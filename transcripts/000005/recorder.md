@@ -1,404 +1,474 @@
-# 000005 · recorder · run 39260533988
+# 000005 · recorder · run 39514767137
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-python tools/readme_row.py 000005 --write; git diff; ls claims/000005 transcripts/000005; cat attempts/000005-yu-2016-01.yaml; python -c "import json;d=json.load(open('targets/dandisets.json'));e=[x for x in (d if isinstance(d,list) else d.get('dandisets',d.values())) if '000005' in json.dumps(x)];print(json.dumps(e,indent=1))"
+python tools/readme_row.py 000005 --write; git diff; ls transcripts/000005/ claims/000005/; cat attempts/000005-yu-2016-02.yaml; python -c "import json;d=json.load(open('targets/dandisets.json'));print([x for x in (d if isinstance(d,list) else d.values()) if '000005' in json.dumps(x)][:1])"
 ```
 
 ```
 <persisted-output>
-Output too large (204.1KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/b6a7d9f8-2f7b-4360-9437-63afc3d6251a/tool-results/bvv4a4nmy.txt
+Output too large (222.3KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/1744c3e1-f332-4cc5-b751-5a27bba6e493/tool-results/btngt0vo9.txt
 
 Preview (first 2KB):
 diff --git a/README.md b/README.md
-index 6ddf675..9157d37 100644
+index f246b9e5..db80f0a5 100644
 --- a/README.md
 +++ b/README.md
-@@ -103,6 +103,7 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
- | [001878](https://dandiarchive.org/dandiset/001878) | [Sun et al. 2021](https://doi.org/10.22002/d1.1991) | 4 (+1) | 2 (+1) | 0 | 0 | [`001878-sun-2021`](entries/001878-sun-2021) |
+@@ -103,7 +103,7 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
+ | [001878](https://dandiarchive.org/dandiset/001878) | [Sun et al. 2021](https://doi.org/10.22002/d1.1991) | 4 | 2 (+1) | 0 | 0 | [`001878-sun-2021`](entries/001878-sun-2021) |
  | [001712](https://dandiarchive.org/dandiset/001712) | [Davatolhagh et al. 2025](https://doi.org/10.1101/2025.09.12.675910) | 3 | 2 | 2 | 11 | [`001712-davatolhagh-2025`](entries/001712-davatolhagh-2025) |
  | [001888](https://dandiarchive.org/dandiset/001888) | [Hristova et al. 2025](https://doi.org/10.1111/epi.18606) | 13 | 9 | 2 | 10 | [`001888-hristova-2025`](entries/001888-hristova-2025) |
-+| [000005](https://dandiarchive.org/dandiset/000005) | [Yu et al. 2016](https://doi.org/10.1038/nn.4412) | 5 | 0 | 2 | 1 | [`000005-yu-2016`](entries/000005-yu-2016) |
+-| [000005](https://dandiarchive.org/dandiset/000005) | [Yu et al. 2016](https://doi.org/10.1038/nn.4412) | – | – | – | – | [`000005-yu-2016`](entries/000005-yu-2016) (deprecated) |
++| [000005](https://dandiarchive.org/dandiset/000005) | [Yu et al. 2016](https://doi.org/10.1038/nn.4412) | 5 | 9 | 6 | 13 | [`000005-yu-2016`](entries/000005-yu-2016) |
+ | [CRCNS:ret-1](https://crcns.org/data-sets/retina/ret-1) | [Lefebvre et al. 2008](https://doi.org/10.1242/dev.027912) | 3 | 0 | 2 | 21 | [`crcns-ret-1-lefebvre-2008`](entries/crcns-ret-1-lefebvre-2008) |
  
- Counts are of claims that rest on the dandiset, including those that take
- names for its own codes from elsewhere. Claims that also use data from
-claims/000005:
+ Counts are of the paper's findings that rest on the dandiset, including
+claims/000005/:
 10.1038-nn.4412.yaml
 
-transcripts/000005:
-[... 31 more lines not kept]
+[... 32 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-grep -n "^| Dandiset\|^|---\|^| ---" README.md | head; sed -n 90,100p README.md; cat attempts/000005-yu-2016-01.yaml; python -c "
+grep -n "^| Dataset\|^| ---\|^|--" README.md | head; grep -n "^### " docs/pilot-notes.md | tail -8; wc -l attempts/000005-yu-2016-02.yaml claims/000005/*.yaml transcripts/000005/*report.md; ls attempts | grep 000005; python -c "
 import json;d=json.load(open('targets/dandisets.json'))
-it=d if isinstance(d,list) else d.get('dandisets',d)
-if isinstance(it,dict): print(json.dumps(it.get('000005'),indent=1))
-else: print(json.dumps([x for x in it if x.get('id',x.get('dandiset'))=='000005'],indent=1))"
+it = d if isinstance(d,list) else list(d.values())
+for x in it:
+  s=json.dumps(x)
+  if '\"000005\"' in s: print(s[:3000])
+" | head -c 4000
 ```
 
 ```
-49:| Dandiset | Paper | Reproduced | Partially | Not reproduced | Blocked | Entry |
 50:|---|---|---|---|---|---|---|
-| [000727](https://dandiarchive.org/dandiset/000727) | [Brezovec et al. 2022](https://doi.org/10.1101/2022.03.20.485047) | 8 | 5 | 1 | 6 | [`000727-brezovec-2022`](entries/000727-brezovec-2022) |
-| [000947](https://dandiarchive.org/dandiset/000947) | [Schwab et al. 2020](https://doi.org/10.1371/journal.pbio.3000829) | 6 (+1) | 4 | 7 | 1 | [`000947-schwab-2020`](entries/000947-schwab-2020) |
-| [000971](https://dandiarchive.org/dandiset/000971) | [Seiler et al. 2022](https://doi.org/10.1016/j.cub.2022.01.055) | 17 | 9 | 6 | 5 | [`000971-seiler-2022`](entries/000971-seiler-2022) |
-| [001038](https://dandiarchive.org/dandiset/001038) | [Azcorra et al. 2023](https://doi.org/10.1038/s41593-023-01401-9) | 16 | 7 | 1 | 0 | [`001038-azcorra-2023`](entries/001038-azcorra-2023) |
-| [001075](https://dandiarchive.org/dandiset/001075) | [Randi et al. 2023](https://doi.org/10.1038/s41586-023-06683-4) | 4 | 4 (+1) | 0 (+1) | 7 | [`001075-randi-2023`](entries/001075-randi-2023) |
-| [001084](https://dandiarchive.org/dandiset/001084) | [Vu et al. 2024](https://doi.org/10.1016/j.neuron.2023.12.011) | 10 (+1) | 10 | 0 | 1 | [`001084-vu-2024`](entries/001084-vu-2024) |
-| [001170](https://dandiarchive.org/dandiset/001170) | [Ling et al. 2023](https://doi.org/10.1101/2023.04.24.538157) | 2 (+1) | 4 | 4 | 3 | [`001170-ling-2023`](entries/001170-ling-2023) |
-| [001172](https://dandiarchive.org/dandiset/001172) | [Lohani et al. 2022](https://doi.org/10.1038/s41593-022-01202-6) | 13 | 7 | 1 | 5 | [`001172-lohani-2022`](entries/001172-lohani-2022) |
-| [001528](https://dandiarchive.org/dandiset/001528) | [Hadjas et al. 2025](https://doi.org/10.1101/2025.06.03.657460) | 12 | 5 | 3 | 5 | [`001528-hadjas-2025`](entries/001528-hadjas-2025) |
-| [001538](https://dandiarchive.org/dandiset/001538) | [Zhai et al. 2025](https://doi.org/10.1126/sciadv.adv8224) | 15 (+1) | 0 (+2) | 3 (+1) | 1
-[... 377 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-grep -n -B2 -A12 '"000005"' targets/dandisets.json | head -40; grep -n "^### " docs/pilot-notes.md | tail -6; wc -l docs/pilot-notes.md
-```
-
-```
-69-  },
-70-  {
-71:   "dandiset": "000005",
-72-   "name": "Electrophysiology data from thalamic and cortical neurons during somatosensation",
-73-   "published_version": "0.220126.1853",
-74-   "asset_count": 148,
-75-   "size_gb": 46.44,
-76-   "data_standards": [
-77-    "Neurodata Without Borders (NWB)"
-78-   ],
-79-   "species": [
-80-    "House mouse"
-81-   ],
-82-   "approaches": [
-83-    "electrophysiological approach",
-3902:### 001550, Pagan et al. 2025
 4011:### 001692, Bouabid et al. 2026
 4116:### 001699, Moore et al. 2025
 4228:### 001878, Sun et al. 2021
 4320:### 001712, Davatolhagh et al. 2025
-[... 2 more lines not kept]
+4420:### 001888, Hristova et al. 2025
+4510:### 000005, Yu et al. 2016
+4752:### 001754, Knierim et al. 2000, third attempt
+4857:### crcns-ret-1, Lefebvre et al. 2008
+  1088 attempts/000005-yu-2016-02.yaml
+  1115 claims/000005/10.1038-nn.4412.yaml
+    12 transcripts/000005/answer-report.md
+    41 transcripts/000005/author-answers-report.md
+    67 transcripts/000005/author-report.md
+    29 transcripts/000005/author-revise-1-report.md
+    25 transcripts/000005/author-revise-2-report.md
+    23 transcripts/000005/claims-check-report.md
+    38 transcripts/000005/claims-report.md
+    89 transcripts/000005/verifier-1-report.md
+    65 transcripts/000005/verifier-2-report.md
+[... 4 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 83,110p targets/dandisets.json; sed -n 4011,4508p docs/pilot-notes.md
+sed -n 44,52p README.md; sed -n 4320,5000p docs/pilot-notes.md
 ```
 
 ```
 <persisted-output>
-Output too large (35.7KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/b6a7d9f8-2f7b-4360-9437-63afc3d6251a/tool-results/baviu4opa.txt
+Output too large (44.4KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/1744c3e1-f332-4cc5-b751-5a27bba6e493/tool-results/b52wo4u3h.txt
 
 Preview (first 2KB):
-    "electrophysiological approach",
-    "optogenetic approach"
-   ],
-   "papers": [
-    {
-     "doi": "10.1038/nn.4412",
-     "title": "Layer 4 fast-spiking interneurons filter thalamocortical signals during active somatosensation",
-     "relation": "IsDescribedBy",
-     "resource_type": null,
-     "preprint": false
-    }
-   ],
-   "catalystneuro": []
-  },
-  {
-   "dandiset": "000006",
-[... 32 more lines not kept]
+- [`entries/`](entries): the notebooks.
+- [`schemas/`](schemas): draft schemas for the files above.
+
+## Attempts so far
+
+| Dandiset | Paper | Reproduced | Partially | Not reproduced | Blocked | Entry |
+|---|---|---|---|---|---|---|
+| [000582](https://dandiarchive.org/dandiset/000582) | [Sargolini et al. 2006](https://doi.org/10.1126/science.1125572) | – | – | – | – | [`000582-sargolini-2006`](entries/000582-sargolini-2006) (deprecated) |
+| [000127](https://dandiarchive.org/dandiset/000127) | [Chowdhury et al. 2020](https://doi.org/10.7554/eLife.48198) | 4 | 2 | 0 | 4 | [`000127-chowdhury-2020`](entries/000127-chowdhury-2020) |
+### 001712, Davatolhagh et al. 2025
+
+Three claims reproduced, two partially, two not reproduced and eleven blocked
+on the dandiset. Round 1 had no attempt record and gave its own outcome for
+each claim from the notebook with its conclusion cells and summary removed, and
+agreed with all 18. Round 2 agreed with all 18 and nothing was proposed, so
+there was no third round. The paper, a bioRxiv preprint, compares Nrxn1a
+[... 14 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/b6a7d9f8-2f7b-4360-9437-63afc3d6251a/tool-results/baviu4opa.txt"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/1744c3e1-f332-4cc5-b751-5a27bba6e493/tool-results/b52wo4u3h.txt"
 }
 ```
 
 ```
-1	    "electrophysiological approach",
-2	    "optogenetic approach"
-3	   ],
-4	   "papers": [
-5	    {
-6	     "doi": "10.1038/nn.4412",
-7	     "title": "Layer 4 fast-spiking interneurons filter thalamocortical signals during active somatosensation",
-8	     "relation": "IsDescribedBy",
-9	     "resource_type": null,
-10	     "preprint": false
-11	    }
-12	   ],
-13	   "catalystneuro": []
-14	  },
-15	  {
-16	   "dandiset": "000006",
-17	   "name": "Mouse anterior lateral motor cortex (ALM) in delay response task",
-18	   "published_version": "0.220126.1855",
-19	   "asset_count": 53,
-20	   "size_gb": 0.14,
-[... 507 more lines not kept]
+1	- [`entries/`](entries): the notebooks.
+2	- [`schemas/`](schemas): draft schemas for the files above.
+3	
+4	## Attempts so far
+5	
+6	| Dandiset | Paper | Reproduced | Partially | Not reproduced | Blocked | Entry |
+7	|---|---|---|---|---|---|---|
+8	| [000582](https://dandiarchive.org/dandiset/000582) | [Sargolini et al. 2006](https://doi.org/10.1126/science.1125572) | – | – | – | – | [`000582-sargolini-2006`](entries/000582-sargolini-2006) (deprecated) |
+9	| [000127](https://dandiarchive.org/dandiset/000127) | [Chowdhury et al. 2020](https://doi.org/10.7554/eLife.48198) | 4 | 2 | 0 | 4 | [`000127-chowdhury-2020`](entries/000127-chowdhury-2020) |
+10	### 001712, Davatolhagh et al. 2025
+11	
+12	Three claims reproduced, two partially, two not reproduced and eleven blocked
+13	on the dandiset. Round 1 had no attempt record and gave its own outcome for
+14	each claim from the notebook with its conclusion cells and summary removed, and
+15	agreed with all 18. Round 2 agreed with all 18 and nothing was proposed, so
+16	there was no third round. The paper, a bioRxiv preprint, compares Nrxn1a
+17	knockout and wild-type mice (8 against 11 mice, 10 sessions each) in the IBL
+18	visual decision task with biased blocks, with widefield calcium imaging of
+19	cortex and a linear encoding model, and reports that knockout mice shift their
+20	choices less between blocks and adapt more slowly after a switch, and show
+[... 631 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd transcripts/000005; ls -la --time-style=full-iso; ls attempt-01; for f in claims-report.md claims-check-report.md author-report.md author-answers-report.md answer-report.md verifier-1-report.md author-revise-1-report.md verifier-2-report.md author-revise-2-report.md; do echo "=== $f"; cat $f; done
+```
+
+```
+<persisted-output>
+Output too large (51.4KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/1744c3e1-f332-4cc5-b751-5a27bba6e493/tool-results/buyq3onjk.txt
+
+Preview (first 2KB):
+total 1068
+drwxr-xr-x  3 runner runner   4096 2026-10-20 23:24:19.640467447 +0000 .
+drwxr-xr-x 59 runner runner   4096 2026-10-20 23:24:19.129461991 +0000 ..
+-rw-r--r--  1 runner runner   2729 2026-10-20 23:24:19.636467404 +0000 answer-report.md
+-rw-r--r--  1 runner runner  30828 2026-10-20 23:24:19.636467404 +0000 answer.md
+drwxr-xr-x  2 runner runner   4096 2026-10-20 23:24:18.992460588 +0000 attempt-01
+-rw-r--r--  1 runner runner   4532 2026-10-20 23:24:19.636467404 +0000 author-answers-report.md
+-rw-r--r--  1 runner runner 106805 2026-10-20 23:24:19.637467415 +0000 author-answers.md
+-rw-r--r--  1 runner runner   4948 2026-10-20 23:24:19.637467415 +0000 author-report.md
+-rw-r--r--  1 runner runner   4538 2026-10-20 23:24:19.637467415 +0000 author-revise-1-report.md
+-rw-r--r--  1 runner runner 205897 2026-10-20 23:24:19.638467426 +0000 author-revise-1.md
+-rw-r--r--  1 runner runner   3407 2026-10-20 23:24:19.638467426 +0000 author-revise-2-report.md
+-rw-r--r--  1 runner runner  89237 2026-10-20 23:24:19.638467426 +0000 author-revise-2.md
+-rw-r--r--  1 runner runner 358475 2026-10-20 23:24:19.640467447 +0000 author.md
+-rw-r--r--  1 runner runner   3715 2026-10-20 23:24:18.992460588 +0000 claims-check-report.md
+-rw-r--r--  1 runner runner  32307 2026-10-20 23:24:18.992460588 +0000 claims-check.md
+[... 16 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/1744c3e1-f332-4cc5-b751-5a27bba6e493/tool-results/buyq3onjk.txt"
+}
+```
+
+```
+1	total 1068
+2	drwxr-xr-x  3 runner runner   4096 2026-10-20 23:24:19.640467447 +0000 .
+3	drwxr-xr-x 59 runner runner   4096 2026-10-20 23:24:19.129461991 +0000 ..
+4	-rw-r--r--  1 runner runner   2729 2026-10-20 23:24:19.636467404 +0000 answer-report.md
+5	-rw-r--r--  1 runner runner  30828 2026-10-20 23:24:19.636467404 +0000 answer.md
+6	drwxr-xr-x  2 runner runner   4096 2026-10-20 23:24:18.992460588 +0000 attempt-01
+7	-rw-r--r--  1 runner runner   4532 2026-10-20 23:24:19.636467404 +0000 author-answers-report.md
+8	-rw-r--r--  1 runner runner 106805 2026-10-20 23:24:19.637467415 +0000 author-answers.md
+9	-rw-r--r--  1 runner runner   4948 2026-10-20 23:24:19.637467415 +0000 author-report.md
+10	-rw-r--r--  1 runner runner   4538 2026-10-20 23:24:19.637467415 +0000 author-revise-1-report.md
+11	-rw-r--r--  1 runner runner 205897 2026-10-20 23:24:19.638467426 +0000 author-revise-1.md
+12	-rw-r--r--  1 runner runner   3407 2026-10-20 23:24:19.638467426 +0000 author-revise-2-report.md
+13	-rw-r--r--  1 runner runner  89237 2026-10-20 23:24:19.638467426 +0000 author-revise-2.md
+14	-rw-r--r--  1 runner runner 358475 2026-10-20 23:24:19.640467447 +0000 author.md
+15	-rw-r--r--  1 runner runner   3715 2026-10-20 23:24:18.992460588 +0000 claims-check-report.md
+16	-rw-r--r--  1 runner runner  32307 2026-10-20 23:24:18.992460588 +0000 claims-check.md
+17	-rw-r--r--  1 runner runner   4038 2026-10-20 23:24:18.992460588 +0000 claims-report.md
+18	-rw-r--r--  1 runner runner  81678 2026-10-20 23:24:18.993460598 +0000 claims.md
+19	-rw-r--r--  1 runner runner  15622 2026-10-20 23:24:19.640467447 +0000 verifier-1-report.md
+20	-rw-r--r--  1 runner runner  52000 2026-10-20 23:24:19.640467447 +0000 verifier-1.md
+[... 413 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd ../..; grep -n "^[a-z_]*:" attempts/000005-yu-2016-02.yaml; grep -n "^#\|catalyst\|deprecat\|supersed" attempts/000005-yu-2016-02.yaml | head -30
+```
+
+```
+1:schema_version: 2
+2:id: 000005-yu-2016-02
+3:dataset:
+8:paper: doi:10.1038/nn.4412
+9:date: 2026-10-20
+10:entry: 000005-yu-2016
+11:provenance:
+19:inputs:
+24:outcomes:
+477:findings:
+535:verifications:
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "attempts/000005-yu-2016-02.yaml",
+ "limit": 540
+}
+```
+
+```
+1	schema_version: 2
+2	id: 000005-yu-2016-02
+3	dataset:
+4	  archive: dandi
+5	  id: '000005'
+6	  version: 0.220126.1853
+7	  doi: 10.48324/dandi.000005/0.220126.1853
+8	paper: doi:10.1038/nn.4412
+9	date: 2026-10-20
+10	entry: 000005-yu-2016
+11	provenance:
+12	  kind: agent
+13	  accountable:
+14	    name: CatalystNeuro
+15	  agent:
+16	    harness: Claude Code (GitHub Actions)
+17	    model: claude-opus-5-5
+18	    protocol: pilot-10
+19	inputs:
+20	- what: Supplementary Table 1 of the paper (the mouse line of each mouse), read at run time from the supplement
+[... 520 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 535,560p attempts/000005-yu-2016-02.yaml; grep -n "agree" attempts/000005-yu-2016-02.yaml | grep -v "agree: true" | head; grep -c "agree: true" attempts/000005-yu-2016-02.yaml; grep -n -i "seconds\|minutes\| s\b" transcripts/000005/author-revise-2-report.md entries/000005-yu-2016/README.md | head
+```
+
+```
+verifications:
+- date: '2026-10-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The handover of the run recorded in this attempt before this revision, the executed
+    notebook with the conclusions and summary removed, the helper module and the claims file; the verifier
+    also read the paper under paper/ and checked the archive metadata for the blocked claims.
+  results:
+  - claim: behavior-touches
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both touch counts are within tolerance only under reading (b), principal whisker, every trial
+      (6.04 and 0.85), but over 9,794 and 8,223 trials against the paper's 4,147 and 4,173. Cortical performance
+      0.718 is within tolerance; VPM performance 0.585 is not (needs 0.71 +- 0.071). Cortical performance
+      uses the post-hoc flagged exclusion as control, though the notebook says no_flagged never decides
+      an outcome; including the flagged mice gives 0.695, still within tolerance.
+    response: Cortical performance is now averaged over all 122 cortical cells (0.681 every trial, 0.694
+      without light, within tolerance), and the flagged-mice exclusion is a variant; the touch-count reading
+      (a) also uses every cortical cell. The notes and conclusion say the matching trial counts are more
+      than twice the paper's. Outcome unchanged.
+[... 19 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+grep -n "agrees: false" -A4 attempts/000005-yu-2016-02.yaml; grep -n "reviewed:" -A6 attempts/000005-yu-2016-02.yaml | sed -n 8,30p; grep -c "agrees: true" attempts/000005-yu-2016-02.yaml
+```
+
+```
+634:    agrees: false
+635-    outcome: blocked
+636-    reason: The FS readings disagree. With the waveform boundary, 2 of 3 values are within tolerance (partial);
+637-      without it, 1 of 3 (not reproduced). Spikes per touch is 1.39 to 1.50 in every reading (needs 1.9
+638-      +- 0.2). Only 17 FS cells against the paper's 26. The tag rule (isolated pulses, gap 0.1 s both
+--
+859:  reviewed: Round 2. The full executed notebook of the run recorded after the round-1 revision, with its conclusions
+860-    and summary, the helper module, the claims file, this record and the README; the verifier also read the
+861-    paper under paper/.
+862-  results:
+863-  - claim: behavior-touches
+864-    agrees: true
+865-    outcome: partially_reproduced
+65
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 1,60p claims/000005/10.1038-nn.4412.yaml; grep -n "^- id:\|^  statement:" claims/000005/10.1038-nn.4412.yaml | head -80
+```
+
+```
+# Claims for Yu, Gutnisky, Hires & Svoboda (2016), Nat. Neurosci. 19, 1647-1657, on dandiset
+# 000005 ("Electrophysiology data from thalamic and cortical neurons during somatosensation").
+#
+# Provenance. Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions),
+# 2026-10-20, protocol as stated in docs/protocol.md (version pilot-10), Reader steps 1 to 4.
+#
+# What changed. This file replaces a deprecated version whose claims were written from the
+# abstract only, with cell types and every measure chosen by the earlier author (proxy FS and
+# excitatory classes, a 6 to 30 Hz whisking band, a touch-selectivity index, Rayleigh and
+# harmonic phase tests). Read against the full text on 2026-10-20, the criteria of
+# exc-mainly-touch and fs-enhance-touch-selectivity tested measures the paper does not use, and
+# seven or more of the paper's findings on these data had no claim. Every claim is written again
+# here from the full text: statements, sources, quotes, statistics, expected values and criteria
+# all come from the paper. The ids of the eight earlier claims are kept where the finding is the
+# same (vpm-touch, vpm-whisking, fs-touch-and-whisking, exc-mainly-touch,
+# fs-suppress-movement-spiking, fs-enhance-touch-selectivity, thalamus-drives-fs,
+# sensory-input-drives-fs), so the outcomes can be compared; their criteria are new. The
+# earlier file's amendments and its proxy cell classes no longer apply. The new claims are
+# vpm-whisking-phase, exc-vm-touch-whisking, exc-threshold-touch-vs-whisking,
+# exc-effective-reversal, exc-inhibition-timing, fs-touch-response, fs-vm-touch-whisking,
+[... 106 more lines not kept]
 ```
 
 **Agent**
 
-The README row is in (5 reproduced, 0 partial, 2 not reproduced, 1 blocked). Now reading the reports.
+Now I have what I need. Writing the subsection.
 
 **Agent calls Bash**
 
 ```bash
-cd transcripts/000005; wc -w *-report.md; cat author-report.md
+tail -c 300 docs/pilot-notes.md | od -c | tail -3
 ```
 
 ```
-906 author-report.md
-  625 author-revise-1-report.md
-  506 author-revise-2-report.md
- 1458 verifier-1-report.md
- 1101 verifier-2-report.md
- 4596 total
-I've done steps 1 to 6 for dandiset 000005: the entry ran cleanly from a fresh environment, the checks pass, and the verifier's handover package is built. The paper is closed access (no copy in PMC, Unpaywall, OpenAlex or Semantic Scholar), so I worked from its abstract plus the eight figure titles on the public landing page. That means no number from the paper is tested. I pinned 0.220126.1853, the only published version; the draft has the same 148 files and sizes.
-
-**(1) Outcomes**
-
-| Claim | Outcome | Basis |
-|---|---|---|
-| vpm-touch | reproduced | 20 of 24 VPM units respond to touch; 0 of 24 when spikes are moved to the wrong trial |
-| vpm-whisking | reproduced | 21 of 24 units modulated by whisking; 0.12 of units under the shifted-spike null |
-| fs-touch-and-whisking | reproduced | of 20 light-tagged FS cells, 0.65 respond to touch and 0.80 to whisking |
-| exc-mainly-touch | not_reproduced | the pre-set test misses: excitatory cells more touch-selective than FS p = 0.074, than VPM p = 0.090. Other measures lean the claim's way (whisking-modulated: 0.28 of excitatory cells against 0.80 FS and 0.88 VPM) |
-| fs-suppress-movement-spiking | reproduced | firing during whisking rises in 6 of 7 PV-Cre excitatory cells, p = 0.016 |
-| fs-enhance-touch-selectivity | not_reproduced | selectivity is lower with light in only 2 of 6 cells; touch responses rise more than whisking responses |
-| thalamus-drives-fs | reproduced | FS firing falls with light at the VPM site in 9 of 9 cells (2 mice), p = 0.002; not specific, as 18 of 21 cells fall |
-| sensory-input-drives-fs | blocked (methods_underspecified) | the experiment is not described in the abstract, and the files don't say what each light condition does |
-[... 31 more lines not kept]
+0000420   w   h   e   r   e       o   n   l   y       t   h   e       z
+0000440   i   p       h   a   s       o   n   e   .  \n
+0000454
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd transcripts/000005; for f in verifier-1-report.md author-revise-1-report.md verifier-2-report.md author-revise-2-report.md; do echo "=== $f"; cat $f; done
-```
+cat >> docs/pilot-notes.md <<'EOF'
 
-```
-=== verifier-1-report.md
-**A. Outcomes** (8 claims, taken from `10.1038-nn.4412.yaml`; no separate attempt record was among my materials)
+### 000005, Yu et al. 2016, second attempt
 
-| Claim | My outcome | Reason |
-|---|---|---|
-| vpm-touch | reproduced | Cell 20: 20 of 24 VPM units are touch-responsive (0.83, criterion ≥ 0.5). The same test with spikes moved to the next trial gives 0.00. Results are consistent across all 6 mice. |
-| vpm-whisking | reproduced | Cell 22: 21 of 24 are modulated by the trial-shift test (0.88). The whisking rate is above the quiet rate in 23 of 24. On spikes moved one trial the test still marks 0.12 against a nominal 0.01 (problem 5), which is far from enough to bring 0.88 below 0.5. |
-| fs-touch-and-whisking | reproduced | Cell 24: 13 of 20 tagged cells are touch-responsive (0.65) and 16 of 20 are whisking-modulated (0.80). Both fractions clear 0.5 and are unchanged across the tag-threshold variants. The FS group is a tagged-GABAergic proxy, not the paper's FS definition (problem 2). |
-| exc-mainly-touch | not_reproduced | Cell 26: one-sided Mann-Whitney on selectivity, EXC > FS p = 0.074 and EXC > VPM p = 0.090. Neither is below 0.05. The fraction modulated by whisking (EXC 0.28, FS 0.80, VPM 0.88) and the whisk-minus-quiet variant (p = 0.047, 0.032) point the paper's way, but they do not decide. The deciding measure is ill-conditioned for cells that barely fire (problem 3). |
-| fs-suppress-movement-spiking | reproduced (weak) | Cell 28: the whisking rate rises in 6 of 7 PV-Cre EXC cells (one is 0 to 0, so 6 of 6 nonzero), one-sided Wilcoxon p = 0.016, the smallest p possible for n = 6. Four of the 7 cells come from mouse anm266945. The rate over the whole light window does not reach significance (p = 0.19). The supplementary legends confirm the assumption: eNpHR in PV cells, 3 of 4 PV cells inhibited. That matches the 3 suppressed cells in cell 15. |
-| fs-enhance-touch-selectivity | not_reproduced | Cell 30: selectivity is lower with light in 2 of 6 cells (median 0.083 without
-[... 139 more lines not kept]
-```
+Five claims reproduced, nine partially, six not reproduced and thirteen
+blocked on the dandiset. The attempt replaces the deprecated
+000005-yu-2016-01, whose claims were written from the abstract and figure
+titles; the claims file was written again from the full text, with its
+supplement, so it has 33 claims where the earlier one had 8, and the eight
+kept ids have new criteria. It pins the same version, 0.220126.1853, the only
+published version, whose draft holds the same 148 assets. The author put
+seven questions to a reader; the answers added readings to several criteria
+and changed one outcome, `behavior-false-alarms`, from blocked to reproduced
+(6 of 9 mice per session without the continuity correction, where the other
+readings give 5, 4 and 5). Round 1 gave its own outcome for each claim from
+the notebook with its conclusions and summary removed and agreed with 32 of
+33. It disagreed on `fs-touch-response`, whose FS readings give different
+outcomes (2 of 3 values within tolerance with the waveform boundary, 1 of 3
+without it), and the claim moved from partially reproduced to blocked as
+`methods_underspecified`. A seed check it asked for moved `auc-weak-strong`
+from reproduced to not reproduced (reading b holds in 8 of 20 seeds) and
+`auc-groups` from blocked to not reproduced, under a rule of the attempt's
+own, recorded as a deviation, that a reading matches only when it matches
+under most of 20 seeds. Round 2 agreed with all 33, including the changes,
+and nothing was proposed, so there was no third round. The paper, "Layer 4
+fast-spiking interneurons filter thalamocortical signals during active
+somatosensation" in Nature Neuroscience, records VPM units with silicon
+probes and L4 neurons by whole-cell and cell-attached recording in mice
+locating a pole with their whiskers, and reports that VPM neurons and L4 FS
+interneurons respond to touch and whisking while L4 excitatory neurons
+respond mostly to touch, that thalamic photoinhibition hyperpolarizes
+excitatory neurons and reduces FS firing, that ION transection removes touch
+responses and reduces whisking responses, and that suppressing PV
+interneurons raises excitatory firing during whisking and changes touch
+detection and behaviour. The touch, whisking and phase responses of VPM
+units, excitatory cells and FS cells, the effects of thalamic
+photoinhibition and of PV suppression, the AUC claims and two behaviour
+claims were tested. The depolarized recordings behind `exc-inhibition-timing`
+and `exc-inhibition-whisking`, the thalamic multiunits of
+`vpm-photoinhibition` and the histology of `rabies-vpm-input` are blocked as
+`data_missing`, the seven ION-cut claims as `metadata_insufficient`, and
+`thalamus-drives-fs` as `other`, because only 5 FS cells qualify and a
+two-sided test of 5 cells cannot go below p = 0.0625. `exc-mainly-touch` is
+not reproduced because the paper's test finds a difference (p = 9.1e-07)
+where the paper found none (P = 0.20), `vpm-touch` because spikes per touch
+average 0.403 against 0.6, `fs-vm-touch-whisking` because the touch latency
+averages 1.88 ms against 4.0, and `exc-touch-spikes-enphr` because the light
+raises spikes per touch from 0.339 to 0.448 (p = 0.044).
+`fs-enhance-touch-selectivity` went from not reproduced to partially
+reproduced: with the light whisking rates exceed nonwhisking rates, as the
+paper reports, but they do in control trials too (p = 6.7e-06 to 0.00013,
+paper P = 0.55). Some outcomes rest on weak ground: without the 8 cells of
+the flagged mice, `exc-vm-touch-whisking` has its amplitude (5.54 mV) and
+latency (4.97 ms) within tolerance; the latency rule on unsmoothed dVm/dt is
+crossed by noise, 1 and 3 of 250 baseline samples, and by single-sample
+transients at light onset (0.10 ms in `exc-thalamus-photoinhibition`); the
+r2 > 0.25 rule of the two phase claims still passes for 16 of 29 VPM units
+and 9 of 17 FS cells with spikes moved to the next trial; and excitatory
+rates are 2 to 6 times the paper's, which drives the rate failures of
+exc-mainly-touch, `fs-suppress-movement-spiking` and auc-groups.
 
-**Agent calls Bash**
+All 11 findings of the earlier attempt are still present, as the dandiset is
+unchanged. No file marks the 9 ION-transected mice, and the files hold no
+surgery or notes field, so the ION-cut claims cannot be tested and their
+cells sit in every control group; the 4 mice flagged here leave at most 7
+candidates for the 9. No L4 file names the cell type of its neuron, so the
+cell types the paper compares can only be inferred from light tagging,
+waveforms and light inactivation, and 26 VGAT-ChR2 cells with fewer than 10
+short pulses at any cortical site cannot be tagged and count as excitatory.
+The dandiset lacks the 6 L4 excitatory neurons recorded with depolarizing
+current (Fig. 3), the 17 thalamic multiunit recordings during
+photoinhibition (Fig. 6b,c) and the rabies tracing histology (Supplementary
+Fig. 10). The optogenetic conditions are not described: photo_stim_mode and
+type have empty descriptions and the mode labels do not map to one kind of
+light, photo_stim_power is NaN in every L4 file, and no file names the opsin.
+The injected current has unit amperes and conversion 1e-6, but the test
+pulse, -0.1 nA in the Methods, is stored as about -0.1, so the stored values
+are in nA and the conversion is wrong by a factor of 1,000, and 17
+cell-attached files of VGAT-ChR2 mice carry a constant stored current of
+about 1.9 that no description explains. The session description gives the
+wrong recording mode for 24 of 130 L4 files, all from PV-IRES-Cre mice, and
+in the L4 files the trial table's first_touch_time is the trial start plus
+the first-touch latency divided by 1000. The genotype is missing for the 6
+VPM mice and 3 L4 mice, and the 5 SOM-IRES-Cre x Ai32 mice are given as
+Ai32. Other findings: every L4 file gives cortical layer 4 (depth 0.42 to
+0.62 mm); the L4 trace is sampled at 10 kHz (92 files) or 20 kHz (38
+files), which only the timestamps state; 8 files name no principal whisker,
+and the VPM files give one per file, though 11 of 20 units in files with
+several tracked whiskers respond most to another whisker; the light at the
+site labelled VPM in VGAT-ChR2 mice is given as 594 nm, and 594 nm pulses at
+the site labelled vS1 drive 13 VGAT-ChR2 cells, so the wavelengths look
+wrong; the pulse trains at the site labelled VPM run at 50 Hz in 12 of 33
+files, where the Methods give 100 Hz; the no-lick trial type is spelled Nogo
+in some files and NoGo in others; and neither the paper nor the dandiset
+links analysis code.
 
-```bash
-cd  grep -n -E "^\s*(id|statement|title|journal|source|amendments?|  - date|reason):" claims/000005/10.1038-nn.4412.yaml | head -60; head -30 claims/000005/10.1038-nn.4412.yaml
-```
-
-```
-67:  statement: Neurons in the ventral posteromedial nucleus (VPM) fire in response to touch in mice
-69:  source: Abstract; Figure 1 and Figure 5 titles
-73:  statement: VPM neurons fire in response to whisker movement.
-74:  source: Abstract; Figure 5 title
-80:  statement: L4 fast-spiking (FS) interneurons inherit the responses of VPM, firing in response to
-82:  source: Abstract; Figures 4 and 5 titles
-87:  statement: In contrast with VPM neurons and L4 FS interneurons, L4 excitatory neurons respond
-89:  source: Abstract; Figures 1 and 5 titles
-99:  statement: FS interneurons reduce movement-related spiking in L4 excitatory neurons; silencing
-101:  source: Abstract; Figure 8 title
-112:  statement: By suppressing movement-related spiking, FS interneurons enhance the selectivity of
-114:  source: Abstract; Figure 8 title
-122:  statement: Thalamic activity drives L4 FS interneurons.
-123:  source: Figure 6 title; Abstract
-132:  statement: The movement-related activity of L4 FS interneurons is driven by sensory input
-134:  source: Abstract; Figure 7 title; Supplementary Figures 6, 11 and 12 legends
-# Claims for Yu, Gutnisky, Hires & Svoboda (2016) on dandiset 000005.
-# Source: the abstract and the eight figure titles on the public landing page of the paper
-# (https://www.nature.com/articles/nn.4412). The full text is not open access and no copy was
-# found in PubMed Central, Europe PMC or a preprint server, so the claims are at the level of the
-[... 26 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 30,66p claims/000005/10.1038-nn.4412.yaml; sed -n 67,140p claims/000005/10.1038-nn.4412.yaml | grep -A3 "statement:"
-```
-
-```
-# - Whisking modulation: Rayleigh test of the whisking phase at spikes during non-touch whisking,
-#   modulated when p < 0.01; its size in Hz is 2 x vector strength x rate during whisking.
-#   Amended after the first run (see below).
-# - Touch selectivity: touch response / (touch response + whisking modulation), both in Hz, the
-#   touch response floored at 0.
-# - A cell or unit enters a measure when its principal whisker is named, it has at least 10
-#   touches and at least 20 spikes in the trials used.
-#
-# Amendment, made after the first run of the notebook and before the outcomes were recorded. The
-# null control of the data check (spikes moved to the next trial) showed that the Rayleigh test
-# above marks 88% of VPM units as modulated with the wrong alignment (92% with the right one),
-# because time is not spread evenly over whisking phase. The test cannot tell modulation from
-# chance, so it was replaced for every claim, as follows. Whisking modulation is the amplitude of
-# the first harmonic of spike rate against whisking phase (12 bins, rate = spikes over time spent
-# in the bin), minus the median of a null made by moving the spikes 1 to 99 trials later and by a
-# quarter, half and three quarters of a trial; modulated when p < 0.01 against that null. Touch
-# selectivity uses this corrected amplitude. When this was decided the author had seen, from the
-# first run, the outputs of every claim under the Rayleigh version: VPM 0.83 touch-responsive and
-# 0.92 modulated; FS 0.65 and 0.75; the excitatory against FS and VPM selectivity tests p = 0.18
-# and 0.26; the PV-Cre whisking-rate test p = 0.016 (6 of 7); the selectivity test p = 0.97; the
-[... 55 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  tail -c 200 docs/pilot-notes.md | od -c | tail -3; cat >> docs/pilot-notes.md <<'EOF'
-
-### 000005, Yu et al. 2016
-
-Five claims reproduced, two not reproduced and one blocked on the dandiset,
-none partially reproduced. Round 1 had no attempt record and gave its own
-outcome for each claim from the notebook with its conclusions and summary
-removed, and agreed with all 8 outcomes, but found the reason for blocking
-`sensory-input-drives-fs`, `methods_underspecified`, wrong: the paper's public
-page carries the legends of all 14 supplementary figures, where Supp. Figs. 6,
-11 and 12 test the claim by comparing FS cells in control and ION-transected
-mice. The author read the supplement, changed the reason to
-`metadata_insufficient` and recorded a second amendment in the claims file
-that left the criteria unchanged, as every outcome had been seen. Round 2
-agreed with all 8 and nothing was proposed, so there was no third round. The
-paper, "Layer 4 fast-spiking interneurons filter thalamocortical signals during
-active somatosensation", records VPM units and L4 cells in mice locating
-objects with their whiskers, and reports that VPM neurons and L4 FS
-interneurons respond to touch and whisking while L4 excitatory neurons respond
-mainly to touch, that FS interneurons suppress movement-related spiking in
-excitatory neurons and so enhance their touch selectivity, and that the
-movement-related activity of FS interneurons is driven by the thalamus and by
-sensory input. The full text is not open access, so the claims were written
-from the abstract and the eight figure titles, no number of the paper is
-compared, and every method choice is made here. The touch and whisking
-responses of VPM units, tagged FS cells and excitatory cells, the effect of
-light in PV-Cre mice and of light at the site labelled VPM were tested;
-`sensory-input-drives-fs` is blocked because no file marks the transected
-mice. `exc-mainly-touch` is not reproduced (excitatory cells more
-touch-selective than FS cells p = 0.074, than VPM units p = 0.090), and
-`fs-enhance-touch-selectivity` is not reproduced (selectivity lower with light
-in 2 of 6 cells, p = 0.953). Some outcomes rest on weak ground: exc-mainly-touch
-passes without the mice flagged as lacking touch input (p = 0.024 and 0.038)
-and with the 12 excitatory cells with at least 20 spikes in the touch windows
-(p = 0.003 and 0.005), selections that favour the claim, and 8 of its 18
-cells sit at selectivity 0 or 1; in fs-enhance-touch-selectivity three cells
-sit at selectivity 0 without light on 0 to 13 spikes after touches;
-`fs-suppress-movement-spiking` (6 of 7 cells, p = 0.016) gives 3 of 3, p =
-0.125, without anm266945, which holds 4 of the cells; and the whisking test
-marks 0.12 of VPM units with spikes moved to the next trial, about ten times
-its nominal rate. Cell types are inferred from the data: FS cells as
-VGAT-ChR2 cells spiking within 6 ms of isolated 5 ms light pulses, and
-excitatory cells as untagged whole-cell cells with action potentials at least
-0.6 ms wide.
-
-No L4 file names the cell type of its neuron, so the cell types the paper
-compares can only be inferred from light tagging and action potential width.
-No file marks the mice whose infraorbital nerve was transected (9 VGAT-ChR2
-mice in Supplementary Table 2), and the files hold no surgery or notes field,
-which blocks the test of Figure 7 and means these cells may be mixed into any
-analysis of control cells; 4 mice whose cells have no touch input are probably
-among them. The optogenetic conditions are not described: `photo_stim_mode`
-has an empty description and its labels do not map to one kind of light
-(VPM-site pulse trains are labelled `5ms_pulse` in early files and `shift` in
-later ones), `photo_stim_power` is NaN in every L4 file, and no file names the
-opsin. The session description gives the wrong recording mode for 24 of 130 L4
-files, all from PV-Cre mice, so that by the trace PV-Cre has 9 whole-cell and
-39 juxtacellular cells where Supplementary Table 2 has 5 and 42. In the L4
-files the trial table's `first_touch_time` is the trial start plus the true
-first-touch latency divided by 1000, while in the VPM files it is correct. The
-genotype is missing for the 6 VPM mice and for 3 L4 mice, and the 5
-SOM-IRES-Cre x Ai32 mice are given as Ai32. Other findings: every L4 file gives
-cortical layer 4 (depth 0.42 to 0.62 mm), though the paper's waveform analysis
-includes L5 cells; the L4 trace is sampled at 10 kHz in files up to March 2015
-and at 20 kHz from late August 2015 on, which only the timestamps state; 8
-files name no principal whisker, and the VPM files give one principal whisker
-per file though the session description says each unit has its own; the light
-at the site labelled VPM in VGAT-ChR2 mice is given as 594 nm, and isolated
-594 nm pulses at the site labelled vS1 evoke short-latency spikes in VGAT-ChR2
-cells, wavelengths that may be worth checking; and neither the paper nor the
-dandiset links analysis code, while the public supplement names the measures
-but not their windows, bins or boundaries.
-
-The notebook ran in about 205 s in the first clean run, with `tools/entry.py
-all` passing in 219 s after round 1 and the notebook in 201 s after round 2.
-Reading the files through h5py and remfile first took 20 minutes, and single
-HTTP range requests with a process pool brought loading to about 2.5 minutes.
-The whisking test fixed in the claims file, a Rayleigh test, marked 0.88 of
-VPM units as modulated with spikes moved to the next trial, so it was replaced
-after the first run by an occupancy-corrected test against a trial-shift null,
-recorded as an amendment, with both versions shown. Round 1's points led to
-reading Supplementary Table 1 at run time, a membrane-potential touch response
-to flag mice without touch input, per-cell spike counts, behaviour with and
-without light and the paper's r2 measure as a variant, none changing an
-outcome, and touch windows crossing a trial boundary (7 of 66,206 touches) were
-dropped. Round 2 found statements the outputs did not support, among them 80
-other cells where there are 85, sampling-rate text that left out the 5.2 s
-trials, ION-transected cells stated as being in both groups, and the
-juxtacellular variant presented without its caveat, and these were corrected;
-the metadata search was extended to every text value of each file, with no
-match. Untracked files in the repository root that the author did not create
-were left alone. The author's points on the protocol: an abstract-only paper,
-which leaves the rules for expected values and tolerances nothing to work on;
-the public figure titles used as a source beside the abstract; cell types
-inferred from the data, where the protocol covers labels taken from outside
-sources; a criterion's test that fails its own null control; a clock check for
-single-cell sessions, where decoding a task variable does not fit; undocumented
-optogenetics, tested where the data support the assumption and blocked
-elsewhere; and runtime advice that was not enough to keep loading short.
+The notebook ran in 281 s in the first clean run, 302 s after the answers
+and 296 s after round 1. `entry.py check`, and so `entry.py all`, failed
+throughout on 25 errors, all in the deprecated record, which has no outcomes
+for the new claims and must stay as it is; the new record had none, and the
+notebook was run with `entry.py run`. Round 1's points led to a tag test that
+counts every pulse of the 5 and 10 Hz trains (it drives the same 24 cells),
+the whisking readings applied to every claim that uses them, the held trials
+of the PV-ChR2 cell left out, checks of spike detection, the near-zero
+latencies, the injected current and the pole times, and a cross-tab of mice
+by VPM fibre site. Round 2 found statements the outputs did not support,
+among them that the thalamic latency is still not the longer one past the
+onset transient, which rested on thresholds that differ between the two
+averages, three mice described as lacking touch input that each have a cell
+with spike touch input, and a measured whisking change of 0.87 mV that was
+the best of 16 readings, and these were corrected; the author then put three
+questions on the claims file to a reader, on one-sample latency crossings,
+on a criterion that passes under one reading, and on a chance level for the
+r2 rule. The author's points on the protocol: `entry.py check` requires every
+attempt of the entry, the deprecated one included, to have an outcome for
+every claim, so `entry.py all` cannot pass; the findings schema cannot say
+whether an earlier finding is fixed, and the earlier record cannot get a
+`superseded_by` without being edited; and the repeat-attempt section assumes
+a new version and a kept claims file, where here the version is the same and
+the claims file was rewritten, so kept ids compare different tests.
 EOF
-git diff --stat
-```
-
-```
-0000260   p   a   p   e   r       l   e   a   v   e   s       u   n   d
-0000300   e   f   i   n   e   d   .  \n
-0000310
- README.md           |  1 +
- docs/pilot-notes.md | 98 +++++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 99 insertions(+)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "docs/pilot-notes.md",
- "old_string": "excitatory neurons and so enhance their touch selectivity, and that the\nmovement-related activity of FS interneurons is driven by the thalamus and by\nsensory input.",
- "new_string": "excitatory neurons and so enhance their touch selectivity, and that thalamic\nactivity drives FS interneurons, whose movement-related activity comes from\nsensory input and not from motor areas."
-}
-```
-
-```
-The file docs/pilot-notes.md has been updated successfully. (note: the file had been modified on disk since you last read it — the edit applied cleanly, but the file contains other changes not in your context. Read it before edits that depend on surrounding content.)
-```
-
-**Agent calls Bash**
-
-```bash
-cd  git diff docs/pilot-notes.md | grep -n -E "—|rather|\*\*" ; git status --short
+grep -n "—\|rather" docs/pilot-notes.md | tail -3; git status --short
 ```
 
 ```
@@ -417,18 +487,200 @@ M README.md
 ?? scripts
 ```
 
+**Agent calls Bash**
+
+```bash
+sed -n 696,699p claims/000005/10.1038-nn.4412.yaml; sed -n 936,939p claims/000005/10.1038-nn.4412.yaml; sed -n 1024,1027p claims/000005/10.1038-nn.4412.yaml
+```
+
+```
+- id: ion-cut-exc-whisking
+  statement: After ION transection, whisking-evoked depolarization of L4 excitatory neurons is
+    reduced (0.62 +- 0.50 mV, n = 9) relative to control neurons with matched resting potential
+    (1.54 +- 0.79 mV, n = 15).
+- id: auc-weak-strong
+  statement: Suppressing PV interneurons improves touch detection (AUC) for L4 excitatory neurons
+    with weak touch responses and diminishes it for neurons with robust touch responses.
+  source: Results, Layer 4 FS interneurons suppress reafference in L4, paragraph 3; Figure 8f,g
+- id: behavior-false-alarms
+  statement: With PV interneurons suppressed, most mice (6 of 8) are more likely to report touch
+    with the pole out of reach (false alarms on no-lick trials).
+  source: Results, Layer 4 FS interneurons suppress reafference in L4, paragraph 6;
+```
+
 **Agent**
 
-I added the 000005 row to README.md (5 reproduced, 0 partially, 2 not reproduced, 1 blocked) and appended this subsection to the end of docs/pilot-notes.md. Nothing is committed. The `catalystneuro` field for 000005 is empty, so the findings paragraph does not open with the conversion sentence. Untracked files in the repository root that I did not create (dotfiles, `.idea`, `scripts`) were left alone.
+Let me make the paper sentence more precise using those statements.
 
-### 000005, Yu et al. 2016
+**Agent calls Edit**
 
-Five claims reproduced, two not reproduced and one blocked on the dandiset, none partially reproduced. Round 1 had no attempt record and gave its own outcome for each claim from the notebook with its conclusions and summary removed, and agreed with all 8 outcomes, but found the reason for blocking `sensory-input-drives-fs`, `methods_underspecified`, wrong: the paper's public page carries the legends of all 14 supplementary figures, where Supp. Figs. 6, 11 and 12 test the claim by comparing FS cells in control and ION-transected mice. The author read the supplement, changed the reason to `metadata_insufficient` and recorded a second amendment in the claims file that left the criteria unchanged, as every outcome had been seen. Round 2 agreed with all 8 and nothing was proposed, so there was no third round. The paper, "Layer 4 fast-spiking interneurons filter thalamocortical signals during active somatosensation", records VPM units and L4 cells in mice locating objects with their whiskers, and reports that VPM neurons and L4 FS interneurons respond to touch and whisking while L4 excitatory neurons respond mainly to touch, that FS interneurons suppress movement-related spiking in excitatory neurons and so enhance their touch selectivity, and that thalamic activity drives FS interneurons, whose movement-related activity comes from sensory input and not from motor areas. The full text is not open access, so the claims were written from the abstract and the eight figure titles, no number of the paper is compared, and every method choice is made here. The touch and whisking responses of VPM units, tagged FS cells and excitatory cells, the effect of light in PV-Cre mice and of light at the site labelled VPM were tested; `sensory-input-drives-fs` is blocked because no file marks the transected mice. `exc-mainly-touch` is not reproduced (excitatory cells more touch-selective than FS cells p = 0.074, than VPM units p = 0.090), and `fs-enhance-touch-selectivity` is not reproduced (selectivity lower with light in 2 of 6 cells, p = 0.953). Some outcomes rest on weak ground: exc-mainly-touch passes without the mice flagged as lacking touch input (p = 0.024 and 0.038) and with the 12 excitatory cells with at least 20 spikes in the touch windows (p = 0.003 and 0.005), selections that favour the claim, and 8 of its 18 cells sit at selectivity 0 or 1; in fs-enhance-touch-selectivity three cells sit at selectivity 0 without light on 0 to 13 spikes after touches; `fs-suppress-movement-spiking` (6 of 7 cells, p = 0.016) gives 3 of 3, p = 0.125, without anm266945, which holds 4 of the cells; and the whisking test marks 0.12 of VPM units with spikes moved to the next trial, about ten times its nominal rate. Cell types are inferred from the data: FS cells as VGAT-ChR2 cells spiking within 6 ms of isolated 5 ms light pulses, and excitatory cells as untagged whole-cell cells with action potentials at least 0.6 ms wide.
+```json
+{
+ "replace_all": false,
+ "file_path": "docs/pilot-notes.md",
+ "old_string": "interneurons raises excitatory firing during whisking and changes touch\ndetection and behaviour.",
+ "new_string": "interneurons raises excitatory firing during whisking, improves touch\ndetection for weakly responding neurons and makes most mice report touch\nwith the pole out of reach."
+}
+```
 
-No L4 file names the cell type of its neuron, so the cell types the paper compares can only be inferred from light tagging and action potential width. No file marks the mice whose infraorbital nerve was transected (9 VGAT-ChR2 mice in Supplementary Table 2), and the files hold no surgery or notes field, which blocks the test of Figure 7 and means these cells may be mixed into any analysis of control cells; 4 mice whose cells have no touch input are probably among them. The optogenetic conditions are not described: `photo_stim_mode` has an empty description and its labels do not map to one kind of light (VPM-site pulse trains are labelled `5ms_pulse` in early files and `shift` in later ones), `photo_stim_power` is NaN in every L4 file, and no file names the opsin. The session description gives the wrong recording mode for 24 of 130 L4 files, all from PV-Cre mice, so that by the trace PV-Cre has 9 whole-cell and 39 juxtacellular cells where Supplementary Table 2 has 5 and 42. In the L4 files the trial table's `first_touch_time` is the trial start plus the true first-touch latency divided by 1000, while in the VPM files it is correct. The genotype is missing for the 6 VPM mice and for 3 L4 mice, and the 5 SOM-IRES-Cre x Ai32 mice are given as Ai32. Other findings: every L4 file gives cortical layer 4 (depth 0.42 to 0.62 mm), though the paper's waveform analysis includes L5 cells; the L4 trace is sampled at 10 kHz in files up to March 2015 and at 20 kHz from late August 2015 on, which only the timestamps state; 8 files name no principal whisker, and the VPM files give one principal whisker per file though the session description says each unit has its own; the light at the site labelled VPM in VGAT-ChR2 mice is given as 594 nm, and isolated 594 nm pulses at the site labelled vS1 evoke short-latency spikes in VGAT-ChR2 cells, wavelengths that may be worth checking; and neither the paper nor the dandiset links analysis code, while the public supplement names the measures but not their windows, bins or boundaries.
+```
+The file docs/pilot-notes.md has been updated successfully. (note: the file had been modified on disk since you last read it — the edit applied cleanly, but the file contains other changes not in your context. Read it before edits that depend on surrounding content.)
+```
 
-The notebook ran in about 205 s in the first clean run, with `tools/entry.py all` passing in 219 s after round 1 and the notebook in 201 s after round 2. Reading the files through h5py and remfile first took 20 minutes, and single HTTP range requests with a process pool brought loading to about 2.5 minutes. The whisking test fixed in the claims file, a Rayleigh test, marked 0.88 of VPM units as modulated with spikes moved to the next trial, so it was replaced after the first run by an occupancy-corrected test against a trial-shift null, recorded as an amendment, with both versions shown. Round 1's points led to reading Supplementary Table 1 at run time, a membrane-potential touch response to flag mice without touch input, per-cell spike counts, behaviour with and without light and the paper's r2 measure as a variant, none changing an outcome, and touch windows crossing a trial boundary (7 of 66,206 touches) were dropped. Round 2 found statements the outputs did not support, among them 80 other cells where there are 85, sampling-rate text that left out the 5.2 s trials, ION-transected cells stated as being in both groups, and the juxtacellular variant presented without its caveat, and these were corrected; the metadata search was extended to every text value of each file, with no match. Untracked files in the repository root that the author did not create were left alone. The author's points on the protocol: an abstract-only paper, which leaves the rules for expected values and tolerances nothing to work on; the public figure titles used as a source beside the abstract; cell types inferred from the data, where the protocol covers labels taken from outside sources; a criterion's test that fails its own null control; a clock check for single-cell sessions, where decoding a task variable does not fit; undocumented optogenetics, tested where the data support the assumption and blocked elsewhere; and runtime advice that was not enough to keep loading short.
+**Agent calls Bash**
+
+```bash
+sed -n '/^### 000005, Yu et al. 2016, second attempt/,$p' docs/pilot-notes.md
+```
+
+```
+### 000005, Yu et al. 2016, second attempt
+
+Five claims reproduced, nine partially, six not reproduced and thirteen
+blocked on the dandiset. The attempt replaces the deprecated
+000005-yu-2016-01, whose claims were written from the abstract and figure
+titles; the claims file was written again from the full text, with its
+supplement, so it has 33 claims where the earlier one had 8, and the eight
+kept ids have new criteria. It pins the same version, 0.220126.1853, the only
+published version, whose draft holds the same 148 assets. The author put
+seven questions to a reader; the answers added readings to several criteria
+and changed one outcome, `behavior-false-alarms`, from blocked to reproduced
+(6 of 9 mice per session without the continuity correction, where the other
+readings give 5, 4 and 5). Round 1 gave its own outcome for each claim from
+the notebook with its conclusions and summary removed and agreed with 32 of
+33. It disagreed on `fs-touch-response`, whose FS readings give different
+outcomes (2 of 3 values within tolerance with the waveform boundary, 1 of 3
+without it), and the claim moved from partially reproduced to blocked as
+`methods_underspecified`. A seed check it asked for moved `auc-weak-strong`
+from reproduced to not reproduced (reading b holds in 8 of 20 seeds) and
+`auc-groups` from blocked to not reproduced, under a rule of the attempt's
+[... 99 more lines not kept]
+```
+
+**Agent**
+
+I ran `tools/readme_row.py 000005 --write`. It replaced the deprecated row in README.md with the counts 5 / 9 / 6 / 13 and removed the "(deprecated)" tag. I added the subsection below at the end of `docs/pilot-notes.md`. The `catalystneuro` field for 000005 is empty, so the CatalystNeuro sentence is left out. The attempt, the claims and the entry are unchanged, and nothing is committed. Some untracked files in the repository root were already there and I did not create them, so I left them alone.
+
+### 000005, Yu et al. 2016, second attempt
+
+Five claims reproduced, nine partially, six not reproduced and thirteen
+blocked on the dandiset. The attempt replaces the deprecated
+000005-yu-2016-01, whose claims were written from the abstract and figure
+titles; the claims file was written again from the full text, with its
+supplement, so it has 33 claims where the earlier one had 8, and the eight
+kept ids have new criteria. It pins the same version, 0.220126.1853, the only
+published version, whose draft holds the same 148 assets. The author put
+seven questions to a reader; the answers added readings to several criteria
+and changed one outcome, `behavior-false-alarms`, from blocked to reproduced
+(6 of 9 mice per session without the continuity correction, where the other
+readings give 5, 4 and 5). Round 1 gave its own outcome for each claim from
+the notebook with its conclusions and summary removed and agreed with 32 of
+33. It disagreed on `fs-touch-response`, whose FS readings give different
+outcomes (2 of 3 values within tolerance with the waveform boundary, 1 of 3
+without it), and the claim moved from partially reproduced to blocked as
+`methods_underspecified`. A seed check it asked for moved `auc-weak-strong`
+from reproduced to not reproduced (reading b holds in 8 of 20 seeds) and
+`auc-groups` from blocked to not reproduced, under a rule of the attempt's
+own, recorded as a deviation, that a reading matches only when it matches
+under most of 20 seeds. Round 2 agreed with all 33, including the changes,
+and nothing was proposed, so there was no third round. The paper, "Layer 4
+fast-spiking interneurons filter thalamocortical signals during active
+somatosensation" in Nature Neuroscience, records VPM units with silicon
+probes and L4 neurons by whole-cell and cell-attached recording in mice
+locating a pole with their whiskers, and reports that VPM neurons and L4 FS
+interneurons respond to touch and whisking while L4 excitatory neurons
+respond mostly to touch, that thalamic photoinhibition hyperpolarizes
+excitatory neurons and reduces FS firing, that ION transection removes touch
+responses and reduces whisking responses, and that suppressing PV
+interneurons raises excitatory firing during whisking, improves touch
+detection for weakly responding neurons and makes most mice report touch
+with the pole out of reach. The touch, whisking and phase responses of VPM
+units, excitatory cells and FS cells, the effects of thalamic
+photoinhibition and of PV suppression, the AUC claims and two behaviour
+claims were tested. The depolarized recordings behind `exc-inhibition-timing`
+and `exc-inhibition-whisking`, the thalamic multiunits of
+`vpm-photoinhibition` and the histology of `rabies-vpm-input` are blocked as
+`data_missing`, the seven ION-cut claims as `metadata_insufficient`, and
+`thalamus-drives-fs` as `other`, because only 5 FS cells qualify and a
+two-sided test of 5 cells cannot go below p = 0.0625. `exc-mainly-touch` is
+not reproduced because the paper's test finds a difference (p = 9.1e-07)
+where the paper found none (P = 0.20), `vpm-touch` because spikes per touch
+average 0.403 against 0.6, `fs-vm-touch-whisking` because the touch latency
+averages 1.88 ms against 4.0, and `exc-touch-spikes-enphr` because the light
+raises spikes per touch from 0.339 to 0.448 (p = 0.044).
+`fs-enhance-touch-selectivity` went from not reproduced to partially
+reproduced: with the light whisking rates exceed nonwhisking rates, as the
+paper reports, but they do in control trials too (p = 6.7e-06 to 0.00013,
+paper P = 0.55). Some outcomes rest on weak ground: without the 8 cells of
+the flagged mice, `exc-vm-touch-whisking` has its amplitude (5.54 mV) and
+latency (4.97 ms) within tolerance; the latency rule on unsmoothed dVm/dt is
+crossed by noise, 1 and 3 of 250 baseline samples, and by single-sample
+transients at light onset (0.10 ms in `exc-thalamus-photoinhibition`); the
+r2 > 0.25 rule of the two phase claims still passes for 16 of 29 VPM units
+and 9 of 17 FS cells with spikes moved to the next trial; and excitatory
+rates are 2 to 6 times the paper's, which drives the rate failures of
+exc-mainly-touch, `fs-suppress-movement-spiking` and auc-groups.
+
+All 11 findings of the earlier attempt are still present, as the dandiset is
+unchanged. No file marks the 9 ION-transected mice, and the files hold no
+surgery or notes field, so the ION-cut claims cannot be tested and their
+cells sit in every control group; the 4 mice flagged here leave at most 7
+candidates for the 9. No L4 file names the cell type of its neuron, so the
+cell types the paper compares can only be inferred from light tagging,
+waveforms and light inactivation, and 26 VGAT-ChR2 cells with fewer than 10
+short pulses at any cortical site cannot be tagged and count as excitatory.
+The dandiset lacks the 6 L4 excitatory neurons recorded with depolarizing
+current (Fig. 3), the 17 thalamic multiunit recordings during
+photoinhibition (Fig. 6b,c) and the rabies tracing histology (Supplementary
+Fig. 10). The optogenetic conditions are not described: photo_stim_mode and
+type have empty descriptions and the mode labels do not map to one kind of
+light, photo_stim_power is NaN in every L4 file, and no file names the opsin.
+The injected current has unit amperes and conversion 1e-6, but the test
+pulse, -0.1 nA in the Methods, is stored as about -0.1, so the stored values
+are in nA and the conversion is wrong by a factor of 1,000, and 17
+cell-attached files of VGAT-ChR2 mice carry a constant stored current of
+about 1.9 that no description explains. The session description gives the
+wrong recording mode for 24 of 130 L4 files, all from PV-IRES-Cre mice, and
+in the L4 files the trial table's first_touch_time is the trial start plus
+the first-touch latency divided by 1000. The genotype is missing for the 6
+VPM mice and 3 L4 mice, and the 5 SOM-IRES-Cre x Ai32 mice are given as
+Ai32. Other findings: every L4 file gives cortical layer 4 (depth 0.42 to
+0.62 mm); the L4 trace is sampled at 10 kHz (92 files) or 20 kHz (38
+files), which only the timestamps state; 8 files name no principal whisker,
+and the VPM files give one per file, though 11 of 20 units in files with
+several tracked whiskers respond most to another whisker; the light at the
+site labelled VPM in VGAT-ChR2 mice is given as 594 nm, and 594 nm pulses at
+the site labelled vS1 drive 13 VGAT-ChR2 cells, so the wavelengths look
+wrong; the pulse trains at the site labelled VPM run at 50 Hz in 12 of 33
+files, where the Methods give 100 Hz; the no-lick trial type is spelled Nogo
+in some files and NoGo in others; and neither the paper nor the dandiset
+links analysis code.
+
+The notebook ran in 281 s in the first clean run, 302 s after the answers
+and 296 s after round 1. `entry.py check`, and so `entry.py all`, failed
+throughout on 25 errors, all in the deprecated record, which has no outcomes
+for the new claims and must stay as it is; the new record had none, and the
+notebook was run with `entry.py run`. Round 1's points led to a tag test that
+counts every pulse of the 5 and 10 Hz trains (it drives the same 24 cells),
+the whisking readings applied to every claim that uses them, the held trials
+of the PV-ChR2 cell left out, checks of spike detection, the near-zero
+latencies, the injected current and the pole times, and a cross-tab of mice
+by VPM fibre site. Round 2 found statements the outputs did not support,
+among them that the thalamic latency is still not the longer one past the
+onset transient, which rested on thresholds that differ between the two
+averages, three mice described as lacking touch input that each have a cell
+with spike touch input, and a measured whisking change of 0.87 mV that was
+the best of 16 readings, and these were corrected; the author then put three
+questions on the claims file to a reader, on one-sample latency crossings,
+on a criterion that passes under one reading, and on a chance level for the
+r2 rule. The author's points on the protocol: `entry.py check` requires every
+attempt of the entry, the deprecated one included, to have an outcome for
+every claim, so `entry.py all` cannot pass; the findings schema cannot say
+whether an earlier finding is fixed, and the earlier record cannot get a
+`superseded_by` without being edited; and the repeat-attempt section assumes
+a new version and a kept claims file, where here the version is the same and
+the claims file was rewritten, so kept ids compare different tests.
 
 ## End of run
 
-13 turns, 1 minutes, result: success.
+17 turns, 2 minutes, result: success.

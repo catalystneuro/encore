@@ -1,16 +1,21 @@
-No outcome changed in round 2, and I did not propose any change. The verifier agreed with all six outcomes. The entry re-ran cleanly twice with `python tools/entry.py all`, and `check` reports 0 errors. Every result statistic is the same as before.
+I've made the round-2 revision. **No outcome changed and none is proposed**: 6 reproduced, 1 partially reproduced, 3 not reproduced, 22 blocked. The verifier agreed with all 32 outcomes, and round 2 is recorded under `verifications` with its reason and my response for each claim.
 
-**Fixes for the five passages the verifier flagged:**
-1. **Video streaming time (rats-learn-puff-location):** the record had numbers left over from an earlier run (8.1 s, about 217 hours). The rate changes from run to run: 8.3 s and then 7.2 s in my two runs. The record now gives the final run's 7.2 s and about 190 hours, and says the rate varies. The README used to say "more than 200 hours", which the final run no longer supports, so it now says about 190 hours.
-2. **"No puffs in the pre-run and post-run" (cell 52):** cell 51 now prints the puffs by epoch. Of 1197 puffs in 38 files, 1195 fall in the run, 2 in the pre-sleep and none in the pre-run or post-run. Cell 52 cites this.
-3. **"927 of 957 puffs" (cell 20 and the aversive-direction deviation):** both now say this count covers only the 31 files in cell 19. Cell 48 now prints the count for the 15 tested sessions: 295 of 304.
-4. **What makes the ripple-up units a subgroup (cell 40):** this now rests on the fraction being well below 1. The 104 units that fire less in ripples are given as a separate fact.
-5. **README run time:** the notebook now prints its total run time (13.9 min in the final run), and the README says about 14 minutes, six of them streaming.
+**What I added**
+- **`direction-all-cell-pairs`**: the verifier said the existing variant only drops Rat08-20130708, while other early Rat08 sessions also have very long laps. I added two variants that limit the platform time and stops in every session. The 30 s and 10 s values are my own choice; they decide nothing, and a small helper `trim_laps` in `hpcbla.py` applies them.
+  - **Laps of at most 30 s (11 sessions):** same result. Air puff p = 0.034, safe p = 0.021, air puff greater than safe p = 0.71.
+  - **Each lap cut to its last 10 s (14 sessions):** the air puff test holds (p = 0.034), but the safe test misses p < 0.05 (p = 0.052).
+  - The criterion fixes the reward-to-reward laps, so the outcome stays reproduced and I proposed no change. The notebook, notes, summary and README now say the result depends partly on the time around the run that those laps include.
+- **`bla-rate-same-across-directions`**: I ran the same two variants on the firing rates. With laps of at most 30 s the air puff versus safe difference remains (p = 0.016 and 0.0043). With laps cut to their last 10 s it disappears (p = 0.75 and 0.82). This supports the verifier's caveat that the difference may come from platform time, not the trajectory. The caveat is now in the notebook, notes and README, and the outcome stays blocked.
 
-**Round 2 record:** it is under `verifications` in `attempts/000061-girardeau-2017-01.yaml`, with the verifier's reasons in its own words and my response for each claim.
+**What I corrected**
+- **README and notes:** the timing figures now match the final run (8.3 s for 20 frames, about 222 hours to stream the run video, 10.2 min run time, 366 s loading). These numbers vary between runs.
+- **`bla-int-sleep-firing` (cell 43):** I removed the unsupported sentence that these cells "differ from the paper's in REM". It now says no test compares the two samples and that the interval of the median includes zero.
+- **`ripple-rate-unchanged` summary row:** "excludes changes above about 11%" is replaced by the bootstrap interval of the change, −1.4% to 8.4% of the rate.
+- **Formatting:** removed stray `**` in cells 31 and 48.
+- **Round-1 record:** the platform-time point was wrongly listed as the verifier's reason under `habituation-over-days`. I removed it there, and the response now says it was raised for the air puff and safe templates.
 
-**Left unchanged:**
-- **Points already covered:** the verifier raised two remaining weak points but said neither changes an outcome. The thin margin for Rat10 is already in the notes. So is the fact that the ripple-up-cells result holds only under the pooled per-pattern criterion, since the effect is not significant at session level once firing rate is controlled.
-- **Lap assignment in cell 51:** the table still assigns laps to epochs by their midpoint, so for Rat08-20130708 its "run" includes the second run. The table is descriptive only and decides nothing, which the record says.
-
-There are untracked files in the repository root (`.bashrc`, `.profile`, `.gitconfig`, `.idea`, `.vscode`, `.mcp.json`, `scripts`, and others) that I did not create. I left them alone; they should be kept out of the commit. Nothing was committed or pushed.
+**What I did not do**
+- I re-ran the notebook with `tools/entry.py run`, not `all`. `all` stops at the check step on 29 errors, all in the earlier `-01` record, which the protocol says must stay as it was; the earlier rounds hit the same errors. The check reports no errors for this attempt's files. The notebook passed in a clean environment, and every other number is the same as before.
+- After the final run I added a missing cell id to the new notebook cell. That is metadata only; the cell's code is unchanged.
+- The verifier also noted that the two absence claims (`cen-no-reactivation`, `ripple-rate-unchanged`) count as reproduced only on the paper's p threshold. I changed nothing for this, because the notebook, notes and README already say so.
+- Nothing is committed or pushed.

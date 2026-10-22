@@ -1,229 +1,519 @@
-# 000061 · author-revise-1 · run 38924833048
+# 000061 · author-revise-1 · run 39502793124
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; cat transcripts/000061/verifier-1-report.md; ls -R entries/000061-girardeau-2017 | head -50
+cat transcripts/000061/verifier-1-report.md; ls entries/000061-girardeau-2017 entries/000061-girardeau-2017/*; ls transcripts/000061
 ```
 
 ```
-# Protocol for an attempt
+**Verifier report: Girardeau et al. 2017 (nn.4637) on DANDI 000061 @ 0.250624.0426, round 1**
 
-Version: `pilot-7`. Record this version in the attempt's provenance.
+The claims file has 32 claims. My outcomes: 6 reproduced, 1 partially reproduced, 3 not reproduced, 22 blocked.
 
-This is what an agent, or a person, does to attempt a target and deposit the
-result. It is written from the eight pilot attempts
-([pilot notes](pilot-notes.md)); the reasons for the rules are there.
+### A. Outcomes
 
-There are two roles. The **author** makes the attempt. The **verifier** checks
-it and must not be the author: for agents, a separate run with a separate
-context that has not seen the author's reasoning.
-
-Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-kept in [`transcripts/<dandiset>/`](../transcripts).
-
-## Author
-
-[... 387 more lines not kept]
+| Claim | Outcome | Reason |
+|---|---|---|
+| unit-counts | not_reproduced | Cell 26: 40 sessions against 61, and 4,702 units against 7,390. Only rat 1 is within tolerance; the totals fail, so the criterion gives "not reproduced". The cause is an incomplete deposit (7 of 40 files have no units table), not a contradiction of the paper. |
+| rats-learn-puff-location | blocked (too_large) | No position or puff location in the data, only gzip video frames: about 227 h of streaming plus tracking (cell 11). DANDI asset metadata lists no SpatialSeries/Position in any of the 40 assets. |
+| each-rat-learns-puff-location | blocked (too_large) | Same data gap. |
+| dz-speed-slower-post-run | blocked (too_large) | Same data gap. |
+| puff-location-no-speed-bias | blocked (too_large) | Same; it also needs the puff location on the track. |
+| habituation-over-days | reproduced | Cell 29: pooled Spearman ρ = 0.38, 0.33, 0.40 with p = 0.015, 0.046, 0.011 for the three lap counts. 4 of 4 rats have ρ > 0 under every lap count. Laps use O1 reading (c) only, which the criterion allows, recorded as a deviation. |
+| bla-pyr-sleep-firing-increase | reproduced | Cell 32: 152 identified excitatory BLA cells (one rat, 5 sessions). REM median 0.39 (p = 7e-15) and NREM median 0.18 (p = 7e-12); the REM median is above the NREM median. |
+| bla-int-sleep-firing | not_reproduced | Cell 34, n = 36: the REM/wake ratio is significant (median +0.029, p = 0.020), so the absence fails. The NREM/wake ratio is not significant (median −0.035, p = 0.26). Neither part holds. |
+| hpc-bla-reactivation-post-sleep | blocked (metadata_insufficient) | No putative cell types. The identified excitatory hippocampal units reach at most 4 per file, below the minimum of 6 (cell 5). Confirmed. |
+| reactiv
+[... 73 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls attempts | grep 000061; cat attempts/000061*; ls claims/000061; cat claims/000061/*; cat entries/000061-girardeau-2017/README.md entries/000061-girardeau-2017/entry.yaml; ls paper/ executed/ 2>/dev/null
+grep -n "" docs/protocol.md | sed -n '1,400p' | grep -n -i -A60 "Hand over for verification" | head -150
 ```
 
-Result: not kept, because it reads the paper's text.
+```
+375:375:  verification round, with its `reason` (see "Hand over for verification").
+376-376:- **`inputs`**: everything used that is not in the dandiset, each with where
+377-377:  it came from (a DOI, or a repository at a commit).
+378-378:- **`findings`**: what the attempt found about the dandiset, whatever the
+379-379:  outcomes. These are for the data owner and the archive. The kinds are
+380-380:  `metadata_error`, `data_missing`, `identifier_missing`,
+381-381:  `selection_undocumented`, `methods_unavailable`, `format_error` (files that
+382-382:  break their own format, such as unsorted spike times), `code_mismatch`
+383-383:  (published code that disagrees with the paper or the data),
+384-384:  `paper_inconsistency` (the paper disagrees with itself),
+385-385:  `metadata_insufficient` (a variable without a description or a needed
+386-386:  mapping) and `other`.
+387-387:- **`provenance`**: who is accountable, and for an agent the harness, model
+388-388:  and this protocol's version.
+389-389:
+390-390:If any outcome is `not_reproduced` or `partially_reproduced`, the entry's
+391-391:`README.md` and the notebook's summary carry this sentence: "A failure to
+392-392:reproduce here may be a failure of this attempt, not of the paper: see the
+393-393:reasoning and the differences from the paper's method."
+394-394:
+[... 6 more lines not kept]
+```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 95,400p attempts/000061-girardeau-2017-01.yaml; echo ----; head -80 claims/000061/*; ls paper executed 2>&1
+sed -n 280,520p docs/protocol.md
 ```
 
 ```
-Exit code 2
-    sessions) was chosen here before the analysis; the paper's is not known here.
-- claim: rats-learn-puff-location
+tables, using a contrast between conditions where an overall check cannot
+tell a response from an offset (with spikes and a trial table only, decoding
+a task variable in windows around the trial start does this; for continuous
+sessions, decoding the annotations with the labels shifted in time), and name any
+session where this could not be established. A description that a check
+supports but does not prove is reported as consistent with the data, not as
+shown. Where they disagree, trust the data, say so in the notebook,
+and record it as a finding.
+
+### 3. Write the entry
+
+An entry is a directory `entries/<dandiset>-<first author>-<year>/` holding
+`entry.yaml`, `requirements.in`, one or more notebooks, and usually a helper
+module.
+
+- **Stream the data** from the archive, at a pinned dandiset version. Do not
+  download files to disk or read local paths.
+- **Compute every result from the data.** No embedded numbers, arrays or
+  images, and no figures read from files.
+- **Fix every random seed**, and give each claim's section its own generator,
+[... 184 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+ls attempts | grep 000061; cat attempts/000061-girardeau-2017-02.yaml 2>/dev/null | head -50; wc -l attempts/000061-girardeau-2017-02.yaml
+```
+
+```
+000061-girardeau-2017-01.yaml
+000061-girardeau-2017-02.yaml
+schema_version: 2
+id: 000061-girardeau-2017-02
+dataset:
+  archive: dandi
+  id: "000061"
+  version: 0.250624.0426
+  doi: 10.48324/dandi.000061/0.250624.0426
+paper: doi:10.1038/nn.4637
+date: 2026-10-20
+entry: 000061-girardeau-2017
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-10
+[... 33 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 50,388p attempts/000061-girardeau-2017-02.yaml
+```
+
+```
+notes: Depends on rats-learn-puff-location (speed ratios from position), which is blocked as too
+    large. No outcome in the earlier attempt.
+- claim: dz-speed-slower-post-run
   outcome: blocked
-  blocked_by: data_missing
-  notes: Learning the location of the puff is behaviour along the track, which needs the rat's
-    position; the dandiset holds no position tracking, only raw video with timestamps that are not
-    on the session clock, reward and puff times, and an undescribed trials table. Lap times between
-    rewards were looked at during the data check but give no location. No public copy of the
-    tracking linked to the paper or the dandiset was found.
-findings:
-- kind: metadata_error
-  statement: The epochs table is stored in milliseconds although its columns say seconds; in all 40
-    files its last stop time is exactly 1000 times the LFP duration and the last spike time.
-- kind: metadata_error
-  statement: Video timestamps are stated in seconds but are in milliseconds and are not on the
-    session clock. The first timestamp matches the start of the video's epoch in 1 of 114 videos,
-    while the spans match the epoch durations in 93 of 114.
-- kind: format_error
-  statement: In ten files the spike_times_index is wrong at the first units. Unit 1's spike times
-[... 109 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 75,96p attempts/000061-girardeau-2017-01.yaml; cat entries/000061-girardeau-2017/hpcbla.py; ls transcripts/000061; ls docs docs/agents
-```
-
-```
-not in Rat10 (1 of 3). In patterns whose post minus pre reactivation is positive, p = 0.0018.
-  deviations:
-  - The abstract does not say how involvement was measured; the pattern weights were chosen here
-    before the analysis.
-- claim: aversive-direction-stronger
-  outcome: not_reproduced
+  blocked_by: too_large
+  notes: Depends on rats-learn-puff-location (danger-zone speeds from position), which is blocked as
+    too large. No outcome in the earlier attempt.
+- claim: puff-location-no-speed-bias
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on rats-learn-puff-location and needs the puff location on the track, which the
+    dandiset does not hold (only puff times). No outcome in the earlier attempt.
+- claim: habituation-over-days
+  outcome: reproduced
   notebook: reproduce_girardeau_2017.ipynb
-  output: claim:aversive-direction-stronger
-  notes: Over 15 sessions, post minus pre reactivation of the air-puff templates exceeds that of
-    the safe templates by a median of 0.0133, in 9 of 15 sessions, Wilcoxon p = 0.11; the criterion
-    needs p < 0.05, and p < 0.1 for a partial outcome. Positive in 6 of 9 Rat08, 2 of 3 Rat10 and 1 of
-    3 Rat11 sessions. Variants lean the same way with mixed strength; the first pattern of each
-    direction gives p = 0.048 (10 of 15), the pooled per-pattern Mann-Whitney test p = 0.083, equal
-    numbers of template bins p = 0.28, and post-sleep strength alone p = 0.45. The safe templates
-    of some sessions rest on few bins (5610 against 66804 in Rat08-20130709).
-  deviations:
-  - Laps, and so run direction, come from the reward times, as the dandiset holds no position; the
-    paper presumably used the position on the track.
-  - The air-puff direction is the lap direction holding most puffs (927 of 957 puffs fall in it).
-  - The measure (mean over significant patterns of post minus pre strength, compared across
-[... 494 more lines not kept]
+  output: claim:habituation-over-days
+  notes: Under O1 reading c, over 40 sessions of four rats, the habituation index rises with
+    training day for each lap count, pooled Spearman rho 0.383 (p = 0.015) for all laps, 0.331 (p =
+    0.046, 37 sessions with a puff direction) for air puff laps and 0.397 (p = 0.011) for
+    left-to-right laps. The correlation is positive in all four rats for each count, with p < 0.05
+[... 319 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat docs/agents/author-revise.md; grep -n "verifications" -A40 attempts/000056*.yaml | head -80; ls schemas 2>/dev/null; ls tools
+ls; ls claims 2>/dev/null | grep 000061; grep -rl "bla-rate-same-across-directions" --include=*.yaml . | head
 ```
 
 ```
-You are the author of the reproduction attempt `{attempt}` (entry `entries/{entry}`) in the reproduction registry, checked out in the current directory. An independent verifier has reviewed it; its round-{round} report is `{report}`. Follow docs/protocol.md, step 6 ("Hand over for verification") and the rules it refers to.
-
-For each point in the report: fix what it found, or say why not. Add any output it asked for. Where it disagrees with an outcome, either change the outcome and say why, or keep it and record the disagreement. In round 2, no outcome may change: if you find one should, keep the verified outcome and write the change under `proposed` on that outcome (the new `outcome`, `blocked_by` if blocked, and a `reason`), with the analysis behind it shown in the notebook. A third verification round reviews proposed changes. Re-run the entry with `python tools/entry.py all entries/{entry}` and make every conclusion match the new numbers. Record the round under `verifications` in the attempt record: for each claim, whether the verifier agreed, the outcome it would give, its reason in its own words (quote or closely paraphrase the report, do not add to it), and what you changed in reply under `response`. Do not commit or push: the workflow commits your changes.
-
-Save any text of the paper you download under `paper/`. Write prose plainly: no em dashes, never the word "rather". YAML plain scalars must not contain ": ".
-
-Your final message is a short report: what changed in the outcomes, what you added or corrected, and anything you did not do and why.
-
-Run every command in the foreground and wait for it to finish, however long it takes: the run ends when you stop, and anything still running is lost.
-272:verifications:
-273-- date: '2026-10-16'
-274-  kind: agent
-275-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-276-  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary remov
-[... 49 more lines not kept]
+LICENSE
+README.md
+attempts
+bunfig.toml
+claims
+docs
+entries
+node_modules
+package-lock.json
+package.json
+paper
+papers
+pnpm-lock.yaml
+questions
+schemas
+scripts
+targets
+tests
+tools
+transcripts
+[... 5 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000061-girardeau-2017; python -c "
-import json;nb=json.load(open('reproduce_girardeau_2017.ipynb'))
-for i,c in enumerate(nb['cells']):
-  print('=====',i,c['cell_type'],c['metadata'].get('tags'));print(''.join(c['source']))
-"; sed -n '/rats-learn-puff-location/,$p' ../../claims/000061/*.yaml
+cd claims/000061; grep -n -B2 -A40 "id: bla-rate-same-across-directions" 10.1038-nn.4637.yaml; grep -n -A30 "^  O7\|id: O7\|O7:" 10.1038-nn.4637.yaml | head -60
 ```
 
 ```
-<persisted-output>
-Output too large (42KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/bfd05b5f-afd2-46db-a90a-c33a8bbbbfd4/tool-results/biopilcnx.txt
+1039-    test has p >= 0.05 (absence on the paper's one-tailed test); partially reproduced when two of
+1040-    the three hold.
+1041:- id: bla-rate-same-across-directions
+1042-  statement: Firing rates of BLA cells do not differ significantly between the safe and the air
+1043-    puff trajectories.
+1044-  source: Results, The aversive trajectory is reactivated during SPW-Rs, paragraph 1
+1045-  quote: Because the firing rates of BLA cells did not significantly differ between safe and air
+1046-    puff trajectories
+1047-  statistics:
+1048-  - about: BLA pyramidal cells
+1049-    test: Wilcoxon signed rank test
+1050-    statistic: z = 1.101
+1051-    p: 0.270
+1052-  - about: all BLA cells
+1053-    test: Wilcoxon signed rank test
+1054-    statistic: z = 0.302
+1055-    p: 0.763
+1056-  criterion: A claim of absence, judged on the paper's test, a two-sided Wilcoxon signed rank test
+1057-    across BLA cells, safe against air puff rate in the run epoch, for pyramidal cells and for all
+1058-    cells. The paper gives no n and does not say which sessions enter; readings (a) the BLA cells
+[... 23 more lines not kept]
+```
 
-Preview (first 2KB):
-===== 0 markdown None
-# Reproducing Girardeau, Inema & Buzsaki (2017) from dandiset 000061
+**Agent calls Bash**
 
-Paper. Girardeau G, Inema I, Buzsaki G (2017). Reactivations of emotional memory in the
-hippocampus-amygdala system during sleep. *Nature Neuroscience* 20, 1634-1642.
-[doi:10.1038/nn.4637](https://doi.org/10.1038/nn.4637). The article is not open access (it is not
-in PubMed Central, and its HAL record holds metadata only), so this attempt used the abstract
-alone (PubMed 28892057). Every claim is a sentence of the abstract, none has a reported number,
-and every method choice was fixed in the claims file before the analysis.
+```bash
+cd  grep -n -A12 "blocked_by" schemas/*.json | head -40; grep -n -B2 -A20 "id: O7" claims/000061/10.1038-nn.4637.yaml; grep -n -B2 -A25 "id: O1$" claims/000061/10.1038-nn.4637.yaml
+```
 
-Dandiset. [DANDI:000061](https://dandiarchive.org/dandiset/000061/0.250624.0426), version
-0.250624.0426. The abstract cites no DANDI version. There are two published versions,
-0.210812.1517 and 0.250624.0426; they hold the same 40 files (same blobs and sizes) and differ only
-in metadata (contributor affiliations and ORCIDs, and a `relatedResource` link to the paper, added
-in 2025), none of which the analysis uses. The most recent published version is pinned.
+```
+schemas/attempt.schema.json:181:          "blocked_by": {
+schemas/attempt.schema.json-182-            "description": "Required when outcome is blocked.",
+schemas/attempt.schema.json-183-            "enum": [
+schemas/attempt.schema.json-184-              "data_missing",
+schemas/attempt.schema.json-185-              "metadata_insufficient",
+schemas/attempt.schema.json-186-              "methods_underspecified",
+schemas/attempt.schema.json-187-              "data_unreadable",
+schemas/attempt.schema.json-188-              "too_large",
+schemas/attempt.schema.json-189-              "not_runnable",
+schemas/attempt.schema.json-190-              "other"
+schemas/attempt.schema.json-191-            ]
+schemas/attempt.schema.json-192-          },
+schemas/attempt.schema.json-193-          "notes": {
+--
+schemas/attempt.schema.json:245:              "blocked_by": {
+schemas/attempt.schema.json-246-                "description": "Required when outcome is blocked.",
+schemas/attempt.schema.json-247-                "enum": [
+schemas/attempt.schema.json-248-                  "data_missing",
+schemas/attempt.schema.json-249-                  "metadata_insufficient",
+schemas/attempt.schema.json-250-                  "methods_underspecified",
+[... 20 more lines not kept]
+```
 
-[... 16 more lines not kept]
+**Agent calls Bash**
+
+```bash
+cd  grep -n "O7\|O1" claims/000061/10.1038-nn.4637.yaml | head -30; sed -n 283,360p schemas/attempt.schema.json
+```
+
+```
+104:# O1 The 150-cm lap window of M8 starts at a left limit picked by hand on a plot (ClassifyLaps.m).
+111:#   from the reward times. A claim is judged on the O1 readings the dataset allows; reading (c)
+128:# O7 How the BLA firing rate of safe and air puff trajectories is taken is not in the text or the
+215:    BehavioralMeasures.m). Laps per M8 under each reading of O1. Sessions with all three ratios
+250:  criterion: The per-session speed ratios of rats-learn-puff-location (each O1 reading), split by
+334:    methods_underspecified with all results. Laps per O1, on the readings the dataset allows; when
+335:    it holds neither lap intervals nor position, the claim is judged on O1 reading (c) alone, the
+964:    laps (M8, each O1 reading), the run counts z-scored within those bins
+967:    when p < 0.05 under every O1 reading; methods_underspecified when the readings disagree.
+988:    O1 readings are each run and reported; absence is judged on each.
+1008:    safe against air puff, tail left). Reproduced when p < 0.05 under every O1 reading;
+1037:    all), using their procedure (M7, M8, laps per O1) but not their results; sessions enter by the
+1060:    (all cells); (b) all BLA cells of sessions with a run epoch. The rate per O7, both readings,
+1061:    laps per O1. Reproduced when neither test has p < 0.05 under every reading; not reproduced
+    "verifications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+[... 72 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 95,140p claims/000061/10.1038-nn.4637.yaml; grep -n "verifications" attempts/*.yaml | head -3
+```
+
+```
+#   bins; ReplayInTime_All.m). A session enters with at least 6 hippocampal and 6 BLA cells of
+#   the type used (ReplayInTime_All.m, ReplayInTime_LapTypes_All.m).
+# M8 Air puff and safe laps (ClassifyLaps.m, LapType.m). In the run epoch, laps are the intervals
+#   during which position stays inside a 150-cm window of the track; a lap goes left to right or
+#   right to left when its end lies more than 10 cm from its start in that direction. Air puff
+#   laps are those in the air puff direction of the day, safe laps the others.
+#
+# Details the paper and its code leave open, with the readings the text allows (each criterion
+# that uses one says so; the notebook runs every reading):
+# O1 The 150-cm lap window of M8 starts at a left limit picked by hand on a plot (ClassifyLaps.m).
+#   Readings (a) lap intervals the dataset holds, if any; (b) the M8 rule with the window's left
+#   edge at the smallest run-epoch position; (c) laps as the intervals between consecutive
+#   rewards at opposite ends of the track. Answered 2026-10-20 (questions/000061.yaml): reading
+#   (a) exists only where the dataset holds lap intervals, and reading (b) only where it holds
+#   position. The paper's laps are back-and-forth runs between the two reward ends of the track
+#   (Online Methods, Recordings and behavior, and the habituation index), which reading (c) counts
+#   from the reward times. A claim is judged on the O1 readings the dataset allows; reading (c)
+#   alone suffices when (a) and (b) cannot be formed, recorded as a deviation.
+# O2 poissonTest (M6) is not in the repository. Readings (a) upper tail P(X >= n) and lower tail
+#   P(X <= n); (b) upper tail P(X > n) and lower tail P(X < n).
+[... 29 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000061-girardeau-2017; wc -l *; cat README.md | head -50; ls ../../executed/ 2>/dev/null | head
+```
+
+```
+44 README.md
+    23 entry.yaml
+   579 hpcbla.py
+  1769 reproduce_girardeau_2017.ipynb
+     7 requirements.in
+   311 requirements.lock.txt
+  2733 total
+# Girardeau, Inema & Buzsaki (2017) from dandiset 000061
+
+Tests the claims of [Girardeau et al. (2017)](https://doi.org/10.1038/nn.4637), written by a reader
+from the full text, the supplement and the paper's code
+(`claims/000061/10.1038-nn.4637.yaml`), on
+[DANDI:000061](https://dandiarchive.org/dandiset/000061/0.250624.0426) version 0.250624.0426,
+which holds sorted units of the hippocampus and the amygdala, sleep states and ripple, air puff and
+reward events from four rats. The attempt record is
+[`attempts/000061-girardeau-2017-02.yaml`](../../attempts/000061-girardeau-2017-02.yaml); it
+replaces [`000061-girardeau-2017-01`](../../attempts/000061-girardeau-2017-01.yaml), whose claims
+were written from the abstract alone.
+
+Of 32 claims, 10 are tested: 6 reproduced, 1 partially reproduced, 3 not reproduced. The other
+[... 31 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/bfd05b5f-afd2-46db-a90a-c33a8bbbbfd4/tool-results/biopilcnx.txt"
+ "file_path": "entries/000061-girardeau-2017/hpcbla.py"
 }
 ```
 
 ```
-1	===== 0 markdown None
-2	# Reproducing Girardeau, Inema & Buzsaki (2017) from dandiset 000061
-3	
-4	Paper. Girardeau G, Inema I, Buzsaki G (2017). Reactivations of emotional memory in the
-5	hippocampus-amygdala system during sleep. *Nature Neuroscience* 20, 1634-1642.
-6	[doi:10.1038/nn.4637](https://doi.org/10.1038/nn.4637). The article is not open access (it is not
-7	in PubMed Central, and its HAL record holds metadata only), so this attempt used the abstract
-8	alone (PubMed 28892057). Every claim is a sentence of the abstract, none has a reported number,
-9	and every method choice was fixed in the claims file before the analysis.
-10	
-11	Dandiset. [DANDI:000061](https://dandiarchive.org/dandiset/000061/0.250624.0426), version
-12	0.250624.0426. The abstract cites no DANDI version. There are two published versions,
-13	0.210812.1517 and 0.250624.0426; they hold the same 40 files (same blobs and sizes) and differ only
-14	in metadata (contributor affiliations and ORCIDs, and a `relatedResource` link to the paper, added
-15	in 2025), none of which the analysis uses. The most recent published version is pinned.
+1	"""Loading and measures for the hippocampus and amygdala recordings of dandiset 000061.
+2	
+3	Girardeau, Inema & Buzsaki (2017), Nature Neuroscience, doi:10.1038/nn.4637.
+4	
+5	Each NWB file is one day of one rat: sorted units with a brain-region label (and, in five Rat08
+6	files, a `cell_type` column), sleep states (Awake, Non-REM, REM), an epochs table (pre-run,
+7	pre-sleep, run, post-sleep, post-run), and annotation series for hippocampal ripples (`rip`:
+8	start, peak and stop of each ripple), air puffs (`puf`) and rewards at the left and right ends
+9	of the track (`lrw`, `rrw`). Some files also hold raw voltage, LFP and video, which are not read
+10	here except for their shapes. Files are streamed from the archive at the pinned version; nothing
+11	is written to disk.
+12	
+13	Where the parameters come from. The claims file (claims/000061/10.1038-nn.4637.yaml) fixes the
+14	methods from the paper's Online Methods, legends and code; its shared methods are M1 to M8 and
+15	its open details O1 to O7, cited below.
 16	
-17	What the dandiset holds. 40 NWB files, one per recording day, from four rats (Rat08 to
-18	Rat11): sorted units with a region label, sleep states, epochs, and event times of hippocampal
-19	ripples, air puffs and rewards; some files also hold raw voltage, LFP and video. There is no
-20	position tracking.
-[... 660 more lines not kept]
+17	- `EPOCH_TIME_SCALE`: the epochs table is stored in milliseconds although its column says
+18	  seconds; the data check shows this (its last stop time is 1000 times the LFP duration).
+19	- Region labels (M1): hippocampus `HPC_LABELS`, BLA `BLA_LABELS`, central nuclei `CEN_LABELS`,
+20	  piriform cortex `PIR_LABELS` (case is ignored). `BLA_COMPLEX_LABELS` adds the labels the
+[... 560 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && timeout 600 python -c "
-import sys; sys.path.insert(0,'$OLDPWD')
-import hpcbla, h5py, remfile
-from dandi.dandiapi import DandiAPIClient
-with DandiAPIClient() as c:
-    d=c.get_dandiset('000061','0.250624.0426')
-    assets=sorted(d.get_assets(), key=lambda a:a.path)
-    print([ (a.path, round(a.size/1e9,1)) for a in assets][:8])
-    a=assets[0]; url=a.get_content_url(follow_redirects=1, strip_query=True)
-f=h5py.File(remfile.File(url),'r')
-for k in f['acquisition']:
-    if k.startswith('Video'):
-        ds=f['acquisition/'+k]
-        print(k, list(ds.keys()), ds['data'].shape, ds['data'].dtype, ds['data'].chunks, ds['data'].compression, dict(ds.attrs).get('neurodata_type'))
-"
+cd entries/000061-girardeau-2017; python - <<'EOF'
+import json
+nb=json.load(open('reproduce_girardeau_2017.ipynb'))
+for i,c in enumerate(nb['cells']):
+    print(f"=== cell {i} [{c['cell_type']}] tags={c.get('metadata',{}).get('tags')}")
+    print(''.join(c['source']))
+EOF
+```
+
+```
+<persisted-output>
+Output too large (75.2KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/26105e14-7a10-4ff8-a218-47b4d2970df8/tool-results/bvnc6xkva.txt
+
+Preview (first 2KB):
+=== cell 0 [markdown] tags=None
+# Reproducing Girardeau, Inema & Buzsaki (2017) from dandiset 000061
+
+Paper. Girardeau G, Inema I, Buzsaki G (2017). Reactivations of emotional memory in the
+hippocampus-amygdala system during sleep. *Nature Neuroscience* 20, 1634-1642.
+[doi:10.1038/nn.4637](https://doi.org/10.1038/nn.4637).
+
+Claims. `claims/000061/10.1038-nn.4637.yaml`, written by a reader from the version of record
+(main text, figure legends, Online Methods, reporting summary) and the Supplementary Information,
+with the paper's code (github.com/buzsakilab/papers, GGirardeau-BLAHpcInteractions-Package, at
+commit cdcec89f), and checked by a second reader. Its criteria fix every method; the shared
+methods M1 to M8 and the open details O1 to O7 are in its opening comment. This attempt
+(`000061-girardeau-2017-02`) replaces `000061-girardeau-2017-01`, whose claims were written from
+the abstract alone. Three questions this attempt asked (`questions/000061.yaml`) were answered by
+a reader and the claims file updated: laps are judged on O1 reading c alone when the dataset has
+neither lap intervals nor position; the sleep firing claims are judged on the identified cells (O4
+[... 12 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/26105e14-7a10-4ff8-a218-47b4d2970df8/tool-results/bvnc6xkva.txt"
+}
+```
+
+```
+1	=== cell 0 [markdown] tags=None
+2	# Reproducing Girardeau, Inema & Buzsaki (2017) from dandiset 000061
+3	
+4	Paper. Girardeau G, Inema I, Buzsaki G (2017). Reactivations of emotional memory in the
+5	hippocampus-amygdala system during sleep. *Nature Neuroscience* 20, 1634-1642.
+6	[doi:10.1038/nn.4637](https://doi.org/10.1038/nn.4637).
+7	
+8	Claims. `claims/000061/10.1038-nn.4637.yaml`, written by a reader from the version of record
+9	(main text, figure legends, Online Methods, reporting summary) and the Supplementary Information,
+10	with the paper's code (github.com/buzsakilab/papers, GGirardeau-BLAHpcInteractions-Package, at
+11	commit cdcec89f), and checked by a second reader. Its criteria fix every method; the shared
+12	methods M1 to M8 and the open details O1 to O7 are in its opening comment. This attempt
+13	(`000061-girardeau-2017-02`) replaces `000061-girardeau-2017-01`, whose claims were written from
+14	the abstract alone. Three questions this attempt asked (`questions/000061.yaml`) were answered by
+15	a reader and the claims file updated: laps are judged on O1 reading c alone when the dataset has
+16	neither lap intervals nor position; the sleep firing claims are judged on the identified cells (O4
+17	reading a) alone; and the all-cell tests of `reactivation-peaks-at-ripples`,
+18	`direction-all-cell-pairs` and `ripple-modulated-cells-larger-reactivation` no longer depend on
+19	claims that need putative cell types, so they are judged here.
+20	
+[... 709 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/26105e14-7a10-4ff8-a218-47b4d2970df8/tool-results/bvnc6xkva.txt",
+ "offset": 730
+}
+```
+
+```
+730	        if len(hpc) < hpcbla.MIN_CELLS or len(other) < hpcbla.MIN_CELLS:
+731	            continue
+732	        res = hpcbla.ev_session(s, hpc, other, nrem_rows, post_periods=(name == "bla"))
+733	        row.update({f"{name}_{k}": v for k, v in res.items()})
+734	        if bool(r.rem_ok.iloc[0]) and name != "bla_wide":
+735	            res = hpcbla.ev_session(s, hpc, other, rem_rows)
+736	            row.update({f"{name}_rem_{k}": v for k, v in res.items()})
+737	    ev_rows.append(row)
+738	ev = pd.DataFrame(ev_rows)
+739	print(f"computed in {time.time() - started:.0f} s")
+740	
+741	def ev_test(df, prefix, label):
+742	    d = df.dropna(subset=[f"{prefix}_ev"])
+743	    diff = d[f"{prefix}_ev"] - d[f"{prefix}_rev"]
+744	    res = stats.wilcoxon(d[f"{prefix}_ev"], d[f"{prefix}_rev"])
+745	    print(f"{label}: {len(d)} sessions {d.rat.value_counts().sort_index().to_dict()}; EV median {d[f'{prefix}_ev'].median():.3f}%,"
+746	          f" REV median {d[f'{prefix}_rev'].median():.3f}%; EV - REV mean {diff.mean():.3f}% (s.e.m. {diff.sem():.3f}),"
+747	          f" median {diff.median():.3f}%, EV > REV in {int((diff > 0).sum())}; Wilcoxon two-sided p = {res.pvalue:.2g}")
+748	    for rat, g in d.groupby("rat"):
+749	        x = g[f"{prefix}_ev"] - g[f"{prefix}_rev"]
+[... 409 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 60,96p claims/000061/10.1038-nn.4637.yaml; grep -n -A22 "id: bla-int-sleep-firing\|id: cen-no-reactivation" claims/000061/10.1038-nn.4637.yaml
+```
+
+```
+#   FinalType.m, type 1 pyramidal, type 2 interneuron). "Pyramidal pairs" means both cells
+#   pyramidal.
+# M2 Epochs. Pre-sleep and post-sleep are the sleep epochs before and after the run (training)
+#   epoch; pre-NREM and post-NREM are the scored NREM intervals inside them; the template epoch
+#   is the whole run epoch, including reward platforms (Supplementary Fig. 11a legend;
+#   ExplainedVariance_Ultimate.m and ReplayInTime.m use the second run interval whole).
+# M3 Binning. Spike counts in 50-ms bins (Online Methods), spikes after the end of the last run
+#   epoch dropped (ReplayInTime.m).
+# M4 EV and REV. For each hippocampus-BLA pair, the Pearson correlation of binned counts in the
+#   pre-NREM bins, the run bins and the post-NREM bins; the three pair-correlation matrices are
+#   correlated with one another over pairs, pairs with an undefined correlation left out
+#   (corrcoef with 'rows','complete'), giving r(run,post), r(run,pre), r(pre,post).
+#   EV = ((r(run,post) - r(run,pre) r(pre,post)) / sqrt((1 - r(run,pre)^2)(1 - r(pre,post)^2)))^2,
+#   REV the same with pre and post swapped (Online Methods; ExplainedVariance_Ultimate.m). Shown
+#   as percent. A session enters when it has at least 6 hippocampal and 6 BLA cells of the cell
+#   type used (Online Methods says "a minimum of 1 shank and 6 cells in each structure";
+#   ExplainedVarianceMean_Ultimate.m tests more than 5 cells in each structure).
+#   For REM, sessions need more than 3 min (180 s) of REM in both pre- and post-sleep.
+# M5 Ripples. The paper's ripple events (detection in Online Methods), kept when inside NREM.
+# M6 Ripple modulation of a unit (Online Methods; PoissonRippleMod.m; ExplainedVariance_Ultimate.m).
+[... 64 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000061-girardeau-2017; ls ../../executed/ 2>&1 | head; which python; python -c "import h5py, remfile, dandi; print('ok')"
 ```
 
 ```
 Exit code 1
+ls: cannot access '../../executed/': No such file or directory
+/opt/hostedtoolcache/Python/3.13.16/x64/bin/python
 Traceback (most recent call last):
-  File "<string>", line 3, in <module>
-    import hpcbla, h5py, remfile
-  File "entries/000061-girardeau-2017/hpcbla.py", line 32, in <module>
-    import h5py
+  File "<string>", line 1, in <module>
+    import h5py, remfile, dandi; print('ok')
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ModuleNotFoundError: No module named 'h5py'
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  sed -n 1,80p tools/entry.py | head -80; ls -a; ls .venv* 2>/dev/null | head
+cd  sed -n 1,80p tools/entry.py | head -80; ls ~/.cache 2>/dev/null; ls -d .venv* /tmp/* 2>/dev/null | head
 ```
 
 ```
@@ -247,1073 +537,1195 @@ tied to the data:
 - the lock file is present and newer requirements are not left unlocked;
 - each notebook, or a helper it imports, names the dandiset the entry uses;
 - each notebook has a cell tagged `sanity` that prints what was loaded;
-[... 106 more lines not kept]
+[... 70 more lines not kept]
 ```
 
 **Agent**
 
-I'll build a scratch venv from the lock file to explore.
+Let me build a scratch environment from the lock file to explore the data structure before editing.
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && uv venv -q -p 3.13 v61 && uv pip install -q -p v61/bin/python -r entries/000061-girardeau-2017/requirements.lock.txt 2>&1 | tail -3; echo done
+cd  uv venv -q -p 3.13 $TMPDIR/venv && VIRTUAL_ENV=$TMPDIR/venv uv pip install -q -r entries/000061-girardeau-2017/requirements.lock.txt 2>&1 | tail -3; $TMPDIR/venv/bin/python -c "import h5py,remfile,dandi;print('ok')"
 ```
 
 ```
-done
-Shell cwd was reset to
+ok
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000061-girardeau-2017 && timeout 900 $TMPDIR/v61/bin/python -c "
-import hpcbla, h5py, remfile
+cd entries/000061-girardeau-2017; cat > $TMPDIR/tree.py <<'EOF'
+import h5py, remfile, hpcbla
 from dandi.dandiapi import DandiAPIClient
+from concurrent.futures import ThreadPoolExecutor
+urls = hpcbla.asset_urls()
+def tree(pu):
+    p,u = pu
+    f = h5py.File(remfile.File(u),'r')
+    out = {}
+    for top in ("acquisition","processing"):
+        if top in f:
+            g = f[top]
+            out[top] = {k: (sorted(g[k].keys()) if isinstance(g[k], h5py.Group) else 'ds') for k in g}
+    return p, out
+with ThreadPoolExecutor(12) as ex:
+    res = list(ex.map(tree, urls))
+for p,o in res:
+    acq = {k:v for k,v in o.get('acquisition',{}).items() if not k.startswith('Video')}
+    print(p.split('/')[-1][:40], 'ACQ', {k: v for k,v in acq.items()}, 'PROC', o.get('processing'))
 with DandiAPIClient() as c:
-    d=c.get_dandiset('000061','0.250624.0426')
-    assets=sorted([a for a in d.get_assets()], key=lambda a:a.path)
-    sz=[a.size/1e9 for a in assets]; print('sizes GB min',min(sz),'max',max(sz),'total',sum(sz))
-    a=assets[0]; url=a.get_content_url(follow_redirects=1, strip_query=True); print(a.path)
-f=h5py.File(remfile.File(url),'r')
-for k in f['acquisition']:
-    ds=f['acquisition/'+k]
-    if k.startswith('Video'):
-        print(k, dict(ds.attrs).get('neurodata_type'), ds['data'].shape, ds['data'].dtype, ds['data'].chunks, ds['data'].compression, 'external_file' in ds)
-"
-```
-
-```
-sizes GB min 9.410629602 max 253.62235843 total 1952.634651805
-sub-Rat08/sub-Rat08_ses-Rat08-20130708_ecephys+image.nwb
-Video: Rat08-20130708-02-run ImageSeries (54431, 360, 640, 3) uint8 (1, 360, 640, 3) gzip False
-Video: Rat08-20130708-04-run ImageSeries (9101, 360, 640, 3) uint8 (1, 360, 640, 3) gzip False
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000061-girardeau-2017 && python - <<'EOF'
-import re
-p='hpcbla.py'; s=open(p).read()
-old='''        s["videos"] = {k: (f[f"acquisition/{k}/data"].shape[0], *f[f"acquisition/{k}/timestamps"][[0, -1]],
-                           f[f"acquisition/{k}/timestamps"].attrs.get("unit"))
-                       for k in f["acquisition"] if k.startswith("Video")}'''
-new='''        s["videos"] = {k: (f[f"acquisition/{k}/data"].shape[0], *f[f"acquisition/{k}/timestamps"][[0, -1]],
-                           f[f"acquisition/{k}/timestamps"].attrs.get("unit"))
-                       for k in f["acquisition"] if k.startswith("Video")}
-        s["video_storage"] = {k: (f[f"acquisition/{k}/data"].shape, str(f[f"acquisition/{k}/data"].dtype),
-                                  f[f"acquisition/{k}/data"].compression)
-                              for k in f["acquisition"] if k.startswith("Video")}'''
-assert old in s; s=s.replace(old,new)
-old='''def puff_direction(session: dict) -> tuple[str | None, dict]:'''
-assert old in s
-old2='''                 bla_labels=BLA_LABELS, templates=("run",), equal_bins: bool = False,
-                 lags: int = 20, keep_traces: bool = True) -> dict:'''
-new2='''                 bla_labels=BLA_LABELS, templates=("run",), equal_bins: bool = False,
-                 lap_tail_s: float | None = None, lags: int = 20, keep_traces: bool = True) -> dict:'''
-assert old2 in s; s=s.replace(old2,new2)
-old3='''    `equal_bins` the two directional templates use the same number of bins (the first bins of
-    the longer one are kept). Returns'''
-new3='''    `equal_bins` the two directional templates use the same number of bins (a random subset of
-    the longer one, drawn with `rng`, is kept). With `lap_tail_s` only the last `lap_tail_s`
-    seconds of each lap, before the reward that ends it, enter the directional templates; this
-    leaves out the time spent waiting at the end where the lap starts. Returns'''
-assert old3 in s; s=s.replace(old3,new3)
-old4='''        lap_iv = {d: np.array([(a, b) for a, b, dd in run_laps(session) if dd == d]).reshape(-1, 2)
-                  for d in ("LR", "RL")}'''
-new4='''        lap_iv = {d: np.array([(a if lap_tail_s is None else max(a, b - lap_tail_s), b)
-                               for a, b, dd in run_laps(session) if dd == d]).reshape(-1, 2)
-                  for d in ("LR", "RL")}'''
-assert old4 in s; s=s.replace(old4,new4)
-old5='''            m = min(len(template_rows["puff"]), len(template_rows["safe"]))
-            template_rows["puff"], template_rows["safe"] = template_rows["puff"][:m], template_rows["safe"][:m]'''
-new5='''            m = min(len(template_rows["puff"]), len(template_rows["safe"]))
-            for key in ("puff", "safe"):
-                template_rows[key] = np.sort(rng.choice(template_rows[key], m, replace=False))'''
-assert old5 in s; s=s.replace(old5,new5)
-open(p,'w').write(s)
+    ds = c.get_dandiset("000061", hpcbla.DANDISET_VERSION)
+    for a in sorted(ds.get_assets(), key=lambda a:a.path):
+        m = a.get_raw_metadata()
+        print(a.path.split('/')[-1][:40], [v.get('value') for v in m.get('variableMeasured',[])])
 EOF
-grep -n "lap_tail_s\|rng.choice" hpcbla.py
-```
-
-```
-/bin/bash: line 42: cd: entries/000061-girardeau-2017: No such file or directory
-362:        offsets = rng.integers(lo, hi + 1, RIPPLE_SHIFTS) * rng.choice([-1, 1], RIPPLE_SHIFTS)
-```
-
-**Agent calls Bash**
-
-```bash
-pwd; python - <<'EOF'
-p='hpcbla.py'; s=open(p).read()
-reps=[('''        s["videos"] = {k: (f[f"acquisition/{k}/data"].shape[0], *f[f"acquisition/{k}/timestamps"][[0, -1]],
-                           f[f"acquisition/{k}/timestamps"].attrs.get("unit"))
-                       for k in f["acquisition"] if k.startswith("Video")}''','''        s["videos"] = {k: (f[f"acquisition/{k}/data"].shape[0], *f[f"acquisition/{k}/timestamps"][[0, -1]],
-                           f[f"acquisition/{k}/timestamps"].attrs.get("unit"))
-                       for k in f["acquisition"] if k.startswith("Video")}
-        s["video_storage"] = {k: (f[f"acquisition/{k}/data"].shape, str(f[f"acquisition/{k}/data"].dtype),
-                                  f[f"acquisition/{k}/data"].compression)
-                              for k in f["acquisition"] if k.startswith("Video")}'''),
-('''                 bla_labels=BLA_LABELS, templates=("run",), equal_bins: bool = False,
-                 lags: int = 20, keep_traces: bool = True) -> dict:''','''                 bla_labels=BLA_LABELS, templates=("run",), equal_bins: bool = False,
-                 lap_tail_s: float | None = None, lags: int = 20, keep_traces: bool = True) -> dict:'''),
-('''    `equal_bins` the two directional templates use the same number of bins (the first bins of
-    the longer one are kept). Returns''','''    `equal_bins` the two directional templates use the same number of bins (a random subset of
-    the longer one, drawn with `rng`, is kept). With `lap_tail_s` only the last `lap_tail_s`
-    seconds of each lap, before the reward that ends it, enter the directional templates; this
-    leaves out the time spent waiting at the end where the lap starts. Returns'''),
-('''        lap_iv = {d: np.array([(a, b) for a, b, dd in run_laps(session) if dd == d]).reshape(-1, 2)
-                  for d in ("LR", "RL")}''','''        lap_iv = {d: np.array([(a if lap_tail_s is None else max(a, b - lap_tail_s), b)
-                               for a, b, dd in run_laps(session) if dd == d]).reshape(-1, 2)
-                  for d in ("LR", "RL")}'''),
-('''            m = min(len(template_rows["puff"]), len(template_rows["safe"]))
-            template_rows["puff"], template_rows["safe"] = template_rows["puff"][:m], template_rows["safe"][:m]''','''            m = min(len(template_rows["puff"]), len(template_rows["safe"]))
-            for key in ("puff", "safe"):
-                template_rows[key] = np.sort(rng.choice(template_rows[key], m, replace=False))''')]
-for a,b in reps:
-    assert a in s, a[:60]; s=s.replace(a,b)
-open(p,'w').write(s)
-EOF
-grep -n "lap_tail_s\|rng.choice\|video_storage" hpcbla.py
-```
-
-```
-entries/000061-girardeau-2017
-132:        s["video_storage"] = {k: (f[f"acquisition/{k}/data"].shape, str(f[f"acquisition/{k}/data"].dtype),
-365:        offsets = rng.integers(lo, hi + 1, RIPPLE_SHIFTS) * rng.choice([-1, 1], RIPPLE_SHIFTS)
-399:                 lap_tail_s: float | None = None, lags: int = 20, keep_traces: bool = True) -> dict:
-405:    the longer one, drawn with `rng`, is kept). With `lap_tail_s` only the last `lap_tail_s`
-427:        lap_iv = {d: np.array([(a if lap_tail_s is None else max(a, b - lap_tail_s), b)
-436:                template_rows[key] = np.sort(rng.choice(template_rows[key], m, replace=False))
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> hpcbla.py <<'EOF'
-
-
-def time_frame_reads(url: str, video: str, n_frames: int = 20) -> tuple[float, int]:
-    """Seconds taken to stream `n_frames` frames spread over a video, and the bytes per frame."""
-    import time
-    f = h5py.File(remfile.File(url), "r")
-    with f:
-        data = f[f"acquisition/{video}/data"]
-        frames = np.linspace(0, data.shape[0] - 1, n_frames).astype(int)
-        started = time.time()
-        for k in frames:
-            data[k]
-        return time.time() - started, int(np.prod(data.shape[1:]) * data.dtype.itemsize)
-EOF
-timeout 1800 $TMPDIR/v61/bin/python -c "
-import hpcbla, pickle, time
-t=time.time(); s=hpcbla.load_all(); print(time.time()-t)
-pickle.dump(s, open('$TMPDIR/sessions.pkl','wb'))
-print(sorted({t for x in s for t,_,_ in x['epochs']}))
-"
-```
-
-```
-363.1376073360443
-[np.str_('postrun'), np.str_('postsleep'), np.str_('prerun'), np.str_('presleep'), np.str_('run'), np.str_('sleep'), np.str_('water')]
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/explore.py <<'EOF'
-import pickle, numpy as np, pandas as pd, hpcbla, time
-pd.set_option("display.width", 220); pd.set_option("display.max_rows", 300)
-sessions = pickle.load(open(__import__('os').environ['TMPDIR']+'/sessions.pkl','rb'))
-used=[s for s in sessions if hpcbla.usable(s)]
-# run epochs
-rows=[]
-for s in used:
-    runs=[(round(a),round(b)) for t,a,b in s["epochs"] if t=="run"]
-    pre,post,run=hpcbla.sleep_epochs(s)
-    rows.append({"session":s["session"],"run_epochs_s":runs,"run_used":(round(run[0]),round(run[1])),
-                 "pre_sleep":[(round(a),round(b)) for a,b in pre],"post_sleep":[(round(a),round(b)) for a,b in post]})
-print(pd.DataFrame(rows).to_string(index=False))
-# laps by epoch
-rows=[]
-for s in sessions:
-    if not all(k in s["events"] for k in ("lrw","rrw","puf")): continue
-    d,_=hpcbla.puff_direction(s)
-    if d is None: continue
-    for a,b,dd in hpcbla.laps(s):
-        m=(a+b)/2
-        tag=[t for t,x,y in s["epochs"] if x<=m<y and t in ("prerun","run","postrun")]
-        rows.append({"session":s["session"],"rat":s["rat"],"epoch":tag[0] if tag else "other","dir":"puff" if dd==d else "safe","dur":b-a})
-L=pd.DataFrame(rows)
-print(L.groupby(["epoch"]).size())
-t=L[L.epoch!="other"].pivot_table(index=["rat","session"],columns=["epoch","dir"],values="dur",aggfunc=["size","median"])
-print(t.round(1).to_string())
-EOF
-timeout 600 $TMPDIR/v61/bin/python $TMPDIR/explore.py
+$TMPDIR/venv/bin/python $TMPDIR/tree.py
 ```
 
 ```
 Exit code 1
 Traceback (most recent call last):
-  File "/tmp/claude-1001/explore.py", line 1, in <module>
-    import pickle, numpy as np, pandas as pd, hpcbla, time
+  File "/tmp/claude-1001/tree.py", line 1, in <module>
+    import h5py, remfile, hpcbla
 ModuleNotFoundError: No module named 'hpcbla'
 ```
 
 **Agent calls Bash**
 
 ```bash
-PYTHONPATH=. timeout 600 $TMPDIR/v61/bin/python $TMPDIR/explore.py
+cd entries/000061-girardeau-2017; PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/tree.py
+```
+
+```
+sub-Rat08_ses-Rat08-20130708_ecephys+ima ACQ {'ElectricalSeries': ['data', 'electrodes', 'starting_time']} PROC {'behavior': ['states'], 'ecephys': ['LFP']}
+sub-Rat08_ses-Rat08-20130709_ecephys+ima ACQ {'ElectricalSeries': ['data', 'electrodes', 'starting_time']} PROC {'behavior': ['states'], 'ecephys': ['LFP']}
+sub-Rat08_ses-Rat08-20130710_ecephys+ima ACQ {'ElectricalSeries': ['data', 'electrodes', 'starting_time']} PROC {'behavior': ['states'], 'ecephys': ['LFP']}
+sub-Rat08_ses-Rat08-20130711_ecephys+ima ACQ {'ElectricalSeries': ['data', 'electrodes', 'starting_time']} PROC {'behavior': ['states'], 'ecephys': ['LFP']}
+sub-Rat08_ses-Rat08-20130712_ecephys+ima ACQ {'ElectricalSeries': ['data', 'electrodes', 'starting_time']} PROC {'behavior': ['states'], 'ecephys': ['LFP']}
+sub-Rat08_ses-Rat08-20130713_ecephys+ima ACQ {'ElectricalSeries': ['data', 'electrodes', 'starting_time']} PROC {'behavior': ['states'], 'ecephys': ['LFP']}
+sub-Rat08_ses-Rat08-20130715_ecephys+ima ACQ {} PROC {'behavior': ['states'], 'ecephys': ['LFP']}
+sub-Rat08_ses-Rat08-20130716_ecephys+ima ACQ {} PROC {'behavior': ['states'], 'ecephys': ['LFP']}
+sub-Rat08_ses-Rat08-20130717_ecephys+ima ACQ {} PROC {'behavior': ['states'], 'ecephys': ['LFP']}
+sub-Rat08_ses-Rat08-20130718_ecephys+ima ACQ {} PROC {'ecephys': ['LFP']}
+sub-Rat08_ses-Rat08-20130719_ecephys+ima ACQ {} PROC {'ecephys': ['LFP']}
+sub-Rat08_ses-Rat08-20130720_ecephys+ima ACQ {} PROC {'ecephys': ['LFP']}
+sub-Rat08_ses-Rat08-20130722_ecephys+ima ACQ {} PROC {'ecephys': ['LFP']}
+sub-Rat09_ses-Rat09-20140324_ecephys+ima ACQ {'ElectricalSeries': ['data', 'electrodes', 'starting_time']} PROC {'behavior': ['states'], 'ecephys': ['LFP']}
+sub-Rat09_ses-Rat09-20140325_ecephys+ima ACQ {'ElectricalSeries': ['data', 'electrodes', 'starting_time']} PROC {'ecephys': ['LFP']}
+sub-Rat09_ses-Rat09-20140326_ecephys+ima ACQ {'ElectricalSeries': ['data', 'electrodes', 'starting_time']} PROC {'ecephys': ['LFP']}
+sub-Rat09_ses-Rat09-20140328_ecephys+ima ACQ 
+[... 63 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000061-girardeau-2017; cat > $TMPDIR/proto.py <<'EOF'
+import time, numpy as np, pandas as pd, hpcbla, pickle
+from scipy import stats
+urls = dict(hpcbla.asset_urls())
+typed_paths = [p for p in urls if any(f"Rat08-201307{d}" in p for d in ("09","10","11","12","13"))]
+t0=time.time()
+from concurrent.futures import ThreadPoolExecutor
+with ThreadPoolExecutor(5) as ex:
+    S = list(ex.map(lambda p: hpcbla.load_session(p, urls[p]), typed_paths))
+print("load", time.time()-t0)
+pickle.dump(S, open(f"{__import__('os').environ['TMPDIR']}/typed.pkl","wb"))
+EOF
+PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/proto.py
+```
+
+```
+load 105.44901180267334
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000061-girardeau-2017; cat > $TMPDIR/ccg.py <<'EOF'
+import time, os, numpy as np, pandas as pd, pickle
+from scipy import stats
+S = pickle.load(open(os.environ['TMPDIR']+"/typed.pkl","rb"))
+EDGES = np.array([-0.05,-0.01,-0.004,-0.001,0.001,0.004,0.01,0.05])
+def ccg_counts(trains, ref, targets):
+    ids = np.concatenate([np.full(len(trains[j]), k) for k, j in enumerate(targets)])
+    t = np.concatenate([trains[j] for j in targets]); o = np.argsort(t, kind="stable"); t, ids = t[o], ids[o]
+    r = trains[ref]
+    lo = np.searchsorted(t, r + EDGES[0]); hi = np.searchsorted(t, r + EDGES[-1])
+    n = hi - lo
+    idx = np.repeat(lo - np.cumsum(np.concatenate([[0], n[:-1]])), n) + np.arange(n.sum())
+    lag = t[idx] - np.repeat(r, n)
+    b = np.searchsorted(EDGES, lag, side="right") - 1
+    ok = (b >= 0) & (b < len(EDGES) - 1)
+    return np.bincount(ids[idx][ok] * (len(EDGES)-1) + b[ok], minlength=len(targets)*(len(EDGES)-1)).reshape(len(targets), -1)
+t0=time.time()
+rows=[]
+for s in S:
+    u=s["units"]; tr=u["trains"]; keys=list(tr)
+    for i in keys:
+        tg=[j for j in keys if j!=i]
+        c=ccg_counts(tr,i,tg)
+        base=c[:,[0,6]].sum(1)  # [-50,-10) and [10,50)
+        exp_after = base*0.003/0.08
+        after=c[:,4]; before=c[:,2]
+        exc = (stats.poisson.sf(after-1, exp_after)<0.001)&(after>before)&(exp_after>0)
+        inh = (stats.poisson.cdf(after, exp_after)<0.001)&(after<before)&(exp_after>0)
+        rows.append({"session":s["session"],"unit":i,"region":u["region"][i],"type":u["cell_type"][i] or "unclassified",
+                     "n_exc":int(exc.sum()),"n_inh":int(inh.sum()),"spikes":len(tr[i])})
+print("ccg", time.time()-t0)
+d=pd.DataFrame(rows)
+d["exc_out"]=d.n_exc>0; d["inh_out"]=d.n_inh>0
+print(d.groupby(["type"])[["exc_out","inh_out"]].agg(["sum","mean","size"]).round(3))
+print(d[d.region=="bla"].groupby(["type"])[["exc_out","inh_out"]].agg(["sum","mean","size"]).round(3))
+EOF
+PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/ccg.py
+```
+
+```
+ccg 181.5072066783905
+             exc_out             inh_out            
+                 sum   mean size     sum   mean size
+type                                                
+excitatory       179  1.000  179      22  0.123  179
+inhibitory        46  0.902   51      48  0.941   51
+unclassified     360  0.807  446      79  0.177  446
+             exc_out             inh_out            
+                 sum   mean size     sum   mean size
+type                                                
+excitatory       152  1.000  152      14  0.092  152
+inhibitory        34  0.944   36      36  1.000   36
+unclassified     150  0.739  203      34  0.167  203
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000061-girardeau-2017; cat > $TMPDIR/ccg2.py <<'EOF'
+import time, os, numpy as np, pandas as pd, pickle
+from scipy import stats
+S = pickle.load(open(os.environ['TMPDIR']+"/typed.pkl","rb"))
+EDGES = np.array([-0.025,-0.01,-0.004,-0.001,0.001,0.004,0.01,0.025])
+def ccg_counts(trains, ref, targets):
+    ids = np.concatenate([np.full(len(trains[j]), k) for k, j in enumerate(targets)])
+    t = np.concatenate([trains[j] for j in targets]); o = np.argsort(t, kind="stable"); t, ids = t[o], ids[o]
+    r = trains[ref]
+    lo = np.searchsorted(t, r + EDGES[0]); hi = np.searchsorted(t, r + EDGES[-1])
+    n = hi - lo
+    idx = np.repeat(lo - np.cumsum(np.concatenate([[0], n[:-1]])), n) + np.arange(n.sum())
+    lag = t[idx] - np.repeat(r, n)
+    b = np.searchsorted(EDGES, lag, side="right") - 1
+    ok = (b >= 0) & (b < len(EDGES) - 1)
+    return np.bincount(ids[idx][ok] * (len(EDGES)-1) + b[ok], minlength=len(targets)*(len(EDGES)-1)).reshape(len(targets), -1)
+t0=time.time()
+rows=[]
+for s in S:
+    u=s["units"]; tr=u["trains"]; keys=list(tr)
+    for i in keys:
+        if u["region"][i]!="bla": continue
+        tg=[j for j in keys if j!=i]
+        c=ccg_counts(tr,i,tg)
+        base=c[:,[0,6]].sum(1)
+        e = base*0.003/0.03
+        after=c[:,4]; before=c[:,2]
+        r={"session":s["session"],"unit":i,"type":u["cell_type"][i] or "unclassified"}
+        for th in (1e-3,1e-6,1e-10):
+            r[f"exc_{th}"]=bool(((stats.poisson.sf(after-1, e)<th)&(after>before)&(e>0)).any())
+            r[f"inh_{th}"]=bool(((stats.poisson.cdf(after, e)<th)&(after<before)&(e>0)).any())
+        rows.append(r)
+print("ccg", time.time()-t0)
+d=pd.DataFrame(rows)
+print(d.drop(columns=["session","unit"]).groupby("type").mean().round(3).T)
+print(d.groupby("type").size())
+EOF
+PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/ccg2.py
+```
+
+```
+ccg 104.17526006698608
+type       excitatory  inhibitory  unclassified
+exc_0.001       1.000       0.833         0.714
+inh_0.001       0.099       1.000         0.177
+exc_1e-06       0.993       0.806         0.443
+inh_1e-06       0.020       0.944         0.079
+exc_1e-10       0.941       0.722         0.310
+inh_1e-10       0.007       0.944         0.034
+type
+excitatory      152
+inhibitory       36
+unclassified    203
+dtype: int64
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000061-girardeau-2017; python - <<'EOF'
+p='hpcbla.py'; s=open(p).read()
+s=s.replace('''- Laps (O1 reading c): the intervals between consecutive rewards at opposite ends of the track.
+"""''','''- Laps (O1 reading c): the intervals between consecutive rewards at opposite ends of the track.
+  A lap so includes the time spent on the starting platform after its reward, which the M8 laps
+  (position inside a 150-cm window) leave out.
+- M3 drops spikes after the end of the last run epoch. It is not applied: the last run epoch
+  (post-run) follows post-sleep, and every analysis here reads only bins of the run and of the
+  sleep epochs and z-scores within those bins, so the dropped spikes could not enter any of them.
+- `MONO_*` (data check only, decides no claim): short-latency cross-correlogram test of whether
+  a unit drives or inhibits another, used to check what the `cell_type` column marks. The
+  windows are a standard choice for monosynaptic connections (1 to 4 ms after the reference
+  spike against a 10 to 25 ms flank baseline); the p-value thresholds are shown at three values.
+- Absence context (`signed_rank_power`, `min_detectable_shift`, `median_ci`): resampling of the
+  session values, a standard choice; it gives power and bounds and decides no claim.
+"""''')
+s=s.replace('''PEAK_WINDOW_S = 0.25
+''','''PEAK_WINDOW_S = 0.25
+
+MONO_EDGES = np.array([-0.025, -0.01, -0.004, -0.001, 0.001, 0.004, 0.01, 0.025])
+MONO_P = (1e-3, 1e-6, 1e-10)
+''')
+s=s.replace('''        s["electrode_locations"] =''','''        s["groups"] = []
+        f.visititems(lambda name, obj: s["groups"].append((name, obj.attrs.get("neurodata_type")))
+                     if isinstance(obj, h5py.Group) and not name.split("/")[-1].startswith("Video")
+                     and name.count("/") < 3 else None)
+        s["electrode_locations"] =''')
+s=s.replace('''def load_all(''','''def asset_variables(version: str = DANDISET_VERSION) -> dict[str, list[str]]:
+    """The variables the archive's asset metadata lists for each NWB file (variableMeasured)."""
+    with DandiAPIClient() as client:
+        dandiset = client.get_dandiset(DANDISET_ID, version)
+        return {a.path: [v.get("value") for v in a.get_raw_metadata().get("variableMeasured", [])]
+                for a in dandiset.get_assets() if a.path.endswith(".nwb")}
+
+
+def load_all(''')
+s=s.replace('''def time_frame_reads(''','''# --- data check: short-latency connections ----------------------------------------------------
+
+def mono_counts(trains: dict, ref: int, targets: list[int]) -> np.ndarray:
+    """(len(targets), 7) counts of target spikes at the lags of `MONO_EDGES` from each spike of ref."""
+    ids = np.concatenate([np.full(len(trains[j]), k) for k, j in enumerate(targets)])
+    t = np.concatenate([trains[j] for j in targets])
+    order = np.argsort(t, kind="stable")
+    t, ids = t[order], ids[order]
+    r = trains[ref]
+    lo = np.searchsorted(t, r + MONO_EDGES[0])
+    n = np.searchsorted(t, r + MONO_EDGES[-1]) - lo
+    idx = np.repeat(lo - np.cumsum(np.concatenate([[0], n[:-1]])), n) + np.arange(n.sum())
+    b = np.searchsorted(MONO_EDGES, t[idx] - np.repeat(r, n), side="right") - 1
+    ok = (b >= 0) & (b < len(MONO_EDGES) - 1)
+    k = len(MONO_EDGES) - 1
+    return np.bincount(ids[idx][ok] * k + b[ok], minlength=len(targets) * k).reshape(len(targets), k)
+
+
+def mono_connections(session: dict, ref: int) -> dict:
+    """Number of loaded units that ref excites or inhibits at short latency, at each `MONO_P`.
+
+    Count of target spikes 1 to 4 ms after ref's spikes against a Poisson of mean the 10 to 25 ms
+    flanks' count scaled to 3 ms; excitation needs the upper tail below the threshold and more
+    spikes after than 1 to 4 ms before (to set aside common input), inhibition the lower tail and
+    fewer after than before.
+    """
+    trains = session["units"]["trains"]
+    c = mono_counts(trains, ref, [j for j in trains if j != ref])
+    flank = (MONO_EDGES[1] - MONO_EDGES[0]) + (MONO_EDGES[-1] - MONO_EDGES[-2])
+    mu = c[:, [0, 6]].sum(1) * (MONO_EDGES[5] - MONO_EDGES[4]) / flank
+    after, before = c[:, 4], c[:, 2]
+    out = {}
+    for p in MONO_P:
+        out[f"excites_{p:g}"] = int(((stats.poisson.sf(after - 1, mu) < p) & (after > before) & (mu > 0)).sum())
+        out[f"inhibits_{p:g}"] = int(((stats.poisson.cdf(after, mu) < p) & (after < before) & (mu > 0)).sum())
+    return out
+
+
+# --- context for claims of absence -----------------------------------------------------------
+
+def signed_rank_power(diffs: np.ndarray, n: int, shift: float, rng: np.random.Generator,
+                      n_sim: int = 2000) -> float:
+    """Share of samples of n values, drawn with replacement from `diffs` centred on a median of
+    zero and moved by `shift`, in which the two-sided Wilcoxon signed rank test has p < 0.05."""
+    centred = np.asarray(diffs) - np.median(diffs)
+    x = rng.choice(centred, size=(n_sim, n), replace=True) + shift
+    return float((stats.wilcoxon(x, axis=1).pvalue < 0.05).mean())
+
+
+def min_detectable_shift(diffs: np.ndarray, n: int, rng: np.random.Generator, power: float = 0.8,
+                         n_sim: int = 2000) -> float:
+    """Smallest positive shift of the median that `signed_rank_power` detects with `power`
+    (bisection to 2% of the spread of `diffs`)."""
+    hi = 4 * (np.std(diffs) + 1e-12)
+    lo = 0.0
+    while hi - lo > 0.02 * np.std(diffs):
+        mid = (lo + hi) / 2
+        if signed_rank_power(diffs, n, mid, rng, n_sim) >= power:
+            hi = mid
+        else:
+            lo = mid
+    return hi
+
+
+def median_ci(x: np.ndarray, rng: np.random.Generator, n_boot: int = 5000) -> tuple[float, float]:
+    """Percentile bootstrap 95% interval of the median."""
+    x = np.asarray(x)
+    m = np.median(rng.choice(x, size=(n_boot, len(x)), replace=True), axis=1)
+    return float(np.percentile(m, 2.5)), float(np.percentile(m, 97.5))
+
+
+def effect_r(p: float, n: int, sign: float) -> float:
+    """Effect size r = z / sqrt(n) of a two-sided test, z from its p-value and the sign given."""
+    return float(np.sign(sign) * stats.norm.isf(p / 2) / np.sqrt(n))
+
+
+def time_frame_reads(''')
+open(p,'w').write(s)
+EOF
+grep -n "visititems" -A3 hpcbla.py
+```
+
+```
+166:        f.visititems(lambda name, obj: s["groups"].append((name, obj.attrs.get("neurodata_type")))
+167-                     if isinstance(obj, h5py.Group) and not name.split("/")[-1].startswith("Video")
+168-                     and name.count("/") < 3 else None)
+169-        s["electrode_locations"] = sorted(set(_strings(f["general/extracellular_ephys/electrodes/location"])))
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000061-girardeau-2017; python - <<'EOF'
+p='hpcbla.py'; s=open(p).read()
+s=s.replace('''        s["groups"] = []
+        f.visititems(lambda name, obj: s["groups"].append((name, obj.attrs.get("neurodata_type")))
+                     if isinstance(obj, h5py.Group) and not name.split("/")[-1].startswith("Video")
+                     and name.count("/") < 3 else None)
+''','''        # Every group down to three levels (videos named once), with its NWB type: shows what
+        # each file holds beyond the paths read here.
+        s["groups"] = []
+
+        def add_group(name, obj):
+            if isinstance(obj, h5py.Group) and name.count("/") < 3 and "/Video" not in "/" + name.split("/", 1)[-1]:
+                kind = obj.attrs.get("neurodata_type")
+                s["groups"].append((name, kind.decode() if isinstance(kind, bytes) else kind))
+        f.visititems(add_group)
+''')
+open(p,'w').write(s)
+EOF
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000061-girardeau-2017; python - <<'EOF'
+p='hpcbla.py'; s=open(p).read()
+s=s.replace('''        # Every group down to three levels (videos named once), with its NWB type: shows what
+        # each file holds beyond the paths read here.''','''        # Every group down to three levels with its NWB type, to show what each file holds beyond
+        # the paths read here (video series are left out; the video check lists them).''')
+s=s.replace('''name.count("/") < 3 and "/Video" not in "/" + name.split("/", 1)[-1]:''','''name.count("/") < 3 and "Video" not in name:''')
+open(p,'w').write(s)
+EOF
+sed -n 160,175p hpcbla.py
+```
+
+```
+f[f"acquisition/{k}/timestamps"].attrs.get("unit"))
+                       for k in f["acquisition"] if k.startswith("Video")}
+        s["video_storage"] = {k: (f[f"acquisition/{k}/data"].shape, str(f[f"acquisition/{k}/data"].dtype),
+                                  f[f"acquisition/{k}/data"].compression)
+                              for k in f["acquisition"] if k.startswith("Video")}
+        # Every group down to three levels with its NWB type, to show what each file holds beyond
+        # the paths read here (video series are left out; the video check lists them).
+        s["groups"] = []
+
+        def add_group(name, obj):
+            if isinstance(obj, h5py.Group) and name.count("/") < 3 and "Video" not in name:
+                kind = obj.attrs.get("neurodata_type")
+                s["groups"].append((name, kind.decode() if isinstance(kind, bytes) else kind))
+        f.visititems(add_group)
+        s["electrode_locations"] = sorted(set(_strings(f["general/extracellular_ephys/electrodes/location"])))
+        s["units"] = None
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; $TMPDIR/venv/bin/python -c "
+import numpy as np,time
+from scipy import stats
+rng=np.random.default_rng(0)
+for n in (9,23,36):
+    x=rng.normal(size=(2000,n)); t=time.time(); p=stats.wilcoxon(x,axis=1).pvalue; print(n,time.time()-t,(p<.05).mean())
+"
+```
+
+```
+9 0.00827169418334961 0.039
+23 0.010654926300048828 0.0435
+36 0.01355290412902832 0.046
+Shell cwd was reset to
+```
+
+**Agent**
+
+Now the notebook edits.
+
+**Agent calls Bash**
+
+```bash
+cd entries/000061-girardeau-2017; cat > $TMPDIR/edit_nb.py <<'PYEOF'
+import json, sys
+p = 'reproduce_girardeau_2017.ipynb'
+nb = json.load(open(p))
+C = nb['cells']
+def src(i): return ''.join(C[i]['source'])
+def setsrc(i, s): C[i]['source'] = s.splitlines(keepends=True)
+def code(s, tag):
+    return {"cell_type": "code", "execution_count": None, "metadata": {"tags": [tag]}, "outputs": [], "source": s.splitlines(keepends=True)}
+def md(s):
+    return {"cell_type": "markdown", "metadata": {}, "source": s.splitlines(keepends=True)}
+def rep(i, a, b):
+    s = src(i)
+    assert a in s, (i, a[:60])
+    setsrc(i, s.replace(a, b))
+
+# sanity check the indices
+assert src(65).startswith('## bla-rate-same-across-directions'), src(65)[:40]
+assert src(69).startswith('rows = []\nfor s in sessions:\n    pre, post, run'), src(69)[:60]
+
+# --- header
+rep(0, "No random numbers are drawn anywhere in this notebook.",
+    "Random numbers are drawn only where power and bounds are given for the claims of absence\n"
+    "(`bla-int-sleep-firing`, `cen-no-reactivation`, `ripple-rate-unchanged`); each of those sections\n"
+    "has its own generator with a fixed seed, and none of these numbers decides an outcome.")
+rep(0, "| `bla-rate-same-across-directions` | blocked (metadata insufficient); the all-cell test is shown |",
+    "| `bla-rate-same-across-directions` | blocked (too large: O7 reading b needs position); the runnable readings are shown |")
+
+# --- ripple-rate: context cell, run time moved to it (insert from the end)
+s69 = src(69).replace('\nprint(f"\\nNotebook run time: {(time.time() - notebook_started) / 60:.1f} min")', '')
+assert 'Notebook run time' not in s69
+setsrc(69, s69)
+C.insert(70, code('''# Context for the claim of absence (decides nothing): the effect size against the paper's, a
+# bootstrap interval of the median change, and the change this many sessions would detect.
+rng_ripple = np.random.default_rng(6100)
+x = rip_rate.post_minus_pre.to_numpy()
+n = len(x)
+lo, hi = hpcbla.median_ci(x, rng_ripple)
+pre_median = rip_rate.pre_rate.median()
+print(f"Effect size r = z / sqrt(n): here {abs(hpcbla.effect_r(res.pvalue, n, np.median(x))):.2f} ({n} sessions);"
+      f" the paper {abs(-1.289) / np.sqrt(41):.2f} (z = -1.289, 41 sessions)")
+print(f"Median post minus pre {np.median(x):.4f} Hz, bootstrap 95% interval {lo:.4f} to {hi:.4f} Hz"
+      f" ({100 * lo / pre_median:.1f}% to {100 * hi / pre_median:.1f}% of the median pre-NREM rate {pre_median:.3f} Hz)")
+for n_ in (n, 41):
+    shift = hpcbla.min_detectable_shift(x, n_, rng_ripple)
+    print(f"Shift of the median detected with 80% power at {n_} sessions: {shift:.4f} Hz ({100 * shift / pre_median:.1f}% of the median rate);"
+          f" power for a 10% change: {hpcbla.signed_rank_power(x, n_, 0.1 * pre_median, rng_ripple):.2f}")
+print(f"\\nNotebook run time: {(time.time() - notebook_started) / 60:.1f} min")
+''', 'claim:ripple-rate-unchanged'))
+
+# --- bla-rate-same-across-directions text
+setsrc(65, '''## bla-rate-same-across-directions (blocked)
+
+> Firing rates of BLA cells do not differ significantly between the safe and the air puff
+> trajectories.
+
+The criterion runs two tests, on BLA pyramidal cells and on all BLA cells, under each reading of
+the sessions and each reading of the rate (O7): reproduced when neither test has p < 0.05 under
+every reading, not reproduced when either test has p < 0.05 under every reading. The pyramidal
+test cannot be run (no putative types), but the all-cell test alone could decide "not reproduced"
+if it had p < 0.05 under every reading. O7 reading b (the mean of each cell's position
+firing-rate curve on each lap type) needs position, which only tracking the raw video would give
+(blocked as too large, as the behaviour claims). So the claim is blocked by O7 reading b. The
+readings that can be run are shown: per BLA unit, the spike count over the air puff laps and over
+the safe laps of the run divided by their durations (O7 reading a), two-sided Wilcoxon signed rank
+test, over the cells of the sessions of `direction-all-cell-pairs` (reading a of the sessions) and
+over all BLA cells of sessions with a run and a puff direction (reading b). Laps are O1 reading c,
+and so include the time on the starting platform after each reward.
+''')
+
+# --- direction-all-cell-pairs: laps and platform time
+rep(63, '''print("Template bins (air puff, safe):", {k: (int(g[g.template == 'airpuff'].template_bins.sum()), int(g[g.template == 'safe'].template_bins.sum()))
+                                          for k, g in rs.groupby("session") if (g.template == "airpuff").any()})''',
+'''# Laps of each template (O1 reading c: reward to reward, so each lap includes the time on the
+# starting platform after its reward, which the M8 laps leave out).
+lap_rows = []
+for s in sessions:
+    if s["session"] not in set(puff_r.session):
+        continue
+    row = {"session": s["session"], "rat": s["rat"]}
+    for kind in ("puff", "safe"):
+        iv = hpcbla.lap_intervals(s, kind)
+        d_ = np.diff(iv).ravel()
+        row.update({f"{kind}_laps": len(iv), f"{kind}_s": round(float(d_.sum())), f"{kind}_lap_median_s": round(float(np.median(d_)), 1),
+                    f"{kind}_lap_max_s": round(float(d_.max()), 1)})
+    lap_rows.append(row)
+lap_table = pd.DataFrame(lap_rows)
+print("\\nLaps per template:")
+print(lap_table.to_string(index=False))
+print("Lap duration over all these laps: median", round(float(np.median(np.concatenate([np.diff(hpcbla.lap_intervals(s, k)).ravel()
+      for s in sessions if s["session"] in set(puff_r.session) for k in ("puff", "safe")]))), 1), "s")
+few = lap_table.session[(lap_table.puff_laps < 3) | (lap_table.safe_laps < 3)].tolist()
+print("Sessions with fewer than 3 laps in a template:", few)
+keep = ~puff_r.session.isin(few)
+print("Variant (description only), sessions with at least 3 laps in each template:")
+one_tailed(puff_r[keep.to_numpy()], "  Air puff template")
+one_tailed(safe_r[~safe_r.session.isin(few).to_numpy()], "  Safe template")
+b3 = both[~both.index.isin(few)]
+print(f"  Air puff greater than safe: {len(b3)} sessions, positive in {int((b3.post_minus_pre_airpuff > b3.post_minus_pre_safe).sum())};"
+      f" one-tailed Wilcoxon p = {stats.wilcoxon(b3.post_minus_pre_airpuff, b3.post_minus_pre_safe, alternative='greater').pvalue:.2g}")''')
+
+# --- reactivation-peaks: totals and per-rat table
+rep(61, '''        rows.append({"session": s["session"], "rat": s["rat"], "template": template,''',
+        '''        rows.append({"session": s["session"], "rat": s["rat"], "template": template, "hpc_total": len(hpc), "bla_total": len(bla),''')
+rep(61, '''    for rat, g in d.groupby("rat"):
+        print(f"    {rat}: {len(g)} sessions, post minus pre median {g.post_minus_pre.median():.4f}, positive in {int((g.post_minus_pre > 0).sum())}")''',
+'''    by_rat = d.groupby("rat").post_minus_pre.agg(sessions="size", median="median", positive=lambda v: int((v > 0).sum()))
+    print(by_rat.round(4).to_string())''')
+rep(61, '''one_tailed(rs[rs.template == "run"], "Whole-run template, all cells")''',
+'''one_tailed(rs[rs.template == "run"], "Whole-run template, all cells")
+run_r = rs[rs.template == "run"]
+print("Units left out of R (silent in the template or in the NREM of a sleep epoch), per session:")
+print(run_r.assign(hpc_left_out=run_r.hpc_total - run_r.hpc_used, bla_left_out=run_r.bla_total - run_r.bla_used)
+      [["session", "hpc_total", "hpc_used", "hpc_left_out", "bla_total", "bla_used", "bla_left_out"]].to_string(index=False))''')
+rep(60, '''repeats their tests with all cells, with the air puff and safe templates (laps per O1 reading c),
+and is tested below from the same computation.''', '''repeats their tests with all cells, with the air puff and safe templates (laps per O1 reading c),
+and is tested below from the same computation. A lap of reading c runs from the reward at one end
+to the reward at the other, so it includes the time on the starting platform after the reward,
+which the M8 laps (position inside a 150-cm window) leave out: the air puff and safe templates hold
+some awake activity on the platforms. The whole-run template includes the platforms in the paper
+too (M2).''')
+
+# --- intra-structure: BLA-only identified excitatory variant
+C.insert(52, code('''# Variant (description only): within the BLA, the identified excitatory units (the five typed
+# Rat08 files), sessions with at least 6 of them.
+rows = []
+for s in typed:
+    r = use[use.session == s["session"]]
+    ids = hpcbla.units_of(s, hpcbla.BLA_LABELS, "excitatory")
+    row = {"session": s["session"], "excitatory_bla": len(ids), "sleep": bool(r.sleep.iloc[0])}
+    if len(ids) >= hpcbla.MIN_CELLS and row["sleep"]:
+        res = hpcbla.ev_session(s, ids, None, hpcbla.session_epoch_rows(s))
+        row.update({"nrem_ev": res["ev"], "nrem_rev": res["rev"], "pairs": res["pairs"]})
+    rows.append(row)
+intra_pyr = pd.DataFrame(rows)
+print(intra_pyr.round(3).to_string(index=False))
+d = intra_pyr.dropna(subset=["nrem_ev"])
+x = d.nrem_ev - d.nrem_rev
+print(f"BLA identified excitatory pairs, NREM: {len(d)} sessions, EV - REV median {x.median():.3f}%, EV > REV in {int((x > 0).sum())},"
+      f" Wilcoxon p = {stats.wilcoxon(x).pvalue:.2g} (the smallest two-sided p with {len(d)} sessions is {2 / 2 ** len(d):.3g})")
+print("The hippocampal pyramidal test cannot be formed: at most", int(hpc_exc.max()), "identified excitatory hippocampal units in a file")
+''', 'claim:intra-structure-reactivation'))
+
+# --- cen: context
+C.insert(49, code('''# Context for the claim of absence (decides nothing): the effect size against the paper's, a
+# bootstrap interval of the median EV - REV, the shift these sessions would detect, and the power
+# to detect a reactivation as large as the hippocampus-BLA one of reactivation-all-cell-pairs.
+rng_cen = np.random.default_rng(6101)
+for label, x, paper_z in (("NREM", diff_cen.to_numpy(), 0.36), ("REM", diff_cen_rem.to_numpy(), -0.40)):
+    n = len(x)
+    lo, hi = hpcbla.median_ci(x, rng_cen)
+    p = stats.wilcoxon(x).pvalue
+    bla_like = float((stats.wilcoxon(rng_cen.choice(diff_all.to_numpy(), size=(2000, n)), axis=1).pvalue < 0.05).mean())
+    print(f"{label}: {n} sessions; effect size r here {hpcbla.effect_r(p, n, np.median(x)):.2f}, the paper {paper_z / np.sqrt(19):.2f} (19 sessions);"
+          f" median EV - REV {np.median(x):.3f}%, bootstrap 95% interval {lo:.3f} to {hi:.3f}%;"
+          f" shift detected with 80% power {hpcbla.min_detectable_shift(x, n, rng_cen):.3f}%;"
+          f" power to detect the hippocampus-BLA EV - REV (median {diff_all.median():.3f}%, {len(diff_all)} sessions resampled): {bla_like:.2f}")
+''', 'claim:cen-no-reactivation'))
+
+# --- bla-int: context
+C.insert(38, code('''# Context (decides nothing): effect sizes against the paper's, and bootstrap intervals of the
+# median ratios.
+rng_int = np.random.default_rng(6102)
+for k, paper_z in (("rem", 1.25), ("nrem", -6.00)):
+    x = inter[f"{k}_ratio"].dropna().to_numpy()
+    lo, hi = hpcbla.median_ci(x, rng_int)
+    p = stats.wilcoxon(x).pvalue
+    print(f"{k.upper()}/wake ratio, {len(x)} cells: median {np.median(x):.3f}, bootstrap 95% interval {lo:.3f} to {hi:.3f};"
+          f" effect size r here {hpcbla.effect_r(p, len(x), np.median(x)):.2f}, the paper {paper_z / np.sqrt(175):.2f} (175 cells);"
+          f" shift detected with 80% power {hpcbla.min_detectable_shift(x, len(x), rng_int):.3f}")
+x = pyr.rem_ratio.dropna().to_numpy()
+print(f"For scale, identified excitatory cells: REM/wake median {np.median(x):.3f}, interval {hpcbla.median_ci(x, rng_int)[0]:.3f} to {hpcbla.median_ci(x, rng_int)[1]:.3f}")
+''', 'claim:bla-int-sleep-firing'))
+
+# --- habituation markdown
+rep(29, '''laps). Readings of "gradually diminished":''', '''laps). A reading c lap includes the time on the starting platform after its reward, so lap
+counts are those of back-and-forth runs between rewards. Readings of "gradually diminished":''')
+
+# --- sanity: group tree and asset metadata (after cell 12), mono check (after cell 6)
+C.insert(13, code('''# What each file holds: its groups (three levels, NWB type), against the variables the archive's
+# asset metadata lists for it.
+asset_vars = hpcbla.asset_variables()
+kinds = sorted({k for s in sessions for _, k in s["groups"] if k})
+print("NWB group types in any file:", kinds)
+print("Groups of type Position, SpatialSeries, BehavioralTimeSeries or CompassDirection in any file:",
+      [(s["session"], g) for s in sessions for g, k in s["groups"] if k in ("Position", "SpatialSeries", "BehavioralTimeSeries", "CompassDirection")] or "none")
+rows = []
+for s in sessions:
+    groups = {g for g, _ in s["groups"]}
+    v = asset_vars[s["path"]]
+    rows.append({"session": s["session"],
+                 "acquisition": ",".join(sorted(g.split("/")[1] for g in groups if g.startswith("acquisition/") and g.count("/") == 1)),
+                 "processing": ",".join(sorted(g.split("/", 1)[1] for g in groups if g.startswith("processing/") and g.count("/") == 2)),
+                 "raw_in_file": s["raw"] is not None, "raw_in_metadata": "ElectricalSeries" in v,
+                 "behavior_module_in_file": "processing/behavior" in groups, "ProcessingModule_in_metadata": "ProcessingModule" in v,
+                 "units_in_file": s["units"] is not None, "Units_in_metadata": "Units" in v})
+tree = pd.DataFrame(rows)
+print(tree.to_string(index=False))
+print("\\nFiles with raw voltage:", int(tree.raw_in_file.sum()), "; listed with ElectricalSeries in the metadata:", int(tree.raw_in_metadata.sum()),
+      "; agreeing:", int((tree.raw_in_file == tree.raw_in_metadata).sum()), "of", len(tree))
+print("Files with a behavior module:", int(tree.behavior_module_in_file.sum()), "; listed with ProcessingModule:",
+      int(tree.ProcessingModule_in_metadata.sum()), "; agreeing:", int((tree.behavior_module_in_file == tree.ProcessingModule_in_metadata).sum()))
+print("Files with units:", int(tree.units_in_file.sum()), "; listed with Units:", int(tree.Units_in_metadata.sum()),
+      "; agreeing:", int((tree.units_in_file == tree.Units_in_metadata).sum()))
+''', 'sanity'))
+C.insert(14, md('''RESULT_TREE_PLACEHOLDER
+'''))
+
+rep(5, '''print("BLA units by cell_type and file:\\n", ident.to_string())''',
+       '''print("BLA units by cell_type and file:\\n", ident.to_string())
+print("Files with at least", hpcbla.MIN_CELLS, "identified excitatory BLA units (M4 minimum):", int((ident.get("excitatory", 0) >= hpcbla.MIN_CELLS).sum()))''')
+
+C.insert(7, code('''# What the cell_type column marks: for each BLA unit of the five typed files, the number of loaded
+# units (hippocampus, amygdala, central nuclei) it excites or inhibits at 1 to 4 ms, at three
+# thresholds. Identified cells should have such partners far more often than unclassified ones.
+started = time.time()
+rows = []
+for s in typed:
+    for i in hpcbla.units_of(s, hpcbla.BLA_LABELS):
+        rows.append({"session": s["session"], "unit": i, "cell_type": s["units"]["cell_type"][i] or "unclassified",
+                     "rate_hz": s["units"]["n_spikes"][i] / s["units"]["last_spike"], **hpcbla.mono_connections(s, i)})
+mono = pd.DataFrame(rows)
+print(f"computed in {time.time() - started:.0f} s; BLA units", len(mono), "; partners searched among",
+      sum(len(s["units"]["trains"]) for s in typed) - len(typed), "loaded units of the same file (all files)")
+table = pd.DataFrame({f"{what} at p < {p:g}": (mono[f"{what}_{p:g}"] > 0).groupby(mono.cell_type).mean()
+                      for p in hpcbla.MONO_P for what in ("excites", "inhibits")})
+table.insert(0, "units", mono.groupby("cell_type").size())
+print("Share of BLA units with at least one short-latency partner:")
+print(table.round(3).to_string())
+print("\\nMedian whole-recording rate (Hz):", mono.groupby("cell_type").rate_hz.median().round(2).to_dict())
+''', 'sanity'))
+rep(6, '''This reading is consistent with the data (inhibitory units fire faster than
+excitatory ones, and the BLA ratio of excitatory to inhibitory units is close to the paper's 675
+to 175), not shown by it.''', '''This reading is consistent with the data (inhibitory units fire faster than
+excitatory ones, the BLA ratio of excitatory to inhibitory units is close to the paper's 675 to
+175, and the short-latency check below finds connections of the marked kind for nearly every
+marked unit), not shown by it.''')
+C.insert(8, md('''RESULT_MONO_PLACEHOLDER
+'''))
+
+json.dump(nb, open(p, 'w'), indent=1, ensure_ascii=False)
+open(p, 'a').write('\n')
+PYEOF
+git show HEAD:entries/000061-girardeau-2017/reproduce_girardeau_2017.ipynb | tail -c 200 | od -c | tail -3; python $TMPDIR/edit_nb.py && git diff --stat
 ```
 
 ```
 Exit code 1
-       session                    run_epochs_s       run_used      pre_sleep                       post_sleep
-Rat08-20130708 [(9890, 13493), (24157, 24759)]  (9890, 13493)    [(0, 9890)]                 [(13493, 24157)]
-Rat08-20130709                [(10042, 13663)] (10042, 13663) [(317, 10042)] [(13663, 19954), (19954, 24902)]
-Rat08-20130710                [(10414, 14021)] (10414, 14021) [(315, 10414)]                 [(14021, 24245)]
-Rat08-20130711                 [(9212, 12824)]  (9212, 12824)  [(308, 9212)]                 [(12824, 21249)]
-Rat08-20130712                [(10613, 13941)] (10613, 13941) [(295, 10613)] [(13941, 17743), (17743, 23163)]
-Rat08-20130713                 [(9406, 12649)]  (9406, 12649)  [(206, 9406)]                 [(12649, 22415)]
-Rat08-20130715                 [(9390, 12120)]  (9390, 12120)  [(124, 9390)]                 [(12120, 21454)]
-Rat08-20130716                [(10813, 13299)] (10813, 13299) [(150, 10813)]                 [(13299, 24799)]
-Rat08-20130717                 [(9861, 11658)]  (9861, 11658)  [(190, 9861)]                 [(11658, 22642)]
-Rat10-20140624                 [(8372, 10262)]  (8372, 10262)  [(231, 8372)]                 [(10262, 19368)]
-Rat10-20140626                  [(8317, 9681)]   (8317, 9681)  [(191, 8317)]  [(9681, 15423), (15423, 17236)]
-Rat10-20140704                  [(8289, 9677)]   (8289, 9677)  [(186, 8289)]                  [(9677, 19531)]
-Rat11-20150325                [(14520, 15332)] (14520, 15332) [(215, 14520)]                 [(15332, 26027)]
-Rat11-20150326                [(11255, 12158)] (11255, 12158) [(190, 11255)]                 [(12158, 23008)]
-Rat11-20150328                [(11782, 12805)] (11782, 12805) [(187, 11782)]                 [(12805, 24387)]
-epoch
-other        50
-postrun     964
-[... 43 more lines not kept]
+0000260  \n       "   n   b   f   o   r   m   a   t   _   m   i   n   o
+0000300   r   "   :       5  \n   }  \n
+0000310
+Traceback (most recent call last):
+  File "/tmp/claude-1001/edit_nb.py", line 175, in <module>
+    rep(29, '''laps). Readings of "gradually diminished":''', '''laps). A reading c lap includes the time on the starting platform after its reward, so lap
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    counts are those of back-and-forth runs between rewards. Readings of "gradually diminished":''')
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/claude-1001/edit_nb.py", line 13, in rep
+    assert a in s, (i, a[:60])
+           ^^^^^^
+AssertionError: (29, 'laps). Readings of "gradually diminished":')
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/ex2.py <<'EOF'
-exec(open(__import__('os').environ['TMPDIR']+'/explore.py').read().split("t=L[")[0].split("# run epochs")[0])
-rows=[]
-for s in sessions:
-    if not all(k in s["events"] for k in ("lrw","rrw","puf")): continue
-    d,_=hpcbla.puff_direction(s)
-    if d is None: continue
-    for a,b,dd in hpcbla.laps(s):
-        m=(a+b)/2
-        tag=[t for t,x,y in s["epochs"] if x<=m<y and t in ("prerun","run","postrun")]
-        rows.append({"session":s["session"],"rat":s["rat"],"epoch":tag[0] if tag else "other","dir":"puff" if dd==d else "safe","dur":b-a})
-L=pd.DataFrame(rows); L=L[L.epoch!="other"]
-g=L.groupby(["rat","session","epoch","dir"]).dur.agg(["size","median"]).unstack(["epoch","dir"])
-print(g.round(1).to_string())
-# within-session ratio puff/safe median lap duration by epoch
-m=L.groupby(["session","epoch","dir"]).dur.median().unstack("dir")
-m["ratio"]=m.puff/m.safe
-print(m.ratio.unstack("epoch").round(2).to_string())
-print(m.ratio.groupby("epoch").median())
-# run laps distribution
-for s in used:
-    d,c=hpcbla.puff_direction(s); rl=hpcbla.run_laps(s)
-    dur={k:np.array([b-a for a,b,dd in rl if (dd==d)==(k=="puff")]) for k in ("puff","safe")}
-    print(s["session"], c, {k:(len(v),np.round(np.percentile(v,[10,50,90]),1).tolist(), round(v.sum())) for k,v in dur.items()})
+cd entries/000061-girardeau-2017; python - <<'EOF'
+import os
+p=os.environ['TMPDIR']+'/edit_nb.py'; s=open(p).read()
+s=s.replace("""rep(29, '''laps). Readings of "gradually diminished":''', '''laps). A reading c lap""","""rep(29, '''left-to-right
+laps. Readings of "gradually diminished":''', '''left-to-right
+laps. A reading c lap""")
+open(p,'w').write(s)
 EOF
-PYTHONPATH=. timeout 600 $TMPDIR/v61/bin/python $TMPDIR/ex2.py
+python $TMPDIR/edit_nb.py && git diff --stat
 ```
 
 ```
-size                                  median                                  
-epoch                  run       postrun       prerun          run        postrun       prerun      
-dir                   puff  safe    puff  safe   puff  safe   puff   safe    puff  safe   puff  safe
-rat   session                                                                                       
-Rat08 Rat08-20130708   4.0   3.0     NaN   NaN    NaN   NaN  216.5   28.4     NaN   NaN    NaN   NaN
-      Rat08-20130709   2.0   3.0     2.0   3.0    4.0   5.0  500.2   87.7   124.9  26.9   37.0  24.9
-      Rat08-20130710   6.0   5.0     NaN   NaN    5.0   5.0  191.9  465.4     NaN   NaN   17.4  17.0
-      Rat08-20130711   4.0   4.0     9.0   9.0    4.0   3.0  660.5  140.1    29.2  18.1   31.8  35.4
-      Rat08-20130712  11.0  11.0    16.0  16.0    6.0   6.0   66.7   52.9    14.7  16.5   16.3  20.1
-      Rat08-20130713   9.0   9.0     7.0   7.0    5.0   4.0  115.1   79.5    15.5  15.4   17.3  15.8
-      Rat08-20130715  20.0  21.0    14.0  14.0    5.0   4.0   56.5   29.1    11.8  12.3   10.3  12.3
-      Rat08-20130716  24.0  24.0    11.0  10.0    4.0   5.0   46.4   24.2    11.8  12.2   15.1  13.4
-      Rat08-20130717  26.0  26.0    17.0  17.0    5.0   5.0   28.4   18.5    15.9  13.7   14.4  17.0
-      Rat08-20130718  43.0  44.0    16.0  16.0   11.0  11.0   21.6   14.8    16.0  11.4   13.3  12.8
-      Rat08-20130719  27.0  28.0     6.0   5.0    6.0   7.0   20.6   26.1    16.1  22.1   10.3  15.6
-      Rat08-20130720  35.0  35.0     4.0   4.0    6.0   5.0   17.6   21.8    18.5  23.9   10.8  20.4
-      Rat08-20130722  40.0  40.0     8.0   8.0    4.0   5.0   19.7   15.0    17.7  13.7   27.5   7.1
-Rat09 Rat09-20140324  11.0  10.0     4.0   3.0    3.0   3.0  104.7   49.8    24.8  24.8   15.7  16.2
-      Rat09-20140325  22.0  21.0     4.0   3.0    5.0   4.0   52.2   37.4    25.9  19.1   18.0  18.9
-      Rat09-20140326  54.0  54.0    23.0  23.0    2.0   2.0   16.6   16.9    13.0  13.7   60.6  26.8
-[... 82 more lines not kept]
+entries/000061-girardeau-2017/hpcbla.py            | 107 ++++++++
+ .../reproduce_girardeau_2017.ipynb                 | 269 +++++++++++++++++++--
+ 2 files changed, 357 insertions(+), 19 deletions(-)
+```
+
+**Agent**
+
+Edits applied. Running the full entry now (check, then a clean run).
+
+**Agent calls Bash**
+
+```bash
+cd  time python tools/entry.py all entries/000061-girardeau-2017 2>&1 | tail -30
+```
+
+```
+error: attempts/000061-girardeau-2017-01.yaml: claim 'airpuff-trajectory-ripple-reactivation' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'bla-int-sleep-firing' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'bla-pyr-sleep-firing-increase' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'bla-rate-same-across-directions' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'bla-ripple-down-subgroup' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'cen-no-reactivation' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'contributing-pairs-run-sleep-coupling' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'contributing-quartiles-run-sleep-coupling' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'contributing-up-cells-gain-increase' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'direction-all-cell-pairs' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'dz-speed-slower-post-run' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'each-rat-learns-puff-location' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'ev-independent-of-firing-rate' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'habituation-over-days' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml
+[... 19 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/ex3.py <<'EOF'
-import pickle, os, numpy as np, hpcbla
-sessions = pickle.load(open(os.environ['TMPDIR']+'/sessions.pkl','rb'))
-tot=0; n=0
-for s in sessions:
-    for k,(shape,dt,comp) in s["video_storage"].items():
-        if k.endswith("run") and not k.endswith("prerun") and not k.endswith("postrun"):
-            tot+=np.prod(shape); n+=shape[0]
-print(n, tot/1e9, {v[2] for s in sessions for v in s["video_storage"].values()}, {v[0][1:] for s in sessions for v in s["video_storage"].values()})
-urls=dict(hpcbla.asset_urls())
-p=sessions[0]["path"]; print(hpcbla.time_frame_reads(urls[p], "Video: Rat08-20130708-02-run", 20))
+cd  git stash -q && python tools/entry.py check entries/000061-girardeau-2017 2>&1 | tail -2; git stash pop -q && git diff --stat; grep -n "000061-girardeau-2017-01\|-01.yaml" tools/entry.py transcripts/000061/author.md transcripts/000061/verifier-1.md 2>/dev/null | head
+```
+
+```
+<persisted-output>
+Output too large (68.7KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/26105e14-7a10-4ff8-a218-47b4d2970df8/tool-results/b5cimdyl1.txt
+
+Preview (first 2KB):
+error: attempts/000061-girardeau-2017-01.yaml: no cell tagged 'claim:aversive-direction-stronger' in reproduce_girardeau_2017.ipynb
+29 error(s)
+ entries/000061-girardeau-2017/hpcbla.py            | 107 ++++++++
+ .../reproduce_girardeau_2017.ipynb                 | 269 +++++++++++++++++++--
+ 2 files changed, 357 insertions(+), 19 deletions(-)
+transcripts/000061/author.md:38:ls -la entries/000061-girardeau-2017 claims/000061 questions/ | head -80; cat docs/agents/author-again.md; cat attempts/000061-girardeau-2017-01.yaml
+transcripts/000061/author.md:1186: "content": "md(r'''\n# Reproducing Girardeau, Inema & Buzsaki (2017) from dandiset 000061\n\nPaper. Girardeau G, Inema I, Buzsaki G (2017). Reactivations of emotional memory in the\nhippocampus-amygdala system during sleep. *Nature Neuroscience* 20, 1634-1642.\n[doi:10.1038/nn.4637](https://doi.org/10.1038/nn.4637).\n\nClaims. `claims/000061/10.1038-nn.4637.yaml`, written by a reader from the version of record\n(main text, figure legends, Online Methods, reporting summary) and the Supplementary Information,\nwith the paper's code (github.com/buzsakilab/papers, GGirardeau-BLAHpcInteractions-Package, at\ncommit cdcec89f), and checked by a second reader. Its criteria fix every method; the shared\nmethods M1 to M8 and the open details O1 to O7 are in its opening comment. This attempt\n(`000061-girardeau-2017-02`) replaces `000061-girardeau-2017-01`, whose claims were written from\nthe abstract alone.\n\nDandiset. [DANDI:000061](https://dandiarchive.org/dandiset/000061/0.250624.0426), version\n0.250624.0426. The paper cites no DANDI version (it says the data will be on CRCNS). There are\ntwo published versions, 0.210812.1517 and 0.250624.0426, with the same 40 files, and the draf
+[... 2 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -o "entry.py [a-z]* [^\"\\]*" transcripts/000061/author*.md | sort | uniq -c | head; grep -o "[0-9]* error(s)[^\"]\{0,300\}" transcripts/000061/author*.md | head -5
+```
+
+```
+1 transcripts/000061/author-answers.md:entry.py all entries/000061-girardeau-2017 2>&1 | tail -30
+      2 transcripts/000061/author-answers.md:entry.py check entries/000061-girardeau-2017 2>&1 | grep -v 
+      1 transcripts/000061/author-answers.md:entry.py check entries/000061-girardeau-2017 2>&1 | grep -vc 
+      1 transcripts/000061/author-answers.md:entry.py handover entries/000061-girardeau-2017 2>&1 | tail -5; grep -n 
+      1 transcripts/000061/author-answers.md:entry.py lock entries/000061-girardeau-2017 2>&1 | tail -5; git status --short
+      1 transcripts/000061/author-answers.md:entry.py run entries/000061-girardeau-2017 2>&1 | tail -2
+      1 transcripts/000061/author-answers.md:entry.py run entries/000061-girardeau-2017 2>&1 | tail -4
+      1 transcripts/000061/author.md:entry.py all   entries/<name>   # check, then run
+      1 transcripts/000061/author.md:entry.py check entries/000061-girardeau-2017 2>&1 | grep -c 
+      1 transcripts/000061/author.md:entry.py check entries/000061-girardeau-2017 2>&1 | grep -v 
+transcripts/000061/author-answers.md:29 error(s)
+transcripts/000061/author-answers.md:29 error(s)
+transcripts/000061/author.md:29 error(s)
+transcripts/000061/author.md:29 error(s)
+```
+
+**Agent**
+
+The 29 check errors are pre-existing and all concern the earlier record `-01`, which must stay as it was; the previous rounds ran `run` separately for the same reason. Running the notebook now.
+
+**Agent calls Bash**
+
+```bash
+cd  time python tools/entry.py run entries/000061-girardeau-2017 2>&1 | tail -8
+```
+
+```
+-------------------
+['import time', 'import warnings', '', 'import matplotlib.pyplot as plt', 'import numpy as np']
+...
+['', 'notebook_started = started = time.time()', 'sessions = sorted(hpcbla.load_all(), key=lambda s: s["path"])', 'print(f"loaded {len(sessions)} files from dandiset {hpcbla.DANDISET_ID} version "', '      f"{hpcbla.DANDISET_VERSION} in {time.time() - started:.0f} s")']
+-------------------
+
+
+FAIL  reproduce_girardeau_2017.ipynb  (3607 s)
+
+real	60m10.269s
+user	0m56.110s
+sys	0m15.795s
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python tools/entry.py run --help 2>&1 | head -20; ls executed/000061-girardeau-2017/
+```
+
+```
+usage: entry.py [-h] [--output-dir OUTPUT_DIR] [--timeout TIMEOUT]
+                [--max-minutes MAX_MINUTES]
+                {lock,check,run,all,handover} entry
+
+Lock, check and run one entry. This is the whole local workflow for a deposit.
+
+    python tools/entry.py lock  entries/<name>   # pin the environment
+    python tools/entry.py check entries/<name>   # validate metadata and conventions
+    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
+    python tools/entry.py all   entries/<name>   # check, then run
+    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
+
+`lock` compiles the entry's requirements.in (direct dependencies only) into
+requirements.lock.txt with every version pinned.
+
+`check` validates entry.yaml, and the claims and attempt files that mention
+the entry, against the schemas, and applies the conventions that keep a result
+tied to the data:
+
+- every notebook in the directory is listed in entry.yaml, and exists;
+[... 1 more lines not kept]
+```
+
+**Agent**
+
+The run timed out in the loading cell: the full-file `visititems` walk is far too slow over streaming. I'll replace it with a listing restricted to the few levels that matter.
+
+**Agent calls Bash**
+
+```bash
+cd entries/000061-girardeau-2017; python - <<'EOF'
+p='hpcbla.py'; s=open(p).read()
+old=s[s.index('        # Every group down to three levels'):s.index('        s["electrode_locations"]')]
+new='''        # The groups under acquisition, processing (two levels), stimulus and intervals, with
+        # their NWB type, to show what each file holds beyond the paths read here (video series
+        # are left out; the video check lists them).
+        s["groups"] = []
+        parents = [p for p in ("acquisition", "processing", "stimulus", "stimulus/presentation", "intervals") if p in f]
+        parents += [f"processing/{m}" for m in (f["processing"] if "processing" in f else [])]
+        for parent in parents:
+            for k in f[parent]:
+                if not k.startswith("Video") and f[parent].get(k, getclass=True) is h5py.Group:
+                    kind = f[f"{parent}/{k}"].attrs.get("neurodata_type")
+                    s["groups"].append((f"{parent}/{k}", kind.decode() if isinstance(kind, bytes) else kind))
+'''
+s=s.replace(old,new)
+open(p,'w').write(s)
 EOF
-PYTHONPATH=. timeout 900 $TMPDIR/v61/bin/python $TMPDIR/ex3.py
+cat > $TMPDIR/t.py <<'EOF'
+import time, hpcbla
+u=hpcbla.asset_urls()
+t=time.time(); s=hpcbla.load_session(*u[0]); print(time.time()-t); print(s["groups"])
+EOF
+PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/t.py
 ```
 
 ```
-1920573 1327.5000576 {'gzip'} {(360, 640, 3)}
-(9.386688709259033, 691200)
+20.460325002670288
+[('acquisition/ElectricalSeries', 'ElectricalSeries'), ('processing/behavior', 'ProcessingModule'), ('processing/ecephys', 'ProcessingModule'), ('stimulus/presentation', None), ('stimulus/templates', None), ('stimulus/presentation/lrw', 'AnnotationSeries'), ('stimulus/presentation/puf', 'AnnotationSeries'), ('stimulus/presentation/rip', 'AnnotationSeries'), ('stimulus/presentation/rrw', 'AnnotationSeries'), ('intervals/epochs', 'TimeIntervals'), ('intervals/trials', 'TimeIntervals'), ('processing/behavior/states', 'TimeIntervals'), ('processing/ecephys/LFP', 'LFP')]
+```
+
+**Agent**
+
+Loading one file now takes 20 s as before. Re-running the entry.
+
+**Agent calls Bash**
+
+```bash
+cd  time python tools/entry.py run entries/000061-girardeau-2017 2>&1 | tail -8
+```
+
+```
+Installed kernelspec registry-000061-girardeau-2017 in executed/000061-girardeau-2017/.venv/share/jupyter/kernels/registry-000061-girardeau-2017
+pass  reproduce_girardeau_2017.ipynb  (608 s)
+
+real	10m12.849s
+user	5m21.866s
+sys	0m25.128s
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/editnb.py <<'PYEOF'
+cd  python - <<'EOF'
+import json
+nb=json.load(open('executed/000061-girardeau-2017/reproduce_girardeau_2017.ipynb'))
+want=[7,15,40,52,53,57,58,68,69,70,74,75,76,77,79]
+for i,c in enumerate(nb['cells']):
+    if c['cell_type']!='code': continue
+    tags=c['metadata'].get('tags')
+    out=''.join(''.join(o.get('text','')) for o in c['outputs'] if o.get('output_type')=='stream')
+    if i in (7,15) or any(t in str(tags) for t in ('bla-int','cen-no','intra-structure','reactivation-peaks','direction-all','bla-rate','ripple-rate','reactivation-all','habituation','unit-counts','bla-pyr','ripple-modulated','bla-ripple','no-rem')):
+        print(f"=== cell {i} {tags}\n{out[-6000:]}")
+EOF
+```
+
+```
+<persisted-output>
+Output too large (39.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/26105e14-7a10-4ff8-a218-47b4d2970df8/tool-results/b0f8q3lfy.txt
+
+Preview (first 2KB):
+=== cell 7 ['sanity']
+computed in 104 s; BLA units 391 ; partners searched among 671 loaded units of the same file (all files)
+Share of BLA units with at least one short-latency partner:
+              units  excites at p < 0.001  inhibits at p < 0.001  excites at p < 1e-06  inhibits at p < 1e-06  excites at p < 1e-10  inhibits at p < 1e-10
+cell_type                                                                                                                                                 
+excitatory      152                 1.000                  0.099                 0.993                  0.020                 0.941                  0.007
+inhibitory       36                 0.833                  1.000                 0.806                  0.944                 0.722                  0.944
+unclassified    203                 0.714                  0.177                 0.443                  0.079                 0.310                  0.034
+
+Median whole-recording rate (Hz): {np.str_('excitatory'): 0.21, np.str_('inhibitory'): 10.62, np.str_('unclassified'): 0.35}
+
+=== cell 15 ['sanity']
+       True               True
+Rat08-20130717                  behavior/states,ecephys/LFP        False             True                     True                         False           True               True
+Rat08-20130718                                  ecephys/LFP        False             True                    False                          True           True               True
+Rat08-20130719                                  ecephys/LFP        False             True                    False                          True           True               True
+[... 3 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/26105e14-7a10-4ff8-a218-47b4d2970df8/tool-results/b0f8q3lfy.txt"
+}
+```
+
+```
+1	=== cell 7 ['sanity']
+2	computed in 104 s; BLA units 391 ; partners searched among 671 loaded units of the same file (all files)
+3	Share of BLA units with at least one short-latency partner:
+4	              units  excites at p < 0.001  inhibits at p < 0.001  excites at p < 1e-06  inhibits at p < 1e-06  excites at p < 1e-10  inhibits at p < 1e-10
+5	cell_type                                                                                                                                                 
+6	excitatory      152                 1.000                  0.099                 0.993                  0.020                 0.941                  0.007
+7	inhibitory       36                 0.833                  1.000                 0.806                  0.944                 0.722                  0.944
+8	unclassified    203                 0.714                  0.177                 0.443                  0.079                 0.310                  0.034
+9	
+10	Median whole-recording rate (Hz): {np.str_('excitatory'): 0.21, np.str_('inhibitory'): 10.62, np.str_('unclassified'): 0.35}
+11	
+12	=== cell 15 ['sanity']
+13	       True               True
+14	Rat08-20130717                  behavior/states,ecephys/LFP        False             True                     True                         False           True               True
+15	Rat08-20130718                                  ecephys/LFP        False             True                    False                          True           True               True
+16	Rat08-20130719                                  ecephys/LFP        False             True                    False                          True           True               True
+17	Rat08-20130720                                  ecephys/LFP        False             True                    False                          True           True               True
+18	Rat08-20130722                                  ecephys/LFP        False             True       
+[... 450 more lines not kept]
+```
+
+**Agent**
+
+Every decision-bearing number is unchanged. Let me see the head of the group-tree output, which was cut from my view.
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import json
+nb=json.load(open('executed/000061-girardeau-2017/reproduce_girardeau_2017.ipynb'))
+for i in (5,15):
+    c=nb['cells'][i]
+    out=''.join(''.join(o.get('text','')) for o in c['outputs'] if o.get('output_type')=='stream')
+    print(i, out[:2500])
+EOF
+```
+
+```
+5 Unit location labels over all files (as stored):
+bla         1101
+hpc          779
+pir          653
+cen          482
+PIR          282
+blv          272
+bmp          264
+ladl         248
+den          181
+ven           98
+(none)        75
+BLV           51
+HIP           50
+no label      43
+PLCo1         37
+cpu           35
+BMP           24
+BLA           17
+plc01         10
+[... 46 more lines not kept]
+```
+
+**Agent**
+
+Now the markdown conclusions and placeholders.
+
+**Agent calls Bash**
+
+```bash
+cd entries/000061-girardeau-2017; cat > $TMPDIR/edit_md.py <<'PYEOF'
 import json
 p = 'reproduce_girardeau_2017.ipynb'
 nb = json.load(open(p))
-cells = nb['cells']
-
-def src(i): return ''.join(cells[i]['source'])
-def setsrc(i, text): cells[i]['source'] = text.splitlines(keepends=True)
-def code(text, tags=None):
-    return {"cell_type": "code", "execution_count": None, "metadata": ({"tags": tags} if tags else {}),
-            "outputs": [], "source": text.splitlines(keepends=True)}
-def md(text):
-    return {"cell_type": "markdown", "metadata": {}, "source": text.splitlines(keepends=True)}
-def find(start):
-    hits = [i for i, c in enumerate(cells) if ''.join(c['source']).startswith(start)]
-    assert len(hits) == 1, (start, hits)
+C = nb['cells']
+def src(i): return ''.join(C[i]['source'])
+def find(prefix):
+    hits = [i for i, c in enumerate(C) if src(i).startswith(prefix)]
+    assert len(hits) == 1, (prefix, hits)
     return hits[0]
-def replace(i, a, b):
-    s = src(i); assert a in s, (i, a); setsrc(i, s.replace(a, b))
+def setsrc(i, s): C[i]['source'] = s.splitlines(keepends=True)
+def rep(i, a, b):
+    s = src(i); assert a in s, (i, a[:70]); setsrc(i, s.replace(a, b))
 
-# header
-replace(0, "ripples, air puffs and rewards; some files also hold raw voltage, LFP and video. There is no\nposition tracking.",
-        "ripples, air puffs and rewards; some files also hold raw voltage, LFP and video. There is no\nposition tracking; the files hold the raw video frames, from which position is not derived.")
-replace(0, "| blocked (data missing: no position tracking) |",
-        "| blocked (too large: position could only come from tracking the raw video frames, see the data check) |")
+i = find('# What the cell_type column marks')
+rep(i, 'print("\\nMedian whole-recording rate (Hz):", mono.groupby("cell_type").rate_hz.median().round(2).to_dict())',
+       'print("\\nMedian whole-recording rate (Hz):", {str(k): v for k, v in mono.groupby("cell_type").rate_hz.median().round(2).items()})')
 
-# video storage cell after the video markdown
-i = find("The video timestamps are stated in seconds")
-cells.insert(i + 1, code('''# Video storage: frame shape and compression of every video series, the size of the run videos,
-# and the time taken to stream frames of one run video.
-storage = pd.DataFrame([{"session": s["session"], "video": k.rsplit("-", 1)[-1], "frames": shape[0],
-                         "frame_shape": shape[1:], "dtype": dt, "compression": comp,
-                         "uncompressed_gb": np.prod(shape) / 1e9}
-                        for s in sessions for k, (shape, dt, comp) in s["video_storage"].items()])
-print("Video series:", len(storage), "; frame shapes:", sorted(set(storage.frame_shape)), "; dtypes:", sorted(set(storage.dtype)),
-      "; compression:", sorted(set(map(str, storage.compression))))
-run_videos = storage[storage.video == "run"]
-print("Run videos:", len(run_videos), "in", run_videos.session.nunique(), "files;", int(run_videos.frames.sum()), "frames,",
-      round(float(run_videos.uncompressed_gb.sum())), "GB uncompressed")
-first = sessions[0]
-name = next(k for k in first["video_storage"] if k.endswith("-run"))
-seconds, frame_bytes = hpcbla.time_frame_reads(dict(hpcbla.asset_urls())[first["path"]], name, 20)
-print(f"Streaming 20 frames of {name}: {seconds:.1f} s ({seconds / 20:.2f} s per frame of {frame_bytes} bytes)")
-print(f"At that rate the run frames alone would take about {run_videos.frames.sum() * seconds / 20 / 3600:.0f} hours to stream")
-''', ["sanity"]))
-cells.insert(i + 2, md('''The videos are stored as raw frames (360 by 640 pixels, three colours) inside the NWB files,
-compressed with gzip, with no position derived from them. Tracking the rat in the run videos would
-mean streaming the frames printed above and running a tracker, which does not fit the time limit;
-their timestamps would also have to be aligned to the session clock first (see above). This is
-why the behaviour claim is blocked as too large.'''))
+setsrc(find('RESULT_MONO_PLACEHOLDER'), '''Among the 391 BLA units of the five typed files, every unit marked excitatory (152) excites at
+least one loaded unit at 1 to 4 ms at p < 0.001, and 99.3% do at p < 1e-6, against 71% and 44% of
+the 203 unclassified units. Of the 36 units marked inhibitory, 94.4% inhibit one at p < 1e-6,
+against 2.0% of the excitatory and 7.9% of the unclassified units, and they fire at a median of
+10.6 Hz against 0.21 Hz. So the marked units are those with short-latency partners of the marked
+sign, which fits the paper's monosynaptic identification and supports reading the column as O4
+reading a. The check is not the paper's procedure: its windows and thresholds are a standard
+choice, it searches partners only among the loaded units (hippocampus, amygdala labels, central
+nuclei), many unclassified units also have short-latency peaks at the looser thresholds, and 81% of
+the inhibitory units also show an excitatory peak at p < 1e-6, which this test cannot tell from
+shared input. It decides no claim.
+''')
 
-# run epochs cell after the usable-sessions markdown
-i = find("Under the claims file's rule (sleep states")
-cells.insert(i + 1, code('''# Epoch boundaries (s) of the sessions used: every run epoch, the one used, and the sleep epochs.
-rows = []
-for s in used:
-    pre, post, run = hpcbla.sleep_epochs(s)
-    rows.append({"session": s["session"], "run_epochs": [(round(a), round(b)) for t, a, b in s["epochs"] if t == "run"],
-                 "run_used": (round(run[0]), round(run[1])), "pre_sleep": [(round(a), round(b)) for a, b in pre],
-                 "post_sleep": [(round(a), round(b)) for a, b in post]})
-print(pd.DataFrame(rows).to_string(index=False))
-''', ["sanity"]))
-cells.insert(i + 2, md('''Each session used has one run epoch, except Rat08-20130708, which has a second run of about
-600 s after the post-sleep; there the first run is used, and its post-sleep is the sleep between
-the two runs. Pre- and post-sleep are the epochs next to the run used.'''))
+setsrc(find('RESULT_TREE_PLACEHOLDER'), '''No file holds position: the only NWB group types under acquisition (videos aside), processing,
+stimulus and intervals are AnnotationSeries, ElectricalSeries, LFP, ProcessingModule and
+TimeIntervals, and no file has a Position, SpatialSeries, BehavioralTimeSeries or
+CompassDirection group. The processing modules are `behavior` (sleep states only, 24 files) and
+`ecephys` (LFP). Raw voltage is `acquisition/ElectricalSeries` in 16 files (Rat08 20130708 to
+20130713 and all ten Rat09 files). The archive's asset metadata (`variableMeasured`) disagrees with
+the files for these two in all 40 files: it lists ElectricalSeries for the 24 files that have no
+raw voltage and not for the 16 that have it, and ProcessingModule for the 16 files without a
+behavior module and not for the 24 with one. Its Units entries agree with the files in all 40. The
+files are read directly, so the asset metadata is wrong, not the loader; this is a new finding.
+''')
 
-# claim 2: session-level
-i = find("traces[\"change_rip\"] = traces.post_rip")
-cells.insert(i + 1, code('''# Session level: the per-pattern measures above averaged within each session, tested over sessions.
-traces["d_rip"] = traces.change_rip - traces.change_out
-traces["pmf_post_minus_pre"] = traces.peak_minus_flank - pre_pmf
-by_session = traces.groupby(["rat", "session"])[["peak_minus_flank", "pmf_post_minus_pre", "d_rip"]].mean()
-print(by_session.round(4).to_string())
-for col, label in (("peak_minus_flank", "reading (a), peak minus flanks"),
-                   ("pmf_post_minus_pre", "reading (a), post minus pre of peak minus flanks"),
-                   ("d_rip", "reading (b), ripple minus outside change")):
-    x = by_session[col]
-    print(f"{label}: median over {len(x)} sessions {x.median():.4f}, positive {int((x > 0).sum())}, Wilcoxon p = {wilcoxon(x):.2g}")
-''', ["claim:reactivation-peaks-at-ripples"]))
+rep(find('The videos are stored as raw frames'), '''The raw voltage of 16 files is chunked one channel at a''', '''The raw voltage of 16 files (next check) is chunked one channel at a''')
 
-# claim 3: per-rat own chance
-replace(find("rng_rip = np.random.default_rng(61003)"),
-        'by["p"] = [stats.binomtest(int(r.up), int(r.units), max(chance, 1 / len(mod)), alternative="greater").pvalue for r in by.itertuples()]',
-        'by["p"] = [stats.binomtest(int(r.up), int(r.units), max(chance, 1 / len(mod)), alternative="greater").pvalue for r in by.itertuples()]\n'
-        '# Against each rat\'s own chance level (at least one unit, so that a chance of zero still gives a test).\n'
-        'by["p_own_chance"] = [stats.binomtest(int(r.up), int(r.units), max(r.chance_fraction, 1 / r.units), alternative="greater").pvalue\n'
-        '                      for r in by.itertuples()]')
-i = find("rng_rip = np.random.default_rng(61003)")
-cells.insert(i + 1, code('''# Where the shifted windows land: the fraction of shifted ripple peaks that fall outside the
-# Non-REM of pre- and post-sleep, for the 500 random offsets and for the 7 s shift.
-rng_null = np.random.default_rng(61004)
-lo, hi = (int(x / hpcbla.RIPPLE_RES_S) for x in hpcbla.RIPPLE_SHIFT_RANGE_S)
-rows = []
-for s in sessions:
-    if s["states"] is None or s["ripples"] is None or s["units"] is None or s["session"] not in set(mod.session):
-        continue
-    pre, post, _ = hpcbla.sleep_epochs(s)
-    nrem = hpcbla.intersect(hpcbla.intervals_of(s, "Non-REM"), np.vstack([pre, post]))
-    peaks = s["ripples"]["peak"][hpcbla.in_intervals(s["ripples"]["peak"], nrem)]
-    offsets = rng_null.integers(lo, hi + 1, hpcbla.RIPPLE_SHIFTS) * rng_null.choice([-1, 1], hpcbla.RIPPLE_SHIFTS) * hpcbla.RIPPLE_RES_S
-    out_random = np.mean([np.mean(~hpcbla.in_intervals(peaks + o, nrem)) for o in offsets])
-    rows.append({"session": s["session"], "ripples": len(peaks), "outside_nrem_random_shifts": out_random,
-                 "outside_nrem_7s": np.mean(~hpcbla.in_intervals(peaks + hpcbla.CHANCE_SHIFT_S, nrem))})
-null_place = pd.DataFrame(rows)
-print(null_place.round(3).to_string(index=False))
-print("Median over sessions: outside Non-REM with random shifts", round(float(null_place.outside_nrem_random_shifts.median()), 3),
-      "; with the 7 s shift", round(float(null_place.outside_nrem_7s.median()), 3))
-''', ["claim:bla-ripple-up-subgroup"]))
+# bla-int result
+rep(find('**Result: not reproduced.** On the 36 identified inhibitory'), '''and by session only Rat08-20130711 (12 cells) has a REM ratio with p < 0.05.''',
+'''and by session only Rat08-20130711 (12 cells) has a REM ratio with p < 0.05. As context, the REM
+effect is small (median 0.029, bootstrap 95% interval -0.015 to 0.109, against 0.39 for the
+excitatory cells) but its effect size r is 0.39 against the paper's 0.09, so a larger sample
+alone would not be expected to remove it. The NREM effect is weaker than the paper's (r -0.19
+against -0.45), and with 36 cells only a shift of the median of about 0.068 would be detected
+with 80% power, larger than the observed -0.035.''')
 
-# claim 4: rate control and session level
-i = find("up_units = {(r.session, r.unit) for r in mod[mod.up].itertuples()}")
-cells.insert(i + 1, code('''# Firing rate. Run-epoch rate of each BLA unit used; within each pattern, each up unit is paired
-# with the other BLA unit of the nearest log rate (with replacement), and the mean squared weight
-# of the up units is compared with that of their matched units.
-run_rate = {}
-for s in used:
-    _, _, run = hpcbla.sleep_epochs(s)
-    for i in hpcbla.unit_sets(s)[1]:
-        t = s["units"]["trains"][i]
-        run_rate[(s["session"], i)] = np.count_nonzero((t >= run[0]) & (t < run[1])) / (run[1] - run[0])
-unit_rates = pd.DataFrame([{"session": k[0], "unit": k[1], "rate": v, "up": k in up_units} for k, v in run_rate.items()])
-print("Run-epoch rate of BLA units used (Hz): up units median", round(unit_rates[unit_rates.up].rate.median(), 2),
-      f"(n = {int(unit_rates.up.sum())}); other units median", round(unit_rates[~unit_rates.up].rate.median(), 2),
-      f"(n = {int((~unit_rates.up).sum())}); Mann-Whitney p = {stats.mannwhitneyu(unit_rates[unit_rates.up].rate, unit_rates[~unit_rates.up].rate).pvalue:.2g}")
-rows = []
-for r in sig.itertuples():
-    is_up = np.array([(r.session, i) in up_units for i in r.bla_units])
-    if not (is_up.any() and (~is_up).any()):
-        continue
-    w2 = np.asarray(r.bla_weights) ** 2
-    log_rate = np.log(np.array([run_rate[(r.session, i)] for i in r.bla_units]))
-    others = np.flatnonzero(~is_up)
-    match = np.array([others[np.argmin(np.abs(log_rate[others] - log_rate[j]))] for j in np.flatnonzero(is_up)])
-    rows.append({"session": r.session, "rat": r.rat, "pattern": r.pattern,
-                 "rho_rate_w2": stats.spearmanr(log_rate, w2)[0],
-                 "matched_diff": w2[is_up].mean() - w2[match].mean(),
-                 "matched_log_rate_gap": float(np.median(np.abs(log_rate[is_up] - log_rate[match])))})
-rate_ctl = pd.DataFrame(rows)
-print("Spearman correlation of run rate and squared weight within a pattern: median", round(rate_ctl.rho_rate_w2.median(), 3),
-      "; positive in", int((rate_ctl.rho_rate_w2 > 0).sum()), "of", len(rate_ctl))
-print("Rate-matched difference (up minus matched other): median", round(rate_ctl.matched_diff.median(), 4), "; positive",
-      int((rate_ctl.matched_diff > 0).sum()), "of", len(rate_ctl), f"; Wilcoxon p = {wilcoxon(rate_ctl.matched_diff):.2g}",
-      "; median ratio of matched rates", round(float(np.exp(rate_ctl.matched_log_rate_gap.median())), 2))
-inv_session = inv.groupby(["rat", "session"])["diff"].mean()
-print("\\nSession level: mean difference per session, median", round(inv_session.median(), 4), "; positive",
-      int((inv_session > 0).sum()), "of", len(inv_session), f"; Wilcoxon p = {wilcoxon(inv_session):.2g}")
-matched_session = rate_ctl.groupby("session").matched_diff.mean()
-print("Session level, rate-matched: median", round(matched_session.median(), 4), "; positive", int((matched_session > 0).sum()),
-      "of", len(matched_session), f"; Wilcoxon p = {wilcoxon(matched_session):.2g}")
-''', ["claim:reactivation-involves-ripple-up-cells"]))
+# cen result
+rep(find('**Result: reproduced.** Hippocampus-central nuclei EV'), '''The paper had 19 sessions in
+each test; with 9 and 8 the test has less power, and the NREM median is positive.**''', '''The paper had 19 sessions in
+each test; with 9 and 8 the test has less power, and the NREM median is positive. As context: the
+effect sizes here (r 0.34 in NREM, 0.41 in REM) are larger than the paper's (0.08 and -0.09); with
+9 sessions a shift of the median EV - REV of about 3.0% (NREM) or 0.95% (REM) would be detected
+with 80% power, and the bootstrap 95% interval of the NREM median (-2.4 to 4.1%) includes the
+hippocampus-BLA median of 1.96%. Resampling the hippocampus-BLA sessions at these sizes, a
+reactivation as large as the BLA's would reach p < 0.05 in 92% (NREM) and 93% (REM) of samples.
+The absence is therefore weak evidence: it holds on the paper's test, but these sessions cannot
+exclude a NREM reactivation of the BLA's size.''')
 
-# claim 5: laps and new variants
-i = find("rows = []\npooled = d.groupby(\"template\").change")
-cells.insert(i + 1, code('''# Laps of the run epoch. A lap runs from one reward to the next at the other end, so it holds the
-# time spent at the starting end as well as the run. The shortest laps of a session (its 10th
-# percentile of lap duration) are taken as the time needed to travel the track; the variant below
-# builds the templates from only that last part of each lap, before the reward that ends it.
-rows, lap_tail = [], {}
-for s in used:
-    direction, counts = hpcbla.puff_direction(s)
-    laps_ = hpcbla.run_laps(s)
-    lap_tail[s["session"]] = float(np.percentile([b - a for a, b, _ in laps_], 10))
-    row = {"session": s["session"], "puffs": int(sum(counts.values())), "travel_s": round(lap_tail[s["session"]], 1)}
-    for name in ("puff", "safe"):
-        dur = np.array([b - a for a, b, dd in laps_ if (dd == direction) == (name == "puff")])
-        row[f"{name}_laps"] = len(dur)
-        row[f"{name}_median_s"] = round(float(np.median(dur)), 1)
-        row[f"{name}_max_s"] = round(float(dur.max()), 1)
-        row[f"{name}_bins"] = directional[s["session"]]["template_bins"][name]
-        row[f"{name}_travel_fraction"] = round(float(np.minimum(dur, lap_tail[s["session"]]).sum() / dur.sum()), 3)
-    rows.append(row)
-lap_table = pd.DataFrame(rows)
-print(lap_table.to_string(index=False))
-print("Fraction of template time inside the travel part of laps: median puff", lap_table.puff_travel_fraction.median(),
-      "; safe", lap_table.safe_travel_fraction.median())
+# intra-structure result
+rep(find('**Result: blocked (metadata insufficient).** The printed tests are a description only: with all\npairs, the hippocampus'),
+'''in REM neither does (p = 0.83 and 0.21).''', '''in REM neither does (p = 0.83 and 0.21). Since the criterion needs all four NREM tests and the
+BLA all-pairs test already fails, the claim could at best be partially reproduced even with
+putative types. A BLA-only variant on the identified excitatory units of the five typed files (all
+five have at least six) gives EV above REV in 4 of 5 sessions, p = 0.44; with five sessions the
+two-sided test cannot reach p < 0.05 (smallest p 0.0625), and the hippocampal pyramidal test
+cannot be formed (at most 4 identified excitatory hippocampal units in a file).''')
 
-rng_tail = np.random.default_rng(61006)
-tail = {s["session"]: hpcbla.reactivation(s, rng_tail, templates=("puff", "safe"), lap_tail_s=lap_tail[s["session"]],
-                                          keep_traces=False) for s in used}
-rows = []
-few = set(lap_table.session[lap_table.puffs < 5])
-for name, df, keep in (("main", dpat, None), ("sessions with at least 5 puffs", dpat, few),
-                       ("travel part of each lap only", direction_table(tail), None)):
-    _, p = compare(df)
-    if keep:
-        p = p[~p.index.get_level_values("session").isin(keep)]
-    rows.append({"variant": name, "sessions": len(p), "median_diff": round(p["diff"].median(), 4),
-                 "positive": int((p["diff"] > 0).sum()), "p": wilcoxon(p["diff"])})
-print("\\nSessions left out for fewer than 5 puffs:", sorted(few))
-print(pd.DataFrame(rows).to_string(index=False))
-''', ["claim:aversive-direction-stronger"]))
+# reactivation-peaks result
+rep(find('**Result: partially reproduced.** The pyramidal test cannot be run'), '''By rat, post exceeds pre in 7 of 9 Rat08, 2 of 3 Rat10 and 2 of 3 Rat11 sessions.''',
+'''By rat, post exceeds pre in 7 of 9 Rat08, 2 of 3 Rat10 and 2 of 3 Rat11 sessions. R leaves out
+units silent in the template or in a sleep epoch's NREM: 1 hippocampal unit in Rat08-20130713, 2
+in Rat11-20150326 and 2 BLA units in Rat11-20150325, none elsewhere.''')
 
-# blocked claim section before the summary
-i = find("## Summary")
-cells.insert(i, md('''## rats-learn-puff-location (blocked)
+# direction result
+rep(find('**Result: reproduced.** With all cells over 14 sessions'), '''Laps are O1 reading c, which as answered decides the claim alone here; the
+paper had 27 sessions.''', '''Laps are O1 reading c, which as answered decides the claim alone here; the
+paper had 27 sessions. These laps run from reward to reward, so they include the time on the
+starting platform after each reward and long stops: the median lap lasts 22.6 s, but in the early
+Rat08 sessions laps last minutes (Rat08-20130708 has 2 air puff laps of 1996 s in all and one safe
+lap of 23 s). The templates thus hold awake activity off the track that the M8 laps leave out.
+Leaving out Rat08-20130708, the only session with fewer than 3 laps in a template, gives the same
+result (air puff p = 0.0052, safe p = 0.0052, air puff greater than safe p = 0.37, 13 sessions).''')
 
-> Rats learned the location of an aversive air puff on a linear track.
+# bla-rate result
+setsrc(find('**Result: blocked (metadata insufficient).** The printed tests are a description only: with all\nBLA cells, the rate'), '''**Result: blocked (too large).** O7 reading b needs position, which only tracking the raw video
+would give. Under the readings that can be run, the all-cell test finds a difference: the rate on
+air puff laps exceeds that on safe laps by a median of 0.0036 Hz, p = 0.022 (739 cells, 14
+sessions), and by 0.0032 Hz, p = 0.0048 (1033 cells, 21 sessions). That is the direction of "not
+reproduced", which the criterion gives when either test has p < 0.05 under every reading; only O7
+reading b keeps the claim from that outcome. The pyramidal test cannot be run (no putative types),
+but it is not needed for "not reproduced".
+''')
 
-Blocked as too large: the dandiset holds no position, and tracking the rat in the raw video
-frames does not fit the time limit (see the data check). No criterion was written for this claim.
-The lap durations below, from the reward times, are shown as a description only: they say how
-long the rat took from one end to the other, not where on the track it slowed or stopped, and do
-not decide an outcome.'''))
-cells.insert(i + 1, code('''# Laps (reward to reward at the other end) in the pre-run, run and post-run epochs, by direction,
-# in every file with rewards and a puff direction. A lap belongs to the epoch holding its midpoint.
-rows = []
-for s in sessions:
-    if not all(k in s["events"] for k in ("lrw", "rrw", "puf")):
-        continue
-    direction, _ = hpcbla.puff_direction(s)
-    if direction is None:
-        continue
-    for a, b, dd in hpcbla.laps(s):
-        tag = [t for t, x, y in s["epochs"] if x <= (a + b) / 2 < y and t in ("prerun", "run", "postrun")]
-        rows.append({"session": s["session"], "rat": s["rat"], "epoch": tag[0] if tag else "other",
-                     "direction": "puff" if dd == direction else "safe", "duration": b - a})
-all_laps = pd.DataFrame(rows)
-print("Laps by epoch:", all_laps.epoch.value_counts().to_dict(), "(laps outside these epochs are left out)")
-all_laps = all_laps[all_laps.epoch != "other"]
-table = all_laps.groupby(["rat", "session", "epoch", "direction"]).duration.agg(["size", "median"]).unstack(["epoch", "direction"])
-print(table.round(1).to_string())
-ratio = all_laps.groupby(["session", "epoch", "direction"]).duration.median().unstack("direction")
-ratio = (ratio.puff / ratio.safe).unstack("epoch")[["prerun", "run", "postrun"]]
-print("\\nMedian lap duration, puff direction over safe direction (reference 1):")
-for epoch in ratio:
-    x = ratio[epoch].dropna()
-    print(f"  {epoch}: median ratio {x.median():.2f} over {len(x)} sessions, above 1 in {int((x > 1).sum())},"
-          f" Wilcoxon of log ratio p = {wilcoxon(np.log(x)):.2g}")
-'''))
+# ripple-rate result
+rep(find('**Result: reproduced.** Over 23 sessions (the paper had 41)'), '''-0.008 Hz in Rat10 (3 of 7) and 0.007 Hz in Rat11 (4 of 7).**''',
+'''-0.008 Hz in Rat10 (3 of 7) and 0.007 Hz in Rat11 (4 of 7). As context, the effect size r is
+0.24 here against the paper's 0.20, the bootstrap 95% interval of the median change is -0.008 to
+0.051 Hz (-1.4% to 8.4% of the median pre-NREM rate), and with 23 sessions a change of the median
+of about 0.068 Hz (11% of the rate) would be detected with 80% power (0.050 Hz, 8%, with the
+paper's 41). The data exclude a change larger than about a tenth of the rate, not a smaller one.''')
 
-# summary table row
-replace(find("## Summary"), "| `rats-learn-puff-location` | blocked: data missing (no position tracking) |",
-        "| `rats-learn-puff-location` | blocked: too large (position only in the raw video frames) |")
-replace(find("## Summary"), "- There is no position tracking, so the behaviour on the track cannot be measured; the `trials`\n  table is undescribed.",
-        "- There is no position tracking, only raw video frames, so the behaviour on the track cannot be\n  measured here; the `trials` table is undescribed.")
+# summary
+i = find('## Summary')
+rep(i, '''| `bla-rate-same-across-directions` | blocked: metadata insufficient | no claim |''', '''| `bla-rate-same-across-directions` | blocked: too large (O7 reading b needs position; the runnable readings give p < 0.05) | no claim |''')
+rep(i, '''| `cen-no-reactivation` | reproduced (NREM p = 0.30, REM p = 0.25) | no claim |''', '''| `cen-no-reactivation` | reproduced (NREM p = 0.30, REM p = 0.25; weak evidence of absence, 9 and 8 sessions) | no claim |''')
+rep(i, '''| `ripple-rate-unchanged` | reproduced (p = 0.26, 23 sessions) | no claim |''', '''| `ripple-rate-unchanged` | reproduced (p = 0.26, 23 sessions; excludes changes above about 11%) | no claim |''')
+rep(i, '''(O1 reading c, which decides alone as answered) and the behaviour claims are blocked;''', '''(O1 reading c, which decides alone as answered), which include the time on the starting platform
+and the stops that the M8 laps leave out, and the behaviour claims and
+`bla-rate-same-across-directions` (O7 reading b) are blocked;''')
+rep(i, '''- The dandiset links no analysis code; the paper links its code.''', '''- The archive's asset metadata lists ElectricalSeries and ProcessingModule for exactly the files
+  that lack them, and not for those that have them (all 40 files wrong for both).
+- The dandiset links no analysis code; the paper links its code.''')
+rep(i, '''  There are no waveforms.''', '''  There are no waveforms. A short-latency cross-correlogram check finds connections of the marked
+  sign for nearly every marked BLA unit.''')
+
 json.dump(nb, open(p, 'w'), indent=1, ensure_ascii=False)
-open(p, 'a').write("\n")
+open(p, 'a').write('\n')
 PYEOF
-python $TMPDIR/editnb.py && git diff --stat
+python $TMPDIR/edit_md.py && grep -c PLACEHOLDER reproduce_girardeau_2017.ipynb
 ```
 
 ```
-entries/000061-girardeau-2017/hpcbla.py            |  30 ++-
- .../reproduce_girardeau_2017.ipynb                 | 281 ++++++++++++++++++++-
- 2 files changed, 301 insertions(+), 10 deletions(-)
-```
-
-**Agent calls Bash**
-
-```bash
-git diff reproduce_girardeau_2017.ipynb | head -30; git diff reproduce_girardeau_2017.ipynb | tail -15
-```
-
-```
-diff --git a/entries/000061-girardeau-2017/reproduce_girardeau_2017.ipynb b/entries/000061-girardeau-2017/reproduce_girardeau_2017.ipynb
-index 115e179..ba0da95 100644
---- a/entries/000061-girardeau-2017/reproduce_girardeau_2017.ipynb
-+++ b/entries/000061-girardeau-2017/reproduce_girardeau_2017.ipynb
-@@ -23,7 +23,7 @@
-     "What the dandiset holds. 40 NWB files, one per recording day, from four rats (Rat08 to\n",
-     "Rat11): sorted units with a region label, sleep states, epochs, and event times of hippocampal\n",
-     "ripples, air puffs and rewards; some files also hold raw voltage, LFP and video. There is no\n",
--    "position tracking.\n",
-+    "position tracking; the files hold the raw video frames, from which position is not derived.\n",
-     "\n",
-     "Code. The dandiset links no analysis code, and the abstract names none. The parameters are\n",
-     "common choices, listed in the helper module `hpcbla.py` and the claims file.\n",
-@@ -35,7 +35,7 @@
-     "| `bla-ripple-up-subgroup`: a subgroup of BLA cells is positively modulated during ripples | tested |\n",
-     "| `reactivation-involves-ripple-up-cells`: the reactivations involve those BLA cells | tested |\n",
-     "| `aversive-direction-stronger`: reactivation is stronger for the air-puff direction than the safe one | tested |\n",
--    "| `rats-learn-puff-location`: rats learned the location of the air puff | blocked (data missing: no position tracking) |"
-+    "| `rats-learn-puff-location`: rats learned the location of the air puff | blocked (too large: position could only come from tracking the raw video frames, see the data check) |"
-    ]
-[... 25 more lines not kept]
-```
-
-**Agent**
-
-Edits are in. Running the full entry now (about 15 minutes).
-
-**Agent calls Bash**
-
-```bash
-cd  && python tools/entry.py all entries/000061-girardeau-2017 2>&1 | tail -20
-```
-
-```
-/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
-  _validate(nbdict, ref, version, version_minor, relax_add_props)
-Installed kernelspec registry-000061-girardeau-2017 in executed/000061-girardeau-2017/.venv/share/jupyter/kernels/registry-000061-girardeau-2017
-0 error(s)
-pass  reproduce_girardeau_2017.ipynb  (683 s)
+0
 ```
 
 **Agent calls Bash**
 
 ```bash
-python -c "
-import json;nb=json.load(open('executed/000061-girardeau-2017/reproduce_girardeau_2017.ipynb'))
-print(nb['nbformat'],nb['nbformat_minor'], [('id' in c) for c in nb['cells']][:5])
-for i,c in enumerate(nb['cells']):
-  if c['cell_type']!='code': continue
-  if i<3: continue
-  out=''.join(''.join(o.get('text','')) if o.get('name')=='stdout' else ''.join(o.get('data',{}).get('text/plain','')) + ''.join(o.get('traceback',[])) for o in c['outputs'])
-  print('=====',i,c['metadata'].get('tags'));print(out[:6000])
-" > $TMPDIR/out.txt; wc -l $TMPDIR/out.txt
-```
-
-```
-613 /tmp/claude-1001/out.txt
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/out.txt"
-}
-```
-
-```
-1	4 5 [True, True, True, True, True]
-2	===== 3 ['sanity']
-3	Archive summary: files 40 ; subjects 4 ; species ['Brown rat'] ; measured ['Units', 'LFP', 'ElectricalSeries', 'ProcessingModule']
-4	
-5	Subjects: ['Rat08', 'Rat09', 'Rat10', 'Rat11'] ; files per rat: {'Rat08': 13, 'Rat09': 10, 'Rat10': 7, 'Rat11': 10}
-6	Species, age, sex: [('Rattus norvegicus domestica - Long Evans', '3 months', 'Male')]
-7	
-8	        session   rat  units  hpc  bla  bla_complex  states  ripples  puffs  rewards  pre_sleep_s  post_sleep_s  run_s  lfp   raw  videos  trials
-9	Rat08-20130708 Rat08    166    9   15           60    True     9473      3        9         9890         10664   3603 True  True       2   215.0
-10	Rat08-20130709 Rat08    201   34   78           99    True    10713      2       22         9725         11239   3621 True  True       3   185.0
-11	Rat08-20130710 Rat08    190   31   87           87    True     9251      9       24        10098         10224   3607 True  True       3   113.0
-12	Rat08-20130711 Rat08    201   24   92           92    True     8193      5       36         8903          8425   3612 True  True       3   289.0
-13	Rat08-20130712 Rat08    199   59   40           40    True     6118     14       69        10318          9222   3328 True  True       3   266.0
-14	Rat08-20130713 Rat08    252   60   94           94    True     6835     20       44         9199          9766   3244 True  True       3   183.0
-15	Rat08-20130715 Rat08    166   20   39           39    True     6945     34       82         9266          9334   2730 True False       3     NaN
-16	Rat08-20130716 Rat08    187   19   34           73    True     8934     30       81        10663         11500   2486 True False       3     NaN
-17	Rat08-20130717 Rat08    197   42   17           76    True     7857     31       99         9671         10985   1797 True False       3     NaN
-18	Rat08-20130718 Rat08    219   50    0           51   False        0     49      146        11154         11121   24
-[... 596 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python -c "
-import json;nb=json.load(open('executed/000061-girardeau-2017/reproduce_girardeau_2017.ipynb'))
-print(''.join(nb['cells'][3]['outputs'][0]['text'])[-900:])"
-```
-
-```
-True False       1     NaN
-
-Files without a units table: ['Rat08-20130722', 'Rat09-20140402', 'Rat09-20140403', 'Rat09-20140404', 'Rat09-20140405', 'Rat09-20140407', 'Rat11-20150403']
-Files without sleep states: ['Rat08-20130718', 'Rat08-20130719', 'Rat08-20130720', 'Rat08-20130722', 'Rat09-20140325', 'Rat09-20140326', 'Rat09-20140328', 'Rat09-20140329', 'Rat09-20140402', 'Rat09-20140403', 'Rat09-20140404', 'Rat09-20140405', 'Rat09-20140407', 'Rat11-20150331', 'Rat11-20150401', 'Rat11-20150403']
-Files without ripple events: ['Rat08-20130718', 'Rat08-20130719', 'Rat08-20130720', 'Rat08-20130722', 'Rat09-20140324', 'Rat09-20140325', 'Rat09-20140326', 'Rat09-20140328', 'Rat09-20140329', 'Rat09-20140402', 'Rat09-20140403', 'Rat09-20140404', 'Rat09-20140405', 'Rat09-20140407']
-Rats with hippocampal units: ['Rat08', 'Rat10', 'Rat11']
-Files with raw voltage: 16 ; with LFP: 40 ; with video: 40
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000061-girardeau-2017 && cat > $TMPDIR/edit2.py <<'PYEOF'
-import json, uuid
-p = 'reproduce_girardeau_2017.ipynb'
-nb = json.load(open(p)); cells = nb['cells']
-def find(start):
-    hits = [i for i, c in enumerate(cells) if ''.join(c['source']).startswith(start)]
-    assert len(hits) == 1, (start, hits); return hits[0]
-def setsrc(i, t): cells[i]['source'] = t.splitlines(keepends=True)
-def replace(start, a, b):
-    i = find(start); s = ''.join(cells[i]['source']); assert a in s, a; setsrc(i, s.replace(a, b))
-
-replace("The archive's summary says four", "Seven files have no units table, twelve have no sleep states, and",
-        "Seven files have no units table, sixteen have no sleep states, and")
-
-setsrc(find("**Result: reproduced.** Under reading (a)"), '''**Result: reproduced.** Under reading (a), the mean ripple-triggered strength in post-sleep is
-highest in the bin of the ripple peak, 4.36 times its mean 0.5 to 1 s away; the peak bin exceeds
-the flanks in 30 of 36 patterns (median 0.103, p = 6e-06), with a positive median in every rat,
-and in 13 of 15 sessions at session level (p = 0.00031). Much of this peak is already present in
-pre-sleep (0.136 at the ripple, against 0.223 in post-sleep), so reading (a) alone does not
-separate reactivation of the run from co-activation at ripples in general. The part that does,
-the peak over flanks being larger in post-sleep than in pre-sleep, holds in 23 of 36 patterns
-(p = 0.022) and 10 of 15 sessions (p = 0.03). Under reading (b), the post minus pre change is
-larger in ripple bins than outside them (median difference 0.0537, 25 of 36 patterns, p =
-0.0033; 10 of 15 sessions, p = 0.03).''')
-
-setsrc(find("**Result: reproduced.** 103 of 822 BLA units"), '''**Result: reproduced.** 103 of 822 BLA units (12.5%) fire more in Non-REM ripples than in the
-shifted windows, against a chance level of 0.7% from the procedure run on windows shifted by 7 s
-(binomial p = 9.8e-90), and the fraction is above chance in each rat (Rat08 10.3%, Rat10 4.8%,
-Rat11 19.8%), against the pooled chance level and against each rat's own (Rat10 p = 0.0034 and
-0.018). It is a subgroup: as many units (104, 12.7%) fire less in ripples. The shifted windows
-stay mostly in Non-REM (a median of 0.9% of the randomly shifted ripple peaks and 1.4% of the 7 s
-shifted ones fall outside it). Units are counted once per session, so a cell recorded on several
-days may be counted more than once.''')
-
-setsrc(find("**Result: reproduced.** In 31 significant patterns"), '''**Result: reproduced.** In 31 significant patterns that have both kinds of BLA unit, the mean
-squared weight of the ripple-up units is above that of the other BLA units (medians 0.0505 and
-0.0181; difference positive in 24 of 31, p = 0.0013). The ripple-up units are a median 20% of the
-BLA units of a pattern and carry 34% of its BLA weight. It holds in Rat08 (17 of 21) and Rat11 (6 of
-7) and not in Rat10 (1 of 3), and in the patterns that reactivate (p = 0.0018). Firing rate
-accounts for part of it: up units fire faster in the run (median 1.66 against 0.41 Hz), and
-squared weight rises with rate within a pattern (median Spearman 0.46). Against other units of
-matched rate the up units still carry more weight (24 of 31 patterns, p = 0.012). At session
-level the difference holds (10 of 13 sessions, p = 0.027), but the rate-matched difference does
-not (9 of 13, p = 0.22).''')
-
-setsrc(find("**Result: not reproduced.** Across the 15 sessions"), '''**Result: not reproduced.** Across the 15 sessions the post minus pre reactivation of the
-air-puff templates exceeds that of the safe templates by a median of 0.0133, in 9 of 15 sessions,
-with Wilcoxon p = 0.11, above the 0.05 of the criterion and the 0.1 of its partial outcome. By rat
-the difference is positive in 6 of 9 Rat08 sessions, 2 of 3 Rat10 and 1 of 3 Rat11. The variants
-lean the same way with mixed strength: the first pattern of each direction gives p = 0.048 (10
-of 15), the pooled per-pattern test p = 0.083, equal numbers of bins p = 0.33 (8 of 14), post-sleep
-strength alone p = 0.45, leaving out the two sessions with fewer than 5 puffs p = 0.15 (8 of 13),
-and templates from the travel part of each lap only p = 0.19 (9 of 14). The laps from reward
-times include the time spent at the end where a lap starts: a median of 33% of the air-puff and
-43% of the safe template time lies in the travel part, and in the early Rat08 sessions laps last
-up to 2310 s, so the directional templates are not templates of running alone.''')
-
-i = find("# Laps (reward to reward at the other end)")
-cells.insert(i + 1, {"cell_type": "markdown", "metadata": {}, "source": '''In the run, laps toward the air-puff direction take longer than laps the other way (median
-ratio 1.18 over 38 sessions, above 1 in 27, p = 0.0063); in the pre-run and the post-run, when
-no puffs are given, the two directions take about as long (0.95 and 1.00). Slower laps where puffs
-are given are what both learning and the puffs themselves would produce, so this does not show
-that the rats learned where the puff was.'''.splitlines(keepends=True)})
-
-for c in cells:
-    c.setdefault('id', uuid.uuid4().hex[:8])
-json.dump(nb, open(p, 'w'), indent=1, ensure_ascii=False); open(p, 'a').write("\n")
-PYEOF
-python $TMPDIR/edit2.py && echo ok
-```
-
-```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'PYEOF'
+cd entries/000061-girardeau-2017; cat > $TMPDIR/edit_md2.py <<'PYEOF'
 import json
-p='reproduce_girardeau_2017.ipynb'; nb=json.load(open(p))
-c=[c for c in nb['cells'] if ''.join(c['source']).startswith('## Summary')][0]
-s=''.join(c['source'])
-a="direction from the reward and puff times (there is no position)."
-assert a in s
-s=s.replace(a,"direction from the reward and puff times (there is no position), so a lap also holds the time\nspent at the end where it starts.")
-c['source']=s.splitlines(keepends=True)
-json.dump(nb, open(p,'w'), indent=1, ensure_ascii=False); open(p,'a').write("\n")
+p = 'reproduce_girardeau_2017.ipynb'
+nb = json.load(open(p)); C = nb['cells']
+def src(i): return ''.join(C[i]['source'])
+def find(prefix):
+    hits = [i for i, c in enumerate(C) if src(i).startswith(prefix)]; assert len(hits) == 1, (prefix, hits); return hits[0]
+def rep(i, a, b):
+    s = src(i); assert a in s, (i, a[:70]); C[i]['source'] = s.replace(a, b).splitlines(keepends=True)
+rep(find('**Result: not reproduced.** On the 36 identified inhibitory'), '''As context, the REM
+effect is small (median 0.029, bootstrap 95% interval -0.015 to 0.109, against 0.39 for the
+excitatory cells) but its effect size r is 0.39 against the paper's 0.09, so a larger sample
+alone would not be expected to remove it.''', '''As context, the REM
+effect is small (median 0.029, against 0.39 for the excitatory cells), and the bootstrap 95%
+interval of the median (-0.015 to 0.109) includes zero while the signed rank test, which uses all
+the ranks, has p = 0.020. Its effect size r is 0.39 against the paper's 0.09, so these cells
+differ from the paper's in REM, not only in number.''')
+rep(find('**Result: reproduced.** Hippocampus-central nuclei EV'), '''Resampling the hippocampus-BLA sessions at these sizes, a
+reactivation as large as the BLA's would reach p < 0.05 in 92% (NREM) and 93% (REM) of samples.
+The absence is therefore weak evidence: it holds on the paper's test, but these sessions cannot
+exclude a NREM reactivation of the BLA's size.''', '''Resampling the hippocampus-BLA sessions at these sizes, a
+reactivation distributed as the BLA's would reach p < 0.05 in 92% (NREM) and 93% (REM) of samples,
+so such a reactivation would usually be seen; yet the interval of the NREM median does not exclude
+one of the BLA's median size. The absence holds on the paper's test and is weak evidence.''')
+rep(6, '''Every claim whose criterion uses putative pyramidal cells or interneurons is
+blocked as `metadata_insufficient`.''', '''Every claim whose criterion uses putative pyramidal cells or interneurons is
+blocked as `metadata_insufficient`, except `bla-rate-same-across-directions`, which position
+blocks first (too large).''')
+json.dump(nb, open(p, 'w'), indent=1, ensure_ascii=False); open(p, 'a').write('\n')
 PYEOF
-python - <<'PYEOF'
-p='README.md'; s=open(p).read()
-s=s.replace("| Rats learned the location of the air puff | Blocked: data missing |","| Rats learned the location of the air puff | Blocked: too large |")
-a="The dandiset has no position tracking, so run direction comes from the reward times."
-assert a in s
-s=s.replace(a,"The dandiset has no position tracking, so run direction comes from the reward times. Position\ncould only come from tracking the raw video frames stored in the files, which would take far\nlonger to stream than the time limit allows.")
-open(p,'w').write(s)
-PYEOF
-grep -n "Blocked\|position" README.md
-```
-
-```
-16:| Rats learned the location of the air puff | Blocked: too large |
-21:The dandiset has no position tracking, so run direction comes from the reward times. Position
-```
-
-**Agent**
-
-Notebook and README updated. Now the attempt record.
-
-**Agent calls Bash**
-
-```bash
-cd ../.. && python -c "
-import json;s=json.load(open('schemas/attempt.schema.json'))
-print(json.dumps(s['properties']['verifications'],indent=1)[:3000]); print(json.dumps(s.get('\$defs',{}),indent=0)[:3000])"
-```
-
-```
-{
- "type": "array",
- "items": {
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-   "date",
-   "kind",
-   "by",
-   "results"
-  ],
-  "properties": {
-   "date": {
-    "type": "string",
-    "format": "date"
-   },
-   "kind": {
-    "enum": [
-     "agent",
-     "person",
-[... 50 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "attempts/000061-girardeau-2017-01.yaml",
- "offset": 14,
- "limit": 90
-}
-```
-
-```
-14	    model: claude-opus-5-5
-15	    protocol: pilot-7
-16	outcomes:
-17	- claim: hpc-bla-reactivation-post-sleep
-18	  outcome: reproduced
-19	  notebook: reproduce_girardeau_2017.ipynb
-20	  output: claim:hpc-bla-reactivation-post-sleep
-21	  notes: 15 sessions (9 Rat08, 3 Rat10, 3 Rat11) with 341 hippocampal and 483 BLA units; every
-22	    session has at least one significant joint pattern, 36 in all. Post-sleep minus pre-sleep
-23	    Non-REM strength has a median of 0.0119, positive in 28 of 36, Wilcoxon p = 3.6e-05. The median
-24	    is above zero in each rat (Rat08 0.0170, 18 of 21, p = 0.00013; Rat10 0.0024, 5 of 8, p = 0.74;
-25	    Rat11 0.0190, 5 of 7, p = 0.11). Non-significant patterns change by a median of 0.0001. The
-26	    variants (25 and 100 ms bins, the wider BLA labels over 21 sessions, the first pattern of each
-27	    session) all give positive medians with p of 0.0084 or less. The comparison does not separate
-28	    reactivation from slow drift of the recording, since post-sleep is next to the run in time.
-29	  deviations:
-30	  - The paper's methods were not available; the joint-pattern method (singular vectors of the run's
-31	    hippocampus by BLA cross-correlation matrix, shuffle threshold, product of projections), the 50
-32	    ms bins and the unit criteria are common choices fixed in the claims file.
-33	  - BLA is taken as the units labelled bla or BLA; other undescribed labels that may be parts of
-[... 70 more lines not kept]
-```
-
-**Agent**
-
-Now I'll write the YAML updates with a script.
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/edit_yaml.py <<'PYEOF'
-p = 'attempts/000061-girardeau-2017-01.yaml'
-s = open(p).read()
-reps = [
-("""    outside ripples (median difference 0.0537, 25 of 36, p = 0.0033).
-  deviations:""",
-"""    outside ripples (median difference 0.0537, 25 of 36, p = 0.0033). Much of the reading (a) peak
-    is already present in pre-sleep, so reading (a) alone does not separate reactivation of the
-    run from co-activation at ripples in general; the post minus pre contrasts do. At session
-    level (15 sessions) the peak over flanks is positive in 13 (p = 0.00031), its post minus pre
-    increase in 10 (p = 0.03), and the reading (b) difference in 10 (p = 0.03).
-  deviations:"""),
-("""    242). 104 units (12.7%) are negatively modulated. At p of 0.05 or less the fraction is 16.3%
-    against 5.6% chance, at 0.002 or less 10.8% against 0.2%.""",
-"""    242), also against each rat's own chance level (Rat10 has 0 chance units; p = 0.018 against
-    one unit). 104 units (12.7%) are negatively modulated. At p of 0.05 or less the fraction is
-    16.3% against 5.6% chance, at 0.002 or less 10.8% against 0.2%. The shifted windows stay
-    mostly in Non-REM (a median of 0.9% of randomly shifted and 1.4% of 7 s shifted ripple peaks
-    fall outside it)."""),
-("""    not in Rat10 (1 of 3). In patterns whose post minus pre reactivation is positive, p = 0.0018.""",
-"""    not in Rat10 (1 of 3). In patterns whose post minus pre reactivation is positive, p = 0.0018.
-    Firing rate accounts for part of the effect; up units fire faster in the run (median 1.66
-    against 0.41 Hz) and squared weight rises with rate within a pattern (median Spearman 0.46).
-    Against other BLA units of the nearest rate, up units still carry more weight (24 of 31
-    patterns, p = 0.012). At session level (13 sessions) the difference holds (10 of 13, p =
-    0.027), the rate-matched difference does not (9 of 13, p = 0.22). The criterion is the pooled
-    per-pattern test, which holds."""),
-("""    numbers of template bins p = 0.28, and post-sleep strength alone p = 0.45. The safe templates
-    of some sessions rest on few bins (5610 against 66804 in Rat08-20130709).""",
-"""    numbers of template bins (a random subset) p = 0.33, post-sleep strength alone p = 0.45,
-    leaving out the two sessions with fewer than 5 puffs p = 0.15, and templates from the travel
-    part of each lap only (its last part, as long as the session's 10th-percentile lap) p = 0.19.
-    Laps from reward times include the time spent at the end where a lap starts; a median of 33%
-    of the air-puff and 43% of the safe template time is in the travel part, and in the early Rat08
-    sessions laps last up to 2310 s, so the safe templates of some sessions rest on few bins
-    (5610 against 66804 in Rat08-20130709)."""),
-("""  - The air-puff direction is the lap direction holding most puffs (927 of 957 puffs fall in it).""",
-"""  - The air-puff direction is the lap direction holding most puffs (927 of 957 puffs fall in it).
-    No minimum number of puffs was set; two sessions with 2 and 3 puffs enter the test.
-  - Laps include the time spent at the starting end, not only running; templates from the travel
-    part of laps are a variant."""),
-("""  blocked_by: data_missing
-  notes: Learning the location of the puff is behaviour along the track, which needs the rat's
-    position; the dandiset holds no position tracking, only raw video with timestamps that are not
-    on the session clock, reward and puff times, and an undescribed trials table. Lap times between
-    rewards were looked at during the data check but give no location. No public copy of the
-    tracking linked to the paper or the dandiset was found.""",
-"""  blocked_by: too_large
-  notes: Learning the location of the puff is behaviour along the track, which needs the rat's
-    position. The dandiset holds no position tracking. The files hold the raw video frames (360 by
-    640 pixels, gzip), so position could in principle be tracked, but the 40 run videos have
-    1920573 frames (1328 GB uncompressed) and streaming 20 frames took 8.6 s, about 230 hours for
-    the run frames alone; the video timestamps are also not on the session clock. No public copy of
-    the tracking linked to the paper or the dandiset was found. As a description only, laps toward
-    the air-puff end take longer than the other way in the run (median ratio 1.18 over 38
-    sessions, p = 0.0063) and about as long in the pre-run (0.95) and the post-run (1.00); lap
-    times give no location on the track, and slower laps where puffs are given do not separate
-    learning from the puffs themselves. No criterion was written, so this decides nothing."""),
-("""- kind: data_missing
-  statement: There is no position tracking, so behaviour on the track, including the learning of
-    the puff location, cannot be measured; run direction can only be inferred from reward times.""",
-"""- kind: data_missing
-  statement: There is no position tracking, only the raw video frames, so behaviour on the track,
-    including the learning of the puff location, cannot be measured without tracking about 1.9
-    million frames; run direction can only be inferred from reward times."""),
-]
-for a, b in reps:
-    assert a in s, a[:70]
-    s = s.replace(a, b)
-open(p, 'w').write(s)
-PYEOF
-python $TMPDIR/edit_yaml.py && echo ok; grep -n "sixteen\|verifications" attempts/000061-girardeau-2017-01.yaml
-```
-
-```
-ok
-145:    sixteen have no sleep states and fourteen have no ripple events. The Rat09 files have no
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> attempts/000061-girardeau-2017-01.yaml <<'EOF'
-verifications:
-- date: '2026-10-16'
-  kind: agent
-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
-    helper module and the claims file, with the paper's abstract (the full text is not open access).
-    The verifier tested helper functions on synthetic inputs and read the archive's asset metadata for
-    the blocked claim. Its report had no attempt record and gave its own outcome for each claim; all six
-    agree with the record on the outcome, and it gave a different reason for the block.
-  results:
-  - claim: hpc-bla-reactivation-post-sleep
-    agrees: true
-    outcome: reproduced
-    reason: Cell 24 gives 36 significant patterns in all 15 usable sessions; post minus pre median
-      0.0119, 28 of 36 positive, Wilcoxon p = 3.6e-05. The median is above zero in all three rats where
-      the criterion needs two, though the Rat10 margin is thin (5 of 8 positive, p = 0.74). The
-      session-level test agrees (14 of 15 sessions, p = 1.2e-4, recomputed), and so do all variants.
-      It also noted that the run epoch used was not printed, and that Rat08-20130708 has two runs and
-      only the first is used.
-    response: No change of outcome. Added a data check printing every run epoch, the run used and the
-      pre- and post-sleep epochs of each session used; only Rat08-20130708 has a second run (about 600
-      s, after the post-sleep), and the first run is used.
-  - claim: reactivation-peaks-at-ripples
-    agrees: true
-    outcome: reproduced
-    reason: Reading (a), the mean post-sleep curve peaks at lag 0, peak minus flanks median 0.103, 30
-      of 36 positive, p = 6e-06; reading (b), ripple minus non-ripple change median 0.054, 25 of 36, p
-      = 0.0033. Both hold. Problems not affecting the conclusion were that the ripple-locked peak is
-      already large in pre-sleep (0.136 at lag 0 against about 0.04 on the flanks), so much of reading
-      (a) is generic co-activation at ripples and only the post minus pre contrast and reading (b)
-      speak to reactivation; and that patterns are tested as if independent though several come from
-      one session.
-    response: No change of outcome. Added session-level tests (peak over flanks 13 of 15 sessions, p =
-      0.00031; its post minus pre increase 10 of 15, p = 0.03; reading (b) 10 of 15, p = 0.03). The
-      conclusion and notes now say that reading (a) alone does not separate reactivation from
-      co-activation at ripples, and that the post minus pre contrasts do.
-  - claim: bla-ripple-up-subgroup
-    agrees: true
-    outcome: reproduced
-    reason: 103 of 822 BLA units positively modulated (0.125) against a 7 s-shift chance level of
-      0.007 (binomial p = 9.8e-90); each rat above chance; the fraction is below 1. The per-rat tests
-      use the pooled chance level, not each rat's own (Rat10's own is 0), though all rats pass either
-      way. It asked for the fraction of shifted windows that land outside Non-REM.
-    response: No change of outcome. Added the binomial test of each rat against its own chance level
-      (Rat10 p = 0.018 with a floor of one unit) and the fraction of shifted ripple peaks outside the
-      Non-REM of the sleep epochs (median 0.9% for the random shifts, 1.4% for the 7 s shift).
-  - claim: reactivation-involves-ripple-up-cells
-    agrees: true
-    outcome: reproduced
-    reason: 31 patterns in 13 sessions; up minus other mean squared BLA weight median 0.034, 24 of 31
-      positive, p = 0.0013; the variant on reactivating patterns gives p = 0.0018. Rat10 goes the other
-      way, but the criterion is pooled only. Problems not affecting the conclusion were that firing
-      rate is not controlled, so up units carrying more weight may partly mean high-rate units carry
-      more weight, and that patterns are tested as if independent.
-    response: No change of outcome. Added run-epoch rates (up units median 1.66 Hz, others 0.41 Hz),
-      the within-pattern correlation of rate and squared weight (median Spearman 0.46), a rate-matched
-      comparison (24 of 31, p = 0.012) and session-level tests (10 of 13, p = 0.027; rate-matched 9 of
-      13, p = 0.22). The conclusion and notes now say that rate accounts for part of the effect and that
-      the rate-matched difference does not hold at session level.
-  - claim: aversive-direction-stronger
-    agrees: true
-    outcome: not_reproduced
-    reason: Median puff minus safe 0.0133, 9 of 15 positive, Wilcoxon p = 0.11 (recomputed 0.107),
-      above the 0.1 cut-off for partial; variants do not change the outcome. Problems not affecting
-      the conclusion were that a lap runs from one reward to the next and so includes the time spent
-      waiting at the ends, which makes the directional templates very unequal and mostly not running
-      in early Rat08 sessions (Rat08-20130709 has 66,804 puff bins against 5,610 safe bins); that
-      puff_direction has no minimum number of puffs, so sessions with 3 and 2 puffs enter (leaving them
-      out gives p = 0.146, recomputed); and that equal_bins keeps the first bins of the longer
-      direction, mixing bin count with time in session. It asked for the distribution of lap durations
-      and the fraction of template bins spent travelling.
-    response: No change of outcome. Added a table of run laps per session and direction (count, median
-      and longest duration, template bins, and the fraction of template time in the travel part, taken
-      as the last part of each lap as long as the session's 10th-percentile lap), a variant leaving
-      out sessions with fewer than 5 puffs (p = 0.15) and a variant with templates from the travel part
-      only (p = 0.19). The equal-bins variant now keeps a random subset of the longer direction (p =
-      0.33, was 0.28). The conclusion and notes describe the lap issue and the new variants, and the
-      deviations record the missing puff minimum.
-  - claim: rats-learn-puff-location
-    agrees: true
-    outcome: blocked
-    reason: The archive has no position series, but the files are ecephys+image and hold the video
-      frames themselves (e.g. 54,431 run frames), so position could be tracked from video, which needs
-      streaming files of 9 to 254 GB; it is not strictly data_missing (other or too_large). The
-      notebook's reason for blocking skips the embedded video and the lap-duration proxy. It asked for
-      per-session median lap duration and lap count by direction in the pre-run, run and post-run
-      epochs.
-    response: Changed blocked_by from data_missing to too_large. Added a data check of the video
-      storage (raw frames, 360 by 640, gzip; the 40 run videos hold 1920573 frames, 1328 GB
-      uncompressed; streaming 20 frames took 8.6 s, about 230 hours for the run frames) and a section
-      with the lap counts and median durations by direction in the pre-run, run and post-run epochs of
-      every file. Kept blocked, as no criterion was written for the claim and lap times give no
-      location on the track; the lap table is shown as a description only.
-EOF
-python tools/entry.py check entries/000061-girardeau-2017 2>&1 | tail -3
-```
-
-```
-0 error(s)
-```
-
-**Agent calls Bash**
-
-```bash
-python -c "
-import yaml
-d=yaml.safe_load(open('attempts/000061-girardeau-2017-01.yaml'))
-def walk(x):
-    if isinstance(x,dict): [walk(v) for v in x.values()]
-    elif isinstance(x,list): [walk(v) for v in x]
-    elif isinstance(x,str) and (': ' in x or '—' in x or 'rather' in x): print(repr(x[:100]))
-walk(d)"; grep -n "—\|rather" entries/000061-girardeau-2017/*.ipynb entries/000061-girardeau-2017/README.md entries/000061-girardeau-2017/hpcbla.py | head
+python $TMPDIR/edit_md2.py; grep -n "—\|rather" reproduce_girardeau_2017.ipynb hpcbla.py | head
 ```
 
 ```
@@ -1322,144 +1734,522 @@ walk(d)"; grep -n "—\|rather" entries/000061-girardeau-2017/*.ipynb entries/00
 
 **Agent**
 
-Now the final full re-run so the executed copy carries the new text.
+Now the README.
 
 **Agent calls Bash**
 
 ```bash
-python tools/entry.py all entries/000061-girardeau-2017 2>&1 | grep -v Warning | tail -4
-```
-
-```
-Installed kernelspec registry-000061-girardeau-2017 in executed/000061-girardeau-2017/.venv/share/jupyter/kernels/registry-000061-girardeau-2017
-0 error(s)
-pass  reproduce_girardeau_2017.ipynb  (670 s)
-```
-
-**Agent calls Bash**
-
-```bash
-python -c "
-import json;nb=json.load(open('executed/000061-girardeau-2017/reproduce_girardeau_2017.ipynb'))
-for c in nb['cells']:
-  for o in c.get('outputs',[]):
-    t=''.join(o.get('text',''))
-    for k in ['Streaming 20','Rate-matched','Session level','travel part of each lap','equal numbers','p_own','Rat10    ','median ratio','Median over sessions: outside','reading (']:
-      for line in t.splitlines():
-        if k in line: print(line[:160])
-" | sort -u; git status --short
-```
-
-```
-equal numbers of bins    14       0.0155       0.0081 0.325806       0.0024       8.0
-       units  up  down  chance_up  up_fraction  chance_fraction       p  p_own_chance
-  postrun: median ratio 1.00 over 36 sessions, above 1 in 19, Wilcoxon of log ratio p = 0.62
-  prerun: median ratio 0.95 over 37 sessions, above 1 in 14, Wilcoxon of log ratio p = 0.19
-  run: median ratio 1.18 over 38 sessions, above 1 in 27, Wilcoxon of log ratio p = 0.0063
-  travel part of each lap only        14       0.0052         9 0.193726
-Median over sessions: outside Non-REM with random shifts 0.009 ; with the 7 s shift 0.014
-Rat10         8                   0.0647         8
-Rat10         8       0.002416         5    0.742188
-Rat10     3  0.0151           2
-Rat10     3 -0.0413           1
-Rat10     8  0.0257           5
-Rat10     84   4    14          0       0.0476           0.0000  0.0034        0.0183
-Rat10-20140624 Rat10        21        19                22    True              True             RL
-Rat10-20140624 Rat10    101   29   37           40    True     7114     26       79         8141          9106   1890 True False       3     NaN
-Rat10-20140626 Rat10        14        16                16    True              True             RL
-Rat10-20140626 Rat10     76   15   33           33    True     9302     20       66         8126          7554   1364 True False       3     NaN
-Rat10-20140701 Rat10        11         2                16   False              True             RL
-Rat10-20140701 Rat10     40   12    6           23    True     9275     14       72         9766         12766   2618 True False       3     NaN
-Rat10-20140702 Rat10        17         0                28   False              True             LR
-[... 29 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python -c "
-import json;nb=json.load(open('executed/000061-girardeau-2017/reproduce_girardeau_2017.ipynb'))
-for c in nb['cells']:
-  for o in c.get('outputs',[]):
-    for l in ''.join(o.get('text','')).splitlines():
-      if 'hours' in l: print(l)"
-sed -i 's/1920573 frames (1328 GB uncompressed) and streaming 20 frames took 8.6 s, about 230 hours for/1920573 frames (1328 GB uncompressed) and streaming 20 frames took 8.1 s, about 216 hours for/; s/uncompressed; streaming 20 frames took 8.6 s, about 230 hours for the run frames)/uncompressed; streaming 20 frames took 8.1 s, about 216 hours for the run frames)/' attempts/000061-girardeau-2017-01.yaml; grep -n "hours" attempts/000061-girardeau-2017-01.yaml
-```
-
-```
-At that rate the run frames alone would take about 217 hours to stream
-123:    1920573 frames (1328 GB uncompressed) and streaming 20 frames took 8.1 s, about 216 hours for
-256:      uncompressed; streaming 20 frames took 8.1 s, about 216 hours for the run frames) and a section
-```
-
-**Agent calls Bash**
-
-```bash
-sed -i 's/about 216 hours/about 217 hours/' attempts/000061-girardeau-2017-01.yaml && sed -i 's/would take far$/would take more than 200 hours,/' entries/000061-girardeau-2017/README.md && sed -n 19,25p entries/000061-girardeau-2017/README.md && python tools/entry.py check entries/000061-girardeau-2017 2>&1 | tail -1
-```
-
-```
-reasoning and the differences from the paper's method.
-
-The dandiset has no position tracking, so run direction comes from the reward times. Position
-could only come from tracking the raw video frames stored in the files, which would take more than 200 hours,
-longer to stream than the time limit allows. The attempt
-record, with the reasons and the differences from the paper's method, is
-[`attempts/000061-girardeau-2017-01.yaml`](../../attempts/000061-girardeau-2017-01.yaml).
-0 error(s)
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000061-girardeau-2017 && python - <<'EOF'
+cd entries/000061-girardeau-2017; python - <<'EOF'
 p='README.md'; s=open(p).read()
-a="""could only come from tracking the raw video frames stored in the files, which would take more than 200 hours,
-longer to stream than the time limit allows. The attempt"""
-assert a in s
-s=s.replace(a,"""could only come from tracking the raw video frames stored in the files, which would take more
-than 200 hours to stream. The attempt""")
+def rep(a,b):
+    global s; assert a in s, a[:60]; s=s.replace(a,b)
+rep('''22 are blocked: 18 because the dandiset has no putative cell types (pyramidal cell or interneuron),
+on which most of the paper's reactivation analyses rest, and 4 because it has no position tracking.''',
+'''22 are blocked: 17 because the dandiset has no putative cell types (pyramidal cell or interneuron),
+on which most of the paper's reactivation analyses rest, and 5 because it has no position tracking.''')
+rep('''| 18 claims on putative pyramidal cells or interneurons | Blocked: metadata insufficient |
+| `rats-learn-puff-location` and the three behaviour claims that depend on it | Blocked: too large (position only in raw video frames) |''',
+'''| 17 claims on putative pyramidal cells or interneurons | Blocked: metadata insufficient |
+| `rats-learn-puff-location` and the three behaviour claims that depend on it | Blocked: too large (position only in raw video frames) |
+| `bla-rate-same-across-directions` | Blocked: too large (one reading of the rate needs position; the readings that run find a difference) |''')
+rep('''Position could only come from tracking''','''The two claims of absence judged on smaller samples than the paper's (`cen-no-reactivation`, 9 and
+8 sessions against 19; `ripple-rate-unchanged`, 23 against 41) are reproduced on the paper's test;
+the notebook gives their power and bounds, and the central nuclei result is weak evidence of
+absence.
+
+Position could only come from tracking''')
+rep('''- `reproduce_girardeau_2017.ipynb`: the analysis. It takes about 8 minutes (7.6 in the final run), six of
+  them streaming the files;''','''- `reproduce_girardeau_2017.ipynb`: the analysis. It takes about 10 minutes (10.0 in the final run), six of
+  them streaming the files;''')
 open(p,'w').write(s)
 EOF
-sed -n 21,23p README.md
+sed -n 30,50p README.md
 ```
 
 ```
-The dandiset has no position tracking, so run direction comes from the reward times. Position
-could only come from tracking the raw video frames stored in the files, which would take more
-than 200 hours to stream. The attempt
+| `ripple-modulated-cells-larger-reactivation` | Not reproduced (all-cell test alone, p = 0.27) |
+| 17 claims on putative pyramidal cells or interneurons | Blocked: metadata insufficient |
+| `rats-learn-puff-location` and the three behaviour claims that depend on it | Blocked: too large (position only in raw video frames) |
+| `bla-rate-same-across-directions` | Blocked: too large (one reading of the rate needs position; the readings that run find a difference) |
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
+
+The two claims of absence judged on smaller samples than the paper's (`cen-no-reactivation`, 9 and
+8 sessions against 19; `ripple-rate-unchanged`, 23 against 41) are reproduced on the paper's test;
+the notebook gives their power and bounds, and the central nuclei result is weak evidence of
+absence.
+
+Position could only come from tracking the raw video frames stored in the files, which would take
+about 234 hours to stream at the rate measured in the final run (the rate varies between runs). Five Rat08 files have a `cell_type` column, which marks
+only cells identified as excitatory or inhibitory.
+
+- `reproduce_girardeau_2017.ipynb`: the analysis. It takes about 10 minutes (10.0 in the final run), six of
+  them streaming the files; the notebook prints its run time at the end.
+- `hpcbla.py`: loading the files, sleep epochs, laps, EV and REV, ripple modulation, reactivation
+[... 1 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n -A14 "^verifications:" attempts/000003-senzai-2017-01.yaml | head -30; git log --oneline -8 -- attempts/000061-girardeau-2017-02.yaml
+```
+
+```
+473:verifications:
+474-- date: '2026-10-16'
+475-  kind: agent
+476-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+477-  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+478-    helper module and the claims file, with the paper. The verifier queried the archive metadata and tested
+479-    helper functions on synthetic inputs. Its report had no attempt record and gave its own outcome for
+480-    each claim; all 31 agree with the record.
+481-  results:
+482-  - claim: unit-counts
+483-    agrees: true
+484-    outcome: partially_reproduced
+485-    reason: GC 609 is inside 527 to 645, but MC 568 is outside 450 to 550.
+486-    response: No change needed.
+487-  - claim: first-stage-labels
+bd449935 Agent run on 000061: author-answers (success)
+3a075665 Agent run on 000061: author (success)
 ```
 
 **Agent**
 
-Round 1 revision is done. Five of the six outcomes are unchanged. The one change is the reason the behaviour claim is blocked. The entry re-ran cleanly with `python tools/entry.py all` (670 s, check passes with 0 errors), and every conclusion matches the new outputs.
+Now the attempt record: outcome notes, the `bla-rate` reason, findings, and the round-1 verification entry.
 
-**Outcome changes**
-- `rats-learn-puff-location`: still blocked, but `blocked_by` is now `too_large` instead of `data_missing`, as the verifier argued. The files hold the raw video frames, so position could in principle be tracked. The run videos alone are about 1.9 million frames (1328 GB uncompressed). Streaming 20 frames took 8.1 s, so the run frames would take about 217 hours. The video timestamps are also not on the session clock.
-- The other five outcomes stand: four `reproduced`, and `aversive-direction-stronger` is `not_reproduced` (p = 0.11). The verifier agreed with all of them.
+**Agent calls Bash**
 
-**Added or corrected, by verifier point**
-- **Run epochs:** a data check now prints every run epoch, the one used, and the sleep epochs on each side. Only Rat08-20130708 has a second run, and the first is used.
-- **Ripple peak (claim 2):** added session-level tests. Peak over flanks holds in 13 of 15 sessions (p = 0.00031), and its post minus pre increase in 10 of 15 (p = 0.03). Reading (b) holds in 10 of 15 (p = 0.03). The conclusion now says that much of the peak is already there in pre-sleep, so only the post minus pre contrasts speak to reactivation.
-- **Ripple-up cells (claim 3):** each rat is now also tested against its own chance level (Rat10 p = 0.018). About 1% of the shifted windows fall outside Non-REM.
-- **Involvement (claim 4):** added a firing-rate control.
-  - Up units fire faster in the run (1.66 against 0.41 Hz).
-  - Against other units of matched rate they still carry more weight (24 of 31 patterns, p = 0.012).
-  - At session level the plain difference holds (p = 0.027), but the rate-matched difference does not (p = 0.22).
-  - The outcome stays `reproduced`, because the criterion is the pooled per-pattern test; the notes now say rate explains part of the effect.
-- **Puff direction (claim 5):** added a table of lap durations and template bins per session, plus two variants. Leaving out the sessions with fewer than 5 puffs gives p = 0.15. Using only the travel part of each lap gives p = 0.19. The equal-bins variant now uses a random subset instead of the first bins, which moved it from p = 0.28 to 0.33. Two new deviations record the missing puff minimum and that laps include waiting time.
-- **Behaviour:** added a section with lap counts and durations by direction in the pre-run, run and post-run. Laps toward the puff end are slower only during the run (ratio 1.18, p = 0.0063). This is shown as a description only and decides no outcome.
-- **Corrections:**
-  - The data-check text said twelve files lack sleep states; the output shows sixteen.
-  - The README, the summary and the findings now describe the video correctly.
-  - New notebook cells got cell ids, to clear an nbformat warning.
-- **Record:** round 1 is recorded under `verifications`, with each claim's agreement, the verifier's outcome and reason, and my response.
+```bash
+cd  cat > $TMPDIR/edit_yaml.py <<'PYEOF'
+p = 'attempts/000061-girardeau-2017-02.yaml'
+s = open(p).read()
+def rep(a, b):
+    global s
+    assert s.count(a) == 1, (s.count(a), a[:70]); s = s.replace(a, b)
 
-**Not done**
-- I left the behaviour claim blocked instead of testing the lap-duration proxy the verifier suggested. No criterion was written for that claim before the data were seen, and lap times give no position on the track.
-- I did not download any paper text; the full text is not open access.
-- Nothing was committed or pushed.
+rep('''uncompressed); streaming 20 frames took 8.8 s in the final run, about 234 hours for the run
+    frames alone, before any tracking, and the video timestamps are not on the session clock. Same
+    outcome as the earlier attempt, which blocked it for the same reason.''',
+'''uncompressed); streaming 20 frames took 8.8 s in the final run, about 234 hours for the run
+    frames alone, before any tracking, and the video timestamps are not on the session clock. No
+    file has a Position, SpatialSeries or other behavioural time series group (the data check lists
+    the groups of every file). Same outcome as the earlier attempt, which blocked it for the same
+    reason.''')
+
+rep('''    0.046, 37 sessions with a puff direction) for air puff laps and 0.397 (p = 0.011) for''',
+'''    0.046, 37 sessions with a puff direction) for air puff laps and 0.397 (p = 0.011) for''')
+rep('''    c alone; the hand-picked 150-cm window of ClassifyLaps.m is not reproduced by any reading.''',
+'''    c alone; the hand-picked 150-cm window of ClassifyLaps.m is not reproduced by any reading.
+    A reading c lap runs from reward to reward, so it includes the time on the starting platform
+    and any stop, which the M8 laps leave out; the count of laps is the same either way.''')
+
+rep('''    the claim is judged on O4 reading a alone; the outcome, not reproduced before the answer, is
+    unchanged. No outcome in the earlier attempt.''',
+'''    the claim is judged on O4 reading a alone; the outcome, not reproduced before the answer, is
+    unchanged. As context (decides nothing), the REM effect size r is 0.39 against the paper's 0.09
+    and the bootstrap 95% interval of the REM median is -0.015 to 0.109; the NREM r is -0.19 against
+    the paper's -0.45, and with 36 cells a NREM shift of about 0.068 would be detected with 80%
+    power. A short-latency cross-correlogram check finds an inhibitory partner at p < 1e-6 for 34
+    of the 36 inhibitory units (94.4%), against 2.0% of excitatory and 7.9% of unclassified BLA
+    units, consistent with the column marking identified interneurons. No outcome in the earlier
+    attempt.''')
+
+rep('''    has less power, and the NREM median is positive. No outcome in the earlier attempt.''',
+'''    has less power, and the NREM median is positive. As context (decides nothing), the effect sizes
+    r are 0.34 (NREM) and 0.41 (REM) against the paper's 0.08 and -0.09; with these sessions a
+    shift of the median EV - REV of about 3.0% (NREM) or 0.95% (REM) would be detected with 80%
+    power, and the bootstrap 95% interval of the NREM median, -2.4 to 4.1%, includes the
+    hippocampus-BLA median of 1.96%. Resampling the hippocampus-BLA sessions at 9 and 8, a
+    reactivation distributed as the BLA's reaches p < 0.05 in 92% and 93% of samples. The absence
+    holds on the paper's test and is weak evidence. No outcome in the earlier attempt.''')
+
+rep('''    above REV in 19, p = 0.0054) and the BLA does not reach p < 0.05 (16 sessions, 9, p = 0.14); in
+    REM neither does (p = 0.83 and 0.21). No outcome in the earlier attempt.''',
+'''    above REV in 19, p = 0.0054) and the BLA does not reach p < 0.05 (16 sessions, 9, p = 0.14); in
+    REM neither does (p = 0.83 and 0.21). Since the BLA all-pairs NREM test fails, the claim could
+    at best be partially reproduced even with putative types. A BLA-only variant on the identified
+    excitatory units (five Rat08 sessions, each with at least six) gives EV above REV in 4 of 5, p
+    = 0.44, and five sessions cannot reach p < 0.05 (smallest two-sided p 0.0625); no file has six
+    identified excitatory hippocampal units. No outcome in the earlier attempt.''')
+
+rep('''    sessions. The pyramidal test cannot be run, so the pyramidal part of the
+    statement is not tested.''',
+'''    sessions. The pyramidal test cannot be run, so the pyramidal part of the
+    statement is not tested. R leaves out units silent in the template or in a sleep epoch's NREM,
+    5 of all units entering (1 hippocampal in Rat08-20130713, 2 in Rat11-20150326, 2 BLA in
+    Rat11-20150325).''')
+
+rep('''    sessions, so its result rests mostly on Rat08. Before the answers''',
+'''    sessions, so its result rests mostly on Rat08. Reading c laps include the time on the starting
+    platform and stops (median lap 22.6 s, but minutes long in early Rat08 sessions); leaving out
+    Rat08-20130708, the only session with fewer than 3 laps in a template (one safe lap of 23 s),
+    gives air puff p = 0.0052, safe p = 0.0052 and air puff greater than safe p = 0.37 (13
+    sessions). Before the answers''')
+rep('''  - Laps are O1 reading c (between rewards at opposite ends); the dandiset has no lap intervals or
+    position. The air puff direction of a day is the lap direction holding most puffs.''',
+'''  - Laps are O1 reading c (between rewards at opposite ends); the dandiset has no lap intervals or
+    position. The air puff direction of a day is the lap direction holding most puffs. These laps
+    include the time on the starting platform after each reward and any stop, so the air puff and
+    safe templates hold awake activity off the track that the M8 laps (position inside a 150-cm
+    window) leave out.''')
+
+rep('''- claim: bla-rate-same-across-directions
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The criterion needs a test on BLA pyramidal cells as well as one on all cells. As a
+    description, all BLA cells fire slightly more on air puff laps than on safe laps, median 0.0036
+    Hz, p = 0.022 (739 cells, 14 sessions) and 0.0032 Hz, p = 0.0048 (1033 cells, 21 sessions), with
+    rates over laps from reward times (O7 reading a; reading b needs position). No outcome in the
+    earlier attempt.''',
+'''- claim: bla-rate-same-across-directions
+  outcome: blocked
+  blocked_by: too_large
+  notes: The criterion gives not reproduced when either test (BLA pyramidal cells, all BLA cells)
+    has p < 0.05 under every reading, and its readings include O7 reading b, the mean of each
+    cell's position firing-rate curve, which needs position that only tracking the raw video would
+    give (too large, as for rats-learn-puff-location). Under the readings that can be run (O7
+    reading a, rates over laps from reward times), the all-cell test has p < 0.05 under both
+    session readings, median air puff minus safe 0.0036 Hz, p = 0.022 (739 cells, 14 sessions) and
+    0.0032 Hz, p = 0.0048 (1033 cells, 21 sessions), the direction of not reproduced; only O7
+    reading b keeps the claim from that outcome. The pyramidal test cannot be run (no putative
+    types) and is not needed for not reproduced. Blocked as metadata_insufficient before the
+    verifier's round 1, which pointed out that the all-cell test alone can decide. No outcome in
+    the earlier attempt.''')
+
+rep('''    is 0.089 Hz in Rat08 (8 of 9 higher in post), -0.008 Hz in Rat10 and 0.007 Hz in Rat11. No
+    outcome in the earlier attempt.''',
+'''    is 0.089 Hz in Rat08 (8 of 9 higher in post), -0.008 Hz in Rat10 and 0.007 Hz in Rat11. As
+    context (decides nothing), the effect size r is 0.24 against the paper's 0.20, the bootstrap 95%
+    interval of the median change is -0.008 to 0.051 Hz (-1.4% to 8.4% of the median pre-NREM rate
+    of 0.611 Hz), and 23 sessions detect a change of about 0.068 Hz (11% of the rate) with 80% power
+    (0.050 Hz with the paper's 41); a change larger than about a tenth of the rate is excluded, a
+    smaller one is not. No outcome in the earlier attempt.''')
+
+rep('''    paper's monosynaptic identification alone. Most of the paper's reactivation analyses cannot be
+    repeated (18 claims blocked). The earlier attempt did not read this column.''',
+'''    paper's monosynaptic identification alone. A short-latency cross-correlogram check supports
+    this reading of the column: at p < 1e-6, 99.3% of the excitatory BLA units excite and 94.4% of
+    the inhibitory ones inhibit another loaded unit at 1 to 4 ms, against 44% and 7.9% of the
+    unclassified ones. Most of the paper's reactivation analyses cannot be repeated (17 claims
+    blocked for this alone). The earlier attempt did not read this column.''')
+
+rep('''- kind: metadata_error
+  statement: Still present (found by 000061-girardeau-2017-01). The epochs table''',
+'''- kind: metadata_error
+  statement: New in this attempt. The archive's asset metadata (variableMeasured) is wrong for all
+    40 files on two entries. It lists ElectricalSeries for the 24 files that hold no raw voltage
+    and not for the 16 that hold it (acquisition/ElectricalSeries in Rat08-20130708 to 20130713
+    and all Rat09 files), and ProcessingModule for the 16 files without a behavior module and not
+    for the 24 with one. Its Units entries agree with the files.
+- kind: metadata_error
+  statement: Still present (found by 000061-girardeau-2017-01). The epochs table''')
+open(p, 'w').write(s)
+PYEOF
+python $TMPDIR/edit_yaml.py && echo ok
+```
+
+```
+Exit code 1
+Traceback (most recent call last):
+  File "/tmp/claude-1001/edit_yaml.py", line 113, in <module>
+    rep('''- kind: metadata_error
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+      statement: Still present (found by 000061-girardeau-2017-01). The epochs table''',
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    - kind: metadata_error
+    ^^^^^^^^^^^^^^^^^^^^^^
+      statement: Still present (found by 000061-girardeau-2017-01). The epochs table''')
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/claude-1001/edit_yaml.py", line 5, in rep
+    assert s.count(a) == 1, (s.count(a), a[:70]); s = s.replace(a, b)
+           ^^^^^^^^^^^^^^^
+AssertionError: (0, '- kind: metadata_error\n  statement: Still present (found by 000061-gir')
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -i 's/statement: Still present (found by 000061-girardeau-2017-01). The epochs table/statement: Still present (found by 000061-girardeau-2017-01; the version/g' $TMPDIR/edit_yaml.py && python $TMPDIR/edit_yaml.py && echo ok
+```
+
+```
+ok
+```
+
+**Agent**
+
+Now appending the round-1 verification block.
+
+**Agent calls Bash**
+
+```bash
+cd  cat > $TMPDIR/ver.py <<'PYEOF'
+import yaml
+R = []
+def add(claim, outcome, reason, response, agrees=True):
+    R.append({"claim": claim, "agrees": agrees, "outcome": outcome, "reason": reason, "response": response})
+NC = "No change needed."
+add("unit-counts", "not_reproduced",
+    "40 sessions against 61, and 4,702 units against 7,390. Only rat 1 is within tolerance; the totals fail, so the criterion gives not reproduced. The cause is an incomplete deposit (7 of 40 files have no units table), not a contradiction of the paper. Rat08 to Rat11 are mapped to the paper's rats 1 to 4 by assumption; the unit totals do not depend on that mapping.",
+    "No change needed; the mapping is already recorded as an assumption in the deviations.")
+gap = "No change to the outcome. Added the output the verifier asked for: the data check now lists the groups of every file with their NWB types and finds no Position, SpatialSeries or other behavioural time series in any file."
+add("rats-learn-puff-location", "blocked",
+    "No position or puff location in the data, only gzip video frames, about 227 h of streaming plus tracking. DANDI asset metadata lists no SpatialSeries or Position in any of the 40 assets. Whether any file holds position or a processed behaviour module could not be checked, since the loader opens only processing/behavior/states.", gap)
+add("each-rat-learns-puff-location", "blocked", "Same data gap.", gap)
+add("dz-speed-slower-post-run", "blocked", "Same data gap.", gap)
+add("puff-location-no-speed-bias", "blocked", "Same; it also needs the puff location on the track.", gap)
+add("habituation-over-days", "reproduced",
+    "Pooled Spearman rho 0.38, 0.33, 0.40 with p = 0.015, 0.046, 0.011 for the three lap counts; 4 of 4 rats have rho > 0 under every lap count. Laps use O1 reading (c) only, which the criterion allows, recorded as a deviation. Each reading (c) lap runs from the reward at one end to the reward at the other, so it includes the reward-consumption time on the starting platform, which M8 laps exclude; this is not flagged in the analysis cells.",
+    "Outcome unchanged. The analysis cell and the deviation now say that a reading c lap includes the platform time and stops; the lap count is unaffected.")
+add("bla-pyr-sleep-firing-increase", "reproduced",
+    "152 identified excitatory BLA cells (one rat, 5 sessions). REM median 0.39 (p = 7e-15) and NREM median 0.18 (p = 7e-12); the REM median is above the NREM median. Nothing checks whether the cell_type labels equal the paper's monosynaptically identified cells beyond firing rate; the outcome rests on that unverified mapping.",
+    "Outcome unchanged. Added a short-latency cross-correlogram check of the typed files (data check): at p < 1e-6, 99.3% of the excitatory BLA units excite another loaded unit at 1 to 4 ms against 44% of unclassified ones, consistent with monosynaptic identification. It is a standard check, not the paper's procedure, and decides nothing.")
+add("bla-int-sleep-firing", "not_reproduced",
+    "n = 36. The REM/wake ratio is significant (median +0.029, p = 0.020), so the absence fails. The NREM/wake ratio is not significant (median -0.035, p = 0.26). Neither part holds. The sample is much smaller than the paper's 175, from one rat, and the notebook gives no power or effect-size context. The identified-interneuron ripple fractions differ strongly from the paper's, and the inhibitory label is checked only by firing rate.",
+    "Outcome unchanged. Added effect sizes against the paper's (REM r 0.39 against 0.09, NREM -0.19 against -0.45), bootstrap intervals of the medians and the NREM shift detectable with 80% power (0.068). Added the cross-correlogram check: 94.4% of the inhibitory BLA units inhibit another unit at p < 1e-6, against 2.0% of excitatory and 7.9% of unclassified units.")
+pyr = "No change needed."
+add("hpc-bla-reactivation-post-sleep", "blocked",
+    "No putative cell types. The identified excitatory hippocampal units reach at most 4 per file, below the minimum of 6. Confirmed.", NC)
+add("reactivation-all-cell-pairs", "reproduced", "EV > REV in 13 of 15 sessions, two-sided Wilcoxon p = 0.00031.", NC)
+add("reactivation-decay", "blocked", "Pyramidal pairs. The all-cell periods (means 2.49, 1.27, 0.52%) are descriptive only.", NC)
+add("no-rem-reactivation", "blocked", "Pyramidal pairs. The all-cell variant has p = 0.43.", NC)
+add("piriform-weaker-reactivation", "blocked", "Pyramidal pairs. Piriform spike trains are not even loaded (KEEP_LABELS).", NC)
+add("cen-no-reactivation", "reproduced",
+    "NREM p = 0.30 (9 sessions) and REM p = 0.25 (8 sessions); neither reaches p < 0.05. This is a claim of absence tested with about half the paper's n (19), so the reproduced outcome is weak evidence of absence; the notebook gives no power or effect-size context.",
+    "Outcome unchanged, as the criterion decides on p. Added effect sizes against the paper's, bootstrap intervals, the shifts detectable with 80% power (3.0% NREM, 0.95% REM) and the power to detect a reactivation distributed as the hippocampus-BLA one (92% and 93%); the NREM interval (-2.4 to 4.1%) includes the hippocampus-BLA median. The conclusion, notes, summary and README now call the absence weak evidence.")
+add("intra-structure-reactivation", "blocked",
+    "Pyramidal tests are missing. However, the BLA all-pairs NREM test already fails (p = 0.14), so the claim can at best be partially reproduced. Whether a BLA-only pyramidal test could be formed as a variant was not shown; per-session counts of identified excitatory BLA units against the M4 minimum would show it.",
+    "Outcome unchanged. The conclusion now says the claim could at best be partially reproduced. Added the per-file counts against the M4 minimum (all five typed files have at least six) and the BLA-only variant on identified excitatory units: EV above REV in 4 of 5 sessions, p = 0.44, where five sessions cannot reach p < 0.05.")
+add("bla-ripple-up-subgroup", "blocked",
+    "The denominators are putative cell types. Descriptive (identified) results: inhibitory 22.2% (paper 25.8 +/- 2.58), excitatory 5.9% (paper 11.1).",
+    "No change to the outcome; the cross-correlogram check added for the identified cells bears on the descriptive fractions.")
+add("bla-ripple-down-subgroup", "blocked",
+    "Same. Identified inhibitory down 47% (paper 14.7%), excitatory down 15% (paper 8.3%); far from the paper, descriptive only.", NC)
+add("ripple-modulated-cells-larger-reactivation", "not_reproduced",
+    "All-cell test judged alone as the criterion directs: rank-sum p = 0.27 (reading a) and 0.30 (reading b), 12 sessions; modulated larger in 7 of 12.", NC)
+for c in ("run-correlated-pair-fractions",):
+    add(c, "blocked", "Needs hippocampus-BLA pyramidal pairs.", NC)
+for c in ("reactivation-involves-ripple-up-cells", "pair-group-ev", "contributing-up-cells-gain-increase", "ev-independent-of-firing-rate"):
+    add(c, "blocked", "Same (hippocampus-BLA pyramidal pairs).", NC)
+add("reactivation-peaks-at-ripples", "partially_reproduced",
+    "All-cell test alone: post > pre in 11 of 15, one-tailed p = 0.0042. The criterion gives partially reproduced when the pyramidal test cannot be run. The per-rat line for Rat11 is truncated in the output, and per-session lists of excluded units (hpc_used and bla_used against the totals) would let the inputs to R be audited.",
+    "Outcome unchanged. The per-rat results are now a printed table, and a per-session table gives the units available, used and left out (5 left out in all, in three sessions).")
+for c in ("airpuff-trajectory-ripple-reactivation", "safe-trajectory-no-ripple-reactivation", "aversive-direction-stronger"):
+    add(c, "blocked", "Pyramidal cells.", NC)
+add("direction-all-cell-pairs", "reproduced",
+    "14 sessions: air puff p = 0.010 and safe p = 0.0043 (both < 0.05); air puff > safe p = 0.48. The O1 (c) laps include the reward-consumption time on the starting platform, so the air puff and safe templates include awake platform activity; this is allowed as the O1(c) deviation but is not flagged in the analysis cells. Rat08-20130708's safe template is a single lap of 463 bins (23 s).",
+    "Outcome unchanged. The analysis cells, conclusion and deviation now flag the platform time; added a table of laps per template and session (median lap 22.6 s, minutes long in early Rat08 sessions) and a variant without Rat08-20130708, the only session with fewer than 3 laps in a template, which gives the same result (p = 0.0052, 0.0052 and 0.37, 13 sessions).")
+add("bla-rate-same-across-directions", "blocked",
+    "Blocked as other: O7 reading (b) needs position. The notebook says the criterion needs both the pyramidal-cell test and the all-cell test, which misreads it: not reproduced when either test has p < 0.05 under every reading. Every reading that can be run gives p < 0.05 on the all-cell test (0.022 and 0.0048), the not reproduced direction; only O7 reading (b) keeps the claim from not reproduced, and the blocking reason should say so.",
+    "Outcome kept as blocked; the reason is corrected. blocked_by changed from metadata_insufficient to too_large (the verifier gave other), because position, which O7 reading b needs, could come only from tracking the raw video, the reason the behaviour claims are blocked as too_large. The notebook section, conclusion, summary, README and notes now give the criterion's rule and say that only O7 reading b keeps the claim from not reproduced.")
+add("ripple-rate-unchanged", "reproduced",
+    "23 sessions, two-sided p = 0.26 (paper n = 41). A claim of absence on a much smaller sample than the paper's; weak evidence of absence, with no power or effect-size context in the notebook.",
+    "Outcome unchanged, as the criterion decides on p. Added the effect size (r 0.24 against the paper's 0.20), the bootstrap interval of the median change (-1.4% to 8.4% of the rate) and the change detectable with 80% power (11% of the rate at 23 sessions, 8% at 41); the conclusion says a change larger than about a tenth of the rate is excluded, a smaller one is not.")
+for c in ("contributing-pairs-run-sleep-coupling",):
+    add(c, "blocked", "Pyramidal pairs; it would also need pre-run and post-run correlations.", NC)
+add("contributing-quartiles-run-sleep-coupling", "blocked", "Same.", NC)
+assert len(R) == 32, len(R)
+block = [{
+    "date": "2026-10-20", "kind": "agent",
+    "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+    "reviewed": ("Round 1. The executed notebook with the conclusion cells and the summary removed, the helper module and "
+                 "the claims file, with the paper. The verifier queried the archive's asset metadata and tested helper "
+                 "functions on synthetic inputs (EV and REV, pair correlations, the Poisson tails, the peri-ripple bins, the "
+                 "interval helpers), finding them correct. Its report had no attempt record and gave its own outcome for each "
+                 "claim; all 32 agree with the record, and for bla-rate-same-across-directions it gave another blocking reason. "
+                 "Points not tied to one claim: the raw voltage reported in 16 files disagrees with the asset metadata "
+                 "(24 other files); the author printed the groups of every file, which confirm the 16 files, and recorded the "
+                 "asset metadata as wrong for ElectricalSeries and ProcessingModule in all 40 files (new finding). M3's rule "
+                 "dropping spikes after the last run epoch is not implemented; the author kept it so and says in the helper "
+                 "docstring why it cannot change any bin used."),
+    "results": R}]
+txt = yaml.safe_dump({"verifications": block}, sort_keys=False, width=100, allow_unicode=True)
+p = 'attempts/000061-girardeau-2017-02.yaml'
+s = open(p).read()
+assert 'verifications:' not in s
+open(p, 'a').write(txt)
+PYEOF
+python $TMPDIR/ver.py && tail -30 attempts/000061-girardeau-2017-02.yaml && python tools/entry.py check entries/000061-girardeau-2017 2>&1 | grep -v "girardeau-2017-01.yaml" | tail -5
+```
+
+```
+outcome: blocked
+    reason: 'Blocked as other: O7 reading (b) needs position. The notebook says the criterion needs both
+      the pyramidal-cell test and the all-cell test, which misreads it: not reproduced when either test
+      has p < 0.05 under every reading. Every reading that can be run gives p < 0.05 on the all-cell test
+      (0.022 and 0.0048), the not reproduced direction; only O7 reading (b) keeps the claim from not reproduced,
+      and the blocking reason should say so.'
+    response: Outcome kept as blocked; the reason is corrected. blocked_by changed from metadata_insufficient
+      to too_large (the verifier gave other), because position, which O7 reading b needs, could come only
+      from tracking the raw video, the reason the behaviour claims are blocked as too_large. The notebook
+      section, conclusion, summary, README and notes now give the criterion's rule and say that only O7
+      reading b keeps the claim from not reproduced.
+  - claim: ripple-rate-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: 23 sessions, two-sided p = 0.26 (paper n = 41). A claim of absence on a much smaller sample
+      than the paper's; weak evidence of absence, with no power or effect-size context in the notebook.
+    response: Outcome unchanged, as the criterion decides on p. Added the effect size (r 0.24 against
+      the paper's 0.20), the bootstrap interval of the median change (-1.4% to 8.4% of the rate) and the
+      change detectable with 80% power (11% of the rate at 23 sessions, 8% at 41); the conclusion says
+      a change larger than about a tenth of the rate is excluded, a smaller one is not.
+[... 15 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -i 's/this reading of the column: at p < 1e-6/this reading of the column. At p < 1e-6/' attempts/000061-girardeau-2017-02.yaml; python tools/entry.py check entries/000061-girardeau-2017 2>&1 | grep -v "girardeau-2017-01.yaml" | tail -5; python -c "
+import yaml;d=yaml.safe_load(open('attempts/000061-girardeau-2017-02.yaml'))
+import collections;print(collections.Counter((o['outcome'],o.get('blocked_by')) for o in d['outcomes']))"
+```
+
+```
+/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
+  _validate(nbdict, ref, version, version_minor, relax_add_props)
+29 error(s)
+Counter({('blocked', 'metadata_insufficient'): 17, ('reproduced', None): 6, ('blocked', 'too_large'): 5, ('not_reproduced', None): 3, ('partially_reproduced', None): 1})
+```
+
+**Agent**
+
+Only the 29 pre-existing errors remain. My new cells lack an `id` field; adding them, then the final run.
+
+**Agent calls Bash**
+
+```bash
+cd entries/000061-girardeau-2017; python - <<'EOF'
+import json, uuid
+p='reproduce_girardeau_2017.ipynb'; nb=json.load(open(p))
+print(nb['nbformat'], nb['nbformat_minor'], sum('id' in c for c in nb['cells']), len(nb['cells']))
+for c in nb['cells']:
+    if 'id' not in c: c['id']=uuid.UUID(int=uuid.uuid4().int).hex[:8]
+json.dump(nb, open(p,'w'), indent=1, ensure_ascii=False); open(p,'a').write('\n')
+EOF
+cd ../..; python tools/entry.py check entries/000061-girardeau-2017 2>&1 | grep -v "girardeau-2017-01.yaml" | tail -3
+```
+
+```
+4 5 72 80
+29 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python tools/entry.py run entries/000061-girardeau-2017 2>&1 | tail -2
+```
+
+```
+Installed kernelspec registry-000061-girardeau-2017 in executed/000061-girardeau-2017/.venv/share/jupyter/kernels/registry-000061-girardeau-2017
+pass  reproduce_girardeau_2017.ipynb  (612 s)
+```
+
+**Agent**
+
+Let me confirm the numbers cited in the conclusions match this final run.
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import json,re
+nb=json.load(open('executed/000061-girardeau-2017/reproduce_girardeau_2017.ipynb'))
+out='\n'.join(''.join(''.join(o.get('text','')) for o in c['outputs'] if o.get('output_type')=='stream') for c in nb['cells'] if c['cell_type']=='code')
+for pat in ["Streaming 20 frames[^\n]*","would take about[^\n]*","Effect size r[^\n]*","Median post minus pre[^\n]*","Shift of the median[^\n]*","^NREM: 9[^\n]*","^REM: 8[^\n]*","REM/wake ratio, 36[^\n]*","NREM/wake ratio, 36[^\n]*","For scale[^\n]*","excitatory      152[^\n]*","inhibitory       36   [^\n]*","unclassified    203[^\n]*","Median whole-recording rate \(Hz\): \{'[^\n]*","BLA identified[^\n]*","Air puff greater[^\n]*","  Air puff template[^\n]*","  Safe template[^\n]*","Lap duration[^\n]*","Files with raw voltage[^\n]*","Files with a behavior[^\n]*","Files with units:[^\n]*","Notebook run time[^\n]*","Rat08-20130708 Rat08          2[^\n]*","p = 0.0042|one-tailed Wilcoxon p = [0-9.e-]+","Whole-run template[^\n]*"]:
+    print([m for m in re.findall(pat,out,re.M)][:4])
+EOF
+```
+
+```
+<stdin>:4: SyntaxWarning: invalid escape sequence '\('
+['Streaming 20 frames of Video: Rat08-20130708-02-run: 8.1 s (0.41 s per frame of 691200 bytes)']
+['would take about 216 hours to stream']
+['Effect size r = z / sqrt(n): here 0.24 (23 sessions); the paper 0.20 (z = -1.289, 41 sessions)']
+['Median post minus pre 0.0315 Hz, bootstrap 95% interval -0.0084 to 0.0514 Hz (-1.4% to 8.4% of the median pre-NREM rate 0.611 Hz)']
+['Shift of the median detected with 80% power at 23 sessions: 0.0679 Hz (11.1% of the median rate); power for a 10% change: 0.75', 'Shift of the median detected with 80% power at 41 sessions: 0.0503 Hz (8.2% of the median rate); power for a 10% change: 0.95']
+['NREM: 9 sessions; effect size r here 0.34, the paper 0.08 (19 sessions); median EV - REV 0.603%, bootstrap 95% interval -2.414 to 4.052%; shift detected with 80% power 3.030%; power to detect the hippocampus-BLA EV - REV (median 1.960%, 15 sessions resampled): 0.92']
+['REM: 8 sessions; effect size r here 0.41, the paper -0.09 (19 sessions); median EV - REV 0.085%, bootstrap 95% interval -0.041 to 0.289%; shift detected with 80% power 0.950%; power to detect the hippocampus-BLA EV - REV (median 1.960%, 15 sessions resampled): 0.93']
+['REM/wake ratio, 36 cells: median 0.029, bootstrap 95% interval -0.015 to 0.109; effect size r here 0.39, the paper 0.09 (175 cells); shift detected with 80% power 0.039', 'REM/wake ratio, 36 cells: median -0.035, bootstrap 95% interval -0.077 to 0.032; effect size r here -0.19, the paper -0.45 (175 cells); shift detected with 80% power 0.068']
+['NREM/wake ratio, 36 cells: median -0.035, bootstrap 95% interval -0.077 to 0.032; effect size r here -0.19, the paper -0.45 (175 cells); shift detected with 80% power 0.068']
+['For scale, identified excitatory cells: REM/wake median 0.392, interval 0.321 to 0.460']
+['excitatory      152                 1.000                  0.099                 0.993                  0.020                 0.941                  0.007'
+[... 15 more lines not kept]
+```
+
+**Agent**
+
+All cited numbers reproduce exactly. Only the streaming-rate measurement moved (8.1 s, 216 h, against 8.8 s, 234 h), so I'm updating those mentions.
+
+**Agent calls Bash**
+
+```bash
+cd  grep -rn "234\|8\.8 s" entries/000061-girardeau-2017/README.md entries/000061-girardeau-2017/reproduce_girardeau_2017.ipynb attempts/000061-girardeau-2017-02.yaml | grep -v '"execution\|2340'
+```
+
+```
+entries/000061-girardeau-2017/README.md:44:about 234 hours to stream at the rate measured in the final run (the rate varies between runs). Five Rat08 files have a `cell_type` column, which marks
+attempts/000061-girardeau-2017-02.yaml:44:    uncompressed); streaming 20 frames took 8.8 s in the final run, about 234 hours for the run
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -i 's/about 234 hours to stream at the rate measured in the final run/about 216 hours to stream at the rate measured in the final run/' entries/000061-girardeau-2017/README.md; sed -i 's/streaming 20 frames took 8.8 s in the final run, about 234 hours for the run/streaming 20 frames took 8.1 s in the final run, about 216 hours for the run/' attempts/000061-girardeau-2017-02.yaml; grep -n "216" entries/000061-girardeau-2017/README.md attempts/000061-girardeau-2017-02.yaml; grep -n "—\| rather" attempts/000061-girardeau-2017-02.yaml entries/000061-girardeau-2017/README.md | head; python tools/entry.py check entries/000061-girardeau-2017 2>&1 | grep -v "girardeau-2017-01.yaml" | tail -1; git status --short
+```
+
+```
+entries/000061-girardeau-2017/README.md:44:about 216 hours to stream at the rate measured in the final run (the rate varies between runs). Five Rat08 files have a `cell_type` column, which marks
+attempts/000061-girardeau-2017-02.yaml:44:    uncompressed); streaming 20 frames took 8.1 s in the final run, about 216 hours for the run
+29 error(s)
+ M attempts/000061-girardeau-2017-02.yaml
+ M entries/000061-girardeau-2017/README.md
+ M entries/000061-girardeau-2017/hpcbla.py
+ M entries/000061-girardeau-2017/reproduce_girardeau_2017.ipynb
+?? .bash_profile
+?? .bashrc
+?? .gitconfig
+?? .idea
+?? .mcp.json
+?? .profile
+?? .ripgreprc
+?? .vscode
+?? .zprofile
+?? .zshrc
+?? scripts
+```
+
+**Agent**
+
+No outcome changed in this round. The verifier's 32 outcomes all match the record: 6 reproduced, 1 partially reproduced, 3 not reproduced, 22 blocked. I re-ran the entry twice from a clean environment. It passes in 10.0 minutes, and every number the conclusions rest on came out the same both times.
+
+**What changed in reply to the report**
+- **`bla-rate-same-across-directions`** (point B1): the outcome stays blocked, but the reason is corrected. The verifier was right that the criterion gives "not reproduced" when *either* test has p < 0.05 under every reading. The all-cell test already does under both session readings (p = 0.022 and 0.0048). The one thing keeping the claim from "not reproduced" is O7 reading b, which needs position. I changed `blocked_by` from `metadata_insufficient` to `too_large`, since position could only come from tracking the raw video, the same reason the behaviour claims are blocked. The verifier gave `other`; the record notes both. The blocked counts are now 17 for missing cell types and 5 for missing position.
+- **Claims of absence tested on small samples** (B2): `cen-no-reactivation`, `ripple-rate-unchanged` and `bla-int-sleep-firing` now report effect sizes against the paper's, bootstrap intervals and the effect they could detect with 80% power. None of this decides an outcome.
+  - For the central nuclei, the interval of the NREM median (−2.4 to 4.1%) includes the hippocampus–BLA median of 1.96%, so that "reproduced" is now described as weak evidence of absence.
+  - For the ripple rate, the data rule out a change larger than about 11% of the rate, but not a smaller one.
+- **Laps include platform time** (B3): the cells, conclusions and deviations now say that reward-to-reward laps include time on the starting platform and long stops. I added a table of laps per session. Leaving out Rat08-20130708, the only session with fewer than 3 laps in a template, gives the same result (p = 0.0052, 0.0052 and 0.37).
+- **Outputs the verifier asked for**:
+  - **What `cell_type` marks:** a short-latency cross-correlogram check shows the column marks cells with short-latency partners of the marked sign, as the paper's identified cells would have. At p < 1e-6, 99.3% of the "excitatory" BLA units excite a partner (44% of unclassified units do). 94.4% of the "inhibitory" units inhibit one (7.9% of unclassified units do). The windows and thresholds are a standard choice, not the paper's procedure.
+  - **Groups in every file:** no file contains position.
+  - **Reactivation-strength inputs:** the per-rat results are now a full table, and a per-session table shows units used and left out (5 left out in all).
+  - **BLA-only variant:** on the identified excitatory units, EV is above REV in 4 of 5 sessions, p = 0.44; five sessions cannot reach p < 0.05 at all.
+- **New finding** (B5): the archive's asset metadata is the files and the loader is right. It lists raw voltage (`ElectricalSeries`) and the processing module for exactly the files that lack them, and not for the ones that have them, in all 40 files.
+- **Points left as they were:**
+  - B6: the mapping of Rat08–Rat11 to the paper's rats 1–4 was already recorded as an assumption.
+  - B7: I did not apply M3's rule of dropping spikes after the last run epoch. The helper's docstring now says why: those spikes never fall in any bin the analyses use.
+- The round is recorded under `verifications` with the verifier's reasons and my response for each claim. The README and the notebook summary are updated.
+
+**Not done, and why**
+- `python tools/entry.py all` stops at the check step with 29 errors, all about the earlier record (`-01`), which the protocol says must stay as it was. They were there before my changes, so I ran `run` separately, as the earlier rounds did. The check reports nothing about this attempt's files.
+- My first run timed out after 60 minutes because the new step that lists each file's contents walked the whole file over the network. I limited it to the few levels that matter and re-ran.
+- Measuring video streaming again gave a slower estimate for tracking: 216 hours, against 234 before. The README and the record now say 216.
+- Nothing is committed, as instructed.
 
 ## End of run
 
-37 turns, 36 minutes, result: success.
+54 turns, 99 minutes, result: success.

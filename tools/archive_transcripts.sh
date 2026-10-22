@@ -8,7 +8,9 @@
 set -euo pipefail
 d=$1
 ls transcripts/"$d"/*.md >/dev/null 2>&1 || exit 0
-latest=$(ls attempts/"$d"-*.yaml 2>/dev/null | sort | tail -n 1)
+# No attempt record yet (a claims run repeated before any attempt): nothing to archive; the new
+# transcripts replace the earlier run's. `|| true`, since ls fails on no match under pipefail.
+latest=$(ls attempts/"$d"-*.yaml 2>/dev/null | sort | tail -n 1 || true)
 [ -n "$latest" ] || exit 0
 n=$(basename "$latest" .yaml); n=${n##*-}
 mkdir -p transcripts/"$d"/attempt-"$n"

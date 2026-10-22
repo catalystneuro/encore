@@ -1,16 +1,19 @@
 """Prepare one agent run on a target: its prompt, and for a verifier its materials.
 
-    python tools/agent_run.py prompt  ROLE DANDISET [--model M] > prompt.md
-    python tools/agent_run.py package ROLE DANDISET DEST
-    python tools/agent_run.py entry   ROLE DANDISET        # the entry directory's name, if any
-    python tools/agent_run.py proposals ROLE DANDISET      # "true" if the attempt has proposed changes
+    python tools/agent_run.py prompt  ROLE DATASET [--model M] > prompt.md
+    python tools/agent_run.py package ROLE DATASET DEST
+    python tools/agent_run.py entry   ROLE DATASET        # the entry directory's name, if any
+    python tools/agent_run.py proposals ROLE DATASET      # "true" if the attempt has proposed changes
+
+DATASET is written any way tools/datasets.py accepts (000003, DANDI:000003, ebrains:<id>); the
+functions below take its folder name.
 
 ROLE is one of author, verifier-1, author-revise-1, verifier-2, author-revise-2,
 the order in which an attempt goes through docs/protocol.md, and verifier-3 and
 author-revise-3, the third round that settles changes proposed after the second. A last role,
 recorder, adds the finished attempt to README.md and docs/pilot-notes.md. The prompts are
 docs/agents/<role>.md with the target's details filled in. A run's transcript
-and final report are kept as transcripts/<dandiset>/<role>.md and
+and final report are kept as transcripts/<folder>/<role>.md and
 <role>-report.md (tools/transcript.py writes them).
 
 `package` copies what a verifier is given into DEST: for round 1, the output
@@ -24,11 +27,15 @@ from __future__ import annotations
 import argparse
 import datetime
 import json
+import os
 import shutil
 import sys
 from pathlib import Path
 
 import yaml
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import datasets  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATES = {"claims": "claims", "claims-check": "claims-check", "answer": "answer",
@@ -42,24 +49,54 @@ READER_ROLES = ("claims", "claims-check", "answer")   # the runs that write the 
 
 
 def target(dandiset: str) -> dict:
+    """The paper of the target in a dataset's folder."""
+    key = datasets.key_of_folder(dandiset)
     for t in yaml.safe_load((ROOT / "targets" / "pilot.yaml").read_text())["targets"]:
-        if t["dandiset"] == dandiset:
+        if datasets.key_of("dandi", t["dandiset"]) == key:
             return {"paper": t["paper"].removeprefix("doi:"), "title": t["title"]}
-    for t in json.loads((ROOT / "targets" / "dandisets.json").read_text())["targets"]:
-        if t["dandiset"] == dandiset:
-            p = next((p for p in t["papers"] if not p["preprint"]), t["papers"][0])
+    # The papers the archive names, corrected by hand in papers/triage.yaml: a paper triage names
+    # as the one behind the data comes first, and those it says are not papers are left out.
+    from papers_manifest import clean_doi
+    fix = ((yaml.safe_load((ROOT / "papers" / "triage.yaml").read_text()) or {}).get("targets", {})
+           .get(datasets.folder(key), {}))
+    drop = {clean_doi(d) for d in fix.get("not_papers", {})}
+    for t in datasets.targets():
+        if t["key"] == key:
+            listed = [dict(p, doi=clean_doi(p["doi"])) for p in t["papers"] if clean_doi(p["doi"]) not in drop]
+            titles = {p["doi"]: p["title"] for p in listed}
+            named = [clean_doi(d) for d in fix.get("papers", {})]
+            if named:
+                return {"paper": named[0], "title": titles.get(named[0]) or t["name"]}
+            if not listed:
+                raise SystemExit(f"error: papers/triage.yaml leaves dataset {datasets.label(key)} no paper")
+            p = next((p for p in listed if not p["preprint"]), listed[0])
             return {"paper": p["doi"], "title": p["title"] or t["name"]}
-    raise SystemExit(f"error: dandiset {dandiset} is not in the queue")
+    raise SystemExit(f"error: dataset {datasets.label(key)} is not in the queue")
+
+
+def record_key(record: dict) -> str | None:
+    ds = record.get("dataset") or {}
+    return datasets.key_of(ds["archive"], ds["id"]) if ds.get("archive") and ds.get("id") else None
 
 
 def attempt_of(dandiset: str) -> tuple[dict, Path] | None:
-    """The latest attempt record on the dandiset, and its entry directory."""
+    """The latest attempt record on the dataset in a folder, and its entry directory."""
+    key = datasets.key_of_folder(dandiset)
     found = sorted(p for p in (ROOT / "attempts").glob("*.yaml")
-                   if ((yaml.safe_load(p.read_text()) or {}).get("dataset") or {}).get("id") == dandiset)
+                   if record_key(yaml.safe_load(p.read_text()) or {}) == key)
     if not found:
         return None
     record = yaml.safe_load(found[-1].read_text())
     return record, ROOT / "entries" / record["entry"]
+
+
+def runner() -> dict:
+    """Where this run is going on, for the record's provenance: the platform, and a link to the run."""
+    env = os.environ
+    if env.get("GITHUB_ACTIONS") == "true" and env.get("GITHUB_RUN_ID"):
+        url = f'{env.get("GITHUB_SERVER_URL", "https://github.com")}/{env["GITHUB_REPOSITORY"]}/actions/runs/{env["GITHUB_RUN_ID"]}'
+        return {"runner": "GitHub Actions", "runner_url": f', url "{url}"'}
+    return {"runner": "local", "runner_url": ""}
 
 
 def protocol_version() -> str:
@@ -69,15 +106,18 @@ def protocol_version() -> str:
 
 
 def fill(role: str, dandiset: str, model: str, version: str | None = None) -> str:
-    details = {"dandiset": dandiset, "model": model, "date": datetime.date.today().isoformat(),
-               **target(dandiset)}
+    key = datasets.key_of_folder(dandiset)
+    # `dandiset` and `folder` name the dataset's folder in the repository; `dataset` is how it is shown.
+    details = {"dandiset": dandiset, "folder": dandiset, "dataset": datasets.label(key),
+               "archive": datasets.archive_name(key), "access": datasets.access(key),
+               "model": model, "date": datetime.date.today().isoformat(), **target(dandiset), **runner()}
     if version:
-        details["version_rule"] = (f"Use version {version} of the dandiset"
+        details["version_rule"] = (f"Use version {version} of the dataset"
                                    + (" (the draft: say in the notebook header when it was last modified, since a "
                                       "draft can change)" if version == "draft" else "")
                                    + ", and say in the notebook header that this version was asked for.")
     else:
-        details["version_rule"] = ("Use a pinned published version of the dandiset and record in the notebook "
+        details["version_rule"] = ("Use a pinned published version of the dataset and record in the notebook "
                                    "header why you chose it.")
     if role == "author" and attempt_of(dandiset):
         # A repeat attempt: the dandiset changed since the last one.
@@ -89,12 +129,12 @@ def fill(role: str, dandiset: str, model: str, version: str | None = None) -> st
                    f"replaces it. A reader has since written the claims file again from the full text; test it "
                    f"as it now is. Where a claim keeps its id, compare its outcome with the earlier one.")
         elif version in (None, record["dataset"].get("version")) and earlier_protocol != protocol_version():
-            why = (f"The dandiset is unchanged; the protocol has changed since, and this attempt applies "
+            why = (f"The dataset is unchanged; the protocol has changed since, and this attempt applies "
                    f"{protocol_version()} to it. Read what changed in docs/pilot-notes.md, under the headings "
                    f"for the protocol versions after {earlier_protocol} (read only those sections), and say in "
                    f"the new record what the changes did.")
         else:
-            why = "Since then the dandiset has changed, and this attempt tests what it holds now."
+            why = "Since then the dataset has changed, and this attempt tests what it holds now."
         details.update(earlier=record["id"], earlier_version=record["dataset"].get("version"), entry=entry_dir.name,
                        earlier_protocol=earlier_protocol, why=why,
                        next_attempt=f'{record["id"].rsplit("-", 1)[0]}-{n:02d}')
@@ -119,7 +159,7 @@ def fill(role: str, dandiset: str, model: str, version: str | None = None) -> st
     if role != "author":
         found = attempt_of(dandiset)
         if found is None:
-            raise SystemExit(f"error: no attempt on dandiset {dandiset} yet; run the author first")
+            raise SystemExit(f"error: no attempt on {datasets.label(key)} yet; run the author first")
         record, entry_dir = found
         details.update(attempt=record["id"], entry=entry_dir.name, version=record["dataset"].get("version"))
     if role.startswith("author-revise"):
@@ -134,7 +174,7 @@ def fill(role: str, dandiset: str, model: str, version: str | None = None) -> st
 def package(role: str, dandiset: str, dest: Path) -> None:
     found = attempt_of(dandiset)
     if found is None:
-        raise SystemExit(f"error: no attempt on dandiset {dandiset}")
+        raise SystemExit(f"error: no attempt on {datasets.label(datasets.key_of_folder(dandiset))}")
     record, entry_dir = found
     executed = ROOT / "executed" / entry_dir.name
     dest.mkdir(parents=True, exist_ok=True)
@@ -171,11 +211,15 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("command", choices=["prompt", "package", "entry", "proposals"])
     parser.add_argument("role", choices=ROLES)
-    parser.add_argument("dandiset")
+    parser.add_argument("dataset")
     parser.add_argument("dest", nargs="?", type=Path)
     parser.add_argument("--model", default="claude-opus-5-5")
-    parser.add_argument("--version", help="the dandiset version the author should use, e.g. draft")
+    parser.add_argument("--version", help="the dataset version the author should use, e.g. draft")
     args = parser.parse_args()
+    try:
+        args.dandiset = datasets.folder(datasets.parse(args.dataset))
+    except ValueError as err:
+        parser.error(str(err))
     if args.command == "prompt":
         sys.stdout.write(fill(args.role, args.dandiset, args.model, args.version))
     elif args.command == "proposals":

@@ -1,56 +1,47 @@
-## A. Outcomes
+## Verifier report, round 1: Knierim, McNaughton & Poe (2000), dandiset 001754 @ 0.260728.1352
 
-The claims file has 7 claims. I judge 3 reproduced, 1 not reproduced and 3 blocked.
+The claims file has 10 claims. The notebook judges six against the data and blocks four.
+
+### A. Outcomes
 
 | Claim | My outcome | Reason |
 |---|---|---|
-| flight-spatial-code | not_reproduced | Under the claims file's criterion, cell 33 gives Rat1 FD9 10/25 significant (0.40, binomial p 1.6e-7) and Rat2 FD9 2/28 (0.071, p 0.41). Rat1 is above chance but below 0.5, and Rat2 is not above chance, so neither "partial" branch applies. This is weak evidence against the claim: no one has shown that the trace in Rat2's windows is Rat2's position (cells 27 and 29). |
-| three-orthogonal-surfaces | blocked (metadata_insufficient) | The abstract says the code covers "three orthogonal surfaces". The archive holds only a 2-D pixel position from one camera, with no camera view, track layout or pixel scale (cell 5, cell 38). I queried the DANDI API: all 8 assets list only Position/SpatialSeries, and no part of this claim can be tested. |
-| si-comparable-to-preflight | reproduced | Cell 40: FD9 ES median 1.385 bits/spike against preflight 1.448, Mann-Whitney p 0.45 (n 64 / 53). Every variant also has p > 0.12 (cells 41, 42). The test can hardly fail, though (problem 3). |
-| fd4-abnormal-selectivity | reproduced (fragile) | Cell 44: FD4 median 1.177 against preflight 1.441, one-sided p 0.024, so the criterion is met on the draft. The same test on the previous version's distinct maps gives p 0.055 (cell 45). Only Rat1 passes on its own (p 0.03; Rat2 0.12, Rat3 0.18), and the spike-based significant fraction is not lower on FD4 (24/71 against 12/53, p 0.94). |
-| fig3-stability-across-sessions | reproduced | Cell 47: Rat3 FD4 ES1 against ES2, 15 units, median same-unit r 0.537. That is above the re-paired 95th percentile (0.102) and above 0.5, but only just: σ 0.5 gives 0.315, and the dandiset's own maps give 0.340 (cell 48). Which sessions the paper's Figure 3 compares is unknown. |
-| theta-normal | blocked (data_missing) | No file has an ElectricalSeries or LFP (cell 3). The asset metadata I queried agrees: variableMeasured is only ProcessingModule/Units/ElectrodeGroup(/Position). Nothing here can be tested. |
-| ripples-normal | blocked (data_missing) | Same as theta-normal. |
+| si-comparable-to-preflight | partially_reproduced | Cell 25: under M-a, neither preflight epoch shows a difference (p 0.88 and 0.66). Flight mean is 1.377 against 1.13 ± 0.09; preflight is 1.320 and 1.284 against 1.12 ± 0.08, so no reading puts both means within tolerance. M-b cannot be run on both sides (no preflight position), so as the criterion says it is not judged. |
+| si-rat1-fd9-vs-preflight | blocked (methods_underspecified) | Cell 27: the readings disagree. Against preflight ES1 p = 0.50; against preflight MC1 p = 0.0055, with flight higher. Under S-a both preflight epochs are candidates, so the criterion blocks the claim. |
+| si-rat3-fd4-vs-preflight | reproduced | Cell 29: no difference under either reading (p 0.28 and 0.77). With the ES1 preflight reading both means are within tolerance (1.231 against 1.12 ± 0.27; 1.518 against 1.48 ± 0.11). Cell counts are well off (11 flight against 7; 38 against 24), but the criterion's rule does not use counts. |
+| flight-spatial-code | blocked (methods_underspecified) | Cell 32: the dependencies are partial, blocked and reproduced. If rat 1 were reproduced or partial the outcome would be partial; if not reproduced, not_reproduced. The others do not decide it, so the criterion blocks it. |
+| fd4-abnormal-selectivity | partially_reproduced | Cell 34: Rat 2's FD4 information is significantly lower than preflight under both readings (p 0.0006 and 0.0015). Rat 1's is lower under neither (p 0.077 and 0.36). The rule gives "holds for one rat". This rests entirely on Rat 2's FD4 maps; see B2. |
+| fig3-stability-across-sessions | blocked (methods_underspecified), possibly not_reproduced | Cell 36: under M-b, (a) 6 of 16 and (b) 1 of 16 cells keep their field. Cell 37: under M-a, (a) 6 of 11 (more than half) and (b) 5 of 11. The readings disagree only because M-a was admitted. The check that admits M-a does not test the criterion's condition (B1). If the condition fails, M-a is not run and the outcome is not_reproduced. |
+| direction-selectivity | blocked (methods_underspecified) | Cell 39: position exists only at spike times (gaps up to 12.7 s), there is one occupancy map per epoch with no direction, and no file gives the track layout. The criterion blocks the claim when these are missing. In substance this is missing data, but the criterion fixes the label. |
+| theta-normal | blocked (data_missing) | No ElectricalSeries or LFP in any file (cell 3). I confirmed this on the archive: every asset's `variableMeasured` is Units, ElectrodeGroup, SpatialSeries, ProcessingModule and Position, and the dandiset totals 32 MB in 8 files. No part can be tested. |
+| ripples-normal | blocked (data_missing) | Same as theta-normal: there is no pouch or baseline EEG in the archive. No part can be tested. |
+| three-orthogonal-surfaces | blocked (methods_underspecified) | Part (i) depends on two blocked claims, and the possible outcomes are not_reproduced or partially_reproduced, so the claim is undecided. Part (ii) cannot be tested at all: the position is one 2-D pixel frame with no track outline. If fig3 turns out not_reproduced (B1), this claim becomes not_reproduced. |
 
-The paper is not open access. I saved its abstract and figure titles to `paper/abstract.txt`. The abstract states no chance level; the notebook uses 0.05 as the criterion specifies. MC epochs, where no claim is made, come out at 0 to 0.11 significant (cell 32), which is consistent with that chance level or a slightly conservative test.
+### B. Problems
 
-## B. Problems
+1. **[affects a conclusion]** Cell 37, `owner` / `pairing_ok`: the check does not test the criterion's condition. The criterion admits M-a only when each map is tied to one unit and no unit to two maps.
+   - The code pairs each unit with its best-matching map, and when two units pick the same map it silently keeps the higher match. That conflict is exactly what the condition is meant to catch.
+   - The check is also never applied to the session 3 maps across all units.
+   - I replicated the logic on a synthetic case where two units share a best map: `pairing_ok` comes out True.
+   - The risk is real here: 47 units compete for 19 ES1 maps, and TT8 has at least 5 units for 3 to 4 maps.
+   - Which way this goes decides whether fig3 is blocked or not_reproduced, and so the outcome of three-orthogonal-surfaces too.
+2. **[affects a conclusion]** Cells 19–20 and 34: the notebook's own time-shift check finds no sign that the position trace in Rat 2's FD4 ES window is Rat 2's (0 of 17 units; 1 of 17 for Rat 1). The deposited maps came from the same shared tracker. So the low FD4 information for Rat 2, the only support for fd4-abnormal-selectivity, may come from tracking rather than firing. The notebook notes this caveat but still judges the claim.
+3. **[affects a conclusion, unverified]** `ma_table`: M-a counts every deposited map as a cell, including maps with `cell_number` −1, which the table describes as "not a per-cell map" (14 to 33 per file outside Rat3 FD4). Their file names are printed only for Rat3 FD4 ES. If some are combined or multi-unit maps, they shift the counts and means in every spatial information comparison. Counts are off throughout (Rat3 preflight 38 against 24; Rat3 FD4 11 against 7), which is consistent with selection differing from the paper's.
+4. **[does not affect a conclusion]** `mb_maps`: spikes that fall in bins with zero deposited occupancy (33 to 1,188 per epoch) are silently dropped. M-b is only a variant for the spatial information claims, and fig3 under M-b fails by a wide margin either way.
+5. **[does not affect a conclusion]** Cell 36: M-b maps are unsmoothed at 4 px with very few spikes per bin, so reading (b), "peak in field", nearly always fails (1 of 16). This follows from the criterion's definition, not from a choice by the author.
+6. **[does not affect a conclusion]** Rat 2's preflight units share no tetrode with its flight units (cell 7). The file may be assigned to the wrong rat; it cannot be checked from the data, and the notebook says so.
+7. **[does not affect a conclusion]** Things I checked and found correct:
+   - `skaggs_info` and `peak_in_field` pass their synthetic tests (cell 15).
+   - `compare` is a two-sided Mann-Whitney test at 0.05, as the claims file reads it.
+   - The 1/11 chance level of the shift test is correct for 10 shifts.
+   - The paper states no chance level, so there is nothing to compare.
+   - No training/test leakage applies.
+8. **Claims file:** I found no misreading of the paper. The fig3 statement ("fourth cell lost its field", "a few other cells gained a field") matches the Fig. 3 legend. Fixing rat 2's preflight cells to the rectangular track is an inference from Fig. 2b, but the criterion runs both preflight epochs anyway.
 
-1. **[affects a conclusion]** Cells 27, 29 and 33, and fd4 in cell 44: it is unresolved whose position the trace is in Rat2's windows.
-   - Rat1's units are selective in Rat2's FD4 ES window (10/15) while Rat1 is labelled as resting (BL). So either the FD4 labels or the trace attribution is wrong.
-   - Cell 23 shows that the original Rat2 rate maps were built from this same trace. Both the judged Rat2 FD9 session and the Rat2 FD4 maps (the lowest group, median 0.872) therefore inherit the problem.
-   - The notebook keeps both with a caveat but never reports fd4-abnormal without Rat2.
-2. **[affects a conclusion]** Cell 45, fd4-abnormal: the pass depends on the conversion dropping every copy of the duplicated maps.
-   - The criterion says "each distinct map once". Applied to the previous version that way, the test gives p 0.055.
-   - The draft drops three near-empty Rat2 FD4 ES maps (7.58 bits, mean rate ≈ 0), which moves p to 0.024.
-   - The CEL-names-only variant also fails (p 0.073).
-3. **[affects a conclusion]** Cells 40 to 42, si-comparable: rate-map spatial information cannot tell selective units from non-selective ones.
-   - Rat2 FD9 rate maps have median 1.343 bits, equal to Rat2 preflight (1.321), while only 2/28 of its units beat their shuffles.
-   - A "no difference" test with no equivalence margin cannot fail under these conditions.
-   - The main comparison may also be ES in flight against a different apparatus on the ground: the dandiset description says the preflight track was flat and rectangular (cells 21 and 22). Rat2's preflight tetrodes also share none with its flight tetrodes (cell 10).
-4. **[affects a conclusion, magnitude unknown]** `neurolab.epoch_units`: shuffled spikes are dropped more often than real ones.
-   - The drop is 6% against 2 to 3% in FD9, and about 21% against 4 to 6% in Rat3 FD4 (cell 35).
-   - The shuffled spikes that survive land at times when other units fire, which can inflate the null. The count-matched variant corrects only the spike count, not where the spikes land.
-   - Rat1 FD9 sits near the 0.5 threshold (0.40 main, 0.44 at 2000 shuffles, 0.48 count-matched).
-   - My synthetic check: 60 independent non-spatial Poisson units, 200 shuffles, position sampled only at ensemble spike times. It gave 5/60 false positives each time, so the test is calibrated when drops are near zero. I did not test it at the drop rates seen in the real data.
-5. **[does not affect a conclusion]** Cells 47 and 49: in Rat3 FD4, ES1 has 11/16 significant units and ES2 has 1/19, although the maps are stable (median r 0.54) and the null 95th percentiles are similar (2.14 and 2.18). The notebook does not discuss this. It is a further sign that the shuffle test is sensitive to something other than spatial tuning.
-6. **[does not affect a conclusion]** Cell 47, fig3: the outcome holds at the criterion's σ of 1 bin, but whether the median clears 0.5 depends on smoothing (problem list in A).
-7. **[does not affect a conclusion]** Cells 17 and 18: occupancy runs at 38 to 57 counts/s against a stated 60 Hz. It is used only as relative weights, so it would matter only if frames were dropped unevenly across space.
-8. **[does not affect a conclusion]** Helper functions check out:
-   - `skaggs_info`: uniform map gives 0; one bin out of 64 gives 6 bits.
-   - `merge_bins` is correct.
-   - The `PositionLookup` test in cell 13 passes.
-   - x→column and y→row are confirmed by the swap test in cell 23.
-   - The p-value (`null >= observed`) matches the 95th-percentile criterion.
-   - There is no train/test leakage; no fitted model is involved apart from the count-adjustment variant.
+### C. What I could not check, and the output that would settle it
 
-## C. What I could not check, and the output that would settle it
-
-- **The paper's methods, chance level, thresholds and Figure 3 sessions** (not open access). No notebook output can supply these.
-- **Whose position is in Rat2's windows.** These outputs would settle it:
-  - path length or speed of the trace in each window;
-  - Rat1 units tested against the trace in Rat2's FD9 MC window and in its FD4 MC window;
-  - fd4-abnormal and si-comparable recomputed without Rat2 (Rats 1 and 3 FD4 against preflight).
-- **Shuffle calibration at the real drop rates.** Needed: the false-positive fraction per session when each unit's spike times are replaced by a rate-matched Poisson train in the same window, run through `epoch_units`.
-- **Whether the rate-map spatial information discriminates at all.** Needed: rate-map information split by the unit's spike-shuffle significance (cell 33 results joined to the `maps` table), and a confidence interval for the FD9 minus preflight median difference.
-- **The Rat3 ES1/ES2 asymmetry.** Needed: per-unit information against null95 in both epochs, and the occupancy-bin count used in each.
+- **Fig3 pairing (B1):** for every ES1 and ES2 map of Rat3 FD4, the best-matching unit and its correlation, plus every unit's best ES1 and ES2 map. Flag any map that is best for more than one unit and any unit that is best for more than one map.
+- **M-a selection (B3):** `source_file` and `cell_number` of every map counted as active, per file. That would show whether maps with `cell_number` −1 are per-cell maps.
+- **Rat 2 FD4 position (B2):** the time-shift contrast with Rat 2's units on the Rat 1 file's trace versus the Rat 2 file's trace in the same ES window, at the timestamps where they differ.
+- **Cell counts:** for Rat3 FD4 ES1, which of the 11 active maps are place cells in the paper's sense. That would show whether some selection reproduces the paper's 7 cells.
+- **Smoothing:** the kernel of the deposited maps is unknown and cannot be recovered from the files. I did not re-run any computation; every number above is taken from the notebook's outputs.

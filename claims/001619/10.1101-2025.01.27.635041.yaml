@@ -1,0 +1,1065 @@
+# Claims for Kaku, Liu et al. (2025), "A brainstem map of orofacial rhythms", bioRxiv
+# doi:10.1101/2025.01.27.635041, on dandiset 001619.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the bioRxiv preprint, version 1 (posted January 27, 2025), as served on its web
+# page, stored in paper/10.1101-2025.01.27.635041.txt: main text, legends of Figures 1 to 5,
+# Methods and references, and the supplement "Extended Data Figures" (the legends of Extended
+# Data Figures 1 to 12, from the supplement PDF, extracted to text). The display equations of
+# the Methods (the circular Gaussian tuning curve and the VAF) are missing from the text; the
+# words around them name every term. The Figure 5 legend stops at panel f, although the
+# Results cite a Figure 5g. No later version was read. Data the dandiset description names: its
+# title and description only (no data or file was looked at).
+#
+# Code read: github.com/NuoLiLabBCM/KakuEtAl2025 at commit fbc0abe (2026-06-18). The preprint
+# says "Code used for analyses will be deposited upon publication"; this repository is the one
+# the dandiset description names as "the corresponding analysis code", and its README points
+# at the preprint v1 and at dandiset 001619. It holds process_mat.py (unit quality filter,
+# trial filter, tongue and inspiration onsets, lick bouts, licking and breathing phase tuning
+# and modulation index, the lick-to-breath and breath-to-lick timing analyses of Figs 1f-i and
+# 4e-f, the swallow detector, swallow-aligned licks and breaths, swallow modulation index),
+# generate_figures.py (plots of Figs 1, 2 and 4; no statistical test), generate_activity_maps.m
+# (the activity maps of Fig 2f-h) and Kuramoto_model_simulations/ (coupled-oscillator
+# simulations that the preprint v1 does not describe; not used here). The code does not hold
+# the Fig 1d frequency statistics, the GLM and CAE, lick direction tuning, the cross-correlation
+# analysis, the analyses of the cued licking task (Figs 3c-h, 4a-c, 5), the rat analysis, the
+# simulations of Extended Data Fig 1d-i, or any statistical test.
+#
+# Data the paper used, as it reports them (Methods, Mice and following sections).
+#  - Electrophysiology: 31 VGAT-ChR2-EYFP mice (22 male, 9 female), 339 insertions of one or two
+#    Neuropixels 1.0 probes (bank 0, 384 sites), Kilosort 2.5, 20,300 single units after quality
+#    control (5,700 cerebellum, 3,700 pons, 10,900 medulla), each localized in Allen CCFv3. Mice
+#    performed a multi-directional licking task: a 2 uL drop on a spout at one of nine targets,
+#    4 s to lick, 40 trials per target, 2 s intertrial interval. Airflow (breathing) at 25 kHz in
+#    SpikeGLX; side (400 x 480) and bottom (720 x 540) videos at 3.4 ms per frame, DeepLabCut
+#    tracking of jaw, tongue and lickport tips in both views, combined into 3D.
+#  - Simultaneous licking- and breathing-oscillator recordings (Fig 4d-h): 43 recordings in 21
+#    mice, two probes, posterior-dorsal IRN/PARN and preBotzinger complex; Extended Data Fig 12c
+#    places them in the cued licking task.
+#  - ALM photostimulation: 11 mice (9 Sim1_KJ18-Cre and 2 Tlx_PL56-Cre, crossed to Ai32), cued
+#    licking task (3.4 kHz Go cue, 0.1 s; 25-50% of trials replaced by 2 s of 20 Hz light, no
+#    reward), with breathing and video. latSC photostimulation: 3 mice, no task. Brainstem
+#    photostimulation: 27 Phox2b-Cre mice (16 crossed to Ai32, 11 with ChR2 or ChRmine virus),
+#    46 fibre sites, constant light for 2 s.
+#  - Rats: 7 Long-Evans females, freely moving, lickometer contacts and nasal thermocouple.
+#  - Outside data: premotor neurons of the masseter and genioglossus from reference 43 (Takatoh
+#    et al. 2021, eLife 10:e67291) mapped into CCF; ALM and latSC anterograde projections
+#    contributed by co-authors (no source given).
+# The dandiset (title and description) is meant to hold the Neuropixels recordings of the
+# brainstem map, the DeepLabCut tracking and the CCF localization; 31 subjects.
+#
+# Methods fixed by the paper and its code, used by the criteria below.
+#  - Units (Methods, Preprocessing): amplitude > 150 uV, ISI violation < 10, rate > 0.2 Hz,
+#    presence ratio > 0.9, amplitude cutoff < 0.15, drift metric < 0.5. The code
+#    (get_good_units) applies the first five and not the drift metric: variant V1.
+#  - Trials (code, get_good_trials): trials tracked in both cameras with no negative jaw
+#    likelihood.
+#  - Tongue onset (Methods; code get_movement_timing): first frame with the tongue detected,
+#    tongue likelihood > 0.95 in both views. Lick bouts as in get_movement_timing (licks at 3 to
+#    9 Hz, runs of at least three). Inspiration onset: z-scored airflow, 3.4 ms bins, 5th-order
+#    Butterworth 1-15 Hz, Hilbert phase crossing 0, kept only when the trace crosses -0.5
+#    within the cycle (code); the Methods say only "phase was equal to 0".
+#  - Lick-to-breath timing, Fig 1f-g (code get_peak_diff_lick_behv): inspirations inside lick
+#    bouts (0.2 s after bout onset to 0.2 s before offset), with licks between this inspiration
+#    and the next; breath cycles longer than the session's longest inter-breath interval
+#    dropped; the code's two exclusions of licks within 50 ms of an inspiration; cycles with
+#    exactly two licks split at the median inter-breath interval into fast and slow halves;
+#    lick PSTHs from -0.4 to 1 s in 20 ms bins; the second-lick peak (find_peaks, threshold
+#    mean + SD of the PSTH, at least 5 per s, 140 ms apart) taken in 0.12-0.32 s (fast) and
+#    0.16-0.36 s (slow); the session value is slow minus fast; sessions with fewer than 40
+#    cycles in either half dropped.
+#  - Breath-to-lick timing, Fig 1h-i (code get_peak_diff_breath_behv): licks inside bouts with
+#    an inspiration before the next lick, split at the median inter-lick interval; inspiration
+#    PSTHs -0.1 to 0.6 s in 20 ms bins; peak (threshold mean + SD, at least 7 per s, 240 ms
+#    apart) in 0-0.22 s (fast) and 0-0.24 s (slow); slow minus fast; at least 100 per half.
+#  - Unit versions, Fig 4e-f (code get_peak_diff_lick_unit, get_peak_diff_breath_unit): the
+#    same splits with spikes in place of licks or breaths; for licking units the 40 fastest and
+#    40 slowest two-lick cycles; peaks above max(mean + SD, 10 spikes/s), in 0.1-0.3 s and
+#    0.16-0.36 s (licking units) or 0-0.24 s and 0.02-0.26 s (breathing units).
+#  - Swallows (Methods; code detect_swallows): negated z-scored airflow at 3.4 ms, 5-sample
+#    moving average, peaks (find_peaks, distance 10) with Hilbert phase between 1.2 and 1.7 rad;
+#    at least 5 licks in the 1.5 s before and 1 in the 0.25 s after, last lick within 0.5 s, the
+#    last four lick frequencies between 3.5 and 13 Hz; inside a pause where the trace velocity
+#    stays within +-0.07 for at least 50 ms; swallow onset is the pause start.
+#  - Swallow-aligned intervals, Fig 1k-n (code plot_licking_swallow_summary,
+#    plot_breath_swallow_summary): events with at least 4 licks (breaths) before and 2 after;
+#    the interval spanning the swallow, cycle 0, between 1/15 and 1/3 s for licks (1/2 s for
+#    breaths); Delta(0,-1) and Delta(1,-1) as in the Fig 1l legend; the code ranks events by
+#    cycle 0, longest first, and keeps the first third ("bottom 1/3").
+#  - Phase tuning (Methods; code get_unit_jaw_tuning, get_unit_breath_tuning): jaw (side-camera
+#    jaw_y) bandpassed 3-15 Hz, airflow 1-10 Hz, Butterworth forwards and backwards, Hilbert
+#    phase; the first 5 s of each trial; spike phases in 20 bins divided by the occupancy of each
+#    phase bin; a circular Gaussian (amplitude, preferred phase, width, baseline; distance is the
+#    shortest circular distance) fitted with scipy curve_fit from two starting phases, the
+#    better r2 kept; MI = (r(phi) - r(phi - pi)) / r(phi). Tuned unit, Results and Methods,
+#    P < 0.001 and MI > 0.6.
+#  - Swallow modulation (Methods; code get_swallow_tuning, generate_activity_maps.m): rates in
+#    -0.3 to -0.1 s, -0.05 to 0.05 s and 0.1 to 0.3 s around swallow onset; an MI against the
+#    window before and one against the window after, averaged; 1000 bootstrap resamples of
+#    swallow events, p the fraction of resamples where the difference changes sign; a unit is
+#    swallow-modulated when both p <= 0.01, mean MI > 0.3 and it has at least 20 swallows.
+#
+# Variants (the Methods come first; the code's choice is shown beside it).
+#  - V1, quality filter with or without the drift metric (above).
+#  - V2, phase-tuning filter. The Methods say "4-pole Butterworth"; the code uses
+#    scipy.signal.butter(5, band). Readings of the Methods (a) butter(4, band); (b) butter(2,
+#    band), four poles in all. The code's order 5 is shown as a variant.
+#  - V3, significance of the licking and breathing MI. The Methods resample phases 1000 times
+#    and use a Wilcoxon rank-sum test against the resampled distribution; the code makes 100
+#    MIs from resampled spike phases and 100 from random session phases and tests them with a
+#    one-sided Mann-Whitney U. Readings (a) the code's scheme with 1000 resamples of each;
+#    (b) the measured MI ranked against 1000 MIs from random session phases, p the fraction at
+#    least as large. The code's scheme with 100 resamples is shown as a variant.
+#  - V4, swallow MI normalization. The Methods normalize "to the peak spike rate during
+#    swallowing"; the code divides each difference by the larger of the two window rates. For
+#    positive MIs the two agree when the peak is read as the mean rate in the swallow window;
+#    reading (b), the peak of the 50 ms-smoothed swallow PSTH within +-50 ms, is also run.
+#
+# Details the paper and the code leave open (each criterion names those it needs).
+#  - O1, the units of a "breathing unit" and "licking unit" in Fig 4 and Extended Data Fig 8.
+#    The Results use MI > 0.6; Extended Data Fig 8b and e use MI > 0.9; the code's Fig 4e-f
+#    summary uses MI > 0.9 with no p threshold. Readings (a) MI > 0.6 and P < 0.001; (b) MI > 0.9
+#    and P < 0.001; (c) MI > 0.9 alone (code).
+#  - O2, which recordings Fig 4e-f use. Readings (a) every session with tuned units (the code's
+#    plot_summary loops over all files); (b) the 43 simultaneous recordings, units in the
+#    posterior-dorsal IRN/PARN (licking) and near the preBotzinger complex (breathing), as
+#    defined in O3.
+#  - O3, regions the CCF does not label. The preBotzinger complex is not an Allen CCF region;
+#    Extended Data Figs 7c and 8c place it below the nucleus ambiguus (AMB). Readings: units
+#    within (a) 300 um or (b) 500 um ventral of AMB, inside AMB's anterior-posterior and
+#    medial-lateral extent. "Posterior-dorsal IRN/PARN" is units labelled IRN or PARN posterior
+#    to the AP midpoint of IRN and dorsal to its DV midpoint, with (a) and (b) the same as for
+#    "posterior ventral IRN" (posterior and ventral halves). The paper gives no numbers.
+#  - O4, the statistical unit of Fig 1g and 1i. The text says "In all mice"; the legend says
+#    "for all sessions"; the code gives one value per session. Readings (a) sessions; (b) the
+#    mean over each mouse's sessions.
+#  - O5, the ranking of swallow events for Fig 1l and 1n. The code ranks by cycle 0 (the
+#    interval spanning the swallow); the Results say "ordered by their frequencies before the
+#    swallow". Readings (a) the code's ranking, the third with the longest cycle 0; (b) ranking
+#    by cycle -1, the third with the longest cycle -1; (c) all events. The t-tests are over
+#    swallow events pooled across sessions, as the code pools them; (d) is (a) with session
+#    means as the unit.
+#  - O6, cross-correlation (Fig 4g-h, Extended Data Fig 12). The Results refer to Methods that
+#    have no such section. Readings for the bin (a) 5 ms, (b) 10 ms; window +-250 ms; trial
+#    shuffle as pairing unit 1 on trial i with unit 2 on trial i+1 (all shifts pooled), the 95%
+#    interval pointwise from the shuffled correlograms; a pair is significant when the
+#    measured correlogram leaves the interval at (i) any bin within +-100 ms, or (ii) any bin
+#    within +-100 ms after Bonferroni over the bins of the window; positive or anticorrelated
+#    by the sign of the largest excursion; the lag is the bin of that excursion.
+#  - O7, the Kuiper test of Fig 5c and 5f, "two sample" against a "random distribution".
+#    Readings for the second sample (a) phases at random times in the same session;
+#    (b) phases at -500 ms from lick onset. Time steps on the 3.4 ms video grid from -500 ms to
+#    lick onset; Bonferroni over the steps; the latency is the earliest step from which every
+#    later step is significant at p < 0.0001; the s.e.m. by 1000 bootstrap resamples of trials.
+#  - O8, the GLM (Extended Data Fig 7). The L1 weight is not given. Readings (a) no penalty;
+#    (b) the weight per unit with the highest validation VAF from 1e-4 to 1 in decades. The
+#    VAF is (i) the best of the 11 lags; (ii) lag 0. The link is (i) log (Poisson canonical);
+#    (ii) logit, as the text says. The CAE follows reference 40 and needs the raw videos.
+#  - O9, the lick angle. Methods: tongue tip at full protraction against the jaw's resting
+#    position; Extended Data Fig 8g: against the midline. Both are run.
+#  - Readings and outcomes. Readings of a method (V2 to V4, O1, O3, O6 to O9, and the readings
+#    of a test, region, selection or shuffle named in a criterion) must all give the outcome;
+#    when they give different outcomes the claim is blocked as methods_underspecified, with
+#    every result shown. "Under one reading" applies only to readings of what a reported
+#    number counts or which subset the paper used (O4, O5, denominators, inclusive or
+#    exclusive counts, the unit of a test); with both kinds, the claim holds when, for one
+#    reading of the second kind, every reading of the first gives the outcome.
+#  - Tolerances. A mean +- SD of pooled single intervals or units describes the spread of the
+#    sample, not the uncertainty of the mean; such means get 10%. Means given +- s.e.m. use the
+#    s.e.m.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001619"
+paper: doi:10.1101/2025.01.27.635041
+claims:
+- id: code-dataset-link
+  kind: link
+  statement: The dandiset is the data the paper's analysis code reads, so that the code's
+    choices fixed in this file apply to it.
+  source: Code availability; the dandiset description; README of NuoLiLabBCM/KakuEtAl2025 at
+    commit fbc0abe
+  data: dataset
+  criterion: Reproduced when process_mat.py's inputs can be built from the NWB files (spike
+    times per trial, unit quality metrics, CCF coordinates, airflow at 25 kHz with its
+    timestamps, side and bottom DeepLabCut jaw and tongue traces and likelihoods, 3D jaw and
+    tongue tracks) and the count of units passing get_good_units over all files is within 10%
+    of 20,300 (with or without the drift metric, V1). Partially reproduced when the inputs
+    exist but the count is outside 10%.
+- id: fig1d-lick-breath-frequencies
+  statement: Mice licked at 6.23 +- 2 Hz (95% range 3.59 to 8.91 Hz) and breathed at lower
+    frequencies, 4.02 +- 1.24 Hz (95% range 2.12 to 7.17 Hz).
+  source: Results, Coordination of breathing, licking, and swallowing, paragraph 2; Figure 1d
+  quote: "Licking occurred at 6.23 ± 2 Hz (mean ± std, 95% range: 3.59 - 8.91 Hz) while breathing
+    occurred at lower frequencies (4.02 ± 1.24 Hz, 95% range: 2.12 - 7.17 Hz; Figure 1d)"
+  expected:
+  - quantity: mean licking frequency
+    value: 6.23
+    tolerance: 0.62
+    unit: Hz
+  - quantity: mean breathing frequency
+    value: 4.02
+    tolerance: 0.4
+    unit: Hz
+  - quantity: licking 95% range, lower bound
+    value: 3.59
+    tolerance: 0.36
+    unit: Hz
+  - quantity: licking 95% range, upper bound
+    value: 8.91
+    tolerance: 0.89
+    unit: Hz
+  - quantity: breathing 95% range, lower bound
+    value: 2.12
+    tolerance: 0.21
+    unit: Hz
+  - quantity: breathing 95% range, upper bound
+    value: 7.17
+    tolerance: 0.72
+    unit: Hz
+  criterion: Neither the Methods nor the code say how the frequencies are taken. Readings
+    (a) the inverse of every interval between consecutive tongue onsets, and between
+    consecutive inspiration onsets, within trials, pooled over all sessions; (b) the same
+    within lick bouts only (code bouts). Onsets as in the header. The 95% range is the 2.5th to
+    97.5th percentile. Reproduced when, under one reading, all six values are within tolerance;
+    partially reproduced when the two means are and a bound is not.
+- id: fig1f-inspiration-between-licks
+  statement: Inspiration always occurred between licks and never coincided with licking;
+    licking preceded inspiration at a fixed latency.
+  source: Results, Coordination of breathing, licking, and swallowing, paragraph 2; Figure 1f
+  quote: Inspiration always occurred between licks and thus never coincided with licking. Licking
+    preceded inspiration at a fixed latency
+  criterion: The paper shows this in raster plots and gives no measure. Measure, from the
+    paper's definitions, the fraction of inspiration onsets inside lick bouts that fall within
+    a tongue protrusion (tongue onset to tongue offset, code get_movement_timing), per session.
+    "Never" is read (a) literally, no such inspiration in any session, and (b) as a rounded
+    statement, under 5% of inspirations in pooled data (a standard choice, named here).
+    Reproduced when (b) holds; the result under (a) is reported. The latency from the last
+    lick to the next inspiration is reported per number of licks in the cycle.
+- id: fig1g-lick-delayed-before-slow-breath
+  statement: For breath cycles with two licks, the second lick was delayed preceding a slower
+    breath compared to a fast breath, in all mice (one-sample t-test, two-tailed, p < 0.001),
+    so breathing influences the licking rhythm.
+  source: Results, Coordination of breathing, licking, and swallowing, paragraph 2; Figure 1g
+  quote: In all mice, the lick timing was significantly delayed preceding a slower breath compared
+    to a fast breath (Figure 1g, p<0.001, one sample t-test, two-tailed)
+  statistics:
+  - test: one sample t-test, two-tailed
+    p: 0.001
+    p_relation: "<"
+    n: all sessions (legend) or all mice (text)
+  criterion: The per-session peak difference of the header (Lick-to-breath timing, code
+    get_peak_diff_lick_behv), slow minus fast. One-sample two-tailed t-test against 0 under
+    O4 (a) sessions and (b) mice. Reproduced when the mean is positive with p < 0.001 under a
+    reading and every mouse's mean difference is positive; partially reproduced when p < 0.001
+    with a positive mean but one or more mice are not positive.
+- id: fig1f-licking-mode-switch
+  statement: During slow breathing, licking frequency increased abruptly to add licks within
+    the breathing cycle (1, 2, 3 or 4 licks between breaths), keeping the fixed lick latency
+    before the next inspiration, so licking shifted between modes of oscillation with
+    breathing frequency.
+  source: Results, Coordination of breathing, licking, and swallowing, paragraph 3; Figure 1f
+  quote: During slow breathing, when the next lick could not be delayed further to accommodate the
+    next breath, licking frequency abruptly increased to add additional licks within the
+    breathing cycle to maintain the fixed lick latency preceding the next inspiration
+  criterion: The paper shows this in a raster grouped by the number of licks in the cycle
+    (code volcano_plot_licking). With the breath cycles of the header, pooled per session,
+    reproduced when the median inter-breath interval rises strictly from 1 to 2 to 3 licks per
+    cycle (and to 4 where a session has at least 20 such cycles) in most sessions (more than
+    half), and the median latency from the last lick to the next inspiration differs by less
+    than 20% between the groups (a standard choice, named here).
+- id: fig1i-breath-delayed-before-slow-lick
+  statement: Inspirations following licking were significantly delayed for slower licking
+    frequencies, anticipating the next lick (one-sample t-test, two-tailed, p < 0.001), so
+    licking influences breathing.
+  source: Results, Coordination of breathing, licking, and swallowing, paragraph 4; Figure 1i
+  quote: inspirations following licking were significantly delayed for slower licking frequencies
+    to anticipate the next lick (Figure 1i, p<0.001, one sample t-test, two-tailed)
+  statistics:
+  - test: one sample t-test, two-tailed
+    p: 0.001
+    p_relation: "<"
+    n: all sessions
+  criterion: The per-session peak difference of the header (Breath-to-lick timing, code
+    get_peak_diff_breath_behv), slow minus fast; one-sample two-tailed t-test against 0 under
+    O4 (a) and (b). Reproduced when the mean is positive with p < 0.001 under a reading.
+- id: ed1-unidirectional-models-fail
+  statement: Neither a free-running breathing oscillator that sets lick timing nor a
+    free-running licking oscillator that sets breath timing reproduces the observed lick-breath
+    relationship, suggesting that the two oscillators are bidirectionally coupled.
+  source: Results, Coordination of breathing, licking, and swallowing, paragraph 4; Extended
+    Data Figure 1d-i; Methods, Simulation of licking-breathing coupling
+  quote: This pattern of lick-breath temporal relationship also cannot be produced by a
+    free-running licking oscillator unidirectionally setting the timing of breathing rhythm
+  depends_on:
+  - fig1g-lick-delayed-before-slow-breath
+  - fig1i-breath-delayed-before-slow-lick
+  criterion: Simulate as the Methods say, drawing intervals from the empirical frequency
+    distributions of fig1d-lick-breath-frequencies, Gaussian timing noise SD 10 ms. The paper
+    gives no value for the fixed latency or the number of simulated cycles; standard choices,
+    named here, are the median latency from the last lick to the next inspiration (breathing
+    model) and from the last inspiration to the next lick (licking model) in the data, and as
+    many simulated cycles as the pooled data. Apply the two peak-difference measures of the
+    header to each simulation. Reproduced when the breathing-driven model gives a Fig 1i
+    difference whose mean is not positive or not significant (two-tailed t-test over simulated
+    sessions of the data's sizes, p >= 0.05, a standard choice named here since the paper
+    reports no test) and the licking-driven model fails likewise on the Fig 1g measure, while
+    the data give both differences positive.
+- id: ed2-rats-similar
+  statement: Licking and breathing in freely moving rats showed a similar lick-breath temporal
+    relationship.
+  source: Results, Coordination of breathing, licking, and swallowing, paragraph 4; Extended
+    Data Figure 2
+  quote: Independent analysis of breathing and licking in freely moving rats yielded similar
+    temporal relationship (Extended Data Figure 2)
+  criterion: Rat data (7 rats, lickometer contacts, thermocouple inspiration onsets at 10% of
+    onset amplitude after 1-20 Hz filtering, Methods). Licks from bouts shorter than 1.75 s
+    left out as the Methods say. The two peak-difference measures of the header computed per
+    rat with tongue contacts as licks. Reproduced when both differences are positive in a
+    majority of rats and positive on average (one-sample t-test over rats, two-tailed,
+    p < 0.05, a standard choice named here since the paper reports no test).
+- id: ed1bc-licks-pause-at-swallows
+  statement: Licking was paused during detected swallows but not during ordinary expirations,
+    so the detected events are genuine swallows.
+  source: Extended Data Figure 1b-c; Results, Coordination of breathing, licking, and
+    swallowing, paragraph 1
+  quote: Licking was paused during swallowing. Bottom, lick timing aligned to all expirations as a
+    control. Lick was not paused during expiration.
+  criterion: Swallows detected as in the header. Per session, the probability of a tongue onset
+    in 3.4 ms bins from -0.3 to 0.3 s around swallow onsets and around all expiration onsets
+    inside lick bouts. The paper does not define expiration onset; it is taken as the Hilbert
+    phase crossing pi (a standard choice, named here), and the bins and window are plotting
+    choices. Reproduced when the mean lick probability from 0 to
+    100 ms after onset is lower around swallows than around expirations in most sessions with
+    at least 20 swallows, by a paired Wilcoxon signed-rank test, p < 0.05 (a standard choice,
+    named here).
+- id: fig1k-rhythms-follow-swallow-at-fixed-latency
+  statement: Inspirations and licks followed swallowing at relatively fixed latencies despite
+    different breath and lick timing before the swallow, suggesting that swallowing interrupted
+    the ongoing rhythms.
+  source: Results, Coordination of breathing, licking, and swallowing, paragraph 5; Figure 1k and
+    1m
+  quote: Inspirations and licks followed swallowing at relatively fixed latencies despite
+    different breath and lick timing before the swallow (Figure 1k and m)
+  criterion: Swallow events and ranking as in O5 (a) and (b). For licks and for breaths
+    separately, reproduced when the difference in median latency from swallow onset to the
+    first following lick (inspiration) between the top and bottom thirds is smaller than the
+    difference in their median cycle -1 (as Figure 1k right compares the two thirds) under a
+    reading.
+- id: fig1l-lick-interval-preserved
+  statement: The inter-lick interval before and after swallowing was preserved (one-sample
+    t-test, two-tailed, P = 0.649).
+  source: Results, Coordination of breathing, licking, and swallowing, paragraph 5; Figure 1l
+  quote: The inter-lick-interval before and after swallowing was preserved (Figure 1l, P=0.649,
+    one-sampled t-test, two-tailed)
+  statistics:
+  - about: Delta(1,-1), cycle 1 minus cycle -1
+    test: one-sampled t-test, two-tailed
+    p: 0.649
+  criterion: A claim of absence, judged on the paper's test. Delta(1,-1) per swallow event as
+    in the header, bottom third by O5 (a), the code's selection, pooled across sessions.
+    Reproduced when the one-sample two-tailed t-test against 0 gives p >= 0.05; not reproduced
+    when p < 0.05. The mean Delta(1,-1) is reported, and O5 (b), (c) and (d) are shown as
+    variants.
+- id: fig1l-lick-cycle-prolonged
+  statement: The lick cycle in which swallowing occurred was significantly prolonged, by 33.3 ms
+    (one-sample t-test, two-tailed, P < 0.001).
+  source: Results, Coordination of breathing, licking, and swallowing, paragraph 5; Figure 1l
+  quote: whereas the lick cycle in which swallowing occurred was significantly prolonged by 33.3 ms
+    (Figure 1l, P<0.001, one-sampled t-test, two-tailed)
+  statistics:
+  - about: Delta(0,-1), cycle 0 minus cycle -1
+    test: one-sampled t-test, two-tailed
+    p: 0.001
+    p_relation: "<"
+  expected:
+    quantity: mean Delta(0,-1) for licks
+    value: 33.3
+    tolerance: 3.3
+    unit: ms
+  criterion: Delta(0,-1) per swallow event, readings O5 (a) to (d). Reproduced when, under one
+    reading, the mean is within tolerance and the one-sample two-tailed t-test gives p < 0.001;
+    partially reproduced when the test holds and the mean is outside tolerance under every
+    reading. Under O5 (a) the selection of the longest cycles 0 favours a positive Delta(0,-1);
+    the result under (b) and (c) is reported beside it.
+- id: fig1n-breath-interval-preserved
+  statement: The inter-breath interval before and after swallowing was preserved (P = 0.225).
+  source: Results, Coordination of breathing, licking, and swallowing, paragraph 5; Figure 1n
+  quote: P=0.225 for inter-breath-interval before vs. after swallowing
+  statistics:
+  - about: Delta(1,-1) for breaths
+    test: one-sample t-test, two-tailed
+    p: 0.225
+  criterion: A claim of absence, judged on the paper's test, as fig1l-lick-interval-preserved
+    with inspiration onsets and the breath limits of the header (cycle 0 between 1/15 and 1/2 s).
+    Reproduced when p >= 0.05 under O5 (a); not reproduced when p < 0.05. The other readings
+    are variants.
+- id: fig1n-breath-cycle-prolonged
+  statement: The breath cycle in which swallowing occurred was significantly prolonged, by 48.0
+    ms (one-sample t-test, two-tailed, P < 0.001).
+  source: Results, Coordination of breathing, licking, and swallowing, paragraph 5; Figure 1n
+  quote: P<0.001 for inter-breath-interval in which swallowing occurred, one-sample t-test,
+    two-tailed, prolonged by 48.0 ms
+  statistics:
+  - about: Delta(0,-1) for breaths
+    test: one-sample t-test, two-tailed
+    p: 0.001
+    p_relation: "<"
+  expected:
+    quantity: mean Delta(0,-1) for breaths
+    value: 48.0
+    tolerance: 4.8
+    unit: ms
+  criterion: As fig1l-lick-cycle-prolonged, with breaths.
+- id: units-count
+  statement: Across 339 insertions in 31 mice, 20,300 single units passed quality control (60 +-
+    22 per probe), 5,700 in the cerebellum, 3,700 in the pons and 10,900 in the medulla.
+  source: Results, Brainstem activity maps of orofacial rhythms, paragraph 2; Methods,
+    Preprocessing, spike sorting, and quality metrics, paragraph 2
+  quote: we obtained 20,300 clear single units, including 5,700 units in the cerebellum, 3,700
+    units in the pons, and 10,900 units in the medulla
+  expected:
+  - quantity: single units after quality control
+    value: 20300
+    tolerance: 2030
+  - quantity: units per probe, mean
+    value: 60
+    tolerance: 6
+  - quantity: units in the cerebellum
+    value: 5700
+    tolerance: 570
+  - quantity: units in the pons
+    value: 3700
+    tolerance: 370
+  - quantity: units in the medulla
+    value: 10900
+    tolerance: 1090
+  - quantity: probe insertions
+    value: 339
+    tolerance: 0
+  - quantity: mice
+    value: 31
+    tolerance: 0
+  criterion: Units by the quality filter of the header, V1 both ways; region from the unit's
+    CCF label (cerebellum CB, pons P, medulla MY, with their subregions). Insertions and mice
+    are counted exactly. Extended Data Figure 4c gives 19,000 units with amplitude > 150 uV,
+    a second reading of the total; a count within tolerance of either is reported as such.
+- id: region-spike-rates
+  statement: Neurons in the cerebellum (22 +- 29 spikes/s) and vestibular nucleus (38 +- 32)
+    fired faster than neurons in the medulla (11 +- 14).
+  source: Methods, Preprocessing, spike sorting, and quality metrics, paragraph 2; Figure 2e
+  quote: Neurons in the cerebellum and the vestibular nucleus exhibited higher spike rates than
+    neurons in the medulla (22 ± 29 spikes/s, mean ± std, for cerebellum, 38 ± 32 spikes/s for
+    vestibular nucleus, and 11 ± 14 spikes/s for medulla
+  depends_on:
+  - units-count
+  expected:
+  - quantity: mean rate, cerebellum
+    value: 22
+    tolerance: 2.2
+    unit: spikes/s
+  - quantity: mean rate, vestibular nucleus
+    value: 38
+    tolerance: 3.8
+    unit: spikes/s
+  - quantity: mean rate, medulla
+    value: 11
+    tolerance: 1.1
+    unit: spikes/s
+  criterion: The rate is not defined; readings (a) the quality metric avg_firing_rate; (b) spikes
+    over the session's trial time. Vestibular nucleus is the CCF VNC; medulla is MY with (i)
+    and (ii) without VNC. Reproduced when the three means are within tolerance under one
+    reading.
+- id: fig2-licking-breathing-tuned-counts
+  statement: Units showed significant phase tuning to licking (3551 of 20,300) or breathing
+    (1015 of 20,300), but rarely to both (182 of 20,300).
+  source: Results, Brainstem activity maps of orofacial rhythms, paragraph 3
+  quote: Individual units exhibited significant phase tuning to either licking (3551/20300), or
+    breathing (1015/20300), but rarely to both (182/20300)
+  depends_on:
+  - units-count
+  expected:
+  - quantity: licking-tuned units
+    value: 3551
+    tolerance: 355
+  - quantity: breathing-tuned units
+    value: 1015
+    tolerance: 102
+  - quantity: units tuned to both
+    value: 182
+    tolerance: 18
+  criterion: Phase tuning and MI as in the header, tuned at P < 0.001 and MI > 0.6, readings V2
+    (a) and (b) and V3 (a) and (b). The text does not say whether the licking and breathing
+    counts include the 182 units tuned to both; readings (i) they include them; (ii) they
+    exclude them. Reproduced when the three counts are within tolerance under (i) or (ii), for
+    every reading of V2 and V3; partially reproduced when the counts are not but both-tuned
+    units are under 10% of licking-tuned units and under 25% of breathing-tuned units, for every
+    reading of V2 and V3 (a standard
+    choice, named here; the paper's ratios are 5% and 18%, and the Methods say only that the
+    relative proportions were robust to the MI criterion). The code's choices (order 5, 100 resamples)
+    are shown as variants.
+- id: fig2-swallow-modulated-counts
+  statement: Of 18,485 units, 427 were modulated by swallowing only, 175 by both licking and
+    swallowing and 55 by both breathing and swallowing.
+  source: Results, Brainstem activity maps of orofacial rhythms, paragraph 3; Extended Data
+    Figure 5e-f
+  quote: Most units were modulated by swallowing only (427/18485), with a smaller group modulated
+    by both licking and swallowing (175/18485) (Extended Data Figure 5f). Another small subset of
+    units with swallowing-related activity were also modulated by breathing (55/18485)
+  depends_on:
+  - fig2-licking-breathing-tuned-counts
+  expected:
+  - quantity: units in the swallow analysis
+    value: 18485
+    tolerance: 1849
+  - quantity: swallow-only units
+    value: 427
+    tolerance: 43
+  - quantity: licking and swallowing units
+    value: 175
+    tolerance: 18
+  - quantity: breathing and swallowing units
+    value: 55
+    tolerance: 6
+  criterion: Swallow modulation as in the header, readings V4 (a) and (b). The denominator
+    18,485 is not defined; readings (a) units of sessions with at least one detected swallow;
+    (b) units with at least 20 swallows (code). "Swallowing only" is read (i) not licking- or
+    breathing-tuned; (ii) not licking-tuned. Reproduced when the four numbers are within
+    tolerance under one combination of (a) or (b) with (i) or (ii), for both readings of V4.
+- id: fig2f-breathing-units-location
+  statement: Units encoding breathing clustered near the preBotzinger complex and in the
+    posterior ventral IRN.
+  source: Results, Brainstem activity maps of orofacial rhythms, paragraph 4; Figure 2f
+  quote: Units encoding breathing were near the preBötzinger complex 22, as well as posterior
+    ventral IRN
+  depends_on:
+  - fig2-licking-breathing-tuned-counts
+  criterion: The paper shows a map and gives no test. Regions by O3 (a) and (b). Reproduced when
+    the fraction of breathing-tuned units among the units of each of the two regions exceeds
+    the fraction among all pons and medulla units, each by a one-sided Fisher exact test at
+    p < 0.05 (a standard choice, named here), under both readings of O3.
+- id: fig2g-licking-units-location
+  statement: Licking-related units were broadly distributed, including the hypoglossal (12N) and
+    trigeminal (5N) motor nuclei, extensive portions of the IRN and parts of the pons.
+  source: Results, Brainstem activity maps of orofacial rhythms, paragraph 4; Figure 2g
+  quote: The regions containing licking-related activity were remarkably broad, including the
+    tongue- and jaw-related motor nuclei (hypoglossal nucleus, 12N; trigeminal nucleus, 5N) as
+    well as extensive portions of the IRN and parts of pons
+  depends_on:
+  - fig2-licking-breathing-tuned-counts
+  criterion: As fig2f-breathing-units-location, with licking-tuned units and the CCF regions XII,
+    V and IRN, and the pons taken whole (P). Reproduced when the fraction exceeds that of all
+    pons and medulla units in each of XII, V and IRN (Fisher exact, one-sided, p < 0.05) and licking
+    units are present in the pons at more than 1% of its units.
+- id: fig2h-swallow-units-location
+  statement: Swallowing-related units clustered in the trigeminal nucleus (5N), lateral to the
+    nucleus of the solitary tract (NTS) and above the nucleus ambiguus (10N), with further
+    clusters in the inferior colliculus and the nucleus of the lateral lemniscus.
+  source: Results, Brainstem activity maps of orofacial rhythms, paragraph 4; Figure 2h; Extended
+    Data Figure 6a-d
+  quote: Units with swallowing-related activity were clustered in the trigeminal nucleus (5N),
+    lateral to the nucleus of the solitary tract (NTS), and above the nucleus ambiguus (10N)
+  depends_on:
+  - fig2-swallow-modulated-counts
+  criterion: As fig2f-breathing-units-location, with swallow-modulated units. Regions are CCF
+    V, IC and NLL; "lateral to NTS" is units within (a) 300 um or (b) 500 um lateral of NTS at
+    its AP extent; "above 10N" is units within the same distances dorsal of AMB. Reproduced
+    when the fraction exceeds that of all units of the same sessions in all five regions under
+    both distance readings; partially reproduced in three or four under both.
+- id: ed6e-swallow-latencies
+  statement: Swallow-related activity in 5N and IRN leads swallowing, while activity in the
+    inferior colliculus and nucleus of the lateral lemniscus follows it.
+  source: Extended Data Figure 6e; Results, Brainstem activity maps of orofacial rhythms,
+    paragraph 4
+  quote: Activities in 5N and IRN lead swallowing while activities in the IC and NLL follow
+    swallowing.
+  depends_on:
+  - fig2-swallow-modulated-counts
+  criterion: Swallow PSTHs as in the code (1 ms bins, 50 ms boxcar, -1 to 1 s). Per
+    swallow-modulated unit, the time of the PSTH peak within -0.15 to 0.15 s (the paper gives no
+    window or latency measure; a standard choice, named here). Reproduced when the median peak
+    time is negative for units in V and IRN and positive for units in IC and NLL, and the two
+    groups differ by a two-sided Mann-Whitney test at p < 0.05 (a standard choice, named here).
+- id: ed7-glm-separate-clusters
+  statement: A GLM on the tracked features found separate clusters of units predicted by
+    licking or by breathing movements.
+  source: Results, Brainstem activity maps of orofacial rhythms, paragraph 5; Extended Data
+    Figure 7c-d
+  quote: The GLM found separate clusters of units predicted by either licking or breathing
+    movement (Extended Data Figure 7c-d)
+  criterion: The GLM of the Methods (17 ms bins, jaw and tongue x, y, z and airflow, z-scored,
+    tongue set to 0 when its likelihood is below 0.05 in both views, every 5th trial held out,
+    lags of +-5 bins), readings O8. The paper shows maps of the weights (Extended Data Fig 7c,
+    airflow weights around and below 10N; 7d, jaw and tongue weights in the premotor regions)
+    and gives no measure. Among units with validation VAF > 0.05, each unit is assigned to
+    airflow or to jaw and tongue by its largest absolute weight (threshold and assignment are
+    standard choices, named here). Reproduced when airflow units lie ventral of jaw and tongue
+    units (CCF DV, one-sided Mann-Whitney test, p < 0.05) and the fraction of airflow units
+    near the preBotzinger complex exceeds that of jaw and tongue units (one-sided Fisher exact
+    test, p < 0.05), under every reading of O3 and O8; both tests are standard choices, named
+    here.
+- id: ed7g-cae-better-than-features
+  statement: The autoencoder embedding predicted a larger fraction of activity variance than the
+    tracked features for most units across the brainstem (Wilcoxon signed-rank test, P <
+    0.001).
+  source: Results, Brainstem activity maps of orofacial rhythms, paragraph 6; Extended Data
+    Figure 7g
+  quote: The CAE predicted a larger fraction of activity variance than the tracked features for
+    most units across the brainstem (Extended Data Figure 7g; CAE vs. features, P<0.001,
+    Wilcoxon signed rank test)
+  statistics:
+  - test: Wilcoxon signed rank test
+    p: 0.001
+    p_relation: "<"
+  criterion: CAE as in reference 40 and the Methods (two residual blocks of three convolutions,
+    linear readouts of 128 and 32, frames downsampled to 120 x 112, one network per mouse
+    trained on 80% of trials for 20,000 iterations with L2 regularization), which needs the
+    raw videos; GLM readings O8. Reproduced when, over all units, CAE VAF exceeds feature VAF
+    in more than half of the units and the paired Wilcoxon signed-rank test gives P < 0.001.
+- id: ed7h-prebotc-exception
+  statement: Units in the preBotzinger complex were the exception, where the autoencoder gave
+    worse predictions than the tracked features (Wilcoxon signed-rank test, P < 0.001).
+  source: Results, Brainstem activity maps of orofacial rhythms, paragraph 6; Extended Data
+    Figure 7g-h
+  quote: the only exceptions were units in the preBötzinger complex where activity prediction
+    using CAE led to worse predictions (CAE vs. features, P<0.001, Wilcoxon signed rank test
+  statistics:
+  - test: Wilcoxon signed rank test
+    p: 0.001
+    p_relation: "<"
+  depends_on:
+  - ed7g-cae-better-than-features
+  criterion: As ed7g-cae-better-than-features, for units near the preBotzinger complex (O3 (a)
+    and (b)), and for breathing-tuned units there (Extended Data Fig 7g marks breathing units).
+    Reproduced when feature VAF exceeds CAE VAF with P < 0.001 under every reading of O3 and
+    O8.
+- id: ed8bc-prebotc-inspiration-phase
+  statement: Breathing-related units in the preBotzinger complex preferentially fired at the
+    inspiration phase of breathing.
+  source: Results, Brainstem activity maps of orofacial rhythms, paragraph 5; Extended Data
+    Figure 8a-c
+  quote: units in the preBötzinger complex preferentially fired at inspiration phase of breathing
+  depends_on:
+  - fig2-licking-breathing-tuned-counts
+  criterion: Preferred phases of the fitted tuning curves (header), breathing units by O1 (b)
+    as Extended Data Fig 8b states, located by O3 (a) and (b). Inspiration phase is the half
+    cycle starting at inspiration onset (phase 0 to pi in the convention where inspiration
+    onset is 0). Reproduced when more than half of those units prefer that half cycle and their
+    phases are non-uniform by a Rayleigh test at p < 0.05 (a standard choice, named here), under
+    both readings of O3.
+- id: ed8e-licking-units-protrusion
+  statement: Licking-related units were mostly active when the tongue was fully protruded.
+  source: Results, Brainstem activity maps of orofacial rhythms, paragraph 5; Extended Data
+    Figure 8d-f
+  quote: Units with licking-related activity were mostly active when the tongue was in the fully
+    protruded state
+  depends_on:
+  - fig2-licking-breathing-tuned-counts
+  criterion: Licking units by O1 (b). For each session, the jaw phase at the frame of maximal
+    tongue protrusion in each lick (the frame of largest 3D tongue distance from its onset
+    position; the paper does not define full protrusion, a standard choice named here) gives
+    the protrusion phase; a unit's preferred phase is compared with its session's circular
+    median protrusion phase. Reproduced when more than half of licking units prefer a phase
+    within pi/2 of it (a standard choice, named here).
+- id: ed8i-ipsilateral-lick-selectivity
+  statement: Licking-related neurons showed selectivity for ipsilateral licking, while
+    individual units within each hemisphere had diverse direction preferences, including the
+    center direction.
+  source: Results, Brainstem activity maps of orofacial rhythms, paragraph 7; Extended Data
+    Figure 8g-i
+  quote: Overall, licking-related neurons showed selectivity for ipsilateral licking (Extended Data
+    Figure 8i)
+  depends_on:
+  - fig2-licking-breathing-tuned-counts
+  criterion: Lick angle by O9 (a) and (b); spikes from -50 to 100 ms around each lick onset
+    (Extended Data Fig 8g); left and right licks are those with angle below and above the
+    midline. Per licking unit (O1 (a)), left-lick rate minus right-lick rate. Reproduced when
+    this difference is larger for left-hemisphere than right-hemisphere units (CCF medial-
+    lateral position against the midline) by a one-sided Mann-Whitney test at p < 0.05 (a
+    standard choice, named here) and each hemisphere's median favours the ipsilateral side,
+    under both readings of O9.
+- id: ed4c-licking-map-insensitive-to-sorting
+  statement: The licking activity map was insensitive to spike-sorting quality; raising the
+    amplitude threshold from 150 to 500 uV left 2223 of 19,000 units and the same map.
+  source: Extended Data Figure 4c; Results, Brainstem activity maps of orofacial rhythms,
+    paragraph 2
+  quote: Licking activity map was insensitive to the quality of spike sorting. To obtain units with
+    the highest amplitude, the waveform amplitude quality metric was increased from 150 μV to
+    500 μV. This filtered the 19,000 units with amplitude > 150 μV to 2223 unit with amplitude >
+    500 μV.
+  depends_on:
+  - fig2-licking-breathing-tuned-counts
+  expected:
+    quantity: units with amplitude above 500 uV
+    value: 2223
+    tolerance: 222
+  criterion: Units passing the filter of the header with amplitude > 500 uV. Reproduced when the
+    count is within tolerance and, over CCF regions with at least 20 such units, the mean
+    licking MI per region in this subset correlates with that in all units (Spearman, p < 0.05,
+    positive; a standard choice, named here). The paper's 19,000 against 20,300 units is not
+    resolved here; both are reported.
+- id: fig3a-premotor-regions
+  statement: Premotor neurons of the masseter and genioglossus occupied largely distinct regions
+    of the pons and medulla, overlapping in the dorsal IRN.
+  source: Results, A licking premotor network with autonomous rhythm-generation properties,
+    paragraph 3; Figure 3a; Extended Data Figure 9a-b
+  quote: Premotor neurons for the masseter and genioglossus muscles occupied largely distinct
+    regions of the pons and medulla, with some overlap in the dorsal IRN (Figure 3a)
+  data: elsewhere
+  where: Takatoh et al. 2021, eLife 10:e67291, doi:10.7554/eLife.67291 (reference 43); the paper
+    gives no archive identifier for the mapped neurons
+  criterion: Not testable on the dandiset. From the premotor neuron positions in CCF, the density
+    contours of Extended Data Fig 9a (genioglossus 0.0063 and masseter 0.0019 neurons per mm3);
+    reproduced when the overlap of the two contours is under half of the smaller and lies in
+    IRN dorsal to its DV midpoint (both standard choices, named here).
+- id: fig3b-licking-units-in-premotor-regions
+  statement: Units inside the tongue-jaw premotor regions showed significantly higher licking
+    modulation than position-shuffled populations (Wilcoxon rank-sum test, P < 0.001).
+  source: Results, A licking premotor network with autonomous rhythm-generation properties,
+    paragraph 3; Figure 3b
+  quote: Units inside these regions showed significantly higher licking modulation compared to
+    position-shuffled populations (P < 0.001 Wilcoxon rank sum test)
+  statistics:
+  - test: Wilcoxon rank sum test
+    p: 0.001
+    p_relation: "<"
+  data: with_inputs
+  depends_on:
+  - fig2-licking-breathing-tuned-counts
+  criterion: Premotor regions are the union of the two density contours of Extended Data Fig 9a
+    built from reference 43's premotor neurons. Position shuffling is not described; readings
+    (a) licking MI of units inside against the MIs of the same number of units drawn at random
+    from all units (positions shuffled across units); (b) inside against outside. Reproduced
+    when the inside MIs are higher with rank-sum P < 0.001 under both readings.
+- id: fig3ce-descending-stimulation-rhythmic-licking
+  statement: Photostimulation of ALM (n = 11 mice) or latSC (n = 3 mice) elicited sustained
+    rhythmic licking at the naturalistic 7 Hz frequency.
+  source: Results, A licking premotor network with autonomous rhythm-generation properties,
+    paragraph 4; Figure 3c and 3e
+  quote: Photostimulation of ALM or latSC (20 or 40 Hz pulse trains for 2 or 1.3 s) elicited
+    sustained rhythmic licking at the naturalistic 7 Hz frequency (Figure 3c and e)
+  expected:
+    quantity: lick rate during photostimulation
+    value: 7
+    tolerance: 0.7
+    unit: Hz
+  criterion: Photostimulation trials of the ALM mice (cued licking task) and latSC mice. Lick
+    rate as tongue onsets per second from the first lick to the end of the light, mean per
+    mouse then across mice (the paper does not say how the rate is taken; a standard choice,
+    named here). Reproduced when the mean across mice is within tolerance for each group and
+    licking lasts to the end of the light in most trials (a lick in the last 300 ms, a standard
+    choice, named here).
+- id: fig3dfh-projections-and-rhythm-site
+  statement: ALM and latSC axons targeted the contralateral brainstem and engulfed the
+    tongue-jaw premotor regions; constant photostimulation of Phox2b+ neurons in the
+    posterior-dorsal IRN/PARN elicited rhythmic licking, while anterior sites locked the jaw.
+  source: Results, A licking premotor network with autonomous rhythm-generation properties,
+    paragraphs 4 and 5; Figure 3d, 3f, 3g and 3h
+  quote: In contrast, photostimulating a posterior-dorsal region of IRN and the adjacent region in
+    PARN (anterior-lateral to 12N) elicited rhythmic jaw movement and tongue protrusions
+  criterion: Anatomy and fibre-site data, with no stated deposit. For the fibre sites (46 sites,
+    27 mice, Figure 3h), reproduced when the sites classed rhythmic lie posterior and dorsal of
+    those not rhythmic (median CCF AP and DV positions) and within or next to IRN or PARN.
+- id: ed10-site-classes
+  statement: Of the brainstem photostimulation sites, 18 evoked rhythmic jaw movement with a
+    peak at 7 Hz and rhythmic tongue protrusions, 11 evoked no rhythmic jaw movement and 4
+    evoked only a transient tongue protrusion.
+  source: Extended Data Figure 10b, 10e and 10h
+  inferred: The counts 18, 11 and 4 are in three legends; no sentence gives them together.
+  expected:
+  - quantity: sites with rhythmic jaw movement
+    value: 18
+    tolerance: 2
+  - quantity: sites without rhythmic jaw movement
+    value: 11
+    tolerance: 1
+  - quantity: sites with transient tongue protrusion
+    value: 4
+    tolerance: 0
+  - quantity: jaw movement frequency peak at rhythmic sites
+    value: 7
+    tolerance: 0.7
+    unit: Hz
+  criterion: Jaw position Fourier spectrum during the 2 s of light (Extended Data Fig 10b).
+    Sites are classed rhythmic when the spectrum has a peak between 3 and 15 Hz (the jaw band
+    of the Methods) higher than in the 2 s before the light; classing rules beyond that are not
+    given. The three classes sum to 33 of the 46 sites of Figure 3h; the paper does not say how
+    the other 13 were classed, or whether the 4 transient sites are among the 11. Reproduced
+    when the counts are within tolerance and the peak of the mean spectrum of rhythmic sites is
+    within tolerance.
+- id: fig4b-artificial-licking-keeps-lick-timing
+  statement: During ALM-induced licking the lick-breath relationship of voluntary licking was
+    recapitulated; lick timing anticipated the next breath at a fixed latency across breathing
+    frequencies.
+  source: Results, Coupled brainstem oscillators autonomously coordinate licking and breathing,
+    paragraph 2; Figure 4b
+  quote: Notably, the same lick-breath temporal relationship was recapitulated during artificially
+    induced licking. Lick timing anticipated the next breath and proceeded inspiration at a fixed
+    latency across different breathing frequencies (Figure 4b)
+  criterion: Cued licking task of the ALM mice. The Fig 1g measure (header) on photostimulation
+    trials (licks during the 2 s light) and on Go-cue trials separately, pooled per mouse
+    (Figure 4b, "across all mice"); session pooling as needed for the minimum of 40 cycles per
+    half. Reproduced when the photostimulation difference is positive on average across mice by
+    a one-sample two-tailed t-test at p < 0.05 (the paper's test of Fig 1g; the threshold is a
+    standard choice, named here).
+- id: fig4c-artificial-licking-breath-timing
+  statement: During ALM-induced licking, inspiration timing was still influenced by future lick
+    timing.
+  source: Results, Coupled brainstem oscillators autonomously coordinate licking and breathing,
+    paragraph 2; Figure 4c
+  quote: Conversely, inspiration timing was influenced by future lick timing (Figure 4c)
+  criterion: As fig4b-artificial-licking-keeps-lick-timing, with the Fig 1i measure of the
+    header.
+- id: ed11b-alm-breathing-rate
+  statement: In a subset of mice, ALM photostimulation also increased breathing rate.
+  source: Results, Coupled brainstem oscillators autonomously coordinate licking and breathing,
+    paragraph 2; Extended Data Figure 11b
+  quote: In a subset of mice, ALM photostimulation also induced an increase in breathing rate
+    (Extended Data Figure 11b)
+  criterion: Breathing rate (inspiration onsets per second) in the 2 s of light against the 1 s
+    before, per photostimulation trial. Reproduced when at least one and fewer than all 11 mice
+    show an increase by a paired two-sided Wilcoxon signed-rank test over trials at p < 0.05
+    (a standard choice, named here).
+- id: fig4e-licking-units-anticipate-breath
+  statement: Preceding a slower breath, the activity of licking neurons was slowed in
+    anticipation of the next inspiration.
+  source: Results, Coupled brainstem oscillators autonomously coordinate licking and breathing,
+    paragraph 3; Figure 4e
+  quote: Preceding a slower breath, the activity of licking neurons was slowed in anticipation of
+    the next inspiration (Figure 4e)
+  depends_on:
+  - fig2-licking-breathing-tuned-counts
+  criterion: The unit peak difference of the header (code get_peak_diff_lick_unit), slow minus
+    fast, per licking unit, units by O1 and recordings by O2. The legend says "Same as b", the
+    test of Fig 1g; one-sample two-tailed t-test over units at p < 0.05 (threshold a standard
+    choice, named here). Reproduced when the mean is positive and significant under all
+    readings; blocked as methods_underspecified when the readings disagree.
+- id: fig4f-breathing-units-anticipate-lick
+  statement: Preceding a slower lick, the activity of breathing neurons was slowed in
+    anticipation of the upcoming lick.
+  source: Results, Coupled brainstem oscillators autonomously coordinate licking and breathing,
+    paragraph 3; Figure 4f
+  quote: Preceding a slower lick, the activity of breathing neurons was slowed in anticipation of
+    the upcoming lick (Figure 4f)
+  depends_on:
+  - fig2-licking-breathing-tuned-counts
+  criterion: As fig4e-licking-units-anticipate-breath, with breathing units and the code's
+    get_peak_diff_breath_unit.
+- id: fig4d-simultaneous-recordings
+  statement: Licking and breathing oscillators were recorded simultaneously in 43 recordings from
+    21 mice, with 1 to 28 licking-related and 1 to 12 breathing-related units per recording.
+  source: Results, Coupled brainstem oscillators autonomously coordinate licking and breathing,
+    paragraph 3; Figure 4d
+  quote: 43 recordings in 21 mice; 1-28 licking-related units and 1-12 breathing-related units per
+    recording
+  expected:
+  - quantity: simultaneous recordings
+    value: 43
+    tolerance: 4
+  - quantity: mice with simultaneous recordings
+    value: 21
+    tolerance: 2
+  criterion: Recordings with two probes, one with licking units (O1) in the posterior-dorsal
+    IRN/PARN and one with breathing units near the preBotzinger complex (O3). Reproduced when
+    the counts are within tolerance and the unit ranges per recording are within 1 to 28 and 1
+    to 12 widened by 10%, under every reading of O1 and O3.
+- id: fig4g-licking-breathing-pairs-correlated
+  statement: Activity of simultaneously recorded breathing and licking units was significantly
+    correlated for most pairs compared to trial-shuffled controls (103 of 119 pairs; 43
+    positively correlated, 60 anticorrelated).
+  source: Results, Coupled brainstem oscillators autonomously coordinate licking and breathing,
+    paragraph 4; Figure 4g
+  quote: Activity was significantly correlated for most pairs compared to trial-shuffled controls
+    (Figure 4g; 103/119 pairs with significant cross-correlation relative to shuffled control, 43
+    positively correlated, 60 anticorrelated
+  depends_on:
+  - fig4d-simultaneous-recordings
+  expected:
+  - quantity: pairs
+    value: 119
+    tolerance: 12
+  - quantity: significant pairs
+    value: 103
+    tolerance: 10
+  - quantity: positively correlated pairs
+    value: 43
+    tolerance: 4
+  - quantity: anticorrelated pairs
+    value: 60
+    tolerance: 6
+  criterion: Pairs from fig4d-simultaneous-recordings; correlograms by O6. Reproduced when, under
+    every reading of O6, the four counts are within tolerance; partially reproduced when, under
+    every reading, more than three quarters of pairs are significant with anticorrelated pairs
+    outnumbering positive ones.
+- id: fig4g-symmetric-lags
+  statement: The cross-correlation was temporally symmetric; breathing units lagged licking units
+    for 57 pairs, licking units lagged breathing units for 34 pairs, and 12 pairs peaked at zero.
+  source: Results, Coupled brainstem oscillators autonomously coordinate licking and breathing,
+    paragraph 4
+  quote: breathing units lagged licking units for 57 pairs, while other licking units lagged
+    breathing units for 34 pairs, (the remaining 12 pairs had cross-correlation peak at 0)
+  depends_on:
+  - fig4g-licking-breathing-pairs-correlated
+  expected:
+  - quantity: pairs with breathing unit lagging
+    value: 57
+    tolerance: 6
+  - quantity: pairs with licking unit lagging
+    value: 34
+    tolerance: 3
+  - quantity: pairs peaking at 0
+    value: 12
+    tolerance: 1
+  criterion: Significant pairs and lags by O6. Reproduced when the three counts are within
+    tolerance under every reading of O6; partially reproduced when, under every reading, both
+    lag directions each hold at least a quarter of significant pairs.
+- id: ed12c-correlation-without-licking
+  statement: Significant cross-correlation between licking and breathing unit pairs was observed
+    even when mice were not licking.
+  source: Results, Coupled brainstem oscillators autonomously coordinate licking and breathing,
+    paragraph 4; Extended Data Figure 12c
+  quote: Notably, significant cross-correlation between the unit pairs was observed even when mice
+    were not licking, i.e. when the licking oscillator was inactive (Extended Data Figure 12c)
+  depends_on:
+  - fig4g-licking-breathing-pairs-correlated
+  criterion: As fig4g-licking-breathing-pairs-correlated, on the baseline of the cued licking
+    task (trial start to Go cue, no tongue detected; Extended Data Fig 12c). Reproduced when
+    more than half of the pairs are significant under every reading of O6.
+- id: fig4h-fewer-correlations-outside-oscillator
+  statement: Units outside the licking oscillator were less often cross-correlated with breathing
+    units (54 of 110 pairs), a significantly lower proportion than licking-breathing oscillator
+    pairs (Chi-square test, p < 0.0001).
+  source: Results, Coupled brainstem oscillators autonomously coordinate licking and breathing,
+    paragraph 4; Figure 4h
+  quote: units outside of the licking oscillator exhibited less cross correlation with the
+    breathing units (Figure 4h; 54/110 pairs with significant cross correlation; a significantly
+    lower proportion compared to licking-breathing oscillator unit pairs, p<0.0001, Chi-square
+    test)
+  statistics:
+  - test: Chi-square test
+    p: 0.0001
+    p_relation: "<"
+    n: 110 and 119 pairs
+  depends_on:
+  - fig4g-licking-breathing-pairs-correlated
+  expected:
+  - quantity: pairs with a non-licking unit
+    value: 110
+    tolerance: 11
+  - quantity: significant pairs with a non-licking unit
+    value: 54
+    tolerance: 5
+  criterion: Non-licking units are not defined; readings (a) units of the licking-oscillator
+    probe not licking-tuned (O1); (b) units of that probe outside the posterior-dorsal IRN/PARN
+    (O3). Correlograms by O6. Chi-square test on the 2 x 2 table of significant and not
+    significant pairs, without continuity correction (i) and with it (ii). Reproduced when the
+    proportion is lower with p < 0.0001 under (a) or (b), for every reading of O6 and of the
+    continuity correction; the counts are reported against the
+    expected values.
+- id: fig5b-voluntary-lick-latency
+  statement: Mice initiated licking 127.6 +- 29.6 ms after the Go cue (mean +- std across mice,
+    n = 11).
+  source: Results, Descending control patterns oscillators at movement initiation, paragraph 2;
+    Figure 5a-b
+  quote: Mice initiated licking 127.6 ± 29.6 ms after the Go cue onset (defined as the onset of
+    tongue appearance in the video, mean ± std across mice, n=11 mice
+  expected:
+    quantity: lick latency after Go cue, mean across mice
+    value: 127.6
+    tolerance: 12.8
+    unit: ms
+  criterion: Cued licking task, Go-cue trials, first tongue onset after the cue within the 0.5 s
+    response window; mean per mouse, then mean across the 11 mice.
+- id: fig5c-preemptive-breath-adjustment
+  statement: Before voluntary licking, breathing phase deviated from random 115 +- 19 ms before
+    lick onset and became entrained to a phase that put expiration at the first lick (two-sample
+    Kuiper test with Bonferroni correction, p < 0.0001).
+  source: Results, Descending control patterns oscillators at movement initiation, paragraph 2;
+    Figure 5c
+  quote: 115 ± 19 ms before licking onset (mean ± s.e.m., bootstrap), breathing phase began to
+    deviate significantly from random distribution and became entrained to a specific phase
+    (Figure 5c; p<0.0001, two sample Kuiper test with Bonferroni correction)
+  statistics:
+  - test: two sample Kuiper test
+    p: 0.0001
+    p_relation: "<"
+    corrected: Bonferroni
+  expected:
+    quantity: onset of breathing-phase entrainment before voluntary lick onset
+    value: 115
+    tolerance: 19
+    unit: ms
+  criterion: Go-cue trials of the cued licking task; breathing phase (Hilbert, header) aligned to
+    the first lick; test and latency by O7 (a) and (b). Reproduced when, under both readings of O7,
+    the latency is within tolerance and the phase at lick onset lies in expiration (phase pi to 2
+    pi).
+- id: fig5e-photostim-lick-latency-longer
+  statement: ALM photostimulation evoked licking with a latency of 230.7 +- 31.5 ms, significantly
+    longer than voluntary licking (paired t-test, two-tailed, p < 0.001).
+  source: Results, Descending control patterns oscillators at movement initiation, paragraph 3;
+    Figure 5e
+  quote: Photostimulation evoked licking with a latency of 230.7 ± 31.5 ms (Figure 5e), which was
+    significantly longer than voluntarily initiated licking (p<0.001, paired t-test, two-tailed)
+  statistics:
+  - test: paired t-test, two-tailed
+    p: 0.001
+    p_relation: "<"
+    n: not stated; the 11 mice of the voluntary latency, or sessions
+  expected:
+    quantity: lick latency after photostimulation onset, mean across mice
+    value: 230.7
+    tolerance: 23.1
+    unit: ms
+  depends_on:
+  - fig5b-voluntary-lick-latency
+  criterion: First tongue onset after light onset on photostimulation trials, mean per mouse.
+    The paper does not give the unit of the paired test; readings (a) the 11 mice, against the
+    Go-cue latencies of fig5b-voluntary-lick-latency; (b) sessions, Go-cue and photostimulation
+    means of the same session. Reproduced when the mean across mice is within tolerance and
+    the paired two-tailed t-test gives p < 0.001 under one reading.
+- id: fig5f-artificial-licking-late-breath-adjustment
+  statement: Artificially induced licking did not recapitulate the pre-emptive breath adjustment;
+    breathing phase changed only 47.6 +- 10 ms before lick onset, a significantly shorter latency
+    than before voluntary licking (bootstrap, P < 0.0001).
+  source: Results, Descending control patterns oscillators at movement initiation, paragraph 3;
+    Figure 5f (the Results also cite a Figure 5g that the legend does not describe)
+  quote: Breathing phase was altered only shortly before licking onset (Figure 5f; 47.6 ± 10 ms),
+    a significantly shorter latency than the pre-emptive adjustment before voluntary licking
+    (Figure 5g; P<0.0001, bootstrap)
+  statistics:
+  - test: bootstrap
+    p: 0.0001
+    p_relation: "<"
+  expected:
+    quantity: onset of breathing-phase change before induced lick onset
+    value: 47.6
+    tolerance: 10
+    unit: ms
+  depends_on:
+  - fig5c-preemptive-breath-adjustment
+  criterion: As fig5c-preemptive-breath-adjustment on photostimulation trials, aligned to the
+    first tongue protrusion after light onset. The bootstrap comparison is not described; the
+    reading used is 10,000 resamples of trials with replacement, drawn within each condition,
+    p the fraction where the induced latency is at least the voluntary one (a standard choice,
+    named here; P < 0.0001 needs at least 10,000 resamples). Reproduced when, under both
+    readings of O7, the latency is within tolerance and the comparison gives P < 0.0001.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment. Added the rule for readings. Readings of a method (V2 to V4, O1, O3, O6 to O9, named tests, regions, shuffles) must all give the outcome, else methods_underspecified (protocol, Reader step 3). "Under one reading" is kept only for readings of what a number counts (O4, O5, denominators, units of a test).
+  - fig2-licking-breathing-tuned-counts, fig2-swallow-modulated-counts, fig2f-breathing-units-location, fig2h-swallow-units-location, ed7h-prebotc-exception, ed8bc-prebotc-inspiration-phase, ed8i-ipsilateral-lick-selectivity, fig3b-licking-units-in-premotor-regions, fig4d-simultaneous-recordings, fig4g-licking-breathing-pairs-correlated, fig4g-symmetric-lags, ed12c-correlation-without-licking, fig4h-fewer-correlations-outside-oscillator, fig5c-preemptive-breath-adjustment and fig5f-artificial-licking-late-breath-adjustment. Changed "under one reading" of method readings to "under every reading", by the rule above.
+  - fig2-licking-breathing-tuned-counts. The 10% and 25% partial thresholds were attributed to the Methods, which say only that the proportions were robust; now named as a standard choice. Added readings (i) and (ii), since the text does not say whether 3551 and 1015 include the 182 units tuned to both.
+  - ed1-unidirectional-models-fail and fig1k-rhythms-follow-swallow-at-fixed-latency. The statements said "so" where the paper says "suggest"; now "suggesting". ed1 also now names the fixed latency, the cycle count and the p >= 0.05 test as choices, since the paper gives none.
+  - ed7-glm-separate-clusters. The criterion asked whether two sets assigned by largest weight "overlap", but such sets cannot overlap, and it set a posterior position the paper does not give. Rewritten from Extended Data Fig 7c-d (airflow weights around and below 10N), with each choice named.
+  - ed1bc-licks-pause-at-swallows, ed6e-swallow-latencies, ed8e-licking-units-protrusion, fig3a-premotor-regions and fig3ce-descending-stimulation-rhythmic-licking. Choices the paper does not give (expiration onset, peak window, full protrusion frame, pi/2 margin, contour overlap rule, lick rate window, last 300 ms) are now named as standard choices.
+  - fig2g-licking-units-location. "in XII, V and IRN" was ambiguous; now "in each of", following the statement, which names each region.
+  - ed10-site-classes. Noted that the three classes sum to 33 of the 46 sites, and that the paper does not say whether the 4 transient sites are among the 11.
+  - fig5e-photostim-lick-latency-longer. The paper does not give n for the paired t-test; the recorded "11 mice" was an inference. n now says so, and the criterion gives readings (a) mice and (b) sessions.
+  - fig5f-artificial-licking-late-breath-adjustment. The bootstrap reading said "paired resamples of trials", but voluntary and induced trials are not paired. Now resamples within each condition, named as a choice.
+  - Open. The cross-correlation analysis (O6) cites Methods that do not exist, so its readings are reconstructed; fig4g, fig4h and ed12c are likely to be blocked as methods_underspecified if the readings disagree.
+  - Open. fig1f-inspiration-between-licks judges "never" by a 5% standard choice and only reports the literal reading.
+  - Open. The header's code details (process_mat.py functions, bins, windows) were not checked against the repository in this check; they were taken as the first reader recorded them.

@@ -207,6 +207,21 @@ def test_the_chart_counts_a_step_not_reached_as_to_do_and_old_claims_as_made_bef
     assert site.chart_state("check", "none", "before checks") == "older"
     assert site.chart_state("paper", "waiting", "not in store") == "waiting"
 
+
+def test_claims_checked_since_an_attempt_was_deprecated_count_as_read_again():
+    target = {"key": "dandi:000001", "label": "DANDI:000001", "name": "x"}
+    attempt = {"key": "dandi:000001", "paper": "p", "date": "2026-10-01", "id": "x-01", "tier": "runs",
+               "deprecated": "From the abstract.", "deprecated_on": "2026-10-20", "outcomes": []}
+    def row(check_date):
+        data = {"targets": [target], "attempts": [attempt],
+                "pipeline": {"papers": {}, "questions": {},
+                             "checks": {"dandi:000001": {"ready": True, "date": check_date}}}}
+        return site.pipeline_rows(data)[0]["state"]
+    old, new = row("2026-10-12"), row("2026-10-21")
+    assert old["claims"] == ("todo", "to read again") and old["check"][0] == "todo"
+    assert new["claims"] == ("done", "read again") and new["check"] == ("done", "ready")
+    assert old["attempt"][0] == new["attempt"][0] == "deprecated"
+
 def test_the_pipeline_has_a_row_per_target(built):
     data, out = built
     rows = json.loads((out / "data" / "pipeline.json").read_text())
@@ -217,10 +232,19 @@ def test_the_pipeline_has_a_row_per_target(built):
     for dandiset, attempts in site.current_attempts(data).items():
         row = next(r for r in rows if r["key"] == dandiset)
         if any(a.get("deprecated") for a in attempts):
-            assert row["state"]["attempt"][0] == "deprecated" and row["state"]["claims"][0] == "todo"
+            # Its claims are to be read again, until a claims file checked since then is merged.
+            assert row["state"]["attempt"][0] == "deprecated"
+            assert tuple(row["state"]["claims"]) in (("todo", "to read again"), ("done", "read again"))
         else:
             assert row["state"]["attempt"][0] == "done"
     assert "Pipeline" in (out / "pipeline" / "index.html").read_text()
+
+
+def test_the_pipeline_says_when_it_was_last_updated(built):
+    data, out = built
+    page = (out / "pipeline" / "index.html").read_text()
+    assert f'<time id="updated" datetime="{data["generated"]}">' in page
+    assert "Last updated <time" in page
 
 
 def test_a_deprecated_attempt_counts_for_nothing():
@@ -446,10 +470,14 @@ def test_stylesheets_and_scripts_are_named_by_their_contents(built):
 def test_old_dandiset_links_redirect_to_the_dataset_pages(built):
     data, out = built
     for key in site.current_attempts(data):
-        old = (out / "dandisets" / site.split_key(key)[1] / "index.html").read_text()
+        archive, ident = site.split_key(key)
+        if archive != "dandi":   # only DANDI datasets had pages under dandisets/
+            assert not (out / "dandisets" / ident).exists()
+            continue
+        old = (out / "dandisets" / ident / "index.html").read_text()
         assert f'url=../../{site.page_of(key)}"' in old
         for a in site.earlier_attempts(data, key):
-            moved = (out / "dandisets" / site.split_key(key)[1] / a["id"] / "index.html").read_text()
+            moved = (out / "dandisets" / ident / a["id"] / "index.html").read_text()
             assert f'url=../../../{site.page_of(key)}{a["id"]}/"' in moved
     assert 'url=../datasets/"' in (out / "dandisets" / "index.html").read_text()
 
@@ -459,3 +487,60 @@ def test_datasets_are_named_by_archive_and_id():
     assert site.page_of("dandi:000003") == "datasets/dandi/000003/"
     assert site.dir_of("dandi:000003") == "000003" and site.dir_of("ebrains:abc") == "ebrains-abc"
     assert site.key_of_dir("000003") == "dandi:000003" and site.key_of_dir("ebrains-abc") == "ebrains:abc"
+
+
+def test_a_dataset_with_claims_and_no_attempt_has_a_page_linked_from_the_pipeline(built):
+    data, out = built
+    rows = json.loads((out / "data" / "pipeline.json").read_text())
+    for key in site.claims_only(data):
+        row = next(r for r in rows if r["key"] == key)
+        assert row["page"] == site.page_of(key)
+        page = (out / site.page_of(key) / "index.html").read_text()
+        claims = [c for f in data["claim_files"][key] for c in f["claims"]]
+        assert all(f'id="claim-{c["id"]}"' in page for c in claims)
+
+
+def test_a_dataset_waiting_on_a_person_links_its_issue():
+    data = site.collect()
+    label = data["targets"][0]["label"]
+    data["issues"] = {label: "https://github.com/catalystneuro/reproduction-registry/issues/1"}
+    row = next(r for r in site.pipeline_rows(data) if r["dataset"] == label)
+    assert row["issue"] == data["issues"][label]
+    page = site.page_pipeline(data)
+    assert f'<a href="{data["issues"][label]}">waiting on you</a>' in page
+    assert "has stopped on" in page and "1 dataset</a>" in page
+
+
+def test_the_queue_estimates_fill_the_lanes_in_order():
+    q = {"full": ["000001", "000002", "000003", "000004"], "claims": ["000004", "000005"],
+         "lanes": {"full": 2, "claims": 1}, "hours": {"full": 4.0, "claims": 0.5}}
+    est = site.queue_estimates(q)
+    # The lanes' current attempts are half done: the first two start in 2 hours, the next two in 6.
+    assert [est[site.key_of_dir(f)]["hours"] for f in q["full"]] == [6.0, 6.0, 10.0, 10.0]
+    assert est[site.key_of_dir("000005")] == {"kind": "claims", "place": 2, "hours": 1.25}
+    # A dataset in both queues gets the full runner's estimate.
+    assert est[site.key_of_dir("000004")]["kind"] == "full"
+    # With the running chains' times, a lane is free when its chain should be done.
+    q["running"] = {"000009": {"kind": "full", "hours": 1.0}}
+    assert [site.queue_estimates(q)[site.key_of_dir(f)]["hours"] for f in q["full"]] == [4.0, 5.0, 8.0, 9.0]
+    assert site.in_hours(0.4) == "within the hour" and site.in_hours(10.2) == "about 10 hours"
+    assert site.in_hours(100) == "about 4 days" and site.in_hours(None) == ""
+
+
+def test_the_pipeline_shows_each_queued_dataset_and_when_it_should_be_done():
+    data = site.collect()
+    first, second = (t["key"] for t in data["targets"][:2])
+    third, fourth = (t["key"] for t in data["targets"][2:4])
+    data["queue"] = {"full": [site.dir_of(first)], "claims": [],
+                     "branches": [site.dir_of(second), site.dir_of(third), site.dir_of(fourth)],
+                     "lanes": {"full": 3, "claims": 1}, "hours": {"full": 4.0, "claims": 0.25},
+                     "running": {site.dir_of(third): {"kind": "full", "hours": 2.4},
+                                 site.dir_of(fourth): {"kind": "full", "hours": 0.5}}}
+    rows = {r["key"]: r for r in site.pipeline_rows(data)}
+    assert rows[first]["queue"]["place"] == 1 and rows[second]["branch"] and rows[third]["running"]
+    page = site.page_pipeline(data)
+    # The first in the queue takes the lane that is free now.
+    assert ">1 for an attempt</td>" in page and ">about 4 hours</td>" in page and ">branch open</td>" in page
+    assert page.count(">running now</td>") == 2 and ">about 2 hours</td>" in page and ">within the hour</td>" in page
+    assert "2 chains are running now" in page
+    assert "1 dataset waits for an attempt on 3 lanes, at about 4.0 hours each" in page

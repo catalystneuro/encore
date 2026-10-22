@@ -1,22 +1,20 @@
-No outcome changed and I proposed no changes. The verifier agreed with all seven outcomes, and the new analyses do not move any of them under the claims' criteria. The entry re-ran cleanly with `python tools/entry.py all` (0 check errors, 6.6 minutes), and every number that was there before came out the same.
+No outcome changed. The round-2 verifier agreed with all 10 outcomes, and I agreed with it, so nothing is under `proposed`. I re-ran `python tools/entry.py all entries/001754-knierim-2000` after the final edits: 0 errors and the notebook passes. Every outcome printed by the criterion's rule matches the record.
 
-**Outputs the verifier asked for (two new cells under flight-spatial-code)**
-- **Test on real spike trains cut off from position.** I reversed each unit's real spike train in time within its epoch, which keeps its bursts and rate changes but breaks its link to position. Only 2 of 122 flight ES units come out significant. I also ran Rat3's ES1 spikes against the ES2 position trace and the reverse: 0 of 16 and 0 of 19. So on real trains the test gives fewer false positives than the 0.05 it assumes.
-- **What sets the high threshold.** A unit's shuffle 95th percentile is nearly the same for its reversed train (rho 0.995), and 1.7 to 2.3 times that of a Poisson train with the same spike count. It is driven by how few 10 s periods hold the unit's spikes (rho −0.874) and by how few spikes it has (rho −0.601); together these explain 80% of its variance on a log scale.
-- **Rat2's FD9 units** are the most clumped in time and have the highest median threshold (3.572). The test has less power for such units, but I did not measure its power. The conclusion and record notes now say that a low fraction of significant units is weak evidence against a spatial code.
-- **Rat3's second ES epoch** is explained the same way: TT4/1 and TT5/1 fire fewer spikes in fewer periods there.
-- **Earlier-version figures** are now computed in the notebook instead of quoted from the first attempt. On the earlier version's files Rat1 gets 11 or 12 of 25 and Rat2 2 or 3 of 28 over five seeds, with shuffle drops of 0.074 to 0.075 and 0.306 to 0.307. The record now cites these.
+**Corrected, for the four sentences the printed numbers did not support:**
+- **si-comparable-to-preflight (cell 29, cell 30, record notes):** cell 29 now also prints every p unrounded. The M-b variant gives p 6.2e-07 and 2.5e-07, and the conclusion and notes now give those values in place of "p < 1e-6".
+- **direction-selectivity (cell 51, cell 48, record notes):** cell 51 now counts, in each zip file of the NASA record (OSD-968), the entries with a position-like name, and prints their file extensions. None has such a name. The text now says that, and that the .cel spike files and the archives nested inside the processed-files zip were not opened, so whether the record holds continuous position is not known.
+- **fig3-stability-across-sessions (cell 44, record notes):** the text now says that 17 of the 19 session 2 maps were tied to a unit, with all 11 active maps among them, and 23 of 23 in session 3. It had said every map was tied.
+- **Cell 23:** it no longer says the position trace is not Rat 2's in Rat 2's flight-day-4 window. It now says the trace could not be attributed to either rat there (0 of 17 and 1 of 16 units).
 
-**Text corrections**
-- **Summary and README:** the false-positive figures now name their null. Poisson trains moved to position sample times give 0.096 pooled and 0.214 at most in one session; plain Poisson trains give 0.074 and 0.160.
-- **si-comparable:** "about a quarter" is now "a drop of up to 29% (40% for Rat1 alone) is not excluded", and the text says the result shows only that no difference was detected.
-- **fd4:** the text now says that with Rat3's units added, the shuffle-corrected measure is higher on FD4 than on FD9 (0.232 against 0.211, p = 0.31).
-- **fig3:** "units with the most stable fields" is now "units whose fields correlate across the epochs", since TT8/5 has r = 0.436, below the median.
-- **Runtime:** `entry.yaml` and the README now say 7 minutes (was 5).
-- **Record:** round 2 is added under `verifications`, with the verifier's reasons in its own words and my responses.
+**Added:**
+- A round-2 entry under `verifications` in `attempts/001754-knierim-2000-03.yaml`, giving for each of the 10 claims whether the verifier agreed, its outcome, its reason in its own words, and my response.
+- A header comment in the record describing this revision.
 
-**Not done**
-- I did not add the verifier's round-1 problem 7 (occupancy at 38 to 57 counts/s) to the record. It belongs to no claim, the verifier marked it as not affecting a conclusion, and the notebook already states it.
-- I did not measure the test's power, so the record calls it unmeasured.
+**Not done, and why:**
+The verifier's remaining points don't decide any outcome under the criteria, so I recorded them and changed no analysis:
+- Rat 2's flight-day-4 position trace may not be Rat 2's.
+- fig3-stability-across-sessions and three-orthogonal-surfaces rest on M-b alone, the unsmoothed recomputed maps with few spikes per bin, a reading that is weak by construction.
+- The cell counts differ from the paper's.
+- Its earlier, non-deciding points (B4, B6 and the unknown smoothing kernel) stand as before.
 
-Nothing is committed, as instructed.
+The caveats were already stated in the notes, deviations and findings. Changing how these claims are tested would mean changing the claims file, which is not mine to change. Nothing is committed.

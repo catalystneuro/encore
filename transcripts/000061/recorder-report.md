@@ -1,11 +1,106 @@
-I added the README row for 000061 (4 reproduced, 0 partial, 1 not reproduced, 1 blocked) and appended the subsection below to the end of `docs/pilot-notes.md`. Nothing is committed. Untracked dotfiles and a `scripts/` directory are in the repository root; I didn't create them, and they should stay out of the commit.
+I ran `tools/readme_row.py 000061 --write`. The 000061 row in README.md now reads 6 reproduced, 1 partially reproduced, 3 not reproduced and 22 blocked, and no longer says "(deprecated)". I added the subsection below at the end of `docs/pilot-notes.md` and committed nothing.
 
-The record gives the video streaming estimate two ways: the claim notes say "about 190 hours" and the round 2 summary says "about 192 hours". I used 190, from the claim notes. The `catalystneuro` field names a contributor and no repository, so the opening sentence of the second paragraph follows the earlier subsections: "(Cody Baker of CatalystNeuro is a contributor)".
+The `catalystneuro` field names no repository, only "contributor Baker, Cody of CatalystNeuro". So the opening sentence of the second paragraph names the contributor, as the first 000061 subsection does.
 
-### 000061, Girardeau et al. 2017
+### 000061, Girardeau et al. 2017, second attempt
 
-Four claims reproduced, one not reproduced and one blocked, all on the dandiset. Round 1 gave its own outcome for each claim without seeing the record and agreed with all six, though it gave a different reason for the block; round 2 agreed again and nothing was proposed, so there was no third round. The paper reports that joint hippocampus and basolateral amygdala (BLA) patterns from an aversive run are reactivated in later sleep in rats, peaking at sharp-wave ripples and involving a subgroup of BLA cells that fire more at ripples. The paper is not open access, so the claims were taken from the abstract alone, none has a reported number, and every method was chosen and fixed in the claims file. Post-sleep reactivation, its peak at ripples, the ripple-up BLA subgroup and its weight in the patterns were tested on 15 sessions from 3 rats, and stronger reactivation of the air-puff direction does not hold (p = 0.11). `rats-learn-puff-location` is blocked as `too_large`, changed from `data_missing` after round 1: the dandiset holds no position tracking, and tracking the 1920573 raw run frames (1328 GB uncompressed) would take about 190 hours to stream. Some outcomes rest on weak ground: in `hpc-bla-reactivation-post-sleep` Rat10 is positive in 5 of 8 patterns (p = 0.74); much of the ripple peak is already present in pre-sleep, so only the post minus pre contrasts speak to reactivation; and in `reactivation-involves-ripple-up-cells` the up units fire faster (1.66 against 0.41 Hz), and the rate-matched difference does not hold at session level (9 of 13, p = 0.22).
+Six claims reproduced, one partially, three not reproduced and twenty-two
+blocked on the dandiset. The attempt replaces the deprecated
+000061-girardeau-2017-01, whose claims were taken from the abstract alone; the
+claims file was written again from the full text, its supplement and the
+paper's code (buzsakilab/papers, GGirardeau-BLAHpcInteractions-Package), so it
+has 32 claims where the earlier one had 6, and the six kept ids now use the
+paper's own measures (EV/REV, the Poisson ripple-modulation test and
+reactivation strength R). It pins the same version, 0.250624.0426, as no later
+version has been published and the draft holds the same 40 assets. The author
+put three questions to a reader; the answers confirmed lap reading c and the
+identified cells for the firing-rate claims, and removed the dependencies of
+three claims so their all-cell tests are judged alone, which moved
+`direction-all-cell-pairs` from blocked to reproduced,
+`reactivation-peaks-at-ripples` to partially reproduced (11 of 15 sessions,
+one-tailed p = 0.0042) and `ripple-modulated-cells-larger-reactivation` to not
+reproduced (p = 0.27 and 0.3). Round 1 gave its own outcome for each claim
+from the notebook and agreed with all 32, but found that
+`bla-rate-same-across-directions` misread its criterion: the all-cell test
+already has p < 0.05 under both session readings (p = 0.022 and 0.0048), and
+only O7 reading b, which needs position, keeps it from not reproduced, so its
+reason changed from `metadata_insufficient` to `too_large` (round 1 gave
+`other`). Round 2 agreed with all 32 and nothing was proposed, so there was no
+third round. The paper, in Nature Neuroscience, records the hippocampus and
+basolateral amygdala (BLA) of rats running a linear track with an air puff at
+one location, and reports that joint hippocampus and BLA patterns of the run
+are reactivated in later NREM sleep, peak at sharp-wave ripples, involve a
+subgroup of BLA cells that fire more at ripples, and are stronger for the
+aversive direction. The unit counts, habituation, BLA sleep firing rates,
+all-pair reactivation, the central nuclei, the ripple rate and the all-cell
+ripple and direction tests were tested. `unit-counts` is not reproduced (40
+sessions and 4702 units against 61 and 7,390), and `bla-int-sleep-firing`
+because the REM/wake ratio of the 36 identified inhibitory BLA units changes
+(p = 0.020) and the NREM decrease has p = 0.26. Seventeen claims on putative
+pyramidal cells, four of the ids kept from the earlier attempt among them,
+are blocked as `metadata_insufficient`, and the four behaviour claims and
+bla-rate-same-across-directions as `too_large`, as they need position from
+about 222 hours of streaming video. Some outcomes rest on weak ground:
+`bla-pyr-sleep-firing-increase` and bla-int-sleep-firing rest on 152 and 36
+cells from one rat, against 675 and 175 from four; `cen-no-reactivation` (9
+and 8 sessions against 19) and `ripple-rate-unchanged` (23 against 41) hold
+only on the paper's p threshold, the bootstrap interval of the central nuclei
+NREM median (-2.4 to 4.1%) including the hippocampus-BLA median of 1.96%; and
+in direction-all-cell-pairs the reward-to-reward laps hold platform time and
+stops, and with each lap cut to its last 10 s the safe test misses p < 0.05 (p
+= 0.052), while the air puff result rests mostly on Rat08 (7 of 8 sessions).
 
-The dandiset was converted by CatalystNeuro (Cody Baker of CatalystNeuro is a contributor). In ten files the spike_times_index is wrong at the first units: unit 1's spike times fall back once, after 65536 times k spikes, and the first part of unit 1 is the end of unit 0, so units 0 and 1 of these files were left out. The epochs table is stored in milliseconds although its columns say seconds, its last stop time exactly 1000 times the LFP duration in all 40 files, and the video timestamps are also in milliseconds and not on the session clock (the first timestamp matches the start of its epoch in 1 of 114 videos). Seven files have no units table, sixteen have no sleep states and fourteen have no ripple events, and Rat09 has no hippocampal units and no ripples, so it cannot enter a hippocampus and BLA analysis. There is no position tracking, only the raw video frames, so run direction can only be inferred from reward times. Other findings: unit region labels are undescribed short codes, some in two cases for the same region, Rat09-20140328 has no location column and every electrode's location is unknown, so which labels make up the paper's BLA cannot be told; the `trials` table of the Rat08 and Rat09 files is described only as "experimental trials" and its intervals of 3 to 5 s are not laps; the ripple annotations carry an undescribed number in each label; and neither the paper (as far as the abstract shows) nor the dandiset links analysis code.
+The dataset was converted by CatalystNeuro (Cody Baker of CatalystNeuro is a
+contributor). The files are unchanged, so every finding of the earlier attempt
+is still present except the missing methods, which the full text and the
+paper's code now supply, though the dandiset still links no code. The
+putative cell types the paper uses are not in the dandiset and there are no
+spike waveforms; five of the 33 files with units (Rat08-20130709 to 20130713)
+have a `cell_type` column, described only as "Type of cell this has been
+classified as.", marking 152 excitatory and 36 inhibitory BLA units and 9
+excitatory hippocampal units, consistent with the paper's monosynaptic
+identification alone, and a cross-correlogram check supports this reading
+(99.3% and 94.4% at p < 1e-6, against 44% and 7.9% of unclassified units).
+The dandiset holds 40 recording days with 4702 units, where the paper reports
+61 sessions with 7,390 units (2317, 515, 440 and 1430 units for Rat08 to
+Rat11 against 2,444, 1,294, 1,138 and 2,514), and does not say which rat is
+which of the paper's rats 1 to 4. The archive's asset metadata is wrong for
+all 40 files: it lists ElectricalSeries for the 24 files that hold no raw
+voltage and not for the 16 that do, and ProcessingModule for the 16 files
+without a behavior module and not for the 24 with one. Still present from the
+earlier attempt: the epochs table is stored in milliseconds although its
+columns say seconds; video timestamps are in milliseconds and not on the
+session clock (the first matches its epoch's start in 1 of 114 videos); in
+ten files the spike_times_index is wrong at the first units, so units 0 and 1
+were left out; seven files have no units table, sixteen no sleep states and
+fourteen no ripple events, and the Rat09 files have no hippocampal units and
+no ripples; there is no position tracking and no air puff location; unit
+region labels are undescribed short codes, which the paper's Supplementary
+Fig. 3 now lets this attempt read; the trials table of the Rat08 and Rat09
+files is described only as "experimental trials" and its intervals are not
+laps; and the ripple annotations carry an undescribed number in each label.
 
-Round 2 found five passages the printed outputs did not support, among them a video streaming time left over from an earlier run, and all were corrected without changing an outcome. Untracked dotfiles and a `scripts/` directory that the author did not create appeared in the repository during the run and were left alone. The author's points on the protocol: an abstract alone gives no reported numbers or tolerances; step 5 assumes there is code to read; the rule on blocking a claim for its unit selection does not cover dropping a whole animal; no guidance on an abstract sentence that describes the task setup; whether to repair broken data or leave it out; a lap-direction clock check where shifting by whole laps only flips the labels; how to count a lap that starts before the run; and a chance level for the BLA selection computed with the author's own procedure when the paper reports none.
+The notebook ran in 6.8 minutes in the first clean run, 454 s after the
+answers and 10.2 minutes in the final run. `entry.py check`, and so
+`entry.py all`, failed throughout on 29 errors, all in the deprecated record,
+which has no outcomes for the new claims and must stay as it is, and the
+notebook was run with `entry.py run`. A run in round 1 timed out after 60
+minutes because the new listing of each file's groups walked whole files over
+the network, and was limited and run again. Round 1's points led to effect
+sizes, bootstrap intervals and power for the absence claims, a
+cross-correlogram check of the `cell_type` column, a listing of every file's
+groups, per-rat and left-out-unit tables and a BLA-only variant of the
+all-pair test (4 of 5 sessions, p = 0.44). Round 2 found statements the
+outputs did not support, among them streaming and run times that did not match
+the printed outputs, a sentence saying the inhibitory cells differ from the paper's in
+REM, which no test compares, and a power figure given as an exclusion bound,
+and these were corrected; the author then added lap variants limiting
+platform time to direction-all-cell-pairs and bla-rate-same-across-directions,
+where the difference in rate disappears with each lap cut to its last 10 s (p
+= 0.75 and 0.82). Untracked dotfiles that the author did not create were left
+alone. The author's points on the protocol: `entry.py check` holds the
+deprecated record to the current claims file, so `entry.py all` cannot pass;
+the repeat-attempt section assumes the claims file is kept and the dandiset
+changed, where here the dandiset is unchanged and the claims file was
+rewritten, so no earlier finding could be fixed; and the rule for dependencies
+blocks claims whose all-cell tests could run.

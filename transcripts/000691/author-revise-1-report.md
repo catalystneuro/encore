@@ -1,36 +1,25 @@
-I've addressed all of the round-1 report. One outcome changed (ed9c), outputs were added for every request I could fit in the time limit, and the entry re-runs clean: `entry.py all` passes in 23.6 minutes. Two consecutive runs gave identical numbers. Nothing is committed.
+I answered every point in the round-1 report and re-ran all seven notebooks; all passed within the 30-minute limit. No outcome changed. The only change of status is the reason for one block: fig2d-lman-sparse-bursting is now blocked as `methods_underspecified`, which is what its criterion says, with the missing data recorded in the notes. Round 1 is recorded under `verifications` for the 22 claims the report covered. Nothing is committed.
 
-**Outcome changed**
-- **ed9c-local-decoding-map: not_reproduced → reproduced.** The verifier suspected the SGD solver (problem 2), and it was the cause. On the 32-footprint decoders, 10 passes of SGD stop at objectives of 19.8 to 68.9, while the optimum is 1.976 to 2.000.
-  - The paper's code leaves the solver at MATLAB's default. For 100 or fewer predictors that is BFGS run to convergence, so the local decoders now use an exact solver (liblinear) with the same objective.
-  - With it, 18 of 150 points are significant, and their scores range over 0.075, so the criterion is met.
-  - The old SGD solver, on the same points and seeds, gives 1 point and fails. The notes call the result fragile: the optimum is close to the objective of predicting every class absent (2.0), and liblinear hit its 10,000-iteration limit in 2268 of 3000 fits.
-  - Round 2 reviews this change.
+**Where I kept an outcome the verifier disagreed with**
+- **fig2-quadrant-direction-decoding and ed9b-octant-decoding:** the verifier would call these reproduced on the n1 null alone. I kept them blocked (`not_runnable`) and recorded the disagreement. The criterion judges p under both null readings, and the full n2 null needs about 34 hours. I ran 9 n2 null decoders per claim, and all lie far below the real decoders: 0.089 to 0.145 against 0.437 for quadrant, 0.109 to 0.149 against 0.326 for octant. But 9 cannot show p < 0.001, so calling it reproduced would rest on my own guess that the full n2 null would agree.
+- **fig2k, fig2l, ed9c:** the verifier wanted the reason for these blocks to be `other`. I kept `not_runnable`: the full runs are measured at 4.5 to 12.8 hours on four cores, against 30 minutes per notebook, which is the protocol's case for `not_runnable`. That disagreement is recorded too.
 
-All other outcomes are unchanged: 6 reproduced, 2 partially reproduced, 7 blocked.
+**What I added**
+- **Is the motion movie raw (ed7-motion-small)?** The values say it is. The histogram of its counts has the uneven raw-sensor pattern in every block (roughness 0.740 to 0.745). Shifting frames by 0.13 px and saving them back as integers, as a motion correction would, smooths that to 0.052. Its zero values are at most 2 isolated pixels per frame, not strips at the frame edges. I also added a known 0.13 px jitter to the first 1200 frames; the registration recovered it (correlation 0.996). The outcome stays not reproduced and is no longer tentative.
+- **PSF fits:** I added readings that use, for each bead, whichever of the two fits has the lower error, plus a table of the Kiloscope's centre and edge beads with both fits. The Featherscope result is unchanged. The Kiloscope is still partially reproduced: no reading meets the criterion, and the width is larger at the edge than at the centre under every reading. The 27.77 µm edge bead keeps its main fit because that fit has the lower error.
+- **ed2b/ed2c:** a cell prints the lines of each `analysis.m` that load the images; they are the same files used in the notebook, in the same roles.
+- **ed8:** I added counts with the quarters split at the image midlines. The result is the same, 8 of 8 events under one reading of the event times and 7 of 8 under the other, so it stays `methods_underspecified`.
+- **Decoding:** each real decoder's 200 single fits are now compared with the single-fit n1 null on equal terms. For quadrant, 2 of 200 real single fits are at or below the largest null value; for octant, 11.
+- **Reduced runs** of fig2k, fig2l and ed9c are in a new notebook, `decoding_reduced.ipynb`. They use far fewer fits and grid points than the criteria and decide nothing.
+- **Other changes:**
+  - The Kiloscope's unconfirmed image order (72%) and the near-circular field-of-view test are now in the record.
+  - The fig2d entry in the notebook table, summary and README now matches the record.
+  - The PSF and illumination conclusion cells now begin "**Result:**", so the handover tool would remove them.
+  - Run times and costs are updated from the new run, and the README and `entry.yaml` list the three new notebooks.
 
-**Added or corrected**
-- **Tracking:**
-  - Jumps: 2 steps above 40 px between video frames, both from one glitch at 1064.8 s.
-  - Small blobs: 55 frames have a blob under 50 px. Dropping them changes the arm label of 0.05% of imaging frames.
-  - Sample frames: eight frames with the tracked centroid on the mouse. The one at 102 s, in the excluded opening part, shows a gloved hand. The text about the experimenter now says only what these frames show.
-- **fig2 solver check:** six splits fit by both SGD and the exact solver. The exact solver gives lower accuracies (0.262 to 0.318 for real decoders, 0.131 to 0.164 for shifted ones), still above chance and above every shifted decoder checked. SGD stays for the full-population decoders because MATLAB's default above 100 predictors is also 10 passes of a stochastic solver.
-- **ed9c:**
-  - Radius set to 45 px, as the criterion says.
-  - Null standard deviation per point is shown. A point alone needs z above 3.40; the smallest z among significant points is 2.53.
-  - The code's 64-footprint variant now uses the exact solver: 22 of 34 points are significant.
-- **ed8:**
-  - Random-window baseline: the event's active fraction is above the random 95th percentile for only 6 of 8 components.
-  - Random-set spread ratios are 0.951 to 1.042, so any set this large passes. The conclusion now says the test is weak.
-  - Event times restricted to after 153 s still pass 8 of 8.
-- **ed10:** empirical false-positive count, treating each shifted copy as the data: median 28, maximum 62. None of the 100 copies reaches the observed 100.
-- **ed2b/ed2c:** minima at the radius ±5% and about five other centres. For the Kiloscope the minimum runs from 0.695 to 0.831, crossing 0.8 for one of the four moved centres. Outcomes stay as the criterion's centre and radius give them.
-- **Determinism:** I seeded liblinear's coordinate order. Unseeded, the exact map's count of significant points changed between runs.
-- **Other files:** the helper module docstring, the README row and runtime (24 minutes), the summary and the conclusions are updated. `joblib` is added to the requirements and the lock is redone; no other version changed. The round is recorded under `verifications` for all 15 claims.
-
-**Not done**
-- The ed9c map was not rerun with more decoders per point. With 10 per point it already takes 634 s on four cores.
-- No paper values for Fig. 2 or ED9b are compared, because the main text is paywalled.
-- The Kiloscope pixel size was not varied.
-- ed10's slow non-stationarity (problem 5) is not addressed.
-- Problems 8 (pixel-size consistency) and 9 (metadata errors) needed no change; I said why in the record.
+**Things to know**
+- **The Kiloscope centre value moved.** Under reading (a) it is now 4.467 µm, against 4.422 µm in the run the verifier saw. The fits are repeatable on this machine but differ slightly between machines, which the record now says.
+- **`entry.py all` stops at the check step** with 11 errors, all in the deprecated `-01` record, which I left unchanged; the previous run hit the same errors. I ran the notebooks with `entry.py run` instead.
+- **The run was split in two.** The 2-hour command limit cut it during the seventh notebook, so I ran `decoding_reduced.ipynb` separately through the same `run` code.
+- **Text-only edits to the executed copies.** After the run I copied the revised conclusion text into the executed notebooks; their code cells are identical to the committed ones.
+- **ed3-adc has no round-1 result.** The verifier's report gave no outcome for it, so it is left out of the results and the `reviewed` text says why.

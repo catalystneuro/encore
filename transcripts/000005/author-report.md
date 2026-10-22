@@ -1,45 +1,67 @@
-I've done steps 1 to 6 for dandiset 000005: the entry ran cleanly from a fresh environment, the checks pass, and the verifier's handover package is built. The paper is closed access (no copy in PMC, Unpaywall, OpenAlex or Semantic Scholar), so I worked from its abstract plus the eight figure titles on the public landing page. That means no number from the paper is tested. I pinned 0.220126.1853, the only published version; the draft has the same 148 files and sizes.
+I've finished the repeat attempt as `attempts/000005-yu-2016-02.yaml` and built the handover; nothing is committed. The notebook ran from a clean environment in 281 s, and its outputs match the conclusions. One thing is not clean: `python tools/entry.py check` still reports 25 errors, all on the earlier record `000005-yu-2016-01.yaml` (see section 4). The new record passes. I pinned the same version, 0.220126.1853: it is the only published version, and the draft has the same 148 assets.
 
-**(1) Outcomes**
+### 1. Outcome per claim (earlier outcome in brackets)
+| Claim | Outcome |
+|---|---|
+| behavior-touches | partially reproduced |
+| vpm-touch | not reproduced [reproduced] |
+| vpm-whisking | partially reproduced [reproduced] |
+| vpm-whisking-phase | reproduced |
+| exc-vm-touch-whisking | partially reproduced |
+| exc-threshold-touch-vs-whisking | partially reproduced |
+| exc-effective-reversal | reproduced |
+| exc-inhibition-timing, exc-inhibition-whisking | blocked, data missing |
+| fs-touch-response | partially reproduced |
+| fs-vm-touch-whisking | not reproduced |
+| fs-whisking-rate | partially reproduced |
+| fs-whisking-phase | reproduced |
+| fs-touch-and-whisking | reproduced [reproduced] |
+| exc-mainly-touch | not reproduced [not reproduced] |
+| vpm-photoinhibition | blocked, data missing |
+| exc-thalamus-photoinhibition | partially reproduced |
+| thalamus-drives-fs | blocked, other: only 5 FS cells qualify [reproduced] |
+| rabies-vpm-input | blocked, data missing |
+| six ION-cut claims plus sensory-input-drives-fs | blocked, metadata insufficient [sensory-input-drives-fs was also blocked, metadata insufficient] |
+| pv-enphr-suppression | partially reproduced |
+| fs-suppress-movement-spiking | partially reproduced [reproduced] |
+| fs-enhance-touch-selectivity | partially reproduced [not reproduced] |
+| exc-touch-spikes-enphr | not reproduced |
+| auc-weak-strong | reproduced |
+| auc-groups | blocked, methods underspecified (its two named readings disagree) |
+| behavior-false-alarms | blocked, methods underspecified (with or without the continuity correction) |
 
-| Claim | Outcome | Basis |
-|---|---|---|
-| vpm-touch | reproduced | 20 of 24 VPM units respond to touch; 0 of 24 when spikes are moved to the wrong trial |
-| vpm-whisking | reproduced | 21 of 24 units modulated by whisking; 0.12 of units under the shifted-spike null |
-| fs-touch-and-whisking | reproduced | of 20 light-tagged FS cells, 0.65 respond to touch and 0.80 to whisking |
-| exc-mainly-touch | not_reproduced | the pre-set test misses: excitatory cells more touch-selective than FS p = 0.074, than VPM p = 0.090. Other measures lean the claim's way (whisking-modulated: 0.28 of excitatory cells against 0.80 FS and 0.88 VPM) |
-| fs-suppress-movement-spiking | reproduced | firing during whisking rises in 6 of 7 PV-Cre excitatory cells, p = 0.016 |
-| fs-enhance-touch-selectivity | not_reproduced | selectivity is lower with light in only 2 of 6 cells; touch responses rise more than whisking responses |
-| thalamus-drives-fs | reproduced | FS firing falls with light at the VPM site in 9 of 9 cells (2 mice), p = 0.002; not specific, as 18 of 21 cells fall |
-| sensory-input-drives-fs | blocked (methods_underspecified) | the experiment is not described in the abstract, and the files don't say what each light condition does |
+Where a kept id changed outcome, the record says why. In short, the new criteria test the paper's own numbers and the claims file's cell rules. Two examples: the file names one principal whisker per VPM session, which lowers VPM spikes per touch, and the waveform boundary leaves only 5 FS cells for the thalamic test. A two-sided test cannot reach p < 0.05 with 5 cells.
 
-**(2) What was found about the dandiset**
-- **No cell types:** none of the 130 L4 files says whether its neuron is excitatory or FS. I identified FS cells by their spikes to 5 ms light pulses in VGAT-ChR2 mice, and excitatory cells by broad action potentials in untagged whole-cell recordings.
-- **Light conditions undocumented:**
-  - `photo_stim_mode` has no description, and its labels mean different things in different files.
-  - `photo_stim_power` is empty in every L4 file, and no file names the opsin.
-  - Two of the recorded wavelengths look questionable.
-- **Wrong recording mode:** the session description is wrong for 24 of 130 L4 files. 23 labelled whole-cell hold juxtacellular traces.
-- **Unstated sampling rate:** the L4 trace is at 10 kHz up to March 2015 and 20 kHz from August 2015; only the timestamps show this.
-- **Bad `first_touch_time`:** in the L4 files it is the trial start plus the true latency divided by 1000. It is correct in the VPM files.
-- **Other:**
-  - 8 files name no principal whisker.
-  - No recording is deposited twice.
-  - Neither the paper nor the dandiset links any analysis code.
+I added 7 questions to `questions/000005.yaml`. They cover:
+- the time resolution of dVm/dt;
+- the latency bin position;
+- the light-driven test and the waveform measures;
+- the chi-squared correction;
+- one- or two-sided tests;
+- whether light trials count in the behaviour numbers;
+- the whisking-onset and touch-exclusion windows.
 
-**(3) Where the protocol was unclear, wrong or missing something**
-1. **Abstract only:** the rules for expected values and tolerances have nothing to work on. I wrote threshold criteria and noted that no number is tested.
-2. **Figure titles as a source:** the protocol says to use the abstract when the paper is closed. I also used the public figure titles and said so in the claims file.
-3. **Cell types inferred from the data:** the protocol covers labels taken from outside sources, not labels derived from the data. I fixed the classification in the claims file before any analysis and recorded it as a deviation on each claim and as a finding.
-4. **A pre-set test that fails its own null:** the Rayleigh test of whisking phase marked 88% of VPM units as modulated even with spikes moved to the wrong trial. The protocol covers tied criteria but not this. I replaced the test with one corrected for uneven phase occupancy, tested against a trial-shift null. The amendment in the claims file records what I had already seen; the notebook shows both versions, and the new one decides.
-5. **Clock check for single-cell sessions:** decoding a task variable doesn't fit here. I compared each cell's touch and whisking responses with spikes moved to the next trial. For 3 of 124 cells or units the alignment is not established; they are listed.
-6. **Undocumented optogenetics:** the protocol offers either blocking or testing. I tested where the data support the assumption (some PV-Cre cells are silenced by the light), stated the assumption in the deviations, and blocked the Figure 7 claim.
-7. **Runtime advice:** "reduce the data as it loads" was not enough. Reading through h5py/remfile took 20 minutes. Single HTTP range requests on the contiguous datasets plus a process pool brought loading to about 2.5 minutes.
+### 2. Earlier findings
+All 11 are still present, which follows from the dandiset being unchanged: same version and same assets.
+- Cell type: not named in any file.
+- ION-cut mice: not marked.
+- Genotypes: missing or given as Ai32.
+- Layer: every file says layer 4.
+- Light: conditions undescribed, power NaN in all 130 files.
+- Recording mode: wrong in 24 session descriptions.
+- `first_touch_time`: still divided by 1000 in the L4 files.
+- Sampling rate: given only by the timestamps.
+- Principal whisker: missing in 8 files, one per VPM file. Now shown per unit: 11 of 20 units respond most to another whisker.
+- Wavelengths: still look wrong.
+- Analysis code: none linked.
 
-**(4) Runtime and failures**
-- The notebook runs in about 205 s, of which about 155 s is streaming.
-- The final `all` run passed with 0 check errors and 0 cell errors, and the handover is in `executed/000005-yu-2016/handover/`.
-- No step failed in the end. The only problems along the way were the 20-minute first load and the invalid Rayleigh test, both handled as described above.
-- Untracked dotfiles at the repo root (`.bashrc`, `.vscode`, and similar) and an empty `entries/000005-yu-2016/.claude/` folder look like harness artifacts. I left them alone.
+### 3. New findings
+- The injected current is stored in nA, but its conversion factor assumes µA, so it is off by 1,000. The stored test pulse reads −0.1, which matches the Methods' −0.1 nA.
+- Data the paper reports are absent: the depolarized excitatory recordings of Fig. 3, the 17 thalamic multiunits of Fig. 6b,c, and the rabies histology.
+- The VPM-site light trains run at 50 Hz in 12 of 33 files; the Methods say 100 Hz.
+- The no-lick trial type is spelled both `Nogo` and `NoGo`, and its column has no description.
 
-Nothing is committed or pushed. The attempt record is `attempts/000005-yu-2016-01.yaml`, the claims are in `claims/000005/10.1038-nn.4412.yaml`, and the notebook is `entries/000005-yu-2016/reproduce_yu_2016.ipynb`.
+### 4. Where the protocol does not fit a repeat attempt
+- **Check fails on the earlier record.** `entry.py check` requires every attempt of the entry to have an outcome for every claim. That includes the deprecated `-01` record, which predates the rewritten claims file and must stay as it is. So `entry.py all` cannot pass; I ran `check` and `run` separately.
+- **No status field for earlier findings.** The findings schema has nowhere to say whether an earlier finding is fixed, so I put "Still present from 000005-yu-2016-01" or "New" in each statement. The `-01` record also cannot get a `superseded_by` without being edited.
+- **Repeat-attempt section assumes a changed dandiset.** It describes a new version and a kept claims file. Here neither holds: the version is the same and the claims file was rewritten. Comparing outcomes for kept ids therefore compares different tests, and "is each finding fixed" can only come out as still present.

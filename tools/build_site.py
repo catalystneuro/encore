@@ -41,6 +41,7 @@ import json
 import random
 import re
 import shutil
+import sys
 from pathlib import Path
 
 import yaml
@@ -52,53 +53,25 @@ SITE_URL = "https://catalystneuro.github.io/reproduction-registry/"
 SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of neuroscience papers from their open data on the "
                     "DANDI Archive, and record every outcome and what they find about the data.")
 
-# The archives the registry reads from. A dataset is keyed as "<archive>:<id>" (dandi:000003), shown as
-# "<label>:<id>" (DANDI:000003), and has its page at datasets/<archive>/<id>/. Its files in the repository
-# (claims/, questions/, transcripts/, the paper store) are under the id for DANDI and "<archive>-<id>" otherwise.
-ARCHIVES = {
-    "dandi": {"label": "DANDI", "name": "the DANDI Archive", "url": "https://dandiarchive.org/dandiset/{id}"},
-}
-
-
-def key_of(archive: str, id_: str) -> str:
-    return f"{archive}:{id_}"
-
-
-def split_key(key: str) -> tuple[str, str]:
-    archive, _, id_ = key.partition(":")
-    return archive, id_
-
-
-def dataset_label(key: str) -> str:
-    """How a dataset is named on the site: DANDI:000003."""
-    archive, id_ = split_key(key)
-    return f'{ARCHIVES.get(archive, {}).get("label", archive.upper())}:{id_}'
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from datasets import ARCHIVES, archive_name, key_of, split_key, targets as all_targets  # noqa: E402
+from datasets import folder as dir_of, key_of_folder as key_of_dir, label as dataset_label, url as archive_url  # noqa: E402,F401
 
 
 def page_of(key: str) -> str:
+    """A dataset's page on the site: datasets/<archive>/<id>/."""
     archive, id_ = split_key(key)
     return f"datasets/{archive}/{id_}/"
 
 
-def archive_url(key: str) -> str:
-    archive, id_ = split_key(key)
-    return ARCHIVES[archive]["url"].format(id=id_) if archive in ARCHIVES else ""
-
-
-def archive_name(key: str) -> str:
-    archive, _ = split_key(key)
-    return ARCHIVES.get(archive, {}).get("name", archive)
-
-
-def dir_of(key: str) -> str:
-    """The directory name a dataset's files have in the repository."""
-    archive, id_ = split_key(key)
-    return id_ if archive == "dandi" else f"{archive}-{id_}"
-
-
-def key_of_dir(name: str) -> str:
-    return key_of("dandi", name) if re.fullmatch(r"[0-9]{6}", name) else key_of(*name.split("-", 1))
-
+# GitHub's mark (Octicons, mark-github), drawn in the text colour.
+GITHUB_MARK = ('<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 '
+               '8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 '
+               '3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2'
+               '-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 '
+               '3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01'
+               '-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 '
+               '7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>')
 
 OUTCOMES = {  # key: (label, css class, icon)
     "reproduced": ("Reproduced", "good", "✓"),
@@ -185,10 +158,17 @@ def asset(name: str) -> str:
 def collect(executed: Path | None = None) -> dict:
     queue = json.loads((ROOT / "targets" / "dandisets.json").read_text())
     pilot = {key_of("dandi", t["dandiset"]) for t in load_yaml(ROOT / "targets" / "pilot.yaml")["targets"]}
-    claims = {}
+    claims, claim_files = {}, {}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         data = load_yaml(path)
-        claims[(key_of(data["dataset"]["archive"], data["dataset"]["id"]), data["paper"])] = {c["id"]: c for c in data["claims"]}
+        key = key_of(data["dataset"]["archive"], data["dataset"]["id"])
+        claims[(key, data["paper"])] = {c["id"]: c for c in data["claims"]}
+        last = (data.get("checks") or [None])[-1]
+        claim_files.setdefault(key, []).append({
+            "path": str(path.relative_to(ROOT)), "paper": str(data["paper"]).removeprefix("doi:"),
+            "check": None if last is None else {"ready": bool(last.get("ready")), "date": str(last.get("date"))},
+            "claims": [{k: squash(c.get(k) or "") for k in ("id", "statement", "source", "quote", "criterion")}
+                       for c in data["claims"]]})
     entries = {}
     for path in sorted((ROOT / "entries").glob("*/entry.yaml")):
         data = load_yaml(path)
@@ -223,8 +203,10 @@ def collect(executed: Path | None = None) -> dict:
             "kind": a["provenance"]["kind"],
             "accountable": a["provenance"]["accountable"]["name"],
             "agent": a["provenance"].get("agent"),
+            "runner": a["provenance"].get("runner"),
             "tier": tier_of(a),
             "deprecated": squash((a.get("deprecated") or {}).get("reason")),
+            "deprecated_on": str((a.get("deprecated") or {}).get("date") or "") or None,
             "entry": a.get("entry"),
             "entry_title": entry["title"] if entry else None,
             "description": squash(entry.get("description")) if entry else None,
@@ -262,9 +244,9 @@ def collect(executed: Path | None = None) -> dict:
 
     attempted = {a["key"] for a in attempts}
     targets = []
-    for t in queue["targets"]:
+    for t in all_targets():
         papers = [p for p in t["papers"] if not p["preprint"]] or t["papers"]
-        key = key_of("dandi", t["dandiset"])
+        key = t["key"]
         status = "attempted" if key in attempted else "pilot" if key in pilot else "open"
         targets.append({
             "key": key, "label": dataset_label(key), "name": t["name"], "size_gb": t["size_gb"],
@@ -298,10 +280,11 @@ def collect(executed: Path | None = None) -> dict:
                 for a in sorted(d.glob("attempt-*")) if a.is_dir()}
     return finish({
         "pipeline": pipeline_inputs(),
+        "claim_files": claim_files,
         "transcripts": {**transcripts, **archived},
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "queue_generated": queue["generated"],
-        "queue_counts": queue["counts"],
+        "queue_counts": {**queue["counts"], "with_a_paper": len(targets)},   # every archive's targets
         "attempts": attempts,
         "entries": entry_list,
         "targets": targets,
@@ -317,7 +300,8 @@ def pipeline_inputs() -> dict:
     checks, questions = {}, {}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         last = ((load_yaml(path) or {}).get("checks") or [None])[-1]
-        checks[key_of_dir(path.parent.name)] = None if last is None else bool(last.get("ready"))
+        checks[key_of_dir(path.parent.name)] = {"ready": None if last is None else bool(last.get("ready")),
+                                                "date": None if last is None else str(last.get("date"))}
     for path in sorted((ROOT / "questions").glob("*.yaml")):
         q = load_yaml(path) or []
         q = q.get("questions", []) if isinstance(q, dict) else q
@@ -388,7 +372,7 @@ def demo(data: dict, n: int, seed: int = 1) -> dict:
     entries = [{"name": a["entry"], "type": "reproduction", "title": a["entry_title"],
                 "description": a["description"], "datasets": [a["key"]], "papers": [a["paper"]],
                 "derived_from": [], "notebooks": a["notebooks"]} for a in attempts]
-    out = dict(data, attempts=attempts, entries=entries, demo=True,
+    out = dict(data, attempts=attempts, entries=entries, demo=True, claim_files={},
                targets=[dict(t, status="pilot" if t["status"] == "pilot" else "open") for t in data["targets"]])
     return finish(out)
 
@@ -460,6 +444,39 @@ PIPELINE_STEPS = [("paper", "Paper"), ("claims", "Claims"), ("check", "Claims ch
                   ("attempt", "Attempt"), ("questions", "Questions"), ("verified", "Verified")]
 
 
+def queue_estimates(q: dict) -> dict[str, dict]:
+    """Each queued dataset's place in its runner's queue, and how many hours from now it should be done.
+
+    The lanes take the datasets in order, each taking the median time of a recent chain (the runs' times,
+    `tools/runner/describe.py queue`). A lane is free when the chain it has going now should be done
+    (q["running"]), and without those times the chains going now are taken to be half done. A dataset in
+    both queues gets the full runner's estimate."""
+    out = {}
+    for kind in ("claims", "full"):
+        hours = (q.get("hours") or {}).get(kind)
+        n = max(1, (q.get("lanes") or {}).get(kind, 1))
+        if "running" in q:
+            going = sorted(r["hours"] or 0.0 for r in q["running"].values() if r["kind"] == kind)
+            free = (going + [0.0] * n)[:n]
+        else:
+            free = [hours / 2 if hours else 0.0] * n
+        for place, folder in enumerate(q.get(kind, []), 1):
+            lane = free.index(min(free))
+            free[lane] += hours or 0.0
+            out[key_of_dir(folder)] = {"kind": kind, "place": place, "hours": free[lane] if hours else None}
+    return out
+
+
+def in_hours(hours: float | None) -> str:
+    if hours is None:
+        return ""
+    if hours < 1:
+        return "within the hour"
+    if hours < 1.5:
+        return "about an hour"
+    return f"about {round(hours)} hours" if hours < 48 else f"about {round(hours / 24)} days"
+
+
 def pipeline_rows(data: dict) -> list[dict]:
     """One row per target: the state of each step of docs/pipeline.md, read from the repository.
 
@@ -467,25 +484,33 @@ def pipeline_rows(data: dict) -> list[dict]:
     pass), "todo", "deprecated", or "none" (a step that does not apply)."""
     inputs = data.get("pipeline") or {"papers": {}, "checks": {}, "questions": {}}
     current = current_attempts(data)
+    queued = queue_estimates(data.get("queue") or {})
+    branches = {key_of_dir(f) for f in (data.get("queue") or {}).get("branches", [])}
+    going = {key_of_dir(f): r for f, r in ((data.get("queue") or {}).get("running") or {}).items()}
     out = []
     for t in data["targets"]:
         d = t["key"]
         papers = inputs["papers"].get(d, [])
         missing = [p["doi"] for p in papers if p["status"] == "missing"]
         stored = sum(1 for p in papers if p["status"] == "stored")
-        check = inputs["checks"].get(d, "absent")
+        found = inputs["checks"].get(d)
+        check = "absent" if found is None else found["ready"]
         atts = current.get(d, [])
         open_q = inputs["questions"].get(d, 0)
-        # A deprecated attempt's claims are to be read again from the paper.
-        rerun = any(a.get("deprecated") for a in atts)
+        # A deprecated attempt's claims are to be read again from the paper, unless a claims file checked
+        # since it was deprecated has been merged (the checkpoint in docs/pipeline.md).
+        deprecated_on = max((a["deprecated_on"] or "" for a in atts if a.get("deprecated")), default="")
+        reread = bool(deprecated_on) and found is not None and (found["date"] or "") >= deprecated_on
+        rerun = bool(deprecated_on) and not reread
         state = {
             "paper": ("done", f"{stored} of {len(papers)}") if papers and not missing
             else ("waiting", f"{len(missing)} not in store") if papers else ("waiting", "no paper named"),
-            "claims": ("todo", "to read again") if rerun else ("done", "") if check != "absent" else ("todo", ""),
+            "claims": ("todo", "to read again") if rerun else ("done", "read again" if reread else "")
+            if check != "absent" else ("todo", ""),
             "check": ("todo", "") if rerun else ("done", "ready") if check is True
             else ("waiting", "not ready") if check is False
             else ("none", "before checks") if check is None else ("todo", ""),
-            "attempt": ("deprecated", "rerun due") if rerun
+            "attempt": ("deprecated", "rerun due") if deprecated_on
             else ("done", atts[-1]["date"]) if atts else ("todo", ""),
             "questions": ("todo", f"{open_q} open") if open_q else ("none", ""),
             "verified": ("done", "") if atts and all(a["tier"] != "runs" for a in atts)
@@ -493,8 +518,10 @@ def pipeline_rows(data: dict) -> list[dict]:
         }
         nxt = next((label for key, label in PIPELINE_STEPS if state[key][0] in ("todo", "waiting", "deprecated")), "")
         out.append({"dataset": t["label"], "key": d, "name": t["name"], "state": state, "next": nxt,
+                    "issue": data.get("issues", {}).get(t["label"]),
                     "waiting": [label for key, label in PIPELINE_STEPS if state[key][0] == "waiting"],
-                    "missing": missing, "page": page_of(d) if atts else None})
+                    "missing": missing, "page": page_of(d) if atts or d in data.get("claim_files", {}) else None,
+                    "queue": queued.get(d), "branch": d in branches, "running": going.get(d)})
     return out
 
 
@@ -746,7 +773,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <link rel="stylesheet" href="{root}{asset("app.css")}"></head><body>
 {banner}<nav class="top" aria-label="Sections"><div class="wrap">
   <a class="brand" href="{home}">Reproduction registry</a>{nav}
-  <a class="tab ext" href="{REPO_URL}">GitHub</a>
+  <a class="tab icon" href="{REPO_URL}" aria-label="The registry on GitHub" title="The registry on GitHub">{GITHUB_MARK}</a>
   <a class="tab ext" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a>
   <button class="theme" id="theme" type="button" aria-label="Colour theme: auto. Change theme" title="Colour theme"><span aria-hidden="true">◐</span><span class="t">Auto</span></button>
 </div></nav>
@@ -899,8 +926,8 @@ def progress_panel(data: dict) -> str:
     <div class="panel"><h2 id="progress-title">Datasets attempted over time</h2>
       <p class="small muted" style="margin:0">Running total, by day.</p>
       <div class="chart" id="progress-line"></div></div>
-    <div class="panel"><h2>Outcomes of claims tested, by day</h2>
-      <p class="small muted" style="margin:0">Claims that rest on the dataset, on the date of their attempt.</p>
+    <div class="panel"><h2 id="progress-day-title">Datasets attempted, new each day</h2>
+      <p class="small muted" style="margin:0" id="progress-day-note">Each dataset on the date of its first attempt.</p>
       <div class="chart" id="progress-outcomes"></div><div id="progress-legend"></div></div>
   </div>
   <details class="table-view panel"><summary>Table: new each day, all datasets</summary>
@@ -1056,7 +1083,7 @@ def pipeline_chart(counts: dict, total: int) -> str:
     for key, label in CHART_STEPS:
         c = counts[key]
         segs = "".join(f'<span class="seg st-{st}" style="width:{100 * c[st] / total:.2f}%" '
-                       f'title="{e(name)}: {c[st]:,}"></span>' for st, name in PIPELINE_STATES if c.get(st))
+                       f'data-tip="{e(name)}: {c[st]:,}"></span>' for st, name in PIPELINE_STATES if c.get(st))
         parts = ", ".join(f"{c[st]:,} {name.lower()}" for st, name in PIPELINE_STATES[1:] if c.get(st))
         done = c.get("done", 0) + c.get("older", 0)
         rows += (f'<div class="frow"><span class="flabel">{e(label)}</span>'
@@ -1066,6 +1093,69 @@ def pipeline_chart(counts: dict, total: int) -> str:
     legend = "".join(f'<span><i class="seg st-{st}"></i>{e(name)}</span>' for st, name in PIPELINE_STATES)
     return (f'<div class="panel"><h2>Targets at each step</h2><div class="funnel">{rows}</div>'
             f'<p class="flegend small">{legend}</p></div>')
+
+
+TABLE_STATES = [("done", "Done"), ("waiting", "Waiting on a person"), ("deprecated", "To redo"),
+                ("todo", "To do"), ("none", "Not applicable")]
+
+# Filters, sorts and pages the pipeline table in place. Sorting a step's column orders its rows by state
+# (done first), then by the cell's note.
+PIPELINE_TABLE_JS = r"""
+(function(){
+var table=document.querySelector('table.pipeline'),tools=document.querySelector('.pipeline-tools');
+if(!table||!tools)return;tools.hidden=false;
+var tbody=table.tBodies[0],rows=[].slice.call(tbody.rows),ths=[].slice.call(table.tHead.rows[0].cells);
+var steps=[].slice.call(document.getElementById('pstep').options,1).map(function(o){return o.value;});
+var rank={done:0,waiting:1,deprecated:2,todo:3,none:4};
+var state={q:'',step:'',st:'',col:-1,dir:1,page:1,size:50};
+var $=function(id){return document.getElementById(id);};
+function key(tr,col){var td=tr.cells[col],t=td.textContent.trim();
+  if(td.dataset.sort!==undefined)return [0,td.dataset.sort];
+  return td.classList.contains('ps')?[rank[td.className.split(' ')[1]],t]:[0,t];}
+function cmp(a,b){return a[0]-b[0]||a[1].localeCompare(b[1],undefined,{numeric:true,sensitivity:'base'});}
+function shown(tr){
+  if(state.q&&(tr.cells[0].textContent+' '+tr.cells[1].textContent).toLowerCase().indexOf(state.q)<0)return false;
+  var keys=state.step?[state.step]:steps;
+  if(state.st)return keys.some(function(k){return tr.dataset[k]===state.st;});
+  return true;}
+function draw(){
+  var list=rows.filter(shown);
+  if(state.col>=0)list.sort(function(a,b){return state.dir*cmp(key(a,state.col),key(b,state.col));});
+  var pages=Math.max(1,Math.ceil(list.length/state.size));if(state.page>pages)state.page=pages;
+  var start=(state.page-1)*state.size,page=list.slice(start,start+state.size);
+  rows.forEach(function(tr){tr.hidden=true;});
+  page.forEach(function(tr){tr.hidden=false;tbody.appendChild(tr);});
+  ths.forEach(function(th,i){if(i===state.col)th.setAttribute('aria-sort',state.dir>0?'ascending':'descending');
+    else th.removeAttribute('aria-sort');});
+  $('pcount').textContent=list.length===rows.length?rows.length.toLocaleString()+' targets'
+    :list.length.toLocaleString()+' of '+rows.length.toLocaleString()+' targets';
+  var el=$('ppager');if(!list.length){el.innerHTML='';return;}
+  var nums=[1,pages,state.page-1,state.page,state.page+1].filter(function(p,i,a){return p>=1&&p<=pages&&a.indexOf(p)===i;})
+    .sort(function(a,b){return a-b;}),last=0,buttons='';
+  nums.forEach(function(p){if(p-last>1)buttons+='<span class="muted">…</span>';
+    buttons+='<button type="button" data-page="'+p+'"'+(p===state.page?' aria-current="page"':'')+'>'+p+'</button>';last=p;});
+  el.innerHTML='<span class="muted">'+(start+1)+'–'+(start+page.length)+' of '+list.length.toLocaleString()+'</span><span class="grow"></span>'
+    +'<button type="button" data-page="'+(state.page-1)+'"'+(state.page===1?' disabled':'')+' aria-label="Previous page">‹</button>'+buttons
+    +'<button type="button" data-page="'+(state.page+1)+'"'+(state.page===pages?' disabled':'')+' aria-label="Next page">›</button>'
+    +'<select class="ghost" id="psize" aria-label="Rows per page">'+[25,50,100,250].map(function(s){
+      return '<option value="'+s+'"'+(s===state.size?' selected':'')+'>'+s+' per page</option>';}).join('')+'</select>';}
+var timer;
+$('pq').addEventListener('input',function(){clearTimeout(timer);timer=setTimeout(function(){
+  state.q=$('pq').value.trim().toLowerCase();state.page=1;draw();},120);});
+$('pstep').addEventListener('change',function(){state.step=this.value;state.page=1;draw();});
+$('pstate').addEventListener('change',function(){state.st=this.value;state.page=1;draw();});
+table.tHead.addEventListener('click',function(ev){var b=ev.target.closest('button.sort');if(!b)return;
+  var col=ths.indexOf(b.closest('th'));state.dir=col===state.col?-state.dir:1;state.col=col;state.page=1;draw();});
+$('ppager').addEventListener('click',function(ev){var b=ev.target.closest('[data-page]');if(!b||b.disabled)return;
+  state.page=+b.dataset.page;draw();table.scrollIntoView({block:'start'});});
+$('ppager').addEventListener('change',function(ev){if(ev.target.id==='psize'){state.size=+ev.target.value;state.page=1;draw();}});
+draw();
+})();
+"""
+
+
+def sort_button(label: str) -> str:
+    return f'<button class="sort" type="button">{e(label)}</button>'
 
 
 def page_pipeline(data: dict) -> str:
@@ -1079,7 +1169,7 @@ def page_pipeline(data: dict) -> str:
             counts[key][st] = counts[key].get(st, 0) + 1
     # Claims files made before the check existed count as checked, as in the chart.
     older = {key: sum(1 for r in rows if chart_state(key, *r["state"][key]) == "older") for key, _ in PIPELINE_STEPS}
-    head = "".join(f'<th>{e(label)}<div class="small muted">{counts[key].get("done", 0) + older[key]:,} done'
+    head = "".join(f'<th>{sort_button(label)}<div class="small muted">{counts[key].get("done", 0) + older[key]:,} done'
                    + (f', {counts[key]["waiting"]:,} waiting' if counts[key].get("waiting") else "")
                    + "</div></th>" for key, label in PIPELINE_STEPS)
     body = ""
@@ -1087,8 +1177,24 @@ def page_pipeline(data: dict) -> str:
         name = (f'<a href="{root}{e(r["page"])}">{e(r["dataset"])}</a>' if r["page"] else e(r["dataset"]))
         cells = "".join(f'<td class="ps {e(r["state"][key][0])}" title="{e(r["state"][key][0])}">'
                         f'{e(r["state"][key][1])}</td>' for key, _ in PIPELINE_STEPS)
-        body += (f'<tr data-waiting="{"1" if r["waiting"] else "0"}"><td>{name}</td>'
-                 f'<td class="pname">{e(r["name"])}</td>{cells}<td class="small">{e(r["next"])}</td></tr>')
+        states = " ".join(f'data-{key}="{e(r["state"][key][0])}"' for key, _ in PIPELINE_STEPS)
+        q = r["queue"]
+        if r["running"]:
+            place, sort = "running now", -1
+            when, hours = in_hours(r["running"]["hours"]), r["running"]["hours"]
+        elif r["branch"]:
+            place, sort, when, hours = "branch open", 0, "", None
+        elif q:
+            place = f'{q["place"]:,} for {"an attempt" if q["kind"] == "full" else "claims"}'
+            sort = q["place"] + (0 if q["kind"] == "full" else 100000)
+            when, hours = in_hours(q["hours"]), q["hours"]
+        else:
+            place, sort, when, hours = "", 999999, "", None
+        body += (f'<tr {states}><td>{name}</td>'
+                 f'<td class="pname">{e(r["name"])}</td>{cells}<td class="small">{e(r["next"])}'
+                 + (f' · <a href="{e(r["issue"])}">waiting on you</a>' if r["issue"] else "") + '</td>'
+                 f'<td class="small" data-sort="{sort}">{e(place)}</td>'
+                 f'<td class="small" data-sort="{999999 if hours is None else round(hours * 10)}">{e(when)}</td></tr>')
     waiting = [r for r in rows if r["waiting"]]
     papers_missing = sum(len(r["missing"]) for r in waiting)
     charted = {key: {} for key, _ in PIPELINE_STEPS}
@@ -1097,25 +1203,58 @@ def page_pipeline(data: dict) -> str:
             st = chart_state(key, *r["state"][key])
             charted[key][st] = charted[key].get(st, 0) + 1
     chart = pipeline_chart(charted, len(rows))
+    step_opts = "".join(f'<option value="{key}">{e(label)}</option>' for key, label in PIPELINE_STEPS)
+    state_opts = "".join(f'<option value="{st}">{e(name)}</option>' for st, name in TABLE_STATES)
+    updated = datetime.datetime.fromisoformat(data["generated"]).strftime("%Y-%m-%d %H:%M UTC")
+    q = data.get("queue") or {}
+    queue_note = ""
+    if q.get("full") is not None:
+        hours, lanes = q.get("hours") or {}, q.get("lanes") or {}
+        def part(kind: str, what: str) -> str:
+            n, h, k = len(q.get(kind, [])), hours.get(kind), lanes.get(kind, 1)
+            each = (f", at about {h:.1f} hours each" if h and h >= 1 else f", at about {round(h * 60)} minutes each" if h
+                    else "")
+            return (f'{n:,} dataset{" waits" if n == 1 else "s wait"} for {what} on {k} lane{"s" if k != 1 else ""}{each}'
+                    + (f', about {in_hours(n * h / k).removeprefix("about ")} in all' if h and n else ""))
+        n_going = len(q.get("running") or {})
+        going_note = (f' {n_going:,} chain{" is" if n_going == 1 else "s are"} running now, and the Done in column '
+                      'estimates when each will finish from how long the rest of a chain usually takes after the '
+                      'role it is on. A branch with nothing running is waiting, on a person or a merge, and has no '
+                      'estimate.' if "running" in q else "")
+        queue_note = (f' {part("full", "an attempt")}, and {part("claims", "their claims to be read")}. '
+                      'The Queue and Done in columns give each dataset’s place and a rough estimate of when it '
+                      f'will be done, counted from the last update.{going_note}')
+    n_issues = len(data.get("issues", {}))
+    issues_note = (f' The runner has stopped on <a href="{REPO_URL}/issues?q=is%3Aissue+is%3Aopen+label%3Aneeds-you">'
+                   f'{n_issues:,} dataset{"s" if n_issues != 1 else ""}</a> that need a person.' if n_issues else "")
     html_ = f'''<header class="page">
   <h1>Pipeline</h1>
   <p class="lede">Every target, and where it stands in the
   <a href="{REPO_URL}/blob/main/docs/pipeline.md">pipeline</a>: its paper, the claims read from it and their
   check, the attempt, the questions it raised, and verification. {len(waiting):,} targets are waiting on a person,
   with {papers_missing:,} papers to supply; the list of missing papers is in
-  <a href="{REPO_URL}/blob/main/papers/manifest.yaml">papers/manifest.yaml</a>.</p>
+  <a href="{REPO_URL}/blob/main/papers/manifest.yaml">papers/manifest.yaml</a>.{issues_note}{queue_note}</p>
+  <p class="small muted">Last updated <time id="updated" datetime="{e(data["generated"])}">{e(updated)}</time>.
+  The page is rebuilt whenever main changes.</p>
 </header>
 <main>{chart}
-<p style="margin-top:16px"><label class="small"><input type="checkbox" id="only-waiting"> Only targets waiting on a
-person</label></p>
+<div class="listbar pipeline-tools" style="margin-top:16px" hidden>
+  <input id="pq" type="search" placeholder="Search datasets and names" aria-label="Search datasets and names">
+  <select class="ghost" id="pstep" aria-label="Step"><option value="">Any step</option>{step_opts}</select>
+  <select class="ghost" id="pstate" aria-label="State"><option value="">Any state</option>{state_opts}</select>
+  <strong id="pcount" aria-live="polite"></strong>
+</div>
 <div class="panel pipeline-wrap"><table class="pipeline">
-<thead><tr><th>Dataset</th><th>Name</th>{head}<th>Next</th></tr></thead>
-<tbody>{body}</tbody></table></div></main>
+<thead><tr><th>{sort_button("Dataset")}</th><th>{sort_button("Name")}</th>{head}<th>{sort_button("Next")}</th><th>{sort_button("Queue")}</th><th>{sort_button("Done in")}</th></tr></thead>
+<tbody>{body}</tbody></table></div>
+<nav class="pager" id="ppager" aria-label="Pages"></nav></main>
 <script>
-(function(){{var box=document.getElementById("only-waiting");if(!box)return;
-box.addEventListener("change",function(){{document.querySelectorAll("table.pipeline tbody tr").forEach(function(tr){{
-tr.hidden=box.checked&&tr.dataset.waiting!=="1";}});}});}})();
-</script>'''
+(function(){{var t=document.getElementById("updated");if(!t)return;
+var m=Math.round((Date.now()-new Date(t.getAttribute("datetime")))/60000);if(isNaN(m)||m<0)return;
+var ago=m<1?"just now":m<60?m+" minute"+(m==1?"":"s")+" ago":m<2880?Math.round(m/60)+" hours ago":Math.round(m/1440)+" days ago";
+t.textContent+=" ("+ago+")";}})();
+</script>
+<script>{PIPELINE_TABLE_JS}</script>'''
     return shell(data, "Pipeline", root, "pipeline", html_, path="pipeline/",
                  description="Where every target of the reproduction registry stands in its pipeline.")
 
@@ -1426,6 +1565,9 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
                      if a["dataset"].get("doi") else "")
                   + (f', modified {e(a["dataset"]["modified"])}' if a["dataset"].get("modified") else ""))]
         if a["kind"] == "agent":
+            runner = a.get("runner") or {}
+            rows_ += [("Run on", (f'<a href="{e(runner["url"]) }">{e(runner.get("platform"))}</a>' if runner.get("url")
+                                  else e(runner.get("platform", "not recorded"))))]
             rows_ += [("Harness", e(agent.get("harness", "not recorded"))),
                       ("Model", e(agent.get("model", "not recorded"))),
                       ("Protocol", e(agent.get("protocol", "not recorded")))]
@@ -1544,6 +1686,72 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
                  body, CLAIMS_JS + TABS_JS, path=path, description=dandiset_description(dandiset, atts))
 
 
+def claims_only(data: dict) -> list[str]:
+    """The datasets with claims read from their paper but no attempt yet."""
+    current = current_attempts(data)
+    return sorted(k for k in data.get("claim_files", {}) if k not in current)
+
+
+def page_claims(data: dict, key: str) -> str:
+    """A dataset's page before its first attempt: the claims read from its paper, and where it stands."""
+    root = "../../../"
+    target = next((t for t in data["targets"] if t["key"] == key), None)
+    row = next((r for r in pipeline_rows(data) if r["key"] == key), None)
+    titles = {t["paper"].lower(): t["paper_title"] for t in data["targets"] if t.get("paper")}
+    claims_html, n = "", 0
+    for f in data["claim_files"][key]:
+        check = ("not yet checked" if f["check"] is None else
+                 f'checked {e(f["check"]["date"])}: ' + ("ready" if f["check"]["ready"] else "not ready"))
+        items = ""
+        for c in f["claims"]:
+            n += 1
+            body = ""
+            if c["quote"]:
+                cite = f'<cite>{e(c["source"])}</cite>' if c["source"] else ""
+                body += f'<blockquote class="quote"><p>{e(c["quote"])}</p>{cite}</blockquote>'
+            if c["criterion"]:
+                body += f'<p class="deviations-title">How it will be judged</p><p class="notes">{e(c["criterion"])}</p>'
+            items += (f'<li class="claim" id="claim-{e(c["id"])}"><details><summary>'
+                      f'<div class="claim-head"><span class="tag">{e(c["id"])}</span></div>'
+                      f'<p class="statement">{e(c["statement"])}</p></summary>'
+                      f'<div class="claim-body">{body or '<p class="notes muted">No quote recorded.</p>'}</div>'
+                      f'</details></li>')
+        paper = titles.get(f["paper"].lower()) or f["paper"]
+        claims_html += (f'<p class="sub small" style="margin:14px 0 0">From the paper '
+                        f'<a href="https://doi.org/{e(f["paper"])}">{e(paper)}</a> · '
+                        f'<a href="{REPO_URL}/blob/main/{e(f["path"])}">claims file</a> · {check}</p>'
+                        f'<ul class="claims">{items}</ul>')
+    steps = ""
+    if row:
+        steps = "".join(f'<dt>{e(label)}</dt><dd>{e(row["state"][k][0])}'
+                        + (f' ({e(row["state"][k][1])})' if row["state"][k][1] else "") + "</dd>"
+                        for k, label in PIPELINE_STEPS)
+    tags = ""
+    if target:
+        tags = " ".join([f'<span class="tag">{e(t)}</span>' for t in target["technique"]]
+                        + [f'<span class="tag">{e(x)}</span>' for x in target["species"]])
+    actions = (f'<a href="{e(archive_url(key))}" target="_blank" rel="noopener">View on '
+               f'{e(ARCHIVES.get(split_key(key)[0], {}).get("label", split_key(key)[0]))}</a> '
+               f'<a href="{root}pipeline/">Pipeline</a>')
+    name = (target or {}).get("name") or dataset_label(key)
+    body = f'''<header class="page">
+  <p class="crumbs"><a href="{root}datasets/">Datasets</a> / {e(dataset_label(key))}</p>
+  <div class="dhead"><h1>{e(dataset_label(key))}</h1></div>
+  <p class="sub">{e(name)}</p>
+  <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
+  <p class="lede">Not attempted yet. These are the claims read from its paper, which an attempt will
+  test{("; next in the pipeline: " + e(row["next"].lower())) if row and row["next"] else ""}.</p>
+  <p class="actions">{actions}</p>
+</header>
+<main>
+  <section class="panel"><h2>Claims <span class="count">{n}</span></h2>{claims_html}</section>
+  <section class="panel" style="margin-top:28px"><h2>Pipeline</h2><dl class="kv" style="margin-top:14px">{steps}</dl></section>
+</main>'''
+    return shell(data, f"{dataset_label(key)} · Reproduction registry", root, "datasets", body, path=page_of(key),
+                 description=f"The claims read from the paper of dataset {dataset_label(key)} on "
+                             f"{archive_name(key)}, before an attempt to reproduce them.")
+
+
 # --- writing -------------------------------------------------------------------
 
 def build(data: dict, output: Path) -> None:
@@ -1588,6 +1796,10 @@ def build(data: dict, output: Path) -> None:
                 (old / sub).mkdir(parents=True, exist_ok=True)
                 (old / sub / "index.html").write_text(redirect_page(target, "../../" + ("../" if sub else "")))
             (output / "api" / "dandiset" / f"{split_key(key)[1]}.json").write_text(api)
+    for key in claims_only(data):
+        page = output / page_of(key)
+        page.mkdir(parents=True, exist_ok=True)
+        (page / "index.html").write_text(page_claims(data, key))
     (output / "dandisets" / "index.html").write_text(redirect_page("datasets/", "../"))
     (output / "data" / "dandisets.json").write_text((output / "data" / "datasets.json").read_text())
     (output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")
@@ -1609,6 +1821,7 @@ def sitemap(data: dict) -> str:
     pages = [("", data["generated"][:10]), ("about/", data["generated"][:10]), ("pipeline/", data["generated"][:10])]
     pages += [(f"{kind}/", data["generated"][:10]) for kind in LISTS]
     pages += [(page_of(d), max(a["date"] for a in atts)) for d, atts in current_attempts(data).items()]
+    pages += [(page_of(d), data["generated"][:10]) for d in claims_only(data)]
     urls = "".join(f"<url><loc>{html.escape(SITE_URL + p)}</loc><lastmod>{day}</lastmod></url>" for p, day in pages)
     return ('<?xml version="1.0" encoding="UTF-8"?>\n'
             f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n')
@@ -1620,6 +1833,10 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=ROOT / "site")
     parser.add_argument("--demo", type=int, metavar="N",
                         help="build from N made-up attempts, to test the site at scale; never publish")
+    parser.add_argument("--issues", type=Path, metavar="JSON",
+                        help="the open needs-you issues (gh issue list --json title,url), to link from the pipeline")
+    parser.add_argument("--queue", type=Path, metavar="JSON",
+                        help="the runners' queues and chain times (tools/runner/describe.py queue), for the pipeline")
     parser.add_argument("--noindex", action="store_true",
                         help="keep the pages out of search results, for a preview of a pull request")
     args = parser.parse_args()
@@ -1628,6 +1845,12 @@ def main() -> int:
     if args.demo:
         data = demo(data, args.demo)
     data["noindex"] = args.noindex
+    if args.queue and args.queue.is_file():
+        data["queue"] = json.loads(args.queue.read_text())
+    if args.issues and args.issues.is_file():
+        # An issue's title is "<dataset label>: waiting on you" (tools/notify.py).
+        data["issues"] = {i["title"].rsplit(": waiting on you", 1)[0]: i["url"]
+                          for i in json.loads(args.issues.read_text()) if i["title"].endswith(": waiting on you")}
     build(data, args.output)
     print(f"wrote {args.output} ({len(data['attempts'])} attempts, {len(data['targets'])} targets"
           f"{', DEMO DATA' if data['demo'] else ''})")

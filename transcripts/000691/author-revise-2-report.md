@@ -1,20 +1,27 @@
-No outcome changed, and none is proposed: the verifier agreed with all 15, and the new outputs support the verified outcomes. The final run of `python tools/entry.py all` passed in 25.2 minutes and `check` shows 0 errors. Nothing is committed.
+I made no outcome changes and proposed none, so the verifier agrees with all 23 outcomes and no third round is needed. Every correction in this round is to text.
 
-**Why the verifier's numbers didn't match the text.** The executed copy it read came from a different machine (19 significant points, 2264 fits at the iteration limit, NMF errors around 97.79, 358 s, 13.7 min). Three runs on this 4-core machine all gave the numbers the text already stated: 18, 2268, 97.55 to 97.58, and about 640 s for the map. The decoder fits stop at an iteration limit and the NMF uses float32, so these counts shift slightly between machines. The ed9c Result cell now says so, and the record's round-2 entry explains it.
+**Re-run.** `python tools/entry.py all` stops at its check step because of 11 errors in the earlier record `attempts/000691-scherrer-2023-01.yaml`. That record was written against an older claims file, and the protocol says earlier records stay as they are, so I didn't touch it. The new record has no errors. As in the round-1 revision, I ran `entry.py run` on its own. It hit the 2-hour tool limit after six notebooks. I ran the seventh, `decoding_reduced.ipynb`, by itself in the same environment (20.3 min). All seven finished, the slowest in 22.4 minutes, under the 30-minute limit.
+
+**What the re-run showed.** The verifier thought the mismatched numbers were left over from another run, which was right. The cause is that some results change between runs on different machines, even with every seed fixed:
+- **fig1f fits:** my run prints exactly the numbers the prose already had (4.467 µm at the centre, 15 of 118 beads moving, lower-cost costs 60.092 against 79.942). The run the verifier reviewed printed 4.422 µm, 14 of 118, and a lower-cost centre of 4.084 µm, which is within tolerance.
+- **Reduced runs:** they differ too. For ed9c, 7 of 56 map points are significant in my run and 0 in the verifier's, so test (i) holds in one run and fails in the other. These runs decide no outcome.
+- **Cost estimates:** about 33 h in my run against 24.6 h in the verifier's for the full (n2) null. Both are far over the limit.
+
+I couldn't find the cause. Running the small-subset fits in parallel threads gave identical results on test data, so the notes report the variability without naming a cause.
 
 **Corrections:**
-- **ed8:** the Result cell and the notes no longer say the active footprints are "as spread as random sets". They now say the event's spread falls inside its component's random range for 3 of the 8 components, below it for 2 and above it for 3, with the numbers.
-- **Cell 15:** removed the sentence saying the AVI's byte size matches the Academic Torrents listing, since no output showed it.
-- **Cell 0:** the sentence about the draft is now backed by a new data-check output: the draft holds the same assets, sizes and blob ids as the published version.
-- **Timings:** the README and `entry.yaml` now say about 25 minutes (was 24). The round-1 response now says about 640 s (was 634 s).
-
-**New output:**
-- **ed9b exact-solver check (new cell 26):** the verifier's open point. With the exact solver, real decoders score 0.220 to 0.292 and shifted-label decoders 0.092 to 0.145, so the claim holds with either solver.
-- **ed9c Welch t-test variant:** the verifier expected a t-test to mark fewer points; it marks more. It gives 80 of 150 significant points (range 0.079), 5 with the SGD solver, and 32 of 34 for the paper code's 64-footprint variant.
-- **Round 2 under `verifications`:** each claim has the verifier's reason in its own words and my response.
+- **fig1f:** the conclusion and notes now use this run's numbers. They say the fits differ between runs and give the verifier's run's values in the record. The verifier was right that the old reason for "partial" (centre 0.067 µm off, edge within) didn't hold in its run. The new reason holds in both runs: under reading (a), one position is within tolerance for each set of fits. The deviation no longer says the fits differ only "in the last digits".
+- **fig1e:** I added 6.884 for reading (c) under Jacobian scaling. The minor-axis edge stays 5.203, as my run prints it; the verifier's run printed 5.202.
+- **Timings and reduced runs:** the fig2, fig2k, fig2l, ed9b and ed9c conclusions and notes now use this run's figures, with the verifier's run's figures in the record.
+- **Notebook headers:** the two null-(n2) notebooks now say "more than a day on four cores", and that 8 decoders is a number chosen to keep the notebook well within the limit, not "as many as fit". The reduced notebook no longer quotes "4 to 11 hours".
+- **README:** run times are now the ranges seen in both runs.
+- **Main notebook cell 23:** fig2d is now described as methods_underspecified, matching the record.
+- **Movie wording:** the README, main notebook cell 0 and `entry.yaml` now say "the imaging video", consistent with the raw video, instead of stating it is the raw video. Cell 17, the motion summary and the finding now say "rigid shifts against a template", not "frame-to-frame".
+- **Round-1 record:** the ed8 reason again says the split is at the midlines "of the footprints' extent", as the verifier wrote it.
+- **Round 2:** recorded under `verifications` for all 23 claims, with the verifier's reasons in its own words and my responses.
 
 **Not done:**
-- **ed9c code variant grid:** the code's 64-footprint variant stays on a 60 px grid, though the claims file says 40 px. I ran it at 40 px once and the notebook took 32 minutes, over the 30-minute limit. This is now listed as a deviation in the record and noted in the notebook. No number from that run is used.
-- **More decoders per point for ed9c:** the map already takes about 640 s with 10 per point, so more would not fit the time limit.
-- **Paper values for Fig. 2 and ED9b:** still not compared, because the main text and the Fig. 2 legend are not available. No paper text was downloaded, so `paper/` stays empty.
-- **ed2c:** no change. The record already states that it sits at the threshold, 0.003 short of 0.8.
+- The executed notebooks show this run's numbers. Any later run on another machine may print slightly different PSF fits, reduced-run counts and timings; the notes say so.
+- I left the `runtime_minutes` values in `entry.yaml` as they were, since they are within a minute or two of this run's times.
+
+Nothing is committed, as you asked.

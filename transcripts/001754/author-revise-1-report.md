@@ -1,34 +1,23 @@
-No outcome changed. The verifier agreed with all seven:
+I've answered the verifier's round-1 report and re-run the entry with `python tools/entry.py all entries/001754-knierim-2000`. The check reports 0 errors and the notebook runs in 97 s. Every conclusion matches the new outputs, and nothing is committed.
 
-| Claim | Outcome |
-|---|---|
-| flight-spatial-code | not_reproduced |
-| three-orthogonal-surfaces | blocked (metadata_insufficient) |
-| si-comparable-to-preflight | reproduced |
-| fd4-abnormal-selectivity | reproduced |
-| fig3-stability-across-sessions | reproduced |
-| theta-normal | blocked (data_missing) |
-| ripples-normal | blocked (data_missing) |
+**Outcomes that changed**
+- **`fig3-stability-across-sessions`: blocked → not_reproduced.** The verifier was right (B1): the old check did not test the criterion's condition. Now every deposited map in sessions 2 and 3 is tied to the unit it best matches, and both directions are printed with conflicts flagged. In session 3, four units are each tied to two maps, three of them units of active session 2 maps. The condition fails, so M-a is not run. M-b, the only reading left, fails both ways: 6 of 16 and 1 of 16 cells keep their field, against more than 8 needed.
+- **`three-orthogonal-surfaces`: blocked → not_reproduced.** Its criterion gives not reproduced when a dependency is not reproduced, and fig3 now is. I added a code cell that applies the rule.
+- **All other outcomes are unchanged.** The verifier agreed with all ten outcomes as they stood, adding for fig3 that it might be not_reproduced if B1 held.
 
-The final run with `python tools/entry.py all entries/001754-knierim-2000` passed in 341 s with 0 check errors. The earlier numbers are unchanged, and the conclusions match the new outputs.
+**Outputs added at the verifier's request**
+- **Rat 2's FD4 position (B2):** in Rat 2's FD4 window the Rat1 and Rat2 files hold the same trace (4 of 707 shared valid positions differ by more than 2 px). Rat 2's units beat every time shift on neither file's copy (0 of 17 and 1 of 16), while on FD9 they do (12 of 28 and 16 of 28). So whose position it is stays unknown. `fd4-abnormal-selectivity` stays partially_reproduced, as the verifier gave it, and its conclusion, notes and finding state this caveat.
+- **Maps with `cell_number` −1 (B3):** every active map is now listed with its name and cell number. In flight the −1 maps match a single unit about as well as numbered maps (median r 0.555 against 0.595), so they look like per-cell maps. Leaving them out as a variant changes no test's result.
+- **Rat 3's session 2 cells:** all 11 active maps are listed with mean rate, information and best-matching unit. Nothing in the files marks which 7 the paper showed.
+- **B4:** spikes in bins with no occupancy (33 to 1,188 per epoch) were already printed; the text now says they are left out of M-b.
 
-**Outputs added for each point:**
-- **Whose position the trace is in Rat2's windows (point 1):** a data-check cell gives the trace's movement in every task window. The median step is 0.50 to 1.18 px and the path length is 20.5 to 91.6 px/s, so Rat2's windows hold a continuous track. The same cell tests each rat's units in its own and the other rat's MC windows. Only 0 to 2 units are significant anywhere, so neither check settles whose position it is, and the text says so.
-- **Shuffle calibration at the real drop rates (point 4):** each unit's spikes were replaced by a Poisson train, and in a second version each spike was moved to its nearest position sample, which reproduces the real drop rates.
-  - Over all flight ES epochs, 0.074 and 0.096 of units come out significant. One session reaches 0.21, so the criterion's 0.05 is lower than the real false-positive rate in some sessions.
-  - Against each session's own rate, Rat1's 10 of 25 is still above chance (p 0.0035 and 0.0026) and Rat2's 2 of 28 is not, so flight-spatial-code stays not reproduced. This is now stated in the conclusion, summary, notes and README.
-- **Whether rate-map information can fail (point 3):**
-  - Rate-map spatial information split by the spike-based test: significant units have a median of 1.855 bits/spike against 1.076 for the rest (p 9e-7).
-  - A bootstrap 95% interval for the FD9 minus preflight median difference: -0.425 to 0.312 bits/spike, about -29% to +22%.
-  - The si-comparable conclusion now says the test has no equivalence margin, so a difference of about a quarter of the preflight level is not ruled out.
-- **fd4-abnormal without Rat2 (points 1 and 2):** Rats 1 and 3 give p = 0.035, the same on the draft and the earlier version, because the three dropped maps are all Rat2's.
-- **Rat3 ES1/ES2 difference (point 5):** I added each unit's shuffle 95th percentile in both epochs. For several stable units it rises more in ES2 than their information does. Poisson trains give 0 to 2 false positives in either epoch. The cause is still not explained, and the text says so.
+**Other changes**
+- `neurolab.py` has a new helper, `map_unit_matches`.
+- The notebook header, the summary and the README now show the new outcomes and the reasons.
+- Two findings in the attempt record gained detail: the shared trace and the −1 maps.
+- The round is recorded under `verifications`, with the verifier's reasons in its own words and my changes under `response`.
 
-**Records:** I added the round-1 `verifications` block to `attempts/001754-knierim-2000-02.yaml`, with the verifier's reasons and my responses. I also updated the notes of four claims and the first finding.
-
-**Not done:**
-- Point 6 (smoothing dependence) was already stated, so I left it as it was.
-- Point 7 (occupancy at 38 to 57 counts/s against a stated 60 Hz) is already noted in the data check. It only matters if frames were dropped unevenly across space, and nothing in the files can test that.
-- The Methods, chance level and Figure 3 sessions are still unavailable because the paper is not open access.
-- I downloaded no paper text, so `paper/` is empty.
-- I did not commit or push.
+**Not done**
+- No change for B5 and B6, which the verifier marked as not affecting a conclusion.
+- The smoothing kernel of the deposited maps cannot be recovered from the files.
+- No questions were added: the claims file covered everything needed.

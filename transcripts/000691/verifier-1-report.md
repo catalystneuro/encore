@@ -1,48 +1,59 @@
-**Verifier report, round 1: Scherrer et al. 2023 (doi:10.1038/s41592-023-01806-1), dandiset 000691 v0.260827.1358**
-
-The paper is not open access, so I used its abstract and Extended Data legends from the publisher page (saved under `paper/`). The claims file lists 15 claims. No separate attempt record was among my materials, so the counts below come from the claims file and the notebook outputs. The DANDI API shows 2 assets: the NWB file (15.2 GB) and the behaviour AVI, for one subject.
-
-My outcomes: 5 reproduced, 2 partially reproduced, 1 not reproduced, 7 blocked.
-
-### A. Outcomes
+**A. Outcomes** (23 claims in the claims file)
 
 | Claim | Outcome | Reason |
 |---|---|---|
-| abstract-thousands-of-neurons | reproduced | Cell 16: all 2948 footprints have non-zero traces. No pairs merge, since the largest trace correlation is 0.77 (cell 13). The mouse visits all 4 arms. |
-| ed6a-curated-footprints | blocked (metadata_insufficient) | The PlaneSegmentation has only `image_mask` and `ROICentroids` (cell 3), so there is no curation flag. 2948 is the uncurated count and cannot be compared with 2382 ± 238. |
-| ed6bcd-other-mice | blocked (data_missing) | The API confirms 1 subject and 2 assets. |
-| ed5-songbirds | blocked (data_missing) | No bird data in the archive (API: species is mouse only). |
-| abstract-kiloscope-fov | blocked (metadata_insufficient) | The NWB file and the asset metadata give no pixel size or `grid_spacing`. At the code's 5.94 µm/px the frame would be 4.80 × 3.61 mm (cell 5), which is outside 4.0 ± 0.4 mm. That value comes from outside the dandiset, and "FOV" may mean the usable circular field, so I agree it is blocked. |
-| abstract-weights | blocked (data_missing) | Weight is not data. The only weight in the file is a wrong device description ("1.0 g"). |
-| ed1-ed4-resolution | blocked (data_missing) | No USAF target images in the archive. |
-| ed3-adc | blocked (data_missing) | No ADC test recordings in the archive. |
-| ed8-coactive-distributed | reproduced | Cell 28: all 8 events have 196 to 320 active footprints with spread ratios of 0.95 to 1.06, so 8 of 8 pass (6 needed). The same holds at thresholds 0.3 and 0.7. See problem 4 for why this test is weak. |
-| fig2-quadrant-direction-decoding | reproduced | Cell 18: the median per-decoder median class accuracy is 0.415. That is above chance (0.125) and above the null 95th percentile (0.145); 50 of 50 decoders exceed it. The paper gives chance only as "white is set at chance level" (ED9b), which matches 1/8. |
-| ed9b-octant-decoding | reproduced | Cell 21: median 0.313, against a null 95th percentile of 0.144 and chance of 0.125; 50 of 50 decoders above. |
-| ed9c-local-decoding-map | not_reproduced | Cell 23: 0 of 151 grid points are significant at BH 5%. The best z is 1.87 (p = 0.031, q = 0.61). The code's variant (64 footprints within 50 px) gives 4 of 77 significant with a score range of 0.054 (cell 24), which would pass. The result is fragile (problems 2 and 3). |
-| ed10-localized-activity | reproduced | Cell 26: 100 of 2948 footprints are localized against 29 expected, binomial p = 4.5e-25. The binomial p is overstated (problem 5), but the excess is large. |
-| ed2b-featherscope-flat-illumination | partially_reproduced | Cell 30: the corrected profile drops to 0.742 at 400 µm, below 0.8. It is above total vignetting there (0.342). |
-| ed2c-kiloscope-flat-illumination | partially_reproduced | Cell 30: the corrected profile is 0.797 at 1500 µm, just under 0.8. It is above total vignetting (0.253). The 0.003 margin depends on pixel size and centring. |
+| abstract-thousands-of-neurons | reproduced | Main nb cell 19: 2948 EXTRACT footprints, all in one movie on shared timestamps. The mouse tracked over 47.7 loops of the maze; `cellfind_min_snr` = 2. |
+| ed6a-curated-footprints | blocked (metadata_insufficient) | The only PlaneSegmentation columns are `image_mask` and `ROICentroids` (cell 3), so nothing marks the curated footprints. The claim's criterion says it then cannot be tested. |
+| ed6bcd-other-mice | blocked (data_missing) | The DANDI API lists 2 assets and 1 subject (I checked this myself). |
+| ed5-songbirds | blocked (data_missing) | No bird data in the archive. |
+| birds-singing-rate | blocked (data_missing) | No bird data in the archive. |
+| fig2d-lman-sparse-bursting | blocked (methods_underspecified; the data are also missing) | The claims file gives methods_underspecified. The notebook's table says only "data missing". |
+| abstract-kiloscope-fov | reproduced | Cell 23: 808×608 px gives 4.80×3.61 mm at 5.94 µm/px and 4.32×3.25 mm at 5.35 µm/px. Both sides are within tolerance under both pixel sizes. |
+| abstract-weights | blocked (data_missing) | No dataset could hold the hardware weights. |
+| fig1e-featherscope-psf | reproduced | Cell 26, reading (a): 3.919 µm at the centre and 6.433 µm at the edge; reading (c): 3.887 and 6.884 µm. Both readings are inside 4±0.4 and 7±0.7, and they are stable under the Jacobian variant (cell 27). |
+| fig1f-kiloscope-psf | partially_reproduced | No reading meets the criterion with either optimizer. Under (a) the edge is 5.441 µm (within tolerance) but the centre is 4.422 µm, 0.022 µm above the bound. With Jacobian scaling the centre is 3.578 µm, 0.022 µm below the other bound. The claims file has no partial rule; I call it partial because the centre is about 4 µm and the edge about 5 µm, rising with radius. |
+| ed1cf-field-curvature | blocked (methods_underspecified) | As the criterion says. Best-focus slice against radius is shown in cell 30. |
+| ed1-ed4-resolution | blocked (data_missing) | No USAF target images, in the dandiset or in the repository listing (cell 21). |
+| ed2b-featherscope-flat-illumination | reproduced | Cell 32: corrected vs total-vignetting profile 0.511 vs 0.193 at 0.5 mm and 0.628 vs 0.257 at 0.45 mm. The corrected profile falls less from the centre at both radii. Robust to moving the centre (cell 33). |
+| ed2c-kiloscope-flat-illumination | reproduced | 0.557 vs 0.180 at 1.8 mm and 0.420 vs 0.148 at 2.0 mm; the comparison holds for all 6 centres tried. |
+| ed7-motion-small | not_reproduced (tentative) | Motion nb cell 6: RMS 0.037, 0.038 and 0.026 px under readings (a), (b) and (c), all far below 0.13±0.013. This rests on the deposited movie being raw, which nothing checks (problem 1); if it is motion-corrected, the right outcome is blocked (metadata_insufficient). |
+| fig2-quadrant-direction-decoding | reproduced (null n1 only) | Quadrant nb cells 6–7: median accuracy 0.437 ≥ 0.375 (reading a; reading b fails, min 0.239). Null (n1): max 0.227 over 1000 shuffles, so p = 0. Null (n2), which the criterion also requires, was not run; its one sample (0.136) and the margin make a disagreement very unlikely. |
+| fig2k-decoder-size | blocked (other: not run, compute) | Cell 10 only times the fits (4.2 h on 4 cores). The data are present, so this is not a data block. |
+| fig2l-local-decoding-map | blocked (other: not run, compute) | Cell 12 only counts the map points used (5411/5905) and times the fits (about 4 h on 4 cores). |
+| ed8-coactive-distributed | blocked (methods_underspecified) | Cell 36: all four quarters are covered in 8 of 8 events under reading (a) but 7 of 8 under reading (b) (component 1 at 1000 s has 0 footprints in the lower left). The criterion says that when the readings disagree the outcome is methods_underspecified. |
+| ed9b-octant-decoding | reproduced (null n1 only) | Octant nb cell 6: 0.326 > 1/8, above the n1 null maximum of 0.229, p = 0. As for fig2, n2 was not run; its one sample is 0.110. |
+| ed9c-local-decoding-map | blocked (other: not run, compute) | Cell 9 times it only (10–11 h on 4 cores). |
+| ed10-localized-activity | blocked (methods_underspecified) | As the criterion says. Maps, entropies and peaks are shown in cell 39. |
 
-### B. Problems
+**B. Problems**
 
-1. [does not affect a conclusion] `decode_once`: I checked the split against the paper's code (`f3+sf8/quadrant_direction_decoding.m` at d596646). It uses train `1:N-buffer`, test `N+1:end-buffer`, a random circular shift and one-vs-all coding, and the helper reproduces this exactly. The 160-frame buffer is larger than the 30-frame smoothing windows, so I found no train/test leakage. On synthetic data the decoder reaches about 1.0 on separable classes, and its nulls fall to 0.00–0.06.
-2. [affects a conclusion] `decode_once`, `SGD_EPOCHS = 10`: SGD at this very small alpha is noisy and was never checked against an exact solver on the real data. On a weak synthetic signal it gave per-decoder medians of 0.18–0.25, against 0.255 from `LinearSVC` with the same objective; 50 epochs did not help. This only lowers scores, so the passing decoding claims stand. For ed9c it lowers the real scores and widens the null spread used in the z-test, so it could explain why no point is significant.
-3. [affects a conclusion] Cell 23 (ed9c): each grid point has 10 real and 10 null decoders, and all 2948 footprints are used. The paper used a curated 2382, so the 32 nearest footprints include ones the paper removed. Each point's z-test rests on a null standard deviation from 10 values. Across 151 BH tests, a point needs roughly z > 3.3 to pass. The not-reproduced result is therefore weakly powered, and the code's own variant passes (cell 24).
-4. [does not affect a conclusion] Cell 28 (ed8): members are assigned by highest rank, so each component gets about 1/8 of all footprints. A random eighth already has a spread ratio near 1. 57–84% of members count as "active" in a 50 s window, and there is no comparison with a random window, so the test barely separates a real event from chance. Two event times (80.4 s and 122.9 s) fall in the first 153 s, which the behaviour analysis drops as experimenter handling.
-5. [does not affect a conclusion] Cell 26 (ed10): the same 100 shifts serve as the null for every footprint, so footprint counts are correlated and the binomial p-value is anti-conservative. Circular-shift nulls also do not remove slow non-stationarity shared by activity and position. The excess (100 vs 29) is large enough that the outcome holds.
-6. [does not affect a conclusion] `behaviour` / `track_mouse`: on a synthetic rectangular loop, `behaviour` gave the right rectangle, octant order 0→7, direction and speed (1.333 px/frame as expected). On the real data, though, the largest step between imaging frames is 62 px. At the 12.5 Hz video rate that is about 150 px between video frames, which looks like a tracking error. Blob areas go down to 3 px. These glitches feed into speed, and so into the "running" frames, and were not counted. The arena crop `ARENA_ROWS`/`ARENA_COLS` is hand-set, and the rectangle is fit to the 2nd–98th percentiles of position on an unrotated frame.
-7. [does not affect a conclusion] Cells 1 and 9: dropping the first 1920 video frames matches the code's `CurrentTime = 64` s at the nominal 30 frames/s, which is 153 s on the true timestamps. The notebook says the experimenter is in view during those frames, but no output shows it.
-8. [does not affect a conclusion] Cell 23: the radius is 45.45 px, where the criterion says 45 px. The notebook uses the code's 5.94 µm/px for ed8 and ed9c but treats the FOV claim as blocked for lack of a pixel size. Both choices are defensible, but they are not consistent with each other.
-9. [does not affect a conclusion] Metadata errors in the dandiset, which the notebook correctly flags in cell 4: the device and dandiset descriptions say "optimized for weight (1.0 mm; 1.0 g)", the imaging is stored as `TwoPhotonSeries`, and the indicator and location are "unknown". The 808 × 608 frames and the 4 mm window support the notebook's reading that this is the large-FOV Kiloscope.
+1. **[affects a conclusion]** motion nb, cell 6 / `normcorre_rigid`: nothing checks that the deposited movie is raw, and the API metadata do not say. The paper says shifts were corrected with NoRMCorre before EXTRACT. Several outputs fit an already-registered movie:
+   - the largest shift in 36,596 frames of a freely moving mouse is 0.16 px;
+   - the per-window RMS is flat at 0.03–0.05 px (cell 7);
+   - block 0 contains values of exactly 0 (cell 3).
+   
+   The ed7 outcome depends on this. Also, the registration is a Python re-implementation built from NoRMCorre defaults "as recalled here", not NoRMCorre itself.
+2. **[affects a conclusion]** quadrant nb cell 8 and octant nb cell 7: the n2 null (1000 decoders of 200 fits each) was not run, though both criteria require it. The n1 comparison also sets a 200-fit averaged real matrix against single-fit null matrices: the n1 null median is 0.074, below chance, while the averaged null sample is 0.136. So n1 overstates the separation, though not enough to matter here.
+3. **[affects a conclusion]** fig2k, fig2l, ed9c were not attempted. The estimated costs are 4–11 h on 4 cores, so this is a compute choice, not a data block. A reduced run was possible within limits, e.g. fig2k reading (b) with fewer fits, or fig2l with one fit per null decoder.
+4. **[affects a conclusion]** `fit_bead` / cell 27: the main PSF fits often stop short of the least-squares minimum. The Jacobian variant finds a lower cost for 49 of 118 Kiloscope beads and 68 of 155 Featherscope beads. For fig1f the centre value swings from 4.42 to 3.58 µm depending on the optimizer. One edge bead is fitted at 27.77 µm, which inflates reading (c) at the edge (7.373 µm). No result is reported using the lower-cost fit for each bead.
+5. **[affects a conclusion]** cells 36–37 (ed8):
+   - The quarters split at the midlines of the footprints' extent leave 85 of 2948 footprints in the lower left, so the test turns on one sparse corner.
+   - Under reading (b), the code's event times land where temporal weights are only 0.04–0.13 of their maxima for four components. Those times are not events of this NMF run.
+6. **[does not affect a conclusion]** All decoding claims and ed8 use all 2948 footprints, not the curated 2382. The claims file names this as a variant, so it is allowed, but it is not the paper's set.
+7. **[does not affect a conclusion]** `behaviour`: position is unwrapped by the loop length rather than with the code's MATLAB unwrap. About 0.6–0.9% of labels differ (cell 9). My synthetic loop test confirmed the quadrant, octant and unwrap logic.
+8. **[does not affect a conclusion]** Cell 12: quadrant decoding peaks with labels shifted +2 s (0.519, against 0.495 at 0 s), so there may be a small clock offset. Any such offset would only make the decoders look worse.
+9. **[does not affect a conclusion]** abstract-kiloscope-fov: both pixel sizes come from the authors' code, not the data. With 5.94 µm/px the test reduces to 808 px × a constant that yields exactly 4.80 mm, so it is close to circular.
+10. **[does not affect a conclusion]** The Kiloscope bead stack's image order (file number) is not confirmed: only 72% of beads have their brightest slice within 5 slices of the listed one (cell 25). The Featherscope order is confirmed (155 of 155).
+11. **[does not affect a conclusion]** The fig2d status in the notebook table ("data missing") differs from the claims file's methods_underspecified.
+12. **[does not affect a conclusion]** Main nb cells 28 and 34 still hold the author's "Result" verdicts, although conclusion cells were meant to be removed.
 
-### C. What I could not check, and which output would have let me
+Helper functions I tested on synthetic inputs all behaved as documented: `shuffle_columns`, `_split` (49/49 with a 1-frame buffer for n = 100), `confusion` (normalized by actual class), `decoding_matrix` (0.98 on separable data, about chance 0.26 on noise with 4 classes), `nmf_groups`, and `behaviour`.
 
-- **Tracking quality:** an overlay of tracked centroids on sample AVI frames, the number of video-frame jumps above about 40 px, and the number of frames with blob area under 50 px.
-- **SGD convergence on the real data:** for a few fig2 and ed9c decoders, the same split fit with an exact solver (`LinearSVC`, or more epochs) and the resulting accuracies.
-- **ed9c power:** the null standard deviation per grid point, and the map rerun with more decoders per point.
-- **ed8 baseline:** the fraction of members active in randomly placed 50 s windows, and the spread ratio of random footprint subsets.
-- **ed10 dependence:** the count of "localized" footprints when one of the shifted nulls is treated as the observed data, which gives an empirical false-positive count.
-- **ed2b/ed2c sensitivity:** the profiles at R ± 5% and under alternative centres, since ed2c misses 0.8 by 0.003.
-- **Paper values for Fig. 2 and ED9b:** the main text and the Fig. 2 legend are paywalled, so I could not compare the notebook's accuracies with the paper's numbers.
-- **The excluded opening frames:** frames 0–1920 of the behaviour video, to confirm the experimenter is in view.
+**C. What I could not check, and the output that would have let me**
+
+- **Whether the movie is raw:** for example, per-frame counts of zero-valued pixels at the frame edges, any NWB attributes or comments on the series, or the shifts estimated on the movie after a known synthetic jitter is added.
+- **The n2 null distributions** for fig2 and ed9b (even 100 decoders), and the distribution of single-fit median accuracies for the real decoder, to put the n1 comparison on equal terms.
+- **Any output at all for fig2k, fig2l and ed9c.**
+- **PSF readings using, for each bead, the lower-cost of the two fits**, plus the Kiloscope readings with the 27.77 µm outlier listed.
+- **Which images `sf3/*/analysis.m` actually loads for ed2b/ed2c**: the lines of the script that name the files. The notebook hard-codes one file per folder without showing that the script uses those files.
+- **For ed8:** the active-footprint counts per quarter with the quarters split at the image midlines rather than the footprints' extent.

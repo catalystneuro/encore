@@ -1,52 +1,108 @@
-# 000691 · author-revise-1 · run 39082958207
+# 000691 · author-revise-1 · run 39535857782
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; echo ======; cat transcripts/000691/verifier-1-report.md; echo =====; ls -R entries/000691-scherrer-2023 | head -50
+cat transcripts/000691/verifier-1-report.md; ls entries/000691-scherrer-2023 entries/000691-scherrer-2023/*; grep -n "" docs/protocol.md | sed -n '1,400p' | grep -n -i "step 6\|Hand over"
 ```
 
 ```
-# Protocol for an attempt
+**A. Outcomes** (23 claims in the claims file)
 
-Version: `pilot-7`. Record this version in the attempt's provenance.
-
-This is what an agent, or a person, does to attempt a target and deposit the
-result. It is written from the eight pilot attempts
-([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-
-There are two roles. The **author** makes the attempt. The **verifier** checks
-it and must not be the author: for agents, a separate run with a separate
-context that has not seen the author's reasoning.
-
-Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-kept in [`transcripts/<dandiset>/`](../transcripts).
-
-## Author
-
-[... 397 more lines not kept]
+| Claim | Outcome | Reason |
+|---|---|---|
+| abstract-thousands-of-neurons | reproduced | Main nb cell 19: 2948 EXTRACT footprints, all in one movie on shared timestamps. The mouse tracked over 47.7 loops of the maze; `cellfind_min_snr` = 2. |
+| ed6a-curated-footprints | blocked (metadata_insufficient) | The only PlaneSegmentation columns are `image_mask` and `ROICentroids` (cell 3), so nothing marks the curated footprints. The claim's criterion says it then cannot be tested. |
+| ed6bcd-other-mice | blocked (data_missing) | The DANDI API lists 2 assets and 1 subject (I checked this myself). |
+| ed5-songbirds | blocked (data_missing) | No bird data in the archive. |
+| birds-singing-rate | blocked (data_missing) | No bird data in the archive. |
+| fig2d-lman-sparse-bursting | blocked (methods_underspecified; the data are also missing) | The claims file gives methods_underspecified. The notebook's table says only "data missing". |
+| abstract-kiloscope-fov | reproduced | Cell 23: 808×608 px gives 4.80×3.61 mm at 5.94 µm/px and 4.32×3.25 mm at 5.35 µm/px. Both sides are within tolerance under both pixel sizes. |
+| abstract-weights | blocked (data_missing) | No dataset could hold the hardware weights. |
+| fig1e-featherscope-psf | reproduced | Cell 26, reading (a): 3.919 µm at the centre and 6.433 µm at the edge; reading (c): 3.887 and 6.884 µm. Both readings are inside 4±0.4 and 7±0.7, and they are stable under the Jacobian variant (cell 27). |
+| fig1f-kiloscope-psf | partially_reproduced | No reading meets the criterion with either optimizer. Under (a) the edge is 5.441 µm (within tolerance) but the centre is 4.422 µm, 0.022 µm above the bound. With Jacobian scaling the centre is 3.578 µm, 0.022 µm below the other bound. The claims file has no partial rule; I call it partial because the centre is about 4 µm and the edge about 5 µm, rising with radius. |
+| ed1cf-field-curvature | blocked (methods_underspecified) | As the crit
+[... 69 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls attempts | grep 000691; cat attempts/000691-scherrer-2023-01.yaml; ls claims/000691; cat claims/000691/*.yaml; cat entries/000691-scherrer-2023/entry.yaml entries/000691-scherrer-2023/README.md; ls paper executed/000691-scherrer-2023 2>/dev/null
+cat docs/protocol.md
 ```
 
 ```
-Exit code 2
+# Protocol for an attempt
+
+Version: `pilot-10`. Record this version in the attempt's provenance.
+
+This is what agents, or people, do to attempt a target and deposit the
+result. It is written from the pilot attempts
+([pilot notes](pilot-notes.md)); the reasons for the rules are there.
+
+An attempt has three roles, each a separate run with a separate context:
+
+- The **reader** reads the paper and writes the claims file: every finding,
+  and how each is to be tested, taken from the paper. A second reader checks
+  it against the paper. Readers never see the dandiset's data.
+- The **author** tests the claims on the dandiset. It reads the paper to
+  understand the claims, but the claims file binds it: it cannot change a
+  claim, and it asks a reader for any method detail the file lacks.
+- The **verifier** checks the author's work and must not be the author.
+
+So every claim and its method are fixed from the paper before anyone analyses
+the data, and no method is chosen by the agent that runs the analysis.
+[... 463 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+ls attempts | grep 000691; ls claims/000691 questions | grep -i 000691; ls claims/000691; cat entries/000691-scherrer-2023/entry.yaml entries/000691-scherrer-2023/README.md entries/000691-scherrer-2023/requirements.in; wc -l entries/000691-scherrer-2023/*; ls transcripts/000691; ls executed/ 2>/dev/null | head
+```
+
+```
 000691-scherrer-2023-01.yaml
+000691-scherrer-2023-02.yaml
+claims/000691:
+10.1038-s41592-023-01806-1.yaml
 schema_version: 1
-id: 000691-scherrer-2023-01
-dandiset: "000691"
-dandiset_version: 0.260827.1358
+name: 000691-scherrer-2023
+type: reproduction
+title: Imaging thousands of neurons in a freely moving mouse with a large-FOV head-mounted microscope (Scherrer et al. 2023)
+description: Tests the findings of Scherrer, Lynch, Zhang and Fee (2023) on dandiset 000691, which holds
+  one session of one mouse imaged with the large-FOV head-mounted microscope while it explores a looped
+  maze, with 2948 EXTRACT footprints, the raw imaging video and a behaviour video. It counts the
+  footprints, computes the field of view, registers the whole movie for its motion, tracks the mouse
+  from the video, decodes its position and direction against shuffled activity, looks at the spread of
+  coactive footprints and at place maps, and tests the bead resolution, field curvature and
+  illumination profiles on measurements in the paper's code repository. The other mice, the birds and
+  the other optical tests are not in the dandiset.
+license: Apache-2.0
+notebooks:
+- path: reproduce_scherrer_2023.ipynb
+  title: Reproducing Scherrer et al. (2023) from dandiset 000691
+[... 93 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat attempts/000691-scherrer-2023-02.yaml
+```
+
+```
+schema_version: 2
+id: 000691-scherrer-2023-02
+dataset:
+  archive: dandi
+  id: "000691"
+  version: 0.260827.1358
+  doi: 10.48324/dandi.000691/0.260827.1358
 paper: doi:10.1038/s41592-023-01806-1
-date: 2026-10-17
+date: 2026-10-20
 entry: 000691-scherrer-2023
 provenance:
   kind: agent
@@ -55,260 +111,170 @@ provenance:
   agent:
     harness: Claude Code (GitHub Actions)
     model: claude-opus-5-5
-    protocol: pilot-7
+    protocol: pilot-10
 inputs:
-- what: Images of a thin layer of fluorescent dye taken with the Featherscope and the Kiloscope with
-    correction optics, with diffuse light, and with the plain laser (sf3/feather and sf3/widefield),
-[... 156 more lines not kept]
+- what: Bead image stacks and their region lists (f2+sf4/feather, f2+sf4/feather_roi.csv,
+[... 318 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 60,400p attempts/000691-scherrer-2023-01.yaml
+grep -n -i "timeout\|1800\|minutes" tools/entry.py | head -30; nproc; free -g
 ```
 
 ```
-outcome: blocked
-  blocked_by: data_missing
-  notes: Weights are hardware measurements; no data on them are in the dandiset or the paper's
-    deposits.
-- claim: ed1-ed4-resolution
-  outcome: blocked
-  blocked_by: data_missing
-  notes: The USAF target images are not in the dandiset, the Academic Torrents deposit or the code
-    repository (which holds bead images for a point spread function analysis whose numbers are in
-    the main text, not available here).
-- claim: ed3-adc
-  outcome: blocked
-  blocked_by: data_missing
-  notes: The test recordings of the analog-to-digital converter are not in the dandiset or the
-    paper's deposits.
-- claim: ed8-coactive-distributed
-  outcome: reproduced
-  notebook: reproduce_scherrer_2023.ipynb
-  output: claim:ed8-coactive-distributed
-  notes: For all 8 components the event has 196 to 320 active footprints, more than half of the
-[... 121 more lines not kept]
+28:that takes longer than --max-minutes fails, even if it ran without error.
+287:def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
+309:             f"--ExecutePreprocessor.timeout={timeout}", f"--ExecutePreprocessor.kernel_name={kernel}",
+316:        if ok and seconds > max_minutes * 60:
+318:            error = f"took {seconds / 60:.0f} minutes; the limit is {max_minutes:.0f}"
+376:    parser.add_argument("--timeout", type=int, default=3600, help="seconds allowed per cell")
+377:    parser.add_argument("--max-minutes", type=float, default=30,
+397:    return run(entry_dir, output_dir, args.timeout, args.max_minutes)
+4
+               total        used        free      shared  buff/cache   available
+Mem:              15           1          11           0           3          14
+Swap:              2           0           2
 ```
 
 **Agent calls Bash**
 
 ```bash
-head -c 9000 claims/000691/*.yaml; ls paper executed/ 2>&1 | head; ls executed/000691-scherrer-2023 2>&1
+python - <<'EOF'
+import yaml
+d=yaml.safe_load(open('claims/000691/10.1038-s41592-023-01806-1.yaml'))
+for c in d['claims']:
+    if c['id'] in ('fig2-quadrant-direction-decoding','fig2k-decoder-size','fig2l-local-decoding-map','ed9b-octant-decoding','ed9c-local-decoding-map','ed7-motion-small','ed8-coactive-distributed','fig1f-kiloscope-psf','fig1e-featherscope-psf','fig2d-lman-sparse-bursting','ed2b-featherscope-flat-illumination'):
+        print(yaml.safe_dump(c,width=120,sort_keys=False)); print('-----')
+EOF
 ```
 
 ```
-Exit code 2
-# Claims for Scherrer, Lynch, Zhang & Fee (2023) on dandiset 000691.
-# Source: the version of record in Nature Methods is not open access. The claims are written from
-# its abstract and from the parts of its article page that are public: the figure titles, the
-# Extended Data legends, and the data and code availability statements. The Extended Data figure
-# numbers below are those of the version of record. The main text and the legends of Figures 1
-# and 2 were not available. The bioRxiv preprint (10.1101/2021.09.03.458947, version 2) was read
-# for its Methods only, to fill in procedures the code leaves open; no expected value is taken
-# from it.
-#
-# When these criteria were written, the author had seen the data check (file list, metadata, every
-# dataset of the NWB file, timestamps of both streams, the behaviour video and a first tracking of
-# the mouse in it) and one prototype of the quadrant and direction decoder: three fits with
-# median per-class accuracies of 0.44 to 0.58, and three fits with shifted labels at 0.04 to 0.12.
-# No other claim's analysis had been run.
-#
-# The dandiset holds one session of one mouse imaged with the large-FOV microscope (the
-# Kiloscope): the raw imaging video, 2948 EXTRACT footprints with their traces and centroids, and
-# a behaviour video of the mouse in a looped corridor maze. It holds no position, no curation of
-# the footprints, no pixel size, and no data from the other mice, the birds, or the optical tests.
-[... 123 more lines not kept]
+id: fig2d-lman-sparse-bursting
+statement: The activity of almost all LMAN footprints during song shows the sparse random bursting seen in earlier recordings
+  of LMAN.
+source: Main text, page 548, paragraph 1; Fig. 2c and 2d
+quote: The activity patterns of almost all footprints recapitulate the sparse random bursting seen in previous observations
+  of LMAN activity during song (Fig. 2c,d)
+criterion: The paper gives no measure of sparse bursting and no count of the footprints that show it; the claim cannot be
+  judged by a method the paper fixes (methods_underspecified).
+
+-----
+id: fig1e-featherscope-psf
+statement: The Featherscope's resolution (FWHM of the bead PSF) is about 4 um at the centre of the field of view and 7 um
+  at the edges.
+source: Main text, page 547, paragraph 1 (continuing from page 546); Fig. 1e
+quote: "center of its FOV, which decreases to 7 \u03BCm at the edges and is limited by the astigmatism of the GRIN lenses\
+  \ (Fig. 1e and Extended Data Fig. 1a,b)"
+data: elsewhere
+where: GitHub FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c, f2+sf4/feather (bead image stack)
+  and f2+sf4/feather_roi.csv (155 bead regions)
+expected:
+[... 205 more lines not kept]
 ```
 
-**Agent**
+**Agent calls Bash**
 
-Now the notebook and helper.
+```bash
+cd entries/000691-scherrer-2023; grep -n "^def \|^class \|^[A-Z_]* = " kiloscope.py
+```
+
+```
+110:DANDISET_ID = "000691"
+111:DANDISET_VERSION = "0.260827.1358"
+112:NWB_PATH = "sub-4mm-mouse-1/sub-4mm-mouse-1_image+ophys.nwb"
+113:VIDEO_SERIES = "acquisition/Video: home_arena_2021-07-26T13_50_50"
+114:MOVIE = "acquisition/TwoPhotonSeries/data"
+115:MASKS = "processing/ophys/ImageSegmentation/PlaneSegmentation/image_mask"
+117:CODE_REPO = "https://raw.githubusercontent.com/FeeLab/Feescope-Paper-Code"
+118:CODE_COMMIT = "d596646b16a505907203828d8026feb7736ca69c"
+120:UM_PER_PIXEL_ILLUMINATION = 5.94   # sf3/widefield/analysis.m (Kiloscope)
+121:UM_PER_PIXEL_BEADS = 5.35          # f2+sf4/wf_analysis_secondorder.m (Kiloscope)
+124:FIRST_VIDEO_FRAME = 1920           # CurrentTime = 64 s at the AVI's nominal 30 frames/s
+125:ROTATION_DEG = -3.21 + 90          # rAngle
+126:CROP_ROWS = (229, 560)             # ymin, ymax (1-based, inclusive)
+127:CROP_COLS = (101, 378)             # xmin, xmax
+128:DARK_RGB = np.array([0, 3, 4])
+129:DARK_LIMIT = 1600                  # squared RGB distance
+130:RECT = (44, 228, 34, 270)          # xmin, xmax, ymin, ymax of the track, in the cropped frame
+131:M_PER_PIXEL = 0.508 / 290          # lf
+132:SMOOTH = 30                        # frames, for speed, direction and the moving maximum
+133:LAMBDA_QUAD_DIR = 3.2e-7           # quadrant_direction_decoding.m
+[... 54 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; sed -n 1,110p kiloscope.py; sed -n 400,560p kiloscope.py
+```
+
+```
+/bin/bash: line 1: cd: entries/000691-scherrer-2023: No such file or directory
+"""Loading and measures for the freely moving mouse session of dandiset 000691.
+
+Scherrer, Lynch, Zhang & Fee (2023), Nature Methods, doi:10.1038/s41592-023-01806-1.
+
+The dandiset holds one NWB file: the raw video of the large-FOV microscope (the Kiloscope), the
+traces, masks and centroids of 2948 EXTRACT footprints, and the timestamps of a behaviour video
+whose AVI is a second asset. Both are streamed from the archive at the pinned version: small
+datasets through h5py and remfile, the AVI (105 MB), the masks (9 MB compressed) and the movie
+(15 GB) by HTTP range requests into memory, whose chunks are decompressed here. Nothing is written
+to disk.
+
+Where the parameters come from. The claims file (claims/000691/10.1038-s41592-023-01806-1.yaml)
+fixes the method; it cites the Methods of the paper and its code, GitHub
+FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c (`CODE_COMMIT`).
+Each constant below names its source. A detail that neither fixes and that cannot change a
+result is marked "standard choice".
+
+- Tracking (claims file, common method; f3+sf8/mouse_position_tracking.m): the video is read from
+  64 s at the AVI's nominal 30 frames/s (frame 1920); each frame is rotated by 86.79 degrees
+[... 252 more lines not kept]
+```
 
 **Agent calls Bash**
 
 ```bash
 cd entries/000691-scherrer-2023; python - <<'EOF'
 import json
-nb=json.load(open('reproduce_scherrer_2023.ipynb'))
-for i,c in enumerate(nb['cells']):
-    print(f"#### cell {i} [{c['cell_type']}] tags={c.get('metadata',{}).get('tags')}")
-    print(''.join(c['source']))
+for nb in ['decoding_quadrant_direction.ipynb']:
+    d=json.load(open(nb))
+    for i,c in enumerate(d['cells']):
+        print(f"=== cell {i} [{c['cell_type']}] tags={c.get('metadata',{}).get('tags')}")
+        print(''.join(c['source']))
 EOF
 ```
 
 ```
-<persisted-output>
-Output too large (39.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/b48b7b05-fd6a-4aaf-8b9b-6d657f476bc4/tool-results/b7p1hwnp9.txt
+=== cell 0 [markdown] tags=None
+# Scherrer, Lynch et al. (2023), dandiset 000691: decoding quadrant and direction
 
-Preview (first 2KB):
-#### cell 0 [markdown] tags=None
-# Reproducing Scherrer, Lynch et al. (2023) from dandiset 000691
-
-**Paper.** Scherrer JR, Lynch GF, Zhang JJ, Fee MS (2023). An optical design enabling lightweight
+Paper. Scherrer JR, Lynch GF, Zhang JJ, Fee MS (2023). An optical design enabling lightweight
 and large field-of-view head-mounted microscopes. *Nature Methods* 20, 546-549.
-[doi:10.1038/s41592-023-01806-1](https://doi.org/10.1038/s41592-023-01806-1). The version of
-record is not open access. This attempt used its abstract and the parts of its article page that
-are public: the figure titles, the Extended Data legends, and the data and code availability
-statements. The main text and the legends of Figures 1 and 2 were not available. The bioRxiv
-preprint (10.1101/2021.09.03.458947, version 2) was read for its Methods only; no expected value
-comes from it.
+[doi:10.1038/s41592-023-01806-1](https://doi.org/10.1038/s41592-023-01806-1).
 
-**Dandiset.** [DANDI:000691](https://dandiarchive.org/dandiset/000691/0.260827.1358), version
-0.260827.1358. The paper cites no DANDI version: its data statement points to an Academic Torrents
-deposit. This is the only published version. The draft holds the same two blobs; it differs only
-in the fields that publication sets (DOI, publication date, citation).
-[... 14 more lines not kept]
-```
+Claims. `claims/000691/10.1038-s41592-023-01806-1.yaml`, written from the full text of the
+version of record and the paper's code (GitHub `FeeLab/Feescope-Paper-Code`, commit d596646). It
+decides what is tested and how.
 
-**Agent calls Read**
+Dandiset. [DANDI:000691](https://dandiarchive.org/dandiset/000691/0.260827.1358), version
+0.260827.1358, the only published version (the paper cites none); see the main notebook,
+`reproduce_scherrer_2023.ipynb`, for the reasons and the full data check. This notebook holds the
+quadrant and direction decoding claims, apart to keep each notebook within the time limit.
 
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/b48b7b05-fd6a-4aaf-8b9b-6d657f476bc4/tool-results/b7p1hwnp9.txt"
-}
-```
+Footprints. The claims use the 2,382 curated footprints, with all 2,948 as a named variant.
+The dandiset does not mark the curated set, so all 2,948 are used.
 
-```
-1	#### cell 0 [markdown] tags=None
-2	# Reproducing Scherrer, Lynch et al. (2023) from dandiset 000691
-3	
-4	**Paper.** Scherrer JR, Lynch GF, Zhang JJ, Fee MS (2023). An optical design enabling lightweight
-5	and large field-of-view head-mounted microscopes. *Nature Methods* 20, 546-549.
-6	[doi:10.1038/s41592-023-01806-1](https://doi.org/10.1038/s41592-023-01806-1). The version of
-7	record is not open access. This attempt used its abstract and the parts of its article page that
-8	are public: the figure titles, the Extended Data legends, and the data and code availability
-9	statements. The main text and the legends of Figures 1 and 2 were not available. The bioRxiv
-10	preprint (10.1101/2021.09.03.458947, version 2) was read for its Methods only; no expected value
-11	comes from it.
-12	
-13	**Dandiset.** [DANDI:000691](https://dandiarchive.org/dandiset/000691/0.260827.1358), version
-14	0.260827.1358. The paper cites no DANDI version: its data statement points to an Academic Torrents
-15	deposit. This is the only published version. The draft holds the same two blobs; it differs only
-16	in the fields that publication sets (DOI, publication date, citation).
-17	
-18	**What the dandiset holds.** One session of one mouse (4 mm cranial window, jGCaMP7f) imaged with
-19	the large-FOV microscope while it explores a looped corridor maze: the raw imaging video, 2948
-20	EXTRACT footprints with traces and centroids, and a behaviour video (a second asset, an AVI). It
-[... 653 more lines not kept]
+| Claim | Data | Status |
+[... 193 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat kiloscope.py; cat requirements.in; ls ../../tools; ls ../../executed 2>&1
-```
-
-```
-Exit code 2
-"""Loading and measures for the freely moving mouse session of dandiset 000691.
-
-Scherrer, Lynch, Zhang & Fee (2023), Nature Methods, doi:10.1038/s41592-023-01806-1.
-
-The dandiset holds one NWB file: the raw video of the large-FOV microscope (the Kiloscope), the
-traces and centroids of 2948 EXTRACT footprints, and the timestamps of a behaviour video whose AVI
-is a second asset. Both are streamed from the archive at the pinned version; the AVI (105 MB) is
-read into memory and decoded there. Nothing is written to disk.
-
-Where the parameters come from. The paper's analysis code is
-https://github.com/FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c
-(`CODE`); the main text and Methods of the version of record were not available, and the bioRxiv
-preprint's Methods (10.1101/2021.09.03.458947 v2) describe the same procedures.
-
-- Tracking (f3+sf8/mouse_position_tracking.m): the mouse is the largest blob of pixels whose
-  squared RGB distance from (0, 3, 4) is below 1600; the first 64 s of the video at its nominal 30
-  frames/s (frame 1920) are skipped "to remove period of experimenter futzing"; positions are
-  interpolated to the imaging timestamps; the quadrant is the nearest side of the loop's
-  rectangle and the octant splits each side in half; linear position runs around the loop and is
-[... 201 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 95,200p kiloscope.py
-```
-
-```
-rrs = "processing/ophys/DfOverF/RoiResponseSeries"
-    video = f[VIDEO_SERIES]
-    meta = {
-        "session_description": _text(f["session_description"][()]),
-        "device_description": _text(f["general/devices/Microscope/description"][()]),
-        "imaging_series": "TwoPhotonSeries",
-        "imaging_description": _text(f["acquisition/TwoPhotonSeries"].attrs["description"]),
-        "video_description": _text(video.attrs["description"]),
-        "video_external_file": _text(video["external_file"][0]),
-        "indicator": _text(f["general/optophysiology/ImagingPlane/indicator"][()]),
-        "location": _text(f["general/optophysiology/ImagingPlane/location"][()]),
-        "excitation_lambda": float(f["general/optophysiology/ImagingPlane/excitation_lambda"][()]),
-        "grid_spacing_present": "grid_spacing" in f["general/optophysiology/ImagingPlane"],
-        "virus": _text(f["general/virus"][()]),
-        "surgery": _text(f["general/surgery"][()]).strip(),
-        "subject": {k: _text(f["general/subject"][k][()]) for k in f["general/subject"].keys()},
-        "trace_description": _text(f[rrs].attrs["description"]),
-        "trace_unit": _text(f[rrs + "/data"].attrs["unit"]),
-        "segmentation_type": _text(f["processing/ophys/ImageSegmentation"].attrs["neurodata_type"]),
-        "cellfind_min_snr": float(f["processing/ophys/ImageSegmentation"].attrs["cellfind_min_snr"]),
-[... 86 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd ../..; grep -n "verif\|proposed\|agrees" tools/entry.py | head -60; grep -l "verifications:" attempts/*.yaml | head -3
-```
-
-```
-7:    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
-30:`handover` builds what a verifier is given in its first round
-226:        for rnd in (attempt.get("verifications") or [])[1:]:
-228:                agreed[r["claim"]] = r.get("outcome") if r.get("agrees") else None
-242:            verified = agreed.get(outcome.get("claim"))
-243:            if verified and outcome.get("outcome") != verified:
-245:                                    f"verification agreed with {verified!r}; record the change under `proposed`, "
-246:                                    "and verify it in another round")
-327:    """The notebook without the author's conclusions, for a verifier's first round."""
-attempts/000003-senzai-2017-01.yaml
-attempts/000004-chandravadia-2020-01.yaml
-attempts/000006-economo-2018-01.yaml
-```
-
-**Agent calls Bash**
-
-```bash
-grep -n -A40 "^verifications:" attempts/000568*.yaml | head -80; ls schema* docs; grep -rn "verifications" schema*/ docs/*.md 2>/dev/null | head
-```
-
-```
-349:verifications:
-350-- date: '2026-10-17'
-351-  kind: agent
-352-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-353-  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper
-354-    module and the claims file, with the paper (PMC author manuscript). The verifier did not open NWB files;
-355-    it tested find_fields and a simulated pulse protocol on synthetic inputs and read the archive's asset list.
-356-    Its report had no attempt record and gave its own outcome for each claim; all 22 agree with the record
-357-    as it then stood. The revision changed five outcomes, which round 2 reviews.
-358-  results:
-359-  - claim: cohort-counts
-360-    agrees: true
-361-    outcome: partially_reproduced
-362-    reason: Reading (a), cell 15, 4 mice and a mean of 48.2 per session (within 43.3 ± 8.37), but 1351 pyramidal
-363-      cells against 822 ± 82. Reading (b) has only 3 mice.
-364-    response: No change needed.
-365-  - claim: fig1c-pulse-protocol
-366-    agrees: true
-367-    outcome: partially_reproduced
-368-    reason: Median duration 19.75 ms and per-uLED median intervals of 0.281 to 0.383 s pass. The end-to-start
-[... 33 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 1,80p tools/entry.py; ls -a; ls ~/.cache 2>/dev/null; which python; python -c "import sklearn, av, remfile; print(sklearn.__version__)"
+cd  sed -n 1,60p tools/entry.py; ls -a; ls ~/.cache 2>/dev/null; which python; python -c "import dandi, h5py, sklearn, remfile, av; print('ok')"
 ```
 
 ```
@@ -332,21 +298,21 @@ tied to the data:
 - notebooks are committed without outputs;
 - the lock file is present and newer requirements are not left unlocked;
 - each notebook, or a helper it imports, names the dandiset the entry uses;
-[... 113 more lines not kept]
+[... 96 more lines not kept]
 ```
 
 **Agent**
 
-Build a prototyping venv from the lock file.
+Let me set up a working environment from the lock file for exploration.
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && uv venv -q -p 3.13 proto && uv pip install -q -p proto/bin/python -r entries/000691-scherrer-2023/requirements.lock.txt && proto/bin/python -c "import sklearn; print(sklearn.__version__)"; echo $TMPDIR
+cd $TMPDIR && uv venv -q -p 3.13 venv691 && uv pip install -q -p venv691/bin/python -r entries/000691-scherrer-2023/requirements.lock.txt ipykernel nbconvert 2>&1 | tail -3; venv691/bin/python -c "import dandi, av, sklearn; print('ok')"; echo $TMPDIR
 ```
 
 ```
-1.9.1
+ok
 /tmp/claude-1001
 Shell cwd was reset to
 ```
@@ -354,1970 +320,1960 @@ Shell cwd was reset to
 **Agent calls Bash**
 
 ```bash
-cd entries/000691-scherrer-2023 && cat > $TMPDIR/cache.py <<'EOF'
-import time, numpy as np, kiloscope as ks, pickle, av, io, requests
-t=time.time()
-urls=ks.asset_urls(); f=ks.open_nwb(urls); S=ks.load_session(f)
-print("nwb",time.time()-t)
-vurl=next(u for p,u in urls.items() if p.endswith(".avi"))
-track=ks.track_mouse(vurl)
-print("track",time.time()-t)
-pickle.dump({"S":S,"track":track,"vurl":vurl},open("/tmp/claude-1001/cache.pkl","wb"))
-EOF
-PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/cache.py
-```
-
-```
-nwb 8.505301713943481
-track 62.85792016983032
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/p1.py <<'EOF'
-import pickle, numpy as np, time, kiloscope as ks
-from sklearn.svm import LinearSVC
-d=pickle.load(open("/tmp/claude-1001/cache.pkl","rb")); S,track=d["S"],d["track"]
-x,y,a=track["x"],track["y"],track["area"]
-k=np.arange(len(x))>=ks.FIRST_VIDEO_FRAME
-dx=np.hypot(np.diff(x[k]),np.diff(y[k]))
-print("video steps pct",np.percentile(dx,[50,90,99,99.9,100]))
-for thr in (20,40,80): print(thr,(dx>thr).sum())
-print("area<50",(a[k]<50).sum(),"<100",(a[k]<100).sum(), "of",k.sum())
-print("skipped areas pct",np.percentile(a[~k],[1,50,99]))
-B=ks.behaviour(S["t_img"],S["t_video"],track)
-T=S["traces"]; act=ks.moving_max(T[B["sel"]]); run=B["running"]
-X=act[run]; lab=ks.quad_dir_labels(B)[run]; n=len(lab)
-print("n",n)
-rng=np.random.default_rng(1)
-for rep in range(2):
-    shift=int(rng.integers(n)); Xs,ls=np.roll(X,shift,0),np.roll(lab,shift)
-    half,buf=round(n*.5),round(n*.01)
-    from sklearn.linear_model import SGDClassifier
-    for ep in (10,50):
-        t=time.time()
-        m=SGDClassifier(loss="hinge",alpha=ks.LAMBDA_QUAD_DIR,max_iter=ep,tol=None,random_state=0).fit(Xs[:half-buf],ls[:half-buf])
-        p=m.predict(Xs[half:n-buf]); te=ls[half:n-buf]
-        acc=[(p[te==c]==c).mean() for c in range(8)]
-        print("sgd",ep,np.median(acc).round(3),time.time()-t)
-    ntr=half-buf
-    t=time.time()
-    m=LinearSVC(loss="hinge",C=1/(ks.LAMBDA_QUAD_DIR*ntr),dual=True,max_iter=20000).fit(Xs[:ntr],ls[:ntr])
-    p=m.predict(Xs[half:n-buf]); acc=[(p[te==c]==c).mean() for c in range(8)]
-    print("lsvc",np.median(acc).round(3),time.time()-t, m.n_iter_)
-EOF
-PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/p1.py 2>&1 | grep -v Warn
-```
-
-```
-warnings.warn(
-  warnings.warn(
-video steps pct [  2.15408156   7.68314599  13.24026384  18.2376297  113.47579082]
-20 5
-40 2
-80 2
-area<50 55 <100 358 of 13601
-skipped areas pct [ 56.   320.   516.81]
-n 16028
-sgd 10 0.501 1.9312770366668701
-sgd 50 0.382 9.367186069488525
-lsvc 0.314 46.965431213378906 20000
-sgd 10 0.436 1.925814151763916
-sgd 50 0.427 9.387141704559326
-lsvc 0.24 48.940670013427734 20000
-```
-
-**Agent calls Bash**
-
-```bash
-for f in "f3+sf8/quadrant_direction_decoding.m" "f3+sf8/subregion_map_octant.m"; do echo "== $f"; curl -s "https://raw.githubusercontent.com/FeeLab/Feescope-Paper-Code/d596646b16a505907203828d8026feb7736ca69c/$(python -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1]))" "$f")" | grep -n -i -B2 -A4 "templateLinear\|fitcecoc\|signif\|fdr\|ttest\|shuffle\|pval\|nd = \|for .*= 1:" ; done
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-curl -sL "https://www.mathworks.com/help/stats/templatelinear.html" | python -c "
-import sys,re,html
-t=re.sub(r'<[^>]+>',' ',sys.stdin.read()); t=html.unescape(re.sub(r'\s+',' ',t))
-for k in ['default solver','PassLimit','fewer predictor']:
-  for m in re.finditer(k,t): print('...',t[max(0,m.start()-300):m.start()+400],'\n')
-" | head -40
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/p2.py <<'EOF'
-import pickle, numpy as np, time, kiloscope as ks, warnings
-warnings.filterwarnings("ignore")
-from sklearn.svm import LinearSVC
-from sklearn.linear_model import SGDClassifier
-d=pickle.load(open("/tmp/claude-1001/cache.pkl","rb")); S,track=d["S"],d["track"]
-B=ks.behaviour(S["t_img"],S["t_video"],track)
-T=S["traces"]; act=ks.moving_max(T[B["sel"]]); run=B["running"]
-X=act[run]; lab=B["octant"][run]; n=len(lab)
-cen=S["centroids"].astype(float)
-rng=np.random.default_rng(2)
-half,buf=round(n*.5),round(n*.01); ntr=half-buf
-for pt in [(300,300),(200,400),(400,200),(350,450)]:
-    dd=np.hypot(cen[:,0]-pt[0],cen[:,1]-pt[1]); idx=np.argsort(dd)[:32]
-    Xp=X[:,idx]
-    for rep in range(2):
-        shift=int(rng.integers(n)); Xs,ls=np.roll(Xp,shift,0),np.roll(lab,shift); te=ls[half:n-buf]
-        out=[]
-        for name,m in [("sgd10",SGDClassifier(loss="hinge",alpha=ks.LAMBDA_OCTANT,max_iter=10,tol=None,random_state=0)),
-                       ("sgd100",SGDClassifier(loss="hinge",alpha=ks.LAMBDA_OCTANT,max_iter=100,tol=None,random_state=0)),
-                       ("lsvc",LinearSVC(loss="hinge",C=1/(ks.LAMBDA_OCTANT*ntr),max_iter=100000))]:
-            t=time.time(); m.fit(Xs[:ntr],ls[:ntr]); p=m.predict(Xs[half:n-buf])
-            acc=np.array([(p[te==c]==c).mean() for c in range(8)])
-            out.append(f"{name} med {np.median(acc):.3f} mean {acc.mean():.3f} ({time.time()-t:.1f}s)")
-        print(pt,rep," | ".join(out))
-EOF
-PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/p2.py
-```
-
-```
-(300, 300) 0 sgd10 med 0.000 mean 0.164 (0.1s) | sgd100 med 0.114 mean 0.184 (0.5s) | lsvc med 0.109 mean 0.165 (11.3s)
-(300, 300) 1 sgd10 med 0.065 mean 0.119 (0.1s) | sgd100 med 0.069 mean 0.140 (0.5s) | lsvc med 0.082 mean 0.149 (11.2s)
-(200, 400) 0 sgd10 med 0.000 mean 0.125 (0.1s) | sgd100 med 0.124 mean 0.190 (0.5s) | lsvc med 0.156 mean 0.188 (20.5s)
-(200, 400) 1 sgd10 med 0.146 mean 0.157 (0.1s) | sgd100 med 0.052 mean 0.158 (0.5s) | lsvc med 0.143 mean 0.155 (14.0s)
-(400, 200) 0 sgd10 med 0.175 mean 0.196 (0.1s) | sgd100 med 0.077 mean 0.161 (0.5s) | lsvc med 0.166 mean 0.187 (9.1s)
-(400, 200) 1 sgd10 med 0.118 mean 0.139 (0.1s) | sgd100 med 0.077 mean 0.137 (0.5s) | lsvc med 0.090 mean 0.116 (12.3s)
-(350, 450) 0 sgd10 med 0.009 mean 0.131 (0.1s) | sgd100 med 0.056 mean 0.151 (0.5s) | lsvc med 0.176 mean 0.174 (11.1s)
-(350, 450) 1 sgd10 med 0.000 mean 0.130 (0.1s) | sgd100 med 0.067 mean 0.173 (0.5s) | lsvc med 0.149 mean 0.170 (13.2s)
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/p3.py <<'EOF'
-import pickle, numpy as np, time, kiloscope as ks, warnings
-warnings.filterwarnings("ignore")
-from sklearn.svm import LinearSVC
-from sklearn.linear_model import SGDClassifier
-d=pickle.load(open("/tmp/claude-1001/cache.pkl","rb")); S,track=d["S"],d["track"]
-B=ks.behaviour(S["t_img"],S["t_video"],track)
-T=S["traces"]; act=ks.moving_max(T[B["sel"]]); run=B["running"]
-X=act[run]; lab=B["octant"][run]; n=len(lab)
-print("feature scale", np.percentile(X.max(0),[5,50,95]))
-cen=S["centroids"].astype(float)
-rng=np.random.default_rng(2)
-half,buf=round(n*.5),round(n*.01); ntr=half-buf; lam=ks.LAMBDA_OCTANT
-def obj(m,Xt,yt):
-    W=m.coef_; b=m.intercept_; tot=0
-    for c in range(8):
-        yy=np.where(yt==c,1,-1); tot+=np.maximum(0,1-yy*(Xt@W[c]+b[c])).mean()+lam/2*W[c]@W[c]
-    return tot
-for pt in [(300,300),(350,450)]:
-    dd=np.hypot(cen[:,0]-pt[0],cen[:,1]-pt[1]); idx=np.argsort(dd)[:32]
-    Xp=X[:,idx]
-    shift=int(rng.integers(n)); Xs,ls=np.roll(Xp,shift,0),np.roll(lab,shift); te=ls[half:n-buf]
-    for name,m in [("sgd10",SGDClassifier(loss="hinge",alpha=lam,max_iter=10,tol=None,random_state=0)),
-                   ("asgd20",SGDClassifier(loss="hinge",alpha=lam,max_iter=20,tol=None,average=True,random_state=0)),
-                   ("asgd100",SGDClassifier(loss="hinge",alpha=lam,max_iter=100,tol=None,average=True,random_state=0)),
-                   ("lsvc1k",LinearSVC(loss="hinge",C=1/(lam*ntr),max_iter=1000)),
-                   ("lsvc100k",LinearSVC(loss="hinge",C=1/(lam*ntr),max_iter=100000)),
-                   ("lsvc1M",LinearSVC(loss="hinge",C=1/(lam*ntr),max_iter=1000000,tol=1e-6))]:
-        t=time.time(); m.fit(Xs[:ntr],ls[:ntr]); p=m.predict(Xs[half:n-buf])
-        acc=np.array([(p[te==c]==c).mean() for c in range(8)])
-        print(pt,f"{name} obj {obj(m,Xs[:ntr],ls[:ntr]):.4f} med {np.median(acc):.3f} mean {acc.mean():.3f} ({time.time()-t:.1f}s)", getattr(m,'n_iter_',''))
-EOF
-PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/p3.py
-```
-
-```
-feature scale [0.02762654 0.05875993 0.14432537]
-(300, 300) sgd10 obj 51.0156 med 0.000 mean 0.164 (0.1s) 10
-(300, 300) asgd20 obj 18.3046 med 0.131 mean 0.157 (0.2s) 20
-(300, 300) asgd100 obj 10.8460 med 0.140 mean 0.158 (0.8s) 100
-(300, 300) lsvc1k obj 4.0106 med 0.004 mean 0.142 (3.4s) 1000
-(300, 300) lsvc100k obj 1.9699 med 0.108 mean 0.165 (11.4s) 100000
-(300, 300) lsvc1M obj 1.9699 med 0.089 mean 0.169 (17.0s) 1000000
-(350, 450) sgd10 obj 22.5348 med 0.223 mean 0.219 (0.1s) 10
-(350, 450) asgd20 obj 16.9473 med 0.206 mean 0.234 (0.2s) 20
-(350, 450) asgd100 obj 10.7306 med 0.236 mean 0.229 (0.8s) 100
-(350, 450) lsvc1k obj 2.2738 med 0.182 mean 0.213 (4.0s) 1000
-(350, 450) lsvc100k obj 1.9779 med 0.131 mean 0.189 (13.1s) 100000
-(350, 450) lsvc1M obj 1.9778 med 0.189 mean 0.187 (19.1s) 1000000
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/p4.py <<'EOF'
-import pickle, numpy as np, time, kiloscope as ks, warnings
-warnings.filterwarnings("ignore")
-from sklearn.svm import LinearSVC
-from scipy.optimize import minimize
-d=pickle.load(open("/tmp/claude-1001/cache.pkl","rb")); S,track=d["S"],d["track"]
-B=ks.behaviour(S["t_img"],S["t_video"],track)
-T=S["traces"]; act=ks.moving_max(T[B["sel"]]); run=B["running"]
-X=act[run].astype(np.float64); lab=B["octant"][run]; n=len(lab)
-cen=S["centroids"].astype(float)
-rng=np.random.default_rng(2)
-half,buf=round(n*.5),round(n*.01); ntr=half-buf; lam=ks.LAMBDA_OCTANT
-def objc(w,b,Xt,yy): return np.maximum(0,1-yy*(Xt@w+b)).mean()+lam/2*w@w
-def huber_fit(Xt,yy,w0=None):
-    p=Xt.shape[1]; z=np.zeros(p+1) if w0 is None else w0
-    for delta in (0.5,0.1,0.02,0.004,0.001):
-        def f(v):
-            w,b=v[:p],v[p]; m=yy*(Xt@w+b); u=1-m
-            l=np.where(u<=0,0,np.where(u>=delta,u-delta/2,u*u/(2*delta)))
-            g=np.where(u<=0,0,np.where(u>=delta,1,u/delta))
-            gw=-(Xt.T@(g*yy))/len(yy)+lam*w; gb=-(g*yy).mean()
-            return l.mean()+lam/2*w@w, np.append(gw,gb)
-        z=minimize(f,z,jac=True,method="L-BFGS-B",options={"maxiter":2000,"gtol":1e-9}).x
-    return z
-for pt in [(300,300),(350,450)]:
-    dd=np.hypot(cen[:,0]-pt[0],cen[:,1]-pt[1]); idx=np.argsort(dd)[:32]
-    Xp=X[:,idx]
-    shift=int(rng.integers(n)); Xs,ls=np.roll(Xp,shift,0),np.roll(lab,shift); te=ls[half:n-buf]
-    Xt,yt=Xs[:ntr],ls[:ntr]
-    t=time.time(); W=[];bb=[];tot=0
-    for c in range(8):
-        yy=np.where(yt==c,1.,-1.); z=huber_fit(Xt,yy); W.append(z[:-1]); bb.append(z[-1]); tot+=objc(z[:-1],z[-1],Xt,yy)
-    W=np.array(W); p=np.argmax(Xs[half:n-buf]@W.T+np.array(bb),1)
-    acc=np.array([(p[te==c]==c).mean() for c in range(8)])
-    print(pt,f"huber obj {tot:.4f} med {np.median(acc):.3f} mean {acc.mean():.3f} ({time.time()-t:.2f}s)")
-    s=1/Xt.std()
-    for isc in (1,10):
-        t=time.time(); m=LinearSVC(loss="hinge",C=1/(lam*s*s*ntr),intercept_scaling=isc,max_iter=100000).fit(Xt*s,yt)
-        tot=sum(objc(m.coef_[c]*s,m.intercept_[c],Xt,np.where(yt==c,1.,-1.)) for c in range(8))
-        p=m.predict(Xs[half:n-buf]*s); acc=np.array([(p[te==c]==c).mean() for c in range(8)])
-        print(pt,f"lsvc scaled isc{isc} obj {tot:.4f} med {np.median(acc):.3f} mean {acc.mean():.3f} ({time.time()-t:.2f}s) it {m.n_iter_}")
-EOF
-PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/p4.py
-```
-
-```
-(300, 300) huber obj 1.9702 med 0.081 mean 0.161 (3.01s)
-(300, 300) lsvc scaled isc1 obj 1.9699 med 0.058 mean 0.169 (0.70s) it 59459
-(300, 300) lsvc scaled isc10 obj 1.9699 med 0.111 mean 0.175 (1.01s) it 100000
-(350, 450) huber obj 1.9782 med 0.194 mean 0.207 (2.38s)
-(350, 450) lsvc scaled isc1 obj 1.9778 med 0.169 mean 0.188 (0.52s) it 100000
-(350, 450) lsvc scaled isc10 obj 1.9778 med 0.191 mean 0.195 (0.60s) it 84111
-```
-
-**Agent calls Bash**
-
-```bash
-nproc; grep -n "runs-on\|timeout" .github/workflows/*.yml | head
-```
-
-```
-4
-.github/workflows/attempt-sequence.yml:53:    runs-on: ubuntu-latest
-.github/workflows/attempt.yml:82:    runs-on: ubuntu-latest
-.github/workflows/attempt.yml:83:    timeout-minutes: 340
-.github/workflows/attempt.yml:166:        timeout-minutes: 300
-.github/workflows/attempt.yml:229:    runs-on: ubuntu-latest
-.github/workflows/check.yml:25:    runs-on: ubuntu-latest
-.github/workflows/check.yml:76:    runs-on: ubuntu-latest
-.github/workflows/check.yml:77:    timeout-minutes: 60
-.github/workflows/check.yml:110:    runs-on: ubuntu-latest
-.github/workflows/pipeline.yml:31:    runs-on: ubuntu-latest
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/p5.py <<'EOF'
-import pickle, numpy as np, time, kiloscope as ks, warnings, pandas as pd
-from scipy import stats
-from joblib import Parallel, delayed
-from sklearn.svm import LinearSVC
-d=pickle.load(open("/tmp/claude-1001/cache.pkl","rb")); S,track=d["S"],d["track"]
-B=ks.behaviour(S["t_img"],S["t_video"],track)
-T=S["traces"]; act=ks.moving_max(T[B["sel"]]); run=B["running"]
-X=act[run].astype(np.float64); lab=B["octant"][run]; n=len(lab)
-cen=S["centroids"].astype(float)
-half,buf=round(n*.5),round(n*.01); ntr=half-buf; lam=ks.LAMBDA_OCTANT
-def once(Xp,labels,rng,null):
-    warnings.filterwarnings("ignore")
-    if null: labels=np.roll(labels,int(rng.integers(n//10,n-n//10)))
-    sh=int(rng.integers(n)); Xs,ls=np.roll(Xp,sh,0),np.roll(labels,sh)
-    Xt,yt=Xs[:ntr],ls[:ntr]; s=1/Xt.std()
-    m=LinearSVC(loss="hinge",C=1/(lam*s*s*ntr),intercept_scaling=10,max_iter=100000).fit(Xt*s,yt)
-    te=ls[half:n-buf]; p=m.predict(Xs[half:n-buf]*s)
-    return np.median([(p[te==c]==c).mean() for c in range(8)])
-def point(a,b,seed,ndec):
-    dd=np.hypot(cen[:,0]-a,cen[:,1]-b); idx=np.argsort(dd)[:32]; Xp=X[:,idx]
-    rng=np.random.default_rng(seed)
-    r=np.array([once(Xp,lab,rng,False) for _ in range(ndec)]); nl=np.array([once(Xp,lab,rng,True) for _ in range(ndec)])
-    return dict(c0=a,c1=b,score=r.mean(),null_mean=nl.mean(),null_sd=nl.std(ddof=1),z=(r.mean()-nl.mean())/nl.std(ddof=1))
-g0=np.arange(cen[:,0].min(),cen[:,0].max()+1,30); g1=np.arange(cen[:,1].min(),cen[:,1].max()+1,30)
-pts=[(a,b) for a in g0 for b in g1 if (np.hypot(cen[:,0]-a,cen[:,1]-b)<=45).sum()>=32]
-print(len(pts))
-t=time.time()
-rows=Parallel(n_jobs=4)(delayed(point)(a,b,i,10) for i,(a,b) in enumerate(pts))
-m=pd.DataFrame(rows); m["p"]=stats.norm.sf(m.z); m["q"]=stats.false_discovery_control(m.p)
-print(time.time()-t)
-print(m.describe().round(3).to_string()); print((m.q<0.05).sum())
-print(m.sort_values("z").tail(5).round(3).to_string())
-m.to_pickle("/tmp/claude-1001/map_exact.pkl")
-EOF
-PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/p5.py
-```
-
-```
-150
-964.4299392700195
-            c0      c1    score  null_mean  null_sd        z        p        q
-count  150.000  150.00  150.000    150.000  150.000  150.000  150.000  150.000
-mean   458.200  223.40    0.126      0.094    0.031    1.174    0.215    0.310
-std    153.077   96.23    0.023      0.012    0.008    1.073    0.206    0.204
-min    164.000   30.00    0.078      0.066    0.012   -1.073    0.000    0.001
-25%    344.000  150.00    0.108      0.087    0.025    0.387    0.027    0.104
-50%    494.000  210.00    0.125      0.095    0.031    0.994    0.160    0.317
-75%    584.000  270.00    0.142      0.103    0.036    1.932    0.350    0.465
-max    674.000  450.00    0.181      0.120    0.059    4.408    0.858    0.858
-16
-        c0     c1  score  null_mean  null_sd      z    p      q
-134  644.0  270.0  0.155      0.088    0.018  3.683  0.0  0.003
-29   284.0  270.0  0.149      0.104    0.012  3.800  0.0  0.003
-26   284.0  180.0  0.167      0.066    0.026  3.807  0.0  0.003
-27   284.0  210.0  0.181      0.092    0.021  4.194  0.0  0.001
-53   404.0  180.0  0.165      0.071    0.021  4.408  0.0  0.001
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/p6.py <<'EOF'
-import pickle, numpy as np, time, kiloscope as ks, warnings, pandas as pd
-warnings.filterwarnings("ignore")
-m=pd.read_pickle("/tmp/claude-1001/map_exact.pkl"); sig=m[m.q<0.05]; print("sig range",sig.score.min(),sig.score.max())
-from sklearn.svm import LinearSVC
-from sklearn.linear_model import SGDClassifier
-d=pickle.load(open("/tmp/claude-1001/cache.pkl","rb")); S,track=d["S"],d["track"]
-B=ks.behaviour(S["t_img"],S["t_video"],track)
-T=S["traces"]; act=ks.moving_max(T[B["sel"]]); run=B["running"]
-X=act[run].astype(np.float64); lab=B["octant"][run]; n=len(lab)
-cen=S["centroids"].astype(float); rng=np.random.default_rng(2)
-half,buf=round(n*.5),round(n*.01); ntr=half-buf; lam=ks.LAMBDA_OCTANT
-def objc(W,b,Xt,yt): return sum(np.maximum(0,1-np.where(yt==c,1,-1)*(Xt@W[c]+b[c])).mean()+lam/2*W[c]@W[c] for c in range(8))
-for pt in [(300,300),(350,450),(404,180)]:
-    idx=np.argsort(np.hypot(cen[:,0]-pt[0],cen[:,1]-pt[1]))[:32]; Xp=X[:,idx]
-    sh=int(rng.integers(n)); Xs,ls=np.roll(Xp,sh,0),np.roll(lab,sh); Xt,yt=Xs[:ntr],ls[:ntr]; te=ls[half:n-buf]; s=1/Xt.std()
-    cands=[("lsvc100k",LinearSVC(loss="hinge",C=1/(lam*s*s*ntr),intercept_scaling=10,max_iter=100000)),
-           ("lsvc10k",LinearSVC(loss="hinge",C=1/(lam*s*s*ntr),intercept_scaling=10,max_iter=10000)),
-           ("lsvc2k",LinearSVC(loss="hinge",C=1/(lam*s*s*ntr),intercept_scaling=10,max_iter=2000))]
-    for ep in (10,50): cands.append((f"asgd{ep}",SGDClassifier(loss="hinge",alpha=lam*s*s,max_iter=ep,tol=None,average=True,random_state=0)))
-    for name,mm in cands:
-        t=time.time(); mm.fit(Xt*s,yt); p=mm.predict(Xs[half:n-buf]*s); acc=[(p[te==c]==c).mean() for c in range(8)]
-        print(pt,name,f"obj {objc(mm.coef_*s,mm.intercept_,Xt,yt):.4f} med {np.median(acc):.3f} {time.time()-t:.2f}s")
-EOF
-PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/p6.py
-```
-
-```
-sig range 0.11906820996471452 0.18121057398571047
-(300, 300) lsvc100k obj 1.9699 med 0.120 1.01s
-(300, 300) lsvc10k obj 1.9699 med 0.131 0.67s
-(300, 300) lsvc2k obj 1.9699 med 0.097 0.59s
-(300, 300) asgd10 obj 4.9206 med 0.134 0.10s
-(300, 300) asgd50 obj 2.6412 med 0.131 0.39s
-(350, 450) lsvc100k obj 1.9778 med 0.164 0.63s
-(350, 450) lsvc10k obj 1.9778 med 0.057 0.36s
-(350, 450) lsvc2k obj 1.9778 med 0.148 0.31s
-(350, 450) asgd10 obj 3.3129 med 0.231 0.10s
-(350, 450) asgd50 obj 2.2932 med 0.217 0.38s
-(404, 180) lsvc100k obj 1.9940 med 0.195 0.40s
-(404, 180) lsvc10k obj 1.9940 med 0.225 0.29s
-(404, 180) lsvc2k obj 1.9940 med 0.201 0.24s
-(404, 180) asgd10 obj 2.6201 med 0.222 0.10s
-(404, 180) asgd50 obj 2.1308 med 0.250 0.39s
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/p7.py <<'EOF'
-import pickle, numpy as np, time, kiloscope as ks, warnings
-warnings.filterwarnings("ignore")
-from sklearn.svm import LinearSVC
-d=pickle.load(open("/tmp/claude-1001/cache.pkl","rb")); S,track=d["S"],d["track"]
-B=ks.behaviour(S["t_img"],S["t_video"],track)
-T=S["traces"]; act=ks.moving_max(T[B["sel"]]); run=B["running"]
-X=act[run].astype(np.float64); lab=ks.quad_dir_labels(B)[run]; n=len(lab)
-rng=np.random.default_rng(2); half,buf=round(n*.5),round(n*.01); ntr=half-buf; lam=ks.LAMBDA_QUAD_DIR
-for null in (False,True):
-    labels=np.roll(lab,int(rng.integers(n//10,n-n//10))) if null else lab
-    sh=int(rng.integers(n)); Xs,ls=np.roll(X,sh,0),np.roll(labels,sh); Xt,yt=Xs[:ntr],ls[:ntr]; te=ls[half:n-buf]; s=1/Xt.std()
-    for mi in (1000,10000):
-        t=time.time(); m=LinearSVC(loss="hinge",C=1/(lam*s*s*ntr),intercept_scaling=10,max_iter=mi).fit(Xt*s,yt)
-        p=m.predict(Xs[half:n-buf]*s); acc=[(p[te==c]==c).mean() for c in range(8)]
-        print(null,mi,np.median(acc).round(3),round(time.time()-t,1),m.n_iter_)
-EOF
-PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/p7.py
-```
-
-```
-False 1000 0.296 11.3 1000
-False 10000 0.294 29.0 10000
-True 1000 0.119 13.3 1000
-True 10000 0.118 32.0 10000
-```
-
-**Agent**
-
-Now the helper changes: solver choice by predictor count (as MATLAB's default), sample frames from the video, and an optional centre for the radial profile.
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-p='kiloscope.py'; s=open(p).read()
-old="""  second half, with 1% of frames left out at the end of each half. MATLAB's fitcecoc with
-  templateLinear is replaced by scikit-learn's SGDClassifier with the hinge loss and the same
-  lambda as `alpha` (the same objective); `SGD_EPOCHS` passes is a choice made here."""
-new="""  second half, with 1% of frames left out at the end of each half. MATLAB's fitcecoc with
-  templateLinear minimizes the mean hinge loss plus lambda / 2 times the squared weights. The code
-  leaves the solver at MATLAB's default, which depends on the number of predictors (templateLinear
-  documentation): for more than 100, dual SGD with 10 passes through the data; for 100 or fewer,
-  BFGS run to convergence. The same rule is followed here. For more than 100 footprints,
-  scikit-learn's SGDClassifier with the hinge loss, the same lambda as `alpha` and `SGD_EPOCHS`
-  passes (a truncated stochastic solver, like MATLAB's). For 100 or fewer, scikit-learn's
-  LinearSVC with the hinge loss, which solves the same problem exactly: the features are divided
-  by their overall standard deviation and C is set so that the objective is unchanged (this only
-  speeds up convergence). LinearSVC also penalizes the intercept, weakly at an intercept scaling
-  of 10; MATLAB does not."""
-assert old in s; s=s.replace(old,new)
-s=s.replace("""SGD_EPOCHS = 10
-""","""SGD_EPOCHS = 10
-EXACT_MAX_PREDICTORS = 100   # MATLAB's templateLinear uses BFGS up to here, dual SGD above
-EXACT_MAX_ITER = 10000
-""")
-s=s.replace("from sklearn.linear_model import SGDClassifier\n","from sklearn.linear_model import SGDClassifier\nfrom sklearn.svm import LinearSVC\n")
-old=s[s.index("def decode_once"):s.index("# --- illumination")]
-new='''def decode_once(X: np.ndarray, labels: np.ndarray, n_class: int, lam: float, rng: np.random.Generator,
-                null: bool = False) -> tuple[np.ndarray, bool]:
-    """Per-class accuracy of one decoder (NaN for a class absent from the test half), and whether
-    the exact solver converged (always True for the SGD solver, which runs a fixed number of
-    passes). For a null decoder the labels are first shifted against the activity by 10% to 90%
-    of the frames."""
-    n = len(labels)
-    if null:
-        labels = np.roll(labels, int(rng.integers(n // 10, n - n // 10)))
-    shift = int(rng.integers(n))
-    Xs, ls = np.roll(X, shift, axis=0), np.roll(labels, shift)
-    half, buffer = round(n * HOLDOUT), round(n * BUFFER)
-    train, test = slice(0, half - buffer), slice(half, n - buffer)
-    if X.shape[1] <= EXACT_MAX_PREDICTORS:
-        predicted, converged = _fit_exact(Xs[train], ls[train], Xs[test], lam)
-    else:
-        model = SGDClassifier(loss="hinge", penalty="l2", alpha=lam, max_iter=SGD_EPOCHS, tol=None,
-                              random_state=int(rng.integers(2**31)))
-        model.fit(Xs[train], ls[train])
-        predicted, converged = model.predict(Xs[test]), True
-    truth = ls[test]
-    return np.array([(predicted[truth == c] == c).mean() if (truth == c).any() else np.nan
-                     for c in range(n_class)]), converged
-
-
-def _fit_exact(X_train, y_train, X_test, lam, max_iter=EXACT_MAX_ITER):
-    """One-against-all linear SVM minimizing mean hinge + lam / 2 |w|^2, solved by liblinear on
-    features scaled by s: with C = 1 / (lam s^2 n) the scaled problem has the same solution."""
-    s = 1 / X_train.std()
-    model = LinearSVC(loss="hinge", C=1 / (lam * s * s * len(y_train)), intercept_scaling=10,
-                      max_iter=max_iter)
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", ConvergenceWarning)
-        model.fit(X_train * s, y_train)
-    return model.predict(X_test * s), bool(model.n_iter_ < max_iter)
-
-
-def decode_many(X, labels, n_class, lam, n, rng, null=False, with_convergence=False):
-    """(n, n_class) per-class accuracies of n decoders; with `with_convergence`, also the number
-    of fits whose exact solver did not converge."""
-    out = [decode_once(X, labels, n_class, lam, rng, null) for _ in range(n)]
-    acc = np.array([a for a, _ in out])
-    return (acc, sum(not c for _, c in out)) if with_convergence else acc
-
-
-def exact_check(X, labels, n_class, lam, rng, null=False, max_iter=EXACT_MAX_ITER):
-    """For a check of the SGD solver: the same split fit by SGD and by the exact solver. Returns
-    the per-class accuracies of each and whether the exact solver converged."""
-    n = len(labels)
-    if null:
-        labels = np.roll(labels, int(rng.integers(n // 10, n - n // 10)))
-    shift = int(rng.integers(n))
-    Xs, ls = np.roll(X, shift, axis=0), np.roll(labels, shift)
-    half, buffer = round(n * HOLDOUT), round(n * BUFFER)
-    train, test = slice(0, half - buffer), slice(half, n - buffer)
-    sgd = SGDClassifier(loss="hinge", penalty="l2", alpha=lam, max_iter=SGD_EPOCHS, tol=None,
-                        random_state=int(rng.integers(2**31))).fit(Xs[train], ls[train])
-    exact, converged = _fit_exact(Xs[train], ls[train], Xs[test], lam, max_iter)
-    truth = ls[test]
-    def acc(predicted):
-        return np.array([(predicted[truth == c] == c).mean() if (truth == c).any() else np.nan
-                         for c in range(n_class)])
-    return acc(sgd.predict(Xs[test])), acc(exact), converged
-
-
-'''
-s=s.replace(old,new)
-s=s.replace("import io\n","import io\nimport warnings\n")
-s=s.replace("from sklearn.linear_model import SGDClassifier\n","from sklearn.exceptions import ConvergenceWarning\nfrom sklearn.linear_model import SGDClassifier\n")
-# track_mouse sample frames
-s=s.replace('''def track_mouse(url: str) -> dict:
-    """Per video frame: centroid (x = column, y = row, pixels) and area of the largest dark blob
-    in the maze, the number of frames, the frame size and the nominal frame rate."""''','''def track_mouse(url: str, keep_frames=()) -> dict:
-    """Per video frame: centroid (x = column, y = row, pixels) and area of the largest dark blob
-    in the maze, the number of frames, the frame size and the nominal frame rate; and the RGB
-    images of the frames listed in `keep_frames`, for display."""''')
-s=s.replace('''    xs, ys, areas, shape = [], [], [], None
-    for frame in container.decode(video=0):
-        rgb = frame.to_ndarray(format="rgb24")
-        shape = rgb.shape''','''    xs, ys, areas, shape, kept = [], [], [], None, {}
-    keep_frames = set(keep_frames)
-    for i, frame in enumerate(container.decode(video=0)):
-        rgb = frame.to_ndarray(format="rgb24")
-        shape = rgb.shape
-        if i in keep_frames:
-            kept[i] = rgb''')
-s=s.replace('''            "frame_shape": shape, "nominal_rate": nominal_rate}''','''            "frame_shape": shape, "nominal_rate": nominal_rate, "frames": kept}''')
-# radial profile centre
-s=s.replace('''def radial_profile(image: np.ndarray, um_per_pixel: float, max_um: int, median_um: int) -> np.ndarray:
-    """analysis.m: mean intensity in 1 um rings about the intensity-weighted centre, smoothed by a
-    moving median of `median_um` bins and normalized to its 99th percentile."""
-    h, w = image.shape
-    cols, rows = np.meshgrid(np.arange(1, w + 1), np.arange(1, h + 1))
-    total = image.sum()
-    xc, yc = (cols * image).sum() / total, (rows * image).sum() / total''','''def radial_profile(image: np.ndarray, um_per_pixel: float, max_um: int, median_um: int,
-                   centre: tuple[float, float] | None = None) -> np.ndarray:
-    """analysis.m: mean intensity in 1 um rings about the intensity-weighted centre, smoothed by a
-    moving median of `median_um` bins and normalized to its 99th percentile. `centre` (column,
-    row, counted from 1) replaces the intensity-weighted centre, for a check of sensitivity."""
-    h, w = image.shape
-    cols, rows = np.meshgrid(np.arange(1, w + 1), np.arange(1, h + 1))
-    xc, yc = weighted_centre(image) if centre is None else centre''')
-s=s.replace('''def _movmedian(''','''def weighted_centre(image: np.ndarray) -> tuple[float, float]:
-    """Intensity-weighted mean (column, row) of an image, counted from 1 as in MATLAB."""
-    h, w = image.shape
-    cols, rows = np.meshgrid(np.arange(1, w + 1), np.arange(1, h + 1))
-    total = image.sum()
-    return (cols * image).sum() / total, (rows * image).sum() / total
-
-
-def _movmedian(''')
-open(p,'w').write(s)
-EOF
-grep -n "SGD_EPOCHS\|keep_frames\|centre" kiloscope.py | head -20
-```
-
-```
-35:  scikit-learn's SGDClassifier with the hinge loss, the same lambda as `alpha` and `SGD_EPOCHS`
-44:  * 8 + blue / 8; the centre is the intensity-weighted mean pixel; profiles are binned at 1 um,
-84:SGD_EPOCHS = 10
-146:def track_mouse(url: str, keep_frames=()) -> dict:
-149:    images of the frames listed in `keep_frames`, for display."""
-158:    keep_frames = set(keep_frames)
-162:        if i in keep_frames:
-232:        model = SGDClassifier(loss="hinge", penalty="l2", alpha=lam, max_iter=SGD_EPOCHS, tol=None,
-271:    sgd = SGDClassifier(loss="hinge", penalty="l2", alpha=lam, max_iter=SGD_EPOCHS, tol=None,
-301:                   centre: tuple[float, float] | None = None) -> np.ndarray:
-302:    """analysis.m: mean intensity in 1 um rings about the intensity-weighted centre, smoothed by a
-303:    moving median of `median_um` bins and normalized to its 99th percentile. `centre` (column,
-304:    row, counted from 1) replaces the intensity-weighted centre, for a check of sensitivity."""
-307:    xc, yc = weighted_centre(image) if centre is None else centre
-320:def weighted_centre(image: np.ndarray) -> tuple[float, float]:
-329:    """MATLAB smoothdata(v, 'movmedian', k): centred window, shrunk at the ends, NaN omitted."""
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-p='kiloscope.py'; s=open(p).read()
-s=s.replace('''def decode_once(X: np.ndarray, labels: np.ndarray, n_class: int, lam: float, rng: np.random.Generator,
-                null: bool = False) -> tuple[np.ndarray, bool]:
-    """Per-class accuracy of one decoder (NaN for a class absent from the test half), and whether
-    the exact solver converged (always True for the SGD solver, which runs a fixed number of
-    passes). For a null decoder the labels are first shifted against the activity by 10% to 90%
-    of the frames."""''','''def decode_once(X: np.ndarray, labels: np.ndarray, n_class: int, lam: float, rng: np.random.Generator,
-                null: bool = False, solver: str | None = None) -> tuple[np.ndarray, bool]:
-    """Per-class accuracy of one decoder (NaN for a class absent from the test half), and whether
-    the exact solver converged (always True for the SGD solver, which runs a fixed number of
-    passes). For a null decoder the labels are first shifted against the activity by 10% to 90%
-    of the frames. `solver` ("exact" or "sgd") overrides the choice by number of predictors."""''')
-s=s.replace('''    if X.shape[1] <= EXACT_MAX_PREDICTORS:
-        predicted, converged''','''    if solver is None:
-        solver = "exact" if X.shape[1] <= EXACT_MAX_PREDICTORS else "sgd"
-    if solver == "exact":
-        predicted, converged''')
-s=s.replace('''def decode_many(X, labels, n_class, lam, n, rng, null=False, with_convergence=False):
-    """(n, n_class) per-class accuracies of n decoders; with `with_convergence`, also the number
-    of fits whose exact solver did not converge."""
-    out = [decode_once(X, labels, n_class, lam, rng, null) for _ in range(n)]''','''def decode_many(X, labels, n_class, lam, n, rng, null=False, with_convergence=False, solver=None):
-    """(n, n_class) per-class accuracies of n decoders; with `with_convergence`, also the number
-    of fits whose exact solver did not converge."""
-    out = [decode_once(X, labels, n_class, lam, rng, null, solver) for _ in range(n)]''')
-open(p,'w').write(s)
-EOF
-cat > $TMPDIR/p8.py <<'EOF'
-import pickle, numpy as np, time, kiloscope as ks
-from joblib import Parallel, delayed
-d=pickle.load(open("/tmp/claude-1001/cache.pkl","rb")); S,track=d["S"],d["track"]
-B=ks.behaviour(S["t_img"],S["t_video"],track)
-T=S["traces"]; act=ks.moving_max(T[B["sel"]]); run=B["running"]
-X=act[run]; lab=B["octant"][run]; cen=S["centroids"].astype(float)
-pts=[(284+30*i,180+30*j) for i in range(5) for j in range(4)]
-def point(a,b,ss,mi,k):
-    ks.EXACT_MAX_ITER=mi
-    idx=np.argsort(np.hypot(cen[:,0]-a,cen[:,1]-b))[:k]; rng=np.random.default_rng(ss)
-    r,nc=ks.decode_many(X[:,idx],lab,8,ks.LAMBDA_OCTANT,10,rng,with_convergence=True)
-    q,nc2=ks.decode_many(X[:,idx],lab,8,ks.LAMBDA_OCTANT,10,rng,null=True,with_convergence=True)
-    return np.nanmedian(r,1).mean(), np.nanmedian(q,1).mean(), nc+nc2
-for k in (32,64):
-  for mi in (2000,10000):
-    t=time.time(); seeds=np.random.SeedSequence(5).spawn(len(pts))
-    out=Parallel(n_jobs=4)(delayed(point)(a,b,ss,mi,k) for (a,b),ss in zip(pts,seeds))
-    o=np.array(out); print(k,mi,round(time.time()-t,1),"score mean",o[:,0].mean().round(4),"null",o[:,1].mean().round(4),"nonconv",o[:,2].sum(),"of",len(pts)*20)
-EOF
-PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/p8.py
-```
-
-```
-32 2000 67.8 score mean 0.1499 null 0.0921 nonconv 285.0 of 400
-32 10000 64.4 score mean 0.1499 null 0.0929 nonconv 285.0 of 400
-64 2000 145.7 score mean 0.1883 null 0.1184 nonconv 400.0 of 400
-64 10000 145.8 score mean 0.1883 null 0.1183 nonconv 400.0 of 400
-```
-
-**Agent calls Bash**
-
-```bash
-grep -n "max.minutes\|max_minutes" ../../tools/entry.py | head; grep -n "runtime_minutes" -r ../../schemas/entry.schema.json
-```
-
-```
-28:that takes longer than --max-minutes fails, even if it ran without error.
-282:def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
-311:        if ok and seconds > max_minutes * 60:
-313:            error = f"took {seconds / 60:.0f} minutes; the limit is {max_minutes:.0f}"
-372:    parser.add_argument("--max-minutes", type=float, default=30,
-392:    return run(entry_dir, output_dir, args.timeout, args.max_minutes)
-30:          "runtime_minutes": {"description": "Roughly how long it takes to run.", "type": "integer", "minimum": 1}
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/p9.py <<'EOF'
-import pickle, numpy as np, time, kiloscope as ks, warnings
-warnings.filterwarnings("ignore")
-from sklearn.svm import LinearSVC
-d=pickle.load(open("/tmp/claude-1001/cache.pkl","rb")); S,track=d["S"],d["track"]
-B=ks.behaviour(S["t_img"],S["t_video"],track)
-T=S["traces"]; act=ks.moving_max(T[B["sel"]]); run=B["running"]
-X=act[run].astype(np.float64); lab=B["octant"][run]; n=len(lab); cen=S["centroids"].astype(float)
-half,buf=round(n*.5),round(n*.01); ntr=half-buf; lam=ks.LAMBDA_OCTANT; rng=np.random.default_rng(3)
-def objc(W,b,Xt,yt): return sum(np.maximum(0,1-np.where(yt==c,1,-1)*(Xt@W[c]+b[c])).mean()+lam/2*W[c]@W[c] for c in range(8))
-tt={}
-for k in (32,64):
-  for pt in [(300,300),(450,200),(600,250)]:
-    idx=np.argsort(np.hypot(cen[:,0]-pt[0],cen[:,1]-pt[1]))[:k]; Xp=X[:,idx]
-    sh=int(rng.integers(n)); Xs,ls=np.roll(Xp,sh,0),np.roll(lab,sh); Xt,yt=Xs[:ntr],ls[:ntr]; te=ls[half:n-buf]; s=1/Xt.std()
-    res=[]
-    for mi in (300,1000,3000,10000,100000):
-        t=time.time(); m=LinearSVC(loss="hinge",C=1/(lam*s*s*ntr),intercept_scaling=10,max_iter=mi).fit(Xt*s,yt)
-        p=m.predict(Xs[half:n-buf]*s); acc=[(p[te==c]==c).mean() for c in range(8)]
-        res.append(f"{mi}:{objc(m.coef_*s,m.intercept_,Xt,yt):.5f}/{np.median(acc):.3f}/{time.time()-t:.2f}s")
-    print(k,pt," ".join(res))
-EOF
-PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/p9.py
-```
-
-```
-32 (300, 300) 300:1.95572/0.074/0.50s 1000:1.95051/0.124/0.57s 3000:1.95031/0.134/0.62s 10000:1.95022/0.124/0.67s 100000:1.95022/0.140/0.98s
-32 (450, 200) 300:1.99820/0.115/0.24s 1000:1.99833/0.081/0.24s 3000:1.99836/0.130/0.25s 10000:1.99909/0.139/0.28s 100000:1.99792/0.120/0.39s
-32 (600, 250) 300:1.99968/0.061/0.23s 1000:2.00000/0.161/0.26s 3000:1.99831/0.120/0.29s 10000:1.99905/0.103/0.29s 100000:1.99829/0.133/0.47s
-64 (300, 300) 300:1.49329/0.149/0.56s 1000:1.48863/0.141/0.74s 3000:1.48774/0.147/0.92s 10000:1.48760/0.149/1.26s 100000:1.48757/0.148/4.82s
-64 (450, 200) 300:1.56841/0.154/0.31s 1000:1.56724/0.152/0.39s 3000:1.56702/0.153/0.48s 10000:1.56700/0.153/0.72s 100000:1.56696/0.153/3.00s
-64 (600, 250) 300:1.54530/0.118/0.31s 1000:1.54426/0.119/0.38s 3000:1.54411/0.118/0.47s 10000:1.54407/0.119/0.71s 100000:1.54405/0.119/2.78s
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-p='kiloscope.py'; s=open(p).read()
-a=s.index("def decode_once"); b=s.index("# --- illumination")
-new='''def decode_once(X: np.ndarray, labels: np.ndarray, n_class: int, lam: float, rng: np.random.Generator,
-                null: bool = False, solver: str | None = None) -> tuple[np.ndarray, bool]:
-    """Per-class accuracy of one decoder (NaN for a class absent from the test half), and whether
-    the exact solver met liblinear's stopping rule within `EXACT_MAX_ITER` iterations (always
-    True for the SGD solver, which runs a fixed number of passes). For a null decoder the labels
-    are first shifted against the activity by 10% to 90% of the frames. `solver` ("exact" or
-    "sgd") overrides the choice by number of predictors."""
-    Xtr, ytr, Xte, yte = _split(X, labels, rng, null)
-    if solver is None:
-        solver = "exact" if X.shape[1] <= EXACT_MAX_PREDICTORS else "sgd"
-    if solver == "exact":
-        W, b, converged = fit_exact(Xtr, ytr, lam)
-    else:
-        W, b, converged = fit_sgd(Xtr, ytr, lam, rng), True
-    return class_accuracy(predict(W, b, Xte), yte, n_class), converged
-
-
-def _split(X, labels, rng, null):
-    """Training and test halves after the random circular shift, with the buffers."""
-    n = len(labels)
-    if null:
-        labels = np.roll(labels, int(rng.integers(n // 10, n - n // 10)))
-    shift = int(rng.integers(n))
-    Xs, ls = np.roll(X, shift, axis=0), np.roll(labels, shift)
-    half, buffer = round(n * HOLDOUT), round(n * BUFFER)
-    return Xs[:half - buffer], ls[:half - buffer], Xs[half:n - buffer], ls[half:n - buffer]
-
-
-def fit_sgd(X, y, lam, rng):
-    """One-against-all weights (classes x features) and intercepts by SGD, `SGD_EPOCHS` passes."""
-    model = SGDClassifier(loss="hinge", penalty="l2", alpha=lam, max_iter=SGD_EPOCHS, tol=None,
-                          random_state=int(rng.integers(2**31))).fit(X, y)
-    return model.coef_, model.intercept_
-
-
-def fit_exact(X, y, lam, max_iter=EXACT_MAX_ITER):
-    """One-against-all linear SVM minimizing mean hinge + lam / 2 |w|^2, solved by liblinear on
-    features scaled by s: with C = 1 / (lam s^2 n) the scaled problem has the same solution.
-    Returns weights in the original units, intercepts, and whether liblinear stopped by its
-    tolerance before `max_iter`."""
-    s = 1 / X.std()
-    model = LinearSVC(loss="hinge", C=1 / (lam * s * s * len(y)), intercept_scaling=10,
-                      max_iter=max_iter)
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", ConvergenceWarning)
-        model.fit(X * s, y)
-    return model.coef_ * s, model.intercept_, bool(model.n_iter_ < max_iter)
-
-
-def predict(W, b, X):
-    return np.argmax(X @ W.T + b, axis=1)
-
-
-def class_accuracy(predicted, truth, n_class):
-    return np.array([(predicted[truth == c] == c).mean() if (truth == c).any() else np.nan
-                     for c in range(n_class)])
-
-
-def svm_objective(W, b, X, y, lam):
-    """Sum over the one-against-all problems of mean hinge loss + lam / 2 |w|^2."""
-    total = 0.0
-    for c in range(W.shape[0]):
-        sign = np.where(y == c, 1.0, -1.0)
-        total += np.maximum(0, 1 - sign * (X @ W[c] + b[c])).mean() + lam / 2 * W[c] @ W[c]
-    return total
-
-
-def decode_many(X, labels, n_class, lam, n, rng, null=False, with_convergence=False, solver=None):
-    """(n, n_class) per-class accuracies of n decoders; with `with_convergence`, also the number
-    of exact fits that reached the iteration limit."""
-    out = [decode_once(X, labels, n_class, lam, rng, null, solver) for _ in range(n)]
-    acc = np.array([a for a, _ in out])
-    return (acc, sum(not c for _, c in out)) if with_convergence else acc
-
-
-def solver_check(X, labels, n_class, lam, rng, null=False, max_iter=EXACT_MAX_ITER) -> dict:
-    """One split fit by both solvers: the median class accuracy and training objective of each,
-    and whether the exact solver stopped by its tolerance."""
-    Xtr, ytr, Xte, yte = _split(X, labels, rng, null)
-    out = {}
-    for name, (W, b, *rest) in [("sgd", fit_sgd(Xtr, ytr, lam, rng)),
-                                ("exact", fit_exact(Xtr, ytr, lam, max_iter))]:
-        out[f"median_acc_{name}"] = float(np.nanmedian(class_accuracy(predict(W, b, Xte), yte, n_class)))
-        out[f"objective_{name}"] = svm_objective(W, b, Xtr, ytr, lam)
-        if rest:
-            out["exact_converged"] = rest[0]
-    return out
-
-
-'''
-s=s[:a]+new+s[b:]
-open(p,'w').write(s)
-EOF
-echo ok
-```
-
-```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-p='kiloscope.py'; s=open(p).read()
-rep=[('''        W, b, converged = fit_exact(Xtr, ytr, lam)
-    else:
-        W, b, converged = fit_sgd(Xtr, ytr, lam, rng), True
-    return class_accuracy(predict(W, b, Xte), yte, n_class), converged''','''        model, converged = fit_exact(Xtr, ytr, lam)
-    else:
-        model, converged = fit_sgd(Xtr, ytr, lam, rng), True
-    return class_accuracy(predict(model, Xte), yte, n_class), converged'''),
-('''    """One-against-all weights (classes x features) and intercepts by SGD, `SGD_EPOCHS` passes."""
-    model = SGDClassifier(loss="hinge", penalty="l2", alpha=lam, max_iter=SGD_EPOCHS, tol=None,
-                          random_state=int(rng.integers(2**31))).fit(X, y)
-    return model.coef_, model.intercept_''','''    """One-against-all linear SVM by SGD, `SGD_EPOCHS` passes: (weights, intercepts, classes)."""
-    model = SGDClassifier(loss="hinge", penalty="l2", alpha=lam, max_iter=SGD_EPOCHS, tol=None,
-                          random_state=int(rng.integers(2**31))).fit(X, y)
-    return model.coef_, model.intercept_, model.classes_'''),
-('''    Returns weights in the original units, intercepts, and whether liblinear stopped by its
-    tolerance before `max_iter`."""''','''    Returns (weights in the original units, intercepts, classes), and whether liblinear stopped by
-    its tolerance before `max_iter`."""'''),
-('''    return model.coef_ * s, model.intercept_, bool(model.n_iter_ < max_iter)
-
-
-def predict(W, b, X):
-    return np.argmax(X @ W.T + b, axis=1)''','''    return (model.coef_ * s, model.intercept_, model.classes_), bool(model.n_iter_ < max_iter)
-
-
-def predict(model, X):
-    W, b, classes = model
-    return classes[np.argmax(X @ W.T + b, axis=1)]'''),
-('''def svm_objective(W, b, X, y, lam):
-    """Sum over the one-against-all problems of mean hinge loss + lam / 2 |w|^2."""
-    total = 0.0
-    for c in range(W.shape[0]):
-        sign = np.where(y == c, 1.0, -1.0)''','''def svm_objective(model, X, y, lam):
-    """Sum over the one-against-all problems of mean hinge loss + lam / 2 |w|^2."""
-    W, b, classes = model
-    total = 0.0
-    for c in range(W.shape[0]):
-        sign = np.where(y == classes[c], 1.0, -1.0)'''),
-('''    out = {}
-    for name, (W, b, *rest) in [("sgd", fit_sgd(Xtr, ytr, lam, rng)),
-                                ("exact", fit_exact(Xtr, ytr, lam, max_iter))]:
-        out[f"median_acc_{name}"] = float(np.nanmedian(class_accuracy(predict(W, b, Xte), yte, n_class)))
-        out[f"objective_{name}"] = svm_objective(W, b, Xtr, ytr, lam)
-        if rest:
-            out["exact_converged"] = rest[0]
-    return out''','''    sgd = fit_sgd(Xtr, ytr, lam, rng)
-    exact, converged = fit_exact(Xtr, ytr, lam, max_iter)
-    out = {}
-    for name, model in [("sgd", sgd), ("exact", exact)]:
-        out[f"median_acc_{name}"] = float(np.nanmedian(class_accuracy(predict(model, Xte), yte, n_class)))
-        out[f"objective_{name}"] = svm_objective(model, Xtr, ytr, lam)
-    out["exact_converged"] = converged
-    return out''')]
-for a,b in rep:
-    assert a in s, a[:60]; s=s.replace(a,b)
-open(p,'w').write(s)
-EOF
-cat > $TMPDIR/t.py <<'EOF'
-import numpy as np, kiloscope as ks
-rng=np.random.default_rng(0); n=4000
-y=np.repeat(np.arange(8),n//8); y=np.roll(y,0)
-X=rng.normal(size=(n,20))*0.05; X[np.arange(n),y]+=0.1
-print(np.nanmedian(ks.decode_many(X,y,8,1e-6,3,rng),1), np.nanmedian(ks.decode_many(X,y,8,1e-6,3,rng,null=True),1))
-X2=np.hstack([X,rng.normal(size=(n,200))*0.05])
-print(np.nanmedian(ks.decode_many(X2,y,8,1e-6,2,rng),1))
-print(ks.solver_check(X,y,8,1e-6,rng))
-EOF
-PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/t.py
-```
-
-```
-[0. 0. 0.] [0. 0. 0.]
-[0. 0.]
-{'median_acc_sgd': 0.0, 'objective_sgd': np.float64(11.36872690097538), 'median_acc_exact': 0.0, 'objective_exact': np.float64(1.0093402844909267), 'exact_converged': False}
-```
-
-**Agent calls Bash**
-
-```bash
-sed -i 's/y=np.repeat(np.arange(8),n\/\/8); y=np.roll(y,0)/y=rng.integers(0,8,n)/' $TMPDIR/t.py; PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/t.py
-```
-
-```
-[0.6867766  0.67798052 0.69924706] [0.11205674 0.12993499 0.00204918]
-[0.52864346 0.56434056]
-{'median_acc_sgd': 0.6958174904942966, 'objective_sgd': np.float64(9.878973331096727), 'median_acc_exact': 0.6717655114141281, 'objective_exact': np.float64(1.445977697562023), 'exact_converged': False}
-```
-
-**Agent**
-
-Helpers pass synthetic tests. Now I'll edit the notebook cells.
-
-**Agent calls Bash**
-
-```bash
-cat >> kiloscope.py <<'EOF'
-EOF
-python - <<'EOF'
-p='kiloscope.py'; s=open(p).read()
-anchor="def solver_check("
-add='''def local_decoders(X: np.ndarray, labels: np.ndarray, lam: float, n_dec: int,
-                   seed: np.random.SeedSequence, solver: str | None = None) -> dict:
-    """For one point of the local decoding map (subregion_map_octant.m): `n_dec` octant decoders
-    and `n_dec` with shifted labels on the footprints in `X`, from their own generator. Returns
-    the per-decoder median class accuracies and the number of exact fits that reached the
-    iteration limit."""
-    rng = np.random.default_rng(seed)
-    real, nc_real = decode_many(X, labels, 8, lam, n_dec, rng, with_convergence=True, solver=solver)
-    null, nc_null = decode_many(X, labels, 8, lam, n_dec, rng, null=True, with_convergence=True,
-                                solver=solver)
-    return {"real": np.nanmedian(real, 1), "null": np.nanmedian(null, 1),
-            "at_iteration_limit": nc_real + nc_null}
-
-
-'''
-s=s.replace(anchor, add+anchor,1)
-open(p,'w').write(s)
-EOF
-grep -n "^def " kiloscope.py
-```
-
-```
-89:def asset_urls() -> dict[str, str]:
-97:def _text(value) -> str:
-101:def open_nwb(urls: dict[str, str]) -> h5py.File:
-105:def load_session(f: h5py.File) -> dict:
-146:def track_mouse(url: str, keep_frames=()) -> dict:
-179:def behaviour(t_img: np.ndarray, t_video: np.ndarray, track: dict) -> dict:
-207:def quad_dir_labels(b: dict) -> np.ndarray:
-212:def moving_max(traces: np.ndarray) -> np.ndarray:
-216:def decode_once(X: np.ndarray, labels: np.ndarray, n_class: int, lam: float, rng: np.random.Generator,
-233:def _split(X, labels, rng, null):
-244:def fit_sgd(X, y, lam, rng):
-251:def fit_exact(X, y, lam, max_iter=EXACT_MAX_ITER):
-265:def predict(model, X):
-270:def class_accuracy(predicted, truth, n_class):
-275:def svm_objective(model, X, y, lam):
-285:def decode_many(X, labels, n_class, lam, n, rng, null=False, with_convergence=False, solver=None):
-293:def local_decoders(X: np.ndarray, labels: np.ndarray, lam: float, n_dec: int,
-307:def solver_check(X, labels, n_class, lam, rng, null=False, max_iter=EXACT_MAX_ITER) -> dict:
-323:def code_file_url(path: str) -> str:
-327:def read_png(url: str) -> np.ndarray:
-[... 4 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/edit_nb.py <<'PYEOF'
-import nbformat
-p='reproduce_scherrer_2023.ipynb'
-nb=nbformat.read(p,as_version=4)
-C=nb.cells
-def code(src,tags=None):
-    c=nbformat.v4.new_code_cell(src)
-    if tags: c.metadata["tags"]=tags
-    return c
-def md(src): return nbformat.v4.new_markdown_cell(src)
-def rep(i,a,b):
-    assert a in C[i].source,(i,a[:50]); C[i].source=C[i].source.replace(a,b)
-
-# cell 1: imports, sample frames
-rep(1,"from dandi.dandiapi import DandiAPIClient\n","from dandi.dandiapi import DandiAPIClient\nfrom joblib import Parallel, delayed\n")
-rep(1,"track = ks.track_mouse(video_url)","# Frames kept for display: four in the opening part the code leaves out, four after it.\nSAMPLE_FRAMES = (0, 640, 1280, 1900, 4000, 8000, 12000, 15000)\ntrack = ks.track_mouse(video_url, keep_frames=SAMPLE_FRAMES)")
-
-# cell 9: tracking quality
-rep(9,'''print(f"Running frames (speed above median)''','''vstep = np.hypot(np.diff(x[~skipped]), np.diff(y[~skipped]))
-print("\\nTracking quality, from frame 1920 on:")
-print("  step between consecutive video frames (pixels), percentiles 50/90/99/99.9/100:",
-      np.round(np.percentile(vstep, [50, 90, 99, 99.9, 100]), 1))
-print("  steps above 20, 40, 80 pixels:", [int((vstep > k).sum()) for k in (20, 40, 80)])
-for j in np.flatnonzero(vstep > 40):
-    i = ks.FIRST_VIDEO_FRAME + j
-    print(f"    frame {i} to {i + 1} (t = {S['t_video'][i]:.1f} s): {vstep[j]:.0f} px; blob areas {area[i]}, {area[i + 1]}; "
-          f"frames {i + 1} to {i + 2}: {np.hypot(x[i + 2] - x[i + 1], y[i + 2] - y[i + 1]):.0f} px")
-small = (area < 50) & ~skipped
-print(f"  frames with blob area below 50 pixels: {small.sum()}; below 100: {((area < 100) & ~skipped).sum()} (of {(~skipped).sum()})")
-# The labels again, with the small blobs and both ends of every step above 40 pixels left out.
-bad = small.copy()
-jump = np.flatnonzero(vstep > 40) + ks.FIRST_VIDEO_FRAME
-bad[jump] = bad[jump + 1] = True
-clean = dict(track, x=np.where(bad, np.nan, x), y=np.where(bad, np.nan, y))
-B_clean = ks.behaviour(S["t_img"], S["t_video"], clean)
-same_frames = np.array_equal(B_clean["sel"], B["sel"])
-print(f"  without those {bad.sum()} video frames: same imaging frames {same_frames}; imaging frames whose arm changes "
-      f"{np.mean(B_clean['quadrant'] != B['quadrant']):.4f}, octant {np.mean(B_clean['octant'] != B['octant']):.4f}, "
-      f"running {np.mean(B_clean['running'] != B['running']):.4f}, direction {np.mean(B_clean['direction'] != B['direction']):.4f}")
-print(f"Running frames (speed above median)''')
-
-# new cell after 9: sample frames
-frames_cell=code('''# Sample frames of the behaviour video, with the tracked centroid (red cross) and the area searched (white box).
-fig, ax = plt.subplots(2, 4, figsize=(14, 5.5))
-r0, r1 = ks.ARENA_ROWS
-c0, c1 = ks.ARENA_COLS
-for a_, i in zip(ax.ravel(), SAMPLE_FRAMES):
-    a_.imshow(track["frames"][i])
-    a_.plot([c0, c1, c1, c0, c0], [r0, r0, r1, r1, r0], color="w", lw=0.8)
-    if np.isfinite(x[i]):
-        a_.plot(x[i], y[i], "r+", ms=14, mew=2)
-    a_.set_title(f"frame {i}, t = {S['t_video'][i]:.0f} s{' (left out)' if i < ks.FIRST_VIDEO_FRAME else ''}", fontsize=8)
-    a_.axis("off")
-plt.tight_layout(); plt.show()
-print(pd.DataFrame({"frame": SAMPLE_FRAMES, "t_s": [round(S["t_video"][i], 1) for i in SAMPLE_FRAMES],
-                    "left_out": [i < ks.FIRST_VIDEO_FRAME for i in SAMPLE_FRAMES],
-                    "blob_area_px": [int(area[i]) for i in SAMPLE_FRAMES],
-                    "x": np.round(x[list(SAMPLE_FRAMES)], 0), "y": np.round(y[list(SAMPLE_FRAMES)], 0)}).to_string(index=False))
-print("Blob area (pixels), percentiles 1/50/99, in the frames left out:", np.percentile(area[skipped], [1, 50, 99]),
-      "; from frame 1920 on:", np.percentile(area[~skipped], [1, 50, 99]))''',["sanity"])
-C.insert(10,frames_cell)
-# indices shift by one from here: old i -> i+1
-
-# fig2: solver check after old cell 19 (now 20) -> insert at 21 (after the variant cell, old 20 now 21) => insert at 22
-solver_cell=code('''# Check of the SGD solver: the same splits fit with an exact solver of the same objective
-# (liblinear, up to 10,000 iterations), 3 decoders and 3 with shifted labels.
-seeds = np.random.SeedSequence(691_09).spawn(6)
-checks = Parallel(n_jobs=-1)(delayed(ks.solver_check)(X_run, labels_qd, 8, ks.LAMBDA_QUAD_DIR, np.random.default_rng(s), null=k >= 3)
-                             for k, s in enumerate(seeds))
-check_qd = pd.DataFrame(checks).assign(labels=["real"] * 3 + ["shifted"] * 3)
-print(check_qd.round(4).to_string(index=False))''',["claim:fig2-quadrant-direction-decoding"])
-C.insert(22,solver_cell)
-# now old cell 26 (ed9c main) is at 26+2=28, old 27 at 29
-i=28
-assert "def local_map" in C[i].source
-C[i].source='''def local_map(n_near, radius_px, spacing, n_dec, seed, solver=None):
-    """Grid points with at least n_near centroids within radius_px; at each, n_dec decoders and
-    n_dec shifted-label decoders on its n_near nearest footprints, each point with its own
-    generator spawned from the seed, run in parallel."""
-    cen = S["centroids"].astype(float)
-    points = []
-    for a in np.arange(cen[:, 0].min(), cen[:, 0].max() + 1, spacing):
-        for b in np.arange(cen[:, 1].min(), cen[:, 1].max() + 1, spacing):
-            d = np.hypot(cen[:, 0] - a, cen[:, 1] - b)
-            if (d <= radius_px).sum() >= n_near:
-                points.append((a, b, int((d <= radius_px).sum()), np.argsort(d)[:n_near]))
-    seeds = np.random.SeedSequence(seed).spawn(len(points))
-    fits = Parallel(n_jobs=-1)(delayed(ks.local_decoders)(X_run[:, idx], labels_oct, ks.LAMBDA_OCTANT, n_dec, s, solver)
-                               for (_, _, _, idx), s in zip(points, seeds))
-    rows = []
-    for (a, b, n_within, _), fit in zip(points, fits):
-        real, null = fit["real"], fit["null"]
-        z = (real.mean() - null.mean()) / null.std(ddof=1)
-        rows.append({"c0": a, "c1": b, "score": real.mean(), "null_mean": null.mean(), "null_sd": null.std(ddof=1),
-                     "z": z, "p": stats.norm.sf(z), "n_within": n_within, "at_iteration_limit": fit["at_iteration_limit"]})
-    out = pd.DataFrame(rows)
-    out["q_bh"] = stats.false_discovery_control(out.p.to_numpy())
-    out["significant"] = out.q_bh < 0.05
-    return out
-
-def map_report(m, label):
-    sig = m[m.significant]
-    print(f"{label}: {len(m)} grid points used; significant at BH 5%: {len(sig)} ({len(sig) / len(m):.0%})")
-    print(f"  score over all points {m.score.min():.3f} to {m.score.max():.3f} (median {m.score.median():.3f}); "
-          f"null means {m.null_mean.min():.3f} to {m.null_mean.max():.3f}")
-    print(f"  null standard deviation per point, percentiles 5/50/95: {np.round(np.percentile(m.null_sd, [5, 50, 95]), 4)}; "
-          f"z percentiles 5/50/95: {np.round(np.percentile(m.z, [5, 50, 95]), 2)}; largest z {m.z.max():.2f}, smallest q {m.q_bh.min():.3f}")
-    print(f"  z the best point needs to pass alone (p < 0.05 / {len(m)}): {stats.norm.isf(0.05 / len(m)):.2f}")
-    print(f"  exact fits that reached the iteration limit: {m.at_iteration_limit.sum()} of {20 * len(m)}")
-    if len(sig):
-        print(f"  significant points' scores {sig.score.min():.3f} to {sig.score.max():.3f} (range {sig.score.max() - sig.score.min():.3f}); "
-              f"smallest z among them {sig.z.min():.2f}")
-
-t0 = time.time()
-radius = 45       # 270 um at 5.94 um per pixel, rounded to 45 pixels as in the criterion
-amap = local_map(32, radius, 30, 10, 691_05)
-print(f"computed in {time.time() - t0:.0f} s; radius {radius} px; exact solver (32 predictors)")
-map_report(amap, "32 footprints within 270 um")
-best = amap.sort_values("score", ascending=False).head(5)
-print("best points (pixels):"); print(best.round(3).to_string(index=False))
-fig, ax = plt.subplots(figsize=(5, 4.5))
-sc = ax.scatter(amap.c1, amap.c0, c=amap.score, s=40, marker="s", cmap="viridis")
-ax.scatter(amap.c1[~amap.significant], amap.c0[~amap.significant], s=40, marker="s", facecolors="none", edgecolors="k")
-ax.invert_yaxis(); ax.set_aspect("equal"); plt.colorbar(sc, label="score (black outline: not significant)")
-ax.set_xlabel("second centroid column (px)"); ax.set_ylabel("first centroid column (px)")
-plt.show()
-print(f"Plotted scores {amap.score.min():.3f} to {amap.score.max():.3f}; all points inside the axes")'''
-i=29
-assert "64 footprints" in C[i].source
-C[i].source='''# Variants. (a) The solver of the first round of this attempt: SGD with 10 passes on the same
-# points and seeds. (b) The code's choice, 64 footprints within 50 pixels, on a 60 pixel grid
-# (exact solver, 64 predictors).
-t0 = time.time()
-amap_sgd = local_map(32, radius, 30, 10, 691_05, solver="sgd")
-map_report(amap_sgd, "(a) 32 footprints within 270 um, SGD solver")
-amap64 = local_map(64, 50, 60, 10, 691_06)
-map_report(amap64, "(b) 64 footprints within 50 px (code), 60 px grid")
-print(f"variants computed in {time.time() - t0:.0f} s")
-
-# The two solvers on the same splits at four points of the map (one decoder each, real labels).
-cen = S["centroids"].astype(float)
-picked_points = amap.iloc[np.linspace(0, len(amap) - 1, 4).astype(int)]
-seeds = np.random.SeedSequence(691_11).spawn(4)
-rows = []
-for (_, pt), s in zip(picked_points.iterrows(), seeds):
-    idx = np.argsort(np.hypot(cen[:, 0] - pt.c0, cen[:, 1] - pt.c1))[:32]
-    rows.append({"c0": pt.c0, "c1": pt.c1, **ks.solver_check(X_run[:, idx], labels_oct, 8, ks.LAMBDA_OCTANT, np.random.default_rng(s), max_iter=100000)})
-print("SGD and exact solver on the same split (exact up to 100,000 iterations); objective = summed mean hinge + penalty:")
-print(pd.DataFrame(rows).round(4).to_string(index=False))
-print("For reference, predicting every class as absent (w = 0, b = -1) gives an objective of 2 * (sum of class fractions) = 2.0")'''
-
-# ed10 old 30 -> 32
-i=32
-rep(i,'''gain = (nulls.mean(0) - obs)''','''# Empirical false-positive count: each shifted copy in turn treated as the observed data and
-# compared with the other 99 (the same shifts serve every footprint, so counts are correlated).
-loo = np.array([int((np.delete(nulls, j, 0) > nulls[j]).all(0).sum()) for j in range(100)])
-print(f"shifted copy as observed, below all 99 others: count per copy median {np.median(loo):.0f}, 95th percentile "
-      f"{np.percentile(loo, 95):.0f}, maximum {loo.max()} (expected {n_fp / 100:.0f}); copies with a count of at least "
-      f"{int((below == 0).sum())}: {(loo >= (below == 0).sum()).sum()} of 100")
-gain = (nulls.mean(0) - obs)''')
-
-# ed8 old 33 -> 35
-i=35
-rep(i,'''def events_table(threshold):
-    rows = []
-    for c in range(8):
-        members = np.flatnonzero(group == c)
-        tpk = S["t_trace"][np.argmax(W[:, c])]''','''def events_table(threshold, t_from=0.0):
-    rows = []
-    for c in range(8):
-        members = np.flatnonzero(group == c)
-        later = S["t_trace"] >= t_from
-        tpk = S["t_trace"][later][np.argmax(W[later, c])]''')
-rep(i,'''fig, ax = plt.subplots(2, 4, figsize=(12, 5))''','''ev_late = events_table(0.5, t_from=B["t"][0])
-print(f"variant, event times from t = {B['t'][0]:.0f} s on (after the opening part the behaviour analysis leaves out): "
-      f"{int(((ev_late.active >= 10) & (ev_late.spread_ratio >= 0.5)).sum())} of 8; event times {ev_late.event_t_s.tolist()}; "
-      f"spread ratios {ev_late.spread_ratio.min():.2f} to {ev_late.spread_ratio.max():.2f}")
-
-# Baselines: members active in randomly placed 50 s windows, and the spread of random sets of footprints.
-rng_ed8 = np.random.default_rng(691_10)
-t_tr = S["t_trace"]
-rows = []
-for c in range(8):
-    members = np.flatnonzero(group == c)
-    fracs = []
-    for tc in rng_ed8.uniform(t_tr[0] + 25, t_tr[-1] - 25, 100):
-        win = np.abs(t_tr - tc) <= 25
-        fracs.append(np.mean(T[win][:, members].max(0) > 0.5 * peak_all[members]))
-    n_act = int(ev.active[c])
-    rand_spread = [spread(cen_um[rng_ed8.choice(len(cen_um), n_act, replace=False)]) / all_spread for _ in range(200)]
-    rows.append({"component": c, "event_fraction_active": round(n_act / ev.members[c], 3),
-                 "random_windows_median": round(float(np.median(fracs)), 3), "random_windows_95th": round(float(np.percentile(fracs, 95)), 3),
-                 "event_spread_ratio": ev.spread_ratio[c], "random_set_spread_5th": round(float(np.percentile(rand_spread, 5)), 3),
-                 "random_set_spread_95th": round(float(np.percentile(rand_spread, 95)), 3)})
-print("\\nBaselines (100 random 50 s windows per component; 200 random sets of footprints of the event's size):")
-print(pd.DataFrame(rows).to_string(index=False))
-fig, ax = plt.subplots(2, 4, figsize=(12, 5))''')
-
-# ed2 old 36 -> 38
-i=38
-C[i].source += '''
-
-# Sensitivity of the corrected profiles to the radius and the centre.
-for name, s in setups.items():
-    img = ks.read_png(ks.code_file_url(f"{s['folder']}/{s['files']['corrected']}"))
-    img = ks.unpack_rgb565(img) if img.ndim == 3 else img.astype(float)
-    xc, yc = ks.weighted_centre(img)
-    h, w = img.shape
-    step = round(100 / s["um"])       # 100 um in pixels
-    centres = {"intensity-weighted (main)": (xc, yc), "image centre": ((w + 1) / 2, (h + 1) / 2),
-               "weighted + 100 um in x": (xc + step, yc), "weighted - 100 um in x": (xc - step, yc),
-               "weighted + 100 um in y": (xc, yc + step), "weighted - 100 um in y": (xc, yc - step)}
-    rows = []
-    for label, centre in centres.items():
-        prof = ks.radial_profile(img, s["um"], s["max_um"], s["med"], centre=centre)
-        row = {"centre": label, "x_px": round(centre[0], 1), "y_px": round(centre[1], 1)}
-        for f_ in (0.95, 1.0, 1.05):
-            r = round(f_ * s["R"])
-            row[f"min_0_to_{r}um"] = round(np.nanmin(prof[:r + 1]), 3)
-        rows.append(row)
-    print(f"\\n{name}, corrected profile, minimum out to R - 5%, R, R + 5%:")
-    print(pd.DataFrame(rows).to_string(index=False))'''
-nbformat.write(nb,p)
-print(len(C))
-PYEOF
-python $TMPDIR/edit_nb.py
-```
-
-```
-42
-```
-
-**Agent calls Bash**
-
-```bash
-cd ../.. && time python tools/entry.py run entries/000691-scherrer-2023 2>&1 | tail -20
-```
-
-```
-Installed kernelspec registry-000691-scherrer-2023 in executed/000691-scherrer-2023/.venv/share/jupyter/kernels/registry-000691-scherrer-2023
-took 30 minutes; the limit is 30
-FAIL  reproduce_scherrer_2023.ipynb  (1829 s)
-
-real	30m32.986s
-user	84m47.487s
-sys	0m30.517s
-```
-
-**Agent calls Bash**
-
-```bash
-ls executed/000691-scherrer-2023/; python - <<'EOF'
+cd entries/000691-scherrer-2023; python - <<'EOF'
 import json
-nb=json.load(open('executed/000691-scherrer-2023/reproduce_scherrer_2023.ipynb'))
-for i,c in enumerate(nb['cells']):
-    if c['cell_type']!='code': continue
-    out=[]
-    for o in c.get('outputs',[]):
-        if o.get('output_type')=='stream': out.append(''.join(o['text']))
-        elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: out.append(''.join(o['data']['text/plain']))
-        elif o.get('output_type')=='error': out.append('ERROR '+o['ename']+o['evalue'])
-    print(f"==== cell {i} {c['metadata'].get('tags')}\n"+'\n'.join(out))
+for nb in ['motion_scherrer_2023.ipynb']:
+    d=json.load(open(nb))
+    for i,c in enumerate(d['cells']):
+        print(f"=== cell {i} [{c['cell_type']}] tags={c.get('metadata',{}).get('tags')}")
+        print(''.join(c['source']))
 EOF
+sed -n 600,760p kiloscope.py
 ```
 
 ```
-reproduce_scherrer_2023.ipynb
-result.json
-==== cell 1 None
-NWB loaded in 8 s
+=== cell 0 [markdown] tags=None
+# Scherrer, Lynch et al. (2023), dandiset 000691: motion of the field of view
 
-behaviour video decoded and tracked in 55 s
+Paper. Scherrer JR, Lynch GF, Zhang JJ, Fee MS (2023). An optical design enabling lightweight
+and large field-of-view head-mounted microscopes. *Nature Methods* 20, 546-549.
+[doi:10.1038/s41592-023-01806-1](https://doi.org/10.1038/s41592-023-01806-1).
 
-==== cell 3 ['sanity']
-Assets:
-   sub-4mm-mouse-1/sub-4mm-mouse-1_image+ophys/60d277d6-24fd-4817-bb02-41382db59172_external_file_0.avi
-   sub-4mm-mouse-1/sub-4mm-mouse-1_image+ophys.nwb
-Dandiset summary: subjects 1 ; species ['Mus musculus - House mouse']
-  measurement techniques: ['analytical technique', 'two-photon microscopy technique', 'surgical technique']
-  variables measured: ['TwoPhotonSeries', 'ImagingPlane', 'ProcessingModule', 'PlaneSegmentation', 'OpticalChannel']
-Dandiset description says the data come from: the calcium imaging data from our microscope optimized for weight
+Claims. `claims/000691/10.1038-s41592-023-01806-1.yaml`, written from the full text of the
+version of record and the paper's code. It decides what is tested and how.
 
-session_description: This session includes calcium imaging recorded from a head-mounted microscope in a freely moving mouse while simultaneously recording more than a thousand neurons in cortex.
-device_description: Head-mounted microscope (Kiloscope) optimized for weight (1.0 mm FOV; 1.0 g).
-imaging_series: TwoPhotonSeries
-imaging_description: Calcium imaging data at ~30 fps in grayscale format
-[... 297 more lines not kept]
+Dandiset. [DANDI:000691](https://dandiarchive.org/dandiset/000691/0.260827.1358), version
+0.260827.1358, the only published version (the paper cites none); see the main notebook,
+`reproduce_scherrer_2023.ipynb`, for the reasons and the full data check. This notebook reads the
+whole imaging movie (15 GB compressed, 36 GB as 16-bit values) by HTTP range requests, in blocks of
+1200 frames held in memory, and registers every frame.
+
+| Claim | Data | Status |
+|---|---|---|
+| ed7-motion-small | dandiset | tested |
+=== cell 1 [code] tags=None
+[... 288 more lines not kept]
 ```
-
-**Agent**
-
-Run took 30.3 min, just over the 30-min limit; the exact-solver map is the cost. Results: ed9c now has 18 of 150 points significant (range 0.067). I'll profile the exact fit to cut time.
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000691-scherrer-2023 && cat > $TMPDIR/prof.py <<'EOF'
-import pickle, numpy as np, time, kiloscope as ks
-d=pickle.load(open("/tmp/claude-1001/cache.pkl","rb")); S,track=d["S"],d["track"]
-B=ks.behaviour(S["t_img"],S["t_video"],track)
-T=S["traces"]; act=ks.moving_max(T[B["sel"]]); run=B["running"]
-X=act[run]; lab=B["octant"][run]; cen=S["centroids"].astype(float)
-idx=np.argsort(np.hypot(cen[:,0]-300,cen[:,1]-300))[:32]; Xp=np.ascontiguousarray(X[:,idx])
-for mi in (200,1000,2000,10000):
-    rng=np.random.default_rng(0); t=time.time()
-    for _ in range(10): ks.fit_exact(Xp[:8000],lab[:8000],ks.LAMBDA_OCTANT,mi)
-    print(mi,(time.time()-t)/10)
-import cProfile; cProfile.run("ks.fit_exact(Xp[:8000],lab[:8000],ks.LAMBDA_OCTANT,2000)",sort="cumtime")
+cd entries/000691-scherrer-2023; cat > $TMPDIR/probe1.py <<'EOF'
+import numpy as np, kiloscope as ks, time
+urls = ks.asset_urls(); f = ks.open_nwb(urls)
+ds = f["acquisition/TwoPhotonSeries"]
+def show(g, pre=""):
+    for k, v in g.attrs.items(): print(pre, "@", k, "=", v if not hasattr(v,'shape') or v.size<10 else v.shape)
+show(ds, "TPS")
+for k in ds: 
+    print("TPS member", k, ds[k].shape if hasattr(ds[k],'shape') else '')
+    if hasattr(ds[k],'attrs'): show(ds[k], "   "+k)
+for p in ["general", "general/optophysiology"]:
+    try:
+        for k in f[p]: print(p, k, f[p][k][()] if hasattr(f[p][k],'shape') and f[p][k].shape==() else '')
+    except Exception as e: print(e)
+print(f["acquisition/TwoPhotonSeries/data"].compression, f["acquisition/TwoPhotonSeries/data"].compression_opts)
+reader = ks.MovieReader(urls[ks.NWB_PATH], f)
+for b in [0, reader.blocks[len(reader.blocks)//2], reader.blocks[-1]]:
+    a = reader.block(b)
+    z = (a == 0)
+    print("block", b, a.shape, "zeros per frame pct", np.percentile(z.sum((1,2)), [0,50,100]), "frames with zeros", (z.any((1,2))).sum())
+    rows = np.where(z.any((0,2)))[0]; cols = np.where(z.any((0,1)))[0]
+    print("  rows with zeros", rows[:10], rows[-10:], len(rows), "cols", cols[:10], cols[-10:], len(cols))
+    for name, e1, e2 in [("top", a[:,0], a[:,1]), ("bottom", a[:,-1], a[:,-2]), ("left", a[:,:,0], a[:,:,1]), ("right", a[:,:,-1], a[:,:,-2]), ("inner row", a[:,300], a[:,301])]:
+        print("  ", name, "edge equals neighbour exactly in frames:", int((e1==e2).all(1).sum()), "of", len(a), "; mean frac equal", float((e1==e2).mean()))
+    h = np.bincount(a.ravel(), minlength=1024)
+    print("  histogram: values", a.min(), a.max(), "odd/even counts", h[1::2].sum(), h[0::2].sum(), "count of 0..5", h[:6].tolist())
+    print("  distinct values", (h>0).sum())
 EOF
-PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/prof.py 2>&1 | head -30
-```
-
-```
-200 0.4281502962112427
-1000 0.5679108381271363
-2000 0.5985710382461548
-10000 0.6959072351455688
-         2494 function calls in 0.605 seconds
-
-   Ordered by: cumulative time
-
-   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.000    0.000    0.605    0.605 {built-in method builtins.exec}
-        1    0.000    0.000    0.605    0.605 <string>:1(<module>)
-        1    0.000    0.000    0.605    0.605 kiloscope.py:251(fit_exact)
-        1    0.000    0.000    0.604    0.604 base.py:1381(wrapper)
-        1    0.000    0.000    0.603    0.603 _classes.py:289(fit)
-        1    0.600    0.600    0.601    0.601 _base.py:1111(_fit_liblinear)
-        5    0.000    0.000    0.002    0.000 validation.py:733(check_array)
-        1    0.000    0.000    0.001    0.001 validation.py:2932(validate_data)
-        1    0.000    0.000    0.001    0.001 validation.py:1186(check_X_y)
-        8    0.000    0.000    0.001    0.000 _internal.py:33(wrapped_f)
-        7    0.000    0.000    0.001    0.000 _array_api.py:962(_asarray_with_order)
-[... 10 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-p='kiloscope.py'; s=open(p).read()
-a=s.index("def decode_once"); b=s.index("def fit_sgd")
-new='''def decode_once(X: np.ndarray, labels: np.ndarray, n_class: int, lam: float, rng: np.random.Generator,
-                null: bool = False, solver: str | None = None) -> tuple[np.ndarray, bool]:
-    """Per-class accuracy of one decoder (NaN for a class absent from the test half), and whether
-    the exact solver met liblinear's stopping rule within `EXACT_MAX_ITER` iterations (always
-    True for the SGD solver, which runs a fixed number of passes). For a null decoder the labels
-    are first shifted against the activity by 10% to 90% of the frames. `solver` ("exact" or
-    "sgd") overrides the choice by number of predictors."""
-    solver = _solver(X, solver)
-    return _decode_drawn(X, labels, n_class, lam, solver, *_draws(rng, len(labels), null, solver))
-
-
-def _solver(X, solver):
-    if solver is None:
-        solver = "exact" if X.shape[1] <= EXACT_MAX_PREDICTORS else "sgd"
-    return solver
-
-
-def _draws(rng, n, null, solver):
-    """The random numbers of one decoder, in the order they are drawn: the shift of a null
-    decoder's labels, the circular shift of the split, and the SGD seed."""
-    roll = int(rng.integers(n // 10, n - n // 10)) if null else 0
-    shift = int(rng.integers(n))
-    seed = int(rng.integers(2**31)) if solver == "sgd" else None
-    return roll, shift, seed
-
-
-def _decode_drawn(X, labels, n_class, lam, solver, roll, shift, seed):
-    Xtr, ytr, Xte, yte = _split(X, np.roll(labels, roll), shift)
-    if solver == "exact":
-        model, converged = fit_exact(Xtr, ytr, lam)
-    else:
-        model, converged = fit_sgd(Xtr, ytr, lam, seed), True
-    return class_accuracy(predict(model, Xte), yte, n_class), converged
-
-
-def _split(X, labels, shift):
-    """Training and test halves after the circular shift, with the buffers."""
-    n = len(labels)
-    Xs, ls = np.roll(X, shift, axis=0), np.roll(labels, shift)
-    half, buffer = round(n * HOLDOUT), round(n * BUFFER)
-    return Xs[:half - buffer], ls[:half - buffer], Xs[half:n - buffer], ls[half:n - buffer]
-
-
-'''
-s=s[:a]+new+s[b:]
-s=s.replace('''def fit_sgd(X, y, lam, rng):
-    """One-against-all linear SVM by SGD, `SGD_EPOCHS` passes: (weights, intercepts, classes)."""
-    model = SGDClassifier(loss="hinge", penalty="l2", alpha=lam, max_iter=SGD_EPOCHS, tol=None,
-                          random_state=int(rng.integers(2**31))).fit(X, y)''','''def fit_sgd(X, y, lam, seed):
-    """One-against-all linear SVM by SGD, `SGD_EPOCHS` passes: (weights, intercepts, classes)."""
-    model = SGDClassifier(loss="hinge", penalty="l2", alpha=lam, max_iter=SGD_EPOCHS, tol=None,
-                          random_state=seed).fit(X, y)''')
-old=s[s.index("def decode_many"):s.index("def local_decoders")]
-s=s.replace(old,'''def decode_many(X, labels, n_class, lam, n, rng, null=False, with_convergence=False, solver=None,
-                n_jobs=1):
-    """(n, n_class) per-class accuracies of n decoders; with `with_convergence`, also the number
-    of exact fits that reached the iteration limit. The random numbers are drawn in order before
-    the fits, so `n_jobs` (parallel fits) does not change the result."""
-    solver = _solver(X, solver)
-    draws = [_draws(rng, len(labels), null, solver) for _ in range(n)]
-    if n_jobs == 1:
-        out = [_decode_drawn(X, labels, n_class, lam, solver, *d) for d in draws]
-    else:
-        out = Parallel(n_jobs=n_jobs)(delayed(_decode_drawn)(X, labels, n_class, lam, solver, *d) for d in draws)
-    acc = np.array([a for a, _ in out])
-    return (acc, sum(not c for _, c in out)) if with_convergence else acc
-
-
-''')
-old=s[s.index("def solver_check"):s.index("# --- illumination")]
-s=s.replace(old,'''def solver_check(X, labels, n_class, lam, rng, null=False, max_iter=EXACT_MAX_ITER) -> dict:
-    """One split fit by both solvers: the median class accuracy and training objective of each,
-    and whether the exact solver stopped by its tolerance."""
-    roll, shift, seed = _draws(rng, len(labels), null, "sgd")
-    Xtr, ytr, Xte, yte = _split(X, np.roll(labels, roll), shift)
-    sgd = fit_sgd(Xtr, ytr, lam, seed)
-    exact, converged = fit_exact(Xtr, ytr, lam, max_iter)
-    out = {}
-    for name, model in [("sgd", sgd), ("exact", exact)]:
-        out[f"median_acc_{name}"] = float(np.nanmedian(class_accuracy(predict(model, Xte), yte, n_class)))
-        out[f"objective_{name}"] = svm_objective(model, Xtr, ytr, lam)
-    out["exact_converged"] = converged
-    return out
-
-
-''')
-s=s.replace("import requests\nfrom dandi.dandiapi import DandiAPIClient\n","import requests\nfrom dandi.dandiapi import DandiAPIClient\nfrom joblib import Parallel, delayed\n")
-open(p,'w').write(s)
-EOF
-grep -n "^from\|^import" kiloscope.py; grep -n "joblib" requirements.in requirements.lock.txt
-```
-
-```
-48:from __future__ import annotations
-50:import io
-51:import warnings
-53:import h5py
-54:import numpy as np
-55:import png
-56:import remfile
-57:import requests
-58:from dandi.dandiapi import DandiAPIClient
-59:from joblib import Parallel, delayed
-60:from scipy import ndimage
-61:from sklearn.exceptions import ConvergenceWarning
-62:from sklearn.linear_model import SGDClassifier
-63:from sklearn.svm import LinearSVC
-requirements.lock.txt:46:    # via joblib
-requirements.lock.txt:123:joblib==1.6.0
-```
-
-**Agent calls Bash**
-
-```bash
-grep -n "def lock" -A25 ../../tools/entry.py
-```
-
-```
-274:def lock(entry_dir: Path) -> int:
-275-    r = subprocess.run(["uv", "pip", "compile", "--quiet", "--python-version", PYTHON_VERSION,
-276-                        "requirements.in", "-o", "requirements.lock.txt"], cwd=entry_dir)
-277-    if r.returncode == 0:
-278-        print(f"wrote {(entry_dir / 'requirements.lock.txt').relative_to(ROOT)}")
-279-    return r.returncode
-280-
-281-
-282-def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
-283-    entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
-284-    output_dir.mkdir(parents=True, exist_ok=True)
-285-    venv = (output_dir / ".venv").resolve()
-286-    python = venv / "bin" / "python"
-287-    # A kernel of the entry's own environment, under a name no other kernel on the machine has, so
-288-    # nbconvert cannot pick up some other "python3" kernel (a user's or a conda install's).
-289-    kernel = f"registry-{entry_dir.name}"
-290-    for cmd in (["uv", "venv", "--quiet", "--clear", "--python", PYTHON_VERSION, str(venv)],
-291-                ["uv", "pip", "install", "--quiet", "--python", str(python),
-292-                 "-r", str(entry_dir / "requirements.lock.txt"), *HARNESS],
-293-                [str(python), "-m", "ipykernel", "install", "--prefix", str(venv), "--name", kernel]):
-[... 6 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cp requirements.lock.txt $TMPDIR/lock.bak; sed -i 's/^h5py$/h5py\njoblib/' requirements.in; cat requirements.in; cd ../.. && python tools/entry.py lock entries/000691-scherrer-2023 && diff $TMPDIR/lock.bak entries/000691-scherrer-2023/requirements.lock.txt
-```
-
-```
-av
-dandi
-h5py
-joblib
-matplotlib
-numpy
-pandas
-pypng
-remfile
-requests
-scikit-learn
-scipy
-wrote entries/000691-scherrer-2023/requirements.lock.txt
-124a125
->     #   -r requirements.in
-```
-
-**Agent calls Bash**
-
-```bash
-git show HEAD:entries/000691-scherrer-2023/kiloscope.py > $TMPDIR/kiloscope_old.py; cat > $TMPDIR/t2.py <<'EOF'
-import sys, numpy as np
-sys.path.insert(0,"/tmp/claude-1001"); import kiloscope_old as old
-import kiloscope as ks
-rng=np.random.default_rng(0); n=4000; y=rng.integers(0,8,n)
-X=rng.normal(size=(n,150))*0.05; X[np.arange(n),y]+=0.1
-a=old.decode_many(X,y,8,1e-6,4,np.random.default_rng(5)); b=old.decode_many(X,y,8,1e-6,4,np.random.default_rng(6),null=True)
-c=ks.decode_many(X,y,8,1e-6,4,np.random.default_rng(5)); d=ks.decode_many(X,y,8,1e-6,4,np.random.default_rng(6),null=True,n_jobs=4)
-e=ks.decode_many(X,y,8,1e-6,4,np.random.default_rng(5),n_jobs=4)
-print(np.array_equal(a,c),np.array_equal(b,d),np.array_equal(c,e))
-EOF
-cd entries/000691-scherrer-2023 && PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/t2.py
+$TMPDIR/venv691/bin/python $TMPDIR/probe1.py
 ```
 
 ```
 Exit code 1
-/bin/bash: line 23: cd: entries/000691-scherrer-2023: No such file or directory
+Traceback (most recent call last):
+  File "/tmp/claude-1001/probe1.py", line 1, in <module>
+    import numpy as np, kiloscope as ks, time
+ModuleNotFoundError: No module named 'kiloscope'
 ```
 
 **Agent calls Bash**
 
 ```bash
-pwd; PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/t2.py
+cd entries/000691-scherrer-2023; PYTHONPATH=. $TMPDIR/venv691/bin/python $TMPDIR/probe1.py
 ```
 
 ```
-entries/000691-scherrer-2023
-True True True
+TPS @ comments = no comments
+TPS @ description = Calcium imaging data at ~30 fps in grayscale format
+TPS @ namespace = core
+TPS @ neurodata_type = TwoPhotonSeries
+TPS @ object_id = a0a98e91-7fec-4655-b7f3-d9d41398b9b4
+TPS member data (36596, 808, 608)
+   data @ conversion = 1.0
+   data @ offset = 0.0
+   data @ resolution = -1.0
+   data @ unit = Frames
+TPS member dimension (2,)
+TPS member imaging_plane 
+   imaging_plane @ namespace = core
+   imaging_plane @ neurodata_type = ImagingPlane
+   imaging_plane @ object_id = 54ce1267-69af-4aca-8d92-a0fc2ebd015f
+TPS member timestamps (36596,)
+   timestamps @ interval = 1
+   timestamps @ unit = seconds
+general devices 
+general experiment_description b'Here we present a fluorescence microscope light path that enables imaging, during free behavior, of thousands of neurons in mice and hundreds of neurons in juvenile songbirds. The light path eliminates traditional illumination optics, allowing for head-mounted microscopes that have both a lower weight and a larger field of view (FOV) than previously possible. Using this light path, we designed two microscopes: one optimized for FOV (~4 mm FOV; 1.4 g), and the other optimized for weight (1.0 mm FOV; 1.0 g). This dataset includes the calcium imaging data from our microscope optimized for weight.For this experiment, we stereotactically located a region of the mouse brain at coordinates associatied with primary visual and somatosensory regions, performed approximately 20 viral injections of GCaMP7f across a 4-mm-diameter region of cortex, and then implanted a 4-mm-diameter glass window in the skull. After letting each mouse recover, we installed our head-mounted microscope and allowed it to freely explore a circular maze while recording calcium activity for several minutes.'
+[... 38 more lines not kept]
 ```
-
-**Agent**
-
-Parallel results match the old sequential ones exactly. Adding `n_jobs` to the notebook's decoder calls.
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-import nbformat
-p='reproduce_scherrer_2023.ipynb'; nb=nbformat.read(p,as_version=4); C=nb.cells
-n=0
-for c in C:
-    if c.cell_type!='code': continue
-    for a in ["ks.LAMBDA_QUAD_DIR, 3, rng_clock)","ks.LAMBDA_QUAD_DIR, 50, rng_qd)","ks.LAMBDA_QUAD_DIR, 50, rng_qd, null=True)",
-              "ks.LAMBDA_QUAD_DIR, 20, rng_qd_var)","ks.LAMBDA_QUAD_DIR, 20, rng_qd_var, null=True)",
-              "ks.LAMBDA_OCTANT, 50, rng_oct)","ks.LAMBDA_OCTANT, 50, rng_oct, null=True)"]:
-        if a in c.source:
-            c.source=c.source.replace(a,a[:-1]+", n_jobs=-1)"); n+=1
-print(n)
-C[1].source=C[1].source.replace("track = ks.track_mouse","# Decoders are fit in parallel; their random numbers are drawn in order first, so results do not\n# depend on the number of workers.\ntrack = ks.track_mouse")
-nbformat.write(nb,p)
+cd entries/000691-scherrer-2023; cat > $TMPDIR/probe2.py <<'EOF'
+import numpy as np, kiloscope as ks, scipy.fft as sfft
+urls = ks.asset_urls(); f = ks.open_nwb(urls)
+reader = ks.MovieReader(urls[ks.NWB_PATH], f)
+a = reader.block(18000)[:200]
+def parity(x):
+    h = np.bincount(x.ravel().astype(np.int64), minlength=1024)
+    return h[1::2].sum() / h[0::2].sum()
+def dnl(x):
+    h = np.bincount(x.ravel().astype(np.int64), minlength=1024).astype(float)
+    m = (h[:-2] + h[2:]) / 2; c = h[1:-1]; ok = m > 1000
+    return np.mean(np.abs(c[ok] - m[ok]) / m[ok])
+print("deposited: parity", parity(a), "dnl", dnl(a))
+rng = np.random.default_rng(0)
+nr, nc = a.shape[1:]
+fr = np.fft.fftfreq(nr)[:, None]; fc = np.fft.fftfreq(nc)[None, :]
+for rms in [0.0, 0.02, 0.05, 0.13, 0.3]:
+    s = rng.normal(0, rms / np.sqrt(2), (len(a), 2)) if rms else np.zeros((len(a), 2))
+    out = np.empty_like(a)
+    for i in range(len(a)):
+        F = sfft.fft2(a[i].astype(np.float64))
+        F *= np.exp(-2j * np.pi * (s[i, 0] * fr + s[i, 1] * fc))
+        out[i] = np.clip(np.round(sfft.ifft2(F).real), 0, 65535)
+    print(f"shifted by RMS {rms}: parity {parity(out):.4f} dnl {dnl(out):.4f}  frac changed {(out != a).mean():.3f}")
 EOF
-cd ../.. && time python tools/entry.py run entries/000691-scherrer-2023 2>&1 | tail -3
+PYTHONPATH=. $TMPDIR/venv691/bin/python $TMPDIR/probe2.py
 ```
 
 ```
-7
-Installed kernelspec registry-000691-scherrer-2023 in executed/000691-scherrer-2023/.venv/share/jupyter/kernels/registry-000691-scherrer-2023
-pass  reproduce_scherrer_2023.ipynb  (1429 s)
-
-real	23m53.887s
-user	84m30.631s
-sys	0m39.160s
+deposited: parity 1.2174914578231038 dnl 0.7443378762671484
+shifted by RMS 0.0: parity 1.2175 dnl 0.7443  frac changed 0.000
+shifted by RMS 0.02: parity 1.2251 dnl 0.4715  frac changed 0.062
+shifted by RMS 0.05: parity 1.1828 dnl 0.1594  frac changed 0.287
+shifted by RMS 0.13: parity 1.0679 dnl 0.0558  frac changed 0.561
+shifted by RMS 0.3: parity 1.0145 dnl 0.0125  frac changed 0.798
 ```
-
-**Agent**
-
-Passes in 24 minutes. Now checking outputs and looking at the sample video frames.
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-import json,base64
-nb=json.load(open('executed/000691-scherrer-2023/reproduce_scherrer_2023.ipynb'))
-for i in [12,20,21,22,25,28,29,32,35,40]:
-    c=nb['cells'][i]
-    for o in c.get('outputs',[]):
-        if o.get('output_type')=='stream': print(f"--{i}\n"+''.join(o['text'])[:3000])
-c=nb['cells'][10]
-for o in c['outputs']:
-    if 'data' in o and 'image/png' in o['data']:
-        open('/tmp/claude-1001/frames.png','wb').write(base64.b64decode(o['data']['image/png']))
+cd entries/000691-scherrer-2023; python - <<'EOF'
+import json
+d=json.load(open('reproduce_scherrer_2023.ipynb'))
+for i,c in enumerate(d['cells']):
+    if i<19: 
+        print(f"=== cell {i} [{c['cell_type']}] tags={c.get('metadata',{}).get('tags')} :: {''.join(c['source'])[:150]!r}")
+        continue
+    print(f"=== cell {i} [{c['cell_type']}] tags={c.get('metadata',{}).get('tags')}")
+    print(''.join(c['source']))
 EOF
+sed -n 760,850p kiloscope.py
 ```
 
 ```
---12
-Arm decoding (chance 0.25), 3 decoders per shift:
- label_shift_s  median_class_accuracy
-           -60                  0.218
-           -20                  0.244
-            -5                  0.333
-            -2                  0.447
-            -1                  0.442
-             0                  0.506
-             1                  0.549
-             2                  0.532
-             5                  0.413
-            20                  0.203
-            60                  0.226
+<persisted-output>
+Output too large (41.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/41b1a7bb-bb7e-4074-bc33-bbf109df412e/tool-results/bb6kspgn7.txt
 
---20
-running frames: 16028 ; frames per class: [1527, 1537, 2882, 2401, 1715, 2056, 1669, 2241]
-
---20
-100 decoders in 58 s
-[... 137 more lines not kept]
+Preview (first 2KB):
+=== cell 0 [markdown] tags=None :: '# Reproducing Scherrer, Lynch et al. (2023) from dandiset 000691\n\nPaper. Scherrer JR, Lynch GF, Zhang JJ, Fee MS (2023). An optical design enabling li'
+=== cell 1 [code] tags=None :: 'import time\nimport warnings\nfrom concurrent.futures import ThreadPoolExecutor\n\nimport matplotlib.pyplot as plt\nimport numpy as np\nimport pandas as pd\n'
+=== cell 2 [markdown] tags=None :: '## Data check\n\nEach check of the metadata against the values is stated under its output. The last part of the\ncheck gives, for each finding of the fir'
+=== cell 3 [code] tags=['sanity'] :: 'with DandiAPIClient() as client:\n    dandiset = client.get_dandiset(ks.DANDISET_ID, ks.DANDISET_VERSION)\n    raw = dandiset.get_raw_metadata()\n    ver'
+=== cell 4 [markdown] tags=None :: 'The dandiset has one published version, 0.260827.1358, and the draft holds the same assets with the\nsame blobs, so nothing has changed since the first'
+=== cell 5 [code] tags=['sanity'] :: 'def rate_summary(t):\n    dt = np.diff(t)\n    return {"n": len(t), "first_s": round(t[0], 3), "last_s": round(t[-1], 3),\n            "median_dt_ms": ro'
+=== cell 6 [markdown] tags=None :: 'The imaging runs at a median 29.7 frames/s over 1234 s, as the series description says (about 30\nframes/s), with irregular intervals. The behaviour vi'
+=== cell 7 [code] tags=['sanity'] :: '# Which movie axis each centroid column indexes, and whether traces, masks and movie share a clock.\nmovie = f[ks.MOVIE]\nrng_check = np.random.default_'
+=== cell 8 [markdown] tags=None :: "The movie pixels at a footprint's stored position follow its own trace at lag 0 and do not follow\nanother footprint's trace (printed above), so the tr"
+=== cell 9 [code] tags=['sanity'] :: 
+[... 2 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/frames.png"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/41b1a7bb-bb7e-4074-bc33-bbf109df412e/tool-results/bb6kspgn7.txt"
 }
 ```
 
-Result: no output.
-
-**Agent**
-
-The frames show the tracked centroid on the mouse in all eight. In frame 1280 (102 s, in the excluded opening part) a gloved hand is in view and the camera framing differs. Now seeding liblinear:
+```
+1	=== cell 0 [markdown] tags=None :: '# Reproducing Scherrer, Lynch et al. (2023) from dandiset 000691\n\nPaper. Scherrer JR, Lynch GF, Zhang JJ, Fee MS (2023). An optical design enabling li'
+2	=== cell 1 [code] tags=None :: 'import time\nimport warnings\nfrom concurrent.futures import ThreadPoolExecutor\n\nimport matplotlib.pyplot as plt\nimport numpy as np\nimport pandas as pd\n'
+3	=== cell 2 [markdown] tags=None :: '## Data check\n\nEach check of the metadata against the values is stated under its output. The last part of the\ncheck gives, for each finding of the fir'
+4	=== cell 3 [code] tags=['sanity'] :: 'with DandiAPIClient() as client:\n    dandiset = client.get_dandiset(ks.DANDISET_ID, ks.DANDISET_VERSION)\n    raw = dandiset.get_raw_metadata()\n    ver'
+5	=== cell 4 [markdown] tags=None :: 'The dandiset has one published version, 0.260827.1358, and the draft holds the same assets with the\nsame blobs, so nothing has changed since the first'
+6	=== cell 5 [code] tags=['sanity'] :: 'def rate_summary(t):\n    dt = np.diff(t)\n    return {"n": len(t), "first_s": round(t[0], 3), "last_s": round(t[-1], 3),\n            "median_dt_ms": ro'
+7	=== cell 6 [markdown] tags=None :: 'The imaging runs at a median 29.7 frames/s over 1234 s, as the series description says (about 30\nframes/s), with irregular intervals. The behaviour vi'
+8	=== cell 7 [code] tags=['sanity'] :: '# Which movie axis each centroid column indexes, and whether traces, masks and movie share a clock.\nmovie = f[ks.MOVIE]\nrng_check = np.random.default_'
+9	=== cell 8 [markdown] tags=None :: "The movie pixels at a footprint's stored position follow its own trace at lag 0 and do not follow\nanother footprint's trace (printed above), so the tr"
+10	=== cell 9 [code] tags=['sanity'] :: 'x, y, area = track["x"], track["y"], track["area"]\ntracked = np.arange(len(x)) >= ks.FIRST_VIDEO_FRAME\n# The rotated crop against a full rotation of o'
+11	=== cell 10 [code] tags=['sanity'] :: "# Sample frames of the behav
+[... 608 more lines not kept]
+```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000691-scherrer-2023 && python - <<'EOF'
-p='kiloscope.py'; s=open(p).read()
-rep=[('''    """The random numbers of one decoder, in the order they are drawn: the shift of a null
-    decoder's labels, the circular shift of the split, and the SGD seed."""
-    roll = int(rng.integers(n // 10, n - n // 10)) if null else 0
-    shift = int(rng.integers(n))
-    seed = int(rng.integers(2**31)) if solver == "sgd" else None
-    return roll, shift, seed''','''    """The random numbers of one decoder, in the order they are drawn: the shift of a null
-    decoder's labels, the circular shift of the split, and the solver's seed (SGD's sample order,
-    or liblinear's order of coordinates)."""
-    roll = int(rng.integers(n // 10, n - n // 10)) if null else 0
-    shift = int(rng.integers(n))
-    return roll, shift, int(rng.integers(2**31))'''),
-('''        model, converged = fit_exact(Xtr, ytr, lam)
-    else:''','''        model, converged = fit_exact(Xtr, ytr, lam, seed)
-    else:'''),
-('''def fit_exact(X, y, lam, max_iter=EXACT_MAX_ITER):''','''def fit_exact(X, y, lam, seed, max_iter=EXACT_MAX_ITER):'''),
-('''                      max_iter=max_iter)
-    with warnings''','''                      max_iter=max_iter, random_state=seed)
-    with warnings'''),
-('''    exact, converged = fit_exact(Xtr, ytr, lam, max_iter)''','''    exact, converged = fit_exact(Xtr, ytr, lam, seed, max_iter)'''),
-]
-for a,b in rep:
-    assert a in s,a[:50]; s=s.replace(a,b)
-s=s.replace("def _draws(rng, n, null, solver):","def _draws(rng, n, null):")
-s=s.replace("*_draws(rng, len(labels), null, solver))","*_draws(rng, len(labels), null))")
-s=s.replace("draws = [_draws(rng, len(labels), null, solver) for _ in range(n)]","draws = [_draws(rng, len(labels), null) for _ in range(n)]")
-s=s.replace('roll, shift, seed = _draws(rng, len(labels), null, "sgd")','roll, shift, seed = _draws(rng, len(labels), null)')
-open(p,'w').write(s)
+cd entries/000691-scherrer-2023; cat > $TMPDIR/probe3.py <<'EOF'
+import time, numpy as np, kiloscope as ks, pickle
+t=time.time()
+urls = ks.asset_urls(); f = ks.open_nwb(urls); S = ks.load_session(f)
+POS = ks.mask_positions(ks.read_masks(urls[ks.NWB_PATH], f))
+track, B = ks.load_behaviour(urls, S)
+print("load", time.time()-t)
+run = B["running"]; X = ks.moving_max(S["traces"][B["sel"]])[run]
+LQ = ks.quad_dir_labels(B)[run]; LO = B["octant"][run]
+pickle.dump(dict(X=X, LQ=LQ, LO=LO, POS=POS), open("/tmp/claude-1001/dec.pkl","wb"))
+rng = np.random.default_rng(0)
+for size in [32, 64, 128, 2048, 2948]:
+    cols = rng.choice(X.shape[1], size, replace=False)
+    t=time.time(); ks.decoding_matrix(X[:, cols], LQ, 8, ks.LAMBDA_OTHER, 4, rng, n_jobs=4); print(size, "4 fits parallel", round(time.time()-t,2))
 EOF
-grep -n "_draws\|fit_exact(" kiloscope.py; PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/t2.py
-cat > $TMPDIR/t3.py <<'EOF'
-import numpy as np, kiloscope as ks
-rng=np.random.default_rng(0); n=4000; y=rng.integers(0,8,n)
-X=rng.normal(size=(n,30))*0.05; X[np.arange(n),y]+=0.03
-a=ks.decode_many(X,y,8,1e-7,4,np.random.default_rng(5),n_jobs=4); b=ks.decode_many(X,y,8,1e-7,4,np.random.default_rng(5),n_jobs=2)
-print(np.array_equal(a,b), np.nanmedian(a,1))
-EOF
-PYTHONPATH=. $TMPDIR/proto/bin/python $TMPDIR/t3.py
+PYTHONPATH=. $TMPDIR/venv691/bin/python $TMPDIR/probe3.py
 ```
 
 ```
-225:    return _decode_drawn(X, labels, n_class, lam, solver, *_draws(rng, len(labels), null))
-234:def _draws(rng, n, null):
-246:        model, converged = fit_exact(Xtr, ytr, lam, seed)
-267:def fit_exact(X, y, lam, seed, max_iter=EXACT_MAX_ITER):
-307:    draws = [_draws(rng, len(labels), null) for _ in range(n)]
-333:    roll, shift, seed = _draws(rng, len(labels), null)
-336:    exact, converged = fit_exact(Xtr, ytr, lam, seed, max_iter)
-True True True
-True [0.04696921 0.20051804 0.00617305 0.0604517 ]
+/tmp/claude-1001/venv691/lib/python3.13/site-packages/sklearn/svm/_base.py:1295: ConvergenceWarning: Liblinear failed to converge, increase the number of iterations.
+  warnings.warn(
+load 261.0059449672699
+32 4 fits parallel 1.17
+64 4 fits parallel 1.46
+128 4 fits parallel 0.27
+2048 4 fits parallel 1.78
+2948 4 fits parallel 2.47
 ```
 
 **Agent**
 
-Determinism confirmed. Rerunning the notebook to get the final numbers.
+Data load takes ~4.4 min and a full-size fit ~0.6 s. Now checking the PSF fits with the lower-cost fit per bead.
 
 **Agent calls Bash**
 
 ```bash
-cd ../.. && python tools/entry.py run entries/000691-scherrer-2023 2>&1 | tail -1 && python - <<'EOF'
+cd entries/000691-scherrer-2023; cat > $TMPDIR/probe4.py <<'EOF'
+import numpy as np, pandas as pd, kiloscope as ks
+from concurrent.futures import ThreadPoolExecutor
+psf_setups = {
+    "fig1e": dict(folder="f2+sf4/feather", csv="f2+sf4/feather_roi.csv", dp=1.68, centre=(273, 400), groups=np.arange(0, 501, 100), start_at_max=False, ftol=1e-6, max_nfev=10000, expect=(4, 7)),
+    "fig1f": dict(folder="f2+sf4/wf/beads", csv="f2+sf4/wf_roi.csv", dp=5.35, centre=(259, 420), groups=np.arange(0, 1501, 250), start_at_max=True, ftol=1e-8, max_nfev=100000, expect=(4, 5)),
+}
+for name, s in psf_setups.items():
+    files = sorted((n for n in ks.list_code_dir(s["folder"]) if n.startswith("beads") and n.endswith(".png")), key=lambda n: int(n[5:-4]))
+    with ThreadPoolExecutor(8) as ex:
+        st = np.array(list(ex.map(lambda n: ks.read_png(ks.code_file_url(f"{s['folder']}/{n}")), files)))
+    tab = pd.read_csv(ks.code_file_url(s["csv"])); tab.columns = ["row"] + list(tab.columns[1:])
+    out = {}
+    for xs in ["code", "jac"]:
+        rows = []
+        for _, r in tab.iterrows():
+            roi = st[int(r.Slice) - 1, r.BY:r.BY + r.Height, r.BX:r.BX + r.Width]
+            fit = ks.fit_bead(roi, s["dp"], s["start_at_max"], s["ftol"], s["max_nfev"], xs)
+            hh, hw = (r.Height - 1) / 2, (r.Width - 1) / 2
+            rad = s["dp"] * np.hypot(s["centre"][0] - (r.BY + hh + 1), s["centre"][1] - (r.BX + hw + 1))
+            rows.append({"r_um": rad, **fit})
+        o = pd.DataFrame(rows); g = s["groups"]; o["group"] = g[np.abs(o.r_um.to_numpy()[:, None] - g[None]).argmin(1)]
+        out[xs] = o
+    a, b = out["code"], out["jac"]
+    best = a.where((a.cost <= b.cost).to_numpy()[:, None], b)
+    print(name, "jac lower cost", int((b.cost < a.cost - 1e-6).sum()), "of", len(a))
+    for lab, o in [("code", a), ("jac", b), ("best", best)]:
+        by = o.groupby("group")
+        c, e = s["groups"][0], s["groups"][-1]
+        print(f"  {lab}: (a) {by.fwhm_major.median()[c]:.3f} {by.fwhm_major.median()[e]:.3f}  (b) {by.fwhm_minor.median()[c]:.3f} {by.fwhm_minor.median()[e]:.3f} (c) {by.fwhm_major.mean()[c]:.3f} {by.fwhm_major.mean()[e]:.3f} (d) {by.fwhm_minor.mean()[c]:.3f} {by.fwhm_minor.mean()[e]:.3f}")
+    print(best.sort_values("fwhm_major").tail(4).round(3).to_string())
+    print(a[a.group==s["groups"][-1]].round(3).to_string())
+EOF
+PYTHONPATH=. $TMPDIR/venv691/bin/python $TMPDIR/probe4.py 2>&1 | grep -v Warn
+```
+
+```
+Traceback (most recent call last):
+  File "/tmp/claude-1001/probe4.py", line 24, in <module>
+    best = a.where((a.cost <= b.cost).to_numpy()[:, None], b)
+  File "/tmp/claude-1001/venv691/lib/python3.13/site-packages/pandas/core/generic.py", line 10309, in where
+    return self._where(cond, other, inplace=inplace, axis=axis, level=level)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/claude-1001/venv691/lib/python3.13/site-packages/pandas/core/generic.py", line 10003, in _where
+    raise ValueError("Array conditional must be same shape as self")
+ValueError: Array conditional must be same shape as self
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; sed -i 's/    best = a.where((a.cost <= b.cost).to_numpy()\[:, None\], b)/    best = a.copy(); m_ = (b.cost < a.cost).to_numpy(); best.loc[m_] = b.loc[m_]/' $TMPDIR/probe4.py; PYTHONPATH=. $TMPDIR/venv691/bin/python $TMPDIR/probe4.py 2>&1 | grep -v Warn
+```
+
+```
+fig1e jac lower cost 60 of 155
+  code: (a) 3.919 6.433  (b) 2.609 5.203 (c) 3.887 6.883 (d) 2.690 5.244
+  jac: (a) 3.919 6.433  (b) 2.609 5.203 (c) 3.887 6.884 (d) 2.690 5.244
+  best: (a) 3.919 6.433  (b) 2.609 5.203 (c) 3.887 6.884 (d) 2.690 5.244
+        r_um  fwhm_minor  fwhm_major     cost  status  nfev  group
+131  461.320       6.945       8.753  310.673       2    12    500
+43   376.380       5.990       9.149  227.596       2    12    400
+153  423.811       4.605       9.255  153.502       2    18    400
+132  466.276       6.826       9.893  118.620       2    15    500
+        r_um  fwhm_minor  fwhm_major     cost  status  nfev  group
+47   462.049       5.167       6.364  251.871       2    11    500
+48   490.681       5.923       6.577  181.555       2     8    500
+52   476.107       4.765       5.927  194.052       2    11    500
+64   478.795       3.912       4.156   89.772       2    10    500
+65   456.889       3.865       4.739   73.276       2    11    500
+66   477.120       4.207       5.562  139.825       2     9    500
+67   480.804       4.974       6.256   77.789       2    12    500
+68   527.927       5.122       6.361   97.443       2    14    500
+75   477.209       4.594       5.995  407.063       2    14    500
+76   456.979       5.537       6.604  255.812       2    14    500
+[... 30 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; cat > $TMPDIR/probe5.py <<'EOF'
+import numpy as np, pandas as pd, kiloscope as ks, sys
+from concurrent.futures import ThreadPoolExecutor
+s = dict(folder="f2+sf4/wf/beads", csv="f2+sf4/wf_roi.csv", dp=5.35, centre=(259, 420), groups=np.arange(0, 1501, 250), start_at_max=True, ftol=1e-8, max_nfev=100000)
+files = sorted((n for n in ks.list_code_dir(s["folder"]) if n.startswith("beads") and n.endswith(".png")), key=lambda n: int(n[5:-4]))
+with ThreadPoolExecutor(8) as ex:
+    st = np.array(list(ex.map(lambda n: ks.read_png(ks.code_file_url(f"{s['folder']}/{n}")), files)))
+tab = pd.read_csv(ks.code_file_url(s["csv"])); tab.columns = ["row"] + list(tab.columns[1:])
+for rep in range(2):
+    v=[]
+    for _, r in tab.iterrows():
+        roi = st[int(r.Slice) - 1, r.BY:r.BY + r.Height, r.BX:r.BX + r.Width]
+        v.append(ks.fit_bead(roi, s["dp"], s["start_at_max"], s["ftol"], s["max_nfev"])["fwhm_major"])
+    print(rep, np.round(v[:12],3))
+EOF
+PYTHONPATH=. $TMPDIR/venv691/bin/python $TMPDIR/probe5.py 2>&1 | grep -v Warn; OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. $TMPDIR/venv691/bin/python $TMPDIR/probe5.py 2>&1 | grep -v Warn
+```
+
+```
+0 [4.084 2.758 5.919 4.467 3.375 4.282 5.072 3.681 5.911 6.014 6.006 4.953]
+1 [4.084 2.758 5.919 4.467 3.375 4.282 5.072 3.681 5.911 6.014 6.006 4.953]
+0 [4.084 2.758 5.919 4.467 3.375 4.282 5.072 3.681 5.911 6.014 6.006 4.953]
+1 [4.084 2.758 5.919 4.467 3.375 4.282 5.072 3.681 5.911 6.014 6.006 4.953]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; for p in sf3/feather/analysis.m sf3/widefield/analysis.m; do echo "== $p"; curl -s https://raw.githubusercontent.com/FeeLab/Feescope-Paper-Code/d596646b16a505907203828d8026feb7736ca69c/$p | grep -n -i "png\|imread\|imImport\|dir(\|load\|fname\|file" ; done; for d in sf3/feather sf3/feather/axicons sf3/feather/reference sf3/feather/led sf3/widefield sf3/widefield/axicons sf3/widefield/reference sf3/widefield/led; do echo "== $d"; curl -s "https://api.github.com/repos/FeeLab/Feescope-Paper-Code/contents/$d?ref=d596646b16a505907203828d8026feb7736ca69c" | python -c "import json,sys; print([i['name'] for i in json.load(sys.stdin)])"; done
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; python - <<'EOF'
 import json
-nb=json.load(open('executed/000691-scherrer-2023/reproduce_scherrer_2023.ipynb'))
-for i in [22,28,29,40]:
-    for o in nb['cells'][i].get('outputs',[]):
-        if o.get('output_type')=='stream': print(f"--{i}\n"+''.join(o['text']))
+d=json.load(open('reproduce_scherrer_2023.ipynb'))
+for i in [0,1,12,13]:
+    c=d['cells'][i]; print(f"=== cell {i}"); print(''.join(c['source']))
 EOF
 ```
 
 ```
-pass  reproduce_scherrer_2023.ipynb  (1432 s)
---22
- median_acc_sgd  objective_sgd  median_acc_exact  objective_exact  exact_converged  labels
-         0.5354         2.3405            0.2615           0.1184            False    real
-         0.4427         2.0439            0.2991           0.0897            False    real
-         0.4420         2.5547            0.3181           0.1122            False    real
-         0.1521         3.2066            0.1309           0.1086            False shifted
-         0.0525         3.0650            0.1310           0.0863            False shifted
-         0.0980         2.7171            0.1641           0.1017            False shifted
+=== cell 0
+# Reproducing Scherrer, Lynch et al. (2023) from dandiset 000691
 
---28
-computed in 634 s; radius 45 px; exact solver (32 predictors)
-32 footprints within 270 um: 150 grid points used; significant at BH 5%: 18 (12%)
-  score over all points 0.068 to 0.187 (median 0.125); null means 0.065 to 0.123
-  null standard deviation per point, percentiles 5/50/95: [0.0184 0.0299 0.046 ]; z percentiles 5/50/95: [-0.19  1.05  3.04]; largest z 4.00, smallest q 0.005
-  z the best point needs to pass alone (p < 0.05 / 150): 3.40
-  exact fits that reached the iteration limit: 2268 of 3000
-  significant points' scores 0.112 to 0.187 (range 0.075); smallest z among them 2.53
-best points (pixels):
-   c0    c1  score  null_mean  null_sd     z     p  n_within  at_iteration_limit  q_bh  significant
-[... 37 more lines not kept]
-```
+Paper. Scherrer JR, Lynch GF, Zhang JJ, Fee MS (2023). An optical design enabling lightweight
+and large field-of-view head-mounted microscopes. *Nature Methods* 20, 546-549.
+[doi:10.1038/s41592-023-01806-1](https://doi.org/10.1038/s41592-023-01806-1).
 
-**Agent**
+Claims. The claims file `claims/000691/10.1038-s41592-023-01806-1.yaml` was written on
+2026-10-20 from the full text of the version of record (main text, figure legends, Methods,
+Extended Data legends and reporting summary) and the paper's code, GitHub
+`FeeLab/Feescope-Paper-Code` at commit d596646, by a reader who did not see the data, and checked
+by a second reader. It decides what is tested and how. This is the second attempt on the dandiset
+(`000691-scherrer-2023-02`); the first (`-01`) worked from claims written from the abstract and
+the public legends, and is deprecated.
 
-ed9c with the seeded exact solver: 18 of 150 points significant, significant scores ranging over 0.075, so its criterion is met. Now updating the markdown conclusions.
-
-**Agent calls Bash**
-
-```bash
-cd entries/000691-scherrer-2023 && python -c "
-import nbformat
-nb=nbformat.read('reproduce_scherrer_2023.ipynb',as_version=4)
-for i,c in enumerate(nb.cells):
-    if c.cell_type=='markdown': print(i, c.source[:90].replace(chr(10),' '))
-"
-```
-
-```
-0 # Reproducing Scherrer, Lynch et al. (2023) from dandiset 000691  **Paper.** Scherrer JR, 
-2 ## Data check  Each check of the metadata against the values is stated under its output.
-4 The device description names the large-FOV microscope (Kiloscope) but gives the size and w
-6 The imaging runs at a median 29.7 frames/s over 1234 s, as the series description says (ab
-8 The centroids index the movie as (axis 1, axis 2) = (first column, second column): at each
-11 The dandiset gives no position, so it is tracked here from the AVI with the code's colour 
-13 Arm decoding is best with labels shifted by +1 s (0.549, against 0.506 unshifted; a positi
-15 There is one session, so no recording can be deposited twice. Within it, no two footprints
-16 ## abstract-thousands-of-neurons  > The large-FOV microscope images thousands of neurons a
-18 **Result: reproduced.** All 2948 footprints have a trace above zero at some time, no two h
-19 ## fig2-quadrant-direction-decoding  > The mouse's position in the maze (quadrant) togethe
-23 **Result: reproduced.** Over 50 decoders the median class accuracy for arm and direction i
-24 ## ed9b-octant-decoding  > Position within the maze can be decoded with octant resolution 
-26 **Result: reproduced.** Octant decoding gives a median class accuracy of 0.313 (0.211 to 0
-27 ## ed9c-local-decoding-map  > Decoders that use the 32 footprints closest to a point, with
-30 **Result: not reproduced.** With the 32 footprints closest to a point within 270 um, 151 g
-31 ## ed10-localized-activity  > Some footprints have activity localized to subregions of the
-33 **Result: reproduced.** 100 of 2948 footprints (3.4%) have an entropy over linear position
-34 ## ed8-coactive-distributed  > The footprints that take part in a large correlated event o
-36 **Result: reproduced.** For all 8 NMF components the event has 196 to 320 active footprint
-[... 3 more lines not kept]
+Dandiset. [DANDI:000691](https://dandiarchive.org/dandiset/000691/0.260827.1358), version
+0.260827.1358. Why this version: the paper cites no DANDI version (its data statement points to an
+Academic Torrents deposit), and 0.260827.1358 is the only published version, the one the first
+attempt used. The draft was last modified when that version was published and holds the same two
+assets with the same blobs (printed in the data check), so the data have not changed since the
+[... 97 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/md.py <<'PYEOF'
-import nbformat
-p='reproduce_scherrer_2023.ipynb'; nb=nbformat.read(p,as_version=4); C=nb.cells
-C[11].source='''The dandiset gives no position, so it is tracked here from the AVI with the code's colour rule.
-The mouse runs 48.5 loop lengths, in both directions, and visits all four arms (printed above).
-After frame 1920 every frame has a dark blob in the maze. Between consecutive video frames the
-blob moves 2.2 pixels at the median and 18.2 at the 99.9th percentile. Two steps exceed 40 pixels:
-a jump of 112 pixels at 1064.8 s and back in the next frame, with blobs of 8, 3 and 7 pixels. 55
-frames have a blob under 50 pixels, when the mouse is partly hidden. Leaving those frames and both
-ends of the jump out changes the arm of 0.05% of the imaging frames, the octant of 0.06%, the
-running label of 1.07% and the direction of 0.18%. The largest step between imaging frames is 62
-of 905 pixels. In the eight sample frames the tracked centroid lies on the mouse. The first 1920
-frames (153 s on the timestamps) are left out, as in the code ("experimenter futzing"). Of the
-four sample frames from that part, the one at 102 s shows a gloved hand over the maze and a
-different camera view, and the one at 0 s shows the maze at another place in the frame; the other
-two look like the later frames.'''
-C[23].source='''**Result: reproduced.** Over 50 decoders the median class accuracy for arm and direction is 0.415
-(0.304 to 0.604), against chance at 0.125 and a 95th percentile of 0.145 for decoders with shifted
-labels; all 50 exceed it. This is 3.32 times chance. Two classes (arm 2 and arm 3 in the negative
-direction) reach only 0.239 and 0.236, the other six 0.443 to 0.594. With all frames in place of
-running frames the median is 0.348, against a null 95th percentile of 0.127. The SGD solver stops
-far from the optimum of its objective: on six splits it reaches objectives of 2.04 to 3.21, where
-an exact solver reaches 0.086 to 0.118 (at its limit of 10,000 iterations in all six). The exact
-solver gives lower accuracies for the three real decoders (0.262 to 0.318, against 0.443 to 0.535
-with SGD) and 0.131 to 0.164 for the three with shifted labels, so with it too the real decoders
-are above chance and above every shifted one checked. The code fits these decoders with MATLAB's
-default for more than 100 predictors, 10 passes of dual SGD, which is also a truncated solver.'''
-C[27].source=C[27].source.replace('''the shifted decoders, Benjamini-Hochberg 5%; reproduced when at least one point is significant
-and the significant points' scores range over at least 0.05.''','''the shifted decoders, Benjamini-Hochberg 5%; reproduced when at least one point is significant
-and the significant points' scores range over at least 0.05.
-
-Decoders on 32 or 64 footprints are fit by an exact solver of the stated objective, as MATLAB
-does by default for 100 or fewer predictors (see the helper module). The first round of this
-attempt used 10 passes of SGD here; that solver is shown as a variant.''')
-C[30].source='''**Result: reproduced.** With the 32 footprints closest to a point within 270 um (45 pixels), 150
-grid points qualify and 18 of them (12%) are significant at Benjamini-Hochberg 5%, with scores of
-0.112 to 0.187, a range of 0.075 where the criterion asks for 0.05. Over all points the scores run
-from 0.068 to 0.187 (median 0.125), against null means of 0.065 to 0.123. The result depends on
-the solver. With 10 passes of SGD, as in the first round of this attempt, on the same points and
-seeds, 1 point is significant and the criterion is not met; at four points checked, SGD stops at
-objectives of 19.8 to 68.9, where the exact solver reaches 1.976 to 2.000. That optimum is close
-to the objective of predicting every class absent (2.0), so the scores rest on weak classifiers.
-liblinear reached its limit of 10,000 iterations in 2268 of the 3000 fits. Each point's null
-standard deviation comes from 10 shifted decoders (0.018 to 0.046, 5th to 95th percentile); a
-point alone needs z above 3.40, and the smallest z among the significant points is 2.53. With the
-code's choice, 64 footprints within 50 pixels on a 60 pixel grid, 22 of 34 points are
-significant, with scores of 0.141 to 0.211 (range 0.070).'''
-C[33].source='''**Result: reproduced.** 100 of 2948 footprints (3.4%) have an entropy over linear position below
-all 100 values with position shifted, where 29 are expected by chance (binomial p = 4.5e-25); at a
-looser threshold, 448 against 175. The binomial p-value treats footprints as independent, but the
-same shifts serve every footprint. Treating each shifted copy in turn as the observed data gives
-counts with a median of 28, a 95th percentile of 54 and a maximum of 62; none of the 100 copies
-reaches the observed 100. The effect per footprint is small: for the 100, the entropy is 0.20 to
-0.90 bits (5th to 95th percentile) below the mean of the shifted values, out of a maximum of 6.64
-bits. The paper's examples were chosen by eye; they are not identified here.'''
-C[36].source='''**Result: reproduced.** For all 8 NMF components the event has 196 to 320 active footprints, and
-their spread is 0.945 to 1.055 times that of all footprints, with a 90th percentile of pairwise
-distance of 2.05 to 2.29 mm at 5.94 um per pixel. Thresholds of 0.3 and 0.7 give 8 of 8 as well.
-Two events (80.4 and 122.9 s) fall in the opening 153 s that the behaviour analysis leaves out;
-with event times from 153 s on, 8 of 8 pass, with spread ratios of 0.94 to 1.05. The test
-separates these events from other times only in part. In 100 random 50 s windows the median
-fraction of a component's members that is active is 0.399 to 0.519, and the event's fraction
-(0.568 to 0.851) is above the 95th percentile of the random windows for 6 of the 8 components.
-Random sets of footprints of the event's size have spread ratios of 0.951 to 1.042 (5th to 95th
-percentiles, over components). The active footprints are as spread as random sets, so they are
-not clustered, which is what the claim states; the criterion's threshold of half the overall
-spread is far below what any set of this size reaches.'''
-C[39].source='''**Result: partially reproduced, for both.** With the correction optics the profile falls less toward
-the edge than with total vignetting: at 0.4 mm, 0.742 against 0.342 for the Featherscope; at 1.5
-mm, 0.797 against 0.253 for the Kiloscope. Neither corrected profile stays at or above 0.8 out to
-that radius (minima 0.742 and 0.797, the Kiloscope's 0.003 short), so the "flat" part of the
-criterion is not met. Optical vignetting alone falls to 0.628 and 0.389 at the same radii. The
-minima depend on the radius and the centre. For the Featherscope the minimum is 0.785 out to 0.38
-mm and 0.698 out to 0.42 mm; with the centre moved by 100 um it is 0.626 to 0.867, and 0.766 about
-the image centre. For the Kiloscope it is 0.846 out to 1.425 mm and 0.742 out to 1.575 mm; with
-the centre moved by 100 um it is 0.765 to 0.831 (above 0.8 for one of the four moves), and 0.695
-about the image centre. The outcome uses the code's centre and the criterion's radius.'''
-s=C[41].source
-s=s.replace("| ed9c-local-decoding-map | dandiset | not reproduced |","| ed9c-local-decoding-map | dandiset | reproduced |")
-old='''- MATLAB's linear SVM is replaced by scikit-learn's SGD classifier with the same loss and penalty;
-  50 decoders per analysis where the code ran 200.
-- The local map follows the legend (32 footprints within 270 um) on a 30 pixel grid with a
-  z-test against 10 shifted decoders per point; the code's 64 footprints within 50 pixels is a
-  variant. The paper's significance test is not described.'''
-new='''- MATLAB's linear SVM is replaced by scikit-learn solvers of the same objective, chosen by MATLAB's
-  default rule: SGD with 10 passes for the decoders on all footprints, an exact solver (liblinear)
-  for the local decoders on 32 or 64 footprints. 50 decoders per analysis where the code ran 200.
-- The local map follows the legend (32 footprints within 270 um) on a 30 pixel grid with a
-  z-test against 10 shifted decoders per point; the code's 64 footprints within 50 pixels is a
-  variant, on a 60 pixel grid. The paper's significance test is not described. The local map's
-  outcome depends on the solver: with SGD, as in the first round of this attempt, it fails.'''
-assert old in s; s=s.replace(old,new)
-C[41].source=s
-nbformat.write(nb,p)
-PYEOF
-python $TMPDIR/md.py && grep -c "—\|rather" reproduce_scherrer_2023.ipynb kiloscope.py
-```
-
-```
-reproduce_scherrer_2023.ipynb:0
-kiloscope.py:0
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import nbformat
-p='reproduce_scherrer_2023.ipynb'; nb=nbformat.read(p,as_version=4)
-s=nb.cells[11].source; a="55\nframes have a blob under 50 pixels, when the mouse is partly hidden."
-assert a in s; nb.cells[11].source=s.replace(a,"55\nframes have a blob under 50 pixels.")
-nbformat.write(nb,p)
+cd entries/000691-scherrer-2023; cat > $TMPDIR/probe6.py <<'EOF'
+import time, numpy as np, kiloscope as ks, pickle, warnings
+warnings.filterwarnings("ignore")
+d = pickle.load(open("/tmp/claude-1001/dec.pkl","rb")); X, LQ, LO = d["X"], d["LQ"], d["LO"]
+rng = np.random.default_rng(1)
+tot=0
+for size in 2 ** np.arange(1, 12):
+    cols = rng.choice(X.shape[1], size, replace=False)
+    t=time.time(); ks.decoding_matrix(X[:, cols], LQ, 8, ks.LAMBDA_OTHER, 8, rng, n_jobs=4); dt=(time.time()-t)/8; tot+=dt
+    print(size, round(dt,3))
+print("per subset-fit across sizes", tot)
+cols = rng.choice(X.shape[1], 32, replace=False)
+t=time.time(); ks.decoding_matrix(X[:, cols], LO, 8, ks.LAMBDA_OTHER, 8, rng, n_jobs=4); print("octant 32", (time.time()-t)/8)
 EOF
-sed -n 1,40p README.md | grep -n "Local\|Not"
+PYTHONPATH=. $TMPDIR/venv691/bin/python $TMPDIR/probe6.py
 ```
 
 ```
-15:| Local decoders of 32 footprints significant in parts of the FOV (Extended Data Fig. 9c) | Not reproduced |
+2 0.052
+4 0.04
+8 0.064
+16 0.346
+32 0.257
+64 0.344
+128 0.065
+256 0.1
+512 0.15
+1024 0.274
+2048 0.488
+per subset-fit across sizes 2.1799313127994537
+octant 32 0.2838858366012573
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -i 's/| Local decoders of 32 footprints significant in parts of the FOV (Extended Data Fig. 9c) | Not reproduced |/| Local decoders of 32 footprints significant in parts of the FOV (Extended Data Fig. 9c) | Reproduced |/; s/It takes about 18 minutes, most of it fitting/It takes about 24 minutes on four cores, most of it fitting/' README.md; sed -i 's/runtime_minutes: 18/runtime_minutes: 24/' entry.yaml; grep -n "minutes" README.md entry.yaml
+cd entries/000691-scherrer-2023; python - <<'EOF'
+import json
+d=json.load(open('decoding_octant.ipynb'))
+for i,c in enumerate(d['cells']):
+    print(f"=== cell {i} [{c['cell_type']}] tags={c.get('metadata',{}).get('tags')}")
+    print(''.join(c['source']))
+EOF
 ```
 
 ```
-README.md:30:- `reproduce_scherrer_2023.ipynb`: the analysis. It takes about 24 minutes on four cores, most of it fitting
-entry.yaml:17:  runtime_minutes: 24
+=== cell 0 [markdown] tags=None
+# Scherrer, Lynch et al. (2023), dandiset 000691: decoding octant
+
+Paper. Scherrer JR, Lynch GF, Zhang JJ, Fee MS (2023). An optical design enabling lightweight
+and large field-of-view head-mounted microscopes. *Nature Methods* 20, 546-549.
+[doi:10.1038/s41592-023-01806-1](https://doi.org/10.1038/s41592-023-01806-1).
+
+Claims. `claims/000691/10.1038-s41592-023-01806-1.yaml`, written from the full text of the
+version of record and the paper's code (GitHub `FeeLab/Feescope-Paper-Code`, commit d596646). It
+decides what is tested and how.
+
+Dandiset. [DANDI:000691](https://dandiarchive.org/dandiset/000691/0.260827.1358), version
+0.260827.1358, the only published version (the paper cites none); see the main notebook,
+`reproduce_scherrer_2023.ipynb`, for the reasons and the full data check. This notebook holds the
+octant decoding claims, apart to keep each notebook within the time limit.
+
+Footprints. The claims use the 2,382 curated footprints, with all 2,948 as a named variant.
+The dandiset does not mark the curated set, so all 2,948 are used.
+
+| Claim | Data | Status |
+[... 155 more lines not kept]
 ```
 
 **Agent**
 
-Now the attempt record. Checking the schema for `verifications`:
+Now the helper module changes: per-block statistics in the registration, and functions for the local decoding maps.
 
-**Agent calls Bash**
+**Agent calls Edit**
 
-```bash
-cd ../.. && python -c "
-import json;s=json.load(open('schemas/attempt.schema.json'));print(json.dumps(s['properties']['verifications'],indent=1))" | head -80
-```
-
-```
+```json
 {
- "type": "array",
- "items": {
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-   "date",
-   "kind",
-   "by",
-   "results"
-  ],
-  "properties": {
-   "date": {
-    "type": "string",
-    "format": "date"
-   },
-   "kind": {
-    "enum": [
-     "agent",
-     "person",
-[... 49 more lines not kept]
+ "replace_all": false,
+ "file_path": "entries/000691-scherrer-2023/kiloscope.py",
+ "old_string": "def normcorre_rigid(reader: MovieReader, init_batch: int = 100, bin_width: int = 200,\n                    buffer_width: int = 50, batch: int = 50, blocks=None, prefilter=None, log=print) -> dict:\n    \"\"\"Rigid shifts of every frame of the movie (or of the frames of `blocks`, a list of block\n    starts), with NoRMCorre's template scheme (see the module docstring). Blocks are fetched one\n    ahead of the registration. `prefilter`, a function of a stack of frames, is applied before\n    registration (a variant; NoRMCorre's default applies none).\"\"\"",
+ "new_string": "def normcorre_rigid(reader: MovieReader, init_batch: int = 100, bin_width: int = 200,\n                    buffer_width: int = 50, batch: int = 50, blocks=None, prefilter=None, log=print,\n                    block_stats=None) -> dict:\n    \"\"\"Rigid shifts of every frame of the movie (or of the frames of `blocks`, a list of block\n    starts), with NoRMCorre's template scheme (see the module docstring). Blocks are fetched one\n    ahead of the registration. `prefilter`, a function of a stack of frames, is applied before\n    registration (a variant; NoRMCorre's default applies none). `block_stats`, a function of a\n    block of raw frames, is applied to each block as it is read; its results are returned under\n    \"stats\", in block order.\"\"\""
+}
+```
+
+```
+The file entries/000691-scherrer-2023/kiloscope.py has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "entries/000691-scherrer-2023/kiloscope.py",
+ "old_string": "    memory, buffer, buffered, done, t0 = [], [], 0, 0, time.time()\n    with ThreadPoolExecutor(1) as ex:\n        pending = ex.submit(reader.block, starts[0])\n        for k, start in enumerate(starts):\n            frames = pending.result()\n            if k + 1 < len(starts):\n                pending = ex.submit(reader.block, starts[k + 1])",
+ "new_string": "    memory, buffer, buffered, done, t0, stats = [], [], 0, 0, time.time(), []\n    with ThreadPoolExecutor(1) as ex:\n        pending = ex.submit(reader.block, starts[0])\n        for k, start in enumerate(starts):\n            frames = pending.result()\n            if k + 1 < len(starts):\n                pending = ex.submit(reader.block, starts[k + 1])\n            if block_stats is not None:\n                stats.append(block_stats(frames))"
+}
+```
+
+```
+The file entries/000691-scherrer-2023/kiloscope.py has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "entries/000691-scherrer-2023/kiloscope.py",
+ "old_string": "    return {\"shifts\": shifts, \"frames\": frame_ids, \"template\": np.mean(memory, 0), \"seconds\": time.time() - t0}",
+ "new_string": "    return {\"shifts\": shifts, \"frames\": frame_ids, \"template\": np.mean(memory, 0), \"seconds\": time.time() - t0,\n            \"stats\": stats}\n\n\ndef fourier_shift_frames(frames: np.ndarray, shifts: np.ndarray, batch: int = 100) -> np.ndarray:\n    \"\"\"Frames moved by sub-pixel `shifts` (row, column; content moves by +shift) with Fourier\n    shifts, rounded and clipped back to 16-bit counts: what a sub-pixel motion correction written\n    back as integers does to the values. For checks of the registration and of the movie.\"\"\"\n    nr, nc = frames.shape[1:]\n    fr = np.fft.fftfreq(nr)[None, :, None]\n    fc = np.fft.fftfreq(nc)[None, None, :]\n    out = np.empty(frames.shape, np.uint16)\n    for i in range(0, len(frames), batch):\n        s = shifts[i:i + batch]\n        F = sfft.fft2(frames[i:i + batch].astype(np.float32), axes=(1, 2), workers=-1)\n        F *= np.exp(-2j * np.pi * (s[:, 0, None, None] * fr + s[:, 1, None, None] * fc)).astype(np.complex64)\n        out[i:i + batch] = np.clip(np.round(sfft.ifft2(F, axes=(1, 2), workers=-1).real), 0, 65535)\n    return out\n\n\ndef histogram_roughness(counts: np.ndarray, min_count: int = 1000) -> float:\n    \"\"\"Mean relative difference between the count of each value and the mean count of its two\n    neighbours, over values whose neighbours' mean count is at least `min_count`. The histogram of\n    raw sensor counts carries the converter's unequal code widths; resampling the frames (a\n    sub-pixel shift) mixes neighbouring pixels and smooths it. A check chosen here.\"\"\"\n    h = np.asarray(counts, dtype=float)\n    m = (h[:-2] + h[2:]) / 2\n    ok = m >= min_count\n    return float(np.mean(np.abs(h[1:-1][ok] - m[ok]) / m[ok]))"
+}
+```
+
+```
+The file entries/000691-scherrer-2023/kiloscope.py has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "entries/000691-scherrer-2023/kiloscope.py",
+ "old_string": "    return np.array(Parallel(n_jobs=n_jobs, prefer=\"threads\")(\n        delayed(_null_one)(X, labels, n_class, lam, solver, n_fits, s) for s in seeds))\n",
+ "new_string": "    return np.array(Parallel(n_jobs=n_jobs, prefer=\"threads\")(\n        delayed(_null_one)(X, labels, n_class, lam, solver, n_fits, s) for s in seeds))\n\n\n# --- local decoding maps (fig2l, ed9c) ----------------------------------------------------------\n\ndef map_grid(every: int = 1) -> np.ndarray:\n    \"\"\"The map points of subregion_map_*.m, (MATLAB row, column): r * 5 + 1 and c * 5 + 140 for r\n    in 1 to round(607 / 5) and c in 1 to round(560 / 5). `every` keeps every k-th point along\n    each axis (a coarser grid, for a reduced run).\"\"\"\n    rs = np.arange(1, round((608 - 1) / 5) + 1)[every - 1::every]\n    cs = np.arange(1, round((700 - 140) / 5) + 1)[every - 1::every]\n    return np.array([(r * 5 + 1, c * 5 + 140) for r in rs for c in cs], dtype=float)\n\n\ndef map_values(X, labels, n_class, lam, positions, grid, radius, n_near, n_fits, rng, n_jobs=4):\n    \"\"\"At each grid point with at least `n_near` footprints within `radius` pixels, the median\n    accuracy of the average matrix of `n_fits` fits on its `n_near` nearest footprints. Returns\n    (used points, values); footprints without a position are left out.\"\"\"\n    ok = ~np.isnan(positions).any(1)\n    idx, P = np.flatnonzero(ok), positions[ok]\n    used, values = [], []\n    for g in grid:\n        d = np.hypot(P[:, 0] - g[0], P[:, 1] - g[1])\n        if (d <= radius).sum() < n_near:\n            continue\n        cols = idx[np.argsort(d, kind=\"stable\")[:n_near]]\n        used.append(g)\n        values.append(decoding_matrix(X[:, cols], labels, n_class, lam, n_fits, rng, n_jobs=n_jobs)[\"median\"])\n    return np.array(used), np.array(values)\n\n\ndef _null_local_one(X, labels, n_class, lam, n_cols, n_fits, seed):\n    rng = np.random.default_rng(seed)\n    cols = rng.choice(X.shape[1], n_cols, replace=False)\n    return decoding_matrix(shuffle_columns(X[:, cols], rng), labels, n_class, lam, n_fits, rng)[\"median\"]\n\n\ndef null_local(X, labels, n_class, lam, n_null, n_cols, n_fits, seed: int, n_jobs=4) -> np.ndarray:\n    \"\"\"Median accuracies of `n_null` decoders, each on `n_cols` footprints drawn anew and shuffled\n    (Methods, paragraph 5), with `n_fits` fits each.\"\"\"\n    seeds = np.random.SeedSequence(seed).spawn(n_null)\n    return np.array(Parallel(n_jobs=n_jobs, prefer=\"threads\")(\n        delayed(_null_local_one)(X, labels, n_class, lam, n_cols, n_fits, s) for s in seeds))\n\n\ndef benjamini_hochberg(p: np.ndarray, q: float = 0.05) -> np.ndarray:\n    \"\"\"Which p-values are significant at false discovery rate `q` (Benjamini-Hochberg).\"\"\"\n    p = np.asarray(p, float)\n    order = np.argsort(p)\n    passed = p[order] <= q * np.arange(1, len(p) + 1) / len(p)\n    k = np.flatnonzero(passed).max() + 1 if passed.any() else 0\n    sig = np.zeros(len(p), bool)\n    sig[order[:k]] = True\n    return sig\n"
+}
+```
+
+```
+The file entries/000691-scherrer-2023/kiloscope.py has been updated successfully.
 ```
 
 **Agent calls Bash**
 
 ```bash
-python - <<'PYEOF'
-p='attempts/000691-scherrer-2023-01.yaml'; s=open(p).read()
-def rep(a,b):
-    global s
-    assert a in s, a[:70]; s=s.replace(a,b)
-# fig2
-rep('''    all frames, without the running selection, 0.348 against a null 95th percentile of 0.127.
-  deviations:''','''    all frames, without the running selection, 0.348 against a null 95th percentile of 0.127. The SGD
-    solver stops far from the optimum of its objective (2.04 to 3.21 on six splits, against 0.086 to
-    0.118 for an exact solver at its limit of 10,000 iterations). On the same splits the exact solver
-    gives 0.262 to 0.318 for three real decoders and 0.131 to 0.164 for three with shifted labels, so
-    the claim also holds with it.
-  deviations:''')
-rep('''  - scikit-learn's SGD classifier (hinge loss, ridge alpha equal to the code's lambda, 10 passes) in
-    place of MATLAB's fitcecoc with templateLinear; 50 decoders in place of 200.''','''  - scikit-learn's SGD classifier (hinge loss, ridge alpha equal to the code's lambda, 10 passes) in
-    place of MATLAB's fitcecoc with templateLinear, whose default for more than 100 predictors is 10
-    passes of dual SGD; 50 decoders in place of 200.''')
-# ed9c
-a=s.index("- claim: ed9c-local-decoding-map"); b=s.index("- claim: ed10-localized-activity")
-s=s[:a]+'''- claim: ed9c-local-decoding-map
-  outcome: reproduced
-  notebook: reproduce_scherrer_2023.ipynb
-  output: claim:ed9c-local-decoding-map
-  notes: With 32 footprints within 270 um (45 px), 150 grid points qualify and 18 (12%) are
-    significant at Benjamini-Hochberg 5%, with scores of 0.112 to 0.187 (range 0.075, where the
-    criterion asks for 0.05). Scores over all points 0.068 to 0.187, median 0.125, against null
-    means of 0.065 to 0.123. The outcome depends on the solver. With 10 passes of SGD, as in round 1,
-    on the same points and seeds, 1 point is significant and the criterion is not met; at four points
-    SGD stops at objectives of 19.8 to 68.9 where the exact solver reaches 1.976 to 2.000, close to
-    the 2.0 of predicting every class absent, so the scores rest on weak classifiers. liblinear
-    reached its limit of 10,000 iterations in 2268 of 3000 fits. Null standard deviations per point
-    0.018 to 0.046 (5th to 95th percentile) from 10 shifted decoders; a point alone needs z above
-    3.40, and the smallest z among the significant points is 2.53. With the code's 64 footprints
-    within 50 px, on a 60 px grid, 22 of 34 points are significant (scores 0.141 to 0.211, range
-    0.070).
-  deviations:
-  - The legend says 32 footprints within 270 um; the code uses 64 within 50 pixels. The legend is
-    followed for the outcome and the code's choice is shown as a variant.
-  - The paper does not describe its significance test. Here, 10 decoders and 10 shifted-label
-    decoders per point and a one-sided z-test, chosen before the analysis.
-  - Local decoders are fit by liblinear (LinearSVC) on the same objective, as MATLAB's default for
-    100 or fewer predictors is BFGS run to convergence; liblinear also penalizes the intercept,
-    weakly. Round 1 used 10 passes of SGD here, which is shown as a variant.
-  - A 30 pixel grid where the code uses 5 pixels; all 2948 footprints in place of 2382; position as
-    for fig2-quadrant-direction-decoding.
-'''+s[b:]
-# ed10
-rep('''    maximum of 6.64 bits.
-  deviations:''','''    maximum of 6.64 bits. The binomial test treats footprints as independent, but the same 100 shifts
-    serve every footprint; treating each shifted copy in turn as the observed data gives counts with
-    a median of 28, a 95th percentile of 54 and a maximum of 62, and none of the 100 copies reaches
-    100.
-  deviations:''')
-# ed8
-rep('''    give 8 of 8. The best of 4 NMF replicates was kept (errors 97.55 to 97.58).''','''    give 8 of 8. The best of 4 NMF replicates was kept (errors 97.55 to 97.58). Two events (80.4 and
-    122.9 s) fall in the opening 153 s the behaviour analysis leaves out; with event times from 153 s
-    on, 8 of 8 pass (spread ratios 0.94 to 1.05). The test is weak. In 100 random 50 s windows, the
-    median fraction of members active is 0.399 to 0.519, and the event's fraction (0.568 to 0.851)
-    is above the 95th percentile of random windows for 6 of 8 components. Random sets of footprints
-    of the same size have spread ratios of 0.951 to 1.042 (5th to 95th percentiles), so any set this
-    large passes the criterion's half; the active footprints are as spread as random sets, which
-    means they are not clustered.''')
-# ed2b, ed2c
-rep('''    0.628; the corrected profile is higher, but falls below 0.8 (minimum 0.742 over 0 to 0.4 mm).''','''    0.628; the corrected profile is higher, but falls below 0.8 (minimum 0.742 over 0 to 0.4 mm).
-    The minimum is 0.785 out to 0.38 mm and 0.698 out to 0.42 mm; with the centre moved by 100 um it
-    is 0.626 to 0.867, and 0.766 about the image centre.''')
-rep('''    the criterion's 0.8; at 1.125 mm it is 0.922.''','''    the criterion's 0.8; at 1.125 mm it is 0.922. The minimum is 0.846 out to 1.425 mm and 0.742 out
-    to 1.575 mm; with the centre moved by 100 um it is 0.765 to 0.831 (above 0.8 for one of four
-    moves), and 0.695 about the image centre.''')
-# abstract-thousands: tracking note
-rep('''    lengths during the 1081 s of imaging that overlap the tracked video.''','''    lengths during the 1081 s of imaging that overlap the tracked video. Tracking has 2 steps above 40
-    px between video frames (one glitch at 1064.8 s) and 55 frames with a blob under 50 px; leaving
-    them out changes the arm of 0.05% of imaging frames and the octant of 0.06%.''')
-open(p,'w').write(s)
+cd entries/000691-scherrer-2023; grep -n "Motion (claims\|PSF fits\|Illumination profiles" kiloscope.py
+```
+
+```
+68:- Motion (claims file, ed7-motion-small): rigid registration with NoRMCorre's defaults, written
+75:- PSF fits (claims file, fig1e and fig1f; f2+sf4/*_analysis_secondorder.m): a rotated 2D
+82:- Illumination profiles (claims file, ed2b and ed2c; sf3/*/analysis.m): images packed as RGB565
+```
+
+**Agent**
+
+Add a docstring note on the maps' parameters.
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "entries/000691-scherrer-2023/kiloscope.py",
+ "old_string": "- Pixel sizes: 5.94 um per pixel",
+ "new_string": "- Local decoding maps (claims file, fig2l and ed9c; subregion_map_*.m): the code's grid, a point\n  used when at least 32 footprints lie within the radius, the 32 nearest footprints decoded; the\n  null decoders use 32 footprints drawn at random and shuffled. The reduced runs of the decoding\n  notebooks (a coarser grid, fewer fits, fewer null decoders) are choices made here and decide no\n  outcome.\n- Pixel sizes: 5.94 um per pixel"
+}
+```
+
+```
+The file entries/000691-scherrer-2023/kiloscope.py has been updated successfully.
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; sed -n 66,76p kiloscope.py
+```
+
+```
+- Place maps (claims file, ed10-localized-activity; sf9/place_cells.m): frames with speed above
+  its 80th percentile; a footprint is active when its trace exceeds 1% of its maximum over those
+  frames; maps of the fraction of time active per video pixel, smoothed by a Gaussian of 10
+  pixels in a 101 pixel window (edges replicated) and divided by the smoothed occupancy mask plus
+  0.001; entropy of mean activity over 100 bins of linear position between its 1st and 99th
+  percentiles, over the bins the mouse occupies (standard choice: the code's division by an
+  empty bin's zero occupancy would make every entropy 0).
+- Motion (claims file, ed7-motion-small): rigid registration with NoRMCorre's defaults, written
+  here after NoRMCorre's normcorre.m and dftregistration.m (no MATLAB): each frame is registered
+  to a template by the peak of the cross-correlation within 50 pixels, refined by an upsampled
+  DFT at 1/50 pixel; the template starts as the median of the 100 middle frames after registering
+```
+
+**Agent**
+
+Now editing the motion notebook.
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; cat > $TMPDIR/edit_motion.py <<'PYEOF'
+import nbformat
+p = "motion_scherrer_2023.ipynb"
+nb = nbformat.read(p, as_version=4)
+C = nb.cells
+def code(src, tags=None):
+    c = nbformat.v4.new_code_cell(src)
+    if tags: c.metadata["tags"] = tags
+    return c
+md = nbformat.v4.new_markdown_cell
+assert C[3].source.rstrip().endswith("del first")
+C[3].source = C[3].source.rstrip()[: -len("del first")].rstrip()
+raw_check = code('''# Is the movie the raw video? Nothing in the file says (printed below); these are the checks the values allow.
+ts = f["acquisition/TwoPhotonSeries"]
+print("series attributes:", {k: str(v) for k, v in ts.attrs.items() if k not in ("object_id", "namespace")})
+print("data attributes:", {k: str(v) for k, v in ts["data"].attrs.items()})
+print("processing modules:", list(f["processing"]), "; ophys holds:", list(f["processing/ophys"]))
+zeros = (first == 0).sum((1, 2))
+zr, zc = np.nonzero((first == 0).any(0))
+print(f"block 0: frames with a zero-valued pixel {int((zeros > 0).sum())} of {len(first)}, at most {zeros.max()} per frame; "
+      f"{len(zr)} pixels ever zero, at rows {sorted(set(zr.tolist()))} and columns {sorted(set(zc.tolist()))}")
+# Sub-pixel shifting mixes neighbouring pixels and smooths the histogram of the 10-bit counts. 200 frames of block 0
+# as deposited, and the same frames moved by random shifts of known size and written back as integers, as a
+# sub-pixel motion correction would leave them. Roughness: the mean relative difference of each value's count from
+# the mean of its two neighbours' (a check chosen here).
+rng_raw = np.random.default_rng(691_71)
+sample = first[:200]
+rows = []
+for rms in [0, 0.02, 0.05, 0.13, 0.3]:
+    moved_ = sample if rms == 0 else ks.fourier_shift_frames(sample, rng_raw.normal(0, rms / np.sqrt(2), (len(sample), 2)))
+    h = np.bincount(moved_.ravel(), minlength=1024)
+    rows.append({"shift_rms_px": rms, "histogram_roughness": round(ks.histogram_roughness(h), 4),
+                 "odd_over_even_counts": round(h[1::2].sum() / h[0::2].sum(), 4), "values_changed": round(float((moved_ != sample).mean()), 3)})
+print(pd.DataFrame(rows).to_string(index=False))
+del first, sample, moved_''', ["sanity"])
+raw_md = md('''The file gives no description beyond "Calcium imaging data at ~30 fps in grayscale format" and
+no comments, and holds no motion-correction module (printed above). The values say more. The
+histogram of the deposited counts is rough, with odd values more frequent than even ones, as raw
+converter counts are; moving the same frames by sub-pixel shifts of the size the paper reports and
+writing them back as integers smooths it (the table above, rows with a shift). The roughness of
+the whole movie is printed with the registration below. The zero values of block 0 are single
+pixels scattered over the frame in a few frames, not the strips at the edges a shift would leave.''')
+C.insert(4, raw_check)
+C.insert(5, raw_md)
+# main registration with per-block statistics
+i = next(k for k, c in enumerate(C) if c.source.startswith("reg = ks.normcorre_rigid(reader)"))
+C[i].source = C[i].source.replace("reg = ks.normcorre_rigid(reader)",
+    "reg = ks.normcorre_rigid(reader, block_stats=lambda a: ((a == 0).sum((1, 2)), np.bincount(a[::10].ravel(), minlength=1024)))")
+i7 = i + 1
+whole = code('''# The whole movie as read for the registration: zero-valued pixels per frame, and the histogram roughness of every
+# tenth frame of each block (as in the data check).
+zeros_all = np.concatenate([z for z, _ in reg["stats"]])
+rough = [ks.histogram_roughness(h) for _, h in reg["stats"]]
+h_all = np.sum([h for _, h in reg["stats"]], 0)
+print(f"frames with a zero-valued pixel: {int((zeros_all > 0).sum())} of {len(zeros_all)}; zero pixels per frame at most {zeros_all.max()}")
+print(f"histogram roughness per block of 1200 frames: {min(rough):.3f} to {max(rough):.3f}; whole movie {ks.histogram_roughness(h_all):.3f}; "
+      f"odd over even counts {h_all[1::2].sum() / h_all[0::2].sum():.3f}")''', ["claim:ed7-motion-small"])
+C.insert(i7 + 1, whole)
+jit = code('''# The registration on the movie with a known jitter added: the frames of the first block moved by random shifts with
+# a 2D RMS of 0.13 px about zero (the paper's value) and written back as integers, then registered as in the main run.
+class Jittered:
+    def __init__(self, reader, shifts):
+        self.reader, self.shifts = reader, shifts
+        self.blocks, self.chunks, self.shape = reader.blocks, reader.chunks, reader.shape
+
+    def block(self, start):
+        a = self.reader.block(start)
+        return ks.fourier_shift_frames(a, self.shifts[start:start + len(a)])
+
+rng_jit = np.random.default_rng(691_72)
+jitter = rng_jit.normal(0, 0.13 / np.sqrt(2), (reader.shape[0], 2))
+jr = ks.normcorre_rigid(Jittered(reader, jitter), blocks=reader.blocks[:1], log=None)
+fr_, est = jr["frames"], jr["shifts"]
+def rms_a(s_):
+    d_ = s_ - s_.mean(0)
+    return np.sqrt(np.mean((d_ ** 2).sum(1)))
+change = est - sh[fr_]                 # what the jitter changed in the estimate
+resid = change + jitter[fr_]           # zero (up to a constant) if the registration recovers the jitter exactly
+print(f"frames {fr_[0]} to {fr_[-1]}, registered in {jr['seconds']:.0f} s")
+print(f"RMS (a) of the added jitter {rms_a(jitter[fr_]):.4f} px; of the main run's shifts on these frames {rms_a(sh[fr_]):.4f} px; "
+      f"of the shifts estimated on the jittered frames {rms_a(est):.4f} px")
+print(f"correlation of the change in the estimate with minus the jitter: rows {np.corrcoef(change[:, 0], -jitter[fr_, 0])[0, 1]:.3f}, "
+      f"columns {np.corrcoef(change[:, 1], -jitter[fr_, 1])[0, 1]:.3f}; RMS (a) of what is left {rms_a(resid):.4f} px")''', ["claim:ed7-motion-small"])
+C.insert(i7 + 2, jit)
+nbformat.write(nb, p)
+for k, c in enumerate(nb.cells): print(k, c.cell_type, c.metadata.get("tags"), c.source[:70].replace("\n", " | "))
 PYEOF
-echo done
+python $TMPDIR/edit_motion.py
+```
+
+```
+0 markdown None # Scherrer, Lynch et al. (2023), dandiset 000691: motion of the field 
+1 code None import time |  | import matplotlib.pyplot as plt | import numpy as np | import
+2 markdown None ## Data check
+3 code ['sanity'] print(f"movie {reader.shape}, chunks {reader.chunks}, {len(reader.inde
+4 code ['sanity'] # Is the movie the raw video? Nothing in the file says (printed below)
+5 markdown None The file gives no description beyond "Calcium imaging data at ~30 fps 
+6 markdown None The movie's frames and timestamps agree in number, the blocks read by 
+7 markdown None ## ed7-motion-small |  | > Lateral shifts of the image due to the mouse's 
+8 code ['claim:ed7-motion-small'] reg = ks.normcorre_rigid(reader, block_stats=lambda a: ((a == 0).sum((
+9 code ['claim:ed7-motion-small'] # Over time: RMS of the 2D shift about the session mean in 100 s windo
+10 code ['claim:ed7-motion-small'] # The whole movie as read for the registration: zero-valued pixels per
+11 code ['claim:ed7-motion-small'] # The registration on the movie with a known jitter added: the frames 
+12 code ['claim:ed7-motion-small'] # Variant chosen here, not part of the criterion: one-photon frames ca
+13 markdown None **Result: not reproduced.** The RMS displacement is 0.0367 px under re
+14 markdown None ## Summary |  | A failure to reproduce here may be a failure of this attem
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; python - <<'EOF'
+import nbformat
+p="motion_scherrer_2023.ipynb"; nb=nbformat.read(p,as_version=4); C=nb.cells
+C[4],C[5],C[6] = C[6],C[4],C[5]
+nbformat.write(nb,p)
+for k, c in enumerate(nb.cells[:8]): print(k, c.cell_type, c.source[:60].replace("\n"," | "))
+EOF
+```
+
+```
+0 markdown # Scherrer, Lynch et al. (2023), dandiset 000691: motion of 
+1 code import time |  | import matplotlib.pyplot as plt | import numpy as
+2 markdown ## Data check
+3 code print(f"movie {reader.shape}, chunks {reader.chunks}, {len(r
+4 markdown The movie's frames and timestamps agree in number, the block
+5 code # Is the movie the raw video? Nothing in the file says (prin
+6 markdown The file gives no description beyond "Calcium imaging data a
+7 markdown ## ed7-motion-small |  | > Lateral shifts of the image due to th
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; cat > $TMPDIR/test_motion.py <<'EOF'
+import time, numpy as np, pandas as pd, kiloscope as ks, nbformat
+urls = ks.asset_urls(); f = ks.open_nwb(urls)
+reader = ks.MovieReader(urls[ks.NWB_PATH], f)
+first = reader.block(0)
+nb = nbformat.read("motion_scherrer_2023.ipynb", as_version=4)
+exec(nb.cells[5].source)
+t=time.time()
+reg = ks.normcorre_rigid(reader, blocks=reader.blocks[:1], log=None, block_stats=lambda a: ((a == 0).sum((1, 2)), np.bincount(a[::10].ravel(), minlength=1024)))
+print("reg", time.time()-t)
+sh = np.zeros((reader.shape[0], 2)); sh[reg["frames"]] = reg["shifts"]
+exec(nb.cells[10].source)
+t=time.time()
+exec(nb.cells[11].source)
+print("jit", time.time()-t)
+EOF
+PYTHONPATH=. $TMPDIR/venv691/bin/python $TMPDIR/test_motion.py
+```
+
+```
+series attributes: {'comments': 'no comments', 'description': 'Calcium imaging data at ~30 fps in grayscale format', 'neurodata_type': 'TwoPhotonSeries'}
+data attributes: {'conversion': '1.0', 'offset': '0.0', 'resolution': '-1.0', 'unit': 'Frames'}
+processing modules: ['ophys'] ; ophys holds: ['DfOverF', 'ImageSegmentation', 'SegmentationImages']
+block 0: frames with a zero-valued pixel 22 of 1200, at most 1 per frame; 7 pixels ever zero, at rows [0, 1, 5, 11, 15, 99, 260] and columns [1, 81, 227, 432, 533, 549, 576]
+ shift_rms_px  histogram_roughness  odd_over_even_counts  values_changed
+         0.00               0.7451                1.2233           0.000
+         0.02               0.4688                1.2331           0.061
+         0.05               0.1453                1.1867           0.301
+         0.13               0.0515                1.0627           0.580
+         0.30               0.0094                1.0091           0.799
+reg 39.4696831703186
+frames with a zero-valued pixel: 22 of 1200; zero pixels per frame at most 1
+histogram roughness per block of 1200 frames: 0.742 to 0.742; whole movie 0.742; odd over even counts 1.230
+frames 0 to 1199, registered in 52 s
+RMS (a) of the added jitter 0.1322 px; of the main run's shifts on these frames 0.0334 px; of the shifts estimated on the jittered frames 0.1363 px
+correlation of the change in the estimate with minus the jitter: rows 0.996, columns 0.996; RMS (a) of what is left 0.0116 px
+jit 79.48122715950012
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; cat > $TMPDIR/edit_main.py <<'PYEOF'
+import nbformat
+p = "reproduce_scherrer_2023.ipynb"
+nb = nbformat.read(p, as_version=4)
+C = nb.cells
+def code(src, tags=None):
+    c = nbformat.v4.new_code_cell(src)
+    if tags: c.metadata["tags"] = tags
+    return c
+md = nbformat.v4.new_markdown_cell
+def find(prefix):
+    return next(k for k, c in enumerate(C) if c.source.startswith(prefix))
+
+# header
+h = C[0].source
+h = h.replace("| fig2d-lman-sparse-bursting | dandiset | this one | blocked: data missing |",
+              "| fig2d-lman-sparse-bursting | dandiset | this one | blocked: no method fixes it (its data are also missing) |")
+old = """ed9c-local-decoding-map), and the motion claim in `motion_scherrer_2023.ipynb`
+(ed7-motion-small), each to keep within the time limit."""
+assert old in h
+h = h.replace(old, """ed9c-local-decoding-map), and the motion claim in `motion_scherrer_2023.ipynb`
+(ed7-motion-small), each to keep within the time limit. Outputs added after the first
+verification are in `decoding_null_n2_quadrant_direction.ipynb` and `decoding_null_n2_octant.ipynb`
+(more null decoders of reading n2) and `decoding_reduced.ipynb` (reduced runs of fig2k, fig2l and
+ed9c, which decide no outcome).""")
+C[0].source = h
+
+# PSF: keep the Jacobian fits, then the lower-cost fit per bead
+k = find("# Variant: the same fits with the optimizer's steps scaled")
+s = C[k].source
+s = s.replace("for name in psf_setups:\n    fits_j = psf_fits(name, x_scale=\"jac\")",
+              "psf_jac = {}\nfor name in psf_setups:\n    fits_j = psf_jac[name] = psf_fits(name, x_scale=\"jac\")")
+assert "psf_jac[name]" in s
+C[k].source = s
+best_cell = code('''# For each bead, the lower-cost of the two fits (the main fit and the Jacobian-scaled one), the one nearer the
+# least-squares minimum that lsqcurvefit seeks.
+psf_best = {}
+for name in psf_setups:
+    main_, jac_ = psf[name], psf_jac[name]
+    use_j = (jac_.cost < main_.cost).to_numpy()
+    best = psf_best[name] = main_.copy()
+    best.loc[use_j] = jac_.loc[use_j]
+    _, read_b = readings(best, name)
+    print(f"\\n{name}, the lower-cost fit for each bead (the Jacobian-scaled fit for {use_j.sum()} of {len(best)} beads):")
+    print(read_b.to_string(index=False))
+    print("  a reading with both within tolerance:", bool((read_b.centre_within & read_b.edge_within).any()))
+    print(f"  largest major FWHM: main fits {np.round(np.sort(main_.fwhm_major)[-3:], 2).tolist()}, lower-cost fits "
+          f"{np.round(np.sort(best.fwhm_major)[-3:], 2).tolist()} um")
+# The Kiloscope's centre and edge beads, each with both fits.
+main_, jac_ = psf["fig1f-kiloscope-psf"], psf_jac["fig1f-kiloscope-psf"]
+both = pd.DataFrame({"group": main_.group, "r_um": main_.r_um, "major_main": main_.fwhm_major, "minor_main": main_.fwhm_minor,
+                     "cost_main": main_.cost, "major_jac": jac_.fwhm_major, "minor_jac": jac_.fwhm_minor, "cost_jac": jac_.cost})
+print("\\nfig1f-kiloscope-psf, beads of the 0 and 1500 um groups:")
+print(both[both.group.isin([0, 1500])].round(3).to_string())''', ["claim:fig1e-featherscope-psf", "claim:fig1f-kiloscope-psf"])
+C.insert(k + 1, best_cell)
+
+# split the PSF result cell
+k = find("**Result (fig1e-featherscope-psf)")
+a, b = C[k].source.split("\n\n**Result (fig1f-kiloscope-psf): partially reproduced.**")
+a = a.replace("**Result (fig1e-featherscope-psf): reproduced.**", "**Result: reproduced (fig1e-featherscope-psf).**")
+C[k].source = a
+C.insert(k + 1, md("**Result: partially reproduced (fig1f-kiloscope-psf).**" + b))
+
+# ed2: which files the scripts load
+k = find("# Sensitivity of the comparison to the centre")
+C.insert(k + 1, code('''# Which images sf3/*/analysis.m loads: its lines that read an image, against the files used above.
+import re
+for name, s in setups.items():
+    script = requests.get(ks.code_file_url(f"{s['folder']}/analysis.m"), timeout=60).text
+    lines = [(i + 1, line.strip()) for i, line in enumerate(script.splitlines()) if re.search(r"imImport\\(|imread\\(", line)]
+    print(f"{s['folder']}/analysis.m:")
+    for i, line in lines:
+        print(f"  line {i}: {line}")
+    loaded = [re.search(r"'([^']+)'", line).group(1) for _, line in lines]
+    print(f"  the files used here, in the order corrected, optical vignetting, total vignetting, are the ones it loads as axicon, "
+          f"led and ref: {loaded == list(s['files'].values())}")''', ["claim:ed2b-featherscope-flat-illumination", "claim:ed2c-kiloscope-flat-illumination"]))
+k = find("**Result (ed2b-featherscope-flat-illumination)")
+a, b = C[k].source.split("\n\n**Result (ed2c-kiloscope-flat-illumination): reproduced.**")
+C[k].source = a.replace("**Result (ed2b-featherscope-flat-illumination): reproduced.**", "**Result: reproduced (ed2b-featherscope-flat-illumination).**")
+C.insert(k + 1, md("**Result: reproduced (ed2c-kiloscope-flat-illumination).**" + b))
+
+# ed8: quarters at the image midlines
+k = find("# Variant: the code's window, frames lb * 30")
+C.insert(k + 1, code('''# Variant: quarters split at the image's midlines, not at the midlines of the extent of the footprints' positions.
+n_rows, n_cols = M["shape"][2], M["shape"][1]          # MATLAB rows and columns of the masks
+pos = POS["peak"]
+has_pos = ~np.isnan(pos).any(1)
+quarter_img = 2 * (pos[:, 0] > (n_rows + 1) / 2) + (pos[:, 1] > (n_cols + 1) / 2)
+print(f"image of {n_rows} rows x {n_cols} columns, midlines at row {(n_rows + 1) / 2} and column {(n_cols + 1) / 2} "
+      f"(the extent's midlines: row {rmid:.1f}, column {cmid:.1f}); footprints without a position: {(~has_pos).sum()}")
+print("all footprints per image quarter (upper left, upper right, lower left, lower right):", np.bincount(quarter_img[has_pos], minlength=4).tolist())
+for label in ["(a) largest weight", "(b) the code's times"]:
+    tab, actives = results[(label, "code's position")]
+    counts = np.array([np.bincount(quarter_img[a_[has_pos[a_]]], minlength=4) for a_ in actives])
+    print(f"\\nEvent times {label}: events with active footprints in all four image quarters {int((counts > 0).all(1).sum())} of 8")
+    print(pd.DataFrame(counts, columns=["upper_left", "upper_right", "lower_left", "lower_right"]).assign(
+        component=range(8), event_t_s=tab.event_t_s).to_string(index=False))''', ["claim:ed8-coactive-distributed"]))
+nbformat.write(nb, p)
+for k, c in enumerate(nb.cells): print(k, c.cell_type, c.metadata.get("tags"), c.source[:70].replace("\n", " | "))
+PYEOF
+python $TMPDIR/edit_main.py
+```
+
+```
+0 markdown None # Reproducing Scherrer, Lynch et al. (2023) from dandiset 000691 |  | Pape
+1 code None import time | import warnings | from concurrent.futures import ThreadPoolE
+2 markdown None ## Data check |  | Each check of the metadata against the values is stated
+3 code ['sanity'] with DandiAPIClient() as client: |     dandiset = client.get_dandiset(ks
+4 markdown None The dandiset has one published version, 0.260827.1358, and the draft h
+5 code ['sanity'] def rate_summary(t): |     dt = np.diff(t) |     return {"n": len(t), "fir
+6 markdown None The imaging runs at a median 29.7 frames/s over 1234 s, as the series 
+7 code ['sanity'] # Which movie axis each centroid column indexes, and whether traces, m
+8 markdown None The movie pixels at a footprint's stored position follow its own trace
+9 code ['sanity'] x, y, area = track["x"], track["y"], track["area"] | tracked = np.arange
+10 code ['sanity'] # Sample frames of the behaviour video: the code's rotated crop, with 
+11 markdown None The dandiset gives no position, so it is tracked here with the code's 
+12 code ['sanity'] # Shared clock of behaviour and imaging: decode the quadrant (4 classe
+13 markdown None Quadrant decoding is best with the labels shifted by 0 to +2 s (0.493 
+14 code ['sanity'] # Footprints deposited twice: pairs with near-identical traces and nea
+15 markdown None There is one session, so no recording can be deposited twice, and with
+16 code ['sanity'] # The findings of the first attempt (000691-scherrer-2023-01), checked
+17 markdown None Status of the findings of `000691-scherrer-2023-01`, from the output a
+18 markdown None ## abstract-thousands-of-neurons |  | > The Kiloscope records thousands of
+19 code ['claim:abstract-thousands-of-neurons'] n_fp = T.shape[1] | print(f"EXTRACT footprints in the session: {n_fp} (i
+[... 33 more lines not kept]
+```
+
+**Agent**
+
+Now the decoding notebooks: the single-fit comparison, and the three new notebooks.
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; cat > $TMPDIR/edit_dec.py <<'PYEOF'
+import nbformat
+SINGLE = '''# On equal terms with the (n1) null, which is single fits: the median accuracy of each of the 200 real fits on its
+# own (NaN when a class is absent from its test part, as for a null decoder).
+fit_med = np.median(real["fit_diag"], axis=1)
+ok = ~np.isnan(fit_med)
+print(f"real single fits with every class in the test part: {ok.sum()} of 200; their median accuracies, percentiles 0/5/50/95/100 "
+      f"{np.round(np.percentile(fit_med[ok], [0, 5, 50, 95, 100]), 3)}")
+print(f"(n1) null: largest {np.nanmax(null1):.3f}; real single fits at or below it: {(fit_med[ok] <= np.nanmax(null1)).sum()}; "
+      f"for the weakest real single fit, null values at or above it: {(null1 >= fit_med[ok].min()).sum()} of 1000")'''
+for p, after_prefix, tag in [("decoding_quadrant_direction.ipynb", "# The accuracy readings.", "claim:fig2-quadrant-direction-decoding"),
+                             ("decoding_octant.ipynb", "rng_real = np.random.default_rng(69130)", "claim:ed9b-octant-decoding")]:
+    nb = nbformat.read(p, as_version=4)
+    k = next(i for i, c in enumerate(nb.cells) if c.source.startswith(after_prefix))
+    c = nbformat.v4.new_code_cell(SINGLE); c.metadata["tags"] = [tag]
+    nb.cells.insert(k + 1, c)
+    # header: point at the added notebooks
+    h = nb.cells[0].source
+    h = h.rstrip() + "\n\nMore (n2) null decoders are run in `decoding_null_n2_quadrant_direction.ipynb` and\n`decoding_null_n2_octant.ipynb`, and reduced runs of the map and decoder-size analyses in\n`decoding_reduced.ipynb`; none of these decides an outcome alone.\n"
+    nb.cells[0].source = h
+    nbformat.write(nb, p)
+PYEOF
+python $TMPDIR/edit_dec.py
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; cat > $TMPDIR/build_new.py <<'PYEOF'
+import nbformat
+md = nbformat.v4.new_markdown_cell
+def code(src, tags=None):
+    c = nbformat.v4.new_code_cell(src)
+    if tags: c.metadata["tags"] = tags
+    return c
+
+PAPER = """Paper. Scherrer JR, Lynch GF, Zhang JJ, Fee MS (2023). An optical design enabling lightweight
+and large field-of-view head-mounted microscopes. *Nature Methods* 20, 546-549.
+[doi:10.1038/s41592-023-01806-1](https://doi.org/10.1038/s41592-023-01806-1).
+
+Claims. `claims/000691/10.1038-s41592-023-01806-1.yaml`, written from the full text of the
+version of record and the paper's code (GitHub `FeeLab/Feescope-Paper-Code`, commit d596646). It
+decides what is tested and how.
+
+Dandiset. [DANDI:000691](https://dandiarchive.org/dandiset/000691/0.260827.1358), version
+0.260827.1358, the only published version (the paper cites none); see the main notebook,
+`reproduce_scherrer_2023.ipynb`, for the reasons and the full data check."""
+
+LOAD = '''import time
+import warnings
+
+import numpy as np
+import pandas as pd
+from scipy.stats import mannwhitneyu
+
+import kiloscope as ks
+
+pd.set_option("display.width", 200)
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+started = time.time()
+urls = ks.asset_urls()
+f = ks.open_nwb(urls)
+S = ks.load_session(f)
+POS = ks.mask_positions(ks.read_masks(urls[ks.NWB_PATH], f))
+track, B = ks.load_behaviour(urls, S)
+run = B["running"]
+X_run = ks.moving_max(S["traces"][B["sel"]])[run]
+X_F = np.asfortranarray(X_run)         # columns contiguous, for fast shuffles
+print(f"loaded and tracked in {time.time() - started:.0f} s")'''
+
+SANITY = '''LABELS_QD = ks.quad_dir_labels(B)[run]
+LABELS_OCT = B["octant"][run]
+print(f"imaging frames within the tracked video: {len(B['sel'])}; running (speed above its median): {run.sum()}")
+print(f"activity: moving maximum over 30 frames of {X_run.shape[1]} footprints; values {X_run.min():.3f} to {X_run.max():.3f}")
+print("frames per quadrant and direction class:", np.bincount(LABELS_QD, minlength=8).tolist())
+print("frames per octant:", np.bincount(LABELS_OCT, minlength=8).tolist())
+print(f"footprints with a position (the code's peak pixel): {(~np.isnan(POS['peak']).any(1)).sum()} of {len(POS['peak'])}")'''
+
+def n2_notebook(claim, title, labels, lam_name, seed_real, seed_null, n_null, quote, crit, result):
+    cells = [md(f"""# Scherrer, Lynch et al. (2023), dandiset 000691: more (n2) null decoders for {claim}
+
+{PAPER}
+
+Why this notebook. The criterion of {claim} judges p under two readings of a null decoder: (n1)
+one fit per shuffle and (n2) the average matrix of 200 fits per shuffle. The 1,000 (n2) decoders it
+asks for need 200,000 fits, about 38 hours here, and are not run. The first verification asked for
+more of them, to show where they lie; this notebook runs {n_null}, as many as fit within the time limit
+of a notebook, beside the one in `{'decoding_quadrant_direction.ipynb' if 'quadrant' in claim else 'decoding_octant.ipynb'}`. They cannot give p < 0.001 and decide no
+outcome alone.
+
+| Claim | Data | Status |
+|---|---|---|
+| {claim} | dandiset | {n_null} more (n2) null decoders |"""),
+        code(LOAD),
+        md("## Data check\n\nThe full check of the data is in the main notebook. Here: what this notebook decodes."),
+        code(SANITY, ["sanity"]),
+        md(f"""## {claim}
+
+> {quote}
+
+{crit}
+
+The real decoder is computed again here with the seed of the decoding notebook, so that its value
+is printed beside the null decoders."""),
+        code(f'''LABELS = {labels}
+LAMBDA = ks.{lam_name}
+t0 = time.time()
+real = ks.decoding_matrix(X_run, LABELS, 8, LAMBDA, 200, np.random.default_rng({seed_real}), n_jobs=4)
+print(f"real decoder, 200 fits, in {{time.time() - t0:.0f}} s: median accuracy {{real['median']:.3f}} (chance 0.125)")
+t0 = time.time()
+null2 = []
+for s_ in np.random.SeedSequence({seed_null}).spawn({n_null}):
+    rng_s = np.random.default_rng(s_)
+    null2.append(ks.decoding_matrix(ks.shuffle_columns(X_F, rng_s), LABELS, 8, LAMBDA, 200, rng_s, n_jobs=4)["median"])
+null2 = np.array(null2)
+print(f"{n_null} (n2) null decoders, 200 fits each, in {{time.time() - t0:.0f}} s")
+print("their median accuracies:", np.round(null2, 3).tolist())
+print(f"range {{null2.min():.3f}} to {{null2.max():.3f}}, mean {{null2.mean():.3f}}, standard deviation {{null2.std(ddof=1):.4f}}; "
+      f"at or above the real {{real['median']:.3f}}: {{(null2 >= real['median']).sum()}}")
+print(f"the real value lies {{(real['median'] - null2.mean()) / null2.std(ddof=1):.0f}} standard deviations of these null values above their mean "
+      f"(descriptive only; no distribution is assumed for an outcome)")''', [f"claim:{claim}"]),
+        md(result),
+        code('print(f"total run time {(time.time() - started) / 60:.1f} min")'),
+        md(f"""## Summary
+
+| Claim | Outcome (this attempt) |
+|---|---|
+| {claim} | blocked: not runnable (see the decoding notebook) |
+
+How the analysis differs from the paper's. As in the decoding notebook: all 2948 footprints, the
+position tracked from the video, scikit-learn's SGD in place of MATLAB's solver. Only {n_null} of the
+1,000 (n2) null decoders the criterion asks for are run."""),
+    ]
+    nb = nbformat.v4.new_notebook(); nb.cells = cells
+    nb.metadata["kernelspec"] = {"name": "python3", "display_name": "Python 3", "language": "python"}
+    return nb
+
+Q_QD = ("Linear SVM decoders trained on half of the data decode the mouse's combined quadrant and\n> movement direction on the other half at an accuracy at least three times chance, above that of\n> decoders trained on shuffled data.")
+C_QD = ("Criterion (part): eight classes, lambda 3.2e-7, the average matrix of 200 fits; the null is 1,000\ndecoders on their own shuffles, p the fraction at or above the real median accuracy, judged under\n(n1) and (n2); when they disagree on p < 0.001 the claim is methods_underspecified.")
+Q_OCT = ("Position within the maze can be decoded with octant resolution from the activity, above\n> decoders trained on shuffled data.")
+C_OCT = ("Criterion (part): eight octants, lambda 6.75e-8, the average matrix of 200 fits; the null as for\nfig2-quadrant-direction-decoding, under (n1) and (n2). Reproduced when the real median accuracy\nexceeds every null value and chance under both.")
+nbformat.write(n2_notebook("fig2-quadrant-direction-decoding", "", "LABELS_QD", "LAMBDA_QUAD_DIR", 69120, 69123, 8, Q_QD, C_QD,
+                           "**Result: blocked (not_runnable).** RESULT_PLACEHOLDER"), "decoding_null_n2_quadrant_direction.ipynb")
+nbformat.write(n2_notebook("ed9b-octant-decoding", "", "LABELS_OCT", "LAMBDA_OTHER", 69130, 69133, 8, Q_OCT, C_OCT,
+                           "**Result: blocked (not_runnable).** RESULT_PLACEHOLDER"), "decoding_null_n2_octant.ipynb")
+
+# reduced runs
+MAP = '''def reduced_map(labels, n_fits, rng, null_seed, n_null=500, every=10, radius=50):
+    grid = ks.map_grid(every)
+    t0 = time.time()
+    used, vals = ks.map_values(X_run, labels, 8, ks.LAMBDA_OTHER, POS["peak"], grid, radius, 32, n_fits, rng)
+    t_map = time.time() - t0
+    t0 = time.time()
+    null = ks.null_local(X_run, labels, 8, ks.LAMBDA_OTHER, n_null, 32, 1, seed=null_seed)
+    print(f"grid of {len(grid)} points (every {every * 5} pixels), {len(used)} used (at least 32 footprints within {radius} pixels); "
+          f"{n_fits} fits per point in {t_map:.0f} s; {n_null} null decoders of one fit in {time.time() - t0:.0f} s")
+    print(f"point values: percentiles 0/5/50/95/100 {np.round(np.percentile(vals, [0, 5, 50, 95, 100]), 3)}; span {vals.max() - vals.min():.3f}")
+    print(f"null values: percentiles 0/50/95/99/100 {np.round(np.nanpercentile(null, [0, 50, 95, 99, 100]), 3)}; NaN {np.isnan(null).sum()}")
+    k = np.array([(null >= v).sum() for v in vals])
+    rows = []
+    for p_label, p in [("fraction", k / n_null), ("(k + 1) / (n + 1)", (k + 1) / (n_null + 1))]:
+        sig = ks.benjamini_hochberg(p, 0.05)
+        rows.append({"p": p_label, "significant": int(sig.sum()), "not_significant": int((~sig).sum()),
+                     "both_present_(i)": bool(sig.any() and (~sig).any())})
+    print(pd.DataFrame(rows).to_string(index=False))
+    return used, vals, null'''
+
+red = nbformat.v4.new_notebook()
+red.metadata["kernelspec"] = {"name": "python3", "display_name": "Python 3", "language": "python"}
+red.cells = [
+    md(f"""# Scherrer, Lynch et al. (2023), dandiset 000691: reduced runs of the decoder-size and map analyses
+
+{PAPER}
+
+Why this notebook. fig2k-decoder-size, fig2l-local-decoding-map and ed9c-local-decoding-map need
+64,000 to 276,000 fits each, 4 to 11 hours on four cores, and are blocked as not runnable (their
+cost is measured in the decoding notebooks). The first verification asked for any output of
+them. This notebook runs each with far fewer fits, subsets, grid points and null decoders, choices
+made here to fit the time limit of a notebook. They are not the criteria's methods and decide no
+outcome; they show what the analyses give at this size.
+
+| Claim | Data | Status |
+|---|---|---|
+| fig2k-decoder-size | dandiset | reduced run (16 subsets of 5 fits per size, in place of 64 of 100) |
+| fig2l-local-decoding-map | dandiset | reduced run (grid every 50 pixels, 500 null decoders of one fit) |
+| ed9c-local-decoding-map | dandiset | reduced run (as fig2l, 10 fits per point in place of 40) |"""),
+    code(LOAD),
+    md("## Data check\n\nThe full check of the data is in the main notebook. Here: what this notebook decodes."),
+    code(SANITY, ["sanity"]),
+    md("""## fig2k-decoder-size
+
+> Decoding accuracy depends on the number of footprints used, with P at or below 2.7 x 10^-4
+> (Mann-Whitney U) for every decoder size from 2 to 2,048 footprints.
+
+Criterion: quadrant and direction labels, lambda 6.75e-8; for each size 2^1 to 2^11, 64 random
+subsets, each the average matrix of 100 fits and the same subset shuffled, again 100 fits;
+two-sided Mann-Whitney U under (a) original against shuffled at each size, (b) original at each
+size against the next size. Here: 16 subsets of 5 fits each, original and shuffled."""),
+    code('''rng_k = np.random.default_rng(691_41)
+t0 = time.time()
+rows, orig, shuf = [], {}, {}
+for size in 2 ** np.arange(1, 12):
+    o_, s_ = [], []
+    for _ in range(16):
+        cols = rng_k.choice(X_run.shape[1], size, replace=False)
+        o_.append(ks.decoding_matrix(X_run[:, cols], LABELS_QD, 8, ks.LAMBDA_OTHER, 5, rng_k, n_jobs=4)["median"])
+        s_.append(ks.decoding_matrix(ks.shuffle_columns(X_F[:, cols], rng_k), LABELS_QD, 8, ks.LAMBDA_OTHER, 5, rng_k, n_jobs=4)["median"])
+    orig[size], shuf[size] = np.array(o_), np.array(s_)
+sizes = sorted(orig)
+for i, size in enumerate(sizes):
+    pa = mannwhitneyu(orig[size], shuf[size], alternative="two-sided").pvalue
+    pb = mannwhitneyu(orig[size], orig[sizes[i + 1]], alternative="two-sided").pvalue if i + 1 < len(sizes) else np.nan
+    rows.append({"size": size, "median_original": round(np.median(orig[size]), 3), "median_shuffled": round(np.median(shuf[size]), 3),
+                 "NaN_original": int(np.isnan(orig[size]).sum()), "NaN_shuffled": int(np.isnan(shuf[size]).sum()),
+                 "p_(a)_vs_shuffled": pa, "p_(b)_vs_next_size": pb})
+tab_k = pd.DataFrame(rows)
+print(f"{len(sizes)} sizes x 16 subsets x 2 x 5 fits in {time.time() - t0:.0f} s")
+print(tab_k.to_string(index=False, float_format=lambda v: f"{v:.3g}"))
+for col in ["p_(a)_vs_shuffled", "p_(b)_vs_next_size"]:
+    p_ = tab_k[col].dropna()
+    print(f"{col}: every p <= 2.7e-4: {bool((p_ <= 2.7e-4).all())}; every p < 0.05: {bool((p_ < 0.05).all())}; largest {p_.max():.3g}")
+print(f"median original accuracy at 2,048 above that at 2: {np.median(orig[2048]) > np.median(orig[2])}")''', ["claim:fig2k-decoder-size"]),
+    md("**Result: blocked (not_runnable).** RESULT_K"),
+    md("""## fig2l-local-decoding-map
+
+> Decoders built from the 32 footprints closest to a point decode quadrant and direction with
+> accuracies that differ substantially across the field of view.
+
+Criterion: map points every 5 pixels, a point used when at least 32 footprints lie within 270 um;
+at each, the average matrix of 10 fits on its 32 nearest footprints; the null is 1,000 decoders on
+shuffled data from 32 random footprints; Benjamini-Hochberg 5%; reproduced when at least one point
+is significant, significant and non-significant points are both present (i), and the values span
+at least 0.108 (ii), under every combination of readings. Here one combination, reduced: every
+tenth grid point along each axis (every 50 pixels), the code's radius of 50 pixels and its
+position, footprints drawn anew for each of 500 null decoders of one fit, both definitions of p."""),
+    code(MAP + '''
+
+used_l, vals_l, null_l = reduced_map(LABELS_QD, 10, np.random.default_rng(691_42), null_seed=691_43)
+print(f"(ii) span of the used points' values at least 0.108: {vals_l.max() - vals_l.min() >= 0.108}")''', ["claim:fig2l-local-decoding-map"]),
+    md("**Result: blocked (not_runnable).** RESULT_L"),
+    md("""## ed9c-local-decoding-map
+
+> Decoders built from the 32 footprints closest to a point decode octant position significantly in
+> parts of the field of view, with accuracy that varies across it.
+
+Criterion: as fig2l with octant labels and the average matrix of 40 fits per point, judged on (i);
+the span is reported. Here as the reduced fig2l run, with 10 fits per point."""),
+    code('''used_o, vals_o, null_o = reduced_map(LABELS_OCT, 10, np.random.default_rng(691_44), null_seed=691_45)''', ["claim:ed9c-local-decoding-map"]),
+    md("**Result: blocked (not_runnable).** RESULT_O"),
+    code('print(f"total run time {(time.time() - started) / 60:.1f} min")'),
+    md("""## Summary
+
+| Claim | Outcome (this attempt) |
+|---|---|
+| fig2k-decoder-size | blocked: not runnable |
+| fig2l-local-decoding-map | blocked: not runnable |
+| ed9c-local-decoding-map | blocked: not runnable |
+
+How the analysis differs from the paper's. Besides the differences of the decoding notebooks (all
+2948 footprints, position tracked from the video, scikit-learn's solvers), every run here is
+reduced in size by a choice made here, so none decides an outcome."""),
+]
+nbformat.write(red, "decoding_reduced.ipynb")
+PYEOF
+python $TMPDIR/build_new.py && ls
+```
+
+```
+README.md
+__pycache__
+decoding_null_n2_octant.ipynb
+decoding_null_n2_quadrant_direction.ipynb
+decoding_octant.ipynb
+decoding_quadrant_direction.ipynb
+decoding_reduced.ipynb
+entry.yaml
+kiloscope.py
+motion_scherrer_2023.ipynb
+reproduce_scherrer_2023.ipynb
+requirements.in
+requirements.lock.txt
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; rm -rf __pycache__; cat > $TMPDIR/test_red.py <<'EOF'
+import pickle, time, numpy as np, pandas as pd, nbformat, warnings
+from scipy.stats import mannwhitneyu
+import kiloscope as ks
+warnings.filterwarnings("ignore")
+d = pickle.load(open("/tmp/claude-1001/dec.pkl","rb"))
+X_run, LABELS_QD, LABELS_OCT, POS = d["X"], d["LQ"], d["LO"], d["POS"]
+X_F = np.asfortranarray(X_run)
+nb = nbformat.read("decoding_reduced.ipynb", as_version=4)
+src = nb.cells[5].source.replace("range(16)", "range(2)").replace(", 5, rng_k", ", 1, rng_k")
+t=time.time(); exec(src); print("k", time.time()-t)
+src = nb.cells[8].source.replace("n_null=500", "n_null=20").replace("every=10", "every=30")
+t=time.time(); exec(src); print("l", time.time()-t)
+print(len(ks.map_grid(1)), len(ks.map_grid(10)))
+print(ks.benjamini_hochberg(np.array([0.001,0.2,0.01,0.04]), 0.05))
+EOF
+PYTHONPATH=. $TMPDIR/venv691/bin/python $TMPDIR/test_red.py
+```
+
+```
+11 sizes x 16 subsets x 2 x 5 fits in 21 s
+ size  median_original  median_shuffled  NaN_original  NaN_shuffled  p_(a)_vs_shuffled  p_(b)_vs_next_size
+    2                0                0             0             0                NaN                 NaN
+    4                0            0.078             0             0              0.221               0.221
+    8            0.094            0.004             0             0              0.333                   1
+   16            0.117            0.061             0             0              0.333                   1
+   32            0.139            0.134             0             0                  1               0.333
+   64            0.238            0.117             0             0              0.333                   1
+  128            0.203             0.05             0             0              0.333               0.333
+  256            0.255            0.092             0             0              0.333               0.667
+  512            0.307            0.039             0             0              0.333               0.333
+ 1024            0.343            0.083             0             0              0.333               0.333
+ 2048            0.393            0.075             0             0              0.333                 NaN
+p_(a)_vs_shuffled: every p <= 2.7e-4: False; every p < 0.05: False; largest 1
+p_(b)_vs_next_size: every p <= 2.7e-4: False; every p < 0.05: False; largest 1
+median original accuracy at 2,048 above that at 2: True
+k 20.61301040649414
+grid of 12 points (every 150 pixels), 5 used (at least 32 footprints within 50 pixels); 10 fits per point in 16 s; 20 null decoders of one fit in 8 s
+point values: percentiles 0/5/50/95/100 [0.098 0.106 0.17  0.21  0.214]; span 0.116
+null values: percentiles 0/50/95/99/100 [0.029 0.105 0.152 0.16  0.162]; NaN 0
+[... 7 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; python - <<'EOF'
+import nbformat
+p="decoding_reduced.ipynb"; nb=nbformat.read(p,as_version=4)
+c=nb.cells[5]
+old='''for col in ["p_(a)_vs_shuffled", "p_(b)_vs_next_size"]:
+    p_ = tab_k[col].dropna()
+    print(f"{col}: every p <= 2.7e-4: {bool((p_ <= 2.7e-4).all())}; every p < 0.05: {bool((p_ < 0.05).all())}; largest {p_.max():.3g}")'''
+new='''for col, p_ in [("p_(a)_vs_shuffled", tab_k["p_(a)_vs_shuffled"]), ("p_(b)_vs_next_size", tab_k["p_(b)_vs_next_size"][:-1])]:
+    print(f"{col}: every p <= 2.7e-4: {bool((p_ <= 2.7e-4).all())}; every p < 0.05: {bool((p_ < 0.05).all())}; "
+          f"largest {np.nanmax(p_):.3g}; undefined (NaN, all values tied) {int(p_.isna().sum())}")'''
+assert old in c.source; c.source=c.source.replace(old,new); nbformat.write(nb,p)
+for p in ["decoding_quadrant_direction.ipynb","decoding_octant.ipynb"]:
+    nb=nbformat.read(p,as_version=4)
+    nb.cells[0].source=nb.cells[0].source.replace("; none of these decides an outcome alone.", "; the reduced runs decide no outcome.")
+    nbformat.write(nb,p)
+EOF
+grep -c "reduced runs decide" decoding_quadrant_direction.ipynb decoding_octant.ipynb
+```
+
+```
+decoding_quadrant_direction.ipynb:1
+decoding_octant.ipynb:1
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; cat > $TMPDIR/test_n2.py <<'EOF'
+import pickle, time, numpy as np, pandas as pd, nbformat, warnings
+import kiloscope as ks
+warnings.filterwarnings("ignore")
+d = pickle.load(open("/tmp/claude-1001/dec.pkl","rb"))
+X_run, LABELS_QD, LABELS_OCT, POS = d["X"], d["LQ"], d["LO"], d["POS"]
+X_F = np.asfortranarray(X_run)
+nb = nbformat.read("decoding_null_n2_octant.ipynb", as_version=4)
+src = nb.cells[5].source.replace(", 200, ", ", 4, ").replace("spawn(8)", "spawn(3)")
+exec(src)
+nb = nbformat.read("decoding_octant.ipynb", as_version=4)
+null1 = ks.null_medians(X_F, LABELS, 8, LAMBDA, 8, 1, seed=1, n_jobs=4)
+c = next(c for c in nb.cells if c.source.startswith("# On equal terms"))
+exec(c.source)
+EOF
+PYTHONPATH=. $TMPDIR/venv691/bin/python $TMPDIR/test_n2.py
+```
+
+```
+real decoder, 200 fits, in 2 s: median accuracy 0.316 (chance 0.125)
+8 (n2) null decoders, 200 fits each, in 7 s
+their median accuracies: [0.108, 0.15, 0.121]
+range 0.108 to 0.150, mean 0.126, standard deviation 0.0217; at or above the real 0.316: 0
+the real value lies 9 standard deviations of these null values above their mean (descriptive only; no distribution is assumed for an outcome)
+real single fits with every class in the test part: 4 of 200; their median accuracies, percentiles 0/5/50/95/100 [0.258 0.262 0.299 0.378 0.389]
+(n1) null: largest 0.153; real single fits at or below it: 0; for the weakest real single fit, null values at or above it: 0 of 1000
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; python - <<'EOF'
+p="entry.yaml"; s=open(p).read()
+old="""- path: motion_scherrer_2023.ipynb
+  title: Motion of the field of view (Scherrer et al. 2023, dandiset 000691)
+  runtime_minutes: 22
+"""
+new=old.replace("runtime_minutes: 22","runtime_minutes: 25")+"""- path: decoding_null_n2_quadrant_direction.ipynb
+  title: More null decoders of reading n2 for quadrant and direction (Scherrer et al. 2023, dandiset 000691)
+  runtime_minutes: 25
+- path: decoding_null_n2_octant.ipynb
+  title: More null decoders of reading n2 for octant (Scherrer et al. 2023, dandiset 000691)
+  runtime_minutes: 25
+- path: decoding_reduced.ipynb
+  title: Reduced runs of the decoder-size and map analyses (Scherrer et al. 2023, dandiset 000691)
+  runtime_minutes: 23
+"""
+assert old in s; open(p,"w").write(s.replace(old,new))
+EOF
+cd ../..; python tools/entry.py check entries/000691-scherrer-2023
+```
+
+```
+Exit code 1
+error: attempts/000691-scherrer-2023-01.yaml: claim 'birds-singing-rate' has no outcome; give every claim one, blocked included
+error: attempts/000691-scherrer-2023-01.yaml: claim 'ed1cf-field-curvature' has no outcome; give every claim one, blocked included
+error: attempts/000691-scherrer-2023-01.yaml: claim 'ed7-motion-small' has no outcome; give every claim one, blocked included
+error: attempts/000691-scherrer-2023-01.yaml: claim 'fig1e-featherscope-psf' has no outcome; give every claim one, blocked included
+error: attempts/000691-scherrer-2023-01.yaml: claim 'fig1f-kiloscope-psf' has no outcome; give every claim one, blocked included
+error: attempts/000691-scherrer-2023-01.yaml: claim 'fig2-quadrant-direction-decoding' has no outcome; give every claim one, blocked included
+error: attempts/000691-scherrer-2023-01.yaml: claim 'fig2d-lman-sparse-bursting' has no outcome; give every claim one, blocked included
+error: attempts/000691-scherrer-2023-01.yaml: claim 'fig2k-decoder-size' has no outcome; give every claim one, blocked included
+error: attempts/000691-scherrer-2023-01.yaml: claim 'fig2l-local-decoding-map' has no outcome; give every claim one, blocked included
+error: attempts/000691-scherrer-2023-01.yaml: no cell tagged 'claim:ed9b-octant-decoding' in reproduce_scherrer_2023.ipynb
+error: attempts/000691-scherrer-2023-01.yaml: no cell tagged 'claim:ed9c-local-decoding-map' in reproduce_scherrer_2023.ipynb
+11 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 360,420p tools/entry.py; grep -n "deprecated\|superseded" tools/entry.py | head; head -30 attempts/000691-scherrer-2023-01.yaml
+```
+
+```
+dandisets = {r["id"].split(":", 1)[1].split("/")[0]
+                 for r in entry.get("related", []) if r["id"].startswith("dandi:")}
+    for path in sorted((ROOT / "claims").glob("*/*.yaml")):
+        claims = yaml.safe_load(path.read_text()) or {}
+        if dataset_id(claims) in dandisets and claims.get("paper") in papers:
+            shutil.copy(path, target / path.name)
+    print(f"wrote {target}")
+    return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("command", choices=["lock", "check", "run", "all", "handover"])
+    parser.add_argument("entry", type=Path, help="the entry directory, e.g. entries/000582-sargolini-2006")
+    parser.add_argument("--output-dir", type=Path, help="where executed notebooks go")
+    parser.add_argument("--timeout", type=int, default=3600, help="seconds allowed per cell")
+    parser.add_argument("--max-minutes", type=float, default=30,
+                        help="a notebook that takes longer than this fails")
+    args = parser.parse_args()
+[... 52 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -o "entry.py [a-z]* [^ \"]*" transcripts/000691/author-answers.md | sort | uniq -c | head; grep -o "[0-9]* error(s)[^\"]\{0,200\}" transcripts/000691/author-answers.md | head; git log --oneline -3 -- tools/entry.py; grep -n "deprecated" tools/*.py | head
+```
+
+```
+1 entry.py check entries/000691-scherrer-2023
+      1 entry.py handover entries/000691-scherrer-2023
+      1 entry.py handover entries/<name>
+      1 entry.py lock entries/000691-scherrer-2023
+      1 entry.py run entries/000691-scherrer-2023
+11 error(s)
+75f25e4d Name the dataset in a form that does not depend on DANDI
+8862f828 Hold only the latest attempt to the elsewhere rules
+d4b6dbbf Add a data kind for claims on data in other archives
+tools/agent_run.py:87:        if record.get("deprecated"):
+tools/agent_run.py:88:            why = (f"That attempt is deprecated: {' '.join(record['deprecated']['reason'].split())} This attempt "
+tools/agent_run.py:107:        elif found and found[0].get("deprecated"):
+tools/agent_run.py:109:                    f"deprecated: {' '.join(found[0]['deprecated']['reason'].split())} Write it again from the full "
+tools/build_site.py:227:            "deprecated": squash((a.get("deprecated") or {}).get("reason")),
+tools/build_site.py:422:    # A deprecated attempt stays on its page but counts for nothing.
+tools/build_site.py:423:    attempts = [a for a in attempts if not a.get("deprecated")]
+tools/build_site.py:467:    pass), "todo", "deprecated", or "none" (a step that does not apply)."""
+tools/build_site.py:479:        # A deprecated attempt's claims are to be read again from the paper.
+tools/build_site.py:480:        rerun = any(a.get("deprecated") for a in atts)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; $TMPDIR/venv691/bin/python -m ipykernel install --user --name v691 >/dev/null 2>&1; time $TMPDIR/venv691/bin/jupyter nbconvert --to notebook --execute --ExecutePreprocessor.kernel_name=v691 --ExecutePreprocessor.timeout=3600 --output-dir $TMPDIR/out reproduce_scherrer_2023.ipynb 2>&1 | tail -3
+```
+
+```
+[NbConvertApp] Converting notebook reproduce_scherrer_2023.ipynb to notebook
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[NbConvertApp] Writing 2868028 bytes to /tmp/claude-1001/out/reproduce_scherrer_2023.ipynb
+
+real	10m7.532s
+user	11m53.450s
+sys	0m7.287s
+```
+
+**Agent**
+
+Main notebook runs. Now the full run (expected around 2.5 hours).
+
+**Agent calls Bash**
+
+```bash
+cd  python tools/entry.py all entries/000691-scherrer-2023 2>&1 | tail -3; time python tools/entry.py run entries/000691-scherrer-2023 2>&1 | tail -20
+```
+
+```
+Exit code 143
+Command timed out after 2h 0m 0s
+error: attempts/000691-scherrer-2023-01.yaml: no cell tagged 'claim:ed9b-octant-decoding' in reproduce_scherrer_2023.ipynb
+error: attempts/000691-scherrer-2023-01.yaml: no cell tagged 'claim:ed9c-local-decoding-map' in reproduce_scherrer_2023.ipynb
+11 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls -la executed/000691-scherrer-2023/; sed -n 280,330p tools/entry.py
+```
+
+```
+total 3120
+drwxr-xr-x 3 runner runner    4096 Oct 21 05:47 .
+drwxr-xr-x 3 runner runner    4096 Oct 21 03:53 ..
+drwxr-xr-x 5 runner runner    4096 Oct 21 03:53 .venv
+-rw-r--r-- 1 runner runner    9837 Oct 21 05:47 decoding_null_n2_octant.ipynb
+-rw-r--r-- 1 runner runner   10068 Oct 21 05:24 decoding_null_n2_quadrant_direction.ipynb
+-rw-r--r-- 1 runner runner   73158 Oct 21 04:40 decoding_octant.ipynb
+-rw-r--r-- 1 runner runner   65594 Oct 21 04:22 decoding_quadrant_direction.ipynb
+-rw-r--r-- 1 runner runner  143049 Oct 21 05:02 motion_scherrer_2023.ipynb
+-rw-r--r-- 1 runner runner 2868027 Oct 21 04:03 reproduce_scherrer_2023.ipynb
+    r = subprocess.run(["uv", "pip", "compile", "--quiet", "--python-version", PYTHON_VERSION,
+                        "requirements.in", "-o", "requirements.lock.txt"], cwd=entry_dir)
+    if r.returncode == 0:
+        print(f"wrote {(entry_dir / 'requirements.lock.txt').relative_to(ROOT)}")
+    return r.returncode
+
+
+def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
+    entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
+    output_dir.mkdir(parents=True, exist_ok=True)
+[... 40 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  E=$TMPDIR/rest/000691-scherrer-2023; rm -rf $TMPDIR/rest; mkdir -p $E; for f in entries/000691-scherrer-2023/*; do ln -s $PWD/$f $E/; done; rm $E/entry.yaml; python - <<EOF
+import yaml
+e=yaml.safe_load(open("entries/000691-scherrer-2023/entry.yaml"))
+e["notebooks"]=[n for n in e["notebooks"] if n["path"]=="decoding_reduced.ipynb"]
+yaml.safe_dump(e, open("$E/entry.yaml","w"), sort_keys=False)
+EOF
+cp executed/000691-scherrer-2023/*.ipynb $TMPDIR/rest/; time python tools/entry.py run $E --output-dir $TMPDIR/rest/out 2>&1 | tail -5
+```
+
+```
+Installed kernelspec registry-000691-scherrer-2023 in /tmp/claude-1001/rest/out/.venv/share/jupyter/kernels/registry-000691-scherrer-2023
+pass  decoding_reduced.ipynb  (1229 s)
+
+real	20m30.744s
+user	60m16.298s
+sys	0m10.027s
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cp $TMPDIR/rest/out/decoding_reduced.ipynb executed/000691-scherrer-2023/; cat > $TMPDIR/show.py <<'EOF'
+import nbformat, sys
+nb = nbformat.read(sys.argv[1], as_version=4)
+sel = sys.argv[2:] 
+for i, c in enumerate(nb.cells):
+    if c.cell_type != "code": continue
+    if sel and str(i) not in sel: continue
+    print(f"--- cell {i} {c.metadata.get('tags')}")
+    for o in c.get("outputs", []):
+        if o.output_type == "stream": print(o.text[-6000:])
+        elif o.output_type in ("execute_result",) and "text/plain" in o.data: print(o.data["text/plain"][:3000])
+        elif o.output_type == "error": print("ERROR", o.ename, o.evalue)
+EOF
+for n in decoding_null_n2_quadrant_direction decoding_null_n2_octant decoding_reduced; do echo "######## $n"; python $TMPDIR/show.py executed/000691-scherrer-2023/$n.ipynb; done
+```
+
+```
+######## decoding_null_n2_quadrant_direction
+--- cell 1 None
+loaded and tracked in 252 s
+
+--- cell 3 ['sanity']
+imaging frames within the tracked video: 32056; running (speed above its median): 16028
+activity: moving maximum over 30 frames of 2948 footprints; values 0.000 to 0.348
+frames per quadrant and direction class: [2845, 2458, 1758, 2025, 1617, 2263, 1474, 1588]
+frames per octant: [2557, 2746, 1858, 1925, 2044, 1836, 1372, 1690]
+footprints with a position (the code's peak pixel): 2948 of 2948
+
+--- cell 5 ['claim:fig2-quadrant-direction-decoding']
+real decoder, 200 fits, in 116 s: median accuracy 0.437 (chance 0.125)
+
+8 (n2) null decoders, 200 fits each, in 945 s
+their median accuracies: [0.109, 0.11, 0.119, 0.141, 0.12, 0.089, 0.145, 0.105]
+range 0.089 to 0.145, mean 0.117, standard deviation 0.0185; at or above the real 0.437: 0
+the real value lies 17 standard deviations of these null values above their mean (descriptive only; no distribution is assumed for an outcome)
+
+--- cell 7 None
+[... 72 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  for n in decoding_quadrant_direction decoding_octant motion_scherrer_2023; do echo "######## $n"; python $TMPDIR/show.py executed/000691-scherrer-2023/$n.ipynb; done 2>&1 | grep -v "^  block"
+```
+
+```
+######## decoding_quadrant_direction
+--- cell 1 None
+loaded and tracked in 255 s
+
+--- cell 3 ['sanity']
+imaging frames within the tracked video: 32056; running (speed above its median): 16028
+activity: moving maximum over 30 frames of 2948 footprints; values 0.000 to 0.348
+frames per class: {'1-': 2845, '1+': 2458, '2-': 1758, '2+': 2025, '3-': 1617, '3+': 2263, '4-': 1474, '4+': 1588}
+each fit trains on 7854 frames and tests on 7854; lambda 3.2e-07; solver for 2948 predictors: sgd
+
+--- cell 6 ['claim:fig2-quadrant-direction-decoding']
+200 fits in 116 s (0.58 s per fit, 4 in parallel); classes absent from a test part: 0 of 1600
+median accuracy (median of the diagonal of the average matrix): 0.437; chance 0.125; ratio 3.49
+class  accuracy  per_fit_5th  per_fit_95th
+   1-     0.540        0.157         0.899
+   1+     0.587        0.259         0.861
+   2-     0.294        0.002         0.643
+   2+     0.473        0.153         0.780
+   3-     0.239        0.000         0.628
+   3+     0.426        0.097         0.785
+[... 190 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python $TMPDIR/show.py executed/000691-scherrer-2023/reproduce_scherrer_2023.ipynb 12 19 22 25 28 29 30 31 35 38 39 40 44 45 46 49 51
+```
+
+```
+--- cell 12 ['sanity']
+Quadrant decoding (chance 0.25), the average matrix of 3 fits per shift:
+ label_shift_s  median_accuracy_3_fits
+           -60                   0.293
+           -20                   0.175
+            -5                   0.286
+            -2                   0.403
+            -1                   0.457
+             0                   0.495
+             1                   0.493
+             2                   0.519
+             5                   0.420
+            20                   0.275
+            60                   0.221
+
+--- cell 19 ['claim:abstract-thousands-of-neurons']
+EXTRACT footprints in the session: 2948 (ids 2948, masks 2948, trace columns 2948)
+expected 2948 +/- 295: within tolerance True
+recorded together: one movie of 36596 frames, traces of all footprints on its 36596 timestamps
+session description: 'This session includes calcium imaging recorded from a head-mounted microscope in a freely moving mouse while simultaneously recording more than a thousand neurons in cortex.'
+[... 309 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; cat > $TMPDIR/text_main.py <<'PYEOF'
+import nbformat
+p = "reproduce_scherrer_2023.ipynb"
+nb = nbformat.read(p, as_version=4); C = nb.cells
+def find(prefix):
+    return next(k for k, c in enumerate(C) if c.source.startswith(prefix))
+C[find("**Result: reproduced (fig1e-featherscope-psf).**")].source = """**Result: reproduced (fig1e-featherscope-psf).** Under reading (a) the median major-axis FWHM is
+3.919 um at the centre (11 beads) and 6.433 um in the 500 um group (19 beads), within 10% of 4
+and 7 um; reading (c) gives 3.887 and 6.883 um, also within. The minor axis is narrower (2.609
+and 5.203 um under b) and fails at both positions. All 155 regions name their image in
+file-number order. With Jacobian scaling no bead's major FWHM moves by more than 0.5 um, and
+taking for each bead the lower-cost of the two fits gives the same readings (3.919 and 6.433 um
+under a)."""
+C[find("**Result: partially reproduced (fig1f-kiloscope-psf).**")].source = """**Result: partially reproduced (fig1f-kiloscope-psf).** No reading puts both values within
+tolerance, with either optimizer or with the lower-cost fit for each bead. Under (a) the edge
+(1500 um group, 11 beads) is 5.441 um, within 5 +/- 0.5, and the centre (11 beads) is 4.467 um,
+0.067 um above the bound of 4.4. The mean major axis (c) is 4.537 um at the centre and 7.373 um at
+the edge, where one bead is fitted at 27.77 um; the minor axis gives 2.722 and 3.306 um (b). The
+fits depend on the optimizer, as the PSF is narrower than a pixel (5.35 um): with Jacobian scaling
+15 of 118 beads' major FWHM move by more than 0.5 um and (a) gives 3.639 um at the centre (within)
+and 5.892 um at the edge (0.392 um above the bound). Taking for each bead the lower-cost fit, the
+one nearer the least-squares minimum, gives 4.467 and 5.892 um under (a), both outside, and 4.685
+and 7.944 um under (c); the 27.77 um edge bead keeps its main fit, which has the lower cost (60.1
+against 79.9). The listed slice is within 5 slices of the bead's brightest slice for 72% of the
+Kiloscope's regions, and the image order of that stack is not confirmed by its labels. Under every
+reading and every fit the FWHM is larger at the edge than at the centre, the centre lies within
+0.07 um of its tolerance under (a), and the edge within it under (a) with the main fits, so the
+claim holds in part."""
+k = find("**Result: reproduced (ed2b-featherscope-flat-illumination).**")
+C[k].source = C[k].source.replace("""With the centre moved by 100 um in either axis, or at the image centre, the comparison
+holds at both radii.""", """With the centre moved by 100 um in either axis, or at the image centre, the comparison
+holds at both radii. The three images are the ones `sf3/feather/analysis.m` loads, in the same
+roles (its lines 20 to 22, printed above).""")
+assert "lines 20 to 22" in C[k].source
+k = find("**Result: reproduced (ed2c-kiloscope-flat-illumination).**")
+C[k].source = C[k].source.rstrip() + """ The three images are the ones `sf3/widefield/analysis.m` loads, in the same roles
+(its lines 18 to 20)."""
+k = find("**Result: blocked (methods_underspecified).** Under event reading (a)")
+C[k].source = C[k].source.rstrip() + """ With the quarters split at the image's midlines (row 304.5, column 404.5) in place of the
+midlines of the footprints' extent, the lower-left quarter holds 86 of 2948 footprints and the
+counts are again 8 of 8 under (a) and 7 of 8 under (b), component 1 at 1000 s having none there.
+Under reading (b), four components' assigned times fall where their temporal weights are 0.04 to
+0.13 of their maximum (components 1, 2, 3, 5 and 6 are at 0.11, 0.04, 0.06, 0.05 and 0.13), so
+those times are not events of this NMF run."""
+k = find("## Summary")
+s = C[k].source
+s = s.replace("| ed6bcd-other-mice, ed5-songbirds, abstract-weights, ed1-ed4-resolution, ed3-adc | dandiset | blocked: data missing | blocked: data missing |\n| birds-singing-rate, fig2d-lman-sparse-bursting | dandiset | blocked: data missing | (new) |",
+              "| ed6bcd-other-mice, ed5-songbirds, abstract-weights, ed1-ed4-resolution, ed3-adc | dandiset | blocked: data missing | blocked: data missing |\n| birds-singing-rate | dandiset | blocked: data missing | (new) |\n| fig2d-lman-sparse-bursting | dandiset | blocked: methods underspecified (data also missing) | (new) |")
+assert "fig2d-lman-sparse-bursting | dandiset | blocked: methods" in s
+old = """- The decoding claims' null with 200 fits per shuffled decoder, and the decoder-size and map
+  analyses, need 64,000 to 276,000 fits each and were not run; their cost is measured in the
+  decoding notebooks."""
+assert old in s
+s = s.replace(old, """- The decoding claims' null with 200 fits per shuffled decoder, and the decoder-size and map
+  analyses, need 64,000 to 276,000 fits each and were not run; their cost is measured in the
+  decoding notebooks. Eight more (n2) null decoders per claim, and reduced runs of the decoder-size
+  and map analyses, are in the added notebooks; they decide no outcome.""")
+old = """and nothing says whether the movie is raw or motion-corrected, while its shifts are about
+a quarter of those the paper reports."""
+assert old in s
+s = s.replace(old, """and nothing says whether the movie is raw or motion-corrected. Its values are consistent with
+the raw video (see the motion notebook), and its shifts are about a quarter of those the paper
+reports.""")
+C[k].source = s
+nbformat.write(nb, p)
+PYEOF
+python $TMPDIR/text_main.py
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; python - <<'EOF'
+import nbformat
+p="reproduce_scherrer_2023.ipynb"; nb=nbformat.read(p,as_version=4)
+n=0
+for c in nb.cells:
+    if "Under reading (b), four components' assigned times" in c.source:
+        c.source=c.source.replace("Under reading (b), four components' assigned times","Under reading (b), five components' assigned times"); n+=1
+assert n==1; nbformat.write(nb,p)
+EOF
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent**
+
+Now the decoding, motion, n2 and reduced notebooks' conclusions.
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; cat > $TMPDIR/text_dec.py <<'PYEOF'
+import nbformat
+def edit(p, fn):
+    nb = nbformat.read(p, as_version=4); fn(nb.cells); nbformat.write(nb, p)
+def find(C, prefix):
+    return next(k for k, c in enumerate(C) if c.source.startswith(prefix))
+
+def quad(C):
+    C[find(C, "**Result: blocked (not_runnable).** Under null reading (n1)")].source = """**Result: blocked (not_runnable).** Under null reading (n1) the claim holds: the average matrix of
+200 fits has a median accuracy of 0.437, 3.49 times chance; none of the 1000 shuffled decoders
+reaches it (the largest is 0.227), so p < 0.001; and accuracy reading (a) holds (0.437 >= 0.375)
+while (b) does not (classes 2- and 3- at 0.294 and 0.239). The (n1) null is of single fits and the
+real matrix an average of 200: on equal terms, the real single fits have median accuracies of
+0.138 to 0.604 (median 0.430), 2 of the 200 lie at or below the largest null value, and the
+weakest has 78 of the 1000 null values at or above it. Reading (n2), 1000 shuffles of 200 fits
+each, needs 200,000 fits, about 33.6 hours on this machine; the one (n2) null decoder run here
+gives 0.136 (eight more are in `decoding_null_n2_quadrant_direction.ipynb`). The criterion judges p
+under both readings, so the claim cannot be decided within the time limit."""
+    C[find(C, "**Result: blocked (not_runnable).** It depends on fig2-quadrant-direction-decoding, which is\nblocked, and it needs")].source = """**Result: blocked (not_runnable).** It depends on fig2-quadrant-direction-decoding, which is
+blocked, and it needs 140,800 fits, measured here at about 5.0 hours on four cores. A reduced run
+is in `decoding_reduced.ipynb`."""
+    C[find(C, "**Result: blocked (not_runnable).** It depends on fig2-quadrant-direction-decoding, which is\nblocked. With")].source = """**Result: blocked (not_runnable).** It depends on fig2-quadrant-direction-decoding, which is
+blocked. With the code's positions, 5411 grid points are used at 45 pixels and 5905 at 50 pixels
+(5409 and 5897 with centroids); with 10 fits per point and per null decoder that is 64,090 to
+69,050 fits, about 4.5 to 4.8 hours on four cores. A reduced run is in `decoding_reduced.ipynb`."""
+    k = find(C, "## Summary")
+    C[k].source = C[k].source.replace("Only\nnull reading (n1) is run; (n2) and the analyses that depend on these claims are costed, not run.",
+        "Only\nnull reading (n1) is run in full; (n2) and the analyses that depend on these claims are costed, not run\n(more n2 decoders and reduced runs are in the added notebooks).")
+    assert "added notebooks" in C[k].source
+edit("decoding_quadrant_direction.ipynb", quad)
+
+def octant(C):
+    C[find(C, "**Result: blocked (not_runnable).** Under null reading (n1)")].source = """**Result: blocked (not_runnable).** Under null reading (n1) the claim holds: the average matrix of
+200 fits has a median accuracy of 0.326, 2.61 times chance; none of the 1000 shuffled decoders
+reaches it (the largest is 0.229), so p < 0.001, and it exceeds chance. On equal terms with the
+single-fit null, the real single fits have median accuracies of 0.179 to 0.417 (median 0.320); 11
+of the 200 lie at or below the largest null value, and the weakest has 12 of the 1000 null values
+at or above it. Reading (n2), 1000 shuffles of 200 fits each, needs 200,000 fits, about 33.9 hours
+on this machine; the one (n2) null decoder run here gives 0.110 (eight more are in
+`decoding_null_n2_octant.ipynb`). The criterion asks for both readings, so the claim cannot be
+decided within the time limit."""
+    C[find(C, "**Result: blocked (not_runnable).** It depends on ed9b-octant-decoding")].source = """**Result: blocked (not_runnable).** It depends on ed9b-octant-decoding, which is blocked. With the
+code's positions, 5411 grid points are used at 45 pixels and 5905 at 50 pixels (5409 and 5897 with
+centroids); with 40 fits per point and per null decoder that is 256,360 to 276,200 fits, about 11.9
+to 12.8 hours on four cores. A reduced run is in `decoding_reduced.ipynb`."""
+    k = find(C, "## Summary")
+    C[k].source = C[k].source.replace("Only\nnull reading (n1) is run; (n2) and the analyses that depend on these claims are costed, not run.",
+        "Only\nnull reading (n1) is run in full; (n2) and the analyses that depend on these claims are costed, not run\n(more n2 decoders and reduced runs are in the added notebooks).")
+    assert "added notebooks" in C[k].source
+edit("decoding_octant.ipynb", octant)
+
+def n2q(C):
+    k = find(C, "**Result: blocked (not_runnable).** RESULT_PLACEHOLDER")
+    C[k].source = """**Result: blocked (not_runnable).** The real decoder, computed again with the decoding notebook's
+seed, has a median accuracy of 0.437. The eight (n2) null decoders run here give 0.089 to 0.145
+(mean 0.117), none at or above it. Eight decoders cannot show p < 0.001, which needs the 1,000 of
+the criterion, so the claim stays blocked; these values show where the (n2) null lies."""
+edit("decoding_null_n2_quadrant_direction.ipynb", n2q)
+def n2o(C):
+    k = find(C, "**Result: blocked (not_runnable).** RESULT_PLACEHOLDER")
+    C[k].source = """**Result: blocked (not_runnable).** The real decoder, computed again with the decoding notebook's
+seed, has a median accuracy of 0.326. The eight (n2) null decoders run here give 0.109 to 0.149
+(mean 0.125), none at or above it. Eight decoders cannot show p < 0.001, which needs the 1,000 of
+the criterion, so the claim stays blocked; these values show where the (n2) null lies."""
+edit("decoding_null_n2_octant.ipynb", n2o)
+
+def red(C):
+    C[find(C, "**Result: blocked (not_runnable).** RESULT_K")].source = """**Result: blocked (not_runnable).** In this reduced run (16 subsets of 5 fits per size) the median
+accuracy rises from 0.099 at 2 footprints to 0.442 at 2,048, and the original subsets differ from
+the shuffled ones with p of 1.5e-6 to 6.7e-6 from 32 footprints on, but not at 2 to 8 footprints
+(p 0.53 to 0.87) nor, at the 2.7e-4 level, at 16 (p 0.017). Neither reading has every p at or below
+2.7e-4. This run is far smaller than the criterion's 64 subsets of 100 fits and decides nothing."""
+    C[find(C, "**Result: blocked (not_runnable).** RESULT_L")].source = """**Result: blocked (not_runnable).** In this reduced run (56 points used on a grid every 50 pixels,
+500 null decoders of one fit) the point values span 0.094 to 0.281 (0.187), and 32 of 56 points are
+significant with p as a fraction (31 with (k + 1) / (n + 1)), so (i) and (ii) hold for this one
+combination of readings. It is far smaller than the criterion's run and decides nothing."""
+    C[find(C, "**Result: blocked (not_runnable).** RESULT_O")].source = """**Result: blocked (not_runnable).** In this reduced run (56 points, 10 fits per point in place of
+40, 500 null decoders of one fit) the point values span 0.078 to 0.203 (0.125), and 5 of 56 points
+are significant under both definitions of p, so (i) holds for this one combination of readings.
+It is far smaller than the criterion's run and decides nothing."""
+edit("decoding_reduced.ipynb", red)
+
+def motion(C):
+    C[find(C, "**Result: not reproduced.**")].source = """**Result: not reproduced.** The RMS displacement is 0.0367 px under reading (a), 0.0381 px under (b)
+and 0.0260 px under (c), against 0.13 +/- 0.013 px; under (a) and (b) that is 0.20 to 0.23 um at
+the two pixel sizes, against the paper's 0.7 um. No frame moves more than 0.16 px along an axis,
+and the RMS in each 100 s window lies between 0.028 and 0.051 px. The registration finds motion of
+the paper's size when it is there: with a jitter of 0.132 px RMS added to the first block, the
+estimated shifts follow it (correlation 0.996 on each axis) and their RMS rises from 0.033 to 0.136
+px. The movie is consistent with the raw video, not a motion-corrected one: the file holds no
+motion correction, the histogram of its counts keeps a roughness of 0.740 to 0.745 in every block,
+where moving frames by sub-pixel shifts of 0.13 px RMS and writing them back as integers lowers it
+from 0.745 to 0.052, and its zero values are at most 2 single pixels in 243 of 36596 frames, not
+strips at the edges. Registering high-pass filtered frames (a variant chosen here, on the first
+2400 frames) gives a smaller value still, 0.0188 px under (a) against 0.0328 px for the main run on
+the same frames, so a static background pulling the estimate toward zero does not explain the
+difference. The registration is written here after NoRMCorre's rigid algorithm with its defaults,
+not MATLAB's NoRMCorre."""
+    k = find(C, "## Summary")
+    s = C[k].source
+    old = """What was found about the dandiset. The `TwoPhotonSeries` is described only as "Calcium imaging
+data at ~30 fps in grayscale format": nothing says whether it is raw or motion-corrected, and its
+frame-to-frame shifts are about a quarter of those the paper reports for the raw video."""
+    assert old in s
+    C[k].source = s.replace(old, """What was found about the dandiset. The `TwoPhotonSeries` is described only as "Calcium imaging
+data at ~30 fps in grayscale format": nothing says whether it is raw or motion-corrected. Its
+values are consistent with the raw video, and its frame-to-frame shifts are about a quarter of
+those the paper reports for the raw video.""").replace(
+        "on the movie the dandiset holds, which may not be the raw video the paper registered.",
+        "on the movie the dandiset holds, whose values are consistent with the raw video the paper registered.")
+    C[0].source = C[0].source  # header unchanged
+edit("motion_scherrer_2023.ipynb", motion)
+PYEOF
+python $TMPDIR/text_dec.py && grep -c "RESULT_" *.ipynb
+```
+
+```
+decoding_null_n2_octant.ipynb:0
+decoding_null_n2_quadrant_direction.ipynb:0
+decoding_octant.ipynb:0
+decoding_quadrant_direction.ipynb:0
+decoding_reduced.ipynb:0
+motion_scherrer_2023.ipynb:0
+reproduce_scherrer_2023.ipynb:0
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -c "may not be the raw" entries/000691-scherrer-2023/motion_scherrer_2023.ipynb; python - <<'EOF'
+import nbformat, glob, os
+for p in sorted(glob.glob("entries/000691-scherrer-2023/*.ipynb")):
+    e = "executed/000691-scherrer-2023/" + os.path.basename(p)
+    src, ex = nbformat.read(p, as_version=4), nbformat.read(e, as_version=4)
+    assert len(src.cells) == len(ex.cells), p
+    for a, b in zip(src.cells, ex.cells):
+        assert a.cell_type == b.cell_type
+        if a.cell_type == "code": assert a.source == b.source, (p, a.source[:80])
+        else: b.source = a.source
+    nbformat.write(ex, e); print("synced", e)
+EOF
+```
+
+```
+1
+synced executed/000691-scherrer-2023/decoding_null_n2_octant.ipynb
+synced executed/000691-scherrer-2023/decoding_null_n2_quadrant_direction.ipynb
+synced executed/000691-scherrer-2023/decoding_octant.ipynb
+synced executed/000691-scherrer-2023/decoding_quadrant_direction.ipynb
+synced executed/000691-scherrer-2023/decoding_reduced.ipynb
+synced executed/000691-scherrer-2023/motion_scherrer_2023.ipynb
+synced executed/000691-scherrer-2023/reproduce_scherrer_2023.ipynb
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000691-scherrer-2023; python - <<'EOF'
+import nbformat
+nb=nbformat.read("motion_scherrer_2023.ipynb",as_version=4)
+print(nb.cells[-1].source)
+EOF
+```
+
+```
+## Summary
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
+
+| Claim | Outcome (this attempt) | Outcome of -01 |
+|---|---|---|
+| ed7-motion-small | not reproduced | (new) |
+
+How the analysis differs from the paper's. The paper ran NoRMCorre in MATLAB with settings it
+does not give; here a rigid registration written after NoRMCorre's algorithm and defaults runs on
+the movie the dandiset holds, which may not be the raw video the paper registered.
+
+What was found about the dandiset. The `TwoPhotonSeries` is described only as "Calcium imaging
+data at ~30 fps in grayscale format": nothing says whether it is raw or motion-corrected. Its
+values are consistent with the raw video, and its frame-to-frame shifts are about a quarter of
+those the paper reports for the raw video.
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import nbformat
+for p in ["entries/000691-scherrer-2023/motion_scherrer_2023.ipynb", "executed/000691-scherrer-2023/motion_scherrer_2023.ipynb"]:
+    nb=nbformat.read(p,as_version=4); c=nb.cells[-1]
+    old="the movie the dandiset holds, which may not be the raw video the paper registered."
+    assert old in c.source
+    c.source=c.source.replace(old,"the movie the dandiset holds, whose values are consistent with the raw video the paper registered.")
+    nbformat.write(nb,p)
+EOF
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n -o ".\{80\}\(4\.422\|38 hours\|4\.4 hours\|3\.8 to 4\.1\|10\.2 to\|3\.578\|motion-corrected\|14 of 118\).\{60\}" entries/000691-scherrer-2023/*.ipynb entries/000691-scherrer-2023/README.md
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "4\.422\|38 hours\|4\.4 hours\|3\.8 to 4\.1\|10\.2 to\|3\.578\|motion-corrected\|14 of 118\|raw video" entries/000691-scherrer-2023/*.ipynb entries/000691-scherrer-2023/README.md | cut -c1-250
+```
+
+```
+entries/000691-scherrer-2023/decoding_null_n2_octant.ipynb:24:    "asks for need 200,000 fits, about 38 hours here, and are not run. The first verification asked for\n",
+entries/000691-scherrer-2023/decoding_null_n2_quadrant_direction.ipynb:24:    "asks for need 200,000 fits, about 38 hours here, and are not run. The first verification asked for\n",
+entries/000691-scherrer-2023/motion_scherrer_2023.ipynb:113:    "# Is the movie the raw video? Nothing in the file says (printed below); these are the checks the values allow.\n",
+entries/000691-scherrer-2023/motion_scherrer_2023.ipynb:321:    "px. The movie is consistent with the raw video, not a motion-corrected one: the file holds no\n",
+entries/000691-scherrer-2023/motion_scherrer_2023.ipynb:348:    "the movie the dandiset holds, whose values are consistent with the raw video the paper registered.\n",
+entries/000691-scherrer-2023/motion_scherrer_2023.ipynb:351:    "data at ~30 fps in grayscale format\": nothing says whether it is raw or motion-corrected. Its\n",
+entries/000691-scherrer-2023/motion_scherrer_2023.ipynb:352:    "values are consistent with the raw video, and its frame-to-frame shifts are about a quarter of\n",
+entries/000691-scherrer-2023/motion_scherrer_2023.ipynb:353:    "those the paper reports for the raw video."
+entries/000691-scherrer-2023/reproduce_scherrer_2023.ipynb:591:    "while nothing says whether the movie is raw or motion-corrected."
+entries/000691-scherrer-2023/reproduce_scherrer_2023.ipynb:1477:    "position; and nothing says whether the movie is raw or motion-corrected. Its values are consistent with\n",
+entries/000691-scherrer-2023/reproduce_scherrer_2023.ipynb:1478:    "the raw video (see the motion notebook), and its shifts are about a quarter of those the paper\n",
+```
+
+**Agent calls Bash**
+
+```bash
+cd  for d in entries executed; do sed -i 's/asks for need 200,000 fits, about 38 hours here, and are not run./asks for need 200,000 fits, about 34 hours here (measured in the decoding notebook), and are not run./' $d/000691-scherrer-2023/decoding_null_n2_*.ipynb; done; grep -c "34 hours" entries/000691-scherrer-2023/decoding_null_n2_*.ipynb executed/000691-scherrer-2023/decoding_null_n2_*.ipynb; python -c "
+import nbformat,glob
+for p in glob.glob('entries/000691-scherrer-2023/*.ipynb')+glob.glob('executed/000691-scherrer-2023/*.ipynb'): nbformat.read(p,as_version=4)
+print('ok')"
+```
+
+```
+entries/000691-scherrer-2023/decoding_null_n2_octant.ipynb:1
+entries/000691-scherrer-2023/decoding_null_n2_quadrant_direction.ipynb:1
+executed/000691-scherrer-2023/decoding_null_n2_octant.ipynb:1
+executed/000691-scherrer-2023/decoding_null_n2_quadrant_direction.ipynb:1
+ok
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 583,592p entries/000691-scherrer-2023/reproduce_scherrer_2023.ipynb
+```
+
+```
+"   ridgeline is Fig. 2h): still present in the version of record's full text, which the first\n",
+    "   attempt had not read.\n",
+    "\n",
+    "New findings of this attempt, shown above and in the claim sections: the stored `ROICentroids` are\n",
+    "closer to the peak pixel than to a weighted centroid, and how they were computed is not said; the\n",
+    "code's unwrap gains an error of up to pi cm at each lap; the bead scripts order their images by file date, which the\n",
+    "repository does not keep (the Featherscope regions confirm the file-number order); and, in the\n",
+    "motion notebook, the movie's frame-to-frame shifts are about a quarter of those the paper reports,\n",
+    "while nothing says whether the movie is raw or motion-corrected."
+   ]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  for d in entries executed; do python - "$d" <<'EOF'
+import nbformat, sys
+p=f"{sys.argv[1]}/000691-scherrer-2023/reproduce_scherrer_2023.ipynb"; nb=nbformat.read(p,as_version=4)
+old="while nothing says whether the movie is raw or motion-corrected."
+c=[c for c in nb.cells if old in c.source]; assert len(c)==1
+c[0].source=c[0].source.replace(old,"while nothing says whether the movie is raw or motion-corrected (its values are consistent with the raw video).")
+nbformat.write(nb,p)
+EOF
+done; echo done
 ```
 
 ```
@@ -2327,280 +2283,752 @@ done
 **Agent calls Bash**
 
 ```bash
-cat >> attempts/000691-scherrer-2023-01.yaml <<'EOF'
+cd entries/000691-scherrer-2023; python - <<'EOF'
+p="README.md"; s=open(p).read()
+rep = [
+("| Coactive footprints spread across the field of view; footprints with localized activity; field curvature | Blocked: methods underspecified |",
+ "| Coactive footprints spread across the field of view; footprints with localized activity; field curvature; LMAN bursting (whose data are also missing) | Blocked: methods underspecified |"),
+("| Other mice, songbirds, singing rate, LMAN bursting, weights, resolution targets, ADC | Blocked: data missing |",
+ "| Other mice, songbirds, singing rate, weights, resolution targets, ADC | Blocked: data missing |"),
+("""- `motion_scherrer_2023.ipynb`: rigid registration of the whole imaging movie, streamed in blocks
+  (about 22 minutes on four cores).""",
+"""- `motion_scherrer_2023.ipynb`: rigid registration of the whole imaging movie, streamed in blocks,
+  with checks that the movie is the raw video and that the registration finds a known jitter
+  (about 25 minutes on four cores).
+- `decoding_null_n2_quadrant_direction.ipynb` and `decoding_null_n2_octant.ipynb`: eight more null
+  decoders of the second reading (200 fits each) for each decoding claim (about 22 minutes each).
+- `decoding_reduced.ipynb`: reduced runs of the decoder-size and map analyses, which decide no
+  outcome (about 21 minutes)."""),
+]
+for a,b in rep:
+    assert a in s, a[:50]; s=s.replace(a,b)
+open(p,"w").write(s)
+EOF
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+p="entries/000691-scherrer-2023/entry.yaml"; s=open(p).read()
+import re
+for path, m in [("reproduce_scherrer_2023.ipynb",10),("decoding_quadrant_direction.ipynb",19),("decoding_octant.ipynb",19),("motion_scherrer_2023.ipynb",23),("decoding_null_n2_quadrant_direction.ipynb",22),("decoding_null_n2_octant.ipynb",23),("decoding_reduced.ipynb",21)]:
+    s, n = re.subn(rf"(- path: {re.escape(path)}\n  title: [^\n]*\n  runtime_minutes: )\d+", rf"\g<1>{m}", s); assert n==1, path
+open(p,"w").write(s)
+EOF
+ls schemas; grep -n -A60 '"verifications"' schemas/attempt*.json | head -120
+```
+
+```
+attempt.schema.json
+claims.schema.json
+entry.schema.json
+283:    "verifications": {
+284-      "type": "array",
+285-      "items": {
+286-        "type": "object",
+287-        "additionalProperties": false,
+288-        "required": [
+289-          "date",
+290-          "kind",
+291-          "by",
+292-          "results"
+293-        ],
+294-        "properties": {
+295-          "date": {
+296-            "type": "string",
+297-            "format": "date"
+298-          },
+299-          "kind": {
+[... 44 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 343,370p schemas/attempt.schema.json; grep -l "verifications:" attempts/*.yaml | head -3; f=$(grep -l "verifications:" attempts/*.yaml | head -1); sed -n '/^verifications:/,/^[a-z]/p' $f | head -40
+```
+
+```
+}
+          },
+          "reviewed": {
+            "description": "What was reviewed, e.g. a commit, when the attempt changed afterwards.",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "findings": {
+      "description": "What the attempt found about the dataset itself, whatever the outcomes. These roll up into the per-dataset report.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "statement"
+        ],
+        "properties": {
+[... 51 more lines not kept]
+```
+
+**Agent**
+
+Now the attempt record. First the outcome entries that change.
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000691-scherrer-2023-02.yaml",
+ "old_string": "  outcome: blocked\n  blocked_by: data_missing\n  notes: No bird imaging in the dandiset or the paper's deposits. The criterion also says no method\n    the paper fixes decides the claim (methods_underspecified). New claim.",
+ "new_string": "  outcome: blocked\n  blocked_by: methods_underspecified\n  notes: The criterion says the paper gives no measure of sparse bursting and no count of the\n    footprints that show it, so no method the paper fixes decides the claim. Its data are also\n    missing (data_missing), with no bird imaging in the dandiset or the paper's deposits. New claim."
+}
+```
+
+```
+The file attempts/000691-scherrer-2023-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000691-scherrer-2023-02.yaml",
+ "old_string": "    against a lower bound of 4.32). -01 blocked the claim as metadata_insufficient because its\n    criterion admitted only a pixel size from the dandiset and its expected value was 4.0 mm; the\n    rewritten criterion admits the code's pixel sizes.",
+ "new_string": "    against a lower bound of 4.32). Both pixel sizes come from the paper's code, not the data; with\n    5.94 um per pixel, 808 pixels give exactly 4.80 mm, so the test under that reading is close to\n    circular. -01 blocked the claim as metadata_insufficient because its criterion admitted only a\n    pixel size from the dandiset and its expected value was 4.0 mm; the rewritten criterion admits\n    the code's pixel sizes."
+}
+```
+
+```
+The file attempts/000691-scherrer-2023-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000691-scherrer-2023-02.yaml",
+ "old_string": "    6.433 um in the 500 um group (19 beads), within 10% of 4 and 7 um; reading (c), the mean major\n    axis, gives 3.887 and 6.884 um, also within. The minor axis (b, d) is 2.609 to 2.690 um at the\n    centre and 5.202 to 5.244 um at the edge and fails at both. All 155 regions name their image in\n    file-number order. With Jacobian scaling of the optimizer no bead's major FWHM moves by more than\n    0.5 um. New claim.",
+ "new_string": "    6.433 um in the 500 um group (19 beads), within 10% of 4 and 7 um; reading (c), the mean major\n    axis, gives 3.887 and 6.883 um, also within. The minor axis (b, d) is 2.609 to 2.690 um at the\n    centre and 5.203 to 5.244 um at the edge and fails at both. All 155 regions name their image in\n    file-number order. With Jacobian scaling of the optimizer no bead's major FWHM moves by more than\n    0.5 um, and taking for each bead the lower-cost of the two fits gives the same readings (3.919\n    and 6.433 um under a). New claim."
+}
+```
+
+```
+The file attempts/000691-scherrer-2023-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000691-scherrer-2023-02.yaml",
+ "old_string": "  measured: [4.422, 5.441]\n  notes: No reading puts both values within tolerance, which the criterion asks for. Under (a) the\n    edge (1500 um group, 11 beads) is 5.441 um, within 5 +/- 0.5, and the centre (11 beads) is 4.422\n    um, 0.022 um above the bound of 4.4. The mean major axis (c) is 4.416 um at the centre and 7.373\n    um at the edge, where one bead is fitted at 27.77 um; the minor axis gives 2.722 and 3.306 um (b)\n    and 2.671 and 3.094 um (d). The PSF is narrower than the 5.35 um pixel, and the fits depend on\n    the optimizer; with Jacobian scaling 14 of 118 beads' major FWHM move by more than 0.5 um and (a)\n    gives 3.578 um at the centre (0.022 um below the bound) and 5.892 um at the edge. Under every\n    reading and both optimizers the FWHM is larger at the edge than at the centre. The outcome is\n    partial because the edge value holds under (a) and the centre misses by 0.022 um. New claim.\n  deviations:\n  - MATLAB's lsqcurvefit is replaced by scipy's least_squares (trust-region-reflective, the code's\n    start, bounds and tolerances); the fits of sub-pixel beads depend on the optimizer.\n  - The code reads the 91 images in order of file date, which the repository does not keep; they\n    are read in file-number order, which the Featherscope's region labels confirm for that stack,\n    and for which each region's listed slice lies at the median of its brightest slice.",
+ "new_string": "  measured: [4.467, 5.441]\n  notes: No reading puts both values within tolerance, which the criterion asks for, with either\n    optimizer or with the lower-cost fit for each bead. Under (a) the edge (1500 um group, 11 beads)\n    is 5.441 um, within 5 +/- 0.5, and the centre (11 beads) is 4.467 um, 0.067 um above the bound\n    of 4.4. The mean major axis (c) is 4.537 um at the centre and 7.373 um at the edge, where one bead\n    is fitted at 27.77 um; the minor axis gives 2.722 and 3.306 um (b) and 2.669 and 3.094 um (d).\n    The PSF is narrower than the 5.35 um pixel, and the fits depend on the optimizer; with Jacobian\n    scaling 15 of 118 beads' major FWHM move by more than 0.5 um and (a) gives 3.639 um at the centre\n    (within) and 5.892 um at the edge (0.392 um above the bound). Taking for each bead the lower-cost\n    fit gives 4.467 and 5.892 um under (a) and 4.685 and 7.944 um under (c); the 27.77 um edge bead\n    keeps its main fit, whose cost is lower (60.1 against 79.9). The fits also differ between\n    machines: the centre under (a) was 4.422 um in the run reviewed in round 1 and is 4.467 um in this\n    run. Under every reading and every fit the FWHM is larger at the edge than at the centre. The\n    outcome is partial because the edge holds under (a) with the main fits and the centre misses by\n    0.067 um. New claim.\n  deviations:\n  - MATLAB's lsqcurvefit is replaced by scipy's least_squares (trust-region-reflective, the code's\n    start, bounds and tolerances); the fits of sub-pixel beads depend on the optimizer and differ in\n    the last digits between machines.\n  - The code reads the 91 images in order of file date, which the repository does not keep; they\n    are read in file-number order, which the Featherscope's region labels confirm for that stack.\n    For the Kiloscope stack the order is not confirmed; each region's listed slice lies at the\n    median of its brightest slice, but within 5 slices of it for only 72% of regions."
+}
+```
+
+```
+The file attempts/000691-scherrer-2023-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000691-scherrer-2023-02.yaml",
+ "old_string": "    against 0.814; at 0.45 mm 0.628 against 0.257, falling by 0.353 against 0.750. It holds for all\n    six centres tried at both radii.",
+ "new_string": "    against 0.814; at 0.45 mm 0.628 against 0.257, falling by 0.353 against 0.750. It holds for all\n    six centres tried at both radii. The three images are the ones sf3/feather/analysis.m loads in\n    the same roles (its lines 20 to 22, printed in the notebook)."
+}
+```
+
+```
+The file attempts/000691-scherrer-2023-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000691-scherrer-2023-02.yaml",
+ "old_string": "    by 0.573 against 0.875). It holds at both radii for all six centres tried. -01 found it partially",
+ "new_string": "    by 0.573 against 0.875). It holds at both radii for all six centres tried. The three images are\n    the ones sf3/widefield/analysis.m loads in the same roles (its lines 18 to 20). -01 found it partially"
+}
+```
+
+```
+The file attempts/000691-scherrer-2023-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000691-scherrer-2023-02.yaml",
+ "old_string": "    5.94 um per pixel and 0.196 um at 5.35, against 0.7 um. No frame moves more than 0.16 px along an\n    axis, and the RMS in each 100 s window is 0.028 to 0.051 px. A variant with high-pass filtered\n    frames (chosen here, first 2400 frames) gives 0.0188 px under (a) against 0.0328 px for the main\n    run on the same frames, so a static background pulling the estimate toward zero does not explain\n    the difference. Nothing in the dandiset says whether the movie is the raw video or the\n    motion-corrected one the paper extracted footprints from; shifts this small would fit a\n    corrected movie. New claim.",
+ "new_string": "    5.94 um per pixel and 0.196 um at 5.35, against 0.7 um. No frame moves more than 0.16 px along an\n    axis, and the RMS in each 100 s window is 0.028 to 0.051 px. With a jitter of 0.132 px RMS added\n    to the first 1200 frames, the estimated shifts follow it (correlation 0.996 on each axis) and\n    their RMS rises from 0.033 to 0.136 px, so the registration finds motion of the paper's size.\n    Nothing in the dandiset says whether the movie is the raw video or a motion-corrected one, and it\n    holds no motion-correction module; its values are consistent with the raw video. The histogram\n    of its 10-bit counts has a roughness (mean relative difference of each value's count from its\n    neighbours') of 0.740 to 0.745 in every block, where moving frames by sub-pixel shifts of 0.13 px\n    RMS and writing them back as integers lowers it from 0.745 to 0.052; its zero values are at most\n    2 single pixels in 243 of 36596 frames, not edge strips. A variant with high-pass filtered\n    frames (chosen here, first 2400 frames) gives 0.0188 px under (a) against 0.0328 px for the main\n    run on the same frames, so a static background pulling the estimate toward zero does not explain\n    the difference. New claim."
+}
+```
+
+```
+The file attempts/000691-scherrer-2023-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000691-scherrer-2023-02.yaml",
+ "old_string": "    reading (a) holds and (b) does not (classes 2- and 3- at 0.294 and 0.239). Reading (n2), 200 fits\n    per shuffle, needs 200,000 fits, measured at about 38 hours on this machine against a 30 minute\n    limit per notebook; one (n2) null decoder gives 0.136. The claim was dropped from the claims file\n    of -01, which had no outcome for it.",
+ "new_string": "    reading (a) holds and (b) does not (classes 2- and 3- at 0.294 and 0.239). The (n1) null is of\n    single fits: the real single fits have median accuracies of 0.138 to 0.604 (median 0.430), 2 of\n    200 at or below the largest null value, and the weakest has 78 of 1000 null values at or above\n    it. Reading (n2), 200 fits per shuffle, needs 200,000 fits, measured at about 33.6 hours on this\n    machine against a 30 minute limit per notebook. Nine (n2) null decoders were run (one in the\n    decoding notebook, 0.136; eight in decoding_null_n2_quadrant_direction.ipynb, 0.089 to 0.145),\n    none near 0.437, but nine cannot show p < 0.001. The clock check of the main notebook peaks with\n    labels shifted by +2 s (0.519 against 0.495 at 0 s, 3 fits each); an offset would lower the\n    accuracy, not raise it. The claim was dropped from the claims file of -01, which had no outcome\n    for it."
+}
+```
+
+```
+The file attempts/000691-scherrer-2023-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000691-scherrer-2023-02.yaml",
+ "old_string": "    needs 140,800 fits (11 sizes, 64 subsets, 100 fits on the original and 100 on the shuffled\n    data), measured at about 4.4 hours on four cores. Not run. New claim.",
+ "new_string": "    needs 140,800 fits (11 sizes, 64 subsets, 100 fits on the original and 100 on the shuffled\n    data), measured at about 5.0 hours on four cores. Not run in full. A reduced run chosen here (16\n    subsets of 5 fits per size, decoding_reduced.ipynb), which decides nothing, has the median\n    accuracy rising from 0.099 at 2 footprints to 0.442 at 2,048; original and shuffled subsets\n    differ with p of 1.5e-6 to 6.7e-6 from 32 footprints on but not at 2 to 8 (p 0.53 to 0.87), and\n    neither reading has every p at or below 2.7e-4. New claim."
+}
+```
+
+```
+The file attempts/000691-scherrer-2023-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000691-scherrer-2023-02.yaml",
+ "old_string": "    point and per null decoder that is 64,090 to 69,050 fits, measured at about 3.8 to 4.1 hours on\n    four cores. Not run. New claim.",
+ "new_string": "    point and per null decoder that is 64,090 to 69,050 fits, measured at about 4.5 to 4.8 hours on\n    four cores. Not run in full. A reduced run chosen here (a grid every 50 pixels with 56 points\n    used, 500 null decoders of one fit, decoding_reduced.ipynb), which decides nothing, gives point\n    values spanning 0.094 to 0.281 with 32 of 56 points significant (31 with (k + 1) / (n + 1)). New\n    claim."
+}
+```
+
+```
+The file attempts/000691-scherrer-2023-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000691-scherrer-2023-02.yaml",
+ "old_string": "    window (frames 30 times the times) component 1 again has none in the lower-left quarter. -01 found it reproduced",
+ "new_string": "    window (frames 30 times the times) component 1 again has none in the lower-left quarter. With\n    the quarters split at the image's midlines (row 304.5, column 404.5), the lower-left quarter\n    holds 86 footprints and the counts are again 8 of 8 under (a) and 7 of 8 under (b). Under (b),\n    five components' assigned times fall where their weights are 0.04 to 0.13 of their maximum, so\n    they are not events of this NMF run. -01 found it reproduced"
+}
+```
+
+```
+The file attempts/000691-scherrer-2023-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000691-scherrer-2023-02.yaml",
+ "old_string": "    0.229, p < 0.001). Reading (n2) needs 200,000 fits, measured at about 38 hours on this machine;\n    one (n2) null decoder gives 0.110. The criterion asks for both.",
+ "new_string": "    0.229, p < 0.001). The real single fits have median accuracies of 0.179 to 0.417 (median\n    0.320), 11 of 200 at or below the largest (n1) null value, and the weakest has 12 of 1000 null\n    values at or above it. Reading (n2) needs 200,000 fits, measured at about 33.9 hours on this\n    machine. Nine (n2) null decoders were run (one in the decoding notebook, 0.110; eight in\n    decoding_null_n2_octant.ipynb, 0.109 to 0.149), none near 0.326, but nine cannot show p < 0.001.\n    The criterion asks for both."
+}
+```
+
+```
+The file attempts/000691-scherrer-2023-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000691-scherrer-2023-02.yaml",
+ "old_string": "    256,360 to 276,200 fits, measured at about 10.2 to 11.0 hours on four cores. Not run. -01 found it",
+ "new_string": "    256,360 to 276,200 fits, measured at about 11.9 to 12.8 hours on four cores. Not run in full. A\n    reduced run chosen here (as for fig2l-local-decoding-map, with 10 fits per point in place of 40,\n    decoding_reduced.ipynb), which decides nothing, gives point values spanning 0.078 to 0.203 with\n    5 of 56 points significant under both definitions of p. -01 found it"
+}
+```
+
+```
+The file attempts/000691-scherrer-2023-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000691-scherrer-2023-02.yaml",
+ "old_string": "    paper extracted footprints from. Its frame-to-frame rigid shifts have an RMS of 0.037 pixels,\n    about a quarter of the 0.13 pixels the paper reports for the raw video.",
+ "new_string": "    paper extracted footprints from, and the file holds no motion-correction module. Its values are\n    consistent with the raw video (the histogram of its counts keeps the converter's uneven pattern,\n    which sub-pixel resampling smooths), and its frame-to-frame rigid shifts have an RMS of 0.037\n    pixels, about a quarter of the 0.13 pixels the paper reports for the raw video."
+}
+```
+
+```
+The file attempts/000691-scherrer-2023-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent**
+
+Now the `verifications` section.
+
+**Agent calls Bash**
+
+```bash
+cd  cat >> attempts/000691-scherrer-2023-02.yaml <<'EOF'
 verifications:
-- date: '2026-10-18'
+- date: '2026-10-21'
   kind: agent
-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
-    helper module and the claims file, with the paper's abstract and Extended Data legends from the
-    publisher page. The verifier read the archive's asset list and metadata, read the paper's code at
-    d596646, and tested the decoder and tracking helpers on synthetic inputs. Its report had no attempt
-    record and gave its own outcome for each claim; all 15 agree with the record as it then stood. The
-    revision changed the outcome of ed9c-local-decoding-map, which round 2 reviews.
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 1. The executed notebooks of the run of 2026-10-20 with the conclusion cells and the
+    summaries removed, the helper module and the claims file, with the paper. The verifier queried the
+    archive and tested helper functions on synthetic inputs. Its report gave its own outcome for 22
+    of the 23 claims; it gave none for ed3-adc, which is not listed here. It agrees with 20 of the 22
+    and gives reproduced for the two decoding claims the record blocks.
   results:
   - claim: abstract-thousands-of-neurons
     agrees: true
     outcome: reproduced
-    reason: All 2948 footprints have non-zero traces. No pairs merge, since the largest trace
-      correlation is 0.77. The mouse visits all 4 arms.
-    response: No change to the outcome. For the tracking (problems 6 and 7), added the steps between
-      video frames (2 above 40 px, one glitch at 1064.8 s), the 55 frames with a blob under 50 px, the
-      labels recomputed without them (arm changes in 0.05% of imaging frames, octant in 0.06%), and
-      eight sample frames with the tracked centroid, four of them from the opening part the code
-      leaves out. The text on the experimenter now says only what those frames show.
+    reason: 2948 EXTRACT footprints, all in one movie on shared timestamps; the mouse tracked over 47.7
+      loops of the maze.
+    response: No change needed.
   - claim: ed6a-curated-footprints
     agrees: true
     outcome: blocked
-    reason: The PlaneSegmentation has only image_mask and ROICentroids, so there is no curation flag.
-      2948 is the uncurated count and cannot be compared with 2382 ± 238.
+    reason: The only PlaneSegmentation columns are image_mask and ROICentroids, so nothing marks the
+      curated footprints; the criterion says it then cannot be tested.
     response: No change needed.
   - claim: ed6bcd-other-mice
     agrees: true
     outcome: blocked
-    reason: The API confirms 1 subject and 2 assets.
+    reason: The DANDI API lists 2 assets and 1 subject (checked by the verifier).
     response: No change needed.
   - claim: ed5-songbirds
     agrees: true
     outcome: blocked
-    reason: No bird data in the archive (API, species is mouse only).
+    reason: No bird data in the archive.
     response: No change needed.
-  - claim: abstract-kiloscope-fov
+  - claim: birds-singing-rate
     agrees: true
     outcome: blocked
-    reason: The NWB file and the asset metadata give no pixel size. At the code's 5.94 um/px the frame
-      would be 4.80 x 3.61 mm, outside 4.0 ± 0.4 mm, but that value comes from outside the dandiset,
-      and FOV may mean the usable circular field, so it agrees the claim is blocked. Using the code's
-      pixel size for ed8 and ed9c while blocking this claim for lack of one is defensible but not
-      consistent (problem 8).
-    response: Outcome kept. The pixel size is kept for ed8 and ed9c because there it sets only a
-      selection radius and a unit of distance, and ed8's outcome uses ratios; for this claim the
-      length in millimetres is the claim itself, so a value from outside the dandiset cannot test
-      it. No change to the notebook.
+    reason: No bird data in the archive.
+    response: No change needed.
+  - claim: fig2d-lman-sparse-bursting
+    agrees: true
+    outcome: blocked
+    reason: Blocked as methods_underspecified, with the data also missing. The claims file gives
+      methods_underspecified; the notebook's table says only "data missing" (problem 11).
+    response: blocked_by changed from data_missing to methods_underspecified, as the criterion says,
+      with the missing data in the notes; the notebook's header table, summary and the README now
+      say so.
+  - claim: abstract-kiloscope-fov
+    agrees: true
+    outcome: reproduced
+    reason: 808 x 608 px gives 4.80 x 3.61 mm at 5.94 um/px and 4.32 x 3.25 mm at 5.35 um/px; both sides
+      within tolerance under both pixel sizes. Both pixel sizes come from the authors' code, and with
+      5.94 um/px the test is close to circular (problem 9).
+    response: The near circularity is now stated in the notes. Outcome kept.
   - claim: abstract-weights
     agrees: true
     outcome: blocked
-    reason: Weight is not data. The only weight in the file is a wrong device description (1.0 g).
+    reason: No dataset could hold the hardware weights.
+    response: No change needed.
+  - claim: fig1e-featherscope-psf
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a) 3.919 um at the centre and 6.433 um at the edge, reading (c) 3.887 and 6.884 um,
+      both inside 4 +/- 0.4 and 7 +/- 0.7, and stable under the Jacobian variant.
+    response: Added the readings with the lower-cost of the two fits for each bead (problem 4); they
+      are the same (3.919 and 6.433 um under a). Outcome kept.
+  - claim: fig1f-kiloscope-psf
+    agrees: true
+    outcome: partially_reproduced
+    reason: No reading meets the criterion with either optimizer; under (a) the edge is within
+      tolerance and the centre 0.022 um above the bound, and with Jacobian scaling the centre is 0.022
+      um below the other bound. Partial because the centre is about 4 um and the edge about 5 um,
+      rising with radius. The fits often stop short of the least-squares minimum, one edge bead is
+      fitted at 27.77 um, and no result uses the lower-cost fit for each bead (problem 4). The stack's
+      image order is not confirmed, with only 72% of beads brightest within 5 slices of the listed
+      one (problem 10).
+    response: Added the readings with the lower-cost fit for each bead (4.467 and 5.892 um under a,
+      both outside) and a table of the centre and edge beads with both fits and their costs; the 27.77
+      um bead keeps its main fit, whose cost is lower (60.1 against 79.9). The unconfirmed image order
+      and the 72% are now in the deviations. On this run the main fits give 4.467 um at the centre
+      under (a), not 4.422; the fits differ between machines, which the notes and deviations now say.
+      No reading or fit meets the criterion, and the FWHM is larger at the edge under all of them, so
+      the outcome is kept.
+  - claim: ed1cf-field-curvature
+    agrees: true
+    outcome: blocked
+    reason: As the criterion says; best-focus slice against radius is shown.
     response: No change needed.
   - claim: ed1-ed4-resolution
     agrees: true
     outcome: blocked
-    reason: No USAF target images in the archive.
+    reason: No USAF target images, in the dandiset or in the repository listing.
     response: No change needed.
-  - claim: ed3-adc
-    agrees: true
-    outcome: blocked
-    reason: No ADC test recordings in the archive.
-    response: No change needed.
-  - claim: ed8-coactive-distributed
-    agrees: true
-    outcome: reproduced
-    reason: All 8 events have 196 to 320 active footprints with spread ratios of 0.95 to 1.06, so 8 of
-      8 pass, and the same holds at thresholds 0.3 and 0.7. The test is weak. Members are assigned by
-      highest rank, so each component gets about 1/8 of all footprints and a random eighth already
-      has a spread ratio near 1; 57 to 84% of members count as active in a 50 s window, with no
-      comparison with a random window. Two event times (80.4 s and 122.9 s) fall in the first 153 s,
-      which the behaviour analysis drops (problem 4).
-    response: Outcome kept. Added the fraction of members active in 100 random 50 s windows per
-      component (medians 0.399 to 0.519; the event is above the 95th percentile for 6 of 8), the
-      spread ratio of random sets of the event's size (0.951 to 1.042, 5th to 95th percentiles), and
-      a variant with event times from 153 s on (8 of 8). The conclusion now says the criterion's
-      threshold is far below what any set this large reaches.
-  - claim: fig2-quadrant-direction-decoding
-    agrees: true
-    outcome: reproduced
-    reason: The median per-decoder median class accuracy is 0.415, above chance (0.125) and above the
-      null 95th percentile (0.145); 50 of 50 decoders exceed it. The split matches the paper's code
-      and there is no train/test leakage (problem 1). SGD at this very small alpha is noisy and was
-      never checked against an exact solver on the real data; this only lowers scores, so the passing
-      decoding claims stand (problem 2). Paper values for Fig. 2 could not be compared.
-    response: Outcome kept. Added six splits fit by both SGD and an exact solver (liblinear) of the
-      same objective. SGD stops far from the optimum (objectives 2.04 to 3.21 against 0.086 to
-      0.118); the exact solver gives 0.262 to 0.318 for real decoders and 0.131 to 0.164 for shifted
-      ones. SGD is kept for these decoders because MATLAB's default for more than 100 predictors,
-      which the code uses, is also 10 passes of a stochastic solver. The Fig. 2 legend and main text
-      remain unavailable, so no paper value is compared.
-  - claim: ed9b-octant-decoding
-    agrees: true
-    outcome: reproduced
-    reason: Median 0.313, against a null 95th percentile of 0.144 and chance of 0.125; 50 of 50
-      decoders above.
-    response: No change; the numbers are the same after the revision.
-  - claim: ed9c-local-decoding-map
-    agrees: true
-    outcome: not_reproduced
-    reason: 0 of 151 grid points are significant at BH 5%; the best z is 1.87 (q = 0.61). The code's
-      variant (64 footprints within 50 px) gives 4 of 77 significant with a score range of 0.054,
-      which would pass. The result is fragile. SGD lowers the real scores and widens the null spread
-      used in the z-test, so it could explain why no point is significant (problem 2). Each point has
-      10 real and 10 null decoders, the null standard deviation comes from 10 values, and a point
-      needs roughly z > 3.3 to pass, so the result is weakly powered (problem 3). The radius is 45.45
-      px where the criterion says 45 px (problem 8).
-    response: Outcome changed to reproduced. Following problem 2, the 32-footprint decoders were
-      checked against an exact solver; SGD stops at objectives of 19.8 to 68.9 where the optimum is
-      1.976 to 2.000. MATLAB's default for 100 or fewer predictors, which the code uses, is BFGS run
-      to convergence, so the local decoders are now fit by liblinear on the same objective. With it,
-      18 of 150 points are significant (scores 0.112 to 0.187, range 0.075), which meets the
-      criterion; with SGD on the same points and seeds, 1 point is. The radius is now 45 px. Added the
-      null standard deviation per point (0.018 to 0.046), the z a point needs alone (3.40) and the
-      smallest z among significant points (2.53). The map was not rerun with more decoders per point;
-      at about 0.4 s per exact fit on 150 points it does not fit the time limit. The code's variant
-      now uses the exact solver on a 60 px grid (22 of 34 significant).
-  - claim: ed10-localized-activity
-    agrees: true
-    outcome: reproduced
-    reason: 100 of 2948 footprints are localized against 29 expected, binomial p = 4.5e-25. The same
-      100 shifts serve as the null for every footprint, so counts are correlated and the binomial p
-      is anti-conservative, and circular-shift nulls do not remove slow non-stationarity shared by
-      activity and position; the excess is large enough that the outcome holds (problem 5).
-    response: Outcome kept. Added the empirical false-positive count, each shifted copy treated as
-      the observed data against the other 99 (median 28, 95th percentile 54, maximum 62; none of 100
-      reaches 100). Slow non-stationarity is not addressed.
   - claim: ed2b-featherscope-flat-illumination
     agrees: true
-    outcome: partially_reproduced
-    reason: The corrected profile drops to 0.742 at 400 um, below 0.8. It is above total vignetting
-      there (0.342).
-    response: Outcome kept. Added the minimum out to R ± 5% (0.785, 0.698) and about five other
-      centres (0.626 to 0.867).
+    outcome: reproduced
+    reason: Corrected against total vignetting 0.511 vs 0.193 at 0.5 mm and 0.628 vs 0.257 at 0.45 mm;
+      the corrected profile falls less at both radii, robust to moving the centre. Which images the
+      script loads was not shown.
+    response: Added a cell that prints the lines of sf3/feather/analysis.m that load the images (lines
+      20 to 22) and checks that they are the three files used, in the same roles. Outcome kept.
   - claim: ed2c-kiloscope-flat-illumination
     agrees: true
-    outcome: partially_reproduced
-    reason: The corrected profile is 0.797 at 1500 um, just under 0.8, and above total vignetting
-      (0.253). The 0.003 margin depends on pixel size and centring.
-    response: Outcome kept, as the criterion fixes the code's centre and the radius. Added the minimum
-      out to R ± 5% (0.846, 0.742) and about five other centres (0.695 to 0.831; above 0.8 for one).
-      The pixel size is the code's and was not varied.
+    outcome: reproduced
+    reason: 0.557 vs 0.180 at 1.8 mm and 0.420 vs 0.148 at 2.0 mm; the comparison holds for all 6
+      centres tried. Which images the script loads was not shown.
+    response: The same cell prints lines 18 to 20 of sf3/widefield/analysis.m, which load the three
+      files used. Outcome kept.
+  - claim: ed7-motion-small
+    agrees: true
+    outcome: not_reproduced
+    reason: RMS 0.037, 0.038 and 0.026 px under readings (a), (b) and (c), all far below 0.13 +/- 0.013.
+      Tentative, as it rests on the deposited movie being raw, which nothing checks; the largest shift
+      of 0.16 px, the flat per-window RMS and exact zeros in block 0 fit an already-registered movie,
+      and if it is motion-corrected the outcome is blocked (metadata_insufficient). The registration
+      is a re-implementation of NoRMCorre (problem 1).
+    response: Added the checks the verifier asked for. The series has no comments and the file no
+      motion-correction module. The histogram of the counts keeps a roughness of 0.740 to 0.745 in
+      every block, where sub-pixel shifts of 0.13 px RMS written back as integers lower it from 0.745
+      to 0.052, so the movie has not been resampled as a correction would; the zero values are at
+      most 2 single pixels in 243 of 36596 frames, not edge strips. With a known jitter of 0.132 px
+      RMS added, the registration follows it (correlation 0.996) and its RMS rises from 0.033 to
+      0.136 px. The movie is consistent with the raw video, so the outcome is kept, no longer
+      tentative; the re-implementation stays a deviation.
+  - claim: fig2-quadrant-direction-decoding
+    agrees: false
+    outcome: reproduced
+    reason: Median accuracy 0.437 >= 0.375 under reading (a); under null (n1) the largest of 1000
+      shuffles is 0.227, so p = 0. Null (n2), which the criterion also requires, was not run; its one
+      sample (0.136) and the margin make a disagreement very unlikely. The n1 comparison sets a
+      200-fit averaged real matrix against single-fit null matrices, which overstates the separation,
+      though not enough to matter here (problem 2).
+    response: Added the real decoder's single-fit median accuracies on equal terms with the (n1) null
+      (0.138 to 0.604, median 0.430; 2 of 200 at or below the largest null value) and eight more (n2)
+      null decoders in a new notebook (0.089 to 0.145), as many as fit in its time limit. The full
+      (n2) null needs about 33.6 hours. Outcome kept as blocked (not_runnable), disagreement recorded:
+      the criterion judges p under both readings, nine (n2) decoders cannot show p < 0.001, and an
+      outcome on (n1) alone would rest on a judgment that (n2) would agree, which no criterion
+      states.
+  - claim: fig2k-decoder-size
+    agrees: true
+    outcome: blocked
+    reason: Blocked as other (not run, compute), not for data. Cell 10 only times the fits; the data are
+      present, and a reduced run was possible within limits, for example reading (b) with fewer fits
+      (problem 3).
+    response: Added a reduced run (16 subsets of 5 fits per size, original and shuffled) in a new
+      notebook, which decides nothing. blocked_by kept as not_runnable, disagreement recorded; the
+      protocol uses not_runnable for a method that cannot run within the time limit, and the full run
+      is measured at about 5.0 hours on four cores against 30 minutes per notebook.
+  - claim: fig2l-local-decoding-map
+    agrees: true
+    outcome: blocked
+    reason: Blocked as other (not run, compute). Cell 12 only counts the map points used and times the
+      fits; a reduced run was possible, for example one fit per null decoder (problem 3).
+    response: Added a reduced run (grid every 50 pixels, 500 null decoders of one fit), which decides
+      nothing. blocked_by kept as not_runnable (about 4.5 to 4.8 hours on four cores), disagreement
+      recorded as for fig2k-decoder-size.
+  - claim: ed8-coactive-distributed
+    agrees: true
+    outcome: blocked
+    reason: All four quarters are covered in 8 of 8 events under reading (a) but 7 of 8 under (b);
+      the criterion says the outcome is then methods_underspecified. The midline split leaves 85
+      footprints in the lower left, so the test turns on one sparse corner, and under (b) the event
+      times land where four components' weights are only 0.04 to 0.13 of their maxima (problem 5).
+    response: Added the counts with the quarters split at the image's midlines; the lower left holds
+      86 footprints and the counts are again 8 of 8 and 7 of 8. The notes and conclusion now say that
+      five components' assigned times (b) fall at 0.04 to 0.13 of their maximum weight and are not
+      events of this NMF run; reading (b) is the criterion's. Outcome kept.
+  - claim: ed9b-octant-decoding
+    agrees: false
+    outcome: reproduced
+    reason: 0.326 > 1/8, above the n1 null maximum of 0.229, p = 0. As for fig2, n2 was not run; its
+      one sample is 0.110.
+    response: Added the single-fit comparison (real single fits 0.179 to 0.417; 11 of 200 at or below
+      the largest null value) and eight more (n2) null decoders in a new notebook (0.109 to 0.149).
+      Outcome kept as blocked (not_runnable), disagreement recorded, for the reason given for
+      fig2-quadrant-direction-decoding.
+  - claim: ed9c-local-decoding-map
+    agrees: true
+    outcome: blocked
+    reason: Blocked as other (not run, compute); cell 9 times it only (10 to 11 h on 4 cores).
+    response: Added a reduced run (as for fig2l-local-decoding-map, 10 fits per point), which decides
+      nothing. blocked_by kept as not_runnable (about 11.9 to 12.8 hours on four cores), disagreement
+      recorded as for fig2k-decoder-size.
+  - claim: ed10-localized-activity
+    agrees: true
+    outcome: blocked
+    reason: As the criterion says; maps, entropies and peaks are shown.
+    response: No change needed.
 EOF
-cd  && python tools/entry.py check entries/000691-scherrer-2023
+python tools/entry.py check entries/000691-scherrer-2023 2>&1 | grep -v "000691-scherrer-2023-01.yaml"
 ```
 
 ```
-0 error(s)
+error: attempts/000691-scherrer-2023-02.yaml: not valid YAML: mapping values are not allowed here
+  in "<unicode string>", line 119, column 13:
+        machines: the centre under (a) was 4.422 ... 
+                ^
+12 error(s)
 ```
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-p='attempts/000691-scherrer-2023-01.yaml'; s=open(p).read()
-s=s.replace("about five other\n      centres","five other centres\n     ").replace("about five other centres","five other centres")
-a='''The map was not rerun with more decoders per point;
-      at about 0.4 s per exact fit on 150 points it does not fit the time limit.'''
-assert a in s
-s=s.replace(a,'''The map was not rerun with more decoders per point;
-      with 10 per point it already takes 634 s on four cores, so more do not fit the time limit.''')
-open(p,'w').write(s)
+cd  sed -i 's/keeps its main fit, whose cost is lower (60.1 against 79.9). The fits also differ between$/keeps its main fit, whose cost is lower (60.1 against 79.9). The fits also differ between/; s/^    machines: the centre under (a) was 4.422 um in the run reviewed in round 1 and is 4.467 um in this$/    machines, and the centre under (a) was 4.422 um in the run reviewed in round 1 and is 4.467 um in this/' attempts/000691-scherrer-2023-02.yaml; python - <<'EOF'
+import yaml
+d=yaml.safe_load(open("attempts/000691-scherrer-2023-02.yaml"))
+def walk(x, path=""):
+    if isinstance(x, dict):
+        for k,v in x.items(): walk(v, path+"/"+str(k))
+    elif isinstance(x, list):
+        for i,v in enumerate(x): walk(v, path+f"[{i}]")
+    elif isinstance(x, str):
+        if ": " in x or "—" in x or "rather" in x.lower(): print(path, "::", x[:120])
+walk(d)
 EOF
-grep -n "five other" -A1 attempts/000691-scherrer-2023-01.yaml
+grep -n "—\|rather" attempts/000691-scherrer-2023-02.yaml entries/000691-scherrer-2023/README.md; python tools/entry.py check entries/000691-scherrer-2023 2>&1 | grep -v "000691-scherrer-2023-01.yaml"
 ```
 
 ```
-363:    response: Outcome kept. Added the minimum out to R ± 5% (0.785, 0.698) and five other centres
-364-      (0.626 to 0.867).
---
-371:      out to R ± 5% (0.846, 0.742) and five other centres (0.695 to 0.831; above 0.8 for one).
-372-      The pixel size is the code's and was not varied.
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/__init__.py", line 125, in safe_load
+    return load(stream, SafeLoader)
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/__init__.py", line 81, in load
+    return loader.get_single_data()
+           ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/constructor.py", line 49, in get_single_data
+    node = self.get_single_node()
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 36, in get_single_node
+    document = self.compose_document()
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 55, in compose_document
+    node = self.compose_node(None, None)
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 133, in compose_mapping_node
+    item_value = self.compose_node(node, item_key)
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 111, in compose_sequence_node
+[... 30 more lines not kept]
 ```
-
-**Agent**
-
-Final clean run with `entry.py all`:
 
 **Agent calls Bash**
 
 ```bash
-python tools/entry.py all entries/000691-scherrer-2023 2>&1 | tail -3
+cd  grep -n "[a-z)]: [a-z0-9]" attempts/000691-scherrer-2023-02.yaml | grep -v "^[0-9]*: *-\? *[a-z_]*: " | head -20
 ```
 
 ```
-Installed kernelspec registry-000691-scherrer-2023 in executed/000691-scherrer-2023/.venv/share/jupyter/kernels/registry-000691-scherrer-2023
-0 error(s)
-pass  reproduce_scherrer_2023.ipynb  (1429 s)
+212:    single fits: the real single fits have median accuracies of 0.138 to 0.604 (median 0.430), 2 of
 ```
-
-**Agent**
-
-Confirming the final numbers match the text:
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-import json
-nb=json.load(open('executed/000691-scherrer-2023/reproduce_scherrer_2023.ipynb'))
-want=["significant at BH 5%","median_acc","shifted copy","variant, event","steps above","without those","min_0_to","total run time","objective_sgd","164.0","374.0","554.0","674.0","intensity","image centre","weighted"]
-for i,c in enumerate(nb['cells']):
-    for o in c.get('outputs',[]):
-        if o.get('output_type')=='stream':
-            for line in ''.join(o['text']).splitlines():
-                if any(w in line for w in want) or line.strip().startswith(("0.5354","0.4427","0.4420","0.1521","0.0525","0.0980")): print(i,line)
+cd  sed -i '212s/^    single fits: the real single fits have/    single fits; the real single fits have/' attempts/000691-scherrer-2023-02.yaml; python - <<'EOF'
+import yaml
+d=yaml.safe_load(open("attempts/000691-scherrer-2023-02.yaml"))
+def walk(x, path=""):
+    if isinstance(x, dict):
+        for k,v in x.items(): walk(v, path+"/"+str(k))
+    elif isinstance(x, list):
+        for i,v in enumerate(x): walk(v, path+f"[{i}]")
+    elif isinstance(x, str):
+        if ": " in x or "—" in x or "rather" in x.lower(): print(path, "::", x[:150])
+walk(d); print(len(d["verifications"][0]["results"]))
+EOF
+python tools/entry.py check entries/000691-scherrer-2023 2>&1 | grep -v "000691-scherrer-2023-01.yaml"
+```
+
+```
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/__init__.py", line 125, in safe_load
+    return load(stream, SafeLoader)
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/__init__.py", line 81, in load
+    return loader.get_single_data()
+           ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/constructor.py", line 49, in get_single_data
+    node = self.get_single_node()
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 36, in get_single_node
+    document = self.compose_document()
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 55, in compose_document
+    node = self.compose_node(None, None)
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 133, in compose_mapping_node
+    item_value = self.compose_node(node, item_key)
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/yaml/composer.py", line 111, in compose_sequence_node
+[... 39 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n ":$\|: " attempts/000691-scherrer-2023-02.yaml | grep -v "^[0-9]*: *\(- \)\?[a-z_]*:\( \|$\)"
+```
+
+```
+517:      (n2) null needs about 33.6 hours. Outcome kept as blocked (not_runnable), disagreement recorded:
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -i '517s/disagreement recorded:$/disagreement recorded;/' attempts/000691-scherrer-2023-02.yaml; python - <<'EOF'
+import yaml
+d=yaml.safe_load(open("attempts/000691-scherrer-2023-02.yaml"))
+def walk(x, path=""):
+    if isinstance(x, dict):
+        for k,v in x.items(): walk(v, path+"/"+str(k))
+    elif isinstance(x, list):
+        for i,v in enumerate(x): walk(v, path+f"[{i}]")
+    elif isinstance(x, str):
+        if ": " in x or "—" in x or "rather" in x.lower(): print(path, "::", x[:150])
+walk(d); print(len(d["verifications"][0]["results"]))
+for o in d["outcomes"]: print(o["claim"], o["outcome"], o.get("blocked_by",""))
+EOF
+python tools/entry.py check entries/000691-scherrer-2023 2>&1 | grep -v "000691-scherrer-2023-01.yaml"
+```
+
+```
+22
+abstract-thousands-of-neurons reproduced 
+ed6a-curated-footprints blocked metadata_insufficient
+ed6bcd-other-mice blocked data_missing
+ed5-songbirds blocked data_missing
+birds-singing-rate blocked data_missing
+fig2d-lman-sparse-bursting blocked methods_underspecified
+abstract-kiloscope-fov reproduced 
+abstract-weights blocked data_missing
+fig1e-featherscope-psf reproduced 
+fig1f-kiloscope-psf partially_reproduced 
+ed1cf-field-curvature blocked methods_underspecified
+ed1-ed4-resolution blocked data_missing
+ed2b-featherscope-flat-illumination reproduced 
+ed2c-kiloscope-flat-illumination reproduced 
+ed3-adc blocked data_missing
+ed7-motion-small not_reproduced 
+fig2-quadrant-direction-decoding blocked not_runnable
+fig2k-decoder-size blocked not_runnable
+fig2l-local-decoding-map blocked not_runnable
+[... 5 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n -i "—\|rather" entries/000691-scherrer-2023/* | cut -c1-200; python - <<'EOF'
+import nbformat, glob, os
+for p in sorted(glob.glob("entries/000691-scherrer-2023/*.ipynb")):
+    e = "executed/000691-scherrer-2023/" + os.path.basename(p)
+    a, b = nbformat.read(p, as_version=4), nbformat.read(e, as_version=4)
+    print(os.path.basename(p), all(x.source == y.source for x, y in zip(a.cells, b.cells)), any(c.get("outputs") for c in a.cells if c.cell_type=="code"))
 EOF
 git status --short
 ```
 
 ```
-9   steps above 20, 40, 80 pixels: [5, 2, 2]
-9   without those 55 video frames: same imaging frames True; imaging frames whose arm changes 0.0005, octant 0.0006, running 0.0107, direction 0.0018
-22  median_acc_sgd  objective_sgd  median_acc_exact  objective_exact  exact_converged  labels
-22          0.5354         2.3405            0.2615           0.1184            False    real
-22          0.4427         2.0439            0.2991           0.0897            False    real
-22          0.4420         2.5547            0.3181           0.1122            False    real
-22          0.1521         3.2066            0.1309           0.1086            False shifted
-22          0.0525         3.0650            0.1310           0.0863            False shifted
-22          0.0980         2.7171            0.1641           0.1017            False shifted
-28 32 footprints within 270 um: 150 grid points used; significant at BH 5%: 18 (12%)
-29 (a) 32 footprints within 270 um, SGD solver: 150 grid points used; significant at BH 5%: 1 (1%)
-29 (b) 64 footprints within 50 px (code), 60 px grid: 34 grid points used; significant at BH 5%: 22 (65%)
-29    c0    c1  median_acc_sgd  objective_sgd  median_acc_exact  objective_exact  exact_converged
-29 164.0 210.0          0.0895        24.6867            0.1745           2.0000             True
-29 374.0 240.0          0.0000        68.9142            0.1156           1.9764            False
-29 554.0 270.0          0.1592        19.8103            0.1428           1.9918            False
-29 674.0 420.0          0.0497        30.9869            0.1141           2.0000             True
-32 shifted copy as observed, below all 99 others: count per copy median 28, 95th percentile 54, maximum 62 (expected 29); copies with a count of at least 100: 0 of 100
-35 variant, event times from t = 153 s on (after the opening part the behaviour analysis leaves out): 8 of 8; event times [286.4, 953.0, 791.5, 1150.7, 518.1, 1165.2, 843.6, 535.3]; spread ratios 0.9
-[... 35 more lines not kept]
+grep: entries/000691-scherrer-2023/__pycache__: Is a directory
+decoding_null_n2_octant.ipynb True False
+decoding_null_n2_quadrant_direction.ipynb True False
+decoding_octant.ipynb True False
+decoding_quadrant_direction.ipynb True False
+decoding_reduced.ipynb True False
+motion_scherrer_2023.ipynb True False
+reproduce_scherrer_2023.ipynb True False
+ M attempts/000691-scherrer-2023-02.yaml
+ M entries/000691-scherrer-2023/README.md
+ M entries/000691-scherrer-2023/decoding_octant.ipynb
+ M entries/000691-scherrer-2023/decoding_quadrant_direction.ipynb
+ M entries/000691-scherrer-2023/entry.yaml
+ M entries/000691-scherrer-2023/kiloscope.py
+ M entries/000691-scherrer-2023/motion_scherrer_2023.ipynb
+ M entries/000691-scherrer-2023/reproduce_scherrer_2023.ipynb
+?? .bash_profile
+?? .bashrc
+?? .gitconfig
+?? .idea
+[... 10 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  rm -rf entries/000691-scherrer-2023/__pycache__; git status --short entries
+```
+
+```
+M entries/000691-scherrer-2023/README.md
+ M entries/000691-scherrer-2023/decoding_octant.ipynb
+ M entries/000691-scherrer-2023/decoding_quadrant_direction.ipynb
+ M entries/000691-scherrer-2023/entry.yaml
+ M entries/000691-scherrer-2023/kiloscope.py
+ M entries/000691-scherrer-2023/motion_scherrer_2023.ipynb
+ M entries/000691-scherrer-2023/reproduce_scherrer_2023.ipynb
+?? entries/000691-scherrer-2023/decoding_null_n2_octant.ipynb
+?? entries/000691-scherrer-2023/decoding_null_n2_quadrant_direction.ipynb
+?? entries/000691-scherrer-2023/decoding_reduced.ipynb
 ```
 
 **Agent**
 
-I've addressed all of the round-1 report. One outcome changed (ed9c), outputs were added for every request I could fit in the time limit, and the entry re-runs clean: `entry.py all` passes in 23.6 minutes. Two consecutive runs gave identical numbers. Nothing is committed.
+I answered every point in the round-1 report and re-ran all seven notebooks; all passed within the 30-minute limit. No outcome changed. The only change of status is the reason for one block: fig2d-lman-sparse-bursting is now blocked as `methods_underspecified`, which is what its criterion says, with the missing data recorded in the notes. Round 1 is recorded under `verifications` for the 22 claims the report covered. Nothing is committed.
 
-**Outcome changed**
-- **ed9c-local-decoding-map: not_reproduced → reproduced.** The verifier suspected the SGD solver (problem 2), and it was the cause. On the 32-footprint decoders, 10 passes of SGD stop at objectives of 19.8 to 68.9, while the optimum is 1.976 to 2.000.
-  - The paper's code leaves the solver at MATLAB's default. For 100 or fewer predictors that is BFGS run to convergence, so the local decoders now use an exact solver (liblinear) with the same objective.
-  - With it, 18 of 150 points are significant, and their scores range over 0.075, so the criterion is met.
-  - The old SGD solver, on the same points and seeds, gives 1 point and fails. The notes call the result fragile: the optimum is close to the objective of predicting every class absent (2.0), and liblinear hit its 10,000-iteration limit in 2268 of 3000 fits.
-  - Round 2 reviews this change.
+**Where I kept an outcome the verifier disagreed with**
+- **fig2-quadrant-direction-decoding and ed9b-octant-decoding:** the verifier would call these reproduced on the n1 null alone. I kept them blocked (`not_runnable`) and recorded the disagreement. The criterion judges p under both null readings, and the full n2 null needs about 34 hours. I ran 9 n2 null decoders per claim, and all lie far below the real decoders: 0.089 to 0.145 against 0.437 for quadrant, 0.109 to 0.149 against 0.326 for octant. But 9 cannot show p < 0.001, so calling it reproduced would rest on my own guess that the full n2 null would agree.
+- **fig2k, fig2l, ed9c:** the verifier wanted the reason for these blocks to be `other`. I kept `not_runnable`: the full runs are measured at 4.5 to 12.8 hours on four cores, against 30 minutes per notebook, which is the protocol's case for `not_runnable`. That disagreement is recorded too.
 
-All other outcomes are unchanged: 6 reproduced, 2 partially reproduced, 7 blocked.
+**What I added**
+- **Is the motion movie raw (ed7-motion-small)?** The values say it is. The histogram of its counts has the uneven raw-sensor pattern in every block (roughness 0.740 to 0.745). Shifting frames by 0.13 px and saving them back as integers, as a motion correction would, smooths that to 0.052. Its zero values are at most 2 isolated pixels per frame, not strips at the frame edges. I also added a known 0.13 px jitter to the first 1200 frames; the registration recovered it (correlation 0.996). The outcome stays not reproduced and is no longer tentative.
+- **PSF fits:** I added readings that use, for each bead, whichever of the two fits has the lower error, plus a table of the Kiloscope's centre and edge beads with both fits. The Featherscope result is unchanged. The Kiloscope is still partially reproduced: no reading meets the criterion, and the width is larger at the edge than at the centre under every reading. The 27.77 µm edge bead keeps its main fit because that fit has the lower error.
+- **ed2b/ed2c:** a cell prints the lines of each `analysis.m` that load the images; they are the same files used in the notebook, in the same roles.
+- **ed8:** I added counts with the quarters split at the image midlines. The result is the same, 8 of 8 events under one reading of the event times and 7 of 8 under the other, so it stays `methods_underspecified`.
+- **Decoding:** each real decoder's 200 single fits are now compared with the single-fit n1 null on equal terms. For quadrant, 2 of 200 real single fits are at or below the largest null value; for octant, 11.
+- **Reduced runs** of fig2k, fig2l and ed9c are in a new notebook, `decoding_reduced.ipynb`. They use far fewer fits and grid points than the criteria and decide nothing.
+- **Other changes:**
+  - The Kiloscope's unconfirmed image order (72%) and the near-circular field-of-view test are now in the record.
+  - The fig2d entry in the notebook table, summary and README now matches the record.
+  - The PSF and illumination conclusion cells now begin "**Result:**", so the handover tool would remove them.
+  - Run times and costs are updated from the new run, and the README and `entry.yaml` list the three new notebooks.
 
-**Added or corrected**
-- **Tracking:**
-  - Jumps: 2 steps above 40 px between video frames, both from one glitch at 1064.8 s.
-  - Small blobs: 55 frames have a blob under 50 px. Dropping them changes the arm label of 0.05% of imaging frames.
-  - Sample frames: eight frames with the tracked centroid on the mouse. The one at 102 s, in the excluded opening part, shows a gloved hand. The text about the experimenter now says only what these frames show.
-- **fig2 solver check:** six splits fit by both SGD and the exact solver. The exact solver gives lower accuracies (0.262 to 0.318 for real decoders, 0.131 to 0.164 for shifted ones), still above chance and above every shifted decoder checked. SGD stays for the full-population decoders because MATLAB's default above 100 predictors is also 10 passes of a stochastic solver.
-- **ed9c:**
-  - Radius set to 45 px, as the criterion says.
-  - Null standard deviation per point is shown. A point alone needs z above 3.40; the smallest z among significant points is 2.53.
-  - The code's 64-footprint variant now uses the exact solver: 22 of 34 points are significant.
-- **ed8:**
-  - Random-window baseline: the event's active fraction is above the random 95th percentile for only 6 of 8 components.
-  - Random-set spread ratios are 0.951 to 1.042, so any set this large passes. The conclusion now says the test is weak.
-  - Event times restricted to after 153 s still pass 8 of 8.
-- **ed10:** empirical false-positive count, treating each shifted copy as the data: median 28, maximum 62. None of the 100 copies reaches the observed 100.
-- **ed2b/ed2c:** minima at the radius ±5% and about five other centres. For the Kiloscope the minimum runs from 0.695 to 0.831, crossing 0.8 for one of the four moved centres. Outcomes stay as the criterion's centre and radius give them.
-- **Determinism:** I seeded liblinear's coordinate order. Unseeded, the exact map's count of significant points changed between runs.
-- **Other files:** the helper module docstring, the README row and runtime (24 minutes), the summary and the conclusions are updated. `joblib` is added to the requirements and the lock is redone; no other version changed. The round is recorded under `verifications` for all 15 claims.
-
-**Not done**
-- The ed9c map was not rerun with more decoders per point. With 10 per point it already takes 634 s on four cores.
-- No paper values for Fig. 2 or ED9b are compared, because the main text is paywalled.
-- The Kiloscope pixel size was not varied.
-- ed10's slow non-stationarity (problem 5) is not addressed.
-- Problems 8 (pixel-size consistency) and 9 (metadata errors) needed no change; I said why in the record.
+**Things to know**
+- **The Kiloscope centre value moved.** Under reading (a) it is now 4.467 µm, against 4.422 µm in the run the verifier saw. The fits are repeatable on this machine but differ slightly between machines, which the record now says.
+- **`entry.py all` stops at the check step** with 11 errors, all in the deprecated `-01` record, which I left unchanged; the previous run hit the same errors. I ran the notebooks with `entry.py run` instead.
+- **The run was split in two.** The 2-hour command limit cut it during the seventh notebook, so I ran `decoding_reduced.ipynb` separately through the same `run` code.
+- **Text-only edits to the executed copies.** After the run I copied the revised conclusion text into the executed notebooks; their code cells are identical to the committed ones.
+- **ed3-adc has no round-1 result.** The verifier's report gave no outcome for it, so it is left out of the results and the `reviewed` text says why.
 
 ## End of run
 
-56 turns, 148 minutes, result: success.
+88 turns, 201 minutes, result: success.

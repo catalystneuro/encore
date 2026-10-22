@@ -3,8 +3,9 @@ name: Publish the dashboard
 # Rebuilds the public dashboard from the registry's files and publishes it to
 # the root of the gh-pages branch, which GitHub Pages serves, on every push to
 # main, and again when the entry checks finish, so the executed notebooks they
-# produce are included. Previews of pull requests live in pr-preview/ on the
-# same branch (preview.yml) and are left in place.
+# produce are included, and when a needs-you issue opens or closes, so that the
+# pipeline page links the datasets waiting on a person. Previews of pull requests
+# live in pr-preview/ on the same branch (preview.yml) and are left in place.
 
 on:
   push:
@@ -13,10 +14,15 @@ on:
     workflows: ["Check entries"]
     types: [completed]
     branches: [main]
+  # A needs-you issue opened or closed (tools/notify.py) changes the pipeline page's links.
+  issues:
+    types: [opened, closed, reopened, labeled, unlabeled]
   workflow_dispatch:
 
 permissions:
   contents: write
+  issues: read
+  actions: read
 
 # One publish at a time; previews (preview.yml) have their own groups.
 concurrency:
@@ -25,9 +31,15 @@ concurrency:
 
 jobs:
   build:
+    if: >-
+      github.event_name != 'issues' || github.event.label.name == 'needs-you' ||
+      contains(github.event.issue.labels.*.name, 'needs-you')
     runs-on: ubuntu-latest
     steps:
+      # The whole history, so that the queue can tell the attempt branches merged into main from the open ones.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -45,9 +57,29 @@ jobs:
             echo "No executed branch yet"
           fi
 
+      - name: List the datasets waiting on a person
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue list --repo "$GITHUB_REPOSITORY" --label needs-you --state open --limit 500 \
+            --json title,url > "$RUNNER_TEMP/issues.json" || echo '[]' > "$RUNNER_TEMP/issues.json"
+
+      # The runners' queues and how long a chain takes, for the pipeline page's estimates. The numbers of
+      # lanes come from the repository variables RUNNER_LANES and CLAIMS_LANES, when they are set.
+      - name: Work out the queues
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          { gh run list --repo "$GITHUB_REPOSITORY" --workflow attempt.yml --limit 1000 \
+              --json displayTitle,createdAt,updatedAt,status,conclusion
+            gh run list --repo "$GITHUB_REPOSITORY" --workflow papers.yml --limit 1000 \
+              --json displayTitle,createdAt,updatedAt,status,conclusion; } \
+            | python tools/runner/describe.py queue "${{ vars.RUNNER_LANES || 3 }}" "${{ vars.CLAIMS_LANES || 1 }}" \
+            > "$RUNNER_TEMP/queue.json" || rm -f "$RUNNER_TEMP/queue.json"
+
       - name: Build the site
         run: |
-          python tools/build_site.py --output site
+          python tools/build_site.py --output site --issues "$RUNNER_TEMP/issues.json" --queue "$RUNNER_TEMP/queue.json"
           touch site/.nojekyll
 
       - uses: JamesIves/github-pages-deploy-action@v4.9.0

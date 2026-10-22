@@ -1,168 +1,289 @@
-# 000061 · author · run 38911730003
+# 000061 · author · run 39490977512
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; ls; ls entries claims attempts tools
+cat docs/protocol.md; ls; ls entries/000061-girardeau-2017 claims/000061 attempts | head -50; ls paper | head
 ```
 
 ```
 # Protocol for an attempt
 
-Version: `pilot-7`. Record this version in the attempt's provenance.
+Version: `pilot-10`. Record this version in the attempt's provenance.
 
-This is what an agent, or a person, does to attempt a target and deposit the
-result. It is written from the eight pilot attempts
+This is what agents, or people, do to attempt a target and deposit the
+result. It is written from the pilot attempts
 ([pilot notes](pilot-notes.md)); the reasons for the rules are there.
 
-There are two roles. The **author** makes the attempt. The **verifier** checks
-it and must not be the author: for agents, a separate run with a separate
-context that has not seen the author's reasoning.
+An attempt has three roles, each a separate run with a separate context:
 
-Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-kept in [`transcripts/<dandiset>/`](../transcripts).
+- The **reader** reads the paper and writes the claims file: every finding,
+  and how each is to be tested, taken from the paper. A second reader checks
+  it against the paper. Readers never see the dandiset's data.
+- The **author** tests the claims on the dandiset. It reads the paper to
+  understand the claims, but the claims file binds it: it cannot change a
+  claim, and it asks a reader for any method detail the file lacks.
+- The **verifier** checks the author's work and must not be the author.
 
-## Author
-
-[... 440 more lines not kept]
+So every claim and its method are fixed from the paper before anyone analyses
+the data, and no method is chosen by the agent that runs the analysis.
+[... 537 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat README.md docs/design.md | head -400
+ls -la entries/000061-girardeau-2017 claims/000061 questions/ | head -80; cat docs/agents/author-again.md; cat attempts/000061-girardeau-2017-01.yaml
 ```
 
 ```
-# Reproduction registry (working name)
+claims/000061:
+total 72
+drwxr-xr-x  2 runner runner  4096 Oct 20 20:19 .
+drwxr-xr-x 58 runner runner  4096 Oct 20 20:19 ..
+-rw-r--r--  1 runner runner 64346 Oct 20 20:19 10.1038-nn.4637.yaml
 
-Agents, and people, try to reproduce the key findings of papers from the open
-data on the [DANDI Archive](https://dandiarchive.org), and register the result
-here: the notebooks when it works, and the reason when it does not.
+entries/000061-girardeau-2017:
+total 128
+drwxr-xr-x  2 runner runner  4096 Oct 20 20:19 .
+drwxr-xr-x 58 runner runner  4096 Oct 20 20:19 ..
+-rw-r--r--  1 runner runner  1872 Oct 20 20:19 README.md
+-rw-r--r--  1 runner runner  1073 Oct 20 20:19 entry.yaml
+-rw-r--r--  1 runner runner 24217 Oct 20 20:19 hpcbla.py
+-rw-r--r--  1 runner runner 73846 Oct 20 20:19 reproduce_girardeau_2017.ipynb
+-rw-r--r--  1 runner runner    49 Oct 20 20:19 requirements.in
+-rw-r--r--  1 runner runner  5566 Oct 20 20:19 requirements.lock.txt
 
-- **For the archive:** evidence of whether each dandiset is complete and
-  accurate enough to support the findings of its paper.
-- **For analysts:** working notebooks to build new analyses on.
-
-Status: pilot. All eight pilot targets have been attempted and checked by an
-independent agent.
-
-**Dashboard:** <https://catalystneuro.github.io/reproduction-registry/>
-
-## Reading the outcomes
-
-An outcome says what one attempt could recover from the data in a dandiset,
-with the methods available to it. **A "not reproduced" or "partially
-reproduced" outcome is not a finding that the paper is wrong.** It can come
-[... 369 more lines not kept]
+questions/:
+total 12
+drwxr-xr-x  2 runner runner 4096 Oct 20 20:19 .
+[... 364 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls -la entries/001453-fouke-2025 claims/001453; cat entries/001453-fouke-2025/entry.yaml entries/001453-fouke-2025/requirements.in; cat claims/001453/*; cat attempts/001453-fouke-2025-01.yaml
+cat claims/000061/10.1038-nn.4637.yaml; cat questions/README.md; ls questions
 ```
 
 ```
 <persisted-output>
-Output too large (48.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/b682be74-e56a-4560-9e99-d9f5172d7692/tool-results/b6y8pjxd8.txt
+Output too large (63.2KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/182fe984-a49a-4f14-8cf1-0ba01350a3fa/tool-results/bywlez2n8.txt
 
 Preview (first 2KB):
-claims/001453:
-total 24
-drwxr-xr-x  2 runner runner  4096 Oct 16 13:56 .
-drwxr-xr-x 23 runner runner  4096 Oct 16 13:56 ..
--rw-r--r--  1 runner runner 12471 Oct 16 13:56 10.1016-j.cub.2025.04.027.yaml
-
-entries/001453-fouke-2025:
-total 124
-drwxr-xr-x  2 runner runner  4096 Oct 16 13:56 .
-drwxr-xr-x 23 runner runner  4096 Oct 16 13:56 ..
--rw-r--r--  1 runner runner  2158 Oct 16 13:56 README.md
--rw-r--r--  1 runner runner   914 Oct 16 13:56 entry.yaml
--rw-r--r--  1 runner runner 16218 Oct 16 13:56 omr.py
--rw-r--r--  1 runner runner 79403 Oct 16 13:56 reproduce_fouke_2025.ipynb
--rw-r--r--  1 runner runner    61 Oct 16 13:56 requirements.in
--rw-r--r--  1 runner runner  5989 Oct 16 13:56 requirements.lock.txt
-[... 35 more lines not kept]
+# Claims for Girardeau, Inema & Buzsaki (2017), Nat. Neurosci. 20, 1634-1642, on dandiset 000061.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-20, protocol
+# pilot-10 as stated in docs/protocol.md (Reader, steps 1 to 4). The reader did not look at the
+# dandiset's data or files; only its archive title and description, which name this paper.
+#
+# Why this file was rewritten. The earlier file was written from the abstract alone (the full text
+# was not open then) and its methods were fixed by an agent. Read against the full text and the
+# supplement on 2026-10-20, two of its claims were tested with measures the paper does not use:
+# aversive-direction-stronger (the paper compares peri-ripple reactivation strength R of a run
+# correlation template, Fig. 6b, not singular-vector patterns over all sleep bins) and
+# reactivation-involves-ripple-up-cells (the paper compares post-NREM minus pre-NREM pair
+# correlations across nine pair groups with a one-way ANOVA, Fig. 5a, not BLA pattern weights). The
+# other claims of that file also used agent-chosen methods (SVD patterns, shuffled ripple windows)
+# in place of the paper's EV/REV, Poisson ripple-modulation test and reactivation strength R, and
+# many findings had no claim. Every criterion is now taken from the Online Methods, the legends,
+# the supplement and the paper's code. Ids are kept where the finding is the same:
+[... 9 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/b682be74-e56a-4560-9e99-d9f5172d7692/tool-results/b6y8pjxd8.txt"
+ "file_path": "claims/000061/10.1038-nn.4637.yaml"
 }
 ```
 
 ```
-1	claims/001453:
-2	total 24
-3	drwxr-xr-x  2 runner runner  4096 Oct 16 13:56 .
-4	drwxr-xr-x 23 runner runner  4096 Oct 16 13:56 ..
-5	-rw-r--r--  1 runner runner 12471 Oct 16 13:56 10.1016-j.cub.2025.04.027.yaml
-6	
-7	entries/001453-fouke-2025:
-8	total 124
-9	drwxr-xr-x  2 runner runner  4096 Oct 16 13:56 .
-10	drwxr-xr-x 23 runner runner  4096 Oct 16 13:56 ..
-11	-rw-r--r--  1 runner runner  2158 Oct 16 13:56 README.md
-12	-rw-r--r--  1 runner runner   914 Oct 16 13:56 entry.yaml
-13	-rw-r--r--  1 runner runner 16218 Oct 16 13:56 omr.py
-14	-rw-r--r--  1 runner runner 79403 Oct 16 13:56 reproduce_fouke_2025.ipynb
-15	-rw-r--r--  1 runner runner    61 Oct 16 13:56 requirements.in
-16	-rw-r--r--  1 runner runner  5989 Oct 16 13:56 requirements.lock.txt
-17	schema_version: 1
-18	name: 001453-fouke-2025
-19	type: reproduction
-20	title: Optomotor swimming of zebrafish and Danionella cerebrum (Fouke et al. 2025)
-[... 849 more lines not kept]
+1	# Claims for Girardeau, Inema & Buzsaki (2017), Nat. Neurosci. 20, 1634-1642, on dandiset 000061.
+2	# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-20, protocol
+3	# pilot-10 as stated in docs/protocol.md (Reader, steps 1 to 4). The reader did not look at the
+4	# dandiset's data or files; only its archive title and description, which name this paper.
+5	#
+6	# Why this file was rewritten. The earlier file was written from the abstract alone (the full text
+7	# was not open then) and its methods were fixed by an agent. Read against the full text and the
+8	# supplement on 2026-10-20, two of its claims were tested with measures the paper does not use:
+9	# aversive-direction-stronger (the paper compares peri-ripple reactivation strength R of a run
+10	# correlation template, Fig. 6b, not singular-vector patterns over all sleep bins) and
+11	# reactivation-involves-ripple-up-cells (the paper compares post-NREM minus pre-NREM pair
+12	# correlations across nine pair groups with a one-way ANOVA, Fig. 5a, not BLA pattern weights). The
+13	# other claims of that file also used agent-chosen methods (SVD patterns, shuffled ripple windows)
+14	# in place of the paper's EV/REV, Poisson ripple-modulation test and reactivation strength R, and
+15	# many findings had no claim. Every criterion is now taken from the Online Methods, the legends,
+16	# the supplement and the paper's code. Ids are kept where the finding is the same:
+17	# hpc-bla-reactivation-post-sleep (EV against REV, Fig. 3c), reactivation-peaks-at-ripples
+18	# (Supplementary Fig. 11a), bla-ripple-up-subgroup (Fig. 4), reactivation-involves-ripple-up-cells
+19	# (Fig. 5a), aversive-direction-stronger (Fig. 6b) and rats-learn-puff-location (Fig. 1b). The
+20	# other 25 claims are new.
+[... 906 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "claims/000061/10.1038-nn.4637.yaml",
+ "offset": 926
+}
+```
+
+```
+926	    test: Wilcoxon one-tailed signed rank test
+927	    statistic: z = -2.895
+928	    p: 0.00189
+929	    n: 27 sessions in 3 rats
+930	  depends_on:
+931	  - hpc-bla-reactivation-post-sleep
+932	  criterion: R per M7 with the whole run epoch as template, pyramidal cells (and all cells as the
+933	    second test). Per session, the ripple-peak value in pre-NREM and in post-NREM; a one-tailed
+934	    Wilcoxon signed rank test, post greater than pre (ReplayInTime_All.m, tail left on pre
+935	    against post). Reproduced when both tests have p < 0.05; partially reproduced when one does.
+936	- id: airpuff-trajectory-ripple-reactivation
+937	  statement: The hippocampus-BLA correlation pattern of the air puff trajectory is reactivated more
+938	    around post-NREM ripples than around pre-NREM ripples.
+939	  source: Figure 6a, top; Results, The aversive trajectory is reactivated during SPW-Rs, paragraph 1
+940	  quote: reactivation strength in a 500-ms window around ripple peaks (gray bars) was significantly
+941	    higher in post-NREM compared to pre-NREM for air puff trajectory
+942	  statistics:
+943	  - about: post-NREM against pre-NREM ripple-peak reactivation strength, air puff trajectory,
+944	      pyramidal pairs
+945	    test: Wilcoxon one-tail signed rank test
+[... 215 more lines not kept]
+```
+
+**Agent**
+
+The claims file now has 31 claims, so this is a large rework. Next I'm reading the existing entry and helper to see what can be reused.
+
+**Agent calls Bash**
+
+```bash
+cd entries/000061-girardeau-2017; cat entry.yaml README.md requirements.in; cat hpcbla.py
+```
+
+```
+schema_version: 1
+name: 000061-girardeau-2017
+type: reproduction
+title: Hippocampus and amygdala reactivation during sleep (Girardeau et al. 2017)
+description: Tests the findings stated in the abstract of Girardeau, Inema and Buzsaki (2017) on
+  dandiset 000061, which holds sorted units of the hippocampus and the amygdala, sleep states,
+  ripple, air-puff and reward events from four rats on an air-puff linear track task. It tests the
+  reactivation of joint hippocampus and BLA patterns in sleep after the run, its peak at ripples,
+  the BLA cells modulated by ripples and their weight in the patterns, and the difference between
+  the air-puff and the safe run direction. The paper's full text was not available, so the methods
+  are common choices fixed before the analysis.
+license: Apache-2.0
+notebooks:
+- path: reproduce_girardeau_2017.ipynb
+  title: Reproducing Girardeau et al. (2017) from dandiset 000061
+  runtime_minutes: 11
+helpers:
+- hpcbla.py
+related:
+- id: dandi:000061/0.250624.0426
+[... 533 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat entries/001453-fouke-2025/README.md; python -c "
-import json;nb=json.load(open('entries/001453-fouke-2025/reproduce_fouke_2025.ipynb'))
-for c in nb['cells'][:6]: print(c['cell_type'],c.get('metadata'),''.join(c['source'])[:1500]);print('----')
-print(len(nb['cells']))
-for c in nb['cells']: print(c['cell_type'], c.get('metadata',{}).get('tags'), ''.join(c['source'])[:80].replace('\n',' | '))
+cd entries/000061-girardeau-2017; python -c "
+import json;nb=json.load(open('reproduce_girardeau_2017.ipynb'))
+for i,c in enumerate(nb['cells']):
+  print('=====',i,c['cell_type'],c.get('metadata',{}).get('tags'));print(''.join(c['source']))
 "
 ```
 
 ```
-# Fouke, He, Loring & Naumann (2025) from dandiset 001453
+<persisted-output>
+Output too large (57.3KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/182fe984-a49a-4f14-8cf1-0ba01350a3fa/tool-results/bc6bppl1n.txt
 
-Tests the findings of [Fouke et al. (2025)](https://doi.org/10.1016/j.cub.2025.04.027) that can be
-tested on [DANDI:001453](https://dandiarchive.org/dandiset/001453/0.250518.1950), which holds the
-freely swimming tracking of 25 zebrafish and 12 *Danionella cerebrum* larvae (Figure 1 and Figure
-S1). The imaging and head-fixed tail tracking of Figures 2 to 4 are not in it.
+Preview (first 2KB):
+/bin/bash: line 1: cd: entries/000061-girardeau-2017: No such file or directory
+===== 0 markdown None
+# Reproducing Girardeau, Inema & Buzsaki (2017) from dandiset 000061
 
-| Claim | Outcome |
-|---|---|
-| The stimulus codes can be linked to the paper's stimuli through its code | Reproduced |
-| DC swim faster than ZF, over all stimulus codes | Reproduced |
-| Median speed over whole-field stimuli, DC 9.8 and ZF 6.4 mm/s | Reproduced |
-| ZF are faster to forward motion than to a static grating (8.8 against 5.0 mm/s) | Reproduced |
-| DC do not modulate speed with stimulus direction | Not reproduced |
-| DC are faster than ZF for oblique stimuli | Reproduced |
-| Both species turn in the direction of motion | Partially reproduced |
-| ZF have higher angular acceleration than DC | Not reproduced |
-| DC turn less than ZF to monocular stimuli | Reproduced |
-| ZF swim in bouts, DC continuously | Reproduced |
-| Values from representative trials (Figure 1C, E, F) | Blocked: metadata insufficient |
-[... 175 more lines not kept]
+Paper. Girardeau G, Inema I, Buzsaki G (2017). Reactivations of emotional memory in the
+hippocampus-amygdala system during sleep. *Nature Neuroscience* 20, 1634-1642.
+[doi:10.1038/nn.4637](https://doi.org/10.1038/nn.4637). The article is not open access (it is not
+in PubMed Central, and its HAL record holds metadata only), so this attempt used the abstract
+alone (PubMed 28892057). Every claim is a sentence of the abstract, none has a reported number,
+and every method choice was fixed in the claims file before the analysis.
+
+Dandiset. [DANDI:000061](https://dandiarchive.org/dandiset/000061/0.250624.0426), version
+0.250624.0426. The abstract cites no DANDI version. There are two published versions,
+0.210812.1517 and 0.250624.0426; they hold the same 40 files (same blobs and sizes) and differ only
+in metadata (contributor affiliations and ORCIDs, and a `relatedResource` link to the paper, added
+in 2025), none of which the analysis uses. The most recent published version is pinned.
+[... 15 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/182fe984-a49a-4f14-8cf1-0ba01350a3fa/tool-results/bc6bppl1n.txt"
+}
+```
+
+```
+1	/bin/bash: line 1: cd: entries/000061-girardeau-2017: No such file or directory
+2	===== 0 markdown None
+3	# Reproducing Girardeau, Inema & Buzsaki (2017) from dandiset 000061
+4	
+5	Paper. Girardeau G, Inema I, Buzsaki G (2017). Reactivations of emotional memory in the
+6	hippocampus-amygdala system during sleep. *Nature Neuroscience* 20, 1634-1642.
+7	[doi:10.1038/nn.4637](https://doi.org/10.1038/nn.4637). The article is not open access (it is not
+8	in PubMed Central, and its HAL record holds metadata only), so this attempt used the abstract
+9	alone (PubMed 28892057). Every claim is a sentence of the abstract, none has a reported number,
+10	and every method choice was fixed in the claims file before the analysis.
+11	
+12	Dandiset. [DANDI:000061](https://dandiarchive.org/dandiset/000061/0.250624.0426), version
+13	0.250624.0426. The abstract cites no DANDI version. There are two published versions,
+14	0.210812.1517 and 0.250624.0426; they hold the same 40 files (same blobs and sizes) and differ only
+15	in metadata (contributor affiliations and ORCIDs, and a `relatedResource` link to the paper, added
+16	in 2025), none of which the analysis uses. The most recent published version is pinned.
+17	
+18	What the dandiset holds. 40 NWB files, one per recording day, from four rats (Rat08 to
+19	Rat11): sorted units with a region label, sleep states, epochs, and event times of hippocampal
+20	ripples, air puffs and rewards; some files also hold raw voltage, LFP and video. There is no
+[... 734 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 1,200p tools/entry.py; ls schemas; ls paper 2>/dev/null; which python; python --version; pip list 2>/dev/null | grep -i -E "dandi|pynwb|h5py|remfile|numpy|scipy|yaml|nbformat"
+cd  python - <<'EOF'
+from dandi.dandiapi import DandiAPIClient
+with DandiAPIClient() as c:
+    d=c.get_dandiset("000061")
+    for v in d.get_versions(): print(v.identifier, v.created, v.modified, v.status)
+    dd=c.get_dandiset("000061","draft")
+    print(dd.version.modified)
+    assets=sorted((a.path,a.size,a.modified) for a in dd.get_assets())
+    print(len(assets))
+    for a in assets: print(a)
+EOF
+```
+
+```
+Exit code 1
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ModuleNotFoundError: No module named 'dandi'
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 1,80p tools/entry.py; ls ~/.venv* .venv 2>/dev/null; which python; ls executed 2>/dev/null | head
 ```
 
 ```
@@ -186,2017 +307,1222 @@ tied to the data:
 - the lock file is present and newer requirements are not left unlocked;
 - each notebook, or a helper it imports, names the dandiset the entry uses;
 - each notebook has a cell tagged `sanity` that prints what was loaded;
-[... 187 more lines not kept]
+[... 61 more lines not kept]
 ```
 
 **Agent**
 
-Read the protocol and the example entry. Now looking at dandiset 000061 through the DANDI API.
+Setting up a working environment from the entry's lock file for exploration.
 
 **Agent calls Bash**
 
 ```bash
-curl -s https://api.dandiarchive.org/api/dandisets/000061/ | python -m json.tool | head -50; curl -s "https://api.dandiarchive.org/api/dandisets/000061/versions/" | python -m json.tool
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-mkdir -p $TMPDIR/w; cd $TMPDIR/w; for v in 0.210812.1517 0.250624.0426; do curl -s "https://api.dandiarchive.org/api/dandisets/000061/versions/$v/assets/?page_size=200" > assets_$v.json; python -c "
-import json;d=json.load(open('assets_$v.json'));print(d['count'])
-for a in d['results']: print(a['asset_id'],a['blob'] if 'blob' in a else '',a['size'],a['path'])
-"; done; curl -s https://api.dandiarchive.org/api/dandisets/000061/versions/0.250624.0426/ > meta_new.json; curl -s https://api.dandiarchive.org/api/dandisets/000061/versions/0.210812.1517/ > meta_old.json; python -m json.tool meta_new.json
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/w; python -c "
-import json
-a=json.load(open('assets_0.210812.1517.json'))['results'];b=json.load(open('assets_0.250624.0426.json'))['results']
-A={x['path']:(x['blob'],x['size']) for x in a};B={x['path']:(x['blob'],x['size']) for x in b}
-print(A==B)
-"; python - <<'E'
-import json
-a=json.load(open('meta_old.json'));b=json.load(open('meta_new.json'))
-for k in sorted(set(a)|set(b)):
-    if a.get(k)!=b.get(k): print(k, json.dumps(a.get(k))[:600], '\n  ->', json.dumps(b.get(k))[:600])
-E
-```
-
-```
-True
-citation "Girardeau, Gabrielle; Inema, Ingrid; Buzs\u00e1ki, Gy\u00f6rgy (2021) Reactivations of emotional memory in the hippocampus\u2013amygdala system during sleep (Version 0.210812.1517) [Data set]. DANDI archive. https://doi.org/10.48324/dandi.000061/0.210812.1517" 
-  -> "Girardeau, Gabrielle; Inema, Ingrid; Buzs\u00e1ki, Gy\u00f6rgy (2025) Reactivations of emotional memory in the hippocampus\u2013amygdala system during sleep (Version 0.250624.0426) [Data set]. DANDI Archive. https://doi.org/10.48324/dandi.000061/0.250624.0426"
-contributor [{"name": "Girardeau, Gabrielle", "roleName": ["dcite:Author", "dcite:ContactPerson"], "schemaKey": "Person", "affiliation": [], "includeInCitation": true}, {"name": "Inema, Ingrid", "roleName": ["dcite:Author"], "schemaKey": "Person", "affiliation": [], "includeInCitation": true}, {"name": "Buzs\u00e1ki, Gy\u00f6rgy", "roleName": ["dcite:Author"], "schemaKey": "Person", "identifier": "0000-0002-3100-4800", "affiliation": [], "includeInCitation": true}] 
-  -> [{"name": "Girardeau, Gabrielle", "email": "[removed: an e-mail address]", "roleName": ["dcite:Author", "dcite:ContactPerson"], "schemaKey": "Person", "identifier": "0000-0002-5265-9697", "affiliation": [{"name": "New York University Langone Medical Center", "schemaKey": "Affiliation", "identifier": "https://ror.org/005dvqh91"}, {"name": "New York University", "schemaKey": "Affiliation", "identifier": "https://ror.org/0190ak572"}], "includeInCitation": true}, {"name": "Inema, Ingrid", "roleName": ["dcite:Author"], "schemaKey": "Person", "affiliation": [], "includeInCitation": true}, {"name": 
-dateCreated null 
-  -> "2021-03-17T17:56:38.739000+00:00"
-datePublished "2021-08-12T15:16:39.157018" 
-  -> "2025-06-24T04:26:50.942773+00:00"
-doi "10.48324/dandi.000061/0.210812.1517" 
-  -> "10.48324/dandi.000061/0.250624.0426"
-id "DANDI:000061/0.210812.1517" 
-  -> "DANDI:000061/0.250624.0426"
-keywords [] 
-  -> null
-manifestLocation ["https://dandiarchive.s3.amazonaws.com/dand
-[... 16 more lines not kept]
-```
-
-**Agent**
-
-Both published versions hold identical blobs; I will pin 0.250624.0426. Now fetching the paper.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/w; curl -s "https://www.ncbi.nlm.nih.gov/pmc/utils/idconv/v1.0/?ids=10.1038/nn.4637&format=json"; echo; curl -s "https://api.unpaywall.org/v2/10.1038/nn.4637?email=[removed: an e-mail address]" | python -m json.tool | head -60
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/w; curl -sL "https://pmc.ncbi.nlm.nih.gov/tools/idconv/api/v1/articles/?ids=10.1038/nn.4637&format=json"; echo; curl -s "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1038/nn.4637&format=json&resultType=core" | python -c "import json,sys;d=json.load(sys.stdin);r=d['resultList']['result'][0];print({k:r.get(k) for k in ['pmid','pmcid','isOpenAccess','inPMC','hasPDF','title']})"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/w; curl -s "https://api.archives-ouvertes.fr/search/?q=doiId_s:%2210.1038/nn.4637%22&fl=halId_s,uri_s,files_s,title_s,submitType_s,linkExtUrl_s" ; echo; curl -s "https://api.openalex.org/works/doi:10.1038/nn.4637" | python -c "import json,sys;d=json.load(sys.stdin);print(d['open_access']);print([ (l.get('landing_page_url'),l.get('pdf_url'),l.get('version'),l.get('is_oa')) for l in d['locations']])"
-```
-
-Result: the fetched text is not kept.
-
-**Agent**
-
-The paper is closed access (not in PMC; HAL has a metadata-only notice). I will work from the abstract.
-
-**Agent calls Bash**
-
-```bash
-mkdir -p paper; curl -s "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=28892057&rettype=abstract&retmode=text" > paper/abstract_pubmed_28892057.txt; cat paper/abstract_pubmed_28892057.txt; git check-ignore paper && echo ignored
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && uv venv -q -p 3.13 env && uv pip install -q -p env/bin/python dandi h5py remfile pynwb numpy scipy pandas matplotlib 2>&1 | tail -3; env/bin/python -c "import pynwb,h5py,remfile,dandi;print(pynwb.__version__,h5py.__version__,dandi.__version__)"
-```
-
-```
-4.2.0 3.16.0 0.81.0
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && cat > explore.py <<'E'
-import h5py, remfile, sys, json
-url = f"https://api.dandiarchive.org/api/assets/{sys.argv[1]}/download/"
-f = h5py.File(remfile.File(url), "r")
-def show(name, obj):
-    if isinstance(obj, h5py.Dataset):
-        print("D", name, obj.shape, obj.dtype, dict((k, (v if not hasattr(v,'shape') or v.size<5 else '...')) for k,v in obj.attrs.items() if k not in ('namespace','object_id')))
-    else:
-        print("G", name, {k:v for k,v in obj.attrs.items() if k not in ('namespace','object_id')})
-f.visititems(show)
-E
-time env/bin/python explore.py 4aedf8b7-a467-46ba-8d2e-548a90c6fda8 2>&1 | grep -v "^D processing.*/ " | head -300
-```
-
-```
-G acquisition {}
-G acquisition/Video: Rat10-20140626-01-prerun {'comments': 'no comments', 'description': 'Video recorded by camera.', 'neurodata_type': 'ImageSeries'}
-D acquisition/Video: Rat10-20140626-01-prerun/data (5714, 360, 640, 3) uint8 {'conversion': np.float64(1.0), 'resolution': np.float64(-1.0), 'unit': 'Frames'}
-D acquisition/Video: Rat10-20140626-01-prerun/timestamps (5714,) float64 {'interval': np.int64(1), 'unit': 'seconds'}
-G acquisition/Video: Rat10-20140626-03-run {'comments': 'no comments', 'description': 'Video recorded by camera.', 'neurodata_type': 'ImageSeries'}
-D acquisition/Video: Rat10-20140626-03-run/data (40838, 360, 640, 3) uint8 {'conversion': np.float64(1.0), 'resolution': np.float64(-1.0), 'unit': 'Frames'}
-D acquisition/Video: Rat10-20140626-03-run/timestamps (40838,) float64 {'interval': np.int64(1), 'unit': 'seconds'}
-G acquisition/Video: Rat10-20140626-06-postrun {'comments': 'no comments', 'description': 'Video recorded by camera.', 'neurodata_type': 'ImageSeries'}
-D acquisition/Video: Rat10-20140626-06-postrun/data (18062, 360, 640, 3) uint8 {'conversion': np.float64(1.0), 'resolution': np.float64(-1.0), 'unit': 'Frames'}
-D acquisition/Video: Rat10-20140626-06-postrun/timestamps (18062,) float64 {'interval': np.int64(1), 'unit': 'seconds'}
-G analysis {}
-D file_create_date (1,) object {}
-G general {}
-G general/devices {}
-G general/devices/Device {'description': 'Three silicon probes (2 with 8 shanks, 1 with 4 shanks, 160 recording channels total, NeuroNexus H32 and H62, A-style, Buzsaki32 and 64 layout) mounted on individual movable microdrives51 were implanted above the amygdalae bilaterally (AP −2.5 mm ML ± 3.6 to 5.5 mm from bregma) and in the dorsal hippocampus (left or right, CA1, AP −3.5 mm, ML ± 2.5 mm). The drives were secured to the skull using dental cement. Skull screws above the cerebellum were used as ground and reference. The drives and probes were protected by a cement-covered copper-mesh Faraday cage on which the
-[... 120 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && cat > t2.py <<'E'
-import h5py, remfile, sys, time, numpy as np, collections
-t0=time.time()
-url = f"https://api.dandiarchive.org/api/assets/{sys.argv[1]}/download/"
-f = h5py.File(remfile.File(url), "r")
-print("open", time.time()-t0)
-g=lambda k: f[k][()]
-for k in ['identifier','session_description','session_id','general/subject/age','general/subject/subject_id','general/subject/sex','general/subject/species','general/subject/weight','general/subject/genotype','general/related_publications','general/institution','general/lab','general/experimenter','session_start_time','timestamps_reference_time']:
-    print(k, g(k))
-print("epochs", g('intervals/epochs/start_time'), g('intervals/epochs/stop_time'), g('intervals/epochs/tags'), g('intervals/epochs/tags_index'))
-lab=g('processing/behavior/states/label'); st=g('processing/behavior/states/start_time'); en=g('processing/behavior/states/stop_time')
-print(collections.Counter(lab)); 
-for l in set(lab): m=lab==l; print(l, (en[m]-st[m]).sum())
-print(list(zip(lab[:10],st[:10],en[:10])))
-for s in ['lrw','rrw','puf','rip']:
-    d=g(f'stimulus/presentation/{s}/data'); t=g(f'stimulus/presentation/{s}/timestamps')
-    print(s, len(t), collections.Counter(d).most_common(5), t[:5], t[-3:])
-print("units loc", collections.Counter(g('units/location')))
-print("units shank_id", g('units/shank_id')[:20])
-eg=f['units/electrode_group'][()]; print(eg[:3])
-print([f[r].name for r in eg[:80:10]])
-idx=g('units/spike_times_index'); print(idx[:5], idx[-1])
-print("electrode loc", collections.Counter(g('general/extracellular_ephys/electrodes/location')))
-print("electr group", collections.Counter(g('general/extracellular_ephys/electrodes/group_name')))
-for k in ['x','y','z','imp','filtering']: print(k, g('general/extracellular_ephys/electrodes/'+k)[:5])
-print(time.time()-t0)
-t1=time.time(); stimes=g('units/spike_times'); print("spikes", time.time()-t1, stimes.min(), stimes.max(), np.all(np.diff(stimes[:idx[0]])>=0))
-for k in f['acquisition']: print(k, f['acquisition'][k]['timestamps'][[0,-1]])
-print(f['processing/ecephys/LFP/LFP/data'].chunks)
-E
-time env/bin/python t2.py 4aedf8b7-a467-46ba-8d2e-548a90c6fda8
-```
-
-```
-Exit code 1
-open 1.8473618030548096
-identifier b'8000af6d-f374-4f21-a4c1-3faedfd531d5'
-session_description b"The consolidation of context-dependent emotional memory requires communication between the hippocampusand the basolateral amygdala (BLA), but the mechanisms of this process are unknown. We recorded neuronalensembles in the hippocampus and BLA while rats learned the location of an aversive air puff on a lineartrack, as well as during sleep before and after training. We found coordinated reactivations between thehippocampus and the BLA during non-REM sleep following training. These reactivations peaked duringhippocampal sharp wave-ripples (SPW-Rs) and involved a subgroup of BLA cells positively modulated duringhippocampal SPW-Rs. Notably, reactivation was stronger for the hippocampus-BLA correlation patternsrepresenting the run direction that involved the air puff than for the 'safe' direction. These findingssuggest that consolidation of contextual emotional memory occurs during ripple-reactivation ofhippocampus-amygdala circuits."
-Traceback (most recent call last):
-  File "/tmp/claude-1001/t2.py", line 8, in <module>
-    print(k, g(k))
-             ~^^^
-  File "/tmp/claude-1001/t2.py", line 6, in <lambda>
-    g=lambda k: f[k][()]
-                ~^^^
-  File "/tmp/claude-1001/env/lib/python3.13/site-packages/h5py/_hl/group.py", line 407, in __getitem__
-    return self._get(name)
-           ~~~~~~~~~^^^^^^
-  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
-  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
-  File "/tmp/claude-1001/env/lib/python3.13/site-packages/h5py/_hl/group.py", line 421, in _get
-    oid = h5o.open(self.id, self._e(name), lapl=lapl)
-  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
-  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
-[... 6 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && sed -i "s#'session_id',#'general/session_id',#" t2.py && time env/bin/python t2.py 4aedf8b7-a467-46ba-8d2e-548a90c6fda8 2>&1 | tail -40
-```
-
-```
-general/subject/age b'3 months'
-general/subject/subject_id b'Rat10'
-general/subject/sex b'Male'
-general/subject/species b'Rattus norvegicus domestica - Long Evans'
-general/subject/weight b'300g'
-general/subject/genotype b'Wild type'
-general/related_publications [b'Reactivations of emotional memory in the hippocampus-amygdala system during sleep.Girardeau G, Inema I, Buzs\xc3\xa1ki G. Nature Neuroscience, 2017.']
-general/institution b'NYU'
-general/lab b'Buzsaki'
-general/experimenter [b'Gabrielle Girardeau']
-session_start_time b'2014-06-26T00:00:00-04:00'
-timestamps_reference_time b'2014-06-26T00:00:00-04:00'
-epochs [       0.   191000.  8317400.  9681400. 15423400. 17235700.] [  191000.  8317400.  9681400. 15423400. 17235700. 17839200.] [b'prerun' b'presleep' b'run' b'postsleep' b'postsleep' b'postrun'] [1 2 3 4 5 6]
-Counter({b'Awake': 37, b'Non-REM': 37, b'REM': 15})
-b'Non-REM' 5244.0
-b'Awake' 11649.0
-b'REM' 848.0
-[(b'Awake', np.float32(5.0), np.float32(672.0)), (b'Non-REM', np.float32(673.0), np.float32(684.0)), (b'Awake', np.float32(685.0), np.float32(735.0)), (b'Non-REM', np.float32(736.0), np.float32(784.0)), (b'Awake', np.float32(785.0), np.float32(1119.0)), (b'Non-REM', np.float32(1120.0), np.float32(1172.0)), (b'Awake', np.float32(1173.0), np.float32(1964.0)), (b'Non-REM', np.float32(1965.0), np.float32(1977.0)), (b'Awake', np.float32(1978.0), np.float32(2004.0)), (b'Non-REM', np.float32(2005.0), np.float32(2082.0))]
-lrw 32 [(b'Left Reward', 32)] [  50.3944  113.5976 8384.2856 8447.9608 8522.632 ] [17702.5416 17767.3784 17821.3248]
-rrw 34 [(b'Right Reward', 34)] [  25.4664   82.1168  156.5368 8325.8192 8415.1448] [17665.7344 17719.4568 17796.4368]
-[... 25 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && cat > survey.py <<'E'
-import h5py, remfile, json, time, numpy as np, collections, pickle
-from concurrent.futures import ThreadPoolExecutor
-assets=json.load(open('w/assets_0.250624.0426.json'))['results']
-def one(a):
-    url=f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"
-    for attempt in range(3):
-        try:
-            f=h5py.File(remfile.File(url),'r'); break
-        except Exception as e: err=e; time.sleep(5)
-    g=lambda k: f[k][()]
-    r={'path':a['path'],'size':a['size']}
-    r['ep']=(g('intervals/epochs/start_time'),g('intervals/epochs/stop_time'),[x.decode() for x in g('intervals/epochs/tags')])
-    r['states']=(g('processing/behavior/states/label'),g('processing/behavior/states/start_time'),g('processing/behavior/states/stop_time'))
-    r['stim']={k:(g(f'stimulus/presentation/{k}/data'),g(f'stimulus/presentation/{k}/timestamps')) for k in f['stimulus/presentation']}
-    r['units_cols']=list(f['units'].attrs['colnames'])
-    r['loc']=g('units/location'); r['shank_id']=g('units/shank_id')
-    r['eg']=[f[x].name.split('/')[-1] for x in g('units/electrode_group')]
-    r['idx']=g('units/spike_times_index'); r['spk']=g('units/spike_times')
-    r['acq']={k:(f['acquisition'][k]['data'].shape if 'data' in f['acquisition'][k] else None, f['acquisition'][k]['timestamps'][[0,-1]] if 'timestamps' in f['acquisition'][k] else None, dict(f['acquisition'][k].attrs)) for k in f['acquisition']}
-    r['lfp']=(f['processing/ecephys/LFP/LFP/data'].shape, f['processing/ecephys/LFP/LFP/starting_time'].attrs['rate'])
-    r['proc']={m:list(f['processing'][m].keys()) for m in f['processing']}
-    r['meta']={k:str(g(k)) for k in ['general/subject/subject_id','general/session_id','session_start_time','general/subject/age']}
-    r['nelec']=len(g('general/extracellular_ephys/electrodes/id'))
-    r['top']=list(f.keys()); r['analysis']=list(f['analysis'].keys()); r['intervals']=list(f['intervals'].keys())
-    print(a['path'], flush=True)
-    return r
-t=time.time()
-with ThreadPoolExecutor(8) as ex: res=list(ex.map(one,assets))
-pickle.dump(res,open('survey.pkl','wb'))
-print(time.time()-t)
-E
-time env/bin/python survey.py 2>&1 | tail -5
-```
-
-```
-oid = h5o.open(self.id, self._e(name), lapl=lapl)
-  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
-  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
-  File "h5py/h5o.pyx", line 255, in h5py.h5o.open
-KeyError: 'Unable to synchronously open object (component not found)'
-
-real	5m20.178s
-user	0m7.960s
-sys	0m2.089s
-Shell cwd was reset to
-```
-
-**Agent**
-
-Some files lack an object the survey assumed. Making the survey tolerant of missing objects and re-running.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && python3 - <<'E'
-s=open('survey.py').read()
-s=s.replace("    g=lambda k: f[k][()]\n","    def g(k):\n        return f[k][()] if k in f else None\n")
-s=s.replace("r['ep']=(g('intervals/epochs/start_time')","r['ep']=None if 'intervals/epochs' not in f else (g('intervals/epochs/start_time')")
-s=s.replace("r['states']=(","r['states']=None if 'processing/behavior/states' not in f else (")
-s=s.replace("for k in f['stimulus/presentation']}","for k in (f['stimulus/presentation'] if 'stimulus/presentation' in f else [])}")
-s=s.replace("r['units_cols']=list(f['units'].attrs['colnames'])","r['units_cols']=list(f['units'].attrs['colnames']) if 'units' in f else None")
-s=s.replace("r['eg']=[f[x].name.split('/')[-1] for x in g('units/electrode_group')]","r['eg']=[f[x].name.split('/')[-1] for x in g('units/electrode_group')] if 'units' in f else None")
-s=s.replace("r['acq']={","r['acq']={} if 'acquisition' not in f else {")
-s=s.replace("r['lfp']=(f","r['lfp']=None if 'processing/ecephys/LFP/LFP' not in f else (f")
-s=s.replace("r['analysis']=list(f['analysis'].keys()); r['intervals']=list(f['intervals'].keys())","r['analysis']=list(f['analysis'].keys()) if 'analysis' in f else None; r['intervals']=list(f['intervals'].keys()) if 'intervals' in f else None")
-open('survey.py','w').write(s)
-E
-time env/bin/python survey.py 2>&1 | tail -5
-```
-
-```
-sub-Rat11/sub-Rat11_ses-Rat11-20150327_ecephys+image.nwb
-sub-Rat11/sub-Rat11_ses-Rat11-20150401_ecephys+image.nwb
-sub-Rat11/sub-Rat11_ses-Rat11-20150331_ecephys+image.nwb
-sub-Rat11/sub-Rat11_ses-Rat11-20150328_ecephys+image.nwb
-520.6261124610901
-
-real	8m40.874s
-user	0m13.066s
-sys	0m4.043s
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && env/bin/python - <<'E'
-import pickle, numpy as np, collections
-res=pickle.load(open('survey.pkl','rb'))
-res.sort(key=lambda r:r['path'])
-for r in res:
-    p=r['path'].split('ses-')[1][:14]
-    ep=r['ep']; st=r['states']
-    loc=collections.Counter(x.decode() for x in r['loc']) if r['loc'] is not None else None
-    stim={k:len(v[1]) for k,v in r['stim'].items()}
-    sd={}
-    if st is not None:
-        for l in set(st[0]): m=st[0]==l; sd[l.decode()]=int((st[2][m]-st[1][m]).sum())
-    print(p, round(r['size']/1e9), 'ep:', None if ep is None else list(zip(ep[2], (ep[0]/1000).round(0), (ep[1]/1000).round(0))))
-    print('   loc', dict(loc) if loc else None, 'stim', stim, 'states', sd, 'lfp', r['lfp'], 'nel', r['nelec'], 'spkmax', r['spk'].max() if r['spk'] is not None else None)
-    print('   acq', {k:v[0] for k,v in r['acq'].items()}, r['proc'], r['analysis'], r['intervals'], r['units_cols'], r['meta'])
-E
-```
-
-```
-<persisted-output>
-Output too large (37.1KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/b682be74-e56a-4560-9e99-d9f5172d7692/tool-results/b45c0tec2.txt
-
-Preview (first 2KB):
-Rat08-20130708 103 ep: [('sleep', np.float64(0.0), np.float64(9890.0)), ('run', np.float64(9890.0), np.float64(13493.0)), ('sleep', np.float64(13493.0), np.float64(24157.0)), ('run', np.float64(24157.0), np.float64(24759.0))]
-   loc {'hpc': 9, 'cen': 64, 'bla': 15, 'ladl': 45, 'den': 24, 'pir': 9} stim {'lrw': 5, 'puf': 3, 'rip': 28419, 'rrw': 4} states {'REM': 1628, 'Awake': 13879, 'Non-REM': 9076} lfp ((30949000, 160), np.float64(1250.0)) nel 160 spkmax 24759.19875
-   acq {'ElectricalSeries': (495184000, 160), 'Video: Rat08-20130708-02-run': (54431, 360, 640, 3), 'Video: Rat08-20130708-04-run': (9101, 360, 640, 3)} {'behavior': ['states'], 'ecephys': ['LFP']} [] ['epochs', 'trials'] ['shank_id', 'location', 'electrode_group', 'spike_times'] {'general/subject/subject_id': "b'Rat08'", 'general/session_id': "b'Rat08-20130708'", 'session_start_time': "b'2013-07-08T00:00:00-04:00'", 'general/subject/age': "b'3 months'"}
-Rat08-20130709 107 ep: [('prerun', np.float64(0.0), np.float64(317.0)), ('presleep', np.float64(317.0), np.float64(10042.0)), ('run', np.float64(10042.0), np.float64(13663.0)), ('postsleep', np.float64(13663.0), np.float64(19954.0)), ('postsleep', np.float64(19954.0), np.float64(24902.0)), ('postrun', np.float64(24902.0), np.float64(25510.0))]
-   loc {'hpc': 34, 'cen': 25, 'bla': 78, 'ladl': 21, 'den': 25, 'pir': 18} stim {'lrw': 11, 'puf': 2, 'rip': 32139, 'rrw': 11} states {'REM': 1828, 'Awake': 13390, 'Non-REM': 10070} lfp ((31888125, 160), np.float64(1250.0)) nel 160 spkmax 25510.49325
-...
-</persisted-output>
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && env/bin/python - <<'E'
-import pickle, numpy as np, collections
-res=pickle.load(open('survey.pkl','rb'))
-res.sort(key=lambda r:r['path'])
-allloc=collections.Counter()
-for r in res:
-    p=r['path'].split('ses-')[1][:14]
-    ep=r['ep']
-    loc=collections.Counter(x.decode() for x in r['loc']); allloc.update(loc)
-    stim={k:len(v[1]) for k,v in r['stim'].items()}
-    print(p, round(r['size']/1e9), [ (t, int(a/1000), int(b/1000)) for t,a,b in zip(ep[2],ep[0],ep[1])], 'puf', stim.get('puf'),'lrw',stim.get('lrw'),'rrw',stim.get('rrw'), 'nU',len(r['loc']), 'hpc',loc['hpc'],'bla',loc['bla'], 'acq', [k.replace('Video: ','') for k in r['acq']], r['intervals'], r['lfp'][0][0]/1250, r['spk'].max().round())
-print(allloc)
-E
-```
-
-```
-Exit code 1
-Rat08-20130708 103 [('sleep', 0, 9889), ('run', 9889, 13492), ('sleep', 13492, 24156), ('run', 24156, 24759)] puf 3 lrw 5 rrw 4 nU 166 hpc 9 bla 15 acq ['ElectricalSeries', 'Rat08-20130708-02-run', 'Rat08-20130708-04-run'] ['epochs', 'trials'] 24759.2 24759.0
-Rat08-20130709 107 [('prerun', 0, 317), ('presleep', 317, 10042), ('run', 10042, 13662), ('postsleep', 13662, 19954), ('postsleep', 19954, 24902), ('postrun', 24902, 25510)] puf 2 lrw 11 rrw 11 nU 201 hpc 34 bla 78 acq ['ElectricalSeries', 'Rat08-20130709-01-prerun', 'Rat08-20130709-03-run', 'Rat08-20130709-06-postrun'] ['epochs', 'trials'] 25510.5 25510.0
-Rat08-20130710 106 [('prerun', 0, 315), ('presleep', 315, 10413), ('run', 10413, 14020), ('postsleep', 14020, 24245), ('postrun', 24245, 24903), ('water', 24903, 25195)] puf 9 lrw 12 rrw 12 nU 190 hpc 31 bla 87 acq ['ElectricalSeries', 'Rat08-20130710-01-prerun', 'Rat08-20130710-03-run', 'Rat08-20130710-05-postrun'] ['epochs', 'trials'] 25195.7 25196.0
-Rat08-20130711 95 [('prerun', 0, 308), ('presleep', 308, 9211), ('run', 9211, 12823), ('postsleep', 12823, 21248), ('postrun', 21248, 21867)] puf 5 lrw 17 rrw 19 nU 201 hpc 24 bla 92 acq ['ElectricalSeries', 'Rat08-20130711-01-prerun', 'Rat08-20130711-03-run', 'Rat08-20130711-05-postrun'] ['epochs', 'trials'] 21867.7 21868.0
-Rat08-20130712 102 [('prerun', 0, 295), ('presleep', 295, 10613), ('run', 10613, 13940), ('postsleep', 13940, 17743), ('postsleep', 17743, 23162), ('postrun', 23162, 23980)] puf 14 lrw 35 rrw 34 nU 199 hpc 59 bla 40 acq ['ElectricalSeries', 'Rat08-20130712-01-prerun', 'Rat08-20130712-03-run', 'Rat08-20130712-06-postrun'] ['epochs', 'trials'] 23980.4256 23980.0
-Rat08-20130713 254 [('prerun', 0, 206), ('presleep', 206, 9405), ('run', 9405, 12649), ('postsleep', 12649, 22415), ('postrun', 22415, 22680)] puf 20 lrw 22 rrw 22 nU 252 hpc 60 bla 94 acq ['ElectricalSeries', 'Rat08-20130713-01-prerun', 'Rat08-20130713-03-run', 'Rat08-20130713-05-postrun'] ['epochs', 'trials'] 22680.0 226
-[... 9 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && env/bin/python - <<'E'
-import pickle, numpy as np, collections
-res=pickle.load(open('survey.pkl','rb'))
-res.sort(key=lambda r:r['path'])
-allloc=collections.Counter()
-for r in res:
-    p=r['path'].split('ses-')[1][:14]
-    ep=r['ep']
-    loc=collections.Counter(x.decode() for x in r['loc']); allloc.update(loc)
-    stim={k:len(v[1]) for k,v in r['stim'].items()}
-    eps=None if ep is None else [ (t, int(a/1000), int(b/1000)) for t,a,b in zip(ep[2],ep[0],ep[1])]
-    print(p, round(r['size']/1e9), eps, {k:v for k,v in stim.items() if k!='rip'}, 'nU',len(r['loc']), dict(loc), 'states', r['states'] is not None, r['intervals'], round(r['lfp'][0][0]/1250), r['spk'].max().round())
-print(allloc)
-E
-```
-
-```
-Exit code 1
-Rat08-20130708 103 [('sleep', 0, 9889), ('run', 9889, 13492), ('sleep', 13492, 24156), ('run', 24156, 24759)] {'lrw': 5, 'puf': 3, 'rrw': 4} nU 166 {'hpc': 9, 'cen': 64, 'bla': 15, 'ladl': 45, 'den': 24, 'pir': 9} states True ['epochs', 'trials'] 24759 24759.0
-Rat08-20130709 107 [('prerun', 0, 317), ('presleep', 317, 10042), ('run', 10042, 13662), ('postsleep', 13662, 19954), ('postsleep', 19954, 24902), ('postrun', 24902, 25510)] {'lrw': 11, 'puf': 2, 'rrw': 11} nU 201 {'hpc': 34, 'cen': 25, 'bla': 78, 'ladl': 21, 'den': 25, 'pir': 18} states True ['epochs', 'trials'] 25510 25510.0
-Rat08-20130710 106 [('prerun', 0, 315), ('presleep', 315, 10413), ('run', 10413, 14020), ('postsleep', 14020, 24245), ('postrun', 24245, 24903), ('water', 24903, 25195)] {'lrw': 12, 'puf': 9, 'rrw': 12} nU 190 {'hpc': 31, 'bla': 87, 'den': 42, 'pir': 13, 'cen': 17} states True ['epochs', 'trials'] 25196 25196.0
-Rat08-20130711 95 [('prerun', 0, 308), ('presleep', 308, 9211), ('run', 9211, 12823), ('postsleep', 12823, 21248), ('postrun', 21248, 21867)] {'lrw': 17, 'puf': 5, 'rrw': 19} nU 201 {'hpc': 24, 'bla': 92, 'den': 44, 'pir': 23, 'cen': 18} states True ['epochs', 'trials'] 21868 21868.0
-Rat08-20130712 102 [('prerun', 0, 295), ('presleep', 295, 10613), ('run', 10613, 13940), ('postsleep', 13940, 17743), ('postsleep', 17743, 23162), ('postrun', 23162, 23980)] {'lrw': 35, 'puf': 14, 'rrw': 34} nU 199 {'hpc': 59, 'bla': 40, 'den': 46, 'pir': 11, 'no label': 43} states True ['epochs', 'trials'] 23980 23980.0
-Rat08-20130713 254 [('prerun', 0, 206), ('presleep', 206, 9405), ('run', 9405, 12649), ('postsleep', 12649, 22415), ('postrun', 22415, 22680)] {'lrw': 22, 'puf': 20, 'rrw': 22} nU 252 {'hpc': 60, 'bla': 94, 'pir': 98} states True ['epochs', 'trials'] 22680 22680.0
-Rat08-20130715 17 [('prerun', 0, 123), ('presleep', 123, 9389), ('run', 9389, 12119), ('postsleep', 12119, 21453), ('postrun', 21453, 21827)] {'lrw': 41, 'puf': 34, 'rrw': 41} nU 166 {'hpc': 20, 'bla': 39, 'ven':
-[... 8 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && env/bin/python - <<'E'
-import pickle, numpy as np, collections
-res=pickle.load(open('survey.pkl','rb'))
-res.sort(key=lambda r:r['path'])
-allloc=collections.Counter()
-for r in res[12:]:
-    p=r['path'].split('ses-')[1][:14]
-    ep=r['ep']
-    loc=collections.Counter(x.decode() for x in r['loc']) if r['loc'] is not None else None
-    if loc: allloc.update(loc)
-    stim={k:len(v[1]) for k,v in r['stim'].items()}
-    eps=None if ep is None else [ (t, int(a/1000), int(b/1000)) for t,a,b in zip(ep[2],ep[0],ep[1])]
-    print(p, round(r['size']/1e9), eps, {k:v for k,v in stim.items() if k!='rip'}, 'rip' in stim, 'nU',None if r['idx'] is None else len(r['idx']), loc and dict(loc), 'states', r['states'] is not None, r['intervals'], r['lfp'] and round(r['lfp'][0][0]/1250), r['spk'] is not None and r['spk'].max().round(), r['top'], r['units_cols'])
-E
-```
-
-```
-Rat08-20130722 17 [('prerun', 0, 185), ('presleep', 185, 8758), ('run', 8758, 10614), ('postsleep', 10614, 21992), ('postrun', 21992, 22295)] {'lrw': 54, 'puf': 40, 'rrw': 54} False nU None None states False ['epochs'] 22295 False ['acquisition', 'analysis', 'file_create_date', 'general', 'identifier', 'intervals', 'processing', 'session_description', 'session_start_time', 'specifications', 'stimulus', 'timestamps_reference_time'] None
-Rat09-20140324 98 [('prerun', 0, 124), ('presleep', 124, 10011), ('run', 10011, 13076), ('postsleep', 13076, 23730), ('postrun', 23730, 23930)] {'lrw': 19, 'puf': 20, 'rrw': 18} False nU 136 {'cen': 70, 'bla': 35, 'ladl': 31} states True ['epochs', 'trials'] 23930 23930.0 ['acquisition', 'analysis', 'file_create_date', 'general', 'identifier', 'intervals', 'processing', 'session_description', 'session_start_time', 'specifications', 'stimulus', 'timestamps_reference_time', 'units'] ['electrode_group', 'location', 'shank_id', 'spike_times']
-Rat09-20140325 75 [('prerun', 0, 182), ('presleep', 182, 7053), ('run', 7053, 10164), ('postsleep', 10164, 19835), ('postrun', 19835, 20033)] {'lrw': 31, 'puf': 37, 'rrw': 31} False nU 97 {'cen': 42, 'bla': 49, 'ladl': 6} states False ['epochs', 'trials'] 20034 20033.0 ['acquisition', 'analysis', 'file_create_date', 'general', 'identifier', 'intervals', 'processing', 'session_description', 'session_start_time', 'specifications', 'stimulus', 'timestamps_reference_time', 'units'] ['location', 'electrode_group', 'shank_id', 'spike_times']
-Rat09-20140326 87 [('prerun', 0, 185), ('presleep', 185, 12223), ('run', 12223, 14931), ('postsleep', 14931, 23666), ('postrun', 23666, 24306)] {'lrw': 81, 'puf': 78, 'rrw': 81} False nU 140 {'cen': 32, 'bla': 108} states False ['epochs', 'trials'] 24306 24306.0 ['acquisition', 'analysis', 'file_create_date', 'general', 'identifier', 'intervals', 'processing', 'session_description', 'session_start_time', 'specifications', 'stimulus', 'timestamps_reference_time', 'units
-[... 25 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && cat > t3.py <<'E'
-import h5py, remfile, json, numpy as np, collections
-A={a['path'].split('ses-')[1][:14]:a['asset_id'] for a in json.load(open('w/assets_0.250624.0426.json'))['results']}
-def op(s): return h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{A[s]}/download/"),'r')
-f=op('Rat08-20130709')
-t=f['intervals/trials']; print(dict(t.attrs)); 
-for k in t: print(k, t[k].shape, t[k][:8])
-print(f['stimulus/presentation/rip/data'][:9], f['stimulus/presentation/rip/timestamps'][:9])
-f=op('Rat08-20130717')
-loc=f['units/location'][()].astype(str); idx=f['units/spike_times_index'][()]; st=f['units/spike_times'][()]
-trains=np.split(st, idx[:-1]); sh=f['units/shank_id'][()]; eg=[f[x].name.split('/')[-1] for x in f['units/electrode_group'][()]]
-sig=collections.defaultdict(list)
-for i,(l,tr) in enumerate(zip(loc,trains)): sig[(len(tr), round(tr[0],4) if len(tr) else None)].append((i,l,eg[i],sh[i]))
-print("dupes", [v for v in sig.values() if len(v)>1][:10], sum(len(v)>1 for v in sig.values()))
-print(list(zip(loc, eg, sh))[:200])
-E
-env/bin/python t3.py
-```
-
-```
-{'colnames': array(['start_time', 'stop_time'], dtype=object), 'description': 'experimental trials', 'namespace': 'core', 'neurodata_type': 'TimeIntervals', 'object_id': '6a29d702-6b80-4ebe-9d72-51d5b153b298'}
-id (185,) [0 1 2 3 4 5 6 7]
-start_time (185,) [  6.656   26.24    52.7616  59.8784  71.4752  96.9728 115.7376 152.7296]
-stop_time (185,) [ 13.2864  38.0416  55.296   67.9424  73.984  103.9872 126.848  159.8464]
-[b'Ripple start 11' b'Ripple peak 11' b'Ripple stop 11' b'Ripple start 11'
- b'Ripple peak 11' b'Ripple stop 11' b'Ripple start 11' b'Ripple peak 11'
- b'Ripple stop 11'] [39.0216 39.0504 39.0656 49.1904 49.196  49.2368 77.7936 77.804  77.8656]
-dupes [] 0
-[(np.str_('hpc'), 'shank1', np.int64(0)), (np.str_('hpc'), 'shank2', np.int64(0)), (np.str_('hpc'), 'shank2', np.int64(1)), (np.str_('hpc'), 'shank3', np.int64(0)), (np.str_('hpc'), 'shank3', np.int64(1)), (np.str_('hpc'), 'shank3', np.int64(2)), (np.str_('hpc'), 'shank3', np.int64(3)), (np.str_('hpc'), 'shank3', np.int64(4)), (np.str_('hpc'), 'shank3', np.int64(5)), (np.str_('hpc'), 'shank3', np.int64(6)), (np.str_('hpc'), 'shank3', np.int64(7)), (np.str_('hpc'), 'shank3', np.int64(8)), (np.str_('hpc'), 'shank3', np.int64(9)), (np.str_('hpc'), 'shank3', np.int64(10)), (np.str_('hpc'), 'shank3', np.int64(11)), (np.str_('hpc'), 'shank3', np.int64(12)), (np.str_('hpc'), 'shank3', np.int64(13)), (np.str_('hpc'), 'shank3', np.int64(14)), (np.str_('hpc'), 'shank3', np.int64(15)), (np.str_('hpc'), 'shank4', np.int64(0)), (np.str_('hpc'), 'shank4', np.int64(1)), (np.str_('hpc'), 'shank4', np.int64(2)), (np.str_('hpc'), 'shank4', np.int64(3)), (np.str_('hpc'), 'shank4', np.int64(4)), (np.str_('hpc'), 'shank4', np.int64(5)), (np.str_('hpc'), 'shank4', np.int64(6)), (np.str_('hpc'), 'shank4', np.int64(7)), (np.str_('hpc'), 'shank4', np.int64(8)), (np.str_('hpc'), 'shank4', np.int64(9)), (np.str_('hpc'), 'shank4', np.int64(10)), (np.str_('hpc'), 'shank4', np.int64(11)), (np.str_('hpc'), 'shank4', np.int64(12)), (np
-[... 1 more lines not kept]
-```
-
-**Agent**
-
-Labels differ only by case across probes (no duplicated units). Some files have an undocumented `trials` table. Now checking how puffs relate to laps defined by alternating left and right rewards.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && env/bin/python - <<'E'
-import pickle, numpy as np, collections
-res=pickle.load(open('survey.pkl','rb')); res.sort(key=lambda r:r['path'])
-for r in res:
-    p=r['path'].split('ses-')[1][:14]
-    s=r['stim']
-    if 'lrw' not in s: print(p,'no rewards'); continue
-    ev=sorted([(t,'L') for t in s['lrw'][1]]+[(t,'R') for t in s['rrw'][1]])
-    ep=r['ep']; epochs=[(t,a/1000,b/1000) for t,a,b in zip(ep[2],ep[0],ep[1])]
-    def epoch_of(t):
-        for n,a,b in epochs:
-            if a<=t<b: return n
-    laps=[(a[0],b[0],a[1]+b[1]) for a,b in zip(ev[:-1],ev[1:]) if a[1]!=b[1]]
-    same=sum(a[1]==b[1] for a,b in zip(ev[:-1],ev[1:]))
-    puffs=s.get('puf',(None,np.array([])))[1]
-    pd=collections.Counter()
-    for t in puffs:
-        d=[l[2] for l in laps if l[0]<=t<l[1]]
-        pd[(epoch_of(t), d[0] if d else 'none')]+=1
-    lapsep=collections.Counter((epoch_of(l[0]),l[2]) for l in laps)
-    durs={k:np.median([l[1]-l[0] for l in laps if epoch_of(l[0])==k[0] and l[2]==k[1]]).round(1) for k in lapsep}
-    print(p, 'repeats',same, 'puffs',dict(pd), 'laps',dict(lapsep), 'dur', durs)
-E
-```
-
-```
-Rat08-20130708 repeats 0 puffs {('run', 'LR'): 3} laps {('run', 'LR'): 4, ('run', 'RL'): 4} dur {('run', 'LR'): np.float64(216.5), ('run', 'RL'): np.float64(65.2)}
-Rat08-20130709 repeats 0 puffs {('run', 'LR'): 2} laps {('prerun', 'RL'): 5, ('prerun', 'LR'): 5, ('run', 'RL'): 3, ('run', 'LR'): 3, ('postrun', 'RL'): 3, ('postrun', 'LR'): 2} dur {('prerun', 'RL'): np.float64(24.9), ('prerun', 'LR'): np.float64(37.9), ('run', 'RL'): np.float64(87.7), ('run', 'LR'): np.float64(860.1), ('postrun', 'RL'): np.float64(26.9), ('postrun', 'LR'): np.float64(124.9)}
-Rat08-20130710 repeats 0 puffs {('run', 'RL'): 8, ('run', 'LR'): 1} laps {('prerun', 'LR'): 6, ('prerun', 'RL'): 5, ('run', 'RL'): 6, ('run', 'LR'): 6} dur {('prerun', 'LR'): np.float64(28.5), ('prerun', 'RL'): np.float64(17.4), ('run', 'RL'): np.float64(191.9), ('run', 'LR'): np.float64(479.7)}
-Rat08-20130711 repeats 1 puffs {('run', 'RL'): 4, ('run', 'none'): 1} laps {('prerun', 'RL'): 4, ('prerun', 'LR'): 4, ('run', 'RL'): 4, ('run', 'LR'): 4, ('postrun', 'RL'): 9, ('postrun', 'LR'): 9} dur {('prerun', 'RL'): np.float64(31.8), ('prerun', 'LR'): np.float64(42.4), ('run', 'RL'): np.float64(660.5), ('run', 'LR'): np.float64(140.1), ('postrun', 'RL'): np.float64(29.2), ('postrun', 'LR'): np.float64(18.1)}
-Rat08-20130712 repeats 1 puffs {('run', 'LR'): 14} laps {('prerun', 'RL'): 7, ('prerun', 'LR'): 6, ('run', 'LR'): 11, ('run', 'RL'): 11, ('postrun', 'LR'): 16, ('postrun', 'RL'): 16} dur {('prerun', 'RL'): np.float64(23.1), ('prerun', 'LR'): np.float64(16.3), ('run', 'LR'): np.float64(66.7), ('run', 'RL'): np.float64(52.9), ('postrun', 'LR'): np.float64(14.7), ('postrun', 'RL'): np.float64(16.5)}
-Rat08-20130713 repeats 0 puffs {('run', 'LR'): 19, ('run', 'RL'): 1} laps {('prerun', 'LR'): 5, ('prerun', 'RL'): 5, ('run', 'LR'): 10, ('run', 'RL'): 9, ('postrun', 'RL'): 7, ('postrun', 'LR'): 7} dur {('prerun', 'LR'): np.float64(17.3), ('prerun', 'RL'): np.float64(15.8), ('run', 'LR'): np.float64(121.9), ('run', 'RL'): n
-[... 35 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat schemas/claims.schema.json | python -m json.tool | head -150
-```
-
-```
-{
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "Claims proposed for one target (a dandiset and one of its papers)",
-    "description": "Draft. To be revised after the pilot.",
-    "type": "object",
-    "additionalProperties": false,
-    "required": [
-        "schema_version",
-        "dandiset",
-        "paper",
-        "claims"
-    ],
-    "properties": {
-        "schema_version": {
-            "const": 1
-        },
-        "dandiset": {
-            "type": "string",
-            "pattern": "^[0-9]{6}$"
-        },
-[... 120 more lines not kept]
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "claims/000061/10.1038-nn.4637.yaml",
- "content": "# Claims for Girardeau, Inema & Buzsaki (2017) on dandiset 000061.\n# Source: the abstract only (PubMed 28892057). The article is not open access: it is not in\n# PubMed Central, Europe PMC lists no full text, and the HAL record (hal-03963137) holds metadata\n# only. So every claim is at the level of a sentence of the abstract, no claim has a reported\n# number, and every method choice below is fixed here, as a common choice, before the analysis.\n#\n# When these criteria were written, the author had seen the data check only: the file list, the\n# metadata, the units' location labels and counts per session, which files lack units, sleep\n# states or ripple events, the epoch tables, and the reward and air-puff events, including the\n# laps built from alternating rewards, which direction holds the puffs, and the median lap\n# durations per direction in the pre-run, run and post-run epochs. No reactivation, ripple\n# modulation or pattern weight had been computed.\n#\n# Method choices fixed here (the Methods were not available):\n# - Units. Hippocampus is the label `hpc` or `HIP`; BLA is the label `bla` or `BLA` (case is\n#   ignored). A session is used when it has sleep states, ripple events, a sleep epoch before and\n#   one after the run, and at least 5 hippocampal and 5 BLA units that fire at 0.1 Hz or more in\n#   the run epoch. Units are not matched across sessions.\n# - Sleep. Pre-sleep and post-sleep are the epochs tagged presleep and postsleep (or the sleep\n#   epochs before and after the first run, where tags are only \"sleep\"), restricted to the\n#   Non-REM intervals of the states table.\n# - Patterns. Spike counts in 50 ms bins, z-scored per unit within the epoch. The template is the\n#   hippocampus by BLA cross-correlation matrix of the run epoch; its singular vectors (u for\n#   hippocampus, v for BLA) are the joint patterns. A pattern is significant when its singular\n#   value exceeds the 95th percentile of the largest singular value over 200 surrogates in which\n#   each BLA unit's binned train is circularly shifted by a random offset.\n# - Reactivation strength in a sleep bin is (z_hpc . u)(z_bla . v), with z-scores taken over the\n#   Non-REM bins of that sleep epoch.\n# - Ripples are the start, peak and stop times of the `rip` annotations.\n# - Laps run from a reward at one end of the track to the next reward at the other end. The\n#   air-puff direction of a session is the direction of the laps that hold most of its puffs.\nschema_version: 1\ndandiset: \"000061\"\npaper: doi:10.1038/nn.4637\nclaims:\n- id: hpc-bla-reactivation-post-sleep\n  statement: Coordinated hippocampus and BLA activity patterns of the training run are\n    reactivated during non-REM sleep after training, more than during non-REM sleep before it.\n  source: Abstract\n  criterion: For every significant joint pattern, the mean reactivation strength over post-sleep\n    Non-REM bins minus the mean over pre-sleep Non-REM bins. Reproduced when the median over\n    patterns of all sessions is above zero with a two-sided Wilcoxon signed-rank p < 0.05, and the\n    median is above zero in at least two of the three rats with usable sessions; partially\n    reproduced when the pooled test holds but the median is above zero in one rat only; not\n    reproduced otherwise. Shown as variants, which do not change the outcome, are bins of 25 and\n    100 ms, the wider BLA label set (bla, blv, bmp, ladl), and the first singular pattern of each\n    session regardless of significance.\n- id: reactivation-peaks-at-ripples\n  statement: The hippocampus and BLA reactivations peak during hippocampal sharp wave-ripples.\n  source: Abstract\n  depends_on:\n  - hpc-bla-reactivation-post-sleep\n  criterion: Over post-sleep Non-REM ripples, the ripple-peak-triggered mean of each significant\n    pattern's reactivation strength from -1 to +1 s in 50 ms bins. \"Peak during SPW-Rs\" can be\n    read as (a) reactivation strength in post-sleep is highest at the ripple, or (b) the increase\n    from pre-sleep to post-sleep is larger at ripples than outside them. Under (a), reproduced\n    when the mean over patterns of the triggered curve has its maximum within 100 ms of the\n    ripple peak, and the per-pattern difference between the bin of the ripple peak and the mean\n    of the bins from 0.5 to 1 s on both sides is above zero (two-sided Wilcoxon signed-rank p <\n    0.05). Under (b), reproduced when the per-pattern post minus pre change of the mean strength\n    in bins that overlap a ripple exceeds the same change in Non-REM bins outside ripples\n    (two-sided Wilcoxon signed-rank p < 0.05, median above zero). The claim is reproduced when\n    either reading holds.\n- id: bla-ripple-up-subgroup\n  statement: A subgroup of BLA cells is positively modulated during hippocampal sharp\n    wave-ripples.\n  source: Abstract\n  criterion: In sessions with ripple events, sleep states and BLA units (no minimum on units),\n    the spikes of each BLA unit in the windows (start to stop) of Non-REM ripples of pre- and\n    post-sleep, against 500 surrogates in which all windows are shifted together by a random\n    offset of 0.5 to 5 s, either sign. A unit is positively modulated when at most 1% of\n    surrogates reach its count (one-sided). The chance level is the fraction selected when the\n    real windows are replaced by the windows shifted by a fixed 7 s. Reproduced when the\n    fraction of positively modulated BLA units is above the chance level (one-sided binomial\n    test against it, p < 0.05), is below 1, and is above the chance level in at least two of the\n    three rats; partially reproduced when the pooled test holds in one rat only.\n- id: reactivation-involves-ripple-up-cells\n  statement: The hippocampus and BLA reactivations involve the subgroup of BLA cells that are\n    positively modulated during sharp wave-ripples.\n  source: Abstract\n  depends_on:\n  - hpc-bla-reactivation-post-sleep\n  - bla-ripple-up-subgroup\n  criterion: For each significant joint pattern of a session that has at least one positively\n    modulated and one other BLA unit among those used, the mean squared BLA weight (v squared) of\n    the positively modulated units minus that of the other BLA units. Reproduced when the median\n    over patterns is above zero with a two-sided Wilcoxon signed-rank p < 0.05. Shown as a\n    variant is the same test on patterns whose post minus pre reactivation is above zero.\n- id: aversive-direction-stronger\n  statement: Reactivation is stronger for the hippocampus and BLA correlation patterns of the run\n    direction that held the air puff than for those of the safe direction.\n  source: Abstract\n  depends_on:\n  - hpc-bla-reactivation-post-sleep\n  criterion: Templates are built separately from the run-epoch bins inside laps of the air-puff\n    direction and inside laps of the safe direction. For each session and direction, the mean\n    over its significant patterns of post-sleep minus pre-sleep Non-REM reactivation strength;\n    a session counts when both directions have at least one significant pattern. Reproduced when\n    the air-puff value exceeds the safe value across sessions (two-sided Wilcoxon signed-rank p <\n    0.05, median difference above zero); partially reproduced when the median difference is above\n    zero with p between 0.05 and 0.1, or the pooled test holds but the median is above zero in one\n    rat only; not reproduced otherwise. Shown as variants are a pooled per-pattern comparison\n    (Mann-Whitney), the first singular pattern of each direction in every session, templates\n    from equal numbers of bins in the two directions, and post-sleep strength alone.\n- id: rats-learn-puff-location\n  statement: Rats learned the location of an aversive air puff on a linear track.\n  source: Abstract\n"
-}
-```
-
-```
-File created successfully at: claims/000061/10.1038-nn.4637.yaml (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "claims/000061/10.1038-nn.4637.yaml",
- "old_string": "three rats; partially reproduced when the pooled test holds in one rat only.",
- "new_string": "three rats; partially reproduced when the pooled test holds but the fraction is above the\n    chance level in one rat only; not reproduced otherwise."
-}
-```
-
-```
-The file claims/000061/10.1038-nn.4637.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 1,200p entries/001453-fouke-2025/omr.py
-```
-
-```
-"""Loading and measures for the freely swimming optomotor data of dandiset 001453.
-
-Fouke, He, Loring & Naumann (2025), Current Biology, doi:10.1016/j.cub.2025.04.027.
-
-Each NWB file holds one fish: x and y position (pixels), heading (`f0_theta`, radians), its
-change per frame (`f0_vtheta`; the file says radians/s, the data show radians per frame),
-velocity estimates, and per frame the stimulus code and trial number (`stim_index`). Files are
-streamed from the archive at the pinned version; nothing is written to disk.
-
-Where the parameters come from:
-
-- Trial processing follows the paper's analysis notebook, Fig1-S1.ipynb, in
-  https://gitlab.oit.duke.edu/ean26/danionella_omr_neuralcircuits2025 at commit
-  33a5c297ff4ab6ff49f6bdd96139e9fdd867025c (the Methods give none of these): Savitzky-Golay
-  smoothing of positions (21 frames, order 2); rejection of trials whose absolute cumulative
-  heading change exceeds 1000 degrees in the first 10 s or 2000 degrees in the first 35 s, or
-  whose mean speed exceeds 100 mm/s; measures from 3 s to 35 s after the first tracked frame;
-  10 pixels per mm (the code divides pixels per second by 10 to give mm/s); per fish the median
-  over trials. The 3 s stationary phase and the 32 s of motion are in the Methods.
-- The names of the stimulus codes combine the protocol file sevenrep_twentyonestim.hdf of the
-[... 180 more lines not kept]
-```
-
-**Agent**
-
-Claims file written. Now the helper module: loading by streaming, sleep epochs, laps, binning, joint patterns with a shuffle threshold, reactivation strength and ripple modulation.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && ls -la survey.pkl && env/bin/python -c "
-import pickle;res=pickle.load(open('survey.pkl','rb'))
-print(sum(len(r['spk']) for r in res if r['spk'] is not None)/1e6, max(len(r['spk']) for r in res if r['spk'] is not None)/1e6)
-r=[r for r in res if 'Rat10-20140626' in r['path']][0]; print(r['acq'])
-"
-```
-
-```
--rw-r--r-- 1 runner runner 1296898943 Oct 16 14:19 survey.pkl
-160.467092 9.476748
-{'Video: Rat10-20140626-01-prerun': ((5714, 360, 640, 3), array([11880333.33333333, 12070733.33333333]), {'comments': 'no comments', 'description': 'Video recorded by camera.', 'namespace': 'core', 'neurodata_type': 'ImageSeries', 'object_id': '6fc78ded-b684-45d5-bf0e-47317a8c4a77'}), 'Video: Rat10-20140626-03-run': ((40838, 360, 640, 3), array([ 9917133.33333333, 11278333.33333333]), {'comments': 'no comments', 'description': 'Video recorded by camera.', 'namespace': 'core', 'neurodata_type': 'ImageSeries', 'object_id': 'a4750cc0-424f-49f5-968b-85f47ec2a857'}), 'Video: Rat10-20140626-06-postrun': ((18062, 360, 640, 3), array([11278333.33333333, 11880333.33333333]), {'comments': 'no comments', 'description': 'Video recorded by camera.', 'namespace': 'core', 'neurodata_type': 'ImageSeries', 'object_id': 'a03ed685-ba87-472c-b7dd-6f6956ff9ee7'})}
-Shell cwd was reset to
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "entries/000061-girardeau-2017/hpcbla.py",
- "content": "\"\"\"Loading and measures for the hippocampus and amygdala recordings of dandiset 000061.\n\nGirardeau, Inema & Buzsaki (2017), Nature Neuroscience, doi:10.1038/nn.4637.\n\nEach NWB file is one day of one rat: sorted units with a brain-region label, sleep states\n(Awake, Non-REM, REM), an epochs table (pre-run, pre-sleep, run, post-sleep, post-run), and\nannotation series for hippocampal ripples (`rip`: start, peak and stop of each ripple), air\npuffs (`puf`) and rewards at the left and right ends of the track (`lrw`, `rrw`). Some files\nalso hold raw voltage, LFP and video, which are not read here. Files are streamed from the\narchive at the pinned version; nothing is written to disk.\n\nWhere the parameters come from: the paper's full text is not open access, so its Methods were\nnot available, and neither the paper's abstract nor the dandiset links analysis code. Every\nparameter below is a common choice made here, fixed in the claims file before the analysis:\n\n- `EPOCH_TIME_SCALE`: the epochs table is stored in milliseconds although its column says\n  seconds; the data check shows this (its last stop time is 1000 times the last spike time).\n- Region labels: `HPC_LABELS` and `BLA_LABELS` (case is ignored). `BLA_COMPLEX_LABELS` adds the\n  undescribed labels that look like basolateral subdivisions (blv, bmp, ladl), for a variant.\n- `BIN_S` (50 ms), `MIN_RATE_HZ` (0.1 Hz in the run epoch), `MIN_UNITS` (5 per region),\n  `N_SURROGATES` (200 circular shifts) and `SIGNIFICANCE_PERCENTILE` (95) for the joint\n  patterns, which are the singular vectors of the hippocampus by BLA cross-correlation matrix of\n  the run.\n- Ripple modulation: `RIPPLE_SHIFTS` (500 shifts of 0.5 to 5 s), `RIPPLE_ALPHA` (0.01, one\n  sided), `CHANCE_SHIFT_S` (7 s), at `RIPPLE_RES_S` (5 ms) resolution.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom concurrent.futures import ThreadPoolExecutor\n\nimport h5py\nimport numpy as np\nimport remfile\nfrom dandi.dandiapi import DandiAPIClient\n\nDANDISET_ID = \"000061\"\nDANDISET_VERSION = \"0.250624.0426\"\n\nEPOCH_TIME_SCALE = 1e-3\nHPC_LABELS = {\"hpc\", \"hip\"}\nBLA_LABELS = {\"bla\"}\nBLA_COMPLEX_LABELS = {\"bla\", \"blv\", \"bmp\", \"ladl\"}\nKEEP_LABELS = HPC_LABELS | BLA_COMPLEX_LABELS\n\nBIN_S = 0.05\nMIN_RATE_HZ = 0.1\nMIN_UNITS = 5\nN_SURROGATES = 200\nSIGNIFICANCE_PERCENTILE = 95.0\n\nRIPPLE_SHIFTS = 500\nRIPPLE_SHIFT_RANGE_S = (0.5, 5.0)\nRIPPLE_ALPHA = 0.01\nCHANCE_SHIFT_S = 7.0\nRIPPLE_RES_S = 0.005\n\n\ndef asset_urls() -> list[tuple[str, str]]:\n    \"\"\"(path, streaming URL) of every NWB file at the pinned version.\"\"\"\n    with DandiAPIClient() as client:\n        dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)\n        return sorted((a.path, a.get_content_url(follow_redirects=1, strip_query=True))\n                      for a in dandiset.get_assets() if a.path.endswith(\".nwb\"))\n\n\ndef _text(value) -> str:\n    value = value[()]\n    if isinstance(value, np.ndarray):\n        value = value[0]\n    return value.decode() if isinstance(value, bytes) else str(value)\n\n\ndef _strings(dataset) -> np.ndarray:\n    return np.array([v.decode() if isinstance(v, bytes) else str(v) for v in dataset[()]])\n\n\ndef load_session(path: str, url: str) -> dict:\n    \"\"\"One file: metadata, tables and events, and the spike trains of hippocampal and BLA units.\n\n    Units of other regions keep only their spike count and first spike time (for the check of\n    duplicated recordings). Epoch times are converted to seconds with `EPOCH_TIME_SCALE`.\n    \"\"\"\n    for attempt in range(3):\n        try:\n            f = h5py.File(remfile.File(url), \"r\")\n            break\n        except OSError:\n            if attempt == 2:\n                raise\n    with f:\n        s = {\"path\": path, \"session\": path.split(\"ses-\")[1].split(\"_\")[0],\n             \"rat\": _text(f[\"general/subject/subject_id\"]),\n             \"species\": _text(f[\"general/subject/species\"]),\n             \"age\": _text(f[\"general/subject/age\"]), \"sex\": _text(f[\"general/subject/sex\"]),\n             \"session_start\": _text(f[\"session_start_time\"])}\n        ep = f[\"intervals/epochs\"]\n        s[\"epoch_columns\"] = list(ep.attrs[\"colnames\"])\n        s[\"epoch_unit_stated\"] = ep[\"start_time\"].attrs.get(\"description\")\n        s[\"epochs_raw\"] = list(zip(_strings(ep[\"tags\"]), ep[\"start_time\"][()], ep[\"stop_time\"][()]))\n        s[\"epochs\"] = [(t, a * EPOCH_TIME_SCALE, b * EPOCH_TIME_SCALE) for t, a, b in s[\"epochs_raw\"]]\n        if \"processing/behavior/states\" in f:\n            st = f[\"processing/behavior/states\"]\n            s[\"states\"] = list(zip(_strings(st[\"label\"]), st[\"start_time\"][()].astype(float),\n                                   st[\"stop_time\"][()].astype(float)))\n        else:\n            s[\"states\"] = None\n        s[\"trials\"] = None\n        if \"intervals/trials\" in f:\n            tr = f[\"intervals/trials\"]\n            s[\"trials\"] = (tr[\"start_time\"][()], tr[\"stop_time\"][()], tr.attrs.get(\"description\"))\n        events = {}\n        for name in (f[\"stimulus/presentation\"] if \"stimulus/presentation\" in f else []):\n            g = f[f\"stimulus/presentation/{name}\"]\n            events[name] = (_strings(g[\"data\"]), g[\"timestamps\"][()], g.attrs.get(\"description\"))\n        s[\"events\"] = events\n        s[\"ripples\"] = parse_ripples(*events[\"rip\"][:2]) if \"rip\" in events else None\n        lfp = \"processing/ecephys/LFP/LFP\"\n        s[\"lfp\"] = None\n        if lfp in f:\n            s[\"lfp\"] = (f[f\"{lfp}/data\"].shape, float(f[f\"{lfp}/starting_time\"].attrs[\"rate\"]),\n                        f[f\"{lfp}/data\"].attrs.get(\"unit\"))\n        s[\"raw\"] = f[\"acquisition/ElectricalSeries/data\"].shape if \"acquisition/ElectricalSeries\" in f else None\n        s[\"videos\"] = {k: (f[f\"acquisition/{k}/data\"].shape[0], *f[f\"acquisition/{k}/timestamps\"][[0, -1]],\n                           f[f\"acquisition/{k}/timestamps\"].attrs.get(\"unit\"))\n                       for k in f[\"acquisition\"] if k.startswith(\"Video\")}\n        s[\"electrode_locations\"] = sorted(set(_strings(f[\"general/extracellular_ephys/electrodes/location\"])))\n        s[\"units\"] = None\n        if \"units\" in f:\n            u = f[\"units\"]\n            loc = _strings(u[\"location\"]) if \"location\" in u else np.array([\"(none)\"] * len(u[\"id\"]))\n            index = u[\"spike_times_index\"][()]\n            spikes = u[\"spike_times\"][()]\n            trains = np.split(spikes, index[:-1])\n            s[\"units\"] = {\n                \"label\": loc, \"region\": np.char.lower(loc), \"shank\": u[\"shank_id\"][()],\n                \"group\": np.array([f[r].name.split(\"/\")[-1] for r in u[\"electrode_group\"][()]]),\n                \"n_spikes\": np.diff(np.concatenate([[0], index])),\n                \"first_spike\": np.array([t[0] if len(t) else np.nan for t in trains]),\n                \"sorted\": bool(all(np.all(np.diff(t) >= 0) for t in trains)),\n                \"trains\": {i: t for i, t in enumerate(trains) if loc[i].lower() in KEEP_LABELS},\n                \"last_spike\": float(spikes.max()) if len(spikes) else np.nan,\n                \"has_location_column\": \"location\" in u,\n            }\n    return s\n\n\ndef load_all(workers: int = 12) -> list[dict]:\n    \"\"\"Every file of the dandiset, loaded in parallel.\"\"\"\n    urls = asset_urls()\n    with ThreadPoolExecutor(workers) as pool:\n        return list(pool.map(lambda pu: load_session(*pu), urls))\n\n\ndef parse_ripples(labels: np.ndarray, times: np.ndarray) -> dict:\n    \"\"\"The `rip` annotations as arrays of start, peak and stop, with the channel in each label.\n\n    The labels come in triplets \"Ripple start N\", \"Ripple peak N\", \"Ripple stop N\"; `ordered`\n    says whether every triplet is in that order with increasing times.\n    \"\"\"\n    kind = np.array([lab.split()[1] for lab in labels])\n    channel = np.array([lab.split()[2] if len(lab.split()) > 2 else \"\" for lab in labels])\n    n = len(labels) // 3\n    k = kind[:3 * n].reshape(n, 3)\n    t = times[:3 * n].reshape(n, 3)\n    ordered = bool(len(labels) % 3 == 0 and np.all(k == [\"start\", \"peak\", \"stop\"])\n                   and np.all(np.diff(t, axis=1) >= 0))\n    return {\"start\": t[:, 0], \"peak\": t[:, 1], \"stop\": t[:, 2], \"ordered\": ordered,\n            \"channels\": sorted(set(channel))}\n\n\n# --- intervals -------------------------------------------------------------------------------\n\ndef intervals_of(session: dict, label: str) -> np.ndarray:\n    \"\"\"(n, 2) state intervals with the given label, in seconds.\"\"\"\n    if session[\"states\"] is None:\n        return np.zeros((0, 2))\n    return np.array([(a, b) for lab, a, b in session[\"states\"] if lab == label]).reshape(-1, 2)\n\n\ndef sleep_epochs(session: dict) -> tuple[np.ndarray, np.ndarray, tuple[float, float] | None]:\n    \"\"\"Pre-sleep intervals, post-sleep intervals and the (first) run epoch, in seconds.\n\n    Tags presleep and postsleep are used where present. Files that tag sleep only as \"sleep\"\n    take the sleep epochs before and after the first run.\n    \"\"\"\n    eps = session[\"epochs\"]\n    runs = [(a, b) for t, a, b in eps if t == \"run\"]\n    run = runs[0] if runs else None\n    pre = [(a, b) for t, a, b in eps if t == \"presleep\"]\n    post = [(a, b) for t, a, b in eps if t == \"postsleep\"]\n    if not pre and not post and run is not None:\n        pre = [(a, b) for t, a, b in eps if t == \"sleep\" and b <= run[0]]\n        post = [(a, b) for t, a, b in eps if t == \"sleep\" and a >= run[1]]\n    return np.array(pre).reshape(-1, 2), np.array(post).reshape(-1, 2), run\n\n\ndef intersect(a: np.ndarray, b: np.ndarray) -> np.ndarray:\n    \"\"\"Intersection of two sets of (start, stop) intervals.\"\"\"\n    out = []\n    for s1, e1 in a:\n        for s2, e2 in b:\n            s, e = max(s1, s2), min(e1, e2)\n            if e > s:\n                out.append((s, e))\n    return np.array(sorted(out)).reshape(-1, 2)\n\n\ndef in_intervals(t: np.ndarray, iv: np.ndarray) -> np.ndarray:\n    \"\"\"Whether each time lies in one of the sorted, non-overlapping intervals.\"\"\"\n    if len(iv) == 0:\n        return np.zeros(len(t), bool)\n    i = np.searchsorted(iv[:, 0], t, side=\"right\") - 1\n    ok = i >= 0\n    out = np.zeros(len(t), bool)\n    out[ok] = t[ok] < iv[i[ok], 1]\n    return out\n\n\ndef laps(session: dict) -> list[tuple[float, float, str]]:\n    \"\"\"Laps from a reward at one end of the track to the next reward at the other end.\n\n    Direction \"LR\" runs from the left reward to the right one. Consecutive rewards at the same\n    end do not make a lap.\n    \"\"\"\n    ev = sorted([(t, \"L\") for t in session[\"events\"][\"lrw\"][1]] +\n                [(t, \"R\") for t in session[\"events\"][\"rrw\"][1]])\n    return [(a, b, sa + sb) for (a, sa), (b, sb) in zip(ev[:-1], ev[1:]) if sa != sb]\n\n\ndef puff_direction(session: dict) -> tuple[str | None, dict]:\n    \"\"\"The lap direction in the run epoch that holds most air puffs, and the counts.\"\"\"\n    _, _, run = sleep_epochs(session)\n    counts = {\"LR\": 0, \"RL\": 0, \"none\": 0}\n    if \"puf\" not in session[\"events\"] or run is None:\n        return None, counts\n    run_laps = [lap for lap in laps(session) if run[0] <= lap[0] < run[1]]\n    for t in session[\"events\"][\"puf\"][1]:\n        d = [lap[2] for lap in run_laps if lap[0] <= t < lap[1]]\n        counts[d[0] if d else \"none\"] += 1\n    if counts[\"LR\"] == counts[\"RL\"]:\n        return None, counts\n    return (\"LR\" if counts[\"LR\"] > counts[\"RL\"] else \"RL\"), counts\n\n\n# --- binning and patterns --------------------------------------------------------------------\n\ndef unit_sets(session: dict, bla_labels=BLA_LABELS) -> tuple[list[int], list[int]]:\n    \"\"\"Hippocampal and BLA units that fire at `MIN_RATE_HZ` or more in the run epoch.\"\"\"\n    _, _, run = sleep_epochs(session)\n    u = session[\"units\"]\n    if u is None or run is None:\n        return [], []\n    dur = run[1] - run[0]\n\n    def ok(i):\n        t = u[\"trains\"][i]\n        return np.count_nonzero((t >= run[0]) & (t < run[1])) / dur >= MIN_RATE_HZ\n    hpc = [i for i in u[\"trains\"] if u[\"region\"][i] in HPC_LABELS and ok(i)]\n    bla = [i for i in u[\"trains\"] if u[\"region\"][i] in bla_labels and ok(i)]\n    return hpc, bla\n\n\ndef binned(session: dict, units: list[int], bin_s: float) -> np.ndarray:\n    \"\"\"(n_bins, n_units) spike counts on a grid from 0 to the end of the session.\"\"\"\n    end = max(b for _, _, b in session[\"epochs\"])\n    n = int(np.ceil(end / bin_s)) + 1\n    out = np.zeros((n, len(units)), np.float32)\n    for j, i in enumerate(units):\n        idx = (session[\"units\"][\"trains\"][i] / bin_s).astype(np.int64)\n        out[:, j] = np.bincount(idx[(idx >= 0) & (idx < n)], minlength=n)\n    return out\n\n\ndef zscore(x: np.ndarray) -> np.ndarray:\n    \"\"\"Z-score each column; a column without variance becomes zero.\"\"\"\n    sd = x.std(0)\n    return np.where(sd > 0, (x - x.mean(0)) / np.where(sd > 0, sd, 1), 0).astype(np.float32)\n\n\ndef joint_patterns(zh: np.ndarray, zb: np.ndarray, rng: np.random.Generator,\n                   n_surrogates: int = N_SURROGATES) -> dict:\n    \"\"\"Singular vectors of the hippocampus by BLA cross-correlation matrix, and their threshold.\n\n    zh and zb are z-scored counts of the template bins. The threshold is the\n    `SIGNIFICANCE_PERCENTILE` percentile of the largest singular value over surrogates in which\n    each BLA column is circularly shifted by its own random offset.\n    \"\"\"\n    T = len(zh)\n    c = zh.T @ zb / T\n    u, sv, vt = np.linalg.svd(c, full_matrices=False)\n    null = np.empty(n_surrogates)\n    for k in range(n_surrogates):\n        shifts = rng.integers(1, T, zb.shape[1])\n        rows = (np.arange(T)[:, None] - shifts[None, :]) % T\n        zs = np.take_along_axis(zb, rows, axis=0)\n        null[k] = np.linalg.svd(zh.T @ zs / T, compute_uv=False)[0]\n    threshold = float(np.percentile(null, SIGNIFICANCE_PERCENTILE))\n    return {\"u\": u, \"s\": sv, \"v\": vt.T, \"threshold\": threshold, \"significant\": sv > threshold,\n            \"n_bins\": T}\n\n\ndef strength(zh: np.ndarray, zb: np.ndarray, u: np.ndarray, v: np.ndarray) -> np.ndarray:\n    \"\"\"Reactivation strength (zh . u)(zb . v) per bin, one column per pattern.\"\"\"\n    return (zh @ u) * (zb @ v)\n\n\ndef ripple_modulation(train: np.ndarray, start: np.ndarray, stop: np.ndarray, end_s: float,\n                      rng: np.random.Generator) -> tuple[int, float, float]:\n    \"\"\"A unit's spikes in the ripple windows, against windows shifted together at random.\n\n    Returns the observed count, the mean surrogate count, and the one-sided p value (the\n    fraction of `RIPPLE_SHIFTS` surrogates at or above the observed count, counting the\n    observed one). Times are handled on a `RIPPLE_RES_S` grid.\n    \"\"\"\n    n = int(np.ceil(end_s / RIPPLE_RES_S)) + 2\n    idx = (train / RIPPLE_RES_S).astype(np.int64)\n    cs = np.concatenate([[0], np.cumsum(np.bincount(idx[(idx >= 0) & (idx < n)], minlength=n))])\n    a = (start / RIPPLE_RES_S).astype(np.int64)\n    b = (stop / RIPPLE_RES_S).astype(np.int64) + 1\n    observed = int((cs[np.clip(b, 0, n)] - cs[np.clip(a, 0, n)]).sum())\n    lo, hi = (int(x / RIPPLE_RES_S) for x in RIPPLE_SHIFT_RANGE_S)\n    offsets = rng.integers(lo, hi + 1, RIPPLE_SHIFTS) * rng.choice([-1, 1], RIPPLE_SHIFTS)\n    aa = np.clip(a[None, :] + offsets[:, None], 0, n)\n    bb = np.clip(b[None, :] + offsets[:, None], 0, n)\n    null = (cs[bb] - cs[aa]).sum(1)\n    p = (1 + np.count_nonzero(null >= observed)) / (1 + RIPPLE_SHIFTS)\n    return observed, float(null.mean()), float(p)\n"
-}
-```
-
-```
-File created successfully at: entries/000061-girardeau-2017/hpcbla.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000061-girardeau-2017 && python3 - <<'E'
-s=open('hpcbla.py').read()
-old="""        shifts = rng.integers(1, T, zb.shape[1])
-        rows = (np.arange(T)[:, None] - shifts[None, :]) % T
-        zs = np.take_along_axis(zb, rows, axis=0)
-"""
-new="""        zs = np.empty_like(zb)
-        for j, shift in enumerate(rng.integers(1, T, zb.shape[1])):
-            zs[:, j] = np.roll(zb[:, j], shift)
-"""
-assert old in s; open('hpcbla.py','w').write(s.replace(old,new))
-E
-cd $TMPDIR && cat > cache.py <<'E'
-import sys, time, pickle
-sys.path.insert(0, 'entries/000061-girardeau-2017')
-import hpcbla
-t=time.time(); S=hpcbla.load_all(); print(time.time()-t)
-pickle.dump(S, open('sessions.pkl','wb'))
-E
-time env/bin/python cache.py
-```
-
-```
-369.06677055358887
-
-real	6m10.852s
-user	0m10.633s
-sys	0m3.990s
-Shell cwd was reset to
-```
-
-**Agent**
-
-All 40 files load through the helper in about 6 minutes. Now prototyping the data-check cells against the cached copy.
-
-**Agent calls Bash**
-
-```bash
-mkdir -p $TMPDIR/dev && cd $TMPDIR/dev && cat > common.py <<'E'
-import sys, pickle
-sys.path.insert(0, 'entries/000061-girardeau-2017')
-import hpcbla
-import numpy as np, pandas as pd
-pd.set_option("display.width", 220); pd.set_option("display.max_columns", 40); pd.set_option("display.max_rows", 200)
-sessions = sorted(pickle.load(open('/tmp/claude-1001/sessions.pkl','rb')), key=lambda s: s["path"])
-E
-cat > check1.py <<'E'
-from common import *
-import collections
-rows=[]
-for s in sessions:
-    u=s["units"]; pre,post,run=hpcbla.sleep_epochs(s)
-    reg=collections.Counter(u["region"]) if u else {}
-    rows.append({"session":s["session"],"rat":s["rat"],"units":0 if u is None else len(u["region"]),
-      "hpc":sum(reg.get(k,0) for k in hpcbla.HPC_LABELS),"bla":sum(reg.get(k,0) for k in hpcbla.BLA_LABELS),
-      "bla_cx":sum(reg.get(k,0) for k in hpcbla.BLA_COMPLEX_LABELS),"states":s["states"] is not None,
-      "ripples":0 if s["ripples"] is None else len(s["ripples"]["peak"]),"puffs":len(s["events"].get("puf",(0,[]))[1]),
-      "rewards":len(s["events"]["lrw"][1])+len(s["events"]["rrw"][1]),"pre_s":round(float(np.sum(np.diff(pre))) ) ,"post_s":round(float(np.sum(np.diff(post)))),"run_s":None if run is None else round(run[1]-run[0]),
-      "lfp":s["lfp"] is not None,"raw":s["raw"] is not None,"videos":len(s["videos"]),"trials":None if s["trials"] is None else len(s["trials"][0])})
-info=pd.DataFrame(rows); print(info.to_string(index=False))
-print(info.groupby("rat")[["units","hpc","bla"]].sum())
-print({s["session"]:(s["species"],s["age"],s["sex"]) for s in sessions[:2]})
-print(collections.Counter((s["species"],s["age"],s["sex"]) for s in sessions))
-labels=collections.Counter(); 
-for s in sessions:
-    if s["units"]: labels.update(s["units"]["label"])
-print(labels)
-print(set(x for s in sessions for x in s["electrode_locations"]))
-print("epoch col desc", set(s["epoch_unit_stated"] for s in sessions), set(tuple(s["epoch_columns"]) for s in sessions))
-# epoch time scale
-for s in sessions:
-    end_raw=max(b for _,_,b in s["epochs_raw"]); last=s["units"]["last_spike"] if s["units"] else np.nan
-    lfp_dur = s["lfp"][0][0]/s["lfp"][1] if s["lfp"] else np.nan
-    print(s["session"], end_raw, round(last,1), round(lfp_dur,1), round(end_raw/lfp_dur,2), s["units"] and s["units"]["sorted"], s["ripples"] and s["ripples"]["ordered"], s["ripples"] and s["ripples"]["channels"], s["lfp"] and s["lfp"][2])
-E
-../env/bin/python check1.py
-```
-
-```
-session   rat  units  hpc  bla  bla_cx  states  ripples  puffs  rewards  pre_s  post_s  run_s  lfp   raw  videos  trials
-Rat08-20130708 Rat08    166    9   15      60    True     9473      3        9   9890   10664   3603 True  True       2   215.0
-Rat08-20130709 Rat08    201   34   78      99    True    10713      2       22   9725   11239   3621 True  True       3   185.0
-Rat08-20130710 Rat08    190   31   87      87    True     9251      9       24  10098   10224   3607 True  True       3   113.0
-Rat08-20130711 Rat08    201   24   92      92    True     8193      5       36   8903    8425   3612 True  True       3   289.0
-Rat08-20130712 Rat08    199   59   40      40    True     6118     14       69  10318    9222   3328 True  True       3   266.0
-Rat08-20130713 Rat08    252   60   94      94    True     6835     20       44   9199    9766   3244 True  True       3   183.0
-Rat08-20130715 Rat08    166   20   39      39    True     6945     34       82   9266    9334   2730 True False       3     NaN
-Rat08-20130716 Rat08    187   19   34      73    True     8934     30       81  10663   11500   2486 True False       3     NaN
-Rat08-20130717 Rat08    197   42   17      76    True     7857     31       99   9671   10985   1797 True False       3     NaN
-Rat08-20130718 Rat08    219   50    0      51   False        0     49      146  11154   11121   2425 True False       3     NaN
-Rat08-20130719 Rat08    157    0    0      48   False        0     29       83   7054   10068   2126 True False       3     NaN
-Rat08-20130720 Rat08    182    0    0       7   False        0     38       92  10801    9430   1819 True False       3     NaN
-Rat08-20130722 Rat08      0    0    0       0   False        0     40      108   8573   11377   1856 True False       3     NaN
-Rat09-20140324 Rat09    136    0   35      66    True        0     20       37   9887   10655   3065 True  True       3   137.0
-Rat09-20140325 Rat09     97    0   49      55   False        0     37       62   6871  
-[... 77 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/dev && cat > check2.py <<'E'
-from common import *
-import collections
-# unsorted spikes
-for s in sessions:
-    u=s["units"]
-    if u and not u["sorted"]:
-        bad=[(i,int(np.sum(np.diff(t)<0)),len(t)) for i,t in u["trains"].items() if np.any(np.diff(t)<0)]
-        print(s["session"], "unsorted units among kept:", len(bad), bad[:3], "dup spikes", [int(np.sum(np.diff(np.sort(t))==0)) for i,t in list(u["trains"].items())[:3]])
-# states coverage vs epochs, ripple rate per state, hpc rate at ripples vs shifted
-rows=[]
-for s in sessions:
-    if s["states"] is None or s["ripples"] is None: continue
-    pk=s["ripples"]["peak"]
-    r={"session":s["session"]}
-    for lab in ["Non-REM","REM","Awake"]:
-        iv=hpcbla.intervals_of(s,lab); dur=np.diff(iv).sum()
-        r[lab+"_s"]=round(dur); r[lab+"_rip_hz"]=round(np.sum(hpcbla.in_intervals(pk,iv))/dur,3)
-        # shifted labels by 600 s
-        r[lab+"_rip_hz_shift600"]=round(np.sum(hpcbla.in_intervals(pk,iv+600))/dur,3)
-    st=np.array([a for _,a,b in s["states"]]); en=np.array([b for _,a,b in s["states"]])
-    r["states_span"]=(st.min(),en.max())
-    pre,post,run=hpcbla.sleep_epochs(s)
-    nrem=hpcbla.intervals_of(s,"Non-REM")
-    r["nrem_in_sleep_frac"]=round(np.diff(hpcbla.intersect(nrem,np.vstack([pre,post]))).sum()/np.diff(nrem).sum(),3)
-    r["nrem_in_run_s"]=round(np.diff(hpcbla.intersect(nrem,np.array([run]))).sum())
-    u=s["units"]
-    hpc=[i for i in u["trains"] if u["region"][i] in hpcbla.HPC_LABELS]
-    if hpc:
-        allsp=np.sort(np.concatenate([u["trains"][i] for i in hpc]))
-        def around(t,w=0.025): return (np.searchsorted(allsp,t+w)-np.searchsorted(allsp,t-w)).mean()/(2*w)
-        r["hpc_mua_peak_hz"]=round(around(pk),1); r["hpc_mua_peak+1s_hz"]=round(around(pk+1),1); r["hpc_mua_peak-1s"]=round(around(pk-1),1)
-    dur=s["ripples"]["stop"]-s["ripples"]["start"]; r["rip_dur_ms_med"]=round(1000*np.median(dur),1)
-    rows.append(r)
-print(pd.DataFrame(rows).to_string(index=False))
-E
-../env/bin/python check2.py
-```
-
-```
-Rat08-20130710 unsorted units among kept: 1 [(1, 1, 69455)] dup spikes [0, 4, 0]
-Rat08-20130711 unsorted units among kept: 1 [(1, 1, 135837)] dup spikes [0, 0, 0]
-Rat08-20130716 unsorted units among kept: 1 [(1, 1, 346828)] dup spikes [0, 0, 0]
-Rat08-20130718 unsorted units among kept: 1 [(1, 1, 334967)] dup spikes [0, 0, 0]
-Rat09-20140325 unsorted units among kept: 0 [] dup spikes [0, 0, 0]
-Rat09-20140329 unsorted units among kept: 1 [(1, 1, 77641)] dup spikes [0, 0, 0]
-Rat10-20140701 unsorted units among kept: 1 [(1, 1, 537827)] dup spikes [0, 79, 0]
-Rat10-20140702 unsorted units among kept: 1 [(1, 1, 84683)] dup spikes [0, 3, 0]
-Rat11-20150326 unsorted units among kept: 1 [(1, 1, 205423)] dup spikes [0, 0, 0]
-Rat11-20150327 unsorted units among kept: 1 [(1, 1, 94095)] dup spikes [0, 0, 0]
-       session  Non-REM_s  Non-REM_rip_hz  Non-REM_rip_hz_shift600  REM_s  REM_rip_hz  REM_rip_hz_shift600  Awake_s  Awake_rip_hz  Awake_rip_hz_shift600    states_span  nrem_in_sleep_frac  nrem_in_run_s  hpc_mua_peak_hz  hpc_mua_peak+1s_hz  hpc_mua_peak-1s  rip_dur_ms_med
-Rat08-20130708       9076           0.835                    0.427   1628       0.019                0.561    13879         0.130                  0.319 (5.0, 24754.0)               0.999             10             73.6                24.8             24.7            38.4
-Rat08-20130709      10070           0.881                    0.462   1828       0.019                0.554    13390         0.129                  0.366 (5.0, 25505.0)               0.994             56            291.1                75.9             74.3            40.8
-Rat08-20130710       8973           0.808                    0.473   1244       0.018                0.393    14795         0.130                  0.296 (5.0, 25190.0)               0.982             82            199.3                56.8             53.5            42.4
-Rat08-20130711       6928           0.893                    0.397   1073       0.049                0.32
-[... 20 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/dev && cat > check3.py <<'E'
-from common import *
-import itertools
-for s in sessions:
-    u=s["units"]
-    if u and not u["sorted"]:
-        for i,t in u["trains"].items():
-            d=np.flatnonzero(np.diff(t)<0)
-            if len(d): print(s["session"], i, d, t[max(0,d[0]-2):d[0]+3], len(t))
-# puffs: BLA and hpc pooled response 0-0.5 s after vs 0.5 s before, real vs shifted by 30 s
-rows=[]
-for s in sessions:
-    u=s["units"]
-    if not u or "puf" not in s["events"] or len(s["events"]["puf"][1])<5: continue
-    pt=s["events"]["puf"][1]
-    for reg,labs in [("bla",hpcbla.BLA_COMPLEX_LABELS),("hpc",hpcbla.HPC_LABELS)]:
-        ids=[i for i in u["trains"] if u["region"][i] in labs]
-        if len(ids)<3: continue
-        sp=np.sort(np.concatenate([u["trains"][i] for i in ids]))
-        def resp(t): 
-            after=np.searchsorted(sp,t+0.5)-np.searchsorted(sp,t); before=np.searchsorted(sp,t)-np.searchsorted(sp,t-0.5)
-            return (after.sum()-before.sum())/max(before.sum(),1)
-        rows.append({"session":s["session"],"region":reg,"n_puffs":len(pt),"units":len(ids),"resp_true":round(resp(pt),3),"resp_shift+30s":round(resp(pt+30),3),"resp_shift-30s":round(resp(pt-30),3)})
-df=pd.DataFrame(rows); print(df.to_string(index=False)); print(df.groupby("region")[["resp_true","resp_shift+30s","resp_shift-30s"]].median())
-# videos
-for s in sessions[:3]+sessions[23:25]:
-    ep={t:(a,b) for t,a,b in s["epochs"]}
-    print(s["session"], [(k.split('-')[-1], n, round(a/1000,1), round(b/1000,1), round((b-a)/1000,1), u) for k,(n,a,b,u) in s["videos"].items()], [(t,round(a,1),round(b-a,1)) for t,a,b in s["epochs"]])
-# trials table
-for s in sessions:
-    if s["trials"] is None: continue
-    a,b,desc=s["trials"]; pre,post,run=hpcbla.sleep_epochs(s)
-    inrun=np.mean((a>=run[0])&(a<run[1])) if run else None
-    lp=hpcbla.laps(s)
-    print(s["session"], len(a), round(a.min(),1), round(b.max(),1), 'frac in run', round(inrun,2), 'median dur', round(np.median(b-a),1), desc, 'laps', len(lp))
-E
-../env/bin/python check3.py
-```
-
-```
-Rat08-20130710 1 [65535] [2.51873999e+04 2.51910750e+04 2.51929418e+04 1.46085000e+00
- 2.42998000e+01] 69455
-Rat08-20130711 1 [65535] [2.18674864e+04 2.18675102e+04 2.18676357e+04 1.12000000e-01
- 5.56200000e-01] 135837
-Rat08-20130716 1 [327679] [2.51126013e+04 2.51126059e+04 2.51126240e+04 2.43450000e-01
- 3.39750000e-01] 346828
-Rat08-20130718 1 [196607] [1.97369458e+04 1.97369575e+04 1.97369715e+04 4.54515000e+00
- 6.72045000e+00] 334967
-Rat09-20140329 1 [65535] [2.01059686e+04 2.01065997e+04 2.01077758e+04 1.44505000e+00
- 1.75305000e+00] 77641
-Rat10-20140701 1 [458751] [2.61960900e+04 2.61961273e+04 2.61962884e+04 4.75250000e-01
- 4.32950000e+00] 537827
-Rat10-20140702 1 [65535] [21061.42475 21061.44095 21061.5666     42.43725   174.91825] 84683
-Rat11-20150326 1 [65535] [2.32049278e+04 2.32050540e+04 2.32053492e+04 5.70050000e-01
- 6.73750000e-01] 205423
-Rat11-20150327 1 [65535] [2.50250281e+04 2.50250500e+04 2.50251601e+04 6.79970000e+00
- 7.05740000e+00] 94095
-       session region  n_puffs  units  resp_true  resp_shift+30s  resp_shift-30s
-Rat08-20130710    bla        9     87      0.182          -0.074           0.146
-Rat08-20130710    hpc        9     31      0.036          -0.224           0.015
-[... 78 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/dev && cat > check4.py <<'E'
-from common import *
-import pickle
-surv={r['path']:r for r in pickle.load(open('/tmp/claude-1001/survey.pkl','rb'))}
-for s in sessions:
-    u=s["units"]
-    if u and not u["sorted"]:
-        r=surv[s["path"]]; idx=r['idx']; spk=r['spk']
-        print(s["session"], 'dtype idx', idx.dtype, 'idx[:3]', idx[:3], 'n0',idx[0], 'unit0 range', spk[0], spk[idx[0]-1], 'unit1 first', spk[idx[0]], 'regions', u['region'][:2])
-        tr=np.split(spk, idx[:-1])
-        bad=[i for i,t in enumerate(tr) if np.any(np.diff(t)<0)]
-        print('   all bad units', bad, [ (len(tr[i]), np.flatnonzero(np.diff(tr[i])<0)) for i in bad])
-E
-../env/bin/python check4.py
-```
-
-```
-Rat08-20130710 dtype idx uint32 idx[:3] [ 21310  90765 101612] n0 21310 unit0 range 0.2589 12430.93625 unit1 first 12431.1508 regions ['hpc' 'hpc']
-   all bad units [1] [(69455, array([65535]))]
-Rat08-20130711 dtype idx uint32 idx[:3] [ 24801 160638 200449] n0 24801 unit0 range 0.5526 6613.77155 unit1 first 6614.1793 regions ['hpc' 'hpc']
-   all bad units [1] [(135837, array([65535]))]
-Rat08-20130716 dtype idx uint32 idx[:3] [  1815 348643 353564] n0 1815 unit0 range 0.01075 182.7133 unit1 first 183.30595 regions ['hpc' 'hpc']
-   all bad units [1] [(346828, array([327679]))]
-Rat08-20130718 dtype idx uint32 idx[:3] [ 46002 380969 413329] n0 46002 unit0 range 2.10035 8651.7204 unit1 first 8651.7279 regions ['hip' 'hip']
-   all bad units [1] [(334967, array([196607]))]
-Rat09-20140325 dtype idx uint32 idx[:3] [ 39641 204257 219585] n0 39641 unit0 range 0.0591 5939.9951 unit1 first 5940.5005 regions ['cen' 'cen']
-   all bad units [1] [(164616, array([131071]))]
-Rat09-20140329 dtype idx uint32 idx[:3] [ 5703 83344 87656] n0 5703 unit0 range 0.4494 2129.97205 unit1 first 2130.18435 regions ['bla' 'bla']
-   all bad units [1] [(77641, array([65535]))]
-Rat10-20140701 dtype idx uint32 idx[:3] [ 64752 602579 608408] n0 64752 unit0 range 0.0055 3133.84575 unit1 first 3133.85805 regions ['bla' 'bla']
-   all bad units [1] [(537827, array([458751]))]
-Rat10-20140702 dtype idx uint32 idx[:3] [ 42836 127519 131344] n0 42836 unit0 range 0.34045 8973.5437 unit1 first 8973.8445 regions ['bmp' 'bla']
-   all bad units [1] [(84683, array([65535]))]
-Rat11-20150326 dtype idx uint32 idx[:3] [ 40888 246311 259329] n0 40888 unit0 range 0.04925 9326.75155 unit1 first 9326.8415 regions ['bla' 'bla']
-   all bad units [1] [(205423, array([65535]))]
-Rat11-20150327 dtype idx uint32 idx[:3] [ 21108 115203 116843] n0 21108 unit0 range 5.9368 7018.66515 unit1 first 7018.7018 regions ['bmp' 'bmp']
-   all bad units [1] [(94095, array([65535]))]
-[... 1 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/dev && cat > check5.py <<'E'
-from common import *
-def decode(s, shift=0.0):
-    u=s["units"]; pre,post,run=hpcbla.sleep_epochs(s)
-    ids=[i for i in u["trains"] if u["region"][i] in hpcbla.HPC_LABELS]
-    if len(ids)<5 or run is None: return None
-    lp=[(a+shift,b+shift,d) for a,b,d in hpcbla.laps(s) if run[0]<=a<run[1]]
-    X=np.array([[np.count_nonzero((u["trains"][i]>=a)&(u["trains"][i]<b))/(b-a) for i in ids] for a,b,d in lp])
-    y=np.array([d=="LR" for a,b,d in lp])
-    X=np.log1p(X); X=(X-X.mean(0))/(X.std(0)+1e-9)
-    ok=0
-    for k in range(len(y)):
-        m=np.ones(len(y),bool); m[k]=False
-        c1=X[m&y].mean(0); c0=X[m&~y].mean(0)
-        ok+= (np.sum((X[k]-c1)**2)<np.sum((X[k]-c0)**2))==y[k]
-    return round(ok/len(y),3), len(y)
-for s in sessions:
-    if s["units"] is None: continue
-    r=[decode(s,sh) for sh in (0,-4,4,8)]
-    if r[0]: print(s["session"], r)
-E
-../env/bin/python check5.py
-```
-
-```
-Rat08-20130708 [(np.float64(0.5), 4), (np.float64(0.75), 4), (np.float64(0.25), 4), (np.float64(0.0), 4)]
-Rat08-20130709 [(np.float64(1.0), 6), (np.float64(1.0), 6), (np.float64(1.0), 6), (np.float64(1.0), 6)]
-Rat08-20130710 [(np.float64(1.0), 12), (np.float64(1.0), 12), (np.float64(1.0), 12), (np.float64(1.0), 12)]
-Rat08-20130711 [(np.float64(1.0), 8), (np.float64(1.0), 8), (np.float64(1.0), 8), (np.float64(1.0), 8)]
-Rat08-20130712 [(np.float64(1.0), 22), (np.float64(1.0), 22), (np.float64(1.0), 22), (np.float64(1.0), 22)]
-Rat08-20130713 [(np.float64(1.0), 19), (np.float64(1.0), 19), (np.float64(1.0), 19), (np.float64(1.0), 19)]
-Rat08-20130715 [(np.float64(0.975), 40), (np.float64(1.0), 40), (np.float64(0.975), 40), (np.float64(0.975), 40)]
-Rat08-20130716 [(np.float64(0.979), 48), (np.float64(0.958), 48), (np.float64(0.958), 48), (np.float64(0.958), 48)]
-Rat08-20130717 [(np.float64(1.0), 53), (np.float64(1.0), 53), (np.float64(0.962), 53), (np.float64(0.962), 53)]
-Rat08-20130718 [(np.float64(0.966), 88), (np.float64(0.977), 88), (np.float64(0.977), 88), (np.float64(0.898), 88)]
-Rat10-20140624 [(np.float64(0.947), 38), (np.float64(0.974), 38), (np.float64(0.921), 38), (np.float64(0.895), 38)]
-Rat10-20140626 [(np.float64(1.0), 34), (np.float64(1.0), 34), (np.float64(0.941), 34), (np.float64(0.853), 34)]
-Rat10-20140701 [(np.float64(0.926), 27), (np.float64(0.926), 27), (np.float64(0.889), 27), (np.float64(0.889), 27)]
-Rat10-20140702 [(np.float64(1.0), 70), (np.float64(0.943), 70), (np.float64(0.886), 70), (np.float64(0.871), 70)]
-Rat10-20140704 [(np.float64(1.0), 51), (np.float64(0.843), 51), (np.float64(1.0), 51), (np.float64(1.0), 51)]
-Rat10-20140705 [(np.float64(0.968), 93), (np.float64(0.925), 93), (np.float64(0.946), 93), (np.float64(0.935), 93)]
-Rat10-20140708 [(np.float64(1.0), 82), (np.float64(0.866), 82), (np.float64(0.951), 82), (np.float64(0.805), 82)]
-Rat11-20150313 [(np.float64(0.974), 38), (np.float64(0.974), 38), (np.float64(0.974), 38), (np.float64(0.7
-[... 9 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "entries/000061-girardeau-2017/hpcbla.py",
- "offset": 120,
- "limit": 30
-}
-```
-
-```
-120	        if lfp in f:
-121	            s["lfp"] = (f[f"{lfp}/data"].shape, float(f[f"{lfp}/starting_time"].attrs["rate"]),
-122	                        f[f"{lfp}/data"].attrs.get("unit"))
-123	        s["raw"] = f["acquisition/ElectricalSeries/data"].shape if "acquisition/ElectricalSeries" in f else None
-124	        s["videos"] = {k: (f[f"acquisition/{k}/data"].shape[0], *f[f"acquisition/{k}/timestamps"][[0, -1]],
-125	                           f[f"acquisition/{k}/timestamps"].attrs.get("unit"))
-126	                       for k in f["acquisition"] if k.startswith("Video")}
-127	        s["electrode_locations"] = sorted(set(_strings(f["general/extracellular_ephys/electrodes/location"])))
-128	        s["units"] = None
-129	        if "units" in f:
-130	            u = f["units"]
-131	            loc = _strings(u["location"]) if "location" in u else np.array(["(none)"] * len(u["id"]))
-132	            index = u["spike_times_index"][()]
-133	            spikes = u["spike_times"][()]
-134	            trains = np.split(spikes, index[:-1])
-135	            s["units"] = {
-136	                "label": loc, "region": np.char.lower(loc), "shank": u["shank_id"][()],
-137	                "group": np.array([f[r].name.split("/")[-1] for r in u["electrode_group"][()]]),
-138	                "n_spikes": np.diff(np.concatenate([[0], index])),
-139	                "first_spike": np.array([t[0] if len(t) else np.nan for t in trains]),
-[... 10 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000061-girardeau-2017 && python3 - <<'E'
-s=open('hpcbla.py').read()
-old='''            trains = np.split(spikes, index[:-1])
-            s["units"] = {'''
-new='''            trains = np.split(spikes, index[:-1])
-            unsorted = [i for i, t in enumerate(trains) if np.any(np.diff(t) < 0)]
-            # A unit whose times fall back once holds the end of the unit before it (see
-            # `MIXED_UNITS_NOTE`); both are left out.
-            mixed = sorted({j for i in unsorted for j in (i - 1, i) if j >= 0})
-            s["units"] = {'''
-assert old in s; s=s.replace(old,new)
-old='''                "sorted": bool(all(np.all(np.diff(t) >= 0) for t in trains)),
-                "trains": {i: t for i, t in enumerate(trains) if loc[i].lower() in KEEP_LABELS},'''
-new='''                "sorted": not unsorted, "unsorted": unsorted, "mixed": mixed,
-                "unsorted_at": {i: np.flatnonzero(np.diff(trains[i]) < 0).tolist() for i in unsorted},
-                "unit0_last": float(trains[0][-1]) if len(trains) and len(trains[0]) else np.nan,
-                "unit1_first": float(trains[1][0]) if len(trains) > 1 and len(trains[1]) else np.nan,
-                "trains": {i: t for i, t in enumerate(trains)
-                           if loc[i].lower() in KEEP_LABELS and i not in mixed},'''
-assert old in s; s=s.replace(old,new)
-old='''RIPPLE_RES_S = 0.005
-'''
-new='''RIPPLE_RES_S = 0.005
-
-MIXED_UNITS_NOTE = (
-    "In some files the spike times of unit 1 fall back once, after 65536 times k spikes, and "
-    "unit 0 stops part way through the session where unit 1 starts: the first part of unit 1 "
-    "is the end of unit 0. Units 0 and 1 of those files are left out.")
-'''
-assert old in s; s=s.replace(old,new)
-open('hpcbla.py','w').write(s)
-E
-```
-
-```
-(Bash completed with no output)
-```
-
-**Agent**
-
-Now adding the per-session reactivation function to the helper, then timing it on one session.
-
-**Agent calls Bash**
-
-```bash
-python3 - <<'E'
-s=open('hpcbla.py').read()
-old='''def binned(session: dict, units: list[int], bin_s: float) -> np.ndarray:
-    """(n_bins, n_units) spike counts on a grid from 0 to the end of the session."""
-    end = max(b for _, _, b in session["epochs"])
-    n = int(np.ceil(end / bin_s)) + 1
-    out = np.zeros((n, len(units)), np.float32)
-    for j, i in enumerate(units):
-        idx = (session["units"]["trains"][i] / bin_s).astype(np.int64)
-        out[:, j] = np.bincount(idx[(idx >= 0) & (idx < n)], minlength=n)
-    return out
-'''
-new='''def grid_size(session: dict, bin_s: float) -> int:
-    """Number of bins of width bin_s from 0 to the end of the last epoch."""
-    return int(np.ceil(max(b for _, _, b in session["epochs"]) / bin_s)) + 1
-
-
-def binned(session: dict, units: list[int], bin_s: float, rows: np.ndarray) -> np.ndarray:
-    """(len(rows), n_units) spike counts in the bins `rows` of the grid of width bin_s."""
-    n = grid_size(session, bin_s)
-    out = np.zeros((len(rows), len(units)), np.float32)
-    for j, i in enumerate(units):
-        idx = (session["units"]["trains"][i] / bin_s).astype(np.int64)
-        out[:, j] = np.bincount(idx[(idx >= 0) & (idx < n)], minlength=n)[rows]
-    return out
-'''
-assert old in s; s=s.replace(old,new)
-s += '''
-
-def usable(session: dict, bla_labels=BLA_LABELS) -> bool:
-    """Whether a session meets the claims file's rule for the reactivation analysis."""
-    pre, post, run = sleep_epochs(session)
-    if session["states"] is None or session["ripples"] is None or run is None:
-        return False
-    if len(pre) == 0 or len(post) == 0:
-        return False
-    hpc, bla = unit_sets(session, bla_labels)
-    return len(hpc) >= MIN_UNITS and len(bla) >= MIN_UNITS
-
-
-def ripple_bins(session: dict, bin_s: float) -> np.ndarray:
-    """Boolean grid of the bins that overlap a ripple (start to stop)."""
-    n = grid_size(session, bin_s)
-    r = session["ripples"]
-    a = np.clip((r["start"] / bin_s).astype(np.int64), 0, n - 1)
-    b = np.clip((r["stop"] / bin_s).astype(np.int64), 0, n - 1)
-    d = np.zeros(n + 1, np.int64)
-    np.add.at(d, a, 1)
-    np.add.at(d, b + 1, -1)
-    return np.cumsum(d[:-1]) > 0
-
-
-def reactivation(session: dict, rng: np.random.Generator, bin_s: float = BIN_S,
-                 bla_labels=BLA_LABELS, templates=("run",), equal_bins: bool = False,
-                 lags: int = 20, keep_traces: bool = True) -> dict:
-    """Joint patterns of the run and their reactivation in pre- and post-sleep Non-REM.
-
-    `templates` names the run bins a template is built from: "run" (the whole run epoch),
-    "puff" or "safe" (bins inside laps of the air-puff or the safe direction). With
-    `equal_bins` the two directional templates use the same number of bins (the first bins of
-    the longer one are kept). Returns one row per pattern, and for significant patterns the
-    ripple-peak-triggered mean strength in post-sleep (lags of `lags` bins either side) and the
-    mean strength in ripple and non-ripple bins of pre- and post-sleep.
-    """
-    hpc, bla = unit_sets(session, bla_labels)
-    units = hpc + bla
-    nh = len(hpc)
-    n = grid_size(session, bin_s)
-    centers = (np.arange(n) + 0.5) * bin_s
-    pre_iv, post_iv, run = sleep_epochs(session)
-    nrem = intervals_of(session, "Non-REM")
-    pre_rows = np.flatnonzero(in_intervals(centers, intersect(nrem, pre_iv)))
-    post_rows = np.flatnonzero(in_intervals(centers, intersect(nrem, post_iv)))
-    rip = ripple_bins(session, bin_s)
-
-    in_run = (centers >= run[0]) & (centers < run[1])
-    direction, _ = puff_direction(session)
-    template_rows = {"run": np.flatnonzero(in_run)}
-    if direction is not None:
-        lap_iv = {d: np.array([(a, b) for a, b, dd in laps(session)
-                               if dd == d and run[0] <= a < run[1]]).reshape(-1, 2) for d in ("LR", "RL")}
-        safe = "RL" if direction == "LR" else "LR"
-        template_rows["puff"] = np.flatnonzero(in_run & in_intervals(centers, lap_iv[direction]))
-        template_rows["safe"] = np.flatnonzero(in_run & in_intervals(centers, lap_iv[safe]))
-        if equal_bins:
-            m = min(len(template_rows["puff"]), len(template_rows["safe"]))
-            template_rows["puff"], template_rows["safe"] = template_rows["puff"][:m], template_rows["safe"][:m]
-
-    def z(rows):
-        c = binned(session, units, bin_s, rows)
-        return zscore(c[:, :nh]), zscore(c[:, nh:])
-    zpre, zpost = z(pre_rows), z(post_rows)
-
-    post_peaks = session["ripples"]["peak"]
-    post_peaks = post_peaks[in_intervals(post_peaks, intersect(nrem, post_iv))]
-    peak_bins = (post_peaks / bin_s).astype(np.int64)
-    position = np.full(n, -1, np.int64)
-    position[post_rows] = np.arange(len(post_rows))
-
-    rows, traces = [], []
-    for name in templates:
-        if name not in template_rows or len(template_rows[name]) < 100:
-            continue
-        zh, zb = z(template_rows[name])
-        p = joint_patterns(zh, zb, rng)
-        r_pre = strength(*zpre, p["u"], p["v"])
-        r_post = strength(*zpost, p["u"], p["v"])
-        for k in range(len(p["s"])):
-            rows.append({"session": session["session"], "rat": session["rat"], "template": name,
-                         "pattern": k, "singular": float(p["s"][k]), "threshold": p["threshold"],
-                         "significant": bool(p["significant"][k]), "n_template_bins": p["n_bins"],
-                         "n_hpc": nh, "n_bla": len(bla),
-                         "pre": float(r_pre[:, k].mean()), "post": float(r_post[:, k].mean()),
-                         "bla_units": bla, "bla_weights": p["v"][:, k].copy()})
-            if keep_traces and p["significant"][k]:
-                full = np.full(n, np.nan, np.float32)
-                full[post_rows] = r_post[:, k]
-                lag_idx = peak_bins[:, None] + np.arange(-lags, lags + 1)[None, :]
-                ok = np.all((lag_idx >= 0) & (lag_idx < n), axis=1)
-                curve = np.nanmean(full[lag_idx[ok]], axis=0)
-                traces.append({"session": session["session"], "rat": session["rat"], "template": name,
-                               "pattern": k, "curve": curve, "n_ripples": int(ok.sum()),
-                               "pre_rip": float(r_pre[rip[pre_rows], k].mean()),
-                               "pre_out": float(r_pre[~rip[pre_rows], k].mean()),
-                               "post_rip": float(r_post[rip[post_rows], k].mean()),
-                               "post_out": float(r_post[~rip[post_rows], k].mean())})
-    return {"rows": rows, "traces": traces, "direction": direction,
-            "n_pre_bins": len(pre_rows), "n_post_bins": len(post_rows),
-            "template_bins": {k: len(v) for k, v in template_rows.items()}}
-'''
-open('hpcbla.py','w').write(s)
-E
-cd $TMPDIR/dev && cat > t_react.py <<'E'
-from common import *
-import time, importlib
-# re-derive mixed exclusion on cached sessions is not needed for timing
-s=[x for x in sessions if x["session"]=="Rat08-20130709"][0]
-print(hpcbla.usable(s), [len(x) for x in hpcbla.unit_sets(s)])
-t=time.time(); out=hpcbla.reactivation(s, np.random.default_rng(0), templates=("run","puff","safe")); print(time.time()-t)
-df=pd.DataFrame(out["rows"]); print(df[df.significant].drop(columns=["bla_units","bla_weights"]).to_string())
-print(out["template_bins"], out["direction"], out["n_pre_bins"], out["n_post_bins"])
-for tr in out["traces"][:3]: print(np.round(tr["curve"],3), tr["n_ripples"])
-E
-../env/bin/python t_react.py
-```
-
-```
-True [26, 45]
-3.3629283905029297
-          session    rat template  pattern  singular  threshold  significant  n_template_bins  n_hpc  n_bla       pre      post
-0  Rat08-20130709  Rat08      run        0  0.355670   0.174952         True            72414     26     45  0.099549  0.134855
-1  Rat08-20130709  Rat08      run        1  0.217983   0.174952         True            72414     26     45  0.011178  0.030170
-{'run': 72414} None 92760 107520
-[0.153 0.141 0.107 0.095 0.086 0.175 0.121 0.208 0.137 0.132 0.15  0.15
- 0.124 0.112 0.135 0.16  0.18  0.154 0.112 0.166 0.673 0.048 0.142 0.251
- 0.2   0.176 0.136 0.141 0.13  0.15  0.117 0.073 0.106 0.123 0.137 0.096
- 0.123 0.064 0.101 0.13  0.168] 4919
-[ 0.033 -0.007  0.039  0.016  0.001  0.036  0.006  0.046  0.009  0.013
-  0.053  0.02   0.043  0.047  0.021  0.043  0.039  0.063  0.025  0.111
-  0.137  0.076  0.078  0.111  0.036  0.059  0.071  0.055  0.054 -0.006
-  0.046  0.044  0.057  0.05   0.048  0.029  0.048  0.002  0.044  0.032
-  0.046] 4919
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/dev && ../env/bin/python -c "
-from common import *
-s=[x for x in sessions if x['session']=='Rat08-20130709'][0]
-print(hpcbla.puff_direction(s)); print(hpcbla.sleep_epochs(s)[2]); print(s['events']['puf'][1]); print([l for l in hpcbla.laps(s)][:12])
-"
-```
-
-```
-(None, {'LR': 0, 'RL': 0, 'none': 2})
-(np.float64(10042.2), np.float64(13662.9))
-[10082.5368 12351.4776]
-[(np.float64(12.26), np.float64(37.1544), 'RL'), (np.float64(37.1544), np.float64(73.2168), 'LR'), (np.float64(73.2168), np.float64(103.30160000000001), 'RL'), (np.float64(103.30160000000001), np.float64(126.0848), 'LR'), (np.float64(126.0848), np.float64(158.9336), 'RL'), (np.float64(158.9336), np.float64(196.82479999999998), 'LR'), (np.float64(196.82479999999998), np.float64(219.3184), 'RL'), (np.float64(219.3184), np.float64(273.664), 'LR'), (np.float64(273.664), np.float64(292.89759999999995), 'RL'), (np.float64(292.89759999999995), np.float64(12352.1312), 'LR'), (np.float64(12352.1312), np.float64(12521.104), 'RL'), (np.float64(12521.104), np.float64(13381.2256), 'LR')]
-Shell cwd was reset to
-```
-
-**Agent**
-
-Laps that start before the run epoch were being dropped. I will clip laps to the run epoch so that time before the first reward still counts as a lap of the direction of that reward.
-
-**Agent calls Bash**
-
-```bash
-cd entries/000061-girardeau-2017 && python3 - <<'E'
-s=open('hpcbla.py').read()
-old='''def puff_direction(session: dict) -> tuple[str | None, dict]:
-    """The lap direction in the run epoch that holds most air puffs, and the counts."""
-    _, _, run = sleep_epochs(session)
-    counts = {"LR": 0, "RL": 0, "none": 0}
-    if "puf" not in session["events"] or run is None:
-        return None, counts
-    run_laps = [lap for lap in laps(session) if run[0] <= lap[0] < run[1]]
-'''
-new='''def run_laps(session: dict) -> list[tuple[float, float, str]]:
-    """Laps clipped to the run epoch.
-
-    A lap that starts before the run (the last reward of the pre-run) and ends inside it keeps
-    its direction for the part inside the run, so the time before the first reward of the run
-    counts as a lap toward that reward.
-    """
-    _, _, run = sleep_epochs(session)
-    if run is None:
-        return []
-    out = []
-    for a, b, d in laps(session):
-        a, b = max(a, run[0]), min(b, run[1])
-        if b > a:
-            out.append((a, b, d))
-    return out
-
-
-def puff_direction(session: dict) -> tuple[str | None, dict]:
-    """The lap direction in the run epoch that holds most air puffs, and the counts."""
-    _, _, run = sleep_epochs(session)
-    counts = {"LR": 0, "RL": 0, "none": 0}
-    if "puf" not in session["events"] or run is None:
-        return None, counts
-    run_laps_ = run_laps(session)
-'''
-assert old in s; s=s.replace(old,new)
-s=s.replace('''        d = [lap[2] for lap in run_laps if lap[0] <= t < lap[1]]''','''        d = [lap[2] for lap in run_laps_ if lap[0] <= t < lap[1]]''')
-old='''        lap_iv = {d: np.array([(a, b) for a, b, dd in laps(session)
-                               if dd == d and run[0] <= a < run[1]]).reshape(-1, 2) for d in ("LR", "RL")}'''
-new='''        lap_iv = {d: np.array([(a, b) for a, b, dd in run_laps(session) if dd == d]).reshape(-1, 2)
-                  for d in ("LR", "RL")}'''
-assert old in s; s=s.replace(old,new)
-open('hpcbla.py','w').write(s)
-E
-cd $TMPDIR/dev && ../env/bin/python -c "
-from common import *
-for s in sessions:
-    if 'puf' in s['events']: print(s['session'], hpcbla.puff_direction(s))
-"
-```
-
-```
-Rat08-20130708 ('LR', {'LR': 3, 'RL': 0, 'none': 0})
-Rat08-20130709 ('LR', {'LR': 2, 'RL': 0, 'none': 0})
-Rat08-20130710 ('RL', {'LR': 1, 'RL': 8, 'none': 0})
-Rat08-20130711 ('RL', {'LR': 0, 'RL': 4, 'none': 1})
-Rat08-20130712 ('LR', {'LR': 14, 'RL': 0, 'none': 0})
-Rat08-20130713 ('LR', {'LR': 19, 'RL': 1, 'none': 0})
-Rat08-20130715 ('RL', {'LR': 0, 'RL': 33, 'none': 1})
-Rat08-20130716 ('LR', {'LR': 28, 'RL': 2, 'none': 0})
-Rat08-20130717 ('RL', {'LR': 0, 'RL': 31, 'none': 0})
-Rat08-20130718 ('RL', {'LR': 2, 'RL': 47, 'none': 0})
-Rat08-20130719 ('LR', {'LR': 29, 'RL': 0, 'none': 0})
-Rat08-20130720 ('LR', {'LR': 36, 'RL': 2, 'none': 0})
-Rat08-20130722 ('RL', {'LR': 0, 'RL': 40, 'none': 0})
-Rat09-20140324 ('RL', {'LR': 1, 'RL': 19, 'none': 0})
-Rat09-20140325 ('LR', {'LR': 36, 'RL': 1, 'none': 0})
-Rat09-20140326 ('RL', {'LR': 4, 'RL': 73, 'none': 1})
-Rat09-20140328 ('RL', {'LR': 1, 'RL': 53, 'none': 0})
-Rat09-20140329 ('RL', {'LR': 1, 'RL': 47, 'none': 2})
-Rat09-20140402 ('LR', {'LR': 56, 'RL': 3, 'none': 0})
-Rat09-20140403 ('RL', {'LR': 3, 'RL': 36, 'none': 1})
-[... 19 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000061-girardeau-2017 && python3 - <<'E'
-s=open('hpcbla.py').read()
-old=s[s.index("def ripple_modulation("):s.index("# --- intervals")]
-new='''def ripple_modulation(train: np.ndarray, windows: list[tuple[np.ndarray, np.ndarray]], end_s: float,
-                      rng: np.random.Generator) -> list[dict]:
-    """A unit's spikes in sets of ripple windows, each against the same windows shifted at random.
-
-    For each (start, stop) set: the observed count, the mean surrogate count, and one-sided p
-    values for an increase and a decrease (the fraction of `RIPPLE_SHIFTS` surrogates at or
-    above, or at or below, the observed count, counting the observed one). All windows of a set
-    are shifted together by one offset of `RIPPLE_SHIFT_RANGE_S`, either sign. Times are handled
-    on a `RIPPLE_RES_S` grid.
-    """
-    n = int(np.ceil(end_s / RIPPLE_RES_S)) + 2
-    idx = (train / RIPPLE_RES_S).astype(np.int64)
-    cs = np.concatenate([[0], np.cumsum(np.bincount(idx[(idx >= 0) & (idx < n)], minlength=n))])
-    lo, hi = (int(x / RIPPLE_RES_S) for x in RIPPLE_SHIFT_RANGE_S)
-    out = []
-    for start, stop in windows:
-        a = (start / RIPPLE_RES_S).astype(np.int64)
-        b = (stop / RIPPLE_RES_S).astype(np.int64) + 1
-        observed = int((cs[np.clip(b, 0, n)] - cs[np.clip(a, 0, n)]).sum())
-        offsets = rng.integers(lo, hi + 1, RIPPLE_SHIFTS) * rng.choice([-1, 1], RIPPLE_SHIFTS)
-        null = (cs[np.clip(b[None, :] + offsets[:, None], 0, n)]
-                - cs[np.clip(a[None, :] + offsets[:, None], 0, n)]).sum(1)
-        out.append({"observed": observed, "null_mean": float(null.mean()),
-                    "p_up": (1 + np.count_nonzero(null >= observed)) / (1 + RIPPLE_SHIFTS),
-                    "p_down": (1 + np.count_nonzero(null <= observed)) / (1 + RIPPLE_SHIFTS)})
-    return out
-
-
-'''
-s=s.replace(old,new)
-old='''                full = np.full(n, np.nan, np.float32)
-                full[post_rows] = r_post[:, k]
-                lag_idx = peak_bins[:, None] + np.arange(-lags, lags + 1)[None, :]
-                ok = np.all((lag_idx >= 0) & (lag_idx < n), axis=1)
-                curve = np.nanmean(full[lag_idx[ok]], axis=0)
-                traces.append({"session": session["session"], "rat": session["rat"], "template": name,
-                               "pattern": k, "curve": curve, "n_ripples": int(ok.sum()),'''
-new='''                curves = {}
-                for label, rows_, r_, peaks in (("post", post_rows, r_post, post_peak_bins),
-                                                ("pre", pre_rows, r_pre, pre_peak_bins)):
-                    full = np.full(n, np.nan, np.float32)
-                    full[rows_] = r_[:, k]
-                    lag_idx = peaks[:, None] + np.arange(-lags, lags + 1)[None, :]
-                    ok = np.all((lag_idx >= 0) & (lag_idx < n), axis=1)
-                    curves[label] = (np.nanmean(full[lag_idx[ok]], axis=0), int(ok.sum()))
-                traces.append({"session": session["session"], "rat": session["rat"], "template": name,
-                               "pattern": k, "curve": curves["post"][0], "n_ripples": curves["post"][1],
-                               "curve_pre": curves["pre"][0], "n_ripples_pre": curves["pre"][1],'''
-assert old in s; s=s.replace(old,new)
-old='''    post_peaks = session["ripples"]["peak"]
-    post_peaks = post_peaks[in_intervals(post_peaks, intersect(nrem, post_iv))]
-    peak_bins = (post_peaks / bin_s).astype(np.int64)
-    position = np.full(n, -1, np.int64)
-    position[post_rows] = np.arange(len(post_rows))
-'''
-new='''    peaks = session["ripples"]["peak"]
-    post_peak_bins = (peaks[in_intervals(peaks, intersect(nrem, post_iv))] / bin_s).astype(np.int64)
-    pre_peak_bins = (peaks[in_intervals(peaks, intersect(nrem, pre_iv))] / bin_s).astype(np.int64)
-'''
-assert old in s; s=s.replace(old,new)
-s=s.replace('''    mean strength in ripple and non-ripple bins of pre- and post-sleep.''','''    mean strength in ripple and non-ripple bins of pre- and post-sleep; the same triggered
-    mean in pre-sleep is kept as a reference.''')
-open('hpcbla.py','w').write(s)
-E
-grep -n "post_peaks\|position" hpcbla.py
-```
-
-```
-Traceback (most recent call last):
-  File "<stdin>", line 51, in <module>
-AssertionError
-430:    post_peaks = session["ripples"]["peak"]
-431:    post_peaks = post_peaks[in_intervals(post_peaks, intersect(nrem, post_iv))]
-432:    peak_bins = (post_peaks / bin_s).astype(np.int64)
-433:    position = np.full(n, -1, np.int64)
-434:    position[post_rows] = np.arange(len(post_rows))
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "entries/000061-girardeau-2017/hpcbla.py",
- "offset": 380,
- "limit": 80
-}
-```
-
-```
-380	    r = session["ripples"]
-381	    a = np.clip((r["start"] / bin_s).astype(np.int64), 0, n - 1)
-382	    b = np.clip((r["stop"] / bin_s).astype(np.int64), 0, n - 1)
-383	    d = np.zeros(n + 1, np.int64)
-384	    np.add.at(d, a, 1)
-385	    np.add.at(d, b + 1, -1)
-386	    return np.cumsum(d[:-1]) > 0
-387	
-388	
-389	def reactivation(session: dict, rng: np.random.Generator, bin_s: float = BIN_S,
-390	                 bla_labels=BLA_LABELS, templates=("run",), equal_bins: bool = False,
-391	                 lags: int = 20, keep_traces: bool = True) -> dict:
-392	    """Joint patterns of the run and their reactivation in pre- and post-sleep Non-REM.
-393	
-394	    `templates` names the run bins a template is built from: "run" (the whole run epoch),
-395	    "puff" or "safe" (bins inside laps of the air-puff or the safe direction). With
-396	    `equal_bins` the two directional templates use the same number of bins (the first bins of
-397	    the longer one are kept). Returns one row per pattern, and for significant patterns the
-398	    ripple-peak-triggered mean strength in post-sleep (lags of `lags` bins either side) and the
-399	    mean strength in ripple and non-ripple bins of pre- and post-sleep.
-[... 60 more lines not kept]
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000061-girardeau-2017/hpcbla.py",
- "old_string": "                full = np.full(n, np.nan, np.float32)\n                full[post_rows] = r_post[:, k]\n                lag_idx = peak_bins[:, None] + np.arange(-lags, lags + 1)[None, :]\n                ok = np.all((lag_idx >= 0) & (lag_idx < n), axis=1)\n                curve = np.nanmean(full[lag_idx[ok]], axis=0)\n                traces.append({\"session\": session[\"session\"], \"rat\": session[\"rat\"], \"template\": name,\n                               \"pattern\": k, \"curve\": curve, \"n_ripples\": int(ok.sum()),",
- "new_string": "                curves = {}\n                for label, rows_, r_, peak_bins in ((\"post\", post_rows, r_post, post_peak_bins),\n                                                    (\"pre\", pre_rows, r_pre, pre_peak_bins)):\n                    full = np.full(n, np.nan, np.float32)\n                    full[rows_] = r_[:, k]\n                    lag_idx = peak_bins[:, None] + np.arange(-lags, lags + 1)[None, :]\n                    ok = np.all((lag_idx >= 0) & (lag_idx < n), axis=1)\n                    curves[label] = (np.nanmean(full[lag_idx[ok]], axis=0), int(ok.sum()))\n                traces.append({\"session\": session[\"session\"], \"rat\": session[\"rat\"], \"template\": name,\n                               \"pattern\": k, \"curve\": curves[\"post\"][0], \"n_ripples\": curves[\"post\"][1],\n                               \"curve_pre\": curves[\"pre\"][0], \"n_ripples_pre\": curves[\"pre\"][1],"
-}
-```
-
-```
-The file entries/000061-girardeau-2017/hpcbla.py has been updated successfully.
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000061-girardeau-2017/hpcbla.py",
- "old_string": "    post_peaks = session[\"ripples\"][\"peak\"]\n    post_peaks = post_peaks[in_intervals(post_peaks, intersect(nrem, post_iv))]\n    peak_bins = (post_peaks / bin_s).astype(np.int64)\n    position = np.full(n, -1, np.int64)\n    position[post_rows] = np.arange(len(post_rows))\n",
- "new_string": "    peaks = session[\"ripples\"][\"peak\"]\n    post_peak_bins = (peaks[in_intervals(peaks, intersect(nrem, post_iv))] / bin_s).astype(np.int64)\n    pre_peak_bins = (peaks[in_intervals(peaks, intersect(nrem, pre_iv))] / bin_s).astype(np.int64)\n"
-}
-```
-
-```
-The file entries/000061-girardeau-2017/hpcbla.py has been updated successfully.
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000061-girardeau-2017/hpcbla.py",
- "old_string": "    mean strength in ripple and non-ripple bins of pre- and post-sleep.\n    \"\"\"",
- "new_string": "    mean strength in ripple and non-ripple bins of pre- and post-sleep. The same triggered mean\n    in pre-sleep is kept as a reference.\n    \"\"\""
-}
-```
-
-```
-The file entries/000061-girardeau-2017/hpcbla.py has been updated successfully.
-```
-
-**Agent calls Grep**
-
-```json
-{
- "pattern": "def ripple_modulation",
- "path": "entries/000061-girardeau-2017/hpcbla.py",
- "output_mode": "content",
- "-A": 30
-}
-```
-
-```
-343:def ripple_modulation(train: np.ndarray, start: np.ndarray, stop: np.ndarray, end_s: float,
-344-                      rng: np.random.Generator) -> tuple[int, float, float]:
-345-    """A unit's spikes in the ripple windows, against windows shifted together at random.
-346-
-347-    Returns the observed count, the mean surrogate count, and the one-sided p value (the
-348-    fraction of `RIPPLE_SHIFTS` surrogates at or above the observed count, counting the
-349-    observed one). Times are handled on a `RIPPLE_RES_S` grid.
-350-    """
-351-    n = int(np.ceil(end_s / RIPPLE_RES_S)) + 2
-352-    idx = (train / RIPPLE_RES_S).astype(np.int64)
-353-    cs = np.concatenate([[0], np.cumsum(np.bincount(idx[(idx >= 0) & (idx < n)], minlength=n))])
-354-    a = (start / RIPPLE_RES_S).astype(np.int64)
-355-    b = (stop / RIPPLE_RES_S).astype(np.int64) + 1
-356-    observed = int((cs[np.clip(b, 0, n)] - cs[np.clip(a, 0, n)]).sum())
-357-    lo, hi = (int(x / RIPPLE_RES_S) for x in RIPPLE_SHIFT_RANGE_S)
-358-    offsets = rng.integers(lo, hi + 1, RIPPLE_SHIFTS) * rng.choice([-1, 1], RIPPLE_SHIFTS)
-359-    aa = np.clip(a[None, :] + offsets[:, None], 0, n)
-360-    bb = np.clip(b[None, :] + offsets[:, None], 0, n)
-361-    null = (cs[bb] - cs[aa]).sum(1)
-362-    p = (1 + np.count_nonzero(null >= observed)) / (1 + RIPPLE_SHIFTS)
+cd $TMPDIR && uv venv -q -p 3.13 env61 && uv pip install -q -p env61/bin/python -r entries/000061-girardeau-2017/requirements.lock.txt ipykernel nbconvert 2>&1 | tail -3; ls env61/bin | head -30
+```
+
+```
+activate
+activate.bat
+activate.csh
+activate.fish
+activate.nu
+activate.ps1
+activate.xsh
+activate_this.py
+bids-validator-deno
+bst
+cffi-gen-src
+dandi
+deactivate.bat
+debugpy
+debugpy-adapter
+deno
+dotenv
+email_validator
+f2py
+fonttools
 [... 11 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-python3 - <<'E'
-s=open('hpcbla.py').read()
-a=s.index("def ripple_modulation("); b=s.index("def usable(")
-new='''def ripple_modulation(train: np.ndarray, windows: list[tuple[np.ndarray, np.ndarray]], end_s: float,
-                      rng: np.random.Generator) -> list[dict]:
-    """A unit's spikes in sets of ripple windows, each against the same windows shifted at random.
+cd $TMPDIR && env61/bin/python - <<'EOF'
+from dandi.dandiapi import DandiAPIClient
+with DandiAPIClient() as c:
+    d=c.get_dandiset("000061")
+    for v in d.get_versions(): print(v.identifier, v.created, v.modified, v.status)
+    dd=c.get_dandiset("000061","draft")
+    print("draft modified", dd.version.modified)
+    pub=c.get_dandiset("000061","0.250624.0426")
+    A={a.path:(a.size,a.blob if hasattr(a,'blob') else None) for a in pub.get_assets()}
+    B={a.path:(a.size,a.identifier) for a in dd.get_assets()}
+    pa={a.path:a.identifier for a in pub.get_assets()}
+    print(len(A),len(B))
+    print("same ids:", sum(pa.get(k)==v[1] for k,v in B.items()))
+    for k in sorted(B): print(k, B[k][0])
+EOF
+```
 
-    For each (start, stop) set: the observed count, the mean surrogate count, and one-sided p
-    values for an increase and a decrease (the fraction of `RIPPLE_SHIFTS` surrogates at or
-    above, or at or below, the observed count, counting the observed one). All windows of a set
-    are shifted together by one offset of `RIPPLE_SHIFT_RANGE_S`, either sign. Times are handled
-    on a `RIPPLE_RES_S` grid.
-    """
-    n = int(np.ceil(end_s / RIPPLE_RES_S)) + 2
-    idx = (train / RIPPLE_RES_S).astype(np.int64)
-    cs = np.concatenate([[0], np.cumsum(np.bincount(idx[(idx >= 0) & (idx < n)], minlength=n))])
-    lo, hi = (int(x / RIPPLE_RES_S) for x in RIPPLE_SHIFT_RANGE_S)
-    out = []
-    for start, stop in windows:
-        a = (start / RIPPLE_RES_S).astype(np.int64)
-        b = (stop / RIPPLE_RES_S).astype(np.int64) + 1
-        observed = int((cs[np.clip(b, 0, n)] - cs[np.clip(a, 0, n)]).sum())
-        offsets = rng.integers(lo, hi + 1, RIPPLE_SHIFTS) * rng.choice([-1, 1], RIPPLE_SHIFTS)
-        null = (cs[np.clip(b[None, :] + offsets[:, None], 0, n)]
-                - cs[np.clip(a[None, :] + offsets[:, None], 0, n)]).sum(1)
-        out.append({"observed": observed, "null_mean": float(null.mean()),
-                    "p_up": (1 + np.count_nonzero(null >= observed)) / (1 + RIPPLE_SHIFTS),
-                    "p_down": (1 + np.count_nonzero(null <= observed)) / (1 + RIPPLE_SHIFTS)})
+```
+draft 2021-03-17 17:56:38.739000+00:00 2026-10-05 19:47:59.101236+00:00 VersionStatus.VALID
+0.210812.1517 2021-08-12 15:16:40.974447+00:00 2021-08-12 15:16:41.081708+00:00 VersionStatus.VALID
+0.250624.0426 2025-06-24 04:26:52.521598+00:00 2025-06-24 04:26:54.714641+00:00 VersionStatus.VALID
+draft modified 2026-10-05 19:47:59.101236+00:00
+40 40
+same ids: 40
+sub-Rat08/sub-Rat08_ses-Rat08-20130708_ecephys+image.nwb 102986180753
+sub-Rat08/sub-Rat08_ses-Rat08-20130709_ecephys+image.nwb 106665778167
+sub-Rat08/sub-Rat08_ses-Rat08-20130710_ecephys+image.nwb 106456123626
+sub-Rat08/sub-Rat08_ses-Rat08-20130711_ecephys+image.nwb 95112303100
+sub-Rat08/sub-Rat08_ses-Rat08-20130712_ecephys+image.nwb 102074727012
+sub-Rat08/sub-Rat08_ses-Rat08-20130713_ecephys+image.nwb 253622358430
+sub-Rat08/sub-Rat08_ses-Rat08-20130715_ecephys+image.nwb 17135971204
+sub-Rat08/sub-Rat08_ses-Rat08-20130716_ecephys+image.nwb 34249056682
+sub-Rat08/sub-Rat08_ses-Rat08-20130717_ecephys+image.nwb 28898891523
+sub-Rat08/sub-Rat08_ses-Rat08-20130718_ecephys+image.nwb 34977200464
+sub-Rat08/sub-Rat08_ses-Rat08-20130719_ecephys+image.nwb 17021746588
+sub-Rat08/sub-Rat08_ses-Rat08-20130720_ecephys+image.nwb 15932111783
+sub-Rat08/sub-Rat08_ses-Rat08-20130722_ecephys+image.nwb 16948966357
+sub-Rat09/sub-Rat09_ses-Rat09-20140324_ecephys+image.nwb 97974100287
+[... 27 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && env61/bin/python - <<'EOF'
+import h5py, remfile
+from dandi.dandiapi import DandiAPIClient
+with DandiAPIClient() as c:
+    d=c.get_dandiset("000061","0.250624.0426")
+    a=d.get_asset_by_path("sub-Rat11/sub-Rat11_ses-Rat11-20150316_ecephys+image.nwb")
+    url=a.get_content_url(follow_redirects=1, strip_query=True)
+f=h5py.File(remfile.File(url),"r")
+def show(name,obj):
+    if isinstance(obj,h5py.Dataset):
+        if 'Video' in name and name.count('/')>1 and not name.endswith(('data','timestamps')): return
+        print(name, obj.shape, obj.dtype, dict((k,(v if not hasattr(v,'shape') or v.size<10 else v.shape)) for k,v in obj.attrs.items() if k not in('namespace','object_id')))
+    else:
+        print(name+'/', {k:v for k,v in obj.attrs.items() if k not in('namespace','object_id')})
+f.visititems(show)
+EOF
+```
+
+```
+acquisition/ {}
+acquisition/Video: Rat11-20150316-01-prerun/ {'comments': 'no comments', 'description': 'Video recorded by camera.', 'neurodata_type': 'ImageSeries'}
+acquisition/Video: Rat11-20150316-01-prerun/data (5410, 360, 640, 3) uint8 {'conversion': np.float64(1.0), 'resolution': np.float64(-1.0), 'unit': 'Frames'}
+acquisition/Video: Rat11-20150316-01-prerun/timestamps (5410,) float64 {'interval': np.int64(1), 'unit': 'seconds'}
+acquisition/Video: Rat11-20150316-03-run/ {'comments': 'no comments', 'description': 'Video recorded by camera.', 'neurodata_type': 'ImageSeries'}
+acquisition/Video: Rat11-20150316-03-run/data (37277, 360, 640, 3) uint8 {'conversion': np.float64(1.0), 'resolution': np.float64(-1.0), 'unit': 'Frames'}
+acquisition/Video: Rat11-20150316-03-run/timestamps (37277,) float64 {'interval': np.int64(1), 'unit': 'seconds'}
+acquisition/Video: Rat11-20150316-06-postrun/ {'comments': 'no comments', 'description': 'Video recorded by camera.', 'neurodata_type': 'ImageSeries'}
+acquisition/Video: Rat11-20150316-06-postrun/data (5572, 360, 640, 3) uint8 {'conversion': np.float64(1.0), 'resolution': np.float64(-1.0), 'unit': 'Frames'}
+acquisition/Video: Rat11-20150316-06-postrun/timestamps (5572,) float64 {'interval': np.int64(1), 'unit': 'seconds'}
+analysis/ {}
+file_create_date (1,) object {}
+general/ {}
+general/devices/ {}
+general/devices/Device/ {'description': 'Three silicon probes (2 with 8 shanks, 1 with 4 shanks, 160 recording channels total, NeuroNexus H32 and H62, A-style, Buzsaki32 and 64 layout) mounted on individual movable microdrives51 were implanted above the amygdalae bilaterally (AP −2.5 mm ML ± 3.6 to 5.5 mm from bregma) and in the dorsal hippocampus (left or right, CA1, AP −3.5 mm, ML ± 2.5 mm). The drives were secured to the skull using dental cement. Skull screws above the cerebellum were used as ground and reference. The drives and probes were protected by a cement-covered copper-mesh Faraday cage on which the probe connectors were a
+[... 116 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; wc -l 10.1038-nn.4637.txt; grep -n -i -E "basolateral|BMP|lateral nucleus|basal|LaDL|cortical nucle|central nucle|CeA|piriform|histolog" 10.1038-nn.4637.txt | head -60
+```
+
+```
+1827 10.1038-nn.4637.txt
+69:basolateral amygdala (BLA), but the mechanisms of this process are unknown. We recorded neuronal ensembles in the 
+98:from large areas of the amygdala and the piriform cortex in each rat 
+196:3, 1,138; rat 4, 2,514). On the basis of histological reconstruction of 
+198:in the BLA, 782 in the central nuclei, 1,560 in the piriform cortex 
+225:Neurons in the piriform cortex showed weaker experience-induced 
+375:reactivation with their CA1 partner neurons (Fig. 3d; Wilcoxon onetailed rank sum test on EV – REV for hippocampus–BLA (n = 25 sessions, mean EV – REV 3.13 ± 0.73%, s.e.m.) vs. hippocampus–piriform 
+377:while there were no reactivations at all between the central nuclei and 
+521:(d) Hippocampus–piriform cortex EV and REV (NREM: n = 17 sessions, P = 0.0052; REM: n = 15 sessions in 3 rats, P = 0.301; pyr–pyr pairs). 
+522:(e) Same as d but for central nuclei (CeN) (NREM: n = 19 sessions, P = 0.717, z = 0.36 and REM: n = 19 sessions, P = 0.687, z = −0.40; all cell 
+1016:1.	 Vazdarjanova, A. & McGaugh, J.L. Basolateral amygdala is involved in modulating 
+1021:3.	 Maren, S. & Fanselow, M.S. Synaptic plasticity in the basolateral amygdala induced 
+1025:basolateral amygdala-lesioned rats. Brain Res. 656, 157–164 (1994).
+1026:5.	 Ikegaya, Y., Saito, H. & Abe, K. High-frequency stimulation of the basolateral 
+1210:Posttraining optogenetic manipulations of basolateral amygdala activity modulate 
+1255:46.	Sparta, D.R. et al. Inhibition of projections from the basolateral amygdala to the 
+1291:intra-piriform cortex physiology and reactivation analysis. Data collection and 
+1487:Histology. At the end of experiments, small electrolytic lesions were made to 
+1492:each recording day. This allowed the construction of histology maps showing 
+1644:Histological reconstruction from DAPI-stained brain slices and reconstructed anatomical maps of recording sites for all four animals. 
+[... 4 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; sed -n 1280,1300p 10.1038-nn.4637.txt; sed -n 1400,1520p 10.1038-nn.4637.txt; sed -n 1640,1670p 10.1038-nn.4637.txt; sed -n 1770,1800p 10.1038-nn.4637.txt
+```
+
+```
+with 4 shanks, 160 recording channels total, NeuroNexus H32 and H62, A-style, 
+Buzsaki32 and 64 layout) mounted on individual movable microdrives51 were 
+implanted above the amygdalae bilaterally (AP −2.5 mm ML ± 3.6 to 5.5 mm 
+from bregma) and in the dorsal hippocampus (left or right, CA1, AP −3.5 mm, 
+ML ± 2.5 mm). The drives were secured to the skull using dental cement. Skull 
+screws above the cerebellum were used as ground and reference. The drives and 
+probes were protected by a cement-covered copper-mesh Faraday cage on which 
+the probe connectors were attached. Animals were allowed to recover for at least 
+5 d with ad libitum food and water. In one animal, the hippocampus probe failed 
+during the course of the experiment. This animal was hence not used for analysis 
+about hippocampus–BLA coordination, but was used for intra-amygdala and 
+intra-piriform cortex physiology and reactivation analysis. Data collection and 
+analysis we not performed blind to the conditions of the experiments.
+Recordings and behavior. All animals were free from prior manipulation before 
+being included in the study. After a week of daily handling, animals were placed 
+on water restriction and trained to run back and forth on a linear track for water 
+rewards (Fig. 1). All experiments were performed during the day (light cycle). 
+Three days before surgery, they regained access to ad libitum food and water. 
+After the recovery period, the probes were slowly lowered in the brain and the 
+recordings started when reaching hippocampal CA1 pyramidal layer and the 
+[... 184 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "paper/10.1038-nn.4637.supp.pdf",
+ "pages": "14"
+}
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && cat > scan.py <<'EOF'
+import h5py, remfile, numpy as np, collections
+from concurrent.futures import ThreadPoolExecutor
+from dandi.dandiapi import DandiAPIClient
+with DandiAPIClient() as c:
+    d=c.get_dandiset("000061","0.250624.0426")
+    urls=sorted((a.path,a.get_content_url(follow_redirects=1, strip_query=True)) for a in d.get_assets())
+def one(pu):
+    p,u=pu
+    f=h5py.File(remfile.File(u),"r")
+    out={'path':p.split('/')[-1]}
+    out['units_cols']=list(f['units'].attrs['colnames']) if 'units' in f else None
+    out['proc']=list(f['processing'].keys()) if 'processing' in f else []
+    out['proc_items']={k:list(f['processing'][k].keys()) for k in f['processing']} if 'processing' in f else {}
+    out['analysis']=list(f['analysis'].keys())
+    out['intervals']=list(f['intervals'].keys())
+    out['acq']=[k for k in f['acquisition'] if not k.startswith('Video')]
+    if 'acquisition/ElectricalSeries' in f:
+        ds=f['acquisition/ElectricalSeries/data']; out['raw']=(ds.shape,ds.chunks,ds.compression)
+    out['units_desc']=f['units'].attrs.get('description') if 'units' in f else None
+    out['epoch_tags']=[t.decode() if isinstance(t,bytes) else t for t in f['intervals/epochs/tags'][()]]
     return out
-
-
-'''
-s=s[:a]+new+s[b:]
-open('hpcbla.py','w').write(s)
-E
-python3 -c "import ast;ast.parse(open('hpcbla.py').read())"
+with ThreadPoolExecutor(10) as ex:
+    for o in ex.map(one,urls): print(o)
+EOF
+env61/bin/python scan.py
 ```
 
 ```
-(Bash completed with no output)
+{'path': 'sub-Rat08_ses-Rat08-20130708_ecephys+image.nwb', 'units_cols': ['shank_id', 'location', 'electrode_group', 'spike_times'], 'proc': ['behavior', 'ecephys'], 'proc_items': {'behavior': ['states'], 'ecephys': ['LFP']}, 'analysis': [], 'intervals': ['epochs', 'trials'], 'acq': ['ElectricalSeries'], 'raw': ((495184000, 160), (241790, 1), 'gzip'), 'units_desc': 'Autogenerated by NWBFile', 'epoch_tags': ['sleep', 'run', 'sleep', 'run']}
+{'path': 'sub-Rat08_ses-Rat08-20130709_ecephys+image.nwb', 'units_cols': ['location', 'cell_type', 'electrode_group', 'shank_id', 'spike_times'], 'proc': ['behavior', 'ecephys'], 'proc_items': {'behavior': ['states'], 'ecephys': ['LFP']}, 'analysis': [], 'intervals': ['epochs', 'trials'], 'acq': ['ElectricalSeries'], 'raw': ((510210000, 160), (249126, 1), 'gzip'), 'units_desc': 'Autogenerated by NWBFile', 'epoch_tags': ['prerun', 'presleep', 'run', 'postsleep', 'postsleep', 'postrun']}
+{'path': 'sub-Rat08_ses-Rat08-20130710_ecephys+image.nwb', 'units_cols': ['cell_type', 'shank_id', 'electrode_group', 'location', 'spike_times'], 'proc': ['behavior', 'ecephys'], 'proc_items': {'behavior': ['states'], 'ecephys': ['LFP']}, 'analysis': [], 'intervals': ['epochs', 'trials'], 'acq': ['ElectricalSeries'], 'raw': ((503914000, 160), (246052, 1), 'gzip'), 'units_desc': 'Autogenerated by NWBFile', 'epoch_tags': ['prerun', 'presleep', 'run', 'postsleep', 'postrun', 'water']}
+{'path': 'sub-Rat08_ses-Rat08-20130711_ecephys+image.nwb', 'units_cols': ['cell_type', 'electrode_group', 'location', 'shank_id', 'spike_times'], 'proc': ['behavior', 'ecephys'], 'proc_items': {'behavior': ['states'], 'ecephys': ['LFP']}, 'analysis': [], 'intervals': ['epochs', 'trials'], 'acq': ['ElectricalSeries'], 'raw': ((437354000, 160), (427104, 1), 'gzip'), 'units_desc': 'Autogenerated by NWBFile', 'epoch_tags': ['prerun', 'presleep', 'run', 'postsleep', 'postrun']}
+{'path': 'sub-Rat08_ses-Rat08-20130712_ecephys+image.nwb', 'units_cols': ['cell_type', 'electrode_gr
+[... 36 more lines not kept]
 ```
 
-**Agent**
+**Agent calls Bash**
 
-Helper done. Now writing the notebook cells in a marked text file, which I will run against the cached data and then convert to a notebook.
+```bash
+cd $TMPDIR && cat > ct.py <<'EOF'
+import h5py, remfile, numpy as np, collections
+from dandi.dandiapi import DandiAPIClient
+with DandiAPIClient() as c:
+    d=c.get_dandiset("000061","0.250624.0426")
+    urls=sorted((a.path,a.get_content_url(follow_redirects=1, strip_query=True)) for a in d.get_assets() if 'Rat08-201307' in a.path)
+for p,u in urls[1:6]:
+    f=h5py.File(remfile.File(u),"r")
+    U=f['units']
+    print(p, dict(U['cell_type'].attrs))
+    ct=[x.decode() if isinstance(x,bytes) else x for x in U['cell_type'][()]]
+    loc=[x.decode() if isinstance(x,bytes) else x for x in U['location'][()]]
+    print(collections.Counter(zip(loc,ct)))
+EOF
+env61/bin/python ct.py
+```
+
+```
+sub-Rat08/sub-Rat08_ses-Rat08-20130709_ecephys+image.nwb {'description': 'Type of cell this has been classified as.', 'namespace': 'hdmf-common', 'neurodata_type': 'VectorData', 'object_id': 'bc40b029-f1e0-4adc-a3db-e7ce7436b3a7'}
+Counter({('bla', 'excitatory'): 34, ('bla', 'unclassified'): 34, ('hpc', 'unclassified'): 30, ('den', 'unclassified'): 19, ('ladl', 'unclassified'): 17, ('cen', 'unclassified'): 15, ('pir', 'unclassified'): 13, ('bla', 'inhibitory'): 10, ('cen', 'excitatory'): 9, ('hpc', 'inhibitory'): 4, ('den', 'excitatory'): 3, ('den', 'inhibitory'): 3, ('ladl', 'excitatory'): 3, ('pir', 'excitatory'): 3, ('pir', 'inhibitory'): 2, ('cen', 'inhibitory'): 1, ('ladl', 'inhibitory'): 1})
+sub-Rat08/sub-Rat08_ses-Rat08-20130710_ecephys+image.nwb {'description': 'Type of cell this has been classified as.', 'namespace': 'hdmf-common', 'neurodata_type': 'VectorData', 'object_id': 'c283f0f6-aa22-413c-902b-8961543c9fa5'}
+Counter({('bla', 'unclassified'): 42, ('bla', 'excitatory'): 38, ('hpc', 'unclassified'): 29, ('den', 'unclassified'): 24, ('den', 'excitatory'): 15, ('cen', 'unclassified'): 14, ('pir', 'unclassified'): 10, ('bla', 'inhibitory'): 7, ('den', 'inhibitory'): 3, ('pir', 'inhibitory'): 2, ('cen', 'excitatory'): 2, ('hpc', 'inhibitory'): 1, ('hpc', 'excitatory'): 1, ('pir', 'excitatory'): 1, ('cen', 'inhibitory'): 1})
+sub-Rat08/sub-Rat08_ses-Rat08-20130711_ecephys+image.nwb {'description': 'Type of cell this has been classified as.', 'namespace': 'hdmf-common', 'neurodata_type': 'VectorData', 'object_id': '35b13412-849b-4559-a2b5-2f9d05dc95cc'}
+Counter({('bla', 'excitatory'): 47, ('bla', 'unclassified'): 33, ('den', 'unclassified'): 31, ('pir', 'unclassified'): 20, ('hpc', 'unclassified'): 18, ('cen', 'unclassified'): 13, ('bla', 'inhibitory'): 12, ('den', 'excitatory'): 8, ('den', 'inhibitory'): 5, ('hpc', 'excitatory'): 4, ('cen', 'excitatory'): 4, ('hpc', 'inhibitory'): 2, ('pir', 'excitatory'): 2, ('pir', 'inhibitory'): 1, ('cen', 'inhibitory'): 1}
+[... 5 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/182fe984-a49a-4f14-8cf1-0ba01350a3fa/tool-results/bc6bppl1n.txt",
+ "offset": 755
+}
+```
+
+```
+755	             "median_puff": round(pooled.median()["puff"], 4), "median_safe": round(pooled.median()["safe"], 4), "p": mw.pvalue})
+756	for name, df, subset, value in (("first pattern of each direction", dpat, "first", "change"),
+757	                                ("equal numbers of bins", direction_table(equal), "significant", "change"),
+758	                                ("post-sleep strength alone", dpat, "significant", "post")):
+759	    _, p = compare(df, value, subset)
+760	    rows.append({"variant": name, "n": len(p), "median_puff": round(p.puff.median(), 4), "median_safe": round(p.safe.median(), 4),
+761	                 "median_diff": round(p["diff"].median(), 4), "positive": int((p["diff"] > 0).sum()), "p": wilcoxon(p["diff"])})
+762	print(pd.DataFrame(rows).to_string(index=False))
+763	===== 48 code ['claim:aversive-direction-stronger']
+764	# Laps of the run epoch. A lap runs from one reward to the next at the other end, so it holds the
+765	# time spent at the starting end as well as the run. The shortest laps of a session (its 10th
+766	# percentile of lap duration) are taken as the time needed to travel the track; the variant below
+767	# builds the templates from only that last part of each lap, before the reward that ends it.
+768	rows, lap_tail = [], {}
+769	for s in used:
+770	    direction, counts = hpcbla.puff_direction(s)
+771	    laps_ = hpcbla.run_laps(s)
+772	    lap_tail[s["session"]] = float(np.percentile([b - a for a, b, _ in laps_], 10))
+773	    row = {"session": s["session"], "puffs": int(sum(counts.values())), "puffs_in_puff_laps": counts[direction], "travel_s": round(lap_tail[s["session"]], 1)}
+774	    for name in ("puff", "safe"):
+[... 126 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; grep -n -i -E "habituat|laps|back-and-forth|StatesFiring|wake" 10.1038-nn.4637.txt | head -40
+```
+
+```
+21:Sleep replay of wake sequences of place cells during hippocampal 
+203:skewed distribution during sleep (NREM and REM) and wakefulness31 (Fig. 2c). In addition, we found a specific increase in the firing 
+205:and, to a lesser extent, NREM sleep relative to wakefulness, as shown 
+206:by the distributions of REM/wake or NREM/wake firing rate ratios 
+247:Wake
+319:Wake rate (Hz)
+336:Wake rate (Hz)
+361:(out of 29 sessions in 3 rats with simultaneous BLA and hippocampus recordings). Spectrograms were used to define brain states (wake, NREM or REM 
+364:BLA during NREM vs. wake (top left) and REM vs. wake (top right). The distribution of REM/wake and NREM/wake firing rate ratios (bottom) is skewed 
+365:toward 1 for pyramidal cells (orange, monosynaptically identified pyramidal cells; n = 675; NREM/wake: P = 4.07 × 10−46, z = 14.25; REM/wake: P 
+366:= 8 × 10−42, z = 13.54; Wilcoxon signed rank tests), indicating an increase in firing rate during both sleep stages compared to wake. Interneurons do 
+367:not change firing rates between REM and wake (blue, monosynaptically identified interneurons, n = 175; REM/wake: P = 0.21, z = 1.25) and slightly 
+368:decrease firing rates during NREM compared to wake (NREM/wake: P = 1.97 × 10−9, z = −6.00; Wilcoxon signed rank tests; dotted lines: medians).
+605:place–threat representation during wakefulness. Rats learned a 
+1345:Because rats run more and faster laps when habituated to the air puff, a habituation index was calculated for each training session and animal as the total number 
+1346:of back-and-forth laps divided by the total time spent on the maze × 100. To 
+1350:Firing rate (FR) changes between wakefulness and REM sleep were evaluated 
+1351:using the REM/wake ratios, calculated as (REM FR – wake FR)/(REM FR + wake 
+1352:FR). Positive ratios indicate REM FR > wake FR.
+1626:Behavioral performance and habituation for each rat. 
+[... 2 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; sed -n 1300,1360p 10.1038-nn.4637.txt; sed -n 1620,1640p 10.1038-nn.4637.txt
+```
+
+```
+/bin/bash: line 1: cd: paper: No such file or directory
+superior limit of BLA, respectively. During this period, the rats were placed back 
+on water restriction to >85% of their normal weight and re-exposed to the linear 
+track. The position of the animal was tracked using a camera mounted on the 
+ceiling and a red LED attached to the head of the animal. Signals were recorded 
+at 20 kHz using an Amplipex recording system (Amplipex Inc., Szeged, Hungary) 
+and the associated Amplirec software. The amygdala electrodes were lowered by 
+140 μm at the end of each recording session to ensure a complete spanning of 
+the amygdala region over the course of the experiment. The hippocampal probe 
+was adjusted daily to optimize ripple and unit recording.
+Preprocessing. 20-kHz signals were resampled at 1,250 Hz to extract LFP data. 
+Spikes were extracted by high-pass filtering (800 Hz) and thresholding the signal, 
+then clustered using Klustakwik (http://sourceforge.net/projects/klustakwik/) followed by manual clustering using Klusters (http://neurosuite.sourceforge.net/) 
+Data were visualized and preprocessed using Neuroscope (http://neurosuite.
+sourceforge.net/) and NDManager (http://neurosuite.sourceforge.net/)52. Units 
+were classified into putative pyramidal cells and putative interneurons using 
+monosynaptic connections (Supplementary Fig. 3). The remaining, unidentified 
+cells were sorted using k-means clustering (two clusters) on the inverse frequency 
+(that is, duration; fast Fourier transform) and peak-to-trough values (in milliseconds) of the mean waveform of the spikes. Sleep stages were manually scored 
+through visual inspection of the hippocampus and amygdala spectrograms and 
+[... 63 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat questions/README.md; ls schemas; git log --all --oneline -- 'questions/*' | head; grep -rn "question" schemas/*.json | head -20
+```
+
+```
+# Questions
+
+`<dandiset>.yaml` holds an attempt's questions about its paper: what the author needed and the
+claims file did not give (docs/protocol.md, "Author", step 1.6), and the reader's answers
+("Reader", step 6). Each question has `claim`, `question`, `why` (how the answer could change the
+outcome), and, once answered, `answer` and `answered` (a date).
+attempt.schema.json
+claims.schema.json
+entry.schema.json
+54a3ea71 Agent run on 001754: answer (success)
+756c414d Agent run on 001754: author (success)
+7c92e295 Split each attempt into a reader, who reads the paper, and an author, who does not
+```
+
+**Agent calls Bash**
+
+```bash
+cd  git show 756c414d --stat | head; git show 54a3ea71:questions/001754.yaml 2>/dev/null | head -60; cat schemas/attempt.schema.json | head -250
+```
+
+```
+commit 756c414d378c009354b725cb3da27367db14eae1
+Author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+Date:   Tue Oct 20 18:38:52 2026 +0000
+
+    Agent run on 001754: author (success)
+    
+    Run: https://github.com/catalystneuro/reproduction-registry/actions/runs/39472420999
+    
+    Account: unverified
+
+# Questions from attempt 001754-knierim-2000-03 (author, 2026-10-20) about the claims file
+# claims/001754/10.1038-72910.yaml. Each is asked under docs/protocol.md, Author, step 1.6; the
+# attempt runs every reading it can see and records the claims whose outcome depends on the answer.
+dandiset: "001754"
+paper: doi:10.1038/72910
+questions:
+- claim: si-comparable-to-preflight
+  also: [si-rat1-fd9-vs-preflight, si-rat3-fd4-vs-preflight, fd4-abnormal-selectivity, fig3-stability-across-sessions]
+  asked: 2026-10-20
+  question: Reading M-b recomputes rate maps from spikes and position. The dandiset gives position
+[... 300 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 250,500p schemas/attempt.schema.json
+```
+
+```
+"methods_underspecified",
+                  "data_unreadable",
+                  "too_large",
+                  "not_runnable",
+                  "other"
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "outcome": {
+                  "const": "blocked"
+[... 163 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n -i -E "SyncHist|smooth|ReplayInTime|PoissonRipple|StatesFiring|Performance.m|ripple.*NREM" claims/000061/10.1038-nn.4637.yaml | head; cd paper; sed -n 1360,1400p 10.1038-nn.4637.txt
+```
+
+```
+11:# reactivation-involves-ripple-up-cells (the paper compares post-NREM minus pre-NREM pair
+32:# FinalType), physiology (PoissonRippleMod, PoissonRippleModPercent, StatesFiringRates,
+36:# ExplainedVariance_PooledCorr_Groups, ReplayInTime, ReplayInTime_LapTypes and their _All and
+39:# SyncHist) and a poissonTest function that is not in the repository.
+65:#   ExplainedVariance_Ultimate.m and ReplayInTime.m use the second run interval whole).
+67:#   epoch dropped (ReplayInTime.m).
+78:# M5 Ripples. The paper's ripple events (detection in Online Methods), kept when inside NREM.
+79:# M6 Ripple modulation of a unit (Online Methods; PoissonRippleMod.m; ExplainedVariance_Ultimate.m).
+86:# M7 Reactivation strength R (Online Methods; Supplementary Fig. 10; ReplayInTime.m,
+87:#   ReplayInTime_LapTypes.m). Binned counts of the pyramidal cells (or all cells, where stated)
+are the same as for the Poisson cumulative function during SPW-Rs (custom 
+program calling the “poiscdf” Matlab function). The baseline (inter-ripple) firing rate was computed during NREM sleep epochs excluding SPW-Rs. To avoid 
+contamination of rate changes around SPW-Rs, the 100-ms periods before and 
+after each ripple were also excluded.
+Explained variance (EV) and reverse explained variance (REV) were calculated per session using subsets of cell pairs selected from the structures of interest. Only sessions with a minimum of 1 shank and 6 cells in each structure were 
+included in the analysis. This criterion accounts for the variation in the number 
+of sessions depending on the subset of cells the EV and REV are calculated for 
+(pyramidal cell only vs. all cells). For REM sleep, only sessions with a minimum 
+of 3 min of total REM sleep (all REM sleep epochs were pooled together) in 
+both pre- and post-sleep were included. Pairwise correlations for EV and REV 
+[... 31 more lines not kept]
+```
 
 **Agent calls Write**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/dev/cells.txt",
- "content": "#%% md\n# Reproducing Girardeau, Inema & Buzsaki (2017) from dandiset 000061\n\n**Paper.** Girardeau G, Inema I, Buzsaki G (2017). Reactivations of emotional memory in the\nhippocampus-amygdala system during sleep. *Nature Neuroscience* 20, 1634-1642.\n[doi:10.1038/nn.4637](https://doi.org/10.1038/nn.4637). The article is not open access (it is not\nin PubMed Central, and its HAL record holds metadata only), so this attempt used the abstract\nalone (PubMed 28892057). Every claim is a sentence of the abstract, none has a reported number,\nand every method choice was fixed in the claims file before the analysis.\n\n**Dandiset.** [DANDI:000061](https://dandiarchive.org/dandiset/000061/0.250624.0426), version\n0.250624.0426. The abstract cites no DANDI version. There are two published versions,\n0.210812.1517 and 0.250624.0426; they hold the same 40 files (same blobs and sizes) and differ only\nin metadata (contributor affiliations and ORCIDs, and a `relatedResource` link to the paper, added\nin 2025), none of which the analysis uses. The most recent published version is pinned.\n\n**What the dandiset holds.** 40 NWB files, one per recording day, from four rats (Rat08 to\nRat11): sorted units with a region label, sleep states, epochs, and event times of hippocampal\nripples, air puffs and rewards; some files also hold raw voltage, LFP and video. There is no\nposition tracking.\n\n**Code.** The dandiset links no analysis code, and the abstract names none. The parameters are\ncommon choices, listed in the helper module `hpcbla.py` and the claims file.\n\n| Claim | Tested here |\n|---|---|\n| `hpc-bla-reactivation-post-sleep`: joint hippocampus and BLA patterns of the run reactivate in post-sleep Non-REM | tested |\n| `reactivation-peaks-at-ripples`: the reactivations peak during sharp wave-ripples | tested |\n| `bla-ripple-up-subgroup`: a subgroup of BLA cells is positively modulated during ripples | tested |\n| `reactivation-involves-ripple-up-cells`: the reactivations involve those BLA cells | tested |\n| `aversive-direction-stronger`: reactivation is stronger for the air-puff direction than the safe one | tested |\n| `rats-learn-puff-location`: rats learned the location of the air puff | blocked (data missing: no position tracking) |\n#%% code\nimport time\nimport warnings\n\nimport matplotlib.pyplot as plt\nimport numpy as np\nimport pandas as pd\nfrom scipy import stats\n\nimport hpcbla\n\npd.set_option(\"display.width\", 220)\npd.set_option(\"display.max_columns\", 40)\npd.set_option(\"display.max_rows\", 200)\nwarnings.filterwarnings(\"ignore\", category=RuntimeWarning)\n\nstarted = time.time()\nsessions = sorted(hpcbla.load_all(), key=lambda s: s[\"path\"])\nprint(f\"loaded {len(sessions)} files from dandiset {hpcbla.DANDISET_ID} version \"\n      f\"{hpcbla.DANDISET_VERSION} in {time.time() - started:.0f} s\")\n#%% md\n## Data check\n\nEach check of the metadata against the values is stated under its output.\n#%% code tags=sanity\nfrom dandi.dandiapi import DandiAPIClient\n\nwith DandiAPIClient() as client:\n    meta = client.get_dandiset(hpcbla.DANDISET_ID, hpcbla.DANDISET_VERSION).get_raw_metadata()\nsummary = meta[\"assetsSummary\"]\nprint(\"Archive summary: files\", summary[\"numberOfFiles\"], \"; subjects\", summary[\"numberOfSubjects\"],\n      \"; species\", [s[\"name\"] for s in summary[\"species\"]], \"; measured\", summary[\"variableMeasured\"])\n\nrows = []\nfor s in sessions:\n    u = s[\"units\"]\n    pre, post, run = hpcbla.sleep_epochs(s)\n    region = pd.Series(u[\"region\"]).value_counts() if u else pd.Series(dtype=int)\n    rows.append({\n        \"session\": s[\"session\"], \"rat\": s[\"rat\"], \"units\": 0 if u is None else len(u[\"region\"]),\n        \"hpc\": int(sum(region.get(k, 0) for k in hpcbla.HPC_LABELS)),\n        \"bla\": int(sum(region.get(k, 0) for k in hpcbla.BLA_LABELS)),\n        \"bla_complex\": int(sum(region.get(k, 0) for k in hpcbla.BLA_COMPLEX_LABELS)),\n        \"states\": s[\"states\"] is not None,\n        \"ripples\": 0 if s[\"ripples\"] is None else len(s[\"ripples\"][\"peak\"]),\n        \"puffs\": len(s[\"events\"][\"puf\"][1]) if \"puf\" in s[\"events\"] else 0,\n        \"rewards\": len(s[\"events\"][\"lrw\"][1]) + len(s[\"events\"][\"rrw\"][1]),\n        \"pre_sleep_s\": round(float(np.diff(pre).sum())), \"post_sleep_s\": round(float(np.diff(post).sum())),\n        \"run_s\": None if run is None else round(run[1] - run[0]),\n        \"lfp\": s[\"lfp\"] is not None, \"raw\": s[\"raw\"] is not None, \"videos\": len(s[\"videos\"]),\n        \"trials\": None if s[\"trials\"] is None else len(s[\"trials\"][0])})\ninfo = pd.DataFrame(rows)\nprint(\"\\nSubjects:\", sorted(info.rat.unique()), \"; files per rat:\", info.rat.value_counts().sort_index().to_dict())\nprint(\"Species, age, sex:\", sorted({(s[\"species\"], s[\"age\"], s[\"sex\"]) for s in sessions}))\nprint(\"\\n\", info.to_string(index=False))\nprint(\"\\nFiles without a units table:\", info.session[info.units == 0].tolist())\nprint(\"Files without sleep states:\", info.session[~info.states].tolist())\nprint(\"Files without ripple events:\", info.session[info.ripples == 0].tolist())\nprint(\"Rats with hippocampal units:\", sorted(info.rat[info.hpc > 0].unique()))\n#%% md\nThe archive's summary says four subjects, which matches the four rats in the files, all male Long\nEvans rats given as 3 months old. Seven files have no units table, twelve have no sleep states, and\nthe Rat09 files have no ripple events and no hippocampal units, so Rat09 cannot enter any analysis\nthat needs both regions. Raw voltage is in 22 of the 40 files; the LFP is in all of them.\n#%% code tags=sanity\nlabels = pd.Series(np.concatenate([s[\"units\"][\"label\"] for s in sessions if s[\"units\"]])).value_counts()\nprint(\"Unit location labels over all files (as stored):\")\nprint(labels.to_string())\nprint(\"\\nElectrode table locations:\", sorted({x for s in sessions for x in s[\"electrode_locations\"]}))\nprint(\"Files whose units table has no location column:\",\n      [s[\"session\"] for s in sessions if s[\"units\"] and not s[\"units\"][\"has_location_column\"]])\nprint(\"\\nUsed as hippocampus:\", sorted(hpcbla.HPC_LABELS), \"; as BLA:\", sorted(hpcbla.BLA_LABELS),\n      \"; wider BLA variant:\", sorted(hpcbla.BLA_COMPLEX_LABELS), \"(case ignored)\")\n#%% md\nThe unit labels are short codes with no description in the files or the dandiset metadata. Some\nappear in two cases (`bla` and `BLA`, `hpc` and `HIP`, `pir` and `PIR`); in Rat08-20130717 the\nupper-case labels are on shanks 13 to 20 and the lower-case ones on shanks 1 to 12, so the case\nmarks a probe, not a duplicate (no two units of that file share a spike count and first spike;\nsee the duplicate check below). Others (`ladl`, `blv`, `bmp`, `den`, `ven`, `cen`, `pir`,\n`plc01`, `PLCo1`, `cpu`, `no label`) are not defined anywhere. The electrode table gives every\nchannel the location `unknown`. Rat09-20140328 has no location column at all.\n#%% code tags=sanity\nrows = []\nfor s in sessions:\n    end_raw = max(b for _, _, b in s[\"epochs_raw\"])\n    lfp_s = s[\"lfp\"][0][0] / s[\"lfp\"][1] if s[\"lfp\"] else np.nan\n    rows.append({\"session\": s[\"session\"], \"epochs_last_stop_raw\": end_raw,\n                 \"lfp_duration_s\": round(lfp_s, 1), \"ratio\": round(end_raw / lfp_s, 3),\n                 \"last_spike_s\": round(s[\"units\"][\"last_spike\"], 1) if s[\"units\"] else np.nan,\n                 \"lfp_rate_hz\": s[\"lfp\"][1] if s[\"lfp\"] else np.nan,\n                 \"states_span_s\": (min(a for _, a, _ in s[\"states\"]), max(b for _, _, b in s[\"states\"]))\n                 if s[\"states\"] else None})\ntimes = pd.DataFrame(rows)\nprint(\"Epoch table column description:\", sorted({s[\"epoch_unit_stated\"] for s in sessions}))\nprint(times.to_string(index=False))\nprint(\"\\nRatio of the epoch table's last stop to the LFP duration: min\", times.ratio.min(), \"max\", times.ratio.max())\nprint(\"Epoch tags:\", sorted({t for s in sessions for t, _, _ in s[\"epochs\"]}))\n#%% md\nThe epoch table says its times are in seconds, but its last stop time is 1000 times the LFP\nduration (and the last spike time) in every file: the epochs are stored in milliseconds. The\nhelper divides them by 1000. Sleep states, spikes, ripples, puffs and rewards are in seconds and\nspan the session. Two files tag their sleep epochs only as `sleep`; there the sleep before the\nfirst run is taken as pre-sleep and the sleep after it as post-sleep.\n#%% code tags=sanity\nrows = []\nfor s in sessions:\n    eps = {t: (a, b) for t, a, b in s[\"epochs\"]}\n    for name, (n_frames, first, last, unit) in s[\"videos\"].items():\n        tag = name.rsplit(\"-\", 1)[-1]\n        a, b = eps.get(tag, (np.nan, np.nan))\n        rows.append({\"session\": s[\"session\"], \"video\": tag, \"frames\": n_frames, \"stated_unit\": unit,\n                     \"first_ts\": round(first, 1), \"last_ts\": round(last, 1),\n                     \"video_span_ts/1000\": round((last - first) / 1000, 1), \"epoch_start_s\": round(a, 1),\n                     \"epoch_duration_s\": round(b - a, 1)})\nvideos = pd.DataFrame(rows)\nprint(videos.head(12).to_string(index=False))\nprint(\"...\", len(videos), \"videos in all\")\nok = np.isfinite(videos.epoch_start_s)\nprint(\"Videos whose first timestamp / 1000 is within 5 s of their epoch's start:\",\n      int((np.abs(videos.first_ts[ok] / 1000 - videos.epoch_start_s[ok]) < 5).sum()), \"of\", int(ok.sum()))\nprint(\"Videos whose span / 1000 is within 5% of their epoch's duration:\",\n      int((np.abs(videos[\"video_span_ts/1000\"][ok] / videos.epoch_duration_s[ok] - 1) < 0.05).sum()), \"of\", int(ok.sum()))\nrows = []\nfor s in sessions:\n    if s[\"trials\"] is None:\n        continue\n    a, b, desc = s[\"trials\"]\n    _, _, run = hpcbla.sleep_epochs(s)\n    rows.append({\"session\": s[\"session\"], \"trials\": len(a), \"description\": desc,\n                 \"median_duration_s\": round(float(np.median(b - a)), 1),\n                 \"fraction_in_run\": round(float(np.mean((a >= run[0]) & (a < run[1]))), 2)})\nprint(\"\\nTrials tables:\")\nprint(pd.DataFrame(rows).to_string(index=False))\n#%% md\nThe video timestamps are stated in seconds but are in milliseconds, and they are not on the\nsession clock: their first timestamps do not match the start of the epoch each video is named\nafter, and in the Rat08 files the run video spans about half of the run epoch. The videos are not\nused here. The `trials` table of the Rat08 and Rat09 files is described only as \"experimental\ntrials\"; its intervals last about 3 to 5 s and fall partly outside the run, so they are not laps.\nIt is not used.\n#%% code tags=sanity\nrows = []\nfor s in sessions:\n    u = s[\"units\"]\n    if u and u[\"unsorted\"]:\n        rows.append({\"session\": s[\"session\"], \"unsorted_units\": u[\"unsorted\"],\n                     \"falls_back_after_spike\": [x for i in u[\"unsorted\"] for x in u[\"unsorted_at\"][i]],\n                     \"unit0_last_spike_s\": round(u[\"unit0_last\"], 2), \"unit1_first_spike_s\": round(u[\"unit1_first\"], 2),\n                     \"units_left_out\": u[\"mixed\"]})\nprint(pd.DataFrame(rows).to_string(index=False))\nprint(hpcbla.MIXED_UNITS_NOTE)\n#%% md\nIn ten files the spike times of unit 1 are not sorted: they fall back once, always after 65536,\n131072, 196608, 327680 or 458752 spikes (multiples of 65536), and unit 0 stops part way through the\nsession at the time where unit 1 starts. The first part of unit 1 is the end of unit 0, so the\nindex that separates them is wrong. Units 0 and 1 of these files are left out.\n#%% code tags=sanity\n# Clock checks. (1) Ripples against the sleep states, with the states shifted by 600 s as the\n# contrast. (2) Hippocampal multi-unit rate within 25 ms of ripple peaks against 1 s away.\nrows = []\nfor s in sessions:\n    if s[\"states\"] is None or s[\"ripples\"] is None or s[\"units\"] is None:\n        continue\n    peaks = s[\"ripples\"][\"peak\"]\n    r = {\"session\": s[\"session\"], \"ripples_ordered\": s[\"ripples\"][\"ordered\"],\n         \"channels\": \",\".join(s[\"ripples\"][\"channels\"]),\n         \"ripple_ms_median\": round(1000 * float(np.median(s[\"ripples\"][\"stop\"] - s[\"ripples\"][\"start\"])), 1)}\n    for label in (\"Non-REM\", \"REM\", \"Awake\"):\n        iv = hpcbla.intervals_of(s, label)\n        dur = np.diff(iv).sum()\n        r[f\"{label}_hz\"] = round(np.count_nonzero(hpcbla.in_intervals(peaks, iv)) / dur, 3)\n        r[f\"{label}_hz_shift\"] = round(np.count_nonzero(hpcbla.in_intervals(peaks, iv + 600)) / dur, 3)\n    u = s[\"units\"]\n    hpc = [i for i in u[\"trains\"] if u[\"region\"][i] in hpcbla.HPC_LABELS]\n    if hpc:\n        spikes = np.sort(np.concatenate([u[\"trains\"][i] for i in hpc]))\n        def rate(t, w=0.025):\n            return (np.searchsorted(spikes, t + w) - np.searchsorted(spikes, t - w)).mean() / (2 * w)\n        r[\"hpc_hz_at_peak\"] = round(rate(peaks), 1)\n        r[\"hpc_hz_peak+1s\"] = round(rate(peaks + 1), 1)\n    rows.append(r)\nclock = pd.DataFrame(rows)\nprint(clock.to_string(index=False))\nprint(\"\\nMedian over files: ripples per s in Non-REM\", clock[\"Non-REM_hz\"].median(),\n      \"(states shifted:\", clock[\"Non-REM_hz_shift\"].median(), \"); in REM\", clock[\"REM_hz\"].median(),\n      \"(shifted:\", clock[\"REM_hz_shift\"].median(), \")\")\nprint(\"Median ratio of hippocampal rate at ripple peaks to 1 s later:\",\n      round(float((clock.hpc_hz_at_peak / clock[\"hpc_hz_peak+1s\"]).median()), 2), \"; files with hippocampal units:\",\n      int(clock.hpc_hz_at_peak.notna().sum()))\n#%% md\nIn every file with states and ripples, ripples occur at 0.33 to 1.0 per second of Non-REM and are\nrare in REM; with the states shifted by 600 s the two rates move toward each other. Hippocampal\nunits fire several times faster within 25 ms of a ripple peak than 1 s later. The ripple\nannotations come in ordered start, peak and stop triplets on one channel per file. So the states,\nthe ripples and the spikes share one clock, as far as these contrasts show.\n#%% code tags=sanity\n# (3) Lap direction decoded from hippocampal rates in each lap (leave one lap out, nearest\n# centroid), with the true laps and with laps shifted by half their own duration.\ndef decode_direction(s, half_shift=False):\n    u = s[\"units\"]\n    ids = [i for i in u[\"trains\"] if u[\"region\"][i] in hpcbla.HPC_LABELS]\n    laps = hpcbla.run_laps(s)\n    if len(ids) < 5 or len(laps) < 6:\n        return None\n    if half_shift:\n        laps = [(a + (b - a) / 2, b + (b - a) / 2, d) for a, b, d in laps]\n    x = np.array([[np.count_nonzero((u[\"trains\"][i] >= a) & (u[\"trains\"][i] < b)) / (b - a) for i in ids]\n                  for a, b, _ in laps])\n    y = np.array([d == \"LR\" for _, _, d in laps])\n    x = np.log1p(x)\n    x = (x - x.mean(0)) / (x.std(0) + 1e-9)\n    hits = 0\n    for k in range(len(y)):\n        keep = np.arange(len(y)) != k\n        c1, c0 = x[keep & y].mean(0), x[keep & ~y].mean(0)\n        hits += (np.sum((x[k] - c1) ** 2) < np.sum((x[k] - c0) ** 2)) == y[k]\n    return hits / len(y), len(y)\n\nrows = []\nfor s in sessions:\n    if s[\"units\"] is None:\n        continue\n    true, shifted = decode_direction(s), decode_direction(s, True)\n    if true:\n        rows.append({\"session\": s[\"session\"], \"laps\": true[1], \"accuracy\": round(true[0], 3),\n                     \"accuracy_half_lap_shift\": round(shifted[0], 3)})\ndec = pd.DataFrame(rows)\nprint(dec.to_string(index=False))\nprint(\"Median accuracy\", dec.accuracy.median(), \"; with laps shifted by half a lap\", dec.accuracy_half_lap_shift.median(),\n      \"; chance 0.5\")\n#%% md\nHippocampal rates tell the lap direction apart in nearly every lap with the laps built from the\nreward times, and less well when the laps are shifted by half their length. The reward events and\nthe spikes share one clock, as far as this contrast shows; it does not test the timing to better\nthan a fraction of a lap.\n#%% code tags=sanity\n# (4) Air puffs: pooled rate in the 0.5 s after each puff against the 0.5 s before, in BLA\n# (wider labels) and hippocampus, with the puff times shifted by 30 s as the contrast.\nrows = []\nfor s in sessions:\n    u = s[\"units\"]\n    if not u or \"puf\" not in s[\"events\"] or len(s[\"events\"][\"puf\"][1]) < 5:\n        continue\n    puffs = s[\"events\"][\"puf\"][1]\n    direction, counts = hpcbla.puff_direction(s)\n    row = {\"session\": s[\"session\"], \"puffs\": len(puffs), \"direction\": direction, **counts}\n    for name, labels_ in ((\"bla\", hpcbla.BLA_COMPLEX_LABELS), (\"hpc\", hpcbla.HPC_LABELS)):\n        ids = [i for i in u[\"trains\"] if u[\"region\"][i] in labels_]\n        if len(ids) < 3:\n            continue\n        spikes = np.sort(np.concatenate([u[\"trains\"][i] for i in ids]))\n        def change(t):\n            after = (np.searchsorted(spikes, t + 0.5) - np.searchsorted(spikes, t)).sum()\n            before = (np.searchsorted(spikes, t) - np.searchsorted(spikes, t - 0.5)).sum()\n            return (after - before) / max(before, 1)\n        row[f\"{name}_change\"] = round(change(puffs), 3)\n        row[f\"{name}_change_shift30\"] = round(change(puffs + 30), 3)\n    rows.append(row)\npuff = pd.DataFrame(rows)\nprint(puff.to_string(index=False))\nprint(\"\\nMedian relative change after puffs, BLA:\", puff.bla_change.median(), \"(shifted:\", puff.bla_change_shift30.median(),\n      \"); hippocampus:\", puff.hpc_change.median(), \"(shifted:\", puff.hpc_change_shift30.median(), \")\")\nprint(\"Files with BLA change above 0.3:\", int((puff.bla_change > 0.3).sum()), \"; with shifted times:\",\n      int((puff.bla_change_shift30 > 0.3).sum()))\nprint(\"Puffs inside laps of the session's air-puff direction:\", int(sum(puff[d].where(puff.direction == d, 0).sum() for d in (\"LR\", \"RL\"))),\n      \"of\", int(puff.puffs.sum()))\n#%% md\nNearly all puffs fall inside laps of one direction in each session, which gives the air-puff\ndirection. The puff side changes between days in the same rat. The pooled response to puffs is\nsmall in most files; a few files show a clear BLA increase that the shifted times do not. This is\nconsistent with the puffs sharing the spike clock but does not show it for every file.\n#%% code tags=sanity\n# Recordings deposited twice: compare unit spike counts and first spikes, ripple times and puff\n# times between every pair of files, and units within a file.\ndef signature(s):\n    u = s[\"units\"]\n    return {\"units\": None if u is None else tuple(zip(u[\"n_spikes\"].tolist(), np.round(u[\"first_spike\"], 4).tolist())),\n            \"ripples\": None if s[\"ripples\"] is None else tuple(np.round(s[\"ripples\"][\"peak\"][:50], 4)),\n            \"puffs\": tuple(np.round(s[\"events\"][\"puf\"][1], 4)) if \"puf\" in s[\"events\"] else None,\n            \"rewards\": tuple(np.round(np.sort(np.concatenate([s[\"events\"][\"lrw\"][1], s[\"events\"][\"rrw\"][1]])), 4))}\nsigs = {s[\"session\"]: signature(s) for s in sessions}\nnames = list(sigs)\nsame = [(a, b, k) for i, a in enumerate(names) for b in names[i + 1:] for k in sigs[a]\n        if sigs[a][k] is not None and sigs[a][k] == sigs[b][k]]\nprint(\"Pairs of files sharing units, ripples, puffs or rewards:\", same if same else \"none\")\nwithin = {s[\"session\"]: len(sigs[s[\"session\"]][\"units\"]) - len(set(sigs[s[\"session\"]][\"units\"]))\n          for s in sessions if s[\"units\"]}\nprint(\"Units sharing spike count and first spike within a file:\", {k: v for k, v in within.items() if v} or \"none\")\n#%% md\nNo two files share their units, ripples, puffs or rewards, and no two units of a file share a\nspike count and first spike, so no recording was deposited twice. Units are not matched across\ndays; each session is analysed on its own and results are given per session and per rat.\n#%% code tags=sanity\nrows = []\nfor s in sessions:\n    if s[\"units\"] is None:\n        continue\n    hpc, bla = hpcbla.unit_sets(s)\n    hpc_w, bla_w = hpcbla.unit_sets(s, hpcbla.BLA_COMPLEX_LABELS)\n    rows.append({\"session\": s[\"session\"], \"rat\": s[\"rat\"], \"hpc_used\": len(hpc), \"bla_used\": len(bla),\n                 \"bla_complex_used\": len(bla_w), \"usable\": hpcbla.usable(s),\n                 \"usable_wider_bla\": hpcbla.usable(s, hpcbla.BLA_COMPLEX_LABELS),\n                 \"puff_direction\": hpcbla.puff_direction(s)[0]})\nuse = pd.DataFrame(rows)\nprint(use.to_string(index=False))\nused = [s for s in sessions if hpcbla.usable(s)]\nprint(\"\\nSessions used:\", len(used), {r: sum(s[\"rat\"] == r for s in used) for r in sorted({s[\"rat\"] for s in used})})\nprint(\"Sessions with the wider BLA labels:\", int(use.usable_wider_bla.sum()))\nprint(\"Units used (hippocampus, BLA):\", int(use.hpc_used[use.usable].sum()), int(use.bla_used[use.usable].sum()))\n#%% md\nUnder the claims file's rule (sleep states, ripples, a sleep epoch before and after the run, and\nat least five hippocampal and five BLA units at 0.1 Hz or more in the run), 16 sessions from three\nrats are used: nine of Rat08, four of Rat10 and three of Rat11.\n#%% md\n## hpc-bla-reactivation-post-sleep\n\n> Coordinated hippocampus and BLA activity patterns of the training run are reactivated during\n> non-REM sleep after training, more than during non-REM sleep before it.\n\nJoint patterns are the singular vectors of the hippocampus by BLA cross-correlation matrix of the\nrun (50 ms bins); a pattern is significant when its singular value exceeds the 95th percentile of\nthe largest one over 200 shuffles of the BLA trains. Reactivation strength is\n(z_hpc . u)(z_bla . v) in each Non-REM bin.\n#%% code tags=claim:hpc-bla-reactivation-post-sleep\nrng = np.random.default_rng(61001)\nstarted = time.time()\nmain = {s[\"session\"]: hpcbla.reactivation(s, rng) for s in used}\npatterns = pd.DataFrame([r for out in main.values() for r in out[\"rows\"]])\npatterns[\"change\"] = patterns.post - patterns.pre\nsig = patterns[patterns.significant].copy()\nprint(f\"computed in {time.time() - started:.0f} s\")\nprint(\"Significant patterns:\", len(sig), \"of\", len(patterns), \"; sessions with at least one:\",\n      sig.session.nunique(), \"of\", len(used))\nper_session = sig.groupby([\"rat\", \"session\"]).agg(patterns=(\"change\", \"size\"), pre=(\"pre\", \"median\"),\n                                                  post=(\"post\", \"median\"), change=(\"change\", \"median\"),\n                                                  positive=(\"change\", lambda x: int((x > 0).sum())))\nprint(per_session.round(4).to_string())\n\ndef wilcoxon(x):\n    x = np.asarray(x)\n    return stats.wilcoxon(x).pvalue if len(x) > 0 and np.any(x != 0) else np.nan\n\nprint(\"\\nPooled: median post minus pre\", round(sig.change.median(), 4), \"; positive\", int((sig.change > 0).sum()),\n      \"of\", len(sig), \"; Wilcoxon p =\", f\"{wilcoxon(sig.change):.2g}\")\nby_rat = sig.groupby(\"rat\").change.agg([\"size\", \"median\", lambda x: int((x > 0).sum()), wilcoxon])\nby_rat.columns = [\"patterns\", \"median_change\", \"positive\", \"wilcoxon_p\"]\nprint(by_rat.to_string())\nprint(\"\\nReference: non-significant patterns, median post minus pre\",\n      round(patterns[~patterns.significant].change.median(), 4), \"over\", int((~patterns.significant).sum()))\nprint(\"Session medians above zero:\", int((per_session.change > 0).sum()), \"of\", len(per_session),\n      \"; Wilcoxon over session medians p =\", f\"{wilcoxon(per_session.change):.2g}\")\n#%% code tags=claim:hpc-bla-reactivation-post-sleep\n# Variants: 25 and 100 ms bins, the wider BLA labels, and the first pattern of every session.\nrng_variants = np.random.default_rng(61002)\nrows = []\nfor name, kwargs, sess in ((\"25 ms bins\", {\"bin_s\": 0.025}, used), (\"100 ms bins\", {\"bin_s\": 0.1}, used),\n                           (\"wider BLA labels\", {\"bla_labels\": hpcbla.BLA_COMPLEX_LABELS},\n                            [s for s in sessions if s[\"units\"] and hpcbla.usable(s, hpcbla.BLA_COMPLEX_LABELS)])):\n    df = pd.DataFrame([r for s in sess for r in hpcbla.reactivation(s, rng_variants, keep_traces=False, **kwargs)[\"rows\"]])\n    df[\"change\"] = df.post - df.pre\n    for subset, d in ((\"significant\", df[df.significant]), (\"first pattern\", df[df.pattern == 0])):\n        rows.append({\"variant\": name, \"patterns\": subset, \"n\": len(d), \"sessions\": d.session.nunique(),\n                     \"median_change\": round(d.change.median(), 4), \"positive\": int((d.change > 0).sum()),\n                     \"p\": wilcoxon(d.change),\n                     \"rats_median_above_0\": int((d.groupby(\"rat\").change.median() > 0).sum()), \"rats\": d.rat.nunique()})\nfirst = patterns[patterns.pattern == 0]\nrows.append({\"variant\": \"main (50 ms)\", \"patterns\": \"first pattern\", \"n\": len(first), \"sessions\": first.session.nunique(),\n             \"median_change\": round(first.change.median(), 4), \"positive\": int((first.change > 0).sum()),\n             \"p\": wilcoxon(first.change), \"rats_median_above_0\": int((first.groupby(\"rat\").change.median() > 0).sum()),\n             \"rats\": first.rat.nunique()})\nprint(pd.DataFrame(rows).to_string(index=False))\n#%% code tags=claim:hpc-bla-reactivation-post-sleep\nfig, ax = plt.subplots(figsize=(5, 4))\nfor rat, d in sig.groupby(\"rat\"):\n    ax.scatter(d.pre, d.post, s=14, label=rat)\nlim = [min(sig.pre.min(), sig.post.min()), max(sig.pre.max(), sig.post.max())]\nax.plot(lim, lim, \"k--\", lw=0.8)\nax.set_xlabel(\"pre-sleep Non-REM strength\")\nax.set_ylabel(\"post-sleep Non-REM strength\")\nax.legend(fontsize=8)\nplt.show()\nprint(\"Plotted ranges: pre\", round(sig.pre.min(), 4), \"to\", round(sig.pre.max(), 4), \"; post\",\n      round(sig.post.min(), 4), \"to\", round(sig.post.max(), 4), \"; no point outside the axes\")\n#%% md\n**Result: TBD**\n#%% md\n## reactivation-peaks-at-ripples\n\n> The hippocampus and BLA reactivations peak during hippocampal sharp wave-ripples.\n\nThe ripple-peak-triggered mean of each significant pattern's strength in post-sleep Non-REM, from\n-1 to +1 s in 50 ms bins, and reading (b): the post minus pre change in bins that overlap a ripple\nagainst bins outside ripples.\n#%% code tags=claim:reactivation-peaks-at-ripples\ntraces = pd.DataFrame([t for out in main.values() for t in out[\"traces\"]])\nlags_s = (np.arange(-20, 21)) * hpcbla.BIN_S\ncurves = np.vstack(traces.curve)\ncurves_pre = np.vstack(traces.curve_pre)\nmean_curve = curves.mean(0)\nprint(\"Patterns:\", len(traces), \"; post-sleep Non-REM ripples per session: median\", int(traces.groupby(\"session\").n_ripples.first().median()))\nprint(\"Reading (a): the mean curve is highest at lag\", round(lags_s[np.argmax(mean_curve)], 3), \"s\")\nprint(pd.DataFrame({\"lag_s\": lags_s, \"post\": mean_curve, \"pre\": curves_pre.mean(0)}).iloc[14:27].round(4).to_string(index=False))\nflank = (np.abs(lags_s) >= 0.5 - 1e-9)\npeak_minus_flank = curves[:, 20] - curves[:, flank].mean(1)\nprint(\"Peak bin minus flanks (0.5 to 1 s): median\", round(float(np.median(peak_minus_flank)), 4), \"; positive\",\n      int((peak_minus_flank > 0).sum()), \"of\", len(peak_minus_flank), \"; Wilcoxon p =\", f\"{wilcoxon(peak_minus_flank):.2g}\")\nprint(\"Ratio of the mean curve at the peak bin to its flanks:\", round(float(mean_curve[20] / mean_curve[flank].mean()), 2))\ntraces[\"peak_minus_flank\"] = peak_minus_flank\ntraces[\"argmax_lag_s\"] = lags_s[np.argmax(curves, 1)]\nprint(\"Patterns whose own curve peaks within 100 ms of the ripple:\", int((np.abs(traces.argmax_lag_s) <= 0.1 + 1e-9).sum()), \"of\", len(traces))\nprint(traces.groupby(\"rat\").agg(patterns=(\"pattern\", \"size\"), median_peak_minus_flank=(\"peak_minus_flank\", \"median\"),\n                                positive=(\"peak_minus_flank\", lambda x: int((x > 0).sum()))).round(4).to_string())\npre_pmf = curves_pre[:, 20] - curves_pre[:, flank].mean(1)\nprint(\"Reference, pre-sleep: peak bin minus flanks median\", round(float(np.median(pre_pmf)), 4),\n      \"; post minus pre of this difference: median\", round(float(np.median(peak_minus_flank - pre_pmf)), 4),\n      \", positive\", int((peak_minus_flank - pre_pmf > 0).sum()), \"of\", len(traces), \", Wilcoxon p =\",\n      f\"{wilcoxon(peak_minus_flank - pre_pmf):.2g}\")\n#%% code tags=claim:reactivation-peaks-at-ripples\ntraces[\"change_rip\"] = traces.post_rip - traces.pre_rip\ntraces[\"change_out\"] = traces.post_out - traces.pre_out\nd = traces.change_rip - traces.change_out\nprint(\"Reading (b): post minus pre in ripple bins, median\", round(traces.change_rip.median(), 4),\n      \"; outside ripples\", round(traces.change_out.median(), 4))\nprint(\"Difference (ripple minus outside): median\", round(float(d.median()), 4), \"; positive\", int((d > 0).sum()), \"of\", len(d),\n      \"; Wilcoxon p =\", f\"{wilcoxon(d):.2g}\")\nprint(traces.assign(d=d).groupby(\"rat\").d.agg([\"size\", \"median\", lambda x: int((x > 0).sum())]).round(4).to_string())\nfig, ax = plt.subplots(figsize=(6, 3.5))\nax.plot(lags_s, mean_curve, label=\"post-sleep\")\nax.plot(lags_s, curves_pre.mean(0), label=\"pre-sleep\")\nax.axvline(0, color=\"k\", lw=0.5)\nax.set_xlabel(\"time from ripple peak (s)\")\nax.set_ylabel(\"mean reactivation strength\")\nax.legend()\nplt.show()\nprint(\"Plotted range:\", round(float(min(mean_curve.min(), curves_pre.mean(0).min())), 4), \"to\",\n      round(float(max(mean_curve.max(), curves_pre.mean(0).max())), 4))\n#%% md\n**Result: TBD**\n#%% md\n## bla-ripple-up-subgroup\n\n> A subgroup of BLA cells is positively modulated during hippocampal sharp wave-ripples.\n\nSpikes of each BLA unit in the windows of the Non-REM ripples of pre- and post-sleep, against 500\nshifts of all windows together by 0.5 to 5 s. The chance level is the fraction selected with the\nreal windows replaced by the windows shifted by 7 s.\n#%% code tags=claim:bla-ripple-up-subgroup\nrng_rip = np.random.default_rng(61003)\nstarted = time.time()\nrows = []\nfor s in sessions:\n    u = s[\"units\"]\n    if s[\"states\"] is None or s[\"ripples\"] is None or u is None:\n        continue\n    pre, post, _ = hpcbla.sleep_epochs(s)\n    nrem = hpcbla.intersect(hpcbla.intervals_of(s, \"Non-REM\"), np.vstack([pre, post]))\n    r = s[\"ripples\"]\n    keep = hpcbla.in_intervals(r[\"peak\"], nrem)\n    start, stop = r[\"start\"][keep], r[\"stop\"][keep]\n    end = max(b for _, _, b in s[\"epochs\"])\n    used_bla = set(hpcbla.unit_sets(s)[1])\n    for i in u[\"trains\"]:\n        if u[\"region\"][i] not in hpcbla.BLA_LABELS:\n            continue\n        real, chance = hpcbla.ripple_modulation(u[\"trains\"][i], [(start, stop), (start + hpcbla.CHANCE_SHIFT_S, stop + hpcbla.CHANCE_SHIFT_S)], end, rng_rip)\n        rows.append({\"session\": s[\"session\"], \"rat\": s[\"rat\"], \"unit\": i, \"ripples\": int(keep.sum()),\n                     \"in_reactivation_set\": i in used_bla and hpcbla.usable(s),\n                     \"observed\": real[\"observed\"], \"expected\": real[\"null_mean\"], \"p_up\": real[\"p_up\"], \"p_down\": real[\"p_down\"],\n                     \"chance_p_up\": chance[\"p_up\"], \"chance_p_down\": chance[\"p_down\"]})\nmod = pd.DataFrame(rows)\nmod[\"up\"] = mod.p_up <= hpcbla.RIPPLE_ALPHA\nmod[\"down\"] = mod.p_down <= hpcbla.RIPPLE_ALPHA\nmod[\"chance_up\"] = mod.chance_p_up <= hpcbla.RIPPLE_ALPHA\nprint(f\"computed in {time.time() - started:.0f} s; BLA units\", len(mod), \"in\", mod.session.nunique(), \"sessions;\",\n      \"units with no spike in any window\", int((mod.observed == 0).sum()))\nchance = mod.chance_up.mean()\nn_up = int(mod.up.sum())\nprint(\"Positively modulated:\", n_up, \"of\", len(mod), f\"({mod.up.mean():.3f}); negatively: {int(mod.down.sum())}\",\n      f\"({mod.down.mean():.3f}); chance level from the 7 s shifted windows: {chance:.3f} ({int(mod.chance_up.sum())} units)\")\nprint(\"Binomial test of the positive fraction against the chance level: p =\",\n      f\"{stats.binomtest(n_up, len(mod), max(chance, 1 / len(mod)), alternative='greater').pvalue:.2g}\")\nby = mod.groupby(\"rat\").agg(units=(\"up\", \"size\"), up=(\"up\", \"sum\"), down=(\"down\", \"sum\"), chance_up=(\"chance_up\", \"sum\"))\nby[\"up_fraction\"] = by.up / by.units\nby[\"chance_fraction\"] = by.chance_up / by.units\nby[\"p\"] = [stats.binomtest(int(r.up), int(r.units), max(chance, 1 / len(mod)), alternative=\"greater\").pvalue for r in by.itertuples()]\nprint(by.round(4).to_string())\nprint(mod.groupby(\"session\").agg(units=(\"up\", \"size\"), up=(\"up\", \"sum\"), down=(\"down\", \"sum\")).T.to_string())\nprint(\"\\nThreshold variants (fraction up, chance fraction):\")\nfor alpha in (0.05, 0.01, 0.002):\n    print(f\"  p <= {alpha}: {np.mean(mod.p_up <= alpha):.3f}, chance {np.mean(mod.chance_p_up <= alpha):.3f}\")\n#%% md\n**Result: TBD**\n#%% md\n## reactivation-involves-ripple-up-cells\n\n> The hippocampus and BLA reactivations involve the subgroup of BLA cells that are positively\n> modulated during sharp wave-ripples.\n\nFor each significant pattern of the run, the mean squared BLA weight of the positively modulated\nunits minus that of the other BLA units used.\n#%% code tags=claim:reactivation-involves-ripple-up-cells\nup_units = {(r.session, r.unit) for r in mod[mod.up].itertuples()}\nrows = []\nfor r in sig.itertuples():\n    is_up = np.array([(r.session, i) in up_units for i in r.bla_units])\n    if is_up.any() and (~is_up).any():\n        w2 = np.asarray(r.bla_weights) ** 2\n        rows.append({\"session\": r.session, \"rat\": r.rat, \"pattern\": r.pattern, \"change\": r.change,\n                     \"n_up\": int(is_up.sum()), \"n_other\": int((~is_up).sum()),\n                     \"w2_up\": w2[is_up].mean(), \"w2_other\": w2[~is_up].mean()})\ninv = pd.DataFrame(rows)\ninv[\"diff\"] = inv.w2_up - inv.w2_other\nprint(\"Patterns with both kinds of BLA unit:\", len(inv), \"of\", len(sig), \"in\", inv.session.nunique(), \"sessions\")\nprint(\"Mean squared weight, up units: median\", round(inv.w2_up.median(), 4), \"; other units:\", round(inv.w2_other.median(), 4),\n      \"; equal weights would give\", round(float((1 / (inv.n_up + inv.n_other)).median()), 4))\nprint(\"Difference: median\", round(inv[\"diff\"].median(), 4), \"; positive\", int((inv[\"diff\"] > 0).sum()), \"of\", len(inv),\n      \"; Wilcoxon p =\", f\"{wilcoxon(inv['diff']):.2g}\")\nprint(inv.groupby(\"rat\")[\"diff\"].agg([\"size\", \"median\", lambda x: int((x > 0).sum())]).round(4).to_string())\nreac = inv[inv.change > 0]\nprint(\"Variant, patterns with post minus pre above zero:\", len(reac), \"; median difference\", round(reac[\"diff\"].median(), 4),\n      \"; positive\", int((reac[\"diff\"] > 0).sum()), \"; Wilcoxon p =\", f\"{wilcoxon(reac['diff']):.2g}\")\nprint(\"Fraction of the BLA weight (sum of squares) on up units: median\", round(float((inv.w2_up * inv.n_up / (inv.w2_up * inv.n_up + inv.w2_other * inv.n_other)).median()), 3),\n      \"; fraction of BLA units that are up: median\", round(float((inv.n_up / (inv.n_up + inv.n_other)).median()), 3))\n#%% md\n**Result: TBD**\n#%% md\n## aversive-direction-stronger\n\n> Reactivation is stronger for the hippocampus and BLA correlation patterns of the run direction\n> that held the air puff than for those of the safe direction.\n\nTemplates are built from the run bins inside laps of each direction (laps from the reward times;\nthe air-puff direction holds most puffs).\n#%% code tags=claim:aversive-direction-stronger\nrng_dir = np.random.default_rng(61005)\nstarted = time.time()\ndirectional = {s[\"session\"]: hpcbla.reactivation(s, rng_dir, templates=(\"puff\", \"safe\"), keep_traces=False) for s in used}\nequal = {s[\"session\"]: hpcbla.reactivation(s, rng_dir, templates=(\"puff\", \"safe\"), equal_bins=True, keep_traces=False) for s in used}\nprint(f\"computed in {time.time() - started:.0f} s\")\n\ndef direction_table(results):\n    df = pd.DataFrame([r for out in results.values() for r in out[\"rows\"]])\n    df[\"change\"] = df.post - df.pre\n    return df\n\ndpat = direction_table(directional)\nprint(\"Template bins per session (puff, safe):\", {k: (v[\"template_bins\"].get(\"puff\"), v[\"template_bins\"].get(\"safe\")) for k, v in directional.items()})\n\ndef compare(df, value=\"change\", subset=\"significant\"):\n    d = df[df.significant] if subset == \"significant\" else df[df.pattern == 0]\n    per = d.groupby([\"rat\", \"session\", \"template\"])[value].mean().unstack(\"template\")\n    per = per.dropna(subset=[\"puff\", \"safe\"]) if {\"puff\", \"safe\"} <= set(per.columns) else per.iloc[0:0]\n    per[\"diff\"] = per.puff - per.safe\n    return d, per\n\nd, per = compare(dpat)\nprint(\"\\nSignificant patterns: puff\", int((d.template == \"puff\").sum()), \"; safe\", int((d.template == \"safe\").sum()))\nprint(per.round(4).to_string())\nprint(\"\\nSessions with both:\", len(per), \"; median puff minus safe\", round(per[\"diff\"].median(), 4), \"; positive\",\n      int((per[\"diff\"] > 0).sum()), \"of\", len(per), \"; Wilcoxon p =\", f\"{wilcoxon(per['diff']):.2g}\")\nprint(per.groupby(\"rat\")[\"diff\"].agg([\"size\", \"median\", lambda x: int((x > 0).sum())]).round(4).to_string())\n#%% code tags=claim:aversive-direction-stronger\nrows = []\npooled = d.groupby(\"template\").change\nmw = stats.mannwhitneyu(d[d.template == \"puff\"].change, d[d.template == \"safe\"].change)\nrows.append({\"variant\": \"pooled per pattern (Mann-Whitney)\", \"n\": f\"{int((d.template == 'puff').sum())}/{int((d.template == 'safe').sum())}\",\n             \"median_puff\": round(pooled.median()[\"puff\"], 4), \"median_safe\": round(pooled.median()[\"safe\"], 4), \"p\": mw.pvalue})\nfor name, df, subset, value in ((\"first pattern of each direction\", dpat, \"first\", \"change\"),\n                                (\"equal numbers of bins\", direction_table(equal), \"significant\", \"change\"),\n                                (\"post-sleep strength alone\", dpat, \"significant\", \"post\")):\n    _, p = compare(df, value, subset)\n    rows.append({\"variant\": name, \"n\": len(p), \"median_puff\": round(p.puff.median(), 4), \"median_safe\": round(p.safe.median(), 4),\n                 \"median_diff\": round(p[\"diff\"].median(), 4), \"positive\": int((p[\"diff\"] > 0).sum()), \"p\": wilcoxon(p[\"diff\"])})\nprint(pd.DataFrame(rows).to_string(index=False))\n#%% md\n**Result: TBD**\n#%% md\n## Summary\n\nTBD\n"
+ "file_path": "entries/000061-girardeau-2017/hpcbla.py",
+ "content": "\"\"\"Loading and measures for the hippocampus and amygdala recordings of dandiset 000061.\n\nGirardeau, Inema & Buzsaki (2017), Nature Neuroscience, doi:10.1038/nn.4637.\n\nEach NWB file is one day of one rat: sorted units with a brain-region label (and, in five Rat08\nfiles, a `cell_type` column), sleep states (Awake, Non-REM, REM), an epochs table (pre-run,\npre-sleep, run, post-sleep, post-run), and annotation series for hippocampal ripples (`rip`:\nstart, peak and stop of each ripple), air puffs (`puf`) and rewards at the left and right ends\nof the track (`lrw`, `rrw`). Some files also hold raw voltage, LFP and video, which are not read\nhere except for their shapes. Files are streamed from the archive at the pinned version; nothing\nis written to disk.\n\nWhere the parameters come from. The claims file (claims/000061/10.1038-nn.4637.yaml) fixes the\nmethods from the paper's Online Methods, legends and code; its shared methods are M1 to M8 and\nits open details O1 to O7, cited below.\n\n- `EPOCH_TIME_SCALE`: the epochs table is stored in milliseconds although its column says\n  seconds; the data check shows this (its last stop time is 1000 times the LFP duration).\n- Region labels (M1): hippocampus `HPC_LABELS`, BLA `BLA_LABELS`, central nuclei `CEN_LABELS`,\n  piriform cortex `PIR_LABELS` (case is ignored). `BLA_COMPLEX_LABELS` adds the labels the\n  paper's Supplementary Fig. 3 names as other amygdala nuclei (BLV, LaDL, BMP), for a variant.\n- `CELL_TYPES`: the dandiset's `cell_type` values \"excitatory\" and \"inhibitory\" are read as the\n  paper's monosynaptically identified pyramidal cells and interneurons (O4 reading a); the data\n  check gives the reasons this reading is consistent with the data.\n- `BIN_S` (50 ms, M3, M4, M7), `MIN_CELLS` (6 in each structure, M4, M7), `MIN_REM_S` (180 s of\n  REM in each sleep epoch, M4), `PERIOD_BINS` (24,000 bins of 20 min, reactivation-decay).\n- `RIPPLE_GUARD_S` (100 ms either side of a ripple left out of the baseline, M6) and\n  `RIPPLE_P` (0.0005 per tail, M6).\n- `PERI_RIPPLE_S`, `PERI_BINS`, `PERI_SMOOTH_BINS`, `PEAK_WINDOW_S` (M7: 100 bins over -2 to\n  +2 s, Gaussian smoothing of SD 2 bins, mean over bin centres strictly inside +-0.25 s).\n- Bin times are bin centres (O3, a standard choice that cannot change an outcome at this\n  resolution), and a 50 ms bin belongs to a set of intervals when its centre does (a standard\n  choice). A ripple is in NREM when its peak is (M5; a standard choice for \"inside\").\n- Laps (O1 reading c): the intervals between consecutive rewards at opposite ends of the track.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom concurrent.futures import ThreadPoolExecutor\n\nimport h5py\nimport numpy as np\nimport remfile\nfrom dandi.dandiapi import DandiAPIClient\nfrom scipy import stats\nfrom scipy.ndimage import gaussian_filter1d\n\nDANDISET_ID = \"000061\"\nDANDISET_VERSION = \"0.250624.0426\"\n\nEPOCH_TIME_SCALE = 1e-3\nHPC_LABELS = {\"hpc\", \"hip\"}\nBLA_LABELS = {\"bla\"}\nBLA_COMPLEX_LABELS = {\"bla\", \"blv\", \"bmp\", \"ladl\"}\nCEN_LABELS = {\"cen\"}\nPIR_LABELS = {\"pir\"}\nKEEP_LABELS = HPC_LABELS | BLA_COMPLEX_LABELS | CEN_LABELS\nCELL_TYPES = {\"excitatory\": \"pyramidal\", \"inhibitory\": \"interneuron\"}\n\nBIN_S = 0.05\nMIN_CELLS = 6\nMIN_REM_S = 180.0\nPERIOD_BINS = 24000\n\nRIPPLE_GUARD_S = 0.1\nRIPPLE_P = 0.0005\n\nPERI_RIPPLE_S = 2.0\nPERI_BINS = 100\nPERI_SMOOTH_BINS = 2\nPEAK_WINDOW_S = 0.25\n\nMIXED_UNITS_NOTE = (\n    \"In some files the spike times of unit 1 fall back once, after 65536 times k spikes, and \"\n    \"unit 0 stops part way through the session where unit 1 starts: the first part of unit 1 \"\n    \"is the end of unit 0. Units 0 and 1 of those files are left out of the analyses.\")\n\n\ndef asset_urls(version: str = DANDISET_VERSION) -> list[tuple[str, str]]:\n    \"\"\"(path, streaming URL) of every NWB file at a version.\"\"\"\n    with DandiAPIClient() as client:\n        dandiset = client.get_dandiset(DANDISET_ID, version)\n        return sorted((a.path, a.get_content_url(follow_redirects=1, strip_query=True))\n                      for a in dandiset.get_assets() if a.path.endswith(\".nwb\"))\n\n\ndef _text(value) -> str:\n    value = value[()]\n    if isinstance(value, np.ndarray):\n        value = value[0]\n    return value.decode() if isinstance(value, bytes) else str(value)\n\n\ndef _strings(dataset) -> np.ndarray:\n    return np.array([v.decode() if isinstance(v, bytes) else str(v) for v in dataset[()]])\n\n\ndef load_session(path: str, url: str) -> dict:\n    \"\"\"One file: metadata, tables and events, and the spike trains of the units analysed.\n\n    Spike trains are kept for units labelled hippocampus, BLA (and the wider amygdala labels) or\n    central nuclei; every unit keeps its label, type, spike count and first spike. Epoch times\n    are converted to seconds with `EPOCH_TIME_SCALE`.\n    \"\"\"\n    for attempt in range(3):\n        try:\n            f = h5py.File(remfile.File(url), \"r\")\n            break\n        except OSError:\n            if attempt == 2:\n                raise\n    with f:\n        s = {\"path\": path, \"session\": path.split(\"ses-\")[1].split(\"_\")[0],\n             \"rat\": _text(f[\"general/subject/subject_id\"]),\n             \"species\": _text(f[\"general/subject/species\"]),\n             \"age\": _text(f[\"general/subject/age\"]), \"sex\": _text(f[\"general/subject/sex\"]),\n             \"session_start\": _text(f[\"session_start_time\"])}\n        ep = f[\"intervals/epochs\"]\n        s[\"epoch_unit_stated\"] = ep[\"start_time\"].attrs.get(\"description\")\n        s[\"epochs_raw\"] = list(zip(_strings(ep[\"tags\"]), ep[\"start_time\"][()], ep[\"stop_time\"][()]))\n        s[\"epochs\"] = [(t, a * EPOCH_TIME_SCALE, b * EPOCH_TIME_SCALE) for t, a, b in s[\"epochs_raw\"]]\n        if \"processing/behavior/states\" in f:\n            st = f[\"processing/behavior/states\"]\n            s[\"states\"] = list(zip(_strings(st[\"label\"]), st[\"start_time\"][()].astype(float),\n                                   st[\"stop_time\"][()].astype(float)))\n        else:\n            s[\"states\"] = None\n        s[\"trials\"] = None\n        if \"intervals/trials\" in f:\n            tr = f[\"intervals/trials\"]\n            s[\"trials\"] = (tr[\"start_time\"][()], tr[\"stop_time\"][()], tr.attrs.get(\"description\"))\n        events = {}\n        for name in (f[\"stimulus/presentation\"] if \"stimulus/presentation\" in f else []):\n            g = f[f\"stimulus/presentation/{name}\"]\n            events[name] = (_strings(g[\"data\"]), g[\"timestamps\"][()], g.attrs.get(\"description\"))\n        s[\"events\"] = events\n        s[\"ripples\"] = parse_ripples(*events[\"rip\"][:2]) if \"rip\" in events else None\n        lfp = \"processing/ecephys/LFP/LFP\"\n        s[\"lfp\"] = None\n        if lfp in f:\n            s[\"lfp\"] = (f[f\"{lfp}/data\"].shape, float(f[f\"{lfp}/starting_time\"].attrs[\"rate\"]),\n                        f[f\"{lfp}/data\"].attrs.get(\"unit\"))\n        raw = \"acquisition/ElectricalSeries/data\"\n        s[\"raw\"] = (f[raw].shape, f[raw].chunks) if raw in f else None\n        s[\"videos\"] = {k: (f[f\"acquisition/{k}/data\"].shape[0], *f[f\"acquisition/{k}/timestamps\"][[0, -1]],\n                           f[f\"acquisition/{k}/timestamps\"].attrs.get(\"unit\"))\n                       for k in f[\"acquisition\"] if k.startswith(\"Video\")}\n        s[\"video_storage\"] = {k: (f[f\"acquisition/{k}/data\"].shape, str(f[f\"acquisition/{k}/data\"].dtype),\n                                  f[f\"acquisition/{k}/data\"].compression)\n                              for k in f[\"acquisition\"] if k.startswith(\"Video\")}\n        s[\"electrode_locations\"] = sorted(set(_strings(f[\"general/extracellular_ephys/electrodes/location\"])))\n        s[\"units\"] = None\n        if \"units\" in f:\n            u = f[\"units\"]\n            n = len(u[\"id\"])\n            loc = _strings(u[\"location\"]) if \"location\" in u else np.array([\"(none)\"] * n)\n            ctype = _strings(u[\"cell_type\"]) if \"cell_type\" in u else np.array([\"\"] * n)\n            index = u[\"spike_times_index\"][()]\n            spikes = u[\"spike_times\"][()]\n            trains = np.split(spikes, index[:-1])\n            unsorted = [i for i, t in enumerate(trains) if np.any(np.diff(t) < 0)]\n            # A unit whose times fall back once holds the end of the unit before it (see\n            # `MIXED_UNITS_NOTE`); both are left out of the analyses.\n            mixed = sorted({j for i in unsorted for j in (i - 1, i) if j >= 0})\n            s[\"units\"] = {\n                \"columns\": list(u.attrs[\"colnames\"]),\n                \"cell_type_description\": u[\"cell_type\"].attrs.get(\"description\") if \"cell_type\" in u else None,\n                \"label\": loc, \"region\": np.char.lower(loc), \"cell_type\": ctype,\n                \"shank\": u[\"shank_id\"][()],\n                \"group\": np.array([f[r].name.split(\"/\")[-1] for r in u[\"electrode_group\"][()]]),\n                \"n_spikes\": np.diff(np.concatenate([[0], index])),\n                \"first_spike\": np.array([t[0] if len(t) else np.nan for t in trains]),\n                \"unsorted\": unsorted, \"mixed\": mixed,\n                \"unsorted_at\": {i: np.flatnonzero(np.diff(trains[i]) < 0).tolist() for i in unsorted},\n                \"unit0_last\": float(trains[0][-1]) if len(trains) and len(trains[0]) else np.nan,\n                \"unit1_first\": float(trains[1][0]) if len(trains) > 1 and len(trains[1]) else np.nan,\n                \"trains\": {i: t for i, t in enumerate(trains)\n                           if loc[i].lower() in KEEP_LABELS and i not in mixed},\n                \"last_spike\": float(spikes.max()) if len(spikes) else np.nan,\n                \"has_location_column\": \"location\" in u,\n            }\n    return s\n\n\ndef load_all(workers: int = 12, version: str = DANDISET_VERSION) -> list[dict]:\n    \"\"\"Every file of the dandiset, loaded in parallel.\"\"\"\n    urls = asset_urls(version)\n    with ThreadPoolExecutor(workers) as pool:\n        return list(pool.map(lambda pu: load_session(*pu), urls))\n\n\ndef parse_ripples(labels: np.ndarray, times: np.ndarray) -> dict:\n    \"\"\"The `rip` annotations as arrays of start, peak and stop, with the channel in each label.\n\n    The labels come in triplets \"Ripple start N\", \"Ripple peak N\", \"Ripple stop N\"; `ordered`\n    says whether every triplet is in that order with increasing times.\n    \"\"\"\n    kind = np.array([lab.split()[1] for lab in labels])\n    channel = np.array([lab.split()[2] if len(lab.split()) > 2 else \"\" for lab in labels])\n    n = len(labels) // 3\n    k = kind[:3 * n].reshape(n, 3)\n    t = times[:3 * n].reshape(n, 3)\n    ordered = bool(len(labels) % 3 == 0 and np.all(k == [\"start\", \"peak\", \"stop\"])\n                   and np.all(np.diff(t, axis=1) >= 0))\n    return {\"start\": t[:, 0], \"peak\": t[:, 1], \"stop\": t[:, 2], \"ordered\": ordered,\n            \"channels\": sorted(set(channel))}\n\n\n# --- intervals -------------------------------------------------------------------------------\n\ndef intervals_of(session: dict, label: str) -> np.ndarray:\n    \"\"\"(n, 2) state intervals with the given label, in seconds, sorted.\"\"\"\n    if session[\"states\"] is None:\n        return np.zeros((0, 2))\n    return np.array(sorted((a, b) for lab, a, b in session[\"states\"] if lab == label)).reshape(-1, 2)\n\n\ndef sleep_epochs(session: dict) -> tuple[np.ndarray, np.ndarray, tuple[float, float] | None]:\n    \"\"\"Pre-sleep intervals, post-sleep intervals and the (first) run epoch, in seconds (M2).\n\n    Tags presleep and postsleep are used where present (a file may have two of either). Files\n    that tag sleep only as \"sleep\" take the sleep epochs before and after the first run.\n    \"\"\"\n    eps = session[\"epochs\"]\n    runs = [(a, b) for t, a, b in eps if t == \"run\"]\n    run = runs[0] if runs else None\n    pre = [(a, b) for t, a, b in eps if t == \"presleep\"]\n    post = [(a, b) for t, a, b in eps if t == \"postsleep\"]\n    if not pre and not post and run is not None:\n        pre = [(a, b) for t, a, b in eps if t == \"sleep\" and b <= run[0]]\n        post = [(a, b) for t, a, b in eps if t == \"sleep\" and a >= run[1]]\n    return np.array(sorted(pre)).reshape(-1, 2), np.array(sorted(post)).reshape(-1, 2), run\n\n\ndef intersect(a: np.ndarray, b: np.ndarray) -> np.ndarray:\n    \"\"\"Intersection of two sets of (start, stop) intervals.\"\"\"\n    out = []\n    for s1, e1 in a:\n        for s2, e2 in b:\n            s, e = max(s1, s2), min(e1, e2)\n            if e > s:\n                out.append((s, e))\n    return np.array(sorted(out)).reshape(-1, 2)\n\n\ndef in_intervals(t: np.ndarray, iv: np.ndarray) -> np.ndarray:\n    \"\"\"Whether each time lies in one of the sorted, non-overlapping intervals.\"\"\"\n    if len(iv) == 0:\n        return np.zeros(len(t), bool)\n    i = np.searchsorted(iv[:, 0], t, side=\"right\") - 1\n    ok = i >= 0\n    out = np.zeros(len(t), bool)\n    out[ok] = t[ok] < iv[i[ok], 1]\n    return out\n\n\ndef state_in(session: dict, label: str, epochs: np.ndarray) -> np.ndarray:\n    \"\"\"Intervals of a sleep state inside a set of epochs, e.g. pre-NREM (M2).\"\"\"\n    return intersect(intervals_of(session, label), epochs)\n\n\n# --- laps (O1 reading c) ----------------------------------------------------------------------\n\ndef laps(session: dict) -> list[tuple[float, float, str]]:\n    \"\"\"Laps from a reward at one end of the track to the next reward at the other end.\n\n    Direction \"LR\" runs from the left reward to the right one. Consecutive rewards at the same\n    end do not make a lap.\n    \"\"\"\n    ev = sorted([(t, \"L\") for t in session[\"events\"][\"lrw\"][1]] +\n                [(t, \"R\") for t in session[\"events\"][\"rrw\"][1]])\n    return [(a, b, sa + sb) for (a, sa), (b, sb) in zip(ev[:-1], ev[1:]) if sa != sb]\n\n\ndef run_laps(session: dict) -> list[tuple[float, float, str]]:\n    \"\"\"Laps whose both rewards fall inside the run epoch.\"\"\"\n    _, _, run = sleep_epochs(session)\n    if run is None:\n        return []\n    return [(a, b, d) for a, b, d in laps(session) if a >= run[0] and b <= run[1]]\n\n\ndef puff_direction(session: dict) -> tuple[str | None, dict]:\n    \"\"\"The lap direction in the run epoch that holds most air puffs, and the counts.\"\"\"\n    counts = {\"LR\": 0, \"RL\": 0, \"none\": 0}\n    if \"puf\" not in session[\"events\"] or sleep_epochs(session)[2] is None:\n        return None, counts\n    run_laps_ = run_laps(session)\n    for t in session[\"events\"][\"puf\"][1]:\n        d = [lap[2] for lap in run_laps_ if lap[0] <= t < lap[1]]\n        counts[d[0] if d else \"none\"] += 1\n    if counts[\"LR\"] == counts[\"RL\"]:\n        return None, counts\n    return (\"LR\" if counts[\"LR\"] > counts[\"RL\"] else \"RL\"), counts\n\n\ndef lap_intervals(session: dict, kind: str) -> np.ndarray:\n    \"\"\"Run laps of the air puff direction (\"puff\") or of the other one (\"safe\").\"\"\"\n    direction, _ = puff_direction(session)\n    if direction is None:\n        return np.zeros((0, 2))\n    keep = [(a, b) for a, b, d in run_laps(session) if (d == direction) == (kind == \"puff\")]\n    return np.array(keep).reshape(-1, 2)\n\n\n# --- units and binning -----------------------------------------------------------------------\n\ndef units_of(session: dict, labels: set, cell_type: str | None = None) -> list[int]:\n    \"\"\"Units with one of the region labels (and, if given, the dandiset's cell type).\"\"\"\n    u = session[\"units\"]\n    if u is None:\n        return []\n    return [i for i in u[\"trains\"] if u[\"region\"][i] in labels\n            and (cell_type is None or u[\"cell_type\"][i] == cell_type)]\n\n\ndef grid_size(session: dict, bin_s: float = BIN_S) -> int:\n    \"\"\"Number of bins of width bin_s from 0 to the end of the last epoch or spike.\"\"\"\n    end = max(max(b for _, _, b in session[\"epochs\"]), session[\"units\"][\"last_spike\"])\n    return int(np.ceil(end / bin_s)) + 1\n\n\ndef rows_in(session: dict, iv: np.ndarray, bin_s: float = BIN_S) -> np.ndarray:\n    \"\"\"Indices of the bins whose centre lies in the intervals.\"\"\"\n    centers = (np.arange(grid_size(session, bin_s)) + 0.5) * bin_s\n    return np.flatnonzero(in_intervals(centers, iv))\n\n\ndef binned(session: dict, units: list[int], rows: np.ndarray, bin_s: float = BIN_S) -> np.ndarray:\n    \"\"\"(len(rows), n_units) spike counts in the bins `rows` of the grid of width bin_s.\"\"\"\n    n = grid_size(session, bin_s)\n    out = np.zeros((len(rows), len(units)), np.float64)\n    for j, i in enumerate(units):\n        idx = (session[\"units\"][\"trains\"][i] / bin_s).astype(np.int64)\n        out[:, j] = np.bincount(idx[(idx >= 0) & (idx < n)], minlength=n)[rows]\n    return out\n\n\ndef zscore(x: np.ndarray) -> np.ndarray:\n    \"\"\"Z-score each column; a column without variance becomes NaN.\"\"\"\n    sd = x.std(0)\n    with np.errstate(invalid=\"ignore\", divide=\"ignore\"):\n        return (x - x.mean(0)) / np.where(sd > 0, sd, np.nan)\n\n\n# --- EV and REV (M4) ---------------------------------------------------------------------------\n\ndef pair_correlations(counts: np.ndarray, a: np.ndarray, b: np.ndarray | None = None) -> np.ndarray:\n    \"\"\"Pearson correlations of binned counts between columns a and b, as one vector of pairs.\n\n    With b None, the distinct pairs within a (upper triangle). A silent column gives NaN.\n    \"\"\"\n    z = zscore(counts)\n    if b is None:\n        c = z[:, a].T @ z[:, a] / len(z)\n        return c[np.triu_indices(len(a), 1)]\n    return (z[:, a].T @ z[:, b] / len(z)).ravel()\n\n\ndef ev_rev(pre: np.ndarray, run: np.ndarray, post: np.ndarray) -> tuple[float, float, int]:\n    \"\"\"EV and REV (percent) from three vectors of pair correlations, and the pairs used.\n\n    Pairs with an undefined correlation in any epoch are left out (corrcoef 'rows','complete').\n    \"\"\"\n    ok = np.isfinite(pre) & np.isfinite(run) & np.isfinite(post)\n    if ok.sum() < 3:\n        return np.nan, np.nan, int(ok.sum())\n    r = np.corrcoef(np.vstack([pre[ok], run[ok], post[ok]]))\n    r_pre_run, r_pre_post, r_run_post = r[0, 1], r[0, 2], r[1, 2]\n    ev = ((r_run_post - r_pre_run * r_pre_post) / np.sqrt((1 - r_pre_run ** 2) * (1 - r_pre_post ** 2))) ** 2\n    rev = ((r_pre_run - r_run_post * r_pre_post) / np.sqrt((1 - r_run_post ** 2) * (1 - r_pre_post ** 2))) ** 2\n    return 100 * ev, 100 * rev, int(ok.sum())\n\n\ndef session_epoch_rows(session: dict, state: str = \"Non-REM\") -> dict:\n    \"\"\"Bins of the run epoch and of a state inside pre- and post-sleep, with their durations.\"\"\"\n    pre, post, run = sleep_epochs(session)\n    pre_iv, post_iv = state_in(session, state, pre), state_in(session, state, post)\n    return {\"pre\": rows_in(session, pre_iv), \"post\": rows_in(session, post_iv),\n            \"run\": rows_in(session, np.array([run])),\n            \"pre_s\": float(np.diff(pre_iv).sum()), \"post_s\": float(np.diff(post_iv).sum())}\n\n\ndef ev_session(session: dict, a_units: list[int], b_units: list[int] | None, rows: dict,\n               post_periods: bool = False) -> dict:\n    \"\"\"EV and REV of one session between two sets of units (or within one set, b None).\n\n    With `post_periods`, also for the successive `PERIOD_BINS` blocks of post-sleep bins (the\n    first three, the third being what remains when shorter), each with the whole pre-sleep and run.\n    \"\"\"\n    units = a_units + (b_units or [])\n    a = np.arange(len(a_units))\n    b = None if b_units is None else np.arange(len(a_units), len(units))\n    corr = {k: pair_correlations(binned(session, units, rows[k]), a, b) for k in (\"pre\", \"run\", \"post\")}\n    ev, rev, n_pairs = ev_rev(corr[\"pre\"], corr[\"run\"], corr[\"post\"])\n    out = {\"ev\": ev, \"rev\": rev, \"pairs\": n_pairs}\n    if post_periods:\n        post_rows = rows[\"post\"]\n        for k in range(3):\n            block = post_rows[k * PERIOD_BINS:(k + 1) * PERIOD_BINS]\n            if len(block) < 2:\n                out[f\"ev_{k}\"], out[f\"rev_{k}\"] = np.nan, np.nan\n                continue\n            c = pair_correlations(binned(session, units, block), a, b)\n            out[f\"ev_{k}\"], out[f\"rev_{k}\"], _ = ev_rev(corr[\"pre\"], corr[\"run\"], c)\n            out[f\"bins_{k}\"] = len(block)\n    return out\n\n\n# --- ripple modulation (M6) ---------------------------------------------------------------------\n\ndef nrem_ripples(session: dict, nrem: np.ndarray | None = None) -> dict:\n    \"\"\"Ripples whose peak lies in NREM (all NREM of the session unless given).\"\"\"\n    if nrem is None:\n        nrem = intervals_of(session, \"Non-REM\")\n    r = session[\"ripples\"]\n    keep = in_intervals(r[\"peak\"], nrem)\n    return {k: r[k][keep] for k in (\"start\", \"peak\", \"stop\")}\n\n\ndef merge(iv: np.ndarray) -> np.ndarray:\n    \"\"\"Union of possibly overlapping intervals, sorted.\"\"\"\n    if len(iv) == 0:\n        return iv.reshape(0, 2)\n    iv = iv[np.argsort(iv[:, 0])]\n    out = [list(iv[0])]\n    for a, b in iv[1:]:\n        if a <= out[-1][1]:\n            out[-1][1] = max(out[-1][1], b)\n        else:\n            out.append([a, b])\n    return np.array(out)\n\n\ndef subtract(a: np.ndarray, b: np.ndarray) -> np.ndarray:\n    \"\"\"Intervals a minus the (merged) intervals b.\"\"\"\n    b = merge(b)\n    out = []\n    for s, e in a:\n        cur = s\n        for bs, be in b[(b[:, 1] > s) & (b[:, 0] < e)]:\n            if bs > cur:\n                out.append((cur, bs))\n            cur = max(cur, be)\n        if cur < e:\n            out.append((cur, e))\n    return np.array(out).reshape(-1, 2)\n\n\ndef count_in(train: np.ndarray, iv: np.ndarray) -> int:\n    \"\"\"Spikes of a sorted train inside the intervals (intervals may overlap; each counts).\"\"\"\n    return int((np.searchsorted(train, iv[:, 1]) - np.searchsorted(train, iv[:, 0])).sum())\n\n\ndef ripple_modulation(session: dict, units: list[int]) -> list[dict]:\n    \"\"\"Poisson test of each unit's spikes in NREM ripples against its NREM baseline (M6, O2).\n\n    Baseline: all NREM of the session minus every ripple widened by `RIPPLE_GUARD_S` either\n    side. Expected count: baseline rate times the total ripple time (start to stop). Reading a\n    of O2 takes the tails P(X >= n) and P(X <= n), reading b P(X > n) and P(X < n). A unit with\n    no spike in ripples or in the baseline is untested.\n    \"\"\"\n    nrem = intervals_of(session, \"Non-REM\")\n    rip = nrem_ripples(session, nrem)\n    rip_iv = np.column_stack([rip[\"start\"], rip[\"stop\"]])\n    base = subtract(nrem, rip_iv + np.array([-RIPPLE_GUARD_S, RIPPLE_GUARD_S]))\n    base_s = float(np.diff(base).sum())\n    rip_s = float(np.diff(rip_iv).sum())\n    out = []\n    for i in units:\n        t = session[\"units\"][\"trains\"][i]\n        n_rip, n_base = count_in(t, rip_iv), count_in(t, base)\n        mu = n_base / base_s * rip_s\n        row = {\"unit\": i, \"n_ripple\": n_rip, \"n_base\": n_base, \"expected\": mu,\n               \"tested\": n_rip > 0 and n_base > 0}\n        row[\"p_up_a\"] = stats.poisson.sf(n_rip - 1, mu)\n        row[\"p_down_a\"] = stats.poisson.cdf(n_rip, mu)\n        row[\"p_up_b\"] = stats.poisson.sf(n_rip, mu)\n        row[\"p_down_b\"] = stats.poisson.cdf(n_rip - 1, mu) if n_rip > 0 else 0.0\n        for r in (\"a\", \"b\"):\n            row[f\"up_{r}\"] = row[\"tested\"] and row[f\"p_up_{r}\"] < RIPPLE_P\n            row[f\"down_{r}\"] = row[\"tested\"] and row[f\"p_down_{r}\"] < RIPPLE_P\n        out.append(row)\n    return out\n\n\n# --- reactivation strength R (M7) ------------------------------------------------------------------\n\ndef peri_ripple_mean(times: np.ndarray, values: np.ndarray, peaks: np.ndarray) -> np.ndarray:\n    \"\"\"Mean of `values` (sampled at sorted `times`) in `PERI_BINS` bins over +-`PERI_RIPPLE_S`\n    around each peak, all peaks pooled (FMAToolbox SyncHist, mode mean), smoothed with a\n    Gaussian of SD `PERI_SMOOTH_BINS` bins.\"\"\"\n    width = 2 * PERI_RIPPLE_S / PERI_BINS\n    total = np.zeros(PERI_BINS)\n    count = np.zeros(PERI_BINS)\n    lo = np.searchsorted(times, peaks - PERI_RIPPLE_S)\n    hi = np.searchsorted(times, peaks + PERI_RIPPLE_S)\n    for p, a, b in zip(peaks, lo, hi):\n        k = np.floor((times[a:b] - p + PERI_RIPPLE_S) / width).astype(int)\n        ok = (k >= 0) & (k < PERI_BINS)\n        np.add.at(total, k[ok], values[a:b][ok])\n        np.add.at(count, k[ok], 1)\n    with np.errstate(invalid=\"ignore\"):\n        curve = total / count\n    curve = np.where(np.isfinite(curve), curve, np.nanmean(curve))\n    return gaussian_filter1d(curve, PERI_SMOOTH_BINS, mode=\"nearest\")\n\n\ndef peri_centres() -> np.ndarray:\n    width = 2 * PERI_RIPPLE_S / PERI_BINS\n    return -PERI_RIPPLE_S + width * (np.arange(PERI_BINS) + 0.5)\n\n\ndef reactivation_strength(session: dict, hpc: list[int], bla: list[int], template_iv: np.ndarray) -> dict:\n    \"\"\"Peri-ripple reactivation strength in pre- and post-NREM for one template (M7).\n\n    Counts are z-scored per cell within the template bins and within the NREM bins of each sleep\n    epoch; a cell silent in either is left out (it has no z-score). C = Z_hpc' Z_bla / nBins;\n    R(t) = z_hpc(t) C z_bla(t)'; R is z-scored over the NREM bins of each epoch.\n    \"\"\"\n    rows = session_epoch_rows(session)\n    template = rows_in(session, template_iv)\n    units = hpc + bla\n    nh = len(hpc)\n    counts = {k: binned(session, units, r) for k, r in ((\"run\", template), (\"pre\", rows[\"pre\"]), (\"post\", rows[\"post\"]))}\n    z = {k: zscore(c) for k, c in counts.items()}\n    ok = np.all([np.isfinite(v).all(0) for v in z.values()], axis=0)\n    h, b = np.flatnonzero(ok[:nh]), nh + np.flatnonzero(ok[nh:])\n    c = z[\"run\"][:, h].T @ z[\"run\"][:, b] / len(template)\n    out = {\"template_bins\": len(template), \"hpc_used\": len(h), \"bla_used\": len(b)}\n    pre_iv, post_iv, _ = sleep_epochs(session)\n    for k, iv in ((\"pre\", pre_iv), (\"post\", post_iv)):\n        r = np.einsum(\"ti,ij,tj->t\", z[k][:, h], c, z[k][:, b])\n        r = (r - r.mean()) / r.std()\n        times = (rows[k] + 0.5) * BIN_S\n        peaks = nrem_ripples(session, state_in(session, \"Non-REM\", iv))[\"peak\"]\n        curve = peri_ripple_mean(times, r, peaks)\n        centres = peri_centres()\n        out[f\"{k}_curve\"] = curve\n        out[f\"{k}_peak\"] = float(curve[np.abs(centres) < PEAK_WINDOW_S].mean())\n        out[f\"{k}_ripples\"] = len(peaks)\n    return out\n\n\n# --- firing by state, and ripple rate ------------------------------------------------------------\n\ndef state_rates(session: dict, units: list[int]) -> list[dict]:\n    \"\"\"Firing rate of each unit over all REM, all NREM and all wake intervals of the session.\"\"\"\n    ivs = {k: intervals_of(session, lab) for k, lab in ((\"rem\", \"REM\"), (\"nrem\", \"Non-REM\"), (\"wake\", \"Awake\"))}\n    out = []\n    for i in units:\n        t = session[\"units\"][\"trains\"][i]\n        out.append({\"unit\": i, **{k: count_in(t, iv) / np.diff(iv).sum() for k, iv in ivs.items()}})\n    return out\n\n\ndef ripple_rates(session: dict) -> dict:\n    \"\"\"Ripple peaks per second of pre-NREM and of post-NREM.\"\"\"\n    pre, post, _ = sleep_epochs(session)\n    out = {}\n    for k, iv in ((\"pre\", pre), (\"post\", post)):\n        nrem = state_in(session, \"Non-REM\", iv)\n        out[f\"{k}_nrem_s\"] = float(np.diff(nrem).sum())\n        out[f\"{k}_ripples\"] = int(in_intervals(session[\"ripples\"][\"peak\"], nrem).sum())\n        out[f\"{k}_rate\"] = out[f\"{k}_ripples\"] / out[f\"{k}_nrem_s\"] if out[f\"{k}_nrem_s\"] > 0 else np.nan\n    return out\n\n\ndef time_frame_reads(url: str, video: str, n_frames: int = 20) -> tuple[float, int]:\n    \"\"\"Seconds taken to stream `n_frames` frames spread over a video, and the bytes per frame.\"\"\"\n    import time\n    f = h5py.File(remfile.File(url), \"r\")\n    with f:\n        data = f[f\"acquisition/{video}/data\"]\n        frames = np.linspace(0, data.shape[0] - 1, n_frames).astype(int)\n        started = time.time()\n        for k in frames:\n            data[k]\n        return time.time() - started, int(np.prod(data.shape[1:]) * data.dtype.itemsize)\n"
 }
 ```
 
 ```
-File created successfully at: /tmp/claude-1001/dev/cells.txt (file state is current in your context — no need to Read it back)
+The file entries/000061-girardeau-2017/hpcbla.py has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
 
 **Agent**
 
-Re-caching the sessions with the updated helper, then running the cells as a script against the cache.
+Helper written. Now loading all 40 files once into a local development cache (only for my exploration; the notebook will stream).
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && time env/bin/python cache.py && cat > dev/run_cells.py <<'E'
-import re, sys
-src=open('/tmp/claude-1001/dev/cells.txt').read()
-cells=re.split(r'^#%% ', src, flags=re.M)[1:]
-code=["import matplotlib; matplotlib.use('Agg')", "import sys; sys.path.insert(0,'entries/000061-girardeau-2017')"]
-for c in cells:
-    head, body = c.split('\n',1)
-    if head.startswith('code'):
-        body=body.replace('sessions = sorted(hpcbla.load_all(), key=lambda s: s["path"])', 'import pickle; sessions = sorted(pickle.load(open("/tmp/claude-1001/sessions.pkl","rb")), key=lambda s: s["path"])')
-        code.append(f"print('=== CELL {head.strip()}')\n"+body)
-open('/tmp/claude-1001/dev/nb_dev.py','w').write('\n'.join(code))
-E
-env/bin/python dev/run_cells.py && cd dev && time ../env/bin/python nb_dev.py 2>&1 | tail -250
+cd $TMPDIR && cat > load.py <<'EOF'
+import sys, time, pickle
+sys.path.insert(0, "entries/000061-girardeau-2017")
+import hpcbla
+t=time.time()
+S=sorted(hpcbla.load_all(), key=lambda s:s["path"])
+print("loaded", len(S), time.time()-t)
+pickle.dump(S, open("sessions.pkl","wb"))
+EOF
+env61/bin/python load.py
 ```
 
 ```
-361.082142829895
-
-real	6m6.629s
-user	0m10.366s
-sys	0m4.146s
-
-Median over files: ripples per s in Non-REM 0.607 (states shifted: 0.368 ); in REM 0.022 (shifted: 0.323 )
-Median ratio of hippocampal rate at ripple peaks to 1 s later: 3.3 ; files with hippocampal units: 23
-=== CELL code tags=sanity
-       session  laps  accuracy  accuracy_half_lap_shift
-Rat08-20130709     7     1.000                    0.714
-Rat08-20130710    13     1.000                    0.692
-Rat08-20130711     9     0.889                    0.222
-Rat08-20130712    23     1.000                    0.783
-Rat08-20130713    20     1.000                    0.800
-Rat08-20130715    41     0.976                    0.756
-Rat08-20130716    48     1.000                    0.833
-Rat08-20130717    54     1.000                    0.944
-Rat08-20130718    89     0.989                    0.876
-Rat10-20140624    39     0.949                    0.744
-[... 240 more lines not kept]
+loaded 40 344.93028831481934
+Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR/dev && ../env/bin/python nb_dev.py > out1.txt 2>&1; sed -n 1,140p out1.txt
+cd $TMPDIR && cat > ex1.py <<'EOF'
+import sys, pickle, numpy as np, pandas as pd, collections
+sys.path.insert(0, "entries/000061-girardeau-2017")
+import hpcbla
+S=pickle.load(open("sessions.pkl","rb"))
+lab=collections.Counter()
+for s in S:
+    if s["units"] is None: continue
+    for l in s["units"]["label"]: lab[(s["rat"],l)]+=1
+print(sorted(lab.items()))
+rows=[]
+for s in S:
+    u=s["units"]
+    if u is None: rows.append({"s":s["session"],"rat":s["rat"]}); continue
+    pre,post,run=hpcbla.sleep_epochs(s)
+    st = s["states"]
+    r={"s":s["session"],"rat":s["rat"],"n":len(u["label"]),"hpc":len(hpcbla.units_of(s,hpcbla.HPC_LABELS)),"bla":len(hpcbla.units_of(s,hpcbla.BLA_LABELS)),"cen":len(hpcbla.units_of(s,hpcbla.CEN_LABELS)),
+       "states":st is not None,"rip":s["ripples"] is not None, "pre":len(pre),"post":len(post),"run":run is not None}
+    if st:
+        r["state_labels"]=sorted(set(x[0] for x in st)); r["span"]=(round(min(x[1] for x in st)),round(max(x[2] for x in st)))
+        r["epochs"]=[(t,round(a),round(b)) for t,a,b in s["epochs"]]
+        rr=hpcbla.session_epoch_rows(s) if len(pre) and len(post) else None
+        if rr: r["preN"]=round(rr["pre_s"]); r["postN"]=round(rr["post_s"])
+        if len(pre) and len(post):
+            rem=hpcbla.session_epoch_rows(s,"REM"); r["preR"]=round(rem["pre_s"]); r["postR"]=round(rem["post_s"])
+    rows.append(r)
+pd.set_option("display.width",300); pd.set_option("display.max_colwidth",200)
+print(pd.DataFrame(rows).to_string())
+EOF
+env61/bin/python ex1.py
 ```
 
 ```
-=== CELL code
-loaded 40 files from dandiset 000061 version 0.250624.0426 in 0 s
-=== CELL code tags=sanity
-Archive summary: files 40 ; subjects 4 ; species ['Brown rat'] ; measured ['Units', 'LFP', 'ElectricalSeries', 'ProcessingModule']
-
-Subjects: ['Rat08', 'Rat09', 'Rat10', 'Rat11'] ; files per rat: {'Rat08': 13, 'Rat09': 10, 'Rat10': 7, 'Rat11': 10}
-Species, age, sex: [('Rattus norvegicus domestica - Long Evans', '3 months', 'Male')]
-
-        session   rat  units  hpc  bla  bla_complex  states  ripples  puffs  rewards  pre_sleep_s  post_sleep_s  run_s  lfp   raw  videos  trials
-Rat08-20130708 Rat08    166    9   15           60    True     9473      3        9         9890         10664   3603 True  True       2   215.0
-Rat08-20130709 Rat08    201   34   78           99    True    10713      2       22         9725         11239   3621 True  True       3   185.0
-Rat08-20130710 Rat08    190   31   87           87    True     9251      9       24        10098         10224   3607 True  True       3   113.0
-Rat08-20130711 Rat08    201   24   92           92    True     8193      5       36         8903          8425   3612 True  True       3   289.0
-Rat08-20130712 Rat08    199   59   40           40    True     6118     14       69        10318          9222   3328 True  True       3   266.0
-Rat08-20130713 Rat08    252   60   94           94    True     6835     20       44         9199          9766   3244 True  True       3   183.0
-Rat08-20130715 Rat08    166   20   39           39    True     6945     34       82         9266          9334   2730 True False       3     NaN
-Rat08-20130716 Rat08    187   19   34           73    True     8934     30       81        10663         11500   2486 True False       3     NaN
-Rat08-20130717 Rat08    197   42   17           76    True     7857     31       99         9671         10985   1797 True False       3     NaN
-Rat08-20130718 Rat08    219   50    0           51   False        0     49      146        11154         111
-[... 122 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/dev && sed -n 140,215p out1.txt
-```
-
-```
-Rat08-20130712  prerun    4461     seconds 11928733.3 12077366.7               148.6            0.0             295.3
-... 114 videos in all
-Videos whose first timestamp / 1000 is within 5 s of their epoch's start: 1 of 114
-Videos whose span / 1000 is within 5% of their epoch's duration: 93 of 114
-
-Trials tables:
-       session  trials         description  median_duration_s  fraction_in_run
-Rat08-20130708     215 experimental trials                3.2             0.75
-Rat08-20130709     185 experimental trials                3.1             0.61
-Rat08-20130710     113 experimental trials                3.0             0.53
-Rat08-20130711     289 experimental trials                3.5             0.69
-Rat08-20130712     266 experimental trials                3.6             0.64
-Rat08-20130713     183 experimental trials                3.5             0.80
-Rat09-20140324     137 experimental trials                3.2             0.85
-Rat09-20140325     167 experimental trials                3.1             0.84
-Rat09-20140326     276 experimental trials                4.7             0.78
-Rat09-20140328      69 experimental trials                4.0             0.00
-Rat09-20140329     219 experimental trials                3.9             0.66
-Rat09-20140402     271 experimental trials                3.9             0.73
-Rat09-20140403     190 experimental trials                3.6             0.59
-[... 57 more lines not kept]
+[(('Rat08', np.str_('BLA')), 17), (('Rat08', np.str_('BLV')), 51), (('Rat08', np.str_('BMP')), 24), (('Rat08', np.str_('HIP')), 50), (('Rat08', np.str_('PIR')), 282), (('Rat08', np.str_('PLCo1')), 37), (('Rat08', np.str_('bla')), 479), (('Rat08', np.str_('blv')), 102), (('Rat08', np.str_('bmp')), 27), (('Rat08', np.str_('cen')), 124), (('Rat08', np.str_('den')), 181), (('Rat08', np.str_('hpc')), 298), (('Rat08', np.str_('ladl')), 66), (('Rat08', np.str_('no label')), 43), (('Rat08', np.str_('pir')), 525), (('Rat08', np.str_('ven')), 11), (('Rat09', np.str_('(none)')), 75), (('Rat09', np.str_('bla')), 259), (('Rat09', np.str_('cen')), 144), (('Rat09', np.str_('ladl')), 37), (('Rat10', np.str_('bla')), 87), (('Rat10', np.str_('blv')), 59), (('Rat10', np.str_('bmp')), 4), (('Rat10', np.str_('cen')), 52), (('Rat10', np.str_('hpc')), 116), (('Rat10', np.str_('pir')), 104), (('Rat10', np.str_('plc01')), 10), (('Rat10', np.str_('ven')), 8), (('Rat11', np.str_('bla')), 276), (('Rat11', np.str_('blv')), 111), (('Rat11', np.str_('bmp')), 233), (('Rat11', np.str_('cen')), 162), (('Rat11', np.str_('cpu')), 35), (('Rat11', np.str_('hpc')), 365), (('Rat11', np.str_('ladl')), 145), (('Rat11', np.str_('pir')), 24), (('Rat11', np.str_('ven')), 79)]
+                 s    rat      n   hpc    bla   cen states    rip  pre  post   run           state_labels        span                                                                                                                                          epochs    preN   postN    preR   postR
+0   Rat08-20130708  Rat08  166.0   9.0   15.0  64.0   True   True  1.0   1.0  True  [Awake, Non-REM, REM]  (5, 24754)                                                              [(sleep, 0, 9890), (run, 9890, 13493), (sleep, 13493, 24157), (run, 24157, 24759)]  4564.0  4502.0   844.0   784.0
+1   Rat08-20130709  Rat08  201.0  34.0   78.0  25.0   True   True  1.0   2.0  True  [Awake, Non-REM, REM]  (5, 25505)  [(prerun, 0, 317), (presleep, 317, 10042)
+[... 39 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR/dev && python3 - <<'E'
-s=open('cells.txt').read()
-def rep(old,new):
+cd $TMPDIR && cat > ex2.py <<'EOF'
+import sys, pickle, time, numpy as np, pandas as pd
+from scipy import stats
+sys.path.insert(0, "entries/000061-girardeau-2017")
+import hpcbla as H
+S=pickle.load(open("sessions.pkl","rb"))
+def ok(s):
+    if s["units"] is None or s["states"] is None: return False
+    pre,post,run=H.sleep_epochs(s); return len(pre)>0 and len(post)>0 and run is not None
+t=time.time(); rows=[]
+for s in S:
+    if not ok(s): continue
+    hpc=H.units_of(s,H.HPC_LABELS); bla=H.units_of(s,H.BLA_LABELS); cen=H.units_of(s,H.CEN_LABELS)
+    R=H.session_epoch_rows(s); RR=H.session_epoch_rows(s,"REM")
+    r={"session":s["session"],"rat":s["rat"],"hpc":len(hpc),"bla":len(bla),"cen":len(cen)}
+    if len(hpc)>=6 and len(bla)>=6:
+        r.update({k+"_bla":v for k,v in H.ev_session(s,hpc,bla,R,post_periods=True).items()})
+        if RR["pre_s"]>180 and RR["post_s"]>180:
+            r.update({k+"_blaREM":v for k,v in H.ev_session(s,hpc,bla,RR).items()})
+    if len(hpc)>=6 and len(cen)>=6:
+        r.update({k+"_cen":v for k,v in H.ev_session(s,hpc,cen,R).items()})
+        if RR["pre_s"]>180 and RR["post_s"]>180:
+            r.update({k+"_cenREM":v for k,v in H.ev_session(s,hpc,cen,RR).items()})
+    rows.append(r)
+df=pd.DataFrame(rows); print(time.time()-t)
+pd.set_option("display.width",300)
+print(df.round(3).to_string())
+for k in ["bla","blaREM","cen","cenREM"]:
+    d=df.dropna(subset=["ev_"+k]); x=d["ev_"+k]-d["rev_"+k]
+    print(k,len(d),x.mean(),x.median(),stats.wilcoxon(d["ev_"+k],d["rev_"+k]).pvalue)
+for p in range(3):
+    d=df.dropna(subset=[f"ev_{p}_bla"]); x=d[f"ev_{p}_bla"]-d[f"rev_{p}_bla"]; print(p,len(d),x.mean(),stats.wilcoxon(x).pvalue)
+df.to_pickle("ev.pkl")
+EOF
+env61/bin/python ex2.py
+```
+
+```
+8.125589847564697
+           session    rat  hpc  bla  cen  ev_bla  rev_bla  pairs_bla  ev_0_bla  rev_0_bla  bins_0_bla  ev_1_bla  rev_1_bla  bins_1_bla  ev_2_bla  rev_2_bla  bins_2_bla  ev_blaREM  rev_blaREM  pairs_blaREM  ev_cen  rev_cen  pairs_cen  ev_cenREM  rev_cenREM  pairs_cenREM
+0   Rat08-20130708  Rat08    9   15   64   2.254    0.293      135.0     4.387      0.189     24000.0     1.169      0.200     24000.0     0.191      0.117     24000.0      0.421       0.025         135.0   0.088    0.011      567.0      0.289       0.000         567.0
+1   Rat08-20130709  Rat08   34   78   25   6.115    0.124     2652.0     6.777      0.795     24000.0     2.180      2.257     24000.0     3.328      1.265     24000.0      0.479       0.292        2652.0   2.232    1.372      850.0      1.418       1.210         850.0
+2   Rat08-20130710  Rat08   29   87   17   5.403    0.548     2523.0     3.942      1.850     24000.0     2.174      1.844     24000.0     1.626      2.168     24000.0      0.270       0.001        2436.0   6.853    1.024      493.0      0.271       0.168         476.0
+3   Rat08-20130711  Rat08   22   92   18   5.606    0.000     2024.0     5.691      0.198     24000.0     1.379      0.556     24000.0     1.667      0.698     16020.0      0.057       0.009        2024.0   0.564    2.978      396.0      0.805       2.477         374.0
+4   Rat08-20130712  Rat08   59   40    0   1.076    0.004     2360.0     1.640      0.002     24000.0     0.700      0.002     24000.0     0.000      0.078     14500.0      0.009       0.028        2280.0     NaN      NaN        NaN        NaN         NaN           NaN
+5   Rat08-20130713  Rat08   60   94    0   1.434    0.224     5546.0     1.542      0.483     24000.0     0.563      0.553     24000.0     0.263      0.699     24000.0      0.066       0.035        5546.0     NaN      NaN        NaN        NaN         NaN           NaN
+6   Rat08-20130715  Rat08   20   39    0   8.444    0.084      780.0     6.640      0.162   
+[... 25 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && cat > ex3.py <<'EOF'
+import sys, pickle, time, numpy as np, pandas as pd
+from scipy import stats
+sys.path.insert(0, "entries/000061-girardeau-2017")
+import hpcbla as H
+S=pickle.load(open("sessions.pkl","rb"))
+pd.set_option("display.width",300)
+# ripple rate
+rows=[]
+for s in S:
+    if s["states"] is None or s["ripples"] is None: continue
+    pre,post,run=H.sleep_epochs(s)
+    if len(pre)==0 or len(post)==0: continue
+    rows.append({"session":s["session"],"rat":s["rat"],**H.ripple_rates(s)})
+rr=pd.DataFrame(rows); print(rr.round(3).to_string()); print(len(rr), stats.wilcoxon(rr.pre_rate, rr.post_rate))
+# state rates on typed cells
+rows=[]
+for s in S:
+    if s["units"] is None or s["states"] is None: continue
+    for ct in ("excitatory","inhibitory"):
+        for r in H.state_rates(s, H.units_of(s,H.BLA_LABELS,ct)):
+            rows.append({"session":s["session"],"type":ct,**r})
+sr=pd.DataFrame(rows)
+for ct,d in sr.groupby("type"):
+    for k in ("rem","nrem"):
+        x=(d[k]-d.wake)/(d[k]+d.wake); x=x.dropna()
+        print(ct,k,len(x),x.median(),stats.wilcoxon(x))
+print(sr.groupby(["session","type"]).size())
+# habituation
+rows=[]
+for s in S:
+    if "lrw" not in s["events"]: continue
+    pre,post,run=H.sleep_epochs(s)
+    L=H.run_laps(s); d,c=H.puff_direction(s)
+    dur=run[1]-run[0]
+    rows.append({"session":s["session"],"rat":s["rat"],"laps":len(L),"LR":sum(x[2]=="LR" for x in L),"puff":sum(x[2]==d for x in L) if d else np.nan,"dur":dur,"dir":d,**c})
+hb=pd.DataFrame(rows); print(hb.to_string())
+EOF
+env61/bin/python ex3.py
+```
+
+```
+session    rat  pre_nrem_s  pre_ripples  pre_rate  post_nrem_s  post_ripples  post_rate
+0   Rat08-20130708  Rat08      4564.0         3581     0.785     4502.000          3993      0.887
+1   Rat08-20130709  Rat08      4638.0         3952     0.852     5376.000          4919      0.915
+2   Rat08-20130710  Rat08      3956.0         3021     0.764     4851.000          4222      0.870
+3   Rat08-20130711  Rat08      3496.0         3152     0.902     3201.000          2987      0.933
+4   Rat08-20130712  Rat08      3281.0         2753     0.839     3125.000          2241      0.717
+5   Rat08-20130713  Rat08      4466.0         2743     0.614     3852.000          2494      0.647
+6   Rat08-20130715  Rat08      1193.0         1116     0.935     2935.000          3008      1.025
+7   Rat08-20130716  Rat08      2639.0         2243     0.850     4784.000          4649      0.972
+8   Rat08-20130717  Rat08      4780.0         3451     0.722     3487.000          3006      0.862
+9   Rat10-20140624  Rat10      5058.0         3105     0.614     4370.000          2395      0.548
+10  Rat10-20140626  Rat10      2374.0         1451     0.611     2870.000          1730      0.603
+11  Rat10-20140701  Rat10      6092.0         3882     0.637     4787.000          2810      0.587
+12  Rat10-20140702  Rat10      3018.0         1695     0.562     2384.888          1000      0.419
+13  Rat10-20140704  Rat10      3818.4         1666     0.436     5514.000          2661      0.483
+14  Rat10-20140705  Rat10      1973.0         1035     0.525     2722.000          1563      0.574
+15  Rat10-20140708  Rat10      1732.0         1033     0.596     3382.000          2191      0.648
+16  Rat11-20150313  Rat11      5000.0         1732     0.346     3076.000          1088      0.354
+17  Rat11-20150315  Rat11      2837.0         1299     0.458     3325.000          1573      0.473
+18  Rat11-20150316  Rat11      2337.0         1050     0.449     3098.000           906      0.292
+[... 63 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && cat > ex4.py <<'EOF'
+import sys, pickle, time, numpy as np, pandas as pd
+from scipy import stats
+sys.path.insert(0, "entries/000061-girardeau-2017")
+import hpcbla as H
+S=pickle.load(open("sessions.pkl","rb"))
+pd.set_option("display.width",300)
+t=time.time(); rows=[]
+for s in S:
+    if s["units"] is None or s["states"] is None or s["ripples"] is None: continue
+    pre,post,run=H.sleep_epochs(s)
+    if len(pre)==0 or len(post)==0: continue
+    hpc=H.units_of(s,H.HPC_LABELS); bla=H.units_of(s,H.BLA_LABELS)
+    if len(hpc)<6 or len(bla)<6: continue
+    for name,iv in (("run",np.array([run])),("puff",H.lap_intervals(s,"puff")),("safe",H.lap_intervals(s,"safe"))):
+        if len(iv)==0: continue
+        o=H.reactivation_strength(s,hpc,bla,iv)
+        rows.append({"session":s["session"],"template":name,**{k:v for k,v in o.items() if not k.endswith("curve")}})
+df=pd.DataFrame(rows); print(time.time()-t)
+print(df.round(3).to_string())
+for name,d in df.groupby("template"):
+    print(name,len(d),(d.post_peak-d.pre_peak).median(), stats.wilcoxon(d.post_peak,d.pre_peak,alternative="greater").pvalue)
+w=df.pivot(index="session",columns="template",values="post_peak")-df.pivot(index="session",columns="template",values="pre_peak")
+w=w.dropna(); print(len(w), stats.wilcoxon(w.puff,w.safe,alternative="greater"))
+EOF
+env61/bin/python ex4.py
+```
+
+```
+17.101648569107056
+           session template  template_bins  hpc_used  bla_used  pre_peak  pre_ripples  post_peak  post_ripples
+0   Rat08-20130708      run          72060         9        15     0.001         3581     -0.015          3993
+1   Rat08-20130708     puff          39915         9        15    -0.001         3581     -0.018          3993
+2   Rat08-20130708     safe            463         7        11     0.002         3581      0.002          3993
+3   Rat08-20130709      run          72414        34        78     0.030         3952      0.043          4919
+4   Rat08-20130710      run          72144        29        87     0.019         3021      0.029          4222
+5   Rat08-20130710     puff          28766        29        87     0.006         3021      0.037          4222
+6   Rat08-20130710     safe          39292        29        86     0.016         3021      0.012          4222
+7   Rat08-20130711      run          72246        22        92     0.022         3152      0.062          2987
+8   Rat08-20130711     puff          55135        22        92     0.009         3152      0.042          2987
+9   Rat08-20130711     safe          11194        22        91     0.003         3152      0.006          2987
+10  Rat08-20130712      run          66554        59        40     0.008         2753      0.038          2241
+11  Rat08-20130712     puff          24040        59        40     0.008         2753      0.031          2241
+12  Rat08-20130712     safe          37948        58        40     0.002         2753      0.037          2241
+13  Rat08-20130713      run          64870        59        94    -0.012         2743     -0.017          2494
+14  Rat08-20130713     puff          36380        59        94    -0.012         2743     -0.004          2494
+15  Rat08-20130713     safe          18512        59        92    -0.018         2743     -0.013          2494
+16  Rat08-20130715      run          54596        20        39    -0.013         1116      0.0
+[... 31 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && cat > ex5.py <<'EOF'
+import sys, pickle, time, numpy as np, pandas as pd
+from scipy import stats
+sys.path.insert(0, "entries/000061-girardeau-2017")
+import hpcbla as H
+S=pickle.load(open("sessions.pkl","rb"))
+pd.set_option("display.width",300)
+t=time.time(); rows=[]
+for s in S:
+    if s["units"] is None or s["states"] is None or s["ripples"] is None: continue
+    bla=H.units_of(s,H.BLA_LABELS)
+    for r in H.ripple_modulation(s,bla):
+        rows.append({"session":s["session"],"rat":s["rat"],"type":s["units"]["cell_type"][r["unit"]],**r})
+m=pd.DataFrame(rows); print(time.time()-t, len(m), m.session.nunique())
+for r in "ab": print(r, m[f"up_{r}"].mean(), m[f"down_{r}"].mean(), (~m.tested).sum())
+print(m.groupby("type")[["up_a","down_a"]].agg(["mean","size"]))
+# ripple-modulated larger, all cells
+ev=[]
+for s in S:
+    if s["units"] is None or s["states"] is None or s["ripples"] is None: continue
+    pre,post,run=H.sleep_epochs(s)
+    if len(pre)==0 or len(post)==0: continue
+    hpc=H.units_of(s,H.HPC_LABELS); d=m[m.session==s["session"]]
+    mod=[int(u) for u in d.unit[d.up_a|d.down_a]]; non=[int(u) for u in d.unit[~(d.up_a|d.down_a)]]
+    if len(hpc)>5 and len(mod)>5:
+        R=H.session_epoch_rows(s)
+        a=H.ev_session(s,hpc,mod,R); b=H.ev_session(s,hpc,non,R) if len(non)>=2 else {"ev":np.nan,"rev":np.nan}
+        ev.append({"session":s["session"],"mod":a["ev"]-a["rev"],"non":b["ev"]-b["rev"],"nmod":len(mod),"nnon":len(non)})
+e=pd.DataFrame(ev); print(e.round(3)); print(stats.ranksums(e["mod"],e["non"].dropna()), e["mod"].mean(), e["non"].mean())
+EOF
+env61/bin/python ex5.py
+```
+
+```
+0.5828123092651367 822 17
+a 0.12773722627737227 0.10340632603406326 0
+b 0.13381995133819952 0.11070559610705596 0
+                  up_a         down_a     
+                  mean size      mean size
+type                                      
+              0.150812  431  0.064965  431
+excitatory    0.059211  152  0.151316  152
+inhibitory    0.222222   36  0.472222   36
+unclassified  0.113300  203  0.083744  203
+           session     mod    non  nmod  nnon
+0   Rat08-20130709   8.321  1.795    30    48
+1   Rat08-20130710   3.845  4.764    18    69
+2   Rat08-20130711   9.191  2.752    26    66
+3   Rat08-20130712   1.374  0.896    10    30
+4   Rat08-20130713  -0.017  1.395    13    81
+5   Rat08-20130715  19.363  2.363     6    33
+6   Rat08-20130716   3.628  7.416    10    24
+7   Rat10-20140624  -0.098 -0.016     9    28
+8   Rat10-20140626  -6.249 -3.374     6    27
+[... 5 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && cat > ex6.py <<'EOF'
+import sys, pickle, numpy as np, pandas as pd
+from scipy import stats
+sys.path.insert(0, "entries/000061-girardeau-2017")
+import hpcbla as H
+S=pickle.load(open("sessions.pkl","rb"))
+rows=[]
+for s in S:
+    _,_,run=H.sleep_epochs(s); L=H.run_laps(s); d,_=H.puff_direction(s); dur=run[1]-run[0]
+    rows.append({"session":s["session"],"rat":s["rat"],"all":100*len(L)/dur,"lr":100*sum(x[2]=="LR" for x in L)/dur,
+                 "puff":100*sum(x[2]==d for x in L)/dur if d else np.nan})
+h=pd.DataFrame(rows); h["day"]=h.groupby("rat").session.rank()
+print(h.round(3).to_string())
+for k in ("all","lr","puff"):
+    d=h.dropna(subset=[k]); print(k, len(d), stats.spearmanr(d.day,d[k]), [ (r, round(stats.spearmanr(g.day,g[k])[0],2), round(stats.spearmanr(g.day,g[k])[1],4)) for r,g in d.groupby("rat")])
+EOF
+env61/bin/python ex6.py
+```
+
+```
+session    rat    all     lr   puff   day
+0   Rat08-20130708  Rat08  0.083  0.056  0.056   1.0
+1   Rat08-20130709  Rat08  0.138  0.055    NaN   2.0
+2   Rat08-20130710  Rat08  0.305  0.139  0.166   3.0
+3   Rat08-20130711  Rat08  0.221  0.111  0.111   4.0
+4   Rat08-20130712  Rat08  0.661  0.331  0.331   5.0
+5   Rat08-20130713  Rat08  0.555  0.277  0.277   6.0
+6   Rat08-20130715  Rat08  1.465  0.733  0.733   7.0
+7   Rat08-20130716  Rat08  1.931  0.965  0.965   8.0
+8   Rat08-20130717  Rat08  2.894  1.447  1.447   9.0
+9   Rat08-20130718  Rat08  3.588  1.815  1.773  10.0
+10  Rat08-20130719  Rat08  2.587  1.270  1.270  11.0
+11  Rat08-20130720  Rat08  3.848  1.924  1.924  12.0
+12  Rat08-20130722  Rat08  4.309  2.155  2.155  13.0
+13  Rat09-20140324  Rat09  0.685  0.326  0.359   1.0
+14  Rat09-20140325  Rat09  1.382  0.707  0.707   2.0
+15  Rat09-20140326  Rat09  3.988  1.994  1.994   3.0
+16  Rat09-20140328  Rat09  3.996  2.022  1.973   4.0
+17  Rat09-20140329  Rat09  4.031  2.016  2.016   5.0
+18  Rat09-20140402  Rat09  4.538  2.246  2.246   6.0
+[... 25 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && env61/bin/python - <<'EOF'
+from dandi.dandiapi import DandiAPIClient
+import json
+with DandiAPIClient() as c:
+    a=c.get_dandiset("000061","0.250624.0426").get_raw_metadata()
+    b=c.get_dandiset("000061","draft").get_raw_metadata()
+for k in sorted(set(a)|set(b)):
+    if a.get(k)!=b.get(k): print(k, "\n  PUB:", json.dumps(a.get(k))[:600], "\n  DRAFT:", json.dumps(b.get(k))[:600])
+print(json.dumps(a.get("relatedResource"),indent=0)[:1500]); print(a.get("description")[:2000])
+EOF
+```
+
+```
+@context 
+  PUB: "https://raw.githubusercontent.com/dandi/schema/master/releases/0.4.4/context.json" 
+  DRAFT: "https://raw.githubusercontent.com/dandi/schema/master/releases/0.7.0/context.json"
+about 
+  PUB: [] 
+  DRAFT: [{"name": "CA1 field of hippocampus", "schemaKey": "Anatomy", "identifier": "http://purl.obolibrary.org/obo/UBERON_0003881"}, {"name": "basal amygdaloid nucleus", "schemaKey": "Anatomy", "identifier": "http://purl.obolibrary.org/obo/UBERON_0002887"}, {"name": "hippocampal formation", "schemaKey": "Anatomy", "identifier": "http://purl.obolibrary.org/obo/UBERON_0002421"}]
+citation 
+  PUB: "Girardeau, Gabrielle; Inema, Ingrid; Buzs\u00e1ki, Gy\u00f6rgy (2025) Reactivations of emotional memory in the hippocampus\u2013amygdala system during sleep (Version 0.250624.0426) [Data set]. DANDI Archive. https://doi.org/10.48324/dandi.000061/0.250624.0426" 
+  DRAFT: "Girardeau, Gabrielle; Inema, Ingrid; Buzs\u00e1ki, Gy\u00f6rgy (2026) Reactivations of emotional memory in the hippocampus\u2013amygdala system during sleep (Version draft) [Data set]. DANDI Archive. https://dandiarchive.org/dandiset/000061/draft"
+contributor 
+  PUB: [{"name": "Girardeau, Gabrielle", "email": "[removed: an e-mail address]", "roleName": ["dcite:Author", "dcite:ContactPerson"], "schemaKey": "Person", "identifier": "0000-0002-5265-9697", "affiliation": [{"name": "New York University Langone Medical Center", "schemaKey": "Affiliation", "identifier": "https://ror.org/005dvqh91"}, {"name": "New York University", "schemaKey": "Affiliation", "identifier": "https://ror.org/0190ak572"}], "includeInCitation": true}, {"name": "Inema, Ingrid", "roleName": ["dcite:Author"], "schemaKey": "Person", "affiliation": [], "includeInCitation": true}, {"name":  
+  DRAFT: [{"name": "Girardeau, Gabrielle", "email": "[removed: an e-mail address]", "roleName": ["dcite:Author", "dcite:ContactPerson"], "schemaKey": "Person", "identifier": "0000-0002-5265-9697", "affiliation": [{"name": "New York University L
+[... 43 more lines not kept]
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "/tmp/claude/build_nb.py",
+ "content": "\"\"\"Build the notebook from cell sources (development helper, not part of the entry).\"\"\"\nimport sys\nimport nbformat as nbf\n\ncells = []\n\n\ndef md(src):\n    cells.append(nbf.v4.new_markdown_cell(src.strip(\"\\n\")))\n\n\ndef code(src, tags=None):\n    c = nbf.v4.new_code_cell(src.strip(\"\\n\"))\n    if tags:\n        c.metadata[\"tags\"] = tags\n    cells.append(c)\n\n\nexec(open(sys.argv[1]).read())\nnb = nbf.v4.new_notebook()\nnb.cells = cells\nnb.metadata[\"kernelspec\"] = {\"display_name\": \"Python 3\", \"language\": \"python\", \"name\": \"python3\"}\nnb.metadata[\"language_info\"] = {\"name\": \"python\"}\nnbf.write(nb, sys.argv[2])\n"
+}
+```
+
+```
+File created successfully at: /tmp/claude/build_nb.py (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "/tmp/claude/cells.py",
+ "content": "md(r'''\n# Reproducing Girardeau, Inema & Buzsaki (2017) from dandiset 000061\n\nPaper. Girardeau G, Inema I, Buzsaki G (2017). Reactivations of emotional memory in the\nhippocampus-amygdala system during sleep. *Nature Neuroscience* 20, 1634-1642.\n[doi:10.1038/nn.4637](https://doi.org/10.1038/nn.4637).\n\nClaims. `claims/000061/10.1038-nn.4637.yaml`, written by a reader from the version of record\n(main text, figure legends, Online Methods, reporting summary) and the Supplementary Information,\nwith the paper's code (github.com/buzsakilab/papers, GGirardeau-BLAHpcInteractions-Package, at\ncommit cdcec89f), and checked by a second reader. Its criteria fix every method; the shared\nmethods M1 to M8 and the open details O1 to O7 are in its opening comment. This attempt\n(`000061-girardeau-2017-02`) replaces `000061-girardeau-2017-01`, whose claims were written from\nthe abstract alone.\n\nDandiset. [DANDI:000061](https://dandiarchive.org/dandiset/000061/0.250624.0426), version\n0.250624.0426. The paper cites no DANDI version (it says the data will be on CRCNS). There are\ntwo published versions, 0.210812.1517 and 0.250624.0426, with the same 40 files, and the draft\n(modified 2026-10-05) holds the same 40 assets as 0.250624.0426; the data check prints this.\nThe most recent published version is pinned, as the protocol asks when the paper cites none: it\nis the version the earlier attempt tested, no later published version exists, and the draft\ndiffers from it only in metadata the analysis does not use (keywords, anatomy terms, ethics\napproval, affiliations).\n\nWhat the dandiset holds. 40 NWB files, one per recording day, from four rats (Rat08 to Rat11):\nsorted units with a region label, sleep states, epochs, and event times of hippocampal ripples,\nair puffs and rewards; some files also hold raw voltage, LFP and video frames. There is no\nposition tracking, and the putative cell types the paper uses (pyramidal cell or interneuron,\nfrom monosynaptic connections and then k-means on the waveform) are not in it: five Rat08 files\nhave a `cell_type` column that marks only cells identified as excitatory or inhibitory. Every\nclaim on putative pyramidal cells is therefore blocked.\n\nNo random numbers are drawn anywhere in this notebook.\n\n| Claim | Tested here |\n|---|---|\n| `unit-counts` | tested |\n| `rats-learn-puff-location` | blocked (too large: no position; only raw video frames) |\n| `each-rat-learns-puff-location` | blocked (too large, depends on `rats-learn-puff-location`) |\n| `dz-speed-slower-post-run` | blocked (too large, depends on `rats-learn-puff-location`) |\n| `puff-location-no-speed-bias` | blocked (too large, depends on `rats-learn-puff-location`) |\n| `habituation-over-days` | tested (laps under O1 reading c) |\n| `bla-pyr-sleep-firing-increase` | tested (identified cells, five Rat08 files) |\n| `bla-int-sleep-firing` | tested (identified cells, five Rat08 files) |\n| `hpc-bla-reactivation-post-sleep` | blocked (metadata insufficient: no putative cell types) |\n| `reactivation-all-cell-pairs` | tested |\n| `reactivation-decay` | blocked (metadata insufficient) |\n| `no-rem-reactivation` | blocked (metadata insufficient); the all-cell variant is shown |\n| `piriform-weaker-reactivation` | blocked (metadata insufficient) |\n| `cen-no-reactivation` | tested |\n| `intra-structure-reactivation` | blocked (metadata insufficient); the all-cell tests are shown |\n| `bla-ripple-up-subgroup` | blocked (metadata insufficient); fractions over all BLA units shown |\n| `bla-ripple-down-subgroup` | blocked (metadata insufficient) |\n| `ripple-modulated-cells-larger-reactivation` | blocked (depends on `bla-ripple-up-subgroup`); the all-cell test is shown |\n| `run-correlated-pair-fractions` | blocked (metadata insufficient) |\n| `reactivation-involves-ripple-up-cells` | blocked (metadata insufficient) |\n| `pair-group-ev` | blocked (metadata insufficient) |\n| `contributing-up-cells-gain-increase` | blocked (metadata insufficient) |\n| `ev-independent-of-firing-rate` | blocked (metadata insufficient) |\n| `reactivation-peaks-at-ripples` | blocked (depends on `hpc-bla-reactivation-post-sleep`); the all-cell test is shown |\n| `airpuff-trajectory-ripple-reactivation` | blocked (metadata insufficient) |\n| `safe-trajectory-no-ripple-reactivation` | blocked (metadata insufficient) |\n| `aversive-direction-stronger` | blocked (metadata insufficient) |\n| `direction-all-cell-pairs` | blocked (depends on `aversive-direction-stronger`); its three tests are shown |\n| `bla-rate-same-across-directions` | blocked (metadata insufficient); the all-cell test is shown |\n| `ripple-rate-unchanged` | tested |\n| `contributing-pairs-run-sleep-coupling` | blocked (metadata insufficient) |\n| `contributing-quartiles-run-sleep-coupling` | blocked (metadata insufficient) |\n''')\n\ncode(r'''\nimport time\nimport warnings\n\nimport matplotlib.pyplot as plt\nimport numpy as np\nimport pandas as pd\nfrom scipy import stats\n\nimport hpcbla\n\npd.set_option(\"display.width\", 220)\npd.set_option(\"display.max_columns\", 40)\npd.set_option(\"display.max_rows\", 200)\nwarnings.filterwarnings(\"ignore\", category=RuntimeWarning)\n\nnotebook_started = started = time.time()\nsessions = sorted(hpcbla.load_all(), key=lambda s: s[\"path\"])\nprint(f\"loaded {len(sessions)} files from dandiset {hpcbla.DANDISET_ID} version \"\n      f\"{hpcbla.DANDISET_VERSION} in {time.time() - started:.0f} s\")\n''')\n\nmd(r'''\n## Data check\n\nEach check of the metadata against the values is stated under its output. The status of each\nfinding of the earlier attempt (`000061-girardeau-2017-01`) is summarised at the end of this\nsection.\n''')\n\ncode(r'''\nfrom dandi.dandiapi import DandiAPIClient\n\nwith DandiAPIClient() as client:\n    ds = client.get_dandiset(hpcbla.DANDISET_ID)\n    print(\"Versions:\", [(v.identifier, str(v.modified)[:19]) for v in ds.get_versions()])\n    meta = client.get_dandiset(hpcbla.DANDISET_ID, hpcbla.DANDISET_VERSION).get_raw_metadata()\n    draft_meta = client.get_dandiset(hpcbla.DANDISET_ID, \"draft\").get_raw_metadata()\n    pinned_assets = {a.path: a.identifier for a in client.get_dandiset(hpcbla.DANDISET_ID, hpcbla.DANDISET_VERSION).get_assets()}\n    draft_assets = {a.path: a.identifier for a in client.get_dandiset(hpcbla.DANDISET_ID, \"draft\").get_assets()}\nsummary = meta[\"assetsSummary\"]\nprint(\"Archive summary: files\", summary[\"numberOfFiles\"], \"; subjects\", summary[\"numberOfSubjects\"],\n      \"; species\", [s[\"name\"] for s in summary[\"species\"]], \"; measured\", summary[\"variableMeasured\"])\nprint(\"Draft against pinned version: assets\", len(draft_assets), \"and\", len(pinned_assets),\n      \"; same asset identifiers:\", sum(pinned_assets.get(k) == v for k, v in draft_assets.items()))\nskip = {\"@context\", \"citation\", \"id\", \"url\", \"version\", \"doi\", \"datePublished\", \"publishedBy\", \"manifestLocation\",\n        \"schemaVersion\", \"dateCreated\", \"dateModified\", \"assetsSummary\"}\nprint(\"Metadata fields that differ in the draft:\", sorted(k for k in set(meta) | set(draft_meta)\n                                                     if k not in skip and meta.get(k) != draft_meta.get(k)))\nprint(\"Related resources (pinned):\", [(r.get(\"relation\"), r.get(\"identifier\")) for r in meta.get(\"relatedResource\", [])])\n\nrows = []\nfor s in sessions:\n    u = s[\"units\"]\n    pre, post, run = hpcbla.sleep_epochs(s)\n    region = pd.Series(u[\"region\"]).value_counts() if u else pd.Series(dtype=int)\n    rows.append({\n        \"session\": s[\"session\"], \"rat\": s[\"rat\"], \"units\": 0 if u is None else len(u[\"region\"]),\n        \"hpc\": int(sum(region.get(k, 0) for k in hpcbla.HPC_LABELS)),\n        \"bla\": int(sum(region.get(k, 0) for k in hpcbla.BLA_LABELS)),\n        \"cen\": int(sum(region.get(k, 0) for k in hpcbla.CEN_LABELS)),\n        \"pir\": int(sum(region.get(k, 0) for k in hpcbla.PIR_LABELS)),\n        \"cell_type\": bool(u and \"cell_type\" in u[\"columns\"]),\n        \"states\": s[\"states\"] is not None,\n        \"ripples\": 0 if s[\"ripples\"] is None else len(s[\"ripples\"][\"peak\"]),\n        \"puffs\": len(s[\"events\"][\"puf\"][1]) if \"puf\" in s[\"events\"] else 0,\n        \"rewards\": len(s[\"events\"][\"lrw\"][1]) + len(s[\"events\"][\"rrw\"][1]),\n        \"pre_sleep_s\": round(float(np.diff(pre).sum())), \"post_sleep_s\": round(float(np.diff(post).sum())),\n        \"run_s\": None if run is None else round(run[1] - run[0]),\n        \"lfp\": s[\"lfp\"] is not None, \"raw\": s[\"raw\"] is not None, \"videos\": len(s[\"videos\"]),\n        \"trials\": None if s[\"trials\"] is None else len(s[\"trials\"][0])})\ninfo = pd.DataFrame(rows)\nprint(\"\\nSubjects:\", sorted(info.rat.unique()), \"; files per rat:\", info.rat.value_counts().sort_index().to_dict())\nprint(\"Species, age, sex:\", sorted({(s[\"species\"], s[\"age\"], s[\"sex\"]) for s in sessions}))\nprint(\"\\n\", info.to_string(index=False))\nprint(\"\\nFiles without a units table:\", info.session[info.units == 0].tolist())\nprint(\"Files without sleep states:\", info.session[~info.states].tolist())\nprint(\"Files without ripple events:\", info.session[info.ripples == 0].tolist())\nprint(\"Rats with hippocampal units:\", sorted(info.rat[info.hpc > 0].unique()))\nprint(\"Files with raw voltage:\", int(info.raw.sum()), \"; with LFP:\", int(info.lfp.sum()), \"; with video:\", int((info.videos > 0).sum()))\n''', [\"sanity\"])\n\nmd(r'''\nThe archive's summary says four subjects, which matches the four rats in the files, all male Long\nEvans rats given as 3 months old. The draft holds the same assets as the pinned version (same\nidentifiers) and differs in descriptive metadata only, so no finding of the earlier attempt can\nhave been fixed in the data. Seven files have no units table, sixteen have no sleep states and\nfourteen have no ripple events; the Rat09 files have no hippocampal units and no ripples, which\nfits the paper's rat whose hippocampal probe failed (rat 2). The dandiset holds 40 recording\ndays, where the paper reports 61 sessions.\n''')\n\ncode(r'''\nlabels = pd.Series(np.concatenate([s[\"units\"][\"label\"] for s in sessions if s[\"units\"]])).value_counts()\nprint(\"Unit location labels over all files (as stored):\")\nprint(labels.to_string())\nprint(\"\\nElectrode table locations:\", sorted({x for s in sessions for x in s[\"electrode_locations\"]}))\nprint(\"Files whose units table has no location column:\",\n      [s[\"session\"] for s in sessions if s[\"units\"] and not s[\"units\"][\"has_location_column\"]])\nprint(\"\\nUnits table columns:\", sorted({tuple(sorted(s[\"units\"][\"columns\"])) for s in sessions if s[\"units\"]}))\ntyped = [s for s in sessions if s[\"units\"] and \"cell_type\" in s[\"units\"][\"columns\"]]\nprint(\"Files with a cell_type column:\", [s[\"session\"] for s in typed])\nprint(\"Its description:\", sorted({s[\"units\"][\"cell_type_description\"] for s in typed}))\nct = pd.DataFrame([{\"session\": s[\"session\"], \"region\": s[\"units\"][\"region\"][i], \"cell_type\": s[\"units\"][\"cell_type\"][i],\n                    \"rate_hz\": s[\"units\"][\"n_spikes\"][i] / s[\"units\"][\"last_spike\"]}\n                   for s in typed for i in range(len(s[\"units\"][\"region\"]))])\nprint(ct.groupby([\"region\", \"cell_type\"]).size().unstack(fill_value=0).to_string())\nprint(\"\\nWhole-recording rate (Hz) by cell_type, all regions: median\",\n      ct.groupby(\"cell_type\").rate_hz.median().round(2).to_dict())\nident = ct[ct.region.isin(hpcbla.BLA_LABELS)].groupby([\"session\", \"cell_type\"]).size().unstack(fill_value=0)\nprint(\"BLA units by cell_type and file:\\n\", ident.to_string())\nhpc_exc = ct[ct.region.isin(hpcbla.HPC_LABELS) & (ct.cell_type == \"excitatory\")].groupby(\"session\").size()\nprint(\"Hippocampal units typed excitatory per file:\", hpc_exc.to_dict(), \"; files with 6 or more:\", int((hpc_exc >= 6).sum()))\nprint(\"\\nUsed as hippocampus:\", sorted(hpcbla.HPC_LABELS), \"; BLA:\", sorted(hpcbla.BLA_LABELS), \"; central nuclei:\",\n      sorted(hpcbla.CEN_LABELS), \"; piriform:\", sorted(hpcbla.PIR_LABELS), \"; wider amygdala variant:\",\n      sorted(hpcbla.BLA_COMPLEX_LABELS), \"(case ignored)\")\n''', [\"sanity\"])\n\nmd(r'''\nThe unit labels are short codes with no description in the files or the dandiset metadata. They\nmatch the structure names of the paper's Supplementary Fig. 3 (BLA, BLV, LaDL, BMP; Pir, VEn,\nDEn; and CeN for the central nuclei), so `bla`, `cen`, `pir` and `hpc`/`HIP` are read as the\npaper's BLA, central nuclei, piriform cortex and hippocampus (M1); this is consistent with the\npaper's names, not shown by the dandiset. Some labels appear in two cases (`bla` and `BLA`,\n`pir` and `PIR`, `plc01` and `PLCo1`); others (`cpu`, `no label`) are not defined anywhere. The\nelectrode table gives every channel the location `unknown`, and Rat09-20140328 has no location\ncolumn.\n\nCell types. Only five Rat08 files (20130709 to 20130713) have a `cell_type` column, described only\nas \"Type of cell this has been classified as\", with the values excitatory, inhibitory and\nunclassified. Most units are unclassified, and almost no hippocampal unit is typed (no file has six\ntyped excitatory hippocampal units), while the paper's k-means step types every remaining cell as\na putative pyramidal cell or interneuron. The column therefore holds at most the paper's\nmonosynaptic identification, and the putative types are missing: excitatory units are read as\nmonosynaptically identified pyramidal cells and inhibitory ones as identified interneurons (O4\nreading a). This reading is consistent with the data (inhibitory units fire faster than\nexcitatory ones, and the BLA ratio of excitatory to inhibitory units is close to the paper's 675\nto 175), not shown by it. The files hold no spike waveforms; the raw voltage of 16 files would be\nneeded to classify cells, which the claims file does not provide for. The earlier attempt did not\nread this column. Every claim whose criterion uses putative pyramidal cells or interneurons is\nblocked as `metadata_insufficient`.\n''')\n\ncode(r'''\nrows = []\nfor s in sessions:\n    end_raw = max(b for _, _, b in s[\"epochs_raw\"])\n    lfp_s = s[\"lfp\"][0][0] / s[\"lfp\"][1] if s[\"lfp\"] else np.nan\n    rows.append({\"session\": s[\"session\"], \"epochs_last_stop_raw\": end_raw,\n                 \"lfp_duration_s\": round(lfp_s, 1), \"ratio\": round(end_raw / lfp_s, 3),\n                 \"last_spike_s\": round(s[\"units\"][\"last_spike\"], 1) if s[\"units\"] else np.nan,\n                 \"lfp_rate_hz\": s[\"lfp\"][1] if s[\"lfp\"] else np.nan,\n                 \"states_span_s\": (round(min(a for _, a, _ in s[\"states\"])), round(max(b for _, _, b in s[\"states\"])))\n                 if s[\"states\"] else None,\n                 \"state_labels\": \",\".join(sorted({lab for lab, _, _ in s[\"states\"]})) if s[\"states\"] else None})\ntimes = pd.DataFrame(rows)\nprint(\"Epoch table column description:\", sorted({s[\"epoch_unit_stated\"] for s in sessions}))\nprint(times.to_string(index=False))\nprint(\"\\nRatio of the epoch table's last stop to the LFP duration: min\", times.ratio.min(), \"max\", times.ratio.max())\nprint(\"Epoch tags:\", sorted({t for s in sessions for t, _, _ in s[\"epochs\"]}))\nprint(\"Files that tag sleep only as 'sleep':\", {s[\"session\"]: [t for t, _, _ in s[\"epochs\"]] for s in sessions\n                                               if \"presleep\" not in [t for t, _, _ in s[\"epochs\"]] and \"postsleep\" not in [t for t, _, _ in s[\"epochs\"]]})\nprint(\"Files with more than one run epoch:\", {s[\"session\"]: [(round(a), round(b)) for t, a, b in s[\"epochs\"] if t == \"run\"]\n                                             for s in sessions if sum(t == \"run\" for t, _, _ in s[\"epochs\"]) > 1})\n''', [\"sanity\"])\n\nmd(r'''\nThe epoch table says its times are in seconds, but its last stop time is 1000 times the LFP\nduration in every file: the epochs are stored in milliseconds. The helper divides them by 1000.\nSleep states, spikes, ripples, puffs and rewards are in seconds and span the session; the states\n(Awake, Non-REM, REM) cover the whole recording, so wake includes the track epochs. Three files\ntag their sleep epochs only as `sleep`; there the sleep before the first run is pre-sleep and the\nsleep after it post-sleep. Rat08-20130708 has a second run of about 600 s after its post-sleep;\nthe first run is the training run used here.\n''')\n\ncode(r'''\nrows = []\nfor s in sessions:\n    eps = {t: (a, b) for t, a, b in s[\"epochs\"]}\n    for name, (n_frames, first, last, unit) in s[\"videos\"].items():\n        tag = name.rsplit(\"-\", 1)[-1]\n        a, b = eps.get(tag, (np.nan, np.nan))\n        rows.append({\"session\": s[\"session\"], \"video\": tag, \"frames\": n_frames, \"stated_unit\": unit,\n                     \"first_ts\": round(first, 1), \"last_ts\": round(last, 1),\n                     \"video_span_ts/1000\": round((last - first) / 1000, 1), \"epoch_start_s\": round(a, 1),\n                     \"epoch_duration_s\": round(b - a, 1)})\nvideos = pd.DataFrame(rows)\nprint(videos.head(12).to_string(index=False))\nprint(\"...\", len(videos), \"videos in all\")\nok = np.isfinite(videos.epoch_start_s)\nprint(\"Videos whose first timestamp / 1000 is within 5 s of their epoch's start:\",\n      int((np.abs(videos.first_ts[ok] / 1000 - videos.epoch_start_s[ok]) < 5).sum()), \"of\", int(ok.sum()))\nprint(\"Videos whose span / 1000 is within 5% of their epoch's duration:\",\n      int((np.abs(videos[\"video_span_ts/1000\"][ok] / videos.epoch_duration_s[ok] - 1) < 0.05).sum()), \"of\", int(ok.sum()))\nrows = []\nfor s in sessions:\n    if s[\"trials\"] is None:\n        continue\n    a, b, desc = s[\"trials\"]\n    _, _, run = hpcbla.sleep_epochs(s)\n    rows.append({\"session\": s[\"session\"], \"trials\": len(a), \"description\": desc,\n                 \"median_duration_s\": round(float(np.median(b - a)), 1),\n                 \"fraction_in_run\": round(float(np.mean((a >= run[0]) & (a < run[1]))), 2)})\nprint(\"\\nTrials tables:\")\nprint(pd.DataFrame(rows).to_string(index=False))\n''', [\"sanity\"])\n\nmd(r'''\nThe video timestamps are stated in seconds but are in milliseconds, and they are not on the\nsession clock: the first timestamp matches the start of the epoch a video is named after in 1 of\n114 videos, while the spans match the epochs' durations in 93 of 114. The videos are not used.\nThe `trials` table of the Rat08 and Rat09 files is described only as \"experimental trials\"; its\nintervals last about 3 to 5 s and fall partly outside the run, so they are not laps (O1 reading\na has no lap intervals to use).\n''')\n\ncode(r'''\n# Video storage: frame shape and compression of every video series, the size of the run videos,\n# and the time taken to stream frames of one run video.\nstorage = pd.DataFrame([{\"session\": s[\"session\"], \"video\": k.rsplit(\"-\", 1)[-1], \"frames\": shape[0],\n                         \"frame_shape\": shape[1:], \"dtype\": dt, \"compression\": comp,\n                         \"uncompressed_gb\": np.prod(shape) / 1e9}\n                        for s in sessions for k, (shape, dt, comp) in s[\"video_storage\"].items()])\nprint(\"Video series:\", len(storage), \"; frame shapes:\", sorted(set(storage.frame_shape)), \"; dtypes:\", sorted(set(storage.dtype)),\n      \"; compression:\", sorted(set(map(str, storage.compression))))\nrun_videos = storage[storage.video == \"run\"]\nprint(\"Run videos:\", len(run_videos), \"in\", run_videos.session.nunique(), \"files;\", int(run_videos.frames.sum()), \"frames,\",\n      round(float(run_videos.uncompressed_gb.sum())), \"GB uncompressed\")\nfirst = sessions[0]\nname = next(k for k in first[\"video_storage\"] if k.endswith(\"-run\"))\nseconds, frame_bytes = hpcbla.time_frame_reads(dict(hpcbla.asset_urls())[first[\"path\"]], name, 20)\nprint(f\"Streaming 20 frames of {name}: {seconds:.1f} s ({seconds / 20:.2f} s per frame of {frame_bytes} bytes)\")\nprint(f\"At that rate the run frames alone would take about {run_videos.frames.sum() * seconds / 20 / 3600:.0f} hours to stream\")\nraw = [(s[\"session\"], s[\"raw\"]) for s in sessions if s[\"raw\"]]\nprint(\"Raw voltage: files\", len(raw), \"; shapes and chunks, first three:\", raw[:3])\n''', [\"sanity\"])\n\nmd(r'''\nThe videos are stored as raw frames (360 by 640 pixels, three colours) inside the NWB files,\ncompressed with gzip, with no position derived from them. Tracking the rat in the run videos would\nmean streaming the frames counted above and running a tracker, which does not fit the time limit,\nand their timestamps would first have to be aligned to the session clock. The behaviour claims that\nneed position are blocked as too large. The raw voltage of 16 files is chunked one channel at a\ntime over about four hours of samples, so reading spike waveforms from it would mean streaming\nwhole channels.\n''')\n\ncode(r'''\nrows = []\nfor s in sessions:\n    u = s[\"units\"]\n    if u and u[\"unsorted\"]:\n        rows.append({\"session\": s[\"session\"], \"unsorted_units\": u[\"unsorted\"],\n                     \"falls_back_after_spike\": [x for i in u[\"unsorted\"] for x in u[\"unsorted_at\"][i]],\n                     \"unit0_last_spike_s\": round(u[\"unit0_last\"], 2), \"unit1_first_spike_s\": round(u[\"unit1_first\"], 2),\n                     \"units_left_out\": u[\"mixed\"]})\nprint(pd.DataFrame(rows).to_string(index=False))\nprint(hpcbla.MIXED_UNITS_NOTE)\n''', [\"sanity\"])\n\nmd(r'''\nIn ten files the spike times of unit 1 are not sorted: they fall back once, always after a\nmultiple of 65536 spikes, and unit 0 stops part way through the session at the time where unit 1\nstarts. The first part of unit 1 is the end of unit 0, so the index that separates them is wrong.\nUnits 0 and 1 of these files are left out of the analyses (they are still counted in\n`unit-counts`, which counts units as stored).\n''')\n\ncode(r'''\n# Clock checks. (1) Ripples against the sleep states, with the states shifted by 600 s as the\n# contrast. (2) Hippocampal multi-unit rate within 25 ms of ripple peaks against 1 s away.\nrows = []\nfor s in sessions:\n    if s[\"states\"] is None or s[\"ripples\"] is None or s[\"units\"] is None:\n        continue\n    peaks = s[\"ripples\"][\"peak\"]\n    r = {\"session\": s[\"session\"], \"ripples_ordered\": s[\"ripples\"][\"ordered\"],\n         \"channels\": \",\".join(s[\"ripples\"][\"channels\"]),\n         \"ripple_ms_median\": round(1000 * float(np.median(s[\"ripples\"][\"stop\"] - s[\"ripples\"][\"start\"])), 1)}\n    for label in (\"Non-REM\", \"REM\", \"Awake\"):\n        iv = hpcbla.intervals_of(s, label)\n        dur = np.diff(iv).sum()\n        r[f\"{label}_hz\"] = round(np.count_nonzero(hpcbla.in_intervals(peaks, iv)) / dur, 3)\n        r[f\"{label}_hz_shift\"] = round(np.count_nonzero(hpcbla.in_intervals(peaks, iv + 600)) / dur, 3)\n    u = s[\"units\"]\n    hpc = hpcbla.units_of(s, hpcbla.HPC_LABELS)\n    if hpc:\n        spikes = np.sort(np.concatenate([u[\"trains\"][i] for i in hpc]))\n        def rate(t, w=0.025):\n            return (np.searchsorted(spikes, t + w) - np.searchsorted(spikes, t - w)).mean() / (2 * w)\n        r[\"hpc_hz_at_peak\"] = round(rate(peaks), 1)\n        r[\"hpc_hz_peak+1s\"] = round(rate(peaks + 1), 1)\n    rows.append(r)\nclock = pd.DataFrame(rows)\nprint(clock.to_string(index=False))\nprint(\"\\nRipples per s of Non-REM: min\", clock[\"Non-REM_hz\"].min(), \"max\", clock[\"Non-REM_hz\"].max(), \"; REM max\", clock[\"REM_hz\"].max())\nprint(\"Median over files: ripples per s in Non-REM\", clock[\"Non-REM_hz\"].median(),\n      \"(states shifted:\", clock[\"Non-REM_hz_shift\"].median(), \"); in REM\", clock[\"REM_hz\"].median(),\n      \"(shifted:\", clock[\"REM_hz_shift\"].median(), \")\")\nprint(\"Median ratio of hippocampal rate at ripple peaks to 1 s later:\",\n      round(float((clock.hpc_hz_at_peak / clock[\"hpc_hz_peak+1s\"]).median()), 2), \"; files with hippocampal units:\",\n      int(clock.hpc_hz_at_peak.notna().sum()))\n''', [\"sanity\"])\n\nmd(r'''\nIn every file with states and ripples, ripples occur far more often per second of Non-REM than of\nREM, and with the states shifted by 600 s the two rates move toward each other. Hippocampal units\nfire several times faster within 25 ms of a ripple peak than 1 s later. The ripple annotations\ncome in ordered start, peak and stop triplets on one channel per file. So the states, the ripples\nand the spikes share one clock, as far as these contrasts show.\n''')\n\ncode(r'''\n# (3) Lap direction decoded from hippocampal rates in each lap (leave one lap out, nearest\n# centroid), with the true laps and with laps shifted by half their own duration.\ndef decode_direction(s, half_shift=False):\n    u = s[\"units\"]\n    ids = hpcbla.units_of(s, hpcbla.HPC_LABELS)\n    laps = hpcbla.run_laps(s)\n    if len(ids) < 5 or len(laps) < 6 or len({d for _, _, d in laps}) < 2:\n        return None\n    if half_shift:\n        laps = [(a + (b - a) / 2, b + (b - a) / 2, d) for a, b, d in laps]\n    x = np.array([[np.count_nonzero((u[\"trains\"][i] >= a) & (u[\"trains\"][i] < b)) / (b - a) for i in ids]\n                  for a, b, _ in laps])\n    y = np.array([d == \"LR\" for _, _, d in laps])\n    x = np.log1p(x)\n    x = (x - x.mean(0)) / (x.std(0) + 1e-9)\n    hits = 0\n    for k in range(len(y)):\n        keep = np.arange(len(y)) != k\n        c1, c0 = x[keep & y].mean(0), x[keep & ~y].mean(0)\n        hits += (np.sum((x[k] - c1) ** 2) < np.sum((x[k] - c0) ** 2)) == y[k]\n    return hits / len(y), len(y)\n\nrows = []\nfor s in sessions:\n    if s[\"units\"] is None:\n        continue\n    true, shifted = decode_direction(s), decode_direction(s, True)\n    if true:\n        rows.append({\"session\": s[\"session\"], \"laps\": true[1], \"accuracy\": round(true[0], 3),\n                     \"accuracy_half_lap_shift\": round(shifted[0], 3)})\ndec = pd.DataFrame(rows)\nprint(dec.to_string(index=False))\nprint(\"Median accuracy\", dec.accuracy.median(), \"; with laps shifted by half a lap\", dec.accuracy_half_lap_shift.median(),\n      \"; chance 0.5\")\n''', [\"sanity\"])\n\nmd(r'''\nHippocampal rates tell the lap direction apart in most laps built from the reward times, and less\nwell when the laps are shifted by half their length. The reward events and the spikes share one\nclock, as far as this contrast shows; it does not test the timing to better than a fraction of a\nlap.\n''')\n\ncode(r'''\n# (4) Air puffs: pooled rate in the 0.5 s after each puff against the 0.5 s before, in BLA\n# (wider labels) and hippocampus, with the puff times shifted by 30 s as the contrast; and the lap\n# direction that holds the puffs.\nrows = []\nfor s in sessions:\n    u = s[\"units\"]\n    if \"puf\" not in s[\"events\"]:\n        continue\n    puffs = s[\"events\"][\"puf\"][1]\n    direction, counts = hpcbla.puff_direction(s)\n    row = {\"session\": s[\"session\"], \"puffs\": len(puffs), \"direction\": direction, **counts}\n    for name, labels_ in ((\"bla\", hpcbla.BLA_COMPLEX_LABELS), (\"hpc\", hpcbla.HPC_LABELS)):\n        ids = hpcbla.units_of(s, labels_)\n        if len(ids) < 3 or len(puffs) < 5:\n            continue\n        spikes = np.sort(np.concatenate([u[\"trains\"][i] for i in ids]))\n        def change(t):\n            after = (np.searchsorted(spikes, t + 0.5) - np.searchsorted(spikes, t)).sum()\n            before = (np.searchsorted(spikes, t) - np.searchsorted(spikes, t - 0.5)).sum()\n            return (after - before) / max(before, 1)\n        row[f\"{name}_change\"] = round(change(puffs), 3)\n        row[f\"{name}_change_shift30\"] = round(change(puffs + 30), 3)\n    rows.append(row)\npuff = pd.DataFrame(rows)\nprint(puff.to_string(index=False))\nprint(\"\\nMedian relative change after puffs, BLA:\", puff.bla_change.median(), \"(shifted:\", puff.bla_change_shift30.median(),\n      \"); hippocampus:\", puff.hpc_change.median(), \"(shifted:\", puff.hpc_change_shift30.median(), \")\")\nprint(\"Files with BLA change above 0.3:\", int((puff.bla_change > 0.3).sum()), \"; with shifted times:\",\n      int((puff.bla_change_shift30 > 0.3).sum()))\nin_dir = int(sum(r[r.direction] for _, r in puff.iterrows() if r.direction))\nprint(\"Files with puffs:\", len(puff), \"; without a puff direction:\", puff.session[puff.direction.isna()].tolist())\nprint(\"Puffs inside run laps of the air puff direction:\", in_dir, \"of\", int(puff.puffs.sum()),\n      \"; in laps of the other direction:\", int(sum(r[\"RL\" if r.direction == \"LR\" else \"LR\"] for _, r in puff.iterrows() if r.direction)),\n      \"; outside run laps:\", int(puff.none.sum()))\n''', [\"sanity\"])\n\nmd(r'''\nIn nearly every file the puffs fall inside run laps of one direction, which gives the day's air\npuff direction for the lap-based analyses (O1 reading c laps, M8 lap types); three files have no\npuff inside a run lap and so no direction. The pooled response to puffs is small in most files;\nthis is consistent with the puffs sharing the spike clock but does not show it for every file.\n''')\n\ncode(r'''\n# Recordings deposited twice: compare unit spike counts and first spikes, ripple times and puff\n# times between every pair of files, and units within a file.\ndef signature(s):\n    u = s[\"units\"]\n    return {\"units\": None if u is None else tuple(zip(u[\"n_spikes\"].tolist(), np.round(u[\"first_spike\"], 4).tolist())),\n            \"ripples\": None if s[\"ripples\"] is None else tuple(np.round(s[\"ripples\"][\"peak\"][:50], 4)),\n            \"puffs\": tuple(np.round(s[\"events\"][\"puf\"][1], 4)) if \"puf\" in s[\"events\"] else None,\n            \"rewards\": tuple(np.round(np.sort(np.concatenate([s[\"events\"][\"lrw\"][1], s[\"events\"][\"rrw\"][1]])), 4))}\nsigs = {s[\"session\"]: signature(s) for s in sessions}\nnames = list(sigs)\nsame = [(a, b, k) for i, a in enumerate(names) for b in names[i + 1:] for k in sigs[a]\n        if sigs[a][k] is not None and sigs[a][k] == sigs[b][k]]\nprint(\"Pairs of files sharing units, ripples, puffs or rewards:\", same if same else \"none\")\nwithin = {s[\"session\"]: len(sigs[s[\"session\"]][\"units\"]) - len(set(sigs[s[\"session\"]][\"units\"]))\n          for s in sessions if s[\"units\"]}\nprint(\"Units sharing spike count and first spike within a file:\", {k: v for k, v in within.items() if v} or \"none\")\n''', [\"sanity\"])\n\nmd(r'''\nNo two files share their units, ripples, puffs or rewards, and no two units of a file share a\nspike count and first spike, so no recording was deposited twice. Units are not matched across\ndays; like the paper, each session is analysed on its own, and a cell recorded on several days may\nbe counted more than once.\n''')\n\ncode(r'''\n# Sessions entering each analysis: states, pre- and post-sleep, a run, and at least 6 cells in each\n# structure (M4, M7); REM needs more than 180 s in both sleep epochs (M4).\nrows = []\nfor s in sessions:\n    if s[\"units\"] is None:\n        continue\n    pre, post, run = hpcbla.sleep_epochs(s)\n    has_sleep = s[\"states\"] is not None and len(pre) > 0 and len(post) > 0 and run is not None\n    r = {\"session\": s[\"session\"], \"rat\": s[\"rat\"], \"sleep\": has_sleep, \"ripples\": s[\"ripples\"] is not None,\n         \"hpc\": len(hpcbla.units_of(s, hpcbla.HPC_LABELS)), \"bla\": len(hpcbla.units_of(s, hpcbla.BLA_LABELS)),\n         \"cen\": len(hpcbla.units_of(s, hpcbla.CEN_LABELS)),\n         \"bla_wide\": len(hpcbla.units_of(s, hpcbla.BLA_COMPLEX_LABELS))}\n    if has_sleep:\n        rem = hpcbla.session_epoch_rows(s, \"REM\")\n        nrem = hpcbla.session_epoch_rows(s)\n        r.update({\"pre_nrem_s\": round(nrem[\"pre_s\"]), \"post_nrem_s\": round(nrem[\"post_s\"]),\n                  \"pre_rem_s\": round(rem[\"pre_s\"]), \"post_rem_s\": round(rem[\"post_s\"]),\n                  \"rem_ok\": rem[\"pre_s\"] > hpcbla.MIN_REM_S and rem[\"post_s\"] > hpcbla.MIN_REM_S})\n    rows.append(r)\nuse = pd.DataFrame(rows)\nuse[\"hpc_bla\"] = use.sleep & (use.hpc >= hpcbla.MIN_CELLS) & (use.bla >= hpcbla.MIN_CELLS)\nuse[\"hpc_cen\"] = use.sleep & (use.hpc >= hpcbla.MIN_CELLS) & (use.cen >= hpcbla.MIN_CELLS)\nprint(use.to_string(index=False))\nfor col in (\"hpc_bla\", \"hpc_cen\"):\n    d = use[use[col]]\n    print(f\"{col}: {len(d)} sessions {d.rat.value_counts().sort_index().to_dict()}; with REM above 180 s in both: {int(d.rem_ok.sum())}\")\nprint(\"Units entering hpc_bla (hippocampus, BLA):\", int(use.hpc[use.hpc_bla].sum()), int(use.bla[use.hpc_bla].sum()))\n''', [\"sanity\"])\n\nmd(r'''\nUnder the claims file's rule (pre- and post-sleep NREM, a run, at least six cells of each\nstructure), the sessions and units printed above enter the hippocampus-BLA and\nhippocampus-central nuclei analyses. Rat09 has no hippocampal units, so as in the paper only three\nrats enter these analyses. Which of the paper's rats 1 to 4 each of Rat08 to Rat11 is, the\ndandiset does not say; Rat09 is the rat without hippocampal units, as the paper's rat 2, and the\nothers are taken in order (Rat08 rat 1, Rat10 rat 3, Rat11 rat 4) for `unit-counts`, as an\nassumption.\n\nStatus of the findings of `000061-girardeau-2017-01`. The version tested is the same\n(0.250624.0426), and the draft holds the same assets, so none of the data findings can have been\nfixed; each check above was re-run and gives the same result.\n\n| Earlier finding | Status | Shown by |\n|---|---|---|\n| Epochs table in milliseconds though it says seconds | still present | epoch check (ratio 1000 in every file) |\n| Video timestamps in milliseconds, stated as seconds, not on the session clock | still present | video check (1 of 114 starts match) |\n| `spike_times_index` wrong at units 0 and 1 of ten files | still present | unsorted-unit check (ten files) |\n| Files without units (7), sleep states (16) or ripples (14); Rat09 without hippocampal units | still present | file table |\n| No position tracking, only raw video frames | still present | video storage check |\n| Undescribed unit region labels; electrode table all `unknown`; one file without labels | still present in the dandiset; the paper's Supplementary Fig. 3 now gives the structure names the codes match | label check |\n| `trials` table undescribed and not laps | still present | trials check |\n| Ripple labels carry an undescribed number; events stored as stimulus annotations | still present | clock check (one channel per file) |\n| Methods unavailable (paper not open, no code linked) | fixed for this attempt: the full text was supplied and the paper links its code; the dandiset still links no code (its related resources name only the paper) | header, related resources above |\n\nNew in this attempt: the `cell_type` column of five files, and the missing putative cell types\nand waveforms (label check above).\n''')\n\n# ---------------------------------------------------------------- tested claims ----------------\n\nmd(r'''\n## unit-counts\n\n> Over 61 sessions in 4 rats, 7,390 well-isolated units were recorded (rat 1, 2,444; rat 2,\n> 1,294; rat 3, 1,138; rat 4, 2,514), of which 2,038 were in the BLA, 782 in the central nuclei,\n> 1,560 in the piriform cortex and 1,210 in the hippocampus.\n\nUnits as stored in the units tables, counted per rat and per location label (M1, case ignored).\nRats are matched to the paper's numbering as stated in the data check.\n''')\n\ncode(r'''\nrat_number = {\"Rat08\": \"rat 1\", \"Rat09\": \"rat 2\", \"Rat10\": \"rat 3\", \"Rat11\": \"rat 4\"}\nunits_all = pd.DataFrame([{\"session\": s[\"session\"], \"rat\": s[\"rat\"], \"region\": r}\n                          for s in sessions if s[\"units\"] for r in s[\"units\"][\"region\"]])\nregion_sets = {\"BLA\": hpcbla.BLA_LABELS, \"central nuclei\": hpcbla.CEN_LABELS, \"piriform cortex\": hpcbla.PIR_LABELS,\n               \"hippocampus\": hpcbla.HPC_LABELS}\nexpected_counts = [(\"sessions\", 61, len(sessions)), (\"units, all rats\", 7390, len(units_all))]\nfor rat, paper_n in ((\"Rat08\", 2444), (\"Rat09\", 1294), (\"Rat10\", 1138), (\"Rat11\", 2514)):\n    expected_counts.append((f\"units, {rat_number[rat]} ({rat})\", paper_n, int((units_all.rat == rat).sum())))\nfor name, paper_n in ((\"BLA\", 2038), (\"central nuclei\", 782), (\"piriform cortex\", 1560), (\"hippocampus\", 1210)):\n    expected_counts.append((f\"{name} units\", paper_n, int(units_all.region.isin(region_sets[name]).sum())))\ncounts = pd.DataFrame(expected_counts, columns=[\"quantity\", \"paper\", \"dandiset\"])\ncounts[\"tolerance\"] = 0.1 * counts.paper\ncounts[\"within\"] = (counts.dandiset - counts.paper).abs() <= counts.tolerance\nprint(counts.to_string(index=False))\nprint(\"\\nFiles with a units table:\", units_all.session.nunique(), \"of\", len(sessions))\nprint(\"Units by rat and region:\")\nprint(units_all.assign(region=units_all.region.map(lambda r: next((k for k, v in region_sets.items() if r in v), \"other: \" + r)))\n      .groupby([\"region\", \"rat\"]).size().unstack(fill_value=0).to_string())\nprint(\"\\nVariant, wider amygdala labels (bla, blv, bmp, ladl):\", int(units_all.region.isin(hpcbla.BLA_COMPLEX_LABELS).sum()))\n''', [\"claim:unit-counts\"])\n\nmd(r'''\n**Result: RESULT_UNIT_COUNTS**\n''')\n\nmd(r'''\n## rats-learn-puff-location, each-rat-learns-puff-location, dz-speed-slower-post-run, puff-location-no-speed-bias (blocked)\n\n> Rats learned the daily location of the air puff. The speed ratio between the previous and the\n> current danger zone rises from pre-run to run and post-run, reversing between pre-run and\n> post-run.\n\nThe four behaviour claims need the rat's speed in the 20 cm before the air puff location of the\nday and of the previous day, which needs position on the track and the location of each puff.\nThe dandiset holds no position tracking and no puff location, only the puff times and the raw\nvideo frames, and tracking the frames does not fit the time limit (data check: run frames and\nstreaming time). `each-rat-learns-puff-location`, `dz-speed-slower-post-run` and\n`puff-location-no-speed-bias` depend on `rats-learn-puff-location` and are blocked with it.\n\n**Result: blocked (too large).** No analysis is run.\n''')\n\nmd(r'''\n## habituation-over-days\n\n> The aversive valence of the air puff diminishes over training days; rats run more laps per unit\n> time as they habituate.\n\nHabituation index per session = laps / run epoch duration x 100 (Performance.m). Laps are O1\nreading c (between consecutive rewards at opposite ends, both inside the run): readings a (lap\nintervals the dataset holds) and b (position) cannot be run, as the dandiset has neither. The\nthree lap counts of the criterion: all laps (back-and-forth), air puff laps, and left-to-right\nlaps. Readings of \"gradually diminished\": (a) pooled Spearman correlation of day rank within the\nrat and index, positive with p < 0.05; (b) positive Spearman correlation in at least 3 of the 4\nrats (shown as the sign alone and with p < 0.05).\n''')\n\ncode(r'''\nrows = []\nfor s in sessions:\n    _, _, run = hpcbla.sleep_epochs(s)\n    laps_ = hpcbla.run_laps(s)\n    direction, _ = hpcbla.puff_direction(s)\n    duration = run[1] - run[0]\n    rows.append({\"session\": s[\"session\"], \"rat\": s[\"rat\"], \"run_s\": round(duration), \"laps\": len(laps_),\n                 \"back_and_forth\": 100 * len(laps_) / duration,\n                 \"airpuff\": 100 * sum(d == direction for _, _, d in laps_) / duration if direction else np.nan,\n                 \"left_to_right\": 100 * sum(d == \"LR\" for _, _, d in laps_) / duration})\nhab = pd.DataFrame(rows)\nhab[\"day\"] = hab.groupby(\"rat\").session.rank().astype(int)\nprint(hab.round(3).to_string(index=False))\nrows = []\nfor kind in (\"back_and_forth\", \"airpuff\", \"left_to_right\"):\n    d = hab.dropna(subset=[kind])\n    rho, p = stats.spearmanr(d.day, d[kind])\n    per_rat = {rat: stats.spearmanr(g.day, g[kind]) for rat, g in d.groupby(\"rat\")}\n    rows.append({\"laps\": kind, \"sessions\": len(d), \"pooled_rho\": round(rho, 3), \"pooled_p\": p,\n                 \"reading_a\": bool(rho > 0 and p < 0.05),\n                 **{f\"rho_{rat}\": round(r.statistic, 2) for rat, r in per_rat.items()},\n                 **{f\"p_{rat}\": round(r.pvalue, 4) for rat, r in per_rat.items()},\n                 \"rats_positive\": sum(r.statistic > 0 for r in per_rat.values()),\n                 \"rats_positive_p05\": sum(r.statistic > 0 and r.pvalue < 0.05 for r in per_rat.values())})\nhab_tests = pd.DataFrame(rows)\nhab_tests[\"reading_b\"] = hab_tests.rats_positive >= 3\nprint(hab_tests.to_string(index=False))\n''', [\"claim:habituation-over-days\"])\n\ncode(r'''\nfig, ax = plt.subplots(figsize=(5, 3.5))\nfor rat, d in hab.groupby(\"rat\"):\n    ax.plot(d.day, d.back_and_forth, \"o-\", label=rat)\nax.set_xlabel(\"training day within rat\")\nax.set_ylabel(\"laps per 100 s of run\")\nax.legend(fontsize=8)\nplt.show()\nprint(\"Plotted range:\", round(hab.back_and_forth.min(), 3), \"to\", round(hab.back_and_forth.max(), 3), \"; no point outside the axes\")\n''', [\"claim:habituation-over-days\"])\n\nmd(r'''\n**Result: RESULT_HABITUATION**\n''')\n\nmd(r'''\n## bla-pyr-sleep-firing-increase\n\n> BLA pyramidal cells fire faster in REM sleep and, to a lesser extent, in NREM sleep than in\n> wakefulness.\n\nPer BLA cell, rates over all REM, all NREM and all wake intervals of the session\n(StatesFiringRates.m), ratios (state - wake)/(state + wake), and a two-sided Wilcoxon signed rank\ntest of each ratio against 0. Cells per O4 reading a: the dandiset's identified excitatory BLA\nunits (five Rat08 files); reading b (all putative pyramidal cells) cannot be run, as the putative\ntypes are not in the dandiset.\n''')\n\ncode(r'''\nrows = []\nfor s in typed:\n    for ctype in (\"excitatory\", \"inhibitory\"):\n        for r in hpcbla.state_rates(s, hpcbla.units_of(s, hpcbla.BLA_LABELS, ctype)):\n            rows.append({\"session\": s[\"session\"], \"type\": ctype, **r})\nstate_fr = pd.DataFrame(rows)\nfor k in (\"rem\", \"nrem\"):\n    state_fr[f\"{k}_ratio\"] = (state_fr[k] - state_fr.wake) / (state_fr[k] + state_fr.wake)\n\ndef ratio_tests(d):\n    out = {}\n    for k in (\"rem\", \"nrem\"):\n        x = d[f\"{k}_ratio\"].dropna()\n        out.update({f\"{k}_n\": len(x), f\"{k}_median\": round(float(x.median()), 4),\n                    f\"{k}_positive\": int((x > 0).sum()), f\"{k}_p\": stats.wilcoxon(x).pvalue if len(x) > 1 else np.nan})\n    return pd.Series(out)\n\nprint(\"Cells with an undefined ratio (no spike in either state):\",\n      state_fr.groupby(\"type\")[[\"rem_ratio\", \"nrem_ratio\"]].apply(lambda d: d.isna().sum()).to_dict())\nprint(\"\\nIdentified BLA pyramidal cells (excitatory):\")\npyr = state_fr[state_fr.type == \"excitatory\"]\nprint(ratio_tests(pyr).to_string())\nprint(\"\\nBy session:\")\nprint(pyr.groupby(\"session\").apply(ratio_tests).to_string())\nprint(\"\\nMedian rates (Hz): REM\", round(pyr.rem.median(), 3), \"; NREM\", round(pyr.nrem.median(), 3), \"; wake\", round(pyr.wake.median(), 3))\n''', [\"claim:bla-pyr-sleep-firing-increase\"])\n\nmd(r'''\n**Result: RESULT_BLA_PYR**\n''')\n\nmd(r'''\n## bla-int-sleep-firing\n\n> BLA interneurons do not change their firing rate between REM sleep and wake, and fire slightly\n> less in NREM sleep than in wake.\n\nAs above, for the identified inhibitory BLA units (O4 reading a). The REM part is a claim of\nabsence, judged on the two-sided Wilcoxon signed rank test at p < 0.05.\n''')\n\ncode(r'''\ninter = state_fr[state_fr.type == \"inhibitory\"]\nprint(\"Identified BLA interneurons (inhibitory):\")\nprint(ratio_tests(inter).to_string())\nprint(\"\\nBy session:\")\nprint(inter.groupby(\"session\").apply(ratio_tests).to_string())\nprint(\"\\nMedian rates (Hz): REM\", round(inter.rem.median(), 3), \"; NREM\", round(inter.nrem.median(), 3), \"; wake\", round(inter.wake.median(), 3))\n''', [\"claim:bla-int-sleep-firing\"])\n\nmd(r'''\n**Result: RESULT_BLA_INT**\n''')\n\nmd(r'''\n## hpc-bla-reactivation-post-sleep (blocked)\n\n> Hippocampus-BLA pyramidal cell pair correlations of the run are reinstated in post-sleep NREM,\n> measured as explained variance (EV) exceeding the reverse explained variance (REV) across\n> sessions.\n\nThe criterion uses putative pyramidal cells of the hippocampus and the BLA. The dandiset has no\nputative types, and even its identified excitatory units leave no session with six hippocampal\ncells (data check). The all-cell version of this test is the claim `reactivation-all-cell-pairs`,\nbelow. `reactivation-decay` (pyramidal pairs, depends on this claim) and\n`piriform-weaker-reactivation` (pyramidal pairs) are blocked for the same reason.\n\n**Result: blocked (metadata insufficient).** No analysis is run here.\n''')\n\nmd(r'''\n## reactivation-all-cell-pairs\n\n> Hippocampus-BLA NREM reactivation holds when pyramidal cells and interneurons are both included.\n\nEV and REV per session (M4) over all hippocampus-BLA pairs, from 50 ms bins of the run epoch and\nof the NREM of pre- and post-sleep; two-sided Wilcoxon signed rank test of EV against REV across\nsessions. The successive 20-min periods of post-NREM (24,000 bins each, with the whole pre-NREM\nand run) are reported, as the criterion says, and decide nothing.\n''')\n\ncode(r'''\nstarted = time.time()\nev_rows = []\nfor s in sessions:\n    r = use[use.session == s[\"session\"]]\n    if r.empty or not r.sleep.iloc[0]:\n        continue\n    hpc = hpcbla.units_of(s, hpcbla.HPC_LABELS)\n    nrem_rows, rem_rows = hpcbla.session_epoch_rows(s), hpcbla.session_epoch_rows(s, \"REM\")\n    row = {\"session\": s[\"session\"], \"rat\": s[\"rat\"]}\n    for name, labels_ in ((\"bla\", hpcbla.BLA_LABELS), (\"cen\", hpcbla.CEN_LABELS), (\"bla_wide\", hpcbla.BLA_COMPLEX_LABELS)):\n        other = hpcbla.units_of(s, labels_)\n        if len(hpc) < hpcbla.MIN_CELLS or len(other) < hpcbla.MIN_CELLS:\n            continue\n        res = hpcbla.ev_session(s, hpc, other, nrem_rows, post_periods=(name == \"bla\"))\n        row.update({f\"{name}_{k}\": v for k, v in res.items()})\n        if bool(r.rem_ok.iloc[0]) and name != \"bla_wide\":\n            res = hpcbla.ev_session(s, hpc, other, rem_rows)\n            row.update({f\"{name}_rem_{k}\": v for k, v in res.items()})\n    ev_rows.append(row)\nev = pd.DataFrame(ev_rows)\nprint(f\"computed in {time.time() - started:.0f} s\")\n\ndef ev_test(df, prefix, label):\n    d = df.dropna(subset=[f\"{prefix}_ev\"])\n    diff = d[f\"{prefix}_ev\"] - d[f\"{prefix}_rev\"]\n    res = stats.wilcoxon(d[f\"{prefix}_ev\"], d[f\"{prefix}_rev\"])\n    print(f\"{label}: {len(d)} sessions {d.rat.value_counts().sort_index().to_dict()}; EV median {d[f'{prefix}_ev'].median():.3f}%,\"\n          f\" REV median {d[f'{prefix}_rev'].median():.3f}%; EV - REV mean {diff.mean():.3f}% (s.e.m. {diff.sem():.3f}),\"\n          f\" median {diff.median():.3f}%, EV > REV in {int((diff > 0).sum())}; Wilcoxon two-sided p = {res.pvalue:.2g}\")\n    return d, diff\n\ncols = [\"session\", \"rat\", \"bla_ev\", \"bla_rev\", \"bla_pairs\", \"bla_ev_0\", \"bla_rev_0\", \"bla_ev_1\", \"bla_rev_1\", \"bla_ev_2\", \"bla_rev_2\", \"bla_bins_2\"]\nprint(ev[cols].dropna(subset=[\"bla_ev\"]).round(3).to_string(index=False))\nd_all, diff_all = ev_test(ev, \"bla\", \"Hippocampus-BLA, all cells, NREM\")\nfor rat, g in d_all.groupby(\"rat\"):\n    x = g.bla_ev - g.bla_rev\n    print(f\"  {rat}: {len(g)} sessions, EV - REV median {x.median():.3f}%, EV > REV in {int((x > 0).sum())}\")\n''', [\"claim:reactivation-all-cell-pairs\"])\n\ncode(r'''\nprint(\"Reported, not deciding: successive 20-min periods of post-NREM (all sessions of the test above)\")\nfor k in range(3):\n    x = d_all[f\"bla_ev_{k}\"] - d_all[f\"bla_rev_{k}\"]\n    ok = x.dropna()\n    print(f\"  period {k + 1}: {len(ok)} sessions, EV - REV mean {ok.mean():.3f}%, EV > REV in {int((ok > 0).sum())},\"\n          f\" Wilcoxon p = {stats.wilcoxon(ok).pvalue:.2g}\")\nprint(\"Sessions whose third period is shorter than 20 min:\", int((d_all.bla_bins_2 < hpcbla.PERIOD_BINS).sum()),\n      \"; post-NREM shorter than 40 min (no third period):\", int(d_all.bla_ev_2.isna().sum()))\nev_test(ev, \"bla_wide\", \"Variant, wider amygdala labels (bla, blv, bmp, ladl)\")\nfig, ax = plt.subplots(figsize=(4, 4))\nax.scatter(d_all.bla_rev, d_all.bla_ev, s=16)\nlim = [0, max(d_all.bla_ev.max(), d_all.bla_rev.max()) * 1.05]\nax.plot(lim, lim, \"k--\", lw=0.8)\nax.set_xlabel(\"REV (%)\")\nax.set_ylabel(\"EV (%)\")\nplt.show()\nprint(\"Plotted ranges: EV\", round(d_all.bla_ev.min(), 3), \"to\", round(d_all.bla_ev.max(), 3), \"; REV\",\n      round(d_all.bla_rev.min(), 3), \"to\", round(d_all.bla_rev.max(), 3), \"; no point outside the axes\")\n''', [\"claim:reactivation-all-cell-pairs\"])\n\nmd(r'''\n**Result: RESULT_ALL_CELL_PAIRS**\n''')\n\nmd(r'''\n## no-rem-reactivation (blocked)\n\n> Hippocampus-BLA and hippocampus-piriform cortex reactivations are not significant in REM sleep.\n\nThe criterion tests pyramidal pairs, for hippocampus-BLA and hippocampus-piriform, which needs\nthe putative types. The criterion's variant, hippocampus-BLA with all cells in REM (sessions with\nmore than 180 s of REM in each sleep epoch), is shown and decides nothing.\n''')\n\ncode(r'''\nev_test(ev, \"bla_rem\", \"Variant, hippocampus-BLA, all cells, REM\")\n''', [\"claim:no-rem-reactivation\"])\n\nmd(r'''\n**Result: blocked (metadata insufficient).** The printed variant is a description only.\n''')\n\nmd(r'''\n## cen-no-reactivation\n\n> There are no reactivations between the central amygdala nuclei and the hippocampus.\n\nA claim of absence, judged on the paper's test: EV and REV (M4) over all hippocampus-central\nnuclei pairs, two-sided Wilcoxon signed rank of EV against REV in NREM and in REM (REM sessions\nwith more than 180 s in each sleep epoch).\n''')\n\ncode(r'''\nprint(ev[[\"session\", \"rat\", \"cen_ev\", \"cen_rev\", \"cen_pairs\", \"cen_rem_ev\", \"cen_rem_rev\"]].dropna(subset=[\"cen_ev\"]).round(3).to_string(index=False))\nd_cen, diff_cen = ev_test(ev, \"cen\", \"Hippocampus-central nuclei, all cells, NREM\")\nd_cen_rem, diff_cen_rem = ev_test(ev, \"cen_rem\", \"Hippocampus-central nuclei, all cells, REM\")\n''', [\"claim:cen-no-reactivation\"])\n\nmd(r'''\n**Result: RESULT_CEN**\n''')\n\nmd(r'''\n## intra-structure-reactivation (blocked)\n\n> Within the hippocampus and within the BLA, pair correlations are reactivated in NREM but not in\n> REM sleep.\n\nThe criterion needs all four NREM tests, two of them on putative pyramidal pairs, so it cannot be\ndecided. The all-cell tests (distinct pairs within one structure, M4) are shown and decide nothing.\n''')\n\ncode(r'''\nrows = []\nfor s in sessions:\n    r = use[use.session == s[\"session\"]]\n    if r.empty or not r.sleep.iloc[0]:\n        continue\n    for name, labels_ in ((\"hippocampus\", hpcbla.HPC_LABELS), (\"BLA\", hpcbla.BLA_LABELS)):\n        ids = hpcbla.units_of(s, labels_)\n        if len(ids) < hpcbla.MIN_CELLS:\n            continue\n        row = {\"session\": s[\"session\"], \"rat\": s[\"rat\"], \"structure\": name, \"cells\": len(ids)}\n        res = hpcbla.ev_session(s, ids, None, hpcbla.session_epoch_rows(s))\n        row.update({\"nrem_ev\": res[\"ev\"], \"nrem_rev\": res[\"rev\"]})\n        if bool(r.rem_ok.iloc[0]):\n            res = hpcbla.ev_session(s, ids, None, hpcbla.session_epoch_rows(s, \"REM\"))\n            row.update({\"rem_ev\": res[\"ev\"], \"rem_rev\": res[\"rev\"]})\n        rows.append(row)\nintra = pd.DataFrame(rows)\nfor (name, state), _ in intra.groupby(\"structure\").size().items() if False else []:\n    pass\nfor name, g in intra.groupby(\"structure\"):\n    for state in (\"nrem\", \"rem\"):\n        d = g.dropna(subset=[f\"{state}_ev\"])\n        x = d[f\"{state}_ev\"] - d[f\"{state}_rev\"]\n        print(f\"{name}, all pairs, {state.upper()}: {len(d)} sessions {d.rat.value_counts().sort_index().to_dict()},\"\n              f\" EV - REV median {x.median():.3f}%, EV > REV in {int((x > 0).sum())}, Wilcoxon p = {stats.wilcoxon(x).pvalue:.2g}\")\n''', [\"claim:intra-structure-reactivation\"])\n\nmd(r'''\n**Result: blocked (metadata insufficient).** The printed tests are a description only.\n''')\n\nmd(r'''\n## bla-ripple-up-subgroup, bla-ripple-down-subgroup (blocked)\n\n> A subset of BLA neurons is positively modulated during hippocampal SPW-Rs, 25.8% of\n> interneurons (42 of 163) and 11.1% of pyramidal cells (137 of 1,233).\n\nBoth claims give fractions of putative pyramidal cells and interneurons, which the dandiset does\nnot type, and are blocked. The Poisson test of M6 (both readings of O2) is run on every BLA unit of\nthe sessions with states and ripples, and its fractions are shown over all BLA units and over the\nidentified units of the five typed files, as a description only. The ripple modulation is also\nused in the description of `ripple-modulated-cells-larger-reactivation`, below.\n''')\n\ncode(r'''\nrows = []\nfor s in sessions:\n    if s[\"units\"] is None or s[\"states\"] is None or s[\"ripples\"] is None:\n        continue\n    for r in hpcbla.ripple_modulation(s, hpcbla.units_of(s, hpcbla.BLA_LABELS)):\n        rows.append({\"session\": s[\"session\"], \"rat\": s[\"rat\"], \"cell_type\": s[\"units\"][\"cell_type\"][r[\"unit\"]] or \"(no column)\", **r})\nmod = pd.DataFrame(rows)\nprint(\"BLA units tested:\", len(mod), \"in\", mod.session.nunique(), \"sessions; untested (no spike in ripples or baseline):\", int((~mod.tested).sum()))\nsummary = mod.groupby(\"cell_type\")[[\"up_a\", \"down_a\", \"up_b\", \"down_b\"]].agg([\"sum\", \"mean\"]).round(3)\nsummary.insert(0, \"units\", mod.groupby(\"cell_type\").size())\nprint(summary.to_string())\nprint(\"All BLA units: up\", int(mod.up_a.sum()), f\"({mod.up_a.mean():.3f}) reading a,\", int(mod.up_b.sum()), f\"({mod.up_b.mean():.3f}) reading b;\",\n      \"down\", int(mod.down_a.sum()), f\"({mod.down_a.mean():.3f}) reading a,\", int(mod.down_b.sum()), f\"({mod.down_b.mean():.3f}) reading b\")\nprint(mod.groupby(\"rat\")[[\"up_a\", \"down_a\"]].agg([\"sum\", \"mean\"]).round(3).to_string())\n''', [\"claim:bla-ripple-up-subgroup\"])\n\nmd(r'''\n**Result: blocked (metadata insufficient).** `bla-ripple-down-subgroup` depends on this claim and\nis blocked with it. The printed fractions are a description only.\n''')\n\nmd(r'''\n## ripple-modulated-cells-larger-reactivation (blocked)\n\n> Reactivation (EV - REV) is larger for hippocampus-BLA pairs whose BLA cell is ripple-modulated\n> than for pairs with a non-modulated BLA cell.\n\nThe claim depends on `bla-ripple-up-subgroup` and is blocked with it; its pyramidal test also needs\nthe putative types. Its all-cell test is shown as a description: per session, EV - REV with the\nmodulated BLA units (up or down, M6) and with the non-modulated ones, sessions with more than 5\nhippocampal and more than 5 modulated BLA units; two-sided Wilcoxon rank sum test, and the signed\nrank test on the same sessions as the criterion's variant.\n''')\n\ncode(r'''\nrows = []\nfor s in sessions:\n    r = use[use.session == s[\"session\"]]\n    if r.empty or not r.sleep.iloc[0] or s[\"ripples\"] is None:\n        continue\n    hpc = hpcbla.units_of(s, hpcbla.HPC_LABELS)\n    m = mod[mod.session == s[\"session\"]]\n    for reading in (\"a\", \"b\"):\n        is_mod = m[f\"up_{reading}\"] | m[f\"down_{reading}\"]\n        modulated, other = [int(u) for u in m.unit[is_mod]], [int(u) for u in m.unit[~is_mod]]\n        if len(hpc) <= 5 or len(modulated) <= 5:\n            continue\n        rows_ = hpcbla.session_epoch_rows(s)\n        a = hpcbla.ev_session(s, hpc, modulated, rows_)\n        b = hpcbla.ev_session(s, hpc, other, rows_)\n        rows.append({\"session\": s[\"session\"], \"rat\": s[\"rat\"], \"reading\": reading, \"modulated\": len(modulated), \"other\": len(other),\n                     \"mod_ev_rev\": a[\"ev\"] - a[\"rev\"], \"non_ev_rev\": b[\"ev\"] - b[\"rev\"]})\nmodev = pd.DataFrame(rows)\nprint(modev.round(3).to_string(index=False))\nfor reading, d in modev.groupby(\"reading\"):\n    d = d.dropna()\n    print(f\"O2 reading {reading}: {len(d)} sessions; EV - REV mean modulated {d.mod_ev_rev.mean():.2f}%, non-modulated {d.non_ev_rev.mean():.2f}%;\"\n          f\" rank sum p = {stats.ranksums(d.mod_ev_rev, d.non_ev_rev).pvalue:.2g}; signed rank p = {stats.wilcoxon(d.mod_ev_rev, d.non_ev_rev).pvalue:.2g};\"\n          f\" modulated larger in {int((d.mod_ev_rev > d.non_ev_rev).sum())}\")\n''', [\"claim:ripple-modulated-cells-larger-reactivation\"])\n\nmd(r'''\n**Result: blocked (metadata insufficient, through `bla-ripple-up-subgroup`).** The printed tests\nare a description only.\n''')\n\nmd(r'''\n## run-correlated-pair-fractions, reactivation-involves-ripple-up-cells, pair-group-ev, contributing-up-cells-gain-increase, ev-independent-of-firing-rate, contributing-pairs-run-sleep-coupling, contributing-quartiles-run-sleep-coupling (blocked)\n\n> Among nine groups of hippocampus-BLA pyramidal pairs formed by run correlation and BLA ripple\n> modulation, the pairs with a significant positive run correlation and an upmodulated BLA partner\n> show the largest pre-NREM to post-NREM increase in correlation, and differ from every other group.\n\nEach of these criteria pools hippocampus-BLA pyramidal pairs (putative types, M1), and all but\n`ev-independent-of-firing-rate` also use the ripple modulation of `bla-ripple-up-subgroup`. The\ndandiset has no putative types, so all seven are blocked. The earlier attempt tested\n`reactivation-involves-ripple-up-cells` with joint-pattern weights over all BLA units, a measure the\nclaims file no longer uses.\n\n**Result: blocked (metadata insufficient).** No analysis is run.\n''')\n\nmd(r'''\n## reactivation-peaks-at-ripples (blocked)\n\n> Reactivation strength of the whole-run template around hippocampal ripple peaks is higher in\n> post-NREM than in pre-NREM, for pyramidal pairs and for all cell pairs.\n\nThe claim depends on `hpc-bla-reactivation-post-sleep`, which is blocked, and its first test uses\npyramidal cells. Its second test, with all cells, is shown as a description: R per M7 with the whole\nrun as template, the ripple-peak value of pre- and post-NREM per session, one-tailed Wilcoxon\nsigned rank test (post greater than pre). `airpuff-trajectory-ripple-reactivation`,\n`safe-trajectory-no-ripple-reactivation` and `aversive-direction-stronger` test pyramidal cells and\nare blocked; `direction-all-cell-pairs` repeats them with all cells and depends on\n`aversive-direction-stronger`, so it is blocked too, and its three tests are shown below with the\nair puff and safe templates (laps per O1 reading c).\n''')\n\ncode(r'''\nstarted = time.time()\nrows, curves = [], {}\nfor s in sessions:\n    r = use[use.session == s[\"session\"]]\n    if r.empty or not r.hpc_bla.iloc[0] or s[\"ripples\"] is None:\n        continue\n    _, _, run = hpcbla.sleep_epochs(s)\n    hpc, bla = hpcbla.units_of(s, hpcbla.HPC_LABELS), hpcbla.units_of(s, hpcbla.BLA_LABELS)\n    for template, iv in ((\"run\", np.array([run])), (\"airpuff\", hpcbla.lap_intervals(s, \"puff\")), (\"safe\", hpcbla.lap_intervals(s, \"safe\"))):\n        if len(iv) == 0:\n            continue\n        out = hpcbla.reactivation_strength(s, hpc, bla, iv)\n        curves[(s[\"session\"], template)] = (out[\"pre_curve\"], out[\"post_curve\"])\n        rows.append({\"session\": s[\"session\"], \"rat\": s[\"rat\"], \"template\": template,\n                     **{k: v for k, v in out.items() if not k.endswith(\"curve\")}})\nrs = pd.DataFrame(rows)\nrs[\"post_minus_pre\"] = rs.post_peak - rs.pre_peak\nprint(f\"computed in {time.time() - started:.0f} s\")\nprint(rs.round(4).to_string(index=False))\n\ndef one_tailed(d, label):\n    res = stats.wilcoxon(d.post_peak, d.pre_peak, alternative=\"greater\")\n    print(f\"{label}: {len(d)} sessions {d.rat.value_counts().sort_index().to_dict()}; post minus pre median {d.post_minus_pre.median():.4f},\"\n          f\" positive in {int((d.post_minus_pre > 0).sum())}; one-tailed Wilcoxon p = {res.pvalue:.2g}\")\n\none_tailed(rs[rs.template == \"run\"], \"Whole-run template, all cells\")\ncentres = hpcbla.peri_centres()\nmean_pre = np.mean([curves[k][0] for k in curves if k[1] == \"run\"], axis=0)\nmean_post = np.mean([curves[k][1] for k in curves if k[1] == \"run\"], axis=0)\nfig, ax = plt.subplots(figsize=(5.5, 3.5))\nax.plot(centres, mean_pre, label=\"pre-NREM\")\nax.plot(centres, mean_post, label=\"post-NREM\")\nax.axvspan(-0.25, 0.25, color=\"0.9\")\nax.set_xlabel(\"time from ripple peak (s)\")\nax.set_ylabel(\"mean z-scored R, all cells\")\nax.legend(fontsize=8)\nplt.show()\nprint(\"Plotted range:\", round(float(min(mean_pre.min(), mean_post.min())), 4), \"to\", round(float(max(mean_pre.max(), mean_post.max())), 4))\n''', [\"claim:reactivation-peaks-at-ripples\"])\n\nmd(r'''\n**Result: blocked (metadata insufficient, through `hpc-bla-reactivation-post-sleep`).** The\nprinted test is a description only.\n''')\n\ncode(r'''\nprint(\"direction-all-cell-pairs, its three tests with all cells (description only):\")\npuff_r, safe_r = rs[rs.template == \"airpuff\"], rs[rs.template == \"safe\"]\none_tailed(puff_r, \"Air puff template, post greater than pre\")\none_tailed(safe_r, \"Safe template, post greater than pre\")\nboth = puff_r.set_index(\"session\")[[\"post_minus_pre\"]].join(safe_r.set_index(\"session\")[[\"post_minus_pre\"]], lsuffix=\"_airpuff\", rsuffix=\"_safe\").dropna()\nres = stats.wilcoxon(both.post_minus_pre_airpuff, both.post_minus_pre_safe, alternative=\"greater\")\nprint(f\"Air puff greater than safe: {len(both)} sessions; median difference {(both.post_minus_pre_airpuff - both.post_minus_pre_safe).median():.4f},\"\n      f\" positive in {int((both.post_minus_pre_airpuff > both.post_minus_pre_safe).sum())}; one-tailed Wilcoxon p = {res.pvalue:.2g}\")\nprint(\"Template bins (air puff, safe):\", {k: (int(g[g.template == 'airpuff'].template_bins.sum()), int(g[g.template == 'safe'].template_bins.sum()))\n                                          for k, g in rs.groupby(\"session\") if (g.template == \"airpuff\").any()})\n''', [\"claim:direction-all-cell-pairs\"])\n\nmd(r'''\n**Result: blocked (metadata insufficient, through `aversive-direction-stronger`).** The printed\ntests are a description only.\n''')\n\nmd(r'''\n## bla-rate-same-across-directions (blocked)\n\n> Firing rates of BLA cells do not differ significantly between the safe and the air puff\n> trajectories.\n\nThe criterion needs both the pyramidal-cell test and the all-cell test, so it cannot be decided.\nThe all-cell test is shown as a description: per BLA unit, the spike count over the air puff laps\nand over the safe laps of the run divided by their durations (O7 reading a; reading b needs\nposition), two-sided Wilcoxon signed rank test, over the cells of the sessions of\n`direction-all-cell-pairs` (reading a of the sessions) and over all BLA cells of sessions with a\nrun and a puff direction (reading b).\n''')\n\ncode(r'''\nrows = []\nfor s in sessions:\n    if s[\"units\"] is None or hpcbla.puff_direction(s)[0] is None:\n        continue\n    ivs = {k: hpcbla.lap_intervals(s, k) for k in (\"puff\", \"safe\")}\n    if any(len(v) == 0 for v in ivs.values()):\n        continue\n    for i in hpcbla.units_of(s, hpcbla.BLA_LABELS):\n        t = s[\"units\"][\"trains\"][i]\n        rows.append({\"session\": s[\"session\"], \"rat\": s[\"rat\"], \"unit\": i,\n                     **{f\"{k}_hz\": hpcbla.count_in(t, iv) / np.diff(iv).sum() for k, iv in ivs.items()}})\ndir_fr = pd.DataFrame(rows)\nfor label, d in ((\"sessions of direction-all-cell-pairs\", dir_fr[dir_fr.session.isin(both.index)]), (\"all sessions with a puff direction\", dir_fr)):\n    x = d.puff_hz - d.safe_hz\n    print(f\"{label}: {len(d)} BLA cells in {d.session.nunique()} sessions; median air puff minus safe {x.median():.4f} Hz,\"\n          f\" Wilcoxon p = {stats.wilcoxon(d.puff_hz, d.safe_hz).pvalue:.2g}\")\n''', [\"claim:bla-rate-same-across-directions\"])\n\nmd(r'''\n**Result: blocked (metadata insufficient).** The printed tests are a description only.\n''')\n\nmd(r'''\n## ripple-rate-unchanged\n\n> The occurrence rate of SPW-Rs does not differ between pre-NREM and post-NREM.\n\nA claim of absence, judged on the paper's test: per session with ripple events, ripple peaks per\nsecond of pre-NREM and of post-NREM (RippleRatePrePost.m), two-sided Wilcoxon signed rank test.\n''')\n\ncode(r'''\nrows = []\nfor s in sessions:\n    pre, post, run = hpcbla.sleep_epochs(s)\n    if s[\"states\"] is None or s[\"ripples\"] is None or len(pre) == 0 or len(post) == 0:\n        continue\n    rows.append({\"session\": s[\"session\"], \"rat\": s[\"rat\"], **hpcbla.ripple_rates(s)})\nrip_rate = pd.DataFrame(rows)\nrip_rate[\"post_minus_pre\"] = rip_rate.post_rate - rip_rate.pre_rate\nprint(rip_rate.round(3).to_string(index=False))\nres = stats.wilcoxon(rip_rate.pre_rate, rip_rate.post_rate)\nprint(f\"\\n{len(rip_rate)} sessions {rip_rate.rat.value_counts().sort_index().to_dict()}; median pre {rip_rate.pre_rate.median():.3f} Hz,\"\n      f\" post {rip_rate.post_rate.median():.3f} Hz; median post minus pre {rip_rate.post_minus_pre.median():.4f} Hz,\"\n      f\" higher in post in {int((rip_rate.post_minus_pre > 0).sum())}; Wilcoxon two-sided p = {res.pvalue:.2g}\")\nfor rat, g in rip_rate.groupby(\"rat\"):\n    print(f\"  {rat}: {len(g)} sessions, median post minus pre {g.post_minus_pre.median():.4f} Hz, higher in post in {int((g.post_minus_pre > 0).sum())}\")\nprint(f\"\\nNotebook run time: {(time.time() - notebook_started) / 60:.1f} min\")\n''', [\"claim:ripple-rate-unchanged\"])\n\nmd(r'''\n**Result: RESULT_RIPPLE_RATE**\n''')\n\nmd(r'''\n## Summary\n\nSUMMARY\n''')\n"
+}
+```
+
+```
+File created successfully at: /tmp/claude/cells.py (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "/tmp/claude/cells.py",
+ "old_string": "for (name, state), _ in intra.groupby(\"structure\").size().items() if False else []:\n    pass\nfor name",
+ "new_string": "for name"
+}
+```
+
+```
+The file /tmp/claude/cells.py has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000061-girardeau-2017 && $TMPDIR/env61/bin/python /tmp/claude/build_nb.py /tmp/claude/cells.py reproduce_girardeau_2017.ipynb && echo $TMPDIR && time $TMPDIR/env61/bin/jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=3600 --output-dir $TMPDIR/exec reproduce_girardeau_2017.ipynb 2>&1 | tail -5
+```
+
+```
+/tmp/claude-1001
+[32m   3652[39m     [38;5;66;03m#  the TypeError.[39;00m
+[32m   3653[39m     [38;5;28mself[39m._check_indexing_error(key)
+
+[31mKeyError[39m: nan
+
+
+real	6m7.135s
+user	0m14.192s
+sys	0m5.159s
+```
+
+**Agent calls Bash**
+
+```bash
+cd /tmp/claude && python - <<'EOF'
+p='cells.py'; s=open(p).read()
+s=s.replace('in_dir = int(sum(r[r.direction] for _, r in puff.iterrows() if r.direction))','has_dir = puff.direction.notna()\nin_dir = int(sum(r[r.direction] for _, r in puff[has_dir].iterrows()))')
+s=s.replace('''int(sum(r["RL" if r.direction == "LR" else "LR"] for _, r in puff.iterrows() if r.direction))''','''int(sum(r["RL" if r.direction == "LR" else "LR"] for _, r in puff[has_dir].iterrows()))''')
+open(p,'w').write(s)
+d=s.replace('sessions = sorted(hpcbla.load_all(), key=lambda s: s["path"])','import pickle; sessions = pickle.load(open("/tmp/claude-1001/sessions.pkl", "rb"))')
+d=d.replace('seconds, frame_bytes = hpcbla.time_frame_reads(dict(hpcbla.asset_urls())[first["path"]], name, 20)','seconds, frame_bytes = 7.0, 691200')
+open('cells_dev.py','w').write(d)
+EOF
+cd entries/000061-girardeau-2017 && $TMPDIR/env61/bin/python /tmp/claude/build_nb.py /tmp/claude/cells_dev.py $TMPDIR/dev.ipynb && cp hpcbla.py $TMPDIR/ && cd $TMPDIR && time env61/bin/jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=3600 --output-dir $TMPDIR/exec dev.ipynb 2>&1 | tail -5
+```
+
+```
+[NbConvertApp] Converting notebook dev.ipynb to notebook
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[NbConvertApp] Writing 284719 bytes to /tmp/claude-1001/exec/dev.ipynb
+
+real	0m51.730s
+user	1m58.334s
+sys	0m6.017s
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && cat > show.py <<'EOF'
+import json,sys
+nb=json.load(open(sys.argv[1]))
+for i,c in enumerate(nb['cells']):
+    if c['cell_type']!='code': continue
+    print('=====',i,c.get('metadata',{}).get('tags'))
+    for o in c.get('outputs',[]):
+        if 'text' in o: print(''.join(o['text']))
+        elif o.get('output_type')=='error': print('ERROR',o['ename'],o['evalue'])
+        elif 'data' in o and 'text/plain' in o['data']: print(''.join(o['data']['text/plain'])[:3000])
+EOF
+env61/bin/python show.py exec/dev.ipynb > dev_out.txt; wc -l dev_out.txt
+```
+
+```
+710 dev_out.txt
+Shell cwd was reset to
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/dev_out.txt"
+}
+```
+
+```
+1	===== 1 None
+2	loaded 40 files from dandiset 000061 version 0.250624.0426 in 0 s
+3	
+4	===== 3 ['sanity']
+5	Versions: [('draft', '2026-10-05 19:47:59'), ('0.210812.1517', '2021-08-12 15:16:41'), ('0.250624.0426', '2025-06-24 04:26:54')]
+6	
+7	Archive summary: files 40 ; subjects 4 ; species ['Brown rat'] ; measured ['Units', 'LFP', 'ElectricalSeries', 'ProcessingModule']
+8	Draft against pinned version: assets 40 and 40 ; same asset identifiers: 40
+9	Metadata fields that differ in the draft: ['about', 'contributor', 'ethicsApproval', 'keywords']
+10	Related resources (pinned): [('dcite:IsDescribedBy', 'https://doi.org/10.1038/nn.4637')]
+11	
+12	Subjects: ['Rat08', 'Rat09', 'Rat10', 'Rat11'] ; files per rat: {'Rat08': 13, 'Rat09': 10, 'Rat10': 7, 'Rat11': 10}
+13	Species, age, sex: [('Rattus norvegicus domestica - Long Evans', '3 months', 'Male')]
+14	
+15	        session   rat  units  hpc  bla  cen  pir  cell_type  states  ripples  puffs  rewards  pre_sleep_s  post_sleep_s  run_s  lfp   raw  videos  trials
+16	Rat08-20130708 Rat08    166    9   15   64    9      False    True     9473      3        9         9890         10664   3603 True  True       2   215.0
+17	Rat08-20130709 Rat08    201   34   78   25   18       True    True    10713      2       22         9725         11239   3621 True  True       3   185.0
+18	Rat08-20130710 Rat08    190   31   87   17   13       True    True     9251      9       24        10098         10224   3607 True  True       3   113.0
+19	Rat08-20130711 Rat08    201   24   92   18   23       True    True     8193      5       36         8903          8425   3612 True  True       3   289.0
+20	Rat08-20130712 Rat08    199   59   40    0   11       True    True     6118     14       69        10318          9222   3328 True  True       3   266.0
+[... 547 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/dev_out.txt",
+ "offset": 567
+}
+```
+
+```
+567	hippocampus, all pairs, NREM: 23 sessions {'Rat08': 9, 'Rat10': 7, 'Rat11': 7}, EV - REV median 6.701%, EV > REV in 19, Wilcoxon p = 0.0054
+568	hippocampus, all pairs, REM: 19 sessions {'Rat08': 8, 'Rat10': 6, 'Rat11': 5}, EV - REV median 0.825%, EV > REV in 12, Wilcoxon p = 0.83
+569	
+570	===== 54 ['claim:bla-ripple-up-subgroup']
+571	BLA units tested: 822 in 17 sessions; untested (no spike in ripples or baseline): 0
+572	             units up_a        down_a        up_b        down_b       
+573	                    sum   mean    sum   mean  sum   mean    sum   mean
+574	cell_type                                                             
+575	(no column)    431   65  0.151     28  0.065   69  0.160     30  0.070
+576	excitatory     152    9  0.059     23  0.151   10  0.066     26  0.171
+577	inhibitory      36    8  0.222     17  0.472    8  0.222     17  0.472
+578	unclassified   203   23  0.113     17  0.084   23  0.113     18  0.089
+579	All BLA units: up 105 (0.128) reading a, 110 (0.134) reading b; down 85 (0.103) reading a, 91 (0.111) reading b
+580	      up_a        down_a       
+581	       sum   mean    sum   mean
+582	rat                            
+583	Rat08   58  0.117     62  0.125
+584	Rat10    5  0.060     12  0.143
+585	Rat11   42  0.174     11  0.045
+586	
+[... 125 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd /tmp/claude && python - <<'EOF'
+p='cells.py'; s=open(p).read()
+def rep(a,b,count=1):
     global s
-    assert old in s, old[:60]; s=s.replace(old,new)
-rep('''print("Rats with hippocampal units:", sorted(info.rat[info.hpc > 0].unique()))''','''print("Rats with hippocampal units:", sorted(info.rat[info.hpc > 0].unique()))
-print("Files with raw voltage:", int(info.raw.sum()), "; with LFP:", int(info.lfp.sum()), "; with video:", int((info.videos > 0).sum()))''')
-rep('''that needs both regions. Raw voltage is in 22 of the 40 files; the LFP is in all of them.''','''that needs both regions. Raw voltage is in 16 of the 40 files; the LFP and video are in all of them.''')
-rep('''print("Epoch tags:", sorted({t for s in sessions for t, _, _ in s["epochs"]}))''','''print("Epoch tags:", sorted({t for s in sessions for t, _, _ in s["epochs"]}))
-print("Files that tag sleep only as 'sleep':", {s["session"]: [t for t, _, _ in s["epochs"]] for s in sessions
-                                               if "presleep" not in [t for t, _, _ in s["epochs"]] and "postsleep" not in [t for t, _, _ in s["epochs"]]})''')
-rep('''span the session. Two files tag their sleep epochs only as `sleep`; there the sleep before the
-first run is taken as pre-sleep and the sleep after it as post-sleep.''','''span the session. Three files tag their sleep epochs only as `sleep`; there the sleep before the
-first run is taken as pre-sleep and the sleep after it as post-sleep. Of these only
-Rat08-20130708 enters the analysis (the other two have no units).''')
-rep('''The video timestamps are stated in seconds but are in milliseconds, and they are not on the
-session clock: their first timestamps do not match the start of the epoch each video is named
-after, and in the Rat08 files the run video spans about half of the run epoch. The videos are not
-used here.''','''The video timestamps are stated in seconds but are in milliseconds, and they are not on the
-session clock: the first timestamp matches the start of the epoch a video is named after in 1 of
-114 videos, while the spans match the epochs' durations in 93 of 114 (the run videos of the early
-Rat08 files span about half of their run epoch). The videos are not used here.''')
-rep('''print("\\nMedian over files: ripples per s in Non-REM"''','''print("\\nRipples per s of Non-REM: min", clock["Non-REM_hz"].min(), "max", clock["Non-REM_hz"].max(), "; REM max", clock["REM_hz"].max())
-print("Median over files: ripples per s in Non-REM"''')
-rep('''In every file with states and ripples, ripples occur at 0.33 to 1.0 per second of Non-REM and are
-rare in REM; with the states shifted by 600 s the two rates move toward each other.''','''In every file with states and ripples, ripples occur at 0.33 to 1.0 per second of Non-REM and at
-most 0.19 per second of REM (median 0.022); with the states shifted by 600 s the two rates move
-toward each other (0.37 and 0.32).''')
-rep('''Nearly all puffs fall inside laps of one direction in each session, which gives the air-puff
-direction. The puff side changes between days in the same rat. The pooled response to puffs is
-small in most files; a few files show a clear BLA increase that the shifted times do not.''','''Nearly all puffs (927 of 957) fall inside laps of one direction in each session, which gives the
-air-puff direction. The puff side changes between days in the same rat. The pooled response to
-puffs is small in most files (median change 0.04 in BLA and in hippocampus); four files show a
-BLA increase above 0.3, against one with the shifted times.''')
-rep('''at least five hippocampal and five BLA units at 0.1 Hz or more in the run), 16 sessions from three
-rats are used: nine of Rat08, four of Rat10 and three of Rat11.''','''at least five hippocampal and five BLA units at 0.1 Hz or more in the run), 15 sessions from three
-rats are used: nine of Rat08, three of Rat10 and three of Rat11, with 341 hippocampal and 483 BLA
-units. With the wider BLA labels, 21 sessions qualify.''')
-results = [
-'''**Result: reproduced.** All 15 sessions have at least one significant joint pattern (36 in all).
-Over these patterns the post-sleep minus pre-sleep Non-REM strength has a median of 0.0119, is
-positive for 28 of 36, and the Wilcoxon p is 3.6e-05. The median is above zero in all three rats
-(Rat08 0.0170, 18 of 21; Rat10 0.0024, 5 of 8; Rat11 0.0190, 5 of 7), though in Rat10 and Rat11 alone
-the test is not significant (p = 0.74 and 0.11). Non-significant patterns change by a median of
-0.0001. Every variant (25 and 100 ms bins, the wider BLA labels, the first pattern of each
-session) gives a positive median with p of 0.0084 or less.''',
-'''**Result: reproduced.** Under reading (a), the mean ripple-triggered strength in post-sleep is
-highest in the bin of the ripple peak, 4.36 times its mean 0.5 to 1 s away; the peak bin exceeds
-the flanks in 30 of 36 patterns (median 0.103, p = 6e-06), in every rat. The pre-sleep curve also
-peaks at the ripple (0.136 against 0.223 in post-sleep), and the peak over flanks is larger in
-post-sleep than in pre-sleep (23 of 36, p = 0.022). Under reading (b), the post minus pre change
-is larger in ripple bins than outside them (median difference 0.0537, 25 of 36, p = 0.0033).''',
-'''**Result: reproduced.** 103 of 822 BLA units (12.5%) fire more in Non-REM ripples than in the
-shifted windows, against a chance level of 0.7% from the procedure run on windows shifted by 7 s
-(binomial p = 9.8e-90), and the fraction is above chance in each rat (Rat08 10.3%, Rat10 4.8%,
-Rat11 19.8%). It is a subgroup: as many units (104, 12.7%) fire less in ripples. Units are counted
-once per session, so a cell recorded on several days may be counted more than once.''',
-'''**Result: reproduced.** In 31 significant patterns that have both kinds of BLA unit, the mean
-squared weight of the ripple-up units is above that of the other BLA units (medians 0.0505 and
-0.0181; difference positive in 24 of 31, p = 0.0013). The ripple-up units are a median 20% of the
-BLA units of a pattern and carry 34% of its BLA weight. It holds in Rat08 (17 of 21) and Rat11 (6 of
-7) and not in Rat10 (1 of 3), and in the patterns that reactivate (p = 0.0018).''',
-'''**Result: not reproduced.** Across the 15 sessions the post minus pre reactivation of the
-air-puff templates exceeds that of the safe templates by a median of 0.0133, in 9 of 15 sessions,
-with Wilcoxon p = 0.11, above the 0.05 of the criterion and the 0.1 of its partial outcome. By rat
-the difference is positive in 6 of 9 Rat08 sessions, 2 of 3 Rat10 and 1 of 3 Rat11. The variants
-lean the same way with mixed strength: the first pattern of each direction gives p = 0.048 (10
-of 15), the pooled per-pattern test p = 0.083, equal numbers of bins p = 0.28, and post-sleep
-strength alone p = 0.45.''']
-parts=s.split('**Result: TBD**')
-assert len(parts)==6
-s=parts[0]+''.join(r+p for r,p in zip(results,parts[1:]))
-summary='''## Summary
+    assert s.count(a)==count, (a, s.count(a))
+    s=s.replace(a,b)
+rep('''          f" median {diff.median():.3f}%, EV > REV in {int((diff > 0).sum())}; Wilcoxon two-sided p = {res.pvalue:.2g}")
+    return d, diff''','''          f" median {diff.median():.3f}%, EV > REV in {int((diff > 0).sum())}; Wilcoxon two-sided p = {res.pvalue:.2g}")
+    for rat, g in d.groupby("rat"):
+        x = g[f"{prefix}_ev"] - g[f"{prefix}_rev"]
+        print(f"  {rat}: {len(g)} sessions, EV - REV median {x.median():.3f}%, EV > REV in {int((x > 0).sum())}")
+    return d, diff''')
+rep('''d_all, diff_all = ev_test(ev, "bla", "Hippocampus-BLA, all cells, NREM")
+for rat, g in d_all.groupby("rat"):
+    x = g.bla_ev - g.bla_rev
+    print(f"  {rat}: {len(g)} sessions, EV - REV median {x.median():.3f}%, EV > REV in {int((x > 0).sum())}")
+''','''d_all, diff_all = ev_test(ev, "bla", "Hippocampus-BLA, all cells, NREM")
+''')
+rep('''ev_test(ev, "bla_wide", "Variant''','''_ = ev_test(ev, "bla_wide", "Variant''')
+rep('''ev_test(ev, "bla_rem", "Variant''','''_ = ev_test(ev, "bla_rem", "Variant''')
+rep('''In nearly every file the puffs fall inside run laps of one direction, which gives the day's air
+puff direction for the lap-based analyses (O1 reading c laps, M8 lap types); three files have no
+puff inside a run lap and so no direction.''','''In the 38 files with puffs, 1153 of 1197 puffs fall inside run laps of the direction that holds
+most of them, 28 in laps of the other direction and 16 outside run laps. This gives the day's air
+puff direction for the lap-based analyses (O1 reading c laps, M8 lap types). Rat08-20130709 has no
+puff inside a run lap (2 puffs, 5 laps) and so no direction; two files have no puffs.''')
+R={}
+R['RESULT_UNIT_COUNTS']='''not reproduced.** The dandiset holds 40 sessions (33 with a units table) and 4702
+units, against the paper's 61 sessions and 7,390 units, both outside the 10% tolerance. Only
+Rat08, taken as rat 1, is within tolerance (2317 units against 2,444); Rat09, Rat10 and Rat11 hold
+515, 440 and 1430 units against 1,294, 1,138 and 2,514. By label the dandiset has 1118 BLA, 482
+central nuclei, 935 piriform and 829 hippocampal units, against 2,038, 782, 1,560 and 1,210; with
+the wider amygdala labels it has 1977 amygdala units. The dandiset holds part of the paper's data.'''
+R['RESULT_HABITUATION']='''reproduced**, under O1 reading c, the only lap reading the dandiset allows. The
+habituation index rises with training day for each lap count: pooled Spearman rho 0.383 (p =
+0.015, 40 sessions) for all laps, 0.331 (p = 0.046, 37 sessions) for air puff laps and 0.397 (p =
+0.011, 40 sessions) for left-to-right laps. The correlation is positive in all four rats for each
+count, with p < 0.05 in Rat08, Rat09 and Rat10 and not in Rat11 (rho 0.32 to 0.33, p of 0.35 to
+0.41). Both readings of "gradually diminished" hold for all three lap counts; the air puff count is
+the closest to its threshold (p = 0.046).'''
+R['RESULT_BLA_PYR']='''reproduced**, on the 152 identified excitatory BLA units of five Rat08 sessions (O4
+reading a; the paper had 675 cells from four rats). The REM/wake ratio has a median of 0.39
+(positive in 120 of 152, p = 7.0e-15) and the NREM/wake ratio a median of 0.18 (positive in 108,
+p = 7.2e-12), so both are positive and the REM median exceeds the NREM one. By session the REM
+ratio is positive with p < 0.05 in four of five sessions and the NREM ratio in three;
+Rat08-20130713 (22 cells) reaches neither.'''
+R['RESULT_BLA_INT']='''not reproduced.** On the 36 identified inhibitory BLA units of five Rat08 sessions,
+the REM/wake ratio has a median of 0.029, positive in 22 of 36, with p = 0.020: the paper's test
+finds a change between REM and wake, where the claim says there is none. The NREM/wake ratio has
+a negative median (-0.035, positive in 16 of 36) but p = 0.26, so the decrease is not significant.
+Neither part of the criterion holds. The cells are about a fifth of the paper's 175, from one rat,
+and by session only Rat08-20130711 (12 cells) has a REM ratio with p < 0.05.'''
+R['RESULT_ALL_CELL_PAIRS']='''reproduced.** Over 15 sessions (9 Rat08, 3 Rat10, 3 Rat11; the paper had 27), EV
+exceeds REV in 13, with a mean EV - REV of 3.48% (s.e.m. 0.99) and a two-sided Wilcoxon p of
+0.00031. By rat, EV exceeds REV in all 9 Rat08 and all 3 Rat11 sessions, and in 1 of 3 Rat10
+sessions (median -0.023%). The wider amygdala labels give the same result (22 sessions, 17 with
+EV > REV, p = 0.0005). Reported only: EV - REV falls over the successive 20-min periods of
+post-NREM (means 2.49, 1.27 and 0.52%; p = 0.018, 0.035 and 1).'''
+R['RESULT_CEN']='''reproduced.** Hippocampus-central nuclei EV does not differ from REV in NREM (9
+sessions, median EV - REV 0.60%, EV > REV in 7, p = 0.30) or in REM (8 sessions, median 0.085%,
+EV > REV in 6, p = 0.25), so the paper's test finds no reactivation. The paper had 19 sessions in
+each test; with 9 and 8 the test has less power, and the NREM median is positive.'''
+R['RESULT_RIPPLE_RATE']='''reproduced.** Over 23 sessions (the paper had 41), the median ripple rate is
+0.611 Hz in pre-NREM and 0.587 Hz in post-NREM; post minus pre has a median of 0.0315 Hz, is
+positive in 15, and the two-sided Wilcoxon p is 0.26. By rat the median change is 0.089 Hz in
+Rat08 (higher in post in 8 of 9), -0.008 Hz in Rat10 (3 of 7) and 0.007 Hz in Rat11 (4 of 7).'''
+for k,v in R.items(): rep(k,v)
+# blocked description sentences
+rep('''**Result: blocked (metadata insufficient).** The printed variant is a description only.''','''**Result: blocked (metadata insufficient).** The printed variant is a description only: with all
+cells, hippocampus-BLA EV does not differ from REV in REM (14 sessions, EV > REV in 8, p = 0.43).''')
+rep('''**Result: blocked (metadata insufficient).** The printed tests are a description only.
+\'\'\')
 
-A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+md(r\'\'\'
+## bla-ripple-up-subgroup''','''**Result: blocked (metadata insufficient).** The printed tests are a description only: with all
+pairs, the hippocampus reactivates in NREM (23 sessions, EV > REV in 19, p = 0.0054) and the BLA
+does not reach p < 0.05 (16 sessions, 9, p = 0.14); in REM neither does (p = 0.83 and 0.21).
+\'\'\')
+
+md(r\'\'\'
+## bla-ripple-up-subgroup''')
+rep('''is blocked with it. The printed fractions are a description only.''','''is blocked with it. The printed fractions are a description only: over all 822 BLA units of 17
+sessions, 105 (12.8%) are upmodulated and 85 (10.3%) downmodulated under O2 reading a (110 and 91
+under reading b); among the identified units of five files, 8 of 36 inhibitory (22.2%) and 9 of
+152 excitatory units (5.9%) are upmodulated.''')
+rep('''**Result: blocked (metadata insufficient, through `bla-ripple-up-subgroup`).** The printed tests
+are a description only.''','''**Result: blocked (metadata insufficient, through `bla-ripple-up-subgroup`).** The printed tests
+are a description only: with all cells, EV - REV is larger with the modulated BLA units in 7 of 12
+sessions (means 4.18 and 1.68%), with rank sum p = 0.27 under O2 reading a and 0.3 under reading b.''')
+rep('''**Result: blocked (metadata insufficient, through `hpc-bla-reactivation-post-sleep`).** The
+printed test is a description only.''','''**Result: blocked (metadata insufficient, through `hpc-bla-reactivation-post-sleep`).** The
+printed test is a description only: with all cells, the ripple-peak strength of the whole-run
+template is higher in post-NREM than in pre-NREM in 11 of 15 sessions (median difference 0.0224,
+one-tailed p = 0.0042).''')
+rep('''**Result: blocked (metadata insufficient, through `aversive-direction-stronger`).** The printed
+tests are a description only.''','''**Result: blocked (metadata insufficient, through `aversive-direction-stronger`).** The printed
+tests are a description only: with all cells over 14 sessions, the air puff template is more
+reactivated in post-NREM (10 of 14, one-tailed p = 0.01), so is the safe template (12 of 14, p =
+0.0043), and the air puff change does not exceed the safe one (8 of 14, p = 0.48), the pattern the
+claim states. With all cells, `aversive-direction-stronger`'s comparison is not significant here.''')
+rep('''**Result: blocked (metadata insufficient).** The printed tests are a description only.
+\'\'\')
+
+md(r\'\'\'
+## ripple-rate-unchanged''','''**Result: blocked (metadata insufficient).** The printed tests are a description only: with all
+BLA cells, the rate on air puff laps exceeds that on safe laps by a median of 0.0036 Hz, p = 0.022
+(739 cells, 14 sessions), and by 0.0032 Hz, p = 0.0048 (1033 cells, 21 sessions), so the all-cell
+test would find a difference under both session readings.
+\'\'\')
+
+md(r\'\'\'
+## ripple-rate-unchanged''')
+rep('''SUMMARY''','''A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-| Claim | Outcome |
-|---|---|
-| `hpc-bla-reactivation-post-sleep` | reproduced |
-| `reactivation-peaks-at-ripples` | reproduced |
-| `bla-ripple-up-subgroup` | reproduced |
-| `reactivation-involves-ripple-up-cells` | reproduced |
-| `aversive-direction-stronger` | not reproduced (p = 0.11, in the claimed direction) |
-| `rats-learn-puff-location` | blocked: data missing (no position tracking) |
+| Claim | Outcome | Earlier attempt (-01) |
+|---|---|---|
+| `unit-counts` | not reproduced (40 of 61 sessions, 4702 of 7,390 units) | no claim |
+| `rats-learn-puff-location` | blocked: too large (no position) | blocked: too large |
+| `each-rat-learns-puff-location` | blocked: too large | no claim |
+| `dz-speed-slower-post-run` | blocked: too large | no claim |
+| `puff-location-no-speed-bias` | blocked: too large | no claim |
+| `habituation-over-days` | reproduced (O1 reading c) | no claim |
+| `bla-pyr-sleep-firing-increase` | reproduced (152 identified cells, one rat) | no claim |
+| `bla-int-sleep-firing` | not reproduced (REM/wake p = 0.020; NREM p = 0.26) | no claim |
+| `hpc-bla-reactivation-post-sleep` | blocked: metadata insufficient | reproduced (another measure) |
+| `reactivation-all-cell-pairs` | reproduced (p = 0.00031, 15 sessions) | no claim |
+| `reactivation-decay` | blocked: metadata insufficient | no claim |
+| `no-rem-reactivation` | blocked: metadata insufficient | no claim |
+| `piriform-weaker-reactivation` | blocked: metadata insufficient | no claim |
+| `cen-no-reactivation` | reproduced (NREM p = 0.30, REM p = 0.25) | no claim |
+| `intra-structure-reactivation` | blocked: metadata insufficient | no claim |
+| `bla-ripple-up-subgroup` | blocked: metadata insufficient | reproduced (another test) |
+| `bla-ripple-down-subgroup` | blocked: metadata insufficient | no claim |
+| `ripple-modulated-cells-larger-reactivation` | blocked: metadata insufficient | no claim |
+| `run-correlated-pair-fractions` | blocked: metadata insufficient | no claim |
+| `reactivation-involves-ripple-up-cells` | blocked: metadata insufficient | reproduced (another measure) |
+| `pair-group-ev` | blocked: metadata insufficient | no claim |
+| `contributing-up-cells-gain-increase` | blocked: metadata insufficient | no claim |
+| `ev-independent-of-firing-rate` | blocked: metadata insufficient | no claim |
+| `reactivation-peaks-at-ripples` | blocked: metadata insufficient | reproduced (another measure) |
+| `airpuff-trajectory-ripple-reactivation` | blocked: metadata insufficient | no claim |
+| `safe-trajectory-no-ripple-reactivation` | blocked: metadata insufficient | no claim |
+| `aversive-direction-stronger` | blocked: metadata insufficient | not reproduced (another measure) |
+| `direction-all-cell-pairs` | blocked: metadata insufficient | no claim |
+| `bla-rate-same-across-directions` | blocked: metadata insufficient | no claim |
+| `ripple-rate-unchanged` | reproduced (p = 0.26, 23 sessions) | no claim |
+| `contributing-pairs-run-sleep-coupling` | blocked: metadata insufficient | no claim |
+| `contributing-quartiles-run-sleep-coupling` | blocked: metadata insufficient | no claim |
 
-**How the analysis differs from the paper's.** The full text was not available, so the methods
-are common choices fixed before the analysis: hippocampus and BLA as the `hpc`/`HIP` and
-`bla`/`BLA` labels, 50 ms bins, joint patterns from the singular vectors of the run's
-hippocampus by BLA cross-correlation matrix with a shuffle threshold, reactivation strength as the
-product of the two projections, ripple windows from the `rip` annotations, laps and the air-puff
-direction from the reward and puff times (there is no position). The paper's session selection,
-cell classification, bin size and statistics are unknown, and 15 sessions from three rats are
-used; Rat09 has no hippocampal units or ripples here.
+How the analysis differs from the paper's. Every method is the claims file's, from the paper's
+Methods and code. The differences come from the data: the dandiset holds 40 of the paper's 61
+sessions; it has no putative cell types, so the cells of `bla-pyr-sleep-firing-increase` and
+`bla-int-sleep-firing` are the identified excitatory and inhibitory units of five Rat08 files (O4
+reading a), and every claim on putative pyramidal cells is blocked; it has no position, so laps
+are the intervals between rewards at opposite ends (O1 reading c) and the behaviour claims are
+blocked; brain regions are the dandiset's labels read as the paper's structures; units 0 and 1 of
+ten files are left out of the analyses because their spike times are mixed. Bins belong to an
+interval when their centre does, and ripples to NREM when their peak does (standard choices).
 
-**What was found about the dandiset.**
-- The epochs table is in milliseconds although it says seconds; video timestamps are also in
-  milliseconds, stated as seconds, and are not on the session clock.
-- In ten files the units index is wrong at the first unit: unit 1 begins with the end of unit 0
-  (a fall back in time after a multiple of 65536 spikes).
-- Seven files have no units table, sixteen no sleep states and fourteen no ripple events; the
-  Rat09 files have no hippocampal units.
-- The unit region labels are undescribed short codes, in two cases for the same region in some
-  files, and one file has no labels; the electrode table gives every channel as `unknown`.
-- There is no position tracking, so the behaviour on the track cannot be measured; the `trials`
-  table is undescribed.
-'''
-a=s.index('## Summary'); s=s[:a]+summary
-open('cells.txt','w').write(s)
-E
-grep -n "TBD" cells.txt | head
+What was found about the dandiset.
+- The putative cell types the paper uses are missing; a `cell_type` column in five of 33 files
+  with units marks only identified excitatory and inhibitory cells and is described in one line.
+  There are no waveforms.
+- It holds 40 recording days against the paper's 61, and 4702 units against 7,390.
+- Still present from the earlier attempt (the files are unchanged): the epochs table is in
+  milliseconds although it says seconds; video timestamps are in milliseconds, stated as seconds,
+  and are not on the session clock; in ten files the units index is wrong at units 0 and 1; seven
+  files have no units table, sixteen no sleep states and fourteen no ripple events; there is no
+  position tracking; the unit region labels, the `trials` table and the ripple labels are
+  undescribed.
+- The dandiset links no analysis code; the paper links its code.''')
+open(p,'w').write(s)
+d=s.replace('sessions = sorted(hpcbla.load_all(), key=lambda s: s["path"])','import pickle; sessions = pickle.load(open("/tmp/claude-1001/sessions.pkl", "rb"))')
+d=d.replace('seconds, frame_bytes = hpcbla.time_frame_reads(dict(hpcbla.asset_urls())[first["path"]], name, 20)','seconds, frame_bytes = 7.0, 691200')
+open('cells_dev.py','w').write(d)
+EOF
+grep -n "RESULT_\|SUMMARY" /tmp/claude/cells.py | head
 ```
 
 ```
 Shell cwd was reset to
-```
-
-**Agent**
-
-Now building the notebook from the cells file, plus entry.yaml, requirements.in and README.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/dev && cat > build_nb.py <<'E'
-import re, nbformat
-src=open('/tmp/claude-1001/dev/cells.txt').read()
-cells=[]
-for c in re.split(r'^#%% ', src, flags=re.M)[1:]:
-    head, body = c.split('\n',1)
-    body=body.rstrip('\n')
-    if head.startswith('md'):
-        cells.append(nbformat.v4.new_markdown_cell(body))
-    else:
-        m=re.search(r'tags=(\S+)', head)
-        cell=nbformat.v4.new_code_cell(body)
-        if m: cell.metadata['tags']=[m.group(1)]
-        cells.append(cell)
-nb=nbformat.v4.new_notebook(cells=cells)
-nb.metadata['kernelspec']={"name":"python3","display_name":"Python 3","language":"python"}
-nbformat.write(nb,'entries/000061-girardeau-2017/reproduce_girardeau_2017.ipynb')
-print(len(cells))
-E
-../env/bin/python build_nb.py
-cd entries/000061-girardeau-2017
-printf "dandi\nh5py\nmatplotlib\nnumpy\npandas\nremfile\nscipy\n" > requirements.in
-cat > entry.yaml <<'E'
-schema_version: 1
-name: 000061-girardeau-2017
-type: reproduction
-title: Hippocampus and amygdala reactivation during sleep (Girardeau et al. 2017)
-description: Tests the findings stated in the abstract of Girardeau, Inema and Buzsaki (2017) on
-  dandiset 000061, which holds sorted units of the hippocampus and the amygdala, sleep states,
-  ripple, air-puff and reward events from four rats on an air-puff linear track task. It tests the
-  reactivation of joint hippocampus and BLA patterns in sleep after the run, its peak at ripples,
-  the BLA cells modulated by ripples and their weight in the patterns, and the difference between
-  the air-puff and the safe run direction. The paper's full text was not available, so the methods
-  are common choices fixed before the analysis.
-license: Apache-2.0
-notebooks:
-- path: reproduce_girardeau_2017.ipynb
-  title: Reproducing Girardeau et al. (2017) from dandiset 000061
-  runtime_minutes: 12
-helpers:
-- hpcbla.py
-related:
-- id: dandi:000061/0.250624.0426
-  relation: uses_data
-- id: doi:10.1038/nn.4637
-  relation: reproduces
-E
-cat ../001453-fouke-2025/entry.yaml | head -3; cat ../../schemas/entry.schema.json | python -c "import json,sys;d=json.load(sys.stdin);print(json.dumps(d['properties'],indent=0)[:1500])"
-```
-
-```
-Traceback (most recent call last):
-  File "/tmp/claude-1001/dev/build_nb.py", line 1, in <module>
-    import re, nbformat
-ModuleNotFoundError: No module named 'nbformat'
-schema_version: 1
-name: 001453-fouke-2025
-type: reproduction
-{
-"schema_version": {
-"const": 1
-},
-"name": {
-"description": "Unique across the registry, and the name of the entry's directory.",
-"type": "string",
-"pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
-"maxLength": 100
-},
-"type": {
-"enum": [
-"orientation",
-[... 78 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python $TMPDIR/dev/build_nb.py && cd  && time python tools/entry.py lock entries/000061-girardeau-2017 && python tools/entry.py check entries/000061-girardeau-2017
-```
-
-```
-43
-wrote entries/000061-girardeau-2017/requirements.lock.txt
-
-real	0m0.223s
-user	0m0.167s
-sys	0m0.059s
-0 error(s)
-```
-
-**Agent**
-
-Check passes. Running the entry from a clean environment (about 12 minutes expected).
-
-**Agent calls Bash**
-
-```bash
-time python tools/entry.py all entries/000061-girardeau-2017 2>&1 | tail -20
-```
-
-```
-Installed kernelspec registry-000061-girardeau-2017 in executed/000061-girardeau-2017/.venv/share/jupyter/kernels/registry-000061-girardeau-2017
-0 error(s)
-pass  reproduce_girardeau_2017.ipynb  (630 s)
-
-real	10m40.185s
-user	10m8.181s
-sys	0m15.827s
-```
-
-**Agent**
-
-Ran in 630 s. Reading the executed outputs to confirm the conclusions match the numbers.
-
-**Agent calls Bash**
-
-```bash
-cd executed/000061-girardeau-2017 && ls && python - <<'E'
-import nbformat
-nb=nbformat.read('reproduce_girardeau_2017.ipynb',4)
-for c in nb.cells:
-    if c.cell_type!='code': continue
-    tags=c.metadata.get('tags',[])
-    if not tags or not tags[0].startswith('claim'): 
-        if tags==[] : 
-            for o in c.outputs: print(''.join(o.get('text','')))
-        continue
-    print('=====',tags)
-    for o in c.outputs:
-        if 'text' in o: print(o['text'])
-E
-```
-
-```
-reproduce_girardeau_2017.ipynb
-result.json
-loaded 40 files from dandiset 000061 version 0.250624.0426 in 350 s
-
-===== ['claim:hpc-bla-reactivation-post-sleep']
-computed in 27 s
-Significant patterns: 36 of 289 ; sessions with at least one: 15 of 15
-                      patterns     pre    post  change  positive
-rat   session                                                   
-Rat08 Rat08-20130708         2  0.0031  0.0085  0.0054         1
-      Rat08-20130709         2  0.0554  0.0825  0.0271         2
-      Rat08-20130710         2  0.0573  0.0626  0.0053         1
-      Rat08-20130711         3  0.0143  0.0364  0.0305         3
-      Rat08-20130712         1  0.0124  0.0322  0.0198         1
-      Rat08-20130713         4  0.0225  0.0291  0.0142         3
-      Rat08-20130715         3  0.0026  0.0308  0.0188         3
-      Rat08-20130716         2  0.0239  0.0438  0.0199         2
-      Rat08-20130717         2  0.0234  0.0642  0.0409         2
-Rat10 Rat10-20140624         3  0.0066  0.0036  0.0032         2
-      Rat10-20140626         4  0.0093  0.0081 -0.0011         2
-[... 133 more lines not kept]
-```
-
-**Agent**
-
-The executed numbers match the dev run exactly. Now the entry README and the attempt record.
-
-**Agent calls Bash**
-
-```bash
-cd  && python -c "
-import json;d=json.load(open('schemas/attempt.schema.json'));print(json.dumps(d,indent=1)[:6000])"
-```
-
-```
-{
- "$schema": "https://json-schema.org/draft/2020-12/schema",
- "title": "One attempt at reproducing the claims of a target",
- "description": "Draft. To be revised after the pilot. An attempt is recorded whether or not it produced a working notebook.",
- "type": "object",
- "additionalProperties": false,
- "required": [
-  "schema_version",
-  "id",
-  "dandiset",
-  "paper",
-  "date",
-  "provenance",
-  "outcomes"
- ],
- "properties": {
-  "schema_version": {
-   "const": 1
-  },
-  "id": {
-[... 252 more lines not kept]
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "attempts/000061-girardeau-2017-01.yaml",
- "content": "schema_version: 1\nid: 000061-girardeau-2017-01\ndandiset: \"000061\"\ndandiset_version: 0.250624.0426\npaper: doi:10.1038/nn.4637\ndate: 2026-10-16\nentry: 000061-girardeau-2017\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code (GitHub Actions)\n    model: claude-opus-5-5\n    protocol: pilot-7\noutcomes:\n- claim: hpc-bla-reactivation-post-sleep\n  outcome: reproduced\n  notebook: reproduce_girardeau_2017.ipynb\n  output: claim:hpc-bla-reactivation-post-sleep\n  notes: 15 sessions (9 Rat08, 3 Rat10, 3 Rat11) with 341 hippocampal and 483 BLA units; every\n    session has at least one significant joint pattern, 36 in all. Post-sleep minus pre-sleep\n    Non-REM strength has a median of 0.0119, positive in 28 of 36, Wilcoxon p = 3.6e-05. The median\n    is above zero in each rat (Rat08 0.0170, 18 of 21, p = 0.00013; Rat10 0.0024, 5 of 8, p = 0.74;\n    Rat11 0.0190, 5 of 7, p = 0.11). Non-significant patterns change by a median of 0.0001. The\n    variants (25 and 100 ms bins, the wider BLA labels over 21 sessions, the first pattern of each\n    session) all give positive medians with p of 0.0084 or less. The comparison does not separate\n    reactivation from slow drift of the recording, since post-sleep is next to the run in time.\n  deviations:\n  - The paper's methods were not available; the joint-pattern method (singular vectors of the run's\n    hippocampus by BLA cross-correlation matrix, shuffle threshold, product of projections), the 50\n    ms bins and the unit criteria are common choices fixed in the claims file.\n  - BLA is taken as the units labelled bla or BLA; other undescribed labels that may be parts of\n    the basolateral complex are a variant only.\n  - Sessions without sleep states or ripples, and Rat09 (no hippocampal units), are left out;\n    which sessions and rats the paper used is not known here.\n  - Units 0 and 1 of ten files are left out because their spike times are mixed (see findings).\n- claim: reactivation-peaks-at-ripples\n  outcome: reproduced\n  notebook: reproduce_girardeau_2017.ipynb\n  output: claim:reactivation-peaks-at-ripples\n  notes: Reading (a) holds. The mean ripple-triggered strength in post-sleep Non-REM is highest in\n    the bin of the ripple peak, 4.36 times its mean at 0.5 to 1 s; the peak bin exceeds the flanks\n    in 30 of 36 patterns (median 0.103, p = 6e-06), with a positive median in each rat. 22 of 36\n    patterns have their own maximum within 100 ms of the ripple. The pre-sleep curve also peaks at\n    ripples (0.136 against 0.223 post), and the peak over flanks is larger post than pre (23 of\n    36, p = 0.022). Reading (b) also holds; the post minus pre change in ripple bins exceeds that\n    outside ripples (median difference 0.0537, 25 of 36, p = 0.0033).\n  deviations:\n  - The abstract's \"peaked during SPW-Rs\" can be read in two ways; both readings were fixed in\n    the criterion and both match.\n  - Ripples are the dandiset's `rip` annotations, not a detection run here.\n- claim: bla-ripple-up-subgroup\n  outcome: reproduced\n  notebook: reproduce_girardeau_2017.ipynb\n  output: claim:bla-ripple-up-subgroup\n  notes: 103 of 822 BLA units in 17 sessions (12.5%) are positively modulated in Non-REM ripple\n    windows, against a chance level of 0.7% (6 units) from the same procedure on windows shifted by\n    7 s; binomial p = 9.8e-90. Above chance in each rat (Rat08 51 of 496, Rat10 4 of 84, Rat11 48 of\n    242). 104 units (12.7%) are negatively modulated. At p of 0.05 or less the fraction is 16.3%\n    against 5.6% chance, at 0.002 or less 10.8% against 0.2%.\n  deviations:\n  - The test of modulation (spike count in ripple windows against windows shifted together by 0.5\n    to 5 s, one-sided p of 0.01 or less) is a common choice; the paper's test is not known here.\n  - Units are counted once per session; a cell recorded on several days may be counted more than\n    once, as the dandiset does not match units across days.\n- claim: reactivation-involves-ripple-up-cells\n  outcome: reproduced\n  notebook: reproduce_girardeau_2017.ipynb\n  output: claim:reactivation-involves-ripple-up-cells\n  notes: In 31 significant patterns with both kinds of BLA unit, the mean squared BLA weight of the\n    ripple-up units exceeds that of the other BLA units (medians 0.0505 and 0.0181; difference\n    positive in 24 of 31, Wilcoxon p = 0.0013). The ripple-up units are a median 20% of a pattern's\n    BLA units and carry 34% of its BLA weight. It holds in Rat08 (17 of 21) and Rat11 (6 of 7) and\n    not in Rat10 (1 of 3). In patterns whose post minus pre reactivation is positive, p = 0.0018.\n  deviations:\n  - The abstract does not say how involvement was measured; the pattern weights were chosen here\n    before the analysis.\n- claim: aversive-direction-stronger\n  outcome: not_reproduced\n  notebook: reproduce_girardeau_2017.ipynb\n  output: claim:aversive-direction-stronger\n  notes: Over 15 sessions, post minus pre reactivation of the air-puff templates exceeds that of\n    the safe templates by a median of 0.0133, in 9 of 15 sessions, Wilcoxon p = 0.11; the criterion\n    needs p < 0.05, and p < 0.1 for a partial outcome. Positive in 6 of 9 Rat08, 2 of 3 Rat10 and 1 of\n    3 Rat11 sessions. Variants lean the same way with mixed strength; the first pattern of each\n    direction gives p = 0.048 (10 of 15), the pooled per-pattern Mann-Whitney test p = 0.083, equal\n    numbers of template bins p = 0.28, and post-sleep strength alone p = 0.45. The safe templates\n    of some sessions rest on few bins (5610 against 66804 in Rat08-20130709).\n  deviations:\n  - Laps, and so run direction, come from the reward times, as the dandiset holds no position; the\n    paper presumably used the position on the track.\n  - The air-puff direction is the lap direction holding most puffs (927 of 957 puffs fall in it).\n  - The measure (mean over significant patterns of post minus pre strength, compared across\n    sessions) was chosen here before the analysis; the paper's is not known here.\n- claim: rats-learn-puff-location\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Learning the location of the puff is behaviour along the track, which needs the rat's\n    position; the dandiset holds no position tracking, only raw video with timestamps that are not\n    on the session clock, reward and puff times, and an undescribed trials table. Lap times between\n    rewards were looked at during the data check but give no location. No public copy of the\n    tracking linked to the paper or the dandiset was found.\nfindings:\n- kind: metadata_error\n  statement: The epochs table is stored in milliseconds although its columns say seconds; in all 40\n    files its last stop time is exactly 1000 times the LFP duration and the last spike time.\n- kind: metadata_error\n  statement: Video timestamps are stated in seconds but are in milliseconds and are not on the\n    session clock. The first timestamp matches the start of the video's epoch in 1 of 114 videos,\n    while the spans match the epoch durations in 93 of 114.\n- kind: format_error\n  statement: In ten files the spike_times_index is wrong at the first units. Unit 1's spike times\n    fall back once, after 65536 times k spikes, and unit 0 stops part way through the session at\n    the time unit 1 starts, so the first part of unit 1 is the end of unit 0. Units 0 and 1 of these\n    files were left out.\n- kind: data_missing\n  statement: Seven files have no units table (Rat08-20130722, five Rat09 files and Rat11-20150403),\n    sixteen have no sleep states and fourteen have no ripple events. The Rat09 files have no\n    hippocampal units and no ripples, so Rat09 cannot enter a hippocampus and BLA analysis.\n- kind: data_missing\n  statement: There is no position tracking, so behaviour on the track, including the learning of\n    the puff location, cannot be measured; run direction can only be inferred from reward times.\n- kind: metadata_insufficient\n  statement: Unit region labels are undescribed short codes (bla, blv, bmp, ladl, cen, den, ven,\n    pir, plc01, PLCo1, cpu, hpc, HIP, no label), some in two cases for the same region, and\n    Rat09-20140328 has no location column; the electrode table gives every channel as unknown. Which\n    labels make up the paper's BLA cannot be told from the dandiset.\n- kind: metadata_insufficient\n  statement: The `trials` table of the Rat08 and Rat09 files is described only as \"experimental\n    trials\"; its intervals of 3 to 5 s fall partly outside the run and are not laps.\n- kind: metadata_insufficient\n  statement: The ripple annotations carry a number in each label (for example \"Ripple peak 156\"),\n    presumably the detection channel, with no description; ripples, puffs and rewards are stored as\n    annotation series under stimulus presentation.\n- kind: methods_unavailable\n  statement: The paper is not open access and neither it (as far as the abstract shows) nor the\n    dandiset links analysis code, so the reactivation method, unit selection and statistics had to\n    be chosen here.\n"
-}
-```
-
-```
-File created successfully at: attempts/000061-girardeau-2017-01.yaml (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Write**
@@ -2204,180 +1530,346 @@ File created successfully at: attempts/000061-girardeau-2017-01.yaml (file state
 ```json
 {
  "file_path": "entries/000061-girardeau-2017/README.md",
- "content": "# Girardeau, Inema & Buzsaki (2017) from dandiset 000061\n\nTests the findings stated in the abstract of [Girardeau et al. (2017)](https://doi.org/10.1038/nn.4637)\non [DANDI:000061](https://dandiarchive.org/dandiset/000061/0.250624.0426), which holds sorted units\nof the hippocampus and the amygdala, sleep states and ripple, air-puff and reward events from four\nrats. The paper is not open access, so only its abstract was used, and the methods are common\nchoices fixed before the analysis.\n\n| Claim | Outcome |\n|---|---|\n| Joint hippocampus and BLA patterns of the run reactivate in post-sleep Non-REM | Reproduced |\n| The reactivations peak during sharp wave-ripples | Reproduced |\n| A subgroup of BLA cells is positively modulated during ripples | Reproduced |\n| The reactivations involve those BLA cells | Reproduced |\n| Reactivation is stronger for the air-puff direction than the safe one | Not reproduced |\n| Rats learned the location of the air puff | Blocked: data missing |\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the\nreasoning and the differences from the paper's method.\n\nThe dandiset has no position tracking, so run direction comes from the reward times. The attempt\nrecord, with the reasons and the differences from the paper's method, is\n[`attempts/000061-girardeau-2017-01.yaml`](../../attempts/000061-girardeau-2017-01.yaml).\n\n- `reproduce_girardeau_2017.ipynb`: the analysis. It takes about eleven minutes, six of them\n  streaming the files.\n- `hpcbla.py`: loading the files, sleep epochs, laps, joint patterns and their reactivation, and\n  ripple modulation. Other notebooks on this dandiset can import it.\n"
+ "content": "# Girardeau, Inema & Buzsaki (2017) from dandiset 000061\n\nTests the claims of [Girardeau et al. (2017)](https://doi.org/10.1038/nn.4637), written by a reader\nfrom the full text, the supplement and the paper's code\n(`claims/000061/10.1038-nn.4637.yaml`), on\n[DANDI:000061](https://dandiarchive.org/dandiset/000061/0.250624.0426) version 0.250624.0426,\nwhich holds sorted units of the hippocampus and the amygdala, sleep states and ripple, air puff and\nreward events from four rats. The attempt record is\n[`attempts/000061-girardeau-2017-02.yaml`](../../attempts/000061-girardeau-2017-02.yaml); it\nreplaces [`000061-girardeau-2017-01`](../../attempts/000061-girardeau-2017-01.yaml), whose claims\nwere written from the abstract alone.\n\nOf 31 claims, 7 are tested: 5 reproduced, 2 not reproduced. The other 24 are blocked: 20 because\nthe dandiset has no putative cell types (pyramidal cell or interneuron), on which most of the\npaper's reactivation analyses rest, and 4 because it has no position tracking.\n\n| Claim | Outcome |\n|---|---|\n| `unit-counts` | Not reproduced: 40 of 61 sessions, 4702 of 7,390 units |\n| `habituation-over-days` | Reproduced (laps from reward times) |\n| `bla-pyr-sleep-firing-increase` | Reproduced (identified cells of five Rat08 files) |\n| `bla-int-sleep-firing` | Not reproduced (REM/wake change p = 0.020) |\n| `reactivation-all-cell-pairs` | Reproduced |\n| `cen-no-reactivation` | Reproduced |\n| `ripple-rate-unchanged` | Reproduced |\n| 20 claims on putative pyramidal cells or interneurons | Blocked: metadata insufficient |\n| `rats-learn-puff-location` and the three behaviour claims that depend on it | Blocked: too large (position only in raw video frames) |\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the\nreasoning and the differences from the paper's method.\n\nPosition could only come from tracking the raw video frames stored in the files, which would take\nabout 190 hours to stream. Five Rat08 files have a `cell_type` column, which marks only\ncells identified as excitatory or inhibitory.\n\n- `reproduce_girardeau_2017.ipynb`: the analysis. It takes about 8 minutes, six of them streaming\n  the files; the notebook prints its run time at the end.\n- `hpcbla.py`: loading the files, sleep epochs, laps, EV and REV, ripple modulation, reactivation\n  strength around ripples, firing rates by state. Other notebooks on this dandiset can import it.\n"
 }
 ```
 
 ```
-File created successfully at: entries/000061-girardeau-2017/README.md (file state is current in your context — no need to Read it back)
+The file entries/000061-girardeau-2017/README.md has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "entries/000061-girardeau-2017/entry.yaml",
+ "content": "schema_version: 1\nname: 000061-girardeau-2017\ntype: reproduction\ntitle: Hippocampus and amygdala reactivation during sleep (Girardeau et al. 2017)\ndescription: Tests the claims of Girardeau, Inema and Buzsaki (2017), written from the full text,\n  the supplement and the paper's code, on dandiset 000061, which holds sorted units of the\n  hippocampus and the amygdala, sleep states, ripple, air puff and reward events from four rats on\n  an air puff linear track task. It tests the unit counts, habituation over days, BLA firing by\n  sleep state, hippocampus-BLA and hippocampus-central nuclei reactivation (explained variance)\n  with all cells, and the ripple rate before and after training. Claims on putative pyramidal cells\n  and on position are blocked, as the dandiset holds neither.\nlicense: Apache-2.0\nnotebooks:\n- path: reproduce_girardeau_2017.ipynb\n  title: Reproducing Girardeau et al. (2017) from dandiset 000061\n  runtime_minutes: 8\nhelpers:\n- hpcbla.py\nrelated:\n- id: dandi:000061/0.250624.0426\n  relation: uses_data\n- id: doi:10.1038/nn.4637\n  relation: reproduces\n"
+}
+```
+
+```
+The file entries/000061-girardeau-2017/entry.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-python3 - <<'E'
-p='/tmp/claude-1001/dev/cells.txt'; s=open(p).read()
-old="the flanks in 30 of 36 patterns (median 0.103, p = 6e-06), in every rat."
-assert old in s; s=s.replace(old,"the flanks in 30 of 36 patterns (median 0.103, p = 6e-06), with a positive median in every rat.")
-open(p,'w').write(s)
-E
-sed -i 's/runtime_minutes: 12/runtime_minutes: 11/' entries/000061-girardeau-2017/entry.yaml
-python $TMPDIR/dev/build_nb.py
-grep -rn -- "—\|rather" entries/000061-girardeau-2017/ claims/000061 attempts/000061-girardeau-2017-01.yaml | grep -v lock | head
-python - <<'E'
-import yaml,re
-for f in ['attempts/000061-girardeau-2017-01.yaml','claims/000061/10.1038-nn.4637.yaml']:
-    for i,l in enumerate(open(f)):
-        body=l.split('#')[0]
-        # flag ': ' beyond the key position
-        m=re.match(r'^\s*(- )?[a-z_]+: (.*)$', body)
-        rest = m.group(2) if m else body.strip()
-        if ': ' in rest: print(f,i+1,l.rstrip())
-    yaml.safe_load(open(f))
-E
-python tools/entry.py check entries/000061-girardeau-2017
+cd entries/000061-girardeau-2017 && $TMPDIR/env61/bin/python /tmp/claude/build_nb.py /tmp/claude/cells.py reproduce_girardeau_2017.ipynb && $TMPDIR/env61/bin/python /tmp/claude/build_nb.py /tmp/claude/cells_dev.py $TMPDIR/dev.ipynb && cp hpcbla.py $TMPDIR/ && cd $TMPDIR && env61/bin/jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=3600 --output-dir $TMPDIR/exec dev.ipynb 2>&1 | tail -2 && env61/bin/python show.py exec/dev.ipynb > dev_out.txt; grep -n "ERROR\|^(" dev_out.txt | head; grep -n -A6 "Hippocampus-central nuclei, all cells, NREM" dev_out.txt
 ```
 
 ```
-43
-0 error(s)
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[NbConvertApp] Writing 290426 bytes to /tmp/claude-1001/exec/dev.ipynb
+74:(none)        75
+573:(no column)    431   65  0.151     28  0.065   69  0.160     30  0.070
+553:Hippocampus-central nuclei, all cells, NREM: 9 sessions {'Rat08': 4, 'Rat10': 2, 'Rat11': 3}; EV median 1.067%, REV median 0.355%; EV - REV mean 0.714% (s.e.m. 0.979), median 0.603%, EV > REV in 7; Wilcoxon two-sided p = 0.3
+554-  Rat08: 4 sessions, EV - REV median 0.468%, EV > REV in 3
+555-  Rat10: 2 sessions, EV - REV median 0.095%, EV > REV in 1
+556-  Rat11: 3 sessions, EV - REV median 0.603%, EV > REV in 3
+557-Hippocampus-central nuclei, all cells, REM: 8 sessions {'Rat08': 4, 'Rat10': 2, 'Rat11': 2}; EV median 0.280%, REV median 0.091%; EV - REV mean -0.058% (s.e.m. 0.239), median 0.085%, EV > REV in 6; Wilcoxon two-sided p = 0.25
+558-  Rat08: 4 sessions, EV - REV median 0.156%, EV > REV in 3
+559-  Rat10: 2 sessions, EV - REV median 0.304%, EV > REV in 2
+Shell cwd was reset to
 ```
 
 **Agent**
 
-Removing the bold labels in the header and summary (only the Result openers may be bold), then re-running.
+The notebook runs clean on the cache. Writing the questions file now: three method gaps the claims file leaves open on this data.
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "questions/000061.yaml",
+ "content": "# Questions from attempt 000061-girardeau-2017-02 (author, 2026-10-20) about the claims file\n# claims/000061/10.1038-nn.4637.yaml. Each is asked under docs/protocol.md, Author, step 1.6; the\n# attempt runs every reading it can see and records the claims whose outcome depends on the answer.\ndandiset: \"000061\"\npaper: doi:10.1038/nn.4637\nquestions:\n- claim: habituation-over-days\n  also: [airpuff-trajectory-ripple-reactivation, safe-trajectory-no-ripple-reactivation, aversive-direction-stronger, direction-all-cell-pairs, bla-rate-same-across-directions]\n  asked: 2026-10-20\n  question: O1 lists three lap readings, and the criteria say the notebook runs every one. The\n    dandiset holds no lap intervals (its `trials` table, in the Rat08 and Rat09 files only, holds\n    intervals of 3 to 5 s, partly outside the run) and no position, so readings a and b cannot be\n    run and only reading c (laps between consecutive rewards at opposite ends) can. Is a claim\n    judged on reading c alone, or is it blocked when the other readings cannot be run?\n  passage: Online Methods, \"a habituation index was calculated for each training session and\n    animal as the total number of back-and-forth laps divided by the total time spent on the maze x\n    100\"; ClassifyLaps.m defines laps from position in a hand-picked 150-cm window.\n  why: Under reading c the habituation index rises with training day under every lap count and\n    both readings of \"gradually diminished\" (pooled p = 0.011 to 0.046), so the attempt records\n    habituation-over-days as reproduced on reading c alone. If readings a and b are required, the\n    claim is blocked as data_missing. The other claims listed are blocked for missing cell types\n    and are not affected.\n- claim: bla-pyr-sleep-firing-increase\n  also: [bla-int-sleep-firing]\n  asked: 2026-10-20\n  question: O4 gives reading a (the monosynaptically identified cells where the dataset marks them)\n    and reading b (all putative cells of each type). Five of the 33 files with units have a\n    `cell_type` column (excitatory, inhibitory, unclassified), read as the identified cells, and no\n    file has the putative types. Is the claim judged on reading a alone, with 152 excitatory and\n    36 inhibitory BLA units of one rat, or blocked because reading b cannot be run?\n  passage: Fig. 2c legend, \"monosynaptically identified pyramidal cells; n = 675\" and\n    \"monosynaptically identified interneurons, n = 175\".\n  why: The legend's cells are the identified ones, which favours reading a. On it\n    bla-pyr-sleep-firing-increase is reproduced and bla-int-sleep-firing is not reproduced (REM/wake\n    p = 0.020); if reading b is required both are blocked as metadata_insufficient.\n- claim: reactivation-peaks-at-ripples\n  also: [direction-all-cell-pairs, ripple-modulated-cells-larger-reactivation]\n  asked: 2026-10-20\n  question: Each of these claims has a test with all cells as well as one with pyramidal cells, and\n    each lists in depends_on a claim that needs putative pyramidal cells (hpc-bla-reactivation-post-sleep,\n    aversive-direction-stronger, bla-ripple-up-subgroup), which the dandiset cannot give. Under the\n    protocol a claim that depends on a blocked claim is blocked. Do these claims need the\n    dependency for their all-cell tests (for example, for the sessions or the ripple-modulated\n    cells), or could their all-cell parts be judged on their own, at most as a partial outcome?\n  passage: M7, \"A session enters with at least 6 hippocampal and 6 BLA cells of the type used\";\n    M6 is defined for every BLA unit.\n  why: The attempt blocks all three and shows the all-cell tests as descriptions. With all cells,\n    reactivation-peaks-at-ripples gives post above pre in 11 of 15 sessions (one-tailed p = 0.0042),\n    direction-all-cell-pairs matches its statement (air puff p = 0.01, safe p = 0.0043, between p =\n    0.48), and ripple-modulated-cells-larger-reactivation does not hold (rank sum p = 0.27). If the\n    dependencies are only on method, the first two could be partially reproduced or reproduced.\n"
+}
+```
+
+```
+File created successfully at: questions/000061.yaml (file state is current in your context — no need to Read it back)
+```
 
 **Agent calls Bash**
 
 ```bash
-python3 - <<'E'
-import re
-p='/tmp/claude-1001/dev/cells.txt'; s=open(p).read()
-for lab in ["Paper.","Dandiset.","What the dandiset holds.","Code.","How the analysis differs from the paper's.","What was found about the dandiset."]:
-    assert f"**{lab}**" in s, lab
-    s=s.replace(f"**{lab}**", lab)
-print(re.findall(r"\*\*[^*]+\*\*", s))
-open(p,'w').write(s)
-E
-python $TMPDIR/dev/build_nb.py && time python tools/entry.py all entries/000061-girardeau-2017 2>&1 | tail -3
+python tools/entry.py lock entries/000061-girardeau-2017 2>&1 | tail -3 && git diff --stat entries/000061-girardeau-2017/requirements.lock.txt && time python tools/entry.py all entries/000061-girardeau-2017 2>&1 | tail -15
 ```
 
 ```
-['** 2) < np.sum((x[k] - c0) **', '**counts}\n    for name, labels_ in (("bla", hpcbla.BLA_COMPLEX_LABELS), ("hpc", hpcbla.HPC_LABELS)):\n        ids = [i for i in u["trains"] if u["region"][i] in labels_]\n        if len(ids) < 3:\n            continue\n        spikes = np.sort(np.concatenate([u["trains"][i] for i in ids]))\n        def change(t):\n            after = (np.searchsorted(spikes, t + 0.5) - np.searchsorted(spikes, t)).sum()\n            before = (np.searchsorted(spikes, t) - np.searchsorted(spikes, t - 0.5)).sum()\n            return (after - before) / max(before, 1)\n        row[f"{name}_change"] = round(change(puffs), 3)\n        row[f"{name}_change_shift30"] = round(change(puffs + 30), 3)\n    rows.append(row)\npuff = pd.DataFrame(rows)\nprint(puff.to_string(index=False))\nprint("\\nMedian relative change after puffs, BLA:", puff.bla_change.median(), "(shifted:", puff.bla_change_shift30.median(),\n      "); hippocampus:", puff.hpc_change.median(), "(shifted:", puff.hpc_change_shift30.median(), ")")\nprint("Files with BLA change above 0.3:", int((puff.bla_change > 0.3).sum()), "; with shifted times:",\n      int((puff.bla_change_shift30 > 0.3).sum()))\nprint("Puffs inside laps of the session\'s air-puff direction:", int(sum(puff[d].where(puff.direction == d, 0).sum() for d in ("LR", "RL"))),\n      "of", int(puff.puffs.sum()))\n#%% md\nNearly all puffs (927 of 957) fall inside laps of one direction in each session, which gives the\nair-puff direction. The puff side changes between days in the same rat. The pooled response to\npuffs is small in most files (median change 0.04 in BLA and in hippocampus); four files show a\nBLA increase above 0.3, against one with the shifted times. This is\nconsistent with the puffs sharing the spike clock but does not show it for every file.\n#%% code tags=sanity\n# Recordings deposited twice: compare unit spike counts and first spikes, ripple times and puff\n# times between every pair of files, and units within a file
-[... 8 more lines not kept]
+wrote entries/000061-girardeau-2017/requirements.lock.txt
+error: attempts/000061-girardeau-2017-01.yaml: claim 'no-rem-reactivation' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'pair-group-ev' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'piriform-weaker-reactivation' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'puff-location-no-speed-bias' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'reactivation-all-cell-pairs' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'reactivation-decay' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'ripple-modulated-cells-larger-reactivation' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'ripple-rate-unchanged' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'run-correlated-pair-fractions' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'safe-trajectory-no-ripple-reactivation' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: claim 'unit-counts' has no outcome; give every claim one, blocked included
+error: attempts/000061-girardeau-2017-01.yaml: no cell tagged 'claim:hpc-bla-reactivation-post-sleep' in reproduce_girardeau_2017.ipynb
+error: attempts/000061-girardeau-2017-01.yaml: no cell tagged 'claim:reactivation-involves-ripple-up-cells' in reproduce_girardeau_2017.ipynb
+error: attempts/000061-girardeau-2017-01.yaml: no cell tagged 'claim:aversive-direction-stronger' in reproduce_girardeau_2017.ipynb
+29 error(s)
+
+real	0m5.513s
+user	0m5.47
+[... 1 more lines not kept]
 ```
 
 **Agent**
 
-Passed in 605 s. Quick check that the key numbers are unchanged, then the handover.
+The check fails on the deprecated `-01` record: it validates that record against the rewritten claims file. Looking at how the checker treats deprecated records.
 
 **Agent calls Bash**
 
 ```bash
-python - <<'E'
-import nbformat
-nb=nbformat.read('executed/000061-girardeau-2017/reproduce_girardeau_2017.ipynb',4)
-txt='\n'.join(o.get('text','') for c in nb.cells if c.cell_type=='code' for o in c.outputs)
-for k in ['Pooled: median','Peak bin minus flanks','Difference (ripple minus outside)','Positively modulated:','Difference: median','Sessions with both:','Sessions used:','loaded 40','Ripples per s of Non-REM','Puffs inside','Videos whose','Files with raw','sleep only as']:
-    print([l for l in txt.splitlines() if l.startswith(k) or k in l][:1])
-E
-python tools/entry.py handover entries/000061-girardeau-2017 && ls -R executed/000061-girardeau-2017/handover && git status --short
+cd  grep -n "deprecated\|has no outcome\|def check\|no cell tagged\|def run\b\|def cmd_all\|args.command\|skip" tools/entry.py | head -40
 ```
 
 ```
-['Pooled: median post minus pre 0.0119 ; positive 28 of 36 ; Wilcoxon p = 3.6e-05']
-['Peak bin minus flanks (0.5 to 1 s): median 0.1032 ; positive 30 of 36 ; Wilcoxon p = 6e-06']
-['Difference (ripple minus outside): median 0.0537 ; positive 25 of 36 ; Wilcoxon p = 0.0033']
-['Positively modulated: 103 of 822 (0.125); negatively: 104 (0.127); chance level from the 7 s shifted windows: 0.007 (6 units)']
-['Difference: median 0.0339 ; positive 24 of 31 ; Wilcoxon p = 0.0013']
-['Sessions with both: 15 ; median puff minus safe 0.0133 ; positive 9 of 15 ; Wilcoxon p = 0.11']
-["Sessions used: 15 {'Rat08': 9, 'Rat10': 3, 'Rat11': 3}"]
-['loaded 40 files from dandiset 000061 version 0.250624.0426 in 353 s']
-['Ripples per s of Non-REM: min 0.327 max 0.996 ; REM max 0.189']
-["Puffs inside laps of the session's air-puff direction: 927 of 957"]
-["Videos whose first timestamp / 1000 is within 5 s of their epoch's start: 1 of 114"]
-['Files with raw voltage: 16 ; with LFP: 40 ; with video: 40']
-["Files that tag sleep only as 'sleep': {'Rat08-20130708': [np.str_('sleep'), np.str_('run'), np.str_('sleep'), np.str_('run')], 'Rat09-20140407': [np.str_('sleep'), np.str_('run'), np.str_('sleep')], 'Rat11-20150403': [np.str_('run'), np.str_('sleep')]}"]
+121:def check(entry_dir: Path) -> Report:
+225:            report.error(where, f"claim {claim!r} has no outcome; give every claim one, blocked included")
+261:                    report.error(path.relative_to(ROOT), f"no cell tagged {tag!r} in {notebook}")
+287:def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
+386:    if args.command == "lock":
+388:    if args.command == "handover":
+390:    if args.command in ("check", "all"):
+395:        if report.errors or args.command == "check":
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "tools/entry.py",
+ "offset": 121,
+ "limit": 170
+}
+```
+
+```
+121	def check(entry_dir: Path) -> Report:
+122	    report = Report()
+123	    rel = entry_dir.relative_to(ROOT)
+124	    entry = validate(report, entry_dir / "entry.yaml", "entry")
+125	    if entry is None:
+126	        return report
+127	    if entry.get("name") != entry_dir.name:
+128	        report.error(rel / "entry.yaml", f"name {entry.get('name')!r} must match the directory name")
+129	
+130	    listed = [n["path"] for n in entry.get("notebooks", [])]
+131	    present = sorted(p.name for p in entry_dir.glob("*.ipynb"))
+132	    for name in sorted(set(present) - set(listed)):
+133	        report.error(rel / name, "notebook is not listed in entry.yaml")
+134	    for name in sorted(set(listed) - set(present)):
+135	        report.error(rel / "entry.yaml", f"listed notebook {name!r} does not exist")
+136	    helpers = entry.get("helpers", [])
+137	    for name in helpers:
+138	        if not (entry_dir / name).is_file():
+139	            report.error(rel / "entry.yaml", f"listed helper {name!r} does not exist")
+140	
+[... 150 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  time python tools/entry.py run entries/000061-girardeau-2017 2>&1 | tail -8
+```
+
+```
+Installed kernelspec registry-000061-girardeau-2017 in executed/000061-girardeau-2017/.venv/share/jupyter/kernels/registry-000061-girardeau-2017
+pass  reproduce_girardeau_2017.ipynb  (412 s)
+
+real	6m56.531s
+user	2m10.277s
+sys	0m11.836s
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls executed/000061-girardeau-2017/; $TMPDIR/env61/bin/python $TMPDIR/show.py executed/000061-girardeau-2017/reproduce_girardeau_2017.ipynb > $TMPDIR/final_out.txt; diff <(grep -v "computed in\|loaded 40\|Notebook run time\|Streaming 20\|would take about" $TMPDIR/dev_out.txt) <(grep -v "computed in\|loaded 40\|Notebook run time\|Streaming 20\|would take about" $TMPDIR/final_out.txt); grep -n "loaded 40\|Streaming 20\|would take about\|Notebook run time\|ERROR" $TMPDIR/final_out.txt
+```
+
+```
+reproduce_girardeau_2017.ipynb
+result.json
+179d178
+< 
+201a201
+> 
+2:loaded 40 files from dandiset 000061 version 0.250624.0426 in 343 s
+203:Streaming 20 frames of Video: Rat08-20130708-02-run: 8.8 s (0.44 s per frame of 691200 bytes)
+204:At that rate the run frames alone would take about 234 hours to stream
+707:Notebook run time: 6.8 min
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000061-girardeau-2017; python - <<'EOF'
+p='README.md'; s=open(p).read()
+s=s.replace("""Position could only come from tracking the raw video frames stored in the files, which would take
+about 190 hours to stream.""","""Position could only come from tracking the raw video frames stored in the files, which would take
+about 234 hours to stream at the rate measured in the final run (the rate varies between runs).""")
+s=s.replace("It takes about 8 minutes, six of them streaming\n  the files; the notebook prints its run time at the end.","It takes about 7 minutes (6.8 in the final run), six of\n  them streaming the files; the notebook prints its run time at the end.")
+open(p,'w').write(s)
+p='entry.yaml'; s=open(p).read(); s=s.replace("runtime_minutes: 8","runtime_minutes: 7"); open(p,'w').write(s)
+EOF
+grep -n "234\|6.8" README.md; grep runtime entry.yaml
+```
+
+```
+33:about 234 hours to stream at the rate measured in the final run (the rate varies between runs). Five Rat08 files have a `cell_type` column, which marks only
+36:- `reproduce_girardeau_2017.ipynb`: the analysis. It takes about 7 minutes (6.8 in the final run), six of
+  runtime_minutes: 7
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -c "^- id:" claims/000061/10.1038-nn.4637.yaml; python - <<'EOF'
+p='entries/000061-girardeau-2017/README.md'; s=open(p).read()
+s=s.replace("""Of 31 claims, 7 are tested: 5 reproduced, 2 not reproduced. The other 24 are blocked: 20 because
+the dandiset has no putative cell types (pyramidal cell or interneuron), on which most of the
+paper's reactivation analyses rest, and 4 because it has no position tracking.""","""Of 32 claims, 7 are tested: 5 reproduced, 2 not reproduced. The other 25 are blocked: 21 because
+the dandiset has no putative cell types (pyramidal cell or interneuron), on which most of the
+paper's reactivation analyses rest, and 4 because it has no position tracking.""")
+s=s.replace("| 20 claims on putative pyramidal cells or interneurons |","| 21 claims on putative pyramidal cells or interneurons |")
+s=s.replace("""(the rate varies between runs). Five Rat08 files have a `cell_type` column, which marks only
+cells identified as excitatory or inhibitory.""","""(the rate varies between runs). Five Rat08 files have a `cell_type` column, which marks
+only cells identified as excitatory or inhibitory.""")
+open(p,'w').write(s)
+EOF
+grep -n "32 claims\|21 claims" entries/000061-girardeau-2017/README.md
+```
+
+```
+32
+13:Of 32 claims, 7 are tested: 5 reproduced, 2 not reproduced. The other 25 are blocked: 21 because
+26:| 21 claims on putative pyramidal cells or interneurons | Blocked: metadata insufficient |
+```
+
+**Agent**
+
+Now writing the attempt record `attempts/000061-girardeau-2017-02.yaml`.
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "attempts/000061-girardeau-2017-02.yaml",
+ "content": "schema_version: 2\nid: 000061-girardeau-2017-02\ndataset:\n  archive: dandi\n  id: \"000061\"\n  version: 0.250624.0426\n  doi: 10.48324/dandi.000061/0.250624.0426\npaper: doi:10.1038/nn.4637\ndate: 2026-10-20\nentry: 000061-girardeau-2017\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code (GitHub Actions)\n    model: claude-opus-5-5\n    protocol: pilot-10\noutcomes:\n- claim: unit-counts\n  outcome: not_reproduced\n  notebook: reproduce_girardeau_2017.ipynb\n  output: claim:unit-counts\n  measured: [40, 4702, 2317, 515, 440, 1430, 1118, 482, 935, 829]\n  notes: The dandiset holds 40 sessions (33 with a units table) and 4702 units, against 61 sessions\n    and 7,390 units, both outside the 10% tolerance, so the criterion's totals fail. Only Rat08,\n    taken as rat 1, is within tolerance (2317 against 2,444); Rat09, Rat10 and Rat11 hold 515, 440\n    and 1430 against 1,294, 1,138 and 2,514. By label there are 1118 BLA (bla and BLA), 482 central\n    nuclei, 935 piriform and 829 hippocampal units against 2,038, 782, 1,560 and 1,210; the wider\n    amygdala labels (bla, blv, bmp, ladl) give 1977. The difference is in the data deposited, fewer\n    days and units than the paper reports. No outcome in the earlier attempt, which had no such claim.\n  deviations:\n  - The dandiset does not say which of Rat08 to Rat11 are the paper's rats 1 to 4. Rat09, the rat\n    without hippocampal units, is taken as rat 2 (whose hippocampal probe failed) and the others in\n    order; this is an assumption.\n  - Units are counted as stored, one per session, including units 0 and 1 of the ten files whose\n    spike index is wrong; location counts use the dandiset's labels read as the paper's structures.\n- claim: rats-learn-puff-location\n  outcome: blocked\n  blocked_by: too_large\n  notes: The criterion needs the rat's speed in the 20 cm before the day's and the previous day's\n    air puff location, so it needs position on the track and the puff locations. The dandiset holds\n    neither, only puff times and the raw video frames (40 run videos, 1920573 frames, 1328 GB\n    uncompressed); streaming 20 frames took 8.8 s in the final run, about 234 hours for the run\n    frames alone, before any tracking, and the video timestamps are not on the session clock. Same\n    outcome as the earlier attempt, which blocked it for the same reason.\n- claim: each-rat-learns-puff-location\n  outcome: blocked\n  blocked_by: too_large\n  notes: Depends on rats-learn-puff-location (speed ratios from position), which is blocked as too\n    large. No outcome in the earlier attempt.\n- claim: dz-speed-slower-post-run\n  outcome: blocked\n  blocked_by: too_large\n  notes: Depends on rats-learn-puff-location (danger-zone speeds from position), which is blocked as\n    too large. No outcome in the earlier attempt.\n- claim: puff-location-no-speed-bias\n  outcome: blocked\n  blocked_by: too_large\n  notes: Depends on rats-learn-puff-location and needs the puff location on the track, which the\n    dandiset does not hold (only puff times). No outcome in the earlier attempt.\n- claim: habituation-over-days\n  outcome: reproduced\n  notebook: reproduce_girardeau_2017.ipynb\n  output: claim:habituation-over-days\n  notes: Under O1 reading c, over 40 sessions of four rats, the habituation index rises with\n    training day for each lap count, pooled Spearman rho 0.383 (p = 0.015) for all laps, 0.331 (p =\n    0.046, 37 sessions with a puff direction) for air puff laps and 0.397 (p = 0.011) for\n    left-to-right laps. The correlation is positive in all four rats for each count, with p < 0.05\n    in Rat08, Rat09 and Rat10 and not in Rat11 (rho 0.32 to 0.33). Both readings of \"gradually\n    diminished\" hold for all three counts, so the outcome holds under every reading the dandiset\n    allows. No outcome in the earlier attempt.\n  deviations:\n  - Laps are O1 reading c, the intervals between consecutive rewards at opposite ends with both\n    rewards inside the run. Reading a has no lap intervals in the dandiset (its trials table is not\n    laps) and reading b needs position, which it lacks; a question asks whether reading c alone\n    decides the claim (questions/000061.yaml).\n  - The air puff direction of a day is the lap direction holding most puffs (1153 of 1197 puffs\n    fall in run laps of that direction); the dandiset gives no direction. Rat08-20130709 has no\n    puff inside a run lap and has no air puff count.\n  - Training day is the rank of the recording date within each rat, over the 40 files; the paper's\n    55 behaviour sessions include days the dandiset does not hold.\n- claim: bla-pyr-sleep-firing-increase\n  outcome: reproduced\n  notebook: reproduce_girardeau_2017.ipynb\n  output: claim:bla-pyr-sleep-firing-increase\n  notes: On the 152 identified excitatory BLA units of five Rat08 sessions, the REM/wake ratio has\n    a median of 0.39 (positive in 120, p = 7.0e-15) and the NREM/wake ratio a median of 0.18\n    (positive in 108, p = 7.2e-12); both are positive and the REM median exceeds the NREM median. By\n    session the REM ratio reaches p < 0.05 in four of five sessions and the NREM ratio in three\n    (Rat08-20130713, 22 cells, reaches neither). The paper had 675 cells from four rats. No outcome\n    in the earlier attempt.\n  deviations:\n  - Cells are the units the dandiset's cell_type column marks excitatory, read as the paper's\n    monosynaptically identified pyramidal cells (O4 reading a). The column exists in five Rat08\n    files only, so the test uses one rat and about a fifth of the paper's cells. Reading b (all\n    putative pyramidal cells) cannot be run; a question asks whether reading a alone decides.\n  - Units 0 and 1 of files with a wrong spike index are left out (Rat08-20130710 and 20130711).\n- claim: bla-int-sleep-firing\n  outcome: not_reproduced\n  notebook: reproduce_girardeau_2017.ipynb\n  output: claim:bla-int-sleep-firing\n  notes: On the 36 identified inhibitory BLA units of five Rat08 sessions, the REM/wake ratio has a\n    median of 0.029 (positive in 22) with two-sided Wilcoxon p = 0.020, so the paper's test finds a\n    REM change the claim says is absent. The NREM/wake ratio has a negative median (-0.035, positive\n    in 16) with p = 0.26, so the decrease is not significant. Neither part holds, which the criterion\n    calls not reproduced. By session only Rat08-20130711 (12 cells) has a REM ratio with p < 0.05.\n    The paper had 175 interneurons from four rats; the REM effect here is small (median 0.029) and\n    rests on one rat. No outcome in the earlier attempt.\n  deviations:\n  - Cells are the units marked inhibitory in the five typed Rat08 files, read as the paper's\n    identified interneurons (O4 reading a); reading b cannot be run.\n- claim: hpc-bla-reactivation-post-sleep\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: The criterion computes EV and REV over hippocampus-BLA putative pyramidal pairs. The\n    dandiset has no putative cell types; its cell_type column (five Rat08 files) marks only\n    identified cells, and no file has six hippocampal units marked excitatory. The earlier attempt\n    reproduced this id with another measure (singular-vector joint patterns over all units at 0.1 Hz\n    or more); the claim now uses the paper's EV against REV on pyramidal pairs, which the dandiset\n    cannot select. The same test with all cells is reactivation-all-cell-pairs, reproduced here (15\n    sessions, p = 0.00031).\n- claim: reactivation-all-cell-pairs\n  outcome: reproduced\n  notebook: reproduce_girardeau_2017.ipynb\n  output: claim:reactivation-all-cell-pairs\n  notes: Over 15 sessions (9 Rat08, 3 Rat10, 3 Rat11; the paper had 27), EV exceeds REV in 13, mean\n    EV - REV 3.48% (s.e.m. 0.99), two-sided Wilcoxon p = 0.00031. EV exceeds REV in all 9 Rat08 and\n    all 3 Rat11 sessions and in 1 of 3 Rat10 sessions (median -0.023%). The wider amygdala labels\n    give 22 sessions, 17 with EV above REV, p = 0.0005. Reported only, EV - REV in successive 20-min\n    periods of post-NREM has means of 2.49, 1.27 and 0.52% (p = 0.018, 0.035 and 1). No outcome in\n    the earlier attempt.\n  deviations:\n  - BLA is the bla label (case ignored); the wider amygdala labels are a variant.\n  - Units 0 and 1 of the files with a wrong spike index are left out.\n  - A 50-ms bin belongs to an epoch when its centre does, a standard choice.\n- claim: reactivation-decay\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Pyramidal pairs, and depends on hpc-bla-reactivation-post-sleep, which is blocked. The\n    all-cell 20-min periods are reported under reactivation-all-cell-pairs (means 2.49, 1.27 and\n    0.52%). No outcome in the earlier attempt.\n- claim: no-rem-reactivation\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Both tests of the criterion use pyramidal pairs (hippocampus-BLA and hippocampus-piriform).\n    The criterion's variant, hippocampus-BLA with all cells in REM, is shown as a description, 14\n    sessions, EV above REV in 8, p = 0.43. No outcome in the earlier attempt.\n- claim: piriform-weaker-reactivation\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Pyramidal pairs, and depends on hpc-bla-reactivation-post-sleep, which is blocked. No\n    outcome in the earlier attempt.\n- claim: cen-no-reactivation\n  outcome: reproduced\n  notebook: reproduce_girardeau_2017.ipynb\n  output: claim:cen-no-reactivation\n  notes: Hippocampus-central nuclei EV does not differ from REV in NREM (9 sessions, median EV - REV\n    0.60%, EV above REV in 7, p = 0.30) or in REM (8 sessions, median 0.085%, 6 of 8, p = 0.25), so\n    the paper's test finds no reactivation. The paper had 19 sessions in each; with 9 and 8 the test\n    has less power, and the NREM median is positive. No outcome in the earlier attempt.\n  deviations:\n  - Central nuclei are the cen label. Units 0 and 1 of files with a wrong spike index are left out.\n- claim: intra-structure-reactivation\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: The criterion needs four NREM tests, two on putative pyramidal pairs, so it cannot be\n    decided. As a description, with all pairs the hippocampus reactivates in NREM (23 sessions, EV\n    above REV in 19, p = 0.0054) and the BLA does not reach p < 0.05 (16 sessions, 9, p = 0.14); in\n    REM neither does (p = 0.83 and 0.21). No outcome in the earlier attempt.\n- claim: bla-ripple-up-subgroup\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: The claim gives the fractions of putative BLA interneurons and pyramidal cells that are\n    upmodulated, and the dandiset has no putative types. As a description, the paper's Poisson test\n    (M6) on all 822 BLA units of 17 sessions finds 105 (12.8%) upmodulated under O2 reading a (110\n    under b); among the identified units of five files, 8 of 36 inhibitory (22.2%) and 9 of 152\n    excitatory (5.9%). The earlier attempt reproduced this id with another test (spikes in ripple\n    windows against shifted windows, all BLA units) on the abstract's statement; the claim now\n    states fractions by cell type, which the dandiset cannot give.\n- claim: bla-ripple-down-subgroup\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Fractions by putative cell type, and depends on bla-ripple-up-subgroup. As a description,\n    85 of 822 BLA units (10.3%) are downmodulated under O2 reading a. No outcome in the earlier\n    attempt.\n- claim: ripple-modulated-cells-larger-reactivation\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Depends on bla-ripple-up-subgroup, which is blocked, and its second test uses pyramidal\n    pairs. Its all-cell test is shown as a description, EV - REV larger with the modulated BLA units\n    in 7 of 12 sessions (means 4.18 and 1.68%), rank sum p = 0.27 (O2 reading a) and 0.3 (b). A\n    question asks whether the all-cell part could be judged alone. No outcome in the earlier attempt.\n- claim: run-correlated-pair-fractions\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Fractions of hippocampus-BLA putative pyramidal pairs, which the dandiset cannot select. No\n    outcome in the earlier attempt.\n- claim: reactivation-involves-ripple-up-cells\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: The criterion crosses putative pyramidal pairs with the ripple modulation of their BLA\n    partner, and the dandiset has no putative types. The earlier attempt reproduced this id with the\n    weights of BLA units in singular-vector joint patterns, a measure the claim no longer uses; the\n    claim now tests the nine pair groups of the paper's Fig. 5a, which cannot be formed here.\n- claim: pair-group-ev\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Depends on reactivation-involves-ripple-up-cells (pyramidal pair groups). No outcome in the\n    earlier attempt.\n- claim: contributing-up-cells-gain-increase\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Contributions are computed over pooled putative pyramidal pairs, and the cells are\n    upmodulated by bla-ripple-up-subgroup, both of which need putative types. No outcome in the\n    earlier attempt.\n- claim: ev-independent-of-firing-rate\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Uses the pooled pyramidal pairs of run-correlated-pair-fractions. No outcome in the earlier\n    attempt.\n- claim: reactivation-peaks-at-ripples\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Depends on hpc-bla-reactivation-post-sleep, which is blocked, and its first test uses\n    pyramidal cells. Its all-cell test is shown as a description, the ripple-peak strength of the\n    whole-run template higher in post-NREM than in pre-NREM in 11 of 15 sessions (median 0.0224,\n    one-tailed p = 0.0042, the paper 0.00189 over 27 sessions). The earlier attempt reproduced this\n    id with singular-vector patterns and two readings of the abstract; the claim now uses the\n    paper's reactivation strength R on pyramidal cells and all cells. A question asks whether the\n    all-cell part could be judged alone, which could make it partially reproduced.\n- claim: airpuff-trajectory-ripple-reactivation\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Pyramidal cells. As a description, the all-cell air puff template gives post above pre in\n    10 of 14 sessions, one-tailed p = 0.01 (under direction-all-cell-pairs). No outcome in the\n    earlier attempt.\n- claim: safe-trajectory-no-ripple-reactivation\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Pyramidal cells. As a description, the all-cell safe template gives post above pre in 12\n    of 14 sessions, one-tailed p = 0.0043. No outcome in the earlier attempt.\n- claim: aversive-direction-stronger\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: The criterion compares the post minus pre ripple-peak strength R of air puff and safe\n    templates of pyramidal cells. The earlier attempt found this id not reproduced (p = 0.11) with\n    singular-vector patterns over all units, a measure the paper does not use; the claim now uses R\n    on pyramidal cells, which the dandiset cannot select. As a description, with all cells the air\n    puff change does not exceed the safe one (8 of 14 sessions, one-tailed p = 0.48).\n- claim: direction-all-cell-pairs\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Depends on aversive-direction-stronger, which is blocked. Its three tests are shown as a\n    description with laps per O1 reading c, over 14 sessions, air puff post above pre p = 0.01, safe\n    p = 0.0043, air puff change above safe p = 0.48; this is the pattern the claim states. A question\n    asks whether the claim could be judged alone, which would make it reproduced on reading c. No\n    outcome in the earlier attempt.\n- claim: bla-rate-same-across-directions\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: The criterion needs a test on BLA pyramidal cells as well as one on all cells. As a\n    description, all BLA cells fire slightly more on air puff laps than on safe laps, median 0.0036\n    Hz, p = 0.022 (739 cells, 14 sessions) and 0.0032 Hz, p = 0.0048 (1033 cells, 21 sessions), with\n    rates over laps from reward times (O7 reading a; reading b needs position). No outcome in the\n    earlier attempt.\n- claim: ripple-rate-unchanged\n  outcome: reproduced\n  notebook: reproduce_girardeau_2017.ipynb\n  output: claim:ripple-rate-unchanged\n  notes: Over 23 sessions (the paper had 41), the median ripple rate is 0.611 Hz in pre-NREM and\n    0.587 Hz in post-NREM; post minus pre has a median of 0.0315 Hz, is positive in 15, and the\n    two-sided Wilcoxon p is 0.26, so the paper's test finds no difference. By rat the median change\n    is 0.089 Hz in Rat08 (8 of 9 higher in post), -0.008 Hz in Rat10 and 0.007 Hz in Rat11. No\n    outcome in the earlier attempt.\n  deviations:\n  - Ripples are the dandiset's rip annotations, counted in NREM when their peak is, a standard\n    choice.\n- claim: contributing-pairs-run-sleep-coupling\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Depends on contributing-up-cells-gain-increase (pair contributions over putative pyramidal\n    pairs). No outcome in the earlier attempt.\n- claim: contributing-quartiles-run-sleep-coupling\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Depends on contributing-pairs-run-sleep-coupling. No outcome in the earlier attempt.\nfindings:\n- kind: metadata_insufficient\n  statement: New in this attempt. The putative cell types the paper uses (pyramidal cell or\n    interneuron for every unit, from monosynaptic connections and then k-means on the waveform) are\n    not in the dandiset, and there are no spike waveforms. Five of the 33 files with units\n    (Rat08-20130709 to 20130713) have a cell_type column with the values excitatory, inhibitory and\n    unclassified, described only as \"Type of cell this has been classified as.\"; it marks 152\n    excitatory and 36 inhibitory BLA units and 9 excitatory hippocampal units, consistent with the\n    paper's monosynaptic identification alone. Most of the paper's reactivation analyses cannot be\n    repeated (21 claims blocked). The earlier attempt did not read this column.\n- kind: data_missing\n  statement: New in this attempt. The dandiset holds 40 recording days with 4702 units, where the\n    paper reports 61 sessions with 7,390 units; per rat it holds 2317, 515, 440 and 1430 units\n    (Rat08 to Rat11) against 2,444, 1,294, 1,138 and 2,514. Which rat is which of the paper's rats\n    1 to 4 is not stated.\n- kind: metadata_error\n  statement: Still present (found by 000061-girardeau-2017-01; the version and the files are\n    unchanged, and the draft holds the same assets). The epochs table is stored in milliseconds\n    although its columns say seconds; in all 40 files its last stop time is exactly 1000 times the\n    LFP duration.\n- kind: metadata_error\n  statement: Still present (found by 000061-girardeau-2017-01). Video timestamps are stated in\n    seconds but are in milliseconds and are not on the session clock; the first timestamp matches\n    the start of the video's epoch in 1 of 114 videos, while the spans match the epoch durations in\n    93 of 114.\n- kind: format_error\n  statement: Still present (found by 000061-girardeau-2017-01). In ten files the spike_times_index\n    is wrong at the first units; unit 1's spike times fall back once, after 65536 times k spikes,\n    and unit 0 stops where unit 1 starts, so the first part of unit 1 is the end of unit 0. Units 0\n    and 1 of these files were left out of the analyses.\n- kind: data_missing\n  statement: Still present (found by 000061-girardeau-2017-01). Seven files have no units table,\n    sixteen have no sleep states and fourteen have no ripple events; the Rat09 files have no\n    hippocampal units and no ripples.\n- kind: data_missing\n  statement: Still present (found by 000061-girardeau-2017-01). There is no position tracking and no\n    air puff location, only the puff times and the raw video frames, so behaviour on the track\n    cannot be measured without tracking about 1.9 million frames; laps and the air puff direction\n    can only be inferred from reward and puff times.\n- kind: metadata_insufficient\n  statement: Still present in the dandiset (found by 000061-girardeau-2017-01). Unit region labels\n    are undescribed short codes (bla, blv, bmp, ladl, cen, den, ven, pir, plc01, PLCo1, cpu, hpc,\n    HIP, no label), some in two cases, Rat09-20140328 has no location column, and the electrode\n    table gives every channel as unknown. The paper's Supplementary Fig. 3 names the structures the\n    codes match (BLA, BLV, LaDL, BMA, BMP, Pir, VEn, DEn), which lets this attempt read them; the\n    dandiset still does not describe them.\n- kind: metadata_insufficient\n  statement: Still present (found by 000061-girardeau-2017-01). The trials table of the Rat08 and\n    Rat09 files is described only as \"experimental trials\"; its intervals of 3 to 5 s fall partly\n    outside the run and are not laps.\n- kind: metadata_insufficient\n  statement: Still present (found by 000061-girardeau-2017-01). The ripple annotations carry an\n    undescribed number in each label (for example \"Ripple peak 156\"), one per file, presumably the\n    detection channel; ripples, puffs and rewards are stored as annotation series under stimulus\n    presentation.\n- kind: methods_unavailable\n  statement: Partly fixed (found by 000061-girardeau-2017-01, when the paper's text was not\n    available). The full text was supplied for this attempt and the paper links its code\n    (github.com/buzsakilab/papers, GGirardeau-BLAHpcInteractions-Package), which the claims file's\n    reader read; the dandiset itself still links no analysis code, its related resources naming\n    only the paper.\n"
+}
+```
+
+```
+File created successfully at: attempts/000061-girardeau-2017-02.yaml (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python tools/entry.py check entries/000061-girardeau-2017 2>&1 | grep -v "attempts/000061-girardeau-2017-01.yaml" ; python tools/entry.py check entries/000061-girardeau-2017 2>&1 | grep -c "girardeau-2017-01.yaml"; python -c "
+import yaml;d=yaml.safe_load(open('attempts/000061-girardeau-2017-02.yaml'));print(len(d['outcomes']))
+import collections;print(collections.Counter(o['outcome'] for o in d['outcomes']))"; grep -n ': ' attempts/000061-girardeau-2017-02.yaml | grep -v '^[0-9]*: *[-a-z_]*:' | grep -v '^[0-9]*: *- [a-z_]*:' | head
+```
+
+```
+29 error(s)
+29
+32
+Counter({'blocked': 25, 'reproduced': 5, 'not_reproduced': 2})
+```
+
+**Agent**
+
+Every check error is in the deprecated `-01` record (29 of 29). The new record passes the schema and the conventions. Checking my prose for banned forms, then building the handover.
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n -i "rather\|—\|\*\*[^R]" attempts/000061-girardeau-2017-02.yaml questions/000061.yaml entries/000061-girardeau-2017/README.md entries/000061-girardeau-2017/entry.yaml entries/000061-girardeau-2017/hpcbla.py /tmp/claude/cells.py | grep -v "\*\*Result" | head; python tools/entry.py handover entries/000061-girardeau-2017 2>&1 | tail -3; ls executed/000061-girardeau-2017/handover; git status --short
+```
+
+```
+entries/000061-girardeau-2017/hpcbla.py:370:    ev = ((r_run_post - r_pre_run * r_pre_post) / np.sqrt((1 - r_pre_run ** 2) * (1 - r_pre_post ** 2))) ** 2
+entries/000061-girardeau-2017/hpcbla.py:371:    rev = ((r_pre_run - r_run_post * r_pre_post) / np.sqrt((1 - r_run_post ** 2) * (1 - r_pre_post ** 2))) ** 2
+entries/000061-girardeau-2017/hpcbla.py:553:        out.append({"unit": i, **{k: count_in(t, iv) / np.diff(iv).sum() for k, iv in ivs.items()}})
+/tmp/claude/cells.py:404:        hits += (np.sum((x[k] - c1) ** 2) < np.sum((x[k] - c0) ** 2)) == y[k]
+/tmp/claude/cells.py:439:    row = {"session": s["session"], "puffs": len(puffs), "direction": direction, **counts}
+/tmp/claude/cells.py:656:                 **{f"rho_{rat}": round(r.statistic, 2) for rat, r in per_rat.items()},
+/tmp/claude/cells.py:657:                 **{f"p_{rat}": round(r.pvalue, 4) for rat, r in per_rat.items()},
+/tmp/claude/cells.py:1076:                     **{k: v for k, v in out.items() if not k.endswith("curve")}})
+/tmp/claude/cells.py:1155:                     **{f"{k}_hz": hpcbla.count_in(t, iv) / np.diff(iv).sum() for k, iv in ivs.items()}})
+/tmp/claude/cells.py:1185:    rows.append({"session": s["session"], "rat": s["rat"], **hpcbla.ripple_rates(s)})
 wrote executed/000061-girardeau-2017/handover
-executed/000061-girardeau-2017/handover:
 10.1038-nn.4637.yaml
 hpcbla.py
 reproduce_girardeau_2017.ipynb
+ M entries/000061-girardeau-2017/README.md
+ M entries/000061-girardeau-2017/entry.yaml
+ M entries/000061-girardeau-2017/hpcbla.py
+ M entries/000061-girardeau-2017/reproduce_girardeau_2017.ipynb
 ?? .bash_profile
 ?? .bashrc
-[... 12 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-ls -la .bashrc .bash_profile .gitconfig .mcp.json .profile .ripgreprc .zprofile .zshrc scripts .idea .vscode 2>&1 | head -30
-```
-
-```
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 13:55 .bash_profile
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 13:55 .bashrc
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 13:55 .gitconfig
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 13:55 .idea
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 13:55 .mcp.json
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 13:55 .profile
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 13:55 .ripgreprc
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 13:55 .vscode
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 13:55 .zprofile
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 13:55 .zshrc
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 13:55 scripts
+[... 11 more lines not kept]
 ```
 
 **Agent**
 
-I finished steps 1 to 6 of the protocol for dandiset 000061: claims, entry, attempt record and verifier handover. Four claims are reproduced, one is not, and one is blocked. The entry passes `check` and runs from a clean environment. Nothing is committed.
+I've finished attempt `000061-girardeau-2017-02`. Of the 32 claims, 7 were tested (5 reproduced, 2 not reproduced) and 25 are blocked. The notebook ran from a clean environment in 6.8 minutes, the record is written, and the handover is built in `executed/000061-girardeau-2017/handover/`. Nothing is committed.
 
-The paper is closed access (not in PubMed Central; the HAL record has metadata only), so I used the abstract alone, saved in `paper/`. Every claim is a sentence of the abstract and none has a reported number. I pinned version 0.250624.0426: the two published versions hold identical files and differ only in metadata the analysis does not use.
+The main reason for so many blocks: most of the rewritten claims are about putative pyramidal cells, and the dandiset has no putative cell types and no spike waveforms. Five Rat08 files (20130709 to 20130713) do have a `cell_type` column that the earlier attempt never read. It marks only cells identified as excitatory or inhibitory, which looks like the paper's monosynaptic identification step alone, and no file has six identified excitatory hippocampal units.
 
-**1. Outcomes**
+**Version.** I kept 0.250624.0426. The paper cites no DANDI version, no later version has been published, and the draft holds the same 40 assets with metadata changes only. Since the version did not change, the helper constant and the `dandi:` relation stay as they were.
 
-| Claim | Outcome | Key numbers |
-|---|---|---|
-| hpc-bla-reactivation-post-sleep | reproduced | 36 patterns in 15 sessions; post minus pre median 0.0119, 28 of 36 positive, p = 3.6e-05; median positive in all 3 rats |
-| reactivation-peaks-at-ripples | reproduced | peak in the ripple bin, 4.4 times the flanks, p = 6e-06; reading (b) also holds, p = 0.0033 |
-| bla-ripple-up-subgroup | reproduced | 103 of 822 BLA units (12.5%) against 0.7% chance |
-| reactivation-involves-ripple-up-cells | reproduced | up-cells weigh more, 24 of 31 patterns, p = 0.0013 (not in Rat10, 1 of 3) |
-| aversive-direction-stronger | not reproduced | median puff minus safe 0.0133, 9 of 15 sessions, p = 0.11; variants p = 0.048 to 0.45 |
-| rats-learn-puff-location | blocked: data_missing | no position tracking |
+### 1. Outcome per claim (earlier outcome in brackets)
 
-**2. What I found about the dandiset**
-- **Wrong time units:** the epochs table is in milliseconds though it says seconds (exactly 1000 times the session length in all 40 files). Video timestamps are also in milliseconds and are not on the session clock.
-- **Broken spike index:** in 10 files the index between unit 0 and unit 1 is short by a multiple of 65536 spikes, so unit 1 starts with the end of unit 0. I left both units out in those files.
-- **Missing data:** 7 files have no units table, 16 no sleep states, 14 no ripple events. Rat09 has no hippocampal units and no ripples, so the analysis uses 15 sessions from 3 rats.
-- **Undescribed labels:** unit region codes (bla, blv, bmp, ladl, den, ven, and others) have no description and some appear in two cases. One file has no labels, and the electrode table says "unknown" for every channel.
-- **No position:** there is no position tracking, and the `trials` table is undescribed.
-- No recording was deposited twice. The clock checks (ripple rate by sleep state, hippocampal firing at ripples, decoding lap direction, responses to puffs) are consistent with one shared clock.
+**Tested:**
+- `unit-counts`: not reproduced. The dandiset has 40 sessions and 4702 units against the paper's 61 and 7,390. [no claim before]
+- `habituation-over-days`: reproduced. Laps come from reward times; the pooled Spearman p is 0.011 to 0.046 and the correlation is positive in all 4 rats. [no claim]
+- `bla-pyr-sleep-firing-increase`: reproduced on the 152 identified excitatory BLA cells of the 5 typed Rat08 files. [no claim]
+- `bla-int-sleep-firing`: not reproduced. The REM/wake test gives p = 0.020 where the claim says no change, and the NREM decrease has p = 0.26. [no claim]
+- `reactivation-all-cell-pairs`: reproduced. EV exceeds REV in 13 of 15 sessions, p = 0.00031. [no claim]
+- `cen-no-reactivation`: reproduced (NREM p = 0.30, REM p = 0.25). [no claim]
+- `ripple-rate-unchanged`: reproduced (p = 0.26 over 23 sessions). [no claim]
 
-**3. Where the protocol was unclear or did not fit**
-1. With only the abstract there are no reported numbers or tolerances. I made every claim a directional criterion and chose all methods myself, fixed in the claims file before the analysis.
-2. Step 5 (read linked code): the dandiset links no code, and I could not see whether the paper does. I recorded this as a `methods_unavailable` finding.
-3. The rule for when to block a claim on its unit selection covers a fixed method but not an analysis that drops a whole animal. I excluded Rat09 under the claims file's own session rule and recorded it as a deviation.
-4. "Decide which claims are blocked" does not say what to do with an abstract sentence that describes the task setup ("rats learned the location"). I kept it as a claim and blocked it as `data_missing`. I had already looked at lap durations in the data check, so testing a lap-time stand-in would have meant writing its criterion after seeing results.
-5. The protocol does not say whether to repair broken data or leave it out. Following "exclude a rare odd input", I left out the two mixed units per file.
-6. For the lap-direction clock check, shifting the labels by whole laps would only flip them, because laps alternate. I shifted the laps by half their own length instead.
-7. The criteria do not say how to count a lap that starts before the run and ends inside it. I clipped such laps to the run epoch, so the time before the first reward counts as a lap toward that reward.
-8. With no reported chance level for the BLA selection, I computed it with my own procedure (windows shifted by 7 s), as the protocol suggests.
+**Blocked, too large (no position):** `rats-learn-puff-location` [was also blocked, too large], plus `each-rat-learns-puff-location`, `dz-speed-slower-post-run` and `puff-location-no-speed-bias` [no claims].
 
-**4. Runtime and failures**
-- The notebook runs in 605 s: about 6 minutes streaming the 40 files and about 4 minutes of analysis.
-- No step failed. Two problems came up during development and were fixed before the analysis: laps that started before the run were dropped, and the mixed units were included.
-- `git status` lists dotfiles (`.bashrc`, `.idea`, `scripts` and others) at the repo root. These are sandbox device mounts pointing to `/dev/null`, not files I made, and they should not be committed.
+**Blocked, metadata insufficient (no putative cell types):** 21 claims. These include the ones that kept their ids:
+- `hpc-bla-reactivation-post-sleep` [reproduced]
+- `reactivation-peaks-at-ripples` [reproduced]
+- `bla-ripple-up-subgroup` [reproduced]
+- `reactivation-involves-ripple-up-cells` [reproduced]
+- `aversive-direction-stronger` [not reproduced]
 
-Files are in `entries/000061-girardeau-2017/`:
-- reproduce_girardeau_2017.ipynb
-- hpcbla.py
-- README.md
-- entry.yaml
-- requirements.in
-- requirements.lock.txt
+Each now uses the paper's measure on pyramidal cells, which cannot be selected here. The earlier outcomes rested on measures the paper does not use. Where the claims file defines an all-cell part, I show it as a description that decides nothing; for example, all-cell air puff against safe gives p = 0.48.
 
-The claims file is `claims/000061/10.1038-nn.4637.yaml`, the attempt record is `attempts/000061-girardeau-2017-01.yaml`, and the verifier's package is in `executed/000061-girardeau-2017/handover/`.
+### 2. Earlier findings
+- **Still present (the files are unchanged):** epochs stored in milliseconds; video timestamps in milliseconds and off the session clock; the wrong spike index in ten files; files missing units, sleep states or ripples; no position tracking; the undescribed `trials` table; the undescribed ripple labels.
+- **Still present in the dandiset:** the undescribed region labels. The paper's Supplementary Fig. 3 now names the structures they match.
+- **Partly fixed:** the methods are now available (full text plus the paper's code), but the dandiset still links no code.
+
+### 3. New findings
+- The putative cell types and waveforms are missing, and the `cell_type` column covers only 5 of 33 files with units.
+- The dandiset holds 40 of 61 sessions and 4702 of 7,390 units, and does not say which rat is which of the paper's rats 1 to 4.
+
+I added three questions in `questions/000061.yaml`:
+- Can a claim be judged on lap reading c alone, since readings a and b cannot be run?
+- Can the firing-rate claims be judged on identified cells alone (O4 reading a)?
+- Could the all-cell parts of the three claims blocked only through `depends_on` be judged on their own? If yes, `reactivation-peaks-at-ripples` might become partially reproduced and `direction-all-cell-pairs` reproduced.
+
+### 4. Where the protocol did not fit a repeat attempt
+- **`entry.py check` fails on the deprecated `-01` record.** It holds every attempt of the entry to the current claims file, so `-01` has 29 errors: 26 claims without outcomes and 3 notebook tags that no longer exist. All 29 errors are in `-01`; the new record passes. Because of this I ran `entry.py run` instead of `all`. I left both `-01` and the tool unchanged; the checker probably needs to skip deprecated records.
+- **The repeat-attempt section assumes the claims file is kept and the dandiset has changed.** Here it was the reverse: the dandiset is unchanged and the claims file was rewritten. So no earlier finding could be fixed, and most outcome changes come from the new claims, not the data.
+- **The blocking rule for dependencies blocks claims whose all-cell tests could run.** A claim that depends on a blocked claim is blocked, even when its own all-cell test needs nothing from that claim.
+
+One unrelated thing: untracked dotfiles (`.bashrc`, `.vscode` and others) appear in the working tree. I did not create them and left them alone.
 
 ## End of run
 
-66 turns, 81 minutes, result: success.
+58 turns, 42 minutes, result: success.

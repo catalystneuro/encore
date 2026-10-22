@@ -1,9 +1,11 @@
 """Build the queue of reproduction targets from the DANDI Archive.
 
 A target is a public, non-empty dandiset that names at least one paper in its
-metadata (`relatedResource`). For each one this records the dandiset, its
-size and data standards, and the papers, so an agent can pick one up and
-try to reproduce the papers' key findings from the data. It also records any
+metadata (`relatedResource`), or whose description names one that holds its
+data (targets/description_papers.yaml, read by hand from the descriptions).
+For each one this records the dandiset, its size and data standards, and the
+papers, so an agent can pick one up and try to reproduce the papers' key
+findings from the data. It also records any
 sign that CatalystNeuro converted the dandiset (`catalystneuro`): a related
 resource in a catalystneuro GitHub repository, or a contributor affiliated
 with CatalystNeuro or with a catalystneuro.com address. Problems an attempt
@@ -16,7 +18,7 @@ attempts, not here, so regenerating never loses state.
 Usage:
     python tools/build_targets.py [--output targets/dandisets.json] [--limit N]
 
-Uses only the standard library and the public DANDI API (no token).
+Uses the public DANDI API (no token), and PyYAML for the hand-made list.
 """
 
 from __future__ import annotations
@@ -32,6 +34,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 API = "https://api.dandiarchive.org/api"
+DESCRIBED = Path(__file__).resolve().parents[1] / "targets" / "description_papers.yaml"
 DOI = re.compile(r"10\.\d{4,9}/\S+", re.I)
 
 # relatedResource types that are not papers even when they carry a DOI.
@@ -95,6 +98,20 @@ def papers(metadata: dict) -> list[dict]:
     return out
 
 
+def described() -> dict[str, list[dict]]:
+    """The papers that dandisets' descriptions name as the source of their data, by dandiset."""
+    import yaml
+    return (yaml.safe_load(DESCRIBED.read_text()) or {}).get("dandisets", {}) if DESCRIBED.is_file() else {}
+
+
+def with_described(found: list[dict], extra: list[dict]) -> list[dict]:
+    """The metadata's papers, then those the description names that the metadata does not."""
+    seen = {p["doi"] for p in found}
+    return found + [{"doi": p["doi"].lower(), "title": p.get("title"), "relation": "IsDescribedBy",
+                     "resource_type": None, "preprint": p["doi"].lower().startswith(PREPRINT_HOSTS),
+                     "source": "description"} for p in extra if p["doi"].lower() not in seen]
+
+
 def catalystneuro(metadata: dict) -> list[str]:
     """Signs in the metadata that CatalystNeuro converted the dandiset, one line each."""
     signs = []
@@ -111,10 +128,10 @@ def catalystneuro(metadata: dict) -> list[str]:
     return signs
 
 
-def target(summary: dict) -> dict | None:
+def target(summary: dict, extra: dict[str, list[dict]] | None = None) -> dict | None:
     dandiset_id = summary["identifier"]
     metadata = get(f"{API}/dandisets/{dandiset_id}/versions/draft/")
-    found = papers(metadata)
+    found = with_described(papers(metadata), (extra or {}).get(dandiset_id, []))
     draft = summary.get("draft_version") or {}
     published = summary.get("most_recent_published_version") or {}
     assets = metadata.get("assetsSummary") or {}
@@ -142,8 +159,9 @@ def main() -> int:
     dandisets = list_dandisets()
     if args.limit:
         dandisets = dandisets[:args.limit]
+    extra = described()
     with ThreadPoolExecutor(max_workers=8) as pool:
-        results = list(pool.map(target, dandisets))
+        results = list(pool.map(lambda s: target(s, extra), dandisets))
 
     with_paper = [t for t in results if t["papers"]]
     out = {

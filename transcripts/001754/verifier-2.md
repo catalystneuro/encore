@@ -1,97 +1,150 @@
-# 001754 · verifier-2 · run 38744891645
+# 001754 · verifier-2 · run 39495558757
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cd  ls -la; ls paper docs 2>/dev/null; cat round-1-report.md
+cd  ls -la; ls paper docs 2>/dev/null; wc -c *
 ```
 
 ```
-total 428
-drwxr-xr-x 5 runner runner    4096 Oct 15 13:47 .
-drwxr-xr-x 7 runner runner    4096 Oct 15 13:47 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 13:41 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 13:41 .bashrc
-drwxr-xr-x 5 runner runner    4096 Oct 15 13:47 .claude
--rw-r--r-- 1 runner runner       0 Oct 15 13:47 .env
--rw-r--r-- 1 runner runner       0 Oct 15 13:47 .env.development
--rw-r--r-- 1 runner runner       0 Oct 15 13:47 .env.development.local
--rw-r--r-- 1 runner runner       0 Oct 15 13:47 .env.local
--rw-r--r-- 1 runner runner       0 Oct 15 13:47 .env.production
--rw-r--r-- 1 runner runner       0 Oct 15 13:47 .env.production.local
--rw-r--r-- 1 runner runner       0 Oct 15 13:47 .env.test
--rw-r--r-- 1 runner runner       0 Oct 15 13:47 .env.test.local
-drwx------ 2 runner runner    4096 Oct 15 13:47 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 13:41 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 13:41 .github
--rw-r--r-- 1 runner runner       0 Oct 15 13:47 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 13:41 .idea
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 13:41 .mcp.json
-[... 77 more lines not kept]
+Exit code 1
+total 380
+drwxr-xr-x 6 runner runner    4096 Oct 20 20:54 .
+drwxr-xr-x 7 runner runner    4096 Oct 20 20:54 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 20 20:48 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 20 20:48 .bashrc
+drwxr-xr-x 5 runner runner    4096 Oct 20 20:54 .claude
+-rw-r--r-- 1 runner runner       0 Oct 20 20:54 .env
+-rw-r--r-- 1 runner runner       0 Oct 20 20:54 .env.development
+-rw-r--r-- 1 runner runner       0 Oct 20 20:54 .env.development.local
+-rw-r--r-- 1 runner runner       0 Oct 20 20:54 .env.local
+-rw-r--r-- 1 runner runner       0 Oct 20 20:54 .env.production
+-rw-r--r-- 1 runner runner       0 Oct 20 20:54 .env.production.local
+-rw-r--r-- 1 runner runner       0 Oct 20 20:54 .env.test
+-rw-r--r-- 1 runner runner       0 Oct 20 20:54 .env.test.local
+drwx------ 2 runner runner      40 Oct 20 20:54 .git
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 20 20:48 .gitconfig
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 20 20:48 .github
+-rw-r--r-- 1 runner runner       0 Oct 20 20:54 .gitmodules
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 20 20:48 .idea
+[... 43 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat 10.1038-72910.yaml; cat README.md; cat 001754-knierim-2000-02.yaml
+cd  cat round-1-report.md; cat 10.1038-72910.yaml
 ```
 
 ```
 <persisted-output>
-Output too large (34.5KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/f6749594-1785-493b-bf3c-d756473e95de/tool-results/b467nnhog.txt
+Output too large (32.4KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/4f278054-0b5f-486c-a607-30d45803c3c9/tool-results/b3p1cww4t.txt
 
 Preview (first 2KB):
-# Claims for Knierim, McNaughton & Poe (2000) on dandiset 001754.
-# Source: the paper is not open access. Only its abstract (the first paragraph shown on the
-# publisher's page) and the titles of its three figures were available. Claims marked as from the
-# dandiset description are taken from the description the data owners gave the dandiset, which
-# summarises the paper's findings; they could not be checked against the paper's text.
+## Verifier report, round 1: Knierim, McNaughton & Poe (2000), dandiset 001754 @ 0.260728.1352
+
+The claims file has 10 claims. The notebook judges six against the data and blocks four.
+
+### A. Outcomes
+
+| Claim | My outcome | Reason |
+|---|---|---|
+| si-comparable-to-preflight | partially_reproduced | Cell 25: under M-a, neither preflight epoch shows a difference (p 0.88 and 0.66). Flight mean is 1.377 against 1.13 ± 0.09; preflight is 1.320 and 1.284 against 1.12 ± 0.08, so no reading puts both means within tolerance. M-b cannot be run on both sides (no preflight position), so as the criterion says it is not judged. |
+| si-rat1-fd9-vs-preflight | blocked (methods_underspecified) | Cell 27: the readings disagree. Against preflight ES1 p = 0.50; against preflight MC1 p = 0.0055, with flight higher. Under S-a both preflight epochs are candidates, so the criterion blocks the claim. |
+| si-rat3-fd4-vs-preflight | reproduced | Cell 29: no difference under either reading (p 0.28 and 0.77). With the ES1 preflight reading both means are within tolerance (1.231 against 1.12 ± 0.27; 1.518 against 1.48 ± 0.11). Cell counts are well off (11 flight against 7; 38 against 24), but the criterion's rule does not use counts. |
+| flight-spatial-code | blocked (methods_underspecified) | Cell 32: the dependencies are partial, blocked and reproduced. If rat 1 were reproduced or partial the outcome would be partial; if not reproduced, not_reproduced. The others do not decide it, so the criterion blocks it. |
+| fd4-abnormal-selectivity | partially_reproduced | Cell 34: Rat 2's FD4 information is significantly lower than preflight under both readings (p 0.0006 and 0.0015). Rat 1's is lower under neither (p 0.077 and 0.36). The rule gives "holds for one rat". This rests entirely on 
+[... 2 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat 001754-knierim-2000-03.yaml; cat README.md
+```
+
+```
+<persisted-output>
+Output too large (32.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/4f278054-0b5f-486c-a607-30d45803c3c9/tool-results/bzzl59aiv.txt
+
+Preview (first 2KB):
+# Repeat attempt on dandiset 001754, version 0.260728.1352, the most recent published version (the
+# paper cites none). It replaces 001754-knierim-2000-02, which read the draft and whose claims were
+# written from the abstract and figure titles; the claims file has been written again from the full
+# text, so most criteria are new. The draft holds a new conversion that fixes several findings, but
+# it is not published and changed after 001754-knierim-2000-02 read it (last modified
+# 2026-10-15T14:09:09Z against 2026-10-14T21:55:09Z), so it is not used. The three published versions
+# hold the same blobs, so the pinned files are those 001754-knierim-2000-01 read.
 #
-# When these criteria were written, the author had seen the data check only: the file list and
-# metadata, the epochs, units, positions and rate maps of every file; that the Rat1 and Rat2 files
-# of the same flight day share one position trace; that each labelled ES or MC epoch's position
-# histogram matches its own occupancy map best; that rate maps use -999 for unvisited bins and that
-# the tracker's missing-position value (0, 255) falls in occupancy bin [63, 0]; and the correlation
-# between unit spike-count maps and rate maps used to test the rate-map identifiers. No spatial
-# information, shuffle or stability analysis had been run.
-#
-# Method choices fixed here, as no Methods were available. Position is the dandiset's video
-# pixel position (0 to 255), binned as the rate maps are (4 pixels per bin, 64 x 64), then merged
-[... 14 more lines not kept]
+# Status of the findings of 001754-knierim-2000-02 on this version (outputs in the notebook's data check):
+# - Shared position trace presented as each rat's position (metadata_error, partly fixed in the draft):
+#   still present. Where the Rat1 and Rat2 files share a timestamp, 98.6 to 98.8% of positions agree
+#   within 2 px, and both span the whole session. New here, the trace behaves as Rat2's position in
+#   Rat2's FD9 ES window (12 of 28 units above every time shift) and could not be attributed in
+#   Rat2's FD4 ES window (0 of 17).
+# - Position only at spike times, none preflight (data_missing): still present.
+# - Preflight said to be on a flat rectangular track (metadata_error): still present in this version;
+[... 9 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/f6749594-1785-493b-bf3c-d756473e95de/tool-results/b467nnhog.txt"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/4f278054-0b5f-486c-a607-30d45803c3c9/tool-results/b3p1cww4t.txt"
 }
 ```
 
 ```
-1	# Claims for Knierim, McNaughton & Poe (2000) on dandiset 001754.
-2	# Source: the paper is not open access. Only its abstract (the first paragraph shown on the
-3	# publisher's page) and the titles of its three figures were available. Claims marked as from the
-4	# dandiset description are taken from the description the data owners gave the dandiset, which
-5	# summarises the paper's findings; they could not be checked against the paper's text.
-6	#
-7	# When these criteria were written, the author had seen the data check only: the file list and
-8	# metadata, the epochs, units, positions and rate maps of every file; that the Rat1 and Rat2 files
-9	# of the same flight day share one position trace; that each labelled ES or MC epoch's position
-10	# histogram matches its own occupancy map best; that rate maps use -999 for unvisited bins and that
-11	# the tracker's missing-position value (0, 255) falls in occupancy bin [63, 0]; and the correlation
-12	# between unit spike-count maps and rate maps used to test the rate-map identifiers. No spatial
-13	# information, shuffle or stability analysis had been run.
-14	#
-15	# Method choices fixed here, as no Methods were available. Position is the dandiset's video
-16	# pixel position (0 to 255), binned as the rate maps are (4 pixels per bin, 64 x 64), then merged
-17	# 2 x 2 into 32 x 32 bins. Samples at (0, 255) are missing tracking and are dropped, and the
-18	# occupancy bin [63, 0] is left out. Occupancy is the rate-map occupancy map of the epoch (the
-19	# dandiset holds position only at spike times); bins with fewer than 5 counts are left out.
-20	# Spatial information is Skaggs' bits per spike. A unit is a tetrode and cluster id within one
-[... 459 more lines not kept]
+1	## Verifier report, round 1: Knierim, McNaughton & Poe (2000), dandiset 001754 @ 0.260728.1352
+2	
+3	The claims file has 10 claims. The notebook judges six against the data and blocks four.
+4	
+5	### A. Outcomes
+6	
+7	| Claim | My outcome | Reason |
+8	|---|---|---|
+9	| si-comparable-to-preflight | partially_reproduced | Cell 25: under M-a, neither preflight epoch shows a difference (p 0.88 and 0.66). Flight mean is 1.377 against 1.13 ± 0.09; preflight is 1.320 and 1.284 against 1.12 ± 0.08, so no reading puts both means within tolerance. M-b cannot be run on both sides (no preflight position), so as the criterion says it is not judged. |
+10	| si-rat1-fd9-vs-preflight | blocked (methods_underspecified) | Cell 27: the readings disagree. Against preflight ES1 p = 0.50; against preflight MC1 p = 0.0055, with flight higher. Under S-a both preflight epochs are candidates, so the criterion blocks the claim. |
+11	| si-rat3-fd4-vs-preflight | reproduced | Cell 29: no difference under either reading (p 0.28 and 0.77). With the ES1 preflight reading both means are within tolerance (1.231 against 1.12 ± 0.27; 1.518 against 1.48 ± 0.11). Cell counts are well off (11 flight against 7; 38 against 24), but the criterion's rule does not use counts. |
+12	| flight-spatial-code | blocked (methods_underspecified) | Cell 32: the dependencies are partial, blocked and reproduced. If rat 1 were reproduced or partial the outcome would be partial; if not reproduced, not_reproduced. The others do not decide it, so the criterion blocks it. |
+13	| fd4-abnormal-selectivity | partially_reproduced | Cell 34: Rat 2's FD4 information is significantly lower than preflight under both readings (p 0.0006 and 0.0015). Rat 1's is lower under neither (p 0.077 and 0.36). The rule gives "holds for one rat". This rests entirely on Rat 2's FD4 maps; see B2. |
+14	| fig3-stability-across-sessions | blocked (methods_underspecified), possibly not_reproduced | Cell 36: under M-b, (a) 6 of 16 and (b) 1 of 16 cells kee
+[... 381 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/4f278054-0b5f-486c-a607-30d45803c3c9/tool-results/bzzl59aiv.txt"
+}
+```
+
+```
+1	# Repeat attempt on dandiset 001754, version 0.260728.1352, the most recent published version (the
+2	# paper cites none). It replaces 001754-knierim-2000-02, which read the draft and whose claims were
+3	# written from the abstract and figure titles; the claims file has been written again from the full
+4	# text, so most criteria are new. The draft holds a new conversion that fixes several findings, but
+5	# it is not published and changed after 001754-knierim-2000-02 read it (last modified
+6	# 2026-10-15T14:09:09Z against 2026-10-14T21:55:09Z), so it is not used. The three published versions
+7	# hold the same blobs, so the pinned files are those 001754-knierim-2000-01 read.
+8	#
+9	# Status of the findings of 001754-knierim-2000-02 on this version (outputs in the notebook's data check):
+10	# - Shared position trace presented as each rat's position (metadata_error, partly fixed in the draft):
+11	#   still present. Where the Rat1 and Rat2 files share a timestamp, 98.6 to 98.8% of positions agree
+12	#   within 2 px, and both span the whole session. New here, the trace behaves as Rat2's position in
+13	#   Rat2's FD9 ES window (12 of 28 units above every time shift) and could not be attributed in
+14	#   Rat2's FD4 ES window (0 of 17).
+15	# - Position only at spike times, none preflight (data_missing): still present.
+16	# - Preflight said to be on a flat rectangular track (metadata_error): still present in this version;
+17	#   the draft's description has dropped the sentence.
+18	# - Rate maps smoothed with an unstated kernel (metadata_insufficient, partly fixed in the draft): still
+19	#   present, and the pinned descriptions do not say the maps are smoothed.
+20	# - No EEG though the description reports it (data_missing, partly fixed in the draft): still present;
+[... 451 more lines not kept]
 ```
 
 **Agent calls Bash**
@@ -101,22 +154,40 @@ cd  python3 - <<'EOF' > $TMPDIR/nb.txt
 import json
 nb=json.load(open('reproduce_knierim_2000.ipynb'))
 for i,c in enumerate(nb['cells']):
-    print(f"\n######## CELL {i} [{c['cell_type']}]")
+    print(f"===== CELL {i} [{c['cell_type']}] =====")
     print(''.join(c['source']))
     for o in c.get('outputs',[]):
-        if 'text' in o: print('--- OUT:'); print(''.join(o['text']))
+        if 'text' in o: print('--- out:'); print(''.join(o['text']))
         elif 'data' in o:
             d=o['data']
-            if 'text/plain' in d: print('--- OUT:'); print(''.join(d['text/plain']))
-            if 'image/png' in d: print('[image]')
-        elif o.get('output_type')=='error': print('--- ERROR', o['ename'], o['evalue'])
+            if 'text/plain' in d: print('--- out:'); print(''.join(d['text/plain'])[:5000])
+        if o.get('output_type')=='error': print('ERROR', o['ename'], o['evalue'])
 EOF
-wc -l $TMPDIR/nb.txt; grep -n "######## CELL" $TMPDIR/nb.txt | wc -l
+wc -l $TMPDIR/nb.txt; grep -n "===== CELL" $TMPDIR/nb.txt | head -80
 ```
 
 ```
-2968 /tmp/claude-1001/nb.txt
-61
+2554 /tmp/claude-1001/nb.txt
+1:===== CELL 0 [markdown] =====
+59:===== CELL 1 [code] =====
+92:===== CELL 2 [markdown] =====
+97:===== CELL 3 [code] =====
+749:===== CELL 4 [markdown] =====
+759:===== CELL 5 [code] =====
+875:===== CELL 6 [markdown] =====
+884:===== CELL 7 [code] =====
+949:===== CELL 8 [markdown] =====
+960:===== CELL 9 [code] =====
+1003:===== CELL 10 [markdown] =====
+1013:===== CELL 11 [code] =====
+1053:===== CELL 12 [markdown] =====
+1065:===== CELL 13 [code] =====
+1114:===== CELL 14 [code] =====
+1172:===== CELL 15 [code] =====
+1186:===== CELL 16 [markdown] =====
+1202:===== CELL 17 [code] =====
+1240:===== CELL 18 [markdown] =====
+[... 40 more lines not kept]
 ```
 
 **Agent calls Read**
@@ -124,12 +195,32 @@ wc -l $TMPDIR/nb.txt; grep -n "######## CELL" $TMPDIR/nb.txt | wc -l
 ```json
 {
  "file_path": "/tmp/claude-1001/nb.txt",
- "limit": 1000
+ "limit": 100
 }
 ```
 
 ```
-File content (27420 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.
+1	===== CELL 0 [markdown] =====
+2	# Reproducing Knierim, McNaughton & Poe (2000) from dandiset 001754
+3	
+4	Paper. Knierim JJ, McNaughton BL, Poe GR (2000). Three-dimensional spatial selectivity of
+5	hippocampal neurons during space flight. *Nature Neuroscience* 3(3):211-212.
+6	[doi:10.1038/72910](https://doi.org/10.1038/72910). The claims file,
+7	`claims/001754/10.1038-72910.yaml`, was written from the full text of the version of record, a
+8	two-page brief communication with no separate Methods section and no supplement; its methods are
+9	in the main text and the figure legends. The paper links no code.
+10	
+11	Dandiset. [DANDI:001754](https://dandiarchive.org/dandiset/001754/0.260728.1352), version
+12	0.260728.1352 (doi:10.48324/dandi.001754/0.260728.1352). Why this version: the paper cites no
+13	version of the dandiset, so the most recent published version is pinned, and 0.260728.1352 is it.
+14	The two earlier published versions (0.260227.0029 and 0.260227.0031) hold the same files with the
+15	same blobs (data check), so none of them matches the claims file better. The draft holds a new
+16	conversion that addresses the findings of the first attempt, but it is not published, and it has
+17	changed since `001754-knierim-2000-02` read it (the data check prints when it was last
+18	modified), so it is not used. This is the version that `001754-knierim-2000-01` read;
+19	`001754-knierim-2000-02` read the draft.
+20	
+[... 80 more lines not kept]
 ```
 
 **Agent calls Read**
@@ -137,90 +228,67 @@ File content (27420 tokens) exceeds maximum allowed tokens (25000). Use offset a
 ```json
 {
  "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 1000,
- "limit": 1000
-}
-```
-
-```
-File content (31137 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 2000,
- "limit": 1000
-}
-```
-
-```
-File content (31451 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 740,
  "limit": 700
 }
 ```
 
 ```
-1	
-2	######## CELL 0 [markdown]
-3	# Reproducing Knierim, McNaughton & Poe (2000) from dandiset 001754
-4	
-5	Paper. Knierim JJ, McNaughton BL, Poe GR (2000). Three-dimensional spatial selectivity of
-6	hippocampal neurons during space flight. *Nature Neuroscience* 3:209-210.
-7	[doi:10.1038/72910](https://doi.org/10.1038/72910). The paper is not open access. This attempt
-8	used only its abstract and the titles of its three figures, from the publisher's page. Four
-9	claims come from the dandiset's own description, which summarises the paper's findings; they
-10	could not be checked against the paper's text.
-11	
-12	Dandiset. [DANDI:001754](https://dandiarchive.org/dandiset/001754/draft), version draft. This
-13	version was asked for. It is a repeat attempt: the first attempt, `001754-knierim-2000-01`, read
-14	version 0.260728.1352, and the data owners have since replaced all eight files in the draft with a
-15	new conversion that addresses its findings. The fixes are not yet published, so the draft is read.
-16	A draft can change: the draft read here was last modified on 2026-10-14 at 21:55:09 UTC (the data
-17	check prints the time it has when the notebook runs). The three published versions (0.260227.0029,
-18	0.260227.0031, 0.260728.1352) hold the same blobs; every file of the draft is a new blob, and the
-19	dandiset's description is unchanged. The data check compares the draft with 0.260728.1352 where the
-20	analysis uses the difference.
+740	  units/electrodes  (188,)  int64  the electrodes that each spike unit came from
+741	  units/electrodes_index  (47,)  uint8  Index for VectorData 'electrodes'
+742	  units/id  (47,)  int64  
+743	  units/spike_times  (58717,)  float64  the spike times for each unit in seconds
+744	  units/spike_times_index  (47,)  uint16  Index for VectorData 'spike_times'
+745	  units/tetrode  (47,)  object  Tetrode name (e.g. TT0)
+746	
+747	Neurodata types of groups, and the number of files holding each: {'Device': 8, 'DynamicTable': 8, 'ElectrodeGroup': 8, 'ElectrodesTable': 8, 'Position': 5, 'ProcessingModule': 8, 'SpatialSeries': 5, 'Subject': 8, 'TimeIntervals': 8, 'Units': 8}
+748	
+749	===== CELL 4 [markdown] =====
+750	The three published versions hold the same eight files with the same blobs; every file of the draft
+751	is a different blob, and the draft's description has been rewritten (the sentences printed above:
+752	it no longer places the preflight recordings on a flat rectangular track, and it says the EEG is
+753	not included). Those changes are in the draft only; the pinned version keeps the description
+754	printed above. The listing shows every group and dataset of every file. The neurodata types are
+755	only those printed under it: there is no ElectricalSeries or LFP, so no file holds EEG or any
+756	continuous voltage. The units table has `tetrode`, `cluster_id`, `spike_times` and `electrodes`;
+757	the epochs table `session_type` and its description; the rate-map table `tetrode`, `source_file`,
+758	`session_type`, `cell_number`, `rate_map` and `occupancy_map`; the position one series of x and y.
+759	===== CELL 5 [code] =====
 [... 680 more lines not kept]
 ```
 
-**Agent calls Bash**
+**Agent calls Read**
 
-```bash
-grep -n "######## CELL" $TMPDIR/nb.txt
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 1439,
+ "limit": 560
+}
 ```
 
 ```
-2:######## CELL 0 [markdown]
-50:######## CELL 1 [code]
-83:######## CELL 2 [markdown]
-89:######## CELL 3 [code]
-788:######## CELL 4 [markdown]
-799:######## CELL 5 [code]
-861:######## CELL 6 [markdown]
-873:######## CELL 7 [code]
-978:######## CELL 8 [markdown]
-989:######## CELL 9 [code]
-1044:######## CELL 10 [markdown]
-1054:######## CELL 11 [code]
-1090:######## CELL 12 [markdown]
-1099:######## CELL 13 [code]
-1110:######## CELL 14 [markdown]
-1116:######## CELL 15 [code]
-1142:######## CELL 16 [markdown]
-1149:######## CELL 17 [code]
-1183:######## CELL 18 [markdown]
-1192:######## CELL 19 [code]
-[... 41 more lines not kept]
+1439	  units), and not in Rat2's FD4 ES window.
+1440	- Position only at spike times, none preflight. Still present.
+1441	- The dandiset description places the preflight recordings on a flat rectangular track while the
+1442	  preflight files label their epochs ES and MC. Still present in this version; the draft's
+1443	  description has dropped the sentence. The paper states the rectangular track for rat 2 only, and
+1444	  the files' experiment description puts the rectangular track in the baseline sessions, which the
+1445	  paper places in the sleeping pouch.
+1446	- The rate maps are smoothed with an unstated kernel (partly fixed in the draft). Still present:
+1447	  the pinned descriptions do not say the maps are smoothed; 91% of positive-rate bins of a
+1448	  well-matched map hold no spike.
+1449	- No EEG though the description reports it (partly fixed in the draft). Still present: no file
+1450	  holds EEG, and the pinned description reports theta and ripples; the draft's description now says
+1451	  the EEG is not included.
+1452	- The age is "/" and the pixel scale and camera view are not described (partly fixed in the draft).
+1453	  Still present, without the draft's statements that they were not recorded.
+1454	- Rat 2's preflight units share no tetrode with its flight units. Still present (0 tetrodes in
+1455	  common, against 4 to 6 for Rats 1 and 3).
+1456	
+1457	The first attempt's other findings, which `001754-knierim-2000-02` found fixed in the draft, are
+1458	present in this version: `cell_number` does not link maps to units (84 of 211, and -1 for every
+[... 540 more lines not kept]
 ```
 
 **Agent calls Read**
@@ -228,292 +296,120 @@ grep -n "######## CELL" $TMPDIR/nb.txt
 ```json
 {
  "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 1290,
- "limit": 480
+ "offset": 1998,
+ "limit": 560
 }
 ```
 
 ```
-1290	Unvisited rate-map bins are NaN, exactly where the occupancy is zero, as the description now
-1291	says, and no value is negative. The lost position is still counted in the original occupancy (bin
-1292	[63, 0], up to 19% of an occupancy map in flight, under 2% preflight), as the occupancy description
-1293	now says; that bin is left out here. No file holds two identical rate maps. Every `source_file` reads
-1294	`<epoch name>.cell<cluster id>.rmap`, every map's unit has the map's tetrode and cluster id, and
-1295	every map's unit has a spike file of the map's epoch; the old 8.3 short names are kept in
-1296	`archived_file_name`. The "CEL names only" variant below uses those short names, as the first
-1297	attempt did.
-1298	
-1299	The highest peak rate, 277.8 Hz in a Rat1 FD9 map, lies in a bin with 55 occupancy counts, not a
-1300	sparsely visited bin. Per file, 9 to 36 maps have their peak in a bin with fewer than 5 counts;
-1301	spatial information over bins with at least 5 counts is shown as a variant of the rate-map claims.
-1302	
-1303	######## CELL 21 [code]
-1304	# What apparatus the preflight epochs labelled ES and MC were recorded on: the dandiset description,
-1305	# and the extent of every distinct occupancy map (visited bins, rows and columns of the 64 x 64 grid).
-1306	desc = meta["draft"]["description"]
-1307	print("Dandiset description, sentences on the track:")
-1308	for sentence in desc.split(". "):
-1309	    if "track" in sentence:
-[... 460 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 1767,
- "limit": 480
-}
-```
-
-```
-1767	######## CELL 33 [code]
-1768	rng_c1 = np.random.default_rng(20000301)
-1769	results = []
-1770	for s in sessions:
-1771	    if "xy" not in s:
-1772	        continue
-1773	    for a, b, typ, name in s["epochs"][["start", "stop", "type", "name"]].itertuples(index=False):
-1774	        if typ in ("ES", "MC"):
-1775	            df = nl.epoch_units(s, a, b, nl.epoch_occupancy(s, name), rng_c1)
-1776	            df["type"] = typ
-1777	            df["epoch"] = f"{typ} {a:.0f}-{b:.0f}"
-1778	            results.append(df)
-1779	units = pd.concat(results, ignore_index=True)
-1780	tested = units.dropna(subset=["info"]).copy()
-1781	tested["sig"] = tested.p < 0.05
-1782	
-1783	def summary(d):
-1784	    n, k = len(d), int(d.sig.sum())
-1785	    return pd.Series({"units_in_file": np.nan, "tested": n, "significant": k, "fraction": round(k / n, 3) if n else np.nan,
-1786	                      "binom_p_vs_0.05": stats.binomtest(k, n, 0.05, alternative="greater").pvalue if n else np.nan,
-[... 460 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 2246,
- "limit": 400
-}
-```
-
-```
-2246	
-2247	def compare(a, b, alternative="two-sided"):
-2248	    if len(a) == 0 or len(b) == 0:
-2249	        return {"n_a": len(a), "n_b": len(b)}
-2250	    u = stats.mannwhitneyu(a, b, alternative=alternative)
-2251	    return {"n_a": len(a), "n_b": len(b), "median_a": round(float(np.median(a)), 3), "median_b": round(float(np.median(b)), 3),
-2252	            "diff": round(float(np.median(a) - np.median(b)), 3), "ratio": round(float(np.median(a) / np.median(b)), 2),
-2253	            "U": float(u.statistic), "p": float(u.pvalue), "rank_biserial": round(1 - 2 * u.statistic / (len(a) * len(b)), 3)}
-2254	
-2255	sel = lambda d, typ, days, rats: d[(d.type == typ) & d.day.isin(days) & d.rat.isin(rats)]["info"].values
-2256	main = compare(sel(m, "ES", ["FD9"], ["Rat1", "Rat2"]), sel(m, "ES", ["preflight"], ["Rat1", "Rat2"]))
-2257	print("\nMain test, ES FD9 (a) against ES preflight (b), Rats 1 and 2:", main)
-2258	--- OUT:
-2259	Maps dropped: duplicates 0 ; zero mean rate 6 ; kept 528 of 534
-2260	Spatial information of rate maps, range: 0.019 to 7.583 bits/spike
-2261	                     count    50%    25%    75%    min    max
-2262	type rat  day                                                
-2263	ES   Rat1 FD4         33.0  1.222  0.755  2.203  0.256  3.431
-2264	          FD9         26.0  1.749  1.094  1.978  0.142  2.627
-2265	          preflight   27.0  1.869  1.122  2.515  0.709  3.070
-[... 380 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 2645,
- "limit": 330
-}
-```
-
-```
-2645	a known position in each. Smoothed 32 x 32 rate maps; median same-unit correlation against 1000
-2646	random re-pairings. Reproduced when above the 95th percentile of the re-paired medians and above
-2647	0.5. A unit is the same sorted cluster in both epochs, as the units' description states; that it is
-2648	the same neuron is assumed (see the data check).
-2649	
-2650	######## CELL 54 [code]
-2651	rng_c4 = np.random.default_rng(72910)
-2652	s3 = by_label["Rat3 FD4"]
-2653	es_epochs = s3["epochs"][s3["epochs"].type == "ES"].sort_values("start")
-2654	lookup3 = nl.PositionLookup(s3)
-2655	maps3, occs = {}, []
-2656	for k, (a, b, name) in enumerate(zip(es_epochs.start, es_epochs.stop, es_epochs.name)):
-2657	    occ = nl.epoch_occupancy(s3, name)
-2658	    occs.append(nl.merge_bins(nl.clean_occupancy(occ)))
-2659	    print(f"ES epoch {k + 1}: {name} {a:.0f}-{b:.0f} s, occupancy map match {nl.occupancy_match(s3, a, b)}")
-2660	    for _, u in s3["units"].iterrows():
-2661	        sp = u.spikes[(u.spikes >= a) & (u.spikes <= b)]
-2662	        found, r, c = lookup3(sp)
-2663	        if found.sum() >= nl.MIN_SPIKES:
-2664	            maps3[(u.tetrode, u.cluster, k)] = nl.smoothed_rate_map(r, c, occ)[0]
-[... 305 more lines not kept]
+1998	
+1999	> For rat 3 on flight day 4, most of the 7 cells kept the same firing fields in a third session
+2000	> that followed the second immediately; the fourth cell lost its field, and a few other cells
+2001	> gained a field in session 3.
+2002	
+2003	Cells are the active cells of session 2 (ES1), followed into session 3 (ES2). A cell keeps its
+2004	field by (a) when the correlation of its session 2 and 3 maps over bins visited in both exceeds
+2005	the 95th percentile of the correlations between different cells across the two sessions, and by
+2006	(b) when its session 3 peak lies in its session 2 field (bins with at least 20% of the session 2
+2007	peak). "Most" is more than half of the active cells of session 2 (answer of 2026-10-20; with the
+2008	paper's 7 cells this was at least 4). Reproduced when more than half keep their field under every
+2009	reading, not reproduced when half or fewer do under every reading, and blocked when the readings
+2010	disagree.
+2011	
+2012	Reading M-b uses the unsmoothed maps of the active units. Reading M-a needs the deposited maps of
+2013	one cell in both sessions, and the dandiset gives no link (every Rat3 FD4 ES map has
+2014	`cell_number` -1). The criterion now allows a pairing through the unit whose spike-count map a deposited map
+2015	best matches, when each map is tied to one unit and no unit to two maps (answer of 2026-10-20). The
+2016	code ties every distinct map of session 2 and of session 3 to the unit it best matches, checks
+2017	that no unit is tied to two maps in either session, and runs M-a as a judged reading only if so.
+[... 538 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; grep -n "0\.307\|12 of 25\|11 to 13\|0\.157\|201 of 211\|84 of" nb.txt | head; sed -n 788,1000p nb.txt | grep -v "^  general\|^  units/\|^  processing\|^  intervals" | head -150
+cd  grep -n "def " neurolab.py; sed -n "$(grep -n 'def map_unit_matches' neurolab.py | cut -d: -f1),+30p" neurolab.py
 ```
 
 ```
-1444:All: median r with the linked map 0.57; the linked map is the best of its tetrode and epoch in 201 of 211; r > 0.5 in 135
-1465:spikes and positions. In 0.260728.1352 the `cell_number` column matched the cluster id for 84 of
-1734:  links to a unit with its tetrode and cluster, and the linked map is the best match for 201 of 211
-2108:attempt had 12 of 25 (11 to 13 over seven runs). Every real spike has a sample at its own time in
-2111:as in Rat1's (0.060), against 0.307 and 0.074 in the earlier version, so the drops no longer differ
-2112:between the rats; the count-matched variant gives 12 of 25 (0.48) for Rat1 and 2 of 28 for Rat2,
-2780:    TT4        3          True  0.157
-######## CELL 4 [markdown]
-The published versions hold the same files; every file of the draft is a new blob, and the
-dandiset description has not changed. The listing shows every group and dataset of every file. In
-each file `acquisition/`, `analysis/` and the `stimulus/` groups are empty, and the neurodata types
-are only those printed under the listing (devices, electrode groups and table, subject, epochs,
-units, position and the rate-map table): there is no ElectricalSeries or LFP, so no file holds EEG
-or any continuous voltage. The units table now has `tetrode`, `cluster_id`, `spike_times`,
-`obs_intervals`, `source_files` and `electrodes`; the epochs table `epoch_name`, `session_type` and
-its description; the rate-map table `tetrode`, `source_file`, `archived_file_name`, `epoch_name`,
-`cluster_id`, `unit`, `rate_map` and `occupancy_map`; the position one series of x and y in pixels.
-
-######## CELL 5 [code]
-# The full descriptions of the tables and series the analysis uses, from the Rat1 FD9 file (the
-[... 138 more lines not kept]
+65:def asset_urls(version: str = DANDISET_VERSION) -> list[tuple[str, str]]:
+73:def _text(value) -> str:
+77:def _column(group, name):
+81:def h5_tree(path_url: tuple[str, str]) -> list[str]:
+86:        def visit(name, obj):
+98:def load_session(path_url: tuple[str, str]) -> dict:
+137:def load_all(version: str = DANDISET_VERSION) -> list[dict]:
+142:def label(s: dict) -> str:
+148:def clean_occupancy(occ: np.ndarray) -> np.ndarray:
+155:def bin_xy(xy: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+162:def count_map(rows: np.ndarray, cols: np.ndarray) -> np.ndarray:
+168:def occupancy_groups(s: dict) -> list[tuple[str, bytes, np.ndarray]]:
+176:def occupancy_match(s: dict, occ: np.ndarray, start: float, stop: float) -> float:
+184:def assign_map_epochs(s: dict) -> list[str]:
+202:def duplicate_rows(rate_maps: np.ndarray) -> list[bool]:
+211:def skaggs_info(rate: np.ndarray, occ: np.ndarray) -> float:
+223:def map_measures(rate_map: np.ndarray, occ_map: np.ndarray) -> tuple[float, float, float]:
+234:def epoch_occupancy(s: dict, epoch: str) -> np.ndarray:
+243:def ma_table(sessions: list[dict]) -> pd.DataFrame:
+259:def spike_positions(s: dict, spikes: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+[... 37 more lines not kept]
 ```
 
-**Agent calls Read**
+**Agent calls Bash**
 
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 930,
- "limit": 360
-}
+```bash
+cd  grep -n -i -E "session|lost|seven|preflight|4 days|Mann" paper/10.1038-72910.txt | head -40
 ```
 
-```
-930	    partner = {"Rat1": "Rat2", "Rat2": "Rat1"}.get(s["subject"])
-931	    row = {"session": nl.label(s), "samples_new": len(s["t"])}
-932	    for who, key in [("same_rat", s["path"]), ("other_rat", by_label[f"{partner} {s['day']}"]["path"] if partner else None)]:
-933	        if key is None:
-934	            continue
-935	        o = old_files[key]
-936	        common, i_new, i_old = np.intersect1d(s["t"], o["t"], return_indices=True)
-937	        old_valid = ~((o["xy"][i_old, 0] == 0) & (o["xy"][i_old, 1] == 255))
-938	        both = s["valid"][i_new] & old_valid
-939	        dist = np.hypot(*(s["xy"][i_new][both] - o["xy"][i_old][both]).T)
-940	        row[f"in_old_{who}_file"] = round(len(common) / len(s["t"]), 3)
-941	        row[f"{who}_within_2px"] = round(float((dist < 2).mean()), 3)
-942	        row[f"{who}_lost_agrees"] = round(float((~s["valid"][i_new] == ~old_valid).mean()), 3)
-943	    in_either = np.isin(s["t"], np.concatenate([old_files[s["path"]]["t"]] + ([old_files[by_label[f"{partner} {s['day']}"]["path"]]["t"]] if partner else [])))
-944	    row["in_neither_old_file"] = int((~in_either).sum())
-945	    row["their_time_range_s"] = f"{s['t'][~in_either].min():.0f}-{s['t'][~in_either].max():.0f}" if (~in_either).any() else ""
-946	    row["old_same_rat_samples_not_in_new"] = int((~np.isin(old_files[s["path"]]["t"], s["t"])).sum())
-947	    rows.append(row)
-948	print(pd.DataFrame(rows).to_string(index=False))
-949	--- OUT:
-[... 340 more lines not kept]
-```
-
-**Agent calls Grep**
-
-```json
-{
- "pattern": "def epoch_units",
- "path": "neurolab.py",
- "output_mode": "content",
- "-A": 60
-}
-```
-
-```
-272:def epoch_units(s: dict, start: float, stop: float, occ: np.ndarray, rng: np.random.Generator,
-273-                n_shuffles: int = N_SHUFFLES, match_counts: bool = False,
-274-                position: dict | None = None) -> pd.DataFrame:
-275-    """Spatial information of every unit of `s` in one epoch with its shuffle distribution, with
-276-    the epoch's 64 x 64 occupancy map `occ` and the position trace of `position` (default `s`).
-277-
-278-    Shifted spikes without a position are dropped, so a shuffle can hold fewer spikes than the
-279-    unit. With `match_counts`, each shuffle is compared with the unit's information on a random
-280-    subsample of its own spikes of the same size (a variant; the main test compares all spikes)."""
-281-    occ32 = merge_bins(clean_occupancy(occ))
-282-    lookup = PositionLookup(s if position is None else position)
-283-    duration = stop - start
-284-    out = []
-285-    for _, u in s["units"].iterrows():
-286-        sp = u["spikes"][(u["spikes"] >= start) & (u["spikes"] <= stop)]
-287-        found, r, c = lookup(sp)
-288-        keep = occ32[r // MERGE, c // MERGE] >= MIN_OCC
-289-        n = int(keep.sum())
-290-        row = {"rat": s["subject"], "day": s["day"], "epoch_start": start, "tetrode": u["tetrode"],
-291-               "cluster": int(u["cluster"]), "spikes_in_epoch": len(sp), "spikes_used": n}
-[... 34 more lines not kept]
-```
+Result: not kept, because it reads the paper's text.
 
 **Agent**
 
-## Round 2 verification: Knierim, McNaughton & Poe (2000) on DANDI 001754 (draft)
+## Verifier report, round 2: Knierim, McNaughton & Poe (2000), dandiset 001754 @ 0.260728.1352
+
+The claims file has 10 claims, and the attempt record gives an outcome for each of them. All cell indices below refer to the re-executed notebook.
 
 ### 1. Outcomes
 
-The claims file has 7 claims. The attempt record gives 1 not_reproduced, 3 reproduced and 3 blocked. I agree with all seven.
+| Claim | Record | Agree? |
+|---|---|---|
+| flight-spatial-code | blocked (methods_underspecified) | Yes. Cell 39: the dependencies are partial, blocked and reproduced, so the rule could give not_reproduced or partially_reproduced. |
+| si-comparable-to-preflight | partially_reproduced | Yes. Cell 29: p is 0.88 and 0.66, and no reading puts both means within tolerance. |
+| si-rat1-fd9-vs-preflight | blocked (methods_underspecified) | Yes. Cell 32: p is 0.50 against preflight ES and 0.0055 against preflight MC. |
+| si-rat3-fd4-vs-preflight | reproduced | Yes. Cell 35: p is 0.28 and 0.77, and both means are within tolerance under the ES reading. The counts are off (11 against 7, 38 against 24), but the rule does not use counts. |
+| fd4-abnormal-selectivity | partially_reproduced | Yes, by the criterion. Cell 42: the drop holds for rat 2 under both readings (p 0.0006 and 0.0015) and for rat 1 under neither. The rat 2 caveat remains (see 3). |
+| fig3-stability-across-sessions | not_reproduced | Yes. Cell 46: tying each map to the unit it best matches leaves four units tied to two session 3 maps, and three of them belong to active session 2 maps. The criterion's condition fails, so M-a is not run. Cell 45: under M-b, (a) 6 of 16 and (b) 1 of 16 cells keep their field, neither more than 8. |
+| direction-selectivity | blocked (methods_underspecified) | Yes. Cell 49: position exists only at spike times, there is no occupancy by direction and no track layout. The criterion fixes the label. |
+| theta-normal | blocked (data_missing) | Yes. There is no ElectricalSeries or LFP (cell 3). |
+| ripples-normal | blocked (data_missing) | Yes, as for theta-normal. |
+| three-orthogonal-surfaces | not_reproduced | Yes. Cell 54: fig3 is not reproduced, and the criterion then gives not_reproduced whatever part (ii) gives. |
 
-| Claim | Record | Agree | Note |
-|---|---|---|---|
-| flight-spatial-code | not_reproduced | Yes | Cell 34: Rat1 FD9 10/25 (0.40), Rat2 FD9 2/28 (0.071, p 0.41). The outcome holds even if Rat2 is set aside: Rat1 alone is below 0.5, so the "reproduced in one only" branch does not apply either. |
-| three-orthogonal-surfaces | blocked (metadata_insufficient) | Yes | Cell 41: no camera view, track layout or pixel scale. |
-| si-comparable-to-preflight | reproduced | Yes | Cell 43: p 0.45. Every variant has p ≥ 0.12 (cells 44, 45). It is a weak test (see 3). |
-| fd4-abnormal-selectivity | reproduced | Yes, fragile | Cell 49: p 0.024. Without Rat2 it is 0.035 on both versions (cell 51). It fails on the earlier version's maps with Rat2 (0.055, cell 50), on CEL names (0.073) and on MC maps (0.060). |
-| fig3-stability-across-sessions | reproduced | Yes | Cell 54: median r 0.537, null 95th percentile 0.102. At σ 0.5 the median is 0.315, which would make it partial. |
-| theta-normal, ripples-normal | blocked (data_missing) | Yes | Cells 3, 5 and 41. |
+**Claims file:** I found no misreading of the paper. The Fig. 3 legend ("same seven cells", "the fourth cell lost its field", "a few other cells (not shown) gained a field") is rendered faithfully.
 
-### 2. Statements the outputs do not support
+### 2. Sentences the printed numbers do not support
 
-- **Cell 52 (fd4 Result):** "FD4 is lower than FD9 for Rats 1 and 2 without significance … and on spike-based information minus the shuffle mean (0.025 against 0.211, p = 0.13; with Rat3, 0.232 against 0.211, p = 0.31)." With Rat3, FD4 is higher than FD9 (cell 49: 0.232 against 0.211), so "FD4 is lower" does not cover that case. The attempt record states the same numbers neutrally and is fine.
-- **Cell 60 (Summary) and README:** "gives 0.074 false positives over all flight ES epochs and up to 0.21 in one session." These two figures come from different nulls:
-  - 0.074 is the plain Poisson pooled rate.
-  - 0.21 (0.214) is the maximum under the sample-time null.
-  - Under the sample-time null, which the record says "reproduces the real drop rates", the pooled rate is 0.096 (cell 37). The plain-Poisson per-session maximum is 0.160.
-  - The sentence should give 0.096, or say which null each number comes from.
-- **Cell 47 and the record (si-comparable):** "a difference of up to about a quarter of the preflight level is not excluded." The interval in cell 46 is −29% to +22%, so a drop of up to 29% is not excluded. For Rat1 alone the bound is −40%. "About a quarter" understates the lower bound.
-- **Cell 57 (fig3):** "Units with the most stable fields are significant in the first epoch only, and for several of them…" One of the three examples, TT8 cluster 5, has r = 0.436, below the median of 0.537 (cell 56). It is not among the most stable units. This is minor; the null-95th-percentile numbers quoted are correct.
-- **Cannot be checked from these outputs:** the earlier-version figures in cell 39 and the record (Rat1 12/25, "11 to 13 over seven runs", shuffle drops 0.307 and 0.074). They come from the first attempt and are not printed here. Cell 7 does support "the draft's trace adds samples at the other rat's spike times".
+- **Cell 30, and the record's notes for si-comparable-to-preflight:** "p < 1e-6" and "(p below 1e-6)". Cell 29 prints p only to four decimals, as 0.0000, which supports p < 5e-5 and nothing smaller. This is a variant and decides nothing.
+- **Cell 48:** "the NASA record (below) lists no continuous position". The same claim is in the record's notes for direction-selectivity: "the names of the files in the NASA record (OSD-968) show no continuous position". Cell 51 prints only the file names and, for each zip, how many entries have an EEG-like name. It prints no entry names and does not search for position, so nothing printed supports the statement. No outcome depends on it, because the claims file names no outside data.
+- **Record notes for fig3-stability-across-sessions:** "Each distinct deposited map of session 2 (19) … was tied to the unit of its tetrode". Cell 44 says the same ("ties every distinct map of session 2 and of session 3"). Cell 46 prints "ES1: 19 distinct maps, 17 with a unit of their tetrode", so two session 2 maps are tied to no unit. All 11 active maps are tied, so the outcome is unaffected.
+- **Cell 23:** the trace behaves as Rat2's position in Rat2's FD9 window, "and not in Rat2's FD4 ES window". This is stronger than the outputs support. Cells 19 and 21 show only that no attribution could be made (0 of 17, 1 of 16), and cells 20 and 22 themselves say it "could not be established" and "remains unknown".
 
-Every other number in the Result cells, the Summary, the README and the record notes matches cells 21 to 57. That includes 9/122 and 12/125, the per-session rates 0.160, 0.154, 0.037 and 0.214, the binomial p values 0.0035, 0.0026, 0.28 and 0.99, path length 20.5 to 91.6, MC 0 to 2 of 11 to 32, 1.855 against 1.076 (p 9.0e-7), rho 0.791, the interval −0.425 to 0.312, and the Rats 1 and 3 result 1.242 against 1.510 (p 0.035).
+Everything else checks against the outputs: the other Result paragraphs (cells 33, 37, 40, 43, 47, 55), the Summary (cell 58), the README, and the record's notes, findings and header.
 
-**My round-1 reasons in the record:** they are faithful paraphrases of my report, with the numbers right. Problem 7 (occupancy of 38 to 57 counts/s) is left out. I had marked it as not affecting a conclusion, and cell 18 states it.
+My round-1 reasons are stated faithfully in my own terms for all 10 claims. The fd4 reason correctly folds in B2, and the fig3 reason folds in B1 and my "if the condition fails … not_reproduced". The "reviewed" text is also accurate: all 10 outcomes agreed with the record as it then stood, and I flagged a possible not_reproduced for fig3.
 
 ### 3. Round-1 points
 
-**Resolved:**
-- **1. Trace attribution in Rat2's windows.** It is still unresolved, and the data cannot settle it. It no longer decides a conclusion:
-  - fd4 without Rat2 passes (p 0.035).
-  - si-comparable for Rat1 alone gives p 0.25.
-  - flight-spatial-code is not_reproduced with or without Rat2.
-  - Cell 30 adds the path length and the MC-window contrasts I asked for.
-- **2. fd4's dependence on the duplicated maps.** It is now stated, and the without-Rat2 test does not depend on version.
-- **3. si-comparable.** The split by spike-shuffle significance, the bootstrap interval and the missing equivalence margin are now reported (cells 46, 47).
-- **4. Shuffle false-positive rate at the real drop rates.** Measured in cell 37, and the outcome holds against it.
-- **6. Smoothing dependence** and **7. occupancy rate:** both stated.
+**Resolved**
+- **B1 (fig3 pairing):** The check now ties every map in both sessions to the unit it best matches, which is the direction the criterion states. It flags conflicts both ways and fails in session 3 (cell 46). The outcome moved to not_reproduced, as I predicted, and three-orthogonal-surfaces followed.
+- **B3 (maps with `cell_number` −1):** Cell 26 now lists every active map. In flight, the active −1 maps outside Rat3 FD4 match a single unit (median r 0.555, against 0.595 for numbered maps). They also match one unit better than the tetrode's summed spikes in 94% of cases. Leaving them out changes no test. Two parts cannot be checked: the preflight −1 maps (there is no preflight position), and the variant for rat 3's flight side, where every map is −1.
+- **C (requested outputs):** All are supplied. The contrast I asked for, at timestamps where the Rat1 and Rat2 traces differ, turns out to be moot: the two files hold the same trace in Rat 2's FD4 window (4 of 707 positions more than 2 px apart).
 
-**Remaining, bearing on a conclusion:**
-- **flight-spatial-code: the test's strictness on real spike trains is untested.** The Poisson calibration measures false positives only.
-  - Rat3 ES2 has units with stable fields (TT4/1 r 0.82, TT5/1 0.84, TT3/2 0.85) that do not pass. Their null 95th percentiles jump, for example TT4/1 from 1.33 to 4.31 (cell 56).
-  - Rat2 FD9 has the same null median as Rat1 FD9 (2.04) but a much higher median 95th percentile (3.57 against 2.60; cells 33, 36). Per unit it reaches 7.93 for TT13/11 (cell 35).
-  - Rat2's real units pass less often (2/28) than non-spatial trains placed at sample times (6/28).
-  - So the null is heavy-tailed for real trains in exactly the sessions that come out negative, and the notebook leaves this unexplained (cell 57). A low significant fraction is therefore weak evidence against a spatial code.
-  - The output that would settle it: the same test on real spike trains with their temporal structure kept but their positions decoupled (for example, ES1 spikes run against the ES2 trace), or the null's upper tail broken down by burst structure per unit.
-- **fd4-abnormal-selectivity: the pass is narrow.** On rate maps it rests on p of 0.024 and 0.035, and the spike-based measures do not show lower selectivity on FD4: 24/71 against 12/53 significant (p 0.94), and corrected information with Rat3 (p 0.31).
-- **si-comparable-to-preflight: the result cannot support "comparable".** There is no equivalence margin, the interval allows −29% (−40% for Rat1), and preflight may have been on a different apparatus (cells 21, 22). The outcome follows the criterion, but it shows only that no difference was detected.
+**Remaining, bearing on a conclusion**
+- **B2 (fd4-abnormal-selectivity):** The outcome rests entirely on Rat 2's low FD4 information. Whether the position trace in that window is Rat 2's is still unknown: 0 of 17 units are selective on the Rat2 file's copy, against 12 of 28 on FD9. The criterion sets no condition on tracking, so the outcome stands by its rule, but its only support may come from tracking rather than firing.
+- **fig3, and through it three-orthogonal-surfaces:** Both outcomes now rest on M-b alone, which uses unsmoothed 4-px maps with few spikes per bin. My B5 now bears on these outcomes: reading (b) almost never passes on such maps (cell 45: 2, 1, 0 and 0 cells at thresholds 0.1 to 0.5). The counts are also off: "more than half" is taken of 16 units against the paper's 7, and nothing identifies the paper's 7. This follows the criterion and is not an error, but these not_reproduced outcomes come from a reading that is weak by construction.
+- **Cell selection:** Counts differ from the paper's in most comparisons, for example 11 maps or 16 units against 7, and 38 against 24. Rat3's reproduced outcome and Rat2's partial outcome come from cell sets that are not the paper's. The criterion's rules do not use counts.
+- **Unchanged and not deciding anything:** B4 (M-b spikes in unvisited bins are dropped), B6 (Rat 2's preflight and flight units share no tetrode), and the unknown smoothing kernel.
 
 ## End of run
 
-17 turns, 3 minutes, result: success.
+13 turns, 2 minutes, result: success.

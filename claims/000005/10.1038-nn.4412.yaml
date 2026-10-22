@@ -1,193 +1,1115 @@
-# Claims for Yu, Gutnisky, Hires & Svoboda (2016) on dandiset 000005.
-# Source: the abstract and the eight figure titles on the public landing page of the paper
-# (https://www.nature.com/articles/nn.4412). The full text is not open access and no copy was
-# found in PubMed Central, Europe PMC or a preprint server, so the claims are at the level of the
-# abstract, no claim has a reported number, and every method choice below is made here.
+# Claims for Yu, Gutnisky, Hires & Svoboda (2016), Nat. Neurosci. 19, 1647-1657, on dandiset
+# 000005 ("Electrophysiology data from thalamic and cortical neurons during somatosensation").
 #
-# When these criteria were written, the author had seen the data check only: the file list and
-# metadata, the recording mode of each L4 file read from its trace, spike counts and spike widths,
-# the sampling rates, the light series of each file, the spike probability after single light
-# pulses in VGAT-ChR2 mice, and the firing rate during the long light epochs in PV-Cre mice. No
-# touch or whisking measure had been computed for any cell or unit.
+# Provenance. Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions),
+# 2026-10-20, protocol as stated in docs/protocol.md (version pilot-10), Reader steps 1 to 4.
 #
-# The dandiset gives no cell type for its 130 L4 cells. Cell types are assigned here from the
-# data, before any claim's analysis:
-# - FS interneuron (proxy): a cell in a VGAT-ChR2-EYFP mouse that spikes within 6 ms of isolated
-#   5 ms light pulses (at least 10 pulses; evoked minus baseline spike probability at least 0.2;
-#   one-sided binomial test on discordant pulses, p < 0.001). This tags GABAergic neurons; the
-#   abstract's L4 FS interneurons are assumed to be the tagged cells.
-# - Excitatory neuron (proxy): a whole-cell recording (median membrane potential below -20 mV)
-#   with action potentials at least 0.6 ms wide at half maximum, not tagged where light pulses
-#   were given.
-# Measures, used by every claim (common choices, as the Methods were not available):
-# - Only trials without light, unless the claim is about light.
-# - Whisking: angle of the principal whisker band-passed at 6 to 30 Hz, Hilbert amplitude and
-#   phase; whisking where the amplitude is at least 2.5 degrees. Samples within 100 ms of a touch
-#   of any tracked whisker, or during a touch, are left out of whisking measures.
-# - Touch response: spike rate 0 to 25 ms after each touch onset of the principal whisker minus
-#   the rate 25 to 0 ms before it; responsive when a one-sided Wilcoxon signed-rank test over
-#   touches gives p < 0.01.
-# - Whisking modulation: Rayleigh test of the whisking phase at spikes during non-touch whisking,
-#   modulated when p < 0.01; its size in Hz is 2 x vector strength x rate during whisking.
-#   Amended after the first run (see below).
-# - Touch selectivity: touch response / (touch response + whisking modulation), both in Hz, the
-#   touch response floored at 0.
-# - A cell or unit enters a measure when its principal whisker is named, it has at least 10
-#   touches and at least 20 spikes in the trials used.
+# What changed. This file replaces a deprecated version whose claims were written from the
+# abstract only, with cell types and every measure chosen by the earlier author (proxy FS and
+# excitatory classes, a 6 to 30 Hz whisking band, a touch-selectivity index, Rayleigh and
+# harmonic phase tests). Read against the full text on 2026-10-20, the criteria of
+# exc-mainly-touch and fs-enhance-touch-selectivity tested measures the paper does not use, and
+# seven or more of the paper's findings on these data had no claim. Every claim is written again
+# here from the full text: statements, sources, quotes, statistics, expected values and criteria
+# all come from the paper. The ids of the eight earlier claims are kept where the finding is the
+# same (vpm-touch, vpm-whisking, fs-touch-and-whisking, exc-mainly-touch,
+# fs-suppress-movement-spiking, fs-enhance-touch-selectivity, thalamus-drives-fs,
+# sensory-input-drives-fs), so the outcomes can be compared; their criteria are new. The
+# earlier file's amendments and its proxy cell classes no longer apply. The new claims are
+# vpm-whisking-phase, exc-vm-touch-whisking, exc-threshold-touch-vs-whisking,
+# exc-effective-reversal, exc-inhibition-timing, fs-touch-response, fs-vm-touch-whisking,
+# fs-whisking-rate, fs-whisking-phase, vpm-photoinhibition, exc-thalamus-photoinhibition,
+# rabies-vpm-input, ion-cut-exc-no-touch, ion-cut-exc-whisking, ion-cut-exc-phase,
+# ion-cut-fs-no-touch, ion-cut-fs-phase, pv-enphr-suppression, exc-touch-spikes-enphr,
+# auc-weak-strong, auc-groups, behavior-false-alarms and behavior-touches. The check of
+# 2026-10-20 added exc-inhibition-whisking and ion-cut-behavior (see checks, at the end).
+# This reader did not see the dandiset's data. It did read the deprecated file, whose opening
+# comment reports some outputs of the earlier attempt's first run under its own proxy measures;
+# no criterion below was set from them.
 #
-# Amendment, made after the first run of the notebook and before the outcomes were recorded. The
-# null control of the data check (spikes moved to the next trial) showed that the Rayleigh test
-# above marks 88% of VPM units as modulated with the wrong alignment (92% with the right one),
-# because time is not spread evenly over whisking phase. The test cannot tell modulation from
-# chance, so it was replaced for every claim, as follows. Whisking modulation is the amplitude of
-# the first harmonic of spike rate against whisking phase (12 bins, rate = spikes over time spent
-# in the bin), minus the median of a null made by moving the spikes 1 to 99 trials later and by a
-# quarter, half and three quarters of a trial; modulated when p < 0.01 against that null. Touch
-# selectivity uses this corrected amplitude. When this was decided the author had seen, from the
-# first run, the outputs of every claim under the Rayleigh version: VPM 0.83 touch-responsive and
-# 0.92 modulated; FS 0.65 and 0.75; the excitatory against FS and VPM selectivity tests p = 0.18
-# and 0.26; the PV-Cre whisking-rate test p = 0.016 (6 of 7); the selectivity test p = 0.97; the
-# VPM-light test p = 0.002 (9 of 9). The notebook shows both versions; the corrected one decides.
+# Text read. The version of record (PDF supplied by a person, text extracted 2026-10-20, under
+# paper/), with its Online Methods and its one supplement PDF (Supplementary Figures 1 to 14 and
+# Supplementary Tables 1 and 2). PDF pages were opened only to read Supplementary Table 2, the
+# boundary drawn in Supplementary Figure 6, the number of phase bins in Supplementary Figure 2d,
+# and the P values printed in Figure 8d, which the text garbles or does not give.
 #
-# Second amendment, after the first verification round. The publisher's page and the supplement
-# PDF of the paper are public and hold the legends of Supplementary Figures 1 to 14 and
-# Supplementary Tables 1 and 2, which the criteria above were written without. They settle that the
-# PV-Cre mice express eNpHR in PV cells, that the VPM light is a 100 Hz train of 5 ms pulses, that
-# FS cells are light-driven VGAT-ChR2 cells inside a waveform boundary, that spike-phase modulation
-# is judged by the r2 of a sinusoid fit (> 0.25), and that Figure 7 compares FS cells in control and
-# ION-transected mice. The criteria were not changed: the author had seen every outcome by then.
-# The paper's choices are shown as variants in the notebook. The source of sensory-input-drives-fs
-# now names the supplementary figures; that claim is blocked because no file marks the transected
-# mice.
-# Quotes from the abstract and the figure titles added 2026-10-19 where they state the finding;
-# the rest are marked inferred (no open full text).
-# Quotes and statistics added 2026-10-20 from the full text (PDF of the version of record, and its
-# supplement).
+# Code. The paper's data and code statement points to CRCNS ssc-7 (doi:10.6080/K0T43R01). Its
+# public pages (read 2026-10-20) describe NWB 1.0.6 data files and a data-description document;
+# no analysis code is listed and the download needs an account, so no code was read. Every
+# method below comes from the Online Methods, the figure legends or the supplement.
+#
+# The data the paper used (Online Methods; Supplementary Table 2).
+# - Head-fixed mice performing a lick/no-lick object localization task with 1 to 3 spared
+#   whiskers of one row; a pole in an anterior (no-lick) or one of several posterior (lick)
+#   locations; whisker angle and curvature from 1,000 fps video (Janelia Whisker Tracker); touch
+#   onsets and offsets of the principal whisker; licks; trial outcome. Videos are 5 s per trial.
+# - VPM: 29 single units from chronic silicon probes (4 x 8 sites, 19,531.25 Hz) in 6
+#   VGAT-ChR2-EYFP mice, each with a mapped principal whisker (Figs. 1, 5).
+# - L4 excitatory (E) neurons, 85 in control mice (Fig. 5): 37 whole-cell (Vm, 10 or 20 kHz)
+#   and 48 loose-seal cell-attached recordings, in VGAT-ChR2-EYFP, PV-IRES-Cre (eNpHR3.0),
+#   PV-IRES-Cre x Ai32, C57BL/6 and SOM-IRES-Cre x Ai32 mice (Supplementary Table 2).
+# - L4 FS interneurons, 26 in control mice per the Results and Methods (19 ChR2-tagged in
+#   VGAT-ChR2-EYFP mice, 5 whole-cell and 14 cell-attached; 4 eNpHR-inactivated in PV-IRES-Cre
+#   mice; 3 by waveform); Supplementary Figure 7 and Table 2 list 25. 7 were whole-cell.
+# - Thalamic photoinhibition: optic fiber in VPM of VGAT-ChR2-EYFP mice (10 mice), 5 ms pulses at
+#   100 Hz (Supplementary Fig. 9i), light in 25 to 50% of trials; 17 VPM multiunits recorded by
+#   pipette; L4 FS (13 to 15) and E neurons (12 whole-cell) recorded with and without light.
+# - ION transection (9 mice): 9 or 10 L4 E neurons whole-cell and 10 L4 FS neurons cell-attached.
+# - PV suppression: eNpHR3.0 in PV neurons of PV-IRES-Cre mice (9 injected), constant 594 nm
+#   light at the cortex on a subset of trials; 40 L4 E neurons and 4 L4 PV neurons; behavior of
+#   8 mice (Supplementary Fig. 14).
+# - Rabies tracing from L4 PV neurons (PV-IRES-Cre x Ai9; histology, Supplementary Fig. 10).
+#
+# Cell types. Recordings at manipulator depth 420 to 620 um count as L4 when unlabeled (Online
+# Methods, Barrel cortex recordings). FS interneurons are cells driven by 5 ms light pulses within
+# 5 ms of onset in VGAT-ChR2-EYFP mice and inside the waveform boundary of Supplementary Figure 6,
+# or PV cells inactivated by eNpHR, or the few identified by waveform and rate (Online Methods).
+# The boundary of Supplementary Figure 6 is drawn, not given in numbers; read from the figure it
+# lies near spike duration 0.27 ms and peak-to-trough ratio 2.8 (an approximate reading). Other
+# L4 cells are excitatory (Fig. 8e legend, "putative excitatory neurons"). Where the dandiset
+# labels cell types, the author uses its labels and reports how they map onto these rules.
+#
+# Measures used by the criteria, each from the paper.
+# - Touch. Touches of the principal whisker only; onsets pooled across pole locations;
+#   intertouch interval (offset of the previous touch to onset of the next) at least 25 ms for
+#   Figs. 1 to 7 and at least 10 ms for Fig. 8e (Online Methods, Data analysis; Behavior).
+# - Spikes per touch. Cortical neurons (Fig. 5) spikes 0 to 50 ms after touch onset minus 2 x the
+#   spikes 0 to 25 ms before; cortical neurons (Fig. 8e) spikes 4 to 20 ms after minus spikes 0
+#   to 16 ms before; VPM spikes 0 to 25 ms after minus 0 to 25 ms before; averaged over touches
+#   (Online Methods, Data analysis). 95% confidence interval by bootstrap (Fig. 5b legend), 1,000
+#   iterations (the number the Methods give for rate intervals).
+# - Spike latency. Touch PSTH in 1 ms bins; latency is the time from touch onset to the crossing
+#   by dPSTH/dt of 3 x the s.d. of dPSTH/dt 0 to 25 ms before onset; cells with no 1 ms bin of
+#   at least 10 spikes/s within 0 to 100 ms, or with no crossing, are left out (Online Methods).
+# - Whisking. Whisker angle band-passed 6 to 60 Hz (4th-order Butterworth), Hilbert transform
+#   for amplitude and phase (phase 0 most protracted, +-pi most retracted). Whisking epochs are
+#   whisking cycles whose amplitude at phase 0 exceeds 2.5 degrees, leaving out +-100 ms around
+#   licks and -10 to 100 ms around touches. Nonwhisking periods are periods of at least 100 ms
+#   with amplitude below 1.25 degrees and no touch or lick. Whisking onsets (transitions) are ends
+#   of nonwhisking periods followed by a rise of mean amplitude of at least 2 degrees with no touch
+#   within 250 ms (Online Methods, Data analysis). The windows of that rise and the touches that
+#   bound epochs and onsets are open (O10, O11).
+# - Rates. Spike rate in nonwhisking and in whisking periods from the extracted epochs, with a
+#   1,000-iteration bootstrap interval (Online Methods; Fig. 5d legend).
+# - Phase coupling. Spike rate (or Vm) in phase bins during whisking epochs, fitted by a sinusoid;
+#   r2 > 0.25 marks coupling (Supplementary Figs. 2e,f, 3f,g and 12a); coupling strength is half
+#   the peak-to-trough of the fit (Online Methods). For FS cells a sum of a sinusoid and one of
+#   twice the frequency is used when its r2 is 50% higher (Supplementary Fig. 7g). Supplementary
+#   Figure 2d shows 12 phase bins over -pi to pi (read from the figure; the text gives none).
+# - Vm. Spikes removed by interpolating Vm from 1 ms before to 4 ms after each spike; spike
+#   threshold where dVm/dt exceeds 3 s.d. of the trial's dVm/dt; each trial's threshold from a
+#   linear fit of threshold against trial number; -42 mV for silent neurons. Distance to
+#   threshold is threshold minus Vm over all time, its 10th percentile taken separately in
+#   nonwhisking, whisking and touch epochs (4 to 50 ms after touch onset). Touch PSP latency is
+#   where dVm/dt of the touch-aligned average crosses 3 x the s.d. of dVm/dt 0 to 25 ms before
+#   onset (Online Methods, Data analysis). Pre-touch Vm is the mean 0 to 5 ms before onset and the
+#   post-touch Vm is at the peak of the average PSP; pre-whisking Vm is the mean 0 to 200 ms
+#   before whisking onset and post-whisking Vm the mean 100 to 300 ms after (Supplementary Fig.
+#   4 legend).
+# - Tests. Wilcoxon rank-sum (unpaired), Wilcoxon signed-rank (paired), Kruskal-Wallis (Online
+#   Methods, Statistical analysis). Where a P is printed without a test, the test is the one the
+#   Methods give for that design. The paper states no significance level; it calls P = 0.046
+#   significant and P = 0.09 and 0.20 not significant, so 0.05 is used.
+#
+# Tolerances. Where the paper gives mean +- s.e.m., the s.e.m. Where it gives mean +- s.d. over n
+# cells, the larger of 10% of the value and s.d./sqrt(n): the s.d. is the spread across cells,
+# not the uncertainty of the mean, and s.d./sqrt(n) is the standard error those numbers imply.
+# Otherwise 10% of the value; counts get 10% of the count.
+#
+# Details the paper leaves open, with the readings each criterion runs (all are run; the outcome
+# is the one they all give, or the claim is methods_underspecified).
+# - O1 Filter direction of the 6 to 60 Hz band-pass. (a) zero-phase (forward and backward);
+#   (b) single forward pass.
+# - O2 Samples of the per-neuron rank-sum test of whisking against nonwhisking rate. (a) the rate
+#   in each whisking epoch against the rate in each nonwhisking period; (b) per trial, the rate
+#   in whisking epochs against that in nonwhisking periods.
+# - O3 The spike-threshold rule "exceeded 3x s.d. of mean dVm/dt". (a) dVm/dt above its trial
+#   mean by 3 s.d.; (b) dVm/dt above 3 s.d.
+# - O4 Resting Vm. (a) mean Vm in nonwhisking periods, spikes removed; (b) median of the same.
+# - O5 Light comparison windows. (a) epochs of light trials inside the light, against epochs of
+#   control trials inside the same span of trial time; (b) against epochs anywhere in control
+#   trials.
+# - O6 "% of control". (a) the population mean with light over the population mean without;
+#   (b) the median over cells of each cell's ratio.
+# - O7 Laser powers of the thalamic photoinhibition (dose-dependent, Supplementary Fig. 9i,j).
+#   (a) all powers pooled; (b) the highest power only.
+# - O8 Phase of the derivative-based latencies. The text fixes 1 ms bins for spike PSTHs only and
+#   gives no smoothing; dPSTH/dt is the first difference of the unsmoothed 1 ms PSTH. dVm/dt is
+#   the first difference of the unsmoothed Vm average at the recording's sampling rate, not in
+#   1 ms bins: the paper's Vm latencies (median 4.7 ms of 37 cells and 4.2 ms of 7 cells, each
+#   one cell's value; laser-onset latencies 4.2 and 2.8 ms) are not on a 1 ms grid (answer of
+#   2026-10-20).
+# - O9 Time given to a crossing found in 1 ms PSTH bins (not stated). (a) the left edge of the
+#   bin; (b) its centre, 0.5 ms later.
+# - O10 Whisking onsets, the windows over which the rise of mean amplitude by 2 degrees is judged
+#   (not stated). (a) 100 to 300 ms after the end of the nonwhisking period against 0 to 200 ms
+#   before it (the whisking-onset windows of the Supplementary Fig. 4 legend); (b) 0 to 250 ms
+#   after it (the touch-free span of the same rule) against the whole nonwhisking period.
+# - O11 Touches that bound whisking epochs and onsets (not stated). Whiskers (a) every tracked
+#   whisker, (b) the principal whisker; span (i) 10 ms before touch onset to 100 ms after touch
+#   offset, (ii) 10 ms before to 100 ms after touch onset.
+# Which cells enter each n (40 of the 43 E cells in PV-IRES-Cre mice; 13 to 15 FS cells in the
+# thalamic experiment) the paper does not say beyond the counts; cells enter a comparison when
+# they have epochs of each kind compared, and the counts are reported against the paper's.
 schema_version: 2
 dataset:
   archive: dandi
   id: "000005"
 paper: doi:10.1038/nn.4412
 claims:
+- id: behavior-touches
+  statement: Mice touched the pole often when it was within reach (lick trials, 5.7 +- 5.3
+    touches per trial over 4,147 trials) and rarely when it was distal (0.9 +- 3.4 over 4,173
+    trials); performance was 0.72 +- 0.11 in cortical and 0.71 +- 0.07 in VPM recordings.
+  source: Online Methods, Behavior, paragraph 2
+  quote: Mice touched the pole at a proximal location multiple times (number of touches ... Mice
+    touched the pole at a distal location less often (number of touches, 0.9 ± 3.4, mean ± s.d.,
+    4,173 trials) and withheld licking. Average performance (proportion of correct trials) was 0.72
+    ± 0.11 (mean ± s.d., during the recordings of 111 cells) for cortical recordings and 0.71 ±
+    0.07 for VPM recordings (during the recordings of 29 cells).
+  expected:
+  - quantity: touches per trial, pole within reach (posterior, lick trials)
+    value: 5.7
+    tolerance: 0.57
+  - quantity: touches per trial, pole distal (anterior, no-lick trials)
+    value: 0.9
+    tolerance: 0.09
+  - quantity: proportion correct during cortical recordings (111 cells)
+    value: 0.72
+    tolerance: 0.072
+  - quantity: proportion correct during VPM recordings (29 cells)
+    value: 0.71
+    tolerance: 0.071
+  criterion: >-
+    Touches counted per trial and split by pole position (Online Methods, Behavior).
+    Performance is the proportion of correct trials per recording, averaged over the 111
+    control cortical cells (85 E and 26 FS, Fig. 5) and separately over the 29 VPM units. The
+    paper does not say which recordings the touch counts and their trial counts (4,147 and
+    4,173) come from, nor whether they count touches of the principal whisker only (the
+    Methods restrict touch responses to it, not touch counts). Readings, each run: recordings
+    (a) the trials of the 111 control cortical cells, (b) all behavioral sessions of the
+    dandiset (cortical, VPM, ION-cut and eNpHR control trials); whiskers (i) principal whisker
+    only, (ii) any tracked whisker. Nor does it say whether trials with light (thalamic or
+    eNpHR) enter the touch counts or the performance (answer of 2026-10-20); light readings,
+    each run with the others: (x) every trial, (y) trials without light only. The trial counts
+    under each reading are reported against 4,147 and 4,173. Reproduced when every expected value is within tolerance under a reading;
+    partially reproduced when the touch counts are and a performance value is not, or the
+    reverse.
 - id: vpm-touch
-  statement: Neurons in the ventral posteromedial nucleus (VPM) fire in response to touch in mice
-    locating objects with their whiskers.
+  statement: VPM neurons respond to active touch with a sharp, short-latency increase in spike
+    rate (0.6 +- 0.5 spikes per touch, median 0.4; latency 3.2 +- 1.0 ms, median 2.5 ms).
   source: Results, Chronic extracellular recordings from somatosensory thalamus, paragraph 1;
     Figure 1b,d; Figure 5b,c
   quote: Neurons responded to active touch during behavior with an increase in spike rate (Fig. 1b).
-  criterion: Over the VPM units with a named principal whisker, reproduced when at least half are
-    touch-responsive; partially reproduced when 25% to 50% are; not reproduced below 25%.
+    The peristimulus time ... histogram aligned to touch onset showed a sharp peak in spike rate
+    (mean ± s.d., 0.6 ± 0.5 spikes per touch; median, 0.4 spikes per touch), with short latency
+    after touch onset (mean ± s.d., 3.2 ± 1.0 ms; median, 2.5 ms)
+  expected:
+  - quantity: mean VPM spikes per touch (29 neurons)
+    value: 0.6
+    tolerance: 0.093
+  - quantity: median VPM spikes per touch
+    value: 0.4
+    tolerance: 0.04
+  - quantity: mean VPM touch latency
+    value: 3.2
+    tolerance: 0.32
+    unit: ms
+  - quantity: median VPM touch latency
+    value: 2.5
+    tolerance: 0.25
+    unit: ms
+  criterion: >-
+    Over the 29 VPM units, spikes per touch by the VPM definition (0 to 25 ms after minus 0 to
+    25 ms before onset) and spike latency by the dPSTH/dt rule, on principal-whisker touches with
+    intertouch interval at least 25 ms (Online Methods, Data analysis; header, Measures). The
+    latency n is the units that pass the Methods' exclusion; the paper does not print it. Filter
+    readings O1 do not enter (no whisking measure); latency readings O8 and O9 (a) left edge and
+    (b) centre of the crossing bin, which the paper does not fix. Reproduced when all four
+    values are within tolerance; partially reproduced when the spikes-per-touch values are and a
+    latency value is not.
 - id: vpm-whisking
-  statement: VPM neurons fire in response to whisker movement.
-  source: Results, Chronic extracellular recordings from somatosensory thalamus, paragraph 2;
-    Figure 1c,e; Supplementary Figure 2
-  quote: Most VPM neurons increased their spike rate during whisking in the absence of touch ... The
-    spike rate was modulated by the phase of the movement (Supplementary Fig. 2d).
+  statement: VPM neurons fire at 5.1 +- 5.5 spikes/s without whisker movement or touch; most
+    (25 of 29) increase their rate during whisking without touch, and the mean rate rises from
+    5.1 to 13.5 spikes/s. Three of 29 do not increase with whisking but still respond to touch.
+  source: Results, Chronic extracellular recordings from somatosensory thalamus, paragraphs 1 and
+    2; Figure 1c,e; Figure 5d,e; Supplementary Figure 2b,c
+  quote: Typical VPM neurons showed significant spike rates (mean ± s.d., 5.1 ± 5.5 spikes per s;
+    median, 3.3 spikes per s; n = 29 neurons), even in the absence of whisker movement and touch.
+    ... Most VPM neurons increased their spike rate during whisking in the absence of touch (25 out
+    of 29 neurons ... The average spike rate increased severalfold after onset of whisker movement
+    (from 5.1 ± 5.5 spikes per s to 13.5 ± 12.7 spikes per s; P = 4 × 10−6; n = 29 neurons,
+    Wilcoxon signed-rank test
   statistics:
-  - test: Wilcoxon signed-rank test
+  - about: nonwhisking against whisking spike rate over VPM neurons
+    test: Wilcoxon signed-rank test
     p: 4.0e-6
     n: 29 neurons
-  criterion: Over the same VPM units, reproduced when at least half are significantly modulated by
-    whisking phase (as amended above); partially reproduced when 25% to 50% are; not reproduced below 25%. The change
-    of rate between whisking and quiet periods (amplitude below 1 degree), away from touch, is
-    shown as a variant.
+  expected:
+  - quantity: VPM neurons with a significant increase of rate during whisking
+    value: 25
+    tolerance: 2.5
+    unit: of 29 neurons
+  - quantity: mean nonwhisking rate
+    value: 5.1
+    tolerance: 1.02
+    unit: spikes/s
+  - quantity: median nonwhisking rate
+    value: 3.3
+    tolerance: 0.33
+    unit: spikes/s
+  - quantity: mean whisking rate
+    value: 13.5
+    tolerance: 2.36
+    unit: spikes/s
+  criterion: >-
+    Over the 29 VPM units, the rate in nonwhisking periods and in whisking epochs (Online
+    Methods; header, Measures). A unit increases when a Wilcoxon rank-sum test of whisking
+    against nonwhisking rate gives p < 0.05 with the whisking rate higher (Results, the test
+    named for the 25 of 29), under samples O2 (a) and (b) and filters O1 (a) and (b). The
+    population test is a Wilcoxon signed-rank test of per-unit nonwhisking against whisking rate.
+    The text gives the 13.5 spikes/s as the rate "after onset of whisker movement"; it is read
+    as the whisking-epoch rate, the quantity Fig. 5d plots for these units, since the paper
+    defines no spike-rate window after whisking onset.
+    Reproduced when the signed-rank test gives p < 0.05 with whisking higher and the expected
+    values are within tolerance; partially reproduced when the test holds and a value is not
+    within tolerance; not reproduced when the test fails.
+- id: vpm-whisking-phase
+  statement: The spike rate of VPM neurons is modulated by the phase of whisker movement.
+  source: Results, Chronic extracellular recordings from somatosensory thalamus, paragraph 2;
+    Supplementary Figure 2d-f
+  quote: The spike rate was modulated by the phase of the movement (Supplementary Fig. 2d).
+  depends_on:
+  - vpm-whisking
+  criterion: >-
+    For each VPM unit, spike rate in 12 phase bins during whisking epochs (Supplementary Fig.
+    2d, bins read from the figure), fitted with a sinusoid; a unit is phase modulated when r2 >
+    0.25 (Supplementary Fig. 2e,f). The paper gives no count; its histogram (Supplementary Fig.
+    2e) has most of the 29 units above 0.25 (about 23 to 26, read from the bars). Reproduced
+    when more than half of the 29 units have r2 > 0.25 under both filter readings O1; not
+    reproduced otherwise. The number above 0.25 and the coupling strengths are reported.
+- id: exc-vm-touch-whisking
+  statement: In L4 excitatory neurons (37 whole-cell), resting Vm spans -76 to -45 mV (-63 +- 8
+    mV); every neuron depolarizes after touch (latency 4.8 +- 0.8 ms, amplitude 6.0 +- 2.9 mV),
+    while whisking causes only a small depolarization or hyperpolarization (1.2 +- 2.1 mV).
+  source: Results, Membrane-potential dynamics of L4 excitatory neurons, paragraph 2; Figure 2f
+  quote: >-
+    Across the excitatory population, the resting membrane potential (Vm) spanned a large range
+    (−76 to −45 mV, mean ± s.d., −63 ± 8 mV; median, −64 mV, n = 37 neurons ... Touches evoked
+    short-latency depolarizations (latency: mean ± s.d., 4.8 ± 0.8 ms; median, 4.7 ms; amplitude:
+    mean ± s.d., 6.0 ± 2.9 mV; median, 5.7 mV; n = 37 neurons) for all neurons (Fig. 2f) ...
+    Whisking induced small depolarization or hyperpolarization (mean ± s.d., 1.2 ± 2.1 mV; median,
+    1.2 mV; Fig. 2f)
+  expected:
+  - quantity: mean resting Vm
+    value: -63
+    tolerance: 6.3
+    unit: mV
+  - quantity: mean touch PSP latency
+    value: 4.8
+    tolerance: 0.48
+    unit: ms
+  - quantity: mean touch PSP amplitude
+    value: 6.0
+    tolerance: 0.6
+    unit: mV
+  - quantity: mean whisking-evoked Vm change
+    value: 1.2
+    tolerance: 0.35
+    unit: mV
+  criterion: >-
+    The 37 whole-cell L4 E neurons of control mice. Touch-aligned average Vm (spikes removed)
+    over principal-whisker touches with intertouch interval at least 25 ms; latency by the
+    dVm/dt rule, with dVm/dt at the recording's sampling rate (10 or 20 kHz), not in 1 ms bins
+    (reading O8; the paper's median latency, 4.7 ms over 37 cells, is one cell's value and not a
+    whole millisecond; answer of 2026-10-20); amplitude is the peak of the average minus the mean 0 to 5 ms
+    before onset (Supplementary Fig. 4 legend). The paper does not say how the whisking change
+    (1.2 +- 2.1 mV) is measured. Readings, each run: (a) the mean Vm 100 to 300 ms after
+    whisking onset minus the mean 0 to 200 ms before, averaged over onsets (Supplementary Fig.
+    4 legend windows; Fig. 2f shows whisking-onset-aligned averages); (b) the mean Vm in
+    whisking epochs minus the mean Vm in nonwhisking periods (Online Methods epochs), spikes
+    removed. Resting Vm by O4 (a) and (b). Whisking onsets and epochs by readings O10 and O11,
+    which the paper leaves open (answer of 2026-10-20). Reproduced when a touch latency is found in
+    every neuron with a positive amplitude and the four values are within tolerance; partially
+    reproduced when every neuron depolarizes and a value is out of tolerance.
+- id: exc-threshold-touch-vs-whisking
+  statement: Touch moves the membrane potential of L4 excitatory neurons much closer to spike
+    threshold than whisking does (shift 6.1 +- 3.2 mV against 1.1 +- 2.0 mV).
+  source: Results, Membrane-potential dynamics of L4 excitatory neurons, paragraph 2; Figure 2g,h
+  quote: Compared to whisking, touch caused a larger shift of membrane potential toward spike
+    threshold (whisking, 1.1 ± 2.0 mV; touch, 6.1 ± 3.2 mV; P = 1 × 10−7, Wilcoxon signed-rank test;
+    Fig. 2g,h)
+  statistics:
+  - about: touch against whisking shift toward threshold
+    test: Wilcoxon signed-rank test
+    p: 1.0e-7
+    n: 37 neurons
+  expected:
+  - quantity: mean whisking shift toward threshold
+    value: 1.1
+    tolerance: 0.33
+    unit: mV
+  - quantity: mean touch shift toward threshold
+    value: 6.1
+    tolerance: 0.61
+    unit: mV
+  criterion: >-
+    For each of the 37 whole-cell L4 E neurons, the 10th percentile of distance to threshold in
+    nonwhisking, whisking and touch epochs (Online Methods; header, Measures), with threshold
+    readings O3 (a) and (b) and filters O1. The shift is the nonwhisking value minus the
+    whisking (or touch) value (Fig. 2h compares these percentiles across periods; the baseline
+    period is the paper's nonwhisking period). Reproduced when the touch shift exceeds the
+    whisking shift by a Wilcoxon signed-rank test at p < 0.05 and both means are within
+    tolerance; partially reproduced when only the test holds.
+- id: exc-effective-reversal
+  statement: The effective reversal potential of the touch response of L4 excitatory neurons is
+    more depolarized than resting Vm, while that of whisking is close to rest and more
+    hyperpolarized than that of touch.
+  source: Results, Membrane-potential dynamics of L4 excitatory neurons, paragraph 2;
+    Supplementary Figure 4
+  quote: of the touch response was more depolarized than the resting Vm and sometimes crossed the
+    spike threshold ... In contrast, the effective reversal potential for whisker movement was
+    close to the resting Vm, below the spike threshold and more hyperpolarized than that for touch
+  criterion: >-
+    Per Supplementary Fig. 4 legend. For each touch, pre-Vm is the mean 0 to 5 ms before onset
+    and post-Vm the Vm at the peak time of the neuron's average PSP; for each whisking onset,
+    pre-Vm the mean 0 to 200 ms before and post-Vm the mean 100 to 300 ms after. dVm = post minus
+    pre, fitted linearly against pre-Vm; the reversal is where the line crosses zero. The legend
+    leaves open whether one line is fitted per neuron or over all neurons (panel b shows all
+    neurons, panel c compares reversals). Readings (a) per neuron, compared across the 37
+    neurons; (b) one pooled fit per event type. The paper reports no test. Reproduced when, under
+    the reading, the touch reversal lies above the whisking reversal (in more than half of the
+    neurons and in the medians for a) and above the median resting Vm; not reproduced otherwise.
+- id: exc-inhibition-timing
+  statement: With L4 excitatory neurons depolarized near 0 mV to reveal inhibition, touch evokes
+    strong, transient inhibition that follows excitation by 0.4 +- 0.8 ms at half maximum.
+  source: Results, Membrane-potential dynamics of L4 excitatory neurons, paragraph 3; Figure
+    3b-d
+  quote: Touch elicited strong and transient inhibitory input (Fig. 3b,c), which followed excitation
+    with a short delay (mean ± s.d., 0.4 ± 0.8 ms at half max; n = 6 neurons; Fig. 3d).
+  expected:
+    quantity: mean delay of inhibition after excitation at half maximum
+    value: 0.4
+    tolerance: 0.33
+    unit: ms
+  criterion: >-
+    The 6 L4 E neurons recorded both at rest and with steady depolarizing current (about 1 nA,
+    baseline near 0 mV; Online Methods, Barrel cortex recordings). For each, the touch-aligned
+    average Vm at rest (excitation) and with current (inhibition, sign inverted), each
+    normalized to its peak (Fig. 3d); the time at which each first reaches half its peak after
+    onset; the delay is inhibition minus excitation. Trials at depolarized potential are those
+    with injected current (or a Vm baseline near 0 mV, as the dandiset marks them). Reproduced
+    when the mean delay is within tolerance; not reproduced otherwise. The range over neurons
+    is reported against the paper's -0.8 to 1.6 ms (Discussion, paragraph 3).
+- id: fs-touch-response
+  statement: L4 FS interneurons fire at 9.3 +- 8.5 spikes/s without whisker movement and fire
+    1.9 +- 1.0 spikes per touch, with a spike latency of 5.3 +- 2.1 ms.
+  source: Results, Dynamics of L4 fast-spiking interneurons, paragraph 1; Figure 5b,c
+  quote: FS interneurons were active during baseline conditions, even in the absence of whisker
+    movements (mean ± s.d., 9.3 ± 8.5 spikes per s; median, 6.4 spikes per s; n = 26 neurons ...
+    and spike rates increased after touch (mean ± s.d., 1.9 ± 1.0 spikes per touch; median, 1.9
+    spikes per touch; n = 26 neurons ... and spiking (mean ± s.d., 5.3 ± 2.1 ms; median, 4.5 ms, n
+    = 24 neurons; Fig. 5c)
+  expected:
+  - quantity: mean FS nonwhisking rate
+    value: 9.3
+    tolerance: 1.67
+    unit: spikes/s
+  - quantity: mean FS spikes per touch
+    value: 1.9
+    tolerance: 0.2
+  - quantity: mean FS touch spike latency (24 neurons)
+    value: 5.3
+    tolerance: 0.53
+    unit: ms
+  criterion: >-
+    Over the control L4 FS cells (26 in the text, 25 in Supplementary Fig. 7; both sets
+    reported), the nonwhisking rate, spikes per touch by the cortical Fig. 5 definition and
+    spike latency by the dPSTH/dt rule with its exclusion (header, Measures; readings O8 and O9).
+    FS identification (answer of 2026-10-20). The paper names no test, baseline or threshold for
+    "directly driven by light within 5 ms after photostimulus onset" (5 ms pulses at 5 or 10 Hz;
+    Online Methods), and defines peak and trough of Supplementary Fig. 6 only in the figure's
+    inset; the text gives duration as "spike peak to trough duration" (Online Methods, Barrel
+    cortex recordings) and nothing on polarity or baseline. The author states its test and its
+    waveform measures; readings, each run: driven at (a) p < 0.001 and (b) p < 0.01, each (i)
+    with and (ii) without the approximate boundary of the header. The paper's counts are the
+    check: 19 ChR2-tagged control FS cells (5 whole-cell, 14 cell-attached), and 14 control
+    plus 10 ION-cut cell-attached FS cells in VGAT-ChR2-EYFP mice (Supplementary Table 2); the
+    count of each reading is reported against them, and dandiset cell-type labels, where
+    present, take precedence (header, Cell types).
+    Reproduced when the three values are within tolerance; partially reproduced when two are.
+- id: fs-vm-touch-whisking
+  statement: In whole-cell L4 FS interneurons (n = 7), touch depolarizes the membrane by 7.0 +-
+    5.2 mV with onset 4.0 +- 0.6 ms, and whisking depolarizes it by 2.7 +- 2.1 mV toward
+    threshold.
+  source: Results, Dynamics of L4 fast-spiking interneurons, paragraphs 1 and 2; Figure 4d-h
+  quote: Membrane potential depolarized (mean ± s.d., 7.0 ± 5.2 mV; median, 6.7 mV; n = 7 neurons,
+    Fig. 4d,f) ... Response latencies were short for membrane potential depolarization (onset ...
+    4.0 ± 0.6 ms; median, 4.2 ms, n = 7 neurons; Fig. 4d,f) ... after onset of whisking, the
+    membrane potential of FS neurons depolarized closer to spike threshold (mean ± s.d., 2.7 ± 2.1
+    mV; median, 2.4 mV, n = 7 neurons; Fig. 4e–h)
+  expected:
+  - quantity: mean touch depolarization
+    value: 7.0
+    tolerance: 1.97
+    unit: mV
+  - quantity: mean touch Vm onset latency
+    value: 4.0
+    tolerance: 0.4
+    unit: ms
+  - quantity: mean whisking depolarization
+    value: 2.7
+    tolerance: 0.79
+    unit: mV
+  criterion: >-
+    The 7 whole-cell L4 FS cells. Touch amplitude and latency as in exc-vm-touch-whisking, with
+    dVm/dt at the sampling rate, not in 1 ms bins (the paper's median, 4.2 ms over 7 cells, is
+    one cell's value; answer of 2026-10-20);
+    whisking depolarization as the post-onset (100 to 300 ms) minus pre-onset (0 to 200 ms) mean
+    Vm (Supplementary Fig. 4 legend, the paper's whisking-onset measure), with the nonwhisking
+    minus whisking 10th percentile of distance to threshold (Fig. 4h) as reading (b). Reproduced
+    when all three values are within tolerance under a reading; partially reproduced when the
+    touch values are and the whisking value is not.
+- id: fs-whisking-rate
+  statement: Most L4 FS interneurons (23 of 26) increase their spike rate during whisking without
+    touch and 3 of 26 decrease it; over the population the rate roughly doubles (to 21.1 +- 15.8
+    spikes/s).
+  source: Results, Dynamics of L4 fast-spiking interneurons, paragraph 2; Figure 5d,e
+  quote: most L4 FS neurons significantly increased their spike rate during whisker movement without
+    touch (23 of 26 neurons ... and a small subset (3 of 26 neurons ... decreased spike rate.
+    Overall, after onset of whisking ... and the spike rate doubled (mean ± s.d., 21.1 ± 15.8 spikes
+    per s; median, 14.6 spikes per s, n = 26 neurons, P = 2.7 × 10−5; Fig. 5d)
+  statistics:
+  - about: nonwhisking against whisking spike rate over FS neurons
+    p: 2.7e-5
+    n: 26 neurons
+  expected:
+  - quantity: FS neurons with a significant increase during whisking
+    value: 23
+    tolerance: 2.3
+    unit: of 26 neurons
+  - quantity: FS neurons with a significant decrease during whisking
+    value: 3
+    tolerance: 0.3
+    unit: of 26 neurons
+  - quantity: mean FS whisking rate
+    value: 21.1
+    tolerance: 3.1
+    unit: spikes/s
+  depends_on:
+  - fs-touch-response
+  criterion: >-
+    Over the control L4 FS cells, per-cell Wilcoxon rank-sum tests of whisking against
+    nonwhisking rate at p < 0.05 (Results), samples O2 (a) and (b), filters O1 (a) and (b). The
+    population test is not named; it is paired, so a Wilcoxon signed-rank test (Online Methods,
+    Statistical analysis). Reproduced when the signed-rank test gives p < 0.05 with whisking
+    higher and the counts and mean are within tolerance; partially reproduced when the test
+    holds and a value is not within tolerance; not reproduced when the test fails.
+- id: fs-whisking-phase
+  statement: Spikes of L4 FS interneurons are coupled to whisking phase.
+  source: Results, Dynamics of L4 fast-spiking interneurons, paragraph 2; Supplementary Figure
+    7d,g
+  quote: Spikes of L4 FS neurons were also coupled to whisking phase (Supplementary Fig. 7).
+  criterion: >-
+    For each control L4 FS cell, spike rate in 12 phase bins during whisking epochs, fitted with
+    a sinusoid, or a sinusoid plus one of twice the frequency when that raises r2 by 50%
+    (Supplementary Fig. 7g); coupled when r2 > 0.25 (the threshold of Supplementary Figs. 2e and
+    12a). Supplementary Fig. 7g shows fits for all 25 cells (18 single, 7 double). Reproduced
+    when more than half of the cells are coupled under both filter readings O1; not reproduced
+    otherwise.
 - id: fs-touch-and-whisking
-  statement: L4 fast-spiking (FS) interneurons inherit the responses of VPM, firing in response to
-    both touch and whisker movement.
-  source: Results, Dynamics of L4 fast-spiking interneurons, paragraphs 1 to 3; Figure 5b-d;
+  statement: Touch- and whisking-evoked spikes are typically multiplexed in individual L4 FS
+    neurons, as in VPM neurons.
+  source: Results, Dynamics of L4 fast-spiking interneurons, paragraph 3; Figure 5b,d;
     Supplementary Figure 7
   quote: Touch- and whisking-evoked spikes were typically multiplexed in individual L4 FS neurons
     (Fig. 5b,d and Supplementary Fig. 7), as in VPM neurons.
-  statistics:
-  - p: 2.7e-5
-    n: 26 neurons
-  criterion: Over the tagged FS cells (proxy), reproduced when at least half are touch-responsive
-    and at least half are modulated by whisking phase; partially reproduced when only one of the
-    two holds; not reproduced when neither does.
+  depends_on:
+  - fs-touch-response
+  - fs-whisking-rate
+  criterion: >-
+    A control L4 FS cell multiplexes when its spikes per touch (Fig. 5 definition) has a 95%
+    bootstrap interval above zero (Fig. 5b legend) and its whisking rate is significantly
+    different from its nonwhisking rate by the per-cell rank-sum test of fs-whisking-rate (Fig.
+    5d; the 23 increases and 3 decreases), readings O1 and O2. "Typically" is read as more than
+    half of the cells. Reproduced when more than half multiplex under every reading; not
+    reproduced otherwise. The same count for the 29 VPM units is reported.
 - id: exc-mainly-touch
-  statement: In contrast with VPM neurons and L4 FS interneurons, L4 excitatory neurons respond
-    mainly to touch.
+  statement: L4 excitatory neurons respond mostly to touch (0.3 +- 0.4 spikes per touch, n = 85)
+    and only weakly to whisker movement; their rate does not change significantly between
+    nonwhisking and whisking (0.4 to 0.6 spikes/s, P = 0.20).
   source: Results, Dynamics of L4 fast-spiking interneurons, paragraph 3; Figure 5b,d,e
   quote: Excitatory neurons responded mostly to touch (mean ± s.d., 0.3 ± 0.4 spikes per touch;
     median, 0.1 spikes per touch; n = 85 neurons; Fig. 5b,d) and showed weak response to whisker
-    movement
+    movement ... (nonwhisking ... 0.4 ± 0.6 spikes per s; median, 0.1 spikes per s; whisking ...
+    0.6 ± 0.9 spikes per s; median, 0.2 spikes per s; n = 85, P = 0.20; Fig. 5d,e). In contrast to
+    VPM and L4 FS neurons, L4 excitatory neurons responded selectively to touch
   statistics:
-  - p: 0.20
+  - about: nonwhisking against whisking spike rate over L4 excitatory neurons
+    p: 0.2
     n: 85 neurons
-  depends_on:
-  - vpm-whisking
-  - fs-touch-and-whisking
-  criterion: Touch selectivity of the excitatory cells (proxy) is compared with that of the FS
-    cells (proxy) and with that of the VPM units, each by a one-sided Mann-Whitney test. Reproduced
-    when the excitatory cells are more touch selective than both at p < 0.05; partially reproduced
-    when only one comparison holds; not reproduced when neither does. The fractions of cells that
-    are touch-responsive and whisking-modulated in each group are reported.
-- id: fs-suppress-movement-spiking
-  statement: FS interneurons reduce movement-related spiking in L4 excitatory neurons; silencing
-    them increases the spiking of excitatory neurons during whisker movement.
-  source: Results, Layer 4 FS interneurons suppress reafference in L4, paragraph 1; Figure 8d;
-    Supplementary Figure 13
-  quote: L4 excitatory neurons increased their spike rate during both nonwhisking periods (from 0.6 ±
-    0.1 spikes per s to 1.6 ± 0.3 spikes per s; mean ± s.e.m., n = 40 neurons ... and whisking
-    periods ... 0.8 ± 0.2 spikes per s to 2.7 ± 0.5 spikes per s
+  expected:
+  - quantity: mean L4 E spikes per touch
+    value: 0.3
+    tolerance: 0.043
+  - quantity: mean L4 E nonwhisking rate
+    value: 0.4
+    tolerance: 0.065
+    unit: spikes/s
+  - quantity: mean L4 E whisking rate
+    value: 0.6
+    tolerance: 0.098
+    unit: spikes/s
+  criterion: >-
+    The 85 control L4 E neurons (37 whole-cell, 48 cell-attached; control trials only for cells
+    in eNpHR mice). Spikes per touch by the cortical Fig. 5 definition; rates in nonwhisking
+    and whisking periods (header, Measures). The absence part is judged on the paper's test, a
+    paired test of per-neuron nonwhisking against whisking rate; the test is not named, and the
+    Methods' paired test is the Wilcoxon signed-rank test, at 0.05. Reproduced when that test
+    gives p >= 0.05 and the three values are within tolerance; partially reproduced when the
+    test gives p >= 0.05 and a value is not within tolerance; not reproduced when the test finds
+    a difference. The size of the whisking change is reported either way, with filter readings
+    O1 shown (the absence test is judged on each; a split is reported as a deviation).
+- id: vpm-photoinhibition
+  statement: Photoactivating TRN axons in VPM of VGAT-ChR2-EYFP mice reduces thalamic activity
+    to 17% of control.
+  source: Results, Inhibition is driven by thalamus, paragraph 1; Figure 6b,c
+  quote: Photoactivation of TRN axons reduced activity in the thalamus (to 17% of control, P = 3 ×
+    10−4, n = 17 multiunit recordings; Fig. 6b,c).
   statistics:
-  - p: 2.0e-6
-    n: 40 neurons
-  criterion: Tested in PV-Cre mice, where the long light epochs at the vS1 site are taken to
-    silence PV (FS) interneurons; the data check shows the light reduces the firing of some cells,
-    which is what an inhibitory opsin in PV cells would do. For each excitatory cell (proxy) in a
-    PV-Cre mouse, the spike rate during non-touch whisking inside the light epoch of light trials
-    is compared with that inside the same span of trials without light. Reproduced when the rate
-    rises in most cells and a one-sided Wilcoxon signed-rank test over cells gives p < 0.05;
-    partially reproduced when it rises in most cells without significance; not reproduced
-    otherwise. The juxtacellular cells of PV-Cre mice that the light does not suppress are shown
-    as a variant; that selection is biased toward a rise and does not decide the outcome.
-- id: fs-enhance-touch-selectivity
-  statement: By suppressing movement-related spiking, FS interneurons enhance the selectivity of
-    L4 excitatory neurons for touch.
-  source: Results, Layer 4 FS interneurons suppress reafference in L4, paragraphs 1 to 4; Figure
-    8d-h
-  quote: L4 excitatory neurons were instead driven by whisker movements (P = 0.02, Fig. 8d), implying
-    that their selectivity for touch was normally maintained in part by FS interneurons.
-  statistics:
-  - p: 0.02
-  depends_on:
-  - fs-suppress-movement-spiking
-  criterion: For the same excitatory cells, touch selectivity computed inside the light epochs of
-    light trials and inside the same span of trials without light. Reproduced when selectivity is
-    lower with light in most cells and a one-sided Wilcoxon signed-rank test gives p < 0.05;
-    partially reproduced when lower in most cells without significance; not reproduced otherwise.
+  - p: 3.0e-4
+    n: 17 multiunit recordings
+  expected:
+    quantity: VPM multiunit rate with light as a fraction of control
+    value: 0.17
+    tolerance: 0.017
+  criterion: >-
+    The 17 VPM multiunit recordings made by pipette during behavior. Rate over all time inside
+    the light (Supplementary Fig. 9i, no behavioral epochs for multiunits) against control,
+    windows O5 (a) and (b), fractions O6 (a) and (b), laser powers O7 (a) and (b). Reproduced
+    when a Wilcoxon signed-rank test of per-recording rates (paired; the paper does not name
+    the test, the Methods give this one for paired data) gives p < 0.05 with light lower and
+    the fraction is within tolerance under a reading; partially reproduced when only the test
+    holds.
+- id: exc-thalamus-photoinhibition
+  statement: Thalamic photoinhibition hyperpolarizes L4 excitatory neurons and reduces their Vm
+    fluctuations, with an onset latency of 4.2 ms, longer than the 2.8 ms latency of direct
+    cortical GABAergic activation.
+  source: Results, Inhibition is driven by thalamus, paragraph 1; Supplementary Figure 9a-f
+  quote: photoinhibition of thalamus hyperpolarized excitatory neurons and reduced the amplitudes of
+    their membrane voltage fluctuations (Supplementary Fig. 9a–e). Onset latency of Vm
+    hyperpolarization induced by thalamus inactivation was 4.2 ms. This was longer than the 2.8-ms
+    latency measured with direct cortical GABAergic activation (Supplementary Fig. 9f)
+  expected:
+  - quantity: onset latency of Vm hyperpolarization with thalamic photoinhibition
+    value: 4.2
+    tolerance: 0.42
+    unit: ms
+  - quantity: onset latency of Vm hyperpolarization with direct cortical light
+    value: 2.8
+    tolerance: 0.28
+    unit: ms
+  criterion: >-
+    The 12 whole-cell L4 E neurons with VPM light (Supplementary Fig. 9c) and the 7 with direct
+    cortical light in VGAT-ChR2 mice (Supplementary Fig. 9f). Resting Vm and Vm variance
+    (high-pass 10 Hz) from Vm outside touch, light against control (Supplementary Fig. 9d,e),
+    windows O5. The latency rule for laser onset is not given; the only onset rule the paper
+    gives is the touch-latency rule (Online Methods), so it is applied to the laser-onset-aligned
+    grand average (Supplementary Fig. 9c,f): dVm/dt crossing 3 x the s.d. of dVm/dt 0 to 25 ms
+    before laser onset, with the crossing taken in the negative direction, dVm/dt at the
+    sampling rate (reading O8; the paper's 4.2 and 2.8 ms are not whole milliseconds, so not
+    1 ms bins; answer of 2026-10-20). That this rule is the one used is an assumption, recorded as a deviation.
+    The paper reports no test for 9d,e. Reproduced when Vm is lower and variance lower with
+    light in most of the 12 neurons and both latencies are within tolerance with the thalamic
+    one longer; partially reproduced when the Vm and variance parts hold and a latency does not.
 - id: thalamus-drives-fs
-  statement: Thalamic activity drives L4 FS interneurons.
-  source: Results, Inhibition is driven by thalamus, paragraph 2; Figure 6d,e
+  statement: Photoinhibiting the thalamus reduces the spike rates of L4 FS interneurons during
+    nonwhisking (to 4% of control), whisking (to 13%) and touch (to 32%), so FS interneurons are
+    driven by thalamic input.
+  source: Results, Inhibition is driven by thalamus, paragraph 2; Figure 6d,e; Supplementary
+    Figure 9j
   quote: Photoinhibition reduced spike rates in FS interneurons during nonwhisking (to 4% of control
-    ... and whisking epochs (to 13% of control ... as well as in response to touch (to 32% of control
-    ... FS interneurons were thus driven by input from the thalamus.
+    ... and whisking epochs (to 13% of control ... as well as in response to touch (to 32% of
+    control ... FS interneurons were thus driven by input from the thalamus.
   statistics:
-  - about: Nonwhisking spike rate with and without thalamic photoinhibition
+  - about: nonwhisking spike rate with and without thalamic photoinhibition
     p: 5.0e-4
     n: 13 neurons
-  - about: Whisking spike rate with and without thalamic photoinhibition
+  - about: whisking spike rate with and without thalamic photoinhibition
     p: 6.0e-5
     n: 15 neurons
-  - about: Touch response with and without thalamic photoinhibition
+  - about: touch response with and without thalamic photoinhibition
     p: 1.0e-4
     n: 14 neurons
-  criterion: Tested on the tagged FS cells (proxy) recorded with light at the site labelled VPM,
-    which in VGAT-ChR2 mice is taken to silence VPM. The spike rate inside the light epoch of light
-    trials is compared with that inside the same span of trials without light. Reproduced when it
-    falls in most cells and a one-sided Wilcoxon signed-rank test over cells gives p < 0.05;
-    partially reproduced when it falls in most cells without significance; not reproduced
-    otherwise. The same comparison for whisking-period rate, and for all cells recorded with VPM
-    light, is shown as a variant.
-- id: sensory-input-drives-fs
-  statement: The movement-related activity of L4 FS interneurons is driven by sensory input
-    (reafference through the thalamus), not by a corollary discharge from motor areas.
-  source: Results, Inhibition is driven by sensory input, paragraph 3; Figure 7g-i; Supplementary
-    Figures 6, 11 and 12 legends
-  quote: These data show that excitation of L4 excitatory neurons and L4 FS neurons is dominated by
-    sensory input. Modulation correlated with whisker movement in L4 FS neurons constitutes
-    reafference.
+  expected:
+  - quantity: FS nonwhisking rate with light as a fraction of control
+    value: 0.04
+    tolerance: 0.004
+  - quantity: FS whisking rate with light as a fraction of control
+    value: 0.13
+    tolerance: 0.013
+  - quantity: FS spikes per touch with light as a fraction of control
+    value: 0.32
+    tolerance: 0.032
+  criterion: >-
+    The L4 FS cells (ChR2-tagged, thin spikes; Fig. 6e legend) recorded with VPM light.
+    Nonwhisking and whisking rates, and spikes per touch (Fig. 6e axis; Fig. 5 definition), in
+    light trials inside the light against control, windows O5, fractions O6 (Fig. 6e plots
+    population means, which favours O6 a), laser powers O7. Tests are Wilcoxon signed-rank
+    (paired; not named in the Results), two-sided: the paper does not state the sides, but its
+    printed P values match exact two-sided tests at the printed n (n = 13, P = 5 x 10^-4 is
+    the two-sided exact P with one cell of smallest change going up; no one-sided exact P at n
+    = 13 rounds to it; n = 14 and 15 give the two-sided minima 1.2 x 10^-4 and 6.1 x 10^-5),
+    and the analyses were run in Matlab, whose signrank is two-sided by default (answer of
+    2026-10-20). The one-sided P is reported as a variant and does not enter the outcome.
+    Reproduced when all three tests give p < 0.05 with
+    light lower and the fractions are within tolerance under a reading; partially reproduced
+    when the three tests hold and a fraction is not within tolerance; not reproduced when a
+    test fails.
+- id: rabies-vpm-input
+  statement: Monosynaptic rabies tracing from L4 PV interneurons labels thalamic neurons mostly in
+    VPM (>90%) and few in POM (<10%).
+  source: Results, Inhibition is driven by thalamus, paragraph 3; Supplementary Figure 10
+  quote: The vast majority of trans-synaptically labeled thalamic neurons were in VPM (>90%), with
+    only a small minority in POM (<10%; Supplementary Fig. 10).
+  criterion: >-
+    Counts of GFP-labeled neurons in VPM and POM from the tracing sections (Online Methods,
+    Virus injection). Reproduced when VPM holds more than 90% of the labeled thalamic neurons.
+    The paper's histology is not described as part of the recordings; the author reports
+    whether the dandiset holds it.
+- id: ion-cut-exc-no-touch
+  statement: After infraorbital nerve transection, L4 excitatory neurons do not depolarize after
+    touch.
+  source: Results, Inhibition is driven by sensory input, paragraph 2; Figure 7b
+  quote: As expected, L4 excitatory neurons did not depolarize after touch (Fig. 7b).
+  criterion: >-
+    The L4 E neurons recorded whole-cell in ION-cut mice (8 in Fig. 7b). The paper reports no
+    test; the claim is one of absence. The post-touch Vm of exc-vm-touch-whisking (Vm at the
+    peak of the neuron's average PSP) is not defined without a PSP: the maximum of a flat
+    average is biased upward. The test therefore uses the paper's touch epoch (4 to 50 ms after
+    onset; Online Methods, distance to threshold): per neuron, the mean Vm 4 to 50 ms after
+    touch onset against the mean 0 to 5 ms before (Supplementary Fig. 4 pre-touch window),
+    compared over neurons by the Methods' paired test (Wilcoxon signed-rank) at 0.05; the
+    peak-based amplitude is shown as a variant. Reproduced when the test finds no
+    depolarization; not reproduced when it finds one. Touch counts per neuron and the mean
+    amplitude are reported, with the 15 matched control neurons as comparison.
+- id: ion-cut-exc-whisking
+  statement: After ION transection, whisking-evoked depolarization of L4 excitatory neurons is
+    reduced (0.62 +- 0.50 mV, n = 9) relative to control neurons with matched resting potential
+    (1.54 +- 0.79 mV, n = 15).
+  source: Results, Inhibition is driven by sensory input, paragraph 2; Figure 7c,d
+  quote: >-
+    Depolarizations in response to whisker movement were reduced (ION cut: mean ± s.d., 0.62 ± 0.50
+    mV, n = 9 neurons versus Control with matched resting potential: mean ± s.d., 1.54 ± 0.79 mV,
+    n = 15 neurons; P = 0.005, Wilcoxon rank-sum test; Fig. 7c,d)
   statistics:
-  - p: 0.80
+  - test: Wilcoxon rank-sum test
+    p: 0.005
+    n: 9 ION-cut and 15 control neurons
+  expected:
+  - quantity: mean whisking depolarization, ION cut
+    value: 0.62
+    tolerance: 0.167
+    unit: mV
+  - quantity: mean whisking depolarization, matched controls
+    value: 1.54
+    tolerance: 0.204
+    unit: mV
+  depends_on:
+  - exc-vm-touch-whisking
+  criterion: >-
+    Whisking depolarization as in exc-vm-touch-whisking, both of its readings (Supplementary
+    Fig. 4 windows; whisking-epoch minus nonwhisking mean Vm). The
+    matching rule for the 15 controls is not given; readings (a) the control whole-cell E neurons
+    whose resting Vm (O4) lies within the range of the 9 ION-cut neurons; (b) the 15 control
+    neurons nearest in resting Vm to the ION-cut median. Reproduced when a Wilcoxon rank-sum
+    test gives p < 0.05 with ION-cut lower and both means are within tolerance under a reading;
+    partially reproduced when only the test holds.
+- id: ion-cut-exc-phase
+  statement: After ION transection, phase-locking of L4 excitatory Vm to whisker movement is
+    abolished (coupling 0.12 +- 0.04 mV against 0.38 +- 0.31 mV in controls).
+  source: Results, Inhibition is driven by sensory input, paragraph 2; Figure 7e
+  quote: phase-locking of membrane potential to whisker movement was abolished (ION cut, 0.12 ± 0.04
+    mV versus Control, 0.38 ± 0.31 mV; P = 0.005; Fig. 7e)
+  statistics:
+  - p: 0.005
+    n: 9 ION-cut and 15 control neurons (the n of the same sentence)
+  expected:
+  - quantity: mean Vm phase coupling, ION cut
+    value: 0.12
+    tolerance: 0.013
+    unit: mV
+  - quantity: mean Vm phase coupling, controls
+    value: 0.38
+    tolerance: 0.08
+    unit: mV
+  depends_on:
+  - ion-cut-exc-whisking
+  criterion: >-
+    Vm (spikes removed) in 12 phase bins during whisking epochs, fitted with a sinusoid;
+    coupling strength is half its peak-to-trough (Online Methods), filters O1. Same ION-cut and
+    matched control neurons as ion-cut-exc-whisking, both readings; unpaired, so a Wilcoxon
+    rank-sum test (Online Methods). Reproduced when the test gives p < 0.05 with ION-cut lower
+    and both means are within tolerance; partially reproduced when only the test holds.
+- id: ion-cut-fs-no-touch
+  statement: After ION transection, touch does not evoke spikes in L4 FS interneurons.
+  source: Results, Inhibition is driven by sensory input, paragraph 3; Figure 7g
+  quote: Touch did not evoke spikes in FS interneurons (Fig. 7g).
+  criterion: >-
+    The 10 L4 FS cells (ChR2-tagged, thin spikes) recorded in ION-cut mice. A claim of absence
+    with no test in the paper; judged by the Methods' paired test (Wilcoxon signed-rank) of
+    per-cell spikes 0 to 50 ms after against 2 x spikes 0 to 25 ms before touch (the Fig. 5
+    spikes-per-touch terms) at 0.05. Reproduced when no increase is found; not reproduced when
+    one is. The mean spikes per touch is reported against the control FS value (1.9).
+- id: sensory-input-drives-fs
+  statement: After ION transection, the whisking-related activation of L4 FS interneurons is
+    absent in most cells (P = 0.80, n = 10), so their movement-related modulation is reafference
+    driven by sensory input.
+  source: Results, Inhibition is driven by sensory input, paragraph 3; Figure 7h,i
+  quote: In addition, whisking-related activation of FS interneurons was also absent in most cells
+    (P = 0.80, n = 10 neurons; Fig. 7h,i). ... These data show that excitation of L4 excitatory
+    neurons and L4 FS neurons is dominated by sensory input. Modulation correlated with whisker
+    movement in L4 FS neurons constitutes reafference.
+  statistics:
+  - about: nonwhisking against whisking spike rate of FS cells after ION cut
+    p: 0.8
     n: 10 neurons
+  depends_on:
+  - fs-whisking-rate
+  criterion: >-
+    The 10 L4 FS cells in ION-cut mice; nonwhisking and whisking rates as in fs-whisking-rate.
+    A claim of absence judged on the paper's test, a paired test (not named; Wilcoxon
+    signed-rank per the Methods) of per-cell nonwhisking against whisking rate at 0.05.
+    Reproduced when it finds no difference; not reproduced when it finds one. The per-cell
+    rank-sum results (how many cells still increase, readings O2) and the size of the change
+    are reported.
+- id: ion-cut-fs-phase
+  statement: After ION transection, phase-locking of L4 FS spikes to whisker movement is reduced
+    but not entirely abolished.
+  source: Results, Inhibition is driven by sensory input, paragraph 3; Supplementary Figure 12
+  quote: Phase-locking of spikes to whisker movement was reduced but not entirely abolished
+    (Supplementary Fig. 12).
+  depends_on:
+  - fs-whisking-phase
+  criterion: >-
+    r2 of the phase fit (sinusoid, or sinusoid plus double frequency as in Supplementary Fig.
+    7g; 12 bins; filters O1) for the 10 ION-cut FS cells and the control FS cells; Supplementary
+    Fig. 12b compares the two distributions by their medians. The paper reports no test.
+    Reproduced when the ION-cut median r2 is below the control median and at least one ION-cut
+    cell has r2 > 0.25 (Supplementary Fig. 12a); not reproduced otherwise.
+- id: pv-enphr-suppression
+  statement: Yellow light in PV-IRES-Cre mice expressing eNpHR3.0 strongly inhibits most L4 PV
+    interneurons (3 of 4); their rate falls 3 ms after laser onset and L4 excitatory activity
+    rises 2 ms later.
+  source: Results, Layer 4 FS interneurons suppress reafference in L4, paragraph 7; Supplementary
+    Figure 13a,c
+  quote: First, the spike rate of L4 PV interneurons decreased 3 ms after laser onset, and activity
+    in L4 neurons increased only 2 ms later (Supplementary Fig. 13c) ... Four L4 PV interneurons
+    recorded. 3 out of 4 are strongly inhibited by eNpHR stimulation.
+  expected:
+  - quantity: L4 PV interneurons strongly inhibited by light
+    value: 3
+    unit: of 4
+  - quantity: latency of PV rate decrease after laser onset
+    value: 3
+    tolerance: 0.3
+    unit: ms
+  - quantity: further delay to the rise of L4 excitatory activity
+    value: 2
+    tolerance: 0.2
+    unit: ms
+  criterion: >-
+    The 4 L4 PV cells and the excitatory cells of PV-IRES-Cre mice; rates in nonwhisking and
+    whisking periods with and without light (Supplementary Fig. 13a, 95% intervals). "Strongly
+    inhibited" is not defined; read as the light-trial rate below the lower bound of the
+    control 95% bootstrap interval in both periods. Grand averages aligned to laser onset
+    (Supplementary Fig. 13c); the latency rule for laser onset is not given, so the Methods'
+    spike-latency rule is applied to the laser-onset-aligned PSTH (1 ms bins; dPSTH/dt crossing
+    3 x its s.d. 0 to 25 ms before laser onset, downward for PV cells and upward for
+    excitatory cells; readings O8 and O9), an assumption recorded as a deviation. Reproduced when 3 of 4 PV
+    cells are inhibited and the latencies are within tolerance (1 ms bins limit them to whole
+    ms); partially reproduced when only the PV count holds.
+- id: fs-suppress-movement-spiking
+  statement: Partially suppressing PV (FS) interneurons increases the spike rate of L4 excitatory
+    neurons during nonwhisking (0.6 to 1.6 spikes/s) and whisking (0.8 to 2.7 spikes/s).
+  source: Results, Layer 4 FS interneurons suppress reafference in L4, paragraph 1; Figure 8b-d;
+    Supplementary Figure 13b
+  quote: Partially suppressing PV (FS) interneurons changed the responses of excitatory neurons
+    (Fig. 8b–e; P = 1 × 10−6, Kruskal-Wallis test). L4 excitatory neurons increased their spike rate
+    during both nonwhisking periods (from 0.6 ± 0.1 spikes per s to 1.6 ± 0.3 spikes per s; mean ±
+    s.e.m., n = 40 neurons, P = 6 × 10−5) and whisking periods(from 0.8 ± 0.2 spikes per s to 2.7 ±
+    0.5 spikes per s, P = 2 × 10−6
+  statistics:
+  - about: rates of excitatory neurons across conditions
+    test: Kruskal-Wallis test
+    p: 1.0e-6
+    n: 40 neurons
+  - about: nonwhisking rate, control against eNpHR
+    p: 6.0e-5
+    n: 40 neurons
+  - about: whisking rate, control against eNpHR
+    p: 2.0e-6
+    n: 40 neurons
+  expected:
+  - quantity: nonwhisking rate, control
+    value: 0.6
+    tolerance: 0.1
+    unit: spikes/s
+  - quantity: nonwhisking rate, eNpHR
+    value: 1.6
+    tolerance: 0.3
+    unit: spikes/s
+  - quantity: whisking rate, control
+    value: 0.8
+    tolerance: 0.2
+    unit: spikes/s
+  - quantity: whisking rate, eNpHR
+    value: 2.7
+    tolerance: 0.5
+    unit: spikes/s
+  criterion: >-
+    The putative excitatory L4 neurons of PV-IRES-Cre eNpHR mice with light trials (40 in the
+    paper; the selection beyond the count is not given). Nonwhisking and whisking rates in light
+    trials inside the light against control, windows O5, filters O1. Kruskal-Wallis over the
+    four groups (nonwhisking and whisking, control and light; Fig. 8b-e; the paper does not
+    name the groups, so this test is reported and does not enter the outcome), and Wilcoxon
+    signed-rank tests per period (paired; not named in the Results). Reproduced when both
+    paired tests give p < 0.05 with light higher and the four rates are within tolerance;
+    partially reproduced when the tests hold and a rate is not within tolerance; not reproduced
+    when a paired test fails.
+- id: fs-enhance-touch-selectivity
+  statement: With PV interneurons suppressed, L4 excitatory neurons become driven by whisker
+    movement (whisking rate above nonwhisking, P = 0.02), while in control trials they are not
+    (P = 0.55); their selectivity for touch is normally maintained in part by FS interneurons.
+  source: Results, Layer 4 FS interneurons suppress reafference in L4, paragraph 1; Figure 8d
+  quote: L4 excitatory neurons were instead driven by whisker movements (P = 0.02, Fig. 8d),
+    implying that their selectivity for touch was normally maintained in part by FS interneurons.
+  statistics:
+  - about: nonwhisking against whisking rate in eNpHR trials (Fig. 8d)
+    p: 0.02
+    n: 40 neurons
+  - about: nonwhisking against whisking rate in control trials (Fig. 8d, printed in the figure)
+    p: 0.55
+    n: 40 neurons
+  depends_on:
+  - fs-suppress-movement-spiking
+  criterion: >-
+    Same neurons, windows and rates as fs-suppress-movement-spiking. Fig. 8d prints P = 0.55
+    for nonwhisking against whisking in control and P = 0.02 with eNpHR; the paired test is the
+    Wilcoxon signed-rank test (Online Methods). Readings O5 and O1. Reproduced when the test in
+    light trials gives p < 0.05 with whisking higher and the test in control trials gives p >=
+    0.05; partially reproduced when the light test holds and the control test also finds a
+    difference; not reproduced when the light test fails.
+- id: exc-touch-spikes-enphr
+  statement: PV interneuron suppression does not change mean touch-evoked spiking of L4
+    excitatory neurons significantly (0.27 to 0.32 spikes per touch, P = 0.09); its effect is
+    heterogeneous, with weakly responding neurons responding more and strongly responding
+    neurons unchanged or less.
+  source: Results, Layer 4 FS interneurons suppress reafference in L4, paragraph 2; Figure 8e;
+    Supplementary Figure 13b
+  quote: PV interneuron suppression also modulated touch-evoked spiking in L4 excitatory neurons,
+    but they did so in a heterogeneous manner (mean ± s.e.m., from 0.27 ± 0.06 spikes per touch to
+    0.32 ± 0.06 spikes per touch, n = 40 neurons, P = 0.09, Wilcoxon signed-rank test; Fig. 8e and
+    Supplementary Fig. 13). Neurons that responded weakly to touch tended to respond more strongly
+    with PV interneuron suppression.
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.09
+    n: 40 neurons
+  expected:
+  - quantity: spikes per touch, control
+    value: 0.27
+    tolerance: 0.06
+  - quantity: spikes per touch, eNpHR
+    value: 0.32
+    tolerance: 0.06
+  depends_on:
+  - fs-suppress-movement-spiking
+  criterion: >-
+    Same 40 neurons. Spikes per touch by the Fig. 8e definition (4 to 20 ms after minus 0 to 16
+    ms before onset; intertouch interval at least 10 ms), light against control trials. The
+    absence of a mean change is judged on the paper's test, a Wilcoxon signed-rank test at
+    0.05. Reproduced when it gives p >= 0.05 and both means are within tolerance; partially
+    reproduced when p >= 0.05 and a mean is not within tolerance; not reproduced when it finds
+    a change. The heterogeneity is described, not tested, in the paper; the change against the
+    control value is shown per neuron (Fig. 8e) and reported.
+- id: auc-weak-strong
+  statement: Suppressing PV interneurons improves touch detection (AUC) for L4 excitatory neurons
+    with weak touch responses and diminishes it for neurons with robust touch responses.
+  source: Results, Layer 4 FS interneurons suppress reafference in L4, paragraph 3; Figure 8f,g
+  quote: Consistent with the heterogeneous changes in spikes per touch, suppression of PV
+    interneurons improved AUC for neurons with weak responses to touch and diminished AUC for
+    neurons with robust responses to touch (Fig. 8f,g).
+  depends_on:
+  - fs-suppress-movement-spiking
+  criterion: >-
+    Same 40 neurons. ROC per neuron and condition (Online Methods): per trial, spike counts in
+    250 ms before and after the first touch, or in the sample epoch for trials without touch;
+    touch and no-touch periods resampled 5,000 times; AUC from the threshold sweep of the count
+    difference. Which 250 ms windows of the sample epoch serve in no-touch trials is not given;
+    readings (a) two adjacent 250 ms windows at a random time in the sample epoch; (b) the 250
+    ms before and after the median first-touch time of touch trials. The touch-evoked rate is
+    the mean rate 0 to 250 ms after minus 0 to 250 ms before touch, control trials (Fig. 8g
+    legend). The paper gives no test; it groups neurons by the sign of the AUC change (Fig. 8h,
+    19 increased, 21 reduced). Reproduced when the neurons whose AUC rises have a lower mean
+    control touch-evoked rate (the Fig. 8g measure, after minus before) than those whose AUC
+    falls, under both readings; not reproduced otherwise. The 3.4 and 7.3 spikes/s of Fig. 8h
+    are rates 0 to 250 ms after touch without the baseline subtracted (auc-groups), a
+    different measure, and are not the comparison here.
+- id: auc-groups
+  statement: Neurons whose AUC rose with PV suppression gained touch-evoked spiking (3.4 to 8.7
+    spikes/s); neurons whose AUC fell kept their touch-evoked response (7.3 to 7.0 spikes/s) but
+    had higher baseline rates (0.9 to 2.6 spikes/s).
+  source: Results, Layer 4 FS interneurons suppress reafference in L4, paragraph 4; Figure 8h
+  quote: L4 excitatory neurons with increased AUCs showed a population increase in touch-evoked
+    responses on average (from 3.4 ± 0.8 spikes per s to 8.7 ± 1.9 spikes per s, P = 0.0001).
+    Neurons with reduced AUC showed unchanged touchevoked responses as a population (from 7.3 ±
+    1.5 spikes per s to 7.0 ± 1.4 spikes per s, P = 0.98, average 0–250 ms after touch onset) ...
+    but elevated baseline spike rates (from 0.9 ± 0.2 spikes per s to 2.6 ± 0.6 spikes per s, mean
+    ± s.e.m., P = 0.0002; Fig. 8f–h).
+  statistics:
+  - about: touch-evoked rate, control against eNpHR, neurons with increased AUC
+    p: 0.0001
+    n: 19 neurons (Fig. 8h)
+  - about: touch-evoked rate, control against eNpHR, neurons with reduced AUC
+    p: 0.98
+    n: 21 neurons (Fig. 8h)
+  - about: baseline rate, control against eNpHR, neurons with reduced AUC
+    p: 0.0002
+    n: 21 neurons (Fig. 8h)
+  expected:
+  - quantity: touch-evoked rate, increased-AUC group, control
+    value: 3.4
+    tolerance: 0.8
+    unit: spikes/s
+  - quantity: touch-evoked rate, increased-AUC group, eNpHR
+    value: 8.7
+    tolerance: 1.9
+    unit: spikes/s
+  - quantity: touch-evoked rate, reduced-AUC group, control
+    value: 7.3
+    tolerance: 1.5
+    unit: spikes/s
+  - quantity: touch-evoked rate, reduced-AUC group, eNpHR
+    value: 7.0
+    tolerance: 1.4
+    unit: spikes/s
+  - quantity: baseline rate, reduced-AUC group, control
+    value: 0.9
+    tolerance: 0.2
+    unit: spikes/s
+  - quantity: baseline rate, reduced-AUC group, eNpHR
+    value: 2.6
+    tolerance: 0.6
+    unit: spikes/s
+  - quantity: neurons whose AUC increased with eNpHR (Fig. 8h)
+    value: 19
+    tolerance: 1.9
+    unit: of 40 neurons
+  - quantity: neurons whose AUC was reduced with eNpHR (Fig. 8h)
+    value: 21
+    tolerance: 2.1
+    unit: of 40 neurons
+  depends_on:
+  - auc-weak-strong
+  criterion: >-
+    Groups by the sign of the AUC change (auc-weak-strong, both readings). The touch-evoked
+    response is the mean rate 0 to 250 ms after touch onset (as the sentence says); the baseline
+    is the mean rate 0 to 250 ms before onset (Fig. 8g legend). Paired tests are Wilcoxon
+    signed-rank (Online Methods). Reproduced when the increased-AUC group's rise and the
+    reduced-AUC group's baseline rise give p < 0.05, the reduced-AUC group's touch response
+    shows no change at 0.05, and the means and group sizes are within tolerance; partially
+    reproduced when the three tests hold and a mean or a group size is not within tolerance;
+    not reproduced otherwise.
+- id: behavior-false-alarms
+  statement: With PV interneurons suppressed, most mice (6 of 8) are more likely to report touch
+    with the pole out of reach (false alarms on no-lick trials).
+  source: Results, Layer 4 FS interneurons suppress reafference in L4, paragraph 6;
+    Supplementary Figure 14b,c
+  quote: with PV interneuron suppressed, most mice (6 of 8) were more likely to report touches with
+    the pole out of reach (Supplementary Fig. 14). ... In 8 mice tested, 6 showed a significant
+    decrease of performance during Nolick trials with PV interneuron inactivation
+  expected:
+    quantity: mice with a significant decrease of no-lick performance with light
+    value: 6
+    unit: of 8 mice
+  criterion: >-
+    For each of the 8 PV-IRES-Cre eNpHR mice, correct responses on no-lick (anterior pole)
+    trials with and without light, compared by a chi-squared test at p < 0.05 (Supplementary
+    Fig. 14c). Whether sessions of a mouse are pooled is not stated; readings (a) all of a
+    mouse's trials pooled; (b) per session, a mouse counting when any session is significant.
+    Nor is a continuity correction stated (answer of 2026-10-20); readings, each run with the
+    others: (i) the Pearson chi-squared test without correction (what Matlab's crosstab, the
+    paper's stated software, returns); (ii) with Yates's correction.
+    Reproduced when 6 of 8 mice show a significant decrease under a reading (5 to 7 partially
+    reproduced); not reproduced when fewer than 5 do.
+- id: exc-inhibition-whisking
+  statement: In L4 excitatory neurons held near 0 mV, inhibitory inputs occur spontaneously but
+    are more prevalent at the onset of whisker movement; after whisking onset, excitation and
+    inhibition increase gradually, with indistinguishable time courses, over about 100 ms.
+  source: Results, Membrane-potential dynamics of L4 excitatory neurons, paragraph 3; Figure
+    3e-g
+  quote: In the absence of touch, inhibitory inputs occurred spontaneously but were more prevalent
+    at onset of whisker movement (Fig. 3e,f). ... After the onset of whisker movement, excitation
+    and inhibition increased gradually, with indistinguishable time courses, over approximately
+    100 ms (Fig. 3g).
+  depends_on:
+  - exc-inhibition-timing
+  criterion: >-
+    The 6 L4 E neurons of exc-inhibition-timing. Whisking-onset-aligned average Vm at rest
+    (excitation) and with current (inhibition, sign inverted), over the transitions of the
+    Online Methods (Fig. 3e-g legend, "same as b-d" for whisking onset), each normalized to its
+    peak after onset (Fig. 3g). The paper gives no test and no window for "more prevalent at
+    onset"; it is read with the paper's whisking-onset windows (Supplementary Fig. 4 legend):
+    with current, the mean Vm 100 to 300 ms after onset below the mean 0 to 200 ms before, in
+    the grand average (Fig. 3f) and by a Wilcoxon signed-rank test over the 6 neurons at 0.05
+    (the Methods' paired test). "Indistinguishable time courses" is a claim of absence with no
+    test in the paper; it is judged by a Wilcoxon signed-rank test at 0.05 of the per-neuron
+    times at which the normalized excitation and inhibition averages first reach half their
+    peak. Reproduced when the inhibition increase holds and the half-maximum times do not
+    differ; partially reproduced when only one part holds. The times to half and full peak of
+    the normalized grand averages are reported against the paper's "approximately 100 ms". With
+    6 neurons the smallest two-sided signed-rank p is 0.03, so the test has little power; this
+    is reported.
+- id: ion-cut-behavior
+  statement: After infraorbital nerve transection, mice still search for the pole by whisking but,
+    unable to sense it, perform the task at chance (48% correct).
+  source: Results, Inhibition is driven by sensory input, paragraph 2
+  quote: however, as they were unable to sense the object, ... they performed at chance level (48%
+    correct).
+  expected:
+    quantity: proportion of correct trials in ION-cut mice
+    value: 0.48
+    tolerance: 0.048
+  criterion: >-
+    Trial outcomes of the behavioral sessions of the ION-cut mice (9 mice; Online Methods,
+    Infraorbital nerve transection). The paper does not say how the 48% is averaged. Readings,
+    each run: (a) all ION-cut trials pooled; (b) the mean over recorded cells of the proportion
+    correct during each recording, as the Methods average control performance (Online Methods,
+    Behavior). Reproduced when the proportion is within tolerance under a reading; not
+    reproduced otherwise. The whisking part ("similar whisking amplitudes", data not shown) is
+    not tested; whisking amplitudes in ION-cut and control sessions are reported.
+checks:
+- date: 2026-10-20
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - behavior-touches. The criterion stated that the touch and trial counts come from the 111 cortical cells and from principal-whisker touches; the paper says neither. Named both as open, with readings for the recordings and for the whiskers counted.
+  - vpm-whisking. Added that the 13.5 spikes/s "after onset of whisker movement" is read as the whisking-epoch rate of Fig. 5d, since the paper defines no spike window after whisking onset.
+  - exc-vm-touch-whisking. The criterion gave the Supplementary Fig. 4 windows as the measure of the 1.2 mV whisking change; the paper does not say how it is measured. Named it open, with readings (a) those windows and (b) whisking-epoch minus nonwhisking mean Vm.
+  - ion-cut-exc-whisking. Uses both readings of the whisking change, as exc-vm-touch-whisking now does.
+  - exc-inhibition-timing. Removed the requirement that the delay be positive in most neurons, which the paper does not state (its Discussion gives a range of -0.8 to 1.6 ms); the range is now reported against that.
+  - exc-thalamus-photoinhibition. Removed latency reading (b), a 3 s.d. threshold on Vm that appears nowhere in the paper. The Methods' touch-latency rule is applied to laser onset, and the criterion says this is an assumption.
+  - pv-enphr-suppression. Same change for its latencies; the Methods' dPSTH/dt rule is applied to the laser-onset PSTH, as an assumption.
+  - ion-cut-exc-no-touch. The post-touch Vm (Vm at the peak of the average PSP) is undefined without a PSP and biased upward on a flat average. The test now uses the paper's touch epoch (4 to 50 ms) against the 0 to 5 ms pre-touch mean, with the peak-based amplitude as a variant.
+  - fs-suppress-movement-spiking. The paper does not name the groups of its Kruskal-Wallis test; the criterion now says the test is reported and does not enter the outcome.
+  - auc-weak-strong. The criterion compared groups on the Fig. 8g measure (after minus before) but cited Fig. 8h's 3.4 and 7.3 spikes/s, which are post-touch rates without the baseline subtracted. Separated the two.
+  - auc-groups. Added the Fig. 8h group sizes (19 and 21 of 40) as expected values with 10% tolerance, and included them in the criterion.
+  - Added claim exc-inhibition-whisking (Fig. 3e-g), a main-text finding with no claim. The paper gives no test or window, so the criterion names the readings and the tests it uses.
+  - Added claim ion-cut-behavior (chance performance, 48% correct, after ION cut), a main-text result with no claim.
+  - Header. Noted the two added claims.
+  - Open, not settled. Figure readings in the header and criteria (the waveform boundary of Supplementary Fig. 6 near 0.27 ms and 2.8, 12 phase bins in Supplementary Fig. 2d, about 23 to 26 VPM units above r2 0.25 in Supplementary Fig. 2e) could not be checked; no PDF renderer was available in this run.
+  - Open, not settled. vpm-whisking-phase and fs-whisking-phase judge coupling by "more than half of the cells above r2 0.25". The paper gives no count or test, and its r2 threshold is stated for VPM (Supplementary Fig. 2e) and for the ION-cut double fits (Supplementary Fig. 12a), not for control FS cells. The threshold and the majority rule are the file's reading.
+  - Open, not settled. Tolerances for mean +- s.d. use the larger of 10% and s.d./sqrt(n), not the s.d. itself. The header gives the reason; the protocol's "stated spread" could also be read as the s.d.
+  - Open, not settled. Secondary findings without claims, each with no test and no frequency band in the paper. They are the Vm fluctuations above 10 Hz in L4 E neurons during whisking (Supplementary Fig. 5), the absence of a spectral difference after ION cut (Supplementary Fig. 11), FS Vm fluctuations in some cells (Supplementary Fig. 8), and the VPM touch-response duration (2.9 +- 1.7 ms).

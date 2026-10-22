@@ -1,0 +1,541 @@
+# Claims for Iram, Garcia et al. (2024), PNAS 121(12) e2307250121, on dandiset 001350.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record as served by Europe PMC (PMC10962977), main text, figure
+# legends and Methods, with the SI Appendix (pnas.2307250121.sapp.pdf: Figs. S1 to S5, their
+# legends, Supplementary Materials and Methods). Datasets S1 to S3 (XLSX) were not read. The
+# main article's PDF was not supplied; values and p-values printed only on the panels of
+# Figures 2 and 5 were read from the figure images of the PMC article (pnas.2307250121fig02.jpg,
+# fig05.jpg), and those of Figs. S2 and S3 from the SI Appendix PDF. Figure 4's image could not
+# be fetched, so the values of Fig. 4C to 4F are not recorded. Numbers read off a bar plot
+# are marked as such and are good to about one tick of the axis's finest gridline.
+#
+# Code. The paper links no analysis code. Its Data availability names only NCBI GEO GSE241561
+# (ChIP-seq, bulk RNA-seq, snRNA-seq). TEM was quantified by hand in Fiji/ImageJ and the
+# statistics run in GraphPad Prism 9. The dandiset's description points to a segmentation
+# model (github.com/axondeepseg/model_seg_unmyelinated_tem) trained later on these images.
+# It is not the paper's code and was not read.
+#
+# The dandiset ("TEM Images of Corpus Callosum in Flox/SRF-cKO Mice") holds, by its
+# description, 8000x TEM images of the corpus callosum of 5 WT (SRF-Flox) and 5 SRF-cKO mice,
+# several images per mouse, prepared by high-pressure freezing and freeze substitution and
+# imaged at UC Berkeley, with segmentation masks for myelinated axon, unmyelinated axon, myelin,
+# oligodendrocyte nucleus and oligodendrocyte processes. These are the data of Fig. 2A to 2E
+# and Fig. S3A to S3D. Every other claim uses data the dandiset does not hold.
+#
+# The paper's corpus callosum TEM data (Fig. 2A to E, Fig. S3A to D; SI Methods, Corpus callosum
+# TEM). Subjects are adult mice (age not stated) of both sexes, SRF-flox/flox (SRF-Flox, the
+# control, called WT in places) and SRF-flox/flox; Olig2-Cre/+ (SRF-cKO), n = 5 per genotype.
+# Brains were perfusion-fixed, cut sagittally at 100 um; corpus callosum (just below cortex)
+# punched at 1.5 mm, OTO-stained, high-pressure frozen and freeze-substituted, cut at 90 nm,
+# imaged on a JEOL JEM-1400 as 8 x 8 montages at 8000x (SerialEM), stitched in IMOD. In Fiji,
+# axons were scored myelinated or not with the Multi-point tool, and axon diameter and myelin
+# thickness were measured with the line tool after setting the image scale to microns, blind to
+# genotype. Measured variables, per mouse, are percent of axons myelinated (at least 2,500 axons
+# per mouse; scored over at least 1,000 um2 because of regional heterogeneity), number of
+# myelinated axons per area (average per mouse), g-ratio (average of 100 myelinated axons per
+# mouse), myelin thickness and myelinated-axon diameter (averages of 100 myelinated axons per
+# mouse). The test is an unpaired, two-tailed t test on per-mouse values (Methods, Data
+# Analysis and Statistics; legends).
+#
+# Method details the paper leaves open for the corpus callosum claims, and the readings the
+# paper's text allows (each corpus callosum criterion refers to these by number). The outcome of
+# a claim is the one all readings give; when they disagree, the claim is blocked as
+# methods_underspecified with every result shown.
+#  O1. How axons are identified. The paper scored and measured by hand. The dandiset's masks
+#      were made for a later segmentation project; using them in place of the hand scoring is a
+#      difference from the paper's method, to be recorded as a deviation. There is no reading
+#      to choose here.
+#  O2. How a mouse's percent myelinated is formed. (a) total myelinated over total axons
+#      counted across the mouse's images; (b) the mean over the mouse's images of each image's
+#      percent.
+#  O3. How a mouse's myelinated-axon density is formed, and its unit. The legend says "the
+#      average per mouse", the axis has no unit. (a) total myelinated axons over total imaged
+#      area; (b) the mean over images of each image's density. The unit is read as axons per
+#      um2, the only unit under which the plotted values (about 1.4 to 1.8) are a plausible
+#      density for adult corpus callosum; the cKO to Flox ratio is shown as a unit-free check.
+#  O4. Axons cut by an image's edge. (a) left out; (b) kept. Applies to every count and measure.
+#  O5. What the line tool measured as a diameter. (a) the equivalent-circle diameter from the
+#      object's area; (b) the minimum Feret diameter. Axon diameter is from the axon (inner)
+#      object, fibre diameter from the axon with its myelin; myelin thickness is half their
+#      difference; g-ratio is axon diameter over fibre diameter, under the same reading.
+#  O6. Which 100 myelinated axons per mouse. (a) all myelinated axons of the mouse's images;
+#      (b) 100 drawn at random per mouse (one fixed seed, a standard choice; the spread of the
+#      result over 100 draws is shown).
+#  O7. The t test. The Methods name an unpaired, two-tailed t test run in Prism 9, whose
+#      unpaired t test assumes equal variances by default (Student); Welch's test is the other
+#      reading. For a claim of absence, Student's test is the paper's test and Welch's is shown
+#      as a variant.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001350"
+paper: doi:10.1073/pnas.2307250121
+claims:
+- id: fig2c-cc-percent-myelinated
+  statement: In the adult corpus callosum SRF-cKO mice have a lower percentage of myelinated
+    axons than SRF-Flox littermates (about 22% against about 37%, read from the figure), so the
+    hypomyelination seen in optic nerve persists into adulthood in corpus callosum.
+  source: Figure 2C; Results, Conditional Knockout of SRF Causes CNS Hypomyelination, paragraph 2
+  quote: This degree of hypomyelination of SRF-cKO mice persisted into adulthood in both the optic
+    nerve ... and the corpus callosum
+  statistics:
+  - test: unpaired t test (p printed on Figure 2C)
+    p: 0.003
+    n: 5 SRF-Flox and 5 SRF-cKO mice, at least 2,500 axons per mouse
+  expected:
+  - quantity: SRF-Flox mean percent axons myelinated, adult corpus callosum (read from Figure 2C)
+    value: 37
+    tolerance: 3.7
+    unit: percent
+  - quantity: SRF-cKO mean percent axons myelinated, adult corpus callosum (read from Figure 2C)
+    value: 22
+    tolerance: 2.2
+    unit: percent
+  criterion: Per mouse, the percent of axons myelinated, from the counts of myelinated and
+    unmyelinated axon objects (SI Methods, Corpus callosum TEM; Figure 2C legend), under the
+    readings O1, O2, O4 and O7 of the opening comment. Reproduced when, under every reading,
+    the SRF-cKO mean is lower than the SRF-Flox mean with an unpaired two-tailed t test p <
+    0.05, and both group means are within tolerance. Partially reproduced when the direction and
+    test hold but a group mean falls outside tolerance. The number of axons counted per mouse is
+    reported against the paper's minimum of 2,500.
+- id: fig2d-cc-myelinated-density
+  statement: SRF-cKO adult corpus callosum has fewer myelinated axons per area than SRF-Flox
+    (about 1.4 against about 1.8 per unit area, read from the figure).
+  source: Figure 2D
+  quote: Quantification of number of myelinated axons per area (at least 1,000 μm 2 ) in adult
+    corpus callosum
+  statistics:
+  - test: unpaired t test (p printed on Figure 2D)
+    p: 0.008
+    n: 5 SRF-Flox and 5 SRF-cKO mice
+  expected:
+  - quantity: SRF-Flox myelinated axons per area (read from Figure 2D, unit not stated)
+    value: 1.8
+    tolerance: 0.18
+    unit: per um2 (reading O3)
+  - quantity: SRF-cKO myelinated axons per area (read from Figure 2D, unit not stated)
+    value: 1.42
+    tolerance: 0.142
+    unit: per um2 (reading O3)
+  - quantity: ratio of SRF-cKO to SRF-Flox mean density (from the values read from Figure 2D)
+    value: 0.79
+    tolerance: 0.079
+  criterion: Per mouse, the density of myelinated axons over the imaged area, under readings
+    O1, O3, O4 and O7, with the image scale from the dataset's metadata. The imaged area per
+    mouse is reported against the paper's minimum of 1,000 um2. Reproduced when, under every
+    reading, the SRF-cKO mean is lower with an unpaired two-tailed t test p < 0.05 and the two
+    means are within tolerance; partially reproduced when the direction and test hold and only
+    the ratio is within tolerance; not reproduced otherwise.
+- id: fig2e-cc-g-ratio
+  statement: The average g-ratio of myelinated axons in adult corpus callosum is higher in
+    SRF-cKO than in SRF-Flox mice (0.760 against 0.703).
+  source: Figure 2E; Results, Conditional Knockout of SRF Causes CNS Hypomyelination, paragraph 2
+  quote: the average g -ratio (ratio describing myelin thickness relative to axonal diameter) of
+    SRF-cKO myelinated axons was significantly higher than WT littermates in the adult corpus
+    callosum (0.760 vs. 0.703
+  statistics:
+  - test: unpaired t test (p printed on Figure 2E)
+    p: 0.0145
+    n: 5 SRF-Flox and 5 SRF-cKO mice, 100 myelinated axons per mouse
+  expected:
+  - quantity: SRF-cKO mean g-ratio, adult corpus callosum
+    value: 0.760
+    tolerance: 0.076
+  - quantity: SRF-Flox mean g-ratio, adult corpus callosum
+    value: 0.703
+    tolerance: 0.0703
+  criterion: Per mouse, the mean g-ratio of its myelinated axons, under readings O1, O4, O5, O6
+    and O7. Reproduced when, under every reading, the SRF-cKO mean exceeds the SRF-Flox mean
+    with an unpaired two-tailed t test p < 0.05 and both means are within tolerance. The 10%
+    tolerance is wide for a g-ratio; the difference between the group means (0.057 in the
+    paper) is reported beside it.
+- id: figs3c-cc-myelin-thickness-unchanged
+  statement: Average myelin thickness of myelinated axons in adult corpus callosum does not
+    differ significantly between SRF-cKO and SRF-Flox mice (about 93 against about 105 nm, read
+    from the figure), arguing against a role of SRF in myelin wrapping.
+  source: Fig. S3C; Results, Conditional Knockout of SRF Causes CNS Hypomyelination, paragraph 2
+  quote: Interestingly, average myelin thickness was not significantly different between WT and
+    SRF-cKO mice in either optic nerve or corpus callosum
+  statistics:
+  - test: unpaired t test (p printed on Fig. S3C)
+    p: 0.08
+    n: 5 SRF-Flox and 5 SRF-cKO mice, 100 myelinated axons per mouse
+  expected:
+  - quantity: SRF-Flox mean myelin thickness (read from Fig. S3C)
+    value: 105
+    tolerance: 10.5
+    unit: nm
+  - quantity: SRF-cKO mean myelin thickness (read from Fig. S3C)
+    value: 93
+    tolerance: 9.3
+    unit: nm
+  criterion: A claim of absence, judged on the paper's test, an unpaired two-tailed Student t
+    test (O7) on per-mouse mean myelin thickness at alpha 0.05, under readings O1, O4, O5 and
+    O6. Reproduced when the test gives p >= 0.05 under every reading; not reproduced when it
+    gives p < 0.05 under every reading; the group means and their difference are reported either
+    way, with Welch's test as a variant.
+- id: figs3d-cc-larger-myelinated-diameter
+  statement: Myelinated axons in adult SRF-cKO corpus callosum have a larger mean diameter than
+    in SRF-Flox (about 625 against about 530 nm, read from the figure), which accounts for the
+    higher g-ratio and suggests a defect in ensheathing small-caliber axons.
+  source: Fig. S3D; Results, Conditional Knockout of SRF Causes CNS Hypomyelination, paragraph 2
+  quote: Instead, the higher g -ratios observed in SRF-cKO mice were due to significantly larger
+    diameters of myelinated axons in cKOs
+  statistics:
+  - test: unpaired t test (p printed on Fig. S3D)
+    p: 0.024
+    n: 5 SRF-Flox and 5 SRF-cKO mice, 100 myelinated axons per mouse
+  expected:
+  - quantity: SRF-Flox mean myelinated axon diameter (read from Fig. S3D)
+    value: 530
+    tolerance: 53
+    unit: nm
+  - quantity: SRF-cKO mean myelinated axon diameter (read from Fig. S3D)
+    value: 625
+    tolerance: 62.5
+    unit: nm
+  criterion: Per mouse, the mean axon (inner) diameter of its myelinated axons, under readings
+    O1, O4, O5, O6 and O7. Reproduced when, under every reading, the SRF-cKO mean exceeds the
+    SRF-Flox mean with an unpaired two-tailed t test p < 0.05 and both means are within
+    tolerance; partially reproduced when the direction and test hold but a mean is outside
+    tolerance.
+- id: figs2b-on-p18-half-myelinated
+  statement: At P18 SRF-cKO optic nerves have about half as many myelinated axons as SRF-Flox
+    littermates (about 16% against about 31% of axons, read from the figure), with no other
+    abnormalities.
+  source: Fig. S2A and S2B; Results, Conditional Knockout of SRF Causes CNS Hypomyelination,
+    paragraph 2
+  quote: At P18 (during active myelination), SRF-cKO optic nerves had on average half as many
+    myelinated axons as control SRF-Flox littermates with no other abnormalities
+  statistics:
+  - test: unpaired t test (p printed on Fig. S2B)
+    p: 0.0262
+    n: 5 SRF-Flox and 5 SRF-cKO mice, at least 700 axons per nerve
+  criterion: Not testable on this dandiset, which holds adult corpus callosum TEM only.
+- id: figs2e-on-adult-hypomyelination
+  statement: Hypomyelination persists in the adult optic nerve of SRF-cKO mice (about 49%
+    against about 87% of axons myelinated, read from the figure).
+  source: Fig. S2D and S2E
+  quote: This degree of hypomyelination of SRF-cKO mice persisted into adulthood in both the optic
+    nerve
+  statistics:
+  - test: unpaired t test (p printed on Fig. S2E)
+    p: 0.0024
+    n: 5 SRF-Flox and 5 SRF-cKO mice, at least 700 axons per nerve
+  criterion: Not testable on this dandiset, which holds adult corpus callosum TEM only.
+- id: figs2cf-on-myelin-thickness-unchanged
+  statement: Myelin thickness in optic nerve does not differ between SRF-cKO and SRF-Flox mice,
+    at P18 or in adults.
+  source: Fig. S2C and S2F
+  quote: average myelin thickness was not significantly different between WT and SRF-cKO mice in
+    either optic nerve or corpus callosum
+  statistics:
+  - about: P18 optic nerve
+    test: unpaired t test (p printed on Fig. S2C)
+    p: 0.7249
+    n: 5 mice per genotype
+  - about: adult optic nerve
+    test: unpaired t test (p printed on Fig. S2F)
+    p: 0.5288
+    n: 5 mice per genotype
+  criterion: Not testable on this dandiset, which holds adult corpus callosum TEM only.
+- id: figs2ij-on-g-ratio-not-significant
+  statement: In the optic nerve the higher g-ratio of SRF-cKO myelinated axons does not reach
+    significance, at P18 or in adults.
+  source: Fig. S2I and S2J; Results, Conditional Knockout of SRF Causes CNS Hypomyelination,
+    paragraph 2
+  quote: but this result did not achieve significance in the optic nerve
+  statistics:
+  - about: P18 optic nerve average g-ratio
+    test: not named in the legend; t test by the Methods' default (p printed on Fig. S2I)
+    p: 0.0579
+    n: 5 mice per genotype
+  - about: adult optic nerve average g-ratio
+    test: not named in the legend; t test by the Methods' default (p printed on Fig. S2J)
+    p: 0.1768
+    n: 5 mice per genotype
+  criterion: Not testable on this dandiset, which holds adult corpus callosum TEM only.
+- id: figs2kl-on-larger-myelinated-caliber
+  statement: Myelinated axons in SRF-cKO optic nerve have a larger caliber than in SRF-Flox, at
+    P18 and in adults, with the caliber distribution shifted to larger axons.
+  source: Fig. S2K to S2N
+  quote: the higher g -ratios observed in SRF-cKO mice were due to significantly larger diameters
+    of myelinated axons in cKOs
+  statistics:
+  - test: not named in the legend (Figs. S2K and S2L marked with one asterisk)
+    p: 0.05
+    p_relation: "<"
+    n: 5 mice per genotype
+  criterion: Not testable on this dandiset, which holds adult corpus callosum TEM only.
+- id: fig2gk-ol-lineage-density-unchanged
+  statement: At P16 to P18, densities of OPCs (CC1-negative Olig2-positive) and oligodendrocytes
+    (CC1-positive Olig2-positive) in corpus callosum and cortex do not differ between SRF-cKO
+    and SRF-Flox mice, with a slight trend to fewer OPCs in cortex.
+  source: Figure 2F to 2K; Results, Conditional Knockout of SRF Causes CNS Hypomyelination,
+    paragraph 3
+  quote: We found similar densities of OPCs and oligodendrocytes in both regions with a slight
+    trend towards fewer OPCs in the cortex
+  statistics:
+  - about: corpus callosum OPC density
+    test: unpaired t test (p printed on Figure 2G)
+    p: 0.3173
+    n: 6 mice per genotype
+  - about: corpus callosum oligodendrocyte density
+    test: unpaired t test (p printed on Figure 2H)
+    p: 0.8507
+    n: 6 mice per genotype
+  - about: cortex OPC density
+    test: Student t test (p printed on Figure 2J)
+    p: 0.1927
+    n: 6 mice per genotype
+  - about: cortex oligodendrocyte density
+    test: unpaired t test (p printed on Figure 2K)
+    p: 0.5453
+    n: 6 mice per genotype
+  criterion: Not testable on this dandiset, which holds TEM images only, no immunostaining.
+- id: figs3fg-mbp-intensity-unchanged
+  statement: MBP staining intensity in corpus callosum and cortex at P16 to P18 is similar in
+    SRF-cKO and SRF-Flox mice.
+  source: Fig. S3E to S3G; Results, Conditional Knockout of SRF Causes CNS Hypomyelination,
+    paragraph 3
+  quote: This was in line with similar levels of MBP staining intensity in the cortex and corpus
+    callosum
+  criterion: Not testable on this dandiset, which holds TEM images only. The legends name an
+    unpaired t test (n = 6 mice per genotype); no p-value is printed.
+- id: fig1d-srf-expressed-opc-ol
+  statement: Srf mRNA is expressed by both OPCs and oligodendrocytes throughout the brain at P8
+    and P16.
+  source: Figure 1B to 1D; Results, SRF Is Expressed by OPCs and Oligodendrocytes during CNS
+    Development, paragraph 1
+  quote: SRF mRNA was expressed by both OPCs and oligodendrocytes throughout the brain at both P8
+    and P16
+  criterion: Not testable on this dandiset, which holds no RNAscope data.
+- id: fig1ef-srf-protein-nuclear
+  statement: SRF protein is in oligodendrocyte nuclei in vivo, and nuclear in cultured OPCs and
+    oligodendrocytes.
+  source: Figure 1E and 1F
+  quote: immunostaining with a knockout-validated antibody confirmed SRF protein expression in
+    oligodendrocyte nuclei
+  criterion: Not testable on this dandiset, which holds no immunostaining.
+- id: figs1-srf-loss-in-cko
+  statement: SRF-cKO mice lose Srf mRNA in purified OPCs and SRF protein in oligodendrocytes but
+    not in neighbouring cells such as neurons.
+  source: Fig. S1B and S1C; Results, Conditional Knockout of SRF Causes CNS Hypomyelination,
+    paragraph 1
+  quote: We confirmed complete loss of SRF mRNA in OPCs using RT-PCR on purified OPCs from SRF-cKO
+    mice and littermate controls
+  criterion: Not testable on this dandiset, which holds no RT-PCR or immunostaining.
+- id: fig3a-chip-peaks
+  statement: SRF ChIP-seq in rat OPCs and day-3 oligodendrocytes finds 848 significant binding
+    sites, narrowed to 329 high-confidence targets.
+  source: Figure 3A; Results, ChIP-Seq Identifies SRF Target Genes in Oligodendrocytes, paragraph 1
+  quote: We identified 848 significant SRF binding sites (peaks) in total and narrowed down the
+    list to 329 high-confidence targets
+  data: elsewhere
+  where: NCBI GEO GSE241561 (ChIP-seq)
+  expected:
+  - quantity: significant SRF binding sites
+    value: 848
+    tolerance: 84.8
+  - quantity: high-confidence targets
+    value: 329
+    tolerance: 32.9
+  criterion: Not testable on this dandiset; the ChIP-seq data are in GEO.
+- id: fig3bc-chip-tss-carg
+  statement: Most SRF peaks lie within 2 kb of the transcription start site, and the peak
+    sequences are enriched for the SRF CArG motif.
+  source: Figure 3B and 3C
+  quote: most peaks were enriched within 2 kb of the transcription start site (TSS) ... Inspection
+    of the target sequences confirmed an enrichment for the SRF CArG consensus
+  data: elsewhere
+  where: NCBI GEO GSE241561 (ChIP-seq)
+  criterion: Not testable on this dandiset; the ChIP-seq data are in GEO.
+- id: fig3d-shared-carg-targets
+  statement: About half (60) of the CArG-containing target genes are shared between OPCs and
+    oligodendrocytes, including immediate early genes and cytoskeletal genes such as Actb.
+  source: Figure 3D
+  quote: Roughly half (n = 60) of the target genes with a confirmed CArG consensus were shared
+    between OPCs and oligodendrocytes
+  data: elsewhere
+  where: NCBI GEO GSE241561 (ChIP-seq)
+  expected:
+  - quantity: shared CArG target genes
+    value: 60
+    tolerance: 6
+  criterion: Not testable on this dandiset; the ChIP-seq data are in GEO.
+- id: fig4ab-rnaseq-degs
+  statement: SRF knockout changes the expression of 157 genes in cultured OPCs and 264 in day-3
+    oligodendrocytes (adjusted p < 0.05).
+  source: Figure 4A and 4B; Results, SRF Regulates Actin Cytoskeleton Gene Expression, paragraph 1
+  quote: We identified 157 differentially expressed genes ( P .adj < 0.05) in SRF-KO OPCs vs
+    SRF-WT and 264 in SRF-KO oligodendrocytes
+  data: elsewhere
+  where: NCBI GEO GSE241561 (bulk RNA-seq)
+  expected:
+  - quantity: differentially expressed genes, SRF-KO OPCs
+    value: 157
+    tolerance: 15.7
+  - quantity: differentially expressed genes, SRF-KO oligodendrocytes
+    value: 264
+    tolerance: 26.4
+  criterion: Not testable on this dandiset; the RNA-seq data are in GEO.
+- id: fig4cd-rnaseq-srf-actb-down
+  statement: Srf and Actb are down-regulated in SRF-KO OPCs and oligodendrocytes in culture, and
+    actin genes among the CArG-containing direct targets are down-regulated.
+  source: Figure 4C, 4D and 4H; Fig. S4A; Results, SRF Regulates Actin Cytoskeleton Gene
+    Expression, paragraph 2
+  quote: Actin genes such as beta actin (Actb) were down-regulated in SRF-KO OPCs and
+    oligodendrocytes
+  data: elsewhere
+  where: NCBI GEO GSE241561 (bulk RNA-seq)
+  criterion: Not testable on this dandiset; the RNA-seq data are in GEO. The legends name
+    DESeq2 statistics (Figure 4C and 4D) and a Wilcoxon rank-sum test (Figure 4H); the values
+    printed on Figure 4 were not read.
+- id: fig4eg-rnascope-in-vivo-down
+  statement: In P16 to P18 cortex, Srf, Actb and Actg1 transcripts are reduced in Olig2-positive
+    nuclei of SRF-cKO mice.
+  source: Figure 4E to 4G; Fig. S4B and S4D
+  quote: Srf ... Actb ... Actg1 ... were significantly down-regulated in our primary cells and in
+    vivo in SRF-cKO Olig2 positive nuclei
+  criterion: Not testable on this dandiset, which holds no RNAscope data (n = 4 per genotype in
+    the legends; the values printed on Figure 4 were not read).
+- id: no-myelin-genes-direct-targets
+  statement: Classical myelin genes are not among the direct SRF targets found by ChIP-seq.
+  source: Results, SRF Regulates Actin Cytoskeleton Gene Expression, paragraph 2
+  quote: Interestingly, we did not identify ... as direct SRF targets
+  data: elsewhere
+  where: NCBI GEO GSE241561 (ChIP-seq)
+  criterion: Not testable on this dandiset; the ChIP-seq data are in GEO.
+- id: figs4ef-assembly-not-disassembly-genes
+  statement: In cultured OPCs and oligodendrocytes, SRF mainly regulates genes that promote actin
+    assembly, actin itself included, and not the main actin disassembly genes such as Cfl1.
+  source: Fig. S4E and S4F; Results, SRF Functionally Regulates the Oligodendrocyte Actin
+    Cytoskeleton, paragraph 1
+  quote: SRF primarily regulates genes that promote actin assembly (including actin itself) and
+    not genes that regulate actin disassembly
+  data: elsewhere
+  where: NCBI GEO GSE241561 (bulk RNA-seq)
+  criterion: Not testable on this dandiset; the RNA-seq data are in GEO. The Fig. S4F legend
+    names DESeq2 statistics; no value is printed in the text.
+- id: fig5e-less-f-actin
+  statement: Cultured SRF-cKO OPCs and early-differentiating oligodendrocytes have much lower
+    actin filament (phalloidin) levels, about 20% to 40% of SRF-Flox levels.
+  source: Figure 5B, 5C and 5E; Results, SRF Functionally Regulates the Oligodendrocyte Actin
+    Cytoskeleton, paragraph 1
+  quote: In OPCs and early stages of oligodendrocyte differentiation, SRF-cKO cells had
+    dramatically reduced actin filament levels (~20% to 40% of SRF-Flox levels
+  statistics:
+  - about: OPCs
+    test: unpaired t test (p printed on Figure 5E)
+    p: 0.0546
+    n: 2 preps
+  - about: days 3, 5 and 7 of differentiation (each marked **)
+    test: unpaired t test
+    p: 0.01
+    p_relation: "<"
+    n: 2 preps
+  expected:
+  - quantity: SRF-cKO phalloidin intensity as a fraction of SRF-Flox, OPCs and early
+      differentiation (reported range 20% to 40%, widened by 10% of each bound to 0.18 to 0.44,
+      written as its midpoint and half-width)
+    value: 0.31
+    tolerance: 0.13
+  criterion: Not testable on this dandiset, which holds no culture imaging.
+- id: fig5d-late-actin-similar
+  statement: Both genotypes disassemble actin during late differentiation, and by 7 days the
+    two are nearly indistinguishable, though Figure 5E still marks the day-7 difference with
+    two asterisks.
+  source: Figure 5D and 5E; Results, SRF Functionally Regulates the Oligodendrocyte Actin
+    Cytoskeleton, paragraph 1
+  quote: both SRF-Flox and SRF-cKO oligodendrocytes underwent a similar degree of actin
+    disassembly during late stages of differentiation, and by full maturation at 7 d of
+    differentiation cells from both genotypes were nearly indistinguishable
+  criterion: Not testable on this dandiset, which holds no culture imaging.
+- id: culture-mbp-unchanged
+  statement: MBP protein level does not differ between cultured SRF-WT and SRF-cKO
+    oligodendrocytes.
+  source: Results, SRF Functionally Regulates the Oligodendrocyte Actin Cytoskeleton, paragraph 1
+  quote: the protein level of the differentiation marker and major myelin protein MBP was not
+    different between SRF-WT and SRF-cKO oligodendrocytes
+  criterion: Not testable on this dandiset, which holds no culture imaging. No figure or test
+    is given for this statement.
+- id: figs5ab-gsea-bulk
+  statement: In bulk RNA-seq, SRF-KO OPCs are depleted of transcription regulation and cell cycle
+    pathways, SRF-KO oligodendrocytes of actin cytoskeleton, postsynaptic density and myelin
+    sheath pathways, and SRF-KO OPCs are enriched for disease pathways carrying genes such as
+    Apoe and Clu.
+  source: Fig. S5A and S5B; Results, SRF Loss Induces Oligodendrocyte Disease-Associated Genes,
+    paragraph 1
+  quote: enriched pathways in SRF-KO OPC genes also consisted of genes like Apoe and Clusterin
+    (Clu) associated with diseases
+  data: elsewhere
+  where: NCBI GEO GSE241561 (bulk RNA-seq)
+  criterion: Not testable on this dandiset; the RNA-seq data are in GEO.
+- id: fig6b-snrnaseq-degs
+  statement: In 10-month-old prefrontal white matter, single-nucleus RNA-seq of SRF-cKO
+    oligodendrocyte clusters finds 63 up-regulated and 213 down-regulated genes.
+  source: Figure 6A and 6B; Results, SRF Loss Induces Oligodendrocyte Disease-Associated Genes,
+    paragraph 2
+  quote: identified 63 significantly up-regulated and 213 down-regulated genes on both OL clusters
+    combined
+  data: elsewhere
+  where: NCBI GEO GSE241561 (snRNA-seq)
+  expected:
+  - quantity: up-regulated genes, oligodendrocyte clusters 0 and 2
+    value: 63
+    tolerance: 6.3
+  - quantity: down-regulated genes, oligodendrocyte clusters 0 and 2
+    value: 213
+    tolerance: 21.3
+  criterion: Not testable on this dandiset; the snRNA-seq data are in GEO.
+- id: fig6cd-ol-genes-depleted
+  statement: In SRF-cKO oligodendrocytes, oligodendrocyte-specific, actin cytoskeleton and mRNA
+    processing pathways are depleted, endothelial and immune pathways enriched, and
+    oligodendrocyte marker and myelin genes are among the top down-regulated genes.
+  source: Figure 6C and 6D
+  quote: Oligodendrocyte marker genes and myelin genes were among the top down-regulated genes
+  data: elsewhere
+  where: NCBI GEO GSE241561 (snRNA-seq)
+  criterion: Not testable on this dandiset; the snRNA-seq data are in GEO.
+- id: fig6eg-disease-genes-up
+  statement: C4b, Serpina3n and Piezo2 are among the top up-regulated genes in SRF-cKO
+    oligodendrocytes, and are absent or very low in 10-month-old SRF-Flox mice.
+  source: Figure 6E to 6G; Results, SRF Loss Induces Oligodendrocyte Disease-Associated Genes,
+    paragraph 3
+  quote: among the top upregulated genes in SRF-cKO oligodendrocytes were genes like C4b ... and
+    Serpina3n ... Notably, these genes were absent or very lowly expressed in middle-aged
+    (10-mo-old) SRF-Flox mice
+  data: elsewhere
+  where: NCBI GEO GSE241561 (snRNA-seq)
+  criterion: Not testable on this dandiset; the snRNA-seq data are in GEO.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2c-cc-percent-myelinated. Statement gave the values Flox first after naming cKO first
+    (37% against 22%); reordered to cKO against Flox (22% against 37%) to match the sentence and
+    the expected values.
+  - fig2d-cc-myelinated-density. Same ordering error (1.8 against 1.4 for cKO against Flox);
+    reordered to 1.4 against 1.8, as in the expected values.
+  - fig5e-less-f-actin. Added the reported range (20% to 40% of SRF-Flox) as an expected value
+    with the protocol's tolerance for a range, 0.18 to 0.44.
+  - fig3d-shared-carg-targets. expected was a mapping; made it a one-item list like every other
+    claim.
+  - Added claim figs4ef-assembly-not-disassembly-genes, a Results finding (Fig. S4E and S4F) that
+    had no claim.
+  - Checked against the SI Appendix PDF, rendered here; the p-values and bar heights of Figs. S2B,
+    S2C, S2E, S2F, S2I, S2J, S3C and S3D match the file, S2K and S2L carry one asterisk, and S3F
+    and S3G print no p-value. The checker's VALUE NOT FOUND lines for these are values printed only
+    on panels.
+  - Open. The values printed on main Figures 2 and 5 (Fig. 2C p 0.003 and means 37 and 22, Fig. 2D
+    p 0.008 and means 1.8 and 1.42, Fig. 2E p 0.0145, Figs. 2G to 2K p-values, Fig. 5E p 0.0546
+    and the asterisks on days 3, 5 and 7) could not be checked; the main article PDF is not under
+    paper/. The g-ratios 0.760 and 0.703 are in the text.
+  - Open. The legend of Figs. S2K and S2L does not say what one asterisk means; p < 0.05 is the
+    usual reading and is kept.
+  - Open. The unit of Fig. 2D (O3) is read as per um2 from plausibility, not from the paper; the
+    criterion already keeps the unit-free cKO to Flox ratio as the fallback.

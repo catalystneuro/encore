@@ -1,33 +1,29 @@
-I've addressed every point in the round-1 report and re-run the entry. `python tools/entry.py all` passes in 219 s. No outcome changed; the blocked claim now has a different reason. Nothing is committed.
+I've worked through every point in the round-1 report, re-run the notebook, matched the conclusions, notes and summary to the new numbers, and recorded round 1 under `verifications`. `python tools/entry.py all` never got to the run: its check step fails with 25 errors, all in the earlier record `attempts/000005-yu-2016-01.yaml`. That record has no outcomes for the claims added since, and it failed the same way before my changes. No error concerns `-02`, so I ran `python tools/entry.py run`, which passes in 296 s. Nothing is committed.
 
-**Outcomes**
-- The verifier agreed with all eight outcomes, and they all stand.
-- `sensory-input-drives-fs` is still blocked, but the reason is now `metadata_insufficient` instead of `methods_underspecified`. The verifier was right that the paper's supplement describes the test: Figure 7 compares FS cells in control mice and mice with the infraorbital nerve cut (ION transection). The notebook now prints every metadata field of the 130 L4 files. None records a surgery, a lesion or notes, so the cut mice cannot be identified from the files.
-- `exc-mainly-touch` stays not reproduced (p = 0.074 against FS cells, 0.090 against VPM units), but the result is fragile:
-  - Leaving out the four mice flagged as lacking touch input gives p = 0.024 and 0.038.
-  - Keeping only the 12 excitatory cells with at least 20 spikes near touches gives p = 0.003 and 0.005.
-  - Neither variant decides the outcome. The flag is inferred from touch responses, so both selections favour the claim by construction. The conclusion and notes say this, and round 2 may disagree.
+**Outcome changes (round 1, so allowed):**
+- **`fs-touch-response`**: partially reproduced → blocked, methods underspecified. This is what the verifier asked for: with the waveform boundary 2 of 3 values match, without it only 1.
+- **`auc-weak-strong`**: reproduced → not reproduced. The verifier had agreed with "reproduced"; round 2 reviews the change. Over 20 further seeds, reading (b) holds in only 8, and the criterion needs both readings.
+- **`auc-groups`**: blocked, methods underspecified → not reproduced. The verifier had agreed with "blocked"; round 2 reviews this too. Its three tests hold in 9 of 20 seeds under reading (a) and in none under (b).
 
-**What I added or corrected**
-- **Paper:** the supplement PDF is public. Its legends and Supplementary Tables 1 and 2 are saved under `paper/`.
-- **Cut mice:** I added a membrane-potential touch response. Whole-cell cells in anm318530, anm318531 and anm318532 show no touch response (below 0.35 mV), against a median of 2.8 mV elsewhere. Those three mice hold 9 whole-cell cells, the number the paper gives for cut mice. Four mice are flagged as probably cut, by a threshold I chose after seeing these values. I use the flag only in variants and in an exploratory comparison of FS cells, which is not a test of the claim.
-- **Mouse lines:** Supplementary Table 1 is now read at run time, which adds `pypdf` to the lock file and is recorded under `inputs`. Cell counts per mouse line and recording mode match Supplementary Table 2 for every line except PV-Cre (48 files against 47 cells).
-- **Outputs the verifier asked for:**
-  - tag site, tag p and latency for each tagged cell;
-  - spike width by sampling rate;
-  - a light-artifact check and example traces with detected spikes;
-  - spike and trial counts per condition, and whisking and touch behaviour with and without light, for the PV-Cre and VPM-light tests;
-  - a trial-shift null for the L4 cells;
-  - the paper's sinusoid-fit r² measure, as a variant (it marks 0.33 to 0.40 of cells on the null, so it does not decide anything);
-  - the PV-Cre test without anm266945 (3 of 3, p = 0.125).
-- **Code fix:** touch windows that crossed a trial boundary are now dropped. This affected 7 of 66,206 touches.
-- **New findings:**
-  - no file marks the cut mice;
-  - the genotype is missing for 9 mice, and the SOM-IRES-Cre x Ai32 mice are labelled `Ai32`;
-  - every cell is labelled layer 4, though the paper includes some L5 cells;
-  - all 24 files with the wrong recording mode in their session description are PV-Cre files.
-- **Other files:** the claims file has a second amendment that records the supplement without changing any criterion. Round 1 is recorded under `verifications`, and the conclusions, summary, README and attempt notes match the new numbers.
+For both AUC changes I used a rule of my own: a reading counts as matching only when it matches under most of the 20 seeds. It is recorded as a deviation. Every other outcome stays as it was.
 
-**Not done**
-- I kept the main tests as the criteria fixed them, because I had seen every outcome before reading the supplement. The paper's FS waveform rule, its r² rule and the PV-Cre juxtacellular population are shown only as variants.
-- The spike detector was not checked against any ground truth.
+**What I fixed or added:**
+- **Tag test:** it now counts every pulse of the 5 and 10 Hz trains. It drives the same 24 cells as before. The 26 cells still untested, including the two with 16,350 and 11,087 spikes, have fewer than 10 short pulses at any cortical site, so no pulse rule can test them. Each VGAT-ChR2 cell is tabulated under three pulse rules.
+- **Touch and onset readings (O10, O11):** now run for every claim that uses whisking epochs or onsets, not only `exc-vm-touch-whisking`. No outcome changes.
+- **Held trials:** the 13 trials of the PV-ChR2 cell held near 0 mV are left out at rest. Its resting Vm is now -38.8 mV, up from -34.9. The whisking shift toward threshold moves into tolerance, but `exc-threshold-touch-vs-whisking` stays partially reproduced because the touch shift (4.62 mV) is still outside.
+- **Spike detection:** whole-cell spikes are clean. In the median cell-attached excitatory cell 5% of interspike intervals are under 1.5 ms, which suggests some double detection. But a 2 ms dead time removes only 8.1% of those spikes, so double detection does not explain the high firing rates.
+- **Near-zero Vm latencies:** for touches, the criterion's rule is tripped by single samples of dVm/dt. For both laser latencies (0.10 ms) it is a one-sample drop of about 0.06 mV at light onset, likely an artifact. The first crossing 2 ms or more after onset is 4.9 ms (thalamic) and 5.2 ms (cortical), so the thalamic latency is still not the longer one.
+- **Fig. 3 recordings:** I added the injected current per trial for every file. 17 cell-attached files carry a constant stored current of about 1.9, but their traces show no whole-cell slow fluctuations (1 to 100 Hz s.d. at most 0.33 mV, against 1.95 mV for whole-cell files), so the "data missing" block holds. The constant current is added to the existing finding on the current.
+- **Other checks:**
+  - Pole times are not scaled like `first_touch_time`.
+  - The exact -50.00 mV median touch reversal is the mean of the two middle neurons.
+  - The two threshold readings (O3) differ by at most 0.009 mV.
+  - The 20 kHz averages are now averaged in pairs before decimation.
+  - Cortical performance in `behavior-touches` now uses every cortical cell (0.681 and 0.694, within tolerance), with the flagged mice only a variant.
+- **ION-cut candidates:** I added the requested cross-tab of VGAT-ChR2 mice by VPM fibre site. It leaves 7 candidates for the paper's 9 ION-cut mice, so the cut mice still cannot be identified.
+
+**What I did not change, and why:**
+- **ION-cut cells in every group:** the files do not mark those mice, so this stays a deviation.
+- **Waveform measure:** I read Supplementary Fig. 6 and its inset defines peak, trough and duration the way the measure does. Four driven cells have ratios of 12 to 19, beyond the figure's axis; I report this rather than correcting it.
+- **Weak chance level of the r2 > 0.25 rule:** that is a property of the claims file, so I report it as a weakness and leave the claim as written.
+- **The near-zero latencies** stand as measured, because the criterion fixes the rule. The diagnostics decide nothing.

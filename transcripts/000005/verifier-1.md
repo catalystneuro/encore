@@ -1,35 +1,35 @@
-# 000005 · verifier-1 · run 39251508486
+# 000005 · verifier-1 · run 39503882242
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cd  ls -la; ls docs paper 2>/dev/null; cat *claims* 2>/dev/null | head -200
+cd  ls -la; ls paper; ls docs 2>/dev/null
 ```
 
 ```
-total 240
-drwxr-xr-x 5 runner runner    4096 Oct 19 12:25 .
-drwxr-xr-x 7 runner runner    4096 Oct 19 12:25 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 19 12:21 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 19 12:21 .bashrc
-drwxr-xr-x 5 runner runner    4096 Oct 19 12:25 .claude
--rw-r--r-- 1 runner runner       0 Oct 19 12:25 .env
--rw-r--r-- 1 runner runner       0 Oct 19 12:25 .env.development
--rw-r--r-- 1 runner runner       0 Oct 19 12:25 .env.development.local
--rw-r--r-- 1 runner runner       0 Oct 19 12:25 .env.local
--rw-r--r-- 1 runner runner       0 Oct 19 12:25 .env.production
--rw-r--r-- 1 runner runner       0 Oct 19 12:25 .env.production.local
--rw-r--r-- 1 runner runner       0 Oct 19 12:25 .env.test
--rw-r--r-- 1 runner runner       0 Oct 19 12:25 .env.test.local
-drwx------ 2 runner runner    4096 Oct 19 12:25 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 19 12:21 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 19 12:21 .github
--rw-r--r-- 1 runner runner       0 Oct 19 12:25 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 19 12:21 .idea
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 19 12:21 .mcp.json
-[... 18 more lines not kept]
+Exit code 2
+total 440
+drwxr-xr-x 6 runner runner    4096 Oct 20 22:00 .
+drwxr-xr-x 7 runner runner    4096 Oct 20 22:00 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 20 21:52 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 20 21:52 .bashrc
+drwxr-xr-x 5 runner runner    4096 Oct 20 22:00 .claude
+-rw-r--r-- 1 runner runner       0 Oct 20 22:00 .env
+-rw-r--r-- 1 runner runner       0 Oct 20 22:00 .env.development
+-rw-r--r-- 1 runner runner       0 Oct 20 22:00 .env.development.local
+-rw-r--r-- 1 runner runner       0 Oct 20 22:00 .env.local
+-rw-r--r-- 1 runner runner       0 Oct 20 22:00 .env.production
+-rw-r--r-- 1 runner runner       0 Oct 20 22:00 .env.production.local
+-rw-r--r-- 1 runner runner       0 Oct 20 22:00 .env.test
+-rw-r--r-- 1 runner runner       0 Oct 20 22:00 .env.test.local
+drwx------ 2 runner runner      40 Oct 20 22:00 .git
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 20 21:52 .gitconfig
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 20 21:52 .github
+-rw-r--r-- 1 runner runner       0 Oct 20 22:00 .gitmodules
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 20 21:52 .idea
+[... 23 more lines not kept]
 ```
 
 **Agent calls Bash**
@@ -39,27 +39,162 @@ cd  cat 10.1038-nn.4412.yaml
 ```
 
 ```
-# Claims for Yu, Gutnisky, Hires & Svoboda (2016) on dandiset 000005.
-# Source: the abstract and the eight figure titles on the public landing page of the paper
-# (https://www.nature.com/articles/nn.4412). The full text is not open access and no copy was
-# found in PubMed Central, Europe PMC or a preprint server, so the claims are at the level of the
-# abstract, no claim has a reported number, and every method choice below is made here.
+<persisted-output>
+Output too large (69.7KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/be70a580-15c8-4e6d-9924-f25c2922274e/tool-results/bcvra6jqk.txt
+
+Preview (first 2KB):
+# Claims for Yu, Gutnisky, Hires & Svoboda (2016), Nat. Neurosci. 19, 1647-1657, on dandiset
+# 000005 ("Electrophysiology data from thalamic and cortical neurons during somatosensation").
 #
-# When these criteria were written, the author had seen the data check only: the file list and
-# metadata, the recording mode of each L4 file read from its trace, spike counts and spike widths,
-# the sampling rates, the light series of each file, the spike probability after single light
-# pulses in VGAT-ChR2 mice, and the firing rate during the long light epochs in PV-Cre mice. No
-# touch or whisking measure had been computed for any cell or unit.
+# Provenance. Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions),
+# 2026-10-20, protocol as stated in docs/protocol.md (version pilot-10), Reader steps 1 to 4.
 #
-# The dandiset gives no cell type for its 130 L4 cells. Cell types are assigned here from the
-# data, before any claim's analysis:
-# - FS interneuron (proxy): a cell in a VGAT-ChR2-EYFP mouse that spikes within 6 ms of isolated
-#   5 ms light pulses (at least 10 pulses; evoked minus baseline spike probability at least 0.2;
-#   one-sided binomial test on discordant pulses, p < 0.001). This tags GABAergic neurons; the
-#   abstract's L4 FS interneurons are assumed to be the tagged cells.
-# - Excitatory neuron (proxy): a whole-cell recording (median membrane potential below -20 mV)
-#   with action potentials at least 0.6 ms wide at half maximum, not tagged where light pulses
-[... 103 more lines not kept]
+# What changed. This file replaces a deprecated version whose claims were written from the
+# abstract only, with cell types and every measure chosen by the earlier author (proxy FS and
+# excitatory classes, a 6 to 30 Hz whisking band, a touch-selectivity index, Rayleigh and
+# harmonic phase tests). Read against the full text on 2026-10-20, the criteria of
+# exc-mainly-touch and fs-enhance-touch-selectivity tested measures the paper does not use, and
+# seven or more of the paper's findings on these data had no claim. Every claim is written again
+# here from the full text: statements, sources, quotes, statistics, expected values and criteria
+# all come from the paper. The ids of the eight earlier claims are kept where the finding is the
+# same (vpm-touch, vpm-whisking, fs-touch-and-whisking, exc-mainly-touch,
+# fs-suppress-movement-spiking, fs-enhance-touch-selectivity, thalamus-drives-fs,
+[... 10 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/be70a580-15c8-4e6d-9924-f25c2922274e/tool-results/bcvra6jqk.txt"
+}
+```
+
+```
+1	# Claims for Yu, Gutnisky, Hires & Svoboda (2016), Nat. Neurosci. 19, 1647-1657, on dandiset
+2	# 000005 ("Electrophysiology data from thalamic and cortical neurons during somatosensation").
+3	#
+4	# Provenance. Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions),
+5	# 2026-10-20, protocol as stated in docs/protocol.md (version pilot-10), Reader steps 1 to 4.
+6	#
+7	# What changed. This file replaces a deprecated version whose claims were written from the
+8	# abstract only, with cell types and every measure chosen by the earlier author (proxy FS and
+9	# excitatory classes, a 6 to 30 Hz whisking band, a touch-selectivity index, Rayleigh and
+10	# harmonic phase tests). Read against the full text on 2026-10-20, the criteria of
+11	# exc-mainly-touch and fs-enhance-touch-selectivity tested measures the paper does not use, and
+12	# seven or more of the paper's findings on these data had no claim. Every claim is written again
+13	# here from the full text: statements, sources, quotes, statistics, expected values and criteria
+14	# all come from the paper. The ids of the eight earlier claims are kept where the finding is the
+15	# same (vpm-touch, vpm-whisking, fs-touch-and-whisking, exc-mainly-touch,
+16	# fs-suppress-movement-spiking, fs-enhance-touch-selectivity, thalamus-drives-fs,
+17	# sensory-input-drives-fs), so the outcomes can be compared; their criteria are new. The
+18	# earlier file's amendments and its proxy cell classes no longer apply. The new claims are
+19	# vpm-whisking-phase, exc-vm-touch-whisking, exc-threshold-touch-vs-whisking,
+20	# exc-effective-reversal, exc-inhibition-timing, fs-touch-response, fs-vm-touch-whisking,
+[... 771 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/be70a580-15c8-4e6d-9924-f25c2922274e/tool-results/bcvra6jqk.txt",
+ "offset": 792
+}
+```
+
+```
+792	  depends_on:
+793	  - fs-whisking-phase
+794	  criterion: >-
+795	    r2 of the phase fit (sinusoid, or sinusoid plus double frequency as in Supplementary Fig.
+796	    7g; 12 bins; filters O1) for the 10 ION-cut FS cells and the control FS cells; Supplementary
+797	    Fig. 12b compares the two distributions by their medians. The paper reports no test.
+798	    Reproduced when the ION-cut median r2 is below the control median and at least one ION-cut
+799	    cell has r2 > 0.25 (Supplementary Fig. 12a); not reproduced otherwise.
+800	- id: pv-enphr-suppression
+801	  statement: Yellow light in PV-IRES-Cre mice expressing eNpHR3.0 strongly inhibits most L4 PV
+802	    interneurons (3 of 4); their rate falls 3 ms after laser onset and L4 excitatory activity
+803	    rises 2 ms later.
+804	  source: Results, Layer 4 FS interneurons suppress reafference in L4, paragraph 7; Supplementary
+805	    Figure 13a,c
+806	  quote: First, the spike rate of L4 PV interneurons decreased 3 ms after laser onset, and activity
+807	    in L4 neurons increased only 2 ms later (Supplementary Fig. 13c) ... Four L4 PV interneurons
+808	    recorded. 3 out of 4 are strongly inhibited by eNpHR stimulation.
+809	  expected:
+810	  - quantity: L4 PV interneurons strongly inhibited by light
+811	    value: 3
+[... 305 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -c "^- id:" 10.1038-nn.4412.yaml; grep "^- id:" 10.1038-nn.4412.yaml | tr '\n' ' '; python3 - <<'EOF'
+import json
+nb=json.load(open('reproduce_yu_2016.ipynb'))
+print(len(nb['cells']))
+for i,c in enumerate(nb['cells']):
+    src=''.join(c['source'])
+    print(f"\n===== CELL {i} [{c['cell_type']}] =====")
+    print(src[:3000] + ('\n...[src truncated %d]'%len(src) if len(src)>3000 else ''))
+EOF
+```
+
+```
+<persisted-output>
+Output too large (89.3KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/be70a580-15c8-4e6d-9924-f25c2922274e/tool-results/bhz95l1hf.txt
+
+Preview (first 2KB):
+33
+- id: behavior-touches - id: vpm-touch - id: vpm-whisking - id: vpm-whisking-phase - id: exc-vm-touch-whisking - id: exc-threshold-touch-vs-whisking - id: exc-effective-reversal - id: exc-inhibition-timing - id: fs-touch-response - id: fs-vm-touch-whisking - id: fs-whisking-rate - id: fs-whisking-phase - id: fs-touch-and-whisking - id: exc-mainly-touch - id: vpm-photoinhibition - id: exc-thalamus-photoinhibition - id: thalamus-drives-fs - id: rabies-vpm-input - id: ion-cut-exc-no-touch - id: ion-cut-exc-whisking - id: ion-cut-exc-phase - id: ion-cut-fs-no-touch - id: sensory-input-drives-fs - id: ion-cut-fs-phase - id: pv-enphr-suppression - id: fs-suppress-movement-spiking - id: fs-enhance-touch-selectivity - id: exc-touch-spikes-enphr - id: auc-weak-strong - id: auc-groups - id: behavior-false-alarms - id: exc-inhibition-whisking - id: ion-cut-behavior 70
+
+===== CELL 0 [markdown] =====
+# Reproducing Yu et al. (2016) from dandiset 000005
+
+Paper: Yu J, Gutnisky DA, Hires SA, Svoboda K (2016). Layer 4 fast-spiking interneurons filter
+thalamocortical signals during active somatosensation. *Nature Neuroscience* 19:1647-1657,
+[doi:10.1038/nn.4412](https://doi.org/10.1038/nn.4412).
+
+Dandiset: [DANDI:000005](https://dandiarchive.org/dandiset/000005/0.220126.1853), version
+0.220126.1853. The paper cites no dandiset version (it predates the archive). 0.220126.1853 is the
+only published version, so it is pinned; the draft (last modified 2026-02-12) lists the same 148
+asset paths and sizes (printed below). The version is the same as that of the earlier attempt,
+`000005-yu-2016-01`.
+
+[... 6 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/be70a580-15c8-4e6d-9924-f25c2922274e/tool-results/bhz95l1hf.txt"
+}
+```
+
+```
+1	33
+2	- id: behavior-touches - id: vpm-touch - id: vpm-whisking - id: vpm-whisking-phase - id: exc-vm-touch-whisking - id: exc-threshold-touch-vs-whisking - id: exc-effective-reversal - id: exc-inhibition-timing - id: fs-touch-response - id: fs-vm-touch-whisking - id: fs-whisking-rate - id: fs-whisking-phase - id: fs-touch-and-whisking - id: exc-mainly-touch - id: vpm-photoinhibition - id: exc-thalamus-photoinhibition - id: thalamus-drives-fs - id: rabies-vpm-input - id: ion-cut-exc-no-touch - id: ion-cut-exc-whisking - id: ion-cut-exc-phase - id: ion-cut-fs-no-touch - id: sensory-input-drives-fs - id: ion-cut-fs-phase - id: pv-enphr-suppression - id: fs-suppress-movement-spiking - id: fs-enhance-touch-selectivity - id: exc-touch-spikes-enphr - id: auc-weak-strong - id: auc-groups - id: behavior-false-alarms - id: exc-inhibition-whisking - id: ion-cut-behavior 70
+3	
+4	===== CELL 0 [markdown] =====
+5	# Reproducing Yu et al. (2016) from dandiset 000005
+6	
+7	Paper: Yu J, Gutnisky DA, Hires SA, Svoboda K (2016). Layer 4 fast-spiking interneurons filter
+8	thalamocortical signals during active somatosensation. *Nature Neuroscience* 19:1647-1657,
+9	[doi:10.1038/nn.4412](https://doi.org/10.1038/nn.4412).
+10	
+11	Dandiset: [DANDI:000005](https://dandiarchive.org/dandiset/000005/0.220126.1853), version
+12	0.220126.1853. The paper cites no dandiset version (it predates the archive). 0.220126.1853 is the
+13	only published version, so it is pinned; the draft (last modified 2026-02-12) lists the same 148
+14	asset paths and sizes (printed below). The version is the same as that of the earlier attempt,
+15	`000005-yu-2016-01`.
+16	
+17	Claims: `claims/000005/10.1038-nn.4412.yaml`, written by a reader from the version of record with its
+18	Online Methods and the supplement (Supplementary Figures 1 to 14, Supplementary Tables 1 and 2), and
+19	checked by a second reader on 2026-10-20. It replaces the claims file of the earlier attempt, which
+20	was written from the abstract. The ids of e
+[... 681 more lines not kept]
 ```
 
 **Agent calls Bash**
@@ -68,116 +203,237 @@ cd  cat 10.1038-nn.4412.yaml
 cd  python3 - <<'EOF'
 import json
 nb=json.load(open('reproduce_yu_2016.ipynb'))
+out=open('/tmp/claude/nb_full.txt','w') if False else None
+import os
+d=os.environ.get('TMPDIR','/tmp/claude')
+f=open(d+'/nb_full.txt','w')
 for i,c in enumerate(nb['cells']):
-    print(f"\n======== CELL {i} [{c['cell_type']}] ========")
-    print(''.join(c['source']))
+    f.write(f"\n===== CELL {i} [{c['cell_type']}] =====\n")
+    f.write(''.join(c['source'])+"\n")
     for o in c.get('outputs',[]):
-        if 'text' in o: print('--OUT--\n'+''.join(o['text'])[:6000])
+        if 'text' in o: f.write("--- OUT ---\n"+''.join(o['text'])+"\n")
         elif 'data' in o:
-            d=o['data']
-            if 'text/plain' in d: print('--OUT--\n'+''.join(d['text/plain'])[:6000])
-        elif o.get('output_type')=='error': print('--ERR--',o['ename'],o['evalue'])
+            if 'text/plain' in o['data'] and 'image/png' not in o['data']: f.write("--- OUT data ---\n"+''.join(o['data']['text/plain'])+"\n")
+            elif 'image/png' in o['data']: f.write("--- [image] ---\n")
+        if o.get('output_type')=='error': f.write("--- ERROR ---\n"+o['ename']+o['evalue']+"\n")
+f.close()
+print(d)
 EOF
+wc -l $TMPDIR/nb_full.txt
 ```
 
 ```
-<persisted-output>
-Output too large (71KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/c3cd3350-b1b2-4f04-bbf4-f64adad23688/tool-results/b9soyrsqu.txt
-
-Preview (first 2KB):
-======== CELL 0 [markdown] ========
-# Reproducing Yu et al. (2016) from dandiset 000005
-
-**Paper.** Yu J, Gutnisky DA, Hires SA, Svoboda K (2016). Layer 4 fast-spiking interneurons filter
-thalamocortical signals during active somatosensation. *Nature Neuroscience* 19:1647-1657.
-[doi:10.1038/nn.4412](https://doi.org/10.1038/nn.4412). The full text is not open access, and no
-open copy was found (PubMed Central, Europe PMC, Unpaywall, OpenAlex, Semantic Scholar). This
-attempt used only the abstract and the eight figure titles shown on the paper's public page. No
-number from the paper is tested, and every method choice here is a common one made in this attempt,
-not the paper's.
-
-**Dandiset.** [DANDI:000005](https://dandiarchive.org/dandiset/000005/0.220126.1853), version
-0.220126.1853. The paper predates the archive and cites no version. This is the only published
-version; the draft lists the same 148 assets and sizes, so the most recent published version was
-pinned.
-
-[... 17 more lines not kept]
+/tmp/claude-1001
+2247 /tmp/claude-1001/nb_full.txt
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/c3cd3350-b1b2-4f04-bbf4-f64adad23688/tool-results/b9soyrsqu.txt"
+ "file_path": "/tmp/claude-1001/nb_full.txt",
+ "limit": 420
 }
 ```
 
 ```
 1	
-2	======== CELL 0 [markdown] ========
+2	===== CELL 0 [markdown] =====
 3	# Reproducing Yu et al. (2016) from dandiset 000005
 4	
-5	**Paper.** Yu J, Gutnisky DA, Hires SA, Svoboda K (2016). Layer 4 fast-spiking interneurons filter
-6	thalamocortical signals during active somatosensation. *Nature Neuroscience* 19:1647-1657.
-7	[doi:10.1038/nn.4412](https://doi.org/10.1038/nn.4412). The full text is not open access, and no
-8	open copy was found (PubMed Central, Europe PMC, Unpaywall, OpenAlex, Semantic Scholar). This
-9	attempt used only the abstract and the eight figure titles shown on the paper's public page. No
-10	number from the paper is tested, and every method choice here is a common one made in this attempt,
-11	not the paper's.
-12	
-13	**Dandiset.** [DANDI:000005](https://dandiarchive.org/dandiset/000005/0.220126.1853), version
-14	0.220126.1853. The paper predates the archive and cites no version. This is the only published
-15	version; the draft lists the same 148 assets and sizes, so the most recent published version was
-16	pinned.
-17	
-18	**What the dandiset holds.** 18 sessions of silicon probe recordings in VPM (6 mice, sorted units),
-19	and 130 sessions with one L4 neuron each, recorded whole-cell or juxtacellularly (49 mice), all
-20	during a pole localization task with whisker tracking, and most L4 sessions with optogenetic
-[... 682 more lines not kept]
+5	Paper: Yu J, Gutnisky DA, Hires SA, Svoboda K (2016). Layer 4 fast-spiking interneurons filter
+6	thalamocortical signals during active somatosensation. *Nature Neuroscience* 19:1647-1657,
+7	[doi:10.1038/nn.4412](https://doi.org/10.1038/nn.4412).
+8	
+9	Dandiset: [DANDI:000005](https://dandiarchive.org/dandiset/000005/0.220126.1853), version
+10	0.220126.1853. The paper cites no dandiset version (it predates the archive). 0.220126.1853 is the
+11	only published version, so it is pinned; the draft (last modified 2026-02-12) lists the same 148
+12	asset paths and sizes (printed below). The version is the same as that of the earlier attempt,
+13	`000005-yu-2016-01`.
+14	
+15	Claims: `claims/000005/10.1038-nn.4412.yaml`, written by a reader from the version of record with its
+16	Online Methods and the supplement (Supplementary Figures 1 to 14, Supplementary Tables 1 and 2), and
+17	checked by a second reader on 2026-10-20. It replaces the claims file of the earlier attempt, which
+18	was written from the abstract. The ids of eight earlier claims are kept; their criteria are new.
+19	The paper's data statement points to CRCNS ssc-7; no analysis code was found.
+20	
+[... 400 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/c3cd3350-b1b2-4f04-bbf4-f64adad23688/tool-results/b9soyrsqu.txt",
- "offset": 703
+ "file_path": "/tmp/claude-1001/nb_full.txt",
+ "offset": 420,
+ "limit": 400
 }
 ```
 
 ```
-703	0.12 and 0.88 (24 units)
-704	
-705	
-706	======== CELL 23 [markdown] ========
-707	## fs-touch-and-whisking
-708	
-709	> L4 fast-spiking (FS) interneurons inherit the responses of VPM, firing in response to both touch
-710	> and whisker movement.
-711	
-712	======== CELL 24 [code] ========
-713	fs = inc[inc.cls == "FS"]
-714	print(f"FS (tagged) cells included: {len(fs)} of {int((meas.cls == 'FS').sum())} "
-715	      f"(dropped: {int(meas[(meas.cls == 'FS')].n_spikes.isna().sum())} without a named principal whisker)")
-716	print(f"Touch-responsive: {int(fs.touch_resp.sum())} ({fs.touch_resp.mean():.2f}); whisking-modulated: "
-717	      f"{int(fs.whisk_mod.sum())} ({fs.whisk_mod.mean():.2f}); both: {int((fs.touch_resp & fs.whisk_mod).sum())}. "
-718	      "Criterion: both fractions >= 0.5 reproduced; one of them partially.")
-719	print(f"Touch response (Hz) median {fs.touch_resp_hz.median():.1f} (range {fs.touch_resp_hz.min():.1f} to "
-720	      f"{fs.touch_resp_hz.max():.1f}); whisking modulation (Hz) median {fs.whisk_mod_hz.median():.2f} "
-721	      f"(range {fs.whisk_mod_hz.min():.2f} to {fs.whisk_mod_hz.max():.2f})")
-722	print("Variant p < 0.05: touch", round((fs.touch_p < 0.05).mean(), 2), ", whisking", round((fs.whisk_p < 0.05).mean(), 2))
-[... 342 more lines not kept]
+420	Photostimulation sites by mouse line, labelled region and wavelength:
+421	                                           files  with_light  lit_trials  short_pulses  isolated  long_epochs  pulses_per_trial  power_max
+422	line                site_region lambda_nm                                                                                                 
+423	PV-ChR2             VPM         594.0          1           1          58          6660         0           17             150.0       15.0
+424	PV-IRES-Cre         vS1         594.0         47          47        1490             0         0         1832               1.0        3.0
+425	PV-IRES-Cre x Ai32  vS1         594.0          1           0           0             0         0            0               0.0        0.0
+426	SOM-IRES-Cre x Ai32 vM1         473.0          3           3          54          5400         0            0             100.0       15.0
+427	                    vS1         594.0          5           3          16           100       100            0               5.0       15.0
+428	VGAT-ChR2-EYFP      VPM         594.0         34          32         760        165357        32            1             250.0       15.0
+429	                    VPM and vS1 473.0         24          21         119         11383       689            5              12.0       15.0
+430	                    vM1         473.0         25          23         360         40149        25            0             100.0       15.0
+431	                    vS1         594.0         33          29         431         15160      1449            0              10.0       15.0
+432	
+433	photo_stim_mode values of the lit trials, by site region:
+434	site_region  modes                            
+435	VPM          shift                                21
+436	             5ms_pulse                            10
+437	             5ms_pulse,constant                    1
+438	             constant_shift,shift                  1
+439	VPM
+[... 380 more lines not kept]
 ```
-
-**Agent**
-
-Notebook read. Next I'm going through the helper module.
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "yu2016.py"
+ "file_path": "/tmp/claude-1001/nb_full.txt",
+ "offset": 820,
+ "limit": 450
+}
+```
+
+```
+820	    ("4 Every L4 file gives cortical layer 4", "still present", f"layers given: {meta.layer.unique().tolist()}, depth {meta.dv_mm.min():.2f} to {meta.dv_mm.max():.2f} mm"),
+821	    ("5 Optogenetic conditions not described (photo_stim_mode, power NaN, no opsin)", "still present",
+822	     f"photo_stim_power NaN in {sum(int(r['trials'].photo_stim_power.isna().all()) for r in l4)} of {len(l4)} L4 files; files naming eNpHR: "
+823	     f"{sum(bool(re.search(terms['eNpHR'], r['metadata_text'])) for r in l4)}"),
+824	    ("6 Session description gives the wrong recording mode for 24 of 130 L4 files", "still present",
+825	     f"files whose described mode disagrees with the trace: {mislabel}"),
+826	    ("7 L4 first_touch_time is the trial start plus the latency divided by 1000", "still present",
+827	     f"L4 trials where the table value x 1000 matches the touch series: {np.mean(np.abs(ft[ft.kind == 'L4'].table_rel * 1000 - ft[ft.kind == 'L4'].series_rel) < 0.002):.3f}"),
+828	    ("8 L4 trace at 10 or 20 kHz, stated only by the timestamps", "still present", f"files by rate: {mode.vm_hz.value_counts().to_dict()}"),
+829	    ("9 8 files name no principal whisker; VPM files give one per file though units have their own", "still present",
+830	     f"files without one: {int((~wh.principal).sum())}; VPM units responding most to another whisker: {int((multi.best != multi.file_pw).sum())} of {len(multi)}"),
+831	    ("10 VPM-site light given as 594 nm in VGAT-ChR2 mice; vS1 594 nm pulses drive VGAT-ChR2 cells", "still present",
+832	     f"VGAT-ChR2 cells driven by pulses at sites labelled vS1 594 nm: {int(((cells.tag_site == 'vS1') & cells.driven).sum())}"),
+833	    ("11 No analysis code linked by the paper or the dandiset", "still present", "the dandiset links only the paper (related_publications); the claims file found no code"),
+834	]
+835	print(pd.DataFrame(status, columns=["earlier finding", "status", "evidence here"]).to_string(index=False))
+836	--- OUT ---
+837	               
+[... 432 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb_full.txt",
+ "offset": 1270,
+ "limit": 500
+}
+```
+
+```
+1270	    cnt.append({"FS reading": rname, "VGAT_FS_whole_cell": int((vgat["mode"] == "whole-cell").sum()),
+1271	                "VGAT_FS_cell_attached": int((vgat["mode"] == "cell-attached").sum()),
+1272	                "VGAT_FS_cell_attached_no_flagged": int(((vgat["mode"] == "cell-attached") & ~vgat.subject.isin(flagged)).sum()),
+1273	                "FS_all_lines": int((cells[col] == "FS").sum()), "FS_with_principal_whisker": int((meas[col] == "FS").sum())})
+1274	print("FS cells per reading; Supplementary Table 2: VGAT-ChR2 whole-cell 5 (control), cell-attached 24 (14 control + 10 ION-cut); "
+1275	      "control ChR2-tagged 19; control FS of all lines 26 (text) or 25 (Supp. Fig. 7)")
+1276	print(pd.DataFrame(cnt).to_string(index=False))
+1277	rows = []
+1278	for rname, col in FS_READINGS_TOUCH.items():
+1279	    for sel in ("all", "no_flagged"):
+1280	        g = group("FS", None, sel, col)
+1281	        lat = g.dropna(subset=["lat_centre"])
+1282	        row = {"FS reading": rname, "cells": sel, "n": len(g), "nonwhisk_mean": g["filtfilt:rate_nonwhisk"].mean(),
+1283	               "nonwhisk_mean_lfilter": g["lfilter:rate_nonwhisk"].mean(), "nonwhisk_sd": g["filtfilt:rate_nonwhisk"].std(),
+1284	               "spt_mean": g.spt.mean(), "spt_sd": g.spt.std(), "spt_median": g.spt.median(), "lat_n": len(lat),
+1285	               "lat_O9a_edge_mean": lat.lat_edge.mean(), "lat_O9b_centre_mean": lat.lat_centre.mean(), "lat_centre_median": lat.lat_centre.median(),
+1286	               "lat_sd": lat.lat_centre.std(), "lat_max": lat.lat_centre.max()}
+1287	        row["within_of_3"] = (within(row["nonwhisk_mean"], 9.3, 1.67) + within(row["spt_mean"], 1.9, 0.2)
+1288	                              + max(within(row["lat_O9a_edge_mean"], 5.3, 0.53), within(row["lat_O9b_centre_mean"], 5.3, 0.53)))
+1289	        rows.append(row)
+[... 480 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb_full.txt",
+ "offset": 1770,
+ "limit": 480
+}
+```
+
+```
+1770	        n = tri.max() + 1
+1771	        c = np.bincount(ks, weights=count[m], minlength=n)
+1772	        t = np.bincount(ks, minlength=n) / 1000
+1773	        keep = t > 0
+1774	        c, t = c[keep], t[keep]
+1775	        if len(c) < 2:
+1776	            out[name] = (np.nan, np.nan)
+1777	            continue
+1778	        idx = rng.integers(0, len(c), (yu2016.N_BOOT, len(c)))
+1779	        bs = c[idx].sum(axis=1) / t[idx].sum(axis=1)
+1780	        out[name] = (np.percentile(bs, 2.5), np.percentile(bs, 97.5))
+1781	    return out
+1782	
+1783	def onset_psth(r, d):
+1784	    """Rate (spikes/s) in 1 ms bins from 25 ms before to 100 ms after the first light sample of each lit trial."""
+1785	    sp = np.sort(r["spikes"])
+1786	    st = r["trials"].start.to_numpy()
+1787	    on = np.array([st[t] + w[0] for t, w in d["windows"].items()])
+1788	    edges = np.arange(-25, 101) / 1000
+1789	    h = np.zeros(len(edges) - 1)
+[... 459 more lines not kept]
+```
+
+**Agent**
+
+Notebook read. Now the helper module.
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "^def \|^[A-Z_]* = " yu2016.py
+```
+
+```
+105:DANDISET_ID = "000005"
+106:DANDISET_VERSION = "0.220126.1853"
+108:WHISK_HZ = 1_000
+109:ANALYSIS_END_S = 5.0
+111:WHISK_BAND_HZ = (6.0, 60.0)
+112:WHISK_ORDER = 4
+113:WHISK_AMP_DEG = 2.5
+114:NONWHISK_AMP_DEG = 1.25
+115:NONWHISK_MIN_S = 0.100
+116:LICK_GUARD_S = 0.100
+117:TOUCH_GUARD_PRE_S = 0.010
+118:TOUCH_GUARD_POST_S = 0.100
+119:ONSET_RISE_DEG = 2.0
+120:ONSET_NO_TOUCH_S = 0.250
+121:PRE_ONSET_S = (-0.200, 0.0)
+122:POST_ONSET_S = (0.100, 0.300)
+123:PHASE_BINS = 12
+125:FILTERS = ("filtfilt", "lfilter")       # readings O1 a and O1 b
+127:WC_PROMINENCE_MV = 20.0
+128:WC_MIN_DVDT = 10.0                      # mV/ms
+[... 69 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "yu2016.py",
+ "limit": 530
 }
 ```
 
@@ -190,86 +446,194 @@ Notebook read. Next I'm going through the helper module.
 6	
 7	The dandiset holds two kinds of file, one session each:
 8	
-9	- `behavior+ecephys`: silicon probe recordings in VPM, a few sorted units per file (spike
-10	  times at 1 ms resolution), with whisker angle, curvature, touch onsets and offsets and pole
-11	  availability at 1 kHz for the principal whisker and its neighbours.
-12	- `behavior+icephys(+ogen)`: one L4 neuron per file, recorded whole-cell or juxtacellularly,
-13	  as a 10 kHz `CurrentClampSeries` (5.5 s per trial), with whisker angle and touches at 1 kHz
-14	  (5 s per trial) and, in most files, one or two photostimulation series at 10 kHz.
+9	- `behavior+ecephys`: chronic silicon probe recordings in VPM, a few sorted units per file
+10	  (spike times), with whisker angle, curvature, touch onsets and offsets of the principal whisker
+11	  and its neighbours at 1 kHz, and a lick trace.
+12	- `behavior+icephys(+ogen)`: one L4 neuron per file, recorded whole-cell or cell-attached, as a
+13	  `CurrentClampSeries` at 10 or 20 kHz, the injected current, whisker variables and touches at
+14	  1 kHz (5 s per trial), a lick trace and, in most files, one or two photostimulation series.
 15	
-16	Files are streamed from the archive at the pinned version; nothing is written to disk. Each
-17	file is reduced on loading to spike times, the whisker variables of the principal whisker,
-18	touch times and light epochs.
-19	
-20	The paper's full text is not open access and no analysis code is linked by the paper or the
-[... 617 more lines not kept]
+16	Files are streamed from the archive at the pinned version; nothing is written to disk. Each file
+17	is reduced as it loads (in a worker process) to what the claims use: spike times, the whisking
+18	epochs of the principal whisker under both filter readings, touches, licks, light epochs and, for
+19	whole-cell recordings, the membrane potential with spikes removed (averaged into the 1 ms bins of
+20	the whisker clock), spike thresholds and full-rate event-aligned averages.
+[... 510 more lines not kept]
 ```
 
-**Agent**
+**Agent calls Read**
 
-The helper module is read. Now I'll check open-access status myself and look at the archive metadata.
-
-**Agent calls Bash**
-
-```bash
-cd  curl -s "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1038/nn.4412&format=json&resultType=core" | python3 -c "import json,sys; d=json.load(sys.stdin); [print({k:r.get(k) for k in ['pmid','pmcid','isOpenAccess','inPMC','hasPDF','authMan','title']}) for r in d['resultList']['result']]"; curl -s "https://api.unpaywall.org/v2/10.1038/nn.4412?email=[removed: an e-mail address]" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('is_oa'), d.get('oa_status'), [l.get('url') for l in d.get('oa_locations',[])])"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd  mkdir -p paper; curl -s "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27749825&rettype=abstract&retmode=text" > paper/abstract_pubmed.txt; cat paper/abstract_pubmed.txt; curl -s "https://api.unpaywall.org/v2/10.1038/nn.4412?email=[removed: an e-mail address]" | head -c 600
-```
-
-Result: the fetched text is not kept.
-
-**Agent**
-
-The paper is closed access, so I saved the PubMed abstract to `paper/`. Next, the dandiset metadata from the REST API.
-
-**Agent calls Bash**
-
-```bash
-cd  B=https://api.dandiarchive.org/api/dandisets/000005/versions/0.220126.1853; curl -s $B/ | python3 -c "
-import json,sys; d=json.load(sys.stdin); print(d.get('description','')[:3000]); print(json.dumps(d.get('assetsSummary'),indent=0)[:2500])"
-```
-
-```
-intracellular and extracellular electrophysiology recordings performed on mouse barrel cortex and ventral posterolateral nucleus (vpm) in whisker-based object locating task.
+```json
 {
-"species": [
-{
-"name": "House mouse",
-"schemaKey": "SpeciesType",
-"identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10090"
+ "file_path": "yu2016.py",
+ "offset": 530,
+ "limit": 300
 }
-],
-"approach": [
+```
+
+```
+530	def _light(f):
+531	    """Per photostimulation series, the light-on intervals (s), and the site's labelled region
+532	    and wavelength."""
+533	    out = {}
+534	    info = {}
+535	    g = f.get("general/optogenetics")
+536	    if g is not None:
+537	        for name in g:
+538	            s = g[name]
+539	            loc = _str(s["location"]) if "location" in s else ""
+540	            info[name.replace("site_ ", "photostimulation_site_ ")] = {
+541	                "region": loc.split(";")[0].replace("brain_region:", "").strip(),
+542	                "lambda_nm": float(s["excitation_lambda"][()])}
+543	    pres = f["stimulus/presentation"]
+544	    for name in pres:
+545	        if not name.startswith("photostimulation"):
+546	            continue
+547	        d = read(f, f"stimulus/presentation/{name}/data")
+548	        on = np.flatnonzero(d > 0)
+549	        rec = {"region": info.get(name, {}).get("region", ""), "lambda_nm": info.get(name, {}).get("lambda_nm", np.nan),
+[... 280 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
 {
-"name": "electrophysiological approach",
-"schemaKey": "ApproachType"
-},
-{
-"name": "optogenetic approach",
-"schemaKey": "ApproachType"
+ "file_path": "yu2016.py",
+ "offset": 830,
+ "limit": 380
 }
-],
-"schemaKey": "AssetsSummary",
-[... 32 more lines not kept]
+```
+
+```
+830	
+831	
+832	def psth_latency(count, tri, on):
+833	    """Touch PSTH (1 ms bins, -25 to 100 ms) and the dPSTH/dt latency (ms) with the paper's
+834	    exclusion; returns (latency left edge, latency bin centre, reason when excluded)."""
+835	    lags = np.arange(-25, 100)
+836	    m = np.array([np.nanmean(_window_counts(count, tri, on, l, l + 1)) for l in lags]) * WHISK_HZ
+837	    post = m[lags >= 0]
+838	    if not np.isfinite(post).any() or np.nanmax(post) < 10:
+839	        return np.nan, np.nan, "max rate below 10 spikes/s", m
+840	    d = np.diff(m)                                  # d[i] = m[i+1] - m[i], the change into bin lags[i+1]
+841	    lag_d = lags[1:]
+842	    base = d[(lag_d >= -25) & (lag_d < 0)]
+843	    thr = 3 * np.nanstd(base)
+844	    after = np.flatnonzero((lag_d >= 0) & (d > thr))
+845	    if len(after) == 0 or thr == 0 and not np.any(d[lag_d >= 0] > 0):
+846	        return np.nan, np.nan, "no crossing", m
+847	    k = lag_d[after[0]]
+848	    return float(k), float(k + 0.5), "", m
+849	
+[... 343 more lines not kept]
+```
+
+**Agent**
+
+Read the notebook and helper module; checking the supplement tables and archive metadata next.
+
+**Agent calls Bash**
+
+```bash
+cd paper; ls -la; which pdftotext; python3 -c "import pypdf; print('pypdf ok')"; grep -n -i "Supplementary Table 1\|ION cut\|ION-cut\|transect" 10.1038-nn.4412.txt | head -40
+```
+
+```
+total 15136
+drwxr-xr-x 2 runner runner     4096 Oct 20 22:00 .
+drwxr-xr-x 6 runner runner     4096 Oct 20 22:03 ..
+-rw-r--r-- 1 runner runner 12229873 Oct 20 22:00 10.1038-nn.4412.pdf
+-rw-r--r-- 1 runner runner  3155211 Oct 20 22:00 10.1038-nn.4412.supp.pdf
+-rw-r--r-- 1 runner runner   102007 Oct 20 22:00 10.1038-nn.4412.txt
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import pypdf; print('pypdf ok')
+    ^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'pypdf'
+772:To remove sensory input, we transected the infraorbital nerve 
+948:in response to whisker movement were reduced (ION cut: mean ± s.d., 
+952:potential to whisker movement was abolished (ION cut, 0.12 ± 0.04 
+958:We recorded spikes from FS interneurons in mice with transected 
+965:spike rates in response to whisking after ION cut (depth, 658 to 819 
+981:ION cut
+1087:ION cut
+1089:ION cut
+1107:Figure 7  Sensory input drives L4 FS interneurons. (a) Top, schematic showing infraorbital nerve transection. Bottom, schematic showing whole-cell 
+[... 15 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  curl -sL "https://www.nature.com/articles/nn.4412" -A "Mozilla/5.0" -o $TMPDIR/nn.html; python3 - <<'EOF'
-import re,os
-h=open(os.environ['TMPDIR']+'/nn.html',encoding='utf8',errors='ignore').read()
-print(len(h))
-for m in re.findall(r'<b id="Fig\d+"[^>]*>(.*?)</b>|data-title="([^"]+)"',h)[:30]: print(m)
-for m in re.findall(r'<figcaption[^>]*>(.*?)</figcaption>',h,re.S)[:12]: print(re.sub('<[^>]+>','',m).strip())
-EOF
+cd paper; sed -n 2440,2560p 10.1038-nn.4412.txt
+```
+
+```
+151002
+160422
+29
+337495
+6
+1
+160126
+160531
+18
+342684
+6
+1
+100328
+160610
+10
+337496
+6
+1
+160126
+160524
+[... 82 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; grep -n "Table 1" 10.1038-nn.4412.txt | head; n=$(grep -n "^Table 1" 10.1038-nn.4412.txt | head -1 | cut -d: -f1); sed -n "$((n-5)),$((n+40))p" 10.1038-nn.4412.txt
+```
+
+```
+2124:Table 1
+of performance during Lick trials. 
+ 
+Nature Neuroscience: doi:10.1038/nn.4412
+
+=== page 24 ===
+Table 1
+Mouse ID
+Mouse line ID
+Sex
+Birth (year‐month‐day)
+Exp date
+Exp age (weeks)
+186997
+1
+1
+120906
+130317
+27
+184389
+[... 27 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; curl -s "https://api.dandiarchive.org/api/dandisets/000005/versions/0.220126.1853/" -o meta.json; python3 -c "
+import json;m=json.load(open('meta.json'))
+print(m.get('description','')[:3000]); print(m.get('assetsSummary')); print([k for k in m])
+"; curl -s "https://api.dandiarchive.org/api/dandisets/000005/versions/0.220126.1853/assets/?page_size=400" -o assets.json; python3 -c "
+import json,collections;a=json.load(open('assets.json'));print(a['count']);
+c=collections.Counter(x['path'].split('_')[-1] for x in a['results']);print(c)
+print([x['path'] for x in a['results'] if not x['path'].endswith('.nwb')])
+"
 ```
 
 Result: the fetched text is not kept.
@@ -277,49 +641,19 @@ Result: the fetched text is not kept.
 **Agent calls Bash**
 
 ```bash
-cd  python3 - <<'EOF'
-import re,os
-h=open(os.environ['TMPDIR']+'/nn.html',encoding='utf8',errors='ignore').read()
-txt=re.sub(r'<script.*?</script>|<style.*?</style>','',h,flags=re.S)
-txt=re.sub('<[^>]+>','\n',txt); txt=re.sub(r'\n\s*\n+','\n',txt)
-i=txt.find('Integrated supplementary information')
-seg=txt[i:i+6000]
-print(seg)
-open('paper/nature_landing_page_text.txt','w').write(txt)
-EOF
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent**
-
-The publisher page carries the supplementary figure legends, which contain method details the claims file did not use. Reading the rest.
-
-**Agent calls Bash**
-
-```bash
-cd  python3 - <<'EOF'
-t=open('paper/nature_landing_page_text.txt').read()
-i=t.find('Supplementary Figure 6 Spike waveform')
-s=t[i:i+12000]
-import re
-print(re.sub(r'\n(?=[^A-Z(])',' ',s))
-EOF
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd  B=https://api.dandiarchive.org/api/dandisets/000005/versions/0.220126.1853; curl -s "$B/assets/?page_size=200" > $TMPDIR/assets.json; python3 - <<'EOF'
-import json,os,requests
-d=json.load(open(os.environ['TMPDIR']+'/assets.json'))
-print(d['count'], len(d['results']))
-a=d['results'][0]; print(a)
-B="https://api.dandiarchive.org/api/dandisets/000005/versions/0.220126.1853"
-m=requests.get(f"{B}/assets/{a['asset_id']}/").json()
-print(json.dumps(m,indent=1)[:5000])
+cd $TMPDIR; python3 - <<'EOF'
+import json, requests, re, collections
+a=json.load(open('assets.json'))['results']
+hits=collections.Counter(); keys=set(); samples={}
+for x in a:
+    r=requests.get(f"https://api.dandiarchive.org/api/assets/{x['asset_id']}/",timeout=60).json()
+    s=json.dumps(r)
+    keys|=set(r.keys())
+    for t in ['ION','infraorbital','nerve','transect','lesion','cut','rabies','NpHR','sham','cell_type','cellType','fast']:
+        if re.search(t if t!='ION' else r'\bION\b', s, re.I if t!='ION' else 0): hits[t]+=1
+    if 'icephys' in x['path'] and not samples: samples=r
+print(hits); print(sorted(keys))
+print(json.dumps({k:samples[k] for k in ['wasAttributedTo','wasGeneratedBy','measurementTechnique','variableMeasured'] if k in samples},indent=0)[:2500])
 EOF
 ```
 
@@ -333,195 +667,289 @@ ModuleNotFoundError: No module named 'requests'
 **Agent calls Bash**
 
 ```bash
-cd  B=https://api.dandiarchive.org/api/dandisets/000005/versions/0.220126.1853; python3 -c "
-import json,os; d=json.load(open(os.environ['TMPDIR']+'/assets.json')); print(d['count'],len(d['results'])); print(d['results'][0]['asset_id'], d['results'][0]['path'])"; id=$(python3 -c "import json,os; print(json.load(open(os.environ['TMPDIR']+'/assets.json'))['results'][5]['asset_id'])"); curl -s "$B/assets/$id/" | python3 -m json.tool | head -150
+cd $TMPDIR; python3 - <<'EOF'
+import json, urllib.request, re, collections
+a=json.load(open('assets.json'))['results']
+hits=collections.Counter(); keys=set(); samples={}
+for x in a:
+    s=urllib.request.urlopen(f"https://api.dandiarchive.org/api/assets/{x['asset_id']}/",timeout=60).read().decode()
+    r=json.loads(s)
+    keys|=set(r.keys())
+    for t in ['infraorbital','nerve','transect','lesion','rabies','NpHR','sham','cell_type','celltype','fast-spiking','interneuron']:
+        if re.search(t, s, re.I): hits[t]+=1
+    if re.search(r'\bION\b', s): hits['ION']+=1
+    if re.search(r'\bcut\b', s, re.I): hits['cut']+=1
+    if 'icephys' in x['path'] and not samples: samples=r
+print(hits); print(sorted(keys))
+print(json.dumps({k:samples.get(k) for k in ['wasAttributedTo','wasGeneratedBy','variableMeasured']},indent=0)[:2000])
+EOF
 ```
 
 ```
-148 148
-b5db4b98-1fa4-47e7-8d59-8378740be3af sub-anm186997/sub-anm186997_ses-20130317_behavior+ecephys.nwb
+Counter()
+['@context', 'access', 'approach', 'blobDateModified', 'contentSize', 'contentUrl', 'dateModified', 'datePublished', 'digest', 'encodingFormat', 'id', 'identifier', 'keywords', 'measurementTechnique', 'path', 'publishedBy', 'repository', 'schemaKey', 'schemaVersion', 'variableMeasured', 'wasAttributedTo', 'wasGeneratedBy']
 {
-    "id": "dandiasset:1ff5bdef-3bb0-4f9f-8e45-62c7871e2632",
-    "path": "sub-anm190963/sub-anm190963_ses-20130408_behavior+icephys+ogen.nwb",
-    "access": [
-        {
-            "schemaKey": "AccessRequirements",
-            "status": "dandi:OpenAccess"
-        }
-    ],
-    "digest": {
-        "dandi:dandi-etag": "9baf87d9ea7290e4cb6bc4731e4f3694-8",
-        "dandi:sha2-256": "7c22c59ad8d1619137159aa14590cf00ffc70a93cd4e6e93b36096114d7c6549"
-    },
-    "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.4.4/context.json",
-    "approach": [
-        {
-            "name": "electrophysiological approach",
-            "schemaKey": "ApproachType"
-[... 90 more lines not kept]
+"wasAttributedTo": [
+{
+"sex": {
+"name": "Female",
+"schemaKey": "SexType",
+"identifier": "http://purl.obolibrary.org/obo/PATO_0000383"
+},
+"species": {
+"name": "House mouse",
+"schemaKey": "SpeciesType",
+"identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10090"
+},
+"genotype": "VGAT-ChR2-EYFP",
+"schemaKey": "Participant",
+"identifier": "anm190963"
+}
+],
+[... 29 more lines not kept]
 ```
 
 **Agent**
 
-Asset metadata has no session descriptions. I'll check the rest of the version metadata for any mention of ION transection, layer or cell type.
+Archive metadata confirms no ION-cut, cell-type or histology fields. Now testing helper functions on synthetic inputs.
 
 **Agent calls Bash**
 
 ```bash
-cd  curl -s https://api.dandiarchive.org/api/dandisets/000005/versions/0.220126.1853/ | python3 -c "
-import json,sys; d=json.load(sys.stdin)
-for k in d: 
-  if k not in ('assetsSummary','contributor'): print(k, json.dumps(d[k])[:600])
-print(json.dumps(d.get('contributor'))[:1500])"; python3 - <<'EOF'
-import json,os,collections
-d=json.load(open(os.environ['TMPDIR']+'/assets.json'))['results']
-print(collections.Counter(p['path'].split('_')[-1] for p in d))
-EOF
+cd  python3 -c "import numpy, scipy, pandas; print(numpy.__version__, scipy.__version__)"; python3 -c "import yu2016" 2>&1 | tail -1
 ```
 
-Result: the fetched text is not kept.
-
-**Agent**
-
-Neither the archive nor the asset metadata marks ION-cut sessions. Next I'll test the helper functions on synthetic data, stubbing out the network imports.
+```
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import numpy, scipy, pandas; print(numpy.__version__, scipy.__version__)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'numpy'
+ModuleNotFoundError: No module named 'h5py'
+```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat > $TMPDIR/t.py <<'EOF'
-import sys, types, numpy as np, pandas as pd
-for m in ["h5py","remfile","requests","dandi","dandi.dandiapi"]:
-    mod=types.ModuleType(m); sys.modules[m]=mod
-sys.modules["dandi.dandiapi"].DandiAPIClient=None
-sys.path.insert(0,"."); import yu2016 as Y
-rng=np.random.default_rng(0)
-# synthetic session: 100 trials of 5 s whisker at 1 kHz, trials 6 s apart
-nT=100; fs=1000; L=5000
-starts=np.arange(nT)*6.0
-trials=pd.DataFrame({"start":starts,"stop":starts+5.9})
-t=(starts[:,None]+np.arange(L)/fs).ravel()
-# whisking 12 Hz with amplitude bursts in half of each trial
-tt=np.arange(L)/fs
-ang=[]
-for k in range(nT):
-    f0=12+rng.normal(0,1)
-    env=np.where((tt>1)&(tt<3.5),15,0.3)
-    ang.append(env*np.sin(2*np.pi*f0*tt+rng.uniform(0,6.28))+rng.normal(0,0.2,L))
-ang=np.concatenate(ang)
-amp,phase,tri=Y.whisking_variables(ang,t,trials)
-touch_on=np.array([k*L+2000 for k in range(nT)]); touch_off=touch_on+50
-w={"principal":True,"t":t,"amp":amp,"phase":phase,"trial":tri,"touch_on":touch_on,"touch_off":touch_off}
-rec={"whiskers":{"p":w},"principal":"p","trials":trials}
-def gen(base, mod, touch_hz):
-    sp=[]
-    rate=base*(1+mod*np.cos(phase))*np.where(amp>=2.5,1,1)
-    rate=np.nan_to_num(rate,nan=base)
-    # touch boost
-    r=rate.copy()
-    for o in touch_on: r[o:o+25]+=touch_hz
-    m=rng.random(len(r))<r/fs
-    return t[m]+0.0002
-pv=[]; 
-for mod,label in [(0,"none"),(0.3,"mod0.3")]:
-    ps=[];amps=[]
-    for rep in range(20 if mod==0 else 5):
-        out=Y.response_measures(gen(10,mod,0 if mod==0 else 50),rec)
-        ps.append(out["whisk_p"]); amps.append(out["whisk_amp_raw_hz"])
-    print(label,"p<0.01 frac",np.mean(np.array(ps)<0.01),"median raw amp",np.median(amps),"expected",10*mod, "touch",out["touch_resp_hz"],out["touch_p"], "rayleigh", out["rayleigh_p"])
-# Rayleigh false positives with non-uniform occupancy?
-o=Y.response_measures(gen(10,0,0),rec); print("null: whisk_p",o["whisk_p"],"rayleigh_p",o["rayleigh_p"],"n_null",o["n_null"])
-# touch window units: 50 Hz added for 25 ms -> expect touch_resp ~50
-EOF
-python3 $TMPDIR/t.py
+cd $TMPDIR && (pip install --quiet numpy scipy pandas 2>&1 | tail -2; python3 -c "import numpy, scipy; print(numpy.__version__, scipy.__version__)")
 ```
 
 ```
 Exit code 1
+[notice] A new release of pip is available: 26.2.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip
 Traceback (most recent call last):
-  File "/tmp/claude-1001/t.py", line 1, in <module>
-    import sys, types, numpy as np, pandas as pd
-ModuleNotFoundError: No module named 'numpy'
+  File "<string>", line 1, in <module>
+    import numpy, scipy; print(numpy.__version__, scipy.__version__)
+    ^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'scipy'
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls /home/runner/work/_temp/ ; which -a python python3 uv pip 2>/dev/null; ls ~/.venv* /opt 2>/dev/null | head; python3 -m pip --version
+cd $TMPDIR && pip install numpy scipy pandas 2>&1 | tail -3; python3 -c "import numpy, scipy; print(numpy.__version__, scipy.__version__)"; which -a python3 pip
 ```
 
 ```
-083b0246-975c-4055-a0d8-0462d9e5d23f.sh
-0a8c7306-a6ce-4f22-aecc-4f952392a29e.sh
-0d152735-0a30-48e3-ac75-535f3fbdf224.sh
-_github_workflow
-_runner_file_commands
-bunfig.toml
-c1a210f4-2f48-4468-ba14-467a00244c0e.sh
-c6fa5f58-6c1e-4cef-bec3-87043f26f12d.sh
-e4c570fe-672e-49e4-a7ed-263ad6f9d38b.sh
-node_modules
-package-lock.json
-package.json
-pnpm-lock.yaml
-preflight.err
-preflight.jsonl
-progress.py
-prompt.md
-run.jsonl
-stderr.txt
-transcript.py
-[... 24 more lines not kept]
+[notice] A new release of pip is available: 26.2.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip
+2.5.4 1.18.1
+/opt/hostedtoolcache/Python/3.13.16/x64/bin/python3
+/usr/bin/python3
+/bin/python3
+/opt/hostedtoolcache/Python/3.13.16/x64/bin/pip
+/usr/bin/pip
+/bin/pip
+Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  uv venv -q $TMPDIR/venv && uv pip install -q --python $TMPDIR/venv/bin/python numpy pandas scipy 2>&1 | tail -2; $TMPDIR/venv/bin/python $TMPDIR/t.py
+python3 - <<'EOF'
+import sys, types
+for m in ["h5py","remfile","requests","dandi","dandi.dandiapi"]:
+    mod=types.ModuleType(m); sys.modules[m]=mod
+sys.modules["dandi.dandiapi"].DandiAPIClient=object
+import numpy as np, yu2016 as Y
+rng=np.random.default_rng(0)
+
+# 1. phase_fit null: Poisson spikes independent of phase, 12 bins
+def null_r2(rate=10, T=60, n=500):
+    out=[]
+    for _ in range(n):
+        occ=np.full(12, T*1000/12)
+        c=rng.poisson(rate*T/12, 12)
+        out.append(Y.phase_fit(c/occ*1000)["r2"])
+    return np.array(out)
+for rate,T in [(10,60),(10,400),(1,60)]:
+    r=null_r2(rate,T); print(f"null r2 rate {rate} T {T}s: median {np.median(r):.2f}, frac>0.25 {np.mean(r>0.25):.2f}")
+# fs double fit null
+r=[]; 
+for _ in range(500):
+    c=rng.poisson(10*60/12,12); f=Y.fs_phase_fit(c.astype(float)); r.append(f["r2"])
+print("FS (single/double) null frac>0.25", np.mean(np.array(r)>0.25))
+
+# 2. isolated_pulses with 10 Hz and 5 Hz trains of 5 ms pulses
+for hz in (5,10):
+    on=np.arange(0,1,1/hz)+0.5
+    light={"s":{"pulses":np.c_[on,on+0.005]}}
+    print(hz,"Hz train of",len(on),"pulses -> isolated:",len(Y.isolated_pulses(light,"s")))
+
+# 3. psth_latency on synthetic: count at 1kHz, touches; response at 3 ms
+n=200000; tri=np.repeat(np.arange(40),5000); count=rng.poisson(0.005,n)
+on=np.sort(rng.choice(np.arange(1000,n-1000),400,replace=False))
+for o in on:
+    count[o+3]+=1 if rng.random()<0.6 else 0
+print("psth_latency (true onset bin 3):", Y.psth_latency(count,tri,on)[:3])
+
+# 4. psp latency at sampling rate on synthetic noisy average (10 kHz), PSP starting 4.8 ms
+fs=10000; t=np.arange(int(0.2*fs))/fs-0.05
+for noise in (0.02,0.05,0.1):
+    lat=[]
+    for _ in range(200):
+        v=np.where(t>0.0048, 6*(1-np.exp(-(t-0.0048)/0.003)),0)+rng.normal(0,noise,len(t))
+        lat.append(Y.psp_measures(v.astype(np.float32),100,fs)["latency_ms"])
+    lat=np.array(lat); print(f"PSP latency, white noise sd {noise} mV: median {np.nanmedian(lat):.2f}, frac < 1 ms {np.mean(lat<1):.2f}")
+# neg onset latency
+for noise in (0.02,0.05):
+    lat=[]
+    for _ in range(200):
+        v=np.where(t>0.0042,-4*(1-np.exp(-(t-0.0042)/0.005)),0)+rng.normal(0,noise,len(t))
+        lat.append(Y.neg_onset_latency(v,13,fs))
+    lat=np.array(lat); print(f"neg onset latency, sd {noise}: median {np.nanmedian(lat):.2f}, frac<1ms {np.mean(lat<1):.2f}")
+
+# 5. roc_auc vs Mann-Whitney AUC
+from scipy import stats
+tb=rng.poisson(2,40); ta=rng.poisson(4,40); nb=rng.poisson(2,30); na=rng.poisson(2,30)
+a=Y.roc_auc((tb,nb),(ta,na),np.random.default_rng(1))
+d1,d0=ta-tb,na-nb
+mw=stats.mannwhitneyu(d1,d0).statistic/(len(d1)*len(d0))
+print("roc_auc", round(a,3), "MW AUC", round(mw,3))
+# identical distributions
+print("roc_auc identical", round(Y.roc_auc((tb,tb),(ta,ta),np.random.default_rng(1)),3))
+
+# 6. _iti
+on=np.array([10,50,60,5100]); off=np.array([20,55,70,5110]); tri=np.repeat(np.arange(2),5000)
+print("iti", Y._iti(on,off,tri))
+# 7. spikes_per_touch cortex5
+count=np.zeros(10000,int); count[1010]=1; count[990]=1; tri=np.zeros(10000,int)
+print("spt cortex5 (1 after, 1 before -> 1-2=-1):", Y.spikes_per_touch(count,tri,np.array([1000]),"cortex5")["spt"])
+EOF
 ```
 
 ```
-none p<0.01 frac 0.05 median raw amp 0.3953433178405765 expected 0 touch 0.8000000000000007 0.36636410353805293 rayleigh 0.29365366125421793
-mod0.3 p<0.01 frac 1.0 median raw amp 3.1333820228559515 expected 3.0 touch 49.199999999999996 1.7738330121275577e-11 rayleigh 1.9189619334239971e-28
-null: whisk_p 0.6025 rayleigh_p 0.577660754874886 n_null 399
+null r2 rate 10 T 60s: median 0.15, frac>0.25 0.26
+null r2 rate 10 T 400s: median 0.13, frac>0.25 0.30
+null r2 rate 1 T 60s: median 0.16, frac>0.25 0.28
+FS (single/double) null frac>0.25 0.646
+5 Hz train of 5 pulses -> isolated: 5
+10 Hz train of 10 pulses -> isolated: 1
+psth_latency (true onset bin 3): (3.0, 3.5, '')
+PSP latency, white noise sd 0.02 mV: median 4.80, frac < 1 ms 0.02
+PSP latency, white noise sd 0.05 mV: median 4.90, frac < 1 ms 0.01
+PSP latency, white noise sd 0.1 mV: median 6.20, frac < 1 ms 0.01
+neg onset latency, sd 0.02: median 4.40, frac<1ms 0.01
+neg onset latency, sd 0.05: median 8.00, frac<1ms 0.01
+roc_auc 0.654 MW AUC 0.655
+roc_auc identical 0.494
+iti [  inf 0.03  0.005   inf]
+spt cortex5 (1 after, 1 before -> 1-2=-1): -1.0
 ```
 
 **Agent**
 
-**A. Outcomes** (8 claims, taken from `10.1038-nn.4412.yaml`; no separate attempt record was among my materials)
+**Verifier report, round 1: Yu et al. 2016 (doi:10.1038/nn.4412) on DANDI 000005 @ 0.220126.1853**
+
+The claims file has 33 claims. My outcomes: 6 reproduced, 9 partially reproduced, 4 not reproduced and 14 blocked. Cell numbers are 0-based notebook cell indices.
+
+### A. Outcomes
 
 | Claim | My outcome | Reason |
 |---|---|---|
-| vpm-touch | reproduced | Cell 20: 20 of 24 VPM units are touch-responsive (0.83, criterion ≥ 0.5). The same test with spikes moved to the next trial gives 0.00. Results are consistent across all 6 mice. |
-| vpm-whisking | reproduced | Cell 22: 21 of 24 are modulated by the trial-shift test (0.88). The whisking rate is above the quiet rate in 23 of 24. On spikes moved one trial the test still marks 0.12 against a nominal 0.01 (problem 5), which is far from enough to bring 0.88 below 0.5. |
-| fs-touch-and-whisking | reproduced | Cell 24: 13 of 20 tagged cells are touch-responsive (0.65) and 16 of 20 are whisking-modulated (0.80). Both fractions clear 0.5 and are unchanged across the tag-threshold variants. The FS group is a tagged-GABAergic proxy, not the paper's FS definition (problem 2). |
-| exc-mainly-touch | not_reproduced | Cell 26: one-sided Mann-Whitney on selectivity, EXC > FS p = 0.074 and EXC > VPM p = 0.090. Neither is below 0.05. The fraction modulated by whisking (EXC 0.28, FS 0.80, VPM 0.88) and the whisk-minus-quiet variant (p = 0.047, 0.032) point the paper's way, but they do not decide. The deciding measure is ill-conditioned for cells that barely fire (problem 3). |
-| fs-suppress-movement-spiking | reproduced (weak) | Cell 28: the whisking rate rises in 6 of 7 PV-Cre EXC cells (one is 0 to 0, so 6 of 6 nonzero), one-sided Wilcoxon p = 0.016, the smallest p possible for n = 6. Four of the 7 cells come from mouse anm266945. The rate over the whole light window does not reach significance (p = 0.19). The supplementary legends confirm the assumption: eNpHR in PV cells, 3 of 4 PV cells inhibited. That matches the 3 suppressed cells in cell 15. |
-| fs-enhance-touch-selectivity | not_reproduced | Cell 30: selectivity is lower with light in 2 of 6 cells (median 0.083 without light, 0.949 with, p = 0.95). Without light, selectivity sits at 0 because the touch responses inside the 0.82–2.32 s window are negative and get floored to 0. The touch response itself rises with light (median 0.4 to 8.6 Hz). The metric is degenerate here, but the criterion fails as written. |
-| thalamus-drives-fs | reproduced | Cell 32: the rate falls in 9 of 9 tagged FS cells with VPM-site light (median ratio 0.40, p = 0.002), and the whisking-period rate falls in 9 of 9 too. Only 2 mice, 6 cells from one. The light is a 100 Hz train of 5 ms pulses (250 per trial), which matches the paper's VGAT-ChR2 thalamic photoinhibition (Supp. Fig. 9i). |
-| sensory-input-drives-fs | blocked (other): the recorded reason, methods_underspecified, is wrong | The method is stated on the paper's public landing page. Supp. Figs. 6, 11 and 12 test the claim with infraorbital nerve (ION) transection, comparing the spike-phase fit of FS cells in control and ION-cut mice. The notebook's vM1-light idea is the wrong experiment. The test is blocked only if the files cannot identify ION-cut sessions, and nobody checked (section C). |
+| behavior-touches | partially_reproduced | Both touch counts are within tolerance only under reading (b, principal whisker, every trial): 6.04 and 0.85, but over 9,794 and 8,223 trials against the paper's 4,147 and 4,173. Cortical performance 0.718 is within tolerance; VPM performance 0.585 is not (needs 0.71 ± 0.071) (cell 23). |
+| vpm-touch | not_reproduced | Spikes per touch: mean 0.403 and median 0.268, both out of tolerance (0.6 ± 0.093, 0.4 ± 0.04). Latency: median 2.5 ms is within; mean 6.14 ms is out, inflated by one 71.5 ms unit. The best-whisker variant also fails (mean 0.485) (cell 25). |
+| vpm-whisking | partially_reproduced | The signed-rank test gives p = 5e-8 with whisking higher. Nonwhisking mean 3.76 and median 1.71 are out of tolerance under every reading; the increase count (21–25) and whisking mean (11.0–11.5) are out under some readings (cell 27). |
+| vpm-whisking-phase | reproduced | 25 of 29 (filtfilt) and 27 of 29 (lfilter) units have r2 > 0.25. They are clearly above the shifted-spike control (16 of 29; own > shifted, p = 0.0015) (cells 11, 29). |
+| exc-vm-touch-whisking | partially_reproduced | All 48 measurable cells have a positive PSP and a latency. Latency mean 7.68 ms and amplitude 4.77 mV are out of tolerance; resting Vm and whisking change (b) are within. The no_flagged variant is still partial (amplitude 5.53 mV) (cell 31). |
+| exc-threshold-touch-vs-whisking | partially_reproduced | Touch > whisking holds (p ≤ 1.9e-9). Touch shift 4.36–4.42 mV is out of tolerance (6.1 ± 0.61) under every reading (cell 33). |
+| exc-effective-reversal | reproduced | Per neuron: touch median −50.0 mV > whisking −58.5 mV, in 39 of 48 neurons, and above rest (−63.9 mV). The pooled fit agrees (−31 against −55 mV) under both filters (cell 35). |
+| exc-inhibition-timing | blocked: data_missing | Only one whole-cell file has trials near 0 mV, and it is the PV-ChR2 cell that the paper counts as FS (cells 5, 69). See B17. |
+| exc-inhibition-whisking | blocked: data_missing | Same recordings as exc-inhibition-timing. |
+| fs-touch-response | blocked: methods_underspecified | The FS readings disagree. With the waveform boundary, 2 of 3 values are within tolerance (partial); without it, 1 of 3 (not reproduced). Spikes per touch is 1.39–1.50 in every reading (needs 1.9 ± 0.2). Only 17 FS cells against the paper's 26 (cell 37). |
+| fs-vm-touch-whisking | not_reproduced | Touch latency mean 1.88 ms is out of tolerance (4.0 ± 0.4); two of the five cells give 0.00 and 0.30 ms. Amplitude 5.56 mV and whisking change (a) 2.24–2.54 mV are within. 5 cells against the paper's 7 (cell 39). |
+| fs-whisking-rate | partially_reproduced | Signed-rank p ≤ 0.0012 with whisking higher. 13 of 17 cells increase and 1–2 decrease, both out of tolerance. Whisking mean 19.0 is within (filtfilt); 17.8 is out (lfilter) (cell 41). |
+| fs-whisking-phase | reproduced | 16 of 17 cells are coupled under both filters (14–15 of 15 in no_flagged). The shifted-spike control gives 9 of 17 (cell 43). |
+| fs-touch-and-whisking | reproduced | 11–12 of 17 cells (0.65–0.71) multiplex under every reading (cell 45). |
+| exc-mainly-touch | not_reproduced | The signed-rank test finds a difference (p = 9e-7 and 7e-6). Spikes per touch 0.319 is within tolerance; rates are 1.53 and 3.55 spikes/s against 0.4 and 0.6 (cell 47). |
+| vpm-photoinhibition | blocked: data_missing | No VPM file has light, and every L4 file is in barrel cortex. The archive confirms this (step 4). |
+| exc-thalamus-photoinhibition | partially_reproduced | Vm is lower with light in 12 of 13 cells and variance lower in 10 of 13. Both latencies come out at 0.10 ms by the criterion's rule (needs 4.2 and 2.8 ms), so the thalamic latency is not longer (cell 53). |
+| thalamus-drives-fs | blocked: other (too few cells) | Only 5 FS cells, all from one mouse. The smallest possible two-sided exact p is 0.0625, so no test can reach 0.05. Fractions are out of tolerance in every reading except one: nonwhisking 0.040 under lfilter, O5 b, O7 b. The tag-only variant (9 cells, a reading of fs-touch-response only) gives p ≤ 0.012 with the fractions still out, so the best possible outcome is partial (cell 51). |
+| rabies-vpm-input | blocked: data_missing | The archive holds no histology or images. |
+| ion-cut-exc-no-touch, ion-cut-exc-whisking, ion-cut-exc-phase, ion-cut-fs-no-touch, sensory-input-drives-fs, ion-cut-fs-phase, ion-cut-behavior | blocked: metadata_insufficient | Neither the files, the DANDI metadata nor Supplementary Tables 1 and 2 identify the ION-cut mice. See step 4 below. |
+| pv-enphr-suppression | partially_reproduced (count circular) | All 3 identified PV cells are strongly inhibited. The PV latency was not found (NaN). The E-cell rise comes at 48 ms against an expected 2 ms further delay (cell 55). See B7. |
+| fs-suppress-movement-spiking | partially_reproduced | Both paired tests give p < 1e-4 with light higher. All four rates are out of tolerance: control 1.26 and 3.95, light 2.26 and 6.14 spikes/s, against 0.6, 0.8, 1.6 and 2.7 (cell 57). |
+| fs-enhance-touch-selectivity | partially_reproduced | In light trials p = 2e-6 with whisking higher, but control trials also differ (p ≤ 1.3e-4; paper P = 0.55) (cell 59). |
+| exc-touch-spikes-enphr | not_reproduced | The signed-rank test finds a change (p = 0.044 and 0.0091). The control mean 0.339 is just out of tolerance (0.27 ± 0.06) (cell 61). |
+| auc-weak-strong | reproduced (fragile) | Neurons whose AUC rises have a lower control touch response under both readings: (a) 5.93 against 10.87, (b) 8.14 against 8.18 spikes/s. Reading (b) passes on a 0.04 spikes/s difference (rank-sum p = 1) (cell 63). |
+| auc-groups | blocked: methods_underspecified | Reading (a) has all three tests holding but the means and group sizes out of tolerance (partial). Under reading (b) the reduced-AUC group's touch response changes (p = 0.021), so it is not reproduced (cell 65). |
+| behavior-false-alarms | reproduced | Reading (b)(i) (per session, no correction) gives 6 mice. The other readings give 4–5 (partial). The paper has 8 mice; the data have 9 (cell 67). |
 
-**B. Problems**
+The paper states no chance level for any selection. The notebook's own shifted-spike controls, and my synthetic tests, show the r2 > 0.25 threshold is passed fairly often by chance (B6).
 
-1. [affects a conclusion] Cell 0, cell 33 and the claims file say only the abstract and figure titles were available. The same public page (I saved it to `paper/nature_landing_page_text.txt`) also carries all 14 supplementary legends. These give the FS definition, the phase-modulation method (sinusoid fit, r² > 0.25), the PV opsin (eNpHR) and the ION-transection design of Fig. 7. Using them would have made sensory-input-drives-fs testable and changed several method choices.
-2. [could affect conclusions; unchecked] Cell 13, `classify`. The FS proxy is "any tagged cell". The paper defines FS by a waveform boundary (peak-to-trough ratio against duration) applied to VGAT-ChR2 cells, and its Supp. Fig. 6 includes tagged cells from ION-transected mice and L5 cells. If ION-cut or L5 cells are in the 23, they enter fs-touch-and-whisking, exc-mainly-touch and thalamus-drives-fs. Four mice (anm220466, anm220470, anm273341, anm275231) contribute FS cells with no touch response. ION-cut cells would look like that, but this is speculation. The same applies to the EXC proxy: Supp. Fig. 11 has 10 whole-cell E cells after ION transection. The notebook never shows that every L4 file is from L4 or from an intact mouse.
-3. [affects a conclusion] `response_measures`, touch selectivity. Selectivity is tr / (tr + wm) with tr floored at 0. For cells firing below about 0.5 Hz it collapses to 0 or 1 on one or two spikes. In cell 26, 8 of 18 EXC cells sit at exactly 0 or 1. In cell 30, three cells sit at 0 without light because their touch response in the window is −0.1 to −0.6 Hz. This decides exc-mainly-touch, a near miss at p = 0.074 and 0.090, and fs-enhance-touch-selectivity, which moves the opposite way.
-4. [affects a conclusion] Cell 13 and cell 18, inclusion rules. EXC cells need at least 5 spikes for a width and at least 20 spikes for a measure. Of 57 whole-cell recordings, 26 have no width. The paper has 37 whole-cell L4 E cells. The surviving 18 EXC cells are the higher-firing minority, which biases exc-mainly-touch in an unknown direction.
-5. [does not affect a conclusion] `phase_modulation`. On spikes moved one trial, the test marks 0.12 of VPM units modulated at α = 0.01 (cell 22), so it is anti-conservative by about 10x. Rate and whisking co-vary slowly across trials (Supp. Fig. 1e), which a trial-shift null does not remove. On my synthetic data with uniform rate it marked 1 of 20 null cells (5%), and the amplitude scale was correct (3.13 against an expected 3.0 Hz). The VPM and FS fractions stay well above 0.5. The fact that 3 EXC and 2 FS cells have fewer than 99 null draws, and so cannot reach p < 0.01, slightly lowers the EXC fraction.
-6. [does not affect a conclusion] Cell 28. The PV-Cre test treats 7 cells from 4 mice as independent, 4 from anm266945. Some whisking rates rest on 1 to 10 spikes; for example, 0.00 to 0.48 Hz over 2.1 s is a single spike. The criterion is met, but the evidence is thin.
-7. [does not affect a conclusion] `classify` picks the tag site with the largest evoked-minus-baseline difference over all sites, including VPM and vM1, where light cannot directly tag a vS1 cell. The tag site is never printed. The latencies (1.6–4.6 ms) argue for direct activation.
-8. [does not affect a conclusion] `response_measures`, touch window. The 25 ms pre-touch window can overlap the previous touch in a bout, and windows can cross trial boundaries in the concatenated samples. Both bias the touch response down slightly.
-9. [does not affect a conclusion] Cell 13. Spike width (FWHM) is measured on 10 kHz and 20 kHz files alike, and the 0.6 ms excitatory cut-off is not checked against sampling rate.
-10. [does not affect a conclusion] Correct and checked: the `first_touch_time` ÷1000 bug in the L4 files was found and avoided (cell 7). Trace units are confirmed in mV. The spike-to-behaviour alignment is shown with a shift control (cell 11). Only no-light trials are used for the baseline measures. No numbers are invented. The paper states no chance level for any selection, so there was nothing to compare.
+### B. Problems
 
-**C. What I could not check**
+1. **[affects a conclusion]** Cell 21, `group(sel="all")`: every "control" group includes the ION-cut cells. The claims specify control mice; the paper has 9 whole-cell E and 10 cell-attached FS ION-cut cells. The flagged variant shows the bias:
+   - E touch latency moves from 7.68 to 4.97 ms (into tolerance).
+   - FS spikes per touch moves from 1.50 to 1.69.
+   - FS reading (a)(ii) goes from 1 to 3 values within tolerance.
 
-- Whether any file marks ION transection, recording layer or depth. The DANDI asset metadata from the REST API has only genotype, sex and variable types, and the dandiset description says nothing about it. Printing `session_description`, `subject.description`, `surgery`, `notes` and the electrode or site `location` for all 130 L4 files, grouped, would settle problem 2 and whether sensory-input-drives-fs can be tested. If ION-cut sessions are labelled, a test is possible: whisking modulation of tagged FS cells in ION-cut against intact mice.
-- The tag site and tag p-value for each FS cell, which would settle problem 7.
-- Spike detection quality for juxtacellular cells. Example traces with detected spikes and the light pulses overlaid, per mode, would show whether light artifacts were counted as spikes.
-- Behaviour in light against no-light trials (whisking time, number of touches) for the PV-Cre and VPM-light sessions. This would rule out a behavioural explanation of the rate changes.
-- Spike counts per condition for the PV-Cre cells (cells 28 and 30), which would show how many spikes each rate and selectivity value rests on.
-- I could not compare any numbers with the paper. The full text is closed access (Europe PMC and Unpaywall both say not open access), so only the abstract (`paper/abstract_pubmed.txt`) and the public landing-page text were available.
+   Because these groups cannot be cleaned (metadata), the outcomes of exc-vm-touch-whisking, fs-touch-response, exc-mainly-touch, exc-threshold-touch-vs-whisking and fs-vm-touch-whisking rest on groups the criterion does not define.
+2. **[affects a conclusion]** `isolated_pulses` (gap 0.1 s on both sides) is the author's own rule and throws away the paper's 10 Hz tagging trains. On synthetic input, a 10 Hz train of 10 pulses keeps 1 and a 5 Hz train keeps all 5. The paper's rule is "driven within 5 ms" by 5 ms pulses at 5 or 10 Hz. As a result:
+   - 29 of 67 VGAT cells are never tested and default to E, including cells with 11,087 and 16,350 spikes (cell 13).
+   - Only 20 FS cells are found against the paper's 35.
+   - The E groups may contain FS cells.
+3. **[affects a conclusion]** `ca_waveform` is the author's own waveform measure, and it is combined with an approximate boundary. It drops 8 of 20 light-driven cells; driven cells have ratios up to 19 and durations up to 0.9 ms, which suggests the measure does not match the axes of Supplementary Fig. 6. This split is what makes fs-touch-response come out methods_underspecified.
+4. **[affects a conclusion]** Spike detection (`detect_spikes_juxta` at 6 robust s.d.; whole-cell prominence of 20 mV) is never validated: no refractory-violation or signal-to-noise output. E rates are 2–6 times the paper's: nonwhisking 1.53 against 0.4; cell-attached E 2.45 and 6.19 spikes/s; AUC-group rates 10–16 against 3.4–7.3. This drives the value failures of exc-mainly-touch, fs-suppress-movement-spiking and auc-groups.
+5. **[affects a conclusion]** The latency rule at the full sampling rate (`psp_measures`, `neg_onset_latency`) returns impossible values: 0.00 and 0.30 ms in FS cells, a minimum of 0.00 ms in E cells, and 0.10 ms for both laser averages. On a clean synthetic PSP with white noise the same rule recovers 4.8 ms (and a 4.2 ms hyperpolarization gives 4.4 ms), so something in the real averages at onset triggers it. The notebook does not investigate this. The 0.5 ms-step grand averages show onsets near 4.5–5 ms (thalamic) and 2.5–3 ms (cortical), which is qualitatively the paper's result. These latencies decide fs-vm-touch-whisking and the latency part of exc-thalamus-photoinhibition.
+6. **[affects a conclusion]** The "more than half above r2 0.25" rule in the claims file (vpm-whisking-phase, fs-whisking-phase) is close to chance:
+   - Spikes shifted to the next trial still pass for 16 of 29 VPM units and 9 of 17 FS cells (cells 29, 43).
+   - Synthetic Poisson, phase-independent spikes give r2 > 0.25 in 26–30% of cells with a single sinusoid, and 65% with the FS double-fit rule.
+
+   The outcomes still stand, on the own-against-shifted comparison and on counts well above these levels. This is a weakness of the claims file to report, not to correct.
+7. **[affects a conclusion]** In pv-enphr-suppression, PV cells are identified by being inhibited (cell 13, `pv_inactivated`), so "3 of 3 inhibited" cannot fail. The paper's fourth, non-inhibited PV cell would be classed as E. The only independent parts, the latencies, fail.
+8. **[affects a conclusion]** In the VPM files, the principal whisker is given once per file, and 11 of 20 units respond most to another whisker (cell 7). This metadata problem lowers vpm-touch's spikes per touch. The outcome holds even with the best-whisker variant.
+9. **[affects a conclusion, weakly]** auc-weak-strong reading (b) passes on 8.14 against 8.18 spikes/s (Spearman 0.04). The AUC uses 5,000 random resamples with one seed, and reading (a) uses random windows with one seed. There is no seed-stability check, and the reading (b) result could flip.
+10. **[does not affect a conclusion]** behavior-touches (cell 23):
+    - The touch counts match only in a reading whose trial counts are more than twice the paper's.
+    - Cortical performance uses the post-hoc flagged exclusion as "control", despite the notebook saying no_flagged never decides an outcome. Including the flagged mice gives 0.695, still within tolerance.
+11. **[does not affect a conclusion]** Readings O10 and O11 are run only for exc-vm-touch-whisking. Every other whisking claim uses one mixed rule (O11 a-i epochs with the principal-whisker 250 ms rule; helper docstring), although the header says readings run wherever they apply. The effect on exc-vm was at most about 0.2 mV.
+12. **[does not affect a conclusion]** The PV-ChR2 cell, which Supplementary Table 2 lists as FS, is classed E by FWHM (0.44 ms). It enters the E whole-cell group with a resting Vm of −34.9 mV (cell 13).
+13. **[does not affect a conclusion]** The PSP amplitude (maximum 0–50 ms minus the pre-touch mean) is biased upward, so "every neuron depolarizes" is nearly guaranteed: amplitudes go down to 0.01 mV.
+14. **[does not affect a conclusion]** thalamus-drives-fs: all 5 cells come from mouse anm260070; see the table.
+15. **[does not affect a conclusion]** `resample` decimates 20 kHz averages with `[::2]` and no anti-alias filter (cell 53).
+16. **[does not affect a conclusion]** Threshold readings O3 (a) and (b) give identical outputs (cell 33). That is plausible, since a trial's mean dVm/dt is close to 0, but it means the reading does no work.
+17. **[probably does not affect a conclusion]** The "data_missing" verdict for the depolarized cells of Fig. 3 rests on per-trial median Vm > −20 mV, checked in whole-cell files only. A file held near 0 mV for the whole session would be classed cell-attached by the −20 mV mode rule, and the injected current per trial is never shown. The two cell-attached files with whole-cell-like slow components (1.09 and 1.3 mV) are PV-IRES-Cre. Supplementary Table 2 assigns Fig. 3 to the VGAT and PV-IRES-Cre × Ai32 lines, so the verdict is probably right.
+
+**Step 4, blocked claims checked against the archive:**
+- **Archive contents.** Version 0.220126.1853 has 148 NWB assets (121 icephys+ogen, 9 icephys, 18 ecephys). The measured variables listed are CurrentClamp(Stimulus)Series, OptogeneticSeries, ElectrodeGroup and Units, with no images.
+- **ION-cut.** No ION, infraorbital, nerve, transection, cut, lesion or rabies term appears in the dandiset metadata or any of the 148 asset metadata records (I scanned them all). Supplementary Table 1 gives mouse ID, line, sex and dates only; Supplementary Table 2 gives counts only.
+- **vpm-photoinhibition, rabies-vpm-input, exc-inhibition-timing, exc-inhibition-whisking.** These blocks hold.
+- **Partly testable ION-cut claims.** ion-cut-exc-whisking, ion-cut-exc-phase, sensory-input-drives-fs and ion-cut-fs-phase could get an exploratory, non-deciding test on the flagged mice, because the flags were not chosen on those measures. The descriptive values (whisking change 0.39 mV, Vm coupling 0.11 mV) are close to the paper's ION-cut values. Mouse identity is unconfirmed (8 of 9 whole-cell and 7 of 10 cell-attached cells found), and the FS part has only 2 cells.
+- **Circular ION-cut claims.** ion-cut-exc-no-touch, ion-cut-fs-no-touch and ion-cut-behavior would be circular on those flags, since the flags were chosen on touch response and performance.
+
+### C. Not checked, and the output that would settle it
+
+- **Spike detection quality.** Per-cell fraction of interspike intervals under 1.5 ms, spike signal-to-noise, and rates by mode set against the paper's.
+- **Tagging coverage.** For each VGAT cell: the number of cortical pulses, the inter-pulse interval, and the tag result using the first pulse of each train.
+- **Cause of the 0-ms latencies.** Full-rate touch- and laser-aligned averages from −2 to +2 ms, with dVm/dt and the 3 s.d. threshold drawn.
+- **Fig. 3 recordings.** Per-file median injected current (CurrentClampStimulus) during trials, and trial-median Vm for the files classed cell-attached.
+- **Pole times.** `pole_in_time − start` per L4 file. The first_touch_time scaling bug may also affect the pole times that AUC reading (a) uses; the notebook never checks this.
+- **AUC stability.** AUC group sizes and auc-weak-strong / auc-groups outcomes over about 20 seeds.
+- **ION-cut candidates.** A cross-tab of VGAT mice by presence of a VPM optical-fiber site against the flagged mice. Supplementary Table 2 suggests the ION-cut mice had no VPM fiber, which would narrow the candidates.
+- **Exact −50.00 mV median.** The touch-reversal median is exactly −50.00 mV under both filters. I could not check it; the per-neuron touch reversals would settle it.
 
 ## End of run
 
-19 turns, 4 minutes, result: success.
+27 turns, 8 minutes, result: success.
