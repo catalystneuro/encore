@@ -99,7 +99,8 @@ claims:
     tolerance: 16.6
   criterion: Sessions are the full-task sessions of each subject, less sessions 1 and 3 of
     subject 1 (Methods, Spatial decoding). Trial blocks are counted as in dfs_ripcontent.m part
-    2, blocks with at least four rewards at the goal (a trial of task phase 4). Reproduced when
+    2, blocks with at least four rewards at the goal (a trial of task phase >= 4, the code's
+    any(ctphase>=4)). Reproduced when
     all eight counts are within tolerance; partially reproduced when the session counts are and
     the block counts are not.
 - id: fig1ef-reward-rate
@@ -266,10 +267,11 @@ claims:
     run, (a) Methods, per session 5000 draws of a random arm 1 to 8 for each event, the null
     values of all included sessions pooled; (b) dfs_ripcontent.m, 100 draws per session pooled;
     (c) 5000 draws over the subject's events pooled across sessions. Per subject, a two-sided
-    Wilcoxon rank-sum test of session fractions against the null. Reproduced when the previous
-    goal fraction is above the null at p < 0.05 in all four subjects under every reading and
-    the session median is within tolerance; partially reproduced when it is enriched in all four
-    but the median is outside tolerance.
+    Wilcoxon rank-sum test of session fractions against the null. "Roughly 20%" does not say
+    which summary; the session median (the boxplot's) and the session mean are both read.
+    Reproduced when the previous goal fraction is above the null at p < 0.05 in all four
+    subjects under every null reading and the median or the mean is within tolerance; partially
+    reproduced when it is enriched in all four but neither is within tolerance.
 - id: fig3b-search-past-depleted
   statement: In those search trials the immediately past arm is replayed far less often than
     chance.
@@ -400,8 +402,9 @@ claims:
   depends_on:
   - fig3e-glm-repeat
   criterion: The repeat GLM of fig3e-glm-repeat fit separately to early and late repeat trials.
-    Early is task phase > 1 and < 5, as dfs_ripcontent.m part 5 (its counts match the Figure
-    4A n, which equal the early correct plus early error counts of Supplementary Figure 7).
+    Early is task phase > 1 and < 5, as dfs_ripcontent.m part 5 (the Figure 4A n equal the early
+    correct plus early error counts of Supplementary Figure 7 for subjects 1 to 3, and differ by
+    one trial for subject 4, 793 against 515 + 277).
     Late is open; readings, each run, (a) task phase >= 5, the complement of early; (b) the
     code's task phase > 4, under which errors after four rewards (4.3, 4.5, 4.8) enter both
     sets. The trial-set readings of fig3d-glm-search also apply. Reproduced when, under each
@@ -457,8 +460,9 @@ claims:
     tolerance: 0.0025
   criterion: As dfs_ripcontent.m part 6. Correct repeat trials after the first block (task
     phase integer > 1 or n + 0.9, with the old goal kept on the n + 0.9 trial), per subject
-    pooled over sessions; Pearson correlation (corrcoef) of the count of box remote events of
-    the current goal with reward experience. Reward experience is open; (a) the code's
+    pooled over sessions (n = 923 is the Figure 5B correct count, so the first-block variant of
+    fig5b-future-correct-error is run too); Pearson correlation (corrcoef) of the count of box
+    remote events of the current goal with reward experience. Reward experience is open; (a) the code's
     ceil(task phase), the reward count including the current trial's (n + 1 on the final
     trial); (b) rewards received before the trial (n - 1 for a rewarded trial, n on the final
     trial). Reproduced when, under one reading, r > 0 with p < 0.05 in all four subjects and
@@ -515,7 +519,11 @@ claims:
   criterion: As dfs_ripcontent.m part 6. Repeat trials after the first block, correct and error
     as in the opening comment; per trial the count of box remote events of the visited arm;
     per subject a Wilcoxon rank-sum test of correct against error trials pooled over sessions.
-    Reproduced when no subject has significantly (p < 0.05) more future replay on correct than on
+    The trial set is open; (a) after the first block, as the Methods (Quantification of replay
+    content) and part 6 (~isnan of the previous goal), the main reading; (b) all repeat trials,
+    first block included, run as a variant, because the legend's correct plus error counts
+    (1347, 1661, 1154, 1730) equal the Figure 3E counts, which part 5 takes with the first block
+    included. Reproduced when no subject has significantly (p < 0.05) more future replay on correct than on
     error trials, and the number of subjects with significantly more on error trials is two.
     Partially reproduced when no subject is higher on correct trials but the count is not two.
     The p entry above records the figure's lowest marked level (**).
@@ -599,7 +607,7 @@ claims:
     at 0.5. Reproduced when every subject and model mean lies within tolerance under every
     reading; when readings differ, the claim is methods_underspecified with all results shown.
     The legend gives 848, 1308, 614 and 780 trials per subset per subject, twice the error
-    trial counts of Figure 5B.
+    trial counts of Figure 5B; the trial-set readings of fig5b-future-correct-error apply.
 - id: pg-replay-visits-correlation
   statement: Across trial blocks, the rate of previous goal replay shows no consistent
     correlation with the number of visits to the previous goal during that block.
@@ -844,3 +852,18 @@ claims:
     dfs_likcontent.m, 20 ms non-overlapping bins without a movement model). Reproduced when the
     three patterns hold under all four controls; partially reproduced when they hold under some.
     The share of remote events classed stationary (paper, < 30%) is reported.
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - checker. 33 claims, 33 quotes, 27 statistical values, 0 problems before the changes. Quotes, sources, statistics and expected values were read against the text and legends. The code criteria were checked against LorenFrankLab/Gillespie_Neuron_2021 at 1be6a6a (dfs_ripcontent.m parts 2 to 10, 14 and 16, dfa_ripcontent.m, label_trial_interval.m, dfs_decodequant_movement.m), and they match except where noted below.
+  - fig1d-sessions-blocks. The criterion said a block counts when it has a trial of task phase 4. The code keeps blocks with any task phase >= 4 (any(ctphase>=4)), which also keeps a block whose fourth reward is followed only by errors. Corrected to match the code.
+  - fig3b-search-prevgoal-enriched. The criterion compared only the session median with 0.2. The text says "roughly 20%" without naming the summary, so the session mean is now read too, and either one within tolerance passes.
+  - fig4ab-current-goal-late. The criterion said the Figure 4A counts equal the early correct plus early error counts of Supplementary Figure 7. They do for subjects 1 to 3 but differ by one trial for subject 4 (793 against 792). Corrected the wording.
+  - fig5b-future-correct-error. Added the trial set as an open detail. The Methods and part 6 of the code exclude the first block. However, the legend's correct plus error counts (923 + 424 = 1347, and so on for each subject) equal the Figure 3E counts, and part 5 of the code takes those with the first block included. So the first-block-included set is run as a variant. fig5c-current-goal-correct-error and figs7-early-late-correct-error inherit this. fig4c-current-goal-reward-correlation (n = 923, the same correct count) and fig5d-glm-predict-chance now say so as well.
+  - open. fig4ab-current-goal-late. "Did not differ substantially" has no test in the paper. Overlapping 99% intervals in at least three of four subjects is the reader's reading, and the paper gives no number to replace it.
+  - open. fig6a-pg-replay-persists and fig6b-visits-decay. "Elevated replay before the transition" and "within a few trials" have no test or number in the paper. The criteria use the figure's Bonferroni-corrected tests and two bounds (+3, +5) as readings.
+  - open. fig5a-future-replay-rate. The Results say future replay is less prevalent in repeat trials "for all subjects", but the legend says three of four (subject 3, p = 0.264). The claim follows the legend, which gives the test.
+  - open. The legend counts of Figure 5A (repeat 924, 1019, 894, 1302) differ from the repeat trials in Figure 5B (1347 and so on), although parts 6 and 7 of the code apply the same filter. The code does not explain the difference.
