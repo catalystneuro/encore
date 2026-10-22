@@ -11,8 +11,7 @@ session in three files.
 | Subjects, cohorts, sex split and session count (four claims) | Reproduced |
 | Session attributes of Table 2 | Not reproduced |
 | Two animals had sessions that failed QC | Blocked: metadata insufficient |
-| Session schedule, acquisition rates | Reproduced |
-| Imaging depths | Not reproduced |
+| Session schedule, imaging depths, acquisition rates | Reproduced |
 | ROI noise rejection, ROI count ranges | Reproduced |
 | Tracked ROI totals and tracking across sessions | Reproduced |
 | Fig. 8 example matches and conflicts (four claims) | Reproduced |
@@ -30,12 +29,14 @@ session in three files.
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The two claims not reproduced rest on differences between the files and the paper's tables. The
+The claim not reproduced rests on differences between the files and the paper's tables. The
 session start times carry a Pacific offset on what the authors' own table gives as UTC clock
 values, which moves four session dates by a day. Mouse 433414 is recorded at 60 um where Table 2
-says 75. The files hold no QC result, so the paper's 33 analysed sessions are selected with its
+says 75; that depth is within the 50 to 75 um range the Methods give, so the imaging-depths claim
+is reproduced. The files hold no QC result, so the paper's 33 analysed sessions are selected with its
 Supplementary Table 1. Several Fig. 5 and Fig. 7 claims ran, but their criteria give different
-outcomes under different readings, and are blocked until a reader answers. The attempt record,
+outcomes under different readings, and are blocked. For Fig. 5 a reader answered that the paper
+does not say which Gabor panel the rule uses, and the three readings still disagree. The attempt record,
 with the reasons and the differences from the paper's method, is
 [`attempts/000037-gillon-2023-01.yaml`](../../attempts/000037-gillon-2023-01.yaml).
 
