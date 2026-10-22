@@ -1,0 +1,78 @@
+dandiset: "000054"
+paper: doi:10.1038/s41593-021-00816-6
+questions:
+- claim: training-intermediate-fraction
+  asked: 2026-10-22
+  question: >-
+    The criterion counts every trial of sessions 1 to 7, imaged or not, and header M7 builds the
+    priors from every trial before session 8. The dandiset holds only the imaged trials of the
+    imaging sessions (1, 3, 5 and 7 for most mice; R4 3 and 6; R5 3; none for R6) and no trial of
+    sessions 2, 4 and 6. The authors deposited "Unprocessed VR data" with "All virtual reality
+    behavior for reproducing empirical prior distributions over morph values" on figshare
+    (doi:10.6084/m9.figshare.31974756.v1, published 2026-04-09), which header M7 names as the source
+    the 2026 code downloads. Should this claim, and the claims whose posteriors use the M7 priors
+    (fig6a, fig6bc, fig6d, map-estimate-values, edf9, edf9k, edf9l, edf10, fig7, fig7g, edf3), be
+    marked `data: with_inputs` with that deposit as their input?
+  passage: >-
+    "we calculated the prior for each mouse as the smoothed normalized histogram of previously seen
+    f h or S values" (Methods, Probabilistic inference using rare and frequent morph priors); "Data
+    availability. The datasets generated during the current study are available in the DANDI
+    repository".
+  why: >-
+    The imaged trials the dandiset holds before session 8 include the imaged trials of session 3,
+    half of them intermediate, so 13.8% of the rare morph mice's trials here are intermediate
+    against fewer than 4% in the paper. The claim is blocked for now, and every posterior is built
+    from a rare prior with more intermediate mass than the paper's, which may explain why the rare
+    and frequent Delta D_KL values here are smaller than the paper's (fig6a, fig6bc, fig6d).
+- claim: fig7-model-reproduces-remapping
+  asked: 2026-10-22
+  question: >-
+    With the parameters of the criterion (inputs exp(-(mu_j - f_h)^2 / 4.11) with f_h in its own
+    units, sigma_S = 2.74, c_y = 0.01, eta = 0.1, tau = 0.001, W initial U(0, 0.1)), the Hebbian
+    increment is smaller than the decay and the weights fall to a mean of 0.000004 within the 1,000
+    training stimuli, so the network learns nothing; reading the width as sigma = 4.11 (so a
+    denominator of 16.9) also decays. The paper's code (notebooks/KWTA_EmpiricalPrior.ipynb, d_def)
+    works in the rescaled unit: input centres from -0.1 to 1.1 units, width sigma 0.15 units (4.11
+    f_h), stimulus noise 0.1 units (2.74 f_h), and noise on the losing outputs scaled by the K-th
+    activation. Which scale, input range and Gaussian form does the claim use, and is the model
+    tested with or without the stimulus and output noise?
+  passage: >-
+    "x j ( f h ) = exp [ ( μ j − f h ) 2 σ 2 ] ... For Fig. 4 , M = 100, N = 100 and σ 2 = 4.11"
+    (Methods, Hebbian learning model); the Methods give f_h values that are the code's unit values
+    times 27.42 (4.11 = 0.15 x 27.42, 2.74 = 0.1 x 27.42), as header M8 notes for the likelihood.
+  why: >-
+    Under the criterion as written the model is inert or noise-driven and the claim is not
+    reproduced under any of the four readings run (weight noise with or without, test noise with
+    or without). A width that lets the weights grow could change the outcome of this claim and of
+    fig7g-model-prior-reconstruction.
+- claim: edf4bc-overlap-cells-at-ends-and-reward
+  asked: 2026-10-22
+  question: >-
+    The criterion asks whether "the share of overlap cells with peaks in the end points or reward
+    zone exceeds the reference". Each overlap cell has two peaks (S-tilde = 0 and = 1). Is the share
+    taken for each peak separately (both shares must exceed the reference), over the two peaks
+    pooled, or over cells whose two peaks both fall in the regions? Reference (b) is the S-tilde = 0
+    place cells' peaks; is it compared with the S-tilde = 0 peaks only?
+  passage: >-
+    "Cells with place fields in both extreme environments tended to cluster at the end points of
+    the track and the reward zone" (Results, paragraph 2); Extended Data Fig. 4b,c plot the peak in
+    S-tilde = 0 trials against the peak in S-tilde = 1 trials.
+  why: >-
+    This attempt took each peak separately, with reference (b) for both. The overlap cells' shares
+    (0.565 to 0.891) exceed the track share (0.378 or 0.556) but are within about 0.03 of the share
+    of all S-tilde = 0 place cells (0.585 to 0.871), so whether a reading requires both cells' peaks
+    in the regions, or compares S-tilde = 1 peaks with S-tilde = 1 place cells, could move the
+    outcome.
+- claim: edf3-simulated-posterior-population
+  asked: 2026-10-22
+  question: >-
+    What range do the neurons' centres mu_i tile ("chosen to evenly tile possible f h values"): the
+    stimulus grid of header M6 (0.06 to 43.9 f_h) or the f_h range of the trials (S from -0.1 to
+    1.1, 5.6 to 38.5 f_h)? And is the simulated difference judged from the mean over the 1,000
+    simulations, as here?
+  passage: >-
+    "σ =4.11, α = 2, β = 0 and μ i were chosen to evenly tile possible f h values" (Methods,
+    Simulating a neural posterior distribution).
+  why: >-
+    The simulated rare minus frequent difference at S-tilde 0.25 against 1.0 is +0.009 here, near
+    zero, against a recorded -0.367; a different tiling could change its sign and the outcome.
