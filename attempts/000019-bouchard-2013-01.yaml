@@ -1,0 +1,299 @@
+schema_version: 2
+id: 000019-bouchard-2013-01
+dataset:
+  archive: dandi
+  id: "000019"
+  version: 0.220126.2148
+  doi: 10.48324/dandi.000019/0.220126.2148
+paper: doi:10.1038/nature11911
+date: 2026-10-21
+entry: 000019-bouchard-2013
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-10
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39692741052
+inputs:
+- what: The articulator state matrix (Supplementary Figure 1d) and the phonetic feature matrix
+    (Supplementary Figure 12), transcribed from the figures of the paper's supplement. They define
+    the paper's variables for each syllable; they hold no measurements.
+  source: doi:10.1038/nature11911 (supplement, NIHMS436351-supplement-1.pdf, pages 2 and 15)
+outcomes:
+- claim: data-composition
+  outcome: partially_reproduced
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:data-composition
+  measured:
+  - 3
+  - 169
+  - 3051.76
+  notes: The dandiset holds four subjects (EC2, EC9, GP31, GP33); EC2, GP31 and GP33 are taken to be
+    the paper's EC2, EC31 and EC33, and EC9 is not in the paper. The rate is 3051.76 Hz. The three
+    subjects have 57, 55 and 57 CVs (169, paper 168), each with 19 consonants, and 2 to 107
+    renditions per CV (EC2 /thi/ 10, GP31 /thi/ 2, 33 GP31 CVs above 100); leaving out CVs below 15
+    renditions gives 56 + 54 + 57 = 167. The audio was removed. EC2 and GP31 have negative x
+    coordinates (left hemisphere if x is the usual axis); GP33 has no coordinates, so the right
+    hemisphere of EC33 cannot be checked.
+  deviations:
+  - The correspondence of GP31 and GP33 to the paper's EC31 and EC33 is an assumption; no metadata
+    links them.
+- claim: active-electrodes
+  outcome: not_reproduced
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:active-electrodes
+  measured: 24.33
+  notes: Mean active vSMC electrodes per subject, every CV, 24.3 with the pre-utterance baseline
+    (EC2 15, GP31 49, GP33 9) and 21.3 with the whole block; with only CVs of 15 or more renditions
+    10.7 and 7.0. Both readings of the change (z above 2, absolute z above 2) give the same counts.
+    None is within 27 to 33. With the dataset's rest period as baseline (a variant, asked as a
+    question) the means are 34.0 and 27.0. The count depends strongly on the threshold (41.7 at
+    1.5, 11.7 at 2.5, pre baseline).
+  deviations:
+  - High gamma computed from the raw ECoG with a filter bank whose widths the paper does not give
+    (standard choice); bad channels from the dataset's flags.
+  - vSMC taken as the electrodes labelled precentral or postcentral, good in every block (268 over
+    the three subjects, paper 266); no label marks the guenon.
+  - CVs with fewer than 15 renditions kept and left out, as two readings (asked as a question).
+- claim: fig1c-e-articulator-electrodes
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:fig1c-e-articulator-electrodes
+  notes: No subject, numbering from 1 or from 0, puts all six named electrodes on vSMC (at most 4 of
+    6); some are labelled middle or superior temporal or pars opercularis. The criterion blocks the
+    claim in that case. The dataset does not say how the paper numbered electrodes, and gives no
+    distance from the Sylvian fissure for the order part. For information, in EC2 counted from 1,
+    five of the six named electrodes prefer their syllable under both measures and baselines.
+- claim: fig1f-h-phonetic-contrasts
+  outcome: not_reproduced
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:fig1f-h-phonetic-contrasts
+  notes: Under all 64 readings (2 baselines, 2 CV sets, 8 timing readings for T_A, 2 p-value
+    readings) no GLM electrode with a positive lips weight has z above 2 for /ju/ at +250 ms in any
+    subject; the largest such /ju/ value is 1.19. The plotted electrodes respond more to /ju/ than
+    to /ja/ and /ji/ at +250 ms, but below the paper's activity threshold. The fricative and manner
+    contrasts are not judged, as the claims file says.
+  deviations:
+  - The lips weights come from the GLM of fig2a-lips-dorsal, which is blocked for its spatial
+    judgement only; the weights and electrode selection need no positions and are computed, so this
+    claim is tested.
+- claim: fig2a-lips-dorsal
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_bouchard_2013.ipynb
+  notes: The claim judges where the lips and tongue weights lie as dorsal-ventral distance from the
+    Sylvian fissure. The dandiset gives no electrode position relative to the Sylvian fissure or the
+    central sulcus. EC2 and GP31 have x, y, z coordinates with no unit or frame; GP33 has none.
+    Asked as a question. The GLM electrodes and weights are computed (they need no positions) and
+    used by fig1f-h, suppfig6 and suppfig9. For information only, the median z coordinate of the top
+    10% of lips weights is above that of the tongue weights in EC2 (36.6 against 15.6) and GP31.
+- claim: fig2b-somatotopic-sequence
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs positions relative to the central sulcus and Sylvian fissure in all three subjects
+    (see fig2a-lips-dorsal).
+- claim: suppfig3b-spatial-clustering
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the smoothed maps in the plane of distances from the central sulcus and Sylvian
+    fissure (see fig2a-lips-dorsal).
+- claim: suppfig3d-cross-subject
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs maps in a common frame across subjects, from distances to the central sulcus and
+    Sylvian fissure (see fig2a-lips-dorsal); GP33 has no coordinates at all.
+- claim: suppfig3f-dv-sequence
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the maps of suppfig3b-spatial-clustering (see fig2a-lips-dorsal).
+- claim: suppfig5-intermediate-organization
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs Euclidean distances in mm between electrodes in the paper's plane (see
+    fig2a-lips-dorsal). The EC2 and GP31 coordinates have no stated unit or frame, and GP33 has
+    none.
+- claim: suppfig6-mixed-tuning
+  outcome: reproduced
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:suppfig6-mixed-tuning
+  notes: Under all 64 readings, each group of GLM electrodes (grouped by largest weight) has its
+    preferred articulator with the largest mean share of positive weight (lips 63 to 79%, tongue
+    53 to 96%, larynx 59 to 84%, jaw 72 to 84%) and non-zero shares of the others. The GLM
+    electrodes number 53 to 117 over the three subjects. In the readings where GP31 has no tongue window
+    T_A, its tongue weights are missing.
+  deviations:
+  - Uses the GLM weights of fig2a-lips-dorsal, which is blocked for its spatial judgement only.
+- claim: fig3d-timing-sequence
+  outcome: not_reproduced
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:fig3d-timing-sequence
+  measured:
+  - 175
+  - 270
+  notes: Under all 64 readings (2 baselines, 2 CV sets, threshold per subject or pooled and over all
+    articulators or per articulator, onset at threshold or half peak, ANOVA on onset or peak) none
+    of the three order conditions holds. Mean lips onsets are -270 to -54 ms, before the annotated
+    acoustic onset (-110 ms), but tongue onsets are -26 to +220 ms; jaw onsets are -270 to -116 ms,
+    as early as the lips; high-tongue peaks are 276 to 317 ms. The ANOVA has F = 9.9 to 39.2 with p
+    below 1e-10 in 51 of 64 readings. Electrodes 162 to 226 (paper 211). Measured values are from the
+    first reading (175 electrodes; mean of back and high tongue peaks, 235 and 305 ms).
+  deviations:
+  - The acoustic onset is the hand-marked syllable start of the trial table, as the audio is not
+    in the dandiset (asked as a question); it does not decide the outcome, since the tongue onsets
+    follow the C-V transition.
+- claim: suppfig7-no-latency-difference
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs electrodes within 10 mm anterior and posterior of the central sulcus and the guenon's
+    boundary; the dandiset gives no distances to the central sulcus and no guenon label.
+- claim: pca-nine-components
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:pca-nine-components
+  measured: 0.625
+  notes: With each electrode's concatenated series z-scored (`row`), nine PCs explain a mean of 0.60
+    to 0.64 over subjects under every baseline, CV set and window (within 0.54 to 0.66); with each
+    electrode z-scored across syllables at each time (`time`), 0.49 to 0.55, outside in seven of
+    eight readings. The z-scoring is not fixed by the claims file and was asked as a question. No
+    sharp change at the ninth eigenvalue is seen; not judged. Measured is the first reading (pre,
+    row, every CV, epoch).
+  deviations:
+  - Two readings of the z-scoring added, as the claims file's description allows both (asked as a
+    question).
+- claim: fig4a-consonant-clusters
+  outcome: not_reproduced
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:fig4a-consonant-clusters
+  measured:
+  - 0.281
+  - 0.4
+  - 0.231
+  notes: Under all 8 readings (baseline, z-scoring, CV set) k = 3 does not have the highest mean
+    silhouette; k = 3 gives 0.19 to 0.28 against the paper's 0.47. With every CV, GP31's k = 2
+    silhouette is 0.76 to 0.80 because its /thi/ (2 renditions) stands apart; without it 0.24 to
+    0.37. Measured values are the first reading (pre, row, every CV) for k = 3, 2 and 4.
+- claim: suppfig11-co-clustering
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:suppfig11-co-clustering
+  measured:
+  - 0.75
+  - 0.395
+  - 0.486
+  - 0.386
+  notes: Clusters match the major articulators beyond chance in every reading (p 3e-20 to 6e-16).
+    Observed consonant medians 0.60 to 0.78 (paper 0.50 +- 0.05), vowel medians 0.41 to 0.65 (paper
+    0.65 +- 0.065), nulls 0.34 to 0.40. Twelve of 16 readings give partially reproduced; with only
+    CVs of 15 or more renditions and row z-scoring the vowel test gives p = 5e-08 and 3e-08, above
+    1e-10, and not reproduced. The readings that differ come from the two questions asked.
+    Measured is the first reading (pre, row, every CV, labels a).
+- claim: fig4c-d-hierarchy
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:fig4c-d-hierarchy
+  notes: Both splits hold together only in EC2, with every CV and row z-scoring (partially reproduced
+    in 4 of 16 readings); under the others no subject meets both, often because two of the three
+    consonant clusters have a coronal majority. The vowel split holds in EC2 in most readings and in
+    GP31 in none. The purity rule of two thirds is the claims file's own.
+- claim: fig4ef-feature-correlations
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:fig4ef-feature-correlations
+  notes: Early window, location over degree over vowel with p < 1e-10 under every Euclidean reading
+    (n = 297). Late window, with every CV location correlates more than the vowel features
+    (partially reproduced); with only CVs of 15 or more renditions the vowel features correlate most,
+    with p < 1e-10 against both other sets under time z-scoring (reproduced) and not against degree
+    under row (partially). Hamming distances (variant) agree, except that the early location test
+    misses 1e-10 with 15+ CVs.
+- claim: fig5c-separability-timing
+  outcome: not_reproduced
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:fig5c-separability-timing
+  measured:
+  - 5
+  - -240
+  - 200
+  - 100
+  notes: Under all 40 readings (8 baseline, z-scoring and CV readings by five cluster readings) the
+    peaks are not both within tolerance. With phonetic groups the consonant peak is at -145 to +10
+    ms (paper -200) and the vowel peak at 200 to 235 ms; with k-means at each time one curve serves
+    both, peaking between -135 and 360 ms. Consonant onsets are -305 to -180 ms, vowel onsets 60 to
+    105 ms. Measured is the first reading (pre, row, every CV, groups a; onset reading a).
+  deviations:
+  - The onset reading (a) takes the curve's value at -500 ms as its pre-epoch level, the earliest
+    time of the epoch.
+- claim: fig5d-separability-coupling
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:fig5d-separability-coupling
+  notes: With phonetic-group clusters and the matching feature set (location for consonants, vowel
+    for vowels), all six R2 lie within 0.38 to 1 with p < 1e-10 in all 32 such readings (R2 0.40 to
+    0.98). With the mean of the three feature sets, or with k-means clusters, the coupling fails (R2
+    near 0 in some subjects). The claims file's own readings give different outcomes.
+- claim: suppfig13-consonant-vowel-distance
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:suppfig13-consonant-vowel-distance
+  notes: With row z-scoring, consonant-vowel distances exceed consonant-consonant ones, which exceed
+    vowel-vowel ones, with corrected p < 1e-10 under every other reading; with time z-scoring the
+    consonant-vowel distances are shorter than the consonant-consonant ones. The pairs number 4677
+    (every CV) or 4567 (15+ CVs), not 4623, so row readings give partially reproduced and time
+    readings not reproduced.
+- claim: suppfig9-pc-articulator-weights
+  outcome: not_reproduced
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:suppfig9-pc-articulator-weights
+  measured: 268
+  notes: Under all 192 readings the condition fails in all three PCs; tongue weights are not larger
+    than lips weights. In the reading printed in full (268 vSMC electrodes) lips minus tongue has a
+    median paired difference of +0.03 in log10 (corrected p = 1), and jaw and larynx differ
+    (corrected p = 5e-11). By Methods Eq. 6 the PC term cancels in paired comparisons of one
+    electrode's articulators, so the three PCs give the same tests.
+  deviations:
+  - Uses the GLM weights of fig2a-lips-dorsal, which is blocked for its spatial judgement only.
+findings:
+- kind: metadata_insufficient
+  statement: No electrode has a position relative to the central sulcus or the Sylvian fissure, the
+    frame of the paper's spatial analyses. EC2 and GP31 have x, y, z coordinates with no unit or
+    coordinate frame described; GP33 and EC9 have none. No electrode is labelled as on the guenon.
+    Seven spatial findings of the paper cannot be tested.
+- kind: data_missing
+  statement: The microphone recordings were removed (dandiset description), so the acoustic onset,
+    peak and offset of each syllable used by the paper cannot be computed; only hand-marked start,
+    C-V transition and stop times are given.
+- kind: identifier_missing
+  statement: Subjects GP31 and GP33 do not carry the paper's names (EC31, EC33), and nothing links
+    them. GP31's coordinates fit a left hemisphere, as the paper's EC31; GP33 has no coordinates, so
+    the right hemisphere of EC33 cannot be checked.
+- kind: other
+  statement: The dandiset holds a fourth subject, EC9 (7 blocks, 1653 trials), that is not in the
+    paper. It has extra syllables (/ch/, /dh/, /j/, /sk/), labels on 79 of 256 electrodes and no
+    coordinates.
+- kind: selection_undocumented
+  statement: Renditions per syllable range from 2 to 107 (GP31 /thi/ 2, EC2 /thi/ 10, GP31 up to 107)
+    against the paper's 15 to 100, and GP31 lacks /tha/ and /thu/. The three subjects have 169
+    distinct syllables against the paper's 168 (57 + 57 + 54). The dandiset does not say which
+    trials or syllables the paper used.
+- kind: metadata_error
+  statement: The raw ElectricalSeries gives unit volt with a conversion factor of 0.001, but the
+    stored values have an SD of a few 1e-5, which is a usual ECoG amplitude if read as volts and tens
+    of nanovolts with the factor; the data are consistent with values already in volts.
+- kind: metadata_error
+  statement: Two syllable labels are misspelt (`she` for `shee` in EC2 and EC9, `ha` for `haa` in
+    GP33 and EC9). Electrode ids start at 0 in EC2 and GP31 and at 1 in GP33 and EC9.
+- kind: other
+  statement: The archive summary counts four subjects and 31 files; bad-channel flags differ between
+    blocks of one subject (EC2 has none in two blocks and up to 10 in others), and 177 of 9370
+    analysed trials overlap intervals marked as ECoG artefacts.

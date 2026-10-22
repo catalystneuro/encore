@@ -1,0 +1,76 @@
+# Questions from attempt 000019-bouchard-2013-01 (author, 2026-10-21) about the claims file
+# claims/000019/10.1038-nature11911.yaml. Each is asked under docs/protocol.md, Author, step 1.6; the
+# attempt runs every reading it can see and records the claims whose outcome depends on the answer.
+dandiset: "000019"
+paper: doi:10.1038/nature11911
+questions:
+- claim: pca-nine-components
+  also: [fig4a-consonant-clusters, suppfig11-co-clustering, fig4c-d-hierarchy, fig4ef-feature-correlations,
+    fig5c-separability-timing, fig5d-separability-coupling, suppfig13-consonant-vowel-distance,
+    suppfig9-pc-articulator-weights]
+  asked: 2026-10-21
+  question: Before the PCA, is each electrode's high gamma z-scored over its whole concatenated (CV x
+    time) series (`row`), or across syllables separately at each time point (`time`)? The second
+    removes the mean time course shared by all syllables. Is the same z-scored input projected onto
+    the PCs to give the state K(s, t)?
+  passage: Methods, PCA and Cortical-State Space, "Each electrode's time series was z-scored across
+    syllables to normalize response variability across electrodes."
+  why: With `row` the nine PCs explain 0.60 to 0.64 of the variance (within 0.6 +- 0.06), with `time`
+    0.49 to 0.55 (mostly outside). Consonant-vowel distances exceed consonant-consonant distances
+    under `row` and not under `time` (suppfig13), and the hierarchy and late feature-correlation
+    results also change. The attempt runs both, and these claims are blocked as
+    methods_underspecified where they differ.
+- claim: data-composition
+  also: [active-electrodes, fig1f-h-phonetic-contrasts, suppfig6-mixed-tuning, fig3d-timing-sequence,
+    pca-nine-components, fig4a-consonant-clusters, suppfig11-co-clustering, fig4c-d-hierarchy,
+    fig4ef-feature-correlations, fig5c-separability-timing, fig5d-separability-coupling,
+    suppfig13-consonant-vowel-distance, suppfig9-pc-articulator-weights]
+  asked: 2026-10-21
+  question: The dandiset has CVs with fewer than 15 renditions (EC2 /thi/ 10, GP31 /thi/ 2) and GP31
+    lacks /tha/ and /thu/. Should CVs with fewer than 15 renditions be left out of the per-syllable
+    averages, as the paper's range of 15 to 100 renditions suggests, or kept?
+  passage: Methods, Subjects and Experimental Task, "Each CV was produced between 15 and 100 times."
+    The paper's 168 CVs (57 + 57 + 54, Fig. 3c legend) match neither choice (169 kept, 167 left out).
+  why: GP31's /thi/ mean over two renditions is an outlier in the state space; with it the k = 2
+    silhouette of GP31 is 0.76 to 0.80, without it 0.24 to 0.37. The active-electrode count of GP31 falls
+    from 49 to 9 (pre baseline). Co-clustering, the hierarchy and the late feature correlations
+    change outcome with the choice. The attempt runs both.
+- claim: fig3d-timing-sequence
+  asked: 2026-10-21
+  question: The dandiset has no audio, so the acoustic onset cannot be taken from the cochlear
+    spectrogram of the prototype rendition. Is the hand-marked syllable start of the trial table
+    (`start_time`, "the start ... of each syllable" in the dandiset description) an acceptable
+    acoustic onset for the condition "lip and tongue correlations began well before sound onset"?
+  passage: Methods, Acoustic Analysis, "The onset, peak, and offset of acoustic power were extracted
+    for each syllable prototype using a thresholding procedure."
+  why: The annotated onset is -110 ms on average (CV range -257 to -11 ms). It does not decide the
+    outcome here, since the tongue correlations begin after the C-V transition in every reading,
+    but it would for a dataset where the lips and tongue onsets fall near it.
+- claim: active-electrodes
+  also: [fig1f-h-phonetic-contrasts, fig3d-timing-sequence, pca-nine-components]
+  asked: 2026-10-21
+  question: The dandiset marks a rest period per block, "when the subject was silent, which can be
+    used as a baseline". Does the paper's "baseline data" allow this reading, besides the two the
+    claims file names (a window before each utterance, and the whole recording)?
+  passage: Methods, Data acquisition and Signal Processing, "High-γ power was z-scored relative to
+    the mean and standard deviation of baseline data for each channel."
+  why: The rest period has lower high gamma than the rest of the block in most blocks, so z-scores
+    are larger. The mean active-electrode count is 34.0 per subject with every CV and 27.0 with CVs
+    of 15 or more renditions (paper about 30, tolerance 27 to 33), against 7.0 to 24.3 under the
+    claims file's readings. The attempt shows it as a variant, not a reading.
+- claim: fig2a-lips-dorsal
+  also: [fig2b-somatotopic-sequence, suppfig3b-spatial-clustering, suppfig3d-cross-subject,
+    suppfig3f-dv-sequence, suppfig5-intermediate-organization, suppfig7-no-latency-difference,
+    fig1c-e-articulator-electrodes]
+  asked: 2026-10-21
+  question: The dandiset gives no electrode positions relative to the central sulcus or the Sylvian
+    fissure. EC2 and GP31 have x, y, z coordinates with no unit or frame (spacing about 4 mm), GP33
+    has none, and the labels are atlas gyri (precentral, postcentral and others; none marks the
+    guenon). Does the paper give any way to obtain the anterior-posterior and dorsal-ventral
+    distances from such data, for example from the grid geometry?
+  passage: Methods, Spatial Organization Derived from a General Linear Model, "We used a Cartesian
+    plane defined by the Anterior-Posterior distance from the Central Sulcus (ordinate) and the
+    Dorsal-Ventral distance from the Sylvian Fissure (azimuth)."
+  why: Without them the seven spatial claims are blocked as metadata_insufficient. For information
+    only, the median z coordinate of the top lips weights lies above that of the tongue weights in
+    EC2 and GP31 (36.6 against 15.6 in EC2 under the first reading).
