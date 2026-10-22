@@ -81,6 +81,9 @@ jobs:
         run: |
           python tools/build_site.py --output site --issues "$RUNNER_TEMP/issues.json" --queue "$RUNNER_TEMP/queue.json"
           touch site/.nojekyll
+          # The site's domain. Each publish replaces the branch, so the file is written with every build;
+          # GitHub Pages would forget the domain without it.
+          echo encorescience.org > site/CNAME
 
       - uses: JamesIves/github-pages-deploy-action@v4.9.0
         with:

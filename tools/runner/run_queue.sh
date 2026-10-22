@@ -12,7 +12,8 @@
 # Give such a runner its own RUNNER_STATE.
 #
 # Each lane takes the next item from $RUNNER_STATE/queue.txt (lines "DATASET [VERSION]", consumed
-# from the top), and when that is empty the next target that describe.py chooses. The scripts are
+# from the top), then the next run request (tools/runner/run_requests.py, docs/queue.md), and when
+# there is none the next target that describe.py chooses. The scripts are
 # copied to $RUNNER_STATE/bin first: chain.sh checks out branches in the clone, and bash reads a
 # script while it runs it. Progress goes to $RUNNER_STATE/runner.log, and each dataset's chain to
 # $RUNNER_STATE/logs/<dataset>.log.
@@ -20,7 +21,7 @@ set -uo pipefail
 STATE=${RUNNER_STATE:?set RUNNER_STATE}; LANES=${1:-1}; STOP_AT=${2:-}
 export RUNNER_STATE=$STATE REGISTRY_ROOT=$PWD
 mkdir -p "$STATE/logs" "$STATE/bin"; touch "$STATE/queue.txt" "$STATE/started.txt"
-cp tools/runner/chain.sh tools/runner/describe.py tools/runner/merge_claims.sh "$STATE/bin/"
+cp tools/runner/chain.sh tools/runner/describe.py tools/runner/merge_claims.sh tools/runner/run_requests.py "$STATE/bin/"
 rmdir "$STATE/finalize.lock" "$STATE/pick.lock" 2>/dev/null
 log(){ echo "$(date -u +%Y-%m-%dT%H:%MZ) $*" >> "$STATE/runner.log"; }
 
@@ -35,6 +36,11 @@ pick(){ local item
     tail -n +2 "$STATE/queue.txt" > "$STATE/queue.tmp" && mv "$STATE/queue.tmp" "$STATE/queue.txt"
   else
     git fetch -q origin 2>/dev/null || true
+    # Then the run requests (docs/queue.md), unless this runner reads claims only.
+    [ "${CLAIMS_ONLY:-}" = 1 ] || item=$(python "$STATE/bin/run_requests.py" next 2>>"$STATE/runner.log") || item=""
+    [ -z "$item" ] || gh workflow run run-requests.yml >/dev/null 2>&1 || true
+  fi
+  if [ -z "$item" ]; then
     # shellcheck disable=SC2046
     item=$(python "$STATE/bin/describe.py" "$([ "${CLAIMS_ONLY:-}" = 1 ] && echo next-claims || echo next)" \
       $(cut -d' ' -f1 "$STATE/started.txt")) || item=""
@@ -52,6 +58,9 @@ lane(){ local item d
     # shellcheck disable=SC2086
     "$STATE/bin/chain.sh" $item >> "$STATE/logs/$d.log" 2>&1
     log "lane $1: $(tail -n 1 "$STATE/logs/$d.log")"
+    # Report on the dataset's run request, if it came from one, and rewrite the board.
+    python "$STATE/bin/run_requests.py" finish "$d" "$(tail -n 1 "$STATE/logs/$d.log")" 2>>"$STATE/runner.log" \
+      && gh workflow run run-requests.yml >/dev/null 2>&1 || true
   done
   log "lane $1: stopping"
 }

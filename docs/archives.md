@@ -79,6 +79,15 @@ take a dataset in any of these forms.
 - **In an entry.** The entry names the dataset as `ebrains:<doi suffix>/<version>`
   under `related`.
 
+## Local and remote (`encore check`)
+
+Two kinds of dataset exist only inside a run of `encore check`
+([encore.md](encore.md)), and never in the registry's record: `local`, a
+directory on the machine running it, and `remote`, files at a URL. The run
+writes `targets/local.json` into its own copy of the registry, with the path or
+URL and a fingerprint of the files, which stands in for a version. How agents
+read them is in [protocol.md](protocol.md), "Local and remote datasets".
+
 ## Adding an archive
 
 1. Add the archive to `ARCHIVES` in `tools/datasets.py`: its label, its name,
