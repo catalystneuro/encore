@@ -77,7 +77,11 @@ outcomes:
     a day later in the files than Table 2's date. Their start times are evening Pacific clock
     values stated with a Pacific offset, and Supplementary Table 1 gives the same clock values as
     UTC for all 50 sessions. Read as UTC and converted to Pacific time, all 50 dates agree and 47
-    sessions agree in every field. QC and stimulus seed are not recorded in the files.
+    sessions agree in every field; that reading is not in the criterion and does not decide the
+    outcome. The files hold no other wall-clock time to settle it, since timestamps_reference_time
+    equals session_start_time and file_create_date gives the conversion dates (2022 and 2023). The
+    depth difference holds under either reading. QC and stimulus seed are not recorded in the
+    files.
   deviations:
   - The date of a session is taken from its start time as the file states it; the reading of the
     clock as UTC is shown as a variant. The claims file does not say how a date is read from a time.
@@ -91,7 +95,10 @@ outcomes:
     the dandiset metadata gives none; the criterion blocks the claim in that case. For reference,
     Supplementary Table 1 marks failed sessions in three mice (411400 and 412933 sessions 1 to 3,
     440889 sessions 5 and 6), so (a) gives 3 and (b) gives 2. Mice with more than three sessions in
-    the files are 411400, 412933, 433448, 433458 and 440889.
+    the files are 411400, 412933, 433448, 433458 and 440889, so that part of the claim holds. None
+    of the 23 small datasets and attributes under general and at the top level of each of the 50
+    files mentions QC, quality, pass, fail, exclusion or rejection; all are printed for 759666166,
+    a failed session of 411400.
 - claim: session-schedule
   outcome: reproduced
   notebook: reproduce_gillon_2023.ipynb
@@ -206,7 +213,9 @@ outcomes:
     image is within 300 ms +/- 10% in 46 of 50 sessions; four sessions hold 1 to 5 images outside
     it (13 of 340000 in all, up to 604 ms), three of them the failed-QC sessions of 411400, for
     which Supplementary Table 1 notes dropped stimulus frames. The criterion asks for every image in
-    every session, so that part holds in 46 of 50.
+    every session, so that part holds in 46 of 50. The criterion names no partial outcome; the
+    claim holds in part, the protocol's partially reproduced, and a strict reading that admits
+    only reproduced or not would give not reproduced.
 - claim: visual-flow-structure
   outcome: reproduced
   notebook: reproduce_gillon_2023.ipynb
@@ -259,7 +268,9 @@ outcomes:
     disagree. The rule holds in 2 planes under (a) and 3 under (b), both partially reproduced, and
     in 1 under (c), not reproduced. The outcome is unchanged. Unscaled, panel a is higher in 2 of
     4 and panel b in 4 of 4, and the readings give 2, 4 and 2 planes (partially reproduced,
-    reproduced, partially reproduced), so they disagree in the variant too.
+    reproduced, partially reproduced), so they disagree in the variant too. The selection keeps 0
+    to 58 ROIs per session and panel (robust-scaled) from 7 to 818 candidates above the median SNR;
+    mouse 418779 gives 1 ROI in panels a to c and none in panel d.
   deviations:
   - Windows are whole two-photon frames from the trial table's frame numbers (27 before and 18 after D
     or U onset, 60 either side of flow onset), a standard choice.
@@ -274,8 +285,11 @@ outcomes:
     is in its decision rule, not in the selection used here. The answer did not change this claim's
     own test or outcome. Its own test ran. With robust-scaled traces, the D and U responses differ by more than the sum of their SEMs
     in 2 of 4 planes under reading (a) and 3 of 4 under reading (b), which by its criterion would be
-    partially reproduced under both. Unscaled, 2 of 4 under each. The flow differences (0.030 to
-    0.206 post minus pre) are reported, not judged.
+    partially reproduced under both. Unscaled, 2 of 4 under each. Counted as planes where both
+    readings hold at once, 1 of 4 (L5 dendrites), scaled or unscaled, which would be not
+    reproduced. The flow differences (0.030 to 0.206 post minus pre) are reported, not judged.
+    The block is kept because the protocol blocks a claim that depends on a blocked claim, for
+    the same reason; the verifier would give partially reproduced (round 1).
 - claim: fig6-behaviour-all-mice
   outcome: reproduced
   notebook: reproduce_gillon_2023.ipynb
@@ -336,7 +350,9 @@ outcomes:
     already used, so the earlier deviation from the criterion's three mice is gone. It also set
     reading (c) to require every local session within tolerance and ruled out per-mouse sessions,
     so the two mouse sessions inside the band (0.0054 and 0.0067%) no longer bear on the outcome.
-    The numbers and the outcome (blocked through the dependency) are unchanged.
+    The numbers and the outcome (blocked through the dependency) are unchanged. The block is kept
+    because the protocol blocks a claim that depends on a blocked claim, for the same reason; the
+    verifier would give not reproduced (round 1).
 - claim: fig7a-source-link
   outcome: reproduced
   notebook: reproduce_gillon_2023.ipynb
@@ -349,9 +365,11 @@ outcomes:
   notebook: reproduce_gillon_2023.ipynb
   output: claim:fig9-onset-offset-transients
   notes: All 12 line, plane and session groups show a transient at onset and at offset under every
-    reading (all or Gabor-only transitions, k of 1 or 2). The largest deviations are 2.3 to 35.3
-    SEM. Unscaled dF/F gives the same, and each mouse session alone deviates by 4.1 to 30.2 SEM
-    (reading a).
+    reading (all or Gabor-only transitions, k of 1 or 2). The largest deviations are 8.8 to 35.3
+    SEM with all transitions and 2.3 to 12.8 with Gabor transitions only; unscaled dF/F gives 2.1
+    to 32.6 SEM, and each mouse session alone deviates by 4.1 to 30.2 SEM (reading a). Session
+    777496949, whose alignment the clock check did not establish, deviates by 4.07 SEM at onset
+    and 6.77 at offset.
   deviations:
   - The 33 sessions are selected with Supplementary Table 1's QC and local numbers.
 - claim: file-sizes
@@ -402,3 +420,255 @@ findings:
   statement: The per-ordering ROI matching counts behind Fig. 8 are published for two mice only, and
     the paper's modified matching code is not linked, so the comparison of order dependence between
     somata and dendrites cannot be repeated.
+verifications:
+- date: '2026-10-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper. The verifier checked the archive's metadata for the blocked
+    claims and tested helper functions on synthetic inputs (rolling_mean, robust_scale, windows, the Pearson
+    correlation, select_gabor_rois, select_flow_rois, grey_transitions, flow_onsets, calculate_snr), finding
+    them as documented; the SNR port matches the source data. It found no misreadings of the paper in
+    the claims file, and spot-checked Supplementary Table 1 against the paper's Tables 1 and 2 for 765427689,
+    777496949 and 826187862 to 827833392, finding agreement. It agreed with 33 of 35 outcomes and would
+    give outcomes to the two claims blocked only by dependency. It could not read the full outputs of
+    the session table and of the Gabor and visual flow tables, cut by its own 6000-character limit; the
+    summary lines were complete. Those tables are unchanged, except that the session table now
+    prints each start time in full.
+  results:
+  - claim: table1-subjects
+    agrees: true
+    outcome: reproduced
+    reason: All 13 subjects are present and sex and genotype agree for every one, 0 disagreements. The
+      files record no date of birth or plane; these are listed, not counted.
+    response: No change needed.
+  - claim: cohorts-by-plane
+    agrees: true
+    outcome: reproduced
+    reason: 3/3/4/3 mice per group, each with at least 3 sessions.
+    response: No change needed.
+  - claim: sex-split
+    agrees: true
+    outcome: reproduced
+    reason: 7 male, 6 female, and 1 female L2/3-D mouse.
+    response: No change needed.
+  - claim: sessions-total
+    agrees: true
+    outcome: reproduced
+    reason: 50 session ids in 13 subject folders, each file in its subject's folder.
+    response: No change needed.
+  - claim: table2-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: 43 of 50 sessions agree in every recorded field, below the 45 needed for partial. The 4 date
+      mismatches are real in the deposited data (startDate 2018-10-19T00:18:29-07:00 for 765427689 against
+      20181018 in Table 2), and 433414's depth is 60 um in the files and 75 in Table 2. Reading the file
+      clock as UTC gives 47, which would be partial, but the criterion has no such reading. The date_if_utc
+      variant drops the file's stated offset and is the author's own reading, and the start string was
+      truncated in the printout, hiding the offset.
+    response: The start time is now printed in full, with its offset, and every time and date field of
+      the four files is printed. They hold no other wall-clock time (timestamps_reference_time equals
+      session_start_time; file_create_date gives the 2022 and 2023 conversion dates), so the files cannot
+      settle whether the offset is mislabelled. The notebook and notes now say the UTC reading is a variant
+      outside the criterion that does not decide the outcome, and that the depth difference holds under
+      either reading. Outcome unchanged.
+  - claim: qc-failures
+    agrees: true
+    outcome: blocked
+    reason: No QC field in the files. The archive's dandiset description points to the external metadata
+      repository for QC. The "more than three sessions" part can be tested from the archive, 5 animals.
+      The QC search looked only at trial-table columns and subject fields, not at other general fields.
+    response: The helper now reads every small dataset and attribute under general and at each file's
+      top level (23 per file). None of the 50 files mentions QC, quality, pass, fail, exclusion or rejection,
+      and all fields of 759666166 (411400, failed QC) are printed. A result cell now states that the part
+      on animals with more than three sessions holds (5 animals). Outcome unchanged.
+  - claim: session-schedule
+    agrees: true
+    outcome: reproduced
+    reason: Under (i)(b), 13 of 13 mice have spans of 3 to 6 inclusive days and no shared dates, whether
+      dates are read as stated in the file or with the clock read as UTC. Durations are 70.06 to 70.53
+      min.
+    response: No change needed.
+  - claim: imaging-depths
+    agrees: true
+    outcome: reproduced
+    reason: 50 of 50 within the allowed values (L2/3-D 50/60/75 um).
+    response: No change needed.
+  - claim: acquisition-rates
+    agrees: true
+    outcome: reproduced
+    reason: Imaging 30.08 to 30.15 Hz, running 59.95 Hz, frames 512 x 512 in all 50 sessions.
+    response: No change needed.
+  - claim: roi-noise-rejection
+    agrees: true
+    outcome: reproduced
+    reason: 0 of 19115 ROIs have either property.
+    response: No change needed.
+  - claim: roi-count-ranges
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a), somata 15 to 224, dendrites 159 to 1636, exact.
+    response: No change needed.
+  - claim: tracked-roi-totals
+    agrees: true
+    outcome: reproduced
+    reason: Totals are 254/261/516/129 for the 11 mice. Under reading (a) the percentages run from 32.9%
+      to 75.0%, within tolerance.
+    response: No change needed.
+  - claim: tracked-sessions-overlap
+    agrees: true
+    outcome: reproduced
+    reason: 13 of 13 mice have equal counts, each index once per session, same index sets.
+    response: No change needed.
+  - claim: fig8a-final-matches
+    agrees: true
+    outcome: reproduced
+    reason: 136 tracked ROIs in each of 413663's three sessions.
+    response: No change needed.
+  - claim: fig8a-conflicts
+    agrees: true
+    outcome: reproduced
+    reason: Union 140 - 136 = 4.
+    response: No change needed.
+  - claim: fig8b-final-matches
+    agrees: true
+    outcome: reproduced
+    reason: 47 tracked ROIs in each of 411771's sessions.
+    response: No change needed.
+  - claim: fig8b-conflicts
+    agrees: true
+    outcome: reproduced
+    reason: Union 49 - 47 = 2.
+    response: No change needed.
+  - claim: fig8-somata-less-order-dependent
+    agrees: true
+    outcome: blocked
+    reason: Only 2 of 13 mice have match_perm_examples in the repository. The NWB files hold only the
+      final tracking_id, so nothing in the archive helps. The examples' ranges are 3 (2.2%) for the dendritic
+      mouse and 1 (2.1%) for the somatic mouse.
+    response: No change needed.
+  - claim: gabor-sequence-structure
+    agrees: true
+    outcome: partially_reproduced
+    reason: Order, 30 patches, A to D and U orientations, and U = mean + 90 hold in 50/50 sessions. But
+      13 of 340000 images in 4 sessions (759189643, 759666166, 759872185, 760269100; three of them from
+      411400's failed-QC sessions) fall outside 300 ms +/- 10% (maximum 0.604 s), and the criterion requires
+      every image in every session. The criterion defines no partial outcome; strictly read, this is not_reproduced.
+    response: Kept partially reproduced, the outcome the verifier gives. The notebook and notes now say
+      the criterion names no partial outcome, that the claim holds in part, which is the protocol's partially
+      reproduced, and that a strict two-way reading would give not reproduced.
+  - claim: visual-flow-structure
+    agrees: true
+    outcome: reproduced
+    reason: 105 squares, flipped proportion 0.25, two contiguous direction periods in 50/50 sessions,
+      reversals 1.99 to 4.01 s. Size and speed in degrees are not recorded and are listed as untestable,
+      as the criterion says.
+    response: No change needed.
+  - claim: session-stimulus-durations
+    agrees: true
+    outcome: reproduced
+    reason: 50 of 50, Gabor 34.03 to 34.31 min, flow 17.01 to 17.04 min per direction, grey 29.98 to 30.04
+      s.
+    response: No change needed.
+  - claim: inconsistent-fractions
+    agrees: true
+    outcome: reproduced
+    reason: Means 6.96% (Gabor) and 4.68% (flow), both within tolerance.
+    response: No change needed.
+  - claim: inconsistent-blocks
+    agrees: true
+    outcome: reproduced
+    reason: Reading (b), Gabor 31.5 and flow 32.3 blocks per session, and 100% of blocks have durations
+      in range.
+    response: No change needed.
+  - claim: fig5-example-responses
+    agrees: true
+    outcome: blocked
+    reason: Robust-scaled readings give a partial (2/4 planes), b partial (3/4), c not reproduced (1/4).
+      Unscaled gives partial, reproduced, partial. The readings disagree, which the criterion says makes
+      the claim methods_underspecified. No chance level is stated in the paper. The ROI selection could
+      not be checked beyond synthetic tests; per-session selection thresholds would allow a comparison
+      with the code's Fig. 5 source data.
+    response: The 75th-percentile thresholds, candidate counts and selected counts of every session 1
+      and selection are now printed (candidates 7 to 818, 0 to 58 ROIs kept). The comparison with the
+      repository's Fig. 5 source data was not added, as that file is not among the attempt's inputs. Outcome
+      unchanged.
+  - claim: fig5-consistent-vs-inconsistent
+    agrees: false
+    outcome: partially_reproduced
+    reason: Scaled, 2/4 planes clear under (a), 3/4 under (b); unscaled, 2/4 and 2/4. Both readings give
+      partial, so they agree. The notebook blocks this claim only because it depends on fig5-example-responses;
+      the ambiguity there is which Gabor panel enters that claim's rule, and this claim's own criterion
+      is fully specified. If at least two planes under both means planes where both readings hold at once,
+      only L5-D qualifies, and the outcome would be not_reproduced.
+    response: Kept blocked, with the disagreement recorded. The protocol (author, step 1.5) blocks a claim
+      that depends on a blocked claim, for the same reason, and the claims file lists fig5-example-responses
+      under depends_on; the author does not change the claims file. The notebook now prints the planes
+      where both readings hold at once (1 of 4, L5 dendrites, scaled and unscaled), and the notes and
+      README give the outcome its own test would have.
+  - claim: fig6-behaviour-all-mice
+    agrees: true
+    outcome: reproduced
+    reason: 33 of 33 sessions from 11 mice have finite running (cm/s) and pupil (mm) series.
+    response: No change needed.
+  - claim: fig7a-snr-above-1
+    agrees: true
+    outcome: reproduced
+    reason: All readings hold; lowest SNR is 2.163 over 10736 ROIs. This is guaranteed by how SNR is defined,
+      though; SNR > 1 can only fail if an ROI's median dF/F is negative, and the result says nothing about
+      recording quality. The claims file notes this; the outcome follows its criterion.
+    response: No change needed; the notebook already prints that no ROI has a negative median dF/F and
+      says what the SNR's construction implies.
+  - claim: fig7a-snr-stable
+    agrees: true
+    outcome: blocked
+    reason: Notch reading 2/4 planes stable, IQR reading 4/4. The readings disagree.
+    response: No change needed.
+  - claim: fig7b-signal-stable
+    agrees: true
+    outcome: blocked
+    reason: Notch reading 1/4, IQR reading 4/4. The readings disagree.
+    response: No change needed.
+  - claim: fig7c-correlations-similar
+    agrees: true
+    outcome: blocked
+    reason: Threshold 0.05 gives 1/6 comparisons similar, threshold 0.1 gives 6/6.
+    response: No change needed.
+  - claim: fig7c-high-correlation-fraction
+    agrees: false
+    outcome: not_reproduced
+    reason: 0.0178% pooled (134 of 752101 pairs, identical to the repository's source data), 0.0176% mean
+      of sessions, and per session 0.021/0.028/0.004%. Every reading falls outside 0.005 to 0.015%. The
+      notebook blocks this claim by dependency only; the fraction does not depend on how similar is read.
+    response: Kept blocked, with the disagreement recorded. The protocol (author, step 1.5) blocks a claim
+      that depends on a blocked claim, for the same reason, and the claims file lists fig7c-correlations-similar
+      under depends_on. The notes and README say that its own test gives not reproduced under every reading.
+  - claim: fig7a-source-link
+    agrees: true
+    outcome: reproduced
+    reason: 33 of 33 sessions have the same ROI counts as the source data, and 100% of ROIs agree within
+      1% (largest relative difference 3e-5).
+    response: No change needed.
+  - claim: fig9-onset-offset-transients
+    agrees: true
+    outcome: reproduced
+    reason: 12 of 12 groups show a transient at onset and at offset under every reading, k and scaling;
+      the weakest is 2.09 SEM. The clock check does not establish alignment in 777496949 (418779 session
+      1, 15 ROIs), one of the analysed sessions; Fig. 9 still shows its onset at 4.07 SEM. trans_scaled[:,
+      sel] would fail if windows dropped any transition; nothing asserts it.
+    response: The helper now asserts that no grey screen transition is dropped (none is). The notebook
+      prints the per-session result of 777496949 (4.07 SEM at onset, 6.77 at offset) next to the clock
+      check, and the conclusion and notes now give the ranges per reading (8.8 to 35.3 SEM with all transitions,
+      2.3 to 12.8 Gabor only, 2.1 to 32.6 unscaled), where they had said 2.3 to 35.3 for all. Outcome
+      unchanged.
+  - claim: file-sizes
+    agrees: true
+    outcome: reproduced
+    reason: All four values are within tolerance in both decimal and binary units, and 50 of 50 sessions
+      have all three versions.
+    response: No change needed.
+  - claim: download-33-files
+    agrees: true
+    outcome: reproduced
+    reason: 33 files, 14.82 GB decimal (13.8 GB binary), within 15 +/- 1.5.
+    response: No change needed.

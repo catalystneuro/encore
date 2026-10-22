@@ -134,6 +134,32 @@ TRIAL_COLUMNS = ["start_time", "stop_time", "stimulus_type", "stimulus_template_
                  "start_frame_twop", "stop_frame_twop", "start_frame_stim", "stop_frame_stim"]
 
 
+def text_fields(f: h5py.File, max_size: int = 64) -> dict:
+    """Every small dataset and attribute under `general`, and the file's top-level datasets and
+    attributes (start time, creation date, reference time, descriptions), as text."""
+    out = {}
+
+    def as_text(v):
+        v = v.decode() if isinstance(v, bytes) else v
+        if isinstance(v, np.ndarray):
+            v = [x.decode() if isinstance(x, bytes) else x for x in v.ravel()]
+        return str(v)
+
+    def add(path, obj):
+        for k, v in obj.attrs.items():
+            if k not in ("namespace", "neurodata_type", "object_id"):
+                out[f"{path}@{k}"] = as_text(v)
+        if isinstance(obj, h5py.Dataset) and obj.size <= max_size:
+            out[path] = as_text(obj[()])
+
+    for k in f.keys():
+        if isinstance(f[k], h5py.Dataset):
+            add(k, f[k])
+    add("/", f)
+    f["general"].visititems(lambda name, obj: add(f"general/{name}", obj))
+    return out
+
+
 def load_session(f: h5py.File, masks: bool = False) -> dict:
     """Metadata, trial table, tracking, running and pupil of one basic file (no dF/F).
 
@@ -175,6 +201,7 @@ def load_session(f: h5py.File, masks: bool = False) -> dict:
         "pupil_y": beh["PupilTracking/pupil_position_y/data"][:],
         "pupil_x_unit": beh["PupilTracking/pupil_position_x/data"].attrs.get("unit"),
         "trial_columns": sorted(trials.keys()),
+        "text_fields": text_fields(f),
     }
     t = {}
     for c in TRIAL_COLUMNS:
@@ -250,10 +277,11 @@ def median_pairwise_corr(tr):
     return out
 
 
-def select_gabor_rois(tr, snr_above):
+def select_gabor_rois(tr, snr_above, thresholds=None):
     """Criterion fig5-example-responses (Gabor): among ROIs with SNR above the session median,
     those whose median pairwise sequence correlation (smoothed sequences), and the standard
-    deviation and skew of their mean response, all exceed the 75th percentile of those ROIs."""
+    deviation and skew of their mean response, all exceed the 75th percentile of those ROIs.
+    A dict passed as `thresholds` receives the candidate count and the three percentiles."""
     cand = np.flatnonzero(snr_above)
     sub = tr[cand]
     mean_tr = sub.mean(axis=1)
@@ -261,18 +289,25 @@ def select_gabor_rois(tr, snr_above):
     corrs = median_pairwise_corr(rolling_mean(sub))
     ok = ((stds > np.percentile(stds, 75)) & (skews > np.percentile(skews, 75))
           & (corrs > np.percentile(corrs, 75)))
+    if thresholds is not None:
+        thresholds.update(candidates=len(cand), std_p75=np.percentile(stds, 75),
+                          skew_p75=np.percentile(skews, 75), corr_p75=np.percentile(corrs, 75))
     return cand[ok]
 
 
-def select_flow_rois(tr, pre_n, snr_above):
+def select_flow_rois(tr, pre_n, snr_above, thresholds=None):
     """Criterion fig5-example-responses (flow): among ROIs above the median SNR, those whose median
     pairwise correlation of post-onset responses and mean post-minus-pre difference both exceed
-    the 75th percentile."""
+    the 75th percentile. A dict passed as `thresholds` receives the candidate count and the two
+    percentiles."""
     cand = np.flatnonzero(snr_above)
     sub = tr[cand]
     diffs = (sub[..., pre_n:].mean(axis=2) - sub[..., :pre_n].mean(axis=2)).mean(axis=1)
     corrs = median_pairwise_corr(rolling_mean(sub)[..., pre_n:])
     ok = (diffs > np.percentile(diffs, 75)) & (corrs > np.percentile(corrs, 75))
+    if thresholds is not None:
+        thresholds.update(candidates=len(cand), diff_p75=np.percentile(diffs, 75),
+                          corr_p75=np.percentile(corrs, 75))
     return cand[ok]
 
 
@@ -406,8 +441,10 @@ def process_session(s: dict, f: h5py.File, corr: bool = False, fig5: bool = Fals
     tr = grey_transitions(s["trials"])
     pre, post = int(round(TRANS_PRE * fps)), int(round(TRANS_POST * fps))
     out["transitions"] = tr
-    out["trans_scaled"], _ = windows(xs, tr.frame, pre, post)       # ROIs x transitions x frames
+    out["trans_scaled"], dropped = windows(xs, tr.frame, pre, post)  # ROIs x transitions x frames
     out["trans_unscaled"], _ = windows(x, tr.frame, pre, post)
+    # Rows of `transitions` index the windows, so no transition may be dropped.
+    assert dropped == 0, f"{s['session_id']}: {dropped} grey screen transitions leave the recording"
     out["trans_t"] = np.arange(-pre, post) / fps
 
     if fig5:
@@ -424,7 +461,8 @@ def process_session(s: dict, f: h5py.File, corr: bool = False, fig5: bool = Fals
                 f5[f"gabor_{k}_{scaled}_mean"] = w.mean(axis=1)
                 f5[f"gabor_{k}_n"] = w.shape[1]
                 f5[f"gabor_{k}_dropped"] = dropped
-                f5[f"gabor_{k}_{scaled}_sel"] = select_gabor_rois(w, snr_above)
+                f5[f"gabor_{k}_{scaled}_thr"] = {}
+                f5[f"gabor_{k}_{scaled}_sel"] = select_gabor_rois(w, snr_above, f5[f"gabor_{k}_{scaled}_thr"])
         fl_pre, fl_post = int(round(FLOW_PRE * fps)), int(round(FLOW_POST * fps))
         f5["flow_t"] = np.arange(-fl_pre, fl_post) / fps
         for direction in ("right", "left"):
@@ -434,7 +472,9 @@ def process_session(s: dict, f: h5py.File, corr: bool = False, fig5: bool = Fals
                 f5[f"flow_{direction}_{scaled}_mean"] = w.mean(axis=1)
                 f5[f"flow_{direction}_n"] = w.shape[1]
                 f5[f"flow_{direction}_dropped"] = dropped
-                f5[f"flow_{direction}_{scaled}_sel"] = select_flow_rois(w, fl_pre, snr_above)
+                f5[f"flow_{direction}_{scaled}_thr"] = {}
+                f5[f"flow_{direction}_{scaled}_sel"] = select_flow_rois(w, fl_pre, snr_above,
+                                                                         f5[f"flow_{direction}_{scaled}_thr"])
         out["fig5"] = f5
     del xs
     if corr:

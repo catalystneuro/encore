@@ -36,7 +36,10 @@ says 75; that depth is within the 50 to 75 um range the Methods give, so the ima
 is reproduced. The files hold no QC result, so the paper's 33 analysed sessions are selected with its
 Supplementary Table 1. Several Fig. 5 and Fig. 7 claims ran, but their criteria give different
 outcomes under different readings, and are blocked. For Fig. 5 a reader answered that the paper
-does not say which Gabor panel the rule uses, and the three readings still disagree. The attempt record,
+does not say which Gabor panel the rule uses, and the three readings still disagree. Two claims
+are blocked only because they depend on a blocked claim: their own tests give partially
+reproduced (Fig. 5, consistent against inconsistent) and not reproduced (the Fig. 7c fraction of
+highly correlated pairs), and the verifier would give those outcomes. The attempt record,
 with the reasons and the differences from the paper's method, is
 [`attempts/000037-gillon-2023-01.yaml`](../../attempts/000037-gillon-2023-01.yaml).
 
