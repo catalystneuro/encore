@@ -36,7 +36,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 import datasets  # noqa: E402
 
-REPO = os.environ.get("GITHUB_REPOSITORY", "catalystneuro/reproduction-registry")
+REPO = os.environ.get("GITHUB_REPOSITORY", "catalystneuro/encore")
 SERVER = os.environ.get("GITHUB_SERVER_URL", "https://github.com")
 KIND = "run-request"
 STATES = ["awaiting-approval", "queued", "running", "needs-you", "invalid"]

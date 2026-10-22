@@ -28,7 +28,7 @@ independent agent, but neither is infallible. Each attempt records its reasoning
 analysis differs from the paper's, and its code, so that anyone can check it.
 
 If you are an author of a paper listed here and think an attempt is wrong,
-please [open an issue](https://github.com/catalystneuro/reproduction-registry/issues).
+please [open an issue](https://github.com/catalystneuro/encore/issues).
 
 ## What is here
 
@@ -50,7 +50,6 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 - [`schemas/`](schemas): draft schemas for the files above.
 
 ## Attempts so far
-
 Every attempt, with its outcomes and its findings about the data, is on the registry's site: <https://encorescience.org/datasets/?status=attempted>. Each dataset's page says which of the paper's findings rest on the dataset alone and which also use other data, and shows the registry's checks that the dataset is the data behind the paper. Attempts are no longer listed here: a table that every attempt added a row to made their pull requests conflict.
 
 ## Agent runs

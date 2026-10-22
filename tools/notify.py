@@ -26,7 +26,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 import datasets  # noqa: E402
 
 LABEL = "needs-you"
-REPO = os.environ.get("GITHUB_REPOSITORY", "catalystneuro/reproduction-registry")
+REPO = os.environ.get("GITHUB_REPOSITORY", "catalystneuro/encore")
 SERVER = os.environ.get("GITHUB_SERVER_URL", "https://github.com")
 
 # The report that explains a stop, for the stops a report explains.
