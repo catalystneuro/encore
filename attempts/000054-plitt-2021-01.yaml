@@ -52,18 +52,37 @@ outcomes:
   deviations:
   - The dandiset holds two more rare morph sessions 8 to N than the paper counts (26 against 24);
     all are used.
+- claim: vr-deposit-link
+  outcome: reproduced
+  notebook: 02_population_inference.ipynb
+  output: claim:vr-deposit-link
+  notes: A link claim added in this revision, as the answer of 2026-10-22 makes the authors' figshare
+    VR deposit the source of the priors (M7) and of training-intermediate-fraction. All 89 NWB files
+    of the 12 rare and frequent morph mice match exactly one deposit file of their own mouse (alias
+    of the 2026 code) and no file of another mouse; in each the deposit file holds exactly the NWB
+    trials (offset 0, same count), with S-tilde and the three jitters identical (largest difference
+    0.0), and every matched file carries the database's imaging flag. No NWB file names an alias, so
+    the alias mapping comes from the 2026 code and the trial sequences confirm it. The deposit holds
+    352 files of the 12 mice on the task track (one listed twice in its database, none missing from
+    the zip), and 26 files with the imaging flag that match no NWB file (12 of them R6's).
 - claim: training-intermediate-fraction
-  outcome: blocked
-  blocked_by: data_missing
-  notebook: 01_sessions_place_cells.ipynb
+  outcome: reproduced
+  notebook: 02_population_inference.ipynb
   output: claim:training-intermediate-fraction
-  notes: The criterion counts every trial of sessions 1 to 7, imaged or not. The dandiset holds only
-    the imaged trials of the imaging sessions and no trial of sessions 2, 4 and 6. Over the trials it
-    holds, 13.8% of the rare morph trials and 59.9% of the frequent morph trials are intermediate,
-    as the imaged trials of session 3 are half intermediate for rare morph mice; these values are
-    printed for reference and do not decide. The authors' figshare deposit
-    10.6084/m9.figshare.31974756.v1 holds the full VR behaviour, but the claims file does not mark
-    it as an input of this claim; a question asks whether it should.
+  measured: 0.5983
+  notes: What the answer changed. The claim was blocked (data_missing), as the dandiset holds only the
+    imaged trials; the answer makes it `data elsewhere`, counted from the figshare deposit, which
+    holds every session. Trials before session 8 are every trial of the mouse's sessions on the task
+    track dated before session 8 (date from vr-deposit-link), and of the earlier session numbers of
+    that date; 15 to 22 sessions over 8 to 10 days per mouse. Reading (a), pooled, holds, rare 3.49%
+    (340 of 9,753 trials) below 4% and frequent 59.83% (5,700 of 9,527) within 0.06 of 60%. Reading
+    (b) does not, as R4 (4.12%) and R6 (5.66%) are above 4%; the other rare mice are 1.85% to 3.15%
+    and the frequent mice 59.2% to 60.6%. The 2026 code's variants (sessions with more than 40
+    rewards; sessions within 8 days of the first) give 3.41% and 3.19% rare and 59.8% frequent
+    pooled. The dandiset's imaged trials, the earlier run's reference, give 13.85% rare.
+  deviations:
+  - Sessions with few rewards are kept, as the criterion counts every trial; the code's filter of
+    more than 40 rewards is shown as a variant.
 - claim: place-cell-fractions
   outcome: not_reproduced
   notebook: 01_sessions_place_cells.ipynb
@@ -123,15 +142,21 @@ outcomes:
   measured:
   - 5997
   - 2552
-  notes: The overlap cells' S-tilde 0 and 1 peaks fall in the end points or the reward zone more
-    often than the track share of those regions (0.565 to 0.891 against 0.378 or 0.556), but not
-    more often than all S-tilde 0 place cells (0.585 to 0.871), under every combination of readings,
-    so the criterion is not met; all place cells cluster there. The overlap counts (reading a 5,997
-    and 2,552; reading b 3,759 and 1,272) are above the paper's 2,219 and 594 and outside tolerance.
+  notes: What the answer changed. The criterion now names the peak readings (i) each environment's
+    peaks against their own reference and (ii) cells with both peaks in the regions against the
+    product of the references, with reference (b) per environment; the earlier run compared both
+    peaks with the S-tilde 0 place cells. Under the new readings 44 of the 48 combinations (two
+    speed readings, two end-point readings, three peak readings, two references, two conditions)
+    hold. Against the track share every combination holds (ratios 1.41 to 1.87 for separate peaks,
+    2.12 to 3.48 for both peaks). The four that fail are all reading (i) against reference (b) with
+    the end points as the first and last bin, rare S-tilde 0 peaks 0.577 against 0.585 (low-speed
+    frames left out) and 0.618 against 0.627 (all frames), and frequent S-tilde 0 and 1 peaks 0.619
+    against 0.635 and 0.574 against 0.601 (low-speed frames left out). Where the overlap cells exceed
+    the place cells of their environment it is by at most 10% (ratios 1.004 to 1.098), so all place
+    cells cluster there. The counts (reading a 5,997 and 2,552; reading b 3,759 and 1,272) are above
+    the paper's 2,219 and 594 and outside tolerance; the measured values are reading (a).
   deviations:
-  - The share is taken for the S-tilde 0 peaks and the S-tilde 1 peaks separately, and both must
-    exceed both references; the claims file does not say how the two peaks of a cell enter. A
-    question has been asked.
+  - Both speed readings of M3 are required to hold, as for every place-cell claim.
 - claim: fig2eh-place-cell-similarity-differs
   outcome: partially_reproduced
   notebook: 01_sessions_place_cells.ipynb
@@ -220,135 +245,156 @@ outcomes:
   notebook: 02_population_inference.ipynb
   output: claim:fig6a-dkl-sign
   measured:
-  - 37
-  - 7
-  - -0.354
-  - 0.007
-  notes: With the Methods likelihood the sign is as expected in 37 of 47 sessions (within
-    tolerance), in every session of 7 mice (expected 9), and the across-mouse means are rare -0.354
-    +- 0.046 and frequent 0.007 +- 0.025 (expected -0.88 +- 0.23 and 0.50 +- 0.11). The difference
-    lies outside the range of all 923 permutations and the signs of the means hold. With the code's
-    likelihood of 0.4 units, a variant, 44 of 47 sessions, 9 mice, rare -0.841 and frequent 0.219.
+  - 43
+  - 8
+  - -0.66
+  - 0.158
+  notes: What the answer changed. The priors now come from every trial before session 8 in the
+    figshare deposit (data with inputs), not the dandiset's imaged trials; the rare prior holds 0.183
+    of its mass between 0.15 and 0.85 units, against 0.256 before. With the Methods likelihood the
+    sign is as expected in 43 of 47 sessions (within 41 +- 4.1), the rare mean is -0.660 +- 0.104
+    (within -0.88 +- 0.23), the frequent mean 0.158 +- 0.052 (outside 0.50 +- 0.11, sign as
+    expected), and 8 mice have the expected sign in every session (outside 9 +- 0.9). The
+    difference, -0.817, lies outside the range of all 923 permutations (-0.727 to 0.817). With the
+    earlier priors the values were 37 sessions, 7 mice, rare -0.354 and frequent 0.007, the same
+    outcome. With the code's likelihood widths, variants, 44 and 40 sessions, 10 mice, rare -0.848
+    and -0.866, frequent 0.701 and 0.778.
   deviations:
-  - The priors come from the imaged trials before session 8 that the dandiset holds (sessions 1, 3,
-    5 and 7 for most mice), not every trial; R6 has none and is left out of the rare prior.
   - 47 sessions, where the paper counts 45.
 - claim: fig6bc-pooled-dkl
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: 02_population_inference.ipynb
   output: claim:fig6bc-pooled-dkl
   measured:
-  - -0.266
-  - 0.0
-  notes: Pooled Q estimates give rare -0.266 and frequent -0.000 (reading a) and -0.268 and -0.004
-    (reading b), against -0.44 and 0.42; the frequent sign does not hold. With the code's likelihood
-    widths, variants, the frequent value is 0.116 to 0.162.
-  deviations:
-  - Priors from the imaged trials only, as for fig6a-dkl-sign.
+  - -0.464
+  - 0.125
+  notes: What the answer changed. With the deposit's priors the pooled Q estimates give rare -0.464
+    and frequent 0.125 (reading a) and -0.469 and 0.118 (reading b), against -0.44 +- 0.044 and 0.42
+    +- 0.042. The rare value is within tolerance under both readings and the frequent value has the
+    expected sign but is outside, so only the signs hold, the criterion's partial outcome. With the
+    earlier priors from the dandiset's imaged trials the values were -0.266 and -0.000, and the
+    outcome was not reproduced. With the code's likelihood widths, variants, frequent 0.590 to 0.646
+    and rare -0.259 to -0.360.
 - claim: fig6d-prior-reconstruction
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: 02_population_inference.ipynb
   output: claim:fig6d-prior-reconstruction
   measured:
-  - -0.02
-  - 0.633
-  notes: The difference of across-mouse means, -0.653, lies outside the range of all permutations;
-    frequent morph mice are positive (0.633 +- 0.055, all six) and rare morph mice -0.020 +- 0.089
-    (4 of 6 negative; R1 +0.178, R2 +0.269). The test and the signs of the means hold; both means
-    are outside tolerance.
-  deviations:
-  - Priors from the imaged trials only, as for fig6a-dkl-sign; the ideal rare prior here holds
-    more intermediate mass than the paper's.
+  - 0.223
+  - 1.125
+  notes: What the answer changed. With the deposit's priors the difference of across-mouse means,
+    -0.902, still lies outside the range of all permutations and all six frequent morph mice are
+    positive (1.125 +- 0.076, outside 0.46 +- 0.07), but the rare morph mean is positive, 0.223 +-
+    0.122 (expected -0.46 +- 0.12), with only R3 (-0.033) and R6 (-0.166) negative. The sign of the
+    rare mean fails, so the partial outcome (test and signs) is not met. With the earlier priors the
+    rare mean was -0.020 and the frequent 0.633 and the outcome was partially reproduced; the rare
+    prior from every trial has less intermediate mass, and the rare mice's reconstructions sit
+    nearer the frequent prior. The code's likelihood widths, variants, give rare 0.480 and 0.517.
 - claim: map-estimate-values
   outcome: reproduced
   notebook: 02_population_inference.ipynb
   output: claim:map-estimate-values
   measured:
-  - 10.67
-  - 10.72
-  - 38.09
+  - 10.62
+  - 10.69
+  - 38.19
   - 37.62
-  notes: Under reading (a) the means are 10.67, 10.72, 38.09 and 37.62 f_h, all within 10% of the
-    paper's; reading (b) and the code's likelihood widths also give all four within 10%.
-  deviations:
-  - Priors from the imaged trials only, as for fig6a-dkl-sign.
+  notes: What the answer changed. With the deposit's priors, under reading (a) the means are 10.62,
+    10.69, 38.19 and 37.62 f_h, all within 10% of the paper's; reading (b) and the code's likelihood
+    widths also give all four within 10%. The earlier priors gave 10.67, 10.72, 38.09 and 37.62, the
+    same outcome.
 - claim: edf9-early-sessions
   outcome: reproduced
   notebook: 02_population_inference.ipynb
   output: claim:edf9-early-sessions
-  notes: Session 3 Delta D_KL has the expected sign in 8 of 11 mice under reading (a) and in 8 of 11
-    under reading (b). In sessions 8 to N every mouse has one sign in most of its sessions (60% to
-    100%).
-  deviations:
-  - Reading (b) builds group posteriors from the session 1 trials the dandiset holds (R1 to R3 and
-    F1 to F6); R4 and R5 have no session 1 file.
-  - Priors from the imaged trials only, as for fig6a-dkl-sign.
+  notes: What the answer changed. Reading (a) uses the deposit's group posteriors, and reading (b)
+    builds posteriors from every deposit trial before each mouse's session 3 (4 to 7 sessions, 320
+    to 517 trials per mouse, none intermediate for the rare morph mice), where the earlier run had
+    only the dandiset's session 1 trials of 9 mice. Session 3 Delta D_KL has the expected sign in 8
+    of 11 mice under both readings (F2, R1 and R5 have the other sign under both). In sessions 8 to N
+    every mouse has one sign in most of its sessions (67% to 100%). Same outcome as before.
 - claim: edf9k-null-models-rare
   outcome: reproduced
   notebook: 02_population_inference.ipynb
   output: claim:edf9k-null-models-rare
-  notes: All five nulls fit the 26 rare morph sessions worse than the rare posterior in every
-    session (Wilcoxon p = 3e-08 each).
+  notes: What the answer changed. With the deposit's priors, all five nulls fit the 26 rare morph
+    sessions worse than the rare posterior in every session (Wilcoxon p = 3e-08 each), as before.
   deviations:
-  - 26 sessions, where the paper's tests used 24; priors from the imaged trials only.
+  - 26 sessions, where the paper's tests used 24.
 - claim: edf9l-null-models-frequent
   outcome: partially_reproduced
   notebook: 02_population_inference.ipynb
   output: claim:edf9l-null-models-frequent
-  notes: Three of five tests hold (Gaussian prior p = 9.5e-07, multimodal prior p = 1.8e-05,
-    uniform posterior p = 1.9e-06). The rare posterior is not worse (11 of 21 sessions, p = 0.37)
-    and the uniform prior fits better in 16 of 21 sessions (p = 0.096).
-  deviations:
-  - Priors from the imaged trials only, as for fig6a-dkl-sign.
+  notes: What the answer changed. With the deposit's priors four of five tests hold, rare posterior
+    (frequent closer in 17 of 21 sessions, p = 0.00051), Gaussian prior (p = 9.5e-07), multimodal
+    prior (p = 1.3e-05) and uniform posterior (p = 1.9e-06). The uniform prior does not (frequent
+    closer in 5 of 21 sessions, p = 0.12). With the earlier priors three held and the rare posterior
+    was not worse (p = 0.37).
 - claim: edf10-decision-mice-like-frequent
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: 02_population_inference.ipynb
   output: claim:edf10-decision-mice-like-frequent
-  notes: Reading (b) holds, every decision mouse's reconstructed prior is closer to the frequent
-    prior (0.494 to 0.601 over every imaged session, 0.520 to 0.635 over sessions 8 to N). Reading
-    (a) does not, the pooled Q estimate gives -0.042 and -0.006 with the Methods likelihood (positive
-    only with the code's widths, 0.088 to 0.257). FD1's sessions 1 and 3 have no S-tilde 0 or 1
-    trials and give no SF.
+  notes: What the answer changed. With the deposit's priors both readings hold. (a) The Q estimate
+    pooled over the decision mice has Delta D_KL 0.042 over every imaged session and 0.125 over
+    sessions 8 to N, where the earlier priors gave -0.042 and -0.006, so the outcome rises from
+    partially reproduced. (b) Each decision mouse's reconstructed prior is closer to the frequent
+    prior (0.933 to 1.082 over every imaged session, 0.970 to 1.128 over sessions 8 to N). FD1's
+    sessions 1 and 3 have no S-tilde 0 or 1 trials and give no SF.
   deviations:
-  - Priors from the imaged trials only, as for fig6a-dkl-sign; FD3 has no session after 7.
+  - FD3 has no session after 7.
 - claim: edf2-fh-best-predictor
   outcome: blocked
   blocked_by: data_missing
   notes: The test uses screenshots of the Unity scenes over the range of morph settings, which are
     not in the dandiset, and the paper names no other deposit for them.
 - claim: fig7-model-reproduces-remapping
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: 02_population_inference.ipynb
   output: claim:fig7-model-reproduces-remapping
-  notes: In none of the four readings (weight noise with or without, testing with or without noise)
-    is the rare-trained median Delta D_KL below 0 with the frequent-trained median above 0. Without
-    weight noise the weights decay from a mean of 0.05 to 0.000004 during training, so nothing is
-    learned; with weight noise the mean weight is 0.89 and weights reach the cap of 5, so they
-    follow the noise. A question asks whether the input width and scale of the criterion are those
-    the paper used.
+  measured:
+  - -0.564
+  - 0.093
+  notes: What the answer changed. The criterion now gives the code's scale (inputs exp(-(mu - x)^2 /
+    0.15^2) in units, centres -0.1 to 1.1 units), stimulus, output and weight noise in training and
+    testing, the losers' noise, and test stimuli at the f_h of S from -0.3 to 1.3; the priors come
+    from the deposit (data elsewhere). The network now learns, the weights ending with a mean of 2.25
+    (rare-trained) and 2.77 (frequent-trained) and reaching the cap of 5, where under the earlier
+    reading they decayed to 0.000004 or followed the noise. The median Delta D_KL of the 50
+    rare-trained models is -0.564 (all 50 below 0) and of the 50 frequent-trained models 0.093 (40
+    of 50 above 0), so the criterion holds; the code's likelihood widths, variants, and the earlier
+    priors from the dandiset's trials give the same signs. The criterion says the test stimuli lie
+    between 5.5 and 38.5 f_h; computed as it prescribes, they span 0.04 to 38.45 f_h, as f_h falls
+    again for S below -0.1.
   deviations:
-  - Input centres tile the stimulus grid of header M6; the test is run with and without the noise
-    terms, which the criterion does not fix.
-  - Training stimuli are drawn from the group priors built from imaged trials only.
+  - The losers' noise follows the Methods (all N - K losers), not the code's indexing slip, as the
+    criterion says.
 - claim: fig7g-model-prior-reconstruction
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: 02_population_inference.ipynb
   output: claim:fig7g-model-prior-reconstruction
-  notes: In every configuration the averaged reconstructed prior has the expected sign for one
-    condition only (with test or weight noise both are positive, 0.153 to 0.301; without either both
-    are negative, -0.541 and -0.584). The dependency fig7-model-reproduces-remapping is not
-    reproduced; the neural magnitudes of fig6d are 0.020 (rare) and 0.633 (frequent).
+  measured:
+  - -0.098
+  - 0.626
+  notes: What the answer changed. With the models of fig7-model-reproduces-remapping as now specified
+    and the deposit's priors, the averaged reconstructed prior has Delta D_KL -0.098 bits for the
+    rare-trained and 0.626 bits for the frequent-trained models (-0.068 and 0.434 nats), both of the
+    expected sign and smaller in magnitude than the neural across-mouse means of
+    fig6d-prior-reconstruction (0.223 and 1.125). The rare neural mean has the wrong sign there
+    (fig6d is not reproduced), and only its magnitude enters this comparison. The earlier priors
+    give -0.188 and 0.264. Earlier, with the model inert, one condition always had the wrong sign.
 - claim: edf3-simulated-posterior-population
   outcome: not_reproduced
   notebook: 02_population_inference.ipynb
   output: claim:edf3-simulated-posterior-population
-  notes: The recorded S-tilde 0.25 row has significant entries at 0.5 (-0.409) and 1.0 (-0.367). The
-    simulated difference, averaged over 1,000 simulations, has the same sign at 0.5 (-0.145 and
-    -0.151 under readings a and b) but not at 1.0 (+0.009 under both).
-  deviations:
-  - Neuron centres tile the stimulus grid of header M6; the result is the mean over the 1,000
-    simulations. A question has been asked about both.
-  - Posteriors from priors built on imaged trials only.
+  notes: What the answer changed. The neuron centres are evenly spaced over the M6 grid, as the earlier
+    run had them; each simulation's trial matrix is now z-scored over its off-diagonal entries
+    before averaging (the earlier run z-scored each session's block matrix), and the posteriors use
+    the deposit's priors. The recorded S-tilde 0.25 row has significant entries at 0.5 (-0.409) and
+    1.0 (-0.367). The simulated difference over 1,000 simulations has the same sign at 0.5 under
+    both readings (-0.410 and -0.444); at 1.0 it is -0.036 under reading (a) and +0.030 under reading
+    (b), so the criterion, which asks both readings, is not met. The earlier z-scoring, a variant
+    here, gives -0.006 and -0.004 at 1.0 with the deposit's posteriors; the earlier run had +0.009
+    under both readings.
 - claim: supp-earlier-morph-studies
   outcome: blocked
   blocked_by: other
@@ -358,9 +404,18 @@ findings:
 - kind: data_missing
   statement: Each file holds only the imaged trials of its session, and sessions without imaging (2,
     4 and 6) are absent. The paper's priors and its training statistics use every trial a mouse ran
-    before session 8, so these cannot be rebuilt from the dandiset; the authors later deposited the
-    full VR behaviour on figshare (doi:10.6084/m9.figshare.31974756.v1), which the dandiset does not
-    reference.
+    before session 8, so these cannot be rebuilt from the dandiset alone. The authors' figshare
+    deposit (doi:10.6084/m9.figshare.31974756.v1) holds every VR session, and this attempt uses it,
+    but neither the dandiset nor the paper's data statement names it.
+- kind: identifier_missing
+  statement: The figshare VR deposit names mice by alias (for example 4139265.3) and the dandiset by
+    R1 to FD4; no NWB file records the alias, so the link rests on the mapping in the authors' 2026
+    code (mouse_metadata.py). The trial sequences confirm that mapping for all 89 files of the rare
+    and frequent morph mice.
+- kind: other
+  statement: The deposit's session database flags 26 VR sessions of the rare and frequent morph mice
+    as imaged that have no file in the dandiset (12 of them R6's, on dates before its session 8),
+    without a note on why they were left out.
 - kind: data_missing
   statement: Mouse R6 has no session before 8 in the dandiset, R4 and R5 lack session 1, and FD3 has
     no session after 7, so the decision-mouse trial counts cannot match the paper's.
@@ -384,6 +439,17 @@ findings:
     replaced R5's files and removed its sessions 1, 5 and 7 relative to 0.260409.0433, without
     release notes.
 - kind: paper_inconsistency
-  statement: With the parameters the Methods give for the Hebbian model (in f_h units), the Hebbian
-    increment is smaller than the weight decay and the weights fall to zero during training; the
-    paper's code uses the rescaled unit, in which the same numbers are 0.15 and 0.1.
+  statement: The Methods give the Hebbian model's input width as "σ 2 = 4.11" in f_h; the paper's code
+    uses a width sigma of 0.15 units (4.11 f_h, so a denominator of 16.9 f_h^2) and a stimulus noise
+    of 0.1 units, and read as a variance in f_h the model's weights decay to zero during training.
+inputs:
+- what: The authors' "Unprocessed VR data" (morph_vr_data.zip, 1,089,941,983 bytes, md5
+    babed27dfd863aaa186f6e8208091801; a session database and one VR sqlite file per session), read
+    by HTTP range requests into memory; the trials of each mouse's sessions on the task track give
+    the priors of M7, training-intermediate-fraction, the reading (b) priors of edf9 and the Hebbian
+    model's training stimuli.
+  source: doi:10.6084/m9.figshare.31974756.v1
+- what: The mouse aliases of the deposit for R1 to F6 (mouse_metadata.py), and the code's way of
+    finding trials in the VR files (preprocessing._get_frame, utilities.by_trial_info), followed to
+    read the deposit; the link claim vr-deposit-link tests the aliases against the dataset.
+  source: https://github.com/GiocomoLab/PlittGiocomo_2021 at commit 9230b0a

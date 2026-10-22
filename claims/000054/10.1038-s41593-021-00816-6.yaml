@@ -155,6 +155,24 @@ claims:
   criterion: Sessions 8 and later per mouse (M1); trials are all imaged trials of those sessions.
     For the decision mice the paper does not say which sessions; read as (a) every imaged session
     and (b) sessions 8 and later. Reproduced when every count is within tolerance under a reading.
+- id: vr-deposit-link
+  kind: link
+  statement: The sessions of the authors' VR deposit on figshare can be matched to the dandiset's
+    imaging sessions of the rare and frequent morph mice, by mouse alias and trial sequence.
+  source: Header M7 (answer of 2026-10-22); figshare doi:10.6084/m9.figshare.31974756.v1
+    (morph_vr_data.zip, behavior.sqlite and one VR sqlite file per session); code
+    src/morph_analyses/mouse_metadata.py at 9230b0a (aliases of R1 to F6)
+  data: with_inputs
+  criterion: Added by the author of attempt 000054-plitt-2021-01 (protocol, Author 1.4), as the
+    priors of M7 and training-intermediate-fraction take each mouse's deposit sessions before its
+    session 8. Mice are matched by the alias of the 2026 code. Each VR file of the mouse on the task
+    track (TwoTower_foraging) gives per-trial S-tilde and wall, tower and background jitters (modes
+    over the trial's frames, trials found as the code finds them). A dandiset file matches a deposit
+    file when its trial sequence of these four values (within 1e-4) runs contiguously within the
+    deposit file's trials. Reproduced when every NWB file of the 12 rare and frequent morph mice
+    matches exactly one deposit file of its own mouse and none of another mouse; partially
+    reproduced when at least 90% do; not reproduced otherwise. Trial counts, offsets and the date
+    and session number of each mouse's session 8 are reported.
 - id: training-intermediate-fraction
   statement: Before session 8, rare morph mice had fewer than 4% of trials with intermediate morph
     values, while frequent morph mice had 60%.
@@ -177,6 +195,8 @@ claims:
     per mouse; readings (a) pooled over trials of the group, (b) every mouse. Reproduced when, under
     a reading, the rare morph fraction is below 4% and the frequent morph fraction is within 0.06
     of 60%.
+  depends_on:
+  - vr-deposit-link
 - id: place-cell-fractions
   statement: Place cells tiled the track in both conditions; 15,829 rare morph place cells (43% of
     recorded cells; 23% S-tilde = 0 and 21% S-tilde = 1 place cells) and 8,933 frequent morph place
@@ -499,6 +519,7 @@ claims:
     shown and do not decide. The 2020 code printed rare -0.96 +- 0.31 and frequent 0.58 +- 0.14
     (SFReg); no code for the 41 of 45 count or the test was found.
   depends_on:
+  - vr-deposit-link
   - session-and-trial-counts
 - id: fig6bc-pooled-dkl
   statement: Q estimates pooled over all sessions and mice approximate the posterior of the matching
@@ -583,6 +604,8 @@ claims:
     or 1 trial, averaged over trials. Which trials is not stated; readings (a) all such trials of
     sessions 8 to N of both groups, (b) of each group's own sessions. Reproduced when all four are
     within tolerance under a reading. The code variants of M7 and M8 are shown.
+  depends_on:
+  - vr-deposit-link
 - id: edf9-early-sessions
   statement: The rare versus frequent remapping patterns were stable over sessions and emerged early
     in training (session 3) in most animals.
@@ -599,6 +622,7 @@ claims:
     frequent positive) in at least 6 of 11 mice under both readings, and in sessions 8 to N the
     sign of every mouse's per-session values is the same in most of its sessions.
   depends_on:
+  - vr-deposit-link
   - fig6a-dkl-sign
 - id: edf9k-null-models-rare
   statement: For rare morph sessions, Q estimates are fit worse by the frequent, uniform, Gaussian
@@ -746,6 +770,8 @@ claims:
     M11. Seeds are a standard choice. Reproduced when the median Delta D_KL of the 50 rare-trained models is
     below 0 and that of the 50 frequent-trained models above 0 (Fig. 7f). The model uses no
     recorded activity; it needs only the trial morph values for the prior.
+  depends_on:
+  - vr-deposit-link
 - id: fig7g-model-prior-reconstruction
   statement: Priors reconstructed from the model's Q estimates are closer to the prior of the
     matching condition, though less closely matched than for the neural data.
@@ -790,6 +816,7 @@ claims:
     sign as the recorded one (fig3f-zscored-difference-at-025) at every entry of the S-tilde = 0.25
     row that was significant there, under both readings.
   depends_on:
+  - vr-deposit-link
   - fig3f-zscored-difference-at-025
 - id: supp-earlier-morph-studies
   statement: With reasonable assumed priors, the probabilistic inference framework reproduces the

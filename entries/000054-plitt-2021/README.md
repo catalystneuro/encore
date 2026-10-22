@@ -9,7 +9,8 @@ morph and four decision mice) running morphed linear tracks.
 |---|---|
 | Cells per session (161 to 3,657) | Reproduced |
 | Session and trial counts | Partially reproduced |
-| Intermediate trials before session 8 | Blocked: data missing |
+| Link of the authors' VR deposit to the dandiset (link claim) | Reproduced |
+| Intermediate trials before session 8 (deposit data) | Reproduced |
 | Place-cell counts and fractions | Not reproduced |
 | Fewer place cells in frequent morph mice | Reproduced |
 | Overlap of S-tilde 0 and 1 place cells above chance | Partially reproduced |
@@ -23,14 +24,14 @@ morph and four decision mice) running morphed linear tracks.
 | Z-scored similarity differs at S-tilde 0.25 | Reproduced |
 | Position-wise SF stable along the track | Reproduced |
 | Delta D_KL sign and group means | Partially reproduced |
-| Pooled Delta D_KL | Not reproduced |
-| Reconstructed priors | Partially reproduced |
+| Pooled Delta D_KL | Partially reproduced |
+| Reconstructed priors | Not reproduced |
 | MAP estimates | Reproduced |
 | Patterns from session 3 on | Reproduced |
 | Null models, rare morph sessions | Reproduced |
 | Null models, frequent morph sessions | Partially reproduced |
-| Decision mice like frequent morph mice | Partially reproduced |
-| Hebbian model and its prior reconstruction (two claims) | Not reproduced |
+| Decision mice like frequent morph mice | Reproduced |
+| Hebbian model and its prior reconstruction (two claims) | Reproduced |
 | Simulated posterior population | Not reproduced |
 | Image statistics of the VR scenes | Blocked: data missing |
 | Earlier morph studies (simulation only) | Blocked: other |
@@ -38,17 +39,20 @@ morph and four decision mice) running morphed linear tracks.
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The files hold only the imaged trials, so the priors behind every posterior come from the imaged
-trials before session 8, which for rare morph mice include the half-intermediate session 3; a
-question asks whether the authors' later deposit of the full VR behaviour should be used. The
+The files hold only the imaged trials. Following a reader's answer, the priors behind every
+posterior, and the training statistics, come from the authors' later deposit of all VR sessions on
+figshare ([doi:10.6084/m9.figshare.31974756.v1](https://doi.org/10.6084/m9.figshare.31974756.v1)),
+read file by file into memory; a link claim shows that its sessions match the dandiset's files.
+The claims that use it are counted apart from those on the dandiset alone. The
 attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000054-plitt-2021-01.yaml`](../../attempts/000054-plitt-2021-01.yaml).
 
 - `01_sessions_place_cells.ipynb`: the data check of every file, sessions, licking, place cells,
-  their similarity matrices, NMF and UMAP. About 15 minutes, most of it the place-cell shuffles.
-- `02_population_inference.ipynb`: population similarity, SF, Q estimates, prior reconstruction,
-  the decision mice, the Hebbian model and the simulated posterior population, and the summary.
-  About 14 minutes.
+  their similarity matrices, NMF and UMAP. About 28 minutes, most of it streaming the files and the
+  place-cell shuffles.
+- `02_population_inference.ipynb`: the link to the figshare VR deposit and the training trials,
+  population similarity, SF, Q estimates, prior reconstruction, the decision mice, the Hebbian
+  model and the simulated posterior population, and the summary. About 24 minutes.
 - `morph.py`: streaming and reducing the files, place cells, the stimulus axis, priors, posteriors,
-  Q estimates, Delta D_KL and the mouse permutation test. Other notebooks on this dandiset can
+  Q estimates, Delta D_KL, the mouse permutation test, and reading and linking the figshare VR deposit. Other notebooks on this dandiset can
   import it.

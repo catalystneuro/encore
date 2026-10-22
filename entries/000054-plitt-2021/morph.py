@@ -24,7 +24,11 @@ code (https://github.com/GiocomoLab/PlittGiocomo_2021, commit dca5a57):
   fraction of shuffles with SI at least the real one is at most 0.05 (criterion).
 - Stimulus axis, f_h, and the rescaled unit `wallmorphx` of the code (M6, UnityTransforms.py), on
   a grid of 1,000 points from -0.3 to 1.3 units.
-- Priors from the trials before session 8 with a kernel exp(-d^2/0.1^2) in units (M7), likelihood
+- Priors from every trial before session 8 with a kernel exp(-d^2/0.1^2) in units (M7); the
+  trials come from the authors' VR deposit on figshare (doi:10.6084/m9.figshare.31974756.v1, M7,
+  answer of 2026-10-22), read with HTTP range requests into memory, its mice named by the aliases
+  of the 2026 code (mouse_metadata.py at 9230b0a). The deposit's trials are found as the code finds
+  them (preprocessing._get_frame, utilities.by_trial_info). Likelihood
   of variance 8.23 f_h^2 (M8, Methods; the code widths 0.3 and 0.4 units are variants).
 - SF (M9), Q with a kernel exp(-d^2/0.1^2) on both axes and the affine map to 10.86 and 37.715 f_h
   (M10), Delta D_KL over rows 0.1 to 1.1 units in bits (M11), mouse permutation test (M12).
@@ -32,6 +36,7 @@ code (https://github.com/GiocomoLab/PlittGiocomo_2021, commit dca5a57):
 
 from __future__ import annotations
 
+import io
 import itertools
 import json
 import re
@@ -297,6 +302,222 @@ def reconstruct_prior(qu: np.ndarray, lik: str = "methods var 8.23") -> np.ndarr
 def dkl(p: np.ndarray, q: np.ndarray) -> float:
     d, _ = dkl_rows(p[None, :], q[None, :])
     return float(d[0])
+
+
+# ----------------------------------------------------------------------------- VR deposit (M7)
+# The authors' "Unprocessed VR data" on figshare (header M7, answer of 2026-10-22): one zip,
+# morph_vr_data.zip, with a session database (behavior.sqlite) and one VR sqlite file per session,
+# in folders named by mouse alias and date. It is read with HTTP range requests and each member is
+# opened in memory; nothing is written to disk.
+VR_DEPOSIT = dict(doi="10.6084/m9.figshare.31974756.v1", article=31974756, version=1,
+                  url="https://ndownloader.figshare.com/files/63594087",
+                  name="morph_vr_data.zip", size=1089941983, md5="babed27dfd863aaa186f6e8208091801")
+# Mouse aliases of the deposit, from the 2026 code (src/morph_analyses/mouse_metadata.py at 9230b0a);
+# the link claim deposit-links-to-dandiset tests them against the dataset's trials.
+ALIAS = {"R1": "4139265.3", "R2": "4139265.4", "R3": "4139265.5", "R4": "4222168.1",
+         "R5": "4343703.1", "R6": "4343706", "F1": "4222153.1", "F2": "4222153.2",
+         "F3": "4222153.3", "F4": "4222174.1", "F5": "4222154.1", "F6": "4343702.1"}
+VR_TRACK = "TwoTower_foraging"      # the scene of the rare and frequent morph task (2026 code)
+
+
+def _get_range(start, end):
+    """Bytes start to end (inclusive) of the deposit. The archive redirects each request to a
+    storage URL signed for 10 s, so every request goes through the redirect."""
+    import requests
+    for attempt in range(6):
+        try:
+            r = requests.get(VR_DEPOSIT["url"], headers={"Range": f"bytes={start}-{end}"}, timeout=300)
+            r.raise_for_status()
+            if len(r.content) == end - start + 1:
+                return r.content
+        except Exception:
+            if attempt == 5:
+                raise
+    raise IOError(f"short read of bytes {start}-{end}")
+
+
+class _RangeFile(io.RawIOBase):
+    """A read-only, seekable file over HTTP range requests (for the zip's directory)."""
+
+    def __init__(self):
+        import requests
+        r = requests.get(VR_DEPOSIT["url"], headers={"Range": "bytes=0-0"}, timeout=120)
+        r.raise_for_status()
+        self.size, self.pos = int(r.headers["Content-Range"].split("/")[1]), 0
+
+    def readable(self):
+        return True
+
+    def seekable(self):
+        return True
+
+    def tell(self):
+        return self.pos
+
+    def seek(self, offset, whence=0):
+        self.pos = offset if whence == 0 else (self.pos + offset if whence == 1 else self.size + offset)
+        return self.pos
+
+    def readinto(self, b):
+        if self.pos >= self.size:
+            return 0
+        data = _get_range(self.pos, min(self.pos + len(b), self.size) - 1)
+        b[:len(data)] = data
+        self.pos += len(data)
+        return len(data)
+
+
+def open_vr_deposit():
+    """The deposit's zip directory (one listing of its members)."""
+    import zipfile
+    f = _RangeFile()
+    assert f.size == VR_DEPOSIT["size"], "the deposit's size differs from the pinned version"
+    return zipfile.ZipFile(io.BufferedReader(f, buffer_size=1 << 20))
+
+
+def read_member(info) -> bytes:
+    """One member of the zip, from a single range request; its CRC is checked."""
+    import struct
+    import zlib
+    raw = _get_range(info.header_offset, info.header_offset + 30 + len(info.orig_filename.encode())
+                     + 1024 + info.compress_size)
+    assert raw[:4] == b"PK\x03\x04"
+    n, m = struct.unpack("<HH", raw[26:30])
+    data = raw[30 + n + m:30 + n + m + info.compress_size]
+    out = zlib.decompress(data, -15) if info.compress_type == 8 else data
+    assert len(out) == info.file_size and zlib.crc32(out) == info.CRC, info.filename
+    return out
+
+
+def _sqlite(data: bytes):
+    import sqlite3
+    con = sqlite3.connect(":memory:")
+    con.deserialize(data)
+    return con
+
+
+def vr_session_db(z) -> pd.DataFrame:
+    """The deposit's session database, one row per VR session, with the file each row names."""
+    con = _sqlite(read_member(z.getinfo("morph_vr_data/behavior.sqlite")))
+    df = pd.read_sql("SELECT * FROM sessions", con)
+    con.close()
+    df["date"] = pd.to_datetime(df["DateFolder"], format="%d_%m_%Y")
+    df["member"] = [f"morph_vr_data/{r.MouseName}/{r.DateFolder}/{r.Track}_{r.SessionNumber}.sqlite"
+                    for r in df.itertuples()]
+    names = set(z.namelist())
+    df["in_zip"] = df["member"].isin(names)
+    return df
+
+
+def vr_trials_from_frames(fr: pd.DataFrame) -> pd.DataFrame:
+    """Per-trial values of one VR session, as the code finds trials (preprocessing._get_frame,
+    utilities.by_trial_info): position clipped at -50 cm, a teleport where position falls by 50 cm
+    or more, a trial from the first non-negative position after a teleport to the next teleport;
+    the trial's morph and jitters are their modes over its frames. Trials without a morph value are
+    dropped and counted."""
+    pos = np.maximum(fr["pos"].to_numpy(float), -50)
+    tele = np.nonzero(np.diff(pos, append=pos[-1]) <= -50)[0]
+    starts = np.append([0], tele[:-1] + 1)
+    rows = []
+    for s, e in zip(starts, tele):
+        while s < e and pos[s] < 0:
+            s += 1
+        sub = fr.iloc[s:e]
+        m = sub["morph"].dropna()
+        if not len(m):
+            rows.append(dict(morph=np.nan))
+            continue
+        rows.append(dict(morph=float(m.mode().iloc[0]),
+                         wall=float(sub["wallJitter"].mode().iloc[0]),
+                         tower=float(sub["towerJitter"].mode().iloc[0]),
+                         background=float(sub["bckgndJitter"].mode().iloc[0]),
+                         rewarded=float(sub["reward"].sum())))
+    t = pd.DataFrame(rows, columns=["morph", "wall", "tower", "background", "rewarded"])
+    t["S"] = t["morph"] + t["wall"]
+    t["fh"] = xfreq(t["S"].to_numpy())
+    t["unit"] = wallmorphx(t["S"].to_numpy())
+    return t
+
+
+def _vr_parse(data: bytes) -> pd.DataFrame:
+    con = _sqlite(data)
+    fr = pd.read_sql("SELECT pos, morph, wallJitter, towerJitter, bckgndJitter, reward FROM data", con)
+    con.close()
+    return vr_trials_from_frames(fr)
+
+
+def vr_deposit(mice=tuple(ALIAS), track=VR_TRACK, workers=16):
+    """Session database rows of the mice's sessions on the task track, and the trials of each.
+
+    Returns (sessions, trials): sessions has one row per file (a file the database lists twice is
+    read once), with mouse, date, session number, reward count, imaging flag and trial counts;
+    trials maps each file to its per-trial table."""
+    z = open_vr_deposit()
+    db = vr_session_db(z)
+    inv = {a: m for m, a in ALIAS.items() if m in mice}
+    ses = db[db["MouseName"].isin(inv) & (db["Track"] == track)].copy()
+    ses["mouse"] = ses["MouseName"].map(inv)
+    ses["db_rows"] = ses["member"].map(ses["member"].value_counts())
+    ses = (ses.groupby("member", as_index=False)
+              .agg(dict(mouse="first", MouseName="first", date="first", DateFolder="first",
+                        SessionNumber="first", RewardCount="max", Imaging="max", in_zip="all",
+                        Track="first", db_rows="first"))
+              .sort_values(["mouse", "date", "SessionNumber"]).reset_index(drop=True))
+    # members are fetched in threads and parsed one at a time here (parsing in the threads is
+    # many times slower)
+    with ThreadPoolExecutor(workers) as ex:
+        tabs = [_vr_parse(b) for b in ex.map(read_member, [z.getinfo(m) for m in ses["member"]])]
+    trials = dict(zip(ses["member"], tabs))
+    ses["trials"] = [int(t["morph"].notna().sum()) for t in tabs]
+    ses["trials_no_morph"] = [int(t["morph"].isna().sum()) for t in tabs]
+    return ses, trials
+
+
+def match_trials(nwb: pd.DataFrame, vr: pd.DataFrame, tol: float = 1e-4):
+    """Where the NWB file's trial sequence (S-tilde and the three jitters) lies within a VR
+    session's trials as one contiguous run: the offset of the run and the largest difference, or
+    None when no offset matches every trial."""
+    cols = ["morph", "wall", "tower", "background"]
+    a, b = nwb[cols].to_numpy(float), vr[cols].to_numpy(float)
+    if len(a) == 0 or len(a) > len(b):
+        return None
+    for k in range(len(b) - len(a) + 1):
+        d = np.abs(b[k:k + len(a)] - a)
+        if np.all(d < tol):
+            return k, float(d.max())
+    return None
+
+
+def link_sessions(nwb_sessions, ses, trials):
+    """Link claim: for each NWB session of the mice, the deposit files of the same mouse whose
+    trials hold its trial sequence. nwb_sessions is a list of dicts with mouse, kind, day, part and
+    trials; returns one row per NWB session with the matching files."""
+    rows = []
+    for s in nwb_sessions:
+        cand = ses[ses["mouse"] == s["mouse"]]
+        hits = []
+        for r in cand.itertuples():
+            m = match_trials(s["trials"], trials[r.member])
+            if m is not None:
+                hits.append((r.member, r.date, r.SessionNumber, r.Imaging, m[0], m[1], len(trials[r.member])))
+        other = []
+        for r in ses[ses["mouse"] != s["mouse"]].itertuples():
+            if len(s["trials"]) >= 10 and match_trials(s["trials"], trials[r.member]) is not None:
+                other.append(r.member)
+        rows.append(dict(mouse=s["mouse"], kind=s["kind"], day=s["day"], part=s["part"],
+                         nwb_trials=len(s["trials"]), matches=len(hits), other_mouse_matches=len(other),
+                         member=hits[0][0] if hits else None, date=hits[0][1] if hits else None,
+                         session_number=hits[0][2] if hits else None, imaging=hits[0][3] if hits else None,
+                         offset=hits[0][4] if hits else None, max_diff=hits[0][5] if hits else None,
+                         vr_trials=hits[0][6] if hits else None))
+    return pd.DataFrame(rows)
+
+
+def sessions_before(ses, mouse, date, number):
+    """M7: the mouse's sessions on the task track before session 8: every session on an earlier
+    date, and the earlier session numbers of session 8's own date."""
+    s = ses[ses["mouse"] == mouse]
+    return s[(s["date"] < date) | ((s["date"] == date) & (s["SessionNumber"] < number))]
 
 
 # ----------------------------------------------------------------------------- mouse permutations (M12)
