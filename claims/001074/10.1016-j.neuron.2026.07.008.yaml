@@ -1,0 +1,1155 @@
+# Claims for Kalugin, Soden, ... Lehtinen & Andermann (2026), Neuron, doi:10.1016/j.neuron.2026.07.008,
+# on dandiset 001074 ("Multiplexed optical recording of sensors on a micro-endoscope (MORSE)",
+# most recent published version 0.260928.0807; title and description read, no data or asset list read).
+#
+# Provenance. Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions),
+# 2026-10-22, protocol pilot-10 as stated in docs/protocol.md (Reader, steps 1 to 4).
+#
+# Text read. The accepted author manuscript in PubMed Central (PMC13568791, NIHMS2202779), as
+# fetched to paper/10.1016-j.neuron.2026.07.008.txt: Summary, Introduction, Results, Discussion,
+# STAR Methods (including "Quantification and statistical analysis"), figure legends of Figures 1
+# to 6, Table 1, the key resources table and the video legends (S1 to S16); and the supplement
+# NIHMS2202779-supplement-1.pdf (Figures S1 to S6 with legends), extracted into the same file.
+# The version of record was not read. The paper reports no statistical test and no p-value: all
+# support is means with SEM, counts, and figures. No claim therefore has `statistics`.
+#
+# Code read. github.com/pkalugin/kalugin-et-al-morse at commit fa4526ac02eaa2c5a24c4cfdcaab5c36ed5ae4ed
+# (2026-08-06; the paper also cites Zenodo doi:10.5281/zenodo.21142692, not read). It holds
+# microscope motor control (1_), Cellpose probability maps (2_), demons deformation fields (3_, 4_),
+# CaImAn mask extraction, curation and cross-recording matching (5_), and the trace analyses by
+# figure in 6_trace_analysis/ (Jupyter notebooks with printed outputs). Cells cited below are
+# 0-based cell positions in the .ipynb files. Which notebook made which paper number:
+#   morse_figs3_rev: Figure 1G-J, S3, Table 1 (the revision set of 10 ten-sensor probes). Its printed
+#     outputs match the paper (506 cells, median 9 sensors, 6.02 cells per sensor, all EC50s).
+#   morse_fig2_rev: the LC optogenetic slices (Figure 2G-L, S4F). Printed outputs match the paper
+#     (thresholds 148, 84.3, 30.3 nM; peaks 347 and 248 nM; delay 30.7 s).
+#   morse_fig2: an older analysis of the dLGN and PVH slices (Figure 2A-F, S4A-E, S5) with older
+#     parameters (fixed threshold 0.125, older EC50s). Its printed values do not match the paper
+#     (for example NE peak 2.21 uM against 4.61 uM; thresholds 278/45.9/28.3 nM against
+#     348/116/62.7 nM). The code that made the paper's dLGN and PVH numbers is not in the repository.
+#   morse_fig3_rev: Figure 3 and Figure 4 (in vivo MORSE, ELISA and mass spectrometry tables).
+#   morse_fig3: Figure 5A-D (spontaneous 5-HT), Figure 5G-H and Figure 6 (choroid plexus, from CSV
+#     traces of square ROIs).
+#   Not in the code: fiber photometry (S6E-F), the "100-200 cells" of Figure 1C, the probe stability
+#     counts, the "two orders of magnitude" comparison, and the PVH and dLGN numbers above.
+#
+# Data the paper used, as it reports them.
+#   In vitro dipping (Figure 1, S1-S3): MORSE probes (HEK-293T cells, one GRAB sensor per cell,
+#     colchicine-treated, in a ~200 um collagen I/Matrigel hydrogel on a 0.5 mm GRIN lens), imaged
+#     at ~0.5 volumes/s (30 planes) while robotically dipped into 20 uL wells of a 384-well plate
+#     (3-5 min per well). Ten ten-sensor probes (AVP, 5-HT, NE, ACh, ATP, OXT, HA, DA, CCK, MT) were
+#     dipped into near-saturating single ligands (identification) and then two 5-ligand mixtures at
+#     10-fold dilutions (dose response). Warping and detachment tests used 50:50 (n=9) and 40:60
+#     (n=24) Matrigel:collagen probes with and without KOH coating, and pure Matrigel against 50:50
+#     probes (n=6 each, 9 h).
+#   Acute slices (Figure 2, S4, S5): seven-sensor probes (ACh, AVP, OXT, 5-HT, NE, DA, HA) pressed on
+#     the slice. dLGN, 9 slices (Pet1-Cre mice with DRN tdTomato; 6 mice), bath 50 mM KCl then 50 uM
+#     DA, 5-HT and NE wash-ons; 4 of 9 followed by dipping. PVH, 6 recordings (TH-Cre::Ai32 mice; 8
+#     mice), KCl at 1.56 to 50 mM in 2-fold steps then DA and NE. LC, 5 slices with NE responses
+#     (ChrimsonR in LC, 5 male mice), 655 nm light in the first 5 s of each 20 s trial, 45 trials,
+#     then DA, 5-HT, NE wash-ons. Frames of 1.92 s (31.25 volumes per minute in morse_fig2_rev).
+#   In vivo CSF (Figure 3, 4, 5A-D, S6): probes inserted into a lateral ventricle cannula of awake
+#     head-fixed mice on a wheel, 3-4 h of imaging. Three-sensor probes (AVP, OXT, 5-HT), IP AVP
+#     1 mg/kg, OXT 1 mg/kg, 5-HT 3 mg/kg, then ICV AVP (n=5) or OXT (n=6) or 5-HT, "n=11 mice" in
+#     Figure 3D-F; ten-sensor probes in 4 mice with three IP mixtures and ICV 5-HT; spontaneous 5-HT
+#     in 3 of 7 three-sensor recordings. Post hoc dipping identified each cell's sensor.
+#   Fiber photometry (S6D-F): single-sensor probes on a 400 um fiber, AVP (n=4 mice), OXT (n=4).
+#   Ex vivo (Figure 4B,C,E,F,H,I, S6G-J): naive Swiss Webster mice, CSF and serum 30 min after IP
+#     AVP, OXT or 5-HT or saline; ELISA (AVP, OXT), mass spectrometry (5-HT, 5-HIAA); a ten-sensor
+#     probe dipped into the serum samples.
+#   Choroid plexus imaging (Figure 5E-H, 6): FoxJ1-Cre::Ai95D mice (GCaMP6f; ICV 5-HT n=3, IP 5-HT
+#     n=6) and mice with ICV AAV5 GRAB sensors (5-HT 5 injections in 4 mice, AVP 9 in 4, OXT 3 in
+#     2), imaged through a cranial window, 1 volume per 4.32 s.
+#   The paper says single-cell traces from all experiments are on DANDI; raw imaging and fiber
+#   photometry are "available from corresponding authors upon request". Claims that need raw
+#   imaging, photometry, ELISA or histology are still `dataset` (the paper's own recordings);
+#   whether the dandiset holds them is the author's to find.
+#
+# Shared methods. Claims refer to these by name. Each part is from the Methods (M) or the code (C).
+#   POOLED-SLICE. Per recording and sensor, the median across that sensor's cells of dF/F0 at each
+#     timepoint (M, "pooled signals"; C morse_fig2_rev cell 107). F0 is the mean of the lowest 10% of
+#     each cell's trace (M Eq. 27; C morse_fig2_rev cell 11). Median filter of 31 frames, about 60 s
+#     (M "10-60 sec window"; C cell 107). Peak normalization (M) so that the post-wash-on peak of the
+#     50 uM ligand wash-on equals F*c/(Kd+c) with c = 50 uM, Kd and F of that sensor (CONSTANTS).
+#     Open, the post-wash-on peak (the code divides by the median of a hand-picked 100-frame window,
+#     morse_fig2_rev cells 73 and 107). Readings (a) the median of the 100 frames centred on the
+#     maximum of the filtered trace between that wash-on and the next; (b) that maximum. Variant
+#     (code, not Methods), a linear detrend between hand-chosen frames before normalization; its
+#     frames are not recoverable, so it is shown only where the dataset gives them.
+#   CONSTANTS. Kd = the MORSE EC50s of Table 1 (consensus fits, as printed in morse_figs3_rev cell
+#     375). F (the fitted maximum) from morse_figs3_rev cell 376, not printed in the paper:
+#     AVP 1.0593, AVP sensor by OXT 1.2894, OXT sensor by AVP 1.0089, OXT 1.0596, 5-HT 1.0484,
+#     CCK 1.0671, NE 1.0440, NE sensor by DA 1.0907, DA sensor by NE 1.0816, DA 1.0007, ACh 1.0643,
+#     ATP 1.0633, MT 1.0648, HA 1.0050. Crosstalk ratios gamma (morse_figs3_rev cell 368), AVP sensor
+#     by OXT 0.2777, OXT sensor by AVP 0.2190, NE sensor by DA 0.4415, DA sensor by NE 0.7981.
+#   CONC. Concentration from a peak-normalized signal y clipped to [0, F], by Eq. 8,
+#     [L] = Kd*y/(F - y), for one ligand, and by Eq. 19 for NE and DA together (M; C morse_fig2_rev
+#     cells 67 and 107, which solve the two equations of Eq. 18 numerically).
+#   THRESH. Robust-response threshold of a dataset (M, "a threshold defining robust response"; the
+#     Methods do not define a dataset, read here as one brain region and stimulus, and for LC see
+#     fig2jk-lc-robust-counts) (M, "a threshold
+#     defining robust response"). The SD of each sensor's pooled peak-normalized signal over the
+#     period before any KCl or optogenetic stimulation or IP injection, for each recording; the
+#     maximum across the dataset's recordings; times 1.96; converted to a concentration by Eq. 8.
+#     A response is robust when its peak concentration exceeds the threshold (Figure 2D legend).
+#     Variant (code, morse_fig2_rev cells 120 and 144), the SD is of the unnormalized pooled dF/F0
+#     over the first 5 min of the recording.
+#   PEAK. The median of the 10 largest values of the concentration trace within the response
+#     window (C morse_fig2_rev cell 139). For optogenetic slices the window is 5 to 12.5 min of the
+#     recording, stimulation starting at 5 min (C cell 139). For KCl the paper and the code do not fix
+#     it; readings (a) from KCl wash-on to the start of the next wash-on, (b) from KCl wash-on to
+#     7.5 min after it (the length of the code's optogenetic window).
+#   TAU-RISE. The time from stimulus onset to the first frame at which the trace exceeds
+#     (1 - 1/e) times its PEAK, within the response window (C morse_fig2_rev cell 170; the same
+#     definition in morse_fig3_rev cells 288-290 and morse_fig3). The Methods name it "onset timing"
+#     without a definition.
+#   POOLED-INVIVO. Per mouse and sensor, the median across cells of dF/F0 with F0 the mean of the
+#     15 min before the injection (M Eq. 27; C morse_fig3_rev cells 96 and 127-142, cells median
+#     filtered over 11 frames), from 15 min before to 45 min after the injection; then mean and SEM
+#     across mice (Figure 3D-F legend; C).
+#   CONC-INVIVO. As POOLED-INVIVO with a 31-frame (about 60 s) median filter, normalized so that the
+#     peak after the saturating ICV infusion of the same ligand equals F (M, "normalized to their
+#     peaks matching the F parameter"; C morse_fig3_rev cells 224-274; the code takes the maximum of
+#     the trace up to 1000 volumes, about 32 min, after the ICV onset), then Eq. 8 with CONSTANTS.
+#     Variant (code), a stretched exponential plus linear detrend fitted over hand-set frames, used
+#     for some mice only; not recoverable, shown only if the dataset gives the frames.
+#   SENSOR IDENTITY. Each cell's sensor is the label the dataset gives from the post hoc dipping. If
+#     the dataset gives none, labels are made as in the Methods and morse_figs3_rev cells 21-78
+#     (exponential background fit, Savitzky-Golay first derivative, window 30 frames and order 1,
+#     HDBSCAN with min_cluster_size 3 on correlation distance, clusters matched to the ligand wells);
+#     the code then corrects clusters by hand, which cannot be repeated, so counts would differ.
+#
+# Inconsistencies noted while reading (for the author's findings, not resolved here).
+#   Results say KCl-free optogenetic increments of "100-300 nM" (Figure 2I text); the Figure 2I
+#     legend says "100-200 nM".
+#   Methods say ">90% probe stability" in revision experiments, with n=10/13 dipping (77%), 9/9
+#     slice and 13/14 in vivo.
+#   Figure 1G IQR "8-9"; the code prints the 25th percentile as 8.25.
+#   Figure 1F legend defines late warp as >25 um in the second hour; the code (morse_figs1 cell 139)
+#     uses >50 um within 2 h.
+#   Figure 3D-F legend "n=11 mice"; morse_fig3_rev cell 96 uses 10 recordings (n 10, 10, 9 by sensor).
+#   Figure 5H legend "six mice"; morse_fig3 leaves one of the six out of the mean.
+#   Figure 6D names GRAB-AVP2.0, Figure 6E and the Results GRAB-AVP0.2.
+#   Figure S4D legend names NE (left) and DA (right), then reports NE and 5-HT tau-rise.
+#   Results give IP 5-HT at 3 mg/kg for ChP GCaMP imaging; the Figure 5H legend and the Methods
+#     ChP table give 2 mg/kg.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001074"
+paper: doi:10.1016/j.neuron.2026.07.008
+claims:
+- id: fig1c-cells-per-gel
+  statement: Imaging a MORSE hydrogel through the GRIN lens shows 100 to 200 green sensor cells
+    spread through the full thickness of the gel.
+  source: Results, MORSE probe development and characterization, paragraph 1; Figure 1C
+  quote: 3D two-photon imaging of the resultant hydrogel through the GRIN lens (30 planes/volume,
+    ~600×600×270 μm 3 volume) demonstrated a uniformly distributed set of 100–200 green cells
+    spanning the full thickness of the gel
+  expected:
+  - quantity: green cells per probe, lower bound of the range
+    value: 100
+    tolerance: 10
+  - quantity: green cells per probe, upper bound of the range
+    value: 200
+    tolerance: 20
+  criterion: Neither the Methods nor the code say how the cells were counted. Readings (a) the
+    number of cell masks extracted per recording before curation (CNMF components); (b) the number
+    of curated cell masks per recording. Reproduced when the per-probe counts of a reading lie in 90
+    to 220 for most probes (more than half) and the cells occupy all depths of the gel (cell centres
+    found in the top, middle and bottom thirds of the gel thickness). Needs masks or imaging.
+- id: fig1d-collagen-reduces-warping
+  statement: Hydrogels of pure Matrigel deform substantially over tens of minutes; a mixture of
+    Matrigel and collagen I deforms less.
+  source: Results, MORSE probe development and characterization, paragraph 2; Figure 1D
+  quote: The small hydrogel volume (~40 nL) on the GRIN lens tip, when composed of pure Matrigel,
+    exhibited substantial global and local deformations over tens of minutes. We minimized these
+    deformations using an optimized mixture of Matrigel and collagen I
+  criterion: Deformation is the local strain magnitude, the mean over the hydrogel volume of the
+    magnitude of the displacement field minus its mean (Figure 1D legend, Figure S1C; morse_figs1
+    cells 3, 92, 97), from demons registration of Cellpose probability maps to a reference volume.
+    With n=6 probes per recipe imaged for 9 h, reproduced when the mean deformation across probes of
+    the 50:50 recipe stays below that of pure Matrigel over the recording (mean over the 9 h lower,
+    and lower at the end). The paper gives no test. Needs the deformation fields or raw imaging.
+- id: fig1f-koh-stability
+  statement: Treating the silicone surface with KOH before applying the gel strongly reduces gel
+    warping and detachment during dipping; with the optimized protocol (40:60 Matrigel:collagen I
+    with 2.5% KOH, against 50:50 without KOH) probe stability rose from about 10% to about 65% in
+    initial tests.
+  source: Methods, Optimization of MORSE manufacture, paragraph 1; Figure 1F; Figure S1D-E; Results,
+    MORSE probe development and characterization, paragraph 2
+  quote: This allowed us to increase probe stability from ~10% to ~65% in initial tests ( Figure 1F
+    )
+  expected:
+  - quantity: stable probes, 50:50 Matrigel:collagen without KOH
+    value: 1
+    tolerance: 0
+    unit: of 9
+  - quantity: fraction of stable probes, 40:60 Matrigel:collagen with 2.5% KOH
+    value: 0.65
+    tolerance: 0.065
+  criterion: A probe is early warp when the 3D translation of the hydrogel (the norm of the mean
+    displacement over the gel) exceeds 25 um in the first hour, late warp when it exceeds 25 um in
+    the second hour, and stable otherwise (Figure 1F legend). Stable fraction over the 9 probes of
+    50:50 without KOH and the 24 of 40:60 with KOH. Variant (code, morse_figs1 cell 139), late warp
+    as more than 50 um within 2 h. The code's comments (cell 126) give "~66% success" for the KOH
+    group. The two groups differ in both recipe and KOH (Figure 1F legend), so the comparison does
+    not separate the two. Of 9 probes, "~10%" can only be 1 (11%), recorded as a count. Needs the
+    deformation fields or raw imaging.
+- id: methods-revision-probe-stability
+  statement: In the revision experiments more than 90% of probes were stable, 10 of 13 in vitro
+    dipping, 9 of 9 slice and 13 of 14 in vivo CSF experiments.
+  source: Methods, Optimization of MORSE manufacture, paragraph 1
+  quote: In revision experiments, >90% probe stability was achieved (n=10/13 in vitro dipping
+    experiments, n=9/9 brain slice experiments, n=13/14 in vivo CSF experiments).
+  expected:
+  - quantity: stable dipping probes
+    value: 10
+    tolerance: 0
+    unit: of 13
+  - quantity: stable slice probes
+    value: 9
+    tolerance: 0
+    unit: of 9
+  - quantity: stable in vivo probes
+    value: 13
+    tolerance: 0
+    unit: of 14
+  criterion: The paper does not define stability for the revision experiments. Read as in
+    fig1f-koh-stability (no translation above 25 um), the only definition the paper gives, made for
+    dipping; for slice and in vivo recordings this is a reading. Counts are exact.
+    The ">90%" does not follow from 10/13; the counts decide the claim. Needs deformation fields
+    or raw imaging, and a record of which recordings were revision experiments.
+- id: fig1g-sensor-yield
+  statement: Ten ten-sensor probes yielded 506 identified single-cell masks; per probe a median of
+    9 sensors were active (IQR 8 to 9), with on average 6.02 cells per sensor per probe.
+  source: Figure 1G and legend; Results, MORSE probe development and characterization, paragraph 4
+  quote: we could assign clear sensor identities across several hundred cells from ten
+    representative MORSE probes (median of 9 active sensors per probe, interquartile range 8–9;
+    average of 6.02 cells per sensor per probe)
+  expected:
+  - quantity: identified cells over the ten probes
+    value: 506
+    tolerance: 50.6
+  - quantity: median active sensors per probe
+    value: 9
+    tolerance: 0.9
+  - quantity: 25th percentile of active sensors per probe
+    value: 8
+    tolerance: 0.8
+  - quantity: 75th percentile of active sensors per probe
+    value: 9
+    tolerance: 0.9
+  - quantity: mean cells per sensor per probe
+    value: 6.02
+    tolerance: 0.602
+  criterion: From SENSOR IDENTITY on the identification dipping recordings of the ten ten-sensor
+    probes. A sensor is active on a probe when at least one cell carries its label; there is no
+    threshold (morse_figs3_rev cells 139-143). Cells per sensor per probe is the total number of
+    cells divided by the number of (probe, sensor) pairs with at least one cell (cells 139, 144,
+    506/84). Percentiles by numpy's default linear interpolation (cell 142, which prints 8.25).
+- id: fig1g-all-ten-sensors-respond
+  statement: Dipping ten-sensor probes into each ligand in turn gave rapid, strong and consistent
+    responses in a subset of cells for each ligand, and all ten sensors were activated.
+  source: Results, MORSE probe development and characterization, paragraph 4; Figure 1G, Figure S3A
+  quote: This resulted in rapid, strong, and consistent patterns of elevated fluorescence in subsets
+    of cells evenly spread throughout the gel in response to each ligand
+  criterion: Reproduced when each of the ten sensor labels is carried by cells on at least one of
+    the ten probes, and the mean peak-normalized dF/F0 of each sensor's cells is highest during the
+    well of its own ligand (Figure 1G heatmap; peak normalization by Eq. 28, mean of the highest 10%
+    minus mean of the lowest 10%), except that the DA and NE sensors and the AVP and OXT sensors may
+    also respond to each other's ligand (fig1h-crosstalk-pairs). Background correction by an
+    exponential fit to the signal before activation (Methods), as in morse_figs3_rev cells 21-24.
+  depends_on:
+  - fig1g-sensor-yield
+- id: fig1h-crosstalk-pairs
+  statement: Among the ten sensors, only the DA and NE sensors, and to a lesser extent the AVP and
+    OXT sensors, show crosstalk in their ligand responses.
+  source: Methods, Quantification and statistical analysis; Figure 1H, Figure S3B; Results, MORSE
+    probe development and characterization, paragraph 4
+  quote: Calculating the means of the derivative time courses across each cell cluster and
+    cross-corelating them with each other consistently demonstrated that only the DA2.9 dopamine and
+    the NE2h norepinephrine sensors, as well as to a lesser extent the AVP0.2 vasopressin and OXT1.7
+    oxytocin sensors, exhibited crosstalk in their ligand responses
+  criterion: Per cell, the time derivative of the peak-normalized dF/F0 by a Savitzky-Golay filter
+    (1-min window, order 1; Methods, which decide; morse_figs3_rev cell 216 uses 10 frames, shown as
+    a variant), each divided by its
+    own maximum (cell 218); the mean per sensor (cell 224); the Pearson correlation at zero lag
+    between the ten sensor means (cell 227). The paper and the code set no threshold for crosstalk.
+    Reproduced when the DA-NE correlation is the largest off-diagonal value, the AVP-OXT
+    correlation is the second largest, and every other pair is lower than both. Variant (code, cell
+    219), a band-pass 3-minute dipping artefact subtracted before averaging.
+  depends_on:
+  - fig1g-sensor-yield
+- id: table1-ec50-on-target
+  statement: The MORSE EC50 of each sensor for its own ligand, from consensus dose-response fits,
+    is AVP 355 nM, OXT 2.19 uM, 5-HT 687 nM, CCK 245 nM, NE 4.04 uM, DA 1.70 uM, ACh 7.03 uM,
+    ATP 75.2 uM, MT 22.0 nM and HA 6.39 uM.
+  source: Table 1, EC50 (MORSE) column; Figure 1I, Figure S3C
+  quote: We found that the sensors’ half-maximal effective concentrations (EC 50 , equivalent to a
+    sensor’s apparent dissociation constant K d ) could be reliably estimated for all sensors (
+    Table 1 ; Figures 1I , S3C )
+  expected:
+  - quantity: EC50 AVP sensor, AVP
+    value: 355
+    tolerance: 35.5
+    unit: nM
+  - quantity: EC50 OXT sensor, OXT
+    value: 2190
+    tolerance: 219
+    unit: nM
+  - quantity: EC50 5-HT sensor
+    value: 687
+    tolerance: 68.7
+    unit: nM
+  - quantity: EC50 CCK sensor
+    value: 245
+    tolerance: 24.5
+    unit: nM
+  - quantity: EC50 NE sensor, NE
+    value: 4040
+    tolerance: 404
+    unit: nM
+  - quantity: EC50 DA sensor, DA
+    value: 1700
+    tolerance: 170
+    unit: nM
+  - quantity: EC50 ACh sensor
+    value: 7030
+    tolerance: 703
+    unit: nM
+  - quantity: EC50 ATP sensor
+    value: 75200
+    tolerance: 7520
+    unit: nM
+  - quantity: EC50 MT sensor
+    value: 22.0
+    tolerance: 2.2
+    unit: nM
+  - quantity: EC50 HA sensor
+    value: 6390
+    tolerance: 639
+    unit: nM
+  criterion: Dose-response dipping of the ten probes of Figure 1G (two mixtures at 10-fold steps;
+    Video S6). Per cell matched to a sensor identity, background corrected by an exponentially
+    decaying fit and peak-normalized (Methods); the plateau in each well is the mean over the third
+    minute (Methods). Fit Eq. 9 with Hill coefficient 1, y = F/(1 + Kd/[L]), by least squares
+    (morse_figs3_rev cell 365, Powell minimization), to the cells of all probes pooled (consensus
+    fit, Figure 1I). Variants (code, cell 339) the plateau as the median of sorted frames 47 to 78
+    of the 93-frame well, peak normalization to the 6th or 7th well, a stretched exponential
+    background, cells dropped by a noise cut, and ACh, ATP, MT and HA pooled with an older probe
+    set (cell 365, groups_merge_rev). The Methods and the code disagree on the plateau; the Methods
+    reading decides and the code's is shown. Each value within 10%.
+  depends_on:
+  - fig1g-sensor-yield
+- id: table1-ec50-off-target
+  statement: The crosstalk sensors respond to the partner ligand with EC50s of 28.7 uM (AVP sensor
+    to OXT), 247 nM (OXT sensor to AVP), 9.35 uM (NE sensor to DA) and 8.20 uM (DA sensor to NE).
+  source: Table 1, EC50 (MORSE) column; Figure S3C
+  inferred: The values are in Table 1 and the Figure S3C panels; the S3C legend says off-target
+    EC50s "are also quantified" without stating them in a sentence.
+  expected:
+  - quantity: EC50 AVP sensor, OXT
+    value: 28700
+    tolerance: 2870
+    unit: nM
+  - quantity: EC50 OXT sensor, AVP
+    value: 247
+    tolerance: 24.7
+    unit: nM
+  - quantity: EC50 NE sensor, DA
+    value: 9350
+    tolerance: 935
+    unit: nM
+  - quantity: EC50 DA sensor, NE
+    value: 8200
+    tolerance: 820
+    unit: nM
+  criterion: As table1-ec50-on-target, each sensor's cells fitted against the partner ligand's
+    concentrations in the mixture wells, signals peak-normalized to the on-target maximum and
+    scaled by the crosstalk ratio (morse_figs3_rev cells 365 and 368). Each value within 10%.
+  depends_on:
+  - fig1g-sensor-yield
+- id: table1-peak-dff-morse
+  statement: On MORSE probes the peak dF/F0 of each sensor to a saturating dose of its ligand is
+    0.37 (AVP), 0.24 (OXT), 0.36 (5-HT), 0.40 (CCK), 0.34 (NE), 0.27 (DA), 0.37 (ACh), 0.28 (ATP),
+    0.30 (MT) and 0.38 (HA), and to the partner ligand 0.10 (AVP sensor, OXT), 0.05 (OXT sensor,
+    AVP), 0.15 (NE sensor, DA) and 0.21 (DA sensor, NE).
+  source: Table 1, Peak dF/F0 (MORSE) column; Figure S3B
+  inferred: Numbers only in Table 1; the Results say only that peak magnitudes varied widely
+    across cells and probes (Figure S3B).
+  expected:
+  - quantity: peak dF/F0 AVP sensor, AVP
+    value: 0.37
+    tolerance: 0.037
+  - quantity: peak dF/F0 AVP sensor, OXT
+    value: 0.10
+    tolerance: 0.01
+  - quantity: peak dF/F0 OXT sensor, OXT
+    value: 0.24
+    tolerance: 0.024
+  - quantity: peak dF/F0 OXT sensor, AVP
+    value: 0.05
+    tolerance: 0.005
+  - quantity: peak dF/F0 5-HT sensor
+    value: 0.36
+    tolerance: 0.036
+  - quantity: peak dF/F0 CCK sensor
+    value: 0.40
+    tolerance: 0.04
+  - quantity: peak dF/F0 NE sensor, NE
+    value: 0.34
+    tolerance: 0.034
+  - quantity: peak dF/F0 NE sensor, DA
+    value: 0.15
+    tolerance: 0.015
+  - quantity: peak dF/F0 DA sensor, DA
+    value: 0.27
+    tolerance: 0.027
+  - quantity: peak dF/F0 DA sensor, NE
+    value: 0.21
+    tolerance: 0.021
+  - quantity: peak dF/F0 ACh sensor
+    value: 0.37
+    tolerance: 0.037
+  - quantity: peak dF/F0 ATP sensor
+    value: 0.28
+    tolerance: 0.028
+  - quantity: peak dF/F0 MT sensor
+    value: 0.30
+    tolerance: 0.03
+  - quantity: peak dF/F0 HA sensor
+    value: 0.38
+    tolerance: 0.038
+  criterion: Identification dipping of the ten probes of Figure 1G (Figure S3B ligands, 10 uM AVP,
+    100 uM OXT, 100 uM 5-HT, 10 uM CCK, 1 mM NE, 100 uM DA, 1 mM ACh, 1 mM ATP, 10 uM MT, 1 mM HA).
+    Per cell, dF/F0 after background correction; the cell's peak is the maximum within the third
+    minute of the ligand's well (morse_figs3_rev cell 160); the table value is the median across
+    cells with a positive peak (cells 248 and 263; the S3B legend draws the median). For AVP, NE and
+    CCK the code takes the well after the ligand well (cell 248); readings (a) the ligand well,
+    (b) the code's well. Each value within 10%.
+  depends_on:
+  - fig1g-sensor-yield
+- id: fig1j-ec50-consistent-across-probes
+  statement: Dose-response relationships, after peak normalization and averaging over cells of the
+    same sensor, are precise and consistent across probes.
+  source: Results, MORSE probe development and characterization, paragraph 5; Figure 1I-J
+  quote: peak-normalizing each cell’s signal and averaging across cells expressing the same sensor
+    produced precise dose-response relationships that were consistent across probes ( Figures 1I - J
+    , S3C )
+  criterion: Per-probe EC50s are fitted as in table1-ec50-on-target to each probe's cells alone,
+    for probes with more than one cell of the sensor (morse_figs3_rev cell 662); Figure 1J shows
+    their mean and SEM across 5 to 8 probes per sensor (cells 677, 685). The paper does not say what
+    consistent means. Readings (a) for every sensor, every per-probe EC50 lies within one 10-fold
+    dose step of the consensus EC50 (between a tenth and ten times it); (b) for every sensor, the
+    SEM across probes is less than half the mean. Reproduced when both hold; blocked as
+    methods_underspecified when they differ.
+  depends_on:
+  - table1-ec50-on-target
+- id: figs3e-tau-on-under-one-minute
+  statement: Ligands diffuse quickly through the hydrogel; almost all sensors show an onset time
+    constant under 1 minute, and most signals plateau within 1 minute.
+  source: Figure S3E legend; Results, MORSE probe development and characterization, paragraph 5
+  quote: Almost all sensors demonstrate a t-on under 1 minute, reflecting rapid diffusion of all ten
+    ligands through the hydrogel to reach their sensors
+  criterion: Per cell, an exponential rise (x0 - xinf)*exp(-t/tau) + xinf fitted to the first
+    three minutes in the well with the lowest concentration of its ligand above the sensor's EC50
+    (Methods; S3E legend; morse_figs3_rev cells 688-692, which fit frames 0 to 78 after a 31-frame
+    median filter, set xinf to the median of frames 47 to 78, and drop tau above 200 frames). Done on
+    the peak-normalized dF/F0 and on the Eq. 8 concentration. "Almost all sensors" read as at least
+    8 of the 10 sensors with a median tau-on across cells under 60 s. The S3E legend plots both fits
+    and does not say which one its sentence is about, and the Methods treat the concentration fit
+    as the diffusion measure; readings (a) the dF/F0 fits, (b) the concentration fits (larger by
+    construction, S3E legend). The outcome is the one both give; if they differ, the claim is
+    blocked as methods_underspecified.
+  depends_on:
+  - table1-ec50-on-target
+- id: figs3f-depth-delay
+  statement: Onset times increase only modestly with cell depth in the gel, with a positive slope
+    for all sensors except ATP.
+  source: Figure S3F legend; Results, MORSE probe development and characterization, paragraph 5
+  quote: Notably, all but one sensor demonstrate a small increase in t-on with increasing cell depth
+  criterion: The concentration tau-on of figs3e-tau-on-under-one-minute against each cell's depth,
+    the z centre of mass of its mask measured from the front face of the gel (morse_figs3_rev cells
+    712-718, 9.89 um per plane), a least-squares line per sensor. Reproduced when 9 of the 10 slopes
+    are positive (tau-on rising with distance from the front face) and the ATP slope is the
+    negative one. "Modest" is read as a slope below 1 s per um. Needs masks with depth.
+  depends_on:
+  - figs3e-tau-on-under-one-minute
+- id: figs2c-stabilization
+  statement: Registration using probability maps of the GRAB signal stabilizes the images as well
+    as or better than registration using the tdTomato channel, in dipping, slice and in vivo
+    recordings.
+  source: Results, MORSE probe development and characterization, paragraph 3; Figure S2C
+  quote: Registration using Cellpose2.0 probability maps derived from the GRAB signals performed
+    similarly to or better than those from tdTomato signals ( Figure S2C ; Video S4 )
+  criterion: Image stability is the normalized cross-correlation of the GRAB probability map at
+    each time with the first, restricted to voxels with at least 50% cell probability at the first
+    timepoint (S2C legend; Methods, MORSE hydrogel deformation quantification; morse_figs2 cells
+    3-12 use skimage match_template on maps downsampled 4-fold in x and y). Over the dipping (n=36), slice (n=11) and in vivo (n=11)
+    recordings with both channels, reproduced when both alignments raise the mean cross-correlation
+    above the unaligned one and the GRAB-aligned mean is at least the tdTomato-aligned mean minus
+    its SEM at most times. Needs raw imaging.
+- id: figs2f-cells-tracked
+  statement: About 70 to 130 active sensor cells per probe can be tracked across 2 to 8 recordings
+    in different contexts.
+  source: Results, MORSE probe development and characterization, paragraph 3; Figure S2F
+  quote: we could reliably track ~70–130 active sensor cells per probe across 2–8 sequential
+    recordings in different contexts across up to 8 hours in total
+  expected:
+  - quantity: matched cells per probe, lower bound
+    value: 70
+    tolerance: 7
+  - quantity: matched cells per probe, upper bound
+    value: 130
+    tolerance: 13
+  criterion: The number of cells matched across recordings of the same probe (S2F, dipping n=40
+    recordings over 10 probes, slice n=15, in vivo n=25). Reproduced when the per-probe mean of the
+    matched counts lies in 63 to 143 for most probes. The code's printed counts (morse_figs2_2 cell
+    4) range from 53 to 108, which is noted.
+- id: fig2c-dlgn-kcl-activates-sensors
+  statement: Bath application of 50 mM KCl to dLGN slices activates the NE, DA and 5-HT sensors.
+  source: Results, MORSE detects regionalized neuromodulator release in brain slices, paragraph 2;
+    Figure 2B-C
+  quote: Bath application of 50 mM KCl activated GRAB sensors for NE, DA, and 5-HT ( Figures 2B - C
+    , top ; Video S7 )
+  criterion: In the 9 dLGN recordings, POOLED-SLICE before peak normalization. Reproduced when, in
+    most recordings, the NE, DA and 5-HT sensors' pooled dF/F0 rise during the KCl wash-on above
+    1.96 times their SD over the pre-KCl period (the Methods' robustness rule applied to dF/F0).
+    The DA rise is accounted for by NE in fig2c-dlgn-da-explained-by-ne.
+- id: fig2c-dlgn-da-explained-by-ne
+  statement: In dLGN slices the KCl responses of both the NE and the DA sensors are explained by
+    release of NE alone, not a combination of DA and NE.
+  source: Results, MORSE detects regionalized neuromodulator release in brain slices, paragraph 2;
+    Figure 2C bottom, Figure S4B
+  quote: Responses to KCl at both the NE and DA sensors could be explained solely by release of NE
+  criterion: CONC by Eq. 19 on the pooled NE and DA sensor signals (POOLED-SLICE, CONSTANTS).
+    Reproduced when, in most of the 9 recordings, the KCl-evoked NE concentration exceeds THRESH
+    while the DA concentration stays below its THRESH during the KCl response window (PEAK readings).
+    A claim of absence for DA; the paper uses the threshold, and its value is given either way.
+  depends_on:
+  - fig2d-dlgn-robust-counts
+- id: fig2d-dlgn-robust-counts
+  statement: KCl evoked robust NE responses in 9 of 9 dLGN slices and robust 5-HT responses in 7 of
+    9, with robustness thresholds of 348 nM (NE), 116 nM (DA) and 62.7 nM (5-HT).
+  source: Results, MORSE detects regionalized neuromodulator release in brain slices, paragraph 2;
+    Figure 2C-D
+  quote: Robust responses to KCl (defined as a peak-normalized ΔF/F 0 signal increases exceeding the
+    95% confidence interval above pre-wash-on baseline) were detected for NE in n=9/9 slices and for
+    5-HT in n=7/9 slices ( Figure 2D )
+  expected:
+  - quantity: slices with robust NE
+    value: 9
+    tolerance: 0
+    unit: of 9
+  - quantity: slices with robust 5-HT
+    value: 7
+    tolerance: 0
+    unit: of 9
+  - quantity: NE threshold
+    value: 348
+    tolerance: 34.8
+    unit: nM
+  - quantity: DA threshold
+    value: 116
+    tolerance: 11.6
+    unit: nM
+  - quantity: 5-HT threshold
+    value: 62.7
+    tolerance: 6.27
+    unit: nM
+  criterion: POOLED-SLICE, CONC (NE and DA by Eq. 19, 5-HT by Eq. 8), THRESH over the 9 dLGN
+    recordings, PEAK with readings (a) and (b) for the KCl window, combined with the two readings of
+    the peak normalization in POOLED-SLICE. Counts are exact. The THRESH variant is shown. The code
+    that made these numbers is not in the repository (morse_fig2 gives other thresholds), so no
+    code detail binds beyond the shared methods.
+- id: fig2e-dlgn-peak-concentrations
+  statement: KCl-evoked peak concentrations at the dLGN were about 4.61 uM NE and 0.44 uM 5-HT.
+  source: Results, MORSE detects regionalized neuromodulator release in brain slices, paragraph 2;
+    Figure 2E
+  quote: KCl-evoked peak concentrations were estimated at ~4.61 μM for NE and ~0.44 μM for 5-HT (
+    Figure 2E )
+  expected:
+  - quantity: mean peak NE concentration
+    value: 4.61
+    tolerance: 0.461
+    unit: uM
+  - quantity: mean peak 5-HT concentration
+    value: 0.44
+    tolerance: 0.044
+    unit: uM
+  criterion: PEAK of the CONC traces of fig2d-dlgn-robust-counts, averaged over recordings. Which
+    recordings enter the mean is open. Readings (a) all 9 for both ligands; (b) all 9 for NE and the
+    7 robust ones for 5-HT. Each combined with the PEAK and POOLED-SLICE readings. Reproduced when
+    both values are within tolerance under one combination.
+  depends_on:
+  - fig2d-dlgn-robust-counts
+- id: fig2f-dlgn-5ht-delay
+  statement: In the dLGN the rise of the 5-HT sensor activation was delayed relative to the NE
+    sensor by 111 s on average.
+  source: Results, MORSE detects regionalized neuromodulator release in brain slices, paragraph 2;
+    Figure 2F
+  quote: The rise time of activation of the 5-HT sensor was delayed relative to that of the NE
+    sensor by an average of 111 sec ( Figure 2F )
+  expected:
+    quantity: mean delay of 5-HT tau-rise after NE tau-rise
+    value: 111
+    tolerance: 11.1
+    unit: s
+  criterion: TAU-RISE of the NE and 5-HT concentration traces of fig2d-dlgn-robust-counts, timed
+    from KCl wash-on. Readings (a) the mean over the 7 recordings with both robust of the
+    within-recording difference; (b) the mean 5-HT tau-rise over the 7 robust minus the mean NE
+    tau-rise over all 9. Figure S4D's numbers imply mean tau-rise of about 240 s (NE) and 351 s
+    (5-HT), whose difference is 111 s; these are reported beside the delay. Each combined with the
+    PEAK and POOLED-SLICE readings.
+  depends_on:
+  - fig2d-dlgn-robust-counts
+- id: figs4de-deconvolution
+  statement: Deconvolving the hydrogel transfer function sharpens the dLGN responses; the average NE
+    and 5-HT tau-rise fall by 44.6 s (18.6%) and 63.9 s (18.2%), and the average peaks rise by 682 nM
+    (14.8%) and 146 nM (33.3%), so true peaks occur up to 19% sooner and up to 33% higher.
+  source: Figure S4D-E legends; Results, MORSE detects regionalized neuromodulator release in brain
+    slices, paragraph 2
+  quote: This resulted in sharper and narrower peak responses for each ligand, suggesting that the
+    true peak concentrations at the slice surface occurred up to 19% sooner and were up to 33%
+    higher than those recorded at the sensors within the hydrogel
+  expected:
+  - quantity: reduction of mean NE tau-rise
+    value: 18.6
+    tolerance: 1.86
+    unit: percent
+  - quantity: reduction of mean 5-HT tau-rise
+    value: 18.2
+    tolerance: 1.82
+    unit: percent
+  - quantity: increase of mean peak NE
+    value: 14.8
+    tolerance: 1.48
+    unit: percent
+  - quantity: increase of mean peak 5-HT
+    value: 33.3
+    tolerance: 3.33
+    unit: percent
+  - quantity: reduction of mean NE tau-rise
+    value: 44.6
+    tolerance: 4.46
+    unit: s
+  - quantity: reduction of mean 5-HT tau-rise
+    value: 63.9
+    tolerance: 6.39
+    unit: s
+  - quantity: increase of mean peak NE
+    value: 682
+    tolerance: 68.2
+    unit: nM
+  - quantity: increase of mean peak 5-HT
+    value: 146
+    tolerance: 14.6
+    unit: nM
+  criterion: Deconvolve h(t) = (1/tau) exp(-t/tau) from each concentration trace of
+    fig2d-dlgn-robust-counts (Methods Eq. 25-26) with tau per sensor the median of the dipping
+    tau-on of figs3e-tau-on-under-one-minute; the code (morse_fig2_rev cell 160, morse_fig2 cell 427)
+    uses scipy.signal.deconvolve after a Savitzky-Golay filter (20 frames, order 1). Open, whether
+    tau comes from the dF/F0 fits or the concentration fits (S3E shows both); readings (a) dF/F0,
+    (b) concentration. Then TAU-RISE and PEAK with and without deconvolution; percent changes are
+    of the means across recordings (n=9 NE; 5-HT over the 7 robust, S4C-E legends). Reproduced when,
+    under one reading, the four percentages are within tolerance; the absolute changes are
+    reported.
+  depends_on:
+  - fig2e-dlgn-peak-concentrations
+  - fig2f-dlgn-5ht-delay
+- id: slices-no-peptide-release
+  statement: KCl did not release enough AVP, OXT or HA from dLGN or PVH slices to drive their
+    sensors; those sensor cells, present on the probes, responded only to post hoc dipping.
+  source: Results, MORSE detects regionalized neuromodulator release in brain slices, paragraphs 2
+    and 3; Figure 2B right, Figure S5B
+  quote: Most of these cells did not have matching cell masks in the slice experiment, indicating
+    that they did not respond to bath application of NE, DA, or 5-HT, and that KCl did not elicit
+    sufficient release of AVP, OXT, or HA from the slice to drive the respective sensors
+  criterion: A claim of absence, judged on the paper's robustness rule. In the dLGN and PVH
+    recordings followed by dipping, the AVP, OXT and HA sensor cells identified by dipping either
+    have no mask in the slice recording or, where matched, show no KCl response above 1.96 times
+    their pre-KCl SD (POOLED-SLICE dF/F0). Reproduced when no recording shows such a response; the
+    largest response is given either way. Needs the dipping-only cells and the matching.
+- id: figs5c-kcl-no-direct-effect
+  statement: Dipping a probe into KCl solutions does not drive the NE or DA sensors, so the slice
+    responses come from KCl-evoked release, not a direct effect of KCl on the sensors.
+  source: Figure S5C legend
+  quote: Neither sensor is driven by dipping into any KCl solution, indicating that the KCl
+    responses on the left heatmap in B correspond to KCl-induced ligand release from the PVH slice
+  criterion: In the first post hoc dipping recording of the PVH probe of Figure S5B, the mean dF/F0
+    of the NE and DA sensor cells in each KCl well (1.56 to 50 mM) against the aCSF wells. A claim of
+    absence, judged as the paper does on the robustness rule; reproduced when no KCl well raises
+    either sensor above 1.96 times its SD over the preceding aCSF wells, while the DA and NE wells
+    do. Sizes reported either way.
+- id: figs5d-pvh-ne-alone
+  statement: In the PVH, KCl activates the NE, DA and 5-HT sensors, and demixing shows that NE alone
+    explains the NE and DA sensor responses.
+  source: Results, MORSE detects regionalized neuromodulator release in brain slices, paragraph 3;
+    Figure S5B-E
+  quote: quantitative estimation of NE and DA concentrations along with demixing of their combined
+    effects at the DA sensor suggested that NE alone could explain the activation of both sensors in
+    the PVH
+  expected:
+  - quantity: PVH NE threshold
+    value: 190
+    tolerance: 19
+    unit: nM
+  - quantity: PVH DA threshold
+    value: 102
+    tolerance: 10.2
+    unit: nM
+  criterion: As fig2c-dlgn-da-explained-by-ne, on the 6 PVH recordings with THRESH computed over
+    them. Reproduced when the NE concentration exceeds threshold during 25 or 50 mM KCl and the DA
+    concentration stays below its threshold, in most recordings, and the two thresholds are within
+    tolerance. The S5D legend gives them on one example, but the Methods define one threshold per
+    dataset (the maximum SD across its recordings), so they are the PVH dataset's thresholds.
+- id: figs5f-pvh-robust-counts
+  statement: KCl drove robust elevations of both NE and 5-HT in all 6 PVH experiments.
+  source: Results, MORSE detects regionalized neuromodulator release in brain slices, paragraph 3;
+    Figure S5F
+  quote: KCl drove robust elevations in both NE and 5-HT in n=6/6 experiments ( Figure S5F )
+  expected:
+  - quantity: PVH recordings with robust NE and 5-HT
+    value: 6
+    tolerance: 0
+    unit: of 6
+  criterion: Robustness on the pooled NE and 5-HT sensor dF/F0 (S5F plots dF/F0 with thresholds;
+    5-HT was not converted to concentration, S5D legend), the threshold being 1.96 times the
+    largest pre-KCl SD across the 6 recordings (THRESH before conversion). In 4 of the 6 the 5-HT
+    identity is inferred from responding to KCl but not to DA or NE (S5F legend); the dataset's
+    labels are used.
+- id: figs5g-pvh-dose-dependence
+  statement: NE sensor cells in the PVH were reliably driven by 25 mM KCl, while 5-HT sensor cells
+    needed 50 mM KCl to be fully activated.
+  source: Results, MORSE detects regionalized neuromodulator release in brain slices, paragraph 3;
+    Figure S5G
+  quote: While NE sensor cells were reliably driven by 25 mM KCl, 5-HT sensor cells consistently
+    required a higher dose of KCl (50 mM) to be fully activated ( Figure S5G )
+  criterion: Per recording, the peak pooled dF/F0 of each sensor at each KCl dose. The code
+    (morse_fig2 cell 642) takes the median of the last 10 frames before the end of each lower dose,
+    and the peak for 50 mM, with hand-set dose ends; the main reading is PEAK of dF/F0 within each
+    dose period (from that dose's onset to the next onset), the code's as variant. "Reliably
+    driven" and "fully activated" are not defined. Readings (a) the NE peak at 25 mM exceeds the
+    threshold of figs5f-pvh-robust-counts in all 6, and the 5-HT peak at 25 mM is below it in all 6
+    and above it at 50 mM; (b) the NE peak at 25 mM is at least half its 50 mM peak, and the 5-HT
+    peak at 25 mM is below half its 50 mM peak, in all 6.
+  depends_on:
+  - figs5f-pvh-robust-counts
+- id: figs5i-pvh-ne-concentration
+  statement: The average NE concentration at the PVH with 50 mM KCl was 21.4 uM, nearly five times
+    that at the dLGN.
+  source: Results, MORSE detects regionalized neuromodulator release in brain slices, paragraph 3;
+    Figure S5F, H, I
+  quote: The average NE concentration detected at the PVH in response to 50 mM KCl was 21.4 μM –
+    nearly five-fold higher than at the dLGN
+  expected:
+  - quantity: mean PVH NE concentration at 50 mM KCl
+    value: 21.4
+    tolerance: 2.14
+    unit: uM
+  - quantity: ratio of PVH to dLGN mean NE peak at 50 mM KCl
+    value: 4.6
+    tolerance: 0.46
+  criterion: PEAK of the CONC NE trace (Eq. 19) during the 50 mM dose period over the 6 PVH
+    recordings, mean across recordings (S5I, not deconvolved). The ratio is to the mean of
+    fig2e-dlgn-peak-concentrations; 21.4/4.61 = 4.6, which "nearly five-fold" states. The ratio's
+    expected value is that quotient, not a printed number.
+  depends_on:
+  - fig2e-dlgn-peak-concentrations
+- id: fig2h-lc-ne-da-peaks
+  statement: Optogenetic stimulation of LC releases NE and DA together with distinct time courses;
+    DA reaches its peak (248 nM on average) before NE (347 nM).
+  source: Results, MORSE detects regionalized neuromodulator release in brain slices, paragraph 4;
+    Figure 2H, 2K, Figure S4F
+  quote: Quantification of NE and DA release while accounting for sensor crosstalk demonstrated
+    that both ligands were released simultaneously and with distinct time courses, with the DA
+    concentration reaching its peak (248 nM, on average) before the NE concentration (347 nM
+  expected:
+  - quantity: mean peak DA concentration
+    value: 248
+    tolerance: 24.8
+    unit: nM
+  - quantity: mean peak NE concentration
+    value: 347
+    tolerance: 34.7
+    unit: nM
+  criterion: POOLED-SLICE and CONC (Eq. 19) on the LC recordings; PEAK in the 5 to 12.5 min window
+    (morse_fig2_rev cell 139); mean over the 5 recordings with robust NE (cells 145 and 157 print
+    347 and 248 nM for these). The paper does not say how "before" is measured. Readings (a) the DA
+    TAU-RISE earlier than the NE TAU-RISE (fig2l-lc-ne-delay, Figure 2L); (b) the time of the
+    maximum of the mean DA concentration trace in the window earlier than that of NE. The outcome is
+    the one both give; if they differ, the claim is blocked as methods_underspecified.
+  depends_on:
+  - fig2jk-lc-robust-counts
+- id: fig2i-lc-increments
+  statement: After each of the first several optogenetic trains, NE and DA concentrations rose in
+    discrete steps of 100 to 300 nM, so 20 s between trains let the released ligands equilibrate
+    with the hydrogel.
+  source: Results, MORSE detects regionalized neuromodulator release in brain slices, paragraph 4;
+    Figure 2I legend
+  quote: In fact, discrete 100–300 nM increments in the concentrations of both ligands were evident
+    after each of the first several trains of optogenetic stimulation
+  expected:
+  - quantity: per-train increment, lower bound
+    value: 100
+    tolerance: 10
+    unit: nM
+  - quantity: per-train increment, upper bound
+    value: 300
+    tolerance: 30
+    unit: nM
+  criterion: The example probe of Figure 2H-I. The NE and DA concentration (CONC, Eq. 19) with a
+    5-frame median filter (morse_fig2_rev cell 205), train onsets from the stimulation record (45
+    trains 20 s apart). The increment is open. Readings (a) the code's, concentration from 4 to 15
+    frames after the train onset minus the value 4 frames after (cells 224-231); (b) the value at
+    the next train's onset minus that at this train's onset. Over the first 5 trains, reproduced
+    when the increments of both ligands lie in 90 to 330 nM. The legend's "100-200 nM" (90 to
+    220 nM) is reported as a second range. The paper names no number of trains; "several" is read
+    as 5.
+- id: fig2jk-lc-robust-counts
+  statement: Of five LC slices with robust NE elevations, four also had robust DA elevations and
+    none had robust 5-HT elevations; thresholds were 148 nM (NE), 84.3 nM (DA) and 30.3 nM (5-HT).
+  source: Results, MORSE detects regionalized neuromodulator release in brain slices, paragraph 4;
+    Figure 2H, 2J-K
+  quote: Out of five brain slices with robust elevations in NE, four also had robust elevations in
+    DA, while none had robust elevations in 5-HT ( Figures 2J - K )
+  expected:
+  - quantity: slices with robust DA among those with robust NE
+    value: 4
+    tolerance: 0
+    unit: of 5
+  - quantity: slices with robust 5-HT among those with robust NE
+    value: 0
+    tolerance: 0
+    unit: of 5
+  - quantity: NE threshold
+    value: 148
+    tolerance: 14.8
+    unit: nM
+  - quantity: DA threshold
+    value: 84.3
+    tolerance: 8.43
+    unit: nM
+  - quantity: 5-HT threshold
+    value: 30.3
+    tolerance: 3.03
+    unit: nM
+  criterion: THRESH as the Methods give it (SD of the pooled peak-normalized signal before
+    stimulation) decides; the code's variant (morse_fig2_rev cells 120, 144, 146, the SD of the
+    unnormalized pooled dF/F0 over the first 5 min) is shown, and is the one whose printed values
+    match the paper's thresholds. Which recordings form the "dataset" over which the maximum SD is
+    taken is open (the Methods do not define it); readings (a) the LC recordings, (b) the code's 12
+    quantified opto recordings (LC and DRN; the paper mentions no DRN optogenetic recordings).
+    PEAK in 5 to 12.5 min. The code picks
+    the five NE responders by hand (cells 116, 183, 195); here a slice is an NE responder when its
+    NE peak exceeds the threshold. Counts are exact.
+- id: fig2l-lc-ne-delay
+  statement: In LC slices the rise of NE concentration lagged the rise of DA by 31 s, or 1 to 2
+    optogenetic trains.
+  source: Results, MORSE detects regionalized neuromodulator release in brain slices, paragraph 4;
+    Figure 2L
+  quote: Rise times of NE concentration were consistently delayed relative to DA concentration by 31
+    sec, or 1–2 trains of optogenetic stimulation ( Figure 2L )
+  expected:
+    quantity: mean NE tau-rise minus mean DA tau-rise
+    value: 31
+    tolerance: 3.1
+    unit: s
+  criterion: TAU-RISE from stimulation onset of the NE and DA concentration traces, in the 4 slices
+    with robust NE and DA (morse_fig2_rev cells 170-174 print 1.432 and 0.920 min, 30.7 s).
+    "Consistently" is read as the NE tau-rise later than the DA tau-rise in each of the 4.
+  depends_on:
+  - fig2jk-lc-robust-counts
+- id: slices-probe-stability
+  statement: MORSE probes stayed stable for over an hour of slice recording (46 of 48 probes) and
+    over the following 1.5 or more hours of dipping (15 of 17).
+  source: Results, MORSE detects regionalized neuromodulator release in brain slices, paragraph 4
+  quote: these hydrogel probes remained stable for over an hour during slice recordings (46/48
+    probes) and over a subsequent 1.5+ hours of post hoc dipping (15/17 probes)
+  expected:
+  - quantity: probes stable over an hour of slice recording
+    value: 46
+    tolerance: 0
+    unit: of 48
+  - quantity: probes stable over 1.5 h of post hoc dipping
+    value: 15
+    tolerance: 0
+    unit: of 17
+  criterion: Stability as in fig1f-koh-stability (hydrogel translation not above 25 um), which the
+    paper defines only for dipping. Counts are exact. Not in the code. Needs all 48 slice
+    recordings with deformation fields or raw imaging.
+- id: fig3df-ip-responses
+  statement: In awake mouse CSF, IP AVP, OXT and 5-HT each evoked a response in the corresponding
+    sensor within at most 10 to 15 min, followed by washout.
+  source: Results, Real time, quantitative tracking of CSF composition with MORSE in vivo, paragraph
+    2; Figure 3B-F
+  quote: Upon peripheral delivery of each ligand, we reliably observed a specific corresponding
+    sensor response in the CSF within at most 10–15 minutes, followed by washout
+  expected:
+    quantity: latest onset after IP injection
+    value: 15
+    tolerance: 1.5
+    unit: min
+  criterion: POOLED-INVIVO on the three-sensor recordings (n=11 mice in the legend; the code uses
+    10, morse_fig3_rev cell 96). Onset is open. Readings (a) TAU-RISE of the per-mouse trace within
+    0 to 45 min; (b) the first time after injection at which the trace exceeds 1.96 times the
+    largest pre-injection SD across mice (the Methods' threshold rule). Reproduced when, for each
+    ligand, the onset is at most 16.5 min in every mouse (or in the mean trace, reported both), the
+    mean peak dF/F0 of the matching sensor in 0 to 45 min exceeds that of the other two sensors
+    (specificity, read from Figure 3D-F), and the mean trace at 45 min is below its peak by more
+    than the threshold (washout). The code prints tau-rise of 11 to 36 min for older data (morse_fig3
+    cells 142-150), which is noted.
+- id: figs6ef-photometry-kinetics
+  statement: Single-sensor fiber photometry probes in CSF show AVP and OXT time courses after IP
+    injection with kinetics similar to MORSE two-photon recordings.
+  source: Results, Real time, quantitative tracking of CSF composition with MORSE in vivo, paragraph
+    2; Figure S6D-F, Figure 3D-E
+  quote: This approach demonstrated similar kinetics of CSF AVP and OXT time courses following IP
+    injection as compared to the MORSE technique involving two-photon imaging ( Figures 3D - E )
+  criterion: Photometry at 50 Hz, a 2-s median filter, an exponential background fitted over the
+    tens of minutes before activation, dF/F0 against the 15 min before each IP injection (Methods).
+    n=4 mice per sensor. Kinetics compared through TAU-RISE of the mean traces (photometry against
+    MORSE of fig3df-ip-responses). "Similar" is not defined; readings (a) the photometry tau-rise
+    lies within the range of per-mouse MORSE tau-rise; (b) the two mean tau-rise differ by less
+    than 5 min. Not in the code. Needs the photometry recordings.
+  depends_on:
+  - fig3df-ip-responses
+- id: fig3g-ten-sensor-yield
+  statement: With ten-sensor probes in CSF of four mice, up to 9 sensors per probe were recovered
+    (median 8.5), with on average 3.8 cells per sensor per probe.
+  source: Results, Real time, quantitative tracking of CSF composition with MORSE in vivo, paragraph
+    3; Figure 3G
+  quote: Across four animals, we were able to successfully recover simultaneous signals from up to 9
+    distinct sensors per probe ... 8.5 sensors; average of 3.8 cells per sensor) ( Figure 3G )
+  expected:
+  - quantity: maximum sensors per probe
+    value: 9
+    tolerance: 0
+  - quantity: median sensors per probe
+    value: 8.5
+    tolerance: 0.85
+  - quantity: mean cells per sensor per probe
+    value: 3.8
+    tolerance: 0.38
+  criterion: SENSOR IDENTITY on the four ten-sensor in vivo recordings; a sensor is recovered on a
+    probe when at least one cell carries its label; cells per sensor per probe is total cells over
+    (probe, sensor) pairs with a cell (morse_fig3_rev cells 192-203 print sensors per probe 9, 8, 9,
+    5 and 119/31 = 3.84).
+- id: fig3h-each-sensor-responds-ip
+  statement: Each of the ten sensors responded after IP injection of its ligand, with kinetics that
+    differ across ligands.
+  source: Results, Real time, quantitative tracking of CSF composition with MORSE in vivo, paragraph
+    3; Figure 3H
+  quote: Each sensor demonstrated a response following IP injection of the respective ligand, with
+    diverse response kinetics across ligands that likely reflect differential permeability from
+    blood into CSF ( Figure 3H )
+  criterion: POOLED-INVIVO for each sensor around the IP mixture that contains its ligand (and the
+    ICV 5-HT), on the ten-sensor probes (Figure 3H uses 5 probes, morse_fig3_rev cells 337-346,
+    31-frame median filter). Reproduced when, for every sensor recorded, the mean dF/F0 after its
+    ligand's injection exceeds 1.96 times the largest pre-injection SD across probes (Methods
+    threshold rule) within 0 to 45 min, and the TAU-RISE of the sensors' mean traces span more than
+    a factor of 2 (diverse kinetics). Sensors with no cell in any probe are listed.
+  depends_on:
+  - fig3g-ten-sensor-yield
+- id: fig4-ip-csf-concentrations
+  statement: IP delivery raised CSF concentrations to tens of nanomolar for 5-HT and hundreds of
+    nanomolar for AVP and OXT.
+  source: Results, Real time, quantitative tracking of CSF composition with MORSE in vivo, paragraph
+    3; Figure 4A, D, G and 4B, E, H left
+  quote: We found that IP delivery drove CSF levels in the tens of nanomolar (5-HT) or hundreds of
+    nanomolar (AVP, OXT) range ( Figures 4A , D , G )
+  expected:
+  - quantity: 5-HT, lower bound of tens of nM
+    value: 10
+    tolerance: 1
+    unit: nM
+  - quantity: 5-HT, upper bound of tens of nM
+    value: 99
+    tolerance: 9.9
+    unit: nM
+  - quantity: AVP and OXT, lower bound of hundreds of nM
+    value: 100
+    tolerance: 10
+    unit: nM
+  - quantity: AVP and OXT, upper bound of hundreds of nM
+    value: 999
+    tolerance: 99.9
+    unit: nM
+  criterion: CONC-INVIVO on the mice with ICV of the same ligand (AVP 5, OXT 6, 5-HT 5; morse_fig3_rev
+    cell 224). Which value is meant is open. Readings (a) the mean across mice of the value at
+    30 min after injection, a single timepoint (Figure 4B, E, H left; code cells 294-297); (b) the
+    mean across mice of the peak within 0 to 45 min. Reproduced when, under one reading, 5-HT lies
+    in 9 to 109 nM and AVP and OXT each in 90 to 1099 nM.
+- id: fig4-ex-vivo-elevations
+  statement: In naive mice, IP injections raised serum levels of the injected ligands 30 min later,
+    and raised AVP and OXT in CSF as well.
+  source: Results, Real time, quantitative tracking of CSF composition with MORSE in vivo, paragraph
+    3; Figure 4B-C, E-F, H-I
+  quote: We found that the IP injections drove elevated levels in serum, with AVP and OXT increases
+    also detected in CSF.
+  criterion: ELISA (AVP, OXT) and mass spectrometry (5-HT, 5-HIAA) of cisterna magna CSF and cardiac
+    serum 30 min after IP ligand (n=3 AVP, n=3 OXT, n=4 5-HT) or saline (n=2, 2, 4), as in the
+    Figure 4 legends; values as tabulated (the code loads AVP_all_samples.csv, OXT_all_samples.csv,
+    vandy_core.csv, morse_fig3_rev cells 298-323). No test is reported. Readings (a) the IP group
+    mean exceeds the saline mean; (b) every IP sample exceeds every saline sample. Reproduced when
+    both hold for serum AVP, OXT and 5-HT and for CSF AVP and OXT; not reproduced when neither
+    does; blocked as methods_underspecified when they differ. Needs the ELISA and mass
+    spectrometry tables.
+- id: fig4-ex-vivo-two-orders-lower
+  statement: CSF concentrations measured ex vivo were over two orders of magnitude lower than those
+    MORSE estimated in vivo 30 min after the same IP injection.
+  source: Results, Real time, quantitative tracking of CSF composition with MORSE in vivo, paragraph
+    3; Figure 4B, E, H
+  quote: Notably, the levels quantified in these ex vivo CSF samples were over two orders of
+    magnitude lower than those estimated in vivo by MORSE at the same 30-minute timepoint following
+    IP injection.
+  expected:
+    quantity: ratio of MORSE 30-min estimate to ex vivo CSF value
+    value: 100
+    tolerance: 0
+    unit: fold, lower bound
+  criterion: For AVP and OXT, the mean across mice of the MORSE 30-min value (fig4-ip-csf-concentrations
+    reading a) divided by the mean ELISA CSF value of the IP group; reproduced when both ratios
+    exceed 100. The sentence follows the one on AVP and OXT increases in CSF, and does not say
+    whether 5-HT is included. For 5-HT the ratio of the MORSE 30-min value to the mean mass
+    spectrometry CSF value of the IP group (Figure 4H) is reported, or to the detection limit (0.050
+    pg/uL, about 0.28 nM; Methods) where values lie below it; the paper does not say whether they do.
+    Not computed in the code (a note in morse_fig3_rev cell 334).
+  depends_on:
+  - fig4-ip-csf-concentrations
+  - fig4-ex-vivo-elevations
+- id: figs6j-serum-dipping-matches-elisa
+  statement: AVP concentrations estimated by MORSE dipping into serum samples ex vivo were similar
+    to ELISA values from the same kind of samples.
+  source: Results, Real time, quantitative tracking of CSF composition with MORSE in vivo, paragraph
+    3; Figure S6G-J
+  quote: AVP concentration estimated by MORSE ex vivo by dipping in serum samples was similar to
+    that obtained with ELISA
+  criterion: A ten-sensor probe dipped in serum from IP AVP mice (n=3); AVP concentration by Eq. 8
+    from the AVP sensor signal calibrated in the same recording (S6H). The code takes twice the
+    median over the last part of each well (morse_fig2 cell 56, 2*median of frames 104 to 156) and
+    prints 13.9, 31.0 and 39.5 nM (morse_fig3_rev cell 320); the factor 2 is not explained, so
+    readings with and without it are shown. "Similar" is not defined; readings (a) the MORSE and
+    ELISA ranges overlap; (b) the ratio of means lies within a factor of 10 (against the "two orders
+    of magnitude" contrast the paper draws). Reproduced when both hold; not reproduced when neither
+    does; blocked as methods_underspecified when they differ.
+- id: fig5ab-spontaneous-5ht
+  statement: In 3 of 7 recordings of undisturbed mice, CSF 5-HT rose spontaneously within the first
+    60 to 90 min, in all 5-HT sensor cells and in none of the other sensor cells.
+  source: Results, MORSE detects endogenous CSF signals at concentrations that impact downstream
+    signaling, paragraph 1; Figure 5A-B
+  quote: In a subset of experiments (n=3/7), we observed a spontaneous elevation in CSF 5-HT that
+    was evident in all 5-HT sensor cells (but none of the other sensor cells) within the first 60–90
+    min of the recording
+  expected:
+    quantity: recordings with a spontaneous 5-HT elevation
+    value: 3
+    tolerance: 0
+    unit: of 7
+  criterion: The 7 three-sensor recordings with 2 h of quiet imaging before IP injections. The code
+    picks the 3 by hand (morse_fig3 cells 232-243, l_vals 1, 2, 5) and gives no rule. Reading, an
+    elevation is a rise of the per-mouse median 5-HT sensor dF/F0 (F0 the mean of the lowest 1/15
+    of values, 51-frame median filter, code cell 232) above 1.96 times its SD over the first 15 min,
+    peaking within the first 90 min and before the first IP injection, with every 5-HT cell rising
+    above its own baseline and no AVP or OXT sensor median doing so. Count exact.
+- id: fig5cd-spontaneous-5ht-dynamics
+  statement: The spontaneous CSF 5-HT fluctuations were as large as or larger than responses to IP
+    5-HT, and rose and decayed over tens of minutes.
+  source: Results, MORSE detects endogenous CSF signals at concentrations that impact downstream
+    signaling, paragraph 1; Figure 5C-D
+  quote: These fluctuations were of similar magnitude or larger than the signals we observed in CSF
+    following IP 5-HT delivery (c.f. Figure 3F ) and slowly rose and decayed over tens of minutes (
+    Figures 5C - D )
+  criterion: On the 3 recordings of fig5ab-spontaneous-5ht, the per-mouse mean 5-HT trace; FWHM as
+    the last minus the first time above half the maximum, tau-off as the last time above max/e
+    minus the time of the peak (morse_fig3 cells 238-243, which print FWHM 79.8, 94.6 and 87.6 min
+    and tau-off 91.1, 84.8 and 76.1 min). Reproduced when the FWHM and tau-off of each lie between
+    10 and 99 min (tens of minutes) and each peak dF/F0 is at least 0.9 times the mean peak dF/F0 of
+    the 5-HT sensor after IP 5-HT in fig3df-ip-responses (same F0 rule across both, readings with
+    the Figure 3 F0 and with the Figure 5 F0).
+  depends_on:
+  - fig5ab-spontaneous-5ht
+  - fig3df-ip-responses
+- id: fig5gh-chp-calcium
+  statement: IP and ICV 5-HT drove calcium responses of similar amplitude in choroid plexus
+    epithelial cells, both lasting at least 60 min.
+  source: Results, MORSE detects endogenous CSF signals at concentrations that impact downstream
+    signaling, paragraph 2; Figure 5G-H
+  quote: Both routes of 5-HT administration drove similar amplitudes of calcium activity in the ChP
+    epithelial cells, and both responses persisted for at least 60 minutes following delivery.
+  criterion: GCaMP6f in FoxJ1-Cre::Ai95D mice, ICV n=3 and IP n=6. A square ROI over several
+    epithelial cells, the mean signal; an exponential fitted to the signal before injection and
+    subtracted where it decays; dF/F0 against the first 5 min (Methods, ChP signal processing).
+    The code (morse_fig3 cells 334-405) median filters over about 100 s and divides by the mean
+    over the 15 min before injection; both F0 readings are shown. Peak = maximum after injection.
+    Code prints peaks ICV 0.72, 0.75, 1.47 and IP 0.58, 0.50, 0.34, 0.61, 1.28, 0.59. "Similar"
+    read as the IP and ICV mean peaks within a factor of 2 of each other. Persistence read as the
+    mean dF/F0 at 60 min after delivery still above 1.96 times the pre-injection SD, for both
+    routes. Needs the ChP traces.
+- id: fig6-chp-grab-similar-time-courses
+  statement: GRAB sensors expressed in the choroid plexus epithelium report IP 5-HT, AVP and OXT with
+    time courses similar to those seen with MORSE in CSF.
+  source: Results, MORSE detects endogenous CSF signals at concentrations that impact downstream
+    signaling, paragraph 3; Figure 6C, E, G against Figure 3F, D, E
+  quote: In subsets of mice, IP delivery of 5-HT, AVP, or OXT drove associated sensor signals in ChP
+    with similar time courses as observed previously with MORSE
+  criterion: ChP GRAB dF/F0 as in fig5gh-chp-calcium (5-HT 5 injections in 4 mice, AVP 9 in 4, OXT 3
+    in 2), TAU-RISE per injection (morse_fig3 prints 5-HT 1.9 to 6.8 min, AVP 4.4 to 42.9, OXT 4.2
+    to 29.3). "Similar" is not defined; readings (a) the mean ChP tau-rise of each ligand lies within
+    the range of per-mouse MORSE tau-rise of fig3df-ip-responses; (b) the mean tau-rise differ by
+    less than a factor of 2. Needs the ChP traces.
+  depends_on:
+  - fig3df-ip-responses
+- id: fig6c-ip-5ht-reaches-chp-fast-enough
+  statement: IP 5-HT reached the apical choroid plexus membrane fast enough to explain the choroid
+    plexus calcium response.
+  source: Results, MORSE detects endogenous CSF signals at concentrations that impact downstream
+    signaling, paragraph 3; Figure 6C, Figure 5H
+  quote: Furthermore, IP 5-HT reached the apical ChP membrane ( Figure 6C ) fast enough to explain
+    the ChP calcium response ( Figure 5H )
+  criterion: TAU-RISE after IP 5-HT of the ChP GRAB-5-HT2h signal (Figure 6C right, 5 injections)
+    against the GCaMP6f signal (Figure 5H right, 6 mice). The paper does not say what "fast enough"
+    means. Readings (a) the mean GRAB tau-rise is not later than the mean GCaMP tau-rise plus its
+    SEM; (b) the mean GRAB signal exceeds 1.96 times its pre-injection SD (the Methods' threshold
+    rule) no later than the mean GCaMP signal does. The outcome is the one both give; if they
+    differ, the claim is blocked as methods_underspecified. The code's printed values (below) fail
+    reading (a), so it may not be what the authors meant. The code prints GRAB 6.8, 5.5, 1.9, 5.0,
+    3.8 min and GCaMP 1.4, 4.4, 0.6, 1.3, 1.6, 3.0 min (morse_fig3), which is noted; the code's
+    exclusion of one GCaMP mouse from the mean is shown as a variant.
+  depends_on:
+  - fig5gh-chp-calcium
+- id: figs6a-no-implant-inflammation
+  statement: MORSE probe implantation caused no asymmetry in microglial (Iba1) or astrocytic (GFAP)
+    staining, nor in diffusion of labeled BSA from CSF into tissue.
+  source: Figure S6A-C legends
+  quote: No Iba1 or GFAP signal asymmetry between left and right hemispheres induced by MORSE probe
+    implantation into one of the cannulae was noted in any animals (n=12) across the span of the
+    ventricular system.
+  criterion: Histology of 12 mice. A claim of absence with no test in the paper; reproduced when the
+    Iba1 and GFAP intensities on the implanted side are within the range of the other side in every
+    mouse, and the BSA profile (S6C) is symmetric. Needs histology images, which the paper does not
+    say are deposited.
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1f-koh-stability. The 10% to 65% sentence is in the Methods and is about the whole optimization, and Figure 1F's groups differ in both recipe and KOH; the statement credited KOH alone. Rewrote the statement and put the Methods first in the source.
+  - fig1f-koh-stability. The tolerance of 0.01 on 0.10 excluded 1/9 (0.11), the only count of 9 probes that "~10%" can denote. Recorded as 1 of 9, exact.
+  - methods-revision-probe-stability. The paper defines stability only for dipping (Figure 1F); the criterion now says applying it to slice and in vivo is a reading.
+  - fig1h-crosstalk-pairs. The quote is from the Methods, so the source now leads with it; said that the Methods' 1-min window decides and the code's 10 frames are a variant.
+  - figs3e-tau-on-under-one-minute. The S3E legend does not say whether its "under 1 minute" refers to the dF/F0 or the concentration fits, and the Methods treat the concentration fit as the diffusion measure. The criterion had chosen dF/F0; it now names both readings, with blocking if they differ.
+  - figs2c-stabilization. Added the Methods' restriction of the cross-correlation to voxels with at least 50% cell probability at the first timepoint.
+  - figs5d-pvh-ne-alone. The criterion said the 190 and 102 nM thresholds do not decide the claim. The Methods define one threshold per dataset, so they are the PVH dataset's; they now count with their tolerances.
+  - fig2h-lc-ne-da-peaks. "DA reaches its peak before NE" was judged only by tau-rise, which the paper does not name for it. Added reading (b), the time of the maximum, with blocking if they differ.
+  - fig2jk-lc-robust-counts. The criterion took the code's THRESH as the main one, which goes against the protocol's rule that the Methods come first when they and the code disagree. The Methods now decide and the code's variant is shown. Named as open which recordings form the dataset (LC alone, or the code's LC and DRN recordings, which the paper never mentions).
+  - fig4-ex-vivo-elevations, figs6j-serum-dipping-matches-elisa. "Reproduced when both readings hold" would have made a split result not reproduced. A split now blocks as methods_underspecified.
+  - fig4-ex-vivo-two-orders-lower. The criterion said the 5-HT CSF values were below detection, which the paper does not say. It now reports the 5-HT ratio from the Figure 4H values (or the detection limit if they fall below it), and notes that the sentence may or may not include 5-HT.
+  - fig6c-ip-5ht-reaches-chp-fast-enough. "Fast enough" had one reading of the file's own making, and the code's printed tau-rise values fail it. Added reading (b), the Methods' threshold-crossing onset, with blocking if they differ.
+  - Header. THRESH now says the Methods do not define a dataset. Added two inconsistencies, the S4D legend panel names and the IP 5-HT dose for ChP imaging (3 against 2 mg/kg).
+  - Open, not settled. fig5ab-spontaneous-5ht has no detection rule in the paper (the code picks the 3 recordings by hand); its rule is the file's reading, and the count may depend on it.
+  - Open, not settled. Several undefined words have one reading each, whose thresholds come from the file and not the paper. These are "modest" in figs3f (under 1 s per um), "similar magnitude" in fig5cd (at least 0.9 times), "similar" in fig5gh (within a factor of 2), "diverse kinetics" in fig3h (a factor of 2 spread) and "most probes" in fig1c and figs2f.
+  - Open, not settled. Findings without claims. Two are not main findings. One is that 10 of 16 tested sensors gave reliable responses (Results, paragraph 1). The other is the Discussion's statement that every ligand reached detectable CSF levels within 15 min of IP injection on the ten-sensor probes; fig3h has no 15 min limit.
+  - Open, not settled. The code repository was not available in this run, so the citations of notebook cells and printed values were not checked against it.

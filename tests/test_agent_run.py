@@ -89,7 +89,7 @@ def test_a_repeated_claims_run_before_any_attempt_archives_nothing(tmp_path):
 def test_the_recorder_prompt_names_the_attempt():
     latest = tool.attempt_of("001933")[0]["id"]
     text = tool.fill("recorder", "001933", "m")
-    assert latest in text and "readme_row.py 001933 --write" in text and "{" not in text
+    assert latest in text and "readme_row.py 001933" in text and "--write" not in text and "{" not in text
 
 
 def test_the_conversion_issue_lists_every_finding():

@@ -5975,3 +5975,645 @@ forbids `data_missing` for data that are public nowhere; the section on repeat
 attempts assumes the dandiset changed, where here the claims file changed and
 the data did not; and no selection is designated when neither reading
 matches, the gap behind most of the blocks before the answers.
+
+### 000011, Li et al. 2016
+
+Six claims reproduced, five partially, nine not reproduced and eighteen
+blocked, all on the dandiset. It pins version 0.220126.1907, the only
+published version, as the paper cites none. The author put ten questions to a
+reader, and nine of the answers were that the paper does not give the detail,
+so each open detail became a set of readings under which the outcome must be
+the same; the answers changed two outcomes. `cd-captures-selectivity` moved
+from not reproduced to blocked as `methods_underspecified`, as the cd values
+are within tolerance with all correct control trials (66.2% and 34.6%) and
+outside with the training trials (73.7% to 88.0%), and `ed9f-reaction-time`
+stayed blocked but moved from `methods_underspecified` to `data_missing`.
+Round 1 gave its own outcome for each claim from the notebook with its
+conclusions and summary removed and agreed with 34 of 38. `selective-fraction`
+and `ed2b-silencing-strength` moved from partially reproduced to not
+reproduced, as with lick-early trials dropped only 1 of 4 counts holds in the
+first and with them kept only 1 of 4 parts in the second, and
+`cd-stable-over-epochs` moved from reproduced to blocked, since taking w from
+all correct control trials (0.563 and 0.588) was the author's choice and the
+training subset gives 0.534 to 0.554. The author kept
+`ed7e-roc-larger-photoinhibition` and `ed8-roc-during-photoinhibition` as
+partially reproduced, where round 1 gave not reproduced, under a rule written
+after round 1 for criteria without a partial clause (partial when at least
+half the parts hold under every reading that must agree); round 2 accepted it
+for consistency and agreed with all 38, so there was no third round. The paper, "Robust neuronal
+dynamics in premotor cortex during motor planning" in Nature, records units in
+left ALM of mice in a delayed-response task while one or both hemispheres are
+photoinhibited, and reports that preparatory activity and behaviour recover
+after unilateral but not bilateral silencing, that the recovery needs the
+other hemisphere, as shown by callosotomy, and that modular network models
+recover where single-module models do not. The unit classes, selective counts,
+recovery of rates and selectivity after silencing, the coding direction and
+its modes, the session biases and the network models were tested. The
+behavioural photoinhibition claims, the photoactivation claims and the spatial
+extent of silencing are blocked as `data_missing`, the four callosotomy claims
+on the recordings as `metadata_insufficient`, and `fig1g-selectivity-recovery`
+and `ed7-larger-photoinhibition` as `methods_underspecified` because their
+readings disagree (12, 9 and 3 of 24 combinations with three, two and no
+times within tolerance for fig1g). `fig2e-selectivity-recovery-times` is not
+reproduced because ipsilateral selectivity does not reach 80% of control
+before the go cue under any of the 24 combinations, against the paper's 538
+ms, and `fig3d-persistent-mode` and `fig3e-ramping-mode` because both modes
+predict the lick on control trials above chance (59% to 62% and 55% to 58%).
+Some outcomes rest on weak ground: `fig1f-spike-rate-recovery` holds only on
+the reading without exclusion, which tests 248 neurons per condition against
+the paper's 168 to 175, while the reading close to the paper's counts fails;
+and the partial outcomes of `unit-classification`, `fig2-recordings-recovery`,
+ed7e, ed8 and `fig6-modular-models-recover` rest on the author's rule, which
+the claims file does not contain and under which, read strictly, they would be
+not reproduced. A question asks a reader whether the claims file adopts it.
+
+The dandiset holds only the recording sessions: the behavioural
+photoinhibition sessions (Figs 1d, 2b, 5b and Extended Data Fig. 3), the
+photoactivation mice (Extended Data Fig. 5), the untrained mice used to map
+photoinhibition (Extended Data Fig. 2d) and any session before callosotomy are
+not in it, so nine of the paper's findings cannot be tested, and its
+genotypes are VGAT-ChR2-EYFP and PV-ires-Cre x ReaChR only. 33 sessions of 7
+mice, the callosotomy group by genotype and delay, and 3 experiment-1 sessions
+of mouse 255200 have no photostimulus record, though most of them contain
+trials whose activity is silenced in the light window of the other sessions,
+so their photoinhibition and control trials cannot be told apart; no file
+says which mice were callosotomised, on which side or when. The trial table
+has no photostimulus column, so the site, number of laser spots and timing of
+a trial can be recovered only from the per-site laser power traces and the
+photostim_start_time events, and the number of spots is stated nowhere. In
+lick-early trials the photostimulus events are logged at the restarted delay,
+after the light seen in the laser trace; over all labelled sessions 339
+lick-early photostimulus trials have the event more than 0.1 s after the
+light, with the light up to 10 s before the logged go cue, so with lick-early
+trials kept these trials enter the photoinhibition averages without light (3%
+to 16% of each condition's trials in experiment 1, 6.5% to 7.5% in experiment
+2). No file holds lick times, only the analogue lick_trace, which in the 24
+experiment-2 sessions used for the activity space holds no licks, so reaction
+times cannot be computed there. The control mice hold 979 units against the
+paper's 1012, with 15 of intermediate spike width against 50, so about 33
+intermediate units were not deposited (widths from upsampled waveforms give
+11), and the units' cell_type labels intermediate-width units as FS, where the
+Methods exclude them (45 units in all). The paper's neuron and session counts
+for its selectivity and population analyses (55, 143 and 40 selective
+neurons; 16 sessions with 6 to 20 neurons) cannot be reached with the
+criteria the paper states, the dataset giving 138 to 173, 221 to 293, 58 to 62
+and 24 sessions with 6 to 37 neurons, and experiment 1 holds 4 mice where the
+paper reports 6. Other findings: session 258250_20141202 holds two
+interleaved sequences of trial ids (1 to 24 and 105 to 160) whose times
+overlap (98 overlapping pairs), in 28 units of 3 sessions the spike times are
+not in time order and two sessions have trials out of time order; and the
+asset sub-255200_ses-20140910_behavior.nwb holds only metadata.
+
+The notebook ran in about 11.5 minutes in the first run, 1042 s after the
+answers, 791 s after round 1 and about 19 minutes after round 2, and
+`entry.py all` passed with no errors. One run failed after a regex that
+stripped bold markup also removed `**` operators from the code; they were
+restored and the outputs matched the earlier run. Round 1's points led to
+spike widths from waveforms interpolated to ten times the stored rate, the
+size of the lick-early artefact, per-neuron trial counts and epoch
+selectivity of the included populations (no simple further selection gives
+the paper's counts), per-session ROCs of the modes, raw lick-trace levels
+above the experiment-2 baseline with the ed9f test run on the 6 experiment-3
+sessions as a variant (it holds under 18 of 26 combinations), reference
+numbers on the recording sessions for the blocked behaviour and callosotomy
+claims, and three more questions to a reader, which are unanswered. Round 2
+found statements the outputs did not support, among them a time of 750 ms
+called outside a tolerance of 210 to 770 ms in ed7, the event said to be
+logged up to about 2 s after the light where the maximum printed is 1587 ms,
+and differences within 2 s.e.m. under every reading in fig3e where that holds
+for T1 only, and these were corrected; a typo fix in a markdown cell came
+after the last run and was applied to the executed copy by hand. Untracked
+files in the repository root that the author did not create were left alone.
+The author's points on the protocol: it does not say how the claims file's
+rule that any reading may reproduce combines with readings of details the
+author finds open; it gives no guidance on reporting up to 256 combinations
+per claim; the claims file's "trials per condition" could not be left open;
+there is no `data` kind for simulations that use no data; unlabelled
+photoinhibition trials fit both `data_missing` and `metadata_insufficient`;
+there is no channel to pass back a point the data settle in the claims file;
+its rule for selections covers only chance levels; it does not say whether a
+measured recovery time is the point estimate or the bootstrap mean; the
+header table allows only "tested" or "blocked" for claims that ran but are
+blocked; and question files name a single claim where questions apply to
+many.
+
+### 000013, Hires et al. 2015
+
+Twenty-two claims reproduced, one partially, eight not reproduced and
+fourteen blocked, all on the dandiset and all blocked as
+`methods_underspecified`. It pins version 0.220126.2143, the only published
+version, as the paper predates the dandiset and cites none; the draft holds
+the same 52 blobs. The claims check added `example-cell-phase-modulation`, so
+the file has 45 claims. The author put seven questions to a reader; the
+answers changed four outcomes. They set the start of the touch response
+cutoff search at the transition where the curve levels off, keeping the
+literal search from 1 ms only as a variant, so `table1-l4-c2` moved from
+blocked to reproduced and `table1-l5` from blocked to partially reproduced;
+they made the phase decoder use the phase-tuning cycles, so
+`fig4c-phase-decoding` moved from not reproduced to blocked; and they made
+"median higher" the median of the per-cell differences, so
+`whisking-rate-l5-increase` moved from partially reproduced to reproduced.
+Round 1 gave its own outcome for each claim from the executed notebook with
+its conclusions and summary removed and agreed with 36 of 45.
+`behavior-whisking-bouts`, `behavior-touches-reaction` and
+`example-cell-touch-window` moved from partially reproduced to not
+reproduced, as their criteria need every value within tolerance and give no
+rule for a partial match. With the whisking periods corrected,
+`whisking-rate-l4-no-change` moved from partially reproduced to blocked (L4
+C2 p = 0.595 with touch epochs left out of whisking, p = 1.28e-7 with them
+in), and with phase cycles taken from the whole trial fig4c moved from
+blocked to not reproduced. The author kept `example-cell-ff-around-touch`,
+`table1-l4-outside` and `fig5-modulation-correlations` blocked because their
+readings disagree, and `fig3c-touch-spikes-outside`,
+`fig3d-touch-phase-outside` and `fig4a-touch-detection-outside` blocked
+because they depend on blocked claims; round 2 accepted these and agreed
+with all 45, so there was no third round. The paper, "Low-noise encoding of
+active touch by layer 4 in the somatosensory cortex" in eLife, describes 52
+loose-seal cell-attached recordings from L4 cells in the C2 barrel, L4 cells
+outside C2 and L5 cells near C2 in mice trimmed to the C2 whisker and
+localizing a pole in a go/no-go task, and reports that L4 C2 touch responses
+are temporally precise, that 15 L4 C2 neurons detect 95% of touches, that 200
+of them decode the time since touch with a minimum uncertainty of 0.55 ms,
+and that the Fano factor after touch lies close to the binomial limit. No
+claim is blocked for lack of data, so the recordings, behaviour, the example
+cell, Table 1, phase modulation, whisking rates, touch-coupled spikes, the
+decoders, modulation indices and Fano factors were all tested.
+`recordings-mice` is not reproduced because the files hold 23 subjects
+against 21 mice, `latency-determinable` because 7 (first touches) or 10 (all
+touches) L4 cells outside C2 have a latency against 4,
+`fig4b-touch-time-precision` because the RMS error is 1.09 to 1.40 ms against
+0.55 +/- 0.055, `text-whisking-rates` because no reading puts both rates in
+tolerance, and fig4c because C2 is far from 24 +/- 2.4 deg and worse than
+outside C2 under every reading. `fig3c-touch-spikes-l4c2`, on which the
+other Figure 3 claims depend, `fig4a-touch-detection-c2` (12 to 30 neurons,
+only one reading at 14 within 15 +/- 1.5) and `fig6d-not-refractory` are
+blocked because their readings disagree. Some
+outcomes rest on weak ground: table1-l4-c2 sits exactly at its threshold, 15
+of 18; the criterion's latency rule gives noise latencies of 0 and 1 ms that
+count as determined; fig4c's criterion ends "else methods_underspecified",
+which the record reads as its rule for readings that disagree, a reading
+round 2 called reasonable but not the literal text; and among the claims
+blocked by dependency, the fig3c and fig3d outside claims fail under every
+reading and fig4a-touch-detection-outside holds under every reading.
+
+All 52 recordings are present and none is deposited twice. In 36 files the
+SpikeTrain timestamps run 10 ms before the CurrentClampSeries timestamps of
+the same samples; under the spike timestamps the median L4 C2 touch-response
+peak is 8 ms in the files without the offset and 12 ms in those with it (rank
+sum p = 0.016), and 8 and 22 ms under the voltage timestamps, so the data are
+consistent with the voltage timestamps of the 36 files being 10 ms late, and
+a residual 4 ms difference is not explained. In 38 files the
+CurrentClampSeries data, with the stated conversion of 0.001 to volts, span
+only 2 to 26 microvolts, so the conversion is off by 1000 (the other 14 span
+3 to 28 mV). In 38 files theta_filt, described as theta_at_base filtered 6 to
+60 Hz, is not the signal the stored amplitude and phase come from (up to 46
+deg apart), while in 14 it equals amplitude times cos(phase); the stored
+amplitude and phase match a 6 to 60 Hz Butterworth band-pass and Hilbert
+transform of theta_at_base. set_point is described as the amplitude of the
+Hilbert transform but follows theta minus its band-passed part (r 0.96 to
+1.00) and holds missing values in 23 files. pole_position is described in mm,
+but its values range from 0.2 to 1.6 in some files, 992 to 13888 (motor
+steps) in others, about 1e8 in others and up to 1.4e12 in one. Three subjects
+(anm211295, anm215592, anm217330; six cells) have no genotype, the paper's
+VGAT-ChR2 mice by their counts, and the files hold 23 subjects where the
+paper reports 21 mice, with the C57BL6 and Ai32 x PV-Cre counts off by one
+cell each, so the mapping of subjects to the paper's animals is not given.
+Other findings: 30 files are named with an ogen suffix, but no file holds an
+optogenetic stimulus series and stim_present is 0 in every trial;
+first_lick_time disagrees with the lick onset series by up to 3.1 s, with 47
+trials having licks and no first_lick_time and 136 a first_lick_time and no
+lick; and the paper's analysis code is not public, the repository it links
+holding only the contact detection.
+
+The notebook ran in 8.7 minutes (530 s) in three runs through `entry.py all`,
+all passing, 8.7 minutes after the answers, 12.1 minutes after round 1 and
+7.5 minutes in the last of two runs after round 2. During development the
+first loader took 13 minutes, until loading in separate processes cut it to
+80 s. Round 1's points led to whisking periods that leave out licking cycles
+and the 70 ms after each touch, phase tuning over every phase-analysis cycle
+of the trial and not only the sample epoch, a touch detector that reads the
+fraction detected at the time point of best percent correct with ties broken
+at the middle threshold (the earlier rule counted every sample as a touch),
+50 repetitions in place of 20, the zero-median checks counted in Table 1, and
+per-file touch-peak latencies by clock offset, per-cell touch windows and the
+rows where cell 11 matches. Round 2 could not check the dependency rule, as
+the protocol was not among its materials, and found statements the outputs
+did not support, among them l5-higher-rates medians from the earlier
+whisking mask, p = 0.971 where the output printed 0.798, fig4c medians that
+hold only over the 42 and 38 of 100 runs reaching 76% correct, a README run
+time of twelve minutes against 8.8 printed, and a synthetic detector value of
+0.15 that no output showed, which a new cell now gives as 0.329 at 0.541
+percent correct; these were corrected. Untracked dotfiles in the repository
+root that the author did not create were left alone. The author's points on
+the protocol: one literal reading can block many claims, as ten claims hinge
+on two readings of the cutoff rule, one of them degenerate; a blocked
+dependency hides a clear failure, as in fig3c-touch-spikes-outside; a
+criterion's fallback can conflict with the protocol, as fig4c's does; Table
+1's 256 combinations of readings make an agreed outcome nearly impossible;
+"any cell" criteria let chance decide, as cell 11 matches in 2 of 394 tries;
+`measured` has no slot for a value never reached; the suggested clock check
+does not fit continuous trial data; no published version is cited; the
+no-download rule left the author caching reduced arrays in `$TMPDIR` while
+developing; and the advice that h5py with remfile serialises reads across
+threads, so loading needs separate processes, belongs in `docs/archives.md`.
+
+### 000015, Chen et al. 2017
+
+Eleven claims reproduced, three partially, seven not reproduced and eight
+blocked on the dandiset, with one more reproduced on the dandiset together with
+the Li et al. 2015 units of dandiset 000010; the two claims on the silicon
+probe recordings, which the claims file places at CRCNS, are blocked. It pins
+version 0.220126.1914, the only published version, whose draft has the same
+210 assets. The claims were written from the extracted text of the paper,
+which lacks its Supplemental Information, with no figure looked at, so the
+five claims on Figures S1, S4, S5, S7 and S9 rest on the main text alone; the
+claims check added `alm-pt-it-lick-fraction-below-20` and the author added the
+link claim `li2015-tagged-units-link`, so the file has 33 claims. The author
+put five questions to a reader, every answer was that the paper does not say,
+and each added readings to the criteria; two outcomes changed:
+`ephys-pt-it-onset-not-detected` moved from blocked to reproduced, and
+`fig8d-pt-earlier-than-it` from not reproduced to reproduced, as the new onset
+rule S2 gives 1.801 s. Round 1 gave its own outcome for each claim from the
+notebook with its conclusions and summary removed and agreed with 32 of 33; it
+gave not reproduced for `fig8d-error-outnumber-correct`, whose reading (b)
+reaches only 1.81 bootstrap SD against a bound of 2 and whose criterion names
+no partial outcome, and the author changed it from partially reproduced. Round
+2 agreed with all 33, so there was no third round. The paper, "A Map of
+Anticipatory Activity in Mouse Motor Cortex" in Neuron, images 15,431 neurons
+in ALM and MM of six mice in a tactile delayed-response task, and reports that
+object location is represented mainly in MM and preparatory lick direction
+activity in ALM, and that lick direction selectivity is stronger and earlier
+in PT than in IT neurons, labelled in three of the mice. The sample, trial and
+neuron counts, the selectivity of single neurons and its timing, the area
+comparisons and the PT and IT analyses were tested. Four claims that need
+plane depth are blocked as `metadata_insufficient`, the wide-field,
+photoinhibition and whisking claims as `data_missing`, and the two silicon
+probe claims as `other`, as the registry's check does not allow
+`data_missing` for data placed in another archive. `fraction-selective-alm-mm`
+is not reproduced because MM is above tolerance under every reading (closest
+1,736, 26.3%, against at most 1,675 and 25.3%), `fig4c-outcome-after-lick`
+because 41.3% of outcome-selective ROIs are first selective after the go cue
+against more than half, `fig6-outcome-response-uniform` because its part (a)
+fails in MM, and `fig8d-pt-contra-bias` and `fig8d-mm-posterior-preferring`
+because their direction holds but they reach 1.71 and 1.87 bootstrap SD
+against 2. `figs4-peak-shift` is not reproduced because over the whole window
+MM peaks after ALM (6.09 against 4.52 s), but before the go cue MM peaks first
+under every reading (2.08 against 4.16 s, V1, T1); round 2 called the
+criterion a misreading of the paper, which places the shift over the delay
+epoch, and a question on the window is unanswered. Some outcomes rest on weak
+ground: `figs5-single-coefficient`, `fig4a-lick-direction-epochs` and
+`fig4b-object-location-memory` are met by permuted trial types as well;
+`fig8d-pt-earlier-than-it` passes in 2 of 16 combinations, both with rule S2,
+T2 bins interpolated from frames and the bootstrap over cells; and in
+`ephys-pt-it-onset-not-detected` the two baselines are the same two windows and
+the IT baseline SD is 0.0004, so the test carries little information.
+
+Every one of the 105 image planes is deposited twice, as two files whose
+contents are identical except the identifier and creation date, so the 210
+files are 105 recordings. The files hold no plane depth, no stereotactic
+coordinates and no identifier of the imaging location within a mouse, and no
+text value in any plane names a depth, a coordinate or a layer, so four of the
+paper's findings and the depth parts of three others cannot be tested, nor can
+the 12 imaging locations be counted. The dandiset holds only the two-photon
+imaging: the wide-field imaging, the whisker tracking, the lick times, the
+photoinhibition behaviour and the silicon probe recordings (567 units) are not
+in it, and the CRCNS DOI the paper names, 10.6080/K0S180F9, resolves to a
+placeholder record ("CRCNS.org ssc-8TBD", "not yet available"); a search of
+DANDI by the paper's DOI and its authors finds only dandiset 000015.
+ImagingPlane.location is "ALM" in every file, including the 47 planes whose
+experiment_description says left_vm1 (the paper's MM); with
+experiment_description as the area, the ROI, area, PT and IT counts, the
+trials and the early-lick fraction all match the paper (15,431 ROIs, 8,837 in
+ALM and 6,594 in MM, 719 PT and 2,631 IT). With the stored ROI and neuropil
+traces and the paper's r = 0.7, the baseline F0 is zero or negative on 0.26% of
+ROI-trials, in 1,262 ROIs, and dF/F reaches thousands, dominating the MM mean
+dF/F; the paper does not say how these were treated, and two outcomes
+(`fig8d-error-outnumber-correct` at 2.20 SD and `fig8d-pt-contra-bias` at 1.97
+SD without those ROIs) stay sensitive to them. Other findings: the ROI table's
+`included` column marks 8,655 of 15,431 ROIs without saying what excluded the
+others, where the paper's counts use all of them; the trial table's start_time
+is 0.623 s before the sample event, the paper's trial start, in every trial,
+an offset that is not described; early-lick trials do not record the pole
+position; and the tagged PT and IT units of Li et al. 2015 that the paper
+compares with are on DANDI as dandiset 000010, version 0.220126.1905, which
+labels exactly 45 PT and 27 IT units, matched by label and count only.
+
+`entry.py all` passed with 0 errors, the notebook running in 11.2 min in the
+first run, about 18 min after the answers, 15 min after round 1 and 20.4 min
+after round 2. One preparation script, not part of the entry, crashed on JSON
+serialisation and was fixed, and one shell command was refused for lack of
+approval and replaced by the search tool. Round 1's points led to a search of
+every text value of every plane for depth (none found), a listing of the
+behavioural events of all 105 planes (sample, delay and go only, so no lick
+times), three duplicate pairs compared in full, the permuted-label null for
+figs5 (0.845 to 0.911), the figs4 peak before the go cue and within the delay
+with a sixth question to a reader, the PT part of `fig8d-mm-object-location`
+(0.623 against 0.033) and the variance explained by area and projection type
+for `fig8ef-area-explains-variance` (projection type 0.0013 against area
+0.0005, not separated by the bootstrap), and the DataCite record of the CRCNS
+DOI; no outcome changed apart from fig8d-error-outnumber-correct. Round 2
+found statements the outputs did not support, among them window W1 given as the closest reading in
+`fraction-selective-alm-mm` where W3 is closer, a README row that left out the
+T2 bins on which fig8d-pt-earlier-than-it rests, a README run time of about fifteen
+minutes against 19.7 printed, and silicon probe data called never made public
+where the notebook showed only the placeholder DOI, and these were corrected;
+the markdown cells were changed after the last run, so the git-ignored
+executed copy still shows the old conclusion text. The author's points
+on the protocol: it has no rule for a multi-part criterion with an untestable
+part; it forbids `data_missing` for an `elsewhere` claim whose data were never
+public while the author cannot change the claim's `data` field; blocking every
+claim that depends on a blocked claim is coarse; it has no rule for criteria
+that chance alone satisfies; its two reading rules, any reading may match and
+all readings must agree, are easy to confuse; it does not cover `measured`
+when no reading matches; it does not say whether mapping a data event to the
+claims file's trial start counts as a method choice; and it does not say
+whether to write a link claim when its only dependent is blocked.
+
+### 000019, Bouchard et al. 2013
+
+One claim reproduced, one partially, four not reproduced and sixteen blocked,
+all on the dandiset. It pins version 0.220126.2148, the only published
+version, as the paper cites none. The claims were written from the NIH author
+manuscript with its supplement, without a PDF of the main text, so the main
+figures were read from their legends and the Results; the claims check made
+ten changes and left the file at 22 claims. The author put five questions to a
+reader; four answers were that the paper does not say, which added readings
+(both z-scorings and two inputs to project for the state-space claims, every
+CV or only those with 15 or more renditions, the rest period as baseline
+reading (c)), and the fifth was that positions cannot be derived from grid
+geometry, unlabelled coordinates or atlas labels. The answers moved
+`active-electrodes` and `fig4a-consonant-clusters` from not reproduced to
+blocked as `methods_underspecified`; the author's reports give the totals as 7
+and 13 before and 5 and 15 after, which their own per-claim tables do not add
+up to. Round 1 gave its own outcome for each claim from the notebook with its
+conclusions and summary removed and agreed with all 22, and round 2 agreed
+with all 22, so there was no third round. The paper, "Functional organization
+of human sensorimotor cortex for speech articulation" in Nature, records
+high-density ECoG over ventral sensorimotor cortex (vSMC) of three subjects
+reading consonant-vowel syllables aloud, and reports a dorsal-to-ventral
+layout of the lips, jaw, tongue and larynx representations, a staggered
+timing of articulator activity, and a cortical state-space whose clusters
+follow the articulators and phonetic features. The data composition, active
+electrode counts, the phonetic contrasts at single electrodes, mixed tuning,
+timing, the state-space analyses and the PC articulator weights were tested.
+`fig1c-e-articulator-electrodes` and the seven spatial claims are blocked as
+`metadata_insufficient`, and the seven state-space claims and
+active-electrodes as `methods_underspecified` because their readings disagree.
+`fig1f-h-phonetic-contrasts` is not reproduced because no lips-positive GLM
+electrode has /ju/ above 2 with /ja/ and /ji/ below 2 under any of 96
+readings, `fig3d-timing-sequence` because tongue onsets are -26 to +290 ms
+and none of the three order conditions holds in any of 96 readings,
+`fig5c-separability-timing` because the consonant peak is at -155 to +15 ms
+against -200, and `suppfig9-pc-articulator-weights` because tongue weights
+are not above lips (corrected p = 1) and jaw and larynx differ at p = 5e-11 in
+all 288 readings. Some outcomes rest on weak ground: `suppfig6-mixed-tuning`
+is reproduced under a criterion that holds on weights permuted across
+electrodes in 94 of 96 readings; the one active-electrodes reading within
+tolerance (rest, 15+ CVs, 27.0) rests on trials the files mark as ECoG
+artifacts, and without them GP31's count falls from 31 to 2; the split there
+comes from GP31's /thi/, with 2 renditions; and `suppfig13-consonant-vowel-distance`
+stays blocked only because the attempt counts a reading where the orderings
+hold but the pair count is 4677 or 4567 against 4623 as partial, while read
+strictly every reading is not reproduced. Three questions on suppfig13,
+suppfig6 and suppfig9, where round 2 thought the claims file may misread the
+paper, are unanswered.
+
+No electrode has a position relative to the central sulcus or the Sylvian
+fissure, the frame of the paper's spatial analyses: EC2 and GP31 have x, y, z
+coordinates with no unit or frame, GP33 and EC9 have none, and no electrode is
+labelled as on the guenon, so seven spatial findings cannot be tested. The
+microphone recordings were removed, so the acoustic onset, peak and offset of
+each syllable cannot be computed and the hand-marked syllable start stands in
+for the onset as a recorded deviation; there is no high gamma either, so it is
+computed from the raw 256-channel ECoG at 3051.76 Hz. Subjects GP31 and GP33
+do not carry the paper's names (EC31, EC33) and nothing links them; the
+subject fields hold only species and id, the electrode group of EC2 and GP31
+is `L256Grid electrodes` and that of GP33 `auto_group`, with location
+`location`, so the right hemisphere of EC33 cannot be checked. A fourth
+subject, EC9 (7 blocks, 1653 trials), is not in the paper. Renditions per
+syllable range from 2 to 107 against the paper's 15 to 100, GP31 lacks /tha/
+and /thu/, and the three subjects have 169 distinct syllables against 168,
+with nothing saying which trials or syllables the paper used. The raw
+ElectricalSeries gives unit volt with a conversion factor of 0.001, but the
+stored values are consistent with being already in volts. Other findings: two
+syllable labels are misspelt (`she` for `shee`, `ha` for `haa`); electrode ids
+start at 0 in EC2 and GP31 and at 1 in GP33 and EC9; bad-channel flags differ
+between blocks of one subject; 162 of 9370 analysed trials overlap intervals
+marked as ECoG artifacts; and one file (EC2 block 1) holds a power spectrum of
+the 256 channels in a processing module. The paper links no code, and the
+articulator and phonetic feature matrices, which exist only as supplement
+figures, were transcribed and listed under `inputs`.
+
+The notebook ran in about 14.5 minutes in the first run, 17.2 minutes after
+the answers, 21 minutes after round 1 and 20.7 minutes after round 2, and
+`entry.py all` passed with 0 errors each time. Streaming with remfile was too
+slow, so each file was fetched whole into memory with parallel range
+requests, 39.0 GB in all, and a bootstrap rewritten as one matrix product,
+about 20 times faster, kept the notebook under 30 minutes; the author could not
+remove an empty `.claude/.cc-writes` directory the harness created in the
+entry. Round 1's points led to a listing of every file's objects in place of a
+hard-coded line, a fix to the separability bootstrap, which had paired tokens
+with their own copies, a corrected artifact trial count of 162 in place of
+177, outcome counts per reading factor, artifact-free variants for
+active-electrodes and fig3d, a permutation null for suppfig6 and the
+transcribed matrices drawn for checking. Round 2 found statements the outputs
+did not support, among them a GP31 comparison in fig2a where GP31 has no
+tongue window, fig5d's split put down to the four reading details where it
+comes from the readings of R and of the clusters, a README run time with 42
+GB streamed where 39.0 GB is printed, and 24 consonant labels for EC9 where
+there are 23, and these were corrected. Untracked dotfiles and a `scripts`
+folder in the repository root that the author did not create were left alone.
+The author's points on the protocol: blocking a claim that depends on a
+blocked claim does not fit fig1f-h, suppfig6 and suppfig9, which use only
+fig2a's position-free weights; readings added through a question multiply all
+the others, so several claims are blocked only because readings disagree; a
+baseline taken from the dataset and not the paper's text fits only as a
+variant; the notebook header template uses bold labels against the no-bold
+rule; the archives doc's advice to stream with remfile is too slow for these
+files; the articulator and phonetic feature matrices exist only as figures
+and were transcribed from the PDF into the helper module; and there is
+no format for a claims file that leaves "pre-epoch level" undefined.
+
+### 000034, Buccino et al. 2020
+
+No claim reproduced, one partially, none not reproduced and 22 blocked, all
+on the dandiset; the link claim `recordings-as-described`, which the table
+does not count, reproduced with all 15 of its checks holding. It pins version
+0.211030.0713, the only published version, with the same six files as the
+draft, which is all the paper cites. The claims check required every
+reading to agree in five claims where the draft had accepted any one, and
+left the file at 24 claims. The author asked no questions, as the one tested
+claim was fully specified, so the answer steps changed nothing. Round 1 gave
+its own outcome for each claim from the notebook with its conclusions and
+summary removed and agreed with 23 of 24; it gave `fig4a-curators-agree` as
+at least partially reproduced where the author had blocked it as dependent on
+the blocked `fig1b-unit-counts`, and the author changed it. Round 1 also held
+that `not_runnable` is not an allowed reason and gave the blocked claims as
+`other`; the author kept `not_runnable`, which the schema and protocol define
+for software that cannot be installed in a locked environment, and round 2
+withdrew the point. Round 2 agreed with all 24, so there was no third round.
+The paper, "SpikeInterface, a unified framework for spike sorting" in eLife,
+runs six spike sorters on a Neuropixels recording from mouse 412804, a
+simulated MEArec recording with 250 ground-truth units, a rat cortex
+recording and a mouse retina recording, and reports that the sorters agree
+poorly, that Kilosort2 scores highest on the simulation, that almost all
+false positive units are found by a single sorter, and that consensus units
+match the two experts' curations of the Kilosort2 output. Only the recordings
+and the agreement of the two curators could be tested: the curators share 226
+of 351 units (64.39%), within tolerance of the paper's 226, 351 and 64.2%,
+while the 174 Kilosort2 units both discarded need the paper's Kilosort2 run
+and are untested. The ratio leaves its tolerance at a minimum score of 0.8
+(56.79%), which does not decide the outcome, as the criterion fixes the
+default of 0.5. Every other claim needs the sorters' output, and Kilosort2,
+IronClust and HDSort are MATLAB programs (Kilosort2 also needs a CUDA GPU)
+that cannot be installed from a lock file on a runner with no MATLAB, GPU or
+MPI.
+
+The dandiset holds no output of the six sorters, including the Kilosort2 run
+the two experts curated, so every comparison of sorters can be repeated only
+by running them again, three of them in MATLAB, and a new Kilosort2 run will
+not give the units the curators worked on. The two curated files hold a Units
+table of ids and spike times only, with no sampling rate, no unit labels, no
+curator name and no link to the Kilosort2 clusters, and nothing says which
+file is curator 1 (they differ only by session time, 15:55:42 and 15:55:43);
+their spike times fall on whole frames at 30 kHz and match the mouse
+recording's clock. The retina recording is stored as unsigned 16-bit values
+centred near 2048 and reaching 4096, consistent with raw counts of a 12-bit
+converter, while the file states a conversion of 1e-6 V per unit and no
+offset, which would put every channel near +2 mV. The mouse recording stores
+int16 values with a conversion of 1e-6 V and no gain or channel_conversion;
+read that way its band-passed noise SD is about 50 uV and the median curated
+trough about 455 uV, several times usual Neuropixels levels, and the values
+are consistent with raw counts, though the file holds nothing to show which.
+Other findings: the electrode tables give location 'unknown' and filtering
+'none' for every channel; the mouse recording has 248 channels where the
+paper says 246 are active, without marking which; the simulated file does not
+say which ground-truth cells are excitatory or inhibitory or what noise was
+added; the archive's species summary lists only house mouse though one
+recording is from a rat; every raw series is stored in chunks of one channel
+by 7911 to 26368 frames, so reading a whole recording chunk by chunk through
+h5py would take 6.2 to 16.9 h in this run, against 1.4 to 6.5 min at the 72
+MB/s of one bulk ranged read; and the paper gives 226 of 351 as 64.2%, where
+it is 64.39%.
+
+The notebook ran in 288 s in the first run; an exploratory listing of the
+metadata had timed out at 20 minutes, and targeted reads replaced it;
+HerdingSpikes 0.3.7 failed to build and SpyKING Circus had no MPI to run
+with, and spikecomparison 0.2.6 and spikeextractors 0.8.4 ran on NumPy 2 with
+five removed aliases restored, a recorded deviation. Round 1's points led to
+the HDF5 trees of the curated files and the mouse recording, a timed bulk
+read so that reading time is no longer part of the block, the mouse electrode
+columns with a finding on its conversion, and the MEArec spectrum, which shows
+the traces are not band-passed at 300 Hz. Round 2 found statements the
+outputs did not support, among them read times from an earlier run, a
+Summary that ruled out microvolts for the mouse values, a minimum-score scan
+that left out the ratio falling out of tolerance at 0.8, three claims that
+need Kilosort2 alone described as needing all six sorters, and a species
+summary and pip results that no cell printed; these were corrected, with the
+read times taken from the final run, as they vary between runs. Untracked
+empty files in the repository root that the author did not create were left
+alone. The author's points on the protocol: the rule that blocks a claim
+depending on a blocked claim forced fig4a to blocked though its curator
+counts were computed, and there is no outcome for a claim tested only in
+part; `not_runnable` and `too_large` overlap when sorting software cannot
+run; the protocol says nothing about restoring names removed from libraries,
+which the paper-era spikecomparison and spikeextractors need on NumPy 2; and
+the 10-minute aim is hard to meet when checking the data needs slow raw
+reads, so only the first chunk of each recording was read.
+
+### 000128, Churchland et al. 2010
+
+Eleven claims reproduced, one partially, three not reproduced and seven
+blocked, all on the dandiset. It pins version 0.220113.0400, the only
+published version, whose draft holds the same two files with identical
+contents. The claims were written from the PubMed Central author manuscript
+and its supplement, without a PDF of the main text, so the main figures were
+read from their legends; the claims check added
+`fig4-no-separate-populations`, so the file has 22 claims. The author put three
+questions to a reader, and the answers set aside the proto-trial reading T1
+(which kept 73.8% of trials with delay over 400 ms and left two conditions
+empty) and the tuning measure S2 (which selected no neuron for the correlation
+claims), and named two readings of the normalising maximum in
+`suppfig1-population-averages`, both already run. The counts moved from 7, 1, 2
+and 12 to 11, 1, 3 and 7: `fig3-maze-most-not-maintained`,
+`fig6-peri-movement-space-best`, `fig6-each-dimensionality` and
+`fig7a-shuffled-space-poor` moved from blocked as `methods_underspecified` to
+reproduced, and `fig6-performance-vs-dimensionality` to not reproduced. Round 1
+gave its own outcome for each claim from the notebook with its conclusions and
+summary removed and agreed with all 22, and round 2 agreed with all 22, so
+there was no third round. The paper, "Cortical preparatory activity:
+representation of movement or first cog in a dynamical machine?" in Neuron,
+records units in PMd and M1 of three monkeys making delayed reaches in a speed
+task and a maze task, with single electrodes and, for monkey J, two
+96-electrode arrays, and reports that preparatory and peri-movement tuning are
+only weakly correlated and that preparatory tuning is best captured by a
+preferred direction in the space of the population's peri-movement response.
+Only the J-array maze session could be tested: its counts, the tuning
+correlations and their time course, the population averages, the PD spaces,
+the controls and the two model simulations. The speed task, single-electrode
+and EMG claims are blocked as `data_missing`, and the two anterior-posterior
+claims as `metadata_insufficient`. `fig4d-mean-correlation-jarray` is not
+reproduced because the mean r is 0.051 and the mean Spearman r 0.072 against
+0.13 and 0.11, with no test below p = 0.05 (P1 0.47, P2 0.42, P3 0.61),
+`fig6-performance-vs-dimensionality` because performance rises to its best at
+k = 14 (0.518) and does not decline, and `prep-dimensionality` because 90% of
+the variance needs 15 components (N1) or 18 (N2) against 7 to 11; the main
+text says "at least 7-10 dimensions", which 15 and 18 would meet, and whether
+the claim is a range or a lower bound is asked in a question. Some outcomes
+rest on weak ground: the correlation claims use only 17 neurons that pass the
+selection, so their tests have little power; fig3 rests on one neuron, unit
+1581 (r 0.765), with the next largest r 0.457; the best k in the PD analyses
+is the upper end of the tested range, an edge value and not a peak; the
+preparatory separation in suppfig1 is positive by construction; and
+`fig8-model-weak-correlation` has a criterion that almost any small value
+would pass.
+
+The dandiset holds only the J-array session of monkey Jenkins (2009-09-25),
+with no speed task, no single-electrode recordings and no EMG, and the paper
+names no other archive for them. Every unit's electrode reference points into
+the first 96 rows of the electrodes table, labelled PMd, so by the file all
+182 units are in PMd although the electrode groups describe one array in M1
+and one in PMd; the reference equals the unit id's channel digits minus one,
+which suggests the array offset was dropped in conversion. The electrodes have
+no coordinates (x, y and z are NaN), and the leading digit of the unit ids (1
+for 92 units, 2 for 90), which may be the array, is not documented, so no unit
+can be placed on the anterior-posterior axis or on an array; regressing tuning
+correlation on that digit, a variant that decides nothing, gives r of
+magnitude 0.432 (p 0.084). The dataset holds 182 units where the paper reports
+146 and does not record which units or trials the paper used, or that this
+session is the paper's. 574 of the session's successful trials are in the test
+file as 0.7 s segments around movement onset, without condition labels or
+behaviour and with only the 137 held-in units, so they cannot enter a
+condition-mean analysis; the test file has a clock of its own and no delay or
+success column, and the train file's trial ids are contiguous, so the files do
+not record which session trials the packaging dropped. Reading (a) of
+`recordings-jarray` gives 2869 trials with the test file and 2295 without it,
+and the 182 units fail under every reading. Other findings: 14 trials have a
+negative delay (as low as -3 ms), where the go cue precedes the recorded
+target onset.
+
+The notebook ran in 152 s in the first run, 81 s after the answers and 121 s
+after round 1, and `entry.py all` passed with 0 errors after round 2. A bug
+found during development averaged an empty condition as zero rates and had
+made fig4d look reproduced (mean r 0.117); with the fix it is not reproduced.
+Round 1's points led to a table labelled by reading for `recordings-jarray`, a
+per-neuron table for fig4d, the lost fig6-each-dimensionality comparison (the
+2-D initial-velocity space, 0.238 against 0.223) printed, and checks of the
+test file's clock and the electrode group descriptions. Round 2 withdrew its
+round-1 point that the supplement's T-matrix might be a conditions by
+(neurons by times) matrix, as the supplement defines it as c by n, so those
+variants were removed; it also found statements the outputs did not support,
+among them both fig4d means called below half the paper's where the Spearman
+mean is 65% of it, the fig8 interval given as its outer envelope, an ambiguous
+"91% of trials kept" for T2, and notes quoting T1 and S2 values the notebook
+no longer prints, and these were corrected. Untracked dotfiles in the
+repository root that the author did not create were left alone. The author's
+points on the protocol: it does not cover a reading that selects no units; it
+does not say what to do when a trial reading leaves a condition with no
+trials; it has no rule for an undocumented substitute such as the unit-id
+digit when the claims file's fallback, the array, is wrong in the data; its
+check for a selection is written only for chance levels and false-positive
+rates, though the paper's "~90% kept" works like one; the `recordings-jarray`
+criterion says only when the claim is reproduced, not when it is partial; and
+some details the criteria leave open below their stated readings were run both
+ways and recorded as deviations.
