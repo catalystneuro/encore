@@ -30,6 +30,9 @@ changed: new dandisets that name a paper, papers added to existing targets
 (an attempted one needs claims for each new paper), and new published versions
 of attempted dandisets, which are candidates for a repeat attempt. Merging the
 pull request puts the new targets in the runner's queue.
+A person asks for a particular attempt, such as a repeat after a conversion was
+fixed, with a run request ([queue.md](queue.md)); requests run before the
+targets the runner chooses itself.
 
 Steps 3 and 4 fix every claim and its method from the paper before anyone
 analyses the data: the claims agent never sees the dataset's contents. The
