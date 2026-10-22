@@ -203,6 +203,7 @@ class Run:
                     shutil.rmtree(path) if path.is_dir() else path.unlink()
         # The notes on earlier attempts, and the README's table of their outcomes, go too.
         stub = "Left out of an `encore check`: this page describes other attempts.\n"
+        shutil.rmtree(self.registry / "docs" / "pilot-notes", ignore_errors=True)
         for name in ("docs/pilot-notes.md", "docs/conversion-tracker.md"):
             if (self.registry / name).is_file():
                 (self.registry / name).write_text(stub)
