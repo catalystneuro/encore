@@ -119,6 +119,12 @@ def fill(role: str, dandiset: str, model: str, version: str | None = None) -> st
     else:
         details["version_rule"] = ("Use a pinned published version of the dataset and record in the notebook "
                                    "header why you chose it.")
+    if datasets.split_key(key)[0] in ("local", "remote"):
+        # A dataset `encore check` runs on has no versions: its files as they are, named by their fingerprint.
+        fingerprint = next((t.get("fingerprint") for t in datasets.targets() if t["key"] == key), None) or "unversioned"
+        details["version_rule"] = (f"The dataset has no versions: use its files as they are now, and give "
+                                   f"`{fingerprint}`, the fingerprint of its files, wherever the protocol asks for "
+                                   f"the version.")
     if role == "author" and attempt_of(dandiset):
         # A repeat attempt: the dandiset changed since the last one.
         record, entry_dir = attempt_of(dandiset)

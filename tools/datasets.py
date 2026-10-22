@@ -51,6 +51,23 @@ ARCHIVES = {
                    "under \"EBRAINS\": stream each file into memory with fsspec; do not download them to disk."),
         "list": "ebrains.json",
     },
+    # The two kinds of dataset `encore check` runs on (encore_science/, docs/encore.md), which never enter the
+    # registry's record: a directory on the machine running it, and files at a URL. Their list is written for
+    # the run alone, into the run's own copy of the registry.
+    "local": {
+        "label": "local", "name": "a directory on this machine", "url": "",
+        "access": ("The dataset is the directory {path} on this machine. Read its files in place: do not copy, "
+                   "move or change them, and do not look for the dataset in any archive (docs/protocol.md, "
+                   "\"Local and remote datasets\")."),
+        "list": "local.json",
+    },
+    "remote": {
+        "label": "remote", "name": "files at a URL", "url": "",
+        "access": ("The dataset is the files at {url}. Stream them with fsspec, or the store's own client; do not "
+                   "download them to disk, and do not look for the dataset in any archive (docs/protocol.md, "
+                   "\"Local and remote datasets\")."),
+        "list": "local.json",
+    },
 }
 
 
@@ -131,6 +148,8 @@ def targets() -> list[dict]:
         if not path.is_file():
             continue
         for t in json.loads(path.read_text())["targets"]:
+            if t.get("archive", archive) != archive:   # local.json holds both local and remote datasets
+                continue
             id_ = t.get("id") or t["dandiset"]
             key = key_of(archive, id_)
             out.append({**t, "key": key, "archive": archive, "id": id_, "folder": folder(key)})
