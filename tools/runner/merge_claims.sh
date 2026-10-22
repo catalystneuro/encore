@@ -9,7 +9,7 @@
 # afterwards), validates each claims file against schemas/claims.schema.json, and commits it straight
 # to main, with no pull request; when main has moved on in the meantime, it starts again from the new
 # main. Works in a temporary worktree, so the clone's checkout is left alone. When the attempt itself
-# is merged later, its rebase on main drops the change main already has.
+# is merged later, the merge keeps the branch's claims file, the same or later.
 set -euo pipefail
 d=$1; with_transcripts=${2:-}
 here=$(cd "$(dirname "$0")" && pwd)
