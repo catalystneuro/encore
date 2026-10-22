@@ -226,6 +226,11 @@ if [ -z "$pr" ]; then
 fi
 log "pull request $pr"
 while true; do
+  # GitHub runs no checks on a pull request that conflicts with main, so waiting for them would never end.
+  if [ "$(gh pr view "$pr" --json mergeable --jq .mergeable 2>/dev/null)" = CONFLICTING ]; then
+    last_why="$pr conflicts with main; merge main into attempt/$d, resolve the conflict, and start the chain again"
+    end "$d STOPPED: the pull request conflicts with main ($pr)"; exit 1
+  fi
   s=$(gh pr checks "$pr" --json bucket 2>/dev/null) || { sleep 60; continue; }
   echo "$s" | jq -e 'length>0 and all(.bucket!="pending")' >/dev/null && break
   sleep 60
