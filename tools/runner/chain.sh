@@ -13,7 +13,7 @@
 # committed since the attempt began ($RUNNER_STATE/attempt-<dataset>), on its branch or already on main,
 # are skipped, and a run of the next role that is still going is waited for. When a new attempt starts, a
 # branch already merged into main belongs to an earlier attempt and is deleted first, so the attempt
-# starts from main; a branch merged while its attempt is going is kept. A run that fails on the subscription's session limit is retried after
+# starts from main; a branch merged while its attempt is going is kept. A run that fails on the subscription's session or weekly limit is retried after
 # 30 minutes from where it started; any other failure stops the chain.
 #
 # Each role runs first on the unverified account (RUNNER_ACCOUNT=verified skips it). A run that
@@ -117,10 +117,10 @@ run_role(){ local role=$1 tries=0 start before id st runlog acct
       account=verified; touch "$STATE/verified-$d"
       continue
     fi
-    if echo "$runlog" | grep -q "session limit" && [ $tries -lt 100 ]; then
+    if echo "$runlog" | grep -qE "session limit|weekly limit" && [ $tries -lt 100 ]; then
       tries=$((tries+1))
-      reset_branch "$start" || { last_why="could not reset attempt/$d after the session limit"; log "STOPPED: $last_why"; return 1; }
-      log "$role hit the session limit; branch reset, retry $tries in 30 minutes"
+      reset_branch "$start" || { last_why="could not reset attempt/$d after the usage limit"; log "STOPPED: $last_why"; return 1; }
+      log "$role hit a usage limit; branch reset, retry $tries in 30 minutes"
       sleep 1800; continue
     fi
     last_why="the run of $role failed"; log "STOPPED at $role (run $id)"; return 1
