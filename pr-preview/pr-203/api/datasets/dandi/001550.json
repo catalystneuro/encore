@@ -1,0 +1,649 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001550",
+  "label": "DANDI:001550"
+ },
+ "page": "datasets/dandi/001550/",
+ "generated": "2026-10-22T19:27:09+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 11,
+  "partially_reproduced": 2,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 2,
+  "partially_reproduced": 0,
+  "not_reproduced": 1,
+  "blocked": 4
+ },
+ "outcome_counts_links": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 1,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001550-pagan-2025-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001550",
+    "version": "0.260916.0811",
+    "doi": "10.48324/dandi.001550/0.260916.0811"
+   },
+   "key": "dandi:001550",
+   "label": "DANDI:001550",
+   "dataset_version": "0.260916.0811",
+   "paper": "10.1038/s41586-024-08433-6",
+   "paper_title": "Individual variability of neural computations underlying flexible decisions",
+   "date": "2026-10-18",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-7"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/39175622648"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "001550-pagan-2025",
+   "entry_title": "Context-dependent evidence accumulation in rats (Pagan et al. 2025)",
+   "description": "Tests the findings of Pagan, Tang, Aoi, Pillow, Mante, Sussillo and Brody (2025) on dandiset 001550, which holds the behaviour of 26 rats trained on a task that switches between accumulating location and frequency evidence. It links the dandiset to the paper's published behavioural tables, checks the session statistics and selection, fits the behavioural pulse kernels and their slope indices, tests the optogenetic inactivation, and, with the paper's neural data from GitHub, the link between behavioural and neural slope indices.",
+   "notebooks": [
+    {
+     "path": "reproduce_pagan_2025.ipynb",
+     "title": "Reproducing Pagan et al. (2025) from dandiset 001550",
+     "executed": "notebooks/001550-pagan-2025/reproduce_pagan_2025.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "session-link",
+     "statement": "The dandiset's sessions can be linked to the paper's published per-session behavioural tables, and the linked records agree on trial counts, outcomes, evidence and pulse timing.",
+     "source": "Data availability; the paper's data/Sessions_trials at GitHub commit 0ea8fdb",
+     "quote": "Rat behavioural and electrophysiological data are available at https://github.com/Brody-Lab/flexible_decision_making_rats.",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "Sessions are matched by rat and session name taken from the source file names in the paper's tables. Of 15,278 paper sessions with valid trials, 15,277 (0.9999) are in the dandiset; the missing one, P189 TaskSwitch6-210516a, has 27 valid trials. In all 15,277 the number of valid trials and the fraction correct are equal, and both relative weights agree to 1e-6 in 0.898; of the 1,553 that differ, 861 agree once this attempt's values are capped at 1 as the paper's table does. Of the 692 left, 627 have a missing value on both sides, 5 in the paper's table only, and 60 differ with both values present (median difference 0.87 after capping, not explained); 3 of the 692 are in the paper's selection. In 20 seeded sessions every valid trial agrees on context, correct side, strengths, choice, outcome and position in block, and 0.99996 of 10 ms pulse bins agree. Over every matched session, 627 have an empty per-trial record in the paper's tables; in the other 14,650 the 7,447,692 valid trials agree on every per-trial field and position in block, and 0.99996 of 50 ms pulse bins agree over the 6,532,005 trials whose pulses were binned. The dandiset's Methods selection keeps all 8,843 sessions of the paper's selection plus 6 (5 P187 and P189 sessions not in the paper's tables, and P059 TaskSwitch4-170331a, whose relative weight of 1.112 the paper's table caps at 1.0). Per-rat selected trial counts equal the paper's numhits for 23 of 26 rats and exceed them by 213 (P059), 1,442 (P187) and 609 (P189).",
+     "deviations": [
+      "The paper's `good` flag is not in the dandiset and is not applied; it removes no session that passes the other criteria."
+     ],
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "subjects",
+     "statement": "The study used 26 male Long-Evans rats, aged between 6 and 24 months.",
+     "source": "Methods, Subjects",
+     "quote": "All subjects were male Long-Evans rats between the ages of 6 and 24 months ... A total of 26 rats were used for the experiments presented in this study",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "26 subjects, all male Long Evans, one date of birth each. Ages at the 8,849 selected sessions are 3.0 to 39.1 months (median 15.4); 0.913 lie within 5.4 to 26.4 months and 0.844 within 6 to 24. Eighteen rats have selected sessions before 5.4 months and eight after 26.4. The dates of birth put 25 rats at 1.6 to 2.7 months at their first session in the dandiset; P189 is at 14.1 months, on the day P187 (born 2019-02-21) starts, and its date of birth (2018-02-21) may be a year early.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "trials-per-session",
+     "statement": "Rats performed on average 542 trials per session.",
+     "source": "Methods, Behaviour",
+     "quote": "rats performed on average 542 trials per session",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "Mean valid trials per session 551.8 over the 8,849 selected sessions (reading b) and 494.2 over all 15,400 task sessions (reading d), both within 487.8 to 596.2. All trials average 817.9 and 749.7 (readings a and c), outside. The 13 unreadable sessions (1 to 3 trials) are left out of readings c and d; added, they give 749.1 and 493.8.",
+     "deviations": [
+      "The Methods do not say which sessions or trials are counted; four readings are shown and two match."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "blocks-per-session",
+     "statement": "On average, rats switched across 14.6 context blocks per session.",
+     "source": "Methods, Behaviour",
+     "quote": "On average, rats switched across 14.6 context blocks per session",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "Blocks per session average 16.98 over selected sessions and 13.90 over all task sessions; switches average 15.98 and 12.90. Blocks over all sessions (13.90) and switches over selected sessions (15.98) are within 13.14 to 16.06; the first is recorded as measured.",
+     "deviations": [
+      "Whether blocks or switches are counted, and over which sessions, is not stated; two of four readings match."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "session-duration",
+     "statement": "Behavioural sessions lasted 2 to 4 hours.",
+     "source": "Methods, Behaviour",
+     "quote": "Behavioural sessions lasted 2\u20134 h",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "Median duration 2.50 h over selected sessions and 2.57 h over all task sessions. Only 0.559 and 0.556 of sessions last 2 to 4 h (0.65 within 1.8 to 4.4); 5% to 95% of selected sessions span 1.26 to 4.41 h, and the range is 0.26 to 7.74 h.",
+     "deviations": [
+      "Duration is taken from the first trial start to the last trial stop; the files hold no session end time."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "block-min-30",
+     "statement": "Block switches occurred after a minimum of 30 trials per block, and when a local estimate of performance reached 80% correct.",
+     "source": "Methods, Behaviour",
+     "quote": "block switches occurred after a minimum of 30 trials per block, and when a local estimate of performance reached a threshold of 80% correct",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "All 141,359 non-final blocks of selected sessions have at least 30 trials counted over all trials (1st percentile 30, median 44); counted over valid trials 0.817 do. Over the last 30 valid trials before a switch the median fraction correct is 0.828 and 0.601 of blocks reach 0.8, so the 80% part is not shown on that window; the task's local estimate is not described.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1c-20-rats",
+     "statement": "Twenty rats each contributed more than 120,000 trials after training.",
+     "source": "Figure 1c legend; Extended Data Figure 1c",
+     "quote": "Logistic fits of psychometric curves for 20 rats after training (more than 120,000 trials for each rat)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "Twenty rats have more than 120,000 valid trials in selected sessions (the twentieth, P189, has 128,309; the next, P124, 115,123). The same 20 pass at 120,000 or more.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1c-context-selection",
+     "statement": "After training, choices are mostly driven by location in the location context and by frequency in the frequency context.",
+     "source": "Figure 1c; Extended Data Figure 3a,d",
+     "quote": "In the LOC context, choices are mostly affected by location; in the FRQ context, choices are mostly affected by frequency",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "In all 20 rats both relative weights exceed 0.5; location in the location context 0.770 to 0.860, frequency in the frequency context 0.724 to 0.870.",
+     "deviations": [
+      "Tested by the Methods' logistic regression on generative strengths, not by the four-parameter psychometric fits that the figure shows."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed1e-switch-four-trials",
+     "statement": "Rats switch the feature they attend to within about four trials of a new context block.",
+     "source": "Results, Flexible evidence accumulation in rats, paragraph 1; Extended Data Figure 1e (legend panel g)",
+     "quote": "were able to switch between selected stimulus features within four trials of a new context block",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "Across 26 rats, at position 4 of a new block the relevant relative weight is 0.91 of its plateau when switching to location and 0.963 when switching to frequency (Methods selection), and 0.914 and 0.961 with the code's 0.65 selection. At position 1 it is 0.502 and 0.560, against plateaus of 0.854 and 0.789. All 26 rats have a fit at positions 1 to 5 (103 to 6,096 trials), so the 30-trial minimum drops nothing. Bootstrapping rats, the position 4 value for the switch to location has a 95% interval of 0.874 to 0.946 and reaches 0.9 in 0.678 of resamples; at position 5, which the criterion also allows, the values are 0.956 and 0.977 and reach 0.9 in 0.998 and 1.000 of resamples.",
+     "deviations": [
+      "The paper's code uses a 0.65 selection for this analysis; the Methods selection is the main result and the code's is a variant."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed2g-learning-2-5-months",
+     "statement": "Most rats learned the task in two to five months.",
+     "source": "Results, Flexible evidence accumulation in rats, paragraph 1; Extended Data Figure 2g",
+     "quote": "most rats learned the task in a timespan between two and five months",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "From each rat's first session to its first session with an index of at least 0.7, 17 of 26 rats took 1.8 to 5.5 months (times 0.85 to 8.18 months). With the full selection 19 of 26; counted from the first TaskSwitch session 13 (exactly half) and 17. Within the unwidened 2 to 5 months the counts are 12, 16, 10 and 13. 24 rats start with ProAnti3Marino sessions.",
+     "deviations": [
+      "The paper does not define the start of training or when a rat counts as trained; four pairings of readings are shown, three match."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-converging",
+     "statement": "Differential behavioural kernels predominantly converge towards the end of the pulse train, that is the difference between contexts in the weight of a feature shrinks for later pulses.",
+     "source": "Methods, Behavioural logistic regression, paragraph 3; Figure 4; Extended Data Figure 3c,f",
+     "quote": "Empirically we found that differential behavioural kernels predominantly displayed convergence towards the end of the pulse stimulus presentation",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "All 36 slope indices of the 18 Figure 4 rats are negative (median -0.432, range -0.774 to -0.097). With the code's fixed penalty of 200 all 36 are negative (median -0.491), and they agree with the indices from the paper's saved weights to at most 0.0177 (r = 0.99973).",
+     "deviations": [
+      "The Methods' ridge penalty is read as the code's penalty on neighbouring weight differences, with its weight chosen by 3-fold cross-validation over 20, 200 and 2000 (chosen weights 20 to 2000); the code fixes it at 200.",
+      "The differential kernel is divided by its largest absolute value before the line fit, as the code does; the Methods do not say."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-loc-frq-uncorrelated",
+     "statement": "Across rats, the shape of the differential behavioural kernel for one feature does not predict the shape for the other feature.",
+     "source": "Results, Linking neural and behaviour variability, paragraph 1; Figure 4 top right",
+     "quote": "The shape of an individual\u2019s differential behavioural kernel for one feature did not appear to predict the shape of the kernel for the other feature",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "Across 18 rats r = 0.180 (95% CI -0.313 to 0.597), p = 0.475; with the fixed penalty r = 0.092, p = 0.717; from the paper's saved weights r = 0.094, p = 0.71.",
+     "deviations": [
+      "The paper gives no test; a two-sided Pearson correlation was chosen before the analysis."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed3g-halfsplit",
+     "statement": "The behavioural slope index computed from the first half of a rat's trials is correlated with the index from the second half (r = 0.58, p = 0.000013).",
+     "source": "Extended Data Figure 3g legend",
+     "quote": "The slope index computed from behavioral trials in the first half split is highly correlated with the slope index computed using the second half split (r = 0.58; p = 0.000013)",
+     "statistics": [
+      {
+       "test": "correlation, significance from the Student\u2019s t distribution",
+       "statistic": "r = 0.58",
+       "p": 1.3e-05
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "Over 24 rats and 48 values r = 0.552 (95% CI 0.318 to 0.723), p = 4.7e-05, within 0.522 to 0.638. With the fixed penalty r = 0.577, p = 1.8e-05. Location alone r = 0.470, frequency alone r = 0.736.",
+     "deviations": [
+      "The halves use the penalty weight chosen on all of that rat's trials in that context."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed4-bilateral-fof-impairs",
+     "statement": "Bilateral optogenetic silencing of the frontal orienting fields during the stimulus impairs performance of the task (three rats).",
+     "source": "Results, Flexible evidence accumulation in rats, paragraph 2; Extended Data Figure 4g",
+     "quote": "bilateral optogenetic silencing of rat FOF demonstrated that they are required for accurate performance of the task",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "Four rats have opto sessions (P116 47, P124 74, P127 4 and P131 88 with at least 100 valid trials). With bilateral full-trial epochs accuracy is lower than on control trials in the same sessions with p < 0.05 in 2 of the 3 rats with most sessions, P116 (0.639 against 0.733, 873 trials, p below 1e-4) and P131 (0.686 against 0.727, 1,988 trials, p = 0.0001). P124 is higher (0.712 against 0.687, p = 0.17) and P127 lower but not significantly (0.603 against 0.634, p = 0.55). Any bilateral epoch gives 2 of 3 and 2 of 4 as well. Every trial with an epoch has the laser connected; with laser-connected trials only the accuracies and p values are the same.",
+     "deviations": [
+      "The paper does not say which three rats were analysed, which sessions, or its test; the readings and the Fisher test were chosen before the analysis."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "neural-link",
+     "statement": "The neurons in the paper's published neural data can be linked to the dandiset's rats and sessions; they come from 199 sessions of 7 rats.",
+     "source": "Results, Flexible evidence accumulation in rats, paragraph 2 (n = 199 sessions, n = 7 rats); the paper's data/neural_data and data/rat_for_each_neuron.mat at GitHub commit 0ea8fdb",
+     "quote": "we recorded from n = 3,495 putative single neurons during n = 199 sessions from n = 7 rats",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "All 7 rats are in the dandiset and every cell file names one of them. Under the criterion's rule (the cell's trials equal a contiguous run of one session's valid trials) 2,371 of 3,495 cells (0.678) match one session and none matches more than one; they come from 110 sessions against 199. With gaps allowed (a variant) 3,269 cells (0.935) match exactly one session, from 112 sessions; 226 cells match none, 189 of them P100's. The neural files leave out some trials of a session, so the contiguous rule is stricter than needed, but neither rule finds 199 sessions. Searching every TaskSwitch protocol (adding P100's 13 TaskSwitch4repeat sessions) gives 2,425 contiguous matches (0.694) from 113 sessions and 3,349 with gaps (0.958) from 115; the 146 cells left share a median 0.43 of their 8-trial windows with their best session, and 61 of those 64 best sessions are already matched.",
+     "deviations": [
+      "The neural files carry no session identifier; cells are matched by their trial sequence."
+     ],
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "units-per-rat",
+     "statement": "The recordings yielded 3,495 putative single units, 2,047, 832, 258, 94 and 54 from five rats in FOF and 112 and 98 from two rats in mPFC.",
+     "source": "Results, Flexible evidence accumulation in rats, paragraph 2; Methods, Analysis of neural data, paragraph 1",
+     "quote": "In total, 3,495 putative single units were recorded from 5 rats in FOF (number of units in each rat: 2,047, 832, 258, 94, 54), while 210 units were recorded from 2 rats in mPFC (number of units in each rat: 112, 98)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "The cell files hold 3,495 units, FOF 2,047 (P100), 832 (P059), 258 (P055), 94 (P095) and 54 (P049), mPFC 112 (P101) and 98 (P102), and rat_for_each_neuron.mat agrees with every file. The Methods sentence that puts all 3,495 in FOF counts the 210 mPFC units as well.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub Brody-Lab/flexible_decision_making_rats at commit 0ea8fdb7c56d755d99155171cc314dbbc24393ac (data/neural_data, data/rat_for_each_neuron.mat)",
+     "proposed": null
+    },
+    {
+     "claim": "fig3h-neural-uncorrelated",
+     "statement": "Neural slope indices vary across rats and features, with no apparent correlation between the location and frequency indices across the seven recorded rats.",
+     "source": "Results, Pulse analyses distinguish solutions, paragraph 2; Figure 3h",
+     "quote": "Instead, there was high variability across rats in this measure, and even across features within a single rat; no apparent correlation between the LOC and FRQ slope indices was visible",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "Neural slope indices range from -0.221 to 1.728 (location) and 0.465 to 1.500 (frequency); across the 7 rats r = -0.177 (95% CI -0.821 to 0.665), p = 0.704. The Methods say differential pulse responses only showed positive (or zero) slope indices; three location indices here are negative (P049 -0.221, P101 -0.045, P095 -0.007). The criterion does not test this.",
+     "deviations": [
+      "The per-neuron kernels are the paper's fitted ones from its repository; the GLM was not refitted from spikes.",
+      "The paper gives no test; a two-sided Pearson correlation was chosen before the analysis."
+     ],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub Brody-Lab/flexible_decision_making_rats at commit 0ea8fdb7c56d755d99155171cc314dbbc24393ac (data/combined_kernels.mat)",
+     "proposed": null
+    },
+    {
+     "claim": "choice-axes-parallel",
+     "statement": "Choice axes estimated separately in the two contexts are essentially parallel (average angle 1.6 degrees, not different from 0 in 6 of 7 rats).",
+     "source": "Results, Flexible evidence accumulation in rats, paragraph 3; Extended Data Figure 5",
+     "quote": "we found that the choice axes, estimated separately for each of the two contexts, were essentially parallel (average angle between contexts = 1.6\u00b0; not significantly different from 0 (P > 0.1) for 6 out of 7 rats",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "By ExtDataFigure5ag.m on the paper's per-context kernels, the angle the code plots (the two context choice axes projected on the first 3 principal components of both contexts' choice kernels, folded to at most 90 degrees) is 5.53, 7.91, 4.49, 1.82, 1.12, 4.25 and 8.00 degrees (P049, P055, P059, P095, P100, P101, P102), mean 4.73, against the reported 1.6 (tolerance 1.44 to 1.76); no rat is in the tolerance. The 3 components explain 0.85 to 0.94 of the variance. The full-space angle, which the code computes first and overwrites, averages 40.34 (29.43 folded). All units of each rat have fits in both contexts. The reported test against 0 (not different from 0 in 6 of 7 rats) is a permutation test the Methods describe, shuffling the trials' context labels and recomputing both axes; it is not in the repository's code and needs the per-neuron kernels refitted for every shuffle, so it was not run.",
+     "deviations": [
+      "The criterion was corrected after the first verification round to follow the angle the code plots; it first described only the full-space angle, now a variant. Both are outside the tolerance."
+     ],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub Brody-Lab/flexible_decision_making_rats at commit 0ea8fdb7c56d755d99155171cc314dbbc24393ac (data/combined_kernels_per_context.mat)",
+     "proposed": null
+    },
+    {
+     "claim": "fig5d-behaviour-neural",
+     "statement": "The behavioural slope index and the neural slope index are anti-correlated across rats and features (r = -0.73, P < 0.01), and for location (r = -0.71) and frequency (r = -0.71) alone (P < 0.1).",
+     "source": "Results, Linking neural and behaviour variability, paragraph 1; Figure 5d",
+     "quote": "We found robust support in the data for the theoretical prediction that the two measures should be correlated ... with the correlation also holding for LOC evidence alone ... or for FRQ evidence alone",
+     "statistics": [
+      {
+       "about": "both features",
+       "statistic": "r = -0.73",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "7 rats, two features each"
+      },
+      {
+       "about": "location",
+       "statistic": "r = -0.71",
+       "p": 0.1,
+       "p_relation": "<",
+       "n": "7 rats"
+      },
+      {
+       "about": "frequency",
+       "statistic": "r = -0.71",
+       "p": 0.1,
+       "p_relation": "<",
+       "n": "7 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_pagan_2025.ipynb",
+     "notes": "Behavioural slope indices from the dandiset (Methods selection, bins 14 to 26) against neural indices from the paper's kernels give r = -0.697 over 14 values (95% CI -0.896 to -0.264), p = 0.0056, within -0.803 to -0.657. Location alone r = -0.675 (p = 0.096), frequency alone r = -0.772 (p = 0.042); the paper reports -0.71 for each with P < 0.1, and both hold at that level. With the code's 0.65 and 0.6 selection and penalty 200, r = -0.765 (p = 0.0014), and the paper's saved behavioural indices give -0.768. The match of neurons to rats, which this claim needs, holds for every cell; the session-level link that fails in neural-link is not used here.",
+     "deviations": [
+      "The Methods selection keeps 23,014 and 25,847 trials of P049 and P059 against 135,001 and 162,317 under the code's selection, and their location indices change sign (0.131 against -0.432, 1.292 against -0.613).",
+      "Neural kernels are the paper's fitted ones, not refitted from spikes.",
+      "The result is close to the tolerance and depends on P049 and P059. With those two rats from the code's selection r = -0.834, and with the code's selection and cross-validated penalty r = -0.830, both beyond the tolerance on the negative side; leaving out one rat at a time gives -0.655 to -0.895, inside the tolerance for 4 of 7. All five 14-point correlations shown are negative with p < 0.01."
+     ],
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1e-choice-axis",
+     "statement": "Choice-related population activity in FOF evolves along an essentially one-dimensional line during the stimulus (73.3% of variance; 81.3% for the two-dimensional choice subspace).",
+     "source": "Results, Flexible evidence accumulation in rats, paragraph 3; Figure 1e",
+     "quote": "the two-dimensional subspace that best accounts for the contribution of the animal\u2019s choice to the neural activity (accounting for 81.3% of the variance) ... this choice-related information in firing rates evolved along an essentially one-dimensional straight line in neural space (accounting for 73.3% of the variance)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Figure1e.m projects the per-context choice kernels on principal components but computes neither 81.3% nor 73.3%, and the text does not say which kernels, time window or normalisation the percentages refer to. The data (combined_kernels_per_context.mat, and the mTDR fits in data/Arrays_Pagan) are public in the paper's repository.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub Brody-Lab/flexible_decision_making_rats at commit 0ea8fdb7c56d755d99155171cc314dbbc24393ac (data/Arrays_Pagan, mbtdr)",
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-irrelevant-encoded",
+     "statement": "In FOF, trajectories for different evidence strengths separate along each sensory axis whether the feature is relevant or irrelevant, so irrelevant information is not gated out before frontal cortex.",
+     "source": "Results, Flexible evidence accumulation in rats, paragraph 2; Figure 1f",
+     "quote": "We found that trajectories for different evidence strengths were clearly separated along the axis of each sensory feature ... This was true regardless of whether the feature was relevant or irrelevant",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "Needs the mTDR fits of the MATLAB toolbox in the repository's mbtdr folder (with minFunc) on data/Arrays_Pagan. MATLAB cannot be installed in the entry's locked Python environment and the toolbox was not ported.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub Brody-Lab/flexible_decision_making_rats at commit 0ea8fdb7c56d755d99155171cc314dbbc24393ac (data/Arrays_Pagan)",
+     "proposed": null
+    },
+    {
+     "claim": "fig3a-trained-rnn-svm",
+     "statement": "RNNs trained by backpropagation through time favour selection vector modulation.",
+     "source": "Figure 3a",
+     "quote": "Distribution of 1,000 RNNs trained using backpropagation through time: networks favoured SVM",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "Needs 1,000 RNNs trained by backpropagation through time (train_model.py in flexible_decision_making_rnn at commit 13cd245) and their linearisation; the repository holds three trained models. Training them is far beyond the 30-minute limit.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub Brody-Lab/flexible_decision_making_rnn at commit 13cd24544258da2e3d846115afb075443db8a8a1",
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-engineered-rnn",
+     "statement": "In RNNs engineered across the solution space, neural and behavioural slope indices are tightly anti-correlated.",
+     "source": "Figure 5c",
+     "quote": "RNN models follow the theoretical prediction, with anti-correlated slope indices for neural differential pulse kernels and differential behavioural kernels",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "The engineered RNNs and their pulse and behavioural kernels are built by MATLAB scripts (handcraft_model.m and others in flexible_decision_making_rnn at commit 13cd245), which cannot run in the entry's environment and were not ported.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub Brody-Lab/flexible_decision_making_rnn at commit 13cd24544258da2e3d846115afb075443db8a8a1",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds only the behaviour. The electrophysiology behind Figures 1d to 1f, 3h and 5d (3,495 units from 7 rats) is not in it; it is public only in the paper's GitHub repository, as one MATLAB file per unit with binned spike counts, without raw data or spike sorting output."
+    },
+    {
+     "kind": "identifier_missing",
+     "statement": "Nothing links the paper's units to dandiset sessions. Matched by trial sequence, 3,269 of 3,495 units fall in exactly one dandiset session when gaps are allowed (2,371 without gaps), from 112 sessions, where the paper reports 199; 226 units match no session. Searching every TaskSwitch protocol gives 3,349 units from 115 sessions, and 146 unmatched."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Every optogenetic epoch gives a wavelength of 473 nm; Extended Data Figure 4 says 450 nm, and the conversion's documentation says the value was corrected to 450."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Optogenetic epochs are present for four rats (P116, P124, P127, P131), where the paper reports three; nothing in the dandiset or the paper says which three were analysed."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The dates of birth give ages of 3.0 to 39.1 months at the sessions the paper's selection keeps (18 rats younger than 5.4 months at some), where the Methods state 6 to 24 months. Either the dates of birth or the stated ages are wrong. The dates of birth put 25 rats at 1.6 to 2.7 months at their first session; P189's (2018-02-21) puts it at 14.1 months on the day P187, born 2019-02-21, starts, and may be a year early."
+    },
+    {
+     "kind": "format_error",
+     "statement": "Thirteen task sessions (1 to 3 trials each) lack HistorySection_result_history or a pulse column, and 95 of the other 15,400 lack HistorySection_hit_history. Where both outcome columns exist they agree on every trial."
+    },
+    {
+     "kind": "data_missing",
+     "statement": "One session of the paper's tables with 27 valid trials, P189 TaskSwitch6-210516a, is not in the dandiset; the conversion's notes list it among aborted sessions left out."
+    },
+    {
+     "kind": "other",
+     "statement": "Six task sessions of P187 and P189 (TaskSwitch6, 2021) are in the dandiset but not in the paper's tables; five of them pass the Methods selection, adding 1,442 and 609 trials to those rats."
+    },
+    {
+     "kind": "other",
+     "statement": "HistorySection_gammafreq_history, a signed strength, is stored as uint8 or int16 in 570 files; in all of them its values equal the float gamma_freq, so nothing was lost."
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The paper's code also requires a per-session `good` flag that the Methods do not describe and the dandiset does not hold, and caps relative weights at 1; neither changes the selection except for one P059 session."
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The Methods describe ridge regression with the regulariser chosen by cross-validation; the code adds a fixed penalty of 200 on squared differences of neighbouring weights. The code also uses looser selections (0.65 correct and 0.6 index) for the recorded rats in Figure 5d and for Extended Data Figure 1e than the Methods' 0.7."
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The paper's own code (ExtDataFigure5ag.m), applied to its own fitted per-context kernels, gives angles of 1.1 to 8.0 degrees between the context choice axes (mean 4.7), not the reported average of 1.6 degrees. The permutation test of each angle against 0 that the Methods describe is not in the code."
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The Methods say 3,495 units were recorded from 5 rats in FOF and list FOF counts that sum to 3,285; the 3,495 include the 210 mPFC units. The main text calls a converging differential behavioural kernel a slope index above 0, while the Methods and the code give converging kernels negative indices, as the data have."
+    }
+   ],
+   "verifications": [
+    {
+     "date": "2026-10-19",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's full text. The verifier recomputed the choice-axis angles from combined_kernels_per_context.mat, read ExtDataFigure5ag.m and get_neural_slope.m, listed the version's assets, and tested bin_pulses, relative_weights, slope_index, fit_logistic and opto_trials on synthetic inputs.",
+     "agreed": 23,
+     "of": 23,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-19",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the first revision with its conclusions and summary, the helper module, the claims file, the README and this attempt record, with the paper's full text (paper/PMC11903320.txt).",
+     "agreed": 23,
+     "of": 23,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001550-pagan-2025",
+   "type": "reproduction",
+   "title": "Context-dependent evidence accumulation in rats (Pagan et al. 2025)",
+   "description": "Tests the findings of Pagan, Tang, Aoi, Pillow, Mante, Sussillo and Brody (2025) on dandiset 001550, which holds the behaviour of 26 rats trained on a task that switches between accumulating location and frequency evidence. It links the dandiset to the paper's published behavioural tables, checks the session statistics and selection, fits the behavioural pulse kernels and their slope indices, tests the optogenetic inactivation, and, with the paper's neural data from GitHub, the link between behavioural and neural slope indices.",
+   "datasets": [
+    "dandi:001550"
+   ],
+   "papers": [
+    "10.1038/s41586-024-08433-6"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_pagan_2025.ipynb",
+     "title": "Reproducing Pagan et al. (2025) from dandiset 001550",
+     "executed": "notebooks/001550-pagan-2025/reproduce_pagan_2025.html"
+    }
+   ]
+  }
+ ]
+}
