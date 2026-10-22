@@ -49,6 +49,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = Path(__file__).resolve().parent / "site_assets"
 REPO_URL = "https://github.com/catalystneuro/reproduction-registry"
+CN_URL = "https://www.catalystneuro.com"
 SITE_URL = "https://encorescience.org/"
 SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of neuroscience papers from their open data on the "
                     "DANDI Archive, and record every outcome and what they find about the data.")
@@ -772,14 +773,14 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <link rel="apple-touch-icon" href="{root}assets/favicon-180.png">
 <link rel="stylesheet" href="{root}{asset("app.css")}"></head><body>
 {banner}<nav class="top" aria-label="Sections"><div class="wrap">
-  <a class="brand" href="{home}">Reproduction registry</a>{nav}
+  <a class="brand" href="{home}">Reproduction registry</a><a class="by" href="{CN_URL}">by CatalystNeuro</a>{nav}
   <a class="tab icon" href="{REPO_URL}" aria-label="The registry on GitHub" title="The registry on GitHub">{GITHUB_MARK}</a>
   <a class="tab ext" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a>
   <button class="theme" id="theme" type="button" aria-label="Colour theme: auto. Change theme" title="Colour theme"><span aria-hidden="true">◐</span><span class="t">Auto</span></button>
 </div></nav>
 <div class="wrap">
 {body}
-<footer>Generated {e(data["generated"][:10])} from the registry's files ·
+<footer>Developed by <a href="{CN_URL}">CatalystNeuro</a>. Generated {e(data["generated"][:10])} from the registry's files ·
 <a href="{root}registry.json">Data as JSON</a> · <a href="{REPO_URL}">Repository</a> ·
 <a href="{REPO_URL}/blob/main/docs/design.md">How it works</a>. Outcomes describe what one attempt could reproduce from
 the data in the dataset, with the methods available. A failure to reproduce may be a failure of the agent, and is not
