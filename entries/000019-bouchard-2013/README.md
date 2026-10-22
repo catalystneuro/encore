@@ -32,12 +32,14 @@ The claims blocked as methods underspecified depend on details the paper does no
 syllables are averaged (all, or only those with 15 or more renditions), the baseline of the
 z-scores, how the state-space input is z-scored, and which input is projected onto the PCs. They
 were asked as questions (`questions/000019.yaml`), and the reader's answers, from the paper, left
-them open, so every reading is run and the outcomes differ between readings. The attempt record, with the reasons
+them open, so every reading is run and the outcomes differ between readings. The separability
+coupling is the exception: its outcomes differ between the claims file's own readings of the
+clusters and of the feature set used, not between those of the details above. The attempt record, with the reasons
 and the differences from the paper's method, is
 [`attempts/000019-bouchard-2013-01.yaml`](../../attempts/000019-bouchard-2013-01.yaml).
 
-- `reproduce_bouchard_2013.ipynb`: the analysis. It takes about 20 minutes, 14 of them streaming
-  about 42 GB of raw ECoG and computing high gamma.
+- `reproduce_bouchard_2013.ipynb`: the analysis. It takes about 21 minutes, about 16 of them streaming
+  39 GB of raw ECoG and computing high gamma.
 - `bouchard.py`: streaming the files, high gamma, the paper's articulator and phonetic feature
   matrices, and the measures (partial correlation, GLM, state space, co-clustering, separability).
   Other notebooks on this dandiset can import it.

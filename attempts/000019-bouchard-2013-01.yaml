@@ -118,8 +118,9 @@ outcomes:
     Sylvian fissure. The dandiset gives no electrode position relative to the Sylvian fissure or the
     central sulcus. EC2 and GP31 have x, y, z coordinates with no unit or frame; GP33 has none. The
     GLM electrodes and weights are computed (they need no positions) and used by fig1f-h, suppfig6
-    and suppfig9. For information only, the median z coordinate of the top 10% of lips weights is
-    above that of the tongue weights in EC2 (36.6 against 15.6) and GP31. The answer of 2026-10-22
+    and suppfig9. For information only, under the first reading the median z coordinate of the top
+    10% of lips weights is above that of the tongue weights in EC2 (36.6 against 15.6); GP31 has no
+    tongue window in that reading, so it gives no comparison. The answer of 2026-10-22
     to the question on positions says the paper measures them on each subject's MRI reconstruction
     and gives no way to derive them from grid geometry, unlabelled coordinates or atlas labels, so
     the block stands.
@@ -335,8 +336,11 @@ outcomes:
     the three feature sets, or with k-means clusters, the coupling fails in every reading. The
     claims file's own readings give different outcomes. What the answers changed. The rest baseline
     and projection (ii) are now readings; the outcome stays blocked as methods_underspecified, as in
-    the first run. The reading of R decides the split; with the mean of three feature sets all 120
-    readings fail.
+    the first run. Two readings of the claims file decide the split, that of R and that of the
+    clusters. With the mean of three feature sets all 120 readings fail, and with k-means clusters
+    all 48 fail, the 24 with the matching feature set among them. Every level of the baseline,
+    z-scoring, projection and CV set has both reproduced and not reproduced readings, so the split
+    does not come from these details.
 - claim: suppfig13-consonant-vowel-distance
   outcome: blocked
   blocked_by: methods_underspecified
@@ -417,7 +421,8 @@ verifications:
   reviewed: Round 1. The handover of the run after the answers of 2026-10-22, the executed notebook with
     the conclusions and summary removed, the helper module and the claims file. The verifier also read
     the paper under paper/, checked the archive's asset list through the API, checked the helpers on synthetic
-    inputs and compared the transcription of Supplementary Figure 1d with the supplement.
+    inputs and compared the transcription of Supplementary Figure 1d with the supplement. Cell numbers in
+    the reasons are those of the round-1 notebook.
   results:
   - claim: data-composition
     agrees: true
@@ -438,8 +443,9 @@ verifications:
     outcome: blocked
     reason: With all CVs, no baseline gives a mean in 27-33 (24.3, 21.3, 34.0). With 15+ CVs only `rest`
       does (27.0), which is partial. The split comes from GP31's /thi/, which has 2 renditions (GP31 counts
-      49 to 9 and 43 to 0). One GP31 CV with 2 renditions drives the threshold count, and many methods_underspecified
-      outcomes come from this split (B3). The verifier asked for the counts with the 177 artifact-interval
+      49 to 9 and 43 to 0). One GP31 CV with 2 renditions drives the threshold count. It also flips silhouettes
+      (GP31 k = 2 at 0.78 against 0.37) and the fig4ef late-window tests. Many methods_underspecified outcomes
+      come from this split (B3). The verifier asked for the counts with the 177 artifact-interval
       trials excluded (B11).
     response: 'Outcome kept. The notebook now prints, per baseline and subject, the electrodes active
       with every CV but not with the 15+ CVs and the CVs above 2 there: all are GP31''s /thi/ (40, 43
@@ -615,3 +621,155 @@ verifications:
       fails anyway (B8).
     response: Outcome kept. The table now has a column of electrodes dropped for lack of a window (none
       in 168 readings, up to 83 in the others), and the conclusion and notes say so.
+- date: '2026-10-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the run after round 1, with its conclusions and summary,
+    the README, the helper module, the attempt record and the claims file. The verifier also read the paper,
+    read the `separability` code of the helper module and checked the transcription of Supplementary Figure
+    12 against the image in the supplement PDF. Cell numbers in the reasons are those of the round-2 notebook.
+  results:
+  - claim: data-composition
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. B2 is still open and bears on this conclusion: that GP31 is EC31 and GP33 is EC33 remains
+      an assumption, and GP33''s hemisphere cannot be checked. It is recorded as a deviation; no field in
+      the files can settle it. Cell 10, a note and not a conclusion, says "EC9 has 24 consonant labels";
+      cell 8 gives 19 plus /ch/, /dh/, /j/ and /sk/, which is 23.'
+    response: Outcome kept. Cell 10 now says 23 consonant labels, as cell 8 prints. The identity of GP31 and
+      GP33 stays an assumption, recorded as a deviation and a finding, since no field in the files settles it.
+  - claim: active-electrodes
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. B3 is still open: GP31''s /thi/, with 2 renditions, alone creates the CV-set split. The
+      one reading within tolerance (rest, 15+ CVs: 27.0) relies on trials the files mark as ECoG artifacts.
+      Without them, GP31''s count falls from 31 to 2 and the mean to 15.0. The blocked outcome stands, but
+      under every variant tried no reading supports about 30 electrodes. The round-1 record dropped part of
+      B3: that the /thi/ split also flips GP31''s silhouettes and the fig4ef late-window tests.'
+    response: Outcome kept; the notes already state the artifact variant and the fall from 31 to 2. The round-1
+      reason now carries the dropped part of B3.
+  - claim: fig1c-e-articulator-electrodes
+    agrees: true
+    outcome: blocked
+    reason: Agrees (metadata_insufficient). The round-1 cell numbers in the record are stale; "cell 22 prints
+      `[]`" now refers to cell 26.
+    response: Outcome kept. The round-1 entry now says its cell numbers are those of the round-1 notebook.
+  - claim: fig1f-h-phonetic-contrasts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The counts and values in the record match the printed outputs.
+    response: Outcome kept. No change.
+  - claim: fig2a-lips-dorsal
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees (metadata_insufficient). The notes say "the median z coordinate of the top 10% of lips
+      weights is above that of the tongue weights in EC2 (36.6 against 15.6) and GP31." Cell 32 prints `GP31:
+      ... Tongue no window`, so there is no GP31 comparison. This is for information only and affects no outcome.'
+    response: Outcome kept. The notes now give the EC2 comparison only and say that GP31 has no tongue window
+      in that reading.
+  - claim: fig2b-somatotopic-sequence
+    agrees: true
+    outcome: blocked
+    reason: Agrees (metadata_insufficient).
+    response: Outcome kept. No change.
+  - claim: suppfig3b-spatial-clustering
+    agrees: true
+    outcome: blocked
+    reason: Agrees (metadata_insufficient).
+    response: Outcome kept. No change.
+  - claim: suppfig3d-cross-subject
+    agrees: true
+    outcome: blocked
+    reason: Agrees (metadata_insufficient).
+    response: Outcome kept. No change.
+  - claim: suppfig3f-dv-sequence
+    agrees: true
+    outcome: blocked
+    reason: Agrees (metadata_insufficient).
+    response: Outcome kept. No change.
+  - claim: suppfig5-intermediate-organization
+    agrees: true
+    outcome: blocked
+    reason: Agrees (metadata_insufficient).
+    response: Outcome kept. No change.
+  - claim: suppfig6-mixed-tuning
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. A place where the claims file may misread the paper: grouping electrodes by their largest
+      weight almost guarantees the result, and the test also holds on permuted weights in 94 of 96 readings
+      (cell 34). It is reproduced under a criterion that barely discriminates; the outcome is correct under
+      that criterion, but it shows little.'
+    response: Outcome kept, as the criterion decides it; the notes already say the test barely discriminates.
+      The point is now a question for a reader in questions/000019.yaml; the claim is not changed.
+  - claim: fig3d-timing-sequence
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The counts and values in the record match the printed outputs.
+    response: Outcome kept. No change.
+  - claim: suppfig7-no-latency-difference
+    agrees: true
+    outcome: blocked
+    reason: Agrees (metadata_insufficient).
+    response: Outcome kept. No change.
+  - claim: pca-nine-components
+    agrees: true
+    outcome: blocked
+    reason: Agrees (methods_underspecified).
+    response: Outcome kept. No change.
+  - claim: fig4a-consonant-clusters
+    agrees: true
+    outcome: blocked
+    reason: Agrees (methods_underspecified).
+    response: Outcome kept. No change.
+  - claim: suppfig11-co-clustering
+    agrees: true
+    outcome: blocked
+    reason: Agrees (methods_underspecified). The Supplementary Figure 12 transcription was checked against the
+      image extracted from the supplement PDF, and all 15 consonant rows and the 4 vowel rows match cell 16.
+    response: Outcome kept. No change.
+  - claim: fig4c-d-hierarchy
+    agrees: true
+    outcome: blocked
+    reason: Agrees (methods_underspecified).
+    response: Outcome kept. No change.
+  - claim: fig4ef-feature-correlations
+    agrees: true
+    outcome: blocked
+    reason: Agrees (methods_underspecified).
+    response: Outcome kept. No change.
+  - claim: fig5c-separability-timing
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The `separability` code in `bouchard.py` now leaves out a token's pairs with its own copies,
+      correctly (B7 resolved).
+    response: Outcome kept. No change.
+  - claim: fig5d-separability-coupling
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees (methods_underspecified). The README sentence that the claims blocked as methods underspecified
+      depend on the CV set, baseline, z-scoring and projection, and the summary''s "The blocked outcomes of
+      the state-space claims and of active-electrodes come from these readings giving different results", do
+      not hold for fig5d. Cell 58 shows its split comes from the reading of R (all 120 "mean of three" readings
+      fail) and from the cluster reading (all 48 k-means readings fail); the four listed factors show similar
+      mixes at every level. Cell 59 and the notes, "the reading of R decides the split", are incomplete: with
+      the matching feature set, k-means clusters still fail all 24 readings, so the cluster reading also splits
+      the outcome.'
+    response: Outcome kept. Cell 59, the notes, the summary and the README now say that the readings of R and
+      of the clusters decide the split, with the k-means count (48 of 48 fail, the 24 with the matching set
+      among them), and that every level of the four other details has both reproduced and not reproduced readings.
+  - claim: suppfig13-consonant-vowel-distance
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. A place where the claims file may misread the paper: a reading reproduces only if the pair
+      count is 4623, a count fixed by which syllables the dataset holds, not by the effect the paper reports.
+      Read strictly, every reading is not reproduced. Its outcome stays blocked only because the attempt treats
+      the pair-count failure as partial, which rests on that claims-file issue.'
+    response: Outcome kept, as verified; the notes already say that read strictly every reading is not reproduced.
+      The pair-count condition is now a question for a reader in questions/000019.yaml; the claim is not changed.
+  - claim: suppfig9-pc-articulator-weights
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. A place where the claims file may misread the paper: jaw against larynx is judged at p >
+      0.05, but the paper says P > 0.2. This does not change the outcome, since the measured p is 5e-11.'
+    response: Outcome kept. The threshold is now a question for a reader in questions/000019.yaml; the claim
+      is not changed, and no reading is near either threshold.
