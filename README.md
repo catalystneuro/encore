@@ -112,6 +112,7 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 | [000008](https://dandiarchive.org/dandiset/000008) | [Scala et al. 2021](https://doi.org/10.1038/s41586-020-2907-3) | 11 (+9) | 4 | 1 | 0 (+2) | [`000008-scala-2021`](entries/000008-scala-2021) |
 | [000010](https://dandiarchive.org/dandiset/000010) | [Li et al. 2015](https://doi.org/10.1038/nature14178) | 8 | 3 | 5 | 11 | [`000010-li-2015`](entries/000010-li-2015) |
 | [000011](https://dandiarchive.org/dandiset/000011) | [Li et al. 2016](https://doi.org/10.1038/nature17643) | 6 | 5 | 9 | 18 | [`000011-li-2016`](entries/000011-li-2016) |
+| [000013](https://dandiarchive.org/dandiset/000013) | [Hires et al. 2015](https://doi.org/10.7554/elife.06619) | 22 | 1 | 8 | 14 | [`000013-hires-2015`](entries/000013-hires-2015) |
 
 Counts are of the paper's findings that rest on the dandiset, including
 those that take names for its own codes from elsewhere. Findings that also
