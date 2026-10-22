@@ -3382,6 +3382,10 @@
     "ready": true,
     "date": "2026-10-22"
    },
+   "dandi:000037": {
+    "ready": true,
+    "date": "2026-10-22"
+   },
    "dandi:000041": {
     "ready": null,
     "date": null
@@ -7786,6 +7790,263 @@
       "source": "Extended Data Figure 8-1 legend; Results, SD does not explain ND",
       "quote": "We also did not find a relationship with stimulus luminance, contrast, or spectral energy",
       "criterion": "A claim of absence. Per stimulus, mean luminance is the mean pixel intensity and contrast the SD of pixel intensities of the unblurred movie; spectral energy is the sum of the energy spectral density of each pixel's intensity time series of the blurred movie after removing the DC component (legend; code stimulus_properties.ipynb). The paper names no test for this figure; readings are Pearson correlations of mean log10 ND (as in fig8-nd-sd-correlation) with each property over the 12 stimuli, (a) two-sided and (b) one-sided (greater), the tests of Fig. 8. DC removal has readings per-pixel mean (legend) and global mean (code). Reproduced when no correlation has p < 0.05 under any reading; not reproduced when one does under every reading; blocked as methods_underspecified when readings differ. All r values are reported."
+     }
+    ]
+   }
+  ],
+  "dandi:000037": [
+   {
+    "path": "claims/000037/10.1038-s41597-023-02214-y.yaml",
+    "paper": "10.1038/s41597-023-02214-y",
+    "check": {
+     "ready": true,
+     "date": "2026-10-22"
+    },
+    "claims": [
+     {
+      "id": "table1-subjects",
+      "statement": "The dataset holds 13 mice whose subject ids, sex, date of birth, imaged cell type (L2/3 or L5 pyramidal) and imaging plane (somata or distal apical dendrites) are as listed in Table 1.",
+      "source": "Methods, Experimental animals and calcium imaging, Table 1",
+      "quote": "",
+      "criterion": "Each subject of the dataset is matched to Table 1 by its six-digit subject id, and sex, date of birth, cell type and plane are compared where the dataset records them. Reproduced when all 13 subjects are present and every recorded field matches; partially reproduced when all 13 are present and at most two fields in total disagree; not reproduced otherwise. Fields the dataset does not record are listed, not counted."
+     },
+     {
+      "id": "cohorts-by-plane",
+      "statement": "Thirteen mice were imaged, three L2/3 dendritic, three L2/3 somatic, four L5 dendritic and three L5 somatic, each with at least three imaging sessions.",
+      "source": "Methods, Experimental animals and calcium imaging, paragraph 1",
+      "quote": "13 mice in total underwent imaging (L2/3-D: n = 3, L2/3-S: n = 3, L5-D: n = 4, L5-S: n = 3) with at least three optical imaging sessions recorded in each",
+      "criterion": "Counts of subjects per line and plane, and of sessions per subject, from the dataset. Tolerance 0 because these are counts of deposited subjects, not estimates. Reproduced when all four counts match and every mouse has at least three sessions."
+     },
+     {
+      "id": "sex-split",
+      "statement": "Seven of the mice are male and six female, and only one L2/3 dendritic mouse is female.",
+      "source": "Data Records, Animal and recording session attributes, paragraph 1",
+      "quote": "while the dataset is well-split between male (7) and female (6) subjects, splitting the data further by sex may result in some groups with N = 1 (e.g., there is only 1 female L2/3-D mouse)",
+      "criterion": "Counts from the subjects' recorded sex. Tolerance 0 because these are counts."
+     },
+     {
+      "id": "sessions-total",
+      "statement": "The dataset holds 50 imaging sessions from 13 animals, each session in its own files grouped by subject.",
+      "source": "Data Records, Data organization, paragraph 1; Animal and recording session attributes, paragraph 1",
+      "quote": "data for 50 recording sessions total were gathered from 13 animals",
+      "criterion": "Count of distinct session ids in the dataset, and of subject folders. Tolerance 0 because it is a count of deposited sessions. Reproduced when there are 50 sessions from 13 subjects."
+     },
+     {
+      "id": "table2-sessions",
+      "statement": "The 50 sessions have the subject ids, session ids, imaging dates, imaging depths, ROI counts, tracked ROI counts, QC results and stimulus seeds listed in Table 2.",
+      "source": "Methods, Experimental animals and calcium imaging, Table 2",
+      "quote": "",
+      "criterion": "Each session is matched to Table 2 by its nine-digit session id. Compared, where the dataset records them, are subject, imaging date, depth, the number of ROIs (the ROIs in the file; the paper's code uses every ROI of an NWB file, analysis/session.py _set_bad_rois), the number of tracked ROIs (the ROIs carrying a tracking index; 0 in Table 2 means none), QC and stimulus seed. Reproduced when all 50 sessions are present and every recorded field matches; partially reproduced when at least 45 sessions match in every recorded field; not reproduced otherwise. Fields the dataset does not record are listed."
+     },
+     {
+      "id": "qc-failures",
+      "statement": "Two animals had at least one session that failed the Allen Institute's QC thresholds, and some animals had more than three sessions, for example when an early session failed QC.",
+      "source": "Data Records, Animal and recording session attributes, paragraph 1",
+      "quote": "Of these, two animals had at least one session that did not meet the Allen Institute's previously-described 15 quality control thresholds",
+      "criterion": "From the QC status the dataset records per session. The paper's own Table 2 marks failed sessions in three animals (411400 and 412933, sessions 1 to 3, and 440889, sessions 5 and 6), so the count can be read as (a) animals with any failed session, or (b) animals whose first three sessions failed and that were therefore re-imaged. Reproduced when the count is 2 under one reading; the notebook reports both counts and the animals with more than three sessions. If the dataset records no QC status the claim is blocked."
+     },
+     {
+      "id": "session-schedule",
+      "statement": "Each mouse had three 70-minute imaging sessions within three to six days, with at most one session per day.",
+      "source": "Methods, Experimental animals and calcium imaging, paragraph 1",
+      "quote": "Following habituation, they underwent three 70-minute optical imaging sessions within a span of three to six days, with no more than one session occurring per day",
+      "criterion": "For each mouse, the three sessions can be read as (i) its local sessions 1 to 3 (Supplementary Table 1), the first three after habituation, whatever their QC, or (ii) the sessions of the paper's analyses, the local sessions 1 to 3 that passed QC, or for mice 411400 and 412933 their tracked sessions 4 to 6. Dates from the sessions' start times. The span can be read as (a) days from the first to the third session (allowed 3 to 6) or (b) calendar days counted inclusively (allowed 3 to 6). By the dates of Table 2, reading (a) gives 2 days for five mice under (ii) and seven under (i), and reading (ii)(b) gives 7 days for mouse 411400; the notebook shows all four combinations. Reproduced when, under one combination, every mouse's span is in range and no two sessions of a mouse share a date; partially reproduced when all but one mouse meet it; not reproduced otherwise. Session durations are reported, with 70 min +/- 10% as the check."
+     },
+     {
+      "id": "imaging-depths",
+      "statement": "Somata were imaged at 175 um (L2/3) and 375 um (L5) depth, and distal apical dendrites at 50 to 75 um (L2/3) and 20 um (L5).",
+      "source": "Methods, Experimental animals and calcium imaging, paragraph 1",
+      "quote": "two-photon calcium imaging was performed in either the cell body layer for somatic recordings (175 \u03bc m depth for layer 2/3 and 375 \u03bc m depth for layer 5) or in cortical layer 1 for distal apical dendritic recordings (50\u201375 \u03bc m depth for layer 2/3 and 20 \u03bc m depth for layer 5)",
+      "criterion": "From the imaging depth the dataset records per session. Reproduced when every session's depth equals the value for its line and plane (any of 50, 75 for L2/3 dendrites); partially reproduced when all but up to two sessions do. Blocked if no depth is recorded."
+     },
+     {
+      "id": "acquisition-rates",
+      "statement": "Calcium movies were recorded at 30 Hz over a 400 um field of view at 512 x 512 pixels, and running was recorded at 60 Hz in cm/s.",
+      "source": "Methods, Experimental animals and calcium imaging, paragraph 2; Running and pupil tracking, paragraph 1",
+      "quote": "Calcium fluorescence movies were recorded at 30 Hz with resonant scanners over a 400 \u03bc m field of view with a resolution of 512 \u00d7 512 pixels",
+      "criterion": "Rates from the timestamps (median inter-sample interval) or recorded rate of the dF/F and running series; frame size from the imaging plane image or stack. Tolerance 0 on the frame size because it is a fixed dimension. Reproduced when all values hold in every session that holds the series."
+     },
+     {
+      "id": "roi-noise-rejection",
+      "statement": "ROIs that were too noisy, with a mean dF/F below 0 or a median dF/F above the midpoint between the trace's minimum and maximum, were rejected, so no retained ROI has either property.",
+      "source": "Methods, Experimental animals and calcium imaging, paragraph 3",
+      "quote": "any remaining ROIs identified as being duplicates or unions, overlapping the motion border or being too noisy (defined as having a mean \u0394F/F below 0 or a median \u0394F/F above the mid-range \u0394F/F, i.e., the midpoint between the minimum and maximum) were rejected",
+      "criterion": "For every ROI of every session, the mean and median of its full-session dF/F trace and its mid-range ((min + max) / 2). Reproduced when no ROI has a mean below 0 or a median above its mid-range; partially reproduced when fewer than 1% of ROIs do; not reproduced otherwise. The counts per session are reported. The duplicate, union and motion-border rules cannot be checked from the traces and are not tested."
+     },
+     {
+      "id": "roi-count-ranges",
+      "statement": "Somatic planes yielded 15 to 224 ROIs per mouse per session and dendritic planes 159 to 1636.",
+      "source": "Methods, Experimental animals and calcium imaging, paragraph 3",
+      "quote": "In the somatic layers, 15\u2013224 ROIs per mouse per session were identified and retained for analysis, compared to 159\u20131636 ROIs in the dendritic layers.",
+      "criterion": "The ROIs in each file (all are used, as in the paper's code). The sessions can be read as (a) the 33 sessions of the paper's analyses (local sessions 1 to 3 passing QC), (b) all sessions that passed QC, or (c) all 50 sessions. Reproduced when, under one reading, the minimum and maximum per plane type are within tolerance. The notebook shows all three."
+     },
+     {
+      "id": "tracked-roi-totals",
+      "statement": "Matching produced 254 tracked ROIs in L2/3 dendritic planes, 261 in L2/3 somatic, 516 in L5 dendritic and 129 in L5 somatic, about 100 to 500 per plane and about 32 to 75% of the theoretical maximum number of trackable ROIs.",
+      "source": "Methods, ROI tracking across sessions, paragraph 1",
+      "quote": "In total, the modified matching algorithm produced ~100\u2013500 highly plausible matched ROIs per plane, i.e., ~32\u201375% of the theoretical maximum number of trackable ROIs (L2/3-D: n = 254, L2/3-S: n = 261, L5-D: n = 516, L5-S: n = 129)",
+      "criterion": "A tracked ROI is one carrying a tracking index in the dataset; each mouse's count is the number of tracked ROIs in one of its three tracked sessions (equal across them). The totals are summed per plane over the 11 mice of the paper's analyses; this is the reading under which Table 2 gives these totals (mice 411400 and 412933, tracked on sessions 4 to 6, are left out); a sum over all 13 mice is shown as a variant. Tolerance 0 on the totals because they are counts of deposited indices. The theoretical maximum is not defined in the paper; readings are (a) per mouse, the smallest ROI count of its three tracked sessions, summed per plane, and (b) per mouse, the mean ROI count of those sessions, summed per plane. The range claim holds when, under one reading, the lowest and highest plane percentages are within tolerance. Reproduced when the four totals match and the range claim holds; partially reproduced when only the totals match."
+     },
+     {
+      "id": "tracked-sessions-overlap",
+      "statement": "The same imaging planes were recorded over three days and many ROIs could be identified in each day's recording, so that individual dendritic segments and somata can be followed over the three sessions.",
+      "source": "Background & Summary, paragraph 3",
+      "quote": "By segmenting the data in each plane into regions of interest (ROIs), and registering these ROIs across recording days, we were able to identify single ROIs that were present in each day's recording.",
+      "criterion": "For each tracked mouse, the tracking indices of its three tracked sessions are read from the dataset. Reproduced when every tracked mouse's three sessions carry the same number of tracked ROIs and the tracking indices define one-to-one matches across the three sessions (each index appears once per session); not reproduced otherwise."
+     },
+     {
+      "id": "fig8a-final-matches",
+      "statement": "In the example L2/3 dendritic mouse of Fig. 8a, removing four conflicting pairwise matches from the union over session orderings left 136 final matches.",
+      "source": "Figure 8a legend",
+      "quote": "In this example, four pairwise matches were identified as conflicts and removed, yielding 136 final matches.",
+      "criterion": "The example mouse is the L2/3 dendritic mouse with 136 tracked ROIs in Table 2 (413663, also mouse_n 6 in the code's Fig. 8a panel). Count of tracked ROIs in its sessions in the dataset. Tolerance 0 because it is a count. The four conflicts are claim fig8a-conflicts."
+     },
+     {
+      "id": "fig8a-conflicts",
+      "statement": "For the same mouse, the union of matches over all session orderings held four conflicting matches, which were removed.",
+      "source": "Figure 8a legend",
+      "quote": "In this example, four pairwise matches were identified as conflicts and removed",
+      "criterion": "The conflicts cannot be counted from the dataset, which holds only the final tracking. The paper's code (analysis/roi_analys.py) takes the conflict count as the union count minus the final tracked count, from the match_perm_examples table of roi_tracking/nway-matched-dfs in the paper's repository (commit above). Reproduced when the union count there minus the tracked count in the dataset is 4. Re-running the matching would need the paper's custom-modified matching code, which the paper does not link."
+     },
+     {
+      "id": "fig8b-final-matches",
+      "statement": "In the example L5 somatic mouse of Fig. 8b, removing two conflicting pairwise matches left 47 final matches.",
+      "source": "Figure 8b legend",
+      "quote": "Combining matched ROIs across all permutations did nonetheless, in this example mouse, enable two of the pairwise matches to be identified as conflicts and removed, yielding 47 final matches.",
+      "criterion": "The example mouse is the L5 somatic mouse with 47 tracked ROIs in Table 2 (411771, mouse_n 4 in the code's Fig. 8b panel). Count of tracked ROIs in its sessions in the dataset. Tolerance 0 because it is a count."
+     },
+     {
+      "id": "fig8b-conflicts",
+      "statement": "For the same L5 somatic mouse, two conflicting matches were removed from the union over session orderings.",
+      "source": "Figure 8b legend",
+      "quote": "enable two of the pairwise matches to be identified as conflicts and removed",
+      "criterion": "As fig8a-conflicts, with the union count of mouse 411771 in the repository's roi_tracking/nway-matched-dfs and the tracked count from the dataset."
+     },
+     {
+      "id": "fig8-somata-less-order-dependent",
+      "statement": "The number of matched ROIs varied less across session orderings for somata than for dendrites.",
+      "source": "Figure 8b legend",
+      "quote": "The variation in number of matched ROIs across session orderings for somata was generally far less than that for dendrites due to their larger sizes and more regular shapes.",
+      "criterion": "Needs the number of matches for each of the six session orderings of each mouse. The dataset holds only the final matches, and the repository's roi_tracking files give the fewest and most matches over orderings only for the two example mice (413663 and 411771). With those inputs only, the claim is blocked for lack of data for the other mice; the two examples' ranges (most minus fewest, also as a fraction of the final count) are reported. If the per-ordering counts of every mouse become available, reproduced when the median range over somatic mice is smaller than over dendritic mice, in absolute terms and as a fraction of the final count."
+     },
+     {
+      "id": "gabor-sequence-structure",
+      "statement": "Gabor sequences are repeating 1.5-s sequences of five 300-ms images (A-B-C-D-G), each non-grey image holding 30 Gabor patches, with inconsistent sequences replacing D by U, whose mean orientation is shifted by 90 degrees (drawn from 90, 135, 180 and 225 degrees, against 0, 45, 90 and 135 degrees for the other images).",
+      "source": "Methods, Visual stimulation, paragraphs 2 and 3",
+      "quote": "it consisted of repeating 1.5-second sequences, each comprising five consecutive images ( A-B-C-D-G ) presented for 300 ms each ... \u201cInconsistent\u201d sequences were created by replacing D images with U images in the sequence ( A-B-C-U-G ) ... namely from {90\u00b0, 135\u00b0, 180\u00b0, 225\u00b0}",
+      "criterion": "From the stimulus parameter table of each session. Image durations from their start and stop times; the number of patches from the per-image parameters, if recorded (tolerance 0, a fixed design value). Reproduced when, in every session that holds the table, images follow the A-B-C-D/U-G order, last 300 ms +/- 10%, the mean orientations of A to D take only 0, 45, 90 and 135 degrees, and U mean orientations take only 90, 135, 180 and 225 degrees and equal the sequence's mean orientation plus 90 degrees."
+     },
+     {
+      "id": "visual-flow-structure",
+      "statement": "Visual flow is 105 white squares of 8 by 8 degrees moving at 50 degrees per second, in two consecutive periods (rightward and leftward) in random order, with 25% of squares reversed for 2 to 4 s during inconsistent flow.",
+      "source": "Methods, Visual stimulation, paragraph 4",
+      "quote": "The visual flow stimulus consisted of 105 white squares moving uniformly across the screen at a velocity of 50 visual degrees per second, with each square being 8 by 8 visual degrees in size.",
+      "criterion": "From the stimulus parameter table, where it records these values. Tolerance 0 on the number of squares because it is a design count. Reproduced when every session holding the table matches, and each session shows the two directions as two consecutive periods. Values the table does not hold are listed as untestable."
+     },
+     {
+      "id": "session-stimulus-durations",
+      "statement": "Each imaging session lasted 70 min, with 34 min of Gabor sequences and 17 min of visual flow in each direction, each stimulus period flanked by 30 s of grey screen.",
+      "source": "Methods, Visual stimulation, paragraph 1",
+      "quote": "optical imaging sessions always lasted 70 minutes, comprising 34 minutes of Gabor sequence stimulus and 17 minutes of visual flow stimulus in each direction. Each stimulus period was flanked by 1 or 30 seconds of grayscreen for the habituation and optical imaging sessions, respectively.",
+      "criterion": "From the stimulus table's start and stop times, per session. Reproduced when all three hold in every session; partially reproduced when they hold in at least 45 of 50."
+     },
+     {
+      "id": "inconsistent-fractions",
+      "statement": "Inconsistent sequences make up about 7% of Gabor sequences and 5% of visual flow time.",
+      "source": "Methods, Visual stimulation, paragraph 5",
+      "quote": "Inconsistent sequences, accounting for approximately 7% of the Gabor sequences and 5% of visual flow stimulus time, only occurred on optical imaging days, and not on habituation days.",
+      "criterion": "From the stimulus table, per session; the values compared are the means over sessions, and each session's value is reported. Gabor, the number of A-B-C-U-G sequences over all sequences; visual flow, the time with reversed squares over all visual flow time. Habituation sessions are not in the dataset (Table 2 lists imaging sessions only), so the absence of inconsistent stimuli during habituation is not tested."
+     },
+     {
+      "id": "inconsistent-blocks",
+      "statement": "Each session is divided into about 30 blocks, each of 30 to 90 s of consistent stimulus followed by 3 to 6 s (Gabor) or 2 to 4 s (visual flow) of inconsistent stimulus, in multiples of 1.5 s (Gabor) and 1 s (visual flow).",
+      "source": "Methods, Visual stimulation, paragraph 5",
+      "quote": "each 70-minute imaging session was broken up into approximately 30 blocks, each comprising 30\u201390 seconds of consistent sequences followed by several seconds of inconsistent sequences (3\u20136 seconds for Gabor sequence stimulus and 2\u20134 seconds for the visual flow stimulus)",
+      "criterion": "A block is a run of consistent stimulus ending with a run of inconsistent stimulus, from the stimulus table. The block count can be read as (a) per session, all stimuli together, (b) per stimulus (Gabor, and visual flow with both directions together), or (c) per stimulus and direction. Reproduced when, under one reading, the mean count is within tolerance and the consistent and inconsistent durations fall in the stated ranges (each widened by 10% of its bounds) for at least 95% of blocks."
+     },
+     {
+      "id": "fig5-example-responses",
+      "statement": "Both somatic and dendritic ROIs responded clearly to the Gabor and visual flow stimuli, many with increased fluorescence at stimulus onset.",
+      "source": "Overview of data, paragraph 1; Figure 5",
+      "quote": "Both the somatic and dendritic ROIs showed clear responses to both the Gabor and visual flow stimuli, with many showing increased fluorescence responses to the onset of the stimuli (Fig. 5 ).",
+      "criterion": "Session 1 (local, passing QC; 11 mice), each line and plane. Selection as in the Figure 5 legend (\"for the session\") and the code (analysis/seq_analys.py get_sess_ex_traces, identify_gabor_roi_ns, identify_visflow_roi_ns), made within each mouse's session; the selected ROIs are then pooled over mice per line and plane (get_ex_traces_df, which draws 6 random examples from the pool for plotting; all selected ROIs are used here). Gabor, ROIs with SNR (claim fig7a-snr-above-1) above the session median; among them, those whose median pairwise correlation between individual sequence responses (each smoothed with a 4-point moving average), and the standard deviation and skew of their mean response, all exceed the 75th percentile of those ROIs; sequences are the -0.9 to 0.6 s window around D (consistent, panel a) or U (inconsistent, panel b) onset. Visual flow, per direction, the -2 to 2 s window around inconsistent flow onset; ROIs above the median SNR whose median pairwise correlation of post-onset responses and mean post-minus-pre difference exceed the 75th percentile. Traces are dF/F robust-scaled per ROI over the session ((x - median) / (95th - 5th percentile)), as in the code; unscaled dF/F is a variant. Reproduced when in all four planes the selection yields ROIs for the Gabor sequences and for each flow direction, and in each plane the mean over selected ROIs of their mean trace is higher after the reference onset (0 to 0.6 s for Gabor, 0 to 2 s for flow) than before it. Partially reproduced when this holds in at least two planes."
+     },
+     {
+      "id": "fig5-consistent-vs-inconsistent",
+      "statement": "Responses to consistent and inconsistent stimuli differed clearly in the example ROIs.",
+      "source": "Overview of data, paragraph 1; Figure 5a versus b, and c and d",
+      "quote": "There were also clear differences in the responses to the consistent versus inconsistent stimuli as well (Fig. 5a versus b, and c & d).",
+      "criterion": "The paper reports no test and calls its examples randomly selected. Gabor, per plane, session 1, the ROIs selected as in fig5-example-responses; the selection can be read as (a) the panel a ROIs (selected on consistent sequences) or (b) the panel b ROIs (selected on inconsistent sequences). For the selected ROIs, the mean over ROIs of their mean trace after D onset and after U onset (0 to 0.6 s), with the SEM across ROIs as in the legend. A difference is clear when, at some time point in 0 to 0.6 s, the two mean traces differ by more than the sum of their SEMs (the plotted bands do not overlap). Reproduced when this holds in all four planes under both readings; partially reproduced when it holds in at least two planes under both; methods_underspecified if the readings disagree. For visual flow, the selection itself requires a larger response after inconsistent onset, so the comparison is circular and is reported, not judged."
+     },
+     {
+      "id": "fig6-behaviour-all-mice",
+      "statement": "Running velocity and pupil diameter were recorded in sessions 1 to 3 of all 11 mice, so their distributions can be shown per session across mice.",
+      "source": "Figure 6b legend",
+      "quote": "Data is stacked across all mice (11), with each mouse represented by a different shade of gray.",
+      "criterion": "The 33 sessions of the paper's analyses (local sessions 1 to 3 passing QC). A session counts when it holds a running velocity series in cm/s and a pupil diameter series in mm with finite values. Tolerance 0 because it is a count. Reproduced when all 33 sessions count; partially reproduced when at least 30 do."
+     },
+     {
+      "id": "fig7a-snr-above-1",
+      "statement": "ROI dF/F traces have a relatively high SNR, above 1.",
+      "source": "Technical Validation, paragraph 2; Figure 7a",
+      "quote": "These are shown in Fig. 7A , and demonstrate that our recordings have relatively high SNR (>1)",
+      "criterion": "SNR per ROI on its full-session unscaled dF/F trace, as in the Methods and the code (util math_util.calculate_snr). The values at or below the trace's median are mirrored about the median to form the noise sample; its mean and standard deviation define a normal distribution whose 95th percentile is the noise threshold; SNR is the mean of values above the threshold divided by the noise standard deviation. The 33 sessions of the paper's analyses, ROIs pooled over mice per line, plane and session (12 groups), as in the code. \"SNR (>1)\" can be read as (a) the median of each group above 1, (b) the 5th percentile of each group (the lower whisker) above 1, or (c) every ROI above 1. By this construction an ROI's SNR exceeds 1.645 whenever its median dF/F is at least 0, which bears on reading (c). These are readings of a reported number (docs/protocol.md, Reader, step 3), so the claim is reproduced when it holds under one reading; the notebook shows each and names those that hold."
+     },
+     {
+      "id": "fig7a-snr-stable",
+      "statement": "ROI SNR is stable over the three days.",
+      "source": "Technical Validation, paragraph 2; Figure 7a",
+      "quote": "demonstrate that our recordings have relatively high SNR (>1) and that this is quite stable over days",
+      "criterion": "The SNR groups of fig7a-snr-above-1, compared across sessions 1 to 3 within each line and plane, as the boxplots of Figure 7a (notched, whiskers at the 5th and 95th percentiles, from the code). The paper defines no test. Stable can be read as (a) the notches of the three sessions overlap pairwise (matplotlib's notch, median +/- 1.57 IQR / sqrt(n), the code's plot) or (b) each session's median lies inside the interquartile range of every other session of the plane. Reproduced when all four planes are stable under both readings; partially reproduced when at least three are under both; methods_underspecified if the readings disagree."
+     },
+     {
+      "id": "fig7b-signal-stable",
+      "statement": "The mean dF/F signal of ROIs is stable over days.",
+      "source": "Technical Validation, paragraph 2; Figure 7b",
+      "quote": "Similarly, the mean \u0394F/F signal was stable over days (Fig. 7b ).",
+      "criterion": "Signal per ROI is the mean of its full-session dF/F values above the noise threshold of fig7a-snr-above-1, as the Figure 7b legend defines it and the code computes it (the last value returned by calculate_snr). Same groups, readings and decision as fig7a-snr-stable."
+     },
+     {
+      "id": "fig7c-correlations-similar",
+      "statement": "The distributions of pairwise ROI correlations are very similar for apical dendrite ROIs and somatic ROIs, which suggests the dendrites are not heavily over-segmented.",
+      "source": "Technical Validation, paragraph 3; Figure 7c",
+      "quote": "The distributions of correlation coefficients were very similar for the apical dendrite ROIs and for the somatic ROIs (Fig. 7c ), suggesting that we were unlikely to be heavily over-segmenting the dendritic data.",
+      "criterion": "Pearson correlation of every pair of ROIs within a session, on full-session dF/F traces each smoothed with a centred 4-point moving average (Figure 7c legend; the code uses scipy.ndimage.convolve, mode mirror). The 33 sessions of the paper's analyses; pairs pooled over mice per line, plane and session, as in the code, which bins them in 40 bins of width 0.05 from -1 to 1. Similar is not defined; it is read as the dendritic and somatic distributions of the same line and session having medians, and 95th percentiles, that differ by less than (a) one bin (0.05) or (b) two bins (0.1). Reproduced when this holds for all six line and session comparisons under both readings; partially reproduced when it holds for at least four under both; methods_underspecified if the readings disagree. The fraction of pairs above 0.8 per group is reported."
+     },
+     {
+      "id": "fig7c-high-correlation-fraction",
+      "statement": "About 0.01% of possible pairs of L2/3 dendritic ROIs have correlations above 0.8.",
+      "source": "Technical Validation, paragraph 3",
+      "quote": "To be more conservative, ROIs with correlations above 0.8 (e.g., approximately 0.01% of possible pairs of L2/3 dendrites)",
+      "criterion": "The correlations of fig7c-correlations-similar, L2/3 dendritic sessions. Tolerance 0.005 percentage points, the range of values that round to the stated one significant figure (0.005 to 0.015%), since the paper gives the value as approximate with one figure. Readings for the denominator are (a) all pairs pooled over the three sessions and three mice, (b) the mean of per-session fractions, and (c) each session separately. Above 0.8 is read as r > 0.8; r >= 0.8 (the code's histogram bin) is shown as a variant. Reproduced when one reading is within tolerance."
+     },
+     {
+      "id": "fig7a-source-link",
+      "statement": "The per-ROI SNRs computed from the dataset agree with those in the source data of Figure 7a in the paper's repository.",
+      "source": "Figure 7a; paper_figures/dataset_paper/Fig7/data_files/panel_A.json at the commit above",
+      "quote": "These are shown in Fig. 7A",
+      "criterion": "Sessions matched by session id, ROIs by their order in the file. Reproduced when, in every one of the 33 sessions, the number of ROIs equals the source data's and at least 95% of ROIs have an SNR within 1% of the source value (the same computation on the same traces; 1% allows for numerical precision); partially reproduced when this holds in at least 30 sessions."
+     },
+     {
+      "id": "fig9-onset-offset-transients",
+      "statement": "Mean dF/F responses across ROIs show distinct transients aligned to stimulus onsets (grey screen to stimulus) and offsets (stimulus to grey screen), which validates the temporal alignment of stimuli and recordings.",
+      "source": "Technical Validation, paragraph 5; Figure 9a and b",
+      "quote": "These \u0394F/F traces show distinct transients that align with the stimulus onsets and offsets (Fig. 9 ), validating our temporal alignment, and demonstrating clear stimulus responses in the identified ROIs.",
+      "criterion": "The 33 sessions of the paper's analyses. As in the code (analysis/basic_analys.py get_stim_on_off_data), onsets are the ends of every grey screen period but the last, and offsets the starts of every grey screen period but the first; the text names transitions to and from Gabor sequences or visual flow, while the Figure 9a legend says \"(Gabor sequence)\", so the onsets and offsets can be read as (a) all transitions (text and code) or (b) Gabor transitions only. Window -2 to 2 s around each transition (code); per ROI, the mean trace over transitions; robust-scaled dF/F as in the code ((x - median) / (95th - 5th percentile) over the session), unscaled dF/F as a variant; then mean and SEM across ROIs pooled over mice per line, plane and session (12 groups). A group shows a transient when, at some time in 0 to 2 s, the mean trace differs from its mean over -2 to 0 s by more than k SEM at that time; k is not given and is read as 1 or 2. Reproduced when every group shows a transient at onset and at offset under all readings; partially reproduced when at least 9 of 12 groups do for both onset and offset under all readings; methods_underspecified if the readings give different outcomes."
+     },
+     {
+      "id": "file-sizes",
+      "statement": "Each session has three file versions; basic files are about 130 MB to 1.7 GB, the stimulus images add about 1.5 GB, and the motion-corrected stack adds about 45 GB.",
+      "source": "Data Records, Data organization, paragraph 2",
+      "quote": "amounting to about 130 MB to 1.7 GB per file. Adding the stimulus frame images increased the file sizes by about 1.5 GB each [I]. Further adding the motion corrected imaging stack increased the file sizes much more, by about 45 GB per file [S].",
+      "criterion": "Sizes from the archive's asset list, files identified by the naming convention of the paper (behavior+ophys, behavior+image+ophys, obj-raw_behavior+image+ophys). Added sizes are per session, [I] minus [B] and [S] minus [I]. MB and GB can be read as decimal or binary units; reproduced when, under one, all four values are within tolerance and every session has the three versions."
+     },
+     {
+      "id": "download-33-files",
+      "statement": "The basic files of the sessions 1 to 3 that passed QC are 33 files totalling about 15 GB.",
+      "source": "Usage Notes, paragraph 1",
+      "quote": "If only the basic data files for sessions 1 to 3 that passed quality control are needed, the total download size is approximately 15 GB for 33 files in total.",
+      "criterion": "Sessions 1 to 3 are local session numbers (Supplementary Table 1, as in the code's session table); passing QC as recorded in the dataset or Table 2. Tolerance 0 on the count because it is a count. Sizes from the asset list, decimal or binary GB as in file-sizes."
      }
     ]
    }
@@ -34668,7 +34929,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-22T04:08:51+00:00",
+ "generated": "2026-10-22T05:05:31+00:00",
  "queue_generated": "2026-10-21T11:49:08+00:00",
  "queue_counts": {
   "public_dandisets": 660,
@@ -88331,7 +88592,6 @@
    "000232",
    "000233",
    "000727",
-   "000037",
    "000045",
    "000054",
    "000115",
@@ -88425,7 +88685,6 @@
    "001271",
    "001272",
    "001273",
-   "001274",
    "001276",
    "001277",
    "001285",
@@ -88503,7 +88762,6 @@
    "001893",
    "001868",
    "001521",
-   "001274",
    "001273",
    "001272",
    "001271",
@@ -88595,7 +88853,6 @@
    "000115",
    "000054",
    "000045",
-   "000037",
    "000727",
    "000233",
    "000232",
@@ -88619,10 +88876,12 @@
    "000023",
    "000034",
    "000036",
+   "000037",
    "000053",
    "000055",
    "001169",
    "001177",
+   "001274",
    "001280",
    "001282",
    "001284",
@@ -88641,20 +88900,16 @@
   },
   "hours": {
    "full": 3.7744444444444443,
-   "claims": 0.2561111111111111
+   "claims": 0.25625
   },
   "running": {
    "000036": {
     "kind": "full",
-    "hours": 2.678121328055556
+    "hours": 1.7350800425000004
    },
-   "000019": {
+   "000037": {
     "kind": "full",
-    "hours": 0.2983991058333333
-   },
-   "000034": {
-    "kind": "full",
-    "hours": 0.7067324391666666
+    "hours": 3.605357820277778
    }
   }
  },
