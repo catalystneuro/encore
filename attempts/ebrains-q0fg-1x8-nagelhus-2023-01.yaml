@@ -72,7 +72,10 @@ outcomes:
     of w a, field a, distance b (mean 34.4 cm, within tolerance). Round 1 additions. The range fails on a few cells.
     2 to 19 tuned cells (1 to 7%) have their field beyond 88.8 cm, and without them the largest distance is 80.4 to 87.9
     cm. The smallest distance is below 4.32 cm under 6 of 12 readings (1 to 4 cells). Fields joined only along edges
-    (connectivity 4, a variant) change the field count by less than 1% and meet the criterion under no reading.
+    (connectivity 4, a variant) change the field count by less than 1% and meet the criterion under no reading. Round
+    2. The Methods apply the contour function iteratively from the peak; whether that splits a region into separate fields
+    is not in the claims file and is asked in the questions file. The connectivity variant does not test it, and the
+    range tail may depend on it.
   deviations:
   - Both field readings are run, as the criterion now allows.
   - The single-cell rate maps use the method of calculateRateMap.m that the claims file now gives; the paper's code for
@@ -99,7 +102,8 @@ outcomes:
     tolerance (w b, three readings) the object-cell fraction is 0.022 to 0.032, below 0.041 +/- 0.0041, and where the
     object-cell fraction is within tolerance (w a) the object-vector fraction is 0.215. The connectivity-4 variant gives
     0.020 to 0.040 object cells, 0.118 to 0.248 object-vector cells and 2 to 73 cells without a field, with no reading
-    within tolerance on all three.
+    within tolerance on all three. Round 2. Whether the Methods' iterative contour splits fields is asked in the questions
+    file; the fractions may depend on it.
   deviations:
   - Both field readings are run, as the criterion now allows.
   - The single-cell rate maps use the method of calculateRateMap.m that the claims file now gives; the paper's code for
@@ -254,7 +258,8 @@ outcomes:
   output: claim:figs3f-ca3-changes
   notes: The answer of 2026-10-21 on rate maps (the rate per bin, unvisited bins 0, then smoothed, as calculateRateMap.m
     does) leaves one map reading in place of two. The rate-overlap readings, which the answers do not address, still
-    give different outcomes. All four spatial-correlation tests give p at most 1.6e-6. With whole-trial rates (b) no
+    give different outcomes. All four spatial-correlation tests give p at most 1.4e-6 (NO-NO'; corrected in round 2 from
+    1.6e-6). With whole-trial rates (b) no
     rate-overlap test is significant (p = 0.066 to 0.46), so the claim is reproduced; with speed-filtered rates (a) the
     OM-NO' test gives p = 0.0081, so it is partially reproduced. The file holds 341 CA3 cells, not 313; with the 120
     tetrode cells the NO-O and O-OM spatial tests are significant (p = 0.023 and 0.0059) and the other two are not.
@@ -274,6 +279,15 @@ outcomes:
     unchanged. 908 and 916 cells change between NO and NO', within 919 +/- 91.9. Under every field, ROI and rate-overlap
     reading 72 to 117 cells (0.061 to 0.098 of 1189) have an object-trace field, far above the 1% chance level (binomial
     p below 1e-32) but fewer than 0.183 +/- 0.0183. The measured values are those of field a, ROI a, rate overlap a.
+    Round 2 addition. The trace counts are 0.33 to 0.54 of the paper's 218, and a two-sided binomial test against 0.183
+    gives p at most 1.4e-16 under every reading. Fields are taken as the regions above 3 x MAD; whether the Methods'
+    iterative contour splits them is asked in the questions file, and the trace fraction may depend on it.
+  proposed:
+    outcome: not_reproduced
+    reason: The claim's main quantity, the trace fraction, is 0.061 to 0.098 under every field, ROI and rate-overlap reading,
+      0.33 to 0.54 of the paper's 218 cells, and differs from 0.183 by a binomial test (p at most 1.4e-16). Unlike fig1c,
+      the miss is far outside sampling error, and being above the 1% chance level and the NO-NO' count within tolerance
+      do not make up for it. The criterion has no partial case. The second verifier gave not_reproduced for this reason.
   deviations:
   - The ROI is the claims file's two readings, as the Methods refer to a section the paper does not contain.
   - The single-cell rate maps use the method of calculateRateMap.m that the claims file now gives; the paper's code for
@@ -288,7 +302,8 @@ outcomes:
     of the claims file still give different outcomes of the paper's test. With the Methods' variances (w b) the count
     after removal is 226 to 240 (0.190 to 0.202), binomial p = 0.47 to 1 against 0.199, so the claim holds; with the
     code's SDs (w a) it is 340 to 355 (0.286 to 0.299), p below 1e-12, a level that reading reaches before removal too
-    (331).
+    (331). The traces removed are those of figs4-object-traces, 72 to 117 cells against the paper's 218, so the test
+    removes a third to a half as many traces as the paper's; this bears on the outcome if the width readings are settled.
   deviations:
   - The single-cell rate maps use the method of calculateRateMap.m that the claims file now gives; the paper's code for
     those maps is not given.
@@ -556,7 +571,7 @@ outcomes:
   notebook: 06_words.ipynb
   output: claim:figs7e-downsampled-words
   notes: Corrected after round 1. The words are now downsampled as the criterion says, per session and distance bin,
-    keeping the c most frequent words of both trials together (c the number of distinct counts there, 5 to 16). Downsampled
+    keeping the c most frequent words of both trials together (c the number of distinct counts there, 5 to 16 under subset reading a and 5 to 18 under b). Downsampled
     words are more informative than counts in all 80 session-bin pairs, signed-rank W = 0, p = 7.9e-15, with or without
     bias subtraction and under both subset readings; medians 0.053 to 0.064 bits against 0.0007 to 0.0013 for counts,
     below all words (0.096 to 0.148). Before, each trial kept its own most frequent words, so a word kept in one trial
@@ -637,8 +652,11 @@ outcomes:
   notes: The answer of 2026-10-21 on rate maps (the rate per bin, unvisited bins 0, then smoothed, as calculateRateMap.m
     does) leaves one map reading in place of two. The outcome is unchanged. In the 14 tetrode sessions pooled and in
     the 135-cell session both Kruskal-Wallis tests across sizes give p at most 6.4e-18 under both speed readings (H =
-    528 to 587 tetrode, 84 to 93 for the 135-cell session), with the mean difference rising and the mean slope falling
-    with size.
+    528 to 587 tetrode, 84 to 93 for the 135-cell session). Over the sizes the mean difference rises and the mean slope
+    falls (rank correlation with size, and the largest size beyond the smallest), but not at every step. In the tetrode
+    sessions the full count gives a difference of 0.176 and 0.184 against 0.200 and 0.205 at 30 cells, and a slope of
+    -0.0426 and -0.0442 against -0.0466 and -0.0480. In the 135-cell session with the speed filter the slope is -0.0508
+    at 30 cells and -0.0495 at 50.
 - claim: fig6ef-least-tuned-cells
   outcome: not_reproduced
   notebook: 04_distance_tuning.ipynb
@@ -1089,6 +1107,342 @@ verifications:
     reason: Reproduced (borderline). The slope first reaches zero at 0.4 kept for both datasets, just inside 0.6 +/-
       0.2 (exactly at the edge) and inside 0.5 +/- 0.2. In figs8eh the tetrode result is averaged over 14 per-session
       curves, not pooled.
+    response: No change.
+- date: '2026-10-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: 'Round 2. The author-revise-1 run (commit 7c4cb363), with the attempt record and the six executed notebooks with their
+    conclusions and summaries, objcode.py, the claims file and the paper under paper/. The verifier did not download the data
+    or re-run anything.'
+  results:
+  - claim: cell-counts
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig1c-object-tuned-fraction
+    agrees: true
+    outcome: partially_reproduced
+    reason: Now agrees after disagreeing in round 1. The CA1 fraction is within tolerance and significant. The control count
+      of 9/219 cannot be told apart from the paper's 11/219 (binomial p = 0.64, nb01 c24); a +/-10% tolerance on 11 cells
+      is tighter than sampling noise.
+    response: No change.
+  - claim: fig1d-field-distances
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Now agrees after disagreeing in round 1. The mean (8 of 12 readings) and the coverage of all sectors hold. The
+      range fails, but only on 2 to 19 cells (nb01 c29). Remaining issue: field detection (B7) is still not the Methods''
+      contour-from-peak method. The edge-connectivity variant does not test that. The failure of the range tail of 1 to 7%
+      of cells may depend on it.'
+    response: No change of outcome. The fields are the regions above 3 x MAD, the region the contour at that level encloses,
+      as the claims file's opening comment gives them; whether the Methods' iterative contour splits or stops is not in the
+      claims file or the paper's code, so it is asked in the questions file and not applied. The notes now say the range tail
+      may depend on it. No variant of the iteration is run, as any splitting rule would be the author's.
+  - claim: fig1e-object-cells-and-object-vector-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The author changed this to my round-1 outcome. Remaining issue: the failure may depend on field detection (B7),
+      which is still not the Methods'' contour-from-peak method.'
+    response: No change of outcome. The field detection question is asked in the questions file and the notes say the fractions
+      may depend on it.
+  - claim: fig1f-orientation-coverage
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig1g-no-experience-effect
+    agrees: true
+    outcome: blocked
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig1h-cross-day-stability
+    agrees: true
+    outcome: blocked
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: figs2e-within-trial-stability
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: figs2c-no-proximodistal-effect
+    agrees: true
+    outcome: blocked
+    reason: 'I agree, as in round 1. Claims-file misreading, reported and not corrected: the claims file says the claim needs
+      the implant sites. It does not note that the Supplementary Figure 2C legend gives the order of the cell counts, so the
+      test is partly possible without them.'
+    response: No change. The question was asked after round 1 and is open in the questions file; the claims file is not the
+      author's to change.
+  - claim: figs3a-ca3-object-tuned
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree, as in round 1. Remaining issue: CA3 has 341 cells against the paper''s 313 (B3). The paper''s 313 cannot
+      be identified. The not_reproduced outcome rests on all 341 cells.'
+    response: No change. The notes already give the tetrode-only fractions and the result without CA3 session 3; which 313
+      cells the paper used cannot be told from the files.
+  - claim: fig2d-spatial-change-no-o
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig2d-rate-overlap-no-o-unchanged
+    agrees: true
+    outcome: blocked
+    reason: 'I accept the methods_underspecified block under the rule the record cites: a claim is blocked when readings the
+      claims file leaves open give different outcomes.'
+    response: No change.
+  - claim: fig2-fraction-changed-no-o
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig2d-o-om-change
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig2d-om-no-prime-change
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig2d-no-no-prime-change
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: figs3f-ca3-changes
+    agrees: true
+    outcome: blocked
+    reason: I accept the methods_underspecified block. The note's "p <= 1.6e-6" is true, but the largest printed p is 1.37e-6
+      (NO-NO'). 1.6e-8 is the NO-O value, so the bound looks miscopied. With tetrode cells only, two of the four spatial tests
+      are not significant (B3).
+    response: Corrected the bound to 1.4e-6 (NO-NO') in the notes and in the conclusion of notebook 01. The tetrode-only result
+      is already in the notes.
+  - claim: figs4-object-traces
+    agrees: false
+    outcome: not_reproduced
+    reason: I disagree and would record not_reproduced. The claim's main quantity is the trace fraction. It is 0.061 to 0.098
+      against 0.183 +/- 0.018 under every field, ROI and rate-overlap reading, less than half the paper's value (nb02 c12).
+      Being above the 1% chance level, and the NO-NO' count falling within tolerance, do not make up for that. This is not
+      like fig1c, where the miss is within sampling error. The trace fraction may also depend on field detection (B7).
+    response: 'Kept as partially_reproduced, as no outcome may change in round 2, and not_reproduced is proposed under `proposed`
+      for a third round. Added to notebook 02 a binomial test of each reading''s trace count against 0.183: the counts are
+      0.33 to 0.54 of the paper''s 218 and p is at most 1.4e-16, so the miss is far outside sampling error, as the verifier
+      says. The field detection question is asked.'
+  - claim: figs2d-traces-no-interference
+    agrees: true
+    outcome: blocked
+    reason: 'I accept the methods_underspecified block. Remaining issue: it rests on about half the paper''s trace cells (B9);
+      this matters if the width question is settled.'
+    response: No change of outcome. The notes now say the removed traces are 72 to 117 cells against the paper's 218, which
+      bears on the outcome if the width readings are settled.
+  - claim: ovs-method-extra-cells
+    agrees: true
+    outcome: blocked
+    reason: 'I accept the methods_underspecified block. Blocking is better than my round-1 "reproduced (fragile)": the pass
+      rests on an exclusion rule that the claims file does not give.'
+    response: No change.
+  - claim: fig3b-decode-presence
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig3c-bin-size
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig3d-number-of-cells
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig4b-distance-decline
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig4c-each-session-decreasing
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig4e-angle-flat
+    agrees: true
+    outcome: blocked
+    reason: I accept the methods_underspecified block under the rule the record cites.
+    response: No change.
+  - claim: fig4h-population-vector-correlation
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: figs5a-decode-no-from-no-prime
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: figs5b-fixed-distance-bins
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: figs5c-half-trial-control
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: figs5d-control-sessions
+    agrees: true
+    outcome: blocked
+    reason: Now data_missing, as I gave.
+    response: No change.
+  - claim: figs5e-shuffled-labels
+    agrees: true
+    outcome: blocked
+    reason: 'I accept the methods_underspecified block under the rule the record cites. B5 (shuffled accuracy) is resolved:
+      the caveat is now noted in nb03 c37.'
+    response: No change.
+  - claim: figs5f-random-partition
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: figs5ghi-fields-and-rates
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: figs6-behaviour-decoders-flat
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree, as in round 1. Remaining issue: the control shows the occupancy decoder''s dependence on distance appears
+      without any object (H = 25.6, p = 3.8e-5, nb03 c46). The not_reproduced outcome therefore may reflect this implementation,
+      as the record says, and not the paper''s result.'
+    response: No change. The notes already say the effect comes from the decoder as built here and the behaviour, and that
+      the failure may be the attempt's.
+  - claim: figs6hij-behaviour-matched
+    agrees: true
+    outcome: blocked
+    reason: I accept this. The third test cannot be run, so whether the whole criterion holds cannot be decided.
+    response: No change.
+  - claim: figs6k-uniform-prior
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: figs6l-sampling-thresholds
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: tables1-without-bin-1
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig5b-words-more-informative
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig5bc-words-information-falls-with-distance
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig5b-counts-uninformative
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig5e-kl-divergence
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig5-entropy
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: figs7cd-number-of-words
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: figs7e-downsampled-words
+    agrees: true
+    outcome: reproduced
+    reason: 'The corrected selection in nb06 c4 picks the top c words once, over both trials, in each session and distance
+      bin. That removes the label leak. All 80 of 80 pairs have words higher, W = 0 (c24). The note''s "c ... 5 to 16" range
+      is printed only for subset reading (a). Claims-file misreading, reported and not corrected: the criterion says "per
+      session and distance bin", but the Methods say "In a given trial, ... kept the c words with the largest frequencies".
+      The literal reading leaks the label, so the claims file''s reading is the workable one, but it departs from the paper.'
+    response: Notebook 06 now prints the range of c for both subset readings (5 to 16 under a, 5 to 18 under b), and the conclusion
+      and notes give both. The wording question was asked after round 1 and is open in the questions file.
+  - claim: fig6ab-single-cell-distance-tuning
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: figs5l-without-positively-tuned
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: figs5m-without-object-tuned
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig6c-subsets-decline
+    agrees: true
+    outcome: blocked
+    reason: I accept the methods_underspecified block under the rule the record cites. B6 is resolved by blocking, plus a
+      variant with 100 subsets per size.
+    response: No change.
+  - claim: fig6d-reorganization-grows-with-cells
+    agrees: true
+    outcome: blocked
+    reason: I accept the methods_underspecified block under the rule the record cites.
+    response: No change.
+  - claim: figs8-smaller-datasets
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree, as in round 1. The sentence "The mean difference rises and the mean slope falls with size" (nb05 c13)
+      is loose: the trends are not monotone. In the tetrode sessions the difference is 0.200 at 30 cells against 0.176 at
+      the full count. In the 135-cell session with speed filter (a), the slope is -0.0508 at 30 cells against -0.0495 at 50
+      (c12).'
+    response: 'Reworded the conclusion of notebook 05 and the notes: over the sizes the difference rises and the slope falls
+      by rank correlation and from the smallest to the largest size, but not at every step, with the two exceptions the verifier
+      gives and the tetrode slopes at 30 cells.'
+  - claim: fig6ef-least-tuned-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: fig7-single-cell-properties
+    agrees: true
+    outcome: partially_reproduced
+    reason: Now agrees after disagreeing in round 1. Three of the four correlations are within tolerance over the 1,189 cells.
+      Only spatial information misses (nb04 c17).
+    response: No change.
+  - claim: fig7-slope-variant
+    agrees: true
+    outcome: not_reproduced
+    reason: The author changed this to my round-1 outcome.
+    response: No change.
+  - claim: figs5jk-walls-no-pivot
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree, as in round 1.
+    response: No change.
+  - claim: figs8eh-least-tuned-smaller-datasets
+    agrees: true
+    outcome: reproduced
+    reason: I agree, as in round 1.
     response: No change.
 findings:
 - kind: format_error

@@ -12,7 +12,9 @@ Of the 57 claims, 30 are reproduced, 5 partially reproduced and 9 not reproduced
 of them because the readings of a method detail that the claims file does not fix give different
 outcomes. Every rate map follows the paper's calculateRateMap.m, as the claims file gives it since
 the answers of 2026-10-21. After the first verification round the figs7e downsampling was corrected
-and two outcomes changed (fig1e and fig7-slope-variant, now not reproduced). The questions and answers are in
+and two outcomes changed (fig1e and fig7-slope-variant, now not reproduced). After the second round the
+attempt proposes one change, for a third round to settle: figs4-object-traces from partially
+reproduced to not reproduced, as its trace fraction is under half the paper's. The questions and answers are in
 [`questions/ebrains-q0fg-1x8.yaml`](../../questions/ebrains-q0fg-1x8.yaml).
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
