@@ -61,8 +61,8 @@
 #    fit; PCA over conditions (columns mean-centred), the first k scores form the c x k matrix S
 #    (Results, Testing preparatory tuning in PCA-based spaces; Methods, PCA-based spaces;
 #    Supplemental Figure 2).
-# M6 Neuron selection. Neurons with at least 5 spikes/s of preparatory tuning for J-array, 10
-#    spikes/s for the single-electrode datasets (Methods, Neural recordings and datasets). For the
+# M6 Neuron selection. Neurons with more than 5 spikes/s of preparatory tuning for J-array, at
+#    least 10 spikes/s for the single-electrode datasets (Methods, Neural recordings and datasets). For the
 #    tuning correlation, also peri-movement tuning at least 1.5 times the preparatory tuning
 #    (Methods, Correlations). The measure of "tuning" is open. Readings (S1) the range, maximum
 #    minus minimum over conditions of the condition-mean rate in the epoch; (S2) the standard
@@ -113,15 +113,26 @@ claims:
   criterion: Counts from the dataset's units, conditions and trials. The trial count can be read as
     (a) all successful trials or (b) those kept by M1 (delay > 400 ms and the proto-trial
     selection); the Methods print 2155 where the Results print 2166, both within the tolerance.
+    The condition count has tolerance 0 because it is a design count, not a measurement.
     Reproduced when all three are within tolerance under one reading.
 - id: recordings-single-electrode
   statement: The single-electrode datasets hold 64, 74 and 172 single units for monkeys A, B and J,
     with means of 311, 492 and 388 trials per neuron.
   source: Results, Behavior and recordings, paragraph 1; Supplemental Experimental Procedures, Neural
     and EMG recordings
-  quote: A total of 310 single-electrode isolations (64, 74, and 172 single-unit isolations for
+  quote: High trial counts (mean trials/neuron = 311, 492, 388 and 2166 for monkey A, B, J, J-array)
+    ... A total of 310 single-electrode isolations (64, 74, and 172 single-unit isolations for
     monkeys A, B and J) were recorded from caudal PMd, surface M1 and sulcal M1.
   expected:
+  - quantity: mean trials per neuron, monkey A
+    value: 311
+    tolerance: 31.1
+  - quantity: mean trials per neuron, monkey B
+    value: 492
+    tolerance: 49.2
+  - quantity: mean trials per neuron, monkey J
+    value: 388
+    tolerance: 38.8
   - quantity: single units, monkey A
     value: 64
     tolerance: 6.4
@@ -146,9 +157,12 @@ claims:
     value: 0.72
     tolerance: 0.072
   criterion: Speed task only (monkey A or B); the paper does not name the neuron. Per neuron, the
-    tuning correlation of claim fig4abc-mean-correlation-single-electrode. Reproduced when at
-    least one speed-task neuron has r within tolerance of 0.72 and a preparatory preference up and
-    left; blocked if the dataset holds no speed-task data.
+    tuning correlation of claim fig4abc-mean-correlation-single-electrode. The paper gives no
+    measure of "prefers reaches ending up and leftwards"; the Figure 2B legend shows the near
+    distance and fast speed and shades traces by the rate 50 ms before the go cue. It is read as
+    follows. Among those 7 conditions, the one with the highest rate 50 ms before the go cue has its target
+    in the upper-left quadrant. Reproduced when at least one speed-task neuron has r within
+    tolerance of 0.72 and that preference; blocked if the dataset holds no speed-task data.
 - id: fig2ce-example-opposing-tuning
   statement: Three other speed-task neurons with clear preparatory tuning do not keep their
     preferences into the peri-movement epoch; their preparatory and peri-movement tuning are
@@ -158,10 +172,11 @@ claims:
   quote: Despite clear preparatory tuning, preferences are not maintained between the preparatory
     and peri-movement epochs (color ordering differs between epochs). ... These neurons show negative
     correlations between preparatory and peri-movement tuning.
-  criterion: Speed task only. With conditions restricted to the far distance and fast speed (the 7
-    directions, as in Figure 2C-E legend), tuning correlation as in M4 for neurons passing M6.
-    Reproduced when at least three neurons have negative correlations; blocked if the dataset holds
-    no speed-task data.
+  criterion: Speed task only, neurons passing M6, tuning correlation as in M4. The paper does not
+    say over which conditions the negative correlations of these neurons were computed. Readings
+    (F1) the 7 far, fast conditions shown in the Figure 2C-E legend; (F2) all 28 conditions, as in
+    Figure 4. Reproduced when at least three neurons have negative correlations under one reading;
+    blocked if the dataset holds no speed-task data.
 - id: fig3-maze-most-not-maintained
   statement: In the maze task some neurons keep similar tuning between the preparatory and
     peri-movement epochs, but most do not.
@@ -209,7 +224,8 @@ claims:
   source: Results, Correlations between preparatory and peri-movement tuning, paragraph 1; Figure
     4A-C
   quote: Across the four datasets the mean correlation was positive (p=0.01, p=0.01, p=0.12, p=0.03)
-    but only very modestly so (mean r = 0.21, 0.19, 0.06 and 0.13).
+    but only very modestly so (mean r = 0.21, 0.19, 0.06 and 0.13). Non-parametric correlations were
+    similarly modest (mean Spearman's r = 0.20, 0.20, 0.06 and 0.11).
   statistics:
   - about: mean tuning correlation against zero, monkey A
     statistic: mean r = 0.21
@@ -230,10 +246,39 @@ claims:
   - quantity: mean tuning correlation, monkey J
     value: 0.06
     tolerance: 0.006
+  - quantity: mean Spearman tuning correlation, monkey A
+    value: 0.20
+    tolerance: 0.020
+  - quantity: mean Spearman tuning correlation, monkey B
+    value: 0.20
+    tolerance: 0.020
+  - quantity: mean Spearman tuning correlation, monkey J
+    value: 0.06
+    tolerance: 0.006
   criterion: As fig4d-mean-correlation-jarray, with the 10 spikes/s preparatory threshold, the speed
     task peri-movement window as in M4, and for monkey J the four 27-condition sets analysed as
     separate datasets (Methods, Task design). Reproduced per dataset the archive holds; blocked for
     datasets it does not hold.
+- id: fig4-no-separate-populations
+  statement: The distributions of tuning correlations give little evidence (except perhaps weakly
+    for monkey B) of one population with concordant tuning (r near 1) and another with opposing
+    tuning (r near -1); most neurons have weakly correlated tuning, with a broad range of
+    correlations centred near zero.
+  source: Results, Correlations between preparatory and peri-movement tuning, paragraphs 3 and 4;
+    Figure 4A-D
+  quote: Even more disconcertingly, different neurons show markedly different relationships between
+    preparatory and peri-movement activity, with a broad range of correlations centered near zero.
+    ... Yet there is little evidence in Figure 4 (except perhaps weakly in panel B ) for one
+    population of concordant tuning ( r ≈ 1) and another of opposing tuning ( r ≈ -1). Instead,
+    most neurons have weakly correlated tuning.
+  depends_on:
+  - fig4d-mean-correlation-jarray
+  criterion: Per-neuron correlations from fig4d (and fig4abc for datasets the archive holds). A
+    claim of absence judged by eye in the paper, which names no test and no threshold. Readings
+    (U1) Hartigan's dip test of unimodality gives p >= 0.05; (U2) more neurons have |r| < 0.5 than
+    have |r| >= 0.5. Reproduced when both hold, not reproduced when neither holds, and
+    methods_underspecified when they disagree; the dip statistic and the share of |r| >= 0.8 are
+    reported either way.
 - id: fig4e-correlation-time-course
   statement: The correlation between preparatory tuning and peri-movement tuning measured at single
     time points begins to decline about 200 ms before movement onset and is near zero by movement
@@ -310,10 +355,12 @@ claims:
   - fig6-peri-movement-space-best
   criterion: Performances from fig6-peri-movement-space-best. Comparisons are each task space against
     the peri-movement space at the task space's dimensionality, and the kinematic space against the
-    peri-movement space at each k. "Almost always" has no threshold in the paper; it is read as all
+    peri-movement space at each k. "Almost always" has no threshold in the paper. Readings (L1) all
     comparisons but at most one, the paper naming one class of exception (3-D spaces on the speed
-    task). Reproduced on J-array when the peri-movement space wins all comparisons but at most one
-    and the 3-D endpoints + maximum speed space falls below the 3-D peri-movement space.
+    task); (L2) at least 90% of comparisons. "Did not perform well" for the 3-D endpoints + maximum
+    speed space is read as below the 3-D peri-movement space. Reproduced on J-array when that
+    space falls below the 3-D peri-movement space and the peri-movement space wins under L1 and
+    L2; the outcome is methods_underspecified if L1 and L2 disagree.
 - id: fig6-performance-vs-dimensionality
   statement: PD performance in PCA-based spaces generally improves with dimensionality, peaks in a
     middle range, and declines beyond about 10 dimensions through over-fitting.
@@ -345,8 +392,8 @@ claims:
 - id: fig6e-summary-across-datasets
   statement: Averaged over monkeys A, B and J (J-array excluded, no EMG), PD performance is highest
     in the peri-movement space at every dimensionality limit, the advantage grows with
-    dimensionality, and task spaces are outperformed by the kinematic and EMG spaces, which are in
-    turn outperformed by the peri-movement space.
+    dimensionality, and task spaces are largely outperformed by the kinematic and EMG spaces, which
+    are in turn outperformed by the peri-movement space.
   source: Results, PD performance in a variety of spaces, paragraph 5; Figure 6E and legend
   quote: Performance (averaged across neurons) was highest when the PD employed the space based on
     peri-movement neural activity. This performance differential increased at higher
@@ -362,8 +409,12 @@ claims:
     spaces defined for all three datasets (endpoints + maximum speed included, targets + instructed
     speed not); performance averaged over neurons, SE over neurons. The test behind the asterisks is
     not named; readings (Q1) paired t-test over neurons; (Q2) Wilcoxon signed-rank over neurons.
-    Reproduced when the peri-movement space is best under all three limits and no other space is
-    significantly better; blocked if the archive lacks those datasets.
+    The paper gives no threshold for "increased" or "largely"; they are read as the gap between
+    the peri-movement space and the next best space being larger at the 12-dimension limit than
+    at the 3-dimension limit, and the kinematic and EMG spaces each exceeding more than half of
+    the task spaces at the 12-dimension limit. Reproduced when the peri-movement space is best
+    under all three limits, no other space is significantly better, and both readings hold;
+    blocked if the archive lacks those datasets.
 - id: fig7a-shuffled-space-poor
   statement: A control space built from peri-movement responses in which each neuron's peri-movement
     pattern was inverted on a random half of the conditions performs poorly, so the trailing end of
@@ -494,3 +545,23 @@ claims:
     25 x 2t matrix of peri-movement activity, k = 2, PD fit of unit 1's initial rates by M7 without
     cross-validation and with it. Reproduced when the fit is exact to numerical precision (R squared
     and leave-one-out performance above 0.999) under every reading.
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header M6, J-array threshold is more than 5 spikes/s and the single-electrode one at least 10 spikes/s, as the Methods word them.
+  - recordings-jarray, criterion gives the reason for the zero tolerance on the condition count.
+  - recordings-single-electrode, the statement names mean trial counts of 311, 492 and 388 but had no expected values or quote for them; added both from Results, Behavior and recordings.
+  - fig2b-example-concordant-tuning, the up-and-left preference had no measure; named the reading from the Figure 2B legend (near/fast conditions, rate 50 ms before the go cue) and said it is a reading.
+  - fig2ce-example-opposing-tuning, the paper does not say over which conditions these neurons' correlations were taken; added the 28-condition reading (F2) beside the 7-condition one (F1).
+  - fig4abc-mean-correlation-single-electrode, the statement gives mean Spearman correlations that had no quote or expected values; quote extended and three expected values added.
+  - fig6-each-dimensionality, the threshold for "almost always" was a single choice by the writer; added a second reading (L2) and the rule for disagreement.
+  - fig6e-summary-across-datasets, the statement said task spaces are outperformed where the paper says "largely outcompeted"; restored "largely". The criterion did not test the growing differential or the task versus kinematic/EMG ordering; added readings for both.
+  - Added claim fig4-no-separate-populations, a Results finding (no concordant and opposing populations, correlations centred near zero) that had no claim. The paper names no test; both readings are the checker's and are named as such.
+  - Open, fig3-maze-most-not-maintained uses r >= 0.72 as "similar tuning"; the paper sets no threshold, and 0.72 is only the value it calls quite high.
+  - Open, header M9 sets the end of reach by a 5% speed threshold when the dataset marks none; the paper does not define the end of reach and this may shift endpoint, halfpoint and segment spaces.
+  - Open, fig7c-anterior-posterior-performance, the dimensionality of the upper-limit space used to normalise and the meaning of "within the spread" of random subdivisions are not fixed by the paper.
+  - Open, fig8-model-weak-correlation tests the 0.08 correlation but not the statement's second part (a given preparatory rate leading to opposing patterns), which the paper shows only by example.
+  - Open, several criteria (fig4e, suppfig1, fig6-performance-vs-dimensionality, fig7a) turn qualitative words into thresholds the paper does not give; each is named as a reading in its criterion.
