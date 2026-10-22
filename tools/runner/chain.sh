@@ -13,7 +13,7 @@
 # committed since the attempt began ($RUNNER_STATE/attempt-<dataset>), on its branch or already on main,
 # are skipped, and a run of the next role that is still going is waited for. When a new attempt starts, a
 # branch already merged into main belongs to an earlier attempt and is deleted first, so the attempt
-# starts from main; a branch merged while its attempt is going is kept. A run that fails on the subscription's session limit is retried after
+# starts from main; a branch merged while its attempt is going is kept. A run that fails on the subscription's session or weekly limit is retried after
 # 30 minutes from where it started; any other failure stops the chain.
 #
 # Each role runs first on the unverified account (RUNNER_ACCOUNT=verified skips it). A run that
@@ -89,8 +89,9 @@ run_role(){ local role=$1 tries=0 start before id st runlog acct
       log "$role: waiting for run $id, already going"
     else
       before=${id:-}
-      # The recorder reads no paper and writes only the README row and the pilot notes.
-      acct=$account; [ "$role" = recorder ] && acct=verified
+      # The recorder reads no paper, so it starts on the unverified account even for a dataset whose paper
+      # was flagged; only a flag on the recorder's own run moves it to the verified one.
+      acct=$account; [ "$role" = recorder ] && acct=${recorder_account:-${RUNNER_ACCOUNT:-unverified}}
       if [ "$role" = author ] && [ -n "$VERSION" ]; then
         gh workflow run attempt.yml -f dataset="$d" -f role="$role" -f version="$VERSION" -f account="$acct" || { sleep 60; continue; }
       else
@@ -114,13 +115,13 @@ run_role(){ local role=$1 tries=0 start before id st runlog acct
         touch "$STATE/flagged-$d"; log "STOPPED at $role: $last_why"; return 1
       fi
       log "$role: $why; on the verified account from here"
-      account=verified; touch "$STATE/verified-$d"
+      account=verified; recorder_account=verified; touch "$STATE/verified-$d"
       continue
     fi
-    if echo "$runlog" | grep -q "session limit" && [ $tries -lt 100 ]; then
+    if echo "$runlog" | grep -qE "session limit|weekly limit" && [ $tries -lt 100 ]; then
       tries=$((tries+1))
-      reset_branch "$start" || { last_why="could not reset attempt/$d after the session limit"; log "STOPPED: $last_why"; return 1; }
-      log "$role hit the session limit; branch reset, retry $tries in 30 minutes"
+      reset_branch "$start" || { last_why="could not reset attempt/$d after the usage limit"; log "STOPPED: $last_why"; return 1; }
+      log "$role hit a usage limit; branch reset, retry $tries in 30 minutes"
       sleep 1800; continue
     fi
     last_why="the run of $role failed"; log "STOPPED at $role (run $id)"; return 1
