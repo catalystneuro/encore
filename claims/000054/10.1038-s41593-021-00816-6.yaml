@@ -1,0 +1,738 @@
+# Claims for Plitt & Giocomo (2021), Nature Neuroscience 24, 705-714, on dandiset 000054.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-22,
+# protocol pilot-10 as stated in docs/protocol.md (reader, steps 1 to 4).
+#
+# Text read: the NIH author manuscript in PubMed Central (PMC8893323, NIHMS1780011), full text
+# with Results, Discussion, Methods, the main and Extended Data figure legends, and the
+# supplementary information PDF (Supplementary Figs. 1 to 4, the simulations of earlier morph
+# studies). It is the accepted manuscript, not the version of record. No main-text PDF was
+# available, so no figure was read from an image; claims shown only in a figure are read from
+# legends and Results. The Supplementary Video and the Reporting Summary were not read.
+#
+# Code read: https://github.com/GiocomoLab/PlittGiocomo_2021 (linked under Code availability),
+# at two commits. dca5a57 (2020-10-28) is the last commit before publication; its analysis is in
+# notebooks/*.ipynb (PlotAllPlaceCells, PlotPopSimMats, SFReg, DataLLR, NullModels4GrumpyPantsReviewer,
+# SingleCellSimMats, SingleCellNMF, KWTA_EmpiricalPrior, TheoreticalSimMats) and morph_analyses/*.py;
+# its main_figs and extended_data_figs notebooks are empty. 9230b0a (2026-04-16, HEAD) is a refactor
+# under src/morph_analyses and notebooks/main_figs that reads the NWB files; its README says it holds
+# data and cells not in the paper and that place cells were recomputed with an updated shuffle. Where
+# the Methods are silent the 2020 code is followed and the 2026 code is named when it differs. Where
+# the Methods and the code disagree, the Methods give the main reading and the code a variant.
+#
+# Data the paper used. 16 mice (9 male, 7 female) with GCaMP in dorsal CA1, head-fixed, running a
+# 450 cm virtual linear track with a reward cue at a random place between 250 and 400 cm, licking for
+# sugar water. Rare morph mice R1 to R6 and frequent morph mice F1 to F6 (n = 6 each); four more
+# frequent morph mice FD1 to FD4 also had to report S above or below 0.5 by where they licked
+# (Extended Data Fig. 10 only). On each trial a shared morph value S-tilde (0, 0.25, 0.5, 0.75 or 1)
+# set the wall gratings, tower colours and background, each with its own uniform jitter in -0.1 to
+# 0.1; the trial's morph value S is S-tilde plus the wall jitter (-0.1 to 1.1), and f_h, the
+# horizontal wall frequency, is a monotonic function of S. Rare morph mice saw only S-tilde 0 and 1
+# except during imaging on sessions 3 and 8 to N (half of imaged trials intermediate); frequent
+# morph mice saw all five equally often in every session. One session per day; imaging on sessions
+# 1, 3 and 8 to N, 60 to 120 imaged trials per session, two-photon at 15.46 Hz, 1 x 1 mm field,
+# 161 to 3,657 Suite2P cells per session, analysed as deconvolved activity rate. Analyses use
+# sessions 8 to N (24 rare morph and 21 frequent morph sessions, Fig. 3c,d; 45 in all), with
+# session 3 in Extended Data Fig. 9. Measured variables are the activity of each cell, VR
+# position, speed, licks, rewards (omitted on 20% of trials in some sessions), reward location,
+# S-tilde and the three jitters. The dandiset description says rare morph mice are labelled RX,
+# frequent morph FX and the decision mice FDX.
+#
+# Common method, used by the criteria below (cited as M1 to M12).
+# M1 Sessions. Sessions 8 and later of each mouse (Results, Prior experience..., paragraph 1). The
+#    paper counts 24 rare and 21 frequent sessions (Fig. 3c,d legend), but Fig. 4e says n = 19
+#    frequent sessions; the 2020 code's own session sets hold 23 to 26 rare sessions, and its
+#    Extended Data Fig. 4a test ran on 47 sessions (PlotAllPlaceCells, printed len 47). The 2026
+#    code lists rare 25 and frequent 21 (mouse_metadata.py). The attempt uses every session 8 to N
+#    the dataset holds and reports the counts.
+# M2 Signal. The deconvolved activity rate of every cell (Methods, Two-photon imaging, "For all
+#    analyses"). The 2020 code uses the raw Suite2P spks for the trial-matrix analyses (similarity,
+#    SF, Q) and spks divided by each cell's 95th percentile for place cells; the 2026 code uses spks
+#    divided by the 99th percentile (sess.py). Main reading raw deconvolved rate; the 2026
+#    normalisation is a variant, shown for the population analyses (a per-cell scale changes
+#    population cosine similarity, not spatial information).
+# M3 Position bins. 10 cm bins from 0 to 450 cm, 45 bins (Methods, Place cell identification). Not
+#    in the Methods, settled by the 2020 code (utilities.make_pos_bin_trial_matrices, speed_thr=2):
+#    timepoints with speed below 2 cm/s are left out of the trial matrices. For place cells the code
+#    is unclear (the 2020 call passes no speed but the arrays were masked in place before; the 2026
+#    call uses none), so place-cell claims run both (a) speed below 2 cm/s excluded and (b) no
+#    speed exclusion.
+# M4 Trial groups. Trials are grouped by S-tilde; S (S-tilde plus wall jitter) and f_h are used for
+#    the posterior analyses (Methods, Morphed environments).
+# M5 Smoothing. Single-trial rate maps smoothed along position with a "20-cm (2-spatial bin)"
+#    Gaussian (Methods, Single-cell and Place cell similarity matrices; the population matrix A is
+#    built from these). Read as a Gaussian of s.d. 2 bins along position, as the code applies it for
+#    the SF (utilities.similarity_fraction, gaussian_filter1d sigma 2). The 2020 code does not
+#    smooth for Fig. 2e-h and Fig. 3 (variant).
+# M6 Stimulus axis. f_h from S by the code's transform (UnityTransforms.py: frequency 2.5S +
+#    3.5(1-S), angle 60S + 10(1-S) degrees, xfreq = |f 1500/120 (cos(a + pi/4) - sin(a + pi/4))|).
+#    The code works in a rescaled unit wallmorphx, linear in f_h, 1 unit = 27.42 f_h, on a grid of
+#    1000 points from -0.3 to 1.3 units (f_h 0.06 to 43.9); this grid is followed.
+# M7 Priors. Per mouse, the normalised Gaussian-smoothed histogram of f_h of every trial the mouse
+#    ran before session 8, imaged or not (Methods, Probabilistic inference; Fig. 1e "at the beginning
+#    of session 8"). The kernel width is not in the Methods; the code uses exp(-d^2/0.1^2) in units
+#    (s.d. 1.94 f_h). The group prior is the mean of the mouse priors, renormalised (Methods). Code
+#    variants, shown and not deciding: the 2020 code keeps only the last mouse's prior
+#    (first_prior_post, prior = _prior.mean(axis=0)); the 2026 code takes sessions within 8 calendar
+#    days of the first (empirical_priors.py). The trials of sessions 1 to 7 and the non-imaged trials
+#    of imaging days are needed; the paper says its data are in DANDI; the 2026 code downloads extra
+#    VR data from figshare article 31974756 (notebooks/01_DOWNLOAD_DATASETS.ipynb, no version given).
+# M8 Likelihood and posterior. Gaussian centred at f_h with variance 8.23 (Methods); posterior
+#    proportional to likelihood times group prior, normalised over f_h for each observed f_h; MAP is
+#    its argmax. The code disagrees: it uses exp(-d^2/sigma^2) with sigma 0.3 units (8.23 f_h, s.d.
+#    5.82 f_h; 2026 code, 2020 null models), and 0.4 units (s.d. 7.76 f_h) for the 2020 posteriors
+#    behind Fig. 6. Main reading the Methods (s.d. 2.87 f_h); the two code widths are variants.
+# M9 SF. Whole-trial SF from all cells of the session: the smoothed trial vector (positions x
+#    cells), its cosine similarity to the mean S-tilde = 0 and S-tilde = 1 vectors, with the trial
+#    left out of its own centroid; SF = cos1 / (cos0 + cos1) (Methods, Similarity fraction; code as
+#    above). Position-wise SF uses one position bin (code rt_similarity_fraction, same smoothing).
+# M10 Q. Per session, SF mapped affinely so that median SF of S-tilde = 0 trials goes to the mean MAP
+#    of those trials (10.86 f_h, mean of 11.08 and 10.64) and of S-tilde = 1 trials to 37.715 f_h
+#    (mean of 38.13 and 37.30) (Methods); clipped to the grid (code). Q is the sum over trials of a
+#    2D Gaussian at (f-hat_h, transformed SF), normalised over f_h for each f-hat_h; width not in the
+#    Methods, the code uses exp(-d^2/0.1^2) in units on both axes (SFReg; similarity_fraction.py).
+# M11 Delta D_KL. Mean over f-hat_h of D_KL(P_rare || Q) - D_KL(P_freq || Q) (Methods), over grid
+#    rows with f-hat_h from 0.1 to 1.1 units (11.0 to 38.5 f_h) and in bits, as in the code. A grid
+#    point where Q is zero and P is not is left out (a standard choice; it is reported).
+# M12 Mouse permutation test. Per-mouse value (mean over sessions), difference of the rare and
+#    frequent across-mouse means, against the same difference for every one of the 923 other ways
+#    to assign 6 of the 12 mice to each group (Methods, Place cell similarity matrices). "P < 0.0011"
+#    is read as the observed difference lying outside the range of all 923 (the code's min and max);
+#    "P < 0.05, two-sided" as outside their 2.5 to 97.5 percentiles (code).
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000054"
+paper: doi:10.1038/s41593-021-00816-6
+claims:
+- id: cells-per-session
+  statement: Each imaging session recorded between 161 and 3,657 putative CA1 pyramidal cells.
+  source: Results, Two-photon imaging of CA1 cells in morphed VR environments, paragraph 1; Methods,
+    Two-photon imaging; Extended Data Fig. 1a,b
+  quote: In each session, we were able to simultaneously image up to several thousands (range of
+    161–3,657) of putative CA1 pyramidal cells
+  expected:
+  - quantity: fewest cells in a session
+    value: 161
+    tolerance: 16.1
+  - quantity: most cells in a session
+    value: 3657
+    tolerance: 365.7
+  criterion: Count of cells (Suite2P regions kept as cells) per imaging session, over all imaging
+    sessions of R, F and FD mice (Methods, Two-photon imaging). Reproduced when the minimum and
+    maximum fall within the range 161 to 3,657 widened by 10% of each bound.
+- id: session-and-trial-counts
+  statement: The analyses of sessions 8 to N use 24 rare morph and 21 frequent morph sessions,
+    holding 2,610 and 1,986 trials; the four decision mice contribute 2,460 trials.
+  source: Figure 3c,d legend; Figure 6b,c legend; Extended Data Fig. 10g legend
+  inferred: Counts read from three legends (Fig. 3c,d "n = 24 sessions", "n = 21 sessions"; Fig. 6b
+    "n = 2,610 trials"; Fig. 6c "n = 1,986 trials"; Extended Data Fig. 10g "N = 2,460 trials"); no
+    sentence states them together. Fig. 4e gives 19 frequent sessions, in conflict with 21.
+  expected:
+  - quantity: rare morph sessions 8 to N
+    value: 24
+    tolerance: 2.4
+  - quantity: frequent morph sessions 8 to N
+    value: 21
+    tolerance: 2.1
+  - quantity: rare morph trials, sessions 8 to N
+    value: 2610
+    tolerance: 261
+  - quantity: frequent morph trials, sessions 8 to N
+    value: 1986
+    tolerance: 198.6
+  - quantity: decision mice trials
+    value: 2460
+    tolerance: 246
+  criterion: Sessions 8 and later per mouse (M1); trials are all imaged trials of those sessions.
+    For the decision mice the paper does not say which sessions; read as (a) every imaged session
+    and (b) sessions 8 and later. Reproduced when every count is within tolerance under a reading.
+- id: training-intermediate-fraction
+  statement: Before session 8, rare morph mice had fewer than 4% of trials with intermediate morph
+    values, while frequent morph mice had 60%.
+  source: Results, Two-photon imaging of CA1 cells in morphed VR environments, paragraph 4; Figure
+    1d,e
+  quote: mice experienced very few trials with intermediate morph values (shared S ~ = 0.25 − 0.75 )
+    during the first 7 training sessions (<4% of trials with intermediate morph values before session
+    8 ... mice were frequently exposed to trials with intermediate morph values (60% of trials with
+    intermediate morph values before session 8
+  expected:
+  - quantity: frequent morph fraction of intermediate trials before session 8
+    value: 0.6
+    tolerance: 0.06
+  criterion: Per mouse, the fraction of all trials run in sessions 1 to 7 (imaged and not, M7) with
+    S-tilde 0.25, 0.5 or 0.75. The paper does not say whether the fraction is pooled over mice or
+    per mouse; readings (a) pooled over trials of the group, (b) every mouse. Reproduced when, under
+    a reading, the rare morph fraction is below 4% and the frequent morph fraction is within 0.06
+    of 60%.
+- id: place-cell-fractions
+  statement: Place cells tiled the track in both conditions; 15,829 rare morph place cells (43% of
+    recorded cells; 23% S-tilde = 0 and 21% S-tilde = 1 place cells) and 8,933 frequent morph place
+    cells (30%; 11% and 10%).
+  source: Results, Prior experience of stimulus frequency determines CA1 place cell remapping,
+    paragraph 1
+  quote: rare = 15,829 place cells across all S ~ values, 43% of recorded population, 23% of cells S
+    ~ = 0 place cells, 21% of cells S ~ = 1 place cells; frequent = 8,933 place cells across all S ~
+    values, 30% of recorded population, 11% of cells S ~ = 0 place cells, 10% of cells S ~ = 1 place
+    cells
+  expected:
+  - quantity: rare morph place cells, any S-tilde
+    value: 15829
+    tolerance: 1582.9
+  - quantity: rare morph fraction place cells, any S-tilde
+    value: 0.43
+    tolerance: 0.043
+  - quantity: rare morph fraction S-tilde = 0 place cells
+    value: 0.23
+    tolerance: 0.023
+  - quantity: rare morph fraction S-tilde = 1 place cells
+    value: 0.21
+    tolerance: 0.021
+  - quantity: frequent morph place cells, any S-tilde
+    value: 8933
+    tolerance: 893.3
+  - quantity: frequent morph fraction place cells, any S-tilde
+    value: 0.30
+    tolerance: 0.03
+  - quantity: frequent morph fraction S-tilde = 0 place cells
+    value: 0.11
+    tolerance: 0.011
+  - quantity: frequent morph fraction S-tilde = 1 place cells
+    value: 0.10
+    tolerance: 0.01
+  criterion: Methods, Place cell identification. Per session and separately for each S-tilde
+    value, Skaggs spatial information of each cell over the 45 bins (M3) from the trial-averaged
+    rate map and the occupancy of those trials; the code subtracts the global minimum of the map and
+    adds 0.001 before the log (PlaceCellAnalysis.spatial_info), followed. Null from 1,000 shuffles,
+    each circularly shifting the activity against position within every trial by a uniform random
+    amount (utilities.make_pos_bin_trial_matrices, perm=True); a place cell has p = fraction of
+    shuffles with SI at least the real SI at most 0.05. A cell is a place cell "across all S-tilde"
+    if it is one for any S-tilde. Sessions 8 to N (M1); signal M2. Open details, (1) speed
+    exclusion (M3 readings a and b); (2) the denominator, read as (a) all cells of the condition's
+    sessions pooled, (b) the mean of per-session fractions. Reproduced when all eight values are
+    within tolerance under one combination; partially reproduced when the counts or the fractions
+    alone are.
+  depends_on:
+  - session-and-trial-counts
+- id: edf4a-fewer-place-cells-frequent
+  statement: A smaller proportion of recorded cells were place cells in the frequent morph than in
+    the rare morph condition.
+  source: Results, Prior experience of stimulus frequency determines CA1 place cell remapping,
+    paragraph 1; Extended Data Fig. 4a
+  quote: The proportion of recorded cells that were classified as place cells was smaller in the
+    frequent morph compared to the rare morph condition
+  criterion: The place cells of place-cell-fractions, under each of its readings. The paper reports
+    no test. Reproduced when the frequent morph fraction (any S-tilde, and for S-tilde = 0 and = 1)
+    is below the rare morph fraction under every reading; the per-mouse fractions are shown.
+  depends_on:
+  - place-cell-fractions
+- id: edf4a-overlap-above-chance
+  statement: The fraction of cells that are place cells in both S-tilde = 0 and S-tilde = 1 trials
+    (6.07% rare, 1.98% frequent) slightly exceeds the overlap expected of independent populations
+    (4.78% and 1.06%), so the two extreme maps are largely independent (global remapping).
+  source: Results, Prior experience of stimulus frequency determines CA1 place cell remapping,
+    paragraph 2; Extended Data Fig. 4a
+  quote: Specifically, 6.07% and 1.98% of recorded cells had significant spatial information in both
+    environments for rare morph and frequent morph sessions, respectively (chance 4.78% and 1.06%,
+    respectively; one-sample two-sided t -test of actual minus chance overlap, t =−4.87, P =
+    1.37×10 −5 , N = 45 sessions pooled across all mice)
+  statistics:
+  - test: one-sample two-sided t-test of actual minus chance overlap
+    statistic: t = -4.87
+    p: 1.37e-5
+    n: 45 sessions pooled across all mice
+  expected:
+  - quantity: rare morph fraction of cells place cells in both
+    value: 0.0607
+    tolerance: 0.00607
+  - quantity: frequent morph fraction of cells place cells in both
+    value: 0.0198
+    tolerance: 0.00198
+  - quantity: rare morph chance overlap
+    value: 0.0478
+    tolerance: 0.00478
+  - quantity: frequent morph chance overlap
+    value: 0.0106
+    tolerance: 0.00106
+  criterion: Place cells as in place-cell-fractions. Per session, actual overlap is the fraction of
+    all cells that are place cells for both S-tilde = 0 and = 1; chance is the product of the two
+    fractions (Results; code PlotAllPlaceCells, randovlp and actlovlp). The group values in the
+    code are pooled; read as (a) pooled over cells and (b) the mean over sessions. Test, as the
+    code runs it, scipy ttest_1samp of chance minus actual over all sessions of both groups (the
+    order that gives the paper's negative t). Reproduced when the test gives p < 0.05 with actual
+    above chance and the four values are within tolerance under one reading; partially reproduced
+    when only the test holds. The 2020 code ran it on 47 sessions; the attempt reports its count.
+  depends_on:
+  - place-cell-fractions
+- id: edf4bc-overlap-cells-at-ends-and-reward
+  statement: Cells with place fields in both extreme environments (2,219 rare, 594 frequent)
+    tended to cluster at the end points of the track and in the reward zone.
+  source: Results, Prior experience of stimulus frequency determines CA1 place cell remapping,
+    paragraph 2; Extended Data Fig. 4b,c
+  quote: Cells with place fields in both extreme environments tended to cluster at the end points of
+    the track and the reward zone
+  expected:
+  - quantity: rare morph cells place cells in both S-tilde = 0 and = 1
+    value: 2219
+    tolerance: 221.9
+  - quantity: frequent morph cells place cells in both
+    value: 594
+    tolerance: 59.4
+  criterion: Cells of edf4a-overlap-above-chance that are place cells in both. Location is the
+    position bin of peak trial-averaged activity in S-tilde = 0 trials and in S-tilde = 1 trials
+    (Extended Data Fig. 4b,c). The paper shows this only as scatter plots; it gives no region or
+    test. The reward zone is 250 to 400 cm (Methods, Morphed environments); "end points" is read as
+    (a) the first and last bin and (b) the first and last 50 cm. The reference is (a) the share of
+    the track those regions cover and (b) the peak locations of all S-tilde = 0 place cells.
+    Reproduced when, in both conditions, the share of overlap cells with peaks in the end points or
+    reward zone exceeds the reference under every combination of readings; the counts are judged by
+    their tolerances.
+  depends_on:
+  - edf4a-overlap-above-chance
+- id: fig2eh-place-cell-similarity-differs
+  statement: Rare morph place cells keep their map up to a threshold morph value (S about 0.25 to
+    0.5) and then switch coherently, while frequent morph place cells change gradually; the
+    difference shows in the place-cell similarity matrices across S-tilde values.
+  source: Results, Prior experience of stimulus frequency determines CA1 place cell remapping,
+    paragraph 3; Figure 2e-h
+  quote: In the rare morph condition, place cells maintained their representation until a threshold
+    morph value ( S ≈ 0.25–0.50) and then coherently switched to a different representation ... This
+    difference between conditions was also apparent in the normalized place cell population
+    similarity matrices ( P < 0.0011, two-sided permutation test using animal identities (IDs), n =
+    12 mice)
+  statistics:
+  - about: z-scored place cell similarity matrices, rare minus frequent (Fig. 2h)
+    test: two-sided permutation test using animal identities
+    p: 0.0011
+    p_relation: "<"
+    n: 12 mice
+  - about: raw place cell similarity matrices, rare minus frequent (Fig. 2g)
+    test: two-sided permutation test of mice across conditions
+    p: 0.05
+    p_relation: "<"
+    n: 12 mice
+  criterion: Methods, Place cell similarity matrices. Cells that are place cells for any S-tilde
+    (place-cell-fractions), pooled over sessions 8 to N and mice of a condition. Per cell, the five
+    trial-averaged rate maps (one per S-tilde, smoothed per M5), rows divided by their l2 norm, give
+    a 5 x 5 cosine matrix; matrices are averaged over the cells of a condition and subtracted (rare
+    minus frequent). For the z-scored version each cell's matrix is z-scored over its off-diagonal
+    entries (Methods; the 2020 code z-scores jointly over all cells of a session, a variant).
+    Mouse permutation test M12 on each entry, all cells of a mouse moving together, with the 6 rare
+    and 6 frequent mice of the paper (the 2020 code counts R6 as frequent, mi<5, a variant).
+    Reproduced when at least one off-diagonal entry of the z-scored difference lies outside the
+    range of the 923 permuted differences, and at least one entry of the raw difference lies
+    outside their 2.5 to 97.5 percentiles. The entries that do, with their signs, are reported.
+  depends_on:
+  - place-cell-fractions
+- id: edf5-umap-rare-frequent-separable
+  statement: In a nonlinear embedding (UMAP) of the morph-by-position activity of task-modulated
+    cells, cells from rare morph and frequent morph mice can be told apart.
+  source: Results, Prior experience of stimulus frequency determines CA1 place cell remapping,
+    paragraph 4; Extended Data Fig. 5c
+  quote: Rare and frequent morph cells were also separable using this approach.
+  criterion: Methods, UMAP for dimensionality reduction. Cells of sessions 8 to N kept when the
+    Euclidean distance between their mean S-tilde = 0 and S-tilde = 1 rate maps exceeds 99.9% of
+    1,000 shuffles of the S-tilde labels of those trials; maps binned by S into ten bins and
+    flattened (450 values per cell); UMAP (n_neighbors 100, correlation, min_dist 0.1, 3 dimensions;
+    the code's min_dist 0.01 is a variant); DBSCAN into two manifolds (the code's min_samples 200,
+    default eps), points outside both dropped; k-means with k = 10 in each; per cluster a new
+    10-dimensional UMAP (n_neighbors 20, min_dist 0.1, correlation); logistic regression with
+    ridge penalty and balanced class weights (code default C = 1, 10-fold cross-validation,
+    permutation_test_score) classifies rare against frequent cells; significant when accuracy
+    exceeds all 100 label shuffles. The paper does not say how many clusters make the two
+    "separable"; readings (a) most of the 20 clusters significant, (b) at least one. UMAP and
+    k-means seeds are a standard choice. The outcome is the one both readings give.
+- id: edf6-nmf-confirms-remapping
+  statement: Non-negative matrix factorization of single-cell trial-by-trial similarity matrices
+    confirms discrete remapping in rare morph sessions and gradual remapping in frequent morph
+    sessions.
+  source: Results, Prior experience of stimulus frequency determines CA1 place cell remapping,
+    paragraph 4; Extended Data Fig. 6
+  quote: These findings were also confirmed using a second unsupervised approach ... non-negative
+    matrix factorization
+  criterion: Extended Data Fig. 6a legend. Per session 8 to N, each cell's trial-by-trial cosine
+    similarity matrix (Methods, Single-cell trial-by-trial similarity matrices; maps smoothed per
+    M5), upper triangle flattened, stacked over cells, factorised with rank 3; each factor reshaped
+    into a trial-by-trial prototype and sorted by S. The paper judges the factors by eye. Read as
+    follows, from the paper's description of discrete and gradual remapping (Results, paragraph
+    3) and its block-diagonal structure (Results, Population similarity analyses); for each
+    factor, average its prototype over S-tilde blocks (5 x 5). Reproduced when, in most rare
+    morph sessions, some factor's block matrix is high for the S-tilde 0 and 0.25 pairs and low for
+    0.25 against 0.75 and 1 (or the mirror image at the other end), with no such factor for the
+    intermediate blocks, and when in most frequent morph sessions no factor shows that step. The
+    2020 code bins all sessions of a mouse into ten S bins with ranks 2 and 3 (SingleCellNMF), a
+    variant.
+- id: fig3ab-block-versus-gradual-similarity
+  statement: Single-session population trial-by-trial similarity matrices show two blocks in the
+    rare morph condition and a gradual transition between the extremes in the frequent morph
+    condition.
+  source: Results, Population similarity analyses reveal distinct remapping patterns visible at the
+    level of single trials, paragraphs 1 and 2; Figure 3a,b; Extended Data Figs. 7 and 8
+  quote: For the rare morph condition, a strong block diagonal structure in the trial-by-trial
+    similarity matrices suggested clustering of morph values into two representations
+  criterion: Methods, Population trial-by-trial similarity matrices. Per session, all cells' single
+    trial rate maps (M2, M3, M5) concatenated per trial, rows l2-normalised, cosine matrix C; rows
+    and columns binned by S-tilde, diagonal left out. The paper judges the single sessions by eye;
+    the comparison that settles it is fig3f-zscored-difference-at-025, on which this claim depends.
+    Read as reproduced when, in the session-averaged binned matrices per mouse, the S-tilde 0.25
+    trials of every rare morph mouse are more similar to S-tilde 0 than to S-tilde 1 trials and
+    the S-tilde 0.75 trials more similar to S-tilde 1, while in frequent morph mice the similarity to
+    S-tilde 0 falls with S-tilde through the five values.
+  depends_on:
+  - fig3f-zscored-difference-at-025
+- id: edf7-checkerboard-sessions
+  statement: In six named rare morph sessions, trials near S-tilde = 0.25 randomly take one extreme
+    representation or the other, seen as checkerboard bands in the sorted similarity matrices.
+  source: Results, Population similarity analyses reveal distinct remapping patterns visible at the
+    level of single trials, paragraph 1; Extended Data Fig. 7
+  quote: checker-board dark bands were observed in the similarity matrices near S ~ = 0.25 , as if
+    the matrix was missorted for R1 session 8, R2 session 13, R3 session 9, R4 session 11, R5 session
+    8 and R6 session 10
+  criterion: The paper shows this by eye only. Read with the paper's own measure of which extreme a
+    trial resembles, the whole-trial SF (M9). Reproduced when, in each of the six sessions named,
+    the S-tilde = 0.25 trials include at least one trial with SF above 0.5 and at least one below
+    0.5. Session numbers follow the paper's numbering; how they map onto the dataset is the
+    author's to show.
+- id: fig3f-zscored-difference-at-025
+  statement: After z-scoring within session, trial-by-trial population similarity differs
+    significantly between rare and frequent morph mice for S-tilde = 0.25 trials.
+  source: Results, Population similarity analyses reveal distinct remapping patterns visible at the
+    level of single trials, paragraph 3; Figure 3c-f
+  quote: As predicted, group differences in trial-by-trial similarity were significant for S ~ =
+    0.25 trials after z -scoring within session similarity ( P < 0.05 two-sided mouse permutation
+    test, n = 12 mice)
+  statistics:
+  - test: two-sided mouse permutation test
+    p: 0.05
+    p_relation: "<"
+    n: 12 mice
+  criterion: Methods, Population trial-by-trial similarity matrices. Per session 8 to N, C as in
+    fig3ab-block-versus-gradual-similarity; binned into the five S-tilde values (code
+    PlotPopSimMats) as means over off-diagonal entries; the 25 binned entries z-scored within the
+    session (Methods; the 2026 code z-scores the mouse means, a variant); averaged over sessions per
+    mouse; rare minus frequent across-mouse means; permutation test M12 at the 2.5 and 97.5
+    percentiles of the 923 permuted differences. Reproduced when at least one entry of the S-tilde
+    = 0.25 row is significant; the significant entries and their signs are reported.
+- id: fig4-sf-stable-along-track
+  statement: Position-wise SF shows stable clustered representations along the whole track in rare
+    morph mice and a spectrum in frequent morph mice; remapping happens soon after the trial starts
+    and stays as the mouse runs.
+  source: Results, CA1 representations show stable discrimination of morph values along the length
+    of the track, paragraphs 1 and 2; Figure 4b-e
+  quote: Plotting SF as a function of the position of the animal along the VR track revealed a
+    clustering of stable representations across the entire length of the track for the rare morph
+    condition ... Together, these results indicate that remapping rapidly occurred after the start of
+    a new trial and remained stable as the animal traversed the virtual track.
+  criterion: Position-wise SF (M9) for every trial of sessions 8 to N, averaged per S-tilde within
+    session, then over sessions per mouse, then across mice with s.e.m. (Fig. 4d,e legends). The
+    paper reads the curves by eye. Read as reproduced when (1) in both conditions the mean SF of
+    S-tilde = 0 and of S-tilde = 1 differ by more than the sum of their s.e.m. in every bin after the
+    first bin; (2) in rare morph mice the S-tilde 0.75 and 1.0 curves overlap within s.e.m. over
+    most bins (Fig. 4d legend) while the S-tilde 0.25 curve stays nearer the S-tilde 0 than the
+    S-tilde 1 curve; (3) in frequent morph mice the S-tilde 0.25 curve lies between the S-tilde 0
+    and 0.5 curves over most bins.
+- id: fig6a-dkl-sign
+  statement: Delta D_KL of each session's Q estimate took the expected sign (negative for rare,
+    positive for frequent) in 41 of 45 sessions and in every session of 9 of 12 mice; across mice,
+    rare -0.88 +- 0.23 and frequent 0.50 +- 0.11 (mean +- s.e.m.), a significant difference.
+  source: Results, CA1 population activity approximates optimal estimation of the stimulus,
+    paragraph 2; Figure 6a
+  quote: "This Δ D KL measure took the expected sign (rare sessions Δ D KL < 0 and frequent sessions
+    Δ D KL > 0) in 41 out of 45 sessions, and it took the expected sign in every session from 9 out of
+    12 mice (across animal mean±s.e.m.: rare Δ D KL = −0.88 ± 0.23, frequent Δ D KL = 0.50±0.11; P
+    <0.0011, two-sided animal permutation test, n = 12 mice)"
+  statistics:
+  - test: two-sided animal permutation test
+    p: 0.0011
+    p_relation: "<"
+    n: 12 mice
+  expected:
+  - quantity: sessions with the expected sign
+    value: 41
+    tolerance: 4.1
+  - quantity: mice with the expected sign in every session
+    value: 9
+    tolerance: 0.9
+  - quantity: rare morph across-mouse mean Delta D_KL
+    value: -0.88
+    tolerance: 0.23
+  - quantity: frequent morph across-mouse mean Delta D_KL
+    value: 0.50
+    tolerance: 0.11
+  criterion: Per session 8 to N, SF (M9), Q (M10) and Delta D_KL (M11) against the ideal rare and
+    frequent posteriors (M6 to M8); per-mouse mean over sessions; test M12. Tolerances are the
+    paper's s.e.m. for the means and 10% for the counts. Reproduced when the test gives the
+    observed difference outside the range of all permutations and all four values are within
+    tolerance; partially reproduced when the test and the signs hold but a value is outside. The
+    code variants (likelihood widths of M8, the last-mouse group prior of M7, signal of M2) are
+    shown and do not decide. The 2020 code printed rare -0.96 +- 0.31 and frequent 0.58 +- 0.14
+    (SFReg); no code for the 41 of 45 count or the test was found.
+  depends_on:
+  - session-and-trial-counts
+- id: fig6bc-pooled-dkl
+  statement: Q estimates pooled over all sessions and mice approximate the posterior of the matching
+    condition (Delta D_KL rare -0.44, frequent 0.42).
+  source: Results, CA1 population activity approximates optimal estimation of the stimulus,
+    paragraph 3; Figure 6b,c, left panels
+  quote: Combining data from all sessions and all mice gave a robust approximation (Δ D KL ) of the
+    posterior for both the rare morph and frequent morph conditions (rare Δ D KL = −0.44, frequent Δ
+    D KL = 0.42
+  expected:
+  - quantity: pooled rare morph Delta D_KL
+    value: -0.44
+    tolerance: 0.044
+  - quantity: pooled frequent morph Delta D_KL
+    value: 0.42
+    tolerance: 0.042
+  criterion: Per mouse, the across-session Q estimate is the average of its session Q estimates,
+    renormalised (Fig. 6b legend); the group Q sums the mouse Q estimates and renormalises
+    (Methods, Estimating posterior distributions, "weighting mice equally"); Delta D_KL as M11.
+    An alternative the Methods also allow (Reconstructing prior distributions, "pooled transformed
+    SF values across all sessions for that mouse") is (b) per mouse one Q from all its trials
+    pooled. Reproduced when both values are within tolerance under a reading; partially reproduced
+    when only the signs hold.
+  depends_on:
+  - fig6a-dkl-sign
+- id: fig6d-prior-reconstruction
+  statement: Priors reconstructed from each mouse's neural data alone are closer to the ideal prior
+    of the mouse's own condition (Delta D_KL rare -0.46 +- 0.12, frequent 0.46 +- 0.07, mean +-
+    s.e.m. across mice), a significant group difference.
+  source: Results, CA1 population activity approximates optimal estimation of the stimulus,
+    paragraph 4; Figure 6b-d
+  quote: "A similar Δ D KL metric showed that the reconstructed priors are closer to the ideal prior
+    from the correct condition than the ideal prior from the incorrect condition ( Fig. 6d ) (across
+    animal mean±s.e.m.: rare Δ D KL = −0.46 ± 0.12, frequent Δ D KL = 0.46±0.07; P <0.0011, animal
+    permutation test, n = 12 mice)"
+  statistics:
+  - test: animal permutation test
+    p: 0.0011
+    p_relation: "<"
+    n: 12 mice
+  expected:
+  - quantity: rare morph across-mouse mean prior Delta D_KL
+    value: -0.46
+    tolerance: 0.12
+  - quantity: frequent morph across-mouse mean prior Delta D_KL
+    value: 0.46
+    tolerance: 0.07
+  criterion: Methods, Reconstructing prior distributions. Per mouse, transformed SF values of all
+    sessions 8 to N pooled into one unnormalised Q (M10); R = sum over f-hat_h of Q(f_h | f-hat_h)
+    divided by sum over f-hat_h of the likelihood P(f-hat_h | f_h) / Z(f-hat_h), Z the row sum of
+    the unnormalised Q, then normalised; Delta D_KL = D_KL(P_rare prior || R) - D_KL(P_freq prior ||
+    R), in bits. The Methods formula writes Q in the second term; read as R, as the code computes it
+    (SFReg, prior_post_reconstruction). Test M12 on the per-mouse values. Reproduced when the test
+    puts the difference outside all permutations and both means are within tolerance; partially
+    reproduced when only the test and signs hold.
+  depends_on:
+  - fig6a-dkl-sign
+- id: map-estimate-values
+  statement: The average MAP estimate of f_h for S-tilde = 0 trials is 11.08 under the rare and
+    10.64 under the frequent posterior, and for S-tilde = 1 trials 38.13 and 37.30.
+  source: Methods, Estimating posterior distributions from population activity (Q estimates)
+  quote: "average rare morph MAP estimate for S ~ = 0 trials: f h = 11.08; average frequent morph MAP
+    estimate for S ~ = 0 trials: f h = 10.64; average rare morph MAP estimate for S ~ = 1 trials: f h
+    = 38.13; average frequent morph MAP estimate for S ~ = 1 trials: f h = 37.30"
+  expected:
+  - quantity: rare MAP, S-tilde = 0 trials
+    value: 11.08
+    tolerance: 1.108
+  - quantity: frequent MAP, S-tilde = 0 trials
+    value: 10.64
+    tolerance: 1.064
+  - quantity: rare MAP, S-tilde = 1 trials
+    value: 38.13
+    tolerance: 3.813
+  - quantity: frequent MAP, S-tilde = 1 trials
+    value: 37.30
+    tolerance: 3.73
+  criterion: Argmax over f_h of the group posteriors (M6 to M8) at the f-hat_h of each S-tilde = 0
+    or 1 trial, averaged over trials. Which trials is not stated; readings (a) all such trials of
+    sessions 8 to N of both groups, (b) of each group's own sessions. Reproduced when all four are
+    within tolerance under a reading. The code variants of M7 and M8 are shown.
+- id: edf9-early-sessions
+  statement: The rare versus frequent remapping patterns were stable over sessions and emerged early
+    in training (session 3) in most animals.
+  source: Results, CA1 population activity approximates optimal estimation of the stimulus,
+    paragraph 5; Extended Data Fig. 9a-i
+  quote: Of note, these remapping patterns observed in rare morph versus frequent morph conditions
+    were stable over sessions and emerged early in training in most animals
+  criterion: Delta D_KL (M9 to M11) of each mouse's session 3 (R6 has none, Extended Data Fig. 9c),
+    and per session for sessions 3 and 8 to N (Extended Data Fig. 9c,d). The ideal posteriors for
+    session 3 are not stated; readings (a) the group posteriors of M8, (b) posteriors from the
+    trials each mouse ran before session 3. "Most animals" is read as more than half of the 11 mice
+    with a session 3. Reproduced when session 3 Delta D_KL has the expected sign (rare negative,
+    frequent positive) in at least 6 of 11 mice under both readings, and in sessions 8 to N the
+    sign of every mouse's per-session values is the same in most of its sessions.
+  depends_on:
+  - fig6a-dkl-sign
+- id: edf9k-null-models-rare
+  statement: For rare morph sessions, Q estimates are fit worse by the frequent, uniform, Gaussian
+    and multimodal prior posteriors and by a uniform posterior than by the rare morph posterior.
+  source: Results, CA1 population activity approximates optimal estimation of the stimulus,
+    paragraph 5; Extended Data Fig. 9j,k
+  quote: Furthermore, a comparison of Q estimates to a number of other null model posteriors yielded
+    poor fits to the data
+  statistics:
+  - about: frequent posterior against rare
+    test: Wilcoxon signed-rank test
+    p: 2.3e-4
+    n: 24 sessions
+  - about: uniform prior against rare
+    test: Wilcoxon signed-rank test
+    p: 4.7e-4
+    n: 24 sessions
+  - about: Gaussian prior against rare
+    test: Wilcoxon signed-rank test
+    p: 1.8e-5
+    n: 24 sessions
+  - about: multimodal prior against rare
+    test: Wilcoxon signed-rank test
+    p: 1.8e-5
+    n: 24 sessions
+  - about: uniform posterior against rare
+    test: Wilcoxon signed-rank test
+    p: 1.82e-5
+    n: 24 sessions
+  criterion: Per rare morph session 8 to N, the mean over f-hat_h (M11 rows) of D_KL(P || Q) for the
+    rare posterior and for each null; Wilcoxon signed-rank of null minus rare over sessions (code
+    NullModels4GrumpyPantsReviewer). Null priors not in the Methods, taken from the code (cell 3)
+    on the M6 grid; uniform; Gaussian exp(-(x - 0.5)^2/0.2^2); multimodal, weights 1, 1, 10, 1, 1
+    at S 0, 0.25, 0.5, 0.75, 1 with exp(-d^2/0.08^2) bumps (in S, through M6); and a constant
+    posterior. Each null posterior with the likelihood of M8. Reproduced when every one of the five
+    tests gives p < 0.05 with the rare posterior closer. The 2020 code printed p = 4.68e-3 for the
+    uniform prior, against 4.7e-4 in the legend.
+  depends_on:
+  - fig6a-dkl-sign
+- id: edf9l-null-models-frequent
+  statement: For frequent morph sessions, Q estimates are fit worse by the rare, uniform, Gaussian
+    and multimodal prior posteriors and by a uniform posterior than by the frequent morph posterior.
+  source: Extended Data Fig. 9l legend
+  quote: Wilcoxon signed rank tests compare D KL for the frequent morph condition to D KL for all
+    other posteriors in ( j )
+  statistics:
+  - about: rare posterior against frequent
+    test: Wilcoxon signed-rank test
+    p: 6.0e-5
+    n: 21 sessions
+  - about: uniform prior against frequent
+    test: Wilcoxon signed-rank test
+    p: 0.019
+    n: 21 sessions
+  - about: Gaussian prior against frequent
+    test: Wilcoxon signed-rank test
+    p: 6.0e-5
+    n: 21 sessions
+  - about: multimodal prior against frequent
+    test: Wilcoxon signed-rank test
+    p: 6.0e-5
+    n: 21 sessions
+  - about: uniform posterior against frequent
+    test: Wilcoxon signed-rank test
+    p: 6.0e-5
+    n: 21 sessions
+  criterion: As edf9k-null-models-rare, for the frequent morph sessions 8 to N against the frequent
+    posterior. Reproduced when all five tests give p < 0.05 with the frequent posterior closer.
+  depends_on:
+  - edf9k-null-models-rare
+- id: edf10-decision-mice-like-frequent
+  statement: Frequent morph mice trained to report whether S was above or below 0.5 by where they
+    licked (FD1 to FD4) remapped like frequent morph mice without the task.
+  source: Results, CA1 population activity approximates optimal estimation of the stimulus,
+    paragraph 6; Extended Data Fig. 10
+  quote: The remapping patterns were similar to those observed in frequent morph mice that did not
+    perform this task
+  criterion: Extended Data Fig. 10f-h. SF, Q and Delta D_KL as in fig6a-dkl-sign and the prior
+    reconstruction as in fig6d-prior-reconstruction, for FD mice; FD sessions are read as in
+    session-and-trial-counts. The comparison is not stated; readings (a) the Q estimate pooled
+    over FD mice has Delta D_KL > 0 (closer to the frequent posterior), (b) each FD mouse's
+    reconstructed prior has Delta D_KL > 0. Reproduced when both readings hold; partially when one.
+  depends_on:
+  - fig6a-dkl-sign
+- id: edf1-licking-before-reward
+  statement: Well-trained mice ran steadily down the first half of the track and began licking as
+    they approached the reward.
+  source: Methods, Morphed environments, paragraph 1; Extended Data Fig. 1c-g
+  quote: Once the animals were well trained, they often ran consistently down the first half of the
+    track and began licking as they approached the reward
+  criterion: Lick rate in the 10 cm bins of M3 per trial, sessions 8 to N. Extended Data Fig. 1g bins
+    trials by reward location (50 cm bins) and plots lick rate against position, with no test. Read
+    as reproduced when, in the across-mouse mean for each reward-location bin, lick rate rises over
+    the 50 cm before the reward location and its peak lies within 50 cm of the reward location, and
+    per mouse the mean lick rate over 0 to 225 cm is below that over 250 to 400 cm.
+- id: edf2-fh-best-predictor
+  statement: Of the stimulus features, the horizontal component of wall frequency f_h best predicts
+    the first principal component of the variance across VR scenes.
+  source: Extended Data Fig. 2g legend; Results, Two-photon imaging of CA1 cells in morphed VR
+    environments, paragraph 3
+  quote: The horizontal component of wall frequency, f h , is the strongest predictor of the
+    projection onto PC1.
+  criterion: Extended Data Fig. 2a-g. Uses screenshots of the VR scene every 10 cm for the range of
+    wall, tower and background morph settings, their per-channel FFT power spectra, PCA across
+    settings, and single-predictor linear regressions onto PC1. These are renders of the Unity
+    scenes, not recorded data. Reproduced when the f_h model has the lowest mean squared error of
+    the single-feature models.
+- id: fig7-model-reproduces-remapping
+  statement: A Hebbian network with radial basis inputs and k-winners-take-all competition, trained
+    on stimuli drawn from the rare or frequent morph prior, gives Q estimates that match the
+    matching posterior.
+  source: Results, Simple associative-learning mechanisms can approximate probabilistic inference in
+    neural populations, paragraph 1; Figure 7b-f
+  quote: model-derived SF values and Q estimates were good matches to the appropriate posterior
+    distributions
+  criterion: Methods, Hebbian learning model (the parameter list says "For Fig. 4", read as Fig. 7).
+    M = 100 inputs with radial basis tuning exp(-(mu_j - f_h)^2/sigma^2) (the Methods drop the
+    minus sign), sigma^2 = 4.11, centres tiling the stimulus axis; N = 100 outputs, K = 20, c_y =
+    0.01, sigma_y 0.01 N(0,1), sigma_S 2.74 N(0,1), eta = 0.1, tau = 0.001, W_max = 5, W initial
+    U(0, 0.1), 1,000 training stimuli drawn from the group prior of M7; 50 models per condition
+    (Fig. 7c legend). Not in the Methods, from the code (KWTA_EmpiricalPrior), testing on the
+    1,000-point grid of M6, SF centroids from test stimuli below 0.05 and above 0.9 units, the
+    affine map on medians of [-0.1, 0.1] and [0.9, 1.1], then Q and Delta D_KL as M10 and M11. Seeds
+    are a standard choice. Reproduced when the median Delta D_KL of the 50 rare-trained models is
+    below 0 and that of the 50 frequent-trained models above 0 (Fig. 7f). The model uses no
+    recorded activity; it needs only the trial morph values for the prior.
+- id: fig7g-model-prior-reconstruction
+  statement: Priors reconstructed from the model's Q estimates are closer to the prior of the
+    matching condition, though less closely matched than for the neural data.
+  source: Results, Simple associative-learning mechanisms can approximate probabilistic inference in
+    neural populations, paragraph 1; Figure 7g
+  quote: These unsupervised reconstructions were quantitatively more similar to the prior of the
+    matching condition, but the match between the reconstruction and the true priors was not as
+    compelling as the match seen in the neural data.
+  criterion: Models as in fig7-model-reproduces-remapping; R per model as in
+    fig6d-prior-reconstruction, averaged over the 50 models (Fig. 7g legend, "Delta D_KL is for the
+    averaged reconstructed prior"), in bits (the code's nats are a variant). Reproduced when the
+    averaged reconstructed prior's Delta D_KL is negative for rare-trained and positive for
+    frequent-trained models, and its magnitude is below the neural across-mouse mean magnitude
+    of fig6d-prior-reconstruction in both conditions.
+  depends_on:
+  - fig7-model-reproduces-remapping
+  - fig6d-prior-reconstruction
+- id: edf3-simulated-posterior-population
+  statement: A simulated population that stochastically encodes samples from the rare or frequent
+    morph posterior reproduces the recorded remapping patterns.
+  source: Results, CA1 population activity approximates optimal estimation of the stimulus,
+    paragraph 6; Extended Data Fig. 3
+  quote: Simulating neural populations that were designed to stochastically encode the posterior
+    distributions also reproduced the remapping patterns described above
+  criterion: Methods, Simulating a neural posterior distribution. Per trial, samples s from the
+    group posterior (M8) at the trial's f-hat_h; neuron i has gamma activity with theta = 1 and
+    kappa_i(s) = alpha exp(-(s - mu_i)^2/sigma^2) + beta, sigma = 4.11, alpha = 2, beta = 0, mu_i
+    tiling f_h; 1,000 simulations (Extended Data Fig. 3g,h). The trials are those of the recorded
+    sessions 8 to N (code TheoreticalSimMats uses a session's morph values and its cell count; the
+    code's rbf_sigma 0.4, alpha 1 and beta 0.25 are a variant). Open, the samples per trial
+    (Methods "several times", code 1) and the number of neurons, read as (a) one sample, the
+    session's cell count, (b) 45 samples (one per position bin), 100 neurons. Reproduced when the
+    z-scored rare minus frequent simulated similarity difference (Extended Data Fig. 3j) has the same
+    sign as the recorded one (fig3f-zscored-difference-at-025) at every entry of the S-tilde = 0.25
+    row that was significant there, under both readings.
+  depends_on:
+  - fig3f-zscored-difference-at-025
+- id: supp-earlier-morph-studies
+  statement: With reasonable assumed priors, the probabilistic inference framework reproduces the
+    discrete and gradual remapping reported in earlier morphed-environment studies (Wills 2005,
+    Colgin 2010 double and single location, Leutgeb 2005).
+  source: Discussion, paragraph 1; Supplementary Figs. 1 to 4
+  quote: making reasonable assumptions, we reproduced each of the conflicting findings from previous
+    studies using our probabilistic inference framework
+  criterion: A simulation with priors the authors propose for other laboratories' experiments
+    (Supplementary Figs. 1 to 4; code WillsLeutgebColgin_models). It uses no data of this paper,
+    so the dataset cannot test it; it is listed to cover the paper's findings.
