@@ -204,11 +204,15 @@ claims:
   - fig2g-days-to-proficiency
   criterion: >-
     Per mouse, the summed trial counts of the training days counted in fig2g-days-to-proficiency
-    (code figure2g_time_to_trained.py), under both of its readings. The 7.4 thousand trials has no
-    code in the repository; readings (1) the cumulative trial count at which the mean over mice of
-    the easy-trial performance curve (Figure 2, figure supplement 1b, 1000-trial bins as in
-    suppfig_variability_over_time.py) first exceeds 80%, and (2) the mean over mice of each
-    mouse's cumulative trials at its first session above 80% correct on easy trials.
+    (code figure2g_time_to_trained.py), under both of its readings. The 7.4 thousand trials is
+    printed by supp_figure2_performance_trials.py, and its method is followed. The 140 proficient
+    mice, sessions (training days) with more than 100 trials, each mouse's easy-trial performance
+    median-filtered over 3 sessions, training day counted from 0 at the mouse's first kept session,
+    cumulative trials per mouse summed over its kept sessions; per training day, the mean over
+    mice of performance and of cumulative trials; the value is the smallest mean cumulative trial
+    count among training days whose mean performance exceeds 80%. Variant, shown only: the mean
+    over mice of each mouse's cumulative trials at its first session above 80% correct on easy
+    trials.
 
 - id: fig2h-proportion-learned-40-days
   statement: >-
@@ -225,12 +229,14 @@ claims:
     value: 0.8
     tolerance: 0.08
   criterion: >-
-    Kaplan-Meier estimate (code figure2d_training_probability.py, lifelines) over all mice that
-    started training, leaving out mice still in training at the cutoff date: time = number of
-    sessions with status in_training or untrainable; event = the mouse's last status is neither.
-    Without status labels in the dataset, time = training days to P1 for proficient mice and
-    their total training days otherwise. Reproduced when the cumulative proportion at day 40 is
-    within the tolerance and higher at the last day than at day 40.
+    Kaplan-Meier estimate (code figure2d_training_probability.py, lifelines) over all 206 mice
+    that started training (Figure 2 legend, "Data in h is for all mice that started training
+    (n = 206)"): time = number of sessions with status in_training or untrainable; event = the
+    mouse's last status is neither, so mice still in training at the cutoff date are censored.
+    The code leaves out mice still in training after the cutoff date; that is a variant. Without
+    status labels in the dataset, time = training days to P1 for proficient mice and their total
+    training days otherwise. Reproduced when the cumulative proportion at day 40 is within the
+    tolerance and higher at the last day than at day 40.
 
 - id: fig2bc-threshold-bias-iqr
   statement: >-
@@ -282,7 +288,8 @@ claims:
     2b,c (code figure2af_learning_curves_all_parameters.py): 50:50 sessions with more than 100
     trials, threshold and bias only from sessions with six or more signed contrasts (legend: from
     the first session with 12% contrast), each mouse's series median-filtered over 3 sessions,
-    training day counted from the mouse's first session. The code does not print the
+    training day counted from 0 at the mouse's first session (the code), so the first 10 training
+    days are code days 0 to 9. The code does not print the
     interquartile ranges, so the pooling is open; readings (1) all session values pooled over mice
     within days 1-10 and after day 10, (2) as (1) without the median filter, each with "thereafter"
     as (a) days 11 to 40 (the plotted range) and (b) all later days. Reproduced when all eight
@@ -357,11 +364,15 @@ claims:
     unit: "%"
   criterion: >-
     Easy-trial performance per mouse and training day for the 140 proficient mice. No code prints
-    these four numbers; readings (1) the Figure 2a,d data (code figure2af: 50:50 sessions with more
-    than 100 trials, median-filtered over 3 sessions) at days 15 and 40, (2) the unfiltered
-    per-day performance binned as in suppfig_variability_over_time.py (training_day strictly
-    within 2 days of the bin centre) at days 15 and 39, the nearest bin to 40. Reproduced when the
-    mean rises and the s.d. falls, with all four values within tolerance under one reading.
+    these four numbers. Readings (1) supp_figure2_performance_trials.py, which computes the mean
+    and s.d. over mice per training day (behav_summary, behav_summary_std) from sessions with more
+    than 100 trials, median-filtered over 3 sessions, training day counted from 0 at the first
+    kept session, at training days 15 and 40 of that count (and at 14 and 39, if the text counts
+    from 1); (2) the Figure 2a,d data (code figure2af: as (1) and only 50:50 sessions) at the same
+    days; (3) the unfiltered per-day performance binned as in suppfig_variability_over_time.py
+    (training_day strictly within 2 days of the bin centre) at days 15 and 39, the nearest bin to
+    40. Reproduced when the mean rises and the s.d. falls, with all four values within tolerance
+    under one reading.
 
 - id: early-sessions-predict-slow-learners
   statement: >-
@@ -388,12 +399,14 @@ claims:
   - fig2g-days-to-proficiency
   criterion: >-
     The repository at the cited commit holds no code for this analysis and the Methods do not
-    describe it. Learning-speed quartiles from days to P1 (fig2g-days-to-proficiency). Open details
-    and the readings the text allows: features (a) the four session-to-session differences in
-    easy-trial performance over sessions 1-5, (b) the five performances; labels the four
-    quartiles (chance 25% implies four classes); scikit-learn Random Forest with default settings
-    and leave-one-out cross-validation, as for the lab classifiers in the Methods; accuracy read
-    as (i) recall of the bottom-quartile class and (ii) overall four-class accuracy. If the
+    describe it. Learning-speed quartiles from days to P1 (fig2g-days-to-proficiency; trials to
+    P1, as in Figure 2, figure supplement 1c, is a further reading). Open details and the readings
+    the text allows: features (a) the four session-to-session differences in easy-trial
+    performance over sessions 1-5, (b) the five performances; labels (A) the four quartiles,
+    (B) bottom quartile against the rest (chance 25% then the base rate); scikit-learn Random
+    Forest with default settings and leave-one-out cross-validation, as for the lab classifiers
+    in the Methods; accuracy read as (i) recall of the bottom-quartile class, (ii) overall
+    four-class accuracy under (A), and (iii) precision of the bottom-quartile class. If the
     readings disagree on whether accuracy is near 53% and well above 25%, the claim is
     methods_underspecified.
 
@@ -439,6 +452,14 @@ claims:
   - quantity: mean bias, S1
     value: 0.3
     tolerance: 3.2
+    unit: "%"
+  - quantity: s.d. of contrast threshold, S1
+    value: 3.8
+    tolerance: 0.38
+    unit: "%"
+  - quantity: s.d. of bias, S1
+    value: 8.4
+    tolerance: 0.84
     unit: "%"
   criterion: >-
     Per mouse, psychometric threshold and bias fitted to the pooled S1 trials (code figure3cde).
@@ -753,7 +774,8 @@ claims:
     p: 0.15
   criterion: >-
     Per mouse and block, psychometric fits to the pooled trials of the first three full-task
-    sessions, and easy-trial performance. Sessions per the legend, the first three biased sessions;
+    sessions, and performance on 100% contrast trials (legend; the code's correct_easy, which also
+    counts any 50% contrast trials, is a variant). Sessions per the legend, the first three biased sessions;
     the code (suppfig_variability_over_labs_first_biased.py) takes the biased sessions on training
     days 1 to 3 after P1b, and its classifier script days -1 to 3; both shown as variants.
     Kruskal-Wallis across labs for each of the seven variables, as the legend names it (the code
@@ -774,10 +796,12 @@ claims:
   - fig3s5-first-full-sessions
   criterion: >-
     Per-mouse bias in 80:20 and 20:80 blocks from the sessions of fig3s5-first-full-sessions
-    (both readings). The paper reports no test for this; the full-task proficiency criterion
-    (Appendix 1, table 1d) defines use of the prior as bias[80:20] - bias[20:80] > 5. Reproduced
-    when the median over mice of that difference exceeds 5 and the Wilcoxon signed-rank test used
-    for Figure 4i (fig4i-bias-shifts-with-block) gives p < 0.05.
+    (both readings). The paper reports no test for this; the test is the one the paper uses for
+    the block effect on bias in Figure 4i (fig4i-bias-shifts-with-block), a Wilcoxon signed-rank
+    test of bias in 80:20 against 20:80 blocks. Reproduced when bias is higher in 80:20 than in
+    20:80 blocks (median of paired differences) with p < 0.05. The median difference is also
+    reported against the full-task proficiency threshold bias[80:20] - bias[20:80] > 5 (Appendix
+    1, table 1d), a criterion for counting mice and not a test, as a variant.
 
 - id: full-task-training-time
   statement: >-
@@ -815,6 +839,14 @@ claims:
     value: 81
     tolerance: 8.1
     unit: days
+  - quantity: fastest mouse, trials
+    value: 4691
+    tolerance: 469
+    unit: trials
+  - quantity: slowest mouse, trials
+    value: 61316
+    tolerance: 6132
+    unit: trials
   criterion: >-
     Per mouse reaching P2, the last training-day number and the summed trials over training days up
     to and including the P2 day (code supp_queries.py, n_training_days = MAX(training_day),
@@ -1153,3 +1185,21 @@ claims:
     trials in 45 min; over 400 trials and 90 min; over 400 trials and median reaction time over
     the last 20 trials above 5 times the session median), taking the first trial at which one is
     met.
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2s1-trials-to-proficiency, criterion. The file said no code computes the 7.4 thousand trials; supp_figure2_performance_trials.py at the cited commit prints it (smallest mean cumulative trial count over days whose mean median-filtered easy performance exceeds 80%), so that method is now the criterion and the per-mouse reading a variant.
+  - fig2s2-variability-decreases, criterion. Added as reading (1) the per-day mean and s.d. over mice that supp_figure2_performance_trials.py computes (not printed), with the code's 0-based training day and the 1-based alternative.
+  - fig2h-proportion-learned-40-days, criterion. The Figure 2 legend says the estimate is over all 206 mice that started training; the main reading now keeps mice still in training as censored, and the code's exclusion of them is a variant.
+  - fig2bc-threshold-bias-iqr, criterion. Stated that the code counts training days from 0, so the first 10 days are code days 0 to 9.
+  - fig3de-threshold-bias-basic, expected. Added the reported s.d. values 3.8 and 8.4 (10% tolerance); the statement rests on them and they separate the per-mouse and per-lab readings.
+  - fig3s5-first-full-sessions, criterion. The legend tests performance on 100% contrast trials; the criterion said easy-trial performance. The legend's measure is now the main reading and the code's correct_easy (contrast of 50% or more) a variant.
+  - fig3s5a-prior-used-from-first-sessions, criterion. The threshold bias[80:20] - bias[20:80] > 5 is a full-task proficiency criterion for counting mice, not a test, so it is no longer part of the decision; the claim is judged on the Figure 4i Wilcoxon test with direction, and the threshold is reported as a variant.
+  - early-sessions-predict-slow-learners, criterion. Added the readings the text also allows (quartiles from trials to P1, bottom quartile against the rest (chance 25% as base rate), and precision of the bottom-quartile class).
+  - full-task-training-time, expected. Added the fastest and slowest mice in trials (4691, 61,316), which the statement reports.
+  - Open. fig2-abs-bias-threshold-during-training, the paper's "absolute bias was similar across laboratories" and "not systematically biased" have no test or code; they are in the statement and the criterion does not judge them.
+  - Open. fig5s1c-updating-by-contrast, the paper gives no test; the comparison of updating after 0% and 6.25% with 100% contrast is a reading of "largest when low contrast ... strongly diminished" and not a method the paper names.
+  - Open. Tolerances on means given as mean +- s.d. over mice use 10% of the mean (header), not the s.d.; protocol's "stated spread" could be read otherwise, kept because an s.d. across mice is not an uncertainty of the mean.
