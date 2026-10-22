@@ -35,6 +35,16 @@ Where the parameters come from:
   before the answer; it is kept to show what the answer changed and decides nothing.
 - A block counts for Figure 1D to 1F when it has a trial of task phase >= 4 (claims file,
   fig1d-sessions-blocks, from dfs_ripcontent.m part 2, `any(ctphase>=4)`).
+- The error subtypes n + 0.3, 0.5 and 0.8 are not used by any test here (only integer phases,
+  phase <= 1 against > 1 and the reward flags are); the claims file does not say which arms
+  count as next to the goal, and arms 1 and 8 are not treated as neighbours.
+- A log shows forage assist when a `CURRENTGOAL IS [...]` line lists more than one arm: with
+  forageNum above 1 the observer's goalWell holds several arms until one is found (the
+  observer code in the log headers); `n_multi_goal_lines` counts such lines.
+- The visit traces of fig6b-visits-decay follow its criterion (as fig6a-pg-replay-persists, for
+  visits, unsmoothed): per block 1 to 8, the goal arm's visits from 40 trials before to 40
+  after the block's last rewarded trial, NaN beyond the session, against the same window for
+  every arm never a goal in the session.
 - The reward-rate curves (fig1ef-reward-rate) take trials 1 to 15 and the binomial S.E.M.
   sqrt(p(1-p)/n), as the claim's criterion gives them.
 """
@@ -227,6 +237,40 @@ def reward_curves(labelled):
     return np.array(search).reshape(-1, len(CURVE_TRIALS)), np.array(repeat).reshape(-1, len(CURVE_TRIALS))
 
 
+VISIT_WINDOW = 40   # fig6b-visits-decay, as fig6a-pg-replay-persists: 40 trials either side
+VISIT_BLOCKS = 8    # blocks 1 to 8
+
+
+def visit_traces(labelled, completed_only=False):
+    """Goal and non-goal visit traces around the last rewarded trial of each block.
+
+    Returns (goal, nongoal): arrays of shape (n, 81) for trials -40 to +40, 1 when the arm was
+    visited on that trial, 0 when not, NaN beyond the session. Blocks 1 to 8 with at least one
+    reward; with `completed_only`, only blocks closed by a goal change. Non-goal arms are the
+    arms never a goal in the session, one trace per arm and block.
+    """
+    v = labelled.reset_index(drop=True)
+    outer, block = v.outer.to_numpy(), v.block.to_numpy()
+    rewarded, final = v.rewarded.to_numpy(), v.final.to_numpy()
+    n = len(v)
+    never = [a for a in OUTER_ARMS if a not in set(v.block_goal)]
+    offs = np.arange(-VISIT_WINDOW, VISIT_WINDOW + 1)
+    goal, nongoal = [], []
+    for k in range(1, VISIT_BLOCKS + 1):
+        rows = np.where(block == k)[0]
+        rew = rows[rewarded[rows] & ~final[rows]]
+        if len(rew) == 0 or (completed_only and not final[rows].any()):
+            continue
+        idx = rew[-1] + offs
+        inside = (idx >= 0) & (idx < n)
+        seen = np.full(len(offs), -1)
+        seen[inside] = outer[idx[inside]]
+        for arm, out in [(v.block_goal[rows[0]], goal)] + [(a, nongoal) for a in never]:
+            out.append(np.where(inside, (seen == arm).astype(float), np.nan))
+    w = len(offs)
+    return np.array(goal).reshape(-1, w), np.array(nongoal).reshape(-1, w)
+
+
 def binomial_curve(mat):
     """Mean, binomial S.E.M. sqrt(p(1-p)/n) and n per column, ignoring NaN."""
     n = np.sum(~np.isnan(mat), axis=0)
@@ -290,6 +334,8 @@ def load_day(asset):
                "sc_hash": hashlib.md5(content.encode()).hexdigest()[:12],
                "n_events": len(events),
                "n_outer_reward_lines": sum(m == "outer reward" for _, m in events),
+               "n_multi_goal_lines": sum(len(re.findall(r"\d+", m)) > 1 for _, m in events
+                                         if m.startswith("CURRENTGOAL")),
                "outerreps_printed": sorted({int(x) for x in re.findall(r"outerreps = (\d+)",
                                                                        "\n".join(m for _, m in events))}),
                "trials": trials, **params}
