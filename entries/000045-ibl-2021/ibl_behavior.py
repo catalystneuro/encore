@@ -306,10 +306,15 @@ def _fit_one(args):
     return fit_psychfunc(*args)
 
 
+_POOLS: dict = {}
+
+
 def fit_many(pairs, workers: int = 4) -> list[dict]:
-    """Fit many (contrast, choice_right) pairs in parallel processes."""
-    with ProcessPoolExecutor(workers) as ex:
-        return list(ex.map(_fit_one, pairs, chunksize=16))
+    """Fit many (contrast, choice_right) pairs in parallel processes. The
+    pool is kept between calls, as starting one costs more than many fits."""
+    if workers not in _POOLS:
+        _POOLS[workers] = ProcessPoolExecutor(workers)
+    return list(_POOLS[workers].map(_fit_one, pairs, chunksize=16))
 
 
 def psychometric_value(pars: dict, c: float) -> float:
@@ -326,19 +331,32 @@ def gamma_curve(pars, c):
 # Proficiency (Appendix 1, table 1d, as the claims file cites it)
 
 # Table 1d, 'Trained 1a/1b': each of the last three sessions > 200/400 trials
-# and > 80/90% correct on 100% contrast, all contrasts introduced; the three
-# combined: |bias| < 16/10, threshold < 19/20, lapse rates < 0.2/0.1; 1b only:
-# median reaction time at 0% contrast < 2 s.
+# and > 80/90% correct, all contrasts introduced; the three combined: |bias|
+# < 16/10, threshold < 19/20, lapse rates < 0.2/0.1; 1b only: median reaction
+# time at 0% contrast < 2 s. Claims file header, P1 (answers of 2026-10-22):
+# the status is recomputed as the pipeline's SessionTrainingStatus computes it,
+# at each session from that session and the two before it (any protocol);
+# trials completed are all trials; percent correct is over contrasts of 50% or
+# more (compute_performance_easy). The table's 100% contrast is run as a
+# sensitivity (perf="100").
 CRIT_1A = dict(n=200, perf=80, bias=16, thr=19, lapse=0.2, rt=None)
 CRIT_1B = dict(n=400, perf=90, bias=10, thr=20, lapse=0.1, rt=2.0)
-# Methods: the 1b criteria were introduced in September 2019, no day given;
-# the first of the month is taken (claims file, P1 readings).
-DATE_1B = "2019-09-01"
-# "All contrasts introduced": the final contrast set of Appendix 1, table 1c
-# (100, 25, 12.5, 6.25, 0). The table does not say how this is checked; two
-# readings are run (a question is open): 'each', present in each of the three
-# sessions; 'pooled', present in the three sessions together.
+# Claims file header, P1: the 1b implementation date in the code
+# (text_trained1a_to_1b_sessions.py, DATE_IMPL), used by the variant in which
+# 1b replaces 1a from that day.
+DATE_1B = "2019-09-12"
+# "All contrasts introduced" (claims file header, P1): main reading 'each',
+# each of the three sessions presents the final set of Appendix 1, table 1c
+# (100, 25, 12.5, 6.25, 0); variant 'last', the pipeline's check, the current
+# session presents 0% and a contrast between 0.1 and 6.5%.
 ALL_CONTRASTS = frozenset([0.0, 6.25, 12.5, 25.0, 100.0])
+
+
+def _contrasts_ok(sets, contrasts):
+    if contrasts == "each":
+        return all(ALL_CONTRASTS <= c for c in sets)
+    last = sets[-1]
+    return 0.0 in last and any(0.1 < c < 6.5 for c in last)
 
 
 def _windows(D):
@@ -353,55 +371,102 @@ def _windows(D):
 _WINDOW_FITS: dict = {}
 
 
-def trial_groups(T: pd.DataFrame, S: pd.DataFrame, task: str) -> dict:
-    """Trials of one task's sessions, by (subject_id, date)."""
-    ses = S[S.task == task][["session_id", "subject_id", "date"]]
-    return {k: v for k, v in T.merge(ses, on="session_id").groupby(["subject_id", "date"])}
+def session_summary(T: pd.DataFrame, S: pd.DataFrame) -> pd.DataFrame:
+    """One row per session with trials, in order of start time per mouse:
+    n_trials (all trials), perf_easy, perf_100, the set of absolute contrasts,
+    and the median reaction time at 0% contrast."""
+    ses = S[S.n_trials > 0][["session_id", "subject_id", "date", "start", "task"]]
+    t = T[T.session_id.isin(ses.session_id)]
+    g = t.groupby("session_id")
+    e = t[t.abs_contrast >= 50].groupby("session_id").correct.mean() * 100
+    h = t[t.abs_contrast == 100].groupby("session_id").correct.mean() * 100
+    z = t[t.signed_contrast == 0].groupby("session_id").rt.median()
+    out = ses.set_index("session_id").assign(
+        n_trials=g.size(), perf_easy=e, perf_100=h,
+        contrasts=g.abs_contrast.agg(lambda x: frozenset(x.unique())), rt0=z)
+    return out.reset_index().sort_values(["subject_id", "start"]).reset_index(drop=True)
 
 
-def basic_proficiency(Dtr: pd.DataFrame, T: pd.DataFrame, S: pd.DataFrame,
-                      reading: str = "1a", contrasts: str = "each",
-                      perf_col: str = "perf_100", groups: dict | None = None) -> pd.DataFrame:
-    """P1 per mouse: the last day of the first three consecutive basic-task
-    training days that meet the criteria.
+def training_status(SS: pd.DataFrame, T: pd.DataFrame, contrasts: str = "each",
+                    replace_from: str | None = None, perf: str = "easy") -> pd.DataFrame:
+    """Per mouse, the first session of trained_1a or trained_1b status (P1) and
+    the first session meeting the 1b criteria, recomputed from the trials.
 
-    reading '1a': the 1a criteria throughout. '1a1b': the 1a criteria for
-    windows ending before DATE_1B, the 1b criteria from then on (claims file,
-    P1 readings). contrasts: 'each' or 'pooled' (see ALL_CONTRASTS). Dtr is
-    daily() over training-protocol sessions. The windows that pass the
-    per-session criteria are fitted in parallel; the first window per mouse
-    that passes all criteria is P1. groups: trial_groups(T, S, "training"),
-    to reuse across calls."""
-    tg = groups if groups is not None else trial_groups(T, S, "training")
-    cand = []
-    for sid, w in _windows(Dtr):
-        d = Dtr.loc[w]
-        crit = CRIT_1A if (reading == "1a" or d.date.iloc[-1] < DATE_1B) else CRIT_1B
-        if not ((d.n_trials > crit["n"]).all() and (d[perf_col] > crit["perf"]).all()
-                and (all(ALL_CONTRASTS <= c for c in d.contrasts) if contrasts == "each"
-                     else ALL_CONTRASTS <= frozenset().union(*d.contrasts))):
-            continue
-        tt = pd.concat([tg[(sid, x)] for x in d.date])
-        cand.append((sid, d, crit, tt))
-    # A window's fit depends only on its trials: fits are kept across calls.
-    keys = [(sid, tuple(d.date)) for sid, d, _, _ in cand]
-    todo = [k for k in dict.fromkeys(keys) if k not in _WINDOW_FITS]
-    todo_t = {k: c[3] for k, c in zip(keys, cand)}
-    for k, f in zip(todo, fit_many([(todo_t[k].signed_contrast.to_numpy(),
-                                     todo_t[k].choice_right.to_numpy()) for k in todo])):
-        _WINDOW_FITS[k] = f
-    fits = [_WINDOW_FITS[k] for k in keys]
-    out = {}
-    for (sid, d, crit, tt), f in zip(cand, fits):
-        if sid in out:
-            continue
-        ok = (abs(f["bias"]) < crit["bias"] and f["threshold"] < crit["thr"]
-              and f["lapselow"] < crit["lapse"] and f["lapsehigh"] < crit["lapse"])
-        if crit["rt"] is not None:
-            ok = ok and np.nanmedian(tt.rt[tt.signed_contrast == 0]) < crit["rt"]
-        if ok:
-            out[sid] = dict(p1_date=d.date.iloc[-1], p1_tday0=int(d.tday0.iloc[-1]),
-                            **{f"p1_{k}": v for k, v in f.items()})
+    SS: session_summary(). At each session the window is that session and the
+    two before it (any protocol); the 1b criteria are tested and then the 1a
+    criteria, at any date (main reading). replace_from: a date from which only
+    the 1b criteria apply, and before which only the 1a criteria (variant).
+    contrasts: 'each' or 'last' (see ALL_CONTRASTS). The fits of the windows
+    that pass the per-session criteria are run in parallel and kept across
+    calls. Columns: p1_session, p1_date, p1_status, b1_session, b1_date."""
+    pcol = "perf_easy" if perf == "easy" else "perf_100"
+    cand = []   # (subject, window session ids, criteria names, last date)
+    for sid, d in SS.groupby("subject_id", sort=False):
+        n = d.n_trials.to_numpy()
+        p = d[pcol].to_numpy()
+        cs = d.contrasts.to_list()
+        ids = d.session_id.to_list()
+        dates = d.date.to_list()
+        for j in range(2, len(d)):
+            w = slice(j - 2, j + 1)
+            if not _contrasts_ok(cs[w], contrasts):
+                continue
+            names = []
+            for name, crit in (("1b", CRIT_1B), ("1a", CRIT_1A)):
+                if replace_from is not None and (name == "1b") != (dates[j] >= replace_from):
+                    continue
+                if (n[w] > crit["n"]).all() and (np.nan_to_num(p[w]) > crit["perf"]).all():
+                    names.append(name)
+            if names:
+                cand.append((sid, tuple(ids[w]), names, dates[j], j))
+    by_mouse: dict = {}
+    for c in cand:
+        by_mouse.setdefault(c[0], []).append(c)
+    by_ses = {k: v for k, v in T[T.session_id.isin({x for c in cand for x in c[1]})]
+              .groupby("session_id")[["signed_contrast", "choice_right", "rt"]]}
+
+    def fit_windows(ws):
+        ws = [w for w in dict.fromkeys(ws) if w not in _WINDOW_FITS]
+        tts = [pd.concat([by_ses[x] for x in w]) for w in ws]
+        for w, tt, f in zip(ws, tts, fit_many([(tt.signed_contrast.to_numpy(), tt.choice_right.to_numpy())
+                                               for tt in tts])):
+            f["rt0"] = float(np.nanmedian(tt.rt[tt.signed_contrast == 0])) \
+                if (tt.signed_contrast == 0).any() else np.nan
+            _WINDOW_FITS[w] = f
+
+    # Windows are evaluated in order, a few per mouse at a time, until the mouse
+    # has both its first 1a-or-1b session and its first 1b session; later
+    # windows cannot change either and are not fitted.
+    out = {sid: {} for sid in by_mouse}
+    pos = dict.fromkeys(by_mouse, 0)
+    chunk = 15
+    while True:
+        live = [s for s in by_mouse if pos[s] < len(by_mouse[s]) and "b1_session" not in out[s]]
+        if not live:
+            break
+        fit_windows([c[1] for s in live for c in by_mouse[s][pos[s]: pos[s] + chunk]])
+        for s in live:
+            r = out[s]
+            for sid, w, names, date, j in by_mouse[s][pos[s]: pos[s] + chunk]:
+                if "b1_session" in r:
+                    break
+                f = _WINDOW_FITS[w]
+                for name in names:
+                    crit = CRIT_1B if name == "1b" else CRIT_1A
+                    ok = (abs(f["bias"]) < crit["bias"] and f["threshold"] < crit["thr"]
+                          and f["lapselow"] < crit["lapse"] and f["lapsehigh"] < crit["lapse"])
+                    if crit["rt"] is not None:
+                        ok = ok and f["rt0"] < crit["rt"]
+                    if not ok:
+                        continue
+                    if "p1_session" not in r:
+                        r.update(p1_session=w[-1], p1_date=date, p1_status=name,
+                                 **{f"p1_{k}": v for k, v in f.items()})
+                    if name == "1b":
+                        r.update(b1_session=w[-1], b1_date=date)
+                    break
+            pos[s] += chunk
+    out = {k: v for k, v in out.items() if v}
     return pd.DataFrame.from_dict(out, orient="index")
 
 
@@ -472,30 +537,62 @@ def fdr(p):
 def loo_gaussian_nb(X: np.ndarray, y: np.ndarray) -> np.ndarray:
     """Leave-one-out predictions of scikit-learn's GaussianNB with default
     settings (var_smoothing 1e-9 of the largest feature variance of the
-    training set; priors from class frequencies), computed directly so that
-    2000 subsamples run in seconds. The notebook checks it against
-    scikit-learn."""
+    training set; priors from class frequencies; variances with ddof 0),
+    computed directly for every fold at once so that 2000 subsamples run in
+    seconds. The notebook checks it against scikit-learn."""
+    X = np.asarray(X, float)
     n = len(y)
     classes = np.unique(y)
-    pred = np.empty(n, dtype=y.dtype)
-    for i in range(n):
-        m = np.ones(n, bool)
-        m[i] = False
-        Xt, yt = X[m], y[m]
-        eps = 1e-9 * np.var(Xt, axis=0).max()
-        best, arg = -np.inf, None
-        for c in classes:
-            Xc = Xt[yt == c]
-            if len(Xc) == 0:
-                continue
-            mu = Xc.mean(0)
-            var = Xc.var(0) + eps
-            ll = np.log(len(Xc) / len(yt)) - 0.5 * np.sum(np.log(2 * np.pi * var)) \
-                - 0.5 * np.sum((X[i] - mu) ** 2 / var)
-            if ll > best:
-                best, arg = ll, c
-        pred[i] = arg
-    return pred
+    keep = ~np.eye(n, dtype=bool)
+    Xtr = np.stack([X[keep[i]] for i in range(n)])                      # (n, n-1, p)
+    ytr = np.stack([y[keep[i]] for i in range(n)])
+    eps = 1e-9 * Xtr.var(axis=1).max(axis=1)                            # (n,)
+    ll = np.full((n, len(classes)), -np.inf)
+    for k, c in enumerate(classes):
+        m = (ytr == c)[..., None]                                       # (n, n-1, 1)
+        cnt = m.sum(1)                                                  # (n, 1)
+        ok = cnt[:, 0] > 0
+        mu = (Xtr * m).sum(1) / np.maximum(cnt, 1)
+        var = (((Xtr - mu[:, None]) ** 2) * m).sum(1) / np.maximum(cnt, 1) + eps[:, None]
+        val = np.log(cnt[:, 0] / (n - 1)) - 0.5 * np.log(2 * np.pi * var).sum(1) \
+            - 0.5 * ((X - mu) ** 2 / var).sum(1)
+        ll[ok, k] = val[ok]
+    return classes[np.argmax(ll, axis=1)]
+
+
+def loo_ovr_logistic(X: np.ndarray, y: np.ndarray, C: float = 1.0, n_newton: int = 100) -> np.ndarray:
+    """Leave-one-out predictions of LogisticRegression(solver='liblinear') with
+    default settings, one-vs-rest over the classes, as scikit-learn did for
+    several classes with this solver when the paper's code ran (from version
+    1.5 the solver refuses more than two classes; OneVsRestClassifier gives the
+    same model). liblinear's objective, 0.5 |w|^2 + C sum log(1 + exp(-y w.x))
+    with x extended by a constant 1 (intercept_scaling 1, the intercept
+    penalised), is strictly convex; it is minimised here by Newton's method
+    for every fold and class at once, so that 2000 subsamples run in seconds.
+    The notebook checks the predictions against scikit-learn."""
+    n = len(y)
+    classes = np.unique(y)
+    Xa = np.hstack([np.asarray(X, float), np.ones((n, 1))])
+    p = Xa.shape[1]
+    keep = ~np.eye(n, dtype=bool)
+    Xtr = np.stack([Xa[keep[i]] for i in range(n)])                     # (n, n-1, p)
+    ytr = np.stack([y[keep[i]] for i in range(n)])                      # (n, n-1)
+    K = len(classes)
+    Xb = np.repeat(Xtr[:, None], K, axis=1).reshape(n * K, n - 1, p)
+    yb = np.stack([np.where(ytr == c, 1.0, -1.0) for c in classes], 1).reshape(n * K, n - 1)
+    w = np.zeros((n * K, p))
+    eye = np.eye(p)
+    for _ in range(n_newton):
+        z = yb * np.einsum("bnp,bp->bn", Xb, w)
+        s = special.expit(z)
+        g = w + C * np.einsum("bnp,bn->bp", Xb, (s - 1) * yb)
+        H = eye + C * np.einsum("bnp,bn,bnq->bpq", Xb, s * (1 - s), Xb)
+        step = np.linalg.solve(H, g[..., None])[..., 0]
+        w = w - step
+        if np.abs(step).max() < 1e-10:
+            break
+    dec = np.einsum("ikp,ip->ik", w.reshape(n, K, p), Xa)
+    return classes[np.argmax(dec, axis=1)]
 
 
 def classify_labs(X: np.ndarray, labs: np.ndarray, kind: str = "nb", n_iter: int = 2000,
@@ -503,9 +600,9 @@ def classify_labs(X: np.ndarray, labs: np.ndarray, kind: str = "nb", n_iter: int
     """Accuracy over n_iter subsamples of per_lab mice per lab, leave-one-out,
     and the same with lab labels shuffled within each subsample (Methods;
     code seed 424242). kind: 'nb' GaussianNB, 'rf' RandomForest (100 trees,
-    random_state 424242), 'lr' LogisticRegression (solver liblinear)."""
+    random_state 424242), 'lr' LogisticRegression (solver liblinear, one-vs-rest;
+    loo_ovr_logistic)."""
     from sklearn.ensemble import RandomForestClassifier
-    from sklearn.linear_model import LogisticRegression
     from sklearn.model_selection import LeaveOneOut, cross_val_predict
     rng = np.random.default_rng(seed)
     labs = np.asarray(labs)
@@ -516,10 +613,9 @@ def classify_labs(X: np.ndarray, labs: np.ndarray, kind: str = "nb", n_iter: int
     def predict(Xs, ys):
         if kind == "nb":
             return loo_gaussian_nb(Xs, ys)
-        if kind == "rf":
-            m = RandomForestClassifier(n_estimators=100, random_state=424242)
-        else:
-            m = LogisticRegression(solver="liblinear")
+        if kind == "lr":
+            return loo_ovr_logistic(Xs, ys)
+        m = RandomForestClassifier(n_estimators=100, random_state=424242)
         return cross_val_predict(m, Xs, ys, cv=LeaveOneOut())
 
     for k in range(n_iter):
@@ -552,12 +648,36 @@ def within_lab_consistency(M: pd.DataFrame, labs: pd.Series) -> float:
     return float(np.mean(cons))
 
 
+def _consistency_many(M: np.ndarray, L: np.ndarray, K: int) -> np.ndarray:
+    """within_lab_consistency for many labellings at once. M: mice x
+    conditions (NaN where missing); L: labellings x mice, lab codes 0..K-1.
+    Per lab and condition the variance across mice (ddof 1, NaN skipped, NaN
+    with fewer than two mice), its mean over conditions, its inverse, and the
+    mean over labs."""
+    ok = ~np.isnan(M)
+    M0 = np.where(ok, M, 0.0)
+    out = np.empty(len(L))
+    for a in range(0, len(L), 500):
+        G = (L[a: a + 500, None, :] == np.arange(K)[None, :, None]).astype(float)   # (b, K, mice)
+        cnt = G @ ok.astype(float)
+        s1 = G @ M0
+        s2 = G @ (M0 ** 2)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            var = (s2 - s1 ** 2 / cnt) / (cnt - 1)
+            var[cnt < 2] = np.nan
+            out[a: a + 500] = np.mean(1 / np.nanmean(var, axis=2), axis=1)
+    return out
+
+
 def consistency_test(M: pd.DataFrame, labs: pd.Series, n_shuffle: int = 10000, seed: int = 0):
+    """Observed within-lab consistency, its null over n_shuffle permutations
+    of the lab labels, and the fraction of the null at or above the observed
+    value."""
     rng = np.random.default_rng(seed)
     obs = within_lab_consistency(M, labs)
-    lv = labs.to_numpy()
-    null = np.array([within_lab_consistency(M, pd.Series(rng.permutation(lv)))
-                     for _ in range(n_shuffle)])
+    names, codes = np.unique(labs.to_numpy(), return_inverse=True)
+    L = np.stack([rng.permutation(codes) for _ in range(n_shuffle)])
+    null = _consistency_many(M.to_numpy(float), L, len(names))
     return obs, null, float(np.mean(null >= obs))
 
 
