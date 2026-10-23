@@ -14,10 +14,14 @@ Where the parameters come from:
   bad electrodes set to weight 0 and each region's weights renormalised to sum to 1; regions
   kept when the density row averaged over subjects exceeds 3: the claims file's opening comment.
 - Rejection of segments by their power spectral density (power below 0 dB, or 115-125 Hz power
-  more than 3 SD above all segments): the Methods, as the claims file gives them. How the PSD is
-  computed is not given; Welch's method with 1 s windows is a standard choice, and the two
-  readings of which channels count are in `segment_rejection` (see the question in
-  questions/000055.yaml).
+  more than 3 SD above all segments): the Methods, as the claims file gives them. The readings
+  are the claims file's after the answer in questions/000055.yaml: (b1) one PSD per segment
+  averaged over good electrodes, the main reading; (b2) the same per good electrode; the 3 SD
+  over the subject's segments, or over all subjects' segments as a variant
+  (`rejection_pooled`); and (b3), a time-resolved test, as a variant. The estimator and the
+  frequencies of the 0 dB test are not given by the paper; Welch's method with 1 s windows in
+  microvolts squared per Hz, and 1-200 Hz (the band of the preprocessing filter), are the
+  attempt's choices (`rejection`).
 - Time-of-day bins (0-8, 8-16, 16-24 h) and the folding of the reach angle: the claims file.
 """
 import io
@@ -666,6 +670,41 @@ def rejection(ev, A, meta, spec, subjects):
             low = np.nanmin(10 * np.log10(gm), 1) < 0
             rej3[idx] = rej1[idx] | (ok & low)
     return rej1, rej2, psd_db, rej3
+
+
+def rejection_pooled(ev, A, meta, spec, subjects):
+    """The variant of (b1) and (b2) the claims file allows, with the 3 SD of the 115-125 Hz
+    test taken over the segments of all subjects together instead of the subject's. For (b2),
+    whose test is per electrode, the mean and SD are over every good electrode of every
+    segment (electrodes differ between subjects). The 0 dB test is as in `rejection`.
+    Returns (rej_b1p, rej_b2p) over the rows of ev."""
+    ok_all = np.concatenate([spec[p]["ok"] for p in A.path])
+    n = len(ev)
+    low1, low2 = np.zeros(n, bool), np.zeros(n, bool)
+    hf1 = np.full(n, np.nan)
+    hf2 = {}
+    for s in subjects:
+        paths = list(A.path[A.subject == s])
+        idx = np.where(ev.subject.to_numpy() == s)[0]
+        good = np.concatenate([np.tile(meta[p]["electrodes"].good.to_numpy(), (len(spec[p]["ok"]), 1))
+                               for p in paths])
+        allc = np.concatenate([spec[p]["psd_all"] for p in paths])
+        hfc = np.concatenate([spec[p]["psd_hf"] for p in paths])
+        ok = ok_all[idx]
+        with np.errstate(divide="ignore", invalid="ignore"):
+            low1[idx] = ok & (10 * np.log10(np.nansum(np.where(good, allc, 0), 1) / good.sum(1)) < 0)
+            hf1[idx] = np.where(ok, 10 * np.log10(np.nansum(np.where(good, hfc, 0), 1) / good.sum(1)), np.nan)
+            low2[idx] = ok & (np.min(np.where(good, 10 * np.log10(allc), np.inf), 1) < 0)
+            hf2[s] = (idx, ok, np.where(good & ok[:, None], 10 * np.log10(hfc), np.nan))
+    mu1, sd1 = np.nanmean(hf1), np.nanstd(hf1)
+    rej1 = low1 | (ok_all & (hf1 > mu1 + 3 * sd1))
+    vals = np.concatenate([v[2].ravel() for v in hf2.values()])
+    vals = vals[np.isfinite(vals)]
+    mu2, sd2 = vals.mean(), vals.std()
+    rej2 = low2.copy()
+    for idx, ok, db in hf2.values():
+        rej2[idx] |= ok & np.any(db > mu2 + 3 * sd2, axis=1)
+    return rej1, rej2
 
 
 def _fit_batch(batch):
