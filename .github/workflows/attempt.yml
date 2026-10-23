@@ -122,6 +122,9 @@ jobs:
           echo "folder=$FOLDER" >> "$GITHUB_OUTPUT"
           if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
             git fetch origin "$BRANCH" && git checkout -B "$BRANCH" FETCH_HEAD
+            # The registry's tools as the workflow has them, not as the branch had them when its attempt began: a
+            # branch made before a fix would otherwise run without it. Working files only, so they are never committed.
+            git restore --worktree --source "$GITHUB_SHA" -- tools
           elif [ "$ROLE" != author ]; then
             echo "::error::No branch $BRANCH; run the author first"; exit 1
           fi
