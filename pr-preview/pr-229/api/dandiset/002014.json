@@ -1,0 +1,421 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "002014",
+  "label": "DANDI:002014"
+ },
+ "page": "datasets/dandi/002014/",
+ "generated": "2026-10-23T19:45:46+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 4,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 8
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "002014-choi-2025-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "002014",
+    "version": "0.261012.0921",
+    "doi": "10.48324/dandi.002014/0.261012.0921"
+   },
+   "key": "dandi:002014",
+   "label": "DANDI:002014",
+   "dataset_version": "0.261012.0921",
+   "paper": "10.1016/j.jneumeth.2025.110467",
+   "paper_title": "Aseptic, semi-sealed cranial chamber implants for chronic multi-channel neurochemical and electrophysiological neural recording in nonhuman primates",
+   "date": "2026-10-15",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-6"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/38742802437"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "002014-choi-2025",
+   "entry_title": "Dopamine, spikes and LFP through an aseptic cranial chamber in a rhesus monkey (Choi et al. 2025)",
+   "description": "Tests the recording findings of Choi et al. (2025) on dandiset 002014, which holds one session of monkey T recorded through the paper's semi-sealed chamber. It compares dopamine and beta-band LFP power between large and small reward trials, aligns spikes to the value cue, and checks the unit's waveform and interspike intervals. The surgical, culture, drainage and yield results, and monkey J, are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_choi_2025.ipynb",
+     "title": "Reproducing Choi et al. (2025) from dandiset 002014",
+     "executed": "notebooks/002014-choi-2025/reproduce_choi_2025.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig8a-single-trial-dopamine",
+     "statement": "In a single trial (trial 133 of the session), dopamine concentration changes at site c8ds fluctuate, especially after the value cue display.",
+     "source": "Figure 8A and its legend",
+     "quote": "Single trial measurements of dopamine concentration changes (\u0394[DA]) as a function of time relative to value cue display (V) at 0 s (trial 133 in the session). ... \u0394[DA] fluctuations are especially visible after the value cue display.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_choi_2025.ipynb",
+     "notes": "In trial 133 (1-based, a successful large reward trial) the SD of dopamine referenced at V over the 5 s after V is 2.02 times that over the 5 s before. Under the other reading (index 133, trial 134) the ratio is 2.04, with 36% and 46% of samples NaN. The test is weak. Of the 889 successful trials with a reference at V, the median ratio is 1.27, 64% exceed 1, and trial 133's ratio is above 76.9% of them. The criterion was written after trial 133's values had been printed.",
+     "deviations": [
+      "The paper shows the trial as a figure with no measure; the SD ratio and its windows were chosen here.",
+      "The paper's trial numbering is not stated; both 1-based and 0-based readings are shown, and both match."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8b-dopamine-large-vs-small",
+     "statement": "Trial-averaged dopamine at site c8ds, aligned to the value cue, increases more for large than for small reward trials, especially between the value cue display and reward.",
+     "source": "Figure 8B and its legend",
+     "quote": "Trial averaged \u0394[DA] aligned to V at 0 s for large and small reward trials, showing increased dopamine release for large in comparison to small reward trials, especially between the value cue display and reward (RW) event.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_choi_2025.ipynb",
+     "notes": "From V to reward, dopamine referenced at V averages 1.88 in large and 1.10 in small reward trials (difference 0.78 in the file's unstated unit, Cohen's d 0.19, Mann-Whitney p = 0.0035, 429 and 460 trials, 23 and 39 dropped for lack of a reference at V). Shuffling the labels within blocks of 50 consecutive trials, which keeps the drift across the session in the null, gives p = 0.0045. The difference is small in the first 2 s after V (p = 0.44) and largest from reward to 3 s after (difference 1.59, p = 0.0001, within blocks p = 0.0010); before V there is none (p = 0.50). It holds in the second half of the session (p = 0.0125) and not significantly in the first (p = 0.075). Without trial 1411, p = 0.0031.",
+     "deviations": [
+      "The PCA dopamine estimate at V is subtracted, in place of subtracting the background voltammogram at V before the PCA; the two agree if the PCA model is linear, which the dandiset does not let us check.",
+      "The window (V to each trial's reward) and the test were chosen here; the paper states none.",
+      "Trial 1411, which the paper's large reward list leaves out, is included (one trial of 452); without it p = 0.0031.",
+      "Where dopamine is NaN at V, the reference is interpolated between the nearest valid samples if both lie within 0.2 s; none of the 62 such trials has them, so all are dropped."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9a-spikes-task-aligned",
+     "statement": "Spikes recorded at site c5d on a chamber-implanted CFE can be shown as a raster and a peristimulus time histogram aligned to the value cue display, for large and small reward trials.",
+     "source": "Figure 9A and its legend; Results, section 3.5, paragraph 4",
+     "quote": "Raster plot of spikes detected on each trial (y-axis) as a function of time relative to value cue display (V) at 0 s (site c5d). ... Peristimulus time histogram (PSTH) showing average spike firing rate (y-axis) for the large (red) and small (blue) reward conditions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_choi_2025.ipynb",
+     "notes": "With the spike times moved to the trial clock by the offset measured in the data check (11812.11 s), all successful trials have a spike within V - 1 s to V + 3 s, and the variance across 100 ms bins of the PSTH is 0.49 against a 95th percentile of 0.06 over random alignments (p = 0.005 with 200); 0.48 with the 7 ms lag also corrected. The rate falls from 5.63 spikes/s before V to 4.58 in the first 0.2 s and rises to 7.70 at 0.3 to 0.5 s. Large and small trials do not differ over 0 to 1 s (5.69 against 5.66 spikes/s, p = 0.90); the paper states no difference. The Plexon unit gives 0.17 against 0.06. With the spike times as stored, 42% of trials have a spike in the window and the variance is 0.01 against 0.03, so the claim fails on the file as published.",
+     "deviations": [
+      "The spike times are moved by an offset measured from the data (the raw ephys located in the stored LFP); the file places them 11812.11 s early.",
+      "The spikes are those of the thresholded table (the paper's Zenodo file); the Plexon unit is a variant.",
+      "The paper states no effect for this panel; the criterion (spikes in most trials, and a rate locked to V beyond chance) was chosen here."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9bc-unit-waveform-isi",
+     "statement": "The spikes at site c5d have a consistent waveform (mean and standard deviation) and an interspike interval distribution (1 ms bins) consistent with a single unit.",
+     "source": "Figure 9B and 9C and their legends",
+     "quote": "Average spike waveform + /\u2212 standard deviation. C. Interspike interval (ISI) histogram showing the distribution of the timing between spikes detected. Bin widths are 1 ms.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_choi_2025.ipynb",
+     "notes": "The criterion holds, but the evidence for a single unit is weak. No ISI is under 1 ms (9 of 101732 under 2 ms), and the mean waveform's trough of -56.4 \u00b5V is 4.79 times the SD across spikes at that sample. Neither part could easily fail. The shortest ISI, 1.562 ms, just exceeds the 48-sample (1.50 ms) waveform, so the detector's dead time excludes ISIs under 1 ms, and every one of the 101733 spikes exceeds the 40 \u00b5V threshold (smallest peak 40.3 \u00b5V), which nearly forces the trough above twice the SD. Above the dead time, ISIs per ms at 1.56 to 3 ms are 0.106 times those at 10 to 30 ms (Plexon unit 0.204), which fits a refractory period in most spikes but does not rule out other units. Only 54411 of the Plexon unit's 90912 spikes lie within 0.2 ms of a spike of thresholded unit 1 (101733 spikes). The Plexon unit has 1 ISI under 1 ms, 14 (0.015%) under 1.56 ms and 39 (0.04%) under 2 ms.",
+     "deviations": [
+      "The paper states no measure for these panels; the 1% ISI rule and the trough-to-SD ratio are common choices made here.",
+      "The waveforms are read as microvolts, although the file states volts."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9d-beta-suppression-large",
+     "statement": "Trial-averaged beta-band LFP power at c7b referenced to c5c is suppressed more in the brief window after the value cue for large than for small reward cues.",
+     "source": "Figure 9D and its legend",
+     "quote": "Trial averaged beta-band LFP power showing increased suppression during the brief time window immediately following the cue (V) for large as compared to small reward cues (site c7b-c5c).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_choi_2025.ipynb",
+     "notes": "Beta power (13 to 30 Hz) falls after V in both conditions (median log10 ratio of 0 to 0.5 s after V to 0.5 s before, -0.158 for large and -0.125 for small, each p < 0.001 against 0). The fall is larger for large cues, but not significantly (difference of medians -0.033, Mann-Whitney p = 0.108; 452 and 499 trials, none dropped; shuffling within blocks of 50 trials, p = 0.19). Averaged over trials, as in the paper's figure, power over 0 to 0.5 s is 0.839 of the baseline for large (95% CI 0.782 to 0.903) and 0.885 for small (0.831 to 0.940), a difference of -0.046 (-0.125 to 0.036). No variant reaches p < 0.05 (15 to 30 Hz, p = 0.063; 1 s baseline, p = 0.108; 12 to 25 Hz, p = 0.19; windows of 0 to 0.3 s and 0 to 1 s, p = 0.59 and 0.84; without baseline, p = 0.17). The paper states no test for this panel.",
+     "deviations": [
+      "The band, the filter, the power measure, the baseline, the window and the test were chosen here; the paper gives none.",
+      "The stored series, described as beta-band LFP, is broadband and was band-passed here."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "recordings-two-monkeys",
+     "statement": "The chamber system provided recordings of dopamine and electrical neural activity in two monkeys (T and J).",
+     "source": "Abstract, Results; Results, section 3.5, paragraph 4",
+     "quote": "Our chamber system was shown to provide successful recordings of dopamine and electrical neural activity in two monkeys",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The dandiset holds one session of monkey T only (one NWB file). No recording of monkey J is in it or in the paper's Zenodo record, which also holds monkey T only. The monkey T part is tested by the Figure 8 and 9 claims.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "scfe-functional-yield",
+     "statement": "53% (21/40) and 25% (13/51) of implanted sCFEs retained functionality (background current above 500 nA and noise below 0.05 nA) in monkeys T and J.",
+     "source": "Results, section 3.5, paragraph 1",
+     "quote": "53 % (21/40) and 25 % (13/51) of the implanted sCFE\u2019s retained functionality (background current > 500 nA and noise < 0.05 nA) in monkeys T and J, respectively.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The per-electrode background current and noise measured at implantation and during recovery, for 40 and 51 sCFEs, are not in the dandiset, which holds one FSCV electrode (c8ds) on one day. Not found in the Zenodo record either.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "scfe-background-yield",
+     "statement": "73% (29/40) and 39% (20/51) of implanted sCFEs retained background current above 500 nA in monkeys T and J, of which 28% and 35% had noise above 0.05 nA.",
+     "source": "Results, section 3.5, paragraph 1",
+     "quote": "73 % (29/40) and 39 % (20/51) of the implanted sCFE\u2019s retained viable background current > 500 nA, and of these several (28 % and 35 % in monkeys T and J, respectively) fell short of full functionality with noise levels > 0.05 nA.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "As for scfe-functional-yield; the electrode-level background and noise measurements are not deposited.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "mcfe-functional-yield",
+     "statement": "21.4% (3/14) and 14.2% (2/14) of mCFEs retained functionality in monkeys T and J.",
+     "source": "Results, section 3.5, paragraph 2",
+     "quote": "On the other hand, the mCFE\u2019s retained a lower functional yield of 21.4 % (3/14) and 14.2 % (2/14) in T and J, respectively.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No mCFE measurements are in the dandiset or the Zenodo record.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "dopamine-signal-yield",
+     "statement": "Of the functional CFEs, 63% (15/24) and 53% (8/15) in monkeys T and J displayed visible dopamine signals and were used during task performance.",
+     "source": "Results, section 3.5, paragraph 4",
+     "quote": "Of the functional CFEs, 63 % (15/24) and 53 % (8/15) in monkeys T and J, respectively, displayed visible dopamine signals (i.e., current changes along dopamine redox potentials), and were successfully applied in measurements during task performance.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The dandiset holds the FSCV of one electrode; the 24 and 15 functional CFEs and which of them showed dopamine signals are not deposited.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "asepsis-cultures",
+     "statement": "Monkey T kept negative bacterial cultures for all samples; in monkey J, staphylococcus cultured at 29 days post-implant was cleared by 39 to 44 days and the chamber stayed aseptic for 286 days after treatment.",
+     "source": "Results, section 3.2, paragraph 3; Abstract",
+     "quote": "Bacteria (staphylococcus) was cultured about a month post-implant (29 days) in monkey J ... Monkey T maintained negative cultures for all collected samples. ... 39 \u2013 44 days post-implant the samples began to show negative results ... maintained aseptic condition for the next 286 days",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The culture results (IDEXX BioAnalytics) are not in the dandiset, the Zenodo record or the protocols.io protocols the paper cites.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-drainage-volume",
+     "statement": "Fluid aspirated from the chamber per session ranged from 0.3 to 4.8 mL in monkey T and 0.2 to 9.8 mL in monkey J, and was sanguinous for the first 18 (T) and 217 (J) days.",
+     "source": "Results, section 3.2, paragraph 1; Figure 6",
+     "quote": "Fluid collected from the chamber aspiration tube for a given day varied between 0.3 \u2013 4.8 mL for monkey T and between 0.2 \u2013 9.8 mL for monkey J (Fig. 6). ... sanguinous (i.e., bloody) in the first few weeks or months (18 days post-implant in monkey T and 217 days in J)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The aspirated volumes per session are not in the dandiset or the Zenodo record.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-bone-growth-margins",
+     "statement": "Bone growth was observed within and around the chamber in both monkeys, and the chamber margins stayed relatively healthy.",
+     "source": "Results, section 3.3, paragraph 1, and section 3.4, paragraph 1; Figure 7",
+     "quote": "Prominent bone growth was observed in both monkeys within and around the chamber interfaces (Fig. 7). ... The margins of the chamber in both monkeys remained relatively healthy and intact (Fig. 7D and E).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The observations are photographs and surgical notes, which are not deposited.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "format_error",
+     "statement": "The raw ephys and the spike times are not on the clock of the trials, events, LFP and FSCV table. The raw ephys is stored with a starting time of 0 s and a rate, and the spike times count from its first sample. Locating the raw c7b minus c5c signal in the stored LFP puts raw time 0 at 11812.11 s on the trial clock (correlation 0.98 to 1.00 at eight points, drift about 4 ms per hour). Without this correction spikes cannot be aligned to the task. The dandiset description says all data are expressed relative to the start of the Neuralynx recording, which the data contradict."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The absolute times disagree. On the trial clock the raw samples run from 12:06:44 to 17:12:20, while the Neuralynx header gives the recording as opened at 08:49:52 (the session start) and closed at 15:12:24, two hours before the raw samples end. The header span (22952 s) is also longer than the raw samples (18336 s)."
+    },
+    {
+     "kind": "other",
+     "statement": "The stored spike times of the thresholded units are about 7.1 ms after the spike troughs in raw c5d (in one 300 s segment of 1633 spikes, per-spike trough lags of -7.4 to -6.9 ms from the 10th to the 90th percentile, 98.8% within 0.5 ms of -7.1 ms)."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The series \"bipolar_lfp_series\" is described as beta-band LFP but is broadband with line noise removed. Its values are already in volts, while it carries the raw int16 conversion factor (3.05e-8), which would scale them about 3e7 times too small."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The thresholded spike waveforms are stated in volts but hold microvolts (mean trough about -56), and the raw FSCV current is stated in amperes but holds nanoamperes (values around 1000)."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The columns of the trial-aligned FSCV table (da, ph, m, iox) state no units, and the `good` column is true for every trial."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The subject description (\"Two adult female rhesus monkeys were used for in vivo validation of the s-\u00b5IP device\"), the session and experiment descriptions and the keyword \"micro-invasive neural implant\" describe the lab's micro-invasive probe study, not this paper's chamber."
+    },
+    {
+     "kind": "format_error",
+     "statement": "The event table stores each event once per overlapping 60 s trial window, about five copies of each (7221 stored trial-start events for 1412 distinct ones), and its event times are not sorted. The Plexon units table's spike times are not sorted either."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The trial tags are all \"initial cue display\" and carry no trial type. Reward size and outcome can be rebuilt from the events, and they then match the paper's Zenodo trial lists except trial 1411, which the events mark as a successful large reward trial and the list leaves out."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The paper says the reward size depends on whether the target is at the top or bottom of the screen. The events code left and right conditions, and both reward sizes occur on both sides, so the target position that sets the reward is not in the dandiset."
+    },
+    {
+     "kind": "other",
+     "statement": "The raw FSCV minute files are joined without their gaps (328 min of scans against 302 min of trials, placed from a single starting time), and the trial-aligned oxidation current cannot be located in them, so the raw FSCV's clock could not be established."
+    },
+    {
+     "kind": "data_missing",
+     "statement": "Only one session of monkey T is deposited. The data behind the electrode yields, cultures, drainage volumes and bone growth, and all of monkey J, are not, so eight of the thirteen claims cannot be tested."
+    }
+   ],
+   "verifications": [
+    {
+     "date": "2026-10-15",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's full text (PMC13250822). The verifier listed the version's assets and metadata through the archive API, and tested psth, window_mean, trial_table, band_power_around and reference_at on synthetic inputs.",
+     "agreed": 13,
+     "of": 13,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-15",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the revision with its conclusions and summary, the helper module, the claims file, the README and this record.",
+     "agreed": 13,
+     "of": 13,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "002014-choi-2025",
+   "type": "reproduction",
+   "title": "Dopamine, spikes and LFP through an aseptic cranial chamber in a rhesus monkey (Choi et al. 2025)",
+   "description": "Tests the recording findings of Choi et al. (2025) on dandiset 002014, which holds one session of monkey T recorded through the paper's semi-sealed chamber. It compares dopamine and beta-band LFP power between large and small reward trials, aligns spikes to the value cue, and checks the unit's waveform and interspike intervals. The surgical, culture, drainage and yield results, and monkey J, are not in the dandiset.",
+   "datasets": [
+    "dandi:002014"
+   ],
+   "papers": [
+    "10.1016/j.jneumeth.2025.110467"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_choi_2025.ipynb",
+     "title": "Reproducing Choi et al. (2025) from dandiset 002014",
+     "executed": "notebooks/002014-choi-2025/reproduce_choi_2025.html"
+    }
+   ]
+  }
+ ]
+}
