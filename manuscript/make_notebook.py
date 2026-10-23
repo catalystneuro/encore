@@ -57,13 +57,10 @@ targets = data["targets"]
 attempts = data["attempts"]
 current = bs.current_attempts(data)
 live = [a for v in current.values() for a in v if not a.get("deprecated")]
-cn = {t["key"] for t in targets if t["catalystneuro"]}
 attempted = {a["key"] for a in live}
 sample = {
     "targets (public datasets that name a paper)": len(targets),
-    "  of them converted by CatalystNeuro": len(cn),
     "datasets with a current attempt": len(attempted),
-    "  of them converted by CatalystNeuro": len(attempted & cn),
     "papers attempted (dataset, paper pairs)": len(live),
     "attempt records in all": len(attempts),
     "  deprecated": sum(1 for a in attempts if a.get("deprecated")),
@@ -71,10 +68,6 @@ sample = {
 }
 numbers["sample"] = sample
 pd.Series(sample, name="count").to_frame()
-""")
-md("""
-CatalystNeuro's conversions were attempted first, so the attempted set is not a random sample of the targets:
-report the two groups apart (section 3), or attempt a random sample of the rest before freezing.
 """)
 
 md("## 2. Outcomes of the claims")
@@ -121,7 +114,7 @@ for a in live:
     n = sum(c.values())
     if n:
         per.append({"dataset": a["label"], "paper": a.get("paper_title") or a["paper"], "n": n,
-                    "catalystneuro": a["key"] in cn, "tier": a["tier"], "findings_about_data": len(a["findings"]),
+                    "tier": a["tier"], "findings_about_data": len(a["findings"]),
                     **{k: c[k] for k in ORDER}})
 per = pd.DataFrame(per)
 per["reproduced_of_tested"] = per["reproduced"] / (per[ORDER[:3]].sum(axis=1)).replace(0, float("nan"))
@@ -140,15 +133,6 @@ ax.set_yticks(range(len(p)), p["dataset"], fontsize=6); ax.set_xlim(0, 1)
 ax.set_xlabel("Share of the paper's findings on the dataset alone")
 ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=4, fontsize=7, frameon=False)
 plt.tight_layout(); plt.savefig(OUT / "outcomes_by_dataset.png", dpi=200); plt.show()
-""")
-code("""
-g = per.groupby("catalystneuro")[ORDER + ["n", "findings_about_data"]].sum()
-g.index = g.index.map({True: "Converted by CatalystNeuro", False: "Converted by others"})
-g["datasets"] = per.groupby("catalystneuro").size().values
-g["reproduced, of tested"] = (g["reproduced"] / g[ORDER[:3]].sum(axis=1)).map("{:.0%}".format)
-g["findings per dataset"] = (g["findings_about_data"] / g["datasets"]).round(1)
-numbers["by_converter"] = g.drop(columns=["reproduced, of tested"]).to_dict(orient="index")
-g
 """)
 
 md("## 4. Verification")
