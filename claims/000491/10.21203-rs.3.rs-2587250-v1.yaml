@@ -1,0 +1,646 @@
+# Claims for Raicevic, Forer, Ladron-de-Guevara, Du, Nedergaard, Kelley & Boster (2023), "Sizes
+# and Shapes of Perivascular Spaces Surrounding Murine Pial Arteries", on dandiset 000491.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read. The Research Square preprint, version 1 (doi:10.21203/rs.3.rs-2587250/v1), full text
+# as served by PubMed Central (PMC9949243): Background, Methods, Results, Discussion, figure
+# legends and Tables 1 to 3. The version of record (Fluids and Barriers of the CNS 20, 56, 2023,
+# doi:10.1186/s12987-023-00454-z) was not read. Additional Files 1 to 6 were not in the text:
+# File 1 is the full description of the segmentation (the main Methods give the approach used),
+# Files 2 to 6 are figures (average images, fits, and per-location distributions of area ratio
+# and resistance). The per-location numbers the claims use are stated in the main Results. The
+# Results cite "Additional File 3" for per-location area ratios, which the file list names
+# Additional File 4. No PDF was supplied. The paper links no code (data "available from the
+# corresponding author upon reasonable request"; the authors' contributions say the code is
+# MATLAB, written by KASB and JF), so no repository was read and no detail is settled by code.
+#
+# Data the paper used. 14 pial periarterial PVS segments (locations A to N) in 9 wild-type mice
+# (BPN/3J or beta-actin-GFP on C57BL/6, male and female, 8 to 12 weeks), ketamine/xylazine
+# anesthesia, cranial window over the MCA territory, intracisternal BSA-647 or BSA-594 CSF tracer,
+# intravascular FITC-dextran. 3D two-photon stacks, 512 by 512 pixels, 0.648 um per pixel in the
+# transverse plane and 1 um per step in depth, 16 bit. The PVS and vessel were segmented with a
+# depth-varying threshold (Edge Finder, with manual refinement; Mean + Standard Deviation for
+# locations G, I and J, J for the PVS only), small regions removed, the largest vessel region and
+# two largest PVS regions kept, holes filled, branching vessels removed by hand, overlaps resolved
+# by hand. Between 54 and 451 cross sections normal to the vessel centerline per segment, about
+# 0.8 um apart. Measured per cross section: segmented PVS and vessel areas, PVS-to-vessel area
+# ratio, hydraulic resistance per unit length of the segmented PVS and of three fits (ellipse,
+# spline, polynomial) and of the optimal elliptical annulus, and the fit parameters (ellipse R1,
+# R2, R3, Oh, Ov; polynomial R1, H1, H2, H3, HC, WS, WL).
+# The dandiset description says it holds, for the 14 datasets of 9 subjects, the 3D stacks in
+# three channels and the final binary segmentation of PVS and vessel used for the paper, and maps
+# subjects to the paper's mice and locations: sub-BPN-OLD-M2 (mouse 1, A and B), sub-BPN-OLD-M3
+# (mouse 2, C and D), sub-BPN-M4 (mouse 3, E and F), sub-BPN-M6 (mouse 4, G and H), sub-BPN-M7
+# (mouse 5, I and J), sub-21-07-19-b-act (mouse 6, K), sub-21-10-08-b-act (mouse 7, L),
+# sub-21-09-01-b-act (mouse 8, M), sub-21-09-20-b-act (mouse 9, N). The 2D time series used to
+# validate the segmentation are not named in the description.
+#
+# The common pipeline, from the Methods, with the details they leave open and the readings
+# each claim runs where the detail could change its outcome. Start from the deposited final
+# segmentations (the paper's segmentation step includes manual work that cannot be redone).
+# (P1) Resample the masks to isotropic resolution. Open, the target voxel size. Readings
+#   (a) 0.648 um (depth upsampled), (b) 1 um (transverse downsampled).
+# (P2) Vessel centerline from MATLAB bwskel (or an equivalent 3D skeleton), erroneous points
+#   removed by hand. Open, which points were removed. Readings (a) the longest path through the
+#   skeleton, side branches dropped, (b) all skeleton points.
+# (P3) Second-order polynomials fit to the centerline points in the transverse plane and in the
+#   axial plane (XZ or YZ, by vessel orientation); the normal at each center point from the cross
+#   product of vectors perpendicular to the two fits; slices taken with obliqueslice (or an
+#   equivalent oblique resampling) and shifted so the vessel center is at the image center.
+#   Orientation within the slice. "Top" in the paper is the brain surface side (the vessel bottom
+#   is the deep side where red blood cells attenuate the signal, Methods, Idealized geometries),
+#   so the slice's vertical axis is the projection of the depth axis, top toward the surface;
+#   left and right follow from a fixed direction along the centerline. This is a reading of the
+#   Methods and Figures 3 and 4; the paper does not state it.
+# (P4) Exclude a cross section when the distance from the vessel center to the edge of the
+#   imaging plane is less than the median width of the PVS divided by 2.5. Open, how the PVS
+#   width is measured and over what the median is taken. Readings (a) the horizontal extent of
+#   the PVS segmentation in each slice, median over the segment's slices, (b) the polynomial-fit
+#   width W (vessel edge to PVS end, Figure 4), median over the segment's slices and both sides.
+#   Open also whether the distance is measured in the slice or in the 3D volume; the slice
+#   reading is used, as the criterion is stated for the imaging plane.
+# (P5) Areas from the segmentation in each slice. The area ratio is PVS area over vessel area.
+#   Open, for the segmentation's ratio, the vessel area. Readings (a) the segmented vessel area
+#   (Figure 5A plots segmented areas), (b) the area of the fitted circle, pi R1^2 (the vessel fit
+#   is used for all fits). For the fits, open also, the vessel area. Readings (a) the fitted
+#   circle, pi R1^2 (the Methods use the same vessel fit for all three fits), (b) the segmented
+#   vessel area. The spline shape is fixed by R1 alone, so under (a) its ratio would be constant
+#   up to pixelation, yet Table 2 gives it an IQR of 0.3 (1.45 to 1.75); the paper does not
+#   say which it used.
+# (P6) Vessel circle fit to edge points of the vessel segmentation, excluding edge points inside
+#   the eroded convex hull of the segmentation. Open, the erosion size and the circle-fitting
+#   method. Readings, erosion by 1, 3 and 5 pixels; algebraic least-squares circle fit (a
+#   standard choice; the paper names none).
+# (P7) Distribution peak (Methods, Defining the distribution peak), the center of the bin of
+#   largest probability density among 20 evenly spaced bins. Open, the range binned. Readings
+#   (a) minimum to maximum of all values, (b) the values left after removing outliers as the
+#   Methods define them (more than 1.5 IQR above the 75th or below the 25th percentile), as the
+#   plotted distributions do. Percentiles from all values.
+# (P8) Hydraulic resistance per unit length, Poiseuille flow, Poisson's equation solved by finite
+#   elements on a triangular mesh (MATLAB solvepde), with no-slip on the PVS boundary, after the
+#   PVS region is eroded by one pixel; mesh refined until the resistance of a circle of the same
+#   area is within 1% of the exact value; viscosity 7.058e-4 Pa s; R = (dP/dn)/Q. Both PVS
+#   lobes form one cross section, Q summed over them (a reading; the paper treats the cross
+#   section as one channel). The pixel size follows P1.
+# (P9) Fits (Methods, Idealized geometries; Figure 4; Table 1). Ellipse, the ellipse with the
+#   centroid and second central moments of the PVS segmentation in the slice (both lobes
+#   together), R2 and R3 its semi-major and semi-minor axes, Oh and Ov the horizontal and
+#   vertical offsets of the vessel center from the ellipse center. Open, the PVS region of the
+#   ellipse fit. Readings (a) the ellipse minus its overlap with the circle, (b) ellipse area
+#   minus circle area. Spline, six control points at horizontal 0, R1, 2R1, 3R1, 4R1, 5R1 from the
+#   vessel center and vertical 1.1111, 0.85, 0.2667, 0.1111, 0.1111, 0.1111 R1 above the PVS
+#   midline, joined by a spline and mirrored about both axes, the vessel center 0.0667 R1 below
+#   the midline (Table 1 and Methods); open, the spline type, reading an interpolating cubic
+#   spline (a standard choice). Polynomial, a line fit by least squares to points on the top
+#   edge of the PVS, and on each side of the vessel a second-order polynomial fit by least squares
+#   to points on the bottom edge. Open, which pixels are edge points and where each side ends.
+#   Reading, per image column crossing the PVS, the topmost PVS pixel for the line and the
+#   bottommost for the polynomial of that side, columns outside the vessel's horizontal extent
+#   for the bottom; each side ends at the outermost PVS column on it. The parameters as the
+#   Figure 4 legend defines them, W from the vessel edge to the end of the PVS (WS and WL the
+#   shorter and longer side), HC from the top of the vessel to the line, H1 the height next to
+#   the vessel, H2 midway, H3 at the end, each height between the line and the polynomial.
+#   The polynomial PVS region is bounded by the line above, the polynomials below, the PVS ends
+#   and the circle.
+# Table 2's 25th and 75th percentiles and IQRs of resistance are garbled in the text (the 75th
+# percentile is printed below the median, exponents appear lost); they are not used. The
+# spline column is doubtful as a whole (its printed median 2.58e15 and 75th percentile 7.07e15
+# lie below its peak 1.07e16), so its median is not used either. Table 3's
+# dimensional values (R1 peak 64.9 um, median 139 um) disagree with the vessel radius peak of
+# 28 um that the Results and Discussion give and are not used; its ratios are.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000491"
+paper: doi:10.21203/rs.3.rs-2587250/v1
+claims:
+- id: cross-section-counts
+  statement: After excluding cross sections near the edge of the imaging volume, each of the 14
+    PVS segments yields between 54 and 451 normal cross sections, about 0.8 um apart.
+  source: Methods, Creating normal cross sections
+  quote: This resulted in between 54 and 451 different cross sections for each of the 14 PVS
+    segments that were included in the subsequent analysis. The average distance between normal
+    planes was approximately 0.8 μ m.
+  expected:
+  - quantity: fewest cross sections in a segment
+    value: 54
+    tolerance: 5.4
+  - quantity: most cross sections in a segment
+    value: 451
+    tolerance: 45.1
+  - quantity: mean distance between normal planes
+    value: 0.8
+    tolerance: 0.08
+    unit: um
+  criterion: Pipeline P1 to P4 of the opening comment, one slice per centerline point. The
+    claim holds under a reading when the fewest and most cross sections per segment lie in
+    the range 54 to 451 widened by 10% of each bound, and the mean spacing is within
+    tolerance. Every combination of readings of P1, P2 and P4 is run.
+- id: segmentation-validation-overlap
+  statement: Where a high signal-to-noise 2D time-averaged image was acquired, the 3D
+    segmentation at the matching depth overlaps the 2D segmentation by at least 70% of the
+    union area, for both PVS and vessel.
+  source: Methods, Image Segmentation, last paragraph; Figure 2 legend
+  quote: To consider the segmentation successful, at least 70% of the area had to overlap in
+    both PVS and vessel ... The 3D segmentation and 2D segmentation match over 70% which gives
+    confidence that 3D segmentation is accurate.
+  expected:
+    quantity: smallest overlap, intersection over union of 2D and 3D segmentations
+    value: 0.7
+    tolerance: 0
+  criterion: Overlap as Equation 1, the area of the intersection over the area of the union of
+    the 2D and 3D segmentations at the depth that minimizes their difference, after aligning the
+    fields of view (the registration of Boster et al., reference 31, is not described here). The
+    2D segmentations must come with the data, since the paper's thresholds for them are not
+    given. Reproduced when every validated segment has overlap of at least 0.70 for both PVS and
+    vessel. The 70% is the paper's acceptance threshold, so no tolerance applies.
+- id: fig5a-pvs-area-scales-with-vessel-area
+  statement: PVS area increases with vessel area only approximately; the least-squares line of
+    PVS area on vessel area over all cross sections has slope 1.05 (95% CI 0.973 to 1.12) and
+    R2 of 0.158.
+  source: Results, Area ratio, paragraph 1; Figure 5A
+  quote: The area of the PVS generally increases with the area of the vessel, but the trend is
+    only approximate, as evidenced by the low R 2 value of the fit line (0.158). The slope of the
+    fit line is 1.05, (95% confidence interval 0.973, 1.12).
+  statistics:
+  - about: slope of PVS area on vessel area
+    test: least-squares fit
+    ci:
+      level: 0.95
+      low: 0.973
+      high: 1.12
+    n: all cross sections of the 14 segments
+  expected:
+  - quantity: slope of PVS area on vessel area
+    value: 1.05
+    tolerance: 0.077
+  - quantity: R2 of the fit
+    value: 0.158
+    tolerance: 0.0158
+  criterion: Pipeline P1 to P5, segmented areas of every retained cross section pooled over the
+    14 segments, ordinary least squares of PVS area on vessel area (Figure 5A legend). The
+    slope tolerance is the larger half-width of the paper's 95% CI; the R2 tolerance is 10%.
+    Open, whether the line has an intercept. Readings (a) with intercept, (b) through the
+    origin (the Results compare the slope with the area ratio). Reproduced when, under one
+    reading, both values are within tolerance.
+- id: fig5e-area-ratio-distribution
+  statement: The PVS-to-vessel area ratio of the segmentation varies widely across cross
+    sections; its distribution peaks at 1.12, its median is 1.88 and its IQR is 1.79 (25th
+    percentile 1.21, 75th 3.00), so the ratio varies by more than 100%.
+  source: Results, Area ratio, paragraph 1; Figure 5E; Table 2
+  quote: There is considerable variation in the area ratio, and the interquartile range of the
+    segmented area ratio is 1.79 ( Table 2 ), a value on the same order as the median value of
+    1.88, meaning that the area ratio varies by more than 100%. The peak value of 1.12
+  expected:
+  - quantity: peak of segmented area ratio distribution
+    value: 1.12
+    tolerance: 0.112
+  - quantity: median segmented area ratio
+    value: 1.88
+    tolerance: 0.188
+  - quantity: IQR of segmented area ratio
+    value: 1.79
+    tolerance: 0.179
+  - quantity: 25th percentile of segmented area ratio
+    value: 1.21
+    tolerance: 0.121
+  - quantity: 75th percentile of segmented area ratio
+    value: 3.0
+    tolerance: 0.3
+  criterion: Pipeline P1 to P5 and P7, the ratio of every retained cross section pooled over the
+    14 segments. Reproduced when, under one combination of the readings of P1, P2, P4, P5, P6
+    (when P5 reading b) and P7, all five values are within tolerance; partially reproduced when
+    the median and IQR are within tolerance but the peak is not.
+- id: fig5bc-area-intersegment-variation
+  statement: Variation in PVS area is much larger between PVS segments than along the length of a
+    single segment.
+  source: Results, Area ratio, paragraph 2; Figure 5B and 5C
+  quote: From Figure 5 , it is clear that the variation in PVS area is much larger between
+    segments of PVS than along the length of a single PVS segment. We quantified this difference
+    by plotting the median PVS area from each segment and the interquartile range of each segment
+  criterion: Pipeline P1 to P4, per segment the median and IQR of segmented PVS area (Figure 5B
+    and 5C). The paper compares these by eye and gives no measure. Readings of "much larger"
+    from what the figure shows (a) the IQR of the 14 segment medians is larger than the median
+    of the 14 within-segment IQRs; (b) the range of the 14 segment medians is larger than the
+    largest within-segment IQR. Reproduced when both readings hold, not reproduced when
+    neither holds; otherwise methods_underspecified. All 28 values are shown.
+- id: area-ratio-per-location
+  statement: The peak of the segmented area ratio distribution ranges from 0.6 to 11.43 across
+    the 14 locations, and in all but one location the ratio's variation along the vessel lies
+    within 30% of the peak, so variation between segments dominates.
+  source: Results, Area ratio, paragraph 2; Additional File 3 (Additional File 4 in the list)
+  quote: The peak of the area ratio distribution ranges from 0.6 to 11.43 across the different
+    locations. Although their area ratio varies along the length of each vessel, in all but one
+    case, this variation occurs within 30% of the peak
+  expected:
+  - quantity: smallest per-location peak of area ratio
+    value: 0.6
+    tolerance: 0.06
+  - quantity: largest per-location peak of area ratio
+    value: 11.43
+    tolerance: 1.143
+  - quantity: locations whose variation lies within 30% of the peak
+    value: 13
+    tolerance: 1.3
+  criterion: Pipeline P1 to P5 and P7, applied per location. Open, what "variation within 30% of
+    the peak" measures. Readings (a) the 25th and 75th percentiles both lie within 30% of the
+    peak value; (b) the IQR is at most 30% of the peak value; (c) the IQR is at most 60% of the
+    peak value (30% each side); (d) all non-outlier values (outliers as the Methods define
+    them, the values the per-location plots show) lie within 30% of the peak. Reproduced when, under one combination of readings, the two
+    peaks and the count are within tolerance.
+- id: fig5d-polynomial-closest-area-ratio
+  statement: Of the three fits, the polynomial fit matches the segmentation's area ratio most
+    closely in 73% of cross sections, the spline fit in 19% and the ellipse fit in 8%, and its
+    distribution matches the segmentation's best.
+  source: Results, Area ratio, paragraph 3; Figure 5D and 5E
+  quote: The distribution of the PVS-to-vessel area ratio in segmentations is matched most
+    closely by the polynomial fit ( Figure 5E ), and the value of the area ratio in segmentations
+    is matched most closely by the polynomial fit in 73% of cases ( Figure 5D ) ... the ellipse
+    fit gives the closest match in only 8% of cases ... The spline fit gives the closest match in
+    19% of the cases
+  expected:
+  - quantity: share of cross sections best matched by the polynomial fit
+    value: 73
+    tolerance: 7.3
+    unit: percent
+  - quantity: share best matched by the spline fit
+    value: 19
+    tolerance: 1.9
+    unit: percent
+  - quantity: share best matched by the ellipse fit
+    value: 8
+    tolerance: 0.8
+    unit: percent
+  criterion: Pipeline P1 to P6 and P9. Per cross section, the fit whose area ratio has the
+    smallest absolute difference from the segmentation's (Figure 5D, "best predicted"). Every
+    combination of the readings of P5, P6 and P9 (ellipse region) is run. Reproduced when, under
+    one combination, the three shares are within tolerance; partially reproduced when the
+    polynomial share is the largest and above 50% but the shares are not all within tolerance.
+- id: table2-fit-area-ratio-peaks
+  statement: The area ratio distribution peaks at 1.21 for the polynomial fit (close to the
+    segmentation's 1.12), 2.08 for the ellipse fit, which does not narrow at the ends, and 1.48
+    for the spline fit, whose ratio varies little because it scales with vessel size alone.
+  source: Results, Area ratio, paragraph 3; Table 2; Figure 5E
+  quote: The peak of the area ratio distribution for the polynomial fit is 1.21, similar to the
+    peak of the segmentation distribution of 1.12 ... has a significantly higher peak of 2.08
+    because it does not narrow at the ends. The spline fit gives the closest match in 19% of the
+    cases and has a peak of 1.48
+  expected:
+  - quantity: peak area ratio, polynomial fit
+    value: 1.21
+    tolerance: 0.121
+  - quantity: peak area ratio, ellipse fit
+    value: 2.08
+    tolerance: 0.208
+  - quantity: peak area ratio, spline fit
+    value: 1.48
+    tolerance: 0.148
+  - quantity: median area ratio, polynomial fit
+    value: 2.15
+    tolerance: 0.215
+  - quantity: median area ratio, ellipse fit
+    value: 2.89
+    tolerance: 0.289
+  - quantity: median area ratio, spline fit
+    value: 1.58
+    tolerance: 0.158
+  - quantity: IQR of area ratio, spline fit
+    value: 0.3
+    tolerance: 0.03
+  criterion: Pipeline P1 to P7 and P9, fit areas over the vessel area under each reading of P5
+    for the fits. The paper reports no test
+    for "significantly higher". Reproduced when, under one combination of readings, all values
+    are within tolerance; partially reproduced when the order of the peaks (ellipse above
+    spline above polynomial) holds and the spline IQR is the smallest of the three.
+- id: fig6a-resistance-power-law
+  statement: The hydraulic resistance per unit length of the segmented PVS is well predicted by
+    a power law in PVS area (R2 = 0.944), with exponent -1.75 (95% CI -1.763 to -1.737), close
+    to the -2 of a shape scaled in size alone.
+  source: Results, Hydraulic Resistance, paragraph 2; Figure 6A
+  quote: The hydraulic resistance can be reasonably predicted with a power-law fit as a function
+    of the PVS area alone (R 2 = 0.944). The exponent in the power law fit is −1.75 (95%
+    confidence interval −1.763, −1.737)
+  statistics:
+  - about: power-law exponent of resistance on PVS area
+    test: power-law fit
+    ci:
+      level: 0.95
+      low: -1.763
+      high: -1.737
+    n: all segmented cross sections of the 14 segments
+  expected:
+  - quantity: power-law exponent
+    value: -1.75
+    tolerance: 0.013
+  - quantity: R2 of the power-law fit
+    value: 0.944
+    tolerance: 0.0944
+  criterion: Pipeline P1 to P4 and P8 on the segmented PVS, area from the segmentation (P5),
+    all retained cross sections pooled. The exponent tolerance is the half-width of the paper's
+    95% CI. Open, how the power law is fit. Readings (a) least squares of log resistance on log
+    area, R2 on the log scale; (b) nonlinear least squares of resistance on area, R2 on the
+    linear scale. Reproduced when, under one combination of readings, both values are within
+    tolerance; partially reproduced when the R2 is within tolerance and the exponent lies
+    between -2 and -1.5.
+- id: fig6b-resistance-segmentation-peak
+  statement: The distribution of segmented PVS hydraulic resistance per unit length over all
+    cross sections peaks at 1.73e15 Pa s/m^4, with a median of 3.84e15 Pa s/m^4.
+  source: Discussion, paragraph 4; Conclusion; Table 2; Figure 6B
+  quote: Here, we report the distribution of hydraulic resistances for thousands of PVS cross
+    sections, with its peak at 1.73×10 15 Pa· s/m 4
+  expected:
+  - quantity: peak of segmented resistance distribution
+    value: 1.73e+15
+    tolerance: 1.73e+14
+    unit: Pa s/m^4
+  - quantity: median segmented resistance (Table 2)
+    value: 3.84e+15
+    tolerance: 3.84e+14
+    unit: Pa s/m^4
+  criterion: Pipeline P1 to P4, P7 and P8. Open, beyond P7, whether the 20 bins are even on a
+    linear or a logarithmic scale of resistance (the paper says evenly spaced and the values
+    span two orders of magnitude). Readings (a) linear, (b) logarithmic. Reproduced when, under
+    one combination of readings, both values are within tolerance; partially reproduced when
+    the median is and the peak is not.
+- id: resistance-per-location
+  statement: Variation in resistance is much larger between locations than along each PVS; the
+    per-location peaks range from 3.23e14 to 1.98e16, and in 65% of vessels all the variation
+    lies within 37% of the peak.
+  source: Results, Hydraulic Resistance, paragraph 2; Figure 6B; Additional File 5
+  quote: it is evident that the variation between locations is much larger than that along the
+    PVS at each location. The peak of hydraulic resistance distributions ranges from 3.23×10 14
+    to 1.98×10 16 across different locations, whereas, in 65% of the vessels, all the variation
+    occurs within 37% of the peak of the distribution
+  expected:
+  - quantity: smallest per-location peak resistance
+    value: 3.23e+14
+    tolerance: 3.23e+13
+    unit: Pa s/m^4
+  - quantity: largest per-location peak resistance
+    value: 1.98e+16
+    tolerance: 1.98e+15
+    unit: Pa s/m^4
+  - quantity: share of locations whose variation lies within 37% of the peak
+    value: 65
+    tolerance: 6.5
+    unit: percent
+  criterion: Pipeline P1 to P4, P7 and P8, per location. Open, what "all the variation"
+    measures. Readings (a) the 25th and 75th percentiles lie within 37% of the peak; (b) all
+    non-outlier values (outliers as the Methods define them) lie within 37% of the peak; (c)
+    the IQR is at most 37% of the peak. Reproduced when, under one combination of readings,
+    the two peaks and the share are within tolerance.
+- id: fig5b-polynomial-closest-resistance
+  statement: The distribution of hydraulic resistance of the polynomial fit matches that of the
+    segmentation most closely, followed by the ellipse fit, and the polynomial fit is the best
+    match for the majority of cross sections; the distribution peaks are 1.44e15 (polynomial),
+    7.06e14 (ellipse), 1.07e16 (spline) and 1.32e15 (optimal annulus) Pa s/m^4.
+  source: Results, Hydraulic Resistance, paragraph 2; Figure 6B and 6C; Table 2. The Results
+    sentence cites Figure 5B, which is the resistance distribution of Figure 6B
+  quote: Figure 5B shows that the distribution of hydraulic resistances for the polynomial fit
+    matches that of the segmentation most closely, followed by the ellipse fit
+  expected:
+  - quantity: peak resistance, polynomial fit
+    value: 1.44e+15
+    tolerance: 1.44e+14
+    unit: Pa s/m^4
+  - quantity: peak resistance, ellipse fit
+    value: 7.06e+14
+    tolerance: 7.06e+13
+    unit: Pa s/m^4
+  - quantity: peak resistance, spline fit
+    value: 1.07e+16
+    tolerance: 1.07e+15
+    unit: Pa s/m^4
+  - quantity: peak resistance, optimal elliptical annulus
+    value: 1.32e+15
+    tolerance: 1.32e+14
+    unit: Pa s/m^4
+  criterion: Pipeline P1 to P9. The optimal annulus resistance from Equation 3 with the
+    segmentation's area ratio K and the fitted vessel radius R1; the printed equation is garbled
+    and is read, from Tithof et al. (reference 18) and its units, as R = mu 6.67 K^-1.96 / R1^4.
+    The Discussion confirms this reading, since with the paper's viscosity, K = 1.4 and R1 = 23 um
+    it gives the 8.7e15 Pa s/m^4 the paper quotes from Tithof et al. (reference 35). Per cross
+    section the best match is the model with the smallest absolute difference in resistance from
+    the segmentation (Figure 6C). Open, which models compete in Figure 6C (its legend says "each
+    model"; Figure 5D leaves out the annulus because its area ratio is the segmentation's, which
+    does not apply to resistance). Readings (a) ellipse, polynomial and spline fits, (b) the
+    three fits and the optimal annulus. Reproduced when, under
+    one combination of readings, the polynomial fit is the best match for more than half the
+    cross sections and the four peaks are within tolerance; partially reproduced when the
+    polynomial is the best match for the largest share but the peaks are not all within
+    tolerance.
+- id: ellipse-annulus-underestimate
+  statement: The resistance distribution of the optimal elliptical annulus is very similar to
+    that of the ellipse fit, and both tend to underestimate the resistance of the segmented PVS.
+  source: Results, Hydraulic Resistance, paragraph 3; Figure 6B
+  quote: The distribution of resistances for the optimal elliptical annulus is very similar to
+    that of the ellipse fit ... Though both the ellipse fit and annulus tend to underestimate
+    the resistance of the PVS
+  depends_on:
+  - fig5b-polynomial-closest-resistance
+  criterion: As in fig5b-polynomial-closest-resistance. "Tend to underestimate" has no measure
+    in the paper; readings (a) the median of the per-cross-section ratio of fit (or annulus)
+    resistance to segmented resistance is below 1, (b) the peak and the median of the fit's (or
+    annulus's) resistance distribution are below the segmentation's (Table 2 has ellipse 7.06e14
+    and 1.55e15, annulus 1.32e15 and 2.49e15, segmentation 1.73e15 and 3.84e15). "Very similar"
+    has no measure either, and the paper's own Table 2 values are not within 10% of each other
+    (annulus over ellipse, 1.87 for the peaks and 1.61 for the medians), so a 10% closeness test
+    would fail the paper's own numbers; the Optimal model section also says the annulus is more
+    similar to the segmentation than the ellipse fit is. Similarity is therefore judged against
+    the paper's numbers, the annulus-over-ellipse ratios of peak and median within 10% of 1.87
+    and 1.61. Reproduced when, under one reading, both underestimate and the two ratios are
+    within tolerance; partially reproduced when only the underestimation holds.
+- id: spline-resistance-five-times
+  statement: The spline fit's resistance is considerably larger than the segmentation's, its
+    distribution peak about 5 times larger, despite a larger area ratio, because the spline PVS
+    narrows rapidly away from the vessel.
+  source: Results, Hydraulic Resistance, paragraph 3; Figure 6B inset
+  quote: The resistance for the spline fit is considerably larger than that of the segmentation
+    (distribution peak is 5 times larger)
+  expected:
+    quantity: ratio of spline peak resistance to segmentation peak resistance
+    value: 5
+    tolerance: 0.5
+  depends_on:
+  - fig6b-resistance-segmentation-peak
+  - fig5b-polynomial-closest-resistance
+  criterion: Peaks as in the claims it depends on. Table 2 gives 1.07e16 over 1.73e15, a ratio
+    of 6.2, which the text calls 5; readings (a) the text's 5 with 10% tolerance, (b) Table 2's
+    6.2 with 10% tolerance. Reproduced when the ratio is within tolerance under one reading and
+    the median spline resistance exceeds the median segmented resistance.
+- id: fig7-velocity-profiles
+  statement: In a representative cross section, the polynomial fit's velocity profile resembles
+    the segmentation's, the ellipse fit gives much higher velocities and the spline fit much
+    lower; these trends are generally consistent across cross sections.
+  source: Results, Hydraulic Resistance, paragraph 4; Figure 7 legend
+  quote: In this example case, the velocity profile for the polynomial fit is similar to the
+    velocity profile in the segmentation, whereas the ellipse fit results in much higher
+    velocities, and the spline fit results in much lower velocities.
+  criterion: Pipeline P1 to P9, velocity from the Poisson solution at a pressure gradient of
+    500 Pa/m (Methods). The representative cross section is not identified, so the claim is
+    tested over all cross sections, as the text's "generally consistent in all cross sections"
+    allows. Open, the velocity measure. Readings (a) maximum velocity, (b) mean velocity (flow
+    rate over area). Reproduced when, under one reading, in more than half the cross sections
+    the ellipse fit is faster than the segmentation, the spline fit slower, and the polynomial
+    fit closer to the segmentation than either.
+- id: vessel-radius-peak
+  statement: The fitted vessel radius distribution peaks at 28 um.
+  source: Discussion, paragraph 2; Results, Characteristics of the typical PVS shape, paragraph
+    2; Figure 8A and 9C
+  quote: We approximated the cross-sectional shape of the vessel as a circle and found that the
+    peak of the vessel radius distribution is 28 μ m
+  expected:
+    quantity: peak of vessel radius R1
+    value: 28
+    tolerance: 2.8
+    unit: um
+  criterion: Pipeline P1 to P4, P6 and P7. Reproduced when, under one combination of readings,
+    the peak is within tolerance. Table 3 gives an R1 peak of 64.9 um, which disagrees; it is
+    not used (opening comment).
+- id: fig8-ellipse-parameters
+  statement: The ellipse fit shows an elongated, eccentric PVS with the vessel slightly below its
+    center; R1 peaks at 28 um and R3 at 35 um, R3/R1 at 0.80, R2/R1 at 2.89, R3/R2 at 0.398, the
+    vertical offset Ov at 0.24, and the horizontal offset Oh is centered near zero with a much
+    wider distribution than Ov.
+  source: Results, Characteristics of the typical PVS shape, paragraphs 2 to 5; Figure 8A, 8C,
+    8D, 8E and 8F
+  quote: the distribution of R 1 , the vessel radius, is similar to that of R 3 , the minor axis
+    length (distribution peaks at 28 μ m and 35 μ m, respectively, see Figure 8A ), and the ratio
+    between them ( R 3 / R 1 ) is generally close to 1 (distribution peaks at 0.80, Figure 8E )
+  expected:
+  - quantity: peak of R3
+    value: 35
+    tolerance: 3.5
+    unit: um
+  - quantity: peak of R3/R1
+    value: 0.8
+    tolerance: 0.08
+  - quantity: peak of R2/R1
+    value: 2.89
+    tolerance: 0.289
+  - quantity: peak of R3/R2
+    value: 0.398
+    tolerance: 0.0398
+  - quantity: peak of Ov
+    value: 0.24
+    tolerance: 0.024
+  depends_on:
+  - vessel-radius-peak
+  criterion: Pipeline P1 to P4, P6, P7 and P9 (ellipse). Open, the units of Ov and Oh, printed
+    without units. Readings (a) offsets over R1, (b) over R3, (c) in um. Ov positive when the
+    vessel is below the ellipse center, as the text reads it. Oh "centered around zero" and
+    "much wider" are read as the median of Oh within one Ov peak value of zero and the IQR of Oh
+    at least twice the IQR of Ov. Reproduced when, under one combination of readings, all
+    values are within tolerance and the Oh conditions hold; partially reproduced when the
+    ratios R3/R1, R2/R1 and R3/R2 are within tolerance and the rest is not.
+- id: fig9c-pvs-two-lobes
+  statement: The PVS usually consists of two mostly or entirely disconnected lobes on either side
+    of the vessel; the polynomial fit's HC (top of PVS above top of vessel) peaks at zero, and
+    when the lobes connect the channel is narrow, usually less than 0.5 R1.
+  source: Results, Characteristics of the typical PVS shape, paragraph 2; Figure 9C; Table 3
+  quote: The distribution peaks at zero ( Figure 9C ), suggesting that the top of the vessel is
+    most often very nearly aligned with the top of the PVS and that the PVS is often separated
+    into two lobes. Even when the two sides are connected, the channel connecting them is quite
+    narrow, usually less than 0.5 R 1 .
+  expected:
+    quantity: peak of HC/R1 (Table 3)
+    value: 0.000689
+    tolerance: 0.1
+  criterion: Pipeline P1 to P4, P6, P7 and P9 (polynomial). A 10% tolerance on a value near zero
+    is meaningless; the tolerance is one tenth of R1 (0.1 in HC/R1), the scale of the paper's
+    0.5 R1 statement; this is a choice and is recorded as a deviation. Reproduced when, under
+    one combination of readings, the peak of HC/R1 is within 0.1 of zero and, among cross
+    sections with HC greater than zero, more than half have HC below 0.5 R1.
+- id: fig9e-pvs-width-asymmetry
+  statement: The PVS is about twice as wide as the vessel radius and asymmetric about the vessel;
+    the short-side width WS/R1 peaks near 1.1, the long-side width WL/R1 near 1.9, and WS/WL near
+    0.5.
+  source: Results, Characteristics of the typical PVS shape, paragraphs 3 and 5; Figure 9E;
+    Table 3
+  quote: The short side is significantly shorter than the long side (distribution peaks of 1.1
+    and 1.9, respectively, Figure 9E ) and for the ratio between them, W S / W L , the
+    distribution peaks at approximately 0.5, indicating that the two PVS sides are typically
+    asymmetric
+  expected:
+  - quantity: peak of WS/R1 (Table 3)
+    value: 1.08
+    tolerance: 0.108
+  - quantity: peak of WL/R1 (Table 3)
+    value: 1.85
+    tolerance: 0.185
+  - quantity: peak of WS/WL (Table 3)
+    value: 0.502
+    tolerance: 0.0502
+  criterion: Pipeline P1 to P4, P6, P7 and P9 (polynomial). The Results also say WS/R1 peaks at
+    1.85, which Table 3 and the sentence quoted give for WL/R1; Table 3 is followed. The paper
+    reports no test for "significantly shorter", and WS is by definition no longer than WL.
+    Reproduced when, under one combination of readings, the three peaks are within tolerance.
+- id: left-right-no-difference
+  statement: The PVS widths on the left and right sides of the vessel do not differ
+    significantly.
+  source: Results, Characteristics of the typical PVS shape, paragraph 5
+  quote: Since there was no statistically significant difference between the left and right
+    sides, we report the distribution of the short ( W S ) and long ( W L ) sides of each cross
+    section.
+  criterion: A claim of absence whose test the paper does not name. Widths W of the polynomial
+    fit on each side (P9), left and right fixed by the direction along the centerline (P3).
+    Readings (a) Wilcoxon signed-rank test on paired left and right widths over all cross
+    sections, (b) two-sample Kolmogorov-Smirnov test of the two distributions, (c) Wilcoxon
+    signed-rank test on the per-segment median left and right widths (14 pairs); alpha 0.05.
+    Reproduced when no reading finds a difference, not reproduced when all do, otherwise
+    methods_underspecified. The median difference and its sign are shown for each.
+- id: fig9a-heights-taper
+  statement: The PVS is tallest next to the vessel and narrows far from it; the heights H1/R1,
+    H2/R1 and H3/R1 peak at 1.34, 0.792 and 0.307, so H1 is about 4 times H3.
+  source: Results, Characteristics of the typical PVS shape, paragraph 6; Figure 9A; Table 3
+  quote: the distributions of heights of the PVS, H 1 , H 2 , and H 3 , peak at 1.34, 0.792, and
+    0.307, respectively, indicating that the PVS is larger closer to the vessel and smaller at
+    the ends of the PVS. H 1 , the height of the PVS close to the vessel, is 4 times larger than
+    H 3
+  expected:
+  - quantity: peak of H1/R1
+    value: 1.34
+    tolerance: 0.134
+  - quantity: peak of H2/R1
+    value: 0.792
+    tolerance: 0.0792
+  - quantity: peak of H3/R1
+    value: 0.307
+    tolerance: 0.0307
+  criterion: Pipeline P1 to P4, P6, P7 and P9 (polynomial), heights per side; open, whether each
+    cross section contributes both sides or their mean. Readings (a) both sides pooled, (b)
+    mean of the two sides. Reproduced when, under one combination of readings, the three peaks
+    are within tolerance; partially reproduced when the order H1 above H2 above H3 holds for
+    the peaks and medians but the values are not within tolerance.
+- id: fig9f-pvs-concave
+  statement: The bottom edge of the PVS is most often concave; the distribution of (H2 - H3)/(H1
+    - H2) peaks at 0.108, below the value of 1 that separates concave from convex.
+  source: Results, Characteristics of the typical PVS shape, paragraph 7; Figure 9F
+  quote: The peak of the curvature distribution is 0.108, showing that the PVS is most often
+    concave
+  expected:
+    quantity: peak of (H2 - H3)/(H1 - H2)
+    value: 0.108
+    tolerance: 0.0108
+  depends_on:
+  - fig9a-heights-taper
+  criterion: As fig9a-heights-taper, with the same readings. Reproduced when, under one
+    combination of readings, the peak is within tolerance and more than half the values are
+    below 1; partially reproduced when only the second holds.
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment P5, the vessel area of the fits' area ratio named as open with readings pi R1^2 and segmented vessel area, since Table 2 gives the spline ratio, fixed by R1 alone, an IQR of 0.3 and the paper does not say which it used.
+  - table2-fit-area-ratio-peaks, criterion no longer fixes the denominator at pi R1^2; it runs both readings of P5 for the fits.
+  - area-ratio-per-location, added reading (d), all non-outlier values within 30% of the peak, the same reading the resistance-per-location claim uses for its parallel sentence.
+  - fig5b-polynomial-closest-resistance, which models compete for best match in Figure 6C named as open (with or without the optimal annulus), since the legend says "each model" and the annulus has a resistance; the Equation 3 reading is now backed by the Discussion, where it gives the quoted 8.7e15 Pa s/m^4 for K 1.4 and R1 23 um.
+  - ellipse-annulus-underestimate, the 10% similarity readings removed because the paper's own Table 2 values (annulus over ellipse 1.87 for peaks, 1.61 for medians) fail them; similarity is now judged against those ratios, and a distribution reading of "underestimate" was added.
+  - vessel-radius-peak, source now also points at the Results paragraph that states the 28 um peak.
+  - Opening comment, noted that the spline resistance column of Table 2 is doubtful as a whole.
+  - Open, not settled, the per-location count in area-ratio-per-location keeps the default 10% tolerance (12 to 14 locations) though the text says exactly all but one.
+  - Open, not settled, fig8-ellipse-parameters judges Oh "centered around zero" and "much wider" with thresholds the paper does not give; they are stated as readings.
+  - Open, not settled, left-right-no-difference names no test in the paper; three readings are run.
