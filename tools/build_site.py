@@ -309,7 +309,7 @@ def pipeline_inputs() -> dict:
     (papers/manifest.yaml), each claims file's last check, and each attempt's open questions."""
     manifest = ROOT / "papers" / "manifest.yaml"
     papers = (load_yaml(manifest) or {}).get("targets", {}) if manifest.is_file() else {}
-    checks, questions = {}, {}
+    checks, questions, items = {}, {}, {}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         last = ((load_yaml(path) or {}).get("checks") or [None])[-1]
         checks[key_of_dir(path.parent.name)] = {"ready": None if last is None else bool(last.get("ready")),
@@ -318,7 +318,9 @@ def pipeline_inputs() -> dict:
         q = load_yaml(path) or []
         q = q.get("questions", []) if isinstance(q, dict) else q
         questions[key_of_dir(path.stem)] = sum(1 for x in q if not x.get("answered"))
-    return {"papers": {key_of_dir(str(k)): v for k, v in papers.items()}, "checks": checks, "questions": questions}
+        items[key_of_dir(path.stem)] = json.loads(json.dumps(q, default=str))   # YAML dates as text, for the JSON
+    return {"papers": {key_of_dir(str(k)): v for k, v in papers.items()}, "checks": checks, "questions": questions,
+            "question_items": items}
 
 
 def finish(data: dict) -> dict:
@@ -673,7 +675,7 @@ def statistic_text(s: dict) -> str:
     return text + (f' (n = {s["n"]})' if s.get("n") else "")
 
 
-def by_outcome(outcomes: list[dict], root: str, attempt: dict | None = None) -> str:
+def by_outcome(outcomes: list[dict], root: str, attempt: dict | None = None, asked: dict | None = None) -> str:
     """Claims under a heading for each outcome, reproduced first, then partially, not reproduced and blocked."""
     html = ""
     for outcome in ("reproduced", "partially_reproduced", "not_reproduced", "blocked"):
@@ -681,16 +683,18 @@ def by_outcome(outcomes: list[dict], root: str, attempt: dict | None = None) -> 
         if mine:
             html += (f'<div class="outcome-group" data-outcome="{outcome}"><h4 class="outcome-head">{chip(outcome)}'
                      f'<span class="count">{len(mine)}</span></h4>'
-                     f'<ul class="claims">{"".join(claim_item(o, root, attempt) for o in mine)}</ul></div>')
+                     f'<ul class="claims">{"".join(claim_item(o, root, attempt, asked) for o in mine)}</ul></div>')
     return html
 
 
-def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
+def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | None = None) -> str:
     """One claim as an accordion: the outcome and statement show, the explanation opens on a click."""
     blocked = f'<span class="why">· {e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
         if o["blocked_by"] else ""
     source = f'<span class="source">{e(o["source"])}</span>' if o["source"] else ""
     tags = '<span class="tag">verifier disagreed at first</span>' if o["disagreed"] else ""
+    if asked and o["claim"] in asked:
+        tags += f'<a class="tag" href="#question-{asked[o["claim"]]}">question to the reader</a>'
     if o.get("kind") == "link":
         tags += '<span class="tag">checks the link to the paper’s data</span>'
     elif o.get("data") == "with_inputs":
@@ -1499,6 +1503,14 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
     n = sum(counts.values())
     order = {"reproduced": 0, "partially_reproduced": 1, "not_reproduced": 2}
 
+    # Questions the author asked a reader about the claims file (docs/protocol.md, Author, step 6), with answers.
+    questions = (data.get("pipeline") or {}).get("question_items", {}).get(dandiset, [])
+    asked: dict = {}
+    for i, q in enumerate(questions, 1):
+        for c in [q.get("claim"), *(q.get("also") or [])]:
+            if c:
+                asked.setdefault(c, i)
+
     # Claims, grouped by paper when the dandiset has attempts on more than one.
     claims_html = ""
     for a in atts:
@@ -1520,7 +1532,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
             claims_html += (f'<div class="claim-group"><h3 style="margin-top:18px">{title} '
                             f'<span class="count">{len(mine)}</span></h3>'
                             f'<p class="sub small" style="margin:2px 0 0">Notebook <code>{e(nb["path"])}</code>'
-                            f'</p>{by_outcome(mine, root, a)}</div>')
+                            f'</p>{by_outcome(mine, root, a, asked)}</div>')
         listed = {n["path"] for n in a["notebooks"]}
         blocked = [o for o in a["outcomes"] if o.get("notebook") not in listed]
         if blocked:
@@ -1531,7 +1543,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
             claims_html += (f'<details class="group claim-group" open><summary><h3>Not tested in a notebook '
                             f'<span class="count">{len(blocked)}</span></h3>'
                             f'<span class="muted small">{e(why)}</span></summary>'
-                            f'{by_outcome(blocked, root, a)}</details>')
+                            f'{by_outcome(blocked, root, a, asked)}</details>')
 
     all_findings = [f for a in atts for f in a["findings"]]
     findings_html = "".join(
@@ -1661,7 +1673,32 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
                       f'outcomes.' + (" Its notebooks link to the entry as it is now, which the later attempt "
                                       "updated; the attempt record is as it was." if same_entry else "") + "</p>")
 
+    claim_ids = {o["claim"] for a in atts for o in a["outcomes"]}
+    question_items = ""
+    for i, q in enumerate(questions, 1):
+        claims = [c for c in [q.get("claim"), *(q.get("also") or [])] if c]
+        links = ", ".join(f'<a href="#claim-{e(c)}"><code>{e(c)}</code></a>' if c in claim_ids else f"<code>{e(c)}</code>"
+                          for c in claims)
+        state = (f'<span class="tag">answered {e(str(q["answered"]))}</span>' if q.get("answered")
+                 else '<span class="tag open">open</span>')
+        answer = squash(q.get("answer") or "")
+        question_items += (
+            f'<li class="question" id="question-{i}"><div class="q-head">{state}'
+            f'<span>asked {e(str(q.get("asked") or ""))}</span><span>about {links}</span></div>'
+            f'<p class="q-text">{e(squash(q.get("question") or ""))}</p>'
+            + (f'<p class="notes"><strong>Passage.</strong> {e(squash(q["passage"]))}</p>' if q.get("passage") else "")
+            + (f'<p class="notes"><strong>Why it matters.</strong> {e(squash(q["why"]))}</p>' if q.get("why") else "")
+            + (f'<div class="answer"><strong>The reader’s answer.</strong> {e(answer)}</div>' if answer
+               else '<div class="answer open">No reader has answered it yet.</div>')
+            + "</li>")
+    questions_panel = (f'<section class="tabpanel" id="questions"><h2>Questions</h2>'
+                       f'<p class="sub small" style="margin-top:12px">Where the claims file did not say how to test a '
+                       f'claim, the author asked, citing the paper, and a reader who had not seen the data answered '
+                       f'from the paper alone. The author then ran the claim as answered.</p>'
+                       f'<ul class="questions">{question_items}</ul></section>') if questions else ""
+
     tab_defs = [("claims", "Claims", n), ("findings", "Findings about the data", len(all_findings)),
+                *([("questions", "Questions", len(questions))] if questions else []),
                 ("notebooks", "Notebooks", n_notebooks), ("verification", "Verification", n_rounds),
                 ("differences", "Method differences", len(deviations)), ("provenance", "Provenance", None)]
     tab_buttons = ""
@@ -1694,6 +1731,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
     <p class="sub small" style="margin-top:12px">What attempts found about the dataset itself, for its owner and the
     archive.</p>
     <ul class="findings">{findings_html}</ul></section>
+  {questions_panel}
   <section class="tabpanel" id="notebooks"><h2>Notebooks</h2>
     <p class="sub small" style="margin-top:12px">Every registered entry that uses this dataset. An entry can hold
     several notebooks, and can use more than one dataset.</p>
