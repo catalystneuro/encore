@@ -1,0 +1,824 @@
+# Claims for Boran, Hilfiker, Stieglitz, Sarnthein & Klaver (2022), NeuroImage 254, 119123, on
+# dandiset 000575.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record (paper/10.1016-j.neuroimage.2022.119123.txt, extracted from the
+# publisher PDF), with its Methods, Results, figure legends and Table 1. The paper has no
+# supplement and cites none. Figures 2c, 2d, 3b and 4d were read from the PDF for the per-region
+# counts and accuracies that the text does not print.
+#
+# Code read: the paper's Data and code availability names one repository,
+# https://gin.g-node.org/USZ_NCH/Human_MTL_units_visual_WM. GIN did not answer from this run;
+# its listing was read from the Internet Archive snapshot of 2026-10-15 (head commit
+# 5ccc2377802efec9522e3c3baa0e600419ee4383, data files at commit 798bf013ee). It holds the 16
+# session files (Data_Subject_XX_Session_YY.h5, NIX format), a README and a LICENSE. The README
+# describes a code_MATLAB folder with a data-loading example script only, and that folder is not
+# on master. No analysis code is published, so no method detail below is settled by code. The
+# dandiset is a variant form of this GIN repository (its related resources say so).
+# The Methods say the recording scheme and non-task-specific analyses are "identical to Boran
+# et al. (2019)" and that dPCA methods were adapted from Kaminski et al. (2017). Neither paper is
+# under paper/ and neither was read; details they may fix are named below as open.
+#
+# Data the paper used: 13 epilepsy patients (7 male, age 18 to 56) with depth electrodes in the
+# medial temporal lobe; 16 sessions (participants 3, 8 and 12 did two sessions on the same day),
+# 192 trials per session. Task: change detection with arrays of 1, 2, 4 or 6 colored squares
+# (set size; low workload 1 and 2, high workload 4 and 6). Trial: red fixation dot 0.4 s, black
+# dot 0.4 to 0.5 s, memory array 0.8 s (encoding), delay 0.9 s (maintenance), test array 2 s
+# (test), inter-trial interval 1.3 to 2.3 s. Response "same" or "different" by button press;
+# in "different" trials one square changes color. Measured variables: response, correctness
+# and response time per trial; spike times of 809 sorted units (Combinato, putative neurons)
+# from microwires in hippocampus (454), entorhinal cortex (209) and amygdala (146), with their
+# waveforms; recording sites in MNI space. Units below 0.1 Hz, noisy or nonuniform waveforms and
+# periods of epileptic activity were removed by the authors before analysis.
+#
+# Periods used throughout (Methods 2.2 and 2.3, Figure 2a axis): fixation is the 900 ms before
+# memory array onset; encoding the 0.8 s of the memory array; maintenance the 0.9 s delay; test
+# the 2 s of the test array. Unless a claim says otherwise, analyses use correct trials only
+# (Results 3.2, paragraph 3).
+#
+# Statistics as the paper defines them (Methods 2.6): the "permutation t-test" is EEGLAB statcond,
+# which shuffles values between two distributions and takes p from the shuffled t-values; the
+# "permutation test against scrambled labels" builds a null from N label-scrambled repetitions,
+# with minimum p = 1/(N+1). The paper does not state N for most tests. The printed p = .002
+# (Figures 2 and 3) is the minimum for about 500 repetitions (N = 499) and p = .0002 (Results
+# 3.1) the minimum for about 5000 (N = 4999); these N are the readings used below. Decoding uses
+# 1000 scrambled runs (Methods 2.5).
+#
+# Details the paper leaves open and that apply to several claims:
+# - statcond paired or unpaired. For maintenance against fixation in the same trials, the
+#   readings are (a) paired over trials and (b) unpaired. statcond is two-sided; a neuron counts
+#   as having higher activity when p < .05 and its mean is higher in the named period.
+# - The number of permutations of each per-neuron permutation t-test is not given. 1000 is used
+#   as a standard choice; it changes only neurons near the threshold, and the count is shown at
+#   5000 as a check.
+# - What is scrambled in "permutation test against scrambled labels" for neuron counts is not
+#   said. The reading used is that the trial labels the selection compares (period labels within
+#   a trial, set-size labels or correct/incorrect labels across trials) are shuffled, the
+#   selection rerun, and the observed count compared with the null counts.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000575"
+paper: doi:10.1016/j.neuroimage.2022.119123
+claims:
+- id: behavior-accuracy-by-set-size
+  statement: >-
+    Performance was almost perfect at set sizes 1 (98% correct) and 2 (99%) and fell at 4 (88%)
+    and 6 (73%), a significant effect of set size in a permuted repeated-measures ANOVA over 16
+    sessions; average performance was 89%.
+  source: Results, 3.1 Task and behavior, paragraph 1; Figure 1b; Discussion 4.1, paragraph 2
+  quote: >-
+    The partici- pants showed almost perfect performance at set size of 1 (98% correct responses)
+    and 2 (99 %), and a decrease at 4 (88%) and 6 (73%) ( Fig. 1 b, permuted repeated-measures
+    ANOVA, F 3,45 = 89.79, p = .0002, 16 ses- sions)
+  statistics:
+  - test: permuted repeated-measures ANOVA
+    statistic: F(3, 45) = 89.79
+    p: 0.0002
+    n: 16 sessions
+  expected:
+  - quantity: percent correct, set size 1
+    value: 98
+    tolerance: 9.8
+    unit: "%"
+  - quantity: percent correct, set size 2
+    value: 99
+    tolerance: 9.9
+    unit: "%"
+  - quantity: percent correct, set size 4
+    value: 88
+    tolerance: 8.8
+    unit: "%"
+  - quantity: percent correct, set size 6
+    value: 73
+    tolerance: 7.3
+    unit: "%"
+  - quantity: percent correct over all set sizes
+    value: 89
+    tolerance: 8.9
+    unit: "%"
+  - quantity: F statistic of the set-size effect
+    value: 89.79
+    tolerance: 8.98
+  criterion: >-
+    All trials of the 16 sessions. The paper does not say how percentages are pooled; readings
+    (a) trials pooled over sessions and (b) the mean of per-session percentages. The ANOVA has
+    set size as the within factor and session as the subject (F with 3 and 45 degrees of
+    freedom, Results 3.1); its permutation scheme is not given, and the reading is set-size
+    labels shuffled within each session, 4999 permutations (from p = .0002 as 1/(N+1), Methods
+    2.6). Reproduced when, under one reading, the five percentages and the F value are within
+    tolerance, the order 1 and 2 above 4 above 6 holds, and the ANOVA has p < .05.
+- id: behavior-capacity
+  statement: >-
+    Across sessions the median working memory capacity was 3.2 by Pashler's K (range 2.2 to 5)
+    and 3 by Cowan's K (range 1.9 to 4.5), so participants held at least 3 squares and set sizes
+    4 and 6 exceeded capacity.
+  source: Results, 3.1 Task and behavior, paragraph 1; Figure 1b; Table 1
+  quote: >-
+    Across all sessions, the median memory capacity according to Pashler ( K P ) was 3.2 (range
+    2.2–5). According to Cowan's K ( K C ) me- dian memory capacity was 3 (range 1.9–4.5)
+  expected:
+  - quantity: median Pashler K (Kmax)
+    value: 3.2
+    tolerance: 0.32
+  - quantity: lowest Pashler K, bound of the range 2.2 to 5
+    value: 2.2
+    tolerance: 0.22
+  - quantity: highest Pashler K, bound of the range 2.2 to 5
+    value: 5
+    tolerance: 0.5
+  - quantity: median Cowan K
+    value: 3
+    tolerance: 0.3
+  - quantity: lowest Cowan K, bound of the range 1.9 to 4.5
+    value: 1.9
+    tolerance: 0.19
+  - quantity: highest Cowan K, bound of the range 1.9 to 4.5
+    value: 4.5
+    tolerance: 0.45
+  criterion: >-
+    Per session and set size, hit rate is the fraction of change trials answered "different" and
+    false alarm rate the fraction of no-change trials answered "different" (the usual reading of
+    the formulas in Methods 2.2, which do not define them). KP = (H - FA) N / (1 - FA) and KC =
+    (H - FA) N; capacity is Kmax = max over set sizes of KP (Figure 1b legend). Open, the unit of
+    the median. Readings (a) per participant, the mean over that participant's sessions as in
+    Table 1 (13 values) and (b) per session (16 values); the text says "across all sessions",
+    while the Table 1 values give 3.23 under (a). Open, how KC is reduced to one value; readings
+    (i) max over set sizes, as for KP, and (ii) KC at set size 6. Reproduced when, under one
+    reading, both medians are within tolerance and both ranges are inside the reported ranges
+    widened by 10% of each bound.
+- id: table1-capacity-and-neurons
+  statement: >-
+    Table 1 gives, per participant, the number of sessions, the memory capacity Kmax (2.41, 2.25,
+    3.04, 3.00, 2.87, 3.88, 3.00, 3.23, 3.58, 3.81, 5.00, 3.83, 4.50 for participants 1 to 13)
+    and the number of neurons (33, 36, 106, 85, 29, 96, 48, 150, 23, 62, 11, 57, 73).
+  source: Table 1
+  inferred: >-
+    Numbers read from Table 1; no sentence states them. For participants 3, 8 and 12 Kmax is the
+    mean of two sessions (2.50 and 3.58, 3.33 and 3.13, 4.00 and 3.67).
+  expected:
+  - quantity: neurons, participant 1
+    value: 33
+    tolerance: 3.3
+  - quantity: neurons, participant 2
+    value: 36
+    tolerance: 3.6
+  - quantity: neurons, participant 3 (two sessions)
+    value: 106
+    tolerance: 10.6
+  - quantity: neurons, participant 4
+    value: 85
+    tolerance: 8.5
+  - quantity: neurons, participant 5
+    value: 29
+    tolerance: 2.9
+  - quantity: neurons, participant 6
+    value: 96
+    tolerance: 9.6
+  - quantity: neurons, participant 7
+    value: 48
+    tolerance: 4.8
+  - quantity: neurons, participant 8 (two sessions)
+    value: 150
+    tolerance: 15
+  - quantity: neurons, participant 9
+    value: 23
+    tolerance: 2.3
+  - quantity: neurons, participant 10
+    value: 62
+    tolerance: 6.2
+  - quantity: neurons, participant 11
+    value: 11
+    tolerance: 1.1
+  - quantity: neurons, participant 12 (two sessions)
+    value: 57
+    tolerance: 5.7
+  - quantity: neurons, participant 13
+    value: 73
+    tolerance: 7.3
+  - quantity: Kmax, participant 1
+    value: 2.41
+    tolerance: 0.241
+  - quantity: Kmax, participant 2
+    value: 2.25
+    tolerance: 0.225
+  - quantity: Kmax, participant 3, mean of sessions 2.50 and 3.58
+    value: 3.04
+    tolerance: 0.304
+  - quantity: Kmax, participant 4
+    value: 3.00
+    tolerance: 0.3
+  - quantity: Kmax, participant 5
+    value: 2.87
+    tolerance: 0.287
+  - quantity: Kmax, participant 6
+    value: 3.88
+    tolerance: 0.388
+  - quantity: Kmax, participant 7
+    value: 3.00
+    tolerance: 0.3
+  - quantity: Kmax, participant 8, mean of sessions 3.33 and 3.13
+    value: 3.23
+    tolerance: 0.323
+  - quantity: Kmax, participant 9
+    value: 3.58
+    tolerance: 0.358
+  - quantity: Kmax, participant 10
+    value: 3.81
+    tolerance: 0.381
+  - quantity: Kmax, participant 11
+    value: 5.00
+    tolerance: 0.5
+  - quantity: Kmax, participant 12, mean of sessions 4.00 and 3.67
+    value: 3.83
+    tolerance: 0.383
+  - quantity: Kmax, participant 13
+    value: 4.50
+    tolerance: 0.45
+  criterion: >-
+    Neurons counted per participant over all sessions. Kmax per session computed as in
+    behavior-capacity (Kmax = max over set sizes of KP, Table 1 legend) and averaged over a
+    participant's sessions (Methods 2.2). Reproduced when every neuron count and every Kmax value
+    is within tolerance (for the three two-session participants the per-session values are also
+    shown); partially reproduced when the neuron counts hold and some Kmax values do not.
+- id: behavior-rt-set-size
+  statement: >-
+    Mean response time on correct trials (2678 trials) increased with set size, by 118 ms per
+    item, a significant effect in a permuted repeated-measures ANOVA over 16 sessions.
+  source: Results, 3.1 Task and behavior, paragraph 1; Figure 1c
+  quote: >-
+    The mean response time (RT) for the correct trials (2678 trials) increased with set size (
+    Fig. 1 c, 118 ms/item, permuted repeated-measures ANOVA, F 3,45 = 48.47; p = .0002, 16
+    sessions)
+  statistics:
+  - test: permuted repeated-measures ANOVA
+    statistic: F(3, 45) = 48.47
+    p: 0.0002
+    n: 16 sessions, 2678 correct trials
+  expected:
+  - quantity: number of correct trials
+    value: 2678
+    tolerance: 267.8
+  - quantity: increase in response time per item
+    value: 118
+    tolerance: 11.8
+    unit: ms/item
+  - quantity: F statistic of the set-size effect
+    value: 48.47
+    tolerance: 4.85
+  criterion: >-
+    Response time from test array onset (Figure 1c legend), correct trials. The ANOVA as in
+    behavior-accuracy-by-set-size, on per-session values. Open, the per-session value; readings
+    (a) mean RT (the text) and (b) median RT (Figure 1c). Open, how 118 ms/item is obtained;
+    readings (i) the slope of a line fit of per-session values on set size, averaged over
+    sessions, (ii) the slope of a line fit over all correct trials pooled, (iii) the slope of a
+    line fit of the four set-size means. Reproduced when RT rises with set size, the ANOVA has
+    p < .05, and under one reading the slope, the F value and the trial count are within
+    tolerance.
+- id: neurons-recorded
+  statement: >-
+    809 neurons were recorded, 454 in hippocampus, 209 in entorhinal cortex and 146 in amygdala,
+    50 plus or minus 25 (range 11 to 96) per session.
+  source: Results, 3.2 Neuronal firing, paragraph 1
+  quote: >-
+    We recorded the ac- tivity of 809 neurons from the hippocampus (Hipp, n = 454), entorhi- nal
+    cortex (Ent, n = 209), and amygdala (Amg, n = 146) across all microelectrodes. We recorded 50
+    ± 25 (range 11–96) neurons per ses- sion.
+  expected:
+  - quantity: neurons, all
+    value: 809
+    tolerance: 80.9
+  - quantity: neurons, hippocampus
+    value: 454
+    tolerance: 45.4
+  - quantity: neurons, entorhinal cortex
+    value: 209
+    tolerance: 20.9
+  - quantity: neurons, amygdala
+    value: 146
+    tolerance: 14.6
+  - quantity: mean neurons per session
+    value: 50
+    tolerance: 5
+  - quantity: standard deviation of neurons per session
+    value: 25
+    tolerance: 2.5
+  - quantity: fewest neurons in a session, bound of the range 11 to 96
+    value: 11
+    tolerance: 1.1
+  - quantity: most neurons in a session, bound of the range 11 to 96
+    value: 96
+    tolerance: 9.6
+  criterion: >-
+    Hippocampus is the hippocampal head and body sites (AH and PH, Table 1), entorhinal cortex EC
+    and amygdala A. Reproduced when all values are within tolerance.
+- id: spike-sorting-quality
+  statement: >-
+    Over all neurons, 0.79 plus or minus 1.54% of inter-spike intervals were shorter than 3 ms,
+    most neurons were below 0.5%, and the peak signal-to-noise ratio of the mean waveform was
+    3.81 plus or minus 0.82.
+  source: Results, 3.2 Neuronal firing, paragraph 1
+  quote: >-
+    Over all neu- rons, the percentage of inter-spike intervals (ISI) shorter than 3 ms was 0.79 ±
+    1.54%. The majority of neurons had short ISI percentages less than 0.5%. ... SNR waveform
+    peak over all neurons was 3.81 ± 0.82.
+  expected:
+  - quantity: mean percent of ISIs under 3 ms
+    value: 0.79
+    tolerance: 0.079
+    unit: "%"
+  - quantity: standard deviation of percent of ISIs under 3 ms
+    value: 1.54
+    tolerance: 0.154
+    unit: "%"
+  - quantity: mean waveform peak SNR
+    value: 3.81
+    tolerance: 0.381
+  - quantity: standard deviation of waveform peak SNR
+    value: 0.82
+    tolerance: 0.082
+  criterion: >-
+    ISI percentage per neuron, mean and SD over neurons. Open, which spikes; readings (i) the
+    whole recording and (ii) spikes within trials only (the paper does not say); "majority" means more than half of the neurons below
+    0.5%. SNR is the peak amplitude of the mean waveform over the standard deviation of the
+    noise (Results 3.2); the noise is not defined. Readings (a) the standard deviation of the
+    single-spike waveforms around their mean, averaged over samples, and (b) a noise level
+    stored with the unit by the spike sorter, if the data hold one. Reproduced when, under one
+    reading, the ISI values and the majority hold and the SNR values are within tolerance;
+    partially reproduced when the ISI values hold only.
+- id: firing-rates-by-period
+  statement: >-
+    The median (IQR) firing rate over all neurons was 1.09 (0.52 to 2.43) Hz over the trial,
+    1.12 (0.54 to 2.56) Hz during fixation, 1.10 (0.53 to 2.50) Hz during encoding, 1.09 (0.54
+    to 2.51) Hz during maintenance and 1.02 (0.49 to 2.45) Hz during test.
+  source: Results, 3.2 Neuronal firing, paragraph 1
+  quote: >-
+    We identified the firing rate over all neurons as median (inter-quartile range, IQR) 1.09
+    (0.52–2.43) Hz throughout the trial du- ration. Median (IQR) firing rate over all neurons was
+    1.12 (0.54–2.56) Hz during fixation, 1.10 (0.53–2.50) Hz during encoding, 1.09 (0.54– 2.51)
+    Hz for maintenance and 1.02 (0.49–2.45) Hz during test.
+  expected:
+  - quantity: median rate, whole trial
+    value: 1.09
+    tolerance: 0.109
+    unit: Hz
+  - quantity: median rate, fixation
+    value: 1.12
+    tolerance: 0.112
+    unit: Hz
+  - quantity: median rate, encoding
+    value: 1.10
+    tolerance: 0.11
+    unit: Hz
+  - quantity: median rate, maintenance
+    value: 1.09
+    tolerance: 0.109
+    unit: Hz
+  - quantity: median rate, test
+    value: 1.02
+    tolerance: 0.102
+    unit: Hz
+  - quantity: lower quartile, whole trial
+    value: 0.52
+    tolerance: 0.052
+    unit: Hz
+  - quantity: upper quartile, whole trial
+    value: 2.43
+    tolerance: 0.243
+    unit: Hz
+  - quantity: lower quartile, fixation
+    value: 0.54
+    tolerance: 0.054
+    unit: Hz
+  - quantity: upper quartile, fixation
+    value: 2.56
+    tolerance: 0.256
+    unit: Hz
+  - quantity: lower quartile, encoding
+    value: 0.53
+    tolerance: 0.053
+    unit: Hz
+  - quantity: upper quartile, encoding
+    value: 2.50
+    tolerance: 0.25
+    unit: Hz
+  - quantity: lower quartile, maintenance
+    value: 0.54
+    tolerance: 0.054
+    unit: Hz
+  - quantity: upper quartile, maintenance
+    value: 2.51
+    tolerance: 0.251
+    unit: Hz
+  - quantity: lower quartile, test
+    value: 0.49
+    tolerance: 0.049
+    unit: Hz
+  - quantity: upper quartile, test
+    value: 2.45
+    tolerance: 0.245
+    unit: Hz
+  criterion: >-
+    Per neuron, the spike count in the period divided by its duration, averaged over trials;
+    median and quartiles over the 809 neurons. Open, which trials; readings (a) correct trials
+    (the paper's default for subsequent analyses) and (b) all trials, since this paragraph comes
+    before that default is stated. Open, the extent of "throughout the trial"; readings (i) from
+    fixation start to test array offset (fixation, encoding, maintenance and test periods
+    joined) and (ii) from the warning signal to the end of the inter-trial interval. Reproduced
+    when, under one reading, all five medians are within tolerance and their quartiles are within
+    10% of the printed ones.
+- id: fig2c-maintenance-neurons
+  statement: >-
+    Maintenance neurons, firing more during maintenance than during fixation, were found in all
+    three regions, 55 of 454 in hippocampus, 21 of 209 in entorhinal cortex and 16 of 146 in
+    amygdala, each a significant proportion.
+  source: Results, 3.2 Neuronal firing, paragraph 4; Figure 2c
+  quote: >-
+    These maintenance neurons were defined by their higher firing rates during the maintenance
+    period than during the fixation period ... Maintenance neurons were found in the hippocampus,
+    the amygdala and the entorhinal cortex (per- mutation t-test, p < .05, Fig. 2 b, c).
+  statistics:
+  - test: permutation test against scrambled labels
+    p: 0.002
+    n: each region, 454, 209 and 146 neurons
+  expected:
+  - quantity: maintenance neurons, hippocampus
+    value: 55
+    tolerance: 5.5
+  - quantity: maintenance neurons, entorhinal cortex
+    value: 21
+    tolerance: 2.1
+  - quantity: maintenance neurons, amygdala
+    value: 16
+    tolerance: 1.6
+  criterion: >-
+    Correct trials. Per neuron, the firing rate in the maintenance period (0.9 s from memory
+    array offset) against the fixation period (900 ms before memory array onset), permutation
+    t-test (Methods 2.3, 2.6), p < .05 with a higher maintenance mean; readings (a) paired and
+    (b) unpaired, as in the opening comment. Counts per region from Figure 2c. Significance of
+    each region's count by the permutation test against scrambled labels (Figure 2c legend),
+    period labels shuffled within trials, 499 repetitions. Reproduced when, under one reading,
+    the three counts are within tolerance and each region's count has p < .05.
+- id: fig2d-workload-modulated-maintenance-neurons
+  statement: >-
+    Among maintenance neurons, a significant number increased firing with workload in
+    hippocampus (10 of 55, 18%) and entorhinal cortex (5 of 21, 24%), and a significant number
+    decreased firing with workload in hippocampus (6 of 55, 11%); in entorhinal cortex 2
+    decreased and in amygdala 1 increased, not significant.
+  source: Results, 3.2 Neuronal firing, paragraph 5; Figure 2d
+  quote: >-
+    we found a significant number of maintenance neurons that showed an increase in firing with
+    workload in the hippocampus (10/55 = 18%, permutation test against scrambled labels, p =
+    .002, Fig. 2 d) and entorhinal cortex (5/21 = 24%, permutation test against scrambled
+    labels, p = .002). We also found a significant number of maintenance neurons that showed a
+    decrease in firing rate with workload in the hippocampus (6/55 = 11%, permutation test
+    against scrambled labels, p = .002).
+  statistics:
+  - about: increase with workload, hippocampus
+    test: permutation test against scrambled labels
+    p: 0.002
+    n: 55 hippocampal maintenance neurons
+  - about: increase with workload, entorhinal cortex
+    test: permutation test against scrambled labels
+    p: 0.002
+    n: 21 entorhinal maintenance neurons
+  - about: decrease with workload, hippocampus
+    test: permutation test against scrambled labels
+    p: 0.002
+    n: 55 hippocampal maintenance neurons
+  expected:
+  - quantity: hippocampal maintenance neurons increasing with workload
+    value: 10
+    tolerance: 1
+  - quantity: entorhinal maintenance neurons increasing with workload
+    value: 5
+    tolerance: 0.5
+  - quantity: hippocampal maintenance neurons decreasing with workload
+    value: 6
+    tolerance: 0.6
+  - quantity: entorhinal maintenance neurons decreasing with workload (Figure 2d label)
+    value: 2
+    tolerance: 0.2
+  - quantity: amygdala maintenance neurons increasing with workload (Figure 2d label)
+    value: 1
+    tolerance: 0.1
+  depends_on:
+  - fig2c-maintenance-neurons
+  criterion: >-
+    Within the maintenance neurons of fig2c-maintenance-neurons, correct trials, maintenance
+    period firing of low workload (set sizes 1 and 2) against high workload (4 and 6) trials.
+    The per-neuron test is not named; readings (a) the permutation t-test of Methods 2.6 on
+    per-trial maintenance rates, unpaired, p < .05, direction from the sign of the difference,
+    and (b) the cluster-based nonparametric permutation test over time used for the example
+    neuron in Figure 2a, a neuron counting when a significant cluster falls in the maintenance
+    period. Significance of each count by shuffling set-size labels across trials within the
+    session, rerunning the per-neuron test, 499 repetitions. Reproduced when, under one reading,
+    the three named counts are within tolerance and each has p < .05, and the entorhinal decrease
+    and amygdala counts are not significant; partially reproduced when two of the three named
+    counts hold with p < .05.
+- id: maintenance-neurons-correct-vs-incorrect
+  statement: >-
+    More hippocampal neurons were classified as maintenance neurons on correct trials than on
+    incorrect trials (55 of 454, 12%, against 30 of 454, 7%).
+  source: Results, 3.2 Neuronal firing, paragraph 6
+  quote: >-
+    There were more of these hippocam- pal neurons for correct trials vs incorrect trials (55/454
+    = 12% vs. 30/454 = 7%, permutation test against scrambled labels, p = .002).
+  statistics:
+  - test: permutation test against scrambled labels
+    p: 0.002
+    n: 454 hippocampal neurons
+  expected:
+  - quantity: hippocampal maintenance neurons, correct trials
+    value: 55
+    tolerance: 5.5
+  - quantity: hippocampal maintenance neurons, incorrect trials
+    value: 30
+    tolerance: 3
+  depends_on:
+  - fig2c-maintenance-neurons
+  criterion: >-
+    The maintenance neuron selection of fig2c-maintenance-neurons run separately on correct
+    trials and on incorrect trials of each session. Open, whether trial numbers were equalized;
+    readings (a) all correct and all incorrect trials (the count 55 equals the count of Figure
+    2c, which points to this reading) and (b) correct trials randomly subsampled to the number of
+    incorrect trials in the session, count averaged over 100 subsamples (the paper does not
+    mention equalizing; 100 is a standard choice). Significance by
+    shuffling correct and incorrect labels across trials within each session and recounting the
+    difference, 499 repetitions. Reproduced when, under one reading, both counts are within
+    tolerance and the difference has p < .05; partially reproduced when the correct count exceeds
+    the incorrect count with p < .05 but the counts are out of tolerance.
+- id: fig3b-test-neurons
+  statement: >-
+    Test neurons, firing more after the test array than during encoding and maintenance, made up
+    46 of 809 neurons (6%), half the number of maintenance neurons, and were found in all regions
+    (17 of 454 in hippocampus, 19 of 209 in entorhinal cortex, 10 of 146 in amygdala).
+  source: Results, 3.2 Neuronal firing, paragraph 7; Figure 3b
+  quote: >-
+    These test neurons were defined based on increased firing only during the presentation of
+    the test array relative to encoding and maintenance (permutation t-test, Fig. 3 a). With a
+    rate of 46/809 = 6%, these were half the number of maintenance neurons ( Fig. 3 b).
+  statistics:
+  - test: permutation test against scrambled labels
+    p: 0.002
+    n: each region, 454, 209 and 146 neurons
+  expected:
+  - quantity: test neurons, all
+    value: 46
+    tolerance: 4.6
+  - quantity: test neurons, hippocampus
+    value: 17
+    tolerance: 1.7
+  - quantity: test neurons, entorhinal cortex
+    value: 19
+    tolerance: 1.9
+  - quantity: test neurons, amygdala
+    value: 10
+    tolerance: 1
+  criterion: >-
+    Correct trials, permutation t-test with a higher test-period mean at p < .05. The Methods and
+    Results define the comparison differently; readings (a) test against maintenance only
+    (Methods 2.3), (b) test against encoding and test against maintenance, both significant
+    (Results 3.2), and (c) test against encoding and maintenance joined. The test period is the 2
+    s of the test array (Methods 2.2); paired and unpaired as in the opening comment.
+    Significance of each region's count as in fig2c-maintenance-neurons. The Methods come first,
+    so reading (a) is the main one; reproduced when, under (a), or under (b) or (c) if (a) fails,
+    the four counts are within tolerance and each region has p < .05. Which readings match is
+    reported.
+- id: fig4a-dpca-separates-set-sizes
+  statement: >-
+    Demixed PCA of the population separated set sizes 1, 2, 4 and 6; dPCs 2, 3 and 4 explained
+    36% of the variance (significant against scrambled labels), the separation appeared early in
+    the trial, and the first 15 dPCs explained 81.4% of the variance.
+  source: Results, 3.3 Neuronal population analysis, paragraph 1; Figure 4a
+  quote: >-
+    dPCA clearly distinguished between set sizes 1, 2, 4, and 6. For better visualization we
+    formed a three-dimensional space from three demixed principal components (dPCs 2, 3 and 4,
+    explaining 36% of the variance, permutation test against scrambled labels, p = .002, Fig. 4
+    a). ... we included the first 15 dPCs that explain 81.4% of the signal variance
+  statistics:
+  - test: permutation test against scrambled labels
+    p: 0.002
+    n: 809 neurons
+  expected:
+  - quantity: variance explained by dPCs 2, 3 and 4
+    value: 36
+    tolerance: 3.6
+    unit: "%"
+  - quantity: variance explained by the first 15 dPCs
+    value: 81.4
+    tolerance: 8.14
+    unit: "%"
+  criterion: >-
+    Method from Methods 2.4. All 809 neurons pooled across sessions, correct trials, trial-averaged
+    rates per set size from 1 ms bins smoothed with a Gaussian kernel over a 1000 ms window,
+    minus each neuron's mean fixation rate; dPCA (Kobak et al. 2016) with time and set-size
+    marginalizations, components ordered by explained variance. Open and named readings. Kernel
+    width; (a) a 1000-sample MATLAB gausswin window (SD 200 ms) and (b) a window of plus or minus
+    3 SD (SD 167 ms). Regularization; (c) none and (d) the toolbox's cross-validated lambda. Time
+    span; fixation onset to test array offset. The p = .002 test is read as set-size labels
+    shuffled across trials, dPCA refit, 499 repetitions, comparing the variance of dPCs 2 to 4.
+    Reproduced when, under one combination of readings, both variance values are within
+    tolerance, the set-size variance exceeds the shuffled null at p < .05, and the four set-size
+    trajectories are distinct during maintenance. The early separation and the 90 degree angles
+    in the dPC3-dPC4 plane are shown and not judged (the paper gives no measure for either).
+- id: fig4b-speed-lowest-in-maintenance
+  statement: >-
+    Multidimensional speed in the 15-dPC space was highest during encoding and lowest during
+    maintenance, lower than in encoding and test.
+  source: Results, 3.3 Neuronal population analysis, paragraph 1; Figure 4b
+  quote: >-
+    Multidimensional speed was highest during encoding, when maintenance neurons ramped up their
+    firing. Speed was lowest during maintenance (permutation t-test against encoding and test
+    periods, p = .0005).
+  statistics:
+  - test: permutation t-test against encoding and test periods
+    p: 0.0005
+    n: 500 dPCA runs on 20% subsamples
+  depends_on:
+  - fig4a-dpca-separates-set-sizes
+  criterion: >-
+    dPCA as in fig4a-dpca-separates-set-sizes, run 500 times, each on a 20% subsample with
+    replacement of the neural firing rate trajectories (Methods 2.4). Open, what is subsampled;
+    readings (a) neurons and (b) trials. Speed is the Euclidean norm of the time derivative of the
+    trajectory in the first 15 dPCs, averaged over set sizes and over time in each period, one
+    value per period per run (the paper does not define speed beyond "rate of change over time";
+    this combination over set sizes and time is a reading, not the paper's). Maintenance against encoding and against test by permutation t-test
+    (Methods 2.6) on the 500 values per period. Reproduced when, under one reading, maintenance
+    speed is below encoding and test with p < .05 for both, and encoding is the highest of the
+    four periods. The figure shows fixation speed near maintenance speed; that comparison is not
+    claimed.
+- id: fig4c-distance-largest-in-maintenance
+  statement: >-
+    The pairwise distance between set-size trajectories was larger during maintenance than during
+    encoding, and the largest of all periods, consistent with attractors during maintenance.
+  source: Results, 3.3 Neuronal population analysis, paragraph 1; Figure 4c
+  quote: >-
+    Analysing the pairwise distance between trajecto- ries that corresponded to different set
+    sizes, we found that the distances during maintenance were larger than during encoding
+    (permutation t- test, p = .0005, Fig. 4 c).
+  statistics:
+  - test: permutation t-test
+    p: 0.0005
+    n: 500 dPCA runs on 20% subsamples
+  depends_on:
+  - fig4b-speed-lowest-in-maintenance
+  criterion: >-
+    The runs of fig4b-speed-lowest-in-maintenance. Distance is the Euclidean distance in the first
+    15 dPCs between the trajectories of each of the six pairs of set sizes, averaged over pairs
+    and over time in each period (the averaging is a reading; the paper and the Figure 4c legend
+    say only "pairwise distance between all possible pairs"). Reproduced when, under one reading, maintenance distance exceeds
+    encoding distance with p < .05 by permutation t-test and is the largest of the four periods;
+    partially reproduced when only the first holds. The comparison with test (starred in Figure
+    4c) is shown.
+- id: fig4d-decode-workload-all
+  statement: >-
+    During maintenance, workload (set sizes 1 and 2 against 4 and 6) was decoded from all neurons
+    pooled with median accuracy 87.5%, above chance; leaving out any one participant gave
+    accuracies with IQR 85.7 to 87.6%.
+  source: Results, 3.4 Decoding of information during the trial, paragraph 1; Figure 4d
+  quote: >-
+    For the maintenance periods, we found that the workload (set size 1, 2 vs. set sizes 4, 6) of
+    each trial could be decoded with median decoding accuracy of 87.5% when all neurons were
+    pooled ( Fig. 4 d, permuta- tion test against scrambled labels, p = .001). In a leave-one-out
+    anal- ysis, the exclusion of any participant resulted in decoding accuracy in the IQR
+    [85.7–87.6%]
+  statistics:
+  - test: permutation test against scrambled labels
+    p: 0.001
+    corrected: Bonferroni over 4 regions
+    n: 809 neurons
+  expected:
+  - quantity: median decoding accuracy, all neurons
+    value: 87.5
+    tolerance: 8.75
+    unit: "%"
+  - quantity: lower quartile of leave-one-participant-out accuracies, bound of 85.7 to 87.6
+    value: 85.7
+    tolerance: 8.57
+    unit: "%"
+  - quantity: upper quartile of leave-one-participant-out accuracies, bound of 85.7 to 87.6
+    value: 87.6
+    tolerance: 8.76
+    unit: "%"
+  criterion: >-
+    From Methods 2.5. Correct trials, labels low (1, 2) and high (4, 6) workload; per neuron, spike
+    counts in a 1000 ms window (1 ms bins); pseudo-population of all neurons; SVM as in the NDT
+    toolbox, trained and tested separately for each window, windows centred every 100 ms; 20
+    cross-validation splits, 500 resampling runs; accuracy is the median over runs; null from
+    1000 runs with shuffled labels; p Bonferroni-corrected for 4 groups (threshold .0125). Open
+    and named readings. Which window is "maintenance"; (a) the window centred on the middle of
+    the maintenance period (1.25 s after memory array onset, nearest 100 ms centres 1.2 and 1.3
+    s) and (b) the median over windows centred inside the maintenance period. Trials per label in
+    the pseudo-population; the paper gives 145 to 169 training trials (95%), read as (c) the
+    largest equal number per label available in every session and (d) the session's own trial
+    count, with each session's neurons resampled to it. Features; (e) z-scored per neuron as in
+    common NDT use and (f) raw counts. SVM kernel; linear (the NDT libsvm default; the paper says
+    nothing). Leave-one-out repeats the analysis without each participant's neurons, 13 values.
+    Reproduced when, under one combination of readings, the accuracy is within tolerance with p <
+    .0125 and the leave-one-out quartiles are within tolerance.
+- id: fig4d-decode-workload-regions
+  statement: >-
+    Workload was decoded during maintenance from hippocampal neurons (75%) and entorhinal neurons
+    (80%) but not from amygdala neurons.
+  source: Results, 3.4 Decoding of information during the trial, paragraph 1; Figure 4d
+  quote: >-
+    When pooling neurons from the three anatomical re- gions separately, decoding accuracy was
+    significant for the hippocam- pus (75%, Fig. 4 d column 3) and for the entorhinal cortex
+    neurons (80%, Fig. 4 d column 5), but not for neurons in the amygdala.
+  statistics:
+  - about: hippocampus
+    test: permutation test against scrambled labels
+    p: 0.006
+    corrected: Bonferroni over 4 regions
+    n: 454 neurons
+  - about: entorhinal cortex
+    test: permutation test against scrambled labels
+    p: 0.001
+    corrected: Bonferroni over 4 regions
+    n: 209 neurons
+  expected:
+  - quantity: median decoding accuracy, hippocampus
+    value: 75
+    tolerance: 7.5
+    unit: "%"
+  - quantity: median decoding accuracy, entorhinal cortex
+    value: 80
+    tolerance: 8
+    unit: "%"
+  depends_on:
+  - fig4d-decode-workload-all
+  criterion: >-
+    The decoder and readings of fig4d-decode-workload-all, on each region's neurons. Reproduced
+    when, under one combination of readings, hippocampus and entorhinal accuracies are within
+    tolerance with p < .0125 and amygdala has p of .0125 or more (the paper's corrected
+    threshold; the amygdala accuracy, near 62% in Figure 4d, is reported); partially reproduced
+    when two of the three regions match.
+- id: decode-performance-not-significant
+  statement: >-
+    Trial-wise performance (correct against incorrect) could not be decoded from MTL firing in
+    any group (all 55%, hippocampus 55%, entorhinal 55%, amygdala 50%; p from .40 to .56).
+  source: Results, 3.4 Decoding of information during the trial, paragraph 2
+  quote: >-
+    Decoding accuracy for the prediction of trial-wise performance (cor- rect vs. incorrect
+    trials) was not significant (All MTL: 55%, p = .45, Hipp: 55%, p = .40, Ent: 55%, p = .44,
+    Amg: 50%, p = .56). We could not decode performance with neural firing in the MTL.
+  statistics:
+  - about: all MTL
+    test: permutation test against scrambled labels
+    p: 0.45
+  - about: hippocampus
+    test: permutation test against scrambled labels
+    p: 0.40
+  - about: entorhinal cortex
+    test: permutation test against scrambled labels
+    p: 0.44
+  - about: amygdala
+    test: permutation test against scrambled labels
+    p: 0.56
+  expected:
+  - quantity: decoding accuracy, all MTL
+    value: 55
+    tolerance: 5.5
+    unit: "%"
+  - quantity: decoding accuracy, hippocampus
+    value: 55
+    tolerance: 5.5
+    unit: "%"
+  - quantity: decoding accuracy, entorhinal cortex
+    value: 55
+    tolerance: 5.5
+    unit: "%"
+  - quantity: decoding accuracy, amygdala
+    value: 50
+    tolerance: 5
+    unit: "%"
+  depends_on:
+  - fig4d-decode-workload-all
+  criterion: >-
+    A claim of absence, judged on the paper's test. The decoder of fig4d-decode-workload-all
+    with labels correct and incorrect, all set sizes, maintenance window, null from 1000 shuffled
+    runs, Bonferroni over 4 groups. Open, how the few incorrect trials are balanced; the reading
+    is equal trials per label set to the smallest number of incorrect trials in any session, all
+    neurons kept. Reproduced when no group reaches p < .0125; not reproduced when any does.
+    Accuracies are reported either way.
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: "claude-opus-5-5"
+  ready: true
+  changes:
+  - behavior-accuracy-by-set-size, source corrected to Discussion 4.1 paragraph 2, where the 89% average is printed (it was paragraph 3).
+  - behavior-accuracy-by-set-size, criterion now also requires the F value in expected to be within tolerance; it was listed but never judged.
+  - behavior-rt-set-size, added the reported F(3, 45) = 48.47 to expected (10%), and the criterion now judges F and the trial count, both reported numbers.
+  - table1-capacity-and-neurons, added the 13 Kmax values of Table 1 to expected (10%); they were in the statement but not in expected.
+  - table1-capacity-and-neurons, removed the "at least 11 of the 13 Kmax values" threshold, which the paper does not give; every value must now be within tolerance.
+  - spike-sorting-quality, which spikes enter the ISI percentage (whole recording or trials) was settled by the writer without a source; now named as open with both readings, and the outcome is judged under one reading.
+  - firing-rates-by-period, added the ten printed quartiles to expected; the criterion judged them but expected lacked them.
+  - maintenance-neurons-correct-vs-incorrect, reading (b) now says the paper does not mention equalizing trials and that 100 subsamples is a standard choice.
+  - fig4a-dpca-separates-set-sizes, the early separation in the statement is now said to be shown and not judged, since the paper gives no measure for it.
+  - fig4b-speed-lowest-in-maintenance, the way speed is combined over set sizes and time is now marked as a reading; the paper does not define it.
+  - fig4c-distance-largest-in-maintenance, the averaging of distances over pairs and time is now marked as a reading; the paper does not define it.
+  - Open, not settled. The per-region counts read from figures (amygdala 16 in Figure 2c; 17, 19, 10 in Figure 3b; entorhinal decrease 2 and amygdala increase 1 in Figure 2d), the assignment of p = .006 to hippocampus in Figure 4d and the amygdala accuracy near 62% could not be checked, as the PDF could not be rendered in this run. The counts agree with the text totals (46 test neurons, half of 92 maintenance neurons).
+  - Open, not settled. The scrambling scheme of each "permutation test against scrambled labels", the number of permutations, and the permutation scheme of the repeated-measures ANOVA are not given by the paper; the file states one reading for each. Boran et al. (2019) and Kaminski et al. (2017), which the Methods cite for these methods, were not read.
