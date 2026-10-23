@@ -174,6 +174,19 @@ claims:
     dropping events marked false positive and ECoG segments with power below 0 dB or with
     115-125 Hz power more than 3 SD above all segments (Methods, ECoG-event synchronization;
     the Figure 2 code reads its events from the spectral power files, which have these removed).
+    The segment rule of reading (b) is only partly given. The Methods compute "log-transformed
+    spectral power density for each segment" to remove "segments with missing data and large
+    artifacts, such as line noise"; that is one spectrum per 10 s segment, not power over time
+    within it. The paper does not give the spectral estimate, the frequencies the 0 dB test is
+    taken over, whether it is judged on the mean over good electrodes or per electrode, or
+    whether "all segments" are a subject's or all subjects'; the code at 04c6faf does not hold
+    the step. The unit is read as microvolts, since the paper puts spectral power without
+    baseline subtraction at about 10-50 dB (Discussion), which volts cannot give. The readings
+    allowed are (b1) one PSD per segment averaged over good electrodes, (b2) the same per good
+    electrode, a segment dropped when any fails; the 3 SD taken over the subject's segments,
+    with all subjects' segments as a variant. (b1) is the main reading. A time-resolved test
+    (dropping a segment with any time bin below 0 dB) is not what the Methods describe, but it
+    serves their stated aim of removing missing data and may be run as a variant.
     Reproduced when all three values are within tolerance under one reading.
 - id: fig2-features-differ-across-subjects
   statement: All ten behavioural and environmental features differ significantly across
