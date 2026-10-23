@@ -3506,6 +3506,10 @@
     "ready": null,
     "date": null
    },
+   "dandi:000774": {
+    "ready": true,
+    "date": "2026-10-23"
+   },
    "dandi:000785": {
     "ready": true,
     "date": "2026-10-23"
@@ -13927,6 +13931,312 @@
       "source": "Figure 6b",
       "quote": "During neutral recall in high-shock mice, population activity vectors were less correlated with the average neutral encoding population vector than aversive recall activity was with the average aversive encoding population vector ... Neutral encoding-to-recall correlations were also lower in high- versus low-shock mice",
       "criterion": ""
+     }
+    ]
+   }
+  ],
+  "dandi:000774": [
+   {
+    "path": "claims/000774/10.1016-j.celrep.2026.117420.yaml",
+    "paper": "10.1016/j.celrep.2026.117420",
+    "check": {
+     "ready": true,
+     "date": "2026-10-23"
+    },
+    "claims": [
+     {
+      "id": "fig1l-saturation-amplitude",
+      "statement": "Recording amplifier saturation after a 0.2 ms pulse lasts about 0.14, 0.24, 0.26 and 0.30 ms at 5, 25, 50 and 100 uA, increasing with amplitude.",
+      "source": "Results, Orthogonal multi-Neuropixels recordings, paragraph 3; Figure 1L",
+      "quote": "saturation persisted for approximately 0.14 \u00b1 0.00 ms at 5 \u03bc A, 0.24 \u00b1 0.01 ms at 25 \u03bc A, 0.26 \u00b1 0.01 ms at 50 \u03bc A, and 0.30 \u00b1 0.01 ms at 100 \u03bc A ( Figure 1L , one-way ANOVA, F = 105.62, p < 0.001)",
+      "criterion": "Needs the raw AP band, which the paper says is not in the NWB. Method from figure1.ipynb (cells 22 to 26), as the Methods give none - cathodal trials (first 75) aligned to the artifact onset found on channel 0, samples above 1100 uV counted per trial and channel and converted to ms at 30 kHz, averaged over trials, outlier channels (|z| >= 1) replaced by their neighbours' mean, averaged over channels to one value per probe; one-way ANOVA (scipy f_oneway) across the four amplitudes. Reproduced when the four means are within tolerance and the ANOVA has p < 0.001."
+     },
+     {
+      "id": "figs1b-saturation-polarity",
+      "statement": "Saturation duration increases with amplitude, and polarity does not significantly change it.",
+      "source": "Results, Orthogonal multi-Neuropixels recordings, paragraph 3; Figure S1B",
+      "quote": "despite increases in saturation with amplitude (two-way ANOVA, F = 236.04, p < 0.001), and polarity alone did not significantly change saturation duration ( F = 2.48, p = 0.09)",
+      "criterion": "A claim of absence, judged on the paper's test, a two-way ANOVA of saturation duration (as in fig1l-saturation-amplitude) on amplitude and polarity; figure1.ipynb cell 34 uses ols('value ~ amplitude * C(polarity)') with type II sums of squares. Reproduced when the polarity effect has p >= 0.05 and the amplitude effect p < 0.001; the polarity effect size is reported."
+     },
+     {
+      "id": "fig2g-extent-increases",
+      "statement": "The spatial extent of the evoked potential, both superficial and deep to the stimulation source, increases with amplitude (superficial about -424, -683, -742 and -744 um; deep about 510, 591, 662 and 712 um at 5, 25, 50 and 100 uA).",
+      "source": "Results, Evoked potential spatial extent increases sub-linearly with amplitude, paragraph 3; Figure 2G",
+      "quote": "Both the superficial and deep distance from stimulation increased with amplitude ( Figure 2G , superficial ... p = 0.002, linear mixed-effects model",
+      "criterion": "Needs the raw AP band, which the paper says is not in the NWB; the code's intermediate EP_boundaries_w_array_distances_curated.pkl holds the boundaries it computed (an outside input for the author to judge). Method, STAR Methods (Algorithmically determining the spatial extent) - trials aligned by threshold detection of the saturating artifact, 0.3 to 3 ms window, per sample the median over the saline channels outside the brain subtracted (Methods say the first 20 such channels, figure2.ipynb cell 8 uses 15; the code's 15 is a variant), mean over trials, the 1 ms sample, extent on each side where the potential returns to 20 uV. Where the Methods are silent the code is followed - Gaussian smoothing over channels (sigma 2), peak taken past channel 30 and kept only if above 40 uV, the boundary moved two channels inward. Distance is Euclidean CCF distance, negative superficial. Cathodal values. The model, from the Methods - recording as random intercept, maximum likelihood, Wald z test of the amplitude term; the fixed effects are polarity, amplitude, boundary type and probe identity \"and their interactions\", which the Methods do not list, so the readings are (a) these main effects with amplitude x polarity and amplitude x boundary type, (b) the full factorial; amplitude is (i) numeric or (ii) categorical. The code has no mixed model (its OLS ANOVA 'distance ~ C(polarity) * amplitude', cell 20, is shown as a variant). The printed values were read as per-amplitude means; the code's cell 16 prints SDs cumulative over amplitudes and its 100 uA superficial mean (-743.84) is pooled over all four, and cell 17 gives per-amplitude means (-424, -725, -812, -750; 510, 605, 747, 888), so both the per-amplitude and the cumulative means are computed. Reproduced when under one reading the amplitude effect has p < 0.05 and the means are within tolerance; partially reproduced when the effect holds and the means do not."
+     },
+     {
+      "id": "fig2g-extent-sublinear",
+      "statement": "The increase in spatial extent with amplitude is sublinear and poorly fit by a linear regression (superficial R2 = 0.02, deep R2 = 0.17), unlike the linear growth of the point-source model.",
+      "source": "Results, Evoked potential spatial extent increases sub-linearly with amplitude, paragraph 3; Figure 2G; Figure S2F",
+      "quote": "the increase in spatial extent of the biologically observed evoked potential was sublinear and poorly fit by linear regression (superficial R 2 = 0.02 and deep R 2 = 0.17)",
+      "criterion": "Extents as in fig2g-extent-increases, cathodal. As in figure2.ipynb cells 16 to 18, scipy linregress of the individual probe extents (CCF distance) on amplitude, pooled over amplitudes, one fit per side. The code's cell 16 prints linear R2 0.02 superficial and 0.16 deep (its quadratic deep fit gives 0.17); the Figure S2F legend gives, for peak-aligned distance, cathodal R2 0.02 dorsal and 0.20 ventral. Both distance types are run, CCF as the main reading. Tolerance 0.05 in R2 (10% of 0.02 is below the precision printed). Reproduced when both R2 are within tolerance and the step from 50 to 100 uA in mean extent is smaller than the step from 5 to 25 uA on each side (sublinear)."
+     },
+     {
+      "id": "fig2-extent-polarity",
+      "statement": "Spatial extents do not differ across polarities.",
+      "source": "Results, Evoked potential spatial extent increases sub-linearly with amplitude, paragraph 3; Figure 2I; Figure S2E",
+      "quote": "Notably, spatial extents did not differ across polarities ( Figures 2J and S2E , linear mixed-effects model, p = 0.151",
+      "criterion": "A claim of absence, judged on the paper's test, the mixed model of fig2g-extent-increases (each of its readings), polarity term. Reproduced when the polarity effect has p >= 0.05 under the readings; not reproduced when it is significant. The Results (p = 0.151) and the legends (p = 0.495, radial extent at 50 uA in Figure 2I) give two values; both the model over all amplitudes and the 50 uA comparison are run. The code's OLS is shown as a variant."
+     },
+     {
+      "id": "fig2h-probe-identity",
+      "statement": "Probe trajectory affects spatial extent, with larger extents on probe C, which stays in cortex, than on probes A and B, which cross the white matter into subcortical areas.",
+      "source": "Results, Evoked potential spatial extent increases sub-linearly with amplitude, paragraph 4; Figure 2H",
+      "quote": "we observed probe trajectory had a significant effect on average spatial extent, most notably with an increase in spatial extent for probe C ( Figure 2H , probe A vs. probe C: p < 0.001, probe B vs. probe C: p < 0.001",
+      "criterion": "Absolute extents (superficial and deep) as in fig2g-extent-increases, with probe identity (A, B, C) as a fixed effect in the same mixed model and readings, probe C as reference. Reproduced when probe C has the largest mean absolute extent and both contrasts have p < 0.05. The code (figure3.ipynb cell 15) fits an OLS of probe B against probe C only and finds no main effect (p = 0.72); it is shown as a variant."
+     },
+     {
+      "id": "figs2gh-magnitude-linear",
+      "statement": "For all polarities, the maximum evoked potential and its area under the curve at 1 ms increase nearly linearly with amplitude.",
+      "source": "Results, Evoked potential spatial extent increases sub-linearly with amplitude, paragraph 2; Figure S2G and S2H",
+      "quote": "For all polarities, both the maximum evoked potential and AUC increased nearly linearly ( Figures S2G and S2H",
+      "criterion": "Needs the raw AP band. Per probe, the maximum and the area under the curve between the two boundaries of the 1 ms profile (as in fig2g-extent-increases); linear regression on amplitude per polarity, with the R2 of the S2G and S2H legends (cathodal 0.16 and 0.23, anodal 0.04 and 0.07, bipolar 0.20 and 0.23) compared at a tolerance of 0.05. Reproduced when for every polarity both slopes are positive with p < 0.05 and the cathodal R2 are within tolerance."
+     },
+     {
+      "id": "fig3c-volume",
+      "statement": "The evoked-potential volume, the convex hull of the six extents on the three probes, tends to increase sublinearly with amplitude (cathodal 0.31, 0.43 and 0.61 mm3 at 25, 50 and 100 uA), with no significant main effect of amplitude or polarity.",
+      "source": "Results, Anisotropic volumetric profile of the induced electrical field, paragraph 1; Figure 3C",
+      "quote": "trended to increase sublinearly with stimulation amplitude ( Figure 3C ; cathodal polarity ... 0.31 \u00b1 0.20 mm 3 , \u221250 \u03bc A: 0.43 \u00b1 0.19 mm 3 , \u2212100 \u03bc A: 0.61 \u00b1 0.22 mm 3 ; linear R 2 = 0.259",
+      "criterion": "Needs the raw AP band. Methods - the four recordings with all six extents (jlh31, jlh32, jlh34 and jlh48 in the code), CCF coordinates of the six boundary points, scipy ConvexHull volume; 25, 50 and 100 uA. Two-way ANOVA of volume on amplitude and polarity (code, ols('volume ~ C(polarity) * amplitude'), type II). The code's typo in figure2.ipynb cell 39 (a_up_cff) reuses an earlier recording's probe A point when that point is missing; the corrected and the code's points are both computed. Reproduced when the cathodal means and R2 are within tolerance and neither main effect has p < 0.05."
+     },
+     {
+      "id": "fig3e-ventral-compression",
+      "statement": "Evoked potentials extend broadly within cortex but are compressed ventrally at the corpus callosum; along probe C, which stays in cortex, they extend beyond a fitted isotropic sphere, and along probe B, which crosses into white matter, they are truncated relative to it.",
+      "source": "Results, Anisotropic volumetric profile of the induced electrical field, paragraph 2; Figure 3D and 3E",
+      "quote": "when probes remained in cortex (probe C, Figure 3E ), responses extended beyond the symmetric fit, whereas when probes traversed into subcortical white matter (probe B, Figure 3E ), responses were truncated relative to the sphere",
+      "criterion": "Needs the raw AP band. Methods (Isotropic spherical fits, Convex-hull comparison) - for each recording and cathodal amplitude, the fixed-centre sphere radius r_L2 = mean distance of the six points from the stimulation contact; the signed difference between each measured point's distance and r_L2 stands for the hull deviation along that direction. Reproduced when, averaged over the four recordings and three cathodal amplitudes, the deep point of probe C lies outside the sphere (positive) and the deep point of probe B inside it (negative). The tessellated point-to-facet deviation of the Methods is computed as well and must agree in sign."
+     },
+     {
+      "id": "fig3fg-anisotropy-strength",
+      "statement": "Anisotropy strength averages 0.493 +- 0.288 across amplitudes and polarities and does not vary with amplitude or polarity.",
+      "source": "Results, Anisotropic volumetric profile of the induced electrical field, paragraph 3; Figure 3F and 3G",
+      "quote": "Across all amplitudes and polarities, anisotropy strength averaged 0.493 \u00b1 0.288 and did not vary systematically with stimulation amplitude or polarity",
+      "criterion": "Needs the raw AP band. Methods (Anisotropy metrics) - for each recording and condition, least-squares fit d_i = a + b.u_i of each point's distance on its unit direction from the stimulation contact, AS = norm(b)/a. Two-way ANOVA of AS on polarity and amplitude (code, figure3.ipynb cells 31 to 35, 'anisotropy_strength ~ C(polarity) * C(amp_abs)', type II). The legend names three polarities; the code (cell 35) groups monopolar against bipolar (polarity 1 df), which gives the printed F = 2.81 and 0.143; both groupings are run. Reproduced when the mean is within tolerance and neither main effect has p < 0.05 (the absence part judged on that ANOVA)."
+     },
+     {
+      "id": "fig3h-com-displacement",
+      "statement": "The centre of mass of the evoked-potential volume is displaced from the stimulating contact (displacement greater than zero), with a dorsal component of 105 +- 46 um away from the corpus callosum that does not reach significance.",
+      "source": "Results, Anisotropic volumetric profile of the induced electrical field, paragraph 3; Figure 3H",
+      "quote": "The displacement magnitude exceeded zero (one-sample t test vs. 0, p = 0.02), indicating anisotropy. The dorsal (superficial) component averaged 105 \u00b1 46 \u03bc m away from the corpus callosum and, while directionally consistent, did not reach significance (one-sample t test vs. 0, p = 0.1095)",
+      "criterion": "Needs the raw AP band. Methods (Center-shift direction metric) - centre of mass is the mean of the six boundary points; displacement is centre of mass minus the stimulation contact, in CCF. Tolerance is the stated spread (46 um, n = 4). What is tested is open; readings (a) per recording, the displacement averaged over conditions, one-sample t test of its magnitude and of its DV component against 0 (n = 4), as figure3.ipynb cell 28 does; (b) the free-centre sphere shift per condition and recording pooled, per axis, as cell 45 does. Reproduced when under one reading the magnitude test has p < 0.05, the DV component is dorsal and within tolerance."
+     },
+     {
+      "id": "fig4d-latency-trough",
+      "statement": "First-spike latencies after a pulse are bimodal, with an early peak, a pause at a median of 1.95 ms across parameters and a broader peak from about 2.5 ms, which sets the 2 ms direct window.",
+      "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 3; Figure 4D; Figure S3B",
+      "quote": "the distribution of first-spike latencies, which exhibited a bimodal shape: an early peak immediately after stimulation, followed by a brief pause occurring at a median value of 1.95 ms across parameters",
+      "criterion": "As in figure4_figure5_figure6.ipynb cells 20 to 23 (the Methods give no procedure) - first spike after each pulse for all good units, pooled per polarity and amplitude, histogram in 0.1 ms bins over 0 to 15 ms (Figure 4D legend), trough is the minimum bin between 0.5 and 5 ms; median over the conditions (the code takes the four cathodal amplitudes). Reproduced when the median trough is within tolerance and the histogram has a higher bin before the trough and after it."
+     },
+     {
+      "id": "figs3cd-gmm-window",
+      "statement": "Gaussian mixtures of first-spike latencies give amplitude-specific direct windows (0.68, 1.14, 1.22 and 1.47 ms at 5, 25, 50 and 100 uA cathodal), and the proportion of direct responders does not differ from that of the 2 ms window.",
+      "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 3; Figure S3C and S3D",
+      "quote": "create a direct response window for each amplitude (5 \u03bcA: 0.68 ms; 25 \u03bcA: 1.14 ms; 50 \u03bcA: 1.22 ms, and 100 \u03bcA: 1.47 ms, Figure S3C ); there was no statistical difference in the overall proportion of direct responders compared to the 2-ms window used",
+      "criterion": "Not in the code. Methods (Gaussian mixture models) - first-spike latencies 0 to 15 ms per condition (only conditions with at least 200), one-dimensional GMM by maximum likelihood; the Methods say both \"4 Gaussian components\" and selection by minimum BIC, so the readings are (a) k = 4 fixed (as the S3C legend, k = 4) and (b) k chosen by BIC up to 4; the window is the crossover of the posteriors of the two earliest components. Responders per recording with each window (nDRP > 0.15, baseline window 7 to 5 ms before onset for 2 ms; for the GMM windows the baseline length is open, readings (i) a baseline as long as the window, (ii) the 2 ms baseline), compared by Wilcoxon signed-rank tests across 9 recordings with FDR correction (S3D legend). Reproduced when under one reading the four windows are within tolerance and no comparison has adjusted p < 0.05."
+     },
+     {
+      "id": "fig4f-responders-within-ep",
+      "statement": "Direct responders are sparse and mostly lie within the average boundaries of the evoked potential (33.3%, 74.1%, 88.2% and 100% at 5, 25, 50 and 100 uA), with more outside at 5 uA.",
+      "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 4; Figure 4F",
+      "quote": "Direct responders were sparse and generally constrained within the average boundaries of the evoked potential (33.3% for 5 \u03bc A, 74.1% for 25 \u03bc A, 88.2% for 50 \u03bc A, and 100% for 100 \u03bc A",
+      "criterion": "Cathodal direct responders (nDRP > 0.15) pooled over recordings; a responder is within when its signed distance (norm_distance) lies between the mean superficial and mean deep extents of the evoked potential at that amplitude (fig2g-extent-increases; the code reads them from EP_distances.pkl, an outside input for the author to judge). The code (figure4_figure5_figure6 cell 27) gives 0.483, 0.765, 0.889 and 1.0 over all responders, and its RS-only count (cell 54) gives 0.333, 0.741, 0.882 and 1.0, the printed numbers. Readings (a) all responders, (b) RS responders only. Reproduced when under one reading the four fractions are within tolerance and the 5 uA fraction is the lowest."
+     },
+     {
+      "id": "fig4h-extent-constant",
+      "statement": "The spatial extent of direct responders stays relatively constant across amplitudes (1180 +- 559, 884 +- 652, 965 +- 451 and 522 +- 313 um), with no significant amplitude effect.",
+      "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 4; Figure 4H and 4I",
+      "quote": "the spatial extent of single-unit responders remained relatively constant across amplitudes (5 \u03bc A: 1180 \u00b1 559 \u03bc m, 25 \u03bc A: 884 \u00b1 652 \u03bc m, 50 \u03bc A: 965 \u00b1 451 \u03bc m, and 100 \u03bc A: 522 \u00b1 313 \u03bc m, One-way ANOVA, F = 1.265, p = 0.312)",
+      "criterion": "A claim of absence, judged on the paper's test. As in figure4_figure5_figure6 cell 30 - per recording and cathodal amplitude, extent = |minimum| + maximum of the responders' signed distances (norm_distance); one-way ANOVA of these per-recording extents across the four amplitudes. Reproduced when p >= 0.05; the means are compared with tolerance and reported (the code prints 868 +- 671 um at 50 uA)."
+     },
+     {
+      "id": "fig4h-distance-decreases",
+      "statement": "Higher amplitudes bring direct responders closer to the stimulation site (mean distance 426, 300, 137 and 146 um at 5, 25, 50 and 100 uA), driven by 5 against 50 and 5 against 100 uA.",
+      "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 4; Figure 4H",
+      "quote": "Stimulation amplitude significantly decreased the average distance from stimulation of responsive units ... one-way ANOVA, F = 4.15, p = 0.007), driven specifically by differences between 5 \u03bc A and 50 \u03bc A and between 5 \u03bc A and 100 \u03bc A (post hoc Tukey tests: 5 vs. 50 \u03bc A, p = 0.015; 5 vs. 100 \u03bc A, p = 0.019",
+      "criterion": "As in figure4_figure5_figure6 cell 32 - signed distance (norm_distance) of cathodal direct responders pooled over recordings, one row per responder and amplitude; one-way ANOVA across amplitudes and Tukey HSD. Reproduced when the ANOVA and both named Tukey contrasts have p < 0.05 and the four means are within tolerance; partially reproduced when the tests hold and the means do not."
+     },
+     {
+      "id": "fig4h-ks-distinct",
+      "statement": "5 and 100 uA recruit distinct spatial populations of direct responders; the other pairs the paper reports (5-25, 25-50, 25-100 and 50-100 uA) do not differ after correction.",
+      "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 4; Figure 4H and 4I",
+      "quote": "Further, 5 \u03bc A and 100 \u03bc A recruited distinct spatial populations (pairwise two-sample Kolmogorov-Smirnov tests, corrected for six comparisons using the Holm-\u0160id\u00e1k procedure",
+      "criterion": "The distance distributions of fig4h-distance-decreases, scipy ks_2samp for the six pairs, Holm-Sidak correction (code, cells 34 and 35). Reproduced when 5 against 100 uA has adjusted p < 0.05 and the 5-25, 25-50, 25-100 and 50-100 pairs do not; partially reproduced when only the first part holds. The paper prints no value for 5 against 50 uA; it is reported and not judged."
+     },
+     {
+      "id": "fig4i-proportion-within-ep",
+      "statement": "The proportion of direct responders among units within the evoked potential is small and increases with amplitude (0.014, 0.020, 0.031 and 0.030), so fewer than 5% of neurons are directly activated.",
+      "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 5; Figure 4I",
+      "quote": "The proportion of responders within the evoked potential increased with amplitude (5 \u03bc A: 0.014 \u00b1 0.12, 25 \u03bc A: 0.020 \u00b1 0.14, 50 \u03bc A: 0.031 \u00b1 0.172, and 100 \u03bc A: 0.030 \u00b1 0.170; linear ANOVA, F = 5.41, p = 0.020",
+      "criterion": "The printed spreads equal the SD of a 0/1 indicator (sqrt(p(1-p))), so the proportion is the mean of a responder indicator over units pooled across recordings, and the \"linear ANOVA\" an OLS of that indicator on amplitude. These numbers are not printed by the code; its nearest cell (figure4_figure5_figure6 cell 37) uses nDRP > 0.10, the 100 uA boundaries and raw distance and gets 0.019 to 0.037. Readings (a) units within the amplitude's own mean evoked-potential boundaries on norm_distance, nDRP > 0.15, amplitude numeric; (b) as (a) with the 100 uA boundaries; (c) as (a) with raw CCF distance. Cathodal; boundaries as in fig4f-responders-within-ep. Reproduced when under one reading the four proportions are within tolerance, all below 0.05, and the slope on amplitude is positive with p < 0.05."
+     },
+     {
+      "id": "fig4j-drp-increases",
+      "statement": "Among units responsive at any amplitude (99 units), direct response probability increases with amplitude (0.12, 0.14, 0.19 and 0.23), so higher amplitude both recruits more neurons and raises their spiking probability.",
+      "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 5; Figure 4J",
+      "quote": "among responders, direct-response probability increased with amplitude (5 \u03bc A: 0.12 \u00b1 0.20, 25 \u03bc A: 0.14 \u00b1 0.21, 50 \u03bc A: 0.19 \u00b1 0.25, and 100 \u03bc A: 0.23 \u00b1 0.31; F = 12.78, p = 0.0004, Figure 4J )",
+      "criterion": "Units with nDRP > 0.15 at any cathodal amplitude and a value at all four (code, figure4_figure5_figure6 cell 39). The test is named a one-way ANOVA; the code fits ols('norm_prob ~ amplitude') with amplitude numeric (F = 12.78, 1 df). Readings (a) the code's regression, (b) a one-way ANOVA with amplitude categorical, (c) a repeated-measures ANOVA over units. Reproduced when under one reading p < 0.05 with nDRP rising with amplitude and the means and unit count are within tolerance."
+     },
+     {
+      "id": "figs3e-early-windows",
+      "statement": "Broader windows (5 and 10 ms) give more responsive units than the 2 ms window (0.092 and 0.175 at 100 uA), and their amplitude dependence is stronger.",
+      "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 6; Figure S3E",
+      "quote": "As expected, broader windows increased the proportion of responsive units (0.092 \u00b1 0.01 for the 5 ms window and 0.175 \u00b1 0.01 for the 10 ms window at 100 \u03bc A, FDR-corrected p < 0.001, paired Wilcoxon signed-rank tests",
+      "criterion": "Not in the code. Per recording, the proportion of units with nDRP > 0.15 in windows of 2, 5 and 10 ms after onset, cathodal (mean and SEM over 9 recordings, S3E legend). The baseline window is open for the longer windows; readings (a) a 2 ms baseline as in spike_probability called with the longer window (the code's function keeps it 2 ms long, ending 3 ms plus the window before onset), (b) a baseline as long as the window, ending 3 ms before onset. Paired Wilcoxon tests across recordings with FDR correction. Reproduced when under one reading both 100 uA proportions are within tolerance and exceed the 2 ms proportion with adjusted p < 0.05, and the increase from 5 to 100 uA is larger for the 5 and 10 ms windows than for 2 ms. With 9 recordings the smallest two-sided exact Wilcoxon p is 0.0039, so p < 0.001 cannot be matched across recordings; this is recorded and the claim is judged at p < 0.05."
+     },
+     {
+      "id": "fig5bc-amplitude-clusters",
+      "statement": "Clustering the direct responders by response probability across amplitude gives six clusters, broadly dose-dependent (58.6% of responders) or amplitude-selective, responding almost only at one amplitude (19.2% at 5 uA, 15.2% at 25 uA, 7.1% at 100 uA).",
+      "source": "Results, Stimulation amplitude and polarity tune unit-specific recruitment, paragraph 1; Figure 5A to 5C; Figure S5A",
+      "quote": "Hierarchical clustering produced six clusters ( Figure S5A ; cophenetic correlation coefficient (CCC) = 0.702, mean silhouette score = 0.352) that were broadly either dose-dependent or amplitude-selective. Surprisingly, while 58.6% of direct responders exhibited dose-dependent increases in response probability",
+      "criterion": "The 99 responders of fig4j-drp-increases. Ward linkage, dendrogram cut with maxclust at k = 6 (Methods; code cells 71 to 75). Features - the Methods say \"normalized feature vectors\"; the code uses the four cathodal nDRP values unscaled. Readings (a) nDRP as the code, (b) each unit's vector divided by its maximum. A cluster is amplitude-selective when its mean nDRP peaks at one amplitude and is below half that peak at every other; otherwise dose-dependent (the paper labels clusters by eye; the code's cluster sizes 15, 19, 40, 13, 7 and 5 give 58 of 99 in the three rising clusters). Reproduced when under one reading the CCC and silhouette are within tolerance and the cluster fractions match within tolerance in some assignment of clusters to the labels; partially reproduced when six clusters include both kinds but the fractions differ."
+     },
+     {
+      "id": "fig5ef-polarity-clusters",
+      "statement": "Clustering responders by their response to cathodal, anodal and bipolar pulses shows a polarity bias - 69.1% are polarity-specific, preferring bipolar (27.7%), anodal (23.6%) or cathodal (17.7%) pulses; smaller groups are dose-selective but polarity-agnostic (10.9%), cathodal-phase-led (12.7%) or monopolar-only (3.3%).",
+      "source": "Results, Stimulation amplitude and polarity tune unit-specific recruitment, paragraph 2; Figure 5D to 5F; Figure S5B",
+      "quote": "revealed a striking polarity bias: 69.1% of directly activated units were polarity-specific, preferring bipolar (27.7%, Figure 5F , i ), anodal (23.6%, Figure 5F , ii ), or cathodal (17.7%, Figure 5F , iii ) stimulation",
+      "criterion": "As in the code (cells 77 to 81) - units with nDRP > 0.15 in any polarity and amplitude; features are per polarity the maximum nDRP over amplitudes, divided by the unit's maximum over polarities; Ward linkage, maxclust k = 6. The legend gives n = 99 units, while the code's population is 220 units (its cluster sizes 61, 52, 39, 28 and 24 give the printed 27.7, 23.6, 17.7, 12.7 and 10.9%); readings (a) the code's population, (b) the 99 cathodal responders of fig4j-drp-increases. A cluster prefers a polarity when its mean normalised response is highest for it and below half for both others (a labelling rule not from the paper, which labels clusters by inspection of Figure 5F; the outcome rests on the fractions matching in some assignment of clusters to the labels). Reproduced when under one reading CCC and silhouette are within tolerance and the three polarity-specific fractions are within tolerance."
+     },
+     {
+      "id": "fig5-fsrs-proportion",
+      "statement": "Direct responders stay sparse for both FS and RS units across amplitudes, with a main effect of amplitude but no effect of waveform class or interaction.",
+      "source": "Results, Cell type correlates with direct activation distance distributions, paragraph 1 (the text cites Figure 6I; the panels are Figure 5I and 5J)",
+      "quote": "The proportion of direct responders remained sparse across amplitudes for both FS ... and RS neurons ... with a significant main effect of amplitude but no effect of waveform class or interaction",
+      "criterion": "Not in the code. The spreads are those of a 0/1 indicator, so the proportions are means of a responder indicator (nDRP > 0.15) over FS or RS units pooled across recordings, cathodal; two-way ANOVA of the indicator on amplitude and waveform class. Readings (a) all FS and RS units, (b) units within the evoked potential as in fig4i-proportion-within-ep; amplitude (i) categorical or (ii) numeric. The full values are FS 0.032, 0.035, 0.030, 0.040 and RS 0.013, 0.033, 0.039, 0.037. Reproduced when under one reading the proportions are within tolerance and the waveform and interaction terms have p >= 0.05 (absence on the paper's test) and amplitude p < 0.05."
+     },
+     {
+      "id": "fig5j-fs-closer",
+      "statement": "FS direct responders lie closer to the stimulation site than RS responders, and higher amplitude brings both closer.",
+      "source": "Results, Cell type correlates with direct activation distance distributions, paragraph 2; Figure 5I and 5J",
+      "quote": "FS responders were clustered significantly closer to the stimulation site than RS responders (two-way ANOVA, F waveform = 8.04, p = 0.005)",
+      "criterion": "As in the code (figure4_figure5_figure6 cell 57) - signed distance (norm_distance) of cathodal direct responders classed FS or RS, ols('value ~ C(amplitude) * C(cell_type)'), type II. Reproduced when the waveform and amplitude terms have p < 0.05 with the FS mean below the RS mean over amplitudes; the per-amplitude means (FS 205, 203, -2, 60; RS 567, 337, 208, 185 um) are compared with tolerance and reported (the FS values near zero cannot take a 10% tolerance and are reported only)."
+     },
+     {
+      "id": "fig5i-fs-within-ep",
+      "statement": "FS responders lie almost entirely within the evoked potential even at low amplitude (75%, 83.3%, 100%, 100%), while only 33% of RS responders do at 5 uA, rising with amplitude.",
+      "source": "Results, Cell type correlates with direct activation distance distributions, paragraph 2; Figure 5I and 5J",
+      "quote": "FS responders were almost entirely constrained within the evoked-potential boundary, even at low amplitudes (75.0% for 5 \u03bc A; 83.3% for 25 \u03bc A; 100% for 50 \u03bc A; and 100% for 100 \u03bc A). In contrast, only 33.0% of RS responders were within the evoked potential at 5 \u03bc A",
+      "criterion": "As fig4f-responders-within-ep, split by waveform class (code cell 54). Reproduced when the four values are within tolerance and FS fractions are at or above RS fractions at every amplitude."
+     },
+     {
+      "id": "figs6b-fsrs-early-firing",
+      "statement": "In the 10 ms after a pulse, the firing of FS and RS cortical units differs at every amplitude.",
+      "source": "Results, Cell type correlates with direct activation distance distributions, paragraph 3; Figure S6B",
+      "quote": "we observed pronounced differences in spiking between waveform classes across amplitudes that evolved with stimulation strength (Kolmogorov-Smirnov tests at each amplitude",
+      "criterion": "From the S6B legend and the code (figure4_figure5_figure6 cells 62 to 67), the Methods being silent. Per recording, cortical good units (CCF name containing \"area\") of each class, first 75 cathodal trials; spikes of all units of the class pooled, counted per trial in bins, averaged over trials and divided by the number of units of the class (the \"normalised firing rate\"); the bins from 0 to 10 ms of every recording's FS PSTH pooled as one sample and of every RS PSTH as the other; scipy ks_2samp at each amplitude, Holm-Sidak adjusted over the four. Bin width - the legend says 2 ms, the code uses 1 ms (pre 5 ms, post 10 ms); both are run. Reproduced when under one bin width all four adjusted p < 0.05."
+     },
+     {
+      "id": "fig6c-modulation-cortex",
+      "statement": "Spiking modulation after a single pulse increases with amplitude for cortical units (12.60, 13.37, 15.11, 20.21) but stays about constant for subcortical units (12.27, 12.60, 12.08, 13.48), differing between them at 50 and 100 uA.",
+      "source": "Results, Single pulse electrical stimulation leads to extensive circuit response, paragraph 1; Figure 6C",
+      "quote": "The magnitude of spiking modulation ( STAR Methods ) increased with amplitude for cortical units ... but remained relatively constant for subcortical units",
+      "criterion": "The modulation index MI = (r_resp - r_base)/(r_resp + r_base + eps) per bin. The sources disagree on its window - the Methods give a response window of 500 to 1000 ms with 5 ms bins, the Figure 6C legend a 500 ms window aligned to onset with 5 ms bins, and the code (figure7 cell 28) 0 to 500 ms in 10 ms bins with the baseline the median rate from 1000 to 500 ms before onset. The \"magnitude of modulation\" is not defined in the paper; the code takes the trapezoid area of |MI| over bins (unit spacing), one value per unit, mean +- SD over units. As that area scales with the number of bins, the printed values are reached only with the code's 10 ms bins; readings (a) code, 0 to 500 ms, 10 ms bins, (b) legend, 0 to 500 ms, 5 ms bins, (c) Methods, 500 to 1000 ms, 5 ms bins, each with the code's baseline. Units good and stable, first 75 cathodal trials, regions as the code's classify_region (cortical when the CCF name contains \"area\"). Two-way ANOVA ols('AUC ~ Amplitude_mag * C(Region)'), type II, amplitude numeric; cortical against subcortical per amplitude by t test, Student's (text) and Welch's (code) both run. Reproduced when under reading (a) the four values are within tolerance and under every reading the region, amplitude and interaction terms have p < 0.001, cortex grows more with amplitude than subcortex, and the 50 and 100 uA comparisons have p < 0.001."
+     },
+     {
+      "id": "fig6d-hva-subcortical",
+      "statement": "At 100 uA higher visual areas, beyond the reach of direct activation, are more modulated than subcortical units (15.82 against 13.48) although both lie at similar distances from the stimulation site.",
+      "source": "Results, Single pulse electrical stimulation leads to extensive circuit response, paragraph 1; Figure 6D; Figure S8A",
+      "quote": "Higher visual areas (HVAs) exhibited responses at higher amplitudes (magnitude of modulation = 15.82 \u00b1 9.97) that were significantly different from those of subcortical units (magnitude of modulation = 13.48 \u00b1 7.70) at 100 \u03bc A (Tukey HSD, p = 0.004",
+      "criterion": "Magnitude of modulation as in fig6c-modulation-cortex (its readings). Groups by the Figure 6 legend - HVA is LM, AM and PM (the code's figure7 cell 39 takes any CCF name with \"layer\" and not \"primary\", which also takes dentate gyrus and superior colliculus layers; shown as a variant), subcortical is hippocampus (CA1, subiculum, dentate gyrus) and superior colliculus, V1 the primary visual area. Tukey HSD over V1, HVA and subcortical at 100 uA cathodal; Mann-Whitney U test of Euclidean distances to the stimulation contact, HVA against subcortical. Reproduced when under reading (a) the two values are within tolerance and, under the legend's groups, HVA exceeds subcortical with Tukey p < 0.05 and the distance test has p >= 0.05."
+     },
+     {
+      "id": "fig6e-circuit-responders",
+      "statement": "The proportion of cortical units in the circuit response grows with amplitude (0.14, 0.21, 0.52, 0.79), so more than half are recruited at the higher amplitudes; subcortical units respond less but also increase (0.08, 0.09, 0.17, 0.35).",
+      "source": "Results, Single pulse electrical stimulation leads to extensive circuit response, paragraph 2; Figure 6E; Figure S7C",
+      "quote": "Further, the proportion of cortical neurons participating in this circuit response increased with amplitude (5 \u03bc A: 0.14 \u00b1 0.05, 25 \u03bc A: 0.21 \u00b1 0.08, 50 \u03bc A: 0.52 \u00b1 0.26, and 100 \u03bc A: 0.79 \u00b1 0.21; F amplitude = 175.18, p < 0.001), such that at the highest amplitudes, over half of all recorded cortical units were recruited",
+      "criterion": "Circuit responder - ZETA test (zetapy getZeta) on spike times in a 300 ms window after onset, p < 0.05 (Methods; code assign_zeta_sig on zetascores300ms). Per recording and region, the fraction of good stable units that respond, cathodal for the values. Regions by the code's map_region_to_group (cortical V1 and A, LM, RL, PM, AM; subcortical the other in-brain regions except optic radiation, corpus callosum and retrosplenial). The \"multivariate ANOVA\" is in the code ols('Value ~ Amplitude * C(Polarity) * C(Region)'), type II, amplitude numeric. The cached zetascores are an outside input; ZETA is recomputed from the dataset and the two are compared. Reproduced when the six proportions are within tolerance, the cortical value at 50 and 100 uA is above 0.5, and the amplitude and region terms have p < 0.001; partially reproduced when the trend and tests hold but some values are out of tolerance (ZETA is a resampling test)."
+     },
+     {
+      "id": "fig6f-no-propagating-wave",
+      "statement": "Response timing shows no propagating wave - time to peak inhibition and to peak rebound excitation do not correlate with distance from the stimulation site.",
+      "source": "Results, Single pulse electrical stimulation leads to extensive circuit response, paragraph 3; Figure 6F",
+      "quote": "This was confirmed statistically by the absence of a relationship between distance from stimulation and time to peak inhibition ( Figure 6F , ii ; Pearson r = 0.09) or time to peak rebound excitation ( Figure 6F , iii ; Pearson r = \u22120.03)",
+      "criterion": "A claim of absence, judged on the paper's test, Pearson correlation of signed distance (negative dorsal) with time to peak, each at p < 0.05. Units and peaks from the code (figure7 cells 20 to 23) - cortical units that are circuit responders at 50 uA cathodal; MI in 5 ms bins over 0 to 500 ms; Gaussian smoothing (sigma 2.5 ms); peaks by find_peaks with prominence 0.2, width at least 4 ms, latency at least 20 ms, time by the local centre of mass over +-6 ms; inhibitory peaks on -MI. The code leaves out jlh39 and jlh49; with and without them both run. Text and legend swap the two r values; both peaks are tested. Reproduced when neither correlation has p < 0.05."
+     },
+     {
+      "id": "figs9-state-drp",
+      "statement": "Direct response probability is slightly but significantly higher on high than on low cortical-state trials at every cathodal amplitude.",
+      "source": "Results, Single pulse electrical stimulation leads to extensive circuit response, paragraph 4; Figure S9B",
+      "quote": "DRP was slightly higher during high cortical states across stimulation amplitudes",
+      "criterion": "Not in the code. Per recording and cathodal condition, trials split at the median of the population spike count in the 500 ms before onset (Methods; S9A legend); per unit DRP within each half; paired Wilcoxon across units, FDR over amplitudes. Open, with readings - the population counted (a) all good units, (b) cortical units; the measure (i) DRP, (ii) nDRP; units (x) all good units, (y) direct responders. Reproduced when under one reading high exceeds low at all four amplitudes with adjusted p < 0.05 and the 5 and 100 uA values are within tolerance; partially reproduced when the direction and tests hold but the values do not."
+     },
+     {
+      "id": "fig6g-dimensionality-collapse",
+      "statement": "After a pulse the population's dimensionality drops (participation ratio and effective dimensionality fall), even as firing rate fluctuates, with a brief rise in effective dimensionality within 20 ms at 5, 25 and 50 uA.",
+      "source": "Results, Single pulse electrical stimulation leads to extensive circuit response, paragraph 5; Figure 6G",
+      "quote": "the response window was associated with a pronounced reduction in neural dimensionality, as reflected by decreases in both PR and effective dimensionality",
+      "criterion": "Methods (Dimensionality calculation) - for all cortical neurons of a recording, firing rate in 2 ms bins; per bin the neuron covariance across trials, PR = (sum of eigenvalues)^2 / sum of squared eigenvalues, and the number of PCA components for 95% of variance. From the code (figure7 cell 69) where the Methods are silent - first 75 cathodal trials, bins from -200 to +500 ms, each recording's trace divided by its median over pre-stimulus bins, averaged over recordings; epochs early 0 to 10 ms, middle 12 to 150 ms, late 170 to 300 ms (cell 52). Cortical units are those whose region contains \"area\" (the code's \"layer\" filter, which takes dentate gyrus and superior colliculus units, is a variant). Bin width - the Methods and the code use 2 ms, the Figure 6G legend says 5 ms; both are run. The paper reports no test. Reproduced when under one bin width, at every amplitude, the mean normalised PR and effective dimensionality in the middle epoch are below 1, and at 5, 25 and 50 uA the normalised effective dimensionality rises above 1 within 0 to 20 ms (\"small transient increases\"; open, readings (a) its mean over 0 to 20 ms, (b) its largest bin in 0 to 20 ms); partially reproduced when only the reduction holds."
+     },
+     {
+      "id": "fig7d-learning",
+      "statement": "Mice learned to detect high-contrast static gratings over 1353.8 +- 496.8 rewarded high-contrast trials and 14802 +- 5154 total trials.",
+      "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 2; Figure 7D",
+      "quote": "Mice successfully learned to detect high-contrast static gratings (>30% contrast) over an average of 1353.8 \u00b1 496.8 rewarded high-contrast trials and 14802 \u00b1 5154 total trials",
+      "criterion": "Behaviour data, which the paper does not name among its deposits. Methods (Quantifying task learning) - d' from high-contrast (> 30%) rewarded trials, hits with reaction time 0.15 to 0.6 s, false positives outside; \"learned\" when d' is stable above 0. The code (figure8) counts trials until a sustained rolling d' above -0.3 and is the variant that gives the printed numbers. Tolerance is the stated spread over 4 mice. Reproduced when both means are within tolerance under one of the two definitions."
+     },
+     {
+      "id": "fig7e-generalization",
+      "statement": "Mice generalized from gratings to the moving-circle stimulus before electrical testing (d' 2.35 +- 0.30), comparable to high-contrast gratings (1.62 +- 0.92).",
+      "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 2; Figure 7E",
+      "quote": "These mice generalized detection of static gratings to the moving-circle stimulus before testing electrical stimulation, achieving a sensitivity index of d \u2032 = 2.35 \u00b1 0.30, comparable to their performance on high-contrast grating stimuli ( d \u2032 = 1.62 \u00b1 0.92, p = 0.113)",
+      "criterion": "Behaviour data. d' for high-contrast gratings and moving circles at the start of Phase 3 (Figure 7E legend), d' = Z(H) - Z(F) with F the catch-trial lick rate (Methods); the extent of \"the beginning of phase 3\" is open, readings (a) each mouse's first Phase 3 session, (b) the code's selection (figure8 cells 10 and 11). Tolerance is the SEM over 4 mice. Reproduced when both are within tolerance, both exceed 0 by one-sample t test at p < 0.05, and the paired test has p >= 0.05."
+     },
+     {
+      "id": "fig7g-no-amplitude-effect",
+      "statement": "Mice detect single pulses at similar rates across amplitudes (d' 0.37, 0.32, 0.36 and 0.45 at 5, 25, 50 and 100 uA); amplitude has no significant effect.",
+      "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 4; Figure 7G",
+      "quote": "Mice detected single pulses of electrical stimulation at similar rates across amplitudes ( d \u2032 for 5 \u03bc A: 0.37 \u00b1 0.04, 25 \u03bc A: 0.32 \u00b1 0.14, 50 \u03bc A: 0.36 \u00b1 0.06, and 100 \u03bc A: 0.45 \u00b1 0.14; F amplitude = 1.74, p = 0.21",
+      "criterion": "A claim of absence, judged on the paper's test, a one-way ANOVA of per-mouse d' on amplitude (categorical), p >= 0.05. d' per mouse and amplitude = Z(hit rate) - Z(catch lick rate), single pulses of Phase 3, trials removed where the 10-trial rolling false-alarm or lapse rate exceeds 0.7 (Methods). The code (figure8 cell 22) pools catch trials per mouse, applies no correction, and fits ols('Dprime ~ Amplitude') with amplitude numeric (F = 1.749, 13 df, 100 uA from 3 mice); shown as a variant. Tolerance is the SEM over mice."
+     },
+     {
+      "id": "fig7h-pulses-detected",
+      "statement": "Single pulses are detected above chance (average d' 0.37 +- 0.06).",
+      "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 4; Figure 7H",
+      "quote": "and above chance levels (average pulse d \u2032 = 0.37 \u00b1 0.06; one-sample t test compared to d \u2032 = 0, p = 0.001",
+      "criterion": "d' as in fig7g-no-amplitude-effect, all single pulses pooled per mouse; one-sample t test against 0 over 4 mice. Reproduced when the mean is within tolerance and p < 0.05."
+     },
+     {
+      "id": "figs10c-anodal-cathodal",
+      "statement": "Anodal-leading pulses are marginally more detectable than cathodal-leading pulses (d' 0.44 against 0.33).",
+      "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 4; Figure S10C",
+      "quote": "Anodal-leading waveforms were marginally more detectable than cathodal-leading waveforms (anodal d \u2032 = 0.44 \u00b1 0.06, cathodal d \u2032 = 0.33 \u00b1 0.09; paired t test, p = 0.028",
+      "criterion": "d' per mouse and polarity as in fig7g-no-amplitude-effect; paired t test. In the code one mouse's anodal d' is undefined and dropped, so the test has 3 pairs; readings (a) the mice with a defined d' for both, (b) all 4 mice with rates clipped to 1/(2N) and 1 - 1/(2N). Reproduced when under one reading anodal exceeds cathodal with p < 0.05 and both means are within tolerance."
+     },
+     {
+      "id": "fig7h-trains-better",
+      "statement": "High-frequency trains (100 to 300 Hz, 10 to 50 pulses) are detected better than single pulses (d' 0.66 against 0.37), with no significant difference by frequency.",
+      "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 4; Figure 7H; Figure S10D",
+      "quote": "yielded higher detection sensitivity than single pulses ( d \u2032 = 0.66 \u00b1 0.11 vs. 0.37 \u00b1 0.06; paired t test, p = 0.019). Within stimulation trains, detection sensitivity did not differ significantly by frequency",
+      "criterion": "d' per mouse for train trials and for single pulses as in fig7g-no-amplitude-effect; paired t test; one-way ANOVA of d' across 100, 200 and 300 Hz (unevenly sampled; the code has 4, 2 and 3 mice). Reproduced when trains exceed pulses with p < 0.05, the train mean is within tolerance, and the frequency ANOVA has p >= 0.05 (absence on the paper's test)."
+     },
+     {
+      "id": "fig7i-contrast-and-equivalence",
+      "statement": "Detection of visual stimuli increases with contrast for gratings and moving circles, emerges at 4% contrast for gratings and 2% for circles, and single pulses perform like 2 to 4% contrast while trains perform near 8%.",
+      "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 4; Figure 7I",
+      "quote": "Perceptual detection in highly trained mice emerged at 4% contrast for static gratings (one-sample t test, p = 0.035) and 2% contrast for moving circles (one-sample t test, p = 0.018, Figure 7I ). Single pulses of electrical stimulation performed comparably to visual contrasts between 2% and 4%, whereas stimulation trains performed near the level of an 8% visual contrast",
+      "criterion": "d' per mouse and contrast for Phase 3 gratings and moving circles as in fig7g-no-amplitude-effect; ANOVA of d' on contrast per class (named one-way; the code fits contrast as numeric, both run); one-sample t tests against 0 per contrast. Tolerance is the SEM over mice. Reproduced when both contrast effects have p < 0.05, the lowest significant contrast is 4% for gratings and 2% for circles (p < 0.05), and the single-pulse d' lies between the d' of the two classes at 2% and 4% (lowest to highest of the four) and the train d' within the SEM of the 8% values; partially reproduced when the contrast effects hold but the equivalences do not."
+     },
+     {
+      "id": "fig7j-habituation",
+      "statement": "Within sessions, electrical stimulation becomes less detectable across trials (slope -0.004 per trial).",
+      "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 5; Figure 7J",
+      "quote": "Within individual sessions, electrical stimulation became less detectable across trials (mixed linear model regression",
+      "criterion": "Behaviour data. From the code (figure8 cells 36 and 37), the Methods being silent - per session, single-pulse electrical trials in order; d' in a rolling window of 15 trials with log-linear correction (H + 0.5)/(N + 1), F the mouse's overall catch rate; mixedlm('Dprime ~ Trial', groups = Mouse), REML. Reproduced when the slope is negative with p < 0.05 and slope and intercept are within tolerance."
+     },
+     {
+      "id": "no-learning-across-sessions",
+      "statement": "Detection of electrical stimulation does not improve across sessions.",
+      "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 6; Figure S10F",
+      "quote": "We observed no evidence of such learning: detection performance did not increase across sessions (ordinary least-squares regression, R 2 = 0.01, F = 1.12, slope = \u22120.004, p slope = 0.29",
+      "criterion": "A claim of absence, judged on the paper's test - OLS of per-session d' on session index (code, figure8 cells 40 and 41, log-linear corrected d' over all electrical trials of a session, sessions from the first with electrical stimulation, 117 sessions). Reproduced when the slope is not positive with p < 0.05; slope and p reported."
+     },
+     {
+      "id": "figs10e-reaction-times",
+      "statement": "Reaction times fall with contrast for both visual classes, while reaction times to electrical stimulation are like those to low-contrast visual stimuli.",
+      "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 5; Figure S10E (the text cites S10F)",
+      "quote": "Reaction times decreased with increasing contrast for both classes of visual stimuli, whereas reaction times for electrical stimuli were similar to those for low-contrast visual stimuli",
+      "criterion": "The paper's tests are said to be in Table S1, which is not in the text read, so the test is open. Hit reaction times per trial, Phase 3, per class and contrast or amplitude. Readings (a) Spearman correlation of per-mouse median reaction time with contrast, (b) one-way ANOVA of per-mouse median reaction time on contrast; each per visual class, decrease at p < 0.05. The electrical stimulation part holds when the per-mouse median electrical reaction time lies within the range of the medians at 2 to 8% contrast. Reproduced when both readings give a decrease for both classes and the electrical part holds; blocked as methods_underspecified when the readings disagree."
      }
     ]
    }
@@ -43830,6 +44140,12 @@
    "verifier-2-report.md",
    "verifier-2.md"
   ],
+  "dandi:000774": [
+   "claims-check-report.md",
+   "claims-check.md",
+   "claims-report.md",
+   "claims.md"
+  ],
   "dandi:000785": [
    "claims-check-report.md",
    "claims-check.md",
@@ -44926,7 +45242,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-23T03:00:38+00:00",
+ "generated": "2026-10-23T03:19:03+00:00",
  "queue_generated": "2026-10-22T11:52:56+00:00",
  "queue_counts": {
   "public_dandisets": 661,
@@ -108353,7 +108669,6 @@
    "001893",
    "001868",
    "001521",
-   "000774",
    "000773",
    "000715",
    "000689",
@@ -108447,7 +108762,7 @@
   "running": {
    "000023": {
     "kind": "full",
-    "hours": 2.282267630277778
+    "hours": 1.9767012161111115
    }
   }
  },
