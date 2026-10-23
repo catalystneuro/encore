@@ -1,0 +1,7 @@
+I couldn't check anything, because there is no claims file for DANDI:000549.
+
+- **Checker:** not run. `claims/000549/` does not exist, so there is nothing to give `tools/claims_check.py`.
+- **Why it's missing:** the last commit (`639fdadac`, "Agent run on 000549: claims (success)") added only `transcripts/000549/claims-report.md` and `transcripts/000549/claims.md`. That run's report says its attempt to write `claims/000549/10.1016-j.bioelechem.2022.108319.yaml` "was stopped by a safety classifier, so the tool call never ran." It then made no further attempt. The run is labelled a success, but it produced no file.
+- **Changes:** none. I did not write the file myself. Step 5 of the protocol requires the check to be done by a second reader in a separate run, so if I wrote the claims, nobody independent would have checked them.
+- **Ready:** no.
+- **Next step:** re-run the `claims` role in the Paper run workflow to write the file, then run `claims-check` again. The earlier run's notes may help. It read the PMC author manuscript (PMC9729435), which has no supplement and links no code. It drafted about 22 claims covering Figs. 2 to 7 and the thermometry in Methods 2.4. It also listed what the paper leaves open: the field strength for each ROI (from a Sim4Life model the paper does not deposit), the ROI layout, the background area, whether the ratio curves are fitted with an exponential or a polynomial, the field cutoff for microsecond pulses, and whether the t-tests are paired or unpaired.
