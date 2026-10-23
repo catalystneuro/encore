@@ -1,0 +1,599 @@
+# Claims for Hart, Lopes, Frank & Kronauer (2024), Curr Biol 34, 3233, on dandiset 000773.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
+# protocol as stated in docs/protocol.md (pilot-10).
+#
+# Text read: the accepted author manuscript (NIHMS1997610, PMC11265976) as served by Europe PMC,
+# main text, figure legends and STAR Methods, with the supplement MMC1 (Figures S1 to S4 and
+# Table S1), from paper/10.1016-j.cub.2024.05.031.txt. The supplement PDF was opened to read the
+# p-values and sample sizes printed inside Figures S1 to S4 and to check Table S1. The images of
+# main Figures 1 to 4 are not part of the text, so p-values printed only inside those panels
+# (Figures 2D, 2E, 3B, 3D and 4) are not known here; where the text says "significant" they are
+# recorded as p < 0.05. Data S1 (behavior) and Data S2 (calcium imaging quantifications) are
+# spreadsheets of the paper's supplement and were not read.
+#
+# Code read: the paper's two Zenodo records. doi:10.5281/zenodo.11151724 is GitHub
+# Social-Evolution-and-Behavior/Hart_Kronauer2023 v1.0.0 (commit 72d041a), from Hart et al. 2023
+# and named by this paper for processing calcium imaging: generate_tif_files.py (NWB to TIFF) and
+# macro_calcium_imaging.txt (ImageJ: image stabilization, fold change, peak maps, max
+# Z-projections). doi:10.5281/zenodo.11151756 is Hart_Kronauer2024 v1.0.0 (commit 1aef6bc):
+# Python that computes the proportions of ants outside the nest from Data S1 and plots the curves
+# fitted in GraphPad Prism. No code for the glomerulus ROI quantification, the AUC, the counts of
+# responding ROIs or the statistics (done in R and Prism) is published.
+#
+# Data the paper used.
+# Behavior (Figure 1, Figure S1, Table S1; Data S1, not in the dandiset): wild type clonal line B
+# ants, young 13 to 19 days and old 55 to 60 days post eclosion, in mixed-age colonies of 16 to 24
+# ants (12 of each age set up). Stimuli: 4-methyl-3-heptanone (6 trials), 4-methyl-3-heptanol (7),
+# the 9:1 blend (7) and pentane vehicle; per trial the number of young and old ants outside the
+# nest counted every 10 s; analysis from -10 to 60 s (8 time points per trial, which matches the
+# residual degrees of freedom of Table S1).
+# Confocal (Figure 2A and 2B): anti-SYNORF1 stained brains of young and old GCaMP6s ants, in the
+# Brain Image Library (doi:10.35077/g.1153), not in the dandiset.
+# Calcium imaging (Figures 2C to 4, S2 to S4; this dandiset): GCaMP6s ants (Orco-QF2,
+# 15xQUAS-GCaMP6s, OSN axons), young 15 to 20 days and old 60 to 61 days post eclosion; right AL;
+# 33 planes of 512 x 512 at 5 um steps; 40 volumes per trial; odor valve after a 3 s delay for
+# 5 s. Seven odors (alarm pheromones 4-methyl-3-heptanone and 4-methyl-3-heptanol; general
+# odorants 3-hexanone, isopropanol, ethylpyrazine, ethanol, propionic acid), each ant at one
+# concentration (3% or 48% v/v in paraffin oil), the seven in a randomized order repeated three
+# times (21 trials). Ants (Figure S3B legend): 48%, 7 young and 7 old; 3%, 3 young and 4 old
+# (21 in all, as the dandiset's subject count). Per-glomerulus n (young/old), Figures S2 and S4:
+# PGb 7/7, PGa 7/6, G1 7/7, G2 7/7, G3 7/6 in Figure S2 but 7/5 in Figure S4, G4 7/6.
+# The 90-day-old ants of Figure 3C and 3D are Hart et al. 2023, DANDI 000467, not this dandiset.
+#
+# Shared methods, from the STAR Methods (Image processing) and macro_calcium_imaging.txt.
+# Frames are volumes, numbered from 1 as in ImageJ. Per Z-plane, the time series is stabilized
+# (Image Stabilizer plugin; the macro uses Translation, 1 pyramid level, template update
+# coefficient 0.90, 200 iterations, error tolerance 1e-7); fold change = (F - F0)/F0 with F0 the
+# mean of frames 1 to 5. Peak response map = mean fold change over frames 9 to 14, a 2-pixel
+# minimum filter, a maximum projection through the Z-planes, values clipped to -1 and 4 (clipping
+# commutes with the minimum filter and the projection, so the macro's order and the Methods'
+# order agree). The macro skips the plane named 0 um when projecting (slice_num < 1); the Methods
+# say all Z-planes. The Methods are followed, and the macro's 32-plane projection is a variant.
+# Glomerulus AUC: on the Z-plane through the glomerulus centre, an ROI around it; a maximum
+# projection of that plane and the planes above and below; fold change as above; AUC = sum of
+# fold change over frames 6 to 40. Statistics in R: Welch's t tests (two-sided, R's t.test
+# default) and Wilcoxon tests (R's wilcox.test default, rank-sum between cohorts); no correction
+# for multiple comparisons is stated. Each ant gives one value per odor (the figures plot one
+# point per ant); the paper does not say how its three trials are combined. Figure S4C averages
+# the three trials per ant, so the per-ant value is the mean over its trials.
+# Open details, shared by the claims that use them:
+# - The volume period. The Methods say the volume is scanned every 0.83 s; the macro sets 1.2 s
+#   (periodVal), and 33 planes at 27.5 frames per second take 1.2 s. All windows are in frames,
+#   so this does not change any measure.
+# - ROIs. The whole-AL ROI, the responding-ROI sets and the six focal glomeruli (PGb, PGa,
+#   G1 to G4) were drawn by hand from the images; the paper gives no coordinates, and the focal
+#   glomeruli were matched across ants "by examining the same region of the AL" (Figure 3A shows
+#   one young and one old ant). Data S2 holds the paper's per-ant quantifications; matching the
+#   dataset's ants and values to them is the author's link check.
+# - Glomerulus fold change. "a max Z-projection was generated ... and the fluorescence fold
+#   change was calculated" allows (a) the ROI mean of the projected raw signal turned into fold
+#   change, or (b) fold change per pixel then the ROI mean. Both are run.
+# - Motion artifacts. "A small number of trials were excluded" from the responding-ROI counts,
+#   by eye. Readings: (a) all trials kept; (b) the trials Data S2 leaves out, if it marks them.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000773"
+paper: doi:10.1016/j.cub.2024.05.031
+claims:
+- id: fig1c-old-faster-alarm
+  statement: For the pooled alarm pheromone stimuli, separate logistic curves for young and old
+    ants fit better than a single curve, and old ants leave the nest faster.
+  source: Results, paragraph 1; Figure 1C; Table S1, row "Pooled alarm pheromone stimuli"
+  quote: For the pooled alarm pheromone stimuli, the preferred model incorporated separate curves
+    for young and old ants, with old ants responding faster
+  statistics:
+  - test: extra sum-of-squares F test, single against separate logistic curves
+    statistic: F(3, 314) = 8.006
+    p: 0.0001
+    p_relation: "<"
+    n: 20 trials (6 with 4-methyl-3-heptanone, 7 with 4-methyl-3-heptanol, 7 with the blend)
+  expected:
+  - quantity: YM, young (Table S1; tolerance the wider side of its 95% CI, 0.808 to 0.939)
+    value: 0.858
+    tolerance: 0.081
+  - quantity: YM, old (95% CI 0.883 to 0.947)
+    value: 0.914
+    tolerance: 0.033
+  - quantity: Y0, young (95% CI 0.527 to 0.617)
+    value: 0.571
+    tolerance: 0.046
+  - quantity: Y0, old (95% CI 0.626 to 0.703)
+    value: 0.663
+    tolerance: 0.040
+  - quantity: K, young (95% CI 0.042 to 0.106)
+    value: 0.070
+    tolerance: 0.036
+    unit: 1/s
+  - quantity: K, old (95% CI 0.074 to 0.128)
+    value: 0.099
+    tolerance: 0.029
+    unit: 1/s
+  data: elsewhere
+  where: Data S1, supplemental information of doi:10.1016/j.cub.2024.05.031 (PMC11265976)
+  criterion: From the Methods, Table S1 and alarm_behavior_calculations.py (commit 1aef6bc). For
+    each trial of the three alarm stimuli and each time point from -10 to 60 s in 10 s steps, the
+    proportion of young ants outside the nest (young outside over the colony's young, as the code
+    computes it; the Methods' "by the total number within the arena" is settled by the code) and
+    the same for old ants. The logistic Y = YM*Y0/((YM-Y0)*exp(-K*x)+Y0) of Table S1 is fit by
+    least squares to all per-trial points, once shared (3 parameters) and once per age (6), and
+    compared by the extra sum-of-squares F test; the residual degrees of freedom should be 314.
+    Prism's starting values are not given; any start that converges is a standard choice.
+    Reproduced when separate curves are preferred at p < 0.05, old ants are faster, and the six
+    parameters are within tolerance. "Faster" is not defined; readings (a) K old above K young,
+    (b) the old curve above the young curve at every time from 0 to 60 s. Partially reproduced
+    when the test and direction hold but a parameter is out of tolerance.
+- id: fig1c-vehicle-single-curve
+  statement: For the vehicle control a single curve for young and old ants is preferred, so the
+    two ages have similar baseline behavior.
+  source: Results, paragraph 1; Figure 1C right; Table S1, row "Vehicle control"
+  quote: For the vehicle control, a single curve for young and old ants was the preferred model
+    (extra sum-of-squares F test), indicating similar baseline behavioral patterns
+  statistics:
+  - test: extra sum-of-squares F test, single against separate quadratic curves
+    statistic: F(3, 90) = 2.617
+    p: 0.056
+    n: 6 vehicle trials (from the 90 residual degrees of freedom at 8 time points per age)
+  data: elsewhere
+  where: Data S1, supplemental information of doi:10.1016/j.cub.2024.05.031 (PMC11265976)
+  criterion: A claim of absence, judged on the paper's test. As in fig1c-old-faster-alarm, but on
+    the pentane trials and with the quadratic Y = B0 + B1*X + B2*X^2 the Methods and Table S1
+    give. Reproduced when the extra sum-of-squares F test gives p >= 0.05; not reproduced when
+    p < 0.05. F, p and the fitted parameters are reported either way.
+- id: fig1b-alarm-stimuli-similar
+  statement: The three alarm stimuli (4-methyl-3-heptanone, 4-methyl-3-heptanol and the 9:1
+    blend) make the ants leave the nest in a similar manner; one curve fits all three.
+  source: Results, paragraph 1; Figure 1B; Table S1, row "Alarm pheromone stimuli, comparing
+    stimuli"
+  quote: all three alarm pheromone stimuli caused ants to leave the nest in a similar manner, so
+    these samples were pooled for analyzing effects of age
+  statistics:
+  - test: extra sum-of-squares F test, single against separate logistic curves
+    statistic: F(6, 151) = 2.144
+    p: 0.052
+    n: 20 trials (6, 7 and 7)
+  data: elsewhere
+  where: Data S1, supplemental information of doi:10.1016/j.cub.2024.05.031 (PMC11265976)
+  criterion: A claim of absence, judged on the paper's test. Per trial and time point (-10 to
+    60 s), the proportion of all ants outside the nest; the logistic of Table S1 fit shared and
+    per stimulus; extra sum-of-squares F test (residual degrees of freedom 151). Reproduced when
+    p >= 0.05, not reproduced when p < 0.05; F, p and the parameters are reported either way.
+- id: figs1-heptanone-separate-curves
+  statement: For 4-methyl-3-heptanone alone, separate curves for young and old ants are preferred,
+    with old ants above young.
+  source: Figure S1 and legend; Table S1, row "4-methyl-3-heptanone, comparing age"
+  quote: For 4-methyl-3-heptanone, a model with separate curves was preferred.
+  statistics:
+  - test: extra sum-of-squares F test, single against separate logistic curves
+    statistic: F(3, 90) = 6.377
+    p: 0.0006
+    n: 6 trials
+  data: elsewhere
+  where: Data S1, supplemental information of doi:10.1016/j.cub.2024.05.031 (PMC11265976)
+  criterion: As fig1c-old-faster-alarm, on the 4-methyl-3-heptanone trials only. Reproduced when
+    separate curves are preferred at p < 0.05 and old ants are faster under at least one of the two
+    readings of fig1c-old-faster-alarm. The legend states no direction for this stimulus; the
+    direction is read from Table S1, where YM and Y0 are higher for old ants (0.921 and 0.662
+    against 0.830 and 0.534) while K is nearly equal (0.097 against 0.095), so reading (b) is the
+    one Table S1 supports. The fitted parameters are reported.
+- id: figs1-heptanol-blend-single-curve
+  statement: For 4-methyl-3-heptanol and for the blend, single curves for both ages are preferred,
+    though the trends are similar to 4-methyl-3-heptanone.
+  source: Figure S1 and legend; Table S1, rows "4-methyl-3-heptanol" and "Blend, comparing age"
+  quote: For 4-methyl-3-heptanol and the blend, similar trends were observed, but single curve
+    models were preferred
+  statistics:
+  - about: 4-methyl-3-heptanol, young against old
+    test: extra sum-of-squares F test
+    statistic: F(3, 106) = 1.979
+    p: 0.122
+    n: 7 trials
+  - about: blend, young against old
+    test: extra sum-of-squares F test
+    statistic: F(3, 106) = 2.529
+    p: 0.061
+    n: 7 trials
+  data: elsewhere
+  where: Data S1, supplemental information of doi:10.1016/j.cub.2024.05.031 (PMC11265976)
+  criterion: A claim of absence, judged on the paper's test, as fig1c-old-faster-alarm on each
+    stimulus. Reproduced when both tests give p >= 0.05; not reproduced when either gives
+    p < 0.05. The direction of the fitted curves is reported.
+- id: fig2b-gcamp-baseline-unchanged
+  statement: Total GCaMP6s fluorescence in the AL of dissected brains does not differ between young
+    and old ants.
+  source: Results, paragraph 3; Figure 2A and 2B
+  quote: Total fluorescence intensity did not differ with age, and calcium responses measured by
+    changes in GCaMP6s fluorescence should therefore be comparable between the two age cohorts
+  statistics:
+  - test: Welch's t test
+    p: 0.21
+  data: elsewhere
+  where: Brain Image Library, doi:10.35077/g.1153
+  criterion: A claim of absence, judged on the paper's test. From the Methods (Confocal
+    microscopy), a sum Z-projection of each brain's GCaMP6s channel, a rectangle around each AL,
+    and its integrated intensity (Fiji Measure); Welch's t test of young against old. The ROI
+    rectangles and n are not given (n is printed in Figure 2B only); readings for the sample
+    (a) each AL a value, (b) the mean of a brain's two ALs. Reproduced when p >= 0.05 under the
+    paper's test (the outcome both readings give; if they differ, both are shown and the claim
+    is blocked as methods_underspecified).
+- id: fig2d-whole-al-alarm-no-age-effect
+  statement: The mean calcium response across the entire AL to each alarm pheromone does not
+    differ between young and old ants, at 3% or at 48%.
+  source: Results, paragraph 4; Figure 2C and 2D
+  quote: we observed no effect of age on mean calcium response across the entire AL for either of
+    the two tested concentrations
+  statistics:
+  - test: Welch's t tests, one per pheromone and concentration
+    p: 0.05
+    p_relation: ">"
+    n: 3 young and 4 old ants at 3%, 7 young and 7 old at 48%
+  criterion: A claim of absence, judged on the paper's test. Peak response maps as in the shared
+    methods; per trial, the mean pixel value inside a single ROI around the AL boundary defined on
+    a max Z-projection of raw fluorescence (Methods); per ant, the mean over its three trials of
+    the odor; Welch's t test young against old for each of the four pheromone and concentration
+    cells. The AL outline was drawn by hand; it is taken from the raw max projection by a
+    threshold, a standard choice, and the result is also shown with the outline shrunk and grown
+    by 5 pixels. Reproduced when all four tests give p >= 0.05; not reproduced when any gives
+    p < 0.05. The cohort means are reported. The 32-plane projection of the macro is a variant.
+- id: fig2e-heptanone-breadth-falls
+  statement: At 48%, 4-methyl-3-heptanone activates a few more glomeruli in young than in old ants
+    (medians of 4 against 2 responding ROIs), while the count for 4-methyl-3-heptanol does not
+    differ with age.
+  source: Results, paragraph 4; Figure 2E
+  quote: While there was no significant difference for 4-methyl-3-heptanol, 4-methyl-3-heptanone
+    activated a few more glomeruli in young ants than in old ants (medians of 4 versus 2
+    responding ROIs)
+  statistics:
+  - about: 4-methyl-3-heptanone, young against old
+    test: Wilcoxon test
+    p: 0.05
+    p_relation: "<"
+    n: 7 young and 7 old ants
+  - about: 4-methyl-3-heptanol, young against old
+    test: Wilcoxon test
+    p: 0.05
+    p_relation: ">"
+    n: 7 young and 7 old ants
+  expected:
+  - quantity: median responding ROIs to 4-methyl-3-heptanone, young ants (counts are integers, so
+      the 10% tolerance means the value itself)
+    value: 4
+    tolerance: 0.4
+  - quantity: median responding ROIs to 4-methyl-3-heptanone, old ants
+    value: 2
+    tolerance: 0.2
+  criterion: From the Methods (Image processing). For each 48% ant, ROIs of the size and shape of
+    single glomeruli that respond in at least two trials, from the peak response maps; per ROI and
+    trial the mean peak fold change; an ROI responds to an odor when its mean over that odor's
+    trials is >= 0.2. The ROIs were drawn by hand; here they are the connected regions of a
+    trial's map at >= 0.2 that recur, overlapping, in at least two trials of any odor, split at
+    glomerulus size, a choice the paper does not fix, so the counts are also compared ant by ant
+    with Data S2. This ROI procedure is a choice made here, not the paper's; when its outcome
+    differs from the outcome the paper's counts in Data S2 give, the claim is blocked as
+    methods_underspecified, with both shown. Motion-artifact trials under both readings of the shared open details. Wilcoxon
+    rank-sum test (R defaults) of young against old per pheromone. Reproduced when
+    4-methyl-3-heptanone gives p < 0.05 with young higher and medians within tolerance, and
+    4-methyl-3-heptanol gives p >= 0.05. Partially reproduced when the direction and the
+    4-methyl-3-heptanol result hold but the medians or the significance do not.
+- id: fig2-alarm-sparse
+  statement: Alarm pheromones are represented sparsely at both ages; only a small fraction of the
+    roughly 500 AL glomeruli respond to them.
+  source: Results, paragraphs 4 and 5; Figure 2C and 2E
+  quote: Calcium responses to 4-methyl-3-heptanone and 4-methyl-3-heptanol were sparse at both
+    tested ages ... Out of the ~500 glomeruli in the ant AL, only a small fraction responded to
+    alarm pheromones in young and/or old ants
+  depends_on:
+  - fig2e-heptanone-breadth-falls
+  criterion: The paper gives no threshold for "sparse" or "small fraction". On the 48% counts of
+    fig2e-heptanone-breadth-falls, readings (a) every ant's count for each alarm pheromone is at
+    most 5% of 500 (25 ROIs), (b) at most 10% (50 ROIs). Reproduced when both readings hold;
+    when they differ the claim is blocked as methods_underspecified, with the counts shown.
+- id: figs2a-mean-six-glomeruli-no-age-effect
+  statement: The alarm pheromone response averaged over the six focal glomeruli does not differ
+    between young and old ants.
+  source: Results, paragraph 5; Figure S2A
+  quote: The mean of responses across these six glomeruli did not differ with age
+  statistics:
+  - test: Welch's t tests, one per pheromone
+    p: 0.05
+    p_relation: ">"
+    n: 7 young and 7 old ants, 48%
+  criterion: A claim of absence, judged on the paper's test. Per ant and pheromone, the AUC of
+    each focal glomerulus (shared methods, both fold-change readings), the mean over the
+    glomeruli identified in that ant (Figure S2A legend; some ants lack one), Welch's t test of
+    young against old. Reproduced when both tests give p >= 0.05; not reproduced when either gives
+    p < 0.05.
+- id: fig3b-g2-heptanone-weaker-old
+  statement: In glomeruli G1 to G4 alarm pheromone responses tend to weaken with age; the decline
+    is significant only for 4-methyl-3-heptanone in G2.
+  source: Results, paragraph 5; Figure 3B; Figure S2B
+  quote: For G1–G4, we observed a trend toward weaker responses with increasing age, which was
+    statistically significant for responses to 4-methyl-3-heptanone in G2
+  statistics:
+  - about: G2, 4-methyl-3-heptanone, young against old
+    test: Welch's t test
+    p: 0.0068
+    n: 7 young and 7 old ants
+  - about: the other seven glomerulus and pheromone pairs of G1 to G4
+    test: Welch's t tests
+    p: 0.05
+    p_relation: ">"
+  criterion: Per ant, the AUC of G1 to G4 for each pheromone at 48% (shared methods, both
+    fold-change readings); Welch's t test of young against old for each of the eight pairs.
+    Reproduced when G2 with 4-methyl-3-heptanone gives p < 0.05 with young higher and the other
+    seven give p >= 0.05; partially reproduced when G2 holds and one or more of the others also
+    reaches p < 0.05. The sign of the young minus old mean is reported for all eight, for the
+    trend.
+- id: fig3d-pg-stronger-old
+  statement: PGb and PGa respond significantly more strongly to alarm pheromones in old than in
+    young ants; PGa does not respond to 4-methyl-3-heptanone.
+  source: Results, paragraph 5; Figure 3C and 3D
+  quote: The patterns in PG b and PG a were quite different, with significantly stronger calcium
+    responses in old ants compared to young ants
+  statistics:
+  - test: Welch's t tests
+    p: 0.05
+    p_relation: "<"
+    n: PGb 7 young and 7 old ants, PGa 7 young and 6 old
+  criterion: Per ant, the AUC of PGb and PGa for each pheromone at 48% (shared methods, both
+    fold-change readings); Welch's t test of young against old. Which pairs Figure 3D marks
+    significant cannot be read from the text; readings (a) PGb for both pheromones and PGa for
+    4-methyl-3-heptanol, (b) PGb for at least one pheromone and PGa for 4-methyl-3-heptanol.
+    Reproduced when, under a reading, each of its pairs gives p < 0.05 with old higher; not
+    reproduced when no reading holds. PGa's 4-methyl-3-heptanone AUC is reported.
+- id: fig3d-pg-60-vs-90-days-same
+  statement: PGb and PGa responses to alarm pheromones do not differ between 60-day-old ants and
+    the 90-day-old ants of the earlier study, so the change occurs between 14 and 60 days.
+  source: Results, paragraph 6; Figure 3C and 3D
+  quote: We found no significant differences between 60- and 90-day-old ants
+  statistics:
+  - test: Welch's t tests
+    p: 0.05
+    p_relation: ">"
+  data: with_inputs
+  depends_on:
+  - fig3d-pg-stronger-old
+  criterion: A claim of absence, judged on the paper's test. The 90-day values are the earlier
+    study's data, DANDI 000467 (Hart et al. 2023, Cell 186, 3079), named in the key resources
+    table; this paper does not say which of those ants, odors and concentrations enter Figure 3C
+    and 3D, nor whether their AUC was recomputed. Readings (a) the 000467 ants given the two
+    pheromones at the same 48% concentration, AUC computed here as for 000773; (b) the per-ant
+    values the earlier paper or Data S2 publishes. Welch's t test of 60 against 90 days for PGb
+    with each pheromone and PGa with 4-methyl-3-heptanol. Reproduced when all give p >= 0.05; not
+    reproduced when any gives p < 0.05.
+- id: figs3b-whole-al-general-decline
+  statement: At 48%, 3-hexanone and isopropanol evoke broad AL responses in young but not old ants;
+    mean peak responses across the AL fall more than 9-fold (3-hexanone) and more than 57-fold
+    (isopropanol) with age.
+  source: Results, paragraph 7; Figure S3A and S3B
+  quote: Mean peak calcium responses across the AL declined dramatically with age for 3-hexanone
+    (>9-fold decline) and isopropanol (>57-fold decline)
+  statistics:
+  - about: 3-hexanone, 48%, young against old
+    test: Welch's t test
+    p: 5.1e-6
+    n: 7 young and 7 old ants
+  - about: isopropanol, 48%, young against old
+    test: Welch's t test
+    p: 0.0068
+    n: 7 young and 7 old ants
+  expected:
+  - quantity: young over old cohort mean of whole-AL peak fold change, 3-hexanone, 48% (a lower
+      bound; 10% below it is accepted)
+    value: 9
+    tolerance: 0.9
+  - quantity: young over old cohort mean, isopropanol, 48% (a lower bound)
+    value: 57
+    tolerance: 5.7
+  criterion: Whole-AL mean peak fold change per ant as in fig2d-whole-al-alarm-no-age-effect;
+    Welch's t test of young against old per odor. Reproduced when both tests give p < 0.05 with
+    young higher and the ratios of cohort means exceed 8.1 and 51.3; partially reproduced when
+    the tests hold but a ratio is lower. The ratio is unstable when the old mean is near zero;
+    the cohort means are reported with it.
+- id: figs3b-whole-al-other-no-age-effect
+  statement: The age decline of whole-AL responses is specific to 3-hexanone and isopropanol at
+    48%; ethylpyrazine, ethanol and propionic acid at 48%, and all five general odorants at 3%,
+    show no age effect.
+  source: Results, paragraph 7; Figure S3B
+  quote: an effect that was specific to these two odorants when presented at 48% concentration
+  statistics:
+  - test: Welch's t tests, one per odorant and concentration
+    p: 0.05
+    p_relation: ">"
+    n: 3 young and 4 old ants at 3%, 7 and 7 at 48%
+  depends_on:
+  - figs3b-whole-al-general-decline
+  criterion: A claim of absence, judged on the paper's test, with the measure of
+    fig2d-whole-al-alarm-no-age-effect. Reproduced when all eight tests give p >= 0.05; not
+    reproduced when any gives p < 0.05.
+- id: figs3c-general-breadth-no-age-effect
+  statement: Age does not change the number of glomeruli activated by ethylpyrazine, ethanol or
+    propionic acid at 48%.
+  source: Results, paragraph 7; Figure S3C
+  quote: we found no effect of age on the number of activated glomeruli for ethylpyrazine,
+    ethanol, or propionic acid
+  statistics:
+  - test: Wilcoxon tests, one per odorant
+    p: 0.05
+    p_relation: ">"
+    n: 7 young and 7 old ants
+  criterion: A claim of absence, judged on the paper's test. Responding-ROI counts as in
+    fig2e-heptanone-breadth-falls; Wilcoxon rank-sum test (R defaults) per odorant. Reproduced
+    when all three give p >= 0.05; not reproduced when any gives p < 0.05.
+- id: figs4a-general-odorants-in-focal-glomeruli
+  statement: 3-hexanone excites all six focal glomeruli in young ants and PGb, PGa and G4 in old
+    ants; isopropanol excites all but G1 in young ants only; propionic acid excites G4 at both
+    ages; no other general odorant excites a focal glomerulus.
+  source: Results, paragraph 8; Figure S4A
+  quote: We found that 3-hexanone activated all six glomeruli in young ants as well as activating
+    PG b , PG a , and G4 in old ants, while isopropanol activated five of the focal glomeruli (all
+    except G1) in young ants only ... Additionally, propionic acid activated G4 in young and old
+    ants, while none of the other general odorants activated any of the six focal glomeruli
+  statistics:
+  - about: young, PGb, 3-hexanone
+    test: one-sided one-sample Welch's t test against zero
+    p: 4.9e-5
+  - about: young, PGb, isopropanol
+    test: one-sided one-sample Welch's t test against zero
+    p: 0.0063
+  - about: young, PGa, 3-hexanone
+    test: one-sided one-sample Welch's t test against zero
+    p: 0.0025
+  - about: young, PGa, isopropanol
+    test: one-sided one-sample Welch's t test against zero
+    p: 0.0074
+  - about: young, G1, 3-hexanone
+    test: one-sided one-sample Welch's t test against zero
+    p: 0.021
+  - about: young, G2, 3-hexanone
+    test: one-sided one-sample Welch's t test against zero
+    p: 0.00058
+  - about: young, G2, isopropanol
+    test: one-sided one-sample Welch's t test against zero
+    p: 0.0011
+  - about: young, G3, 3-hexanone
+    test: one-sided one-sample Welch's t test against zero
+    p: 0.00011
+  - about: young, G3, isopropanol
+    test: one-sided one-sample Welch's t test against zero
+    p: 0.0036
+  - about: young, G4, 3-hexanone
+    test: one-sided one-sample Welch's t test against zero
+    p: 0.00031
+  - about: young, G4, isopropanol
+    test: one-sided one-sample Welch's t test against zero
+    p: 0.0033
+  - about: young, G4, propionic acid
+    test: one-sided one-sample Welch's t test against zero
+    p: 0.033
+  - about: old, PGb, 3-hexanone
+    test: one-sided one-sample Welch's t test against zero
+    p: 0.00018
+  - about: old, PGa, 3-hexanone
+    test: one-sided one-sample Welch's t test against zero
+    p: 0.011
+  - about: old, G4, 3-hexanone
+    test: one-sided one-sample Welch's t test against zero
+    p: 0.027
+  - about: old, G4, propionic acid
+    test: one-sided one-sample Welch's t test against zero
+    p: 0.023
+  criterion: Per ant, the AUC of each focal glomerulus for each general odorant at 48% (shared
+    methods, both fold-change readings); for each age, glomerulus and odorant (60 cells), a
+    one-sided one-sample t test that the mean AUC exceeds zero (Figure S4A legend), at p < 0.05
+    uncorrected as the figure marks it. Reproduced when exactly the 16 cells above are
+    significant; partially reproduced when the text's pattern for 3-hexanone and isopropanol holds
+    but cells for the other odorants differ; not reproduced otherwise. All mismatches are listed.
+- id: fig4-general-odorants-decline
+  statement: Responses to 3-hexanone and isopropanol decline significantly with age in five of the
+    six focal glomeruli (3-hexanone in all but PGb, isopropanol in all but G1).
+  source: Results, paragraph 9; Figure 4; Figure S4B
+  quote: Directly comparing calcium responses across age cohorts showed that responses to
+    3-hexanone and isopropanol each significantly declined with age in 5 out of 6 glomeruli
+    (3-hexanone, all except PG b ; isopropanol, all except G1)
+  statistics:
+  - about: 3-hexanone, PGa
+    test: Welch's t test
+    p: 0.014
+  - about: 3-hexanone, G1
+    test: Welch's t test
+    p: 0.026
+  - about: 3-hexanone, G2
+    test: Welch's t test
+    p: 0.0012
+  - about: 3-hexanone, G3
+    test: Welch's t test
+    p: 0.00017
+  - about: 3-hexanone, G4
+    test: Welch's t test
+    p: 0.0015
+  - about: isopropanol, PGb
+    test: Welch's t test
+    p: 0.044
+  - about: isopropanol, PGa
+    test: Welch's t test
+    p: 0.011
+  - about: isopropanol, G2
+    test: Welch's t test
+    p: 0.0024
+  - about: isopropanol, G3
+    test: Welch's t test
+    p: 0.0080
+  - about: isopropanol, G4
+    test: Welch's t test
+    p: 0.0084
+  criterion: Per ant, the AUC of each focal glomerulus for 3-hexanone and isopropanol at 48%
+    (shared methods, both fold-change readings); Welch's t test of young against old. Reproduced
+    when the ten pairs above give p < 0.05 with young higher and 3-hexanone in PGb and
+    isopropanol in G1 give p >= 0.05; partially reproduced when at least four of the five
+    glomeruli per odorant decline significantly.
+- id: fig4-propionic-acid-g2-g3
+  statement: In young ants propionic acid gives a very small negative deflection in G2 and G3 that
+    declines in amplitude with age; its responses in G4 tend to fall with age, not significantly.
+  source: Results, paragraph 9; Figure 4; Figure S4B
+  quote: We also found that, in young ants, propionic acid produced a very small negative
+    deflection in G2 and G3 that declined in amplitude with age ... Propionic acid responses in G4
+    also tended to decrease with age, but the difference was not statistically significant
+  statistics:
+  - about: G2, young against old
+    test: Welch's t test
+    p: 0.0052
+  - about: G3, young against old
+    test: Welch's t test
+    p: 0.029
+  - about: G4, young against old
+    test: Welch's t test
+    p: 0.05
+    p_relation: ">"
+  criterion: Per ant, the AUC for propionic acid at 48% in G2, G3 and G4 (shared methods, both
+    fold-change readings); Welch's t test of young against old. Reproduced when the young mean AUC
+    is below zero in G2 and G3, both tests give p < 0.05 with the old mean nearer zero, and G4
+    gives p >= 0.05 with the old mean below the young.
+- id: figs4d-pgb-hexanone-dynamics
+  statement: In PGb, 3-hexanone responses of old ants have a lower peak but decline more slowly
+    than those of young ants; the AUC over frames 9 to 14 is larger in young ants and over frames
+    35 to 40 larger in old ants.
+  source: Results, paragraph 10; Figure S4C and S4D
+  quote: responses to 3-hexanone in PG b had a lower peak amplitude but then declined more slowly
+    in old versus young ants
+  statistics:
+  - about: frames 9 to 14, young against old
+    test: Welch's t test
+    p: 0.0020
+    n: 7 young and 7 old ants
+  - about: frames 35 to 40, young against old
+    test: Welch's t test
+    p: 0.0098
+    n: 7 young and 7 old ants
+  criterion: Per ant, the PGb fold-change trace for 3-hexanone at 48% (shared methods, both
+    fold-change readings), the mean of its three trials (Figure S4C legend), summed over frames 9
+    to 14 and over frames 35 to 40 (the legend's "AUC", whose plotted scale is that of a sum).
+    Reproduced when frames 9 to 14 give young above old and frames 35 to 40 old above young, each
+    by Welch's t test at p < 0.05; partially reproduced when one of the two holds.
+- id: pg-opposite-modulation
+  statement: In PGb and PGa, responses to alarm pheromones rise with age while responses to general
+    odorants fall or stay absent; no general odorant response rises with age in any focal
+    glomerulus.
+  source: Results, paragraph 9; Figures 3, 4 and S4B
+  quote: Whereas alarm pheromone responses increased with age specifically in PG b and PG a ,
+    general odorant responses showed overall similar patterns across all six glomeruli, either with
+    no responses or decreasing responses with age
+  depends_on:
+  - fig3d-pg-stronger-old
+  - fig4-general-odorants-decline
+  criterion: Reproduced when fig3d-pg-stronger-old is reproduced, PGb or PGa has at least one
+    general odorant with a significant decline in fig4-general-odorants-decline, and none of the
+    30 glomerulus and general odorant Welch's t tests at 48% gives p < 0.05 with old higher.
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: "claude-opus-5-5"
+  ready: true
+  changes:
+  - figs1-heptanone-separate-curves, criterion. The Figure S1 legend gives no direction for 4-methyl-3-heptanone; the criterion now says the direction is read from Table S1 (YM and Y0 higher for old ants, K nearly equal), names which reading Table S1 supports, and asks for the parameters to be reported.
+  - fig2e-heptanone-breadth-falls, criterion. The automated ROI procedure is a choice made by the reader, not the paper (the paper's ROIs were drawn by hand), so a protocol rule was added that a disagreement with the outcome of Data S2's counts blocks the claim as methods_underspecified and does not decide it.
+  - All 28 p-values the checker could not find in the text (Figures S2B, S3B, S4A, S4B, S4D) were read from the rendered supplement PDF and match the numbers printed in the panels, as do the per-glomerulus n in the opening comment. The Table S1 values, F statistics and confidence-interval tolerances of the behavior claims match the text.
+  - The code claim in fig1c-old-faster-alarm was confirmed in alarm_behavior_calculations.py at commit 1aef6bc (Zenodo 10.5281/zenodo.11151756). The proportion of young ants outside the nest is computed over the colony's young, and that of old ants over its old.
+  - Open, not settled. How each ant's three trials are combined for the whole-AL, ROI count and AUC measures is stated only for Figure S4C (the mean of three trials); the other claims take the mean by analogy.
+  - Open, not settled. The p-values of main Figures 2D, 2E, 3D and 4 can be read only as bounds from the text; Figure 3D's significant pairs are handled as two readings in fig3d-pg-stronger-old.
+  - Open, not settled. fig2-alarm-sparse has no threshold in the paper; its 5% and 10% readings are the reader's and are recorded as such.

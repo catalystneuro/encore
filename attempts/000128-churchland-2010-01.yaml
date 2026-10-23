@@ -1,0 +1,608 @@
+schema_version: 2
+id: 000128-churchland-2010-01
+dataset:
+  archive: dandi
+  id: "000128"
+  version: 0.220113.0400
+  doi: 10.48324/dandi.000128/0.220113.0400
+paper: doi:10.1016/j.neuron.2010.09.015
+date: 2026-10-22
+entry: 000128-churchland-2010
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-10
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39810757909
+outcomes:
+- claim: recordings-jarray
+  outcome: partially_reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:recordings-jarray
+  measured:
+  - 182
+  - 108
+  - 2295
+  notes: The dataset has 108 conditions (36 mazes in 3 versions). The unit count is 182 (137 held in,
+    45 held out), outside 146 plus or minus 14.6, so the three counts do not all match under any
+    reading. Reading (a), all successful trials, gives 2869 with the 574 test-file segments, outside
+    the tolerance, and 2295 counting the train file alone (the trials with condition labels), within
+    it; every unit is observed on every train trial. The test file has its own clock and no delay or
+    success column, so whether its trials belong to (a) cannot be settled from the file. Under
+    reading (b) M1 keeps 1786 trials with T2, outside the tolerance. The 137 held-in units (a Neural
+    Latents Benchmark split) and the 1967 trials with delay > 400 ms are printed but are not readings
+    and decide nothing. The answer of 2026-10-22 to the M1 question removed T1's count (1452) from
+    reading (b); the outcome is unchanged.
+  deviations:
+  - Nothing in the dataset says which units or trials the paper used, or whether this session
+    (2009-09-25) is the one the paper analysed.
+- claim: recordings-single-electrode
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the array session of monkey Jenkins. No speed-task data (monkeys A
+    and B) and no single-electrode maze recordings are in it, and the paper names no other archive
+    for them.
+- claim: fig2b-example-concordant-tuning
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the speed task, which is not in the dandiset.
+- claim: fig2ce-example-opposing-tuning
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the speed task, which is not in the dandiset.
+- claim: fig3-maze-most-not-maintained
+  outcome: reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig3-maze-most-not-maintained
+  notes: Under T2 with S1, 1 of 17 neurons has r of 0.72 or more (0.765) and 94.1% have r below
+    0.72, so the claim holds. The first part rests on that one neuron (unit 1581); the next largest
+    r is 0.457. The answers of 2026-10-22 set aside T1 and S2. The earlier record was
+    blocked (methods_underspecified) because T1 with S1 gave no neuron at 0.72 and S2 selected no
+    neuron; with T2 and S1 fixed, the claim is reproduced. The notebook no longer prints T1 or S2
+    values.
+- claim: fig4d-mean-correlation-jarray
+  outcome: not_reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig4d-mean-correlation-jarray
+  measured:
+  - 0.051
+  - 0.072
+  notes: Under T2 with S1, 17 neurons, the mean Pearson r is 0.051 and the mean Spearman r 0.072,
+    outside 0.13 plus or minus 0.013 and 0.11 plus or minus 0.011, and no test gives p below 0.05
+    (P1 0.47, P2 0.42, P3 0.61). Both means are positive; the Pearson mean is below half the paper's
+    (0.065) and the Spearman mean is 65% of the paper's. Per-neuron r runs
+    from -0.355 to 0.765 (SD 0.283); with 17 neurons the tests have little power. The answers of
+    2026-10-22 set aside T1 and S2; the earlier record gave T1 with S1 (recorded then as measured)
+    and T2 with S1, and S2 gave no neuron; the notebook no longer prints T1 or S2 values. The measured values are now those of T2, and the
+    outcome is unchanged.
+  deviations:
+  - The dataset has 182 units, not the paper's 146, and the paper's unit selection is not
+    recorded; the selected neurons may differ from the paper's.
+- claim: fig4abc-mean-correlation-single-electrode
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The single-electrode datasets of monkeys A, B and J are not in the dandiset.
+- claim: fig4-no-separate-populations
+  outcome: reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig4-no-separate-populations
+  notes: J-array only. Under T2 with S1 the dip statistic is 0.071 (p 0.683), so U1 holds, and 16 of
+    17 neurons have |r| below 0.5, so U2 holds. No neuron has |r| of 0.8 or more; median r 0.013.
+    With 17 neurons the dip test has little power, so U1 is weak evidence. The
+    panel B part of the statement (monkey B) cannot be tested. The answers of 2026-10-22 removed the
+    T1 and S2 readings, which had given the same outcome (T1) or no neuron (S2); the outcome is
+    unchanged.
+- claim: fig4e-correlation-time-course
+  outcome: reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig4e-correlation-time-course
+  notes: Under T2 with S1 (17 neurons), the mean correlation is 0.737 (A1) and 0.759 (A2) at -400 ms,
+    0.608 at -200 ms and 0.012 at movement onset, where no test is significant (smallest p 0.854).
+    82.1% (A1) and 79.8% (A2) of the drop from -400 ms to onset comes after -200 ms. The answers of
+    2026-10-22 removed the T1 and S2 readings, which had given the same outcome (T1) or no neuron
+    (S2); the outcome is unchanged.
+  deviations:
+  - Under A2 the criterion's linear joining was implemented as a straight line between the last
+    go-locked value and the first movement-locked one where they leave a gap, and a linear fade from
+    one to the other where they overlap, with each condition's go cue placed at its mean reaction
+    time before onset. A1 and A2 differ only before -300 ms and give the same outcome.
+- claim: suppfig1-population-averages
+  outcome: reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:suppfig1-population-averages
+  notes: Under T2 with S1 (17 neurons), the strongest-minus-weakest separation is 0.220 (reading a)
+    and 0.346 (reading b) of the maximum rate in the preparatory epoch, and 0.053 and 0.095 at
+    movement onset, ratios 0.240 and 0.274. R1 holds under both; R2 holds under (a) and not under
+    (b). The preparatory separation is positive by construction, as the conditions are ranked on the
+    same preparatory rates. The answer of 2026-10-22 says the paper does not fix the maximum, and the criterion now
+    names readings (a) and (b), the two already run, so the method is unchanged. The answers on M1
+    and M6 removed T1 and S2; the outcome is unchanged.
+- claim: fig6-peri-movement-space-best
+  outcome: reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig6-peri-movement-space-best
+  notes: Under T2 with S1 (83 neurons) the peri-movement space is best in 24 of 24 combinations of
+    W, D, V and G under K1 and under K2. Its best is 0.518 at k = 14 (K1) and 0.505 at k = 12 (K2),
+    against 0.424 and 0.417 for the best kinematic space and 0.412 for the kitchen-sink space (G1).
+    The best k is the upper end of each range, an edge value and not a peak.
+    The answers of 2026-10-22 set aside T1 and S2. The earlier record was blocked
+    (methods_underspecified) because under T1 with S1 the peri-movement space fell below the
+    kinematic and kitchen-sink spaces (values no longer printed); with T2 fixed, the claim is reproduced.
+  deviations:
+  - J-array only; EMG is not recorded for it.
+  - Acceleration is the time derivative of the dataset's hand velocity.
+  - V1 ("each component's maximum absolute value") was run as the magnitudes (V1a) and as the signed
+    component at its largest magnitude (V1b); they do not change the outcome.
+- claim: fig6-each-dimensionality
+  outcome: reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig6-each-dimensionality
+  notes: The 3-D endpoints + max speed space (0.168) is below the 3-D peri-movement space (0.271).
+    Under T2 with S1 the peri-movement space wins 21 of 22 comparisons (K1) and 19 of 20 (K2) in
+    every combination of W, D, V and G, so L1 and L2 hold. The comparison lost is the 2-D
+    initial-velocity space (0.238 against 0.223). At k = 1 the peri-movement space beats the kinematic
+    spaces by 0.002 to 0.004 only. The answers of 2026-10-22 set aside T1 and
+    S2. The earlier record was blocked (methods_underspecified) because T1 failed L1 and L2 and
+    T2 with S2 failed L1 in some combinations; with T2 and S1 fixed, the claim is reproduced.
+  deviations:
+  - J-array only.
+- claim: fig6-performance-vs-dimensionality
+  outcome: not_reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig6-performance-vs-dimensionality
+  notes: Under T2 with S1 (83 neurons) performance rises from 0.140 at k = 1 to 0.518 at k = 14, so
+    it improves with dimensionality, but the best k is 14, above 10, and performance does not
+    decline at k = 14. Two of the criterion's three conditions fail, and the part of the statement
+    they test (a peak in a middle range and a decline beyond about 10 dimensions) is not found. The
+    answers of 2026-10-22 set aside T1 and S2. The earlier record was blocked
+    (methods_underspecified) because under T1 the claim held (values no longer printed); with T2
+    fixed, it is not reproduced.
+  deviations:
+  - J-array only.
+- claim: prep-dimensionality
+  outcome: not_reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:prep-dimensionality
+  measured: 15
+  notes: Under T2, 90% of the variance of the preparatory condition-mean matrix needs 15 components
+    with the 83 neurons of N1 (S1) and 18 with all 182 units (N2). Neither is within 7 to 11.
+    The supplement defines the matrix as the claims file does ("T was c×n with each row containing
+    the mean preparatory activity for every neuron"), from "all neurons", which is reading N2 (18),
+    and says "7-10 dimensions were required"; the main text says "at least 7-10 dimensions", which
+    15 and 18 would meet. Whether the claim is a range or a lower bound is asked in
+    questions/000128.yaml. The condition means average 10 to 22 trials per condition (median 17),
+    and their noise may add components; the claims file does not fix how the paper handled this.
+    The answers of 2026-10-22 set aside T1 (recorded earlier as measured) and S2; the measured value
+    is now 15 and the outcome is unchanged.
+  deviations:
+  - J-array only.
+- claim: fig6e-summary-across-datasets
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs monkeys A, B and J (single electrodes) and EMG, none of which is in the dandiset.
+- claim: fig7a-shuffled-space-poor
+  outcome: reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig7a-shuffled-space-poor
+  notes: Under T2 with S1 the shuffled space (mean of 10 shuffles) is below the unshuffled one at
+    every k, so H1 holds, and its best, 0.227 (0.208 to 0.244 over shuffles), is below the best
+    kinematic space in every variant (0.421 or more under K1, 0.414 or more under K2), so H2 holds.
+    The answers of 2026-10-22 set aside T1 and S2. The earlier record was blocked
+    (methods_underspecified) because under T1 the unshuffled space fell below zero at k of 10 or more
+    while the shuffled one stayed positive, so H1 failed; with T2 fixed, the claim is reproduced.
+  deviations:
+  - J-array only; the paper averages over datasets.
+- claim: fig7b-window-start-slide
+  outcome: reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig7b-window-start-slide
+  measured: 0.959
+  notes: Reading J2, the J-array ratio. Under T2 with S1, performance at the best k with the window
+    starting at onset is 0.959 (K1) and 0.957 (K2) of that with the window starting at -150 ms,
+    within 0.97 plus or minus 0.097. The 94% of monkeys A and B and the single-electrode J value (J1)
+    cannot be tested. Both best k values are the upper end of their range. The answers of 2026-10-22
+    set aside T1 and S2, which had all been within tolerance (T1 was recorded earlier as
+    measured); the measured value is now 0.959 and the outcome is unchanged.
+  deviations:
+  - J-array only (reading J2).
+- claim: ap-location-no-effect-on-correlation
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The electrodes table has no coordinates, so no anterior-posterior location. The criterion's
+    fallback, the array, is not usable either, as every unit's electrode reference points into the 96
+    PMd rows, so by the file all units are in PMd. The unit ids' leading digit (1 for 92 units, 2 for
+    90) looks like an array number, but nothing in the dataset documents it or which array is which.
+    As a variant that decides nothing, regressing tuning correlation on that digit gives r of
+    magnitude 0.432 (T2 with S1, 17 neurons, p 0.084), not significant. The electrode groups are
+    described as one array in M1 and one in PMd, but no unit column other than the electrode
+    reference maps a unit to a group. The answers of 2026-10-22
+    removed the T1 variant; the block is unchanged.
+- claim: fig7c-anterior-posterior-performance
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs each unit's AP location or at least its array; see ap-location-no-effect-on-correlation.
+    Not run.
+- claim: fig7d-pd-consistency
+  outcome: reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig7d-pd-consistency
+  notes: Under T2 with S1 the peri-movement space has the higher mean PD consistency in all 11
+    comparisons (0.752 against 0.548 for endpoints + max speed, 0.649 and 0.648 against 0.495 and
+    0.466 for segment directions G1 and G2, and 0.197 to 0.319 against 0.166 to 0.230 for the
+    kinematic spaces at their best k, which is the upper end of the range). The answers of 2026-10-22 removed the T1 and S2 readings,
+    which had given the same outcome; the outcome is unchanged. Removing them changed the random
+    draws, so the values differ slightly from the earlier record.
+  deviations:
+  - J-array only.
+- claim: fig8-model-weak-correlation
+  outcome: reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig8-model-weak-correlation
+  notes: Over 1000 draws of 25 initial states, the correlation has medians -0.041 to 0.019, and the
+    central 95% ranges have lower bounds of -0.430 to -0.385 and upper bounds of 0.350 to 0.428 under
+    the eight readings; 0.08 lies inside all of them. The
+    second part of the statement (a given preparatory rate leading to opposing patterns) is not tested
+    by the criterion.
+- claim: fig8-model-pd-perfect
+  outcome: reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig8-model-pd-perfect
+  measured: 1.0
+  notes: Under all eight readings the smallest R squared and leave-one-out performance over 100 draws
+    are 1.0 to the printed precision.
+findings:
+- kind: metadata_error
+  statement: Every unit's electrode reference in the units table points into the first 96 rows of the
+    electrodes table, which are labelled PMd, so by the file all 182 units are in PMd. The dataset
+    describes two arrays, in M1 and PMd. The reference equals the unit id's channel digits minus one,
+    which suggests the array offset was dropped in conversion.
+- kind: metadata_insufficient
+  statement: The electrodes have no coordinates (x, y and z are NaN), and the leading digit of the unit
+    ids (1 or 2), which may be the array, is not documented. No unit can be placed on the
+    anterior-posterior axis or on an array.
+- kind: selection_undocumented
+  statement: The dataset holds 182 units where the paper reports 146 isolations for the J-array dataset,
+    and does not record which units or trials the paper used, or that this session is the paper's.
+- kind: other
+  statement: 574 of the session's successful trials are in the test file as 0.7 s segments around
+    movement onset, without condition labels or behaviour and with only the 137 held-in units, so they
+    cannot enter a condition-mean analysis. None duplicates a train trial. The test file has a clock
+    of its own (segment times restart at 0) and no delay or success column, and the train file's
+    trial ids are contiguous, so the files do not record which session trials the packaging dropped.
+- kind: other
+  statement: 14 trials have a negative delay (as low as -3 ms), where the go cue precedes the recorded
+    target onset.
+verifications:
+- date: 2026-10-22
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The round-1 handover, the executed notebook with the conclusions and summary removed, the
+    helper module and the claims file, with the paper under paper/.
+  results:
+  - claim: recordings-jarray
+    agrees: true
+    outcome: partially_reproduced
+    reason: Conditions are 108 (exact), and trials are 2295 under reading (a), within 2166 plus or minus
+      216.6. The unit count is 182, outside 146 plus or minus 14.6. The 137 held-in units that fall
+      within tolerance are a Neural Latents Benchmark split, not a reading the claims file names, so the
+      three counts do not all match under one reading. The table printed "within" for the held-in units
+      and for the train-file trials, neither a reading in the claims file; reading (a), all successful
+      trials, arguably includes the 574 test-file trials (2869, outside tolerance).
+    response: The table now labels each row by reading. The held-in units and the delay > 400 ms count
+      are marked as not readings, and reading (a) is shown both with the test file (2869) and for the
+      train file alone (2295). The data check now prints that the test file has its own clock and no
+      delay or success column and that the train trial ids are contiguous, so the dropped trials cannot
+      be counted. The conclusion and notes were rewritten to match. Outcome unchanged.
+  - claim: recordings-single-electrode
+    agrees: true
+    outcome: blocked
+    reason: The archive holds one subject (Jenkins), two files and one array session; there are no
+      single-electrode data for A, B or J.
+    response: No change.
+  - claim: fig2b-example-concordant-tuning
+    agrees: true
+    outcome: blocked
+    reason: Speed task (monkeys A and B) is not in the archive.
+    response: No change.
+  - claim: fig2ce-example-opposing-tuning
+    agrees: true
+    outcome: blocked
+    reason: Speed task is not in the archive.
+    response: No change.
+  - claim: fig3-maze-most-not-maintained
+    agrees: true
+    outcome: reproduced
+    reason: Of 17 neurons, 1 has r of 0.72 or more (0.765) and 94% have r below 0.72. This rests on a
+      single neuron; n = 17 gives the fig3 count little power.
+    response: The fig4d cell now prints each selected neuron's id, id digit, preparatory and
+      peri-movement tuning, r and Spearman r. The conclusion and notes say the first part rests on unit
+      1581 and that the next largest r is 0.457. Outcome unchanged.
+  - claim: fig4d-mean-correlation-jarray
+    agrees: true
+    outcome: not_reproduced
+    reason: Mean r = 0.051 and mean Spearman = 0.072, against 0.13 plus or minus 0.013 and 0.11 plus or
+      minus 0.011. p = 0.42 to 0.61 under P1, P2 and P3 (n = 17), so even the partially reproduced rule
+      (positive mean with p < 0.05) fails. The selection leaves only 17 of 182 units; the code follows
+      the claims file.
+    response: The per-neuron table was added, and the conclusion and notes say that 17 neurons give the
+      tests little power. Outcome unchanged.
+  - claim: fig4abc-mean-correlation-single-electrode
+    agrees: true
+    outcome: blocked
+    reason: No data from monkeys A, B or J (single electrode).
+    response: No change.
+  - claim: fig4-no-separate-populations
+    agrees: true
+    outcome: reproduced
+    reason: Dip test p = 0.683 (U1 holds); 16 of 17 neurons have |r| below 0.5 (U2 holds); no neuron
+      has |r| of 0.8 or more. n = 17 gives the dip test little power.
+    response: The conclusion and notes now say the dip test has little power with 17 neurons. Outcome
+      unchanged.
+  - claim: fig4e-correlation-time-course
+    agrees: true
+    outcome: reproduced
+    reason: Under both A1 and A2, r falls from about 0.74 (-400 ms) to 0.61 (-200 ms) to 0.012 at onset.
+      Smallest p at onset is 0.854, so (i) holds; 80 to 82% of the drop comes after -200 ms, so (ii)
+      holds.
+    response: No change.
+  - claim: suppfig1-population-averages
+    agrees: true
+    outcome: reproduced
+    reason: Preparatory separation is positive (0.220 or 0.346). The ratio at onset is 0.240 (a) and
+      0.274 (b), so R1 holds under both readings and R2 under (a). The preparatory separation is
+      positive by construction, because conditions are ranked on the same preparatory rates; the claims
+      file asks for this.
+    response: The conclusion and notes now say the preparatory separation is positive by construction.
+      Outcome unchanged.
+  - claim: fig6-peri-movement-space-best
+    agrees: true
+    outcome: reproduced
+    reason: Best peri-movement performance is 0.518 (K1) or 0.505 (K2). The best kinematic space reaches
+      0.424 and the best task space 0.412. The peri-movement space wins 24 of 24 combinations under each
+      K. J-array is the only dataset.
+    response: The conclusion and notes now say the best k is the upper end of each range. Outcome
+      unchanged.
+  - claim: fig6-each-dimensionality
+    agrees: true
+    outcome: reproduced
+    reason: Peri-movement wins 21 of 22 (K1) and 19 of 20 (K2) comparisons, so L1 and L2 both hold.
+      Endpoints + max speed scores 0.168, below the 3-D peri-movement space at 0.271. The one lost
+      comparison is not printed; it must be initial velocity (2-D, 0.238 against 0.223). Peri-movement
+      beats kinematic at k = 1 by only 0.002 to 0.004.
+    response: The cell now prints the lost comparisons, which are the 2-D initial-velocity space (0.238
+      against 0.223) under K1 and K2, and the margins at k = 1 over each kinematic space (0.0024 to
+      0.0041). The conclusion and notes say both. Outcome unchanged.
+  - claim: fig6-performance-vs-dimensionality
+    agrees: true
+    outcome: not_reproduced
+    reason: Performance rises almost monotonically to the edge of the range, with best k = 14 (0.518)
+      and no decline after k = 10.
+    response: No change.
+  - claim: prep-dimensionality
+    agrees: true
+    outcome: not_reproduced
+    reason: 15 components (N1) and 18 (N2) are needed for 90% of variance, outside 7 to 11. The main
+      text says "at least 7-10 dimensions", while the claim treats 7 to 10 as a two-sided range, and 15
+      would agree with "at least". The supplement's "This T-matrix" may mean a conditions x (neurons x
+      times) matrix, not the c x n epoch means the claims file uses. Reported as a possible
+      misreading in the claims file, not corrected.
+    response: Both points are asked as a question in questions/000128.yaml; the claim is decided as the
+      claims file states it. The cell now also computes, as variants that decide nothing, 90%
+      dimensionality on conditions x (neurons x times) matrices of the preparatory window and of the M5
+      window, which need 55 to 61 components. The conclusion and notes say this. Outcome unchanged.
+  - claim: fig6e-summary-across-datasets
+    agrees: true
+    outcome: blocked
+    reason: Needs A, B, J and EMG; the archive's assets summary lists Units and ProcessingModule only,
+      with no EMG.
+    response: No change.
+  - claim: fig7a-shuffled-space-poor
+    agrees: true
+    outcome: reproduced
+    reason: Shuffled space is below the unshuffled one at every k (best 0.227 against 0.518) and below
+      the worst kinematic variant (0.414 to 0.421), so H1 and H2 hold.
+    response: No change.
+  - claim: fig7b-window-start-slide
+    agrees: true
+    outcome: reproduced
+    reason: J-array ratio is 0.959 (K1) or 0.957 (K2), within 0.97 plus or minus 0.097 under reading J2.
+      The 0.94 value for monkeys A and B cannot be tested. The best k is an edge value, not a true peak.
+    response: The conclusion and notes now say both best k values sit at the upper end of the range.
+      Outcome unchanged.
+  - claim: ap-location-no-effect-on-correlation
+    agrees: true
+    outcome: blocked
+    reason: Asset and version metadata have no anatomical coordinates; x, y, z are all NaN and every
+      unit points to PMd electrode rows. A two-level variant is possible only if the unit-id leading
+      digit means the array; under that assumption p = 0.084, which would meet the criterion. The
+      digit-to-array mapping is unverified, so the variant decides nothing.
+    response: The data check now prints the electrode group descriptions (one array in M1, one in PMd),
+      the rows of each group, and that no unit column other than the electrode reference names an
+      array, so the digit stays unmapped. The per-neuron table gives each neuron's digit. Block
+      unchanged.
+  - claim: fig7c-anterior-posterior-performance
+    agrees: true
+    outcome: blocked
+    reason: Same missing location data. A split by the id digit is not testable either, because the
+      criterion needs to know which half is anterior.
+    response: No change.
+  - claim: fig7d-pd-consistency
+    agrees: true
+    outcome: reproduced
+    reason: Peri-movement consistency is higher in 11 of 11 comparisons. J-array only. The best k in the
+      kinematic comparisons is an edge value.
+    response: The conclusion and notes now say the kinematic comparisons are taken at the upper end of
+      the range. Outcome unchanged.
+  - claim: fig8-model-weak-correlation
+    agrees: true
+    outcome: reproduced
+    reason: 0.08 lies inside the central 95% (about -0.40 to 0.40) under all 8 readings. The criterion
+      is weak; almost any small value would pass.
+    response: No change; the criterion is the claims file's.
+  - claim: fig8-model-pd-perfect
+    agrees: true
+    outcome: reproduced
+    reason: Smallest R squared and smallest leave-one-out performance are both 1.0 under all readings.
+    response: No change.
+- date: 2026-10-22
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The round-2 handover, the full executed notebook with conclusions and summary, the helper
+    module, the claims file and the attempt record, with the paper under paper/.
+  results:
+  - claim: recordings-jarray
+    agrees: true
+    outcome: partially_reproduced
+    reason: 182 units fails under every reading (cell 12). Each row of the table is now labelled by
+      reading, the held-in units and the delay > 400 ms count are marked as not readings, and reading
+      (a) is shown as 2869 and as 2295. Reading (a) stays undecidable, but the outcome does not depend
+      on it, because the unit count fails either way. The Summary's "T2 (91% of trials kept)" is
+      ambiguous next to the paper's "~90% of all trials", as 90.8% is of the 1967 trials with delay >
+      400 ms and 77.8% of all 2295 train trials.
+    response: The Summary now gives T2's 1786 trials as 90.8% of the 1967 trials with delay > 400 ms
+      and 77.8% of all 2295 train trials, and T1's 73.8% as a share of the trials with delay > 400 ms.
+      The README has no such percentage. Outcome unchanged.
+  - claim: recordings-single-electrode
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the outcome matches the outputs and the claims file's criteria.
+    response: No change.
+  - claim: fig2b-example-concordant-tuning
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the outcome matches the outputs and the claims file's criteria.
+    response: No change.
+  - claim: fig2ce-example-opposing-tuning
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the outcome matches the outputs and the claims file's criteria.
+    response: No change.
+  - claim: fig3-maze-most-not-maintained
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion (cell 19). Every selected neuron is now printed with its id digit, its
+      two tunings, r and Spearman r, and the texts say fig3 rests on unit 1581.
+    response: The notes no longer quote the T1 value that the notebook does not print. Outcome
+      unchanged.
+  - claim: fig4d-mean-correlation-jarray
+    agrees: true
+    outcome: not_reproduced
+    reason: p is 0.42 to 0.61, so even the "partially reproduced" rule fails (cell 15). "Less than half
+      the paper's 0.13 and 0.11" holds for Pearson (0.051 < 0.065) but fails for Spearman, 0.072 being
+      65% of 0.11. The notes quote T1 values (0.025 and 0.054) the notebook no longer prints. The
+      dataset has 182 units, not 146, and nothing records which units or trials the paper used; only
+      17 neurons pass the selection, so the outcome may come from the selection, not the data. This
+      stays unresolved.
+    response: Cell 17 and the notes now say the Pearson mean is below half the paper's (0.065) and the
+      Spearman mean is 65% of the paper's. The T1 values were removed from the notes. The selection
+      stays a recorded deviation, as the claims file fixes it. Outcome unchanged.
+  - claim: fig4abc-mean-correlation-single-electrode
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the outcome matches the outputs and the claims file's criteria.
+    response: No change.
+  - claim: fig4-no-separate-populations
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion (cell 22); the texts say the tests have little power.
+    response: No change.
+  - claim: fig4e-correlation-time-course
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion (cell 25).
+    response: No change.
+  - claim: suppfig1-population-averages
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion (cell 29). "Positive by construction" is now stated in cell 30.
+    response: No change.
+  - claim: fig6-peri-movement-space-best
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion (cell 38). The edge k is now stated.
+    response: The notes no longer quote T1 values that the notebook does not print. Outcome unchanged.
+  - claim: fig6-each-dimensionality
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion (cell 41). The lost comparison is printed, the 2-D initial-velocity
+      space (0.238 against 0.223), with margins at k = 1 of 0.0024 to 0.0041.
+    response: The notes no longer quote the T1 win counts that the notebook does not print. Outcome
+      unchanged.
+  - claim: fig6-performance-vs-dimensionality
+    agrees: true
+    outcome: not_reproduced
+    reason: Best k is 14 and there is no decline (cell 44). The notes quote T1 values (best at k = 5,
+      0.281, falling to -0.287) the notebook no longer prints; these are history, not support for any
+      current outcome.
+    response: The T1 values were removed from the notes. Outcome unchanged.
+  - claim: prep-dimensionality
+    agrees: true
+    outcome: not_reproduced
+    reason: 15 and 18 components (cell 32). The round-1 T-matrix point is withdrawn. The supplement
+      defines the matrix ("T was c × n with each row containing the mean preparatory activity for
+      every neuron"), so the claims file's c × n matrix is the paper's, the 55 to 61 component
+      variants test a reading the paper rules out, and "all neurons" points to reading N2 (18
+      components). The supplement says "7-10 dimensions were required", so the claims file's
+      two-sided reading is defensible, not a misreading; the open question should drop the T-matrix
+      part. What still separates the result from the paper is the method, trial-averaged rates from 10
+      to 27 trials per condition carrying noise that may add components, which the claims file does
+      not fix. The notes quote T1 (18 and 20) and S2 (4 components) values no longer printed.
+    response: The conditions x (neurons x times) variants were removed from cell 32. Cell 33 and the
+      notes now quote the supplement's definition, say "all neurons" points to N2, and keep the range
+      or lower bound point as the open question; the question in questions/000128.yaml no longer asks
+      about the T-matrix. Cell 10 now prints the largest trial count per condition, which is 22, not
+      27, and the texts say 10 to 22. The T1 and S2 values were removed from the notes. Outcome
+      unchanged.
+  - claim: fig6e-summary-across-datasets
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the outcome matches the outputs and the claims file's criteria.
+    response: No change.
+  - claim: fig7a-shuffled-space-poor
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion (cell 47).
+    response: No change.
+  - claim: fig7b-window-start-slide
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion (cell 50). The notes quote values (0.904 to 0.972, and 0.918 under T1)
+      the notebook no longer prints.
+    response: Those values were removed from the notes. Outcome unchanged.
+  - claim: ap-location-no-effect-on-correlation
+    agrees: true
+    outcome: blocked
+    reason: The electrode groups and the id digits are now printed (cell 4). Nothing maps a digit to
+      an array, so the block remains correct.
+    response: No change.
+  - claim: fig7c-anterior-posterior-performance
+    agrees: true
+    outcome: blocked
+    reason: As for ap-location-no-effect-on-correlation, nothing maps a digit to an array.
+    response: No change.
+  - claim: fig7d-pd-consistency
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion (cell 53).
+    response: No change.
+  - claim: fig8-model-weak-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Cell 58 prints lower bounds of -0.385 to -0.430 and upper bounds of 0.350 to 0.428, so
+      "about -0.43 to 0.43 under every reading" is the outer envelope, not each reading's interval;
+      the round-1 wording "about -0.40 to 0.40" is also loose. The outcome is unaffected, because 0.08
+      lies inside every interval.
+    response: Cell 59 and the notes now give the lower bounds (-0.430 to -0.385) and upper bounds
+      (0.350 to 0.428). The round-1 reason is left as given. Outcome unchanged.
+  - claim: fig8-model-pd-perfect
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion (cell 61).
+    response: No change.

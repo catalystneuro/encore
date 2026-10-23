@@ -89,7 +89,7 @@ def test_a_repeated_claims_run_before_any_attempt_archives_nothing(tmp_path):
 def test_the_recorder_prompt_names_the_attempt():
     latest = tool.attempt_of("001933")[0]["id"]
     text = tool.fill("recorder", "001933", "m")
-    assert latest in text and "readme_row.py 001933 --write" in text and "{" not in text
+    assert latest in text and "readme_row.py 001933" in text and "--write" not in text and "{" not in text
 
 
 def test_the_conversion_issue_lists_every_finding():
@@ -108,3 +108,11 @@ def test_the_target_paper_follows_the_hand_corrections():
     assert tool.target("000336")["paper"] != "10.1016/j.tins.2012.11.006"
     # DOIs are cleaned, as the paper store names them.
     assert tool.target("000026")["paper"] == "10.1117/1.jbo.24.10.106504"
+
+
+def test_an_authors_prompt_ends_with_its_time(monkeypatch):
+    monkeypatch.setenv("AGENT_TIME_BUDGET_MIN", "60")
+    monkeypatch.setenv("AGENT_TIME_LIMIT_MIN", "90")
+    text = tool.fill("author", "001754", "claude-opus-5-5", "draft")
+    assert "Time: this run started at" in text and "1 h 30 min after it started" in text
+    assert "Time: this run started" not in tool.fill("verifier-1", "001754", "claude-opus-5-5")

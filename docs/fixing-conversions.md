@@ -41,7 +41,7 @@ Re-convert the dataset and upload it to the dandiset's draft. The published vers
 
 ### 6. Re-check with the Registry
 
-Ask Ben to queue a repeat attempt on the draft. The repeat attempt runs the full protocol against the new files and says, for each earlier finding, whether it is fixed, partly fixed or still present, as the [001754 repeat](pilot-notes.md) did. It also catches anything the fix broke. Fix what it reports and repeat this step if needed.
+Open a [run request](https://github.com/catalystneuro/encore/issues/new?template=run-request.yml) for the draft, with the conversion's issue or pull request under "Why" ([queue.md](queue.md)). The repeat attempt runs the full protocol against the new files and says, for each earlier finding, whether it is fixed, partly fixed or still present, as the [001754 repeat](pilot-notes.md) did. It also catches anything the fix broke. Fix what it reports and repeat this step if needed.
 
 ### 7. Publish
 

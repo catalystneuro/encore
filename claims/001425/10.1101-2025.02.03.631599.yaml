@@ -1,0 +1,465 @@
+# Claims for Kondo, Sehara, Harukuni, Aoki et al. (2025) on dandiset 001425.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# following docs/protocol.md (pilot-10), Reader, steps 1 to 4.
+#
+# Text read: the bioRxiv preprint, version 1 (doi:10.1101/2025.02.03.631599), from its JATS XML
+# as stored in paper/10.1101-2025.02.03.631599.txt. It holds the main text, the Methods, the
+# figure legends of Figures 1 to 6 and the legends of Supplementary Figures S1 to S4. The text
+# has the legends of Tables 1 to 4 but not their contents (session counts per animal and type,
+# keypoint names, DeepLabCut training image counts, NWB contents), and there is no PDF, so no
+# figure or table could be read. The claims below rest on the sentences of the text.
+#
+# Code read: https://github.com/BraiDyn-BC/bdbc-data-pipeline at commit ab50b17 (2025-07-05),
+# with the submodule commits it pins, bdbc-nwb-packager 426f07c, bdbc-session-explorer 58089f2,
+# bdbc-nwb-explorer 309c5fb, bdbc-batch-scripts 763cf80 and python-ks-pupilfitting dc14b36. The
+# code builds the NWB files (DAQ logs, ROI signals, keypoints, pupil fits, trial tables), aligns
+# the Allen CCF atlas, fits pupil ellipses, and holds a visual sanity check of the NWB files. It
+# confirms the likelihood cut-off of 0.2 used when keypoints are down-sampled
+# (bdbc_nwb_packager/tracking/dlc.py). It holds no analysis behind Figures 3 to 6 or Figure S2b:
+# not the response and success rates, the clustering, the keypoint-encoder correlations, the
+# sensory maps or the transient detection. The MATLAB preprocessing (motion correction, the
+# trial tables) is stated as not in the repository, and the trial-table columns are defined by
+# JSON files outside it. So every analysis detail below comes from the Methods and legends, or
+# is named as open.
+#
+# Data the paper used. 25 VGluT1-Cre x Ai162 (GCaMP6s) mice, 11 male and 14 female, aged 17 to
+# 31 weeks at the end of the experiments. Each was trained for 15 daily sessions (30 min) of a
+# tone-cued lever-pull task (a pull is the lever held beyond 1 mm; it must start within 1 s of a
+# 200 ms 10 kHz tone and be held for T_pull, which starts at 1 ms, rises by 50 ms after 80%
+# success over 20 trials, at most every 20 trials, up to 400 ms, and starts each session at the
+# previous session's final value minus 100 ms). Resting-state sessions (10 min) on recording
+# days 0, 1, 7 and 15 (day 8 for one mouse), and a sensory-mapping session under anaesthesia
+# (15 min; visual LED to the left eye, vibration or air puff on the right whisker pad, white
+# noise; 8 mice had two). Of 375 task sessions, 364 have imaging. Measured variables are
+# wide-field one-photon imaging at 60 Hz alternating 470 and 405 nm excitation (30 Hz per
+# channel, 288 x 288 pixels; hemodynamics-corrected dF/F of 22 Allen CCF ROIs per hemisphere),
+# lever position (rotary encoder), licking, a load cell for body motion, tone, reward and
+# stimulus TTLs, temperature, humidity, air pressure and CO2, and 100 Hz videos of the upper
+# body, the right face and the right eye with DeepLabCut keypoints and a fitted pupil ellipse,
+# both at the video rate and down-sampled to 30 Hz. The Data Records name the 15 task sessions
+# and 4 resting-state sessions as the dataset; whether the sensory-mapping sessions are
+# deposited is not said plainly (Table 1's legend counts them). The manual annotations used to
+# validate the atlas landmarks and the DeepLabCut models are not described as deposited.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001425"
+paper: doi:10.1101/2025.02.03.631599
+claims:
+- id: cohort-sex-age
+  statement: The dataset comes from 25 mice of both sexes, 11 males and 14 females, aged 17 to 31
+    weeks at the end of the experiments.
+  source: Methods, Animals, paragraph 1
+  quote: The mice of both sexes (11 males and 14 females) were used for the experiments. The age
+    ranged from 17–31 weeks at the end of experiments.
+  expected:
+  - quantity: number of mice
+    value: 25
+    tolerance: 0
+  - quantity: number of male mice
+    value: 11
+    tolerance: 0
+  - quantity: number of female mice
+    value: 14
+    tolerance: 0
+  criterion: Counts of subjects are exact, so the tolerance is 0. Reproduced when the subjects
+    with any session number 25 with 11 males and 14 females, and every subject's age at its
+    last session lies within 17 to 31 weeks widened by 10% of each bound (15.3 to 34.1 weeks),
+    age taken from the subject metadata (age or date of birth) and the session dates.
+- id: task-sessions-collected
+  statement: Of the 375 task training sessions (25 mice by 15 sessions), data were collected from
+    364 (97%); the 11 others lacked complete imaging. All 15 sessions were collected for 16 of
+    the 25 mice.
+  source: Background & Summary, paragraph 3; Technical Validation, paragraph 2; Figure 3d legend
+  quote: Of the 375 task training sessions conducted, we successfully collected data from 364
+    sessions ( Fig. 3d ; Table 1 ) and completed data collection for all 15 sessions in 16 out of
+    25 animals.
+  expected:
+  - quantity: task training sessions with data
+    value: 364
+    tolerance: 0
+  - quantity: mice with all 15 task sessions
+    value: 16
+    tolerance: 0
+  criterion: Counts of deposited sessions are exact, so the tolerance is 0. A task session is one
+    whose session description or file name marks it as a task (lever-pull) session; recordings
+    deposited more than once count once. Reproduced when 364 distinct task sessions are found
+    and 16 mice have all 15. The Data Records sentence (15 task and 4 resting-state sessions per
+    mouse) also bears on the count of resting-state sessions, which is reported without a
+    criterion, as Table 1's contents are not in the text.
+- id: imaging-frame-counts
+  statement: Each task session was imaged for 30 min (108000 frames at 60 Hz, so 54000 frames per
+    excitation channel at 30 Hz), each resting-state session for 10 min and the sensory-mapping
+    session for 15 min.
+  source: Methods, Acquisition of wide-field one-photon image, paragraph 1; Data Records, Imaging
+    Raw Data
+  quote: We imaged 108000 frames (30 min) in each task session, 36000 frames in each
+    resting-state session (10 min on recording days 1, 7, 15), and 54000 frames in the sensory
+    mapping session (recording day 16).
+  expected:
+  - quantity: frames per excitation channel, task session
+    value: 54000
+    tolerance: 0
+  - quantity: frames per excitation channel, resting-state session
+    value: 18000
+    tolerance: 0
+  - quantity: frames per excitation channel, sensory-mapping session
+    value: 27000
+    tolerance: 0
+  criterion: The paper's 60 Hz counts are read as the sum over the two channels, from the
+    Methods sentence that the effective rate is 30 Hz and the Data Records sentence on TIFF
+    frame counts. Reproduced when the 30 Hz ROI series (and, where they are read, the TIFF
+    stacks) of most sessions of each type have these lengths; sessions that differ are listed
+    with their lengths.
+- id: training-breaks
+  statement: Training had 3.1 +/- 0.6 breaks per mouse of 2.3 +/- 0.7 days each (mean +/- s.d.,
+    25 mice), and recording days 1 to 16 spanned 24.28 +/- 3.2 calendar days.
+  source: Methods, Behavioral task, paragraph 1
+  quote: There were occasional training breaks of typically 2–3 days without any handling ( e.g.
+    over weekends; 3.1 ± 0.6 breaks throughout training; 2.3 ± 0.7 days per break; mean ± s.d., n
+    = 25 mice). ... The entire recording period (recording day 1 to 16) spanned 24.28 ± 3.2
+    calendar days (mean ± s.d.).
+  expected:
+  - quantity: breaks per mouse, mean
+    value: 3.1
+    tolerance: 0.6
+  - quantity: days per break, mean
+    value: 2.3
+    tolerance: 0.7
+  - quantity: calendar days from recording day 1 to 16, mean
+    value: 24.28
+    tolerance: 3.2
+  criterion: Tolerances are the paper's stated s.d. Dates are the session start dates. A break is
+    a run of calendar days without a task session between consecutive task sessions (days 1 to
+    15), and its length is the number of days in the run. The span is from the day 1 task
+    session to the sensory-mapping session (day 16), counted inclusively or as a difference
+    (both shown). Open details, each run. (1) Which gaps are breaks, read as (a) every run of
+    one or more days, (b) runs of two or more days only (the text's "typically 2–3 days" and
+    the Methods' "two or more days" for breaks over weekends). (2) Whether "days per break" is the
+    mean over all breaks pooled or the mean over mice of each mouse's mean. (3) For the 8 mice
+    with two sensory-mapping sessions, day 16 read as (a) the first (the session Figure 4 uses),
+    (b) the last. A task session that was run but not deposited cannot be told from a break in
+    the deposited dates; such gaps are listed. If no sensory-mapping session is deposited, the
+    span is blocked and the other two values are still tested.
+- id: fig3c-response-rate-increase
+  statement: Across the population the response rate to the tone rose over training, from about
+    0.55 in task session 1 to about 0.85 in task session 15 (median over mice).
+  source: Technical Validation, paragraph 2; Figure 3c, top panel
+  quote: The response rate to the sound cue tended to increase overall (∼0.55 in task training
+    session 1 to ∼0.85 in task training session 15; median)
+  expected:
+  - quantity: median response rate, task session 1
+    value: 0.55
+    tolerance: 0.055
+  - quantity: median response rate, task session 15
+    value: 0.85
+    tolerance: 0.085
+  criterion: From the Figure 3 legend, the response rate is the number of valid pulls over the
+    number of tones, a valid pull being a pull (lever beyond 1 mm) initiated within 1 s of the
+    tone onset; per session, then the median over the mice with that session (thick black line
+    of Figure 3c). How a valid pull is identified is open, with two readings, both run. (a)
+    From the trial table's outcome labels, counting successes and failures (aborted pulls) as
+    valid and misses as not, following the Methods' trial outcomes. (b) From the lever trace,
+    a trial being valid when the lever crosses 1 mm within 1 s of tone onset. Reproduced when,
+    under one reading, both medians are within tolerance and session 15's exceeds session 1's.
+- id: fig3c-success-rate-constant
+  statement: The population success rate stayed roughly constant across the 15 task sessions.
+  source: Technical Validation, paragraph 2; Figure 3c, middle panel
+  quote: while the success rate seemed to be constant as a whole ( Fig. 3c )
+  criterion: The success rate is the number of successful (rewarded) pulls over the number of
+    tones (Figure 3 legend), per session, and the population value is the median over mice. The
+    paper gives no test and no bound for "constant", so the readings are (a) the session-15
+    median within 10% (relative) of the session-1 median, the protocol's default tolerance;
+    (b) no monotonic trend of the 15 session medians, Spearman correlation with session index
+    at p >= 0.05. Successes are counted from reward deliveries and, where the trial table has
+    them, from its outcome labels (both shown). The claim holds when both readings hold, fails
+    when both fail, and is blocked as methods_underspecified when they differ. The change in
+    the response rate over the same sessions is shown alongside for contrast.
+  depends_on:
+  - fig3c-response-rate-increase
+- id: fig3d-tpull-clusters
+  statement: Hierarchical clustering (Ward's method) of the session-by-session T_pull_final
+    divides the mice into two clusters, A with 7 mice and B with 18.
+  source: Technical Validation, paragraph 2; Figure 3d and 3e legends
+  quote: The hierarchical clustering revealed that mice could be divided into two clusters in
+    terms of T pull_final ( Fig. 3d ).
+  expected:
+  - quantity: mice in cluster A
+    value: 7
+    tolerance: 0
+  - quantity: mice in cluster B
+    value: 18
+    tolerance: 0
+  criterion: Cluster sizes are counts, with tolerance 0 (10% of 7 is under one mouse). T_pull_final
+    is the required pull duration at the end of each session (Methods, Tone-triggered
+    lever-pull task), read from the trial table's required-duration field at the last trial;
+    where no such field exists, the author asks. Each mouse is a vector of its T_pull_final over
+    task sessions 1 to 15, clustered by Ward's method (Figure 3d legend) on Euclidean distance
+    and cut at two clusters; cluster A is the one with the higher mean T_pull_final. Open
+    details, each run. (1) The feature, "the chronological change in T_pull_final", read as
+    (a) the 15 values themselves, (b) the 14 differences between consecutive sessions. (2)
+    Missing sessions (9 mice), read as (i) linear interpolation from the neighbouring sessions
+    (carrying the nearest value at the ends), (ii) the previous session's value carried
+    forward, (iii) the next session's initial T_pull plus 100 ms where that session exists,
+    following the Methods' rule. Reproduced when a reading gives clusters of 7 and 18.
+- id: fig3e-cluster-a-high-tpull
+  statement: Mice of cluster A had high success rates in the early sessions (about session 5),
+    which led to a high T_pull_final that was often maintained into the late sessions.
+  source: Technical Validation, paragraph 2; Figure 3e
+  quote: Mice belonging to one cluster (cluster A) showed high success rates in the early sessions
+    (∼5) leading to high T pull_final which were often maintained even in the late sessions.
+  depends_on:
+  - fig3d-tpull-clusters
+  - fig3c-success-rate-constant
+  criterion: Uses the clusters of fig3d-tpull-clusters (under each reading that gives 7 and 18).
+    The paper gives no test; "high" is read against cluster B, the contrast of Figure 3e.
+    Reproduced when (1) cluster A's median success rate exceeds cluster B's in the early
+    sessions, read as (a) sessions 1 to 5, (b) session 5 alone, and (2) cluster A's median
+    T_pull_final exceeds cluster B's in the late sessions, read as (a) sessions 11 to 15, (b)
+    session 15 alone. Per-mouse values are shown.
+- id: fig3e-cluster-b-similar-rates
+  statement: Mice of cluster B rarely reached a high T_pull_final, but in the late sessions their
+    response and success rates were similar to those of cluster A.
+  source: Technical Validation, paragraph 2; Figure 3e; Figure S1c
+  quote: Mice belonging to the other cluster (cluster B) rarely achieved a high T pull_final ,
+    while they accomplished a response rate and success rate similar to the cluster A mice in
+    the late sessions ( Fig. 3e , Fig. S1).
+  depends_on:
+  - fig3d-tpull-clusters
+  - fig3c-response-rate-increase
+  - fig3c-success-rate-constant
+  criterion: Uses the clusters of fig3d-tpull-clusters. The paper gives no test or bound. "High
+    T_pull_final" is read as (a) the 400 ms maximum, (b) above the median of all mice's
+    T_pull_final values; "rarely" holds when the fraction of cluster B's mouse-sessions above
+    that level is below cluster A's and below one half. "Late sessions" are read as (a)
+    sessions 11 to 15, each mouse's mean, (b) session 15. "Similar" is read as (a) a two-sided
+    Mann-Whitney U test of A against B with p >= 0.05, (b) group medians within 10% of cluster
+    A's median. Response and success rates as in fig3c-response-rate-increase and
+    fig3c-success-rate-constant. The claim holds when the T_pull_final part holds and, for both
+    rates, the similarity holds under both readings of "similar"; when these readings differ it
+    is blocked as methods_underspecified, with every result shown.
+- id: methods-no-signal-degradation
+  statement: Fluorescence signal degradation across imaging sessions was not observed.
+  source: Methods, Acquisition of wide-field one-photon image, paragraph 1
+  quote: The total power of excitation lights (blue and violet) was set at ∼10 mW and the
+    fluorescent signal degradation across imaging sessions was not observed.
+  criterion: A claim of absence for which the paper names no measure and no test. The readings
+    the text allows are (a) the raw 470 nm fluorescence (the ROI baseline F_B0, the median over
+    time, where the dataset holds raw ROI signals; otherwise the session-mean intensity of the
+    blue TIFF stack within the cortical ROI masks) against task-session index, (b) the s.d. of
+    the corrected dF/F per ROI against task-session index. For each, a per-mouse Spearman
+    correlation with session index, and a Wilcoxon signed-rank test of the 25 correlations
+    against 0 at p < 0.05. The claim holds when neither reading finds a significant decline,
+    fails when both do, and is blocked as methods_underspecified when they differ; the size of
+    the change (session 15 over session 1, median over mice) is reported either way.
+- id: fig4ab-landmark-validation
+  statement: MesoNet-inferred skull landmarks used to register the Allen CCF agreed with manual
+    annotations of three representative sessions from each of the 25 mice (75 sessions).
+  source: Technical Validation, paragraph 3; Figure 4a,b legend
+  quote: We validated the accuracy of this method by comparing the MesoNet-based skull-landmark
+    annotations with the manual annotations, based on three representative sessions from each of
+    the 25 animals ( Fig. 4a,b ).
+  criterion: The paper gives no number or bound for the agreement. The test needs the manual
+    landmark annotations, which the paper does not describe as deposited; the dataset's
+    atlas_to_data_transform alone cannot be compared with them. Reproduced only if the manual
+    annotations are found, when the warped manual landmarks fall near the CCF reference
+    landmarks as in Figure 4b; the distances (median and 95th percentile, in atlas pixels) are
+    reported.
+- id: fig4d-visual-map
+  statement: In the sensory-mapping sessions, visual stimulation of the left eye evoked the
+    strongest activity in the right occipital cortex, at VISp in the registered atlas.
+  source: Technical Validation, paragraph 3; Figure 4d
+  quote: Visual stimuli to the left eye of mice elicited prominent activity in the right occipital
+    cortex ( Dräger 1975 ; Grinvald et al. 1986 ; Schuett, Bonhoeffer, and Hübener 2002 )
+    corresponding to VISp (primary visual area) in the atlas.
+  criterion: From the Figure 4d legend, the first sensory-mapping session of each mouse; the
+    response is the trial-averaged activity over 2 s from stimulus onset, normalized to 0 to 1
+    per mouse and stimulus; the area is the region above the 80th percentile of the normalized
+    map. Open details, each run. (1) The map, read as (a) the 44 ROI dF/F series in the NWB
+    file, (b) pixel maps from the blue TIFF stack as dF/F against the session median (the
+    Methods' dF/F), without hemodynamic correction, as the Methods describe it for ROIs only.
+    (2) The baseline, read as (a) none (dF/F is already relative to the session median), (b)
+    the mean over the 2 s before stimulus onset subtracted. Stimulus onsets are the visual
+    stimulus TTL onsets. Reproduced when, under one reading, right VISp is the ROI with the
+    largest response (or, for pixel maps, the peak falls inside right VISp) in the mean over
+    mice (the animal-averaged map of Figure 4d); the number of mice in which it holds is
+    reported. If no sensory-mapping session is deposited the claim is blocked.
+- id: fig4d-tactile-map
+  statement: Vibration of the right whisker pad evoked a robust response in the left barrel cortex
+    (SSp-bfd), with marked laterality.
+  source: Technical Validation, paragraph 3; Figure 4d
+  quote: Tactile stimuli to the right whisker pad elicited a robust response in the left SSp-bfd,
+    a primary sensory cortex for processing whisker-related sensory information with marked
+    hemispheric laterality
+  criterion: As fig4d-visual-map, with the tactile stimulus TTL onsets (vibration or air puff, both
+    included). Reproduced when, under one reading, left SSp-bfd is the ROI with the largest
+    response (or holds the pixel peak) in the mean over mice, and its response exceeds that of
+    right SSp-bfd; the number of mice in which each holds is reported.
+- id: fig4d-auditory-map
+  statement: White-noise stimulation evoked spreading activity that included a multimodal sensory
+    area in the parietal cortex.
+  source: Technical Validation, paragraph 3; Figure 4d
+  quote: Auditory stimuli evoked spreading activity, including a multimodal sensory area in the
+    parietal cortex
+  criterion: As fig4d-visual-map, with the auditory stimulus TTL onsets. The parietal multimodal
+    area is not named; it is read as any of the posterior parietal ROIs of the Allen CCF dorsal
+    map (VISa, VISrl, or a ROI named PTLp), in either hemisphere. "Spreading" is read as an
+    80th-percentile region covering more than one ROI. Reproduced when, under one reading, the
+    80th-percentile region of the mean over mice includes a parietal ROI and more than one ROI.
+- id: figs2b-no-aberrant-transients
+  statement: The mice showed no sign of the aberrant short-duration, large-amplitude calcium
+    transients reported in some transgenic lines; no cluster of transients had high prominence
+    (> 0.1 dF/F) and narrow width (< 0.5 s).
+  source: Technical Validation, paragraph 3; Figure S2b legend
+  quote: High prominence (> 0.1 in Δ F / F ) and narrow width (< 0.5 s) of the transients were not
+    detected in each animal (right).
+  criterion: From the Figure S2b legend. Each mouse's first resting-state recording (day 0); the
+    left frontal, left barrel, left retrosplenial and right visual ROIs; transients detected in
+    the corrected dF/F with their prominences and widths; per mouse and region, K-means (k = 2)
+    on (prominence, width), and the two cluster centres. Reproduced when no centre in any mouse
+    and region has prominence > 0.1 and width < 0.5 s, and not reproduced when any does. Open
+    details, each run. (1) Peak detection, which the paper does not name, read as
+    scipy.signal.find_peaks (SciPy is the library the Methods name) (a) with no threshold, (b)
+    with a minimum prominence of 0.01 dF/F; width at half prominence in seconds at 30 Hz.
+    (2) The ROIs, "frontal" read as MOs or MOp, "visual" as VISp, "barrel" as SSp-bfd,
+    "retrosplenial" as RSPd or RSPagl. (3) K-means features raw or z-scored. (4) The signal,
+    which the legend calls ΔF/F, read as (a) the hemodynamics-corrected dF/F, (b) the
+    uncorrected ΔF_B/F_B (the Methods' ratio before band-pass filtering), where the dataset
+    holds the raw blue ROI signal. The number of transients per mouse is reported.
+- id: fig5abc-dlc-error
+  statement: DeepLabCut keypoints differed from manual annotations only by minor errors on
+    validation frames (192 frames from 25 mice for the body and face cameras, 190 for the eye).
+  source: Technical Validation, paragraph 4; Figure 5a-c legend
+  quote: Comparison of DeepLabCut model-based keypoint annotations with manual annotations showed
+    minor errors, validating the quality of our models ( Fig. 5a-c ).
+  criterion: The paper gives no number in the text (the 95th percentiles are in the figure, which
+    could not be read). The test needs the manual annotations of the validation frames (from
+    task sessions 3, 6, 9 and 12, Figure S3 legend), which the paper does not describe as
+    deposited. Blocked unless they are found; if found, the 95th-percentile error per keypoint
+    is reported, and the claim holds when it is small against the keypoint spacing.
+- id: fig5f-lever-tip-correlation
+  statement: The lever-tip position tracked from the body video correlated highly with the
+    encoder lever position, R = 0.98 +/- 0.02 (mean +/- s.d.).
+  source: Technical Validation, paragraph 4; Figure 5e,f
+  quote: Moreover, the lever tip position estimated from the videography showed a markedly high
+    correlation (0.98 ± 0.02; mean ± s.d.) with the encoder-based lever position ( Fig. 5e,f ).
+  expected:
+    quantity: mean Pearson R, lever-tip keypoint y against encoder lever position
+    value: 0.98
+    tolerance: 0.02
+  criterion: Tolerance is the paper's stated s.d. From the Figure 5 legend, Pearson's R between
+    the keypoint's y position and the encoder-based lever position, over the frames of all
+    successful trials of a session, per task session with body video and at least one
+    successful trial (354 sessions, 25 mice). Open details, each run. (1) Sampling, read as (a)
+    keypoints at the 100 Hz video rate with the lever position averaged over each video frame
+    (each dot is a video frame in Figure 5e), (b) the down-sampled 30 Hz series. (2) Keypoints
+    with likelihood below 0.2 dropped (the Methods' cut-off, confirmed in
+    bdbc_nwb_packager/tracking/dlc.py) or kept. (3) The frames of a trial, read as (a) the trial
+    interval of the trial table, (b) tone onset to tone onset plus 1 s plus the trial's T_pull.
+    (4) The summary, read as (a) mean and s.d. over sessions (the text), (b) over the per-mouse
+    means (the Figure 5f legend). (5) The sign, as computed and as an absolute value, since the
+    image y axis points down. Reproduced when, under one reading, the mean R is within
+    tolerance.
+- id: fig5f-forepaw-correlation
+  statement: The right forepaw, which pulls the lever, correlated with the lever position (R = 0.49
+    +/- 0.23), and the left forepaw did not (R = 0.05 +/- 0.19), over 354 task sessions from 25
+    mice.
+  source: Technical Validation, paragraph 4; Figure 5d-f
+  quote: We found this is exactly the case, based on the 354 task-recording sessions of our dataset
+    that successfully included upper-body videos ( Fig. 5d-f ; right forepaw, 0.49 ± 0.23; left
+    forepaw, 0.05 ± 0.19; mean±s.d., n = 354 sessions from 25 animals
+  expected:
+  - quantity: mean Pearson R, right forepaw
+    value: 0.49
+    tolerance: 0.23
+  - quantity: mean Pearson R, left forepaw
+    value: 0.05
+    tolerance: 0.19
+  - quantity: task sessions analysed
+    value: 354
+    tolerance: 0
+  depends_on:
+  - fig5f-lever-tip-correlation
+  criterion: Tolerances are the paper's stated s.d.; the session count is exact. As
+    fig5f-lever-tip-correlation, with the right and left forepaw keypoints, under the same
+    readings. The sessions are the 355 task sessions with an upper-body video less the one with
+    no successful trial. Reproduced when, under one reading, both means are within tolerance and
+    the right forepaw's exceeds the left's.
+- id: fig6b-movement-order
+  statement: In the example session, the forepaws and the nose began moving before lever-pull
+    onset, and the jaw and pupil diameter changed after it.
+  source: Technical Validation, paragraph 5; Figure 6b
+  quote: While some body parts, such as forepaws and nose, began moving before the lever-pull
+    onset, others, including jaw and pupil diameter, moved afterward at least in this session.
+  criterion: The example session is not identified, so the readings are (a) the mean over all
+    task sessions with videos of each session's trial average, (b) the fraction of sessions in
+    which the order holds, the claim holding under (b) when it holds in more than half. The
+    paper states the finding for its example session only ("at least in this session"), so
+    when no reading holds the claim is blocked as methods_underspecified (the session cannot
+    be identified), not judged not reproduced; the per-session results are shown. Lever-
+    pull onset is the lever crossing 1 mm (Methods), for pulls in (a) successful trials, (b)
+    all valid pulls. Traces are taken from -1 s to 3 s around onset (the range of Figure 6c),
+    as the keypoint's displacement from its mean position over -1 to -0.5 s. A trace's onset
+    is the first time its trial average leaves the mean +/- 2 s.d. of that baseline window; this
+    rule is not in the paper and is a standard choice, shown also with 3 s.d. Reproduced when,
+    under one reading, both forepaws and the nose have onsets before 0 and the jaw and pupil
+    diameter after 0.
+- id: fig6b-motor-somatosensory-after-reward
+  statement: In the example session, MOs activity returned quickly to baseline after the pull,
+    while MOp and the upper-limb and nose somatosensory areas (SSp-ul, SSp-n) stayed slightly
+    above baseline after reward delivery.
+  source: Technical Validation, paragraph 5; Figure 6b
+  quote: The secondary motor cortex (MOs) quickly recovered to the baseline level. In contrast, the
+    primary motor (MOp) and somatosensory cortex (SSpul and SSpn) showed slightly higher activity
+    than the baseline level after the reward delivery.
+  criterion: The example session is not identified; readings (a) and (b) for sessions and pulls
+    as in fig6b-movement-order. Trial-averaged corrected dF/F aligned to lever-pull onset,
+    baseline the mean over -1 to 0 s. After reward is read as (a) 1 to 3 s after onset (to the
+    end of the Figure 6c range), (b) 0.5 to 2 s after reward delivery in successful trials.
+    The hemisphere is not given, read as left (contralateral to the pulling forelimb), right,
+    and their mean. Reproduced when, under one reading, MOs's post-reward mean minus baseline is
+    smaller than each of MOp's, SSp-ul's and SSp-n's, and those three are above baseline. As
+    the paper states it for its example session only, when no reading holds the claim is
+    blocked as methods_underspecified, as in fig6b-movement-order.
+- id: fig6b-sensory-areas-track-pupil
+  statement: In the example session, OB, RSPagl, AUDs and VISp had activity time courses that
+    closely matched pupil dilation.
+  source: Technical Validation, paragraph 5; Figure 6b
+  quote: Other sensory-related areas (OB, olfactory bulb; RSPagl, retrosplenial area, lateral
+    agranular part; AUDs, secondary auditory areas; VISp, primary visual area) showed activity
+    traces that shared time courses closely matching the pupil dilation.
+  criterion: Readings for sessions, pulls and hemisphere as in
+    fig6b-motor-somatosensory-after-reward, over -1 to 3 s around lever-pull onset. The paper gives no measure of the match; the
+    reading here is the contrast the paragraph draws, motor and somatosensory areas tracking the
+    lever and these areas tracking the pupil. Reproduced when, under one reading, each of the
+    four areas' trial-averaged traces has a higher Pearson correlation with the trial-averaged
+    pupil diameter than with the trial-averaged lever position, and MOp's does not. As the
+    paper states it for its example session only, when no reading holds the claim is blocked
+    as methods_underspecified, as in fig6b-movement-order.
+- id: fig6b-variability-decrease
+  statement: Cortical activity varied less across trials after lever-pull onset than before it.
+  source: Technical Validation, paragraph 5; Figure 6b
+  quote: The data also revealed a decrease in activity variability after the lever-pull onset,
+    exemplifying how stereotypic movements like lever-pull constrain cortical activity.
+  criterion: Readings for sessions and pulls as in fig6b-movement-order. Variability is the
+    across-trial s.d. of the corrected dF/F at each time point, averaged over a window, per ROI;
+    before is -1 to 0 s, after is read as (a) 0 to 1 s, (b) 0 to 3 s. The paper names no test;
+    reproduced when, under one reading, the after value is lower than the before value in more
+    than half of the 44 ROIs, with a Wilcoxon signed-rank test over ROIs at p < 0.05 reported.
+    As the paper states it for its example session (Figure 6b), when no reading holds the
+    claim is blocked as methods_underspecified, as in fig6b-movement-order.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - training-breaks. The criterion defined a break as two or more days and then named one-day gaps as an open reading, which contradicted it; the break definition is now the open detail with readings (a) one or more days and (b) two or more days, both from the text. Added the choice of day 16 for the 8 mice with two sensory-mapping sessions (first, as Figure 4 uses, or last).
+  - fig4d-visual-map and fig4d-tactile-map. Removed the requirement that the peak hold in more than half of the mice, which no part of the paper sets; the finding rests on the animal-averaged map of Figure 4d, and the per-mouse count is now reported only.
+  - figs2b-no-aberrant-transients. Added the signal as an open detail (corrected dF/F or uncorrected ΔF_B/F_B), as the Figure S2b legend says only ΔF/F and the band-pass filter of the correction changes transient prominence.
+  - fig6b-movement-order, fig6b-motor-somatosensory-after-reward, fig6b-sensory-areas-track-pupil, fig6b-variability-decrease. The paper states these for one unidentified example session ("In this particular session", "at least in this session"), so a result over all sessions that does not hold cannot contradict it; when no reading holds, the claim is now blocked as methods_underspecified, not judged not reproduced.
+  - Open, fig6b-movement-order. The baseline window (-1 to -0.5 s) and the onset rule (2 or 3 s.d.) are not in the paper; they are named as such in the criterion and could change the outcome.
+  - Open, fig3e-cluster-a-high-tpull. Cluster A is identified as the cluster with the higher mean T_pull_final, so part (2) of the criterion (higher late T_pull_final) follows largely from that labelling; the paper gives no other way to name the clusters.
+  - Open, fig3c-success-rate-constant, fig3e-cluster-b-similar-rates, methods-no-signal-degradation, fig6b-variability-decrease. The paper gives no test or bound for "constant", "similar", "not observed" or "decrease"; the readings in the criteria are the file's, run side by side, with disagreement blocking the claim.
+  - Open, fig4ab-landmark-validation and fig5abc-dlc-error. The manual annotations these rest on are not described as deposited; the claims are blocked unless they are found.
+  - Open, Table 1 to 4 contents are not in the text and no PDF was available, so the per-type session counts and keypoint names could not be checked.

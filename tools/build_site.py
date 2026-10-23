@@ -48,10 +48,14 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = Path(__file__).resolve().parent / "site_assets"
-REPO_URL = "https://github.com/catalystneuro/reproduction-registry"
-SITE_URL = "https://catalystneuro.github.io/reproduction-registry/"
-SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of neuroscience papers from their open data on the "
-                    "DANDI Archive, and record every outcome and what they find about the data.")
+REPO_URL = "https://github.com/catalystneuro/encore"
+CN_URL = "https://www.catalystneuro.com"
+# Encore Science is the project: the `encore` tool (docs/encore.md) and this site, the Encore registry.
+SITE_NAME = "Encore Science"
+ENCORE_DOCS = REPO_URL + "/blob/main/docs/encore.md"
+SITE_URL = "https://encorescience.org/"
+SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of papers from their open data, and record every "
+                    "outcome and what they find about the data.")
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from datasets import ARCHIVES, archive_name, key_of, split_key, targets as all_targets  # noqa: E402
@@ -65,6 +69,14 @@ def page_of(key: str) -> str:
 
 
 # GitHub's mark (Octicons, mark-github), drawn in the text colour.
+# The site's mark, drawn like the favicon: a loop that comes back round, a result run again, with a tick inside it.
+# The loop takes the text colour and the tick the brand colour, so it suits both themes.
+ENCORE_MARK = ('<svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">'
+               '<path d="M21.6 8.3A9.5 9.5 0 1 0 25.5 16" fill="none" stroke="currentColor" stroke-width="2.8" '
+               'stroke-linecap="round"/><path d="M18.9 10.7 24.1 5.5 24.7 11.3z" fill="currentColor" '
+               'stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path class="tick" '
+               'd="M11.3 16.3l3.3 3.3 5.9-6.8" fill="none" stroke-width="3" stroke-linecap="round" '
+               'stroke-linejoin="round"/></svg>')
 GITHUB_MARK = ('<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 '
                '8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 '
                '3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2'
@@ -297,7 +309,7 @@ def pipeline_inputs() -> dict:
     (papers/manifest.yaml), each claims file's last check, and each attempt's open questions."""
     manifest = ROOT / "papers" / "manifest.yaml"
     papers = (load_yaml(manifest) or {}).get("targets", {}) if manifest.is_file() else {}
-    checks, questions = {}, {}
+    checks, questions, items = {}, {}, {}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         last = ((load_yaml(path) or {}).get("checks") or [None])[-1]
         checks[key_of_dir(path.parent.name)] = {"ready": None if last is None else bool(last.get("ready")),
@@ -306,7 +318,9 @@ def pipeline_inputs() -> dict:
         q = load_yaml(path) or []
         q = q.get("questions", []) if isinstance(q, dict) else q
         questions[key_of_dir(path.stem)] = sum(1 for x in q if not x.get("answered"))
-    return {"papers": {key_of_dir(str(k)): v for k, v in papers.items()}, "checks": checks, "questions": questions}
+        items[key_of_dir(path.stem)] = json.loads(json.dumps(q, default=str))   # YAML dates as text, for the JSON
+    return {"papers": {key_of_dir(str(k)): v for k, v in papers.items()}, "checks": checks, "questions": questions,
+            "question_items": items}
 
 
 def finish(data: dict) -> dict:
@@ -444,6 +458,39 @@ PIPELINE_STEPS = [("paper", "Paper"), ("claims", "Claims"), ("check", "Claims ch
                   ("attempt", "Attempt"), ("questions", "Questions"), ("verified", "Verified")]
 
 
+def queue_estimates(q: dict) -> dict[str, dict]:
+    """Each queued dataset's place in its runner's queue, and how many hours from now it should be done.
+
+    The lanes take the datasets in order, each taking the median time of a recent chain (the runs' times,
+    `tools/runner/describe.py queue`). A lane is free when the chain it has going now should be done
+    (q["running"]), and without those times the chains going now are taken to be half done. A dataset in
+    both queues gets the full runner's estimate."""
+    out = {}
+    for kind in ("claims", "full"):
+        hours = (q.get("hours") or {}).get(kind)
+        n = max(1, (q.get("lanes") or {}).get(kind, 1))
+        if "running" in q:
+            going = sorted(r["hours"] or 0.0 for r in q["running"].values() if r["kind"] == kind)
+            free = (going + [0.0] * n)[:n]
+        else:
+            free = [hours / 2 if hours else 0.0] * n
+        for place, folder in enumerate(q.get(kind, []), 1):
+            lane = free.index(min(free))
+            free[lane] += hours or 0.0
+            out[key_of_dir(folder)] = {"kind": kind, "place": place, "hours": free[lane] if hours else None}
+    return out
+
+
+def in_hours(hours: float | None) -> str:
+    if hours is None:
+        return ""
+    if hours < 1:
+        return "within the hour"
+    if hours < 1.5:
+        return "about an hour"
+    return f"about {round(hours)} hours" if hours < 48 else f"about {round(hours / 24)} days"
+
+
 def pipeline_rows(data: dict) -> list[dict]:
     """One row per target: the state of each step of docs/pipeline.md, read from the repository.
 
@@ -451,6 +498,9 @@ def pipeline_rows(data: dict) -> list[dict]:
     pass), "todo", "deprecated", or "none" (a step that does not apply)."""
     inputs = data.get("pipeline") or {"papers": {}, "checks": {}, "questions": {}}
     current = current_attempts(data)
+    queued = queue_estimates(data.get("queue") or {})
+    branches = {key_of_dir(f) for f in (data.get("queue") or {}).get("branches", [])}
+    going = {key_of_dir(f): r for f, r in ((data.get("queue") or {}).get("running") or {}).items()}
     out = []
     for t in data["targets"]:
         d = t["key"]
@@ -484,7 +534,8 @@ def pipeline_rows(data: dict) -> list[dict]:
         out.append({"dataset": t["label"], "key": d, "name": t["name"], "state": state, "next": nxt,
                     "issue": data.get("issues", {}).get(t["label"]),
                     "waiting": [label for key, label in PIPELINE_STEPS if state[key][0] == "waiting"],
-                    "missing": missing, "page": page_of(d) if atts or d in data.get("claim_files", {}) else None})
+                    "missing": missing, "page": page_of(d) if atts or d in data.get("claim_files", {}) else None,
+                    "queue": queued.get(d), "branch": d in branches, "running": going.get(d)})
     return out
 
 
@@ -624,12 +675,26 @@ def statistic_text(s: dict) -> str:
     return text + (f' (n = {s["n"]})' if s.get("n") else "")
 
 
-def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
+def by_outcome(outcomes: list[dict], root: str, attempt: dict | None = None, asked: dict | None = None) -> str:
+    """Claims under a heading for each outcome, reproduced first, then partially, not reproduced and blocked."""
+    html = ""
+    for outcome in ("reproduced", "partially_reproduced", "not_reproduced", "blocked"):
+        mine = [o for o in outcomes if o["outcome"] == outcome]
+        if mine:
+            html += (f'<div class="outcome-group" data-outcome="{outcome}"><h4 class="outcome-head">{chip(outcome)}'
+                     f'<span class="count">{len(mine)}</span></h4>'
+                     f'<ul class="claims">{"".join(claim_item(o, root, attempt, asked) for o in mine)}</ul></div>')
+    return html
+
+
+def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | None = None) -> str:
     """One claim as an accordion: the outcome and statement show, the explanation opens on a click."""
     blocked = f'<span class="why">· {e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
         if o["blocked_by"] else ""
     source = f'<span class="source">{e(o["source"])}</span>' if o["source"] else ""
     tags = '<span class="tag">verifier disagreed at first</span>' if o["disagreed"] else ""
+    if asked and o["claim"] in asked:
+        tags += f'<a class="tag" href="#question-{asked[o["claim"]]}">question to the reader</a>'
     if o.get("kind") == "link":
         tags += '<span class="tag">checks the link to the paper’s data</span>'
     elif o.get("data") == "with_inputs":
@@ -689,14 +754,14 @@ def head_tags(data: dict, title: str, path: str, description: str, structured: d
         f'<meta name="description" content="{e(description)}">',
         f'<link rel="canonical" href="{e(url)}">',
         '<meta property="og:type" content="website">',
-        '<meta property="og:site_name" content="Reproduction registry">',
+        f'<meta property="og:site_name" content="{SITE_NAME}">',
         f'<meta property="og:title" content="{e(title)}">',
         f'<meta property="og:description" content="{e(description)}">',
         f'<meta property="og:url" content="{e(url)}">',
         f'<meta property="og:image" content="{card}">',
         '<meta property="og:image:width" content="1200">',
         '<meta property="og:image:height" content="630">',
-        '<meta property="og:image:alt" content="Reproduction registry: can the findings of a paper be reproduced '
+        f'<meta property="og:image:alt" content="{SITE_NAME}: can the findings of a paper be reproduced '
         'from its open data?">',
         '<meta name="twitter:card" content="summary_large_image">',
         f'<meta name="twitter:title" content="{e(title)}">',
@@ -735,14 +800,15 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <link rel="apple-touch-icon" href="{root}assets/favicon-180.png">
 <link rel="stylesheet" href="{root}{asset("app.css")}"></head><body>
 {banner}<nav class="top" aria-label="Sections"><div class="wrap">
-  <a class="brand" href="{home}">Reproduction registry</a>{nav}
+  <a class="brand" href="{home}">{ENCORE_MARK}<span>{SITE_NAME}</span></a><a class="by" href="{CN_URL}">by CatalystNeuro</a>{nav}
   <a class="tab icon" href="{REPO_URL}" aria-label="The registry on GitHub" title="The registry on GitHub">{GITHUB_MARK}</a>
+  <a class="tab ext" href="{ENCORE_DOCS}" title="Run the same check on your own data with the encore command">Check your data</a>
   <a class="tab ext" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a>
   <button class="theme" id="theme" type="button" aria-label="Colour theme: auto. Change theme" title="Colour theme"><span aria-hidden="true">◐</span><span class="t">Auto</span></button>
 </div></nav>
 <div class="wrap">
 {body}
-<footer>Generated {e(data["generated"][:10])} from the registry's files ·
+<footer>{SITE_NAME} is developed by <a href="{CN_URL}">CatalystNeuro</a>. Generated {e(data["generated"][:10])} from the registry's files ·
 <a href="{root}registry.json">Data as JSON</a> · <a href="{REPO_URL}">Repository</a> ·
 <a href="{REPO_URL}/blob/main/docs/design.md">How it works</a>. Outcomes describe what one attempt could reproduce from
 the data in the dataset, with the methods available. A failure to reproduce may be a failure of the agent, and is not
@@ -971,10 +1037,12 @@ def page_overview(data: dict) -> str:
     dashboard = progress_panel(data)
     redirect = json.dumps({a["id"]: a["key"] for a in data["attempts"]})
     body = f'''<header class="page" id="top">
+  <div class="eyebrow">The Encore registry</div>
   <h1>Can the findings of a paper be reproduced from its open data?</h1>
-  <p class="lede">AI agents try to reproduce the key findings of papers from their open data on the
-  <a href="https://dandiarchive.org">DANDI Archive</a>. Independent agents check each attempt, and every finding gets
-  an outcome, whether or not it reproduced. <a href="about/">How it works</a></p>
+  <p class="lede">AI agents try to reproduce the key findings of papers from their open data. Independent agents check
+  each attempt, and every finding gets
+  an outcome, whether or not it reproduced. <a href="about/">How it works</a> ·
+  <a href="{ENCORE_DOCS}">Run the same check on your own data</a></p>
   {"" if dashboard else f'<div class="tiles">{tile_html}</div>'}
 </header>
 <main>
@@ -994,11 +1062,11 @@ def page_overview(data: dict) -> str:
                'if(h&&m[h[1]])location.replace(m[h[1]]);})();</script>'
                + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
     structured = {
-        "@context": "https://schema.org", "@type": "WebSite", "name": "Reproduction registry",
+        "@context": "https://schema.org", "@type": "WebSite", "name": SITE_NAME, "alternateName": "The Encore registry",
         "url": SITE_URL, "description": SITE_DESCRIPTION,
         "publisher": {"@type": "Organization", "name": "CatalystNeuro", "url": "https://www.catalystneuro.com"},
     }
-    return shell(data, "Reproduction registry: can the findings of a paper be reproduced from its open data?", "",
+    return shell(data, f"{SITE_NAME}: can the findings of a paper be reproduced from its open data?", "",
                  "overview", body, scripts, path="", structured=structured)
 
 
@@ -1073,6 +1141,7 @@ var rank={done:0,waiting:1,deprecated:2,todo:3,none:4};
 var state={q:'',step:'',st:'',col:-1,dir:1,page:1,size:50};
 var $=function(id){return document.getElementById(id);};
 function key(tr,col){var td=tr.cells[col],t=td.textContent.trim();
+  if(td.dataset.sort!==undefined)return [0,td.dataset.sort];
   return td.classList.contains('ps')?[rank[td.className.split(' ')[1]],t]:[0,t];}
 function cmp(a,b){return a[0]-b[0]||a[1].localeCompare(b[1],undefined,{numeric:true,sensitivity:'base'});}
 function shown(tr){
@@ -1140,9 +1209,23 @@ def page_pipeline(data: dict) -> str:
         cells = "".join(f'<td class="ps {e(r["state"][key][0])}" title="{e(r["state"][key][0])}">'
                         f'{e(r["state"][key][1])}</td>' for key, _ in PIPELINE_STEPS)
         states = " ".join(f'data-{key}="{e(r["state"][key][0])}"' for key, _ in PIPELINE_STEPS)
+        q = r["queue"]
+        if r["running"]:
+            place, sort = "running now", -1
+            when, hours = in_hours(r["running"]["hours"]), r["running"]["hours"]
+        elif r["branch"]:
+            place, sort, when, hours = "branch open", 0, "", None
+        elif q:
+            place = f'{q["place"]:,} for {"an attempt" if q["kind"] == "full" else "claims"}'
+            sort = q["place"] + (0 if q["kind"] == "full" else 100000)
+            when, hours = in_hours(q["hours"]), q["hours"]
+        else:
+            place, sort, when, hours = "", 999999, "", None
         body += (f'<tr {states}><td>{name}</td>'
                  f'<td class="pname">{e(r["name"])}</td>{cells}<td class="small">{e(r["next"])}'
-                 + (f' · <a href="{e(r["issue"])}">waiting on you</a>' if r["issue"] else "") + '</td></tr>')
+                 + (f' · <a href="{e(r["issue"])}">waiting on you</a>' if r["issue"] else "") + '</td>'
+                 f'<td class="small" data-sort="{sort}">{e(place)}</td>'
+                 f'<td class="small" data-sort="{999999 if hours is None else round(hours * 10)}">{e(when)}</td></tr>')
     waiting = [r for r in rows if r["waiting"]]
     papers_missing = sum(len(r["missing"]) for r in waiting)
     charted = {key: {} for key, _ in PIPELINE_STEPS}
@@ -1154,6 +1237,24 @@ def page_pipeline(data: dict) -> str:
     step_opts = "".join(f'<option value="{key}">{e(label)}</option>' for key, label in PIPELINE_STEPS)
     state_opts = "".join(f'<option value="{st}">{e(name)}</option>' for st, name in TABLE_STATES)
     updated = datetime.datetime.fromisoformat(data["generated"]).strftime("%Y-%m-%d %H:%M UTC")
+    q = data.get("queue") or {}
+    queue_note = ""
+    if q.get("full") is not None:
+        hours, lanes = q.get("hours") or {}, q.get("lanes") or {}
+        def part(kind: str, what: str) -> str:
+            n, h, k = len(q.get(kind, [])), hours.get(kind), lanes.get(kind, 1)
+            each = (f", at about {h:.1f} hours each" if h and h >= 1 else f", at about {round(h * 60)} minutes each" if h
+                    else "")
+            return (f'{n:,} dataset{" waits" if n == 1 else "s wait"} for {what} on {k} lane{"s" if k != 1 else ""}{each}'
+                    + (f', about {in_hours(n * h / k).removeprefix("about ")} in all' if h and n else ""))
+        n_going = len(q.get("running") or {})
+        going_note = (f' {n_going:,} chain{" is" if n_going == 1 else "s are"} running now, and the Done in column '
+                      'estimates when each will finish from how long the rest of a chain usually takes after the '
+                      'role it is on. A branch with nothing running is waiting, on a person or a merge, and has no '
+                      'estimate.' if "running" in q else "")
+        queue_note = (f' {part("full", "an attempt")}, and {part("claims", "their claims to be read")}. '
+                      'The Queue and Done in columns give each dataset’s place and a rough estimate of when it '
+                      f'will be done, counted from the last update.{going_note}')
     n_issues = len(data.get("issues", {}))
     issues_note = (f' The runner has stopped on <a href="{REPO_URL}/issues?q=is%3Aissue+is%3Aopen+label%3Aneeds-you">'
                    f'{n_issues:,} dataset{"s" if n_issues != 1 else ""}</a> that need a person.' if n_issues else "")
@@ -1163,7 +1264,7 @@ def page_pipeline(data: dict) -> str:
   <a href="{REPO_URL}/blob/main/docs/pipeline.md">pipeline</a>: its paper, the claims read from it and their
   check, the attempt, the questions it raised, and verification. {len(waiting):,} targets are waiting on a person,
   with {papers_missing:,} papers to supply; the list of missing papers is in
-  <a href="{REPO_URL}/blob/main/papers/manifest.yaml">papers/manifest.yaml</a>.{issues_note}</p>
+  <a href="{REPO_URL}/blob/main/papers/manifest.yaml">papers/manifest.yaml</a>.{issues_note}{queue_note}</p>
   <p class="small muted">Last updated <time id="updated" datetime="{e(data["generated"])}">{e(updated)}</time>.
   The page is rebuilt whenever main changes.</p>
 </header>
@@ -1175,7 +1276,7 @@ def page_pipeline(data: dict) -> str:
   <strong id="pcount" aria-live="polite"></strong>
 </div>
 <div class="panel pipeline-wrap"><table class="pipeline">
-<thead><tr><th>{sort_button("Dataset")}</th><th>{sort_button("Name")}</th>{head}<th>{sort_button("Next")}</th></tr></thead>
+<thead><tr><th>{sort_button("Dataset")}</th><th>{sort_button("Name")}</th>{head}<th>{sort_button("Next")}</th><th>{sort_button("Queue")}</th><th>{sort_button("Done in")}</th></tr></thead>
 <tbody>{body}</tbody></table></div>
 <nav class="pager" id="ppager" aria-label="Pages"></nav></main>
 <script>
@@ -1223,7 +1324,7 @@ def page_about(data: dict) -> str:
       claims and the reasoning behind each outcome.</p></div>
   </div>
 </main>'''
-    return shell(data, "How the registry works · Reproduction registry", root, "about", body, path="about/",
+    return shell(data, f"How the registry works · {SITE_NAME}", root, "about", body, path="about/",
                  description="How AI agents attempt to reproduce papers from their open data on the DANDI Archive: "
                              "the claims, the author and verifier roles, and where the agents run.")
 
@@ -1287,7 +1388,7 @@ def page_list(data: dict, kind: str) -> str:
 </main>'''
     scripts = (f'<script type="application/json" id="list-config">{json.dumps(config)}</script>'
                f'<script src="../{asset("list.js")}"></script>')
-    return shell(data, f'{spec["title"]} · Reproduction registry', "../", kind, body, scripts, path=f"{kind}/",
+    return shell(data, f'{spec["title"]} · {SITE_NAME}', "../", kind, body, scripts, path=f"{kind}/",
                  description=spec["intro"])
 
 
@@ -1305,7 +1406,7 @@ return '<button type="button" data-f="'+l[0]+'">'+l[1]+' <span class="count">'+n
 function draw(){var shown=items.filter(match),pages=Math.max(1,Math.ceil(shown.length/PER));
 if(state.p>=pages)state.p=pages-1;var page=shown.slice(state.p*PER,(state.p+1)*PER);
 items.forEach(function(li){li.hidden=page.indexOf(li)<0;});
-[].slice.call(panel.querySelectorAll('.claim-group')).forEach(function(g){
+[].slice.call(panel.querySelectorAll('.claim-group,.outcome-group')).forEach(function(g){
 g.hidden=!g.querySelector('li.claim:not([hidden])');});
 [].slice.call(bar.querySelectorAll('button')).forEach(function(b){b.setAttribute('aria-pressed',b.dataset.f===state.f);});
 if(pages<2){pager.innerHTML='';return;}
@@ -1372,7 +1473,7 @@ def dandiset_title(dandiset: str, atts: list[dict]) -> str:
     """The page title: the paper when there is one, then the dandiset."""
     titles = {a["paper_title"] for a in atts if a.get("paper_title")}
     paper = titles.pop() if len(titles) == 1 else None
-    return f"{paper} ({dataset_label(dandiset)}) · Reproduction registry" if paper else f"{dataset_label(dandiset)} · Reproduction registry"
+    return f"{paper} ({dataset_label(dandiset)}) · {SITE_NAME}" if paper else f"{dataset_label(dandiset)} · {SITE_NAME}"
 
 
 def dandiset_description(dandiset: str, atts: list[dict]) -> str:
@@ -1400,7 +1501,15 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
     target = next((t for t in data["targets"] if t["key"] == dandiset), None)
     counts = outcome_counts(atts)
     n = sum(counts.values())
-    order = {"not_reproduced": 0, "partially_reproduced": 1, "reproduced": 2}
+    order = {"reproduced": 0, "partially_reproduced": 1, "not_reproduced": 2}
+
+    # Questions the author asked a reader about the claims file (docs/protocol.md, Author, step 6), with answers.
+    questions = (data.get("pipeline") or {}).get("question_items", {}).get(dandiset, [])
+    asked: dict = {}
+    for i, q in enumerate(questions, 1):
+        for c in [q.get("claim"), *(q.get("also") or [])]:
+            if c:
+                asked.setdefault(c, i)
 
     # Claims, grouped by paper when the dandiset has attempts on more than one.
     claims_html = ""
@@ -1423,7 +1532,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
             claims_html += (f'<div class="claim-group"><h3 style="margin-top:18px">{title} '
                             f'<span class="count">{len(mine)}</span></h3>'
                             f'<p class="sub small" style="margin:2px 0 0">Notebook <code>{e(nb["path"])}</code>'
-                            f'</p><ul class="claims">{"".join(claim_item(o, root, a) for o in mine)}</ul></div>')
+                            f'</p>{by_outcome(mine, root, a, asked)}</div>')
         listed = {n["path"] for n in a["notebooks"]}
         blocked = [o for o in a["outcomes"] if o.get("notebook") not in listed]
         if blocked:
@@ -1434,7 +1543,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
             claims_html += (f'<details class="group claim-group" open><summary><h3>Not tested in a notebook '
                             f'<span class="count">{len(blocked)}</span></h3>'
                             f'<span class="muted small">{e(why)}</span></summary>'
-                            f'<ul class="claims">{"".join(claim_item(o, root, a) for o in blocked)}</ul></details>')
+                            f'{by_outcome(blocked, root, a, asked)}</details>')
 
     all_findings = [f for a in atts for f in a["findings"]]
     findings_html = "".join(
@@ -1564,7 +1673,32 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
                       f'outcomes.' + (" Its notebooks link to the entry as it is now, which the later attempt "
                                       "updated; the attempt record is as it was." if same_entry else "") + "</p>")
 
+    claim_ids = {o["claim"] for a in atts for o in a["outcomes"]}
+    question_items = ""
+    for i, q in enumerate(questions, 1):
+        claims = [c for c in [q.get("claim"), *(q.get("also") or [])] if c]
+        links = ", ".join(f'<a href="#claim-{e(c)}"><code>{e(c)}</code></a>' if c in claim_ids else f"<code>{e(c)}</code>"
+                          for c in claims)
+        state = (f'<span class="tag">answered {e(str(q["answered"]))}</span>' if q.get("answered")
+                 else '<span class="tag open">open</span>')
+        answer = squash(q.get("answer") or "")
+        question_items += (
+            f'<li class="question" id="question-{i}"><div class="q-head">{state}'
+            f'<span>asked {e(str(q.get("asked") or ""))}</span><span>about {links}</span></div>'
+            f'<p class="q-text">{e(squash(q.get("question") or ""))}</p>'
+            + (f'<p class="notes"><strong>Passage.</strong> {e(squash(q["passage"]))}</p>' if q.get("passage") else "")
+            + (f'<p class="notes"><strong>Why it matters.</strong> {e(squash(q["why"]))}</p>' if q.get("why") else "")
+            + (f'<div class="answer"><strong>The reader’s answer.</strong> {e(answer)}</div>' if answer
+               else '<div class="answer open">No reader has answered it yet.</div>')
+            + "</li>")
+    questions_panel = (f'<section class="tabpanel" id="questions"><h2>Questions</h2>'
+                       f'<p class="sub small" style="margin-top:12px">Where the claims file did not say how to test a '
+                       f'claim, the author asked, citing the paper, and a reader who had not seen the data answered '
+                       f'from the paper alone. The author then ran the claim as answered.</p>'
+                       f'<ul class="questions">{question_items}</ul></section>') if questions else ""
+
     tab_defs = [("claims", "Claims", n), ("findings", "Findings about the data", len(all_findings)),
+                *([("questions", "Questions", len(questions))] if questions else []),
                 ("notebooks", "Notebooks", n_notebooks), ("verification", "Verification", n_rounds),
                 ("differences", "Method differences", len(deviations)), ("provenance", "Provenance", None)]
     tab_buttons = ""
@@ -1597,6 +1731,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
     <p class="sub small" style="margin-top:12px">What attempts found about the dataset itself, for its owner and the
     archive.</p>
     <ul class="findings">{findings_html}</ul></section>
+  {questions_panel}
   <section class="tabpanel" id="notebooks"><h2>Notebooks</h2>
     <p class="sub small" style="margin-top:12px">Every registered entry that uses this dataset. An entry can hold
     several notebooks, and can use more than one dataset.</p>
@@ -1677,7 +1812,7 @@ def page_claims(data: dict, key: str) -> str:
   <section class="panel"><h2>Claims <span class="count">{n}</span></h2>{claims_html}</section>
   <section class="panel" style="margin-top:28px"><h2>Pipeline</h2><dl class="kv" style="margin-top:14px">{steps}</dl></section>
 </main>'''
-    return shell(data, f"{dataset_label(key)} · Reproduction registry", root, "datasets", body, path=page_of(key),
+    return shell(data, f"{dataset_label(key)} · {SITE_NAME}", root, "datasets", body, path=page_of(key),
                  description=f"The claims read from the paper of dataset {dataset_label(key)} on "
                              f"{archive_name(key)}, before an attempt to reproduce them.")
 
@@ -1765,6 +1900,8 @@ def main() -> int:
                         help="build from N made-up attempts, to test the site at scale; never publish")
     parser.add_argument("--issues", type=Path, metavar="JSON",
                         help="the open needs-you issues (gh issue list --json title,url), to link from the pipeline")
+    parser.add_argument("--queue", type=Path, metavar="JSON",
+                        help="the runners' queues and chain times (tools/runner/describe.py queue), for the pipeline")
     parser.add_argument("--noindex", action="store_true",
                         help="keep the pages out of search results, for a preview of a pull request")
     args = parser.parse_args()
@@ -1773,6 +1910,8 @@ def main() -> int:
     if args.demo:
         data = demo(data, args.demo)
     data["noindex"] = args.noindex
+    if args.queue and args.queue.is_file():
+        data["queue"] = json.loads(args.queue.read_text())
     if args.issues and args.issues.is_file():
         # An issue's title is "<dataset label>: waiting on you" (tools/notify.py).
         data["issues"] = {i["title"].rsplit(": waiting on you", 1)[0]: i["url"]

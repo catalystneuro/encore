@@ -1,0 +1,534 @@
+# Claims for Buccino, Damart, Bartram, ... Hierlemann & Van Geit (2024) on dandiset 000294.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record (Neural Computation 36, 1286-1331, 2024, CC BY 4.0), from the
+# PDF supplied to paper/ and its text extraction: main text, Methods (section 5), Tables 1 to 5
+# and the appendix (Figures 9 and 10). The paper has no separate supplement.
+#
+# Code read: github.com/alejoe91/multimodalfitting at commit 24e8e6168b2d5be45c551bcc08b62fde187d01c7
+# (2025-04-12), the repository the Data and Code Availability section names. It holds the package
+# (ecode protocols, feature extraction, the patch and HD-MEA sync and patch-triggered average in
+# mea_patch/mea_patch.py, model and evaluator construction), the optimization script
+# (scripts/run_optimizations.py, 20 offspring and 600 generations by default), the notebooks that
+# make the figures (notebooks/ground-truth and notebooks/experimental/cell1, cell2, notebook
+# outputs stripped), and cell_models/ with the ground-truth model (hay_ais) and the two
+# experimental models: morphology_corrected.swc, mechanisms, parameters, and fitting/efeatures with
+# the extracted feature and protocol files, the thresholded probe and the template_BPO.npy
+# template of each cell. No optimization results (checkpoints, runs.pkl) are in the repository.
+# The BluePyOpt extensions are in BluePyOpt pull request 385, release 1.13.88 (not read).
+# In the code, cell 1 is "cell1_211006_3148" and cell 2 is "cell1_211011_3436" (the cell1 and
+# cell2 notebook folders; the cell2 feature notebook still shows the cell 1 name in its first
+# cell, the other cell2 notebooks use 211011_3436).
+#
+# Data the paper describes. Two neurons of rat cortical cultures (Wistar, embryonic day 18,
+# dissociated, plated on the HD-MEA), recorded at DIV 18 to 24 (Methods 5.6.3; the Results say
+# DIV 18 to 21 in one place and 18 to 24 in another). Simultaneous whole-cell current-clamp patch
+# recording (MultiClamp 700B, low-pass 10 kHz, digitized 20 kHz, WinWCP) and HD-MEA recording
+# (26,400 electrodes, 17.5 um pitch, up to 1024 recorded at once at 20 kHz, more than 500 near the
+# pipette), synchronized by TTL pulses sent at the start of each sweep. Holding current set for a
+# read-out membrane potential of about -70 mV (about -84 mV after the 14 mV liquid junction
+# potential correction). The eCode protocols (IDthres, firepattern, IV, IDrest, APWaveform,
+# HyperDepol, sAHP, PosCheops), with amplitudes in percent of a roughly estimated rheobase, were
+# run four to six times per cell (runs of about 200 s). The dandiset's description (two NWB files,
+# one per neuron, several runs of 8 eCode protocols, with intracellular voltage, stimulus current
+# and extracellular voltage) matches this. The code (0-export-to-nwb.ipynb) exported runs 1 to 5
+# of cell 1 and runs 3 to 6 of cell 2 (renamed run1 to run4), with response and stimulus series
+# named response_<protocol>_<run>_<sweep> and stimulus_<protocol>_<run>_<sweep>, and a confocal
+# maximum z-projection in a processing module. Measured variables are the somatic membrane
+# potential (V), the injected current (A) and the extracellular voltages per electrode.
+#
+# Outside data. The ground-truth results (section 3.2, Figures 3 to 5, Table 1) are simulations
+# of a model held in the code repository (cell_models/hay_ais), not recordings; those claims are
+# data elsewhere. The experimental model fits (Figures 7, 8, 10) use the dataset's recordings
+# with the reconstructed morphologies (repository cell_models/<cell>/morphology_corrected.swc,
+# also NeuroMorpho.org Buccino_Hierlemann_Cell1 and Buccino_Hierlemann_Cell2) and the model
+# definitions of the repository; those claims are with_inputs. The repository's
+# fitting/efeatures files (features.json, template_BPO.npy) are derived from the recordings and
+# can serve to link the dataset to the files the fits used.
+#
+# Shared method, cited below as "the template method" (Methods 5.7.1 and 3.1, with the code where
+# they are silent). Per run, sync patch and MEA by the TTL pulses; drop saturated channels; filter
+# the MEA signals with a third-order Butterworth band-pass, 300 to 6000 Hz; detect intracellular
+# action potentials with the eFEL peak_time feature (threshold -20 mV, mea_patch.get_peak_times),
+# leaving out PosCheops; cut 2 ms before and 5 ms after each peak; center each waveform on its
+# extracellular negative peak on the largest channel (searched within +/- 2 ms of the patch peak,
+# process_mea_patch default center_ms); discard waveforms whose largest-channel amplitude is more
+# than 2 SD from the median; template is the sample-wise median of the rest; the run whose
+# template keeps the most channels after denoising is used; channels with peak-to-peak below 5 uV
+# are excluded. The Methods say median; the code (process_mea_patch, clean_sta) takes the mean of
+# the kept waveforms, a variant.
+#
+# Shared method, cited below as "the fitting method" (sections 3.1, 3.2, 5.4, 5.5 and the code).
+# Training protocols IDrest 150, 250, 300%, APWaveform 290%, IV -100 and -20%; e-features as listed
+# in Methods 5.4 (BluePyEfe, eFEL); extracellular features (11, Methods 5.1.2) from IDrest 300%
+# for simulations; strategies soma, all (cosine distance per feature over all channels, weighted
+# 2.5), sections, single (7 channels, SD 5% of the mean); hybrid CMA (population 20, hypervolume
+# weight 0.4), 10 seeds, 600 generations. Per seed the solution is the member of the final
+# population with the lowest summed fitness (3-compute-all-responses notebooks). A seed's
+# intracellular score is the sum of its intracellular feature scores, and its extracellular score
+# the sum of the all-strategy extracellular feature scores, both from the all-strategy evaluator
+# on the training protocols (3-compute-all-responses notebooks). The experimental models are the
+# ones without an explicit axon-bearing dendrite (abd False in the code), as the paper treats the
+# ABD as a normal dendrite.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000294"
+paper: doi:10.1162/neco_a_01672
+claims:
+- id: recordings-two-cells-runs
+  statement: The experimental data are simultaneous patch-clamp and HD-MEA recordings of two cultured
+    neurons, each stimulated with the eCode protocols repeated in four to six runs of about 200 s.
+  source: Results 3.3, paragraph 1; Methods 5.2, last paragraph, and 5.6.5
+  quote: We acquired paired patch-clamp and extracellular signals from two cells of cortical cultures
+    in embryonic rats ... The eCode protocols were repeated during four to six runs (each run lasted
+    approximately 200 s)
+  expected:
+  - quantity: recorded neurons
+    value: 2
+    tolerance: 0
+  - quantity: duration of one run
+    value: 200
+    tolerance: 20
+    unit: s
+  criterion: Count the neurons (NWB files) and, per neuron, the runs (the run label in the series
+    names). Reproduced when there are two neurons, each with between 4 and 6 runs (widened by 10% of
+    each bound, 3.6 to 6.6, so 4 to 6 runs), and the median run duration (first to last timestamp
+    of a run's patch series) is within tolerance. The runs the paper's fits used are runs 1 to 5
+    of cell 1 and 3 to 6 of cell 2 (code, 0-export-to-nwb.ipynb); a dataset holding other runs is
+    reported, not judged.
+- id: ecode-protocol-structure
+  statement: Each run applies the eCode protocols with the sweep numbers, step durations and
+    amplitudes (in percent of the estimated rheobase) that the Methods list.
+  source: Methods 5.2
+  quote: 'IDthresh: The purpose of this protocol was to finely screen the current levels to correctly
+    reestimate Irheo before processing. It consisted of 21 sweeps with a 270 ms square pulse of
+    increasing amplitudes from 50% to 130% with step increments of 4%'
+  criterion: Per run, from the stimulus current series, count the sweeps of each protocol and
+    measure step durations and amplitudes (current minus the pre-step holding level). The Methods
+    give IDthres 21 sweeps of 270 ms, 50 to 130% by 4%; firepattern 2 sweeps of 3.6 s at 120 and
+    200%; IV 3 s steps; IDrest 11 sweeps of 1.35 s, 50 to 300% by 25%; APWaveform 50 ms pulses, 200
+    to 350% by 30%; HyperDepol 4 sweeps of 450 ms at -40 to -160% then 270 ms at 100%; sAHP 4
+    sweeps of 250 ms at 40%, 225 ms at 150 to 300% by 50%, 450 ms at 40%; PosCheops three ramps to
+    300% with up and down phases of 4, 2 and 1.33 s. The code's timings (ecodes_cell_timings in the
+    feature notebooks) agree on every duration. For IV the Methods say 11 steps "from -140 to 20%"
+    by 20%, which is 9 steps; the code's feature files list IV -140 to 60% (11 steps). Readings
+    for IV (a) 11 steps, -140 to 60%; (b) 9 steps, -140 to 20%. The 100% scale is the IDthres scale
+    (sweep k at 50 + 4k %), the rough rheobase from which the protocols were generated (Methods
+    5.6.5). Reproduced when, in every run of both cells, all eight protocols are present with these
+    sweep counts and durations (within 10%) and every step amplitude is within 10% of its stated
+    percentage of that scale (IV under either reading). Partially reproduced when counts and
+    durations hold and amplitudes do not.
+- id: holding-potential
+  statement: The holding current was set so that the read-out membrane potential was about -70 mV,
+    which is about -84 mV after liquid junction potential correction.
+  source: Methods 5.6.5, paragraph 1; Methods 5.2
+  quote: the holding current was manually adjusted to obtain a resting membrane potential of around
+    -70 mV (note that with LJP correction, this corresponds to -84 mV)
+  expected:
+  - quantity: read-out membrane potential at holding
+    value: -70
+    tolerance: 7
+    unit: mV
+  criterion: Median membrane potential before the stimulus onset of each sweep (the code's ton, e.g.
+    400 ms for IDrest), median over sweeps per cell. The paper does not say whether the stored
+    voltages are corrected for the junction potential. Readings (a) uncorrected, compared with -70
+    mV; (b) corrected, compared with -84 mV (tolerance 8.4 mV). Reproduced for a cell when its value
+    matches under either reading; reproduced when it holds for both cells.
+- id: extracellular-spikes-above-50uv
+  statement: Only cells whose extracellular spikes were at least 50 uV were kept, so both recorded
+    cells show extracellular spikes of 50 uV or more.
+  source: Methods 5.6.5, paragraph 1
+  quote: We discarded cells with extracellular spikes lower than 50 μV
+  expected:
+  - quantity: minimum extracellular spike amplitude of a kept cell
+    value: 50
+    unit: uV
+  criterion: Template of each cell by the template method. The paper does not say how the spike
+    amplitude was measured. Readings (a) the absolute negative peak on the largest channel; (b) the
+    peak-to-peak amplitude on the largest channel. Reproduced when, for both cells, the amplitude
+    is at least 50 uV under either reading.
+- id: mea-electrodes-and-rates
+  statement: The HD-MEA recorded more than 500 electrodes near the pipette simultaneously, out of at
+    most 1024, at 20 kHz, and the patch signal was digitized at 20 kHz.
+  source: Results 3.1, paragraph 2; Methods 5.6.2 and 5.6.5
+  quote: The patch-clamp and the HD-MEA systems were synchronized so that we could simultaneously
+    acquire the patch-clamp readout and the extracellular signals from more 500 electrodes in
+    proximity of the patch pipette
+  expected:
+  - quantity: MEA sampling rate
+    value: 20000
+    tolerance: 0
+    unit: Hz
+  - quantity: patch sampling rate
+    value: 20000
+    tolerance: 0
+    unit: Hz
+  criterion: From the NWB electrodes table and series rates. Methods 5.2 says APWaveform was meant
+    to be recorded "at high sampling rates (typically 200 kHz)", so the APWaveform patch series may
+    be at 20 or 200 kHz. Reproduced when, for each cell, the number of recorded electrodes is above
+    500 and at most 1024, the MEA rate is 20 kHz, and the patch rate is 20 kHz for every protocol
+    (APWaveform at 20 or 200 kHz).
+- id: culture-age
+  statement: The cultured cells were recorded between days in vitro 18 and 24.
+  source: Methods 5.6.3, paragraph 2; Results 3.3, paragraphs 1 and 2
+  quote: All experiments were conducted between days in vitro (DIVs) 18 and 24
+  expected:
+  - quantity: earliest DIV
+    value: 18
+  - quantity: latest DIV
+    value: 24
+  criterion: From the subject or session metadata, if they give the culture age or the plating
+    date. The paper also writes "experiments performed between DIVs 18 and 21" (Results 3.3).
+    Readings (a) 18 to 24; (b) 18 to 21. Reproduced when the age of both recordings lies in either
+    range, widened by 10% of each bound.
+- id: fig6-ais-from-dendrite
+  statement: In both cells the axon initial segment does not leave the soma but a dendrite (an
+    axon-bearing dendrite).
+  source: Results 3.3, paragraph 2; Figure 6
+  quote: Moreover, for both cells, the AIS did not originate directly from the soma but from one of
+    the dendrites, which is termed an axon-bearing dendrite (ABD
+  data: elsewhere
+  where: NeuroMorpho.org Buccino_Hierlemann_Cell1 and Buccino_Hierlemann_Cell2; GitHub
+    alejoe91/multimodalfitting at commit 24e8e61, cell_models/<cell>/morphology_corrected.swc
+  criterion: In each reconstructed morphology (SWC), the AIS is the path labeled "apic" (type 4,
+    Methods 5.7.2). Reproduced when, in both cells, the first AIS point's parent is a dendrite
+    point (type 3), not the soma (type 1).
+- id: gt-rheobase
+  statement: The ground-truth model's rheobase, estimated with a 270 ms step, is 150 pA.
+  source: Results 3.2, paragraph 4
+  quote: All current amplitudes were computed with respect to the neuron's rheobase current
+    (estimated using a 270 ms step). For our groundtruth model, the rheobase current was 150 pA
+  data: elsewhere
+  where: GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais (model) and
+    notebooks/ground-truth/1-generate-ecode-protocols-and-features-hay_ais.ipynb
+  expected:
+    quantity: ground-truth rheobase
+    value: 150
+    tolerance: 15
+    unit: pA
+  criterion: The lowest amplitude of 270 ms steps that elicits a spike in the released ground-truth
+    model, with the step series of the ground-truth notebook.
+- id: fig3b-ap-initiates-distal-ais
+  statement: In the ground-truth model the action potential starts in the distal AIS and travels
+    back toward the soma.
+  source: Figure 3B; Results 3.2, paragraph 2
+  quote: The AP is initiated at the distal end of the AIS and travels back toward the soma
+  data: elsewhere
+  where: GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais and
+    notebooks/ground-truth/7-AIS-test.ipynb
+  criterion: Simulate the released model with IDrest 300% (7-AIS-test.ipynb) and record the
+    membrane potential at the soma, the middle and the distal AIS, as in Figure 3B; the code plots
+    the average of the spike cutouts aligned on the somatic peaks. The paper does not say how the
+    initiation site is read. Readings (a) the time the averaged AP crosses -20 mV (the code's eFEL
+    threshold); (b) the time of the averaged AP peak. Reproduced when, under both readings, the
+    distal AIS comes first, then the middle AIS, then the soma; with readings that disagree,
+    methods_underspecified.
+- id: fig3a-largest-channel-at-ais
+  statement: On the simulated 80-electrode MEA, the largest extracellular signal is on the electrode
+    closest to the AIS.
+  source: Figure 3A; Results 3.2, paragraph 3
+  quote: The red trace depicts the signal with the largest amplitude, which appears on the electrode
+    closest to the AIS
+  data: elsewhere
+  where: GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais/fitting
+  criterion: The ground-truth template (repository fitting/extracellular/template.npy, or recomputed
+    from the released model on the 20 by 4 probe at 50 um pitch). Reproduced when the channel with
+    the largest peak-to-peak amplitude is the electrode nearest the AIS midpoint in the plane. The
+    paper does not say which amplitude; the largest absolute negative peak is shown as well.
+- id: table1-feature-counts
+  statement: For the ground-truth model, the soma strategy uses 76 intracellular features; all adds
+    11 extracellular features (87), sections adds 33 (109), and single adds 77 (153).
+  source: Table 1; Results 3.2, paragraph 6
+  quote: A total of 76 intracellular features were extracted from these selected protocols ... the
+    all strategy ... adds 11 extracellular features (total = 87). The sections strategy added 33
+    (three sections times 11 extracellular features), and the single strategy added 77 features
+  data: elsewhere
+  where: GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais/fitting/efeatures
+  expected:
+  - quantity: intracellular features
+    value: 76
+    tolerance: 0
+  - quantity: total features, all
+    value: 87
+    tolerance: 0
+  - quantity: total features, sections
+    value: 109
+    tolerance: 0
+  - quantity: total features, single
+    value: 153
+    tolerance: 0
+  criterion: Counted as the objectives of the evaluator per strategy (the code's "num features"
+    cell in 3-compute-all-responses.ipynb). Tolerance 0 as these are counts fixed by design. The
+    Methods 5.4 list "total of 79 features" for optimization; that count is shown as a variant.
+- id: fig4a-strategy-balance
+  statement: On the ground-truth model, soma, all and sections give good intracellular fitness and
+    single worse; single gives the best extracellular fitness and soma the worst.
+  source: Figure 4A; Results 3.2, paragraph 7
+  quote: While the soma, all, and sections strategies appeared to yield low scores (i.e., better
+    fitness) for intracellular features, the single strategy produced solutions with worse
+    intracellular fitness. Conversely, the single strategy yielded the best performance with respect
+    to extracellular features, while the worst performance was achieved by using the soma strategy
+  data: elsewhere
+  where: GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais, scripts and
+    notebooks/ground-truth
+  criterion: Fitting method, 10 seeds per strategy, intracellular and extracellular scores per seed.
+    No test is reported. The paper shows box plots, so the medians over seeds are compared, with
+    means as a variant. Reproduced when single has the highest intracellular median, single the
+    lowest extracellular median and soma the highest extracellular median.
+- id: gt-intracellular-scores
+  statement: Over the ten seeds, the ground-truth fits reach intracellular scores of 62.8 +/- 13.6
+    for soma and 59.3 +/- 17.0 for all.
+  source: Results 3.3, paragraph 3
+  quote: '(intracellular score: GT fitting: 62.8 ± 13.6 for soma and 59.3 ± 17.0 for all'
+  data: elsewhere
+  where: GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais, scripts and
+    notebooks/ground-truth
+  expected:
+  - quantity: mean intracellular score, soma
+    value: 62.8
+    tolerance: 13.6
+  - quantity: mean intracellular score, all
+    value: 59.3
+    tolerance: 17.0
+  criterion: Fitting method, mean over the ten seeds; tolerances are the paper's stated spread (not
+    named as SD or SEM; the SD over seeds is reported for comparison).
+- id: fig4c-hyperdepol-only-single
+  statement: In validation, only the single strategy reproduces that the ground-truth model fires no
+    spike in the depolarizing phase of HyperDepol -160% and one at HyperDepol -40%; soma, all and
+    sections fire at -160%.
+  source: Figure 4C; Results 3.2, paragraph 8
+  quote: 'the soma, all, and sections strategies failed to reproduce the absence of spikes observed
+    in the depolarization phase (second row: HyperDepol (−160%). Only the single ... strategy
+    correctly did not generate a spike for HyperDepol (−160%) and did generate one for HyperDepol (−40%)'
+  data: elsewhere
+  where: GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais, scripts and
+    notebooks/ground-truth
+  criterion: Fitting method; for each strategy the seed with the lowest intracellular score (Figure
+    4C legend, and 3-compute-all-responses.ipynb). Spike count (eFEL, -20 mV) in the 270 ms
+    depolarizing phase of HyperDepol -160% and -40%. Reproduced when the ground truth has 0 and at
+    least 1 spikes, single matches both, and soma, all and sections each fire at -160%.
+- id: fig4b-intra-no-difference
+  statement: On validation protocols (86 intracellular features), the best solutions of the four
+    strategies do not differ in intracellular feature scores.
+  source: Figure 4B, left; Results 3.2, paragraph 8
+  quote: No significant differences were ... detected across strategies (post hoc Mann-Whitney
+    tests with Holm p-value correction)
+  data: elsewhere
+  where: GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais, scripts and
+    notebooks/ground-truth
+  expected:
+    quantity: validation intracellular features
+    value: 86
+    tolerance: 0
+  criterion: A claim of absence. Best-intracellular seed per strategy; validation protocols
+    firepattern, HyperDepol, sAHP, PosCheops; feature score |GT - model| / (0.05 |GT|), a missing
+    model feature set to 50 (4-optimization-performance.ipynb). Test as the paper names it,
+    two-sided Mann-Whitney between strategies with Holm correction. The paper states no alpha and
+    not which pairs; readings (a) soma against each other strategy (3 pairs), (b) all 6 pairs, each
+    at alpha 0.05, the conventional level. Reproduced when no corrected p is below 0.05 under the
+    reading in use; with two readings that disagree, methods_underspecified. The code runs a
+    Conover post hoc test with Holm correction (scikit_posthocs.posthoc_conover); shown as a
+    variant.
+- id: fig4b-extra-better-than-soma
+  statement: On extracellular features computed on all 80 electrodes (796 features), all three
+    extracellular strategies score significantly better than the soma strategy.
+  source: Figure 4B, right; Results 3.2, paragraph 8
+  quote: 'All strategies making use of extracellular data significantly outperformed the soma
+    strategy (post hoc Mann-Whitney tests with Holm p-value correction: soma VS all - p < 10−5, soma
+    VS sections - p < 10−5, soma VS single - p < 10−5'
+  statistics:
+  - about: soma against all
+    test: post hoc Mann-Whitney test
+    p: 0.00001
+    p_relation: "<"
+    corrected: Holm
+    n: 796 extracellular features per strategy
+  - about: soma against sections
+    test: post hoc Mann-Whitney test
+    p: 0.00001
+    p_relation: "<"
+    corrected: Holm
+    n: 796 extracellular features per strategy
+  - about: soma against single
+    test: post hoc Mann-Whitney test
+    p: 0.00001
+    p_relation: "<"
+    corrected: Holm
+    n: 796 extracellular features per strategy
+  data: elsewhere
+  where: GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais, scripts and
+    notebooks/ground-truth
+  expected:
+    quantity: validation extracellular features
+    value: 796
+    tolerance: 80
+  criterion: Best-intracellular seed per strategy; template from firepattern 120%; the 11 features
+    on each of the 80 channels, invalid values left out; feature score |GT - model| / (0.05 |GT|),
+    or |model| when GT is 0 (4-optimization-performance.ipynb). Two-sided Mann-Whitney, soma
+    against each other strategy. The paper does not say over which pairs the Holm correction runs.
+    Readings (a) the three soma comparisons; (b) all six pairs of strategies (as the code's
+    Conover test does). Reproduced when, under both readings, each soma comparison has corrected p
+    below 1e-5 with the other strategy's median score lower; partially reproduced when all three
+    are below 0.05 but not all below 1e-5; with readings that disagree, methods_underspecified. The
+    code's Conover test (scikit_posthocs.posthoc_conover, Holm) is shown as a variant.
+- id: fig4d-templates-better-than-soma
+  statement: The extracellular strategies fit the ground-truth template better on almost all
+    electrodes, while the soma solution fails to capture the extracellular signals on many channels.
+  source: Figure 4D; Results 3.2, paragraph 8
+  quote: It is evident at first glance that the three extracellular strategies achieve a better fit
+    for almost all electrodes, while the solution from the soma strategy ... failed to capture the
+    complex dynamics of extracellular signals in many recording channels
+  data: elsewhere
+  where: GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais, scripts and
+    notebooks/ground-truth
+  criterion: Templates from firepattern 120%, each channel normalized to its peak-to-peak (Figure
+    4D legend; the code divides by np.ptp of the absolute values, shown as a variant); per
+    channel, the sum of absolute differences from the ground truth (the code's eap_dist, taken per
+    channel). The legend names the seed with the best intracellular score, as the code does; the
+    Results text says the best extracellular fit, shown as a variant. "Almost all" is not
+    quantified. Readings (a) each extracellular strategy is closer than soma on more than half of
+    the 80 channels; (b) on at least 72 of 80 (90%). Reproduced when the readings agree that each of
+    all, sections and single is closer; with readings that disagree, methods_underspecified.
+- id: fig5-ap-distribution
+  statement: Across the neuron, the all strategy gives lower AP waveform errors than the soma
+    strategy at every tested location, and all extracellular strategies beat soma at every dendritic
+    location.
+  source: Figure 5; Results 3.2, paragraph 9
+  quote: For all tested locations, the all strategy produces lower errors than the strategy. For all
+    dendritic locations (both apical and basal), all extracellular strategies (all, single,
+    sections) outperform the soma strategy
+  data: elsewhere
+  where: GitHub alejoe91/multimodalfitting at commit 24e8e61, cell_models/hay_ais and
+    notebooks/ground-truth/5-AP-distribution.ipynb
+  criterion: Best-intracellular seed per strategy; firepattern 120%; APs detected at the soma, first
+    and last left out, averaged at 8 locations (code positions, apical distal left and right, apical
+    middle, apical proximal, basal left and right, AIS distal and proximal); amplitude, half-width,
+    decay time and AHP by the code's compute_features; mean relative error of the four against the
+    ground truth. The first sentence lacks a word ("than the strategy"); the reading is "than the
+    soma strategy", the only one the next sentence allows. Reproduced when all is below soma at all
+    8 locations and all, single and sections are each below soma at the 6 dendritic ones; partially
+    reproduced when only one of the two holds.
+- id: fig78a-soma-intra-all-extra
+  statement: For both experimental cells, the soma strategy gives better intracellular scores and
+    the all strategy better extracellular scores.
+  source: Figures 7A and 8A; Results 3.3, paragraph 3
+  quote: For both cell models, the application of the soma strategy yielded better intracellular
+    scores, while the use of the all strategy resulted in better extracellular fitting
+  data: with_inputs
+  depends_on:
+  - recordings-two-cells-runs
+  criterion: Fitting method on each cell; features extracted from the dataset's patch recordings
+    (runs as in recordings-two-cells-runs; BluePyEfe with the rheobase from IDthres. Methods 5.4
+    give the lowest amplitude triggering a spike in the majority of recordings, and an amplitude
+    tolerance of 10%; these are the main result. The code (1-generate-experimental-features
+    notebooks) sets the majority fraction to 0.4 for cell 1 and 0.2 for cell 2 and the tolerance to
+    30; shown as a variant) and the template method's template; morphology and model from the
+    repository. 10 seeds each for soma and all. No test is reported; medians over seeds compared
+    (box plots), means as a variant. Reproduced when, for both cells, soma has the lower median
+    intracellular score and all the lower median extracellular score; partially reproduced when
+    this holds for one cell.
+- id: experimental-intracellular-scores
+  statement: Intracellular scores are 123.9 +/- 11.2 (soma) and 149.2 +/- 47.2 (all, one
+    non-converging seed left out) for cell 1, and 152.8 +/- 9.22 (soma) and 177.6 +/- 20.4 (all)
+    for cell 2, almost twice those of the ground-truth fits.
+  source: Results 3.3, paragraph 3
+  quote: 'cell 1 fitting: 123.9 ± 11.2 for soma and 149.2 ± 47.2 (excluding one seed that did not
+    converge) for all; cell 2 fitting: 152.8 ± 9.22 for soma and 177.6 ± 20.4 for all'
+  data: with_inputs
+  depends_on:
+  - recordings-two-cells-runs
+  expected:
+  - quantity: cell 1 mean intracellular score, soma
+    value: 123.9
+    tolerance: 11.2
+  - quantity: cell 1 mean intracellular score, all
+    value: 149.2
+    tolerance: 47.2
+  - quantity: cell 2 mean intracellular score, soma
+    value: 152.8
+    tolerance: 9.22
+  - quantity: cell 2 mean intracellular score, all
+    value: 177.6
+    tolerance: 20.4
+  criterion: As in fig78a-soma-intra-all-extra, mean over seeds; tolerances are the stated spread.
+    Which seed "did not converge" is not said. Readings (a) the seed whose solution fires no spike
+    (NaN template, dropped in 3-compute-all-responses_cell1.ipynb); (b) the seed with the highest
+    intracellular score. Reproduced when all four values are within tolerance under one reading.
+- id: fig78b-validation-spiking
+  statement: The experimental cell models of both strategies reproduce the main features of the
+    spiking patterns of the validation protocols, except the soma model's PosCheops 300% response in
+    cell 2, so including extracellular features does not keep the optimization from finding
+    acceptable models.
+  source: Figures 7B and 8B; Results 3.3, paragraphs 3 and 6
+  quote: the models fitted on the experimental data could reproduce the main features of the
+    intracellular spiking patterns of the validation protocols (panels B, with the exception of the
+    PosCheops (300%) response for the soma strategy in cell 2
+  data: with_inputs
+  depends_on:
+  - fig78a-soma-intra-all-extra
+  criterion: The seed with the best intracellular score per strategy and cell (Figure 7B and 8B
+    legends, and the code that makes the figures, 4-optimization-performance-cell1 and -cell2,
+    best_intras; the 3-compute-all-responses notebooks also select the best extracellular seed for
+    their own plots, shown as a variant). Validation protocols
+    firepattern, HyperDepol, sAHP and PosCheops (Methods 5.4). "Main features" is not quantified.
+    Readings (a) the model's spike count in each validation sweep lies within the range over the
+    cell's runs; (b) the model's mean firing frequency (eFEL mean_frequency, one of the Methods 5.4
+    validation features) in each spiking sweep lies within that range. Reproduced when the readings agree that every model matches
+    all its sweeps except the soma model of cell 2 on PosCheops 300%, which does not; partially
+    reproduced when only that exception differs; with readings that disagree, methods_underspecified.
+- id: fig78c-cell2-worse-extracellular
+  statement: The simulated templates are qualitatively similar to the recorded ones, with
+    mismatches mainly in cell 2, whose fits have higher extracellular scores than cell 1.
+  source: Figures 7C and 8C, and 7A and 8A right; Results 3.3, paragraph 4
+  quote: The worse fit of cell 2 with respect to cell 1 is also ... reflected by the overall
+    higher extracellular scores
+  data: with_inputs
+  depends_on:
+  - fig78a-soma-intra-all-extra
+  criterion: Extracellular scores per seed as in fig78a-soma-intra-all-extra. The text cites "right
+    box plots of panels B", which hold no box plots; panels A right are meant. Readings (a) the all
+    strategy alone; (b) both strategies. Reproduced when the cell 2 median extracellular score is
+    above the cell 1 median under both readings; with readings that disagree, methods_underspecified.
+    The summed per-channel distance of normalized templates (eap_dist in the code) is reported for
+    the best seed of each strategy and cell.
+- id: fig10-cell2-soma-underestimated
+  statement: In the cell 2 all model, the template mismatch is explained by too small a somatic and
+    too large an AIS contribution; the recorded positive upstroke near the basal dendrite coincides
+    with the somatic negative current peak, and the initial negative phase with the AIS peak.
+  source: Figure 10 legend; Results 3.3, paragraph 5
+  quote: The upstroke of the experimental EAP close to the basal dendrite ... seems to coincide with
+    the somatic negative peak ... The initial negative phase instead is time-locked to the AIS negative peak
+  data: with_inputs
+  depends_on:
+  - fig78a-soma-intra-all-extra
+  criterion: Best-intracellular cell 2 all model (Figure 10 legend and Results 3.3 name the all
+    model; the code, 5-AP-dirstirbution-cell2.ipynb, passes the soma model's parameters,
+    opt_results_validation["soma"], shown as a variant); transmembrane currents at the soma, the AIS
+    and a basal dendrite (code, extra_recordings_from_positions with_currents, positions soma
+    [0, 0, 0], basal [-92, 11, 0], AIS [-48, 5, 0] um, IDrest 250%, averaged over spike cutouts of
+    2 ms before and 5 ms after), aligned to the recorded template; the electrode near the basal
+    dendrite and the one near the AIS are those nearest these positions (code, elec_idx_basal and
+    elec_idx_ais). How the model and recorded time axes are aligned is not given; both are cut 2 ms
+    before the peak, which is used. Reproduced when, on the electrode near the basal dendrite, the time of the recorded
+    positive peak is nearer the somatic negative current peak than the AIS one, and the recorded
+    initial negative peak nearer the AIS negative current peak than the somatic one. The electrode
+    and dendrite location are those of Figure 10, which the text does not give by number; the
+    5-AP-dirstirbution-cell2 notebook positions are used.
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - mea-electrodes-and-rates. Methods 5.2 say APWaveform was recorded at high sampling rates (typically 200 kHz); the criterion required 20 kHz for every patch series. It now accepts 20 or 200 kHz for APWaveform.
+  - fig3b-ap-initiates-distal-ais. The protocol (IDrest 300%, averaged spike cutouts) is now taken from 7-AIS-test.ipynb. The -20 mV crossing as the initiation time was a choice not in the paper; it is now one of two readings, with the AP peak time.
+  - fig4b-extra-better-than-soma. The criterion fixed the Holm family at the three soma comparisons, which the paper does not say; the code corrects over all six pairs. Both are now readings.
+  - fig4d-templates-better-than-soma. Noted that the code normalizes by np.ptp of the absolute template values, unlike the legend's peak-to-peak; shown as a variant.
+  - fig78a-soma-intra-all-extra. The criterion used the code's rheobase majority fractions (0.4 and 0.2) as the method; Methods 5.4 say majority of recordings and a 10% tolerance. The Methods are now the main result and the code's values (0.4, 0.2, tolerance 30) a variant.
+  - fig78b-validation-spiking. The criterion said the code plots the best extracellular seed; the notebooks that make Figures 7 and 8 (4-optimization-performance-cell1 and -cell2) use the best intracellular seed, as the legends say. Corrected; the best extracellular seed of the 3-compute-all-responses notebooks stays a variant.
+  - fig10-cell2-soma-underestimated. Added the code's positions, protocol (IDrest 250%) and electrode choice, and that the code passes the soma model's parameters while the paper names the all model; the all model is the main result, the soma model a variant.
+  - Open. fig4d-templates-better-than-soma and fig78b-validation-spiking quantify "almost all" and "main features" with readings the paper does not give; they are named as readings and the outcome needs them to agree.
+  - Open. fig10-cell2-soma-underestimated. How the model and recorded time axes are aligned is not given by the paper or the code; both cutouts start 2 ms before the peak, which is used.
+  - Open. fig4b-intra-no-difference and fig4b-extra-better-than-soma. The paper names post hoc Mann-Whitney tests but no omnibus test or sidedness; two-sided is used, as the criteria say.

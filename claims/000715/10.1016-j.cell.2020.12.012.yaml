@@ -1,0 +1,682 @@
+# Claims for Yemini, Lin, Nejatbakhsh et al. (2021), "NeuroPAL: A Multicolor Atlas for Whole-Brain
+# Neuronal Identification in C. elegans", Cell 184, 272-288, on dandiset 000715.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23, protocol
+# pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the accepted author manuscript in PubMed Central (PMC10494711, NIHMS1925874), as served
+# by ncbi_pmc, with its Results, Discussion, STAR Methods, figure legends (Figures 1 to 7, S1 to S3),
+# and two supplements extracted from their PDFs: Methods S1 (semi-automated neuronal identification,
+# with the atlas, detection and cross-validated accuracy results) and Methods S2 (optimal coloring).
+# The version of record was not read. Tables S1 to S6 (spreadsheets), Videos S1 to S4 and the legend
+# of Figure S4 are not in the text read. No claim below needs a number that only those tables hold,
+# except that the per-neuron atlas values (Table S3), receptor expression (Table S4), mutant scores
+# and p-values (Table S5) and whole-brain statistics (Table S6) could not be read.
+#
+# Code read. github.com/amin-nejat/CELL_ID at commit d9f5df9 (2020-10-28, the last commit before
+# publication; HEAD 759898d of 2021-11-14 was also looked at). It holds the NeuroPAL ID GUI: neuron
+# detection (+Methods/AutoDetect.m, +Methods/Preprocess.m), identification against a pretrained atlas
+# (+Methods/AutoId.m) and atlas files (Data/Models/atlas*.mat). It does not hold the script that
+# trains the atlas from annotated worms (Methods S1 Algorithm 4) nor the cross-validation behind
+# Figure 7B-C; the training set of its shipped atlas is not stated, so that atlas is not used here.
+# github.com/Eviatar/Optimal_Coloring at commit 990c597 (2020-06-30, the last code commit before
+# publication; f01284f of 2021-03-14 changes only the README). It holds the optimal-coloring solver,
+# the adjacency rule (computeProbAdjacency.m), the violation measure (find_optimal_colors.m) and
+# data.mat with the Brain Atlas and NeuroPAL-tested reporter tables and the NeuroPAL colors.
+# github.com/venkatachalamlab/NeuroPAL-traces was not read: it extracts traces for the OH15500
+# whole-brain recordings, which no claim tested here uses.
+#
+# Data the paper used, as it reports them.
+# Atlas (Figure 2C-D, Table S3, Methods S1, Figure 7A-C). 10 young-adult NeuroPAL hermaphrodites of
+# identical age, integrant otIs669 (strain OH15262), head and tail of each imaged on a Zeiss LSM880
+# with 405, 488, 561 and 633 nm lasers exciting mTagBFP2, CyOFP1, TagRFP-T and mNeptune2.5. Landmark
+# colors are pseudo-colored red (mNeptune2.5), green (CyOFP1) and blue (mTagBFP2); TagRFP-T is the
+# panneuronal label (white). Every neuron was annotated by hand ("fully annotated neuron
+# detections", Methods S1 section 4), giving per neuron a 3-D position and a color; Methods S1 reads
+# a neuron's color as the median pixel intensity in a 1.5 x 1.5 x 0.75 um patch centred on it in the
+# z-scored image (Figure 6.2 legend), z-scored per channel over the volume (CELL_ID
+# Preprocess.zscore_frame). Detection was evaluated on the same 10 worms (Figure 6.3), and
+# identification accuracy by leave-one-out over them (Figure 6.4 legend). The dandiset's title,
+# "Atlas of C. elegans neuron locations and colors in NeuroPAL worm", names these data.
+# Whole-brain activity (Figures 6, S1H, S2, Table S6). Strain OH16230 (otIs669; otIs672, NeuroPAL
+# with panneuronal nuclear GCaMP6s), 21 heads (189 neurons) and, separately, 21 tails (42 neurons),
+# young adults in a microfluidic chip; a 4-color identification volume, then 4 min of GCaMP6s at
+# about 4 Hz, with 10 s pulses of 160 mM NaCl, 1e-4 2-butanone and 1e-4 2,3-pentanedione one
+# minute apart in rotated order. A second strain, OH15500, was imaged in water with 200 mM NaCl for
+# 20 s. These are deposited on Zenodo (doi:10.5281/zenodo.3906530), not, by its title, in this
+# dandiset. Receptor expression (Figures 3, 4, Table S4), mutant analysis (Figure 5, Table S5) and
+# phenotyping (Figure S1, Table S2) used other strains and are not deposited in any archive the
+# paper names.
+#
+# Method choices shared by the atlas claims, from Methods S1 unless said otherwise. The atlas is fit
+# by Algorithm 4: initialize the means at a random worm and identity covariances, then alternate an
+# affine alignment of each worm to the atlas (equations 4.15, 4.16) with updates of the means and
+# covariances (equations 4.13, 4.14, normalized by the number of worms m) until convergence; each
+# neuron's 6-D covariance is block diagonal, position and color (equation 4.1 and text). A held-out
+# worm is identified by Algorithm 5 (alignment initialized at the identity, alternated with the
+# Hungarian assignment of equation 4.18) and its likelihoods (equation 5.4); probabilities are the
+# Sinkhorn approximation (Algorithm 6), with 500 iterations as in CELL_ID AutoId.iter_sinkhorn.
+# Head and tail are separate atlases. The random initial worm and the convergence tolerance are
+# not given; they are standard choices (a fixed seed; a tolerance of 1e-6 on the Frobenius norm)
+# that should not change an outcome, and the notebook reports any sensitivity to the initial worm.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000715"
+paper: doi:10.1016/j.cell.2020.12.012
+claims:
+- id: fig2cd-variability-differs
+  statement: In a probabilistic atlas built from 10 young-adult NeuroPAL worms, the positional
+    variability of cell bodies differs across neuron types.
+  source: Results, Variability in Neuronal Cell Body Positions, paragraph 2; Figures 2C and 2D
+  quote: This map revealed different positional variability across neuron types
+  criterion: The atlas is fit on all 10 worms, head and tail, as in the shared method above; a
+    neuron's positional variability is the standard deviation of its atlas positional covariance
+    along each of the three principal axes of the atlas means (the axes Methods S1 Figure 6.1
+    plots, major and minor axes of position). The paper gives no test or threshold. The one
+    difference it quantifies is OLLR against OLLL, over a factor of two (claim
+    fig2c-ollr-more-variable-than-olll), so the claim is reproduced when, along at least one axis,
+    the largest per-neuron standard deviation is more than twice the smallest within the head
+    and within the tail. The distribution of per-neuron standard deviations is reported.
+- id: fig2c-ollr-more-variable-than-olll
+  statement: In the head atlas, OLLR shows over twice the positional variability of OLLL along the
+    anterior-posterior axis.
+  source: Figure 2C legend
+  quote: OLLR exhibits over twice the positional variability of OLLL in its anterior-posterior axis
+  expected:
+  - quantity: OLLR over OLLL anterior-posterior positional variability, lower bound
+    value: 2
+    unit: ratio
+  criterion: Head atlas fit on all 10 worms as in the shared method. The anterior-posterior axis is
+    the major axis of the atlas means (Methods S1 Figure 6.1 legend; the CELL_ID code aligns
+    positions to it by principal components, AutoId.major_axis_align). "Positional variability"
+    can be read as (a) the standard deviation of the neuron's positional distribution along that
+    axis, (b) its variance, or (c) the anterior-posterior extent of the 50% contour within the 2-D
+    plane Figure 2 slices (left-right or dorsal-ventral view, the conditional distribution in that
+    plane). Reproduced when the OLLR to OLLL ratio exceeds 2 under any reading; all three are
+    reported.
+- id: fig7bc-identification-accuracy
+  statement: Unsupervised identification of neurons against the statistical atlas of NeuroPAL
+    colors and positions is 86% accurate in the head and 94% in the tail, cross-validated.
+  source: Results, Semi-automated Neuronal Identification, paragraph 2; Figures 7B and 7C; Methods
+    S1 section 6.3, Figure 6.4
+  quote: Accuracy was 86% for the head and 94% for the tail.
+  expected:
+  - quantity: head identification accuracy
+    value: 86
+    tolerance: 8.6
+    unit: percent
+  - quantity: tail identification accuracy
+    value: 94
+    tolerance: 9.4
+    unit: percent
+  criterion: Leave-one-out over the 10 worms (Methods S1 Figure 6.4 legend), head and tail apart.
+    For each held-out worm, the atlas is fit on the other 9 (Algorithm 4) with 6-D features
+    (position in um and the three landmark colors); the held-out worm is identified by Algorithm
+    5 and the Hungarian assignment (equation 4.18), and a neuron is correct when its assigned
+    identity is its annotation. Open details, each run. Which neurons are identified, (a) the
+    hand-annotated neurons, (b) the automatic detections of claim ms1-detection-accuracy matched
+    to annotations within 3 um, unmatched annotated neurons counted wrong. Start of the
+    alignment, Algorithm 5 initializes it at the identity on the positions as given (the Methods,
+    main result); the CELL_ID code (AutoId.global_alignment) first aligns the worm's major axis
+    and searches rotations about it (theta from 0 to 2 pi in steps of 0.25, both orientations,
+    10 alternations, color regression with ridge 1e5), shown as a variant. Colors, the dandiset's
+    stored per-neuron colors if it holds them, and the Methods S1 Figure 6.2 readout recomputed
+    from the images if it holds images. These are method details; the outcome is the one they
+    give together, and differing outcomes block the claim as methods_underspecified. The reported
+    numbers can be read as (i) the mean over held-out worms of per-worm accuracy or (ii) the
+    accuracy over all neurons pooled, and as (1) per-neuron identity or (2) identity at class
+    level for left/right pairs (Methods S1 footnote 1 scores midline pairs such as RMFL/R by
+    class but does not list them; class level for every left/right pair is the upper bound of
+    that rule). The number is matched when it falls within tolerance under any of these readings.
+- id: fig7bc-ventral-ganglion-lowest
+  statement: Accuracy depends on neuron density; it is high for all tail ganglia and lower for the
+    dense ventral ganglion of the head.
+  source: Results, Semi-automated Neuronal Identification, paragraph 2; Figures 7B and 7C legend
+  quote: Accuracy largely depended on neuron density; for example, our pipeline achieved high
+    accuracy for all tail ganglia but lower accuracy for the much denser ventral ganglion in the
+    head.
+  data: with_labels
+  depends_on:
+  - fig7bc-identification-accuracy
+  criterion: The per-neuron results of fig7bc-identification-accuracy (the Methods reading, and
+    each other reading as a variant), grouped by ganglion. Ganglion membership is taken from the
+    dandiset if it records it, else from the CELL_ID neuron tables (Data/NeuroPAL) or the ganglion
+    lists of the GUI; the head ganglia are those of Methods S1 Figure 6.8 (anterior and posterior
+    pharynx, anterior, dorsal, lateral, ventral and retrovesicular ganglia) and the tail ganglia
+    pre-anal, dorso-rectal and lumbar. Reproduced when every tail ganglion has a higher accuracy
+    than the head's ventral ganglion; the rank of the ventral ganglion among head ganglia and
+    the ganglion densities are reported.
+- id: fig7b-eight-labels-above-90
+  statement: Manually annotating eight neurons, chosen by the software as the least certain, raises
+    head identification accuracy above 90% on average.
+  source: Results, Semi-automated Neuronal Identification, paragraph 2; Figure 7B; Methods S1
+    section 6.5, Figure 6.9
+  quote: Adding eight manual annotations, on average, brings the head accuracy above 90%
+  depends_on:
+  - fig7bc-identification-accuracy
+  expected:
+  - quantity: mean head accuracy after eight manual annotations, lower bound
+    value: 90
+    unit: percent
+  criterion: In the leave-one-out runs of fig7bc-identification-accuracy (head), the neuron whose
+    row of the Sinkhorn probability matrix is closest to uniform is annotated with its true
+    identity, the likelihoods are updated as CELL_ID does (AutoId.update_log_likelihood sets the
+    annotated neuron's row to the minimum except its true identity at the maximum) and the
+    assignment recomputed (AutoId.update_id, without re-alignment); repeated eight times.
+    "Closest to uniform" is open, read as (a) the highest entropy of the row and (b) the lowest
+    top probability (the code's ranking, AutoId.add_to_image); a method detail, both run. The
+    accuracy after eight annotations can be read as over all neurons with the annotated ones
+    counted correct, or over the unannotated neurons only; matched under either. Reproduced when
+    the mean over held-out worms exceeds 90%.
+- id: ms1-uncertain-first-faster
+  statement: Annotating the most uncertain neurons first raises identification accuracy much faster
+    than annotating neurons in random order, in head and tail.
+  source: Methods S1, section 6.5, Figure 6.9
+  quote: Figure 6.9 shows that following this strategy, the accuracy increases much faster ... than
+    by a random recommendation
+  depends_on:
+  - fig7b-eight-labels-above-90
+  criterion: As in fig7b-eight-labels-above-90, for 1 to 50 annotations in the head and 1 to 16 in
+    the tail (the ranges of Figure 6.9), against the same procedure with neurons chosen at random
+    (the mean of 100 random orders per held-out worm, a standard choice that should not change the
+    outcome). Reproduced when, in head and tail, the mean accuracy over worms with the most
+    uncertain neurons first is above the random curve at most annotation counts and its mean
+    over the range is higher; both curves are shown.
+- id: ms1-position-only-accuracy
+  statement: Restricted to neuron positions without color, automated identification accuracy drops
+    to 50% in the head and 68% in the tail, showing the gain from NeuroPAL's colors.
+  source: Results, Semi-automated Neuronal Identification, paragraph 3; Methods S1 section 6.3,
+    Figure 6.5
+  quote: When we restricted the model to assign identities only on the basis of location, automated
+    accuracy dropped to 50% for the head and 68% for the tail
+  depends_on:
+  - fig7bc-identification-accuracy
+  expected:
+  - quantity: head identification accuracy, position only
+    value: 50
+    tolerance: 5
+    unit: percent
+  - quantity: tail identification accuracy, position only
+    value: 68
+    tolerance: 6.8
+    unit: percent
+  criterion: As fig7bc-identification-accuracy, with every reading listed there, but with the atlas
+    and the held-out worm restricted to the three position coordinates ("using only position
+    information", Methods S1 Figure 6.5 legend). Reproduced when both values are within tolerance
+    under one reading and each is below the full model's accuracy under the same reading.
+- id: ms1-detection-accuracy
+  statement: The automatic neuron detection (matching pursuit) reaches 80% accuracy in the head and
+    88% in the tail, at 191 and 44 detections, with precision and recall both about 90% in the
+    head and 93% in the tail.
+  source: Methods S1, section 6.2, Figure 6.3
+  quote: As shown in figures 6.3 our algorithm reaches the accuracy of 80% in head and 88% in tail.
+    This occurs when we find K = 191 and K = 44 neurons in head and tail in which case we get
+    similar precision and recall values that are both equal to 90% and 93% in head and tail
+    respectively.
+  expected:
+  - quantity: head detection accuracy at K = 191
+    value: 80
+    tolerance: 8
+    unit: percent
+  - quantity: tail detection accuracy at K = 44
+    value: 88
+    tolerance: 8.8
+    unit: percent
+  - quantity: head precision and recall at K = 191
+    value: 90
+    tolerance: 9
+    unit: percent
+  - quantity: tail precision and recall at K = 44
+    value: 93
+    tolerance: 9.3
+    unit: percent
+  criterion: Needs the images. Detection as Methods S1 sections 2 and 3 describe and CELL_ID
+    implements it (Preprocess.zscore_frame, Preprocess.filter_gut_lysosomes, AutoDetect.detect,
+    with a 1.5 um exclusion radius), run for K = 191 (head) and K = 44 (tail) on each of the 10
+    worms. Detections are matched one to one to the hand annotations by the Hungarian algorithm on
+    distances, with distances over 3 um set to infinity (section 6.2); accuracy is TP / (TP + FP
+    + FN), precision TP / (TP + FP), recall TP / (TP + FN). The values are the means over the 10
+    worms (Figure 6.3 plots means and standard deviations). The detection bounds that the GUI
+    takes from its preferences (minimum eigenvalue of the Gaussian shape and the size thresholds
+    of the gut and lysosome filter) are not given in the paper; the CELL_ID defaults at d9f5df9
+    are used and named as a deviation. Blocked if the dandiset holds no images.
+- id: ms1-calibration
+  statement: The identification's confidence is calibrated; per-neuron confidence and accuracy
+    largely agree in head and tail.
+  source: Methods S1, section 6.4, Figure 6.8
+  quote: Figure 6.8 shows that confidence and accuracy ... are largely in good agreement, as desired
+  depends_on:
+  - fig7bc-identification-accuracy
+  criterion: From the leave-one-out runs of fig7bc-identification-accuracy, per atlas neuron, the
+    mean over held-out worms of the Sinkhorn probability of the assigned identity (confidence) and
+    the fraction of worms in which it is correct (accuracy), with left/right midline pairs scored
+    by class as in footnote 1 of Methods S1 section 6.4. The paper gives no measure of agreement
+    and no threshold; "largely in good agreement" is open. Two readings, each run, (a) a positive
+    Spearman correlation between per-neuron confidence and accuracy with p < 0.05 and (b) a mean
+    absolute difference between confidence and accuracy under 10 percentage points (a standard
+    choice, not from the paper). Reproduced in head and tail when both readings agree that it
+    holds; when they disagree the claim is blocked as methods_underspecified. The reliability
+    plot is shown.
+- id: ms2-neuropal-color-violations
+  statement: Using the atlas of neuron positions from the 10 worms to define neighbors, NeuroPAL's
+    designed color map leaves 3.5% of neighboring neuron pairs below the color discrimination
+    margin.
+  source: Methods S2, section 4.3, paragraph 1
+  quote: NeuroPAL, which comprehensively identifies all neuron types, exhibited a theoretical color
+    violation of 3.5%.
+  data: with_inputs
+  depends_on:
+  - fig2cd-variability-differs
+  expected:
+  - quantity: NeuroPAL color violations among neighboring pairs
+    value: 3.5
+    tolerance: 0.35
+    unit: percent
+  criterion: Neighbors are pairs whose positional covariance ellipses, at 95% probability mass,
+    include each other (Methods S2 section 2; Optimal_Coloring computeProbAdjacency.m, 1000
+    samples per neuron, seed 1), from the head and tail atlases fit on all 10 worms. Colors are the
+    NeuroPAL colors of Optimal_Coloring data.mat (NeuroPAL_colors), normalized to sum to one per
+    neuron as find_optimal_colors.m does; the margin is 1/3. The Methods define the violation
+    rate as the share of neighboring pairs whose color distance is below the margin (section 4.3);
+    the code reports the mean shortfall below the margin over neighboring pairs
+    (find_optimal_colors.m); the Methods measure is the main result and the code's is a variant.
+    Whether the 3.5% pools head and tail is not said for NeuroPAL itself; the solver runs of
+    Methods S2 section 4.2 use the 235 head and tail neurons together, and Methods S2 Figure 1A
+    shows head and tail with one value, so pooled is the main reading; head and tail apart are
+    reported as variants, and the number is matched under any of them. The outside inputs are the
+    NeuroPAL colors from the code repository.
+- id: fig7de-optimal-coloring-violations
+  statement: The optimal-coloring algorithm, using WormBase reporters, finds NeuroPAL alternatives
+    with 1.7% color violations with 39 reporters and 10.5% when restricted to 3 reporters.
+  source: Results, An Optimal-Coloring Algorithm for Other Tissues and Model Organisms, paragraph 3;
+    Figures 7D and 7E; Methods S2 Figure 1
+  quote: In our simulations, we achieve color violations of 1.7% when using 39 reporters and 10.5%
+    when restricting the solution to only 3 reporters
+  data: with_inputs
+  depends_on:
+  - ms2-neuropal-color-violations
+  expected:
+  - quantity: color violations of the best 39-reporter solution
+    value: 1.7
+    tolerance: 0.17
+    unit: percent
+  - quantity: color violations of the best 3-reporter solution
+    value: 10.5
+    tolerance: 1.05
+    unit: percent
+  criterion: Adjacency as in ms2-neuropal-color-violations. The Brain Atlas reporter table of
+    Optimal_Coloring data.mat (1192 reporters, 654 unique), 3 colors, margin 1/3, solved with
+    optimal_color_solver.m; the best of 10,000 runs for the roughly 40-reporter case (sparsity 100,
+    Methods S2 Figure 3 legend) and of 7,500 runs for the 3-reporter case (Methods S2 Figure 1
+    legend), both with 3 colors at 3 intensities (Figure 7 legend; Methods S2 Figure 1 panel
+    labels, Colors=3 Intensities=3 Reporters=39 and Reporters=3). The sparsity giving 3 reporters
+    is not stated; the reading is the sparsity whose
+    solutions use 3 reporters after the code's Otsu threshold. Violations as in
+    ms2-neuropal-color-violations (Methods measure, code measure as a variant). Reproduced when the
+    best solutions are within tolerance; the solver is stochastic and fewer runs may be used if
+    the full number cannot run, which is recorded as a deviation.
+- id: fig1e-stereotyped-color-map
+  statement: A transgene of 41 reporter-fluorophore fusions gives a stereotyped color map with which
+    every neuron of the C. elegans hermaphrodite can be identified, each distinguishable from its
+    neighbors by color.
+  source: Results, Empirical Assembly of NeuroPAL, paragraph 2; Figure 1E
+  quote: The final transgene, composed of 41 different reporter-fluorophore fusions, allowed us to
+    unambiguously assign identities to every neuron in C. elegans based on a stereotyped color map
+  data: elsewhere
+  where: Verified in hundreds of animals crossed to 25 GFP reporter lines (Table S1, NeuroPAL
+    manuals at hobertlab.org); these images are not deposited in any archive the paper names
+  criterion: Not tested on the dandiset. The 10 annotated worms bear on it only through the atlas
+    claims above (fig7bc-identification-accuracy and ms2-neuropal-color-violations).
+- id: res-variable-brightness-classes
+  statement: The NeuroPAL expression pattern is stable and stereotyped, except that four neuron
+    classes (AVL, RIM, RIS and PVW) vary in brightness.
+  source: Results, Neuronal Color Verification and Phenotypic Assessment of NeuroPAL Strains,
+    paragraph 1
+  quote: A minor exception was four neuron classes that exhibited variable brightness (AVL, RIM,
+    RIS, and PVW).
+  data: elsewhere
+  where: Scored over hundreds of animals, not deposited in any archive the paper names
+  criterion: Not tested on the dandiset; the paper's scoring of hundreds of animals is not given
+    as data. The color covariance of these four classes in the 10-worm atlas may be reported as
+    context and does not decide the claim.
+- id: figs1-otis670-closest-to-wild-type
+  statement: Of the NeuroPAL integrants, otIs669 (OH15262) is the brightest, and otIs670 (OH15263)
+    has locomotion and chemotaxis closest to wild type.
+  source: Results, Neuronal Color Verification and Phenotypic Assessment of NeuroPAL Strains,
+    paragraph 2; Figures S1A to S1G; Table S2
+  quote: The brightest integrant was otls669 (strain OH15262). The integrant with locomotion and
+    chemotactic behavior closest to wild-type, otls670 (strain OH15263), is less bright
+  data: elsewhere
+  where: Phenotyping data (Table S2, not in the text read) are not deposited in any archive the
+    paper names
+  criterion: Not tested on the dandiset.
+- id: fig4c-metabotropic-receptor-coverage
+  statement: Metabotropic acetylcholine, glutamate and GABA receptors are expressed in 97% of all
+    neurons; 70% express GARs, 54% MGLs and 89% GBBs.
+  source: Results, Expression Maps for All Metabotropic Neurotransmitter Receptors, paragraph 2;
+    Figure 4C
+  quote: we find that these receptors are expressed in 97% of all neurons ... 70% express GARs, 54%
+    express MGLs, and 89% express GBBs
+  data: elsewhere
+  where: Expression scored from reporter crosses (Figure 3, Table S4, not in the text read); the
+    images are not deposited in any archive the paper names
+  expected:
+  - quantity: neurons expressing any metabotropic receptor
+    value: 97
+    tolerance: 9.7
+    unit: percent
+  - quantity: neurons expressing GARs
+    value: 70
+    tolerance: 7
+    unit: percent
+  - quantity: neurons expressing MGLs
+    value: 54
+    tolerance: 5.4
+    unit: percent
+  - quantity: neurons expressing GBBs
+    value: 89
+    tolerance: 8.9
+    unit: percent
+  criterion: Not tested on the dandiset.
+- id: fig4b-gabab-in-every-gaba-partner
+  statement: Every postsynaptic partner of every GABA-releasing neuron expresses a GABA-B receptor,
+    whereas only 60% express a GABA-A receptor.
+  source: Results, Expression Maps for All Metabotropic Neurotransmitter Receptors, paragraph 3;
+    Figures 4B and 4G
+  quote: We found that every postsynaptic partner of every GABA-releasing neuron expresses one of
+    the two GABA B receptors. In contrast, only 60% of postsynaptic partners of GABAergic neurons
+    express any of the seven GABA A receptors
+  data: elsewhere
+  where: Table S4 (not in the text read) with the connectome of Cook et al. 2019
+    (doi:10.1038/s41586-019-1352-7) and GABA-A expression of Gendrel et al. 2016
+  expected:
+  - quantity: postsynaptic partners of GABAergic neurons expressing GABA-A receptors
+    value: 60
+    tolerance: 6
+    unit: percent
+  criterion: Not tested on the dandiset. Figure 4D's legend notes that one polyadic synapse from
+    AVF brings the GABA-B count to just under 100%.
+- id: fig4d-cognate-metabotropic-partners
+  statement: 76% of postsynaptic partners of cholinergic neurons express GAR receptors and 66% of
+    postsynaptic partners of glutamatergic neurons express MGL receptors; metabotropic receptors
+    can take part in 75% of all synaptic connections from neurotransmitter-releasing neurons.
+  source: Results, Expression Maps for All Metabotropic Neurotransmitter Receptors, paragraph 3;
+    Figure 4D; Discussion, paragraph 3
+  quote: 76% of the postsynaptic partners of cholinergic neurons express GAR receptors, and 66% of
+    the postsynaptic partners of glutamatergic neurons express MGL receptors
+  data: elsewhere
+  where: Table S4 (not in the text read) with the connectome of Cook et al. 2019
+    (doi:10.1038/s41586-019-1352-7)
+  expected:
+  - quantity: cholinergic partners expressing GARs
+    value: 76
+    tolerance: 7.6
+    unit: percent
+  - quantity: glutamatergic partners expressing MGLs
+    value: 66
+    tolerance: 6.6
+    unit: percent
+  - quantity: synaptic connections with a cognate metabotropic receptor
+    value: 75
+    tolerance: 7.5
+    unit: percent
+  criterion: Not tested on the dandiset.
+- id: fig4e-extrasynaptic-gaba
+  statement: Many receptor-expressing neurons have no presynaptic partner releasing the cognate
+    transmitter (31% of GABA-A and 37% of GABA-B expressing neurons; 3% of GAR and 10% of MGL
+    expressing neurons), and 92% of neurons express GABA receptors while 10% release GABA,
+    suggesting widespread extrasynaptic signaling.
+  source: Results, Expression Maps for All Metabotropic Neurotransmitter Receptors, paragraph 4;
+    Figure 4E
+  quote: 31% of GABA A and 37% of GABA B receptor-expressing neurons have no presynaptic GABAergic
+    partner. Moreover, we found 92% of all neurons express GABA receptors, and yet only 10% of
+    neurons release GABA.
+  data: elsewhere
+  where: Table S4 (not in the text read) with the connectome of Cook et al. 2019
+    (doi:10.1038/s41586-019-1352-7)
+  expected:
+  - quantity: GABA-A expressing neurons without a GABAergic presynaptic partner
+    value: 31
+    tolerance: 3.1
+    unit: percent
+  - quantity: GABA-B expressing neurons without a GABAergic presynaptic partner
+    value: 37
+    tolerance: 3.7
+    unit: percent
+  - quantity: neurons expressing GABA receptors
+    value: 92
+    tolerance: 9.2
+    unit: percent
+  - quantity: neurons releasing GABA
+    value: 10
+    tolerance: 1
+    unit: percent
+  - quantity: GAR expressing neurons without a cognate presynaptic partner
+    value: 3
+    tolerance: 0.3
+    unit: percent
+  - quantity: MGL expressing neurons without a cognate presynaptic partner
+    value: 10
+    tolerance: 1
+    unit: percent
+  criterion: Not tested on the dandiset. The sentence giving 3% and 10% pairs GAR and MGL with
+    "glutamatergic and cholinergic neurons, respectively", the reverse of the receptors' ligands;
+    the cognate reading (GAR with cholinergic, MGL with glutamatergic) is the one Figure 4E's
+    legend describes.
+- id: fig4f-sensory-extrasynaptic
+  statement: Sensory neurons are the most prominent recipients of the putative extrasynaptic
+    communication.
+  source: Results, Expression Maps for All Metabotropic Neurotransmitter Receptors, paragraph 4;
+    Figure 4F
+  quote: Notably, sensory neurons appear to be the most prominent recipients of extrasynaptic
+    communication
+  data: elsewhere
+  where: Table S4 (not in the text read) with the connectome of Cook et al. 2019
+  criterion: Not tested on the dandiset.
+- id: fig5ab-pag3-fate-changes
+  statement: In pag-3 null mutants the NeuroPAL color codes of VA and VB motor neurons are absent,
+    and the AVE and PVR interneurons change color.
+  source: Results, Uncovering Determinants of Cell Fate, paragraph 1; Figures 5A and 5B
+  quote: As predicted, the color codes that identify the VA and VB cell types in NeuroPAL are
+    absent in pag-3 mutants ... Unexpectedly, we also found color changes in the AVE and PVR
+    interneurons caused by pag-3 mutation.
+  statistics:
+  - about: PVR, VA2 and VB3 changes in two pag-3 alleles
+    test: one-sided Fisher's exact test
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni, eight tests
+  - about: AVE changes scored 0, 1 or 2
+    test: one-sided rank sum test
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni, eight tests
+  data: elsewhere
+  where: Mutant scores in Table S5 (not in the text read); images not deposited in any archive the
+    paper names
+  criterion: Not tested on the dandiset. The p-values are recorded as the paper's significance
+    standard (p or q of at most 0.05 after correction, STAR Methods); the values are in Table S5.
+- id: fig5c-pag3-new-expression
+  statement: A pag-3 fosmid reporter is expressed in neurons not previously reported, including AVE
+    and PVR.
+  source: Results, Uncovering Determinants of Cell Fate, paragraph 1; Figure 5C
+  quote: By checking a fosmid-based reporter, we discovered pag-3 expression in neurons that had
+    gone previously unidentified, including AVE and PVR
+  data: elsewhere
+  where: Images not deposited in any archive the paper names; Table S5 not in the text read
+  criterion: Not tested on the dandiset.
+- id: fig5efg-eor1-rme
+  statement: In eor-1 null mutants the dorsal and ventral RME neurons lose all blue NeuroPAL color
+    and UNC-25/GAD reporter expression but keep the panneuronal label, while RMEL/R are unchanged
+    and UNC-47/VGAT expression is not affected.
+  source: Results, Uncovering Determinants of Cell Fate, paragraph 2; Figures 5E to 5G
+  quote: The dorsal and ventral RME neurons (RMED/V) lost all their blue coloring but retained their
+    panneuronal label ... In contrast, the left and right RME neurons (RMEL/R) exhibited no changes
+    in their color codes.
+  statistics:
+  - about: loss of RMED/V blue coloring in two eor-1 alleles
+    test: one-sided Fisher's exact test
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni, eight tests
+  - about: RMED/V UNC-25 reporter expression scored 0, 1 or 2
+    test: one-sided rank sum test
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni, eight tests
+  data: elsewhere
+  where: Mutant scores in Table S5 (not in the text read); images not deposited in any archive the
+    paper names
+  criterion: Not tested on the dandiset.
+- id: fig6d-ase-nacl-asymmetry
+  statement: NaCl (160 mM) evokes left/right asymmetric responses in the ASE neurons, with ASER
+    increasing its calcium.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 3;
+    Figure 6D
+  quote: NaCl evoked stereotyped left/right (L/R) asymmetric responses in the two ASE neurons.
+    However, ASER exhibited an increase in [Ca 2+ ] upon NaCl presentation
+  statistics:
+  - test: two-tailed two-sample (unpaired) t test between left and right neurons
+    p: 0.05
+    p_relation: "<"
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.3906530 (whole-brain recordings and traces, Table S6)
+  criterion: Not tested on the dandiset. The paper's test (STAR Methods, Analysis of brainwide
+    imaging data) is a two-tailed unpaired t test for asymmetry, at p of at most 0.05.
+- id: fig6d-awc-odor-asymmetry
+  statement: 2-butanone and 2,3-pentanedione evoke stochastically asymmetric responses in the AWC
+    ON/OFF pair.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 4;
+    Figure 6D
+  quote: 2-butanone and 2,3-pentanedione evoked stochastically asymmetric responses in the AWC
+    ON/OFF neuron pair
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.3906530
+  criterion: Not tested on the dandiset.
+- id: fig6ef-nacl-novel-interneurons
+  statement: NaCl evokes significant responses in six interneurons with no previously known
+    function, AIN, AVF, AVH, AVJ, I2 and MI.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 3;
+    Figures 6C to 6F
+  quote: In particular, we detected significant NaCl responses in six interneurons with no
+    previously known function ... AIN, AVF, AVH, AVJ, I2, and MI.
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.3906530
+  criterion: Not tested on the dandiset. Responding neurons are those significant (q of at most
+    0.05) by a two-tailed paired t test of the stimulus period against the equal period before it,
+    FDR q-values (Storey 2002), with up to 42 left/right neuron pairs or 21 single neurons from 21
+    heads (STAR Methods, Analysis of brainwide imaging data).
+- id: fig6c-odors-more-inhibitory
+  statement: Odors evoke responses across many sensory and interneurons but with more inhibitory
+    (decreasing calcium) activity than NaCl.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 4;
+    Figure 6C
+  quote: We found that odors also evoked responses in a large set of both sensory and interneurons,
+    throughout the brain, but exhibited more inhibitory activity (decreasing [Ca 2+ ]) than seen
+    for NaCl
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.3906530
+  criterion: Not tested on the dandiset.
+- id: fig6de-asj-ric-stimulus-specific
+  statement: The sets of responding neurons overlap but differ by stimulus; ASJ is excited by NaCl
+    and inhibited by both odors, and RIC is excited only by 2,3-pentanedione.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 4;
+    Figures 6C to 6F
+  quote: For example, the ASJ sensory neurons were excited by NaCl but inhibited by both odors,
+    whereas the RIC interneurons were excited solely by 2,3-pentanedione.
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.3906530
+  criterion: Not tested on the dandiset.
+- id: tables6-tail-pvq-and-post-stimulus
+  statement: In the tail, PVQ is significantly excited by 2,3-pentanedione, and sensory and
+    interneurons show significant post-stimulus responses to all three stimuli.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 4;
+    Table S6
+  quote: In the tail, the PVQ interneurons were significantly excited upon presentation of
+    2,3-pentanedione, while a mix of sensory and interneurons exhibited significant post-stimulus
+    responses
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.3906530
+  criterion: Not tested on the dandiset. Post-stimulus responses are those whose stimulus mean
+    exceeds the pre-stimulus mean and whose post-stimulus mean exceeds the stimulus mean by a
+    one-tailed paired t test, FDR corrected at q of at most 0.05, over 21 tails (STAR Methods,
+    Analysis of brainwide imaging data).
+- id: fig6f-pharyngeal-responses
+  statement: Both salt and odors elicit responses across the pharyngeal nervous system.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 4;
+    Figure 6F
+  quote: Surprisingly, both salt and odors elicited responses across the pharyngeal nervous system
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.3906530
+  criterion: Not tested on the dandiset.
+- id: figs1h-avf-cyclic-activity
+  statement: In many animals AVF shows robust cyclical activity of about 0.3 Hz throughout the
+    recording, regardless of stimuli, similar to the strain's crawling frequency.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 5;
+    Figures S1G and S1H
+  quote: the pair of AVF interneurons displayed robust cyclical activity for the entire 4-min
+    recording, irrespective of delivery of gustatory or olfactory stimuli. The frequency of this
+    activity was ~0.3 Hz
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.3906530
+  expected:
+  - quantity: AVF cycle frequency
+    value: 0.3
+    tolerance: 0.03
+    unit: Hz
+  criterion: Not tested on the dandiset. Figure S1H counts peaks per 4-minute interval in traces
+    median filtered at 0.5 s, from five OH16230 worms.
+- id: fig6gi-stimulus-specific-correlations
+  statement: Pairwise neuronal correlations are similar across individuals for a given stimulus, but
+    each stimulus produces its own brainwide correlation pattern.
+  source: Results, Whole-Brain Neuronal Dynamics and Connectivity, paragraph 1; Figures 6G to 6I,
+    S2C to S2E
+  quote: We found similar stimulus-specific neuronal correlations across individuals, but each
+    stimulus generated its own brainwide correlation pattern
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.3906530
+  criterion: Not tested on the dandiset.
+- id: fig6jk-weak-function-structure-correlation
+  statement: Functional correlations between neurons correspond poorly to synapse counts; R squared
+    is 2.8% (head) and 1.7% (tail) for electrical and 0.5% (head) and 1.5% (tail) for chemical
+    connectivity.
+  source: Results, Whole-Brain Neuronal Dynamics and Connectivity, paragraph 2; Figures 6J and 6K
+  quote: We found low Pearson correlation between these functional and structural matrices. For
+    electrical connectivity, R 2 = 2.8% in the head and R 2 = 1.7% in the tail, and for chemical
+    connectivity, R 2 = 0.5% in the head and R 2 = 1.5% in the tail
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.3906530, with the connectomes of White et al. 1986 and Cook et
+    al. 2019
+  expected:
+  - quantity: R squared, electrical, head
+    value: 2.8
+    tolerance: 0.28
+    unit: percent
+  - quantity: R squared, electrical, tail
+    value: 1.7
+    tolerance: 0.17
+    unit: percent
+  - quantity: R squared, chemical, head
+    value: 0.5
+    tolerance: 0.05
+    unit: percent
+  - quantity: R squared, chemical, tail
+    value: 1.5
+    tolerance: 0.15
+    unit: percent
+  criterion: Not tested on the dandiset.
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - ms1-calibration. The 10 percentage point bound was justified as the protocol's default tolerance, which is 10% of a reported value, not 10 points; it is now named as a standard choice not from the paper. The criterion required both readings to hold; it now follows the protocol rule for readings (agreement decides, disagreement blocks as methods_underspecified). The class-level scoring is cited to footnote 1 of Methods S1 section 6.4, where the footnote sits, not to the Figure 6.8 legend.
+  - ms2-neuropal-color-violations. The criterion said pooling of head and tail is not stated; Methods S2 section 4.2 runs the solver on the 235 head and tail neurons together and Methods S2 Figure 1A shows one value for head and tail, so pooled is now the main reading and head and tail apart are variants.
+  - fig7de-optimal-coloring-violations. Added the source for 3 colors at 3 intensities in both solutions (Figure 7 legend, Methods S2 Figure 1 panel labels).
+  - fig6ef-nacl-novel-interneurons. Removed the statistics entry; the paired t test at q of at most 0.05 selects which neurons count as responding, a threshold used to count units, not a result. The test is kept in the criterion.
+  - tables6-tail-pvq-and-post-stimulus. Removed the statistics entry for the same reason (the post-stimulus test identifies responding neurons); kept in the criterion.
+  - Open. Every remaining statistics entry (fig5ab-pag3-fate-changes, fig5efg-eor1-rme, fig6d-ase-nacl-asymmetry) records the paper's significance standard, p or q of at most 0.05, as p 0.05 with "<" since the schema has no "<=" relation; the actual p-values are in Tables S5 and S6, not in the text read.
+  - Open. fig2cd-variability-differs has no test or threshold in the paper; the factor of two taken from the OLLR and OLLL example in the Figure 2C legend is a reading of "different positional variability", and is easily met.
+  - Open. ms1-calibration and ms1-uncertain-first-faster judge qualitative statements ("largely in good agreement", "much faster") for which the paper gives no measure; their readings are named in the criteria but are not the paper's.
+  - Checked against the code. CELL_ID at d9f5df9 holds the details cited from it (iter_sinkhorn 500, theta from 0 to 2 pi in steps of 0.25, ridge 1e5 in MCR_solver, ranking by top probability in add_to_image, positions scaled to um).

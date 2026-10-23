@@ -1,0 +1,1105 @@
+# Claims for Gao, Ramachandran, Yu & He (2025), J Neurosci 45(23) e2218242025, on dandiset 001199.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-22, under
+# docs/protocol.md, version pilot-10.
+#
+# Text read: the version of record as served by PubMed Central (paper/10.1523-jneurosci.2218-24.2025.txt,
+# fetched by paper-text-fetcher), with Abstract, Significance Statement, Introduction, Materials and
+# Methods, Results, all eleven figure legends and Discussion. The paper has no supplement and no PDF
+# was supplied. The text lost the equation of the directional STTC (Methods, Directional spike time
+# tiling coefficient); only its verbal definition survives (see D below). The Fig. 6 legend prints the
+# postsonication window as "201–28 ms" (201–268 ms in the Results), and the Fig. 11 legend labels two
+# panels "C" (the second is Fig. 11B in the Results).
+#
+# Code. The paper links no analysis code and names none; it says the analysis was done in MATLAB
+# R2022a after spike sorting in Offline Sorter (Plexon). No repository was read.
+#
+# Which dataset. The paper's Methods name dandiset 000946 as the repository of all its data. Dandiset
+# 001199 has the same title and cites this paper, but its description differs from the paper. It
+# describes S1 recordings with 64-channel Cambridge or NeuroNexus electrodes, tFUS delivered "either at
+# S1 or PoM", and varied pressure levels (input voltage in the session identifier), none of which the
+# paper reports, and it does not mention the auditory cortex recordings. Dandiset 000946's description
+# matches the paper (32-channel NeuroNexus, S1 targeting, AC recordings, about 90 kPa). So 001199 may
+# hold part of the paper's data, the same data again, or other recordings; the author must find which
+# sessions match the paper's conditions below. Sessions with POm targeting or a pressure other than the
+# paper's are not described by the paper and are not used for these claims.
+#
+# Data the paper used (Methods, Animal surgery; Transcranial focused ultrasound stimulation).
+# - Subjects. Male Wistar rats (Hsd WI, Envigo), 250 to 350 g, 3 to 6 months, isoflurane anesthesia
+#   (2% during recordings). 16 rats with simultaneous S1 and POm recordings; a second group of 12 rats
+#   with S1 and auditory cortex (AC) recordings, to check the auditory confound.
+# - Electrodes. Two 32-channel NeuroNexus probes (A1x32-Poly3-10mm-50-177) per session. S1 (AP -2, ML
+#   2.5) at 40 degrees, 1 to 1.3 mm deep (layers III to V); POm (AP -4.5, ML 2.6) at 20 degrees, 5.8 mm
+#   deep; AC (AP -4.5, ML 6.5) at 40 degrees, 1 to 1.3 mm deep. TDT acquisition, 300 Hz to 5 kHz
+#   bandpass, Offline Sorter with a -3.5 SD threshold and k-means clustering.
+# - Stimulation. 128-element random array H276, 1.5 MHz, Verasonics Vantage, beam steered to S1.
+#   Ultrasound duration (UD) 67 ms, intersonication interval 2.5 s with 10% jitter, 500 trials per
+#   condition, conditions in random order. In situ pressure 88 kPa peak to peak (5 V input at 1,500 Hz
+#   PRF, 200 us PD). PRFs 30, 300, 1,500, 3,000, 4,500 Hz; DCs 0.6, 6, 30, 60, 90%; DC = PRF x PD.
+#   The 001199 description encodes a session as rat_PRF_PD_UD_voltage (e.g. BH596_3000_200_67_10).
+#   The paper's condition series, as PRF and PD:
+#   * constant PD 200 us (Fig. 4, 6, 10C, 11B): 30 Hz (0.6% DC), 300 (6%), 1,500 (30%), 3,000 (60%),
+#     4,500 Hz (90%). Fig. 4's "3,000 Hz PRF, 60% DC" and "30 Hz PRF, 0.6% DC" are 3,000/200 and 30/200.
+#   * constant 3,000 Hz PRF (Fig. 7, 10F): PD 2, 20, 100, 200, 300 us for 0.6, 6, 30, 60, 90% DC.
+#   * constant 30 Hz PRF (Fig. 8, 10E): PD 200, 2,000, 10,000, 20,000, 30,000 us.
+#   * constant 60% DC (Fig. 9, 10D): 30 Hz/20,000 us, 300/2,000, 1,500/400, 3,000/200, 4,500/133 us.
+#   * sham, sessions with no tFUS (Fig. 5A); control, tFUS steered to cingulate cortex CG1 (AP 3, ML 0)
+#     at 3,000 Hz PRF (Fig. 5B).
+#   Target determination used 10 to 20 trials at about 170 kPa and 1,500 Hz PRF before each recording.
+# - Measured variables. Sorted single units of S1, POm and AC with spike times and waveforms; trial
+#   (sonication) onset times.
+#
+# Shared method, from the Methods, Statistical analysis and the figure legends. Criteria refer to these
+# by letter. A detail the paper does not fix is named, with the readings its text allows.
+# U, units. Units that fire more than 2,000 spikes in the session (Methods, Neuronal type
+#   classification). Each unit is counted once per session it passes in; the paper's n per condition
+#   are units per condition pooled over rats. Type, RSU or FSU, by k-means on the initial phase (IP,
+#   onset to recrossing of baseline) and afterhyperpolarization period (AHP, end of IP to its
+#   recrossing of baseline), FSUs being the cluster with the shorter, narrower waveforms (Methods,
+#   citing Bartho et al. 2004). Open, (U1) the number of clusters, two by the paper's wording (RSUs and
+#   FSUs), with no other reading in the text; (U2) whether IP and AHP are taken from the mean waveform or
+#   averaged over each unit's spikes ("For each identified spike"), and whether k-means runs on all
+#   units pooled or per area. If the dataset holds the authors' RSU and FSU labels, those are the
+#   paper's classification and are used, with the re-clustering under each reading of U2 as a variant.
+#   AC neurons are not split by type in the paper (Fig. 11A, 11B).
+# R, normalized spiking rate. Rate in a window divided by the rate in the 67 ms before sonication onset,
+#   in percent (Methods; Statistical analysis). Open, (R1) per unit, the trial-averaged rate in the
+#   window over the trial-averaged prestimulus rate; (R2) per trial, window over prestimulus rate, then
+#   averaged over trials, trials with no prestimulus spike left out. Units with no prestimulus spike in
+#   any trial are left out under both. Group values are mean +/- SEM over units (Fig. 4, 5 legends).
+# W, windows. During sonication 0 to 67 ms; postsonication 201 to 268 ms (Results, tFUS parameters,
+#   paragraph 1; Fig. 6 to 9 legends). Fig. 4 reports windows of 67 ms after onset (67–134 ms, 134–268
+#   ms, "from 134 ms"); the readings for Fig. 4 are consecutive 67 ms windows from 0 ms, the claim
+#   holding when the effect is found in at least one window inside the range the paper names. PSTH bins
+#   of 50 ms are for display only (Fig. 3).
+# T, response test. Kruskal-Wallis H test across the groups of a panel, then post hoc one-tailed
+#   two-sample Wilcoxon (rank-sum) tests with Bonferroni correction, significance at 0.01 for spiking
+#   (Methods, Statistical analysis; Fig. 4 and 5 legends). A response "compared with baseline" is a
+#   one-tailed rank-sum test of the window against the prestimulus window, in the direction stated
+#   (above baseline for an activation, below for an inhibition). Open, (T1) the two samples are the
+#   units' window rates and prestimulus rates in spikes/s; (T2) the two samples are the units'
+#   normalized window values and their normalized prestimulus values (100% for every unit under R1, so
+#   under R1 T2 is a one-sample comparison with 100%, run as a rank-sum against a vector of 100s);
+#   (B) the Bonferroni factor, (B1) the number of windows or conditions compared with baseline in the
+#   panel, (B2) the number of all pairwise comparisons among the panel's groups. A comparison between
+#   two conditions in the same window is a one-tailed rank-sum on the units' normalized values, under
+#   the same B readings. Whether a printed p is before or after correction is not said; the criteria
+#   compare corrected p with 0.01.
+# D, directional STTC. Delta t = 20 ms (Methods). The equation is missing from the text; its verbal
+#   definition is that P_A is the fraction of spikes of A within Delta t before a spike of B, T_B the
+#   fraction of time covered by Delta t before each spike of B, P_B the fraction of spikes of B within
+#   Delta t after a spike of A, T_A the fraction of time covered by Delta t after each spike of A. The
+#   reading taken, by the cited STTC of Cutts and Eglen (2014) that the paper says it modified, is
+#   dSTTC = 1/2 [(P_A - T_B)/(1 - P_A T_B) + (P_B - T_A)/(1 - P_B T_A)]; no other combination is named
+#   in the text. dSTTC is computed trial by trial for each cross-area pair recorded in the same session
+#   (Methods), the recording time being the window. Open, (D1) the windows, 67 ms windows tiled from -67
+#   ms (prestimulus, during, and 67 ms steps after) as for the spiking rate, or (D2) the same windows in
+#   the 0 to 268 ms range only; (D3) the normalization, the window's dSTTC minus the prestimulus dSTTC,
+#   or (D4) divided by it and minus one; per pair the mean over trials with spikes from both units in the
+#   window. The window length is not given for dSTTC; 67 ms is taken from the spiking analysis (67 ms
+#   prestimulus and sonication windows), a reading the text allows and no other is named. Tests as T
+#   with significance at 0.05 (Methods), pairs as samples, normalized dSTTC compared with the
+#   prestimulus value (Fig. 10 legend, "compared with prestimulation correlation"), one-tailed in the
+#   stated direction. The Methods name Bonferroni's correction for the spiking post hoc tests only; for
+#   dSTTC they say "Post hoc one-tail two-sample Wilcoxon tests were employed". Open, (C1) uncorrected,
+#   as the dSTTC sentence reads, or (C2) Bonferroni under B1 or B2 as for spiking; the outcome is the
+#   one they all give. Fig. 10C to 10F use the undirected STTC of Cutts and Eglen with the same
+#   Delta t (the text gives no other), between S1 RSUs and POm RSUs, as the change from prestimulus to
+#   during sonication under D3 or D4, compared across conditions by Kruskal-Wallis at 0.05.
+#
+# Every claim's data are the paper's own recordings (data dataset). The paper uses no outside data.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001199"
+paper: doi:10.1523/jneurosci.2218-24.2025
+claims:
+- id: subjects
+  statement: Simultaneous S1 and POm recordings were made in 16 rats, and S1 and auditory cortex
+    recordings in a further 12 rats.
+  source: Materials and Methods, Animal surgery, paragraph 3
+  quote: multiunit activities were recorded from the S1 and POm (N = 16) ... To check the auditory
+    confound, another group of rats was used (N = 12)
+  expected:
+  - quantity: rats with S1 and POm recordings
+    value: 16
+    tolerance: 0
+  - quantity: rats with S1 and AC recordings
+    value: 12
+    tolerance: 0
+  criterion: Counts of distinct rats with sessions of each recording pair under the paper's conditions
+    (S1-targeted tFUS, sham or CG1 control). The tolerance is zero as these are counts of animals, which
+    the paper gives exactly. Reproduced when both counts match; partially reproduced when the dataset
+    holds a subset of the rats (fewer, none extra), with the counts given.
+- id: fig2-target-artifact
+  statement: High-pressure tFUS (about 170 kPa) aimed at the electrode site produces an artifact aligned
+    with sonication that vanishes off target or at lower pressure, and extracted waveforms show tail
+    oscillations at the 1,500 Hz PRF.
+  source: Materials and Methods, Transcranial focused ultrasound stimulation, paragraph 4; Figure 2
+  quote: Once the ultrasound was delivered at the desired target, high “artifact” would appear and align
+    with the stimulation duration (Fig. 2A). To lower the pressure or move off the target could eliminate
+    the “artifact” (Fig. 2B). The extracted spike waveform also showed oscillations at the tail due to the
+    displacement of electrode (Fig. 2C). The frequency of the oscillations was 1,500 Hz which aligned
+    with PRF.
+  expected:
+  - quantity: frequency of waveform tail oscillation
+    value: 1500
+    tolerance: 150
+    unit: Hz
+  criterion: Needs the target-determination trials (10 to 20 trials at about 170 kPa, 1,500 Hz PRF,
+    Methods) and a lower-pressure recording at the same site. The paper gives no measure of the
+    artifact; it shows traces. Reproduced when the voltage aligned to sonication onset shows a
+    deflection confined to 0 to 67 ms at high pressure and not at lower pressure, and the dominant
+    frequency of the mean waveform tail (after the AHP) is within tolerance of 1,500 Hz. The spectral
+    method is a standard choice (FFT peak), named as one.
+- id: fig4-unit-counts
+  statement: In the constant-PD sessions at 3,000 Hz there were 312 RSUs and 54 FSUs in S1 and 233 RSUs
+    and 17 FSUs in POm; at 30 Hz there were 148 RSUs and 61 FSUs in S1 and 189 RSUs and 43 FSUs in POm.
+  source: Figure 4 legend
+  quote: There are 312 RSUs and 54 FSUs recorded from S1, 233 RSUs and 17 FSUs recorded from POm for PRF
+    3,000 Hz. There are 148 RSUs and 61 FSUs recorded from S1 and189 RSUs and 43 FSUs recorded from POm
+    for PRF 30 Hz.
+  expected:
+  - {quantity: S1 RSUs at 3000 Hz, value: 312, tolerance: 31.2}
+  - {quantity: S1 FSUs at 3000 Hz, value: 54, tolerance: 5.4}
+  - {quantity: POm RSUs at 3000 Hz, value: 233, tolerance: 23.3}
+  - {quantity: POm FSUs at 3000 Hz, value: 17, tolerance: 1.7}
+  - {quantity: S1 RSUs at 30 Hz, value: 148, tolerance: 14.8}
+  - {quantity: S1 FSUs at 30 Hz, value: 61, tolerance: 6.1}
+  - {quantity: POm RSUs at 30 Hz, value: 189, tolerance: 18.9}
+  - {quantity: POm FSUs at 30 Hz, value: 43, tolerance: 4.3}
+  criterion: Units selected and typed as in U, in the 3,000 Hz/200 us and 30 Hz/200 us sessions of the
+    S1 and POm rats, counted once per session. Reproduced when all eight counts are within 10% under a
+    reading of U; partially reproduced when at least six are.
+  depends_on:
+  - subjects
+- id: fig4-timelocked-rsu-3000
+  statement: During 3,000 Hz PRF (60% DC) sonication of S1, RSUs in S1 (n = 312) and in POm (n = 233)
+    increase their firing above baseline.
+  source: Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 1; Figure 4A, 4B
+  quote: RSUs from S1 (n = 312, p = 3.13 × 10−7) and POm (n = 233, p = 0.0003) were both activated during
+    3,000 Hz PRF sonication.
+  statistics:
+  - about: S1 RSUs, during sonication against baseline
+    test: post hoc one-tail two-sample Wilcoxon test after Kruskal-Wallis
+    p: 3.13e-7
+    corrected: Bonferroni
+    n: 312 S1 RSUs
+  - about: POm RSUs, during sonication against baseline
+    test: post hoc one-tail two-sample Wilcoxon test after Kruskal-Wallis
+    p: 0.0003
+    corrected: Bonferroni
+    n: 233 POm RSUs
+  criterion: Units as in U in the 3,000 Hz/200 us sessions; normalized rate (R) in 0 to 67 ms; test T,
+    one-tailed for an increase, at corrected p < 0.01. Reproduced when both S1 RSUs and POm RSUs are
+    significant with mean normalized rate above 100%; partially reproduced when one is. Run under R1 and
+    R2, T1 and T2, B1 and B2; the outcome is the one they all give.
+  depends_on:
+  - fig4-unit-counts
+- id: fig4-postsonication-3000
+  statement: After 3,000 Hz PRF sonication, from 134 ms, S1 RSUs, POm RSUs and S1 FSUs (n = 54) show
+    increased firing.
+  source: Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 1; Figure 4A, 4B
+  quote: Postsonication activations were presented for S1 RSUs (p = 5 × 10−18), POm RSUs (p = 0.0007),
+    and S1 FSUs (n = 54, p = 4.03 × 10−8) from 134 ms.
+  statistics:
+  - about: S1 RSUs, postsonication against baseline
+    test: post hoc one-tail two-sample Wilcoxon test after Kruskal-Wallis
+    p: 5.0e-18
+    corrected: Bonferroni
+    n: 312 S1 RSUs
+  - about: POm RSUs, postsonication against baseline
+    test: post hoc one-tail two-sample Wilcoxon test after Kruskal-Wallis
+    p: 0.0007
+    corrected: Bonferroni
+    n: 233 POm RSUs
+  - about: S1 FSUs, postsonication against baseline
+    test: post hoc one-tail two-sample Wilcoxon test after Kruskal-Wallis
+    p: 4.03e-8
+    corrected: Bonferroni
+    n: 54 S1 FSUs
+  criterion: As fig4-timelocked-rsu-3000, in the 67 ms windows of W starting at or after 134 ms (134 to
+    201, 201 to 268 ms; the paper reports this window range for Fig. 4 and 201 to 268 ms in Fig. 6).
+    Reproduced when each of the three groups is significantly above baseline in at least one of these
+    windows; partially reproduced when one or two are.
+  depends_on:
+  - fig4-unit-counts
+- id: fig4-30hz-responses
+  statement: At 30 Hz PRF (0.6% DC), S1 RSUs (n = 148) decrease firing at 67 to 134 ms after onset, and
+    POm RSUs (n = 189) show a delayed increase at 134 to 268 ms.
+  source: Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 1; Figure 4 legend
+  quote: At 30 Hz PRF, the S1 RSUs showed an inhibitory response after sonication (67–134 ms, n = 148, p =
+    0.0029) and POm RSUs expressed delayed excitatory activities (n = 189, p = 2 × 10−9).
+  statistics:
+  - about: S1 RSUs, 67 to 134 ms, decrease against baseline
+    test: post hoc one-tail two-sample Wilcoxon test after Kruskal-Wallis
+    p: 0.0029
+    corrected: Bonferroni
+    n: 148 S1 RSUs
+  - about: POm RSUs, delayed increase against baseline
+    test: post hoc one-tail two-sample Wilcoxon test after Kruskal-Wallis
+    p: 2.0e-9
+    corrected: Bonferroni
+    n: 189 POm RSUs
+  criterion: Units as in U in the 30 Hz/200 us sessions; R; T at corrected p < 0.01, one-tailed for a
+    decrease in S1 RSUs in 67 to 134 ms, and for an increase in POm RSUs in at least one of the windows
+    134 to 201 and 201 to 268 ms (Fig. 4 legend, 134–268 ms). Reproduced when both hold, partially when
+    one does, across the readings of R, T and B.
+  depends_on:
+  - fig4-unit-counts
+- id: fig4-no-fsu-change
+  statement: S1 FSUs show no activity change to 30 Hz PRF, POm FSUs show none to either PRF, and S1 FSUs
+    show no time-locked response at 3,000 Hz.
+  source: Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraphs 1 and 3; Figure 4
+    legend
+  quote: There was no activity change among S1 FSUs (n = 61) to 30 Hz PRF and POm FSUs to both PRFs
+    (3,000 Hz, n = 17; 30 Hz, n = 43).
+  criterion: A claim of absence, judged on the paper's test, T at corrected p < 0.01, in each 67 ms
+    window of W from 0 to 268 ms, for S1 FSUs at 30 Hz, POm FSUs at 30 Hz and 3,000 Hz, and S1 FSUs at
+    3,000 Hz in 0 to 67 ms only. The direction the absence is tested in is not stated; the readings
+    are an increase only (the one-tailed direction of the paper's activations) and either direction
+    (both one-tailed tests). Reproduced when no test finds a change under either reading; not
+    reproduced when a test for an increase finds one; when only a decrease is found the readings
+    differ and the claim is methods_underspecified. The S1 FSU part at 3,000 Hz is read from the
+    Fig. 4 legend, which names time-locked responses in S1 and POm RSUs only, and from paragraph 3
+    ("only S1 RSUs showed time-locked responses to 3,000 Hz PRF"). The mean normalized rates are
+    reported either way, under each reading of R, T and B.
+  depends_on:
+  - fig4-unit-counts
+- id: fig5-unit-counts
+  statement: Sham sessions held 31 RSUs and 53 FSUs in S1 and 67 RSUs and 67 FSUs in POm; CG1 control
+    sessions held 12 RSUs and 34 FSUs in S1 and 55 RSUs and 42 FSUs in POm.
+  source: Figure 5 legend
+  quote: There are 31 RSUs and 53 FSUs recorded from S1 and 67 RSUs and 67 FSUs recorded from POm for sham
+    condition. There are 12 RSUs and 34 FSUs recorded from S1 and 55 RSUs and 42 FSUs recorded from POm
+    for control condition.
+  expected:
+  - {quantity: sham S1 RSUs, value: 31, tolerance: 3.1}
+  - {quantity: sham S1 FSUs, value: 53, tolerance: 5.3}
+  - {quantity: sham POm RSUs, value: 67, tolerance: 6.7}
+  - {quantity: sham POm FSUs, value: 67, tolerance: 6.7}
+  - {quantity: control S1 RSUs, value: 12, tolerance: 1.2}
+  - {quantity: control S1 FSUs, value: 34, tolerance: 3.4}
+  - {quantity: control POm RSUs, value: 55, tolerance: 5.5}
+  - {quantity: control POm FSUs, value: 42, tolerance: 4.2}
+  criterion: As fig4-unit-counts, for the sham and CG1 control sessions. Reproduced when all eight
+    counts are within 10% under a reading of U; partially reproduced when at least six are.
+- id: fig5a-sham-no-response
+  statement: Without tFUS (sham), S1 and POm RSUs and FSUs show no time-locked or delayed (201 to 268 ms)
+    change in activity.
+  source: Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 2; Figure 5A
+  quote: 'In sham condition (no tFUS), S1 neurons and POm neurons showed no time-locked (S1 RSUs: n = 31,
+    p = 1.0; S1 FSUs: n = 53, p = 0.55; POm RSUs: n = 67, p = 1.0; POm FSUs: n = 67, p = 1.0) and delayed'
+  statistics:
+  - about: S1 RSUs, during
+    test: post hoc one-tail two-sample Wilcoxon test after Kruskal-Wallis
+    p: 1.0
+    corrected: Bonferroni
+    n: 31 S1 RSUs
+  - about: S1 FSUs, during
+    test: post hoc one-tail two-sample Wilcoxon test after Kruskal-Wallis
+    p: 0.55
+    corrected: Bonferroni
+    n: 53 S1 FSUs
+  - about: POm RSUs and POm FSUs, during, and all four groups at 201 to 268 ms
+    test: post hoc one-tail two-sample Wilcoxon test after Kruskal-Wallis
+    p: 1.0
+    corrected: Bonferroni
+    n: 31 S1 RSUs, 53 S1 FSUs, 67 POm RSUs, 67 POm FSUs
+  criterion: A claim of absence, judged on the paper's test, T at corrected p < 0.01, in 0 to 67 ms and
+    201 to 268 ms, for the four groups of the sham sessions, aligned to the sham trial times the dataset
+    gives. The direction of the one-tailed tests is not stated; the readings are an increase only (the
+    direction of the responses this control is set against) and either direction. Reproduced when none
+    of the tests is significant under either reading; not reproduced when a test for an increase is;
+    when only a decrease is significant the readings differ and the claim is methods_underspecified.
+    The effect sizes (mean normalized rates) are reported. Run under each reading of R, T and B; the
+    outcome is the one they all give.
+  depends_on:
+  - fig5-unit-counts
+- id: fig5b-cg1-control-no-response
+  statement: With tFUS aimed at the cingulate cortex (CG1) at 3,000 Hz PRF, S1 and POm neurons show no
+    time-locked or delayed (201 to 268 ms) change in activity.
+  source: Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 2; Figure 5B
+  quote: 'In control condition (tFUS targeted at CG1), S1 neurons and POm neurons showed no time-locked
+    (S1 RSUs: n = 12, p = 1.0; S1 FSUs: n = 34, p = 1.0; POm RSUs: n = 55, p = 1.0; POm FSUs: n = 42, p =
+    0.33) and delayed responses (201–268 ms, S1 RSUs: p = 1.0; S1 FSUs: p = 0.10; POm RSUs: p = 0.32, POm
+    FSUs: p = 1.0).'
+  statistics:
+  - about: POm FSUs, during
+    test: post hoc one-tail two-sample Wilcoxon test after Kruskal-Wallis
+    p: 0.33
+    corrected: Bonferroni
+    n: 42 POm FSUs
+  - about: S1 FSUs, 201 to 268 ms
+    test: post hoc one-tail two-sample Wilcoxon test after Kruskal-Wallis
+    p: 0.10
+    corrected: Bonferroni
+    n: 34 S1 FSUs
+  - about: POm RSUs, 201 to 268 ms
+    test: post hoc one-tail two-sample Wilcoxon test after Kruskal-Wallis
+    p: 0.32
+    corrected: Bonferroni
+    n: 55 POm RSUs
+  - about: the other five group and window tests
+    test: post hoc one-tail two-sample Wilcoxon test after Kruskal-Wallis
+    p: 1.0
+    corrected: Bonferroni
+  criterion: As fig5a-sham-no-response, for the CG1 control sessions.
+  depends_on:
+  - fig5-unit-counts
+- id: fig6-unit-counts
+  statement: Across the five constant-PD PRF conditions, 1,050 RSUs and 247 FSUs were sorted in S1 and
+    913 RSUs and 106 FSUs in POm.
+  source: Figure 6 legend
+  quote: The comparison of neuronal responses for sorted 1,050 RSUs (A) and 247 FSUs (B) recorded from S1
+    ... The comparison of neuronal responses for sorted 913 RSUs (C) and 106 FSUs (D) recorded from POm
+  expected:
+  - {quantity: S1 RSUs, value: 1050, tolerance: 105}
+  - {quantity: S1 FSUs, value: 247, tolerance: 24.7}
+  - {quantity: POm RSUs, value: 913, tolerance: 91.3}
+  - {quantity: POm FSUs, value: 106, tolerance: 10.6}
+  criterion: Units as in U in the five 200 us PD sessions (30, 300, 1,500, 3,000, 4,500 Hz), summed over
+    conditions with each unit counted once per session. Reproduced when all four totals are within 10%
+    under a reading of U; partially reproduced when two or three are. The per-condition counts are
+    reported and compared with those the Results give (S1 RSUs 284 at 1,500 Hz, 312 at 3,000 Hz, 152 at
+    4,500 Hz; POm RSUs 153 at 1,500 Hz; POm FSUs 26 at 4,500 Hz).
+- id: fig6a-s1-rsu-timelocked-high-prf
+  statement: With constant 200 us PD, S1 RSU time-locked responses depend on PRF and are elicited only
+    by 1,500, 3,000 and 4,500 Hz, with the highest level, 123.34 +/- 4.3%, at 1,500 Hz.
+  source: Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 1; Figure
+    6A
+  quote: time-locked S1 RSUs’ responses could only be elicited from high PRFs ... 1,500 Hz (n = 284, p =
+    2.74 × 10−6 compared with baseline), 3,000 Hz (n = 312, p = 3.13 × 10−7), and 4,500 Hz (n = 152, p =
+    0.0028), among which 1,500 Hz evoked highest response level of 123.34 ± 4.3%.
+  statistics:
+  - about: during sonication, across PRFs
+    test: Kruskal-Wallis
+    p: 1.49e-15
+    n: 1,050 S1 RSUs
+  - about: 1,500 Hz against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 2.74e-6
+    corrected: Bonferroni
+    n: 284 S1 RSUs
+  - about: 3,000 Hz against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 3.13e-7
+    corrected: Bonferroni
+    n: 312 S1 RSUs
+  - about: 4,500 Hz against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.0028
+    corrected: Bonferroni
+    n: 152 S1 RSUs
+  expected:
+  - quantity: S1 RSU normalized rate during sonication at 1,500 Hz, mean over units
+    value: 123.34
+    tolerance: 4.3
+    unit: percent
+  criterion: S1 RSUs (U) of the five 200 us PD sessions; R in 0 to 67 ms; Kruskal-Wallis across the five
+    PRFs at p < 0.01, then T against baseline per PRF, one-tailed for an increase, corrected p < 0.01.
+    The tolerance is the paper's SEM. Reproduced when the Kruskal-Wallis test is significant, 1,500,
+    3,000 and 4,500 Hz are significant and 30 and 300 Hz are not, 1,500 Hz has the highest mean, and
+    the 1,500 Hz mean is within tolerance; partially reproduced when the pattern of significance holds
+    but the 1,500 Hz value or rank does not. Run under each reading of R, T and B.
+  depends_on:
+  - fig6-unit-counts
+- id: fig6a-s1-rsu-delayed
+  statement: S1 RSU postsonication (201 to 268 ms) responses depend on PRF, occur at PRFs above 30 Hz,
+    and are highest at 4,500 Hz (148.39 +/- 5.41%).
+  source: Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 1; Figure
+    6A legend
+  quote: The delayed responses (201–268 ms) of RSUs could be observed at PRFs higher than 30 Hz and the
+    highest response occurred at 4,500 Hz (148.39 ± 5.41%).
+  statistics:
+  - about: postsonication, across PRFs
+    test: Kruskal-Wallis
+    p: 5.14e-13
+    n: 1,050 S1 RSUs
+  expected:
+  - quantity: S1 RSU normalized rate at 201 to 268 ms at 4,500 Hz, mean over units
+    value: 148.39
+    tolerance: 5.41
+    unit: percent
+  criterion: As fig6a-s1-rsu-timelocked-high-prf, in 201 to 268 ms. Reproduced when the Kruskal-Wallis
+    test is significant, 300, 1,500, 3,000 and 4,500 Hz are significantly above baseline and 30 Hz is
+    not, 4,500 Hz has the highest mean, and its mean is within the paper's SEM; partially reproduced
+    when the significance pattern holds without the value or the rank.
+  depends_on:
+  - fig6-unit-counts
+- id: fig6b-s1-fsu-prf
+  statement: S1 FSUs show no time-locked response to any PRF, and delayed responses only at the higher
+    PRFs, highest at 4,500 Hz (158.75 +/- 10.75%), with PRF-dependent postsonication activity.
+  source: Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 1; Figure
+    6B
+  quote: FSUs did not show time-locked responses to any PRFs and only presented delayed responses at PRFs
+    higher than 1,500 Hz, with the highest response level at 4,500 Hz (158.75 ± 10.75%).
+  statistics:
+  - about: postsonication, across PRFs
+    test: Kruskal-Wallis
+    p: 5.19e-13
+    n: 247 S1 FSUs
+  expected:
+  - quantity: S1 FSU normalized rate at 201 to 268 ms at 4,500 Hz, mean over units
+    value: 158.75
+    tolerance: 10.75
+    unit: percent
+  criterion: S1 FSUs (U) of the five 200 us PD sessions, R, T as in fig6a-s1-rsu-timelocked-high-prf.
+    "Higher than 1,500 Hz" is read as (a) 3,000 and 4,500 Hz significant and 1,500 Hz not, or (b) 1,500
+    Hz and above significant. Reproduced when no PRF gives a significant increase in 0 to 67 ms, the
+    postsonication Kruskal-Wallis is significant, the postsonication pattern matches a reading, 4,500 Hz
+    has the highest mean and that mean is within the SEM; partially reproduced when the absence of
+    time-locked responses and the postsonication pattern hold without the value.
+  depends_on:
+  - fig6-unit-counts
+- id: fig6c-pom-rsu-prf
+  statement: POm RSUs respond during sonication to 1,500 Hz (n = 153) and 3,000 Hz (n = 233), and their
+    delayed responses are induced by the higher PRFs and highest at 1,500 Hz (141.68 +/- 2.38%).
+  source: Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 1; Figure
+    6C legend
+  quote: time-locked responses (Fig. 6B) from POm RSUs could be elicited by 1,500 Hz (n = 153, p = 0.003)
+    and 3,000 Hz PRFs (n = 233, p = 0.0003). However, the delayed responses (201–268 ms) of POm RSUs were
+    induced by PRFs higher than 1,500 Hz and were highest (141.68 ± 2.38%) at 1,500 Hz.
+  statistics:
+  - about: during sonication, across PRFs
+    test: Kruskal-Wallis
+    p: 2.09e-21
+    n: 913 POm RSUs
+  - about: postsonication, across PRFs
+    test: Kruskal-Wallis
+    p: 6.03e-17
+    n: 913 POm RSUs
+  - about: 1,500 Hz during sonication against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.003
+    corrected: Bonferroni
+    n: 153 POm RSUs
+  - about: 3,000 Hz during sonication against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.0003
+    corrected: Bonferroni
+    n: 233 POm RSUs
+  expected:
+  - quantity: POm RSU normalized rate at 201 to 268 ms at 1,500 Hz, mean over units
+    value: 141.68
+    tolerance: 2.38
+    unit: percent
+  criterion: POm RSUs (U) of the five 200 us PD sessions, R, T as in fig6a-s1-rsu-timelocked-high-prf.
+    During sonication, 1,500 and 3,000 Hz significantly above baseline and 30, 300 and 4,500 Hz not.
+    The paper says the delayed responses come at PRFs "higher than 1,500 Hz" yet are highest at 1,500
+    Hz; the readings are (a) 3,000 and 4,500 Hz significant, (b) 1,500, 3,000 and 4,500 Hz significant.
+    Reproduced when both Kruskal-Wallis tests are significant, the time-locked pattern holds, the
+    postsonication pattern matches a reading, and 1,500 Hz has the highest postsonication mean within
+    the SEM; partially reproduced when the time-locked pattern holds and the postsonication part holds
+    only in part.
+  depends_on:
+  - fig6-unit-counts
+- id: fig6d-pom-fsu-prf
+  statement: POm FSUs show no time-locked responses relative to baseline at any PRF (though 30 and 1,500
+    Hz differ), and a delayed response only to 4,500 Hz (n = 26).
+  source: Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 1; Figure
+    6D legend
+  quote: The FSUs did not show any time-locked responses and only expressed the delayed responses to
+    4,500 Hz (n = 26, p = 4.2 × 10−6).
+  statistics:
+  - about: 4,500 Hz postsonication against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 4.2e-6
+    corrected: Bonferroni
+    n: 26 POm FSUs
+  - about: during sonication, 30 against 1,500 Hz
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.004
+    corrected: Bonferroni
+  - about: postsonication, across PRFs
+    test: Kruskal-Wallis
+    p: 3.99e-4
+    n: 106 POm FSUs
+  criterion: POm FSUs (U) of the five 200 us PD sessions, R, T as in fig6a-s1-rsu-timelocked-high-prf.
+    Reproduced when no PRF is significantly above baseline in 0 to 67 ms, only 4,500 Hz is in 201 to
+    268 ms, and the postsonication Kruskal-Wallis is significant; partially reproduced when the 4,500
+    Hz response holds and one other part fails. The 30 against 1,500 Hz comparison in 0 to 67 ms is
+    reported, one-tailed in each direction since the paper does not give one.
+  depends_on:
+  - fig6-unit-counts
+- id: fig7-9-unit-counts
+  statement: The DC series at 3,000 Hz held 645 S1 RSUs, 171 S1 FSUs, 286 POm RSUs and 129 POm FSUs; the
+    DC series at 30 Hz 442 S1 RSUs and 147 S1 FSUs; the 60% DC series 759 S1 RSUs and 151 S1 FSUs.
+  source: Figure 7, 8 and 9 legends
+  quote: sorted 645 RSUs recorded from S1 ... sorted 171 FSUs recorded from S1 ... sorted 286 RSUs from
+    POm ... sorted 129 FSUs ... sorted 442 RSUs recorded from S1 with 30 Hz PRF ... sorted 147 FSUs ...
+    The comparison of 759 RSU’s responses ... The comparison of 151 FSU’s responses
+  expected:
+  - {quantity: S1 RSUs at 3000 Hz across DCs, value: 645, tolerance: 64.5}
+  - {quantity: S1 FSUs at 3000 Hz across DCs, value: 171, tolerance: 17.1}
+  - {quantity: POm RSUs at 3000 Hz across DCs, value: 286, tolerance: 28.6}
+  - {quantity: POm FSUs at 3000 Hz across DCs, value: 129, tolerance: 12.9}
+  - {quantity: S1 RSUs at 30 Hz across DCs, value: 442, tolerance: 44.2}
+  - {quantity: S1 FSUs at 30 Hz across DCs, value: 147, tolerance: 14.7}
+  - {quantity: S1 RSUs at 60% DC across PRFs, value: 759, tolerance: 75.9}
+  - {quantity: S1 FSUs at 60% DC across PRFs, value: 151, tolerance: 15.1}
+  criterion: As fig6-unit-counts, for the three series of the header. Reproduced when all eight totals
+    are within 10% under a reading of U; partially reproduced when at least five are.
+- id: fig7a-s1-rsu-dc-3000
+  statement: At 3,000 Hz PRF, S1 RSU responses depend on DC; time-locked responses are elicited at 30%
+    and 60% DC and delayed responses at 6%, 30% and 60%.
+  source: Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 3; Figure
+    7A
+  quote: with 3,000 Hz PRF, the time-locked responses of S1 RSUs were dependent on DCs which can be
+    elicited with DC of 30% (n = 194, p = 3.38 × 10−6) and 60% (n = 312, p = 5.96 × 10−6). Delayed
+    activities of RSUs were found at 6% (n = 56, p = 0.001), 30% (n = 194, p = 9.64 × 10−32), and 60% (n
+    = 312, p = 1.38 × 10−15).
+  statistics:
+  - about: during sonication, across DCs
+    test: Kruskal-Wallis
+    p: 1.34e-11
+    n: 645 S1 RSUs
+  - about: postsonication, across DCs
+    test: Kruskal-Wallis
+    p: 2.52e-29
+    n: 645 S1 RSUs
+  - about: 30% DC during, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 3.38e-6
+    corrected: Bonferroni
+    n: 194 S1 RSUs
+  - about: 60% DC during, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 5.96e-6
+    corrected: Bonferroni
+    n: 312 S1 RSUs
+  - about: 6% DC postsonication, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.001
+    corrected: Bonferroni
+    n: 56 S1 RSUs
+  - about: 30% DC postsonication, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 9.64e-32
+    corrected: Bonferroni
+    n: 194 S1 RSUs
+  - about: 60% DC postsonication, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 1.38e-15
+    corrected: Bonferroni
+    n: 312 S1 RSUs
+  criterion: S1 RSUs (U) of the five 3,000 Hz sessions (PD 2, 20, 100, 200, 300 us); R in 0 to 67 and
+    201 to 268 ms; Kruskal-Wallis across DCs at p < 0.01 in each window; T against baseline per DC,
+    one-tailed for an increase, corrected p < 0.01. Reproduced when both Kruskal-Wallis tests are
+    significant, exactly 30% and 60% are significant during sonication, and exactly 6%, 30% and 60%
+    postsonication; partially reproduced when the Kruskal-Wallis tests hold and the per-DC pattern
+    differs by one DC. Run under each reading of R, T and B.
+  depends_on:
+  - fig7-9-unit-counts
+- id: fig7b-s1-fsu-dc-3000
+  statement: At 3,000 Hz PRF, S1 FSUs show delayed responses at 6%, 30% and 60% DC, the same range as S1
+    RSUs, and 0.6% differs from 30% postsonication.
+  source: Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 3; Figure
+    7B
+  quote: Delayed responses of FSUs could be elicited by 6% (n = 22, p = 1.29 × 10−8), 30% (n = 49, p = 2.32
+    × 10−11), and 60% (n = 54, p = 2.38 × 10−8) DCs (Fig. 7B), which were the same range of S1 RSUs.
+  statistics:
+  - about: 6% DC postsonication, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 1.29e-8
+    corrected: Bonferroni
+    n: 22 S1 FSUs
+  - about: 30% DC postsonication, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 2.32e-11
+    corrected: Bonferroni
+    n: 49 S1 FSUs
+  - about: 60% DC postsonication, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 2.38e-8
+    corrected: Bonferroni
+    n: 54 S1 FSUs
+  - about: postsonication, 0.6% against 30% DC
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.002
+    corrected: Bonferroni
+    n: 171 S1 FSUs in the panel
+  criterion: As fig7a-s1-rsu-dc-3000 for S1 FSUs in 201 to 268 ms. The legend does not give the
+    direction of the 0.6% against 30% difference; both one-tailed directions are read, the claim holding
+    under the one the data's means give. Reproduced when exactly 6%, 30% and 60% are significantly
+    above baseline and 0.6% and 30% differ significantly; partially
+    reproduced when the per-DC pattern differs by one DC.
+  depends_on:
+  - fig7-9-unit-counts
+- id: fig7c-pom-rsu-dc-3000
+  statement: At 3,000 Hz PRF, POm RSU time-locked responses do not depend on DC and are highest at 60%
+    (106 +/- 0.77%); their delayed responses depend on DC and are activated at the middle and high DCs.
+  source: Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 3; Figure
+    7C legend
+  quote: The POm RSUs’ time-locked responses did not show DC dependence and were highest at 60% (106 ±
+    0.77%; Fig. 7C). Delayed responses could be activated by DC higher than 6% (6%, n = 22, p = 1.55 ×
+    10−6; n = 7, p = 0.001; 60%, n = 233, p = 1.28 × 10−6; 90%, n = 18, p = 0.006).
+  statistics:
+  - about: postsonication, across DCs
+    test: Kruskal-Wallis
+    p: 3.61e-4
+    n: 286 POm RSUs
+  - about: 6% DC postsonication, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 1.55e-6
+    corrected: Bonferroni
+    n: 22 POm RSUs
+  - about: unlabeled DC (by order 30%) postsonication, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.001
+    corrected: Bonferroni
+    n: 7 POm RSUs
+  - about: 60% DC postsonication, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 1.28e-6
+    corrected: Bonferroni
+    n: 233 POm RSUs
+  - about: 90% DC postsonication, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.006
+    corrected: Bonferroni
+    n: 18 POm RSUs
+  expected:
+  - quantity: POm RSU normalized rate during sonication at 60% DC, mean over units
+    value: 106
+    tolerance: 0.77
+    unit: percent
+  criterion: POm RSUs (U) of the five 3,000 Hz sessions, R, T as in fig7a-s1-rsu-dc-3000. The absence
+    of DC dependence during sonication is judged on the paper's test, Kruskal-Wallis across the five DCs
+    in 0 to 67 ms, at p < 0.01 (the spiking level). "Higher than 6%" with 6% listed is read as (a) 6%,
+    30%, 60% and 90% significant and 0.6% not, or (b) 30%, 60% and 90% significant; the unlabeled n = 7
+    entry is taken as 30% by its order. Reproduced when the during-sonication Kruskal-Wallis is not
+    significant, 60% has the highest mean within the paper's SEM, the postsonication Kruskal-Wallis is
+    significant and the postsonication pattern matches a reading; partially reproduced when the two
+    Kruskal-Wallis results hold and the rest holds in part.
+  depends_on:
+  - fig7-9-unit-counts
+- id: fig7d-pom-fsu-dc-3000
+  statement: At 3,000 Hz PRF, POm FSUs show no time-locked response against baseline but DC-dependent
+    activity during sonication, with 30% above 0.6% and 6%, and delayed responses at 30%, 60% and 90%.
+  source: Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 3; Figure
+    7D legend
+  quote: There was no time-locked responses of POm FSUs compared with baseline while 30% DC showed higher
+    activities compared with 0.6% (p = 0.0001) and 6% DC (p = 0.0003). The delayed activities of POm FSUs
+    occurred at 30% (n = 18, p = 0.003), 60% (n = 17, p = 0.005), and 90% (n = 52, p = 6.8 × 10−5) DCs
+  statistics:
+  - about: during sonication, across DCs
+    test: Kruskal-Wallis
+    p: 3.32e-4
+    n: 129 POm FSUs
+  - about: during, 30% against 0.6% DC
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.0001
+    corrected: Bonferroni
+  - about: during, 30% against 6% DC
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.0003
+    corrected: Bonferroni
+  - about: 30% DC postsonication, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.003
+    corrected: Bonferroni
+    n: 18 POm FSUs
+  - about: 60% DC postsonication, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.005
+    corrected: Bonferroni
+    n: 17 POm FSUs
+  - about: 90% DC postsonication, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 6.8e-5
+    corrected: Bonferroni
+    n: 52 POm FSUs
+  criterion: POm FSUs (U) of the five 3,000 Hz sessions, R, T as in fig7a-s1-rsu-dc-3000. Reproduced when
+    no DC is significantly above baseline in 0 to 67 ms, the during-sonication Kruskal-Wallis is
+    significant, 30% is significantly above 0.6% and 6% (one-tailed), and exactly 30%, 60% and 90% are
+    significant in 201 to 268 ms; partially reproduced when at least three of these four parts hold.
+  depends_on:
+  - fig7-9-unit-counts
+- id: fig8a-s1-rsu-dc-30
+  statement: At 30 Hz PRF, S1 RSUs respond during sonication at 6%, 30% and 90% DC and after sonication
+    only at 90% DC, with DC-dependent activity in both windows.
+  source: Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 3; Figure
+    8A
+  quote: With 30 Hz PRF stimulation (Fig. 8A), the S1 RSUs showed time-locked responses to DC of 6% (n =
+    81, p = 1.19 × 10−8), 30% (n = 61, p = 0.001), and 90% (n = 66, p = 2.17 × 10−6) and delayed responses
+    to 90% DC (n = 66, p = 1.5 × 10−24).
+  statistics:
+  - about: during sonication, across DCs
+    test: Kruskal-Wallis
+    p: 6.98e-12
+    n: 442 S1 RSUs
+  - about: postsonication, across DCs
+    test: Kruskal-Wallis
+    p: 1.02e-27
+    n: 442 S1 RSUs
+  - about: 6% DC during, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 1.19e-8
+    corrected: Bonferroni
+    n: 81 S1 RSUs
+  - about: 30% DC during, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.001
+    corrected: Bonferroni
+    n: 61 S1 RSUs
+  - about: 90% DC during, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 2.17e-6
+    corrected: Bonferroni
+    n: 66 S1 RSUs
+  - about: 90% DC postsonication, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 1.5e-24
+    corrected: Bonferroni
+    n: 66 S1 RSUs
+  criterion: S1 RSUs (U) of the five 30 Hz sessions (PD 200, 2,000, 10,000, 20,000, 30,000 us), R, T as
+    in fig7a-s1-rsu-dc-3000. Reproduced when both Kruskal-Wallis tests are significant, exactly 6%, 30%
+    and 90% are significantly above baseline in 0 to 67 ms and only 90% in 201 to 268 ms; partially
+    reproduced when the Kruskal-Wallis tests hold and the per-DC pattern differs by one DC.
+  depends_on:
+  - fig7-9-unit-counts
+- id: fig8b-s1-fsu-dc-30
+  statement: At 30 Hz PRF, 90% DC induces a time-locked increase in S1 FSUs (n = 28), whose activity
+    during sonication depends on DC; after sonication they respond only to 90% DC, while the legend
+    reports no DC difference postsonication.
+  source: Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 3; Figure
+    8B legend
+  quote: Moreover, 90% DC with 30 Hz PRF induced positive time-locked response in S1 FSUs (Fig. 8B; n = 28,
+    p = 4.57 × 10−11). Like S1 RSUs, S1 FSUs only showed delayed responses to 90% DC (n = 28, p = 0.007)
+    with 30 Hz PRF.
+  statistics:
+  - about: 90% DC during, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 4.57e-11
+    corrected: Bonferroni
+    n: 28 S1 FSUs
+  - about: 90% DC postsonication, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.007
+    corrected: Bonferroni
+    n: 28 S1 FSUs
+  - about: during sonication, across DCs
+    test: Kruskal-Wallis
+    p: 1.89e-8
+    n: 147 S1 FSUs
+  criterion: S1 FSUs (U) of the five 30 Hz sessions, R, T as in fig7a-s1-rsu-dc-3000. Reproduced when the
+    during-sonication Kruskal-Wallis is significant, 90% is significantly above baseline in 0 to 67 ms,
+    and in 201 to 268 ms 90% is significantly above baseline and no other DC is; partially reproduced
+    when the time-locked part holds without the delayed part. The postsonication Kruskal-Wallis is
+    reported against the legend's "no difference to DCs postsonication".
+  depends_on:
+  - fig7-9-unit-counts
+- id: fig9a-s1-rsu-60dc
+  statement: At constant 60% DC, only 30 Hz PRF differs from the other PRFs in S1 RSU activity during
+    sonication, and postsonication activity is highest at 4,500 Hz; activity depends on PRF in both
+    windows.
+  source: Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 3; Figure
+    9A legend
+  quote: only 30 Hz PRF showed different effects to other PRFs (300 Hz, p = 0.008; 1,500 Hz, p = 0.006;
+    3,000 Hz, p = 0.007; 4,500 Hz, p = 0.0003) on S1 RSUs during sonication, while postsonication
+    activities preferred 4,500 Hz.
+  statistics:
+  - about: during sonication, across PRFs
+    test: Kruskal-Wallis
+    p: 2.47e-4
+    n: 759 S1 RSUs
+  - about: postsonication, across PRFs
+    test: Kruskal-Wallis
+    p: 1.65e-25
+    n: 759 S1 RSUs
+  - about: during, 30 against 300 Hz
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.008
+    corrected: Bonferroni
+  - about: during, 30 against 1,500 Hz
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.006
+    corrected: Bonferroni
+  - about: during, 30 against 3,000 Hz
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.007
+    corrected: Bonferroni
+  - about: during, 30 against 4,500 Hz
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 0.0003
+    corrected: Bonferroni
+  criterion: S1 RSUs (U) of the five 60% DC sessions (30 Hz/20,000 us, 300/2,000, 1,500/400, 3,000/200,
+    4,500/133 us), R in 0 to 67 and 201 to 268 ms, Kruskal-Wallis at p < 0.01, pairwise one-tailed
+    rank-sum tests between PRFs under B1 (the five PRFs compared with baseline) and B2 (the ten pairs),
+    corrected p < 0.01. The direction of the
+    30 Hz difference is not stated; both directions are read, the claim holding under the one the
+    data's means give. Reproduced when both Kruskal-Wallis tests are significant, 30 Hz differs from
+    each of the other four PRFs in one direction during sonication and no other pair differs, and 4,500
+    Hz has the highest postsonication mean; partially reproduced when 30 Hz differs from three of the
+    four or the postsonication rank fails.
+  depends_on:
+  - fig7-9-unit-counts
+- id: fig9b-s1-fsu-60dc
+  statement: At constant 60% DC, S1 FSUs respond to 1,500 Hz PRF during sonication (n = 48) and
+    postsonication prefer 4,500 Hz (n = 18), with PRF-dependent activity in both windows.
+  source: Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 3; Figure
+    9B legend
+  quote: S1 FSUs responded to 1,500 Hz PRF (n = 48, p = 3.35 ×10−6) during sonication and preferred 4,500
+    Hz post sonication (n = 18, p = 5.84 × 10−10; Fig. 9B).
+  statistics:
+  - about: 1,500 Hz during, against baseline
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 3.35e-6
+    corrected: Bonferroni
+    n: 48 S1 FSUs
+  - about: 4,500 Hz postsonication
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 5.84e-10
+    corrected: Bonferroni
+    n: 18 S1 FSUs
+  - about: during sonication, across PRFs
+    test: Kruskal-Wallis
+    p: 0.0079
+    n: 151 S1 FSUs
+  - about: postsonication, across PRFs
+    test: Kruskal-Wallis
+    p: 4.996e-5
+    n: 151 S1 FSUs
+  criterion: S1 FSUs (U) of the five 60% DC sessions, R and T as in fig9a-s1-rsu-60dc. Reproduced when
+    both Kruskal-Wallis tests are significant, 1,500 Hz is significantly above baseline during
+    sonication, and 4,500 Hz is significantly above baseline postsonication with the highest mean;
+    partially reproduced when two of these three parts hold.
+  depends_on:
+  - fig7-9-unit-counts
+- id: fig10a-dsttc-3000-during
+  statement: During 3,000 Hz PRF, 60% DC sonication, the directional correlation from S1 RSUs to POm RSUs
+    and from POm RSUs to S1 FSUs increases, while S1 RSU to POm FSU and POm RSU to S1 RSU do not change.
+  source: Results, tFUS elicited correlation change in CTC pathway, paragraph 1; Figure 10A legend
+  quote: When 3,000 Hz PRF was applied, S1 RSUs showed an increased correlation to POm RSUs during
+    sonication (p = 0.01). At the same period, POm RSUs showed enhanced correlation to S1 FSUs (p = 0.02).
+    The other directional correlation did not show significant change during sonication.
+  statistics:
+  - about: S1 RSU to POm RSU, during against prestimulus
+    test: one-tail two-sample Wilcoxon test
+    p: 0.01
+  - about: POm RSU to S1 FSU, during against prestimulus
+    test: one-tail two-sample Wilcoxon test
+    p: 0.02
+  criterion: Pairs from the 3,000 Hz/200 us sessions, types as in U, normalized dSTTC as in D in 0 to 67
+    ms against the prestimulus window, one-tailed rank-sum at p < 0.05, after Kruskal-Wallis across the
+    windows. Reproduced when S1 RSU to POm RSU and POm RSU to S1 FSU increase significantly and S1 RSU to
+    POm FSU and POm RSU to S1 RSU do not change (tested in either direction, the paper's "no significant
+    change"); partially reproduced when one of the two increases holds. Run under D1 and D2, D3 and D4, C1 and
+    C2, R-independent; the outcome is the one they all give.
+  depends_on:
+  - fig4-unit-counts
+- id: fig10a-dsttc-3000-post
+  statement: After 3,000 Hz PRF sonication, the directional correlation from S1 RSUs to POm FSUs and from
+    POm RSUs to S1 RSUs decreases.
+  source: Results, tFUS elicited correlation change in CTC pathway, paragraph 1; Figure 10A
+  quote: Postsonication, we found the correlation from S1 RSUs to POm FSUs and POm RSUs to S1 RSUs
+    significantly decreased, representing the desynchronization of spikes.
+  criterion: As fig10a-dsttc-3000-during, one-tailed for a decrease, in the postsonication windows of
+    D1 or D2 (the paper does not say which postsonication window; 201 to 268 ms is the window of the
+    spiking analysis, and the claim holds when the decrease is significant in at least one window
+    after 67 ms). Reproduced when both decrease; partially when one does.
+  depends_on:
+  - fig4-unit-counts
+- id: fig10b-dsttc-30
+  statement: During 30 Hz PRF sonication, the directional correlation from S1 RSUs to POm FSUs increases
+    and that from POm RSUs to S1 FSUs decreases.
+  source: Results, tFUS elicited correlation change in CTC pathway, paragraph 1; Figure 10B legend
+  quote: When delivering 30 Hz ultrasound, S1 RSUs to POm FSUs higher correlated (p = 0.0058), while POm
+    RSUs showed decreased correlation to S1 FSUs during sonication (p = 0.0058).
+  statistics:
+  - about: S1 RSU to POm FSU, increase
+    test: one-tail two-sample Wilcoxon test
+    p: 0.0058
+  - about: POm RSU to S1 FSU, decrease
+    test: one-tail two-sample Wilcoxon test
+    p: 0.0058
+  criterion: As fig10a-dsttc-3000-during, for the 30 Hz/200 us sessions in 0 to 67 ms. Reproduced when
+    the S1 RSU to POm FSU increase and the POm RSU to S1 FSU decrease are both significant at p < 0.05;
+    partially reproduced when one is.
+  depends_on:
+  - fig4-unit-counts
+- id: fig10c-sttc-constant-pd
+  statement: With constant 200 us PD, the change in S1 RSU to POm RSU correlation during sonication does
+    not depend on PRF, though 1,500 Hz gives a larger change than 30 Hz.
+  source: Results, tFUS elicited correlation change in CTC pathway, paragraph 2; Figure 10C
+  quote: When applying tFUS with constant 200 μs PD, varying the DC and PRF, the correlation did not show
+    PRF-dependent change. A total of 1,500 Hz PRF did show a higher correlation change compared with 30
+    Hz PRF (Fig. 10C; p = 0.02).
+  statistics:
+  - about: 1,500 against 30 Hz
+    test: one-tail two-sample Wilcoxon test
+    p: 0.02
+  criterion: S1 RSU and POm RSU pairs of the five 200 us PD sessions, STTC change from prestimulus to 0 to
+    67 ms as in D (D3 or D4). The absence is judged on the paper's test, Kruskal-Wallis across the five
+    PRFs at p < 0.05, not significant; the 1,500 against 30 Hz one-tailed rank-sum at p < 0.05. Reproduced
+    when the Kruskal-Wallis test is not significant and 1,500 Hz exceeds 30 Hz significantly; not
+    reproduced when the Kruskal-Wallis test is significant; partially reproduced when it is not and the
+    pairwise test fails. Effect sizes (median change per PRF) are reported.
+  depends_on:
+  - fig6-unit-counts
+- id: fig10d-sttc-60dc
+  statement: At constant 60% DC, the S1 RSU to POm RSU correlation change depends on PRF, with a
+    preference for 1,500 and 3,000 Hz.
+  source: Results, tFUS elicited correlation change in CTC pathway, paragraph 2; Figure 10D legend
+  quote: Then we fixed the DC to 60% and varied PRF. Unlike the neuronal responses (Fig. 9), the
+    correlation showed the preference to 1,500 and 3,000 Hz (Fig. 10D).
+  statistics:
+  - test: Kruskal-Wallis
+    p: 0.0012
+  criterion: As fig10c-sttc-constant-pd, for the five 60% DC sessions. Reproduced when the Kruskal-Wallis
+    test is significant at p < 0.05 and 1,500 and 3,000 Hz have the two highest changes; partially
+    reproduced when it is significant and one of them is among the two highest. The paper does not say
+    whether the preference is read from means or medians; both are read.
+  depends_on:
+  - fig7-9-unit-counts
+- id: fig10e-sttc-30hz-dc
+  statement: At 30 Hz PRF, the S1 RSU to POm RSU correlation change depends on DC, changing most at the
+    middle DCs (6, 30, 60%) and less at 0.6% and 90%.
+  source: Results, tFUS elicited correlation change in CTC pathway, paragraph 2; Figure 10E
+  quote: For 30 Hz PRF (Fig. 10E), the correlation tended to change most at a middle range (6, 30, 60%)
+    and respond less to lower (e.g., 0.6%) and higher DC (e.g., 90%).
+  statistics:
+  - test: Kruskal-Wallis
+    p: 0.0054
+  criterion: As fig10c-sttc-constant-pd, for the five 30 Hz sessions. "Tended to" is judged on the means, and
+    on the medians as a second reading (the paper names neither);
+    reproduced when the Kruskal-Wallis test is significant at p < 0.05 and each of 6%, 30% and 60% has a
+    larger mean change than both 0.6% and 90%; partially reproduced when the test is significant and two
+    of the three middle DCs exceed both ends.
+  depends_on:
+  - fig7-9-unit-counts
+- id: fig10f-sttc-3000-dc
+  statement: At 3,000 Hz PRF, the S1 RSU to POm RSU correlation change does not depend on DC.
+  source: Results, tFUS elicited correlation change in CTC pathway, paragraph 2; Figure 10F
+  quote: For 3,000 Hz PRF, the pathway correlation showed DC independence (Fig. 10F).
+  criterion: A claim of absence, judged on the paper's test, Kruskal-Wallis across the five 3,000 Hz DC
+    sessions at p < 0.05, measure as in fig10c-sttc-constant-pd. Reproduced when not significant, not
+    reproduced when significant, under each reading of D3 and D4; the H statistic and the per-DC means
+    are reported.
+  depends_on:
+  - fig7-9-unit-counts
+- id: fig11b-ac-responses
+  statement: Auditory cortex neurons respond during sonication to 1,500 and 3,000 Hz PRF and after
+    sonication to 30, 1,500, 3,000 and 4,500 Hz, with PRF-dependent responses and the least response at
+    300 Hz.
+  source: Results, Auditory confound on CTC pathway modulation using tFUS, paragraph 1; Figure 11 legend
+    (panel B, printed as C)
+  quote: During sonication, the AC neurons showed time-locked responses to 1,500 Hz (n = 107, p = 9.9 ×
+    10−5) and 3,000 Hz PRF (n = 104, p = 1.98 × 10−7). Postsonication, neuronal responses were activated
+    by 30 Hz (n = 83, p = 1.77 × 10−20), 1,500 Hz, (n = 107, p = 1.36 × 10−5), 3,000 Hz (n = 104, p = 4.47
+    × 10−13), and 4,500 Hz (n = 100, p = 1.66 × 10−40).
+  statistics:
+  - about: during sonication, across PRFs
+    test: Kruskal-Wallis
+    p: 3.18e-4
+    n: 453 AC neurons
+  - about: postsonication, across PRFs
+    test: Kruskal-Wallis
+    p: 2.67e-43
+    n: 453 AC neurons
+  - about: 1,500 Hz during
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 9.9e-5
+    corrected: Bonferroni
+    n: 107 AC neurons
+  - about: 3,000 Hz during
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 1.98e-7
+    corrected: Bonferroni
+    n: 104 AC neurons
+  - about: 30 Hz postsonication
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 1.77e-20
+    corrected: Bonferroni
+    n: 83 AC neurons
+  - about: 1,500 Hz postsonication
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 1.36e-5
+    corrected: Bonferroni
+    n: 107 AC neurons
+  - about: 3,000 Hz postsonication
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 4.47e-13
+    corrected: Bonferroni
+    n: 104 AC neurons
+  - about: 4,500 Hz postsonication
+    test: post hoc one-tail two-sample Wilcoxon test
+    p: 1.66e-40
+    corrected: Bonferroni
+    n: 100 AC neurons
+  expected:
+  - {quantity: AC neurons across the five PRFs, value: 453, tolerance: 45.3}
+  criterion: AC units of the 12 S1 and AC rats with more than 2,000 spikes (U, not typed), R, T as in
+    fig6a-s1-rsu-timelocked-high-prf, 0 to 67 and 201 to 268 ms. Which PD the PRF series used is not
+    stated ("varying combination of PRFs and DCs"); the reading is the 200 us PD series of Fig. 6, and
+    any other PRF series the AC sessions hold is shown as a variant. Reproduced when both
+    Kruskal-Wallis tests are significant, exactly 1,500 and 3,000 Hz are significant during sonication,
+    exactly 30, 1,500, 3,000 and 4,500 Hz postsonication, and 300 Hz has the lowest mean in both windows;
+    partially reproduced when the patterns differ by one PRF. The total count is within 10%.
+  depends_on:
+  - subjects
+- id: fig11c-ac-to-s1-30hz
+  statement: During 30 Hz PRF sonication the directional correlation from AC neurons to S1 RSUs increases
+    and lasts about 150 to 200 ms, while the correlation of AC neurons to S1 FSUs changes during and right
+    after sonication.
+  source: Figure 11 legend (second panel C); Results, Auditory confound on CTC pathway modulation using
+    tFUS, paragraph 2
+  quote: During tFUS sonication with 30 Hz PRF, the correlation from 878 paired AC neurons to S1 RSUs
+    significantly increased (p = 0.0014) which lasting for ∼150 ms (left). The correlation of AC neurons to
+    S1 FSUs decreased during and right after sonication.
+  statistics:
+  - about: AC to S1 RSU, during against prestimulus
+    test: one-tail two-sample Wilcoxon test
+    p: 0.0014
+    n: 878 pairs
+  expected:
+  - {quantity: AC to S1 RSU pairs at 30 Hz, value: 878, tolerance: 87.8}
+  criterion: Pairs of AC neurons and S1 units (U) in the 30 Hz/200 us sessions of the AC rats, normalized
+    dSTTC from AC to S1 as in D, against the prestimulus window, one-tailed rank-sum at p < 0.05. The
+    legend gives 1,421 AC and S1 RSU pairs and 878 pairs for 30 Hz; the readings are (a) 878 is the
+    number of pairs in the 30 Hz sessions and 1,421 those of all sessions, (b) 878 are the pairs with a
+    defined dSTTC among 1,421 in the 30 Hz sessions. The Results say the increase lasted about 200 ms and
+    that the same synchronization was found from AC to S1 FSUs, while the legend says about 150 ms and a
+    decrease to S1 FSUs. Reproduced when the AC to S1 RSU increase is significant in 0 to 67 ms and stays
+    significant in consecutive windows to between 134 and 268 ms (covering both durations); partially
+    reproduced when only the 0 to 67 ms increase holds. The AC to S1 FSU change is reported with its
+    direction, set against both passages, and the pair count is compared under each reading.
+  depends_on:
+  - fig11b-ac-responses
+- id: fig11d-ac-to-s1-3000
+  statement: With 3,000 Hz PRF, AC neurons show no directional correlation change with S1 RSUs, while the
+    correlation of AC neurons to S1 FSUs changes in both directions after sonication, at about 200 to 300
+    ms.
+  source: Figure 11 legend (panel D); Results, Auditory confound on CTC pathway modulation using tFUS,
+    paragraph 2
+  quote: The 1,714 paired neurons recorded from 3,000 Hz PRF sessions were compared. There was no
+    correlation change of AC neurons to S1 RSUs. While there were postsonication bidirectional correlation
+    change from 1,016 paired AC neurons to S1 FSUs.
+  expected:
+  - {quantity: AC to S1 FSU pairs at 3000 Hz, value: 1016, tolerance: 101.6}
+  criterion: As fig11c-ac-to-s1-30hz, for the 3,000 Hz/200 us sessions. The absence for AC to S1 RSUs is
+    judged on the paper's test, one-tailed rank-sum against the prestimulus window at p < 0.05, in
+    each window of D, in either direction; reproduced for that part when none is significant. The AC to
+    S1 FSU part holds when windows between about 200 and 300 ms (D1 windows 201 to 268 and 268 to 335
+    ms) show significant changes, an increase in one and a decrease in another ("bidirectional"; the
+    paper does not say whether this means both signs over time or both directions of the pair, which is
+    the second reading, AC to S1 FSU and S1 FSU to AC both changing). Reproduced when both parts hold,
+    partially when one does.
+  depends_on:
+  - fig11b-ac-responses
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header D, the dSTTC tests were given Bonferroni's correction through T, but the Methods name it for the spiking post hoc tests only; the correction is now open, C1 uncorrected and C2 Bonferroni, and fig10a-dsttc-3000-during runs both.
+  - Header D, the 67 ms dSTTC window length is not given by the paper; it is now named as taken from the spiking windows.
+  - fig4-no-fsu-change, source changed from paragraphs 1 and 2 to paragraphs 1 and 3 and the Fig. 4 legend, where the S1 FSU 3,000 Hz part is stated; the outcome rule now follows the protocol when the two direction readings differ (methods_underspecified) where it had counted any decrease as not reproduced.
+  - fig5a-sham-no-response (and fig5b by reference), the one-tailed direction was fixed to an increase by the agent; the paper does not state it, so increase only and either direction are now both read, with the same outcome rule as fig4-no-fsu-change.
+  - fig5a-sham-no-response, the n of the pooled p = 1.0 entry listed only the POm groups though it covers all four groups at 201 to 268 ms; corrected.
+  - fig7b-s1-fsu-dc-3000, the criterion required 30% above 0.6%, a direction the Fig. 7B legend does not give; both directions are now read.
+  - fig9a-s1-rsu-60dc, B1 was glossed as the ten pairs, which is B2 in the header; corrected to B1 the five PRFs, B2 the ten pairs.
+  - fig10d-sttc-60dc and fig10e-sttc-30hz-dc, the ranking was on means only, an agent choice; medians are added as a second reading since the paper names neither.
+  - Open, whether dandiset 001199 holds the paper's recordings (the paper names 000946) is for the author to settle from the dataset.
+  - Open, the dSTTC equation is lost from the text; the Cutts and Eglen form in header D is a reading, with no other named in the text.

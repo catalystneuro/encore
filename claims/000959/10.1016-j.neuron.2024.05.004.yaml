@@ -1,0 +1,1166 @@
+# Claims for Fan, Dal Monte, Nair, Fagan & Chang (2024) on dandiset 000959.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-22,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the accepted author manuscript in PubMed Central (PMC11309918, NIHMS1994226),
+# main text, figure legends and STAR Methods, with its one supplement
+# (NIHMS1994226-supplement-1.pdf, Table S1 and the legends of Figures S1 to S4). The version of
+# record (Neuron 112(15) 2631-2644.e6) was not read. The Results point to "Supplementary
+# Results" for the Mouth stimulation experiments and the post-gaze window; the supplement holds
+# no such section, and these results are given in the STAR Methods of the manuscript
+# ("Gaze distance analyses" and "Gaze distance analyses (Mouth stimulation)"), which were read.
+#
+# Code read: github.com/changlabneuro/microstim-ofc-social-attention, commit cc0bf994 (2024-10-15),
+# the analysis code named in Data and code availability (also Zenodo doi:10.5281/zenodo.11110139).
+# It holds MATLAB scripts for every analysis of the paper ("Scripts for social attention":
+# Get data, Overall gaze behavior and number of stims, Heatmap, Spatial dimension, Temporal
+# dimension, Inter-individual dynamics, Saccade kinematics) and older scripts (stim/, script/).
+# It starts from intermediate files (fixation events, ROIs, positions, stimulation and sham
+# times) made by an upstream pipeline that is not in the repository, and it calls functions
+# of outside packages (bfw, shared_utils, dsp3). The causal decomposition itself was run
+# outside the repository; only its output folder name is given
+# (cd_output_null_02_1000_150_100_10). The repository also holds zipped processed data folders;
+# these were not opened.
+#
+# Data the paper used. Two male rhesus macaques were stimulated (M1, monkey L, "Lynch" in the
+# code, chamber on the left; monkey T, "Tarantino", chamber on the right); one female, monkey E,
+# was the partner (M2) of both. Eyes stimulation experiments: 27 days per stimulated area (OFC,
+# dmPFC, ACCg), 15 per area from monkey L and 12 from monkey T, 81 days in all; the code lists
+# the days by date. Each day alternated live social gaze sessions (about 10 for L, 9 to 11; about
+# 15 for T, 14 to 15) and non-social control sessions with a random dot motion (RDM) stimulus in
+# front of M2's face (about 5; 4 to 8 for L, 5 for T), 300 s each with 180 s breaks. Mouth
+# stimulation control experiments: 5 days per area from monkey T. Gaze positions and pupil
+# size of both monkeys at 1000 Hz (EyeLink 1000); in control sessions M2's gaze is not usable.
+# Each trial is a microstimulation (75 uA, 100 Hz, 200 ms) or a sham, triggered with
+# probability 0.5 by an online fixation (150 ms window, dispersion below 1 degree) in the Eyes
+# ROI (or the RDM ROI, or the Mouth ROI), trials at least 5 s apart, two stimulations and two
+# shams in every four. Variables used: stimulation and sham times and labels, M1 and M2 gaze
+# positions, fixations (EyeMMV, t1 = 1.18 and t2 = 0.59 degrees, minimum 70 ms), the Eyes,
+# Face, Mouth and RDM ROIs per day, gaze events labelled M1-only, M2-only or mutual, pupil
+# size, saccades. Raw neural signals and multi-unit activity were recorded (Fig. 1D) but no
+# finding below rests on them.
+#
+# Method choices fixed here from the code where the Methods are silent, for every claim that
+# uses trials. A trial is kept when its time lies within the run and more than 5 s before the
+# run's last sample; the first trial of each run is dropped (the code labels each trial by the
+# one before it). Trials are grouped by their own type (stimulation or sham). The post-gaze
+# epoch takes the fixations whose start time lies in [0, 1.5) s after the trial time. A
+# fixation's position is the mean of its gaze samples; its social gaze distance is the
+# Euclidean distance from that position to the centre of the partner's Eyes ROI (the RDM ROI in
+# control sessions). A trial's distance is the mean over its fixations; a day's value is the
+# mean over its trials of a type, ignoring trials with no fixation. Which fixations enter the
+# distance: the Methods say "all M1's fixations"; the code (S3_Basic_Gaze_Matrices_Combined.m,
+# m1_all, built in S1_Get_data_gaze_Lynch.m) takes only events labelled looks_by m1, which
+# it calls "exclusive m1 events", and leaves out M1 fixations labelled mutual. The Methods
+# reading (M1-only and mutual events) is the main one and the code's (M1-only events) is a
+# variant, shown for every distance claim. A fixation is contralateral
+# or ipsilateral by the side of the mean horizontal gaze position of its event relative to the
+# centre of the whole Face ROI of M2's calibration (center_roi_m2_face in S1_Get_data_gaze_Lynch.m
+# and _Tarantino.m: M2's Face ROI, which is M1's own face, mirrored into M1's coordinates with
+# the m2_to_m1 offset; this is not the centre of the partner's face, center_roi_m1_face):
+# for monkey L (left chamber) left of centre is
+# ipsilateral, for monkey T (right chamber) right of centre is ipsilateral. Day-level
+# comparisons are two-sided Wilcoxon signed-rank tests over days; trial-level comparisons are
+# two-sided Wilcoxon rank-sum tests over the trials of all days of an area pooled. "Both
+# monkeys combined" is all 27 days of an area. Distances in the code are in pixels, converted
+# to degrees for plots with h = 27 cm, d = 50 cm and 768 pixels (the Methods give 36 cm to the
+# middle monitor); rank tests do not depend on that scale.
+#
+# Details open in the paper and the code, named in the claims that need them: the padding of
+# the Eyes ROI (the Methods text reads "adding a padding of to the center of each eye", the
+# number is missing), the smoothing used to fill gaps before the causal decomposition and the
+# decomposition's settings, the side of the permutation test for the slope difference, the
+# bootstrap p-value of the Mouth comparison, and how the "diff" values and the 41% and 86%
+# figures are averaged.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000959"
+paper: doi:10.1016/j.neuron.2024.05.004
+claims:
+- id: design-days-per-area
+  statement: Eyes stimulation was applied on 27 days per stimulated area (OFC, dmPFC and ACCg),
+    15 per area from monkey L and 12 per area from monkey T, and Mouth stimulation on 5 days per
+    area from monkey T.
+  source: STAR Methods, Closed-loop microstimulation protocol, paragraph 1; Figure 1B legend
+  quote: In our main experiments (Eyes stimulation; n = 15 per area from monkey L and n = 12 per
+    area from monkey T)
+  expected:
+  - quantity: Eyes stimulation days per area, monkey L
+    value: 15
+    tolerance: 0
+  - quantity: Eyes stimulation days per area, monkey T
+    value: 12
+    tolerance: 0
+  - quantity: Mouth stimulation days per area, monkey T
+    value: 5
+    tolerance: 0
+  criterion: Counts of days, so no tolerance; a day counts when it holds stimulation and sham
+    trials of the named experiment and area. The code's day lists (S2_Gaze_Stats_Basic_Behaviors_Combined.m)
+    give the dates of the 81 Eyes stimulation days. Reproduced when every count matches;
+    partially reproduced when the Eyes counts match and the Mouth days are not in the dataset.
+- id: design-sessions-per-day
+  statement: Each day held on average 10 live social gaze sessions (9 to 11) and 5 non-social
+    control sessions (4 to 8) for monkey L, and 15 social (14 to 15) and 5 control sessions for
+    monkey T, each 300 s long.
+  source: STAR Methods, Experimental setup, paragraph 2
+  quote: Each data collection day consisted of a total of alternating 10 live social gaze sessions
+    and 5 non-social control sessions on average for monkey L (9-11 social and 4-8 control sessions
+    across all days) and alternating 15 live social gaze sessions and 5 non-social control sessions
+    on average for monkey T (14-15 social and 5 control sessions across all days). Each session
+    lasted 300 sec.
+  expected:
+  - quantity: mean social sessions per day, monkey L
+    value: 10
+    tolerance: 1
+  - quantity: mean control sessions per day, monkey L
+    value: 5
+    tolerance: 0.5
+  - quantity: mean social sessions per day, monkey T
+    value: 15
+    tolerance: 1.5
+  - quantity: mean control sessions per day, monkey T
+    value: 5
+    tolerance: 0.5
+  - quantity: session duration
+    value: 300
+    tolerance: 30
+    unit: s
+  criterion: Over the Eyes stimulation days. The reported ranges (9 to 11, 4 to 8, 14 to 15, 5)
+    are checked as ranges widened by 10% of each bound. Reproduced when all means and ranges hold.
+- id: fig1e-stim-counts-comparable
+  statement: In the live social gaze condition, the total numbers of microstimulations and of shams
+    per day were comparable across the three stimulated areas and between the two monkeys.
+  source: Results, opening section, paragraph 2; Figure 1E legend
+  quote: The total number of microstimulations (and shams) received per day was comparable across
+    the three stimulated regions and comparable between the two animals both in the social gaze and
+    non-social control conditions (Fig. 1E, live social gaze condition, all p > 0.90
+  statistics:
+  - test: Wilcoxon rank sum, two-sided
+    p: 0.9
+    p_relation: ">"
+    corrected: FDR
+    n: 15 days per area for monkey L and 12 for monkey T
+  criterion: A claim of absence, judged on the paper's test. Per day, the number of
+    microstimulation trials and of sham trials of the social sessions, counted as in
+    S1_Total_Number_of_Stim_Combined.m (the trials kept for analysis). Wilcoxon rank-sum tests,
+    two-sided, between each pair of areas for both monkeys combined and for each monkey, and
+    between the monkeys for each area, 12 tests for stimulations and 12 for shams, each set
+    FDR-corrected (Benjamini-Hochberg; the code calls dsp3.fdr, an outside package). Reproduced
+    when no corrected p is below 0.05; the smallest corrected p is reported, and whether all
+    exceed 0.90.
+- id: figs1d-stim-counts-nonsocial
+  statement: In the non-social control condition the numbers of microstimulations and shams per
+    day were also comparable across areas and between monkeys.
+  source: Results, opening section, paragraph 2; Figure S1D legend
+  quote: Fig. S1D, non-social control condition, all p > 0.10
+  statistics:
+  - test: Wilcoxon rank sum, two-sided
+    p: 0.1
+    p_relation: ">"
+    corrected: FDR
+  criterion: As fig1e-stim-counts-comparable, on the control (RDM) sessions. Reproduced when no
+    FDR-corrected p is below 0.05; whether all exceed 0.10 is reported.
+- id: figs1e-eyes-more-than-face
+  statement: The stimulated monkeys made significantly more fixations per day on the partner's
+    Eyes than on the non-eye Face, for days of all three stimulated areas.
+  source: Results, opening section, paragraph 2; Figure S1E
+  quote: The total number of fixations on partner's Eyes per day was significantly higher than
+    fixations on non-eye Face for all three stimulated brain regions (Fig. S1E, top, all p < 10−4,
+    Wilcoxon signed rank, two-sided, FDR-corrected)
+  statistics:
+  - test: Wilcoxon signed rank, two-sided
+    p: 0.0001
+    p_relation: "<"
+    corrected: FDR
+    n: 27 days per area
+  criterion: Per day, the number of M1 fixations in the Eyes ROI and in the non-eye Face ROI
+    (whole Face minus Eyes) over the social sessions, compared with a two-sided signed-rank
+    test over the 27 days of each area, FDR-corrected (Benjamini-Hochberg, dsp3.fdr) over the 15
+    day-count tests of S3_Stats_ROI_number_duration_final.m (By_region_total_number_p_correct,
+    both monkeys combined; Eyes against non-eye Face and Eyes against RDM for each area, and
+    the rank-sum tests between areas for Eyes, non-eye Face and RDM). The Methods say
+    "total number ... for each day"; the code takes the mean over the day's sessions of the
+    per-session count. Readings (a) the day's total and (b) the mean per session; they give the
+    same ranks only when session numbers are equal. Reproduced when, under each reading, Eyes
+    exceed non-eye Face with corrected p < 0.05 for all three areas; the p-values are compared
+    with 10^-4.
+- id: figs1e-eyes-vs-rdm-comparable
+  statement: The number of fixations on the partner's Eyes per day was comparable to the number of
+    fixations on the RDM stimulus, for days of all three areas.
+  source: Results, opening section, paragraph 2; Figure S1E
+  quote: the total number of fixations on partner's Eyes per day was comparable to fixations on the
+    RDM stimulus for days involving the three stimulated regions (Fig. S1E, top, all p > 0.30)
+  statistics:
+  - test: Wilcoxon signed rank, two-sided
+    p: 0.3
+    p_relation: ">"
+    corrected: FDR
+  criterion: A claim of absence, judged on the paper's test. Per day, M1 fixations in the Eyes ROI
+    in social sessions against fixations in the RDM ROI in control sessions, paired by day,
+    two-sided signed-rank test per area, FDR-corrected as in figs1e-eyes-more-than-face, under
+    the same two readings of the day count. Reproduced when no corrected p is below 0.05 under
+    the paper's reading (a); reading (b) is shown as the code's variant.
+- id: fig2a-density-map-ofc
+  statement: After OFC microstimulations, compared with shams, the stimulated monkey's fixations in
+    the 1.5 s post-gaze epoch were more clustered around the partner monkey.
+  source: Results, Closed-loop microstimulations of OFC facilitate momentary social attention in
+    the spatial dimension, paragraph 2; Figure 2A
+  quote: Specifically, microstimulations of OFC led to more clustered subsequent gaze fixations
+    around the partner monkey (Fig. 2A
+  criterion: >-
+    From the Methods (Fixation density map): fixations of the post-gaze epoch assigned to 1-degree
+    squares of a 40 by 40 degree grid centred on the partner's Eyes ROI, counts summed per day for
+    stimulation and for sham trials, the stimulation minus sham difference averaged over days
+    per area, monkey T's maps flipped horizontally. The normalisation is given two ways, and
+    both are run: (1) the Methods, each day's maps z-scored over grid squares before the
+    difference; (2) the code (S1_Gaze_Fixation_Heatmap.m), the difference divided by the day's
+    total count of stimulation and sham fixations. The paper reads the map by eye and gives no
+    measure of "more clustered"; the readings named are (a) the averaged difference summed over
+    squares inside the whole Face ROI is positive, and (b) the same inside the Eyes ROI. The
+    claim is reproduced when the OFC map is positive under every reading and normalisation, not
+    reproduced when it is negative under all, and blocked as methods_underspecified when they
+    differ. dmPFC and ACCg values are reported alongside.
+- id: fig2c-ofc-social-gaze-distance
+  statement: OFC microstimulations decreased the social gaze distance, the mean distance of the
+    stimulated monkey's fixations in the post-gaze epoch from the centre of the partner's Eyes,
+    compared with shams; the effect held in each monkey.
+  source: Results, Closed-loop microstimulations of OFC facilitate momentary social attention in
+    the spatial dimension, paragraph 3; Figure 2C legend
+  quote: microstimulations of OFC significantly decreased the average distance of one's own gaze
+    positions in space relative to partner's Eyes during the post-gaze epoch, compared to shams
+    (Fig. 2C, p < 0.001, Wilcoxon signed rank, two-sided
+  statistics:
+  - about: OFC, both monkeys combined
+    test: Wilcoxon signed rank, two-sided
+    p: 0.001
+    p_relation: "<"
+    n: 27 OFC days
+  - about: OFC, monkey L
+    test: Wilcoxon signed rank, two-sided
+    p: 0.008
+    n: 15 OFC days
+  - about: OFC, monkey T
+    test: Wilcoxon signed rank, two-sided
+    p: 0.002
+    n: 12 OFC days
+  criterion: Social gaze distance per trial and per day as in the opening comment (STAR Methods,
+    Gaze distance analyses; S3_Basic_Gaze_Matrices_Combined.m, S1_Gaze_Results_Combined.m and
+    S2_Gaze_Stats_Basic_Behaviors_Combined.m), day means of stimulation trials against day means
+    of sham trials, two-sided signed-rank test over OFC days. The outcome is judged on the
+    Methods reading of the fixations (M1-only and mutual events); the code's M1-only reading is
+    shown as a variant (opening comment). Reproduced when the combined test
+    gives p < 0.001 with the median day difference (stimulation minus sham) negative, and each
+    monkey's test gives p < 0.05 in the same direction; partially reproduced when the combined
+    test gives p < 0.05 in that direction but a monkey's does not or the combined p is not below
+    0.001. The p-values are compared with the reported ones.
+- id: fig2c-dmpfc-accg-no-distance-effect
+  statement: Microstimulations of dmPFC or ACCg did not change social gaze distance.
+  source: Results, Closed-loop microstimulations of OFC facilitate momentary social attention in
+    the spatial dimension, paragraph 3; Figure 2C
+  quote: By contrast, we did not observe such stimulation effect on social gaze distance for dmPFC
+    (Fig. 2C, p = 0.361) or ACCg (Fig. 2C, p = 0.374)
+  statistics:
+  - about: dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.361
+    n: 27 dmPFC days
+  - about: ACCg
+    test: Wilcoxon signed rank, two-sided
+    p: 0.374
+    n: 27 ACCg days
+  criterion: A claim of absence, judged on the paper's test, as in fig2c-ofc-social-gaze-distance
+    for dmPFC and ACCg days. Reproduced when neither test gives p < 0.05; the median day
+    differences and p-values are reported.
+- id: fig2e-ofc-contralateral
+  statement: The OFC effect on social gaze distance was stronger for fixations in the hemifield
+    contralateral to the stimulated hemisphere; it was significant for contralateral fixations,
+    not for ipsilateral ones, and the contralateral effect exceeded the ipsilateral one.
+  source: Results, Closed-loop microstimulations of OFC facilitate momentary social attention in
+    the spatial dimension, paragraph 3; Figure 2E legend
+  quote: >-
+    Notably, the observed stimulation effect of OFC was more pronounced for gaze fixations in the
+    contralateral visual field of the stimulated brain hemisphere (Fig. 2D–E; contralateral: p <
+    0.001; significant statistics for individual animals are reported in the figure legend;
+    ipsilateral: p = 0.068; contralateral vs. ipsilateral: p = 0.026, Wilcoxon signed rank,
+    two-sided)
+  statistics:
+  - about: contralateral, stimulation against sham, both monkeys
+    test: Wilcoxon signed rank, two-sided
+    p: 0.001
+    p_relation: "<"
+    n: 27 OFC days
+  - about: contralateral, monkey L
+    test: Wilcoxon signed rank, two-sided
+    p: 0.015
+  - about: contralateral, monkey T
+    test: Wilcoxon signed rank, two-sided
+    p: 0.012
+  - about: ipsilateral, stimulation against sham, both monkeys
+    test: Wilcoxon signed rank, two-sided
+    p: 0.068
+  - about: contralateral against ipsilateral effect, both monkeys
+    test: Wilcoxon signed rank, two-sided
+    p: 0.026
+  - about: contralateral against ipsilateral effect, monkey L
+    test: Wilcoxon signed rank, two-sided
+    p: 0.073
+  - about: contralateral against ipsilateral effect, monkey T
+    test: Wilcoxon signed rank, two-sided
+    p: 0.204
+  criterion: >-
+    Fixations split by hemifield as in the opening comment (S1_Get_data_gaze_Lynch.m and
+    _Tarantino.m), social gaze distance per trial and day computed within each hemifield. The
+    effect of a day is the stimulation minus sham difference of day means. Tests from the
+    Methods: signed-rank of stimulation against sham per hemifield, and signed-rank of the
+    contralateral effect against the ipsilateral effect paired by day (the code holds no script
+    for this last test; the pairing by day follows from the Methods' "Wilcoxon signed rank test
+    ... between hemifields"). Days without fixations in a hemifield are left out of that test.
+    Reproduced when the contralateral test gives p < 0.05 with negative median effect, the
+    ipsilateral test gives p >= 0.05, and the contralateral against ipsilateral test gives
+    p < 0.05 with the contralateral effect more negative. Partially reproduced when only the
+    contralateral effect holds. Per-monkey values are reported and compared.
+- id: fig2e-dmpfc-accg-no-hemifield-effect
+  statement: For dmPFC and ACCg there was no stimulation effect on social gaze distance in either
+    hemifield, and no difference between hemifields.
+  source: Results, Closed-loop microstimulations of OFC facilitate momentary social attention in
+    the spatial dimension, paragraph 3; Figure 2E
+  quote: >-
+    Again, no such effect was observed in either hemifield for dmPFC (Fig. 2E, contralateral: p =
+    0.501; ipsilateral: p = 0.149; contralateral vs. ipsilateral: p = 0.230) or ACCg (Fig. 2E, p =
+    0.442; p = 0.517; p = 0.564)
+  statistics:
+  - about: dmPFC contralateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.501
+  - about: dmPFC ipsilateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.149
+  - about: dmPFC contralateral against ipsilateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.23
+  - about: ACCg contralateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.442
+  - about: ACCg ipsilateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.517
+  - about: ACCg contralateral against ipsilateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.564
+  criterion: A claim of absence, judged on the paper's tests as in fig2e-ofc-contralateral for
+    dmPFC and ACCg. Reproduced when none of the six tests gives p < 0.05; effects and p-values
+    are reported.
+- id: fig2f-nonsocial-no-distance-effect
+  statement: In the non-social control condition, microstimulations of none of the three areas
+    changed the distance of fixations from the centre of the RDM stimulus.
+  source: Results, Closed-loop microstimulations of OFC facilitate momentary social attention in
+    the spatial dimension, paragraph 4; Figure 2F
+  quote: Crucially, these stimulation effects of OFC were exclusively observed in the live social
+    gaze condition ... and not in the non-social gaze control condition using the RDM stimulus with
+    no behavioral meaning to monkeys (Fig. 2F, OFC
+  statistics:
+  - about: OFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.118
+  - about: dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.719
+  - about: ACCg
+    test: Wilcoxon signed rank, two-sided
+    p: 0.302
+  criterion: A claim of absence, judged on the paper's test. Non-social gaze distance as social gaze
+    distance with the centre of the RDM ROI in place of the Eyes (STAR Methods, Gaze distance
+    analyses, last sentence; S1_Dot_Results_Combined.m), on control-session trials, signed-rank
+    over days per area. Reproduced when no area gives p < 0.05.
+- id: fig2gh-nonsocial-no-hemifield-effect
+  statement: In the non-social control condition there was no stimulation effect in either
+    hemifield, and no hemifield difference, for any area.
+  source: Results, Closed-loop microstimulations of OFC facilitate momentary social attention in
+    the spatial dimension, paragraph 4; Figure 2G-H
+  quote: >-
+    The absence of stimulation effect for the RDM stimulus was also found when gaze fixation
+    locations were split by hemifield for OFC (Fig. 2G–H; contralateral: p = 0.097; ipsilateral: p
+    = 0.249; contralateral vs. ipsilateral: p = 0.442), dmPFC (p = 0.374; p = 0.517; p = 0.773) or
+    ACCg (p = 0.532; p = 0.943; p = 0.171)
+  statistics:
+  - about: OFC contralateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.097
+  - about: OFC ipsilateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.249
+  - about: OFC contralateral against ipsilateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.442
+  - about: dmPFC contralateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.374
+  - about: dmPFC ipsilateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.517
+  - about: dmPFC contralateral against ipsilateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.773
+  - about: ACCg contralateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.532
+  - about: ACCg ipsilateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.943
+  - about: ACCg contralateral against ipsilateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.171
+  criterion: A claim of absence, judged on the paper's tests, as fig2e-ofc-contralateral on
+    control-session trials with distances to the RDM centre. The hemifield split uses the same
+    reference as the code uses for social sessions, center_roi_m2_face (S1_Get_data_dot_Lynch.m
+    and _Tarantino.m; opening comment).
+    Reproduced when none of the nine tests gives p < 0.05.
+- id: methods-ofc-distance-longer-windows
+  statement: The OFC decrease of social gaze distance also held within 2 s and within 3 s after the
+    trial for both monkeys combined and for monkey L, not for monkey T.
+  source: STAR Methods, Gaze distance analyses, paragraph 1
+  quote: In fact, the effect was present and lasted longer beyond 1.5 sec in one of the stimulated
+    monkeys (within 2 sec after trial onset
+  statistics:
+  - about: within 2 s, both monkeys
+    test: Wilcoxon signed rank, two-sided
+    p: 0.003
+  - about: within 2 s, monkey L
+    test: Wilcoxon signed rank, two-sided
+    p: 0.008
+  - about: within 2 s, monkey T
+    test: Wilcoxon signed rank, two-sided
+    p: 0.204
+  - about: within 3 s, both monkeys
+    test: Wilcoxon signed rank, two-sided
+    p: 0.004
+  - about: within 3 s, monkey L
+    test: Wilcoxon signed rank, two-sided
+    p: 0.007
+  - about: within 3 s, monkey T
+    test: Wilcoxon signed rank, two-sided
+    p: 0.204
+  criterion: As fig2c-ofc-social-gaze-distance with the window [0, 2) s and [0, 3) s (the code's
+    alternative call basic_gaze_matrices(GazeData, 0, 3)). Reproduced when, for both windows, the
+    combined and monkey L tests give p < 0.05 with stimulation below sham and the monkey T test
+    gives p >= 0.05; partially reproduced when the combined tests hold.
+- id: methods-ofc-no-change-in-fixation-number
+  statement: OFC microstimulations did not change the number of fixations within the partner's Eyes
+    or whole Face in the post-gaze window, in either monkey, for windows of 1.5, 2 or 3 s.
+  source: STAR Methods, Gaze distance analyses, paragraph 2
+  quote: Following OFC microstimulations, unlike more clustered subsequent gaze fixations around
+    another social agent, we did not observe any change in the total number of fixations within
+    partner's Eyes (within 1.5 sec
+  statistics:
+  - about: Eyes, 1.5 s, each monkey
+    test: Wilcoxon signed rank, two-sided
+    p: 0.18
+    p_relation: ">"
+  - about: Eyes, 2 s
+    test: Wilcoxon signed rank, two-sided
+    p: 0.24
+    p_relation: ">"
+  - about: Eyes, 3 s
+    test: Wilcoxon signed rank, two-sided
+    p: 0.3
+    p_relation: ">"
+  - about: whole Face, 1.5 s
+    test: Wilcoxon signed rank, two-sided
+    p: 0.12
+    p_relation: ">"
+  - about: whole Face, 2 s
+    test: Wilcoxon signed rank, two-sided
+    p: 0.2
+    p_relation: ">"
+  - about: whole Face, 3 s
+    test: Wilcoxon signed rank, two-sided
+    p: 0.22
+    p_relation: ">"
+  criterion: A claim of absence, judged on the paper's tests. Per trial, the number of M1 fixations
+    starting in the window and lying in the Eyes ROI, or in the whole Face ROI (Eyes, Mouth and
+    the rest of the face), counting M1-only events as the code does
+    (fixation_m1_eye_number and fixation_m1_wholeface_number in S3_Basic_Gaze_Matrices_Combined.m,
+    which use M1-only events); day means per trial type; signed-rank test over OFC days for each
+    monkey. Readings for the events counted are (a) M1-only events, as the code, (b) M1-only and
+    mutual events. Reproduced when no test gives p < 0.05 under the code's reading (a); reading
+    (b) is shown.
+- id: methods-ofc-longer-face-looking
+  statement: With OFC microstimulations the stimulated monkey spent more time looking within the
+    partner's whole Face in the post-gaze epoch (48.9 ms more than with shams, both monkeys
+    combined), and more weakly within the Eyes; dmPFC and ACCg showed no such effect.
+  source: STAR Methods, Gaze distance analyses, paragraph 2
+  quote: With OFC microstimulations, the monkeys spent more time looking within the partner's whole
+    Face (p = 0.003, stim minus sham difference = 48.9 msec for both monkeys combined; p = 0.008,
+    diff = 66.6 msec for monkey L and p = 0.129, diff = 39.5 msec for monkey T)
+  statistics:
+  - about: OFC whole Face, both monkeys
+    test: Wilcoxon signed rank, two-sided
+    p: 0.003
+  - about: OFC whole Face, monkey L
+    test: Wilcoxon signed rank, two-sided
+    p: 0.008
+  - about: OFC whole Face, monkey T
+    test: Wilcoxon signed rank, two-sided
+    p: 0.129
+  - about: dmPFC whole Face, both monkeys
+    test: Wilcoxon signed rank, two-sided
+    p: 0.683
+  - about: ACCg whole Face, both monkeys
+    test: Wilcoxon signed rank, two-sided
+    p: 0.848
+  - about: OFC Eyes, both monkeys
+    test: Wilcoxon signed rank, two-sided
+    p: 0.044
+  expected:
+  - quantity: OFC whole Face total duration, stimulation minus sham, both monkeys
+    value: 48.9
+    tolerance: 4.89
+    unit: ms
+  - quantity: same, monkey L
+    value: 66.6
+    tolerance: 6.66
+    unit: ms
+  - quantity: same, monkey T
+    value: 39.5
+    tolerance: 3.95
+    unit: ms
+  - quantity: dmPFC whole Face difference, both monkeys
+    value: -14.5
+    tolerance: 1.45
+    unit: ms
+  - quantity: ACCg whole Face difference, both monkeys
+    value: 3.4
+    tolerance: 0.34
+    unit: ms
+  - quantity: OFC Eyes difference, both monkeys
+    value: 16.5
+    tolerance: 1.65
+    unit: ms
+  criterion: Per trial, the summed duration of M1 fixations starting in [0, 1.5) s and lying in the
+    whole Face ROI or in the Eyes ROI (fixation_m1_wholeface_totalduration and
+    fixation_m1_eye_totalduration in the code, M1-only events, 0 when none); day means per trial
+    type; signed-rank test over days. How "diff" is taken is not stated; the readings are (a) the
+    median over days of the stimulation minus sham day means, (b) the mean over days of that
+    difference. Reproduced when the OFC whole Face test gives p < 0.05 with stimulation longer,
+    dmPFC and ACCg give p >= 0.05, the OFC Eyes test gives p < 0.05, and under one reading the
+    OFC whole Face differences fall within tolerance. Partially reproduced when the tests hold
+    and no reading matches the numbers.
+- id: methods-mouth-stimulation-no-effect
+  statement: When microstimulations were triggered by looking at the partner's Mouth (or at an RDM
+    stimulus at the Mouth location), none of the three areas changed social or non-social gaze
+    distance, in either hemifield.
+  source: STAR Methods, Gaze distance analyses (Mouth stimulation); Results, Closed-loop
+    microstimulations of OFC facilitate momentary social attention in the spatial dimension,
+    paragraph 4
+  quote: On the day level, none of the three brain regions had any microstimulation effect on social
+    gaze distance (OFC
+  statistics:
+  - about: social, OFC
+    test: Wilcoxon signed rank, two-sided
+    p: 1
+    n: 5 days from monkey T
+  - about: social, dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 1
+  - about: social, ACCg
+    test: Wilcoxon signed rank, two-sided
+    p: 0.125
+  - about: social, each hemifield, all areas
+    test: Wilcoxon signed rank, two-sided
+    p: 0.18
+    p_relation: ">"
+  - about: non-social, OFC
+    test: Wilcoxon signed rank, two-sided
+    p: 1
+  - about: non-social, dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.188
+  - about: non-social, ACCg
+    test: Wilcoxon signed rank, two-sided
+    p: 0.188
+  - about: non-social, each hemifield, all areas
+    test: Wilcoxon signed rank, two-sided
+    p: 0.06
+    p_relation: ">"
+  criterion: A claim of absence, judged on the paper's test. Social gaze distance on Mouth
+    stimulation days as in fig2c-ofc-social-gaze-distance with the centre of the partner's Mouth
+    ROI (same size as the Eyes ROI without padding), and non-social distance to the centre of the
+    RDM ROI at the Mouth location; signed-rank over the 5 days per area, both hemifields and each
+    hemifield. The code in the repository holds no Mouth-stimulation script; the trial handling
+    of the Eyes analysis is used. Reproduced when no test gives p < 0.05. If the dataset does not
+    hold the Mouth stimulation days the claim cannot be tested.
+- id: methods-eyes-vs-mouth-bootstrap
+  statement: For contralateral fixations, the OFC stimulation effect on social gaze distance was
+    significantly more negative in Eyes stimulation than in Mouth stimulation, but not for
+    ipsilateral fixations or both hemifields combined; the difference was stronger using monkey
+    T's Eyes days only.
+  source: STAR Methods, Gaze distance analyses (Mouth stimulation)
+  quote: For fixations in the contralateral hemifield, microstimulation effect (stimulation minus
+    sham) of OFC led to significantly smaller social gaze distance in Eyes stimulation compared to
+    Month stimulation (p = 0.009), while no effect was observed for fixations in the ipsilateral
+    hemifield (p = 0.724) or when both hemifields combined (p = 0.799)
+  statistics:
+  - about: contralateral, all Eyes days
+    test: bootstrap, 1,000 resamples of 5 days with replacement
+    p: 0.009
+  - about: ipsilateral, all Eyes days
+    test: bootstrap
+    p: 0.724
+  - about: both hemifields, all Eyes days
+    test: bootstrap
+    p: 0.799
+  - about: contralateral, monkey T Eyes days
+    test: bootstrap
+    p: 0.005
+  - about: ipsilateral, monkey T Eyes days
+    test: bootstrap
+    p: 0.654
+  - about: both hemifields, monkey T Eyes days
+    test: bootstrap
+    p: 0.51
+  depends_on:
+  - methods-mouth-stimulation-no-effect
+  criterion: From the Methods. The OFC effect per day is the stimulation minus sham difference of
+    day-mean social gaze distance. 5 days are drawn with replacement from the 27 OFC Eyes days (or
+    the 12 of monkey T) 1,000 times, the median effect of each draw is taken, and the 1,000
+    medians are compared with the median effect of the 5 OFC Mouth days. The p-value is not
+    defined in the paper and no code holds it; the readings are (a) the fraction of bootstrap
+    medians at or above the Mouth median (one-sided, Eyes smaller), (b) twice the smaller tail
+    fraction (two-sided). The seed is a standard choice and is recorded. Reproduced when, under
+    a reading, the contralateral p values are below 0.05 and the ipsilateral and combined ones are
+    not, for both the all-days and the monkey-T comparisons; the outcome follows the rule for
+    several readings.
+- id: fig3b-ofc-inter-looking-interval
+  statement: OFC microstimulations decreased the inter-looking interval, the latency of the
+    stimulated monkey to look back at the partner's whole Face within 5 s after the trial,
+    compared with shams; dmPFC and ACCg microstimulations did not.
+  source: Results, Microstimulations of OFC also promote momentary social attention in the temporal
+    dimension, Inter-looking interval, paragraph 1; Figure 3B legend
+  quote: Microstimulations of OFC decreased this inter-looking interval (Fig. 3B, p = 0.035, Wilcoxon
+    signed rank, two-sided; see Fig. S3A for an alternative visualization). However, we did not
+    observe such stimulation effect for dmPFC (Fig. 3B, p = 0.792) or ACCg (Fig. 3B, p = 0.291)
+  statistics:
+  - about: OFC, both monkeys
+    test: Wilcoxon signed rank, two-sided
+    p: 0.035
+    n: 27 OFC days
+  - about: OFC, monkey L
+    test: Wilcoxon signed rank, two-sided
+    p: 0.188
+  - about: OFC, monkey T
+    test: Wilcoxon signed rank, two-sided
+    p: 0.092
+  - about: dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.792
+  - about: ACCg
+    test: Wilcoxon signed rank, two-sided
+    p: 0.291
+  criterion: From the Methods (Gaze latency analyses) and S1_Gaze_M1_Latency_Combined.m. Per trial,
+    the time from the trial sample to the start of the first M1-only or mutual whole Face event
+    that starts after it and within 5,000 samples (5 s); no such event leaves the trial out
+    (NaN). Day means per trial type, ignoring NaN; signed-rank over days. Reproduced when OFC gives
+    p < 0.05 with stimulation shorter and dmPFC and ACCg give p >= 0.05; per-monkey values are
+    reported (the paper finds neither significant alone).
+- id: ili-nonsocial-no-effect
+  statement: The inter-looking interval did not change with stimulation in the non-social control
+    condition, for any area.
+  source: Results, Microstimulations of OFC also promote momentary social attention in the temporal
+    dimension, Inter-looking interval, paragraph 1
+  quote: Further, this reduction of inter-looking interval from OFC microstimulations was specific
+    to social attention as no effect was observed in the non-social gaze condition
+  statistics:
+  - about: OFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.773
+  - about: dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.08
+  - about: ACCg
+    test: Wilcoxon signed rank, two-sided
+    p: 0.943
+  criterion: A claim of absence, judged on the paper's test, as fig3b-ofc-inter-looking-interval on
+    control sessions with the corresponding whole Face ROI and M1 events only
+    (S1_Dot_M1_Latency_Combined.m). Reproduced when no area gives p < 0.05.
+- id: ili-missing-trials-41
+  statement: On 41% of microstimulation and sham trials per day on average, the stimulated monkey
+    did not look back at the partner's whole Face within the 5 s window.
+  source: Results, Microstimulations of OFC also promote momentary social attention in the temporal
+    dimension, Inter-looking interval, paragraph 1
+  quote: the stimulated monkey did not look back at the partner's whole Face during the examined
+    time window on 41% of microstimulation and sham trials per day on average
+  expected:
+    quantity: mean over days of the fraction of trials with no inter-looking interval
+    value: 41
+    tolerance: 4.1
+    unit: "%"
+  depends_on:
+  - fig3b-ofc-inter-looking-interval
+  criterion: Per day, the fraction of analysed social-session trials (stimulation and sham
+    together) whose inter-looking interval is NaN, averaged over days. The days averaged over are
+    not stated; the readings are (a) all 81 Eyes stimulation days, (b) the 27 OFC days.
+    Reproduced when a reading falls within tolerance.
+- id: figs3b-ili-trial-level
+  statement: With all trials of each area pooled across days, OFC microstimulations still decreased
+    the inter-looking interval, while dmPFC and ACCg did not.
+  source: Results, Microstimulations of OFC also promote momentary social attention in the temporal
+    dimension, Inter-looking interval, paragraph 1; Figure S3B legend
+  quote: Nevertheless, when we combined all trials for each stimulated region, we still observed
+    similar results to the day-level analysis above (Fig. S3B, OFC
+  statistics:
+  - about: OFC, both monkeys
+    test: Wilcoxon rank sum, two-sided
+    p: 0.01
+  - about: OFC, monkey L
+    test: Wilcoxon rank sum, two-sided
+    p: 0.026
+  - about: OFC, monkey T
+    test: Wilcoxon rank sum, two-sided
+    p: 0.143
+  - about: dmPFC
+    test: Wilcoxon rank sum, two-sided
+    p: 0.301
+  - about: ACCg
+    test: Wilcoxon rank sum, two-sided
+    p: 0.602
+  depends_on:
+  - fig3b-ofc-inter-looking-interval
+  criterion: Trial inter-looking intervals as in fig3b-ofc-inter-looking-interval, stimulation
+    trials against sham trials of all days of an area pooled, rank-sum test
+    (S3_Gaze_M1_Latency_Across_Trials.m). Reproduced when OFC gives p < 0.05 with stimulation
+    shorter and dmPFC and ACCg give p >= 0.05.
+- id: figs3c-reciprocation-day-level-none
+  statement: At the day level, microstimulations did not significantly reduce the reciprocation
+    latency in any area; on 86% of trials per day on average there was no sequence of the partner
+    looking at the stimulated monkey followed by the stimulated monkey looking back.
+  source: Results, Reciprocation latency, paragraph 1; Figure S3C legend
+  quote: On the day level, microstimulations did not seem to greatly reduce such reciprocation
+    latency (Fig. S3C–D, OFC
+  statistics:
+  - about: OFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.13
+  - about: dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.701
+  - about: ACCg
+    test: Wilcoxon signed rank, two-sided
+    p: 0.4
+  expected:
+    quantity: mean over days of the fraction of trials with no M2-then-M1 sequence
+    value: 86
+    tolerance: 8.6
+    unit: "%"
+  criterion: >-
+    Reciprocation latency per trial from S1_Gaze_ITI_Combined.m ("all_face" events): whole Face
+    events of M1 and of M2 that start in the 5 s after the trial, mutual events counted for both;
+    for each run of consecutive M2 events followed by an M1 event, the time from the start of the
+    run's first M2 event to the start of that M1 event; the trial's value is the mean over such
+    sequences, NaN when there is none. Day means per trial type ignoring NaN; signed-rank over
+    days. A claim of absence for the tests: reproduced when no area gives p < 0.05. The 86% is the
+    per-day fraction of analysed trials with NaN, averaged over days, under the readings (a) all
+    81 days, (b) the 27 OFC days; it is reported against its tolerance and is part of the claim.
+- id: fig3d-ofc-reciprocation-latency
+  statement: With trials pooled across days, OFC microstimulations decreased the latency of the
+    stimulated monkey to reciprocate the partner's gaze to his face; dmPFC and ACCg did not.
+  source: Results, Reciprocation latency, paragraph 1; Figure 3D legend
+  quote: When combining all trials for each stimulated region, we observed that microstimulations of
+    OFC decreased reciprocation latency (Fig. 3D, p = 0.011, Wilcoxon rank sum, two-sided). We again
+    did not observe such stimulation effect for dmPFC (Fig. 3D, p = 0.777) or ACCg (Fig. 3D, p =
+    0.368)
+  statistics:
+  - about: OFC, both monkeys
+    test: Wilcoxon rank sum, two-sided
+    p: 0.011
+  - about: OFC, monkey L
+    test: Wilcoxon rank sum, two-sided
+    p: 0.074
+  - about: OFC, monkey T
+    test: Wilcoxon rank sum, two-sided
+    p: 0.079
+  - about: dmPFC
+    test: Wilcoxon rank sum, two-sided
+    p: 0.777
+  - about: ACCg
+    test: Wilcoxon rank sum, two-sided
+    p: 0.368
+  depends_on:
+  - figs3c-reciprocation-day-level-none
+  criterion: Trial reciprocation latencies as in figs3c-reciprocation-day-level-none, stimulation
+    trials against sham trials of all days of an area pooled, NaN trials left out, rank-sum test
+    (S3_Gaze_ITI_Across_Trials.m). Reproduced when OFC gives p < 0.05 with stimulation shorter
+    and dmPFC and ACCg give p >= 0.05.
+- id: partner-monkey-unchanged
+  statement: Microstimulations in none of the areas changed the partner monkey's social gaze
+    distance, inter-looking interval or reciprocation latency.
+  source: Results, Microstimulations do not change momentary social attention in the unstimulated
+    animal, paragraph 1
+  quote: Therefore, we did not find any evidence that the social gaze behaviors of the unstimulated
+    monkey were altered on a short timescale during social gaze interactions.
+  statistics:
+  - about: M2 social gaze distance, OFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.118
+  - about: M2 social gaze distance, dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.302
+  - about: M2 social gaze distance, ACCg
+    test: Wilcoxon signed rank, two-sided
+    p: 0.064
+  - about: M2 inter-looking interval, OFC
+    test: Wilcoxon signed rank, two-sided
+    p: 1
+  - about: M2 inter-looking interval, dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.866
+  - about: M2 inter-looking interval, ACCg
+    test: Wilcoxon signed rank, two-sided
+    p: 0.249
+  - about: M2 reciprocation latency, OFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.665
+  - about: M2 reciprocation latency, dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.773
+  - about: M2 reciprocation latency, ACCg
+    test: Wilcoxon signed rank, two-sided
+    p: 0.701
+  criterion: >-
+    A claim of absence, judged on the paper's tests (signed-rank over days per area). M2 social
+    gaze distance: M2 fixations starting in [0, 1.5) s, distance to the centre of M1's Eyes ROI
+    (m2_distance_to_eyes in the code). M2 inter-looking interval, from the Results: the latency
+    between the first and second M2 whole Face events within 5 s after the trial. M2 reciprocation
+    latency, from the Results: the latency of M2 to look at M1's whole Face within 5 s after the
+    trial when M2 was being looked at by M1. The code in the repository has no script for the two
+    M2 latencies; whether the latency is taken from the trial time or from the start of the M1
+    look is open for the reciprocation latency, readings (a) from the start of the M1 whole Face
+    event, (b) from the trial time. Reproduced when no test gives p < 0.05 under every reading.
+- id: figs4a-causal-strength-no-stim-effect
+  statement: Microstimulations did not change the relative causal strength of gaze between the
+    monkeys in any area.
+  source: Results, Do microstimulations of OFC also lead to longer timescale modulation of social
+    gaze exchanges?, paragraph 1; Figure S4A legend
+  quote: We did not observe stimulation effect on the magnitudes of relative causal strength (OFC
+    ... dmPFC ... ACCg
+  statistics:
+  - about: OFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.239
+  - about: dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.962
+  - about: ACCg
+    test: Wilcoxon signed rank, two-sided
+    p: 0.361
+  criterion: >-
+    A claim of absence, judged on the paper's test. Relative causal strength per trial from the
+    causal decomposition analysis of Yang, Peng and Huang (2018; code at
+    github.com/accyang/causal-decomposition-analysis) of the moment-by-moment social gaze distance
+    of M1 (to M2's Eyes centre) and of M2 (to M1's Eyes centre), in 10 ms bins
+    (S1_Gaze_Binned_Distance_Combined.m), over the post-gaze epoch; the trial value is the mean
+    over IMFs of the M1-to-M2 relative causal strength (S2_Gaze_Get_CDI.m). Trials are excluded
+    when either monkey has more than 1 s of continuous NaN samples or when the ends of a smoothed
+    gap are more than 20 degrees apart (Methods). Open, with no source: the smoothing used to fill
+    gaps between fixations, and the decomposition's noise level, ensemble size and other settings.
+    The output folder name cd_output_null_02_1000_150_100_10 suggests noise 0.2, 1,000 ensembles
+    and 150 bins (1.5 s); this is taken as reading (a), and reading (b) is the defaults of the
+    Yang et al. code with the same 150 bins. Linear interpolation over gaps is the gap filling
+    under both, named as a standard choice that the paper does not fix. Day means per trial type,
+    signed-rank over days per area. Reproduced when no area gives p < 0.05 under each reading.
+- id: figs4b-causal-strength-no-epoch-effect
+  statement: Neither trial type nor time epoch (first 45 against next 45 stimulations) changed the
+    relative causal strength in any area.
+  source: Results, Do microstimulations of OFC also lead to longer timescale modulation of social
+    gaze exchanges?, paragraph 1; Figure S4B legend
+  quote: We did not observe effect of microstimulation trial type or time epoch on relative casual
+    strength (OFC
+  statistics:
+  - about: OFC, all comparisons
+    test: Wilcoxon signed rank, two-sided
+    p: 0.16
+    p_relation: ">"
+  - about: dmPFC, all comparisons
+    test: Wilcoxon signed rank, two-sided
+    p: 0.67
+    p_relation: ">"
+  - about: ACCg, all comparisons
+    test: Wilcoxon signed rank, two-sided
+    p: 0.46
+    p_relation: ">"
+  depends_on:
+  - figs4a-causal-strength-no-stim-effect
+  - epoch-days-76-of-81
+  criterion: A claim of absence, judged on the paper's tests. Epochs as in epoch-days-76-of-81;
+    day means of relative causal strength for stimulation and sham trials in each epoch; the
+    paper does not list the comparisons; the readings are (a) the four pairs that differ in one
+    factor (stimulation against sham within each epoch, early against late within each trial
+    type), (b) all six pairs of the four groups. Reproduced when no test gives p < 0.05 under each
+    reading.
+- id: epoch-days-76-of-81
+  statement: 76 of the 81 days had at least 90 microstimulations and entered the epoch analysis;
+    the five excluded were 1 OFC day of monkey L and, of monkey T, 1 OFC, 2 dmPFC and 1 ACCg day.
+  source: STAR Methods, Inter-individual gaze dynamics analyses, paragraph 2
+  quote: 76 out of 81 days had at least 90 stimulations. The 5 days excluded from further analysis
+    were 1 day from monkey L with OFC microstimulations, 1 day from monkey T OFC, 2 days from monkey
+    T dmPFC, and 1 day from monkey T ACCg.
+  expected:
+    quantity: days with at least 90 stimulations
+    value: 76
+    tolerance: 0
+  criterion: A count of days with named composition, so no tolerance; the code
+    (S1_Gaze_Time_Epoch.m) names the excluded days, 08122019 (L, OFC), 12222021 (T, OFC), 11052021
+    and 12172021 (T, dmPFC), 11042021 (T, ACCg). Stimulations are counted (a) among the analysed
+    trials (first trial of each run and trials in the last 5 s dropped), as the code counts them,
+    or (b) among all stimulations delivered. Reproduced when a reading gives 76 days with the
+    named composition.
+- id: ofc-slope-unchanged-by-epoch
+  statement: For OFC, the slope of the fitted relation between social gaze distance and relative
+    causal strength did not differ between the early and late epochs, for both hemifields
+    combined, contralateral or ipsilateral fixations.
+  source: Results, Do microstimulations of OFC also lead to longer timescale modulation of social
+    gaze exchanges?, paragraph 1; Figure 4C; Figure S4C-D
+  quote: >-
+    we correlated social gaze distance and relative causal strength (STAR Methods) and found the
+    slope of this fitted correlation comparable between early and late epochs for OFC (Fig. S4C,
+    both hemifields combined: p = 0.757; Fig. 4C, contralateral: p = 0.882; Fig. S4D, ipsilateral:
+    p = 0.098)
+  statistics:
+  - about: both hemifields
+    test: Wilcoxon signed rank, two-sided
+    p: 0.757
+  - about: contralateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.882
+  - about: ipsilateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.098
+  depends_on:
+  - figs4a-causal-strength-no-stim-effect
+  - epoch-days-76-of-81
+  criterion: A claim of absence, judged on the paper's test. From the Methods and
+    S3_Gaze_Correlation_by_Epoch.m. For each day and epoch, an ordinary least squares fit (fitlm)
+    of relative causal strength on social gaze distance (in degrees) over the stimulation trials
+    of the epoch; distance is the trial mean over fixations in the post-gaze epoch, overall,
+    contralateral or ipsilateral. Late against early slopes, signed-rank over OFC days.
+    Reproduced when no test gives p < 0.05, under each reading of figs4a-causal-strength-no-stim-effect.
+- id: fig4c-dmpfc-slope-late-greater
+  statement: For dmPFC, the slope of the relation between contralateral social gaze distance and
+    relative causal strength was larger in the late than in the early epoch (p = 0.054, at the
+    margin), and significantly so for both hemifields combined; not for ipsilateral fixations,
+    and not for ACCg.
+  source: Figure 4C legend; Figure S4C-D legends
+  quote: For dmPFC, the slope of this fitted correlation was stronger for the late epoch than early
+    epoch (p = 0.054 for both monkeys combined; p = 0.048 for monkey L and p = 0.625 for monkey T)
+  statistics:
+  - about: dmPFC contralateral, both monkeys
+    test: Wilcoxon signed rank, two-sided
+    p: 0.054
+  - about: dmPFC contralateral, monkey L
+    test: Wilcoxon signed rank, two-sided
+    p: 0.048
+  - about: dmPFC contralateral, monkey T
+    test: Wilcoxon signed rank, two-sided
+    p: 0.625
+  - about: dmPFC both hemifields
+    test: Wilcoxon signed rank, two-sided
+    p: 0.037
+  - about: ACCg both hemifields
+    test: Wilcoxon signed rank, two-sided
+    p: 0.77
+  - about: dmPFC ipsilateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.757
+  - about: ACCg ipsilateral
+    test: Wilcoxon signed rank, two-sided
+    p: 0.381
+  depends_on:
+  - ofc-slope-unchanged-by-epoch
+  criterion: Slopes as in ofc-slope-unchanged-by-epoch for dmPFC and ACCg days. Reproduced when the
+    dmPFC contralateral test gives p at most 0.0594 (the reported 0.054 widened by 10%, the
+    protocol's default tolerance; the paper marks it "p ≈ 0.05") with late slopes larger (median
+    late minus early positive), the dmPFC both-hemifields test gives p < 0.05 in the same
+    direction, and the dmPFC ipsilateral and the ACCg tests give p >= 0.05; partially reproduced
+    when the direction holds and only some of these do. Results under each reading of the
+    causal decomposition are shown.
+- id: fig4d-dmpfc-slope-permutation
+  statement: Against a null from shuffling the order of each day's 90 stimulations, the dmPFC
+    increase of the contralateral slope from early to late epoch was significant (p = 0.015), not
+    for both hemifields combined or ipsilateral fixations.
+  source: Results, Do microstimulations of OFC also lead to longer timescale modulation of social
+    gaze exchanges?, paragraph 2; Figure 4D legend; Figure S4E-F legends
+  quote: However, the slope of this fitted correlation for dmPFC was stronger for the late epoch than
+    early epoch, specifically for gaze fixations in the contralateral hemifield (Fig. 4D; p = 0.015,
+    permutation test
+  statistics:
+  - about: dmPFC contralateral, both monkeys
+    test: permutation test, 1,000 shuffles
+    p: 0.015
+  - about: dmPFC contralateral, monkey L
+    test: permutation test
+    p: 0.038
+  - about: dmPFC contralateral, monkey T
+    test: permutation test
+    p: 0.068
+  - about: dmPFC both hemifields
+    test: permutation test
+    p: 0.131
+  - about: dmPFC ipsilateral
+    test: permutation test
+    p: 0.455
+  depends_on:
+  - fig4c-dmpfc-slope-late-greater
+  criterion: >-
+    From the Methods, the Figure 4D and S4E legends, S1_Gaze_Time_Epoch.m and
+    S3_Gaze_Correlation_by_Epoch.m. The real statistic is the median over days of the late minus
+    early slope (S3_Gaze_Correlation_by_Epoch.m). Null, from the Methods: within each day the
+    90 stimulation trials are permuted 1,000 times and split into the first 45 and the next 45,
+    slopes refitted, and for each permutation the median over days of the slope difference is
+    taken. The repository does not build this null: S3_Gaze_Correlation_by_Epoch.m loads a
+    precomputed Decomp_Temporal_shuffled file whose causal strength field is named
+    causal_m1m2_eyes_null, so whether the null also uses causal strengths from a null
+    decomposition is open; the Methods construction above, with the real causal strengths
+    carried with their trials, is used. The p-value computation is not in the repository; the readings are (a) one-sided in
+    the direction of the real median, the fraction of null medians beyond it, as the code
+    computes the permutation p of Fig. 5G (S6_Gaze_Saccade_Kinematics_Combined.m), (b)
+    two-sided, twice that fraction. Reproduced when dmPFC contralateral gives p < 0.05 with a
+    positive real median and the both-hemifields and ipsilateral tests give p >= 0.05; the
+    outcome follows the rule for several readings, and per-monkey values are reported. (The
+    Figure S4F legend prints a "* p < 0.05" key while the Results give p = 0.455; the Results
+    value is used.)
+- id: dmpfc-slope-positive
+  statement: For dmPFC, the slope of the relation between social gaze distance and relative causal
+    strength was on average positive in both epochs, so that the closer the stimulated monkey
+    looked to the partner, the more his gaze was led by the partner.
+  source: Results, Do microstimulations of OFC also lead to longer timescale modulation of social
+    gaze exchanges?, paragraph 2
+  quote: Specifically, the slope of this examined correlation on average was positive in both early
+    and late epochs for gaze fixations in both hemifields for dmPFC
+  depends_on:
+  - fig4c-dmpfc-slope-late-greater
+  criterion: Slopes as in ofc-slope-unchanged-by-epoch, dmPFC days. "On average" is read as the mean
+    over days, with the median as a second reading. "In both hemifields" is read as (a) the slope
+    with both hemifields combined, (b) the contralateral and the ipsilateral slopes each.
+    Reproduced when the average slope is positive in both epochs under every reading; the
+    outcome follows the rule for several readings. No test is reported for this sign.
+- id: fig5a-trigger-duration-unchanged
+  statement: Microstimulations of OFC or dmPFC did not change the duration of the Eyes fixation that
+    triggered the trial.
+  source: Results, Microstimulation effects of OFC and dmPFC are not driven by low-level properties
+    of saccades, paragraph 1; Figure 5A
+  quote: Importantly, the observed effects of OFC and dmPFC microstimulations were not driven by any
+    change in the duration of current looking to partner's Eyes that triggered a microstimulation or
+    sham (Fig. 5A, OFC
+  statistics:
+  - about: OFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.302
+  - about: dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.269
+  criterion: A claim of absence, judged on the paper's test. Per trial, the duration of the M1 Eyes
+    event in progress at the trial time; day means per trial type; signed-rank over days.
+    Readings for the events (the code for this panel is not among the scripts read) are (a)
+    M1-only and mutual Eyes events, (b) M1-only events. Reproduced when neither area gives
+    p < 0.05 under each reading.
+- id: fig5b-pupil-unchanged
+  statement: Pupil size did not differ between microstimulation and sham trials in any 10 ms bin of
+    the 700 ms after trial onset, for any area.
+  source: Results, Microstimulation effects of OFC and dmPFC are not driven by low-level properties
+    of saccades, paragraph 1; Figure 5B legend
+  quote: No difference was observed for pupil size between the two trial types throughout the
+    700-msec period following trial onset for any of the three stimulated regions.
+  statistics:
+  - test: Wilcoxon signed rank, two-sided, per 10 ms bin
+    p: 0.05
+    p_relation: ">"
+  criterion: A claim of absence, judged on the paper's test. From the Methods and
+    stim/S5_Pupil_Size.m. Trials where M1's gaze stays within the partner's whole Face ROI for the
+    whole 700 ms after the trial; M1 pupil size averaged over trials per day and type in 10 ms
+    bins; signed-rank per bin over days, uncorrected. Reproduced when no bin of any area gives
+    p < 0.05; the number of bins below 0.05 is reported.
+- id: fig5cd-saccade-counts-unchanged
+  statement: The numbers of microsaccades and macrosaccades in the post-gaze epoch did not differ
+    between microstimulation and sham trials for OFC or dmPFC.
+  source: Results, Microstimulation effects of OFC and dmPFC are not driven by low-level properties
+    of saccades, paragraph 1; Figure 5C-D
+  quote: number of microsaccades (Fig. 5C, OFC
+  statistics:
+  - about: microsaccades, OFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.456
+  - about: microsaccades, dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.581
+  - about: macrosaccades, OFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.055
+  - about: macrosaccades, dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.23
+  criterion: A claim of absence, judged on the paper's test. Saccades detected by the unsupervised
+    clustering method of Otero-Millan et al. (2014); a saccade lying strictly within a fixation
+    interval (EyeMMV) is a microsaccade, any other a macrosaccade (Methods). Counts per trial in
+    the post-gaze epoch, day means per type, signed-rank over days. If the dataset holds no
+    saccade events, the detection must be run with the Otero-Millan code (outside software) and
+    the claim is with_inputs for that run. Reproduced when no test gives p < 0.05.
+- id: fig5e-h-saccade-kinematics-unchanged
+  statement: Microstimulations of OFC or dmPFC did not change macrosaccade peak velocity, the slope
+    of peak velocity on amplitude, or that slope by saccade direction.
+  source: Results, Microstimulation effects of OFC and dmPFC are not driven by low-level properties
+    of saccades, paragraph 1; Figure 5E-H
+  quote: macrosaccade peak velocity (Fig. 5E, OFC
+  statistics:
+  - about: peak velocity, OFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.848
+  - about: peak velocity, dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 1
+  - about: slope difference against zero, OFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.665
+  - about: slope difference against zero, dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.904
+  - about: slope difference, OFC
+    test: permutation test
+    p: 0.515
+  - about: slope difference, dmPFC
+    test: permutation test
+    p: 0.164
+  - about: by direction, OFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.47
+    p_relation: ">"
+  - about: by direction, dmPFC
+    test: Wilcoxon signed rank, two-sided
+    p: 0.31
+    p_relation: ">"
+  depends_on:
+  - fig5cd-saccade-counts-unchanged
+  criterion: A claim of absence, judged on the paper's tests. From the Methods and
+    S6_Gaze_Saccade_Kinematics_Combined.m. The first macrosaccade of each trial's post-gaze epoch;
+    day mean peak velocity per type, signed-rank. Per day, a linear fit of peak velocity on
+    amplitude for stimulation and for sham trials, the slope difference tested against zero by
+    signed-rank; the permutation test shuffles the trial labels 1,000 times within each day and
+    gives the fraction of shuffled median differences beyond the real median, on its side, as
+    the code does. Direction groups II, IC, CI and CC by the hemifields of start and end,
+    signed-rank against zero per group. Reproduced when no test gives p < 0.05.
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, hemifield split. The header said fixations are split at the centre of the partner's whole Face ROI. S1_Get_data_gaze_Lynch.m and _Tarantino.m (and the dot scripts) split at center_roi_m2_face, the centre of M2's Face ROI (M1's own face) mirrored into M1's coordinates, not at center_roi_m1_face. Corrected; this applies to fig2e-ofc-contralateral, fig2e-dmpfc-accg-no-hemifield-effect, fig2gh-nonsocial-no-hemifield-effect, methods-mouth-stimulation-no-effect, methods-eyes-vs-mouth-bootstrap and the epoch slope claims.
+  - Header, fixations entering the distance. The Methods say social gaze distance uses "all M1's fixations"; the code (m1_all in S3_Basic_Gaze_Matrices_Combined.m) uses only events labelled looks_by m1 and drops M1 fixations labelled mutual. The header did not say this. Added it, with the Methods reading as the main one and the code's as a variant, as the protocol orders when Methods and code disagree.
+  - fig2c-ofc-social-gaze-distance. The criterion now says the outcome is judged on the Methods reading of the fixations and the code's M1-only reading is shown as a variant.
+  - fig2gh-nonsocial-no-hemifield-effect. Same correction of the hemifield reference as the header.
+  - figs1e-eyes-more-than-face. The criterion put the FDR correction over two tests (Eyes against non-eye Face and Eyes against RDM of one area). S3_Stats_ROI_number_duration_final.m corrects the per-area figure values over 15 day-count tests (By_region_total_number_p_correct, all monkeys). Corrected; figs1e-eyes-vs-rdm-comparable refers to it and follows.
+  - methods-ofc-no-change-in-fixation-number. The criterion said the code counts M1-only and mutual events and, in the same sentence, that it uses M1-only events. The code uses M1-only events; removed the contradiction.
+  - fig4c-dmpfc-slope-late-greater. The criterion's bound p < 0.1 for the dmPFC contralateral test was not from the paper. Replaced by the reported p = 0.054 widened by 10% (p at most 0.0594), the protocol's default tolerance.
+  - fig4d-dmpfc-slope-permutation. The criterion credited the null construction to S1_Gaze_Time_Epoch.m, which does not build it; no script in the repository does. The construction is now credited to the Methods and legends, and the criterion says the code loads a precomputed shuffled file.
+  - Open, fig4d-dmpfc-slope-permutation. The shuffled file's causal strength field is named causal_m1m2_eyes_null, which may mean the code's null also takes causal strengths from a null decomposition. The Methods describe only reshuffling the trial order. The Methods construction is used.
+  - Open, header. The hemifield reference is read from the code's ROI handling and its comment "m1 roi is m2's eyes from m1's perspective". That rois.m2 holds M1's face as M2 sees it is an inference from that comment and from M2's distance using center_roi_m2_eyes.
+  - Checked and unchanged. Every other statement, source, quote, statistic and expected value matches the paper. Code details checked at commit cc0bf99 and found as cited, namely trial selection and dropping the first trial, own-type grouping, the inter-looking interval and reciprocation latency computations, the 12-test FDR families for stimulation counts, the five excluded epoch days, the fitlm slopes on stimulation trials, the heatmap normalisation, the one-sided permutation p of Fig. 5G, and the pupil script. The paper's main findings each have a claim.

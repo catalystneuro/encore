@@ -1,0 +1,675 @@
+# Claims for Cody, Kumar & Tzounopoulos (2024) on dandiset 001256.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-22, protocol
+# as stated in docs/protocol.md (pilot-10), Reader steps 1 to 4.
+#
+# Text read: the version of record (J Neurosci 44(11) e0939232024, 2024), as the PDF supplied by a
+# person and its text extraction (paper/10.1523-jneurosci.0939-23.2024.txt): main text, Materials and
+# Methods, figure legends of Figures 1 to 6. The paper has no supplement and no Extended Data. It
+# links no code and no data availability statement; no analysis code was read. The dandiset's
+# title ("Cortical zinc dependent pupil changes to sound contrast") and description ("Data for
+# analyses presented in Cody et. al. 2024") say it holds the data of this paper; its files were not
+# looked at.
+#
+# The data the paper used (Materials and Methods, Animals). Awake head-fixed mice, right auditory
+# cortex (ACtx) expressing GCaMP6f in CaMKII principal neurons, two-photon calcium imaging (2PCI,
+# 145 x 145 um, 256 x 256 pixels, 5 Hz) of right A1 layer 2/3 with simultaneous video of the right
+# pupil (10 Hz, synchronized to the 2P frames). Sound from a free-field speaker at the left ear.
+# Groups, as the Methods list them:
+# - A. 4 F and 4 M C57BL6/J mice, Figures 1, 2a-c and 3 (295 tone-responsive cells from 8 animals).
+# - B. 6 F and 8 M C57BL6/J mice, "Figure 2a-e" (the Results give 520 tone-responsive cells from 14
+#   mice for Fig. 2d, e, before and after ZX1). The Methods name Fig. 2a-c for both A and B; see
+#   fig2b-evoked-pd-whole-drc for the readings.
+# - C. 6 F and 4 M ZnT3-WT littermate mice, Fig. 4a, c (and the WT side of Fig. 6d).
+# - D. 3 F and 3 M ZnT3-KO mice, Fig. 4b, d and 6d.
+# - E. 1 F and 2 M C57BL6/J mice with a chronic cannula in left ACtx, widefield imaging of right A1,
+#   Figure 5.
+# - F. 3 M and 1 F C57BL6/J mice, ACSF control injections, Figure 6.
+# Conditions: low-contrast dynamic random chords (DRC; 28 tones 5 to 51.874 kHz, 25 ms chords,
+# levels uniform 50 to 60 dB SPL) and high-contrast DRC (40 to 70 dB SPL), same 55 dB mean, each
+# trace with 4 s of silence before and after; for the contrast gain control (CGC) assay a 400 ms
+# 70 dB SPL pure tone at 2 s into the DRC, at the frequency best for the field's average FRA; for
+# the Fig. 4 and 6 pupil analyses DRCs without the tone. At least 8 repetitions per contrast,
+# pseudorandom order, 25 to 35 s between traces. Treatment: CTRL before, then ZX1 (100 uM, with
+# Alexa Fluor 594) or ACSF injected into right ACtx. Measured variables: cell fluorescence traces,
+# pupil video or pupil diameter, trial times, contrast, treatment, genotype, recording time.
+#
+# Methods shared by the claims, with their source (all from Materials and Methods unless noted).
+# - Pupil diameter (Pupillometry, analysis): least-squares circle fit to DeepLabCut points, at least
+#   three points at likelihood > 0.9 or the frame is dropped; then remove frames that are > 6 SD
+#   outliers of the first derivative, interpolate missing points linearly from the two before and
+#   two after, and low-pass filter (third order Butterworth, 3 Hz). Needed only if the dandiset
+#   holds points, not diameters. Open: whether the filter is zero-phase or causal (readings, (a)
+#   zero-phase, (b) causal); it cannot change a sign of a 1 s average and is run as (a), a
+#   standard choice.
+# - Evoked pupil: each trace divided by its mean over -4 to 0 s before sound onset, times 100 (%
+#   baseline). Baseline PD for binning: each trace as % of the animal's maximum PD in the
+#   experiment, averaged over -4 to 0 s. Sound-evoked pupil analyses keep trials with baseline PD
+#   < 50% of animal max (Methods, Pupillometry, analysis, paragraph 2); this applies to the claims
+#   on Fig. 2a-c, 4 and 6b-d; analyses without it are variants.
+# - Baseline PD bins (Fig. 1f-i): seven bins, the last > 76% and wider. The Methods give no other
+#   edges. The Discussion names the fourth bin "43–54%", so bins 1 to 6 are read as 11% wide:
+#   below 21, 21-32, 32-43, 43-54, 54-65, 65-76, above 76 (inferred; the lower edge of bin 1 is not
+#   given and is taken as open below). Trials are binned by their own baseline PD (Methods). The
+#   Fig. 1 legend says "Baseline PD is calculated by animal as the mean baseline PD percentage of
+#   max animal PD across the entire experiment", which could mean one value per animal; that
+#   reading is a variant, since the Fig. 1i error df (1871, 14 groups, so 1885 values from 295
+#   cells) needs several bins per cell.
+# - Cell fluorescence (2PCI processing and analysis): NoRMCorre motion correction, FISSA neuropil
+#   removal scaled by 0.8, ellipse ROIs. dF/F = (F - F0_DRC)/F0_DRC with F0_DRC the mean over -1.2
+#   to 0 s before DRC onset. Pure-tone response = F(t) - F0_PT, F0_PT the mean of F(t) over 1-2 s.
+#   The window of the peak pure-tone response is not stated for the response measure itself. Open:
+#   (a) the 800 ms after tone onset (2 to 2.8 s), the window of the responsiveness test, (b) 2 to
+#   3.2 s, the window of the reliability measure; both are run. Open: whether a cell's "average
+#   peak" is (a) the maximum of its trial-averaged trace or (b) the mean of its trial maxima; both
+#   are run.
+# - Cell inclusion: tone-responsive cells with d' >= 0 (Romero et al. 2019; the paper gives neither
+#   the formula nor which measures it compares). Any d' of the form difference of means over a
+#   spread is >= 0 exactly when the mean response is at least the mean baseline; which response and
+#   baseline are compared is open, (a) the peak in the tone window (both window readings) against
+#   the 1-2 s baseline of the CGC assay traces, (b) the FRA mapping responses, peak in the 800 ms
+#   after tone onset against the 600 ms pre-tone baseline (Methods, Frequency response area
+#   mapping, which also says only cells with significant pure-tone responses were included); the
+#   counts 295 and 520 are checked under each. And significantly responsive, the average trace maximum in
+#   the 800 ms after tone onset >= 2 SD above the average baseline (1-2 s). Open: the SD is (a) the
+#   SD over time of the trial-averaged trace in 1-2 s or (b) the SD across trials of the trial
+#   baseline means. For CGC analyses, cells responsive in both low and high contrast. Open: whether
+#   the Fig. 1f, g and 2e cells are (a) those responsive in both contrasts or (b) responsive with
+#   trials of both contrasts pooled; the reported counts (295, 520) are checked under each.
+# - Contrast scaling factor: per cell, average peak in low contrast divided by average peak in high
+#   contrast (Discussion, paragraph 3, "calculated from each cell's average peak response in low
+#   contrast divided by its peak response in high contrast"), then the population mean, per
+#   baseline PD bin, with both contrasts of a cell taken from the same bin ("grouped ... to
+#   maintain pairing by contrast condition").
+# - Growth curve analysis (GCA): pupil (% baseline) from sound onset to 2 s, orthogonal first and
+#   second order time polynomials (as in Mirman 2016, which the Methods cite, R poly() with unit
+#   norm columns over the time samples), LME pupil ~ (tPoly1 + tPoly2) x contrast + (tPoly1 +
+#   tPoly2) x treatment + (1 | subject), fitted with MATLAB fitlme and checked with R lmer; Tukey
+#   adjusted pairwise comparisons with emmeans and Satterthwaite df. Rows are trial by time sample:
+#   the reported denominator df (7921.6 for the WT model, 4500.8 for KO, 2558 for ACSF, 3869 for
+#   genotype) need thousands of rows, which per-animal mean traces cannot give. Samples with 0 <= t
+#   <= 2 s are used (standard choice). Open, and run under each reading: the model the text reports
+#   includes a contrast x treatment interaction (Fig. 4c, F(1,7921.6) = 24.2) that the written
+#   formula lacks, so the model is (a) the written formula plus contrast:treatment, or (b) the full
+#   factorial (tPoly1 + tPoly2) x contrast x treatment; and the factor coding is (a) reference
+#   coding with LOW and CTRL as references (fitlme's default), or (b) effects (sum) coding. The
+#   "F" values printed with negative signs for the KO model (for example F(1,4500.8) = -1.14) can
+#   only be t statistics of coefficient tests; the p-values are compared.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001256"
+paper: doi:10.1523/jneurosci.0939-23.2024
+claims:
+- id: fig1f-tone-response-inverse-u
+  statement: Peak pure-tone responses of A1 principal cells, contrasts combined, vary with baseline PD in
+    an inverse U, largest at intermediate baseline PD (Kruskal-Wallis p = 5.91e-7, 295 tone-responsive
+    cells from eight animals).
+  source: Results, CGC is more robust at intermediate baseline PD, paragraph 2; Figure 1f
+  quote: we also observed an inverse U relationship, where pure-tone response amplitudes are largest at
+    baseline PDs that are within ... the intermediate range of an animal's PD [Fig. 1f, relative to maximum
+    animal PD; p = 5.91 × 10−7, one-way Kruskal–Wallis test, 295 tone-responsive cells
+  statistics:
+  - test: one-way Kruskal-Wallis test
+    p: 5.91e-7
+    n: 295 tone-responsive cells from eight animals
+  expected:
+  - quantity: tone-responsive cells
+    value: 295
+    tolerance: 29.5
+  criterion: Group A mice, all trials (the 50% limit applies to evoked pupil analyses, not Fig. 1).
+    Per cell and baseline PD bin, the average peak pure-tone response over that cell's trials of both
+    contrasts in the bin (shared methods, both peak readings). Kruskal-Wallis across the seven bins on
+    the cell-bin values. Reproduced when p < 0.05 and the bin with the highest mean is neither the first
+    nor the last. The lower edge of bin 1 is open, (a) all trials below 21% or (b) 10 to 21%; both run.
+  data: dataset
+- id: fig1g-reliability-intermediate
+  statement: Response reliability (trial-to-trial zero-lag cross-correlation of pure-tone responses at
+    2-3.2 s) is highest at intermediate baseline PD, along with response amplitude (Kruskal-Wallis p =
+    3.25e-8).
+  source: Results, CGC is more robust at intermediate baseline PD, paragraph 2; Figure 1g
+  quote: increased trial-to-trial consistency in the timing of pure-tone responses, termed reliability,
+    coincides with increased pure-tone response amplitudes at intermediate baseline PD (Fig. 1g; reliability
+    calculated as average zero lag trial-to-trial cross-correlation between all pairs of pure-tone response
+    ΔF/F traces at 2–3.2 s; p = 3.25 × 10−8, one-way Kruskal–Wallis test)
+  statistics:
+  - test: one-way Kruskal-Wallis test
+    p: 3.25e-8
+  criterion: Group A, cells and bins as in fig1f-tone-response-inverse-u. Per cell and bin, the mean over
+    all pairs of trials in the bin of the zero-lag cross-correlation of the pure-tone response traces at
+    2 to 3.2 s (Methods and Results). The normalization is open, (a) Pearson correlation of the two
+    traces (the axis reads "reliability (C.C.)"), (b) the normalized cross-correlation without mean
+    removal; both run. Cell-bins with fewer than two trials have no value. Reproduced when the
+    Kruskal-Wallis test across bins has p < 0.05 and the bin with the highest mean is neither the first
+    nor the last.
+  depends_on:
+  - fig1f-tone-response-inverse-u
+- id: fig1h-cgc-largest-intermediate
+  statement: The contrast scaling factor (CGC magnitude) is largest at intermediate baseline PD
+    (Kruskal-Wallis p = 3.03e-5).
+  source: Results, CGC is more robust at intermediate baseline PD, paragraph 3; Figure 1h
+  quote: the magnitude of CGC is, like pure-tone response amplitudes (Fig. 1f), largest at intermediate
+    baseline PDs (Fig. 1h; p= 3.03 × 10−5, one-way Kruskal–Wallis test)
+  statistics:
+  - test: one-way Kruskal-Wallis test
+    p: 3.03e-5
+  criterion: Group A, cells responsive in both contrasts. Per cell and bin with trials of both contrasts,
+    the contrast scaling factor (shared methods, both peak readings). Kruskal-Wallis across the seven
+    bins. Reproduced when p < 0.05 and the bin with the highest mean factor is neither the first nor the
+    last.
+  depends_on:
+  - fig1f-tone-response-inverse-u
+- id: fig1h-cgc-evident-all-bins
+  statement: CGC is evident throughout the baseline PD range, the contrast scaling factor being
+    significantly above 1 in every baseline PD bin.
+  source: Results, CGC is more robust at intermediate baseline PD, paragraph 3; Figure 1h; Discussion,
+    paragraph 3
+  quote: We deemed CGC evident when contrast scaling factors were significantly >1. Contrast scaling
+    factors plotted across baseline PD reveal that CGC is evident throughout the baseline PD range
+  criterion: Values as in fig1h-cgc-largest-intermediate. The paper names no test for "significantly
+    >1", no sidedness and no correction. Readings, (a) one-sample Wilcoxon signed-rank test of the
+    cell factors against 1, (b) one-sample t-test against 1, each run one-sided and two-sided at p <
+    0.05 per bin, uncorrected.
+    Reproduced when, under each reading, every bin's mean factor is above 1 and the test is significant
+    in every bin; the bins and p-values are shown.
+  depends_on:
+  - fig1h-cgc-largest-intermediate
+- id: fig1i-baseline-contrast-interaction
+  statement: Peak pure-tone responses depend on baseline PD (F(6,1871) = 10.74, p = 9.04e-12), with a
+    significant interaction between contrast and baseline PD (F(6,1871) = 6.01, p = 3.10e-6).
+  source: Results, CGC is more robust at intermediate baseline PD, paragraph 3; Figure 1i
+  quote: we observed a significant association between baseline PD and response amplitude (Fig. 1i;
+    F(6,1871) = 10.74, p =9.04× 10−12, two-way ANOVA). Notably, we found a significant interaction between
+    contrast and baseline PD (Fig. 1i; F(6,1871)= 6.01, p = 3.10 × 10−6)
+  statistics:
+  - about: main effect of baseline PD bin
+    test: two-way ANOVA
+    statistic: F(6,1871) = 10.74
+    p: 9.04e-12
+  - about: contrast x baseline PD interaction
+    test: two-way ANOVA
+    statistic: F(6,1871) = 6.01
+    p: 3.10e-6
+  expected:
+  - quantity: values in the ANOVA (error df 1871 plus 14 groups)
+    value: 1885
+    tolerance: 188.5
+  criterion: Group A. Per cell, bin and contrast, the average peak pure-tone response (shared methods,
+    both peak readings). Two-way ANOVA with bin (7 levels) and contrast (2), with interaction. Which
+    cell-bins enter is open, (a) every cell-bin-contrast with trials, (b) only cell-bins with trials of
+    both contrasts; both run. Reproduced when, under one reading whose count of values is within
+    tolerance, both the bin effect and the interaction have p < 0.05; partially reproduced when only the
+    bin effect does.
+  depends_on:
+  - fig1f-tone-response-inverse-u
+- id: fig1i-contrast-effect-intermediate-only
+  statement: Only at the intermediate baseline PD bin of 43-54% do peak pure-tone responses differ
+    significantly between low and high contrast (Bonferroni corrected post hoc, p = 3.65e-5).
+  source: Discussion, paragraph 3; Figure 1i, fourth bin
+  quote: solely at the intermediate baseline PD range where CGC is maximal, we observed a significant
+    effect of contrast on pure-tone responses between low and high contrast (p = 3.65 × 10−5, Bonferroni’s
+    corrected post hoc test)
+  statistics:
+  - about: low against high contrast in the 43-54% bin
+    test: Bonferroni corrected post hoc test
+    p: 3.65e-5
+    corrected: Bonferroni
+  criterion: On the ANOVA of fig1i-baseline-contrast-interaction, low against high contrast within each of
+    the seven bins, Bonferroni corrected. The paper names Bonferroni and no family, so the family is
+    open, (a) the seven contrast comparisons, one per bin, (b) all 91 pairs of the 14 bin by contrast
+    groups (as a post hoc test of all group means after a two-way ANOVA gives); both run. Reproduced
+    when, under both, the fourth bin is significant at corrected p < 0.05 and no other bin is;
+    methods_underspecified if they disagree.
+  depends_on:
+  - fig1i-baseline-contrast-interaction
+- id: fig2b-evoked-pd-whole-drc
+  statement: Evoked PD averaged over the DRC (0-8 s) is larger in high than in low contrast (Wilcoxon rank
+    sum p = 0.0066).
+  source: Results, Sound-evoked PD responses are contrast-dependent but do not predict CGC magnitude,
+    paragraph 1; Figure 2a, b
+  quote: We found that evoked PD responses to high-contrast sound are significantly larger than those in
+    low contrast across a temporal average of the DRC stimulus (Fig, 2a; 0–8 s; Wilcoxon rank sum test, p =
+    0.0066)
+  statistics:
+  - test: Wilcoxon rank sum test
+    p: 0.0066
+  criterion: Per trial, the mean evoked PD (% baseline) over 0 to 8 s from DRC onset, trials with
+    baseline PD < 50% of animal max, CTRL trials of the CGC assay (DRC with the pure tone, as Fig. 2a
+    shows). Open, run under each reading - the mice, (a) group A, (b) group B before ZX1, (c) groups A
+    and B pooled, if they are distinct mice (the Methods list both for Fig. 2a-c); the unit of the test, (a) trials, (b) per-animal means per contrast.
+    Two-sided Wilcoxon rank sum, high against low. Reproduced when high exceeds low with p < 0.05 under
+    every reading; if the readings differ, methods_underspecified with every result shown.
+- id: fig2c-evoked-pd-1-2s
+  statement: Before the pure tone, evoked PD averaged over 1-2 s is also larger in high than in low
+    contrast (Wilcoxon rank sum p = 0.043).
+  source: Results, Sound-evoked PD responses are contrast-dependent but do not predict CGC magnitude,
+    paragraph 1; Figure 2c
+  quote: we analyzed responses at 1–2 s and again observed significantly larger evoked PD during high
+    contrast (Fig. 2c; 1–2 s; Wilcoxon rank sum test, p = 0.043)
+  statistics:
+  - test: Wilcoxon rank sum test
+    p: 0.043
+  criterion: As fig2b-evoked-pd-whole-drc, with the per-trial mean over 1 to 2 s, under the same readings.
+  depends_on:
+  - fig2b-evoked-pd-whole-drc
+- id: fig2e-drc-responses-no-difference
+  statement: A1 principal cell responses averaged over the first 2 s of the DRC do not differ between low
+    and high contrast, before or after ZX1 (520 tone-responsive cells from 14 mice).
+  source: Results, Sound-evoked PD responses are contrast-dependent but do not predict CGC magnitude,
+    paragraphs 1 and 2; Figure 2d, e
+  quote: "we averaged cell response magnitude across 0–2 s (Fig. 2e). We did not observe any significant difference in response magnitude in either control or ZX1 (Wilcoxon rank
+    sum test for control: z = 0.0073, p = 0.9942; after ZX1, z = −1.2425, p = 0.2141)"
+  statistics:
+  - about: CTRL, low against high contrast
+    test: Wilcoxon rank sum test
+    statistic: z = 0.0073
+    p: 0.9942
+    n: 520 tone-responsive cells from 14 mice
+  - about: after ZX1, low against high contrast
+    test: Wilcoxon rank sum test
+    statistic: z = -1.2425
+    p: 0.2141
+    n: 520 tone-responsive cells from 14 mice
+  expected:
+  - quantity: tone-responsive cells
+    value: 520
+    tolerance: 52
+  criterion: Group B. Per cell and condition, the mean over 0 to 2 s of the trial-averaged dF/F (F0_DRC
+    over -1.2 to 0 s). A claim of absence, judged on the paper's test - two-sided Wilcoxon rank sum of
+    cell values, low against high, in CTRL and in ZX1 separately. Reproduced when neither is significant
+    at p < 0.05; not reproduced when either is; the median difference is given either way. Cell
+    inclusion readings as in the shared methods; the count is checked under each.
+- id: fig3b-lme-coefficients
+  statement: In an LME model of cell peak pure-tone responses, baseline PD contributes significantly
+    (F(1,165.06) = 8.70, p = 3.64e-3), while evoked PD at 1-2 s (p = 0.108) and its interaction with
+    contrast (p = 0.756) do not.
+  source: Results, Sound-evoked PD responses are contrast-dependent but do not predict CGC magnitude,
+    paragraph 2; Figure 3b; Methods, Pupillometry, analysis, paragraph 3
+  quote: we found that the baseline PD model coefficient significantly differed from zero and thus
+    significantly contributed to neuronal responses (F(1,165.06) = 8.70; p = 3.64 × 10−3). Neither
+    sound-evoked PD responses (F(1,167.17)= 2.61; p = 0.108) nor their interaction with contrast
+    (F(1,169.59) = 0.0971; p = 0.756) contributed to predicting neuronal pure-tone responses
+  statistics:
+  - about: baseline PD
+    test: LME coefficient test
+    statistic: F(1,165.06) = 8.70
+    p: 3.64e-3
+  - about: evoked PD at 1-2 s
+    test: LME coefficient test
+    statistic: F(1,167.17) = 2.61
+    p: 0.108
+  - about: evoked PD x contrast
+    test: LME coefficient test
+    statistic: F(1,169.59) = 0.0971
+    p: 0.756
+  criterion: Group A. Which cells is open, (a) cells responsive in both contrasts (the Methods rule for
+    CGC analyses), (b) all tone-responsive cells of fig1f-tone-response-inverse-u; both run. Model as
+    in the Methods, peakPureToneResponse ~ baseline_PD + contrast x
+    pupil_at_1-2s + (1 | subject) + (1 | baseline_PD) + (1 | pupil_at_1-2s), baseline_PD in % animal
+    max (Fig. 3a axis), pupil_at_1-2s the trial's mean evoked PD over 1 to 2 s in % baseline; F tests of
+    the fixed effects with Satterthwaite df. Rows are cell by trial (the pupil terms are per trial), with
+    the trial peak response. Open, run under each reading - trials, (a) all, (b) baseline PD < 50%.
+    The positive claim (baseline PD) is reproduced when p < 0.05 under every reading; the absence parts
+    (evoked PD and its interaction) are judged on the paper's test, reproduced when neither has p < 0.05.
+    The claim is reproduced when all three parts hold, partially when the baseline part or the absence
+    parts hold alone.
+  depends_on:
+  - fig1f-tone-response-inverse-u
+- id: fig3c-lme-likelihood-ratio
+  statement: The full LME model with evoked PD and its contrast interaction does not predict pure-tone
+    responses better than a null model with baseline PD alone (likelihood ratio test p = 0.330).
+  source: Results, Sound-evoked PD responses are contrast-dependent but do not predict CGC magnitude,
+    paragraph 2; Figure 3c
+  quote: The full model including sound-evoked PD responses and their interaction with contrast did not
+    significantly improve neuronal pure-tone response prediction when compared with the null model (p =
+    0.330)
+  statistics:
+  - test: likelihood ratio test
+    p: 0.33
+  criterion: Data and full model as in fig3b-lme-coefficients; null model peakPureToneResponse ~
+    baseline_PD + (1 | subject) + (1 | baseline_PD) (Methods). Both fitted by maximum likelihood (needed to
+    compare models with different fixed effects; a standard choice). A claim of absence, judged on the
+    paper's test - reproduced when the likelihood ratio test has p >= 0.05, under each trial reading.
+  depends_on:
+  - fig3b-lme-coefficients
+- id: fig4c-wt-contrast-zx1-effects
+  statement: In ZnT3-WT mice, contrast and ZX1 both affect the GCA intercept and slope of evoked PD, and
+    contrast interacts with ZX1 (F(1,7921.6) = 24.2, p = 8.85e-7).
+  source: Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high-
+    versus low-contrast sound, paragraph 1; Figure 4a, c, e
+  quote: In ZnT3-WT mice, we observed a significant effect of both contrast and ZX1 on the intercept ...
+    and on the first-order (linear) time polynomial coefficient (slope) ... We also observed a significant
+    interaction between contrast and ZX1 treatment (Fig. 4c, F(1,7921.6) = 24.2, p = 8.85 × 10−7)
+  statistics:
+  - about: contrast, intercept
+    test: LME growth curve analysis
+    statistic: F(1,7921.6) = 19.48
+    p: 1.03e-5
+  - about: contrast, slope
+    test: LME growth curve analysis
+    statistic: F(1,7918.8) = 26.54
+    p: 2.64e-7
+  - about: ZX1, intercept
+    test: LME growth curve analysis
+    statistic: F(1,7926.3) = 4.47
+    p: 0.0344
+  - about: ZX1, slope
+    test: LME growth curve analysis
+    statistic: F(1,7918.8) = 40.45
+    p: 2.13e-10
+  - about: contrast x ZX1
+    test: LME growth curve analysis
+    statistic: F(1,7921.6) = 24.2
+    p: 8.85e-7
+  criterion: Group C, CTRL and ZX1 trials of DRC without the tone, baseline PD < 50%. GCA as in the shared
+    methods, under both model readings and both coding readings. Reproduced when, under every reading, all
+    five terms have p < 0.05; partially reproduced when the contrast x ZX1 term and at least two of the
+    four main terms do; methods_underspecified if the readings disagree. The signs of the terms and the
+    row count against the df (about 7930 rows) are shown.
+- id: fig4-wt-posthoc
+  statement: In ZnT3-WT mice, post hoc Tukey tests show an effect of contrast before but not after ZX1,
+    and an effect of ZX1 only on high-contrast evoked PD (p < 0.0001).
+  source: Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high-
+    versus low-contrast sound, paragraph 1; Figure 4c
+  quote: Pairwise post hoc Tukey tests revealed a significant effect of contrast before, but not after ZX1
+    treatment, and solely a significant effect of ZX1 on high-contrast–evoked PD (p < 0.0001 for both
+    comparisons)
+  statistics:
+  - test: Tukey adjusted pairwise comparisons (emmeans)
+    p: 0.0001
+    p_relation: "<"
+    corrected: Tukey
+  criterion: On the model of fig4c-wt-contrast-zx1-effects (each model reading), emmeans of the four
+    contrast x treatment cells at the time polynomials' mean (zero for orthogonal polynomials, emmeans'
+    default), Tukey adjusted pairwise comparisons with Satterthwaite df (Methods). Reproduced when HIGH
+    exceeds LOW in CTRL at p < 0.05 and not in ZX1, and ZX1 lowers HIGH at p < 0.05 and does not change
+    LOW at p < 0.05.
+  depends_on:
+  - fig4c-wt-contrast-zx1-effects
+- id: fig4f-ko-no-contrast-effect
+  statement: In ZnT3-KO mice, neither contrast nor ZX1 affects the GCA intercept of evoked PD and they do
+    not interact; contrast does not affect the slope.
+  source: Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high-
+    versus low-contrast sound, paragraph 2; Figure 4b, d, f
+  quote: In ZnT3-KO mice (Fig. 4b), we did not observe a significant effect of either contrast or ZX1 on
+    evoked PD intercept (Fig. 4d,f; contrast, F(1,4500.8) = −1.14, p = 0.255; ZX1, F(1,4502.4) = 1.45, p =
+    0.147), nor a significant interaction between the two (F(1,4500.2) = −0.540, p = 0.589)
+  statistics:
+  - about: contrast, intercept
+    test: LME growth curve analysis
+    statistic: F(1,4500.8) = -1.14
+    p: 0.255
+  - about: ZX1, intercept
+    test: LME growth curve analysis
+    statistic: F(1,4502.4) = 1.45
+    p: 0.147
+  - about: contrast x ZX1
+    test: LME growth curve analysis
+    statistic: F(1,4500.2) = -0.540
+    p: 0.589
+  - about: contrast, slope
+    test: LME growth curve analysis
+    statistic: F(1,4500.0) = 1.31
+    p: 0.19
+  criterion: Group D, as fig4c-wt-contrast-zx1-effects. A claim of absence, judged on the paper's test -
+    reproduced when the contrast intercept, ZX1 intercept, contrast x ZX1 and contrast slope terms all have
+    p >= 0.05, not reproduced when any has p < 0.05; under each model and coding reading, estimates given.
+    The model readings are part of how the test is written, so a disagreement between them is reported
+    as methods_underspecified.
+- id: fig4f-ko-zx1-slope
+  statement: In ZnT3-KO mice ZX1 still reduces the GCA slope (p = 0.0129), but its slope weight (-0.64) is
+    less than half that in ZnT3-WT mice (-1.41).
+  source: Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high-
+    versus low-contrast sound, paragraph 2; Figure 4e, f
+  quote: however, we observed a significant effect of ZX1 (F(1,4500.0) = −2.49, p = 0.0129) ... the GCA
+    slope coefficient (weight) for ZX1 in the ZnT3-KO mice (−0.64, Fig. 4f) was less than half that of
+    ZnT3-WT (−1.41, Fig. 4e)
+  statistics:
+  - about: ZX1, slope, ZnT3-KO
+    test: LME growth curve analysis
+    statistic: F(1,4500.0) = -2.49
+    p: 0.0129
+  expected:
+  - quantity: ZX1 slope weight, ZnT3-KO
+    value: -0.64
+    tolerance: 0.064
+  - quantity: ZX1 slope weight, ZnT3-WT
+    value: -1.41
+    tolerance: 0.141
+  criterion: Models of fig4c-wt-contrast-zx1-effects and fig4f-ko-no-contrast-effect; the weight is the
+    tPoly1 x treatment coefficient. Reproduced when, under one model and coding reading, the KO term is
+    negative with p < 0.05 and the KO weight is less than half the WT weight in magnitude; the two weights
+    are checked against the expected values, which also depend on the polynomial scaling (unit norm, as R
+    poly() gives, is used; the paper does not state it).
+  depends_on:
+  - fig4c-wt-contrast-zx1-effects
+  - fig4f-ko-no-contrast-effect
+- id: fig5-contralateral-zx1-increases
+  statement: ZX1 infused into the contralateral (left) ACtx increases sound-evoked responses of right A1
+    principal neurons (one-way repeated measures ANOVA F = 33.44, p = 4.1e-5; control against
+    contralateral ZX1 p = 0.016, Bonferroni; three mice).
+  source: Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high-
+    versus low-contrast sound, paragraph 4; Figure 5c-e
+  quote: infusion of ZX1 to the contralateral ACtx increased the sound-evoked responses of ipsilateral A1
+    PNs (Fig. 5c–e; three mice, one-way repeated measure ANOVA, F = 33.44, p = 4.1 × 10−5; control vs ZX1
+    in contralateral ACtx, p = 0.016, Bonferroni's multiple-comparisons test)
+  statistics:
+  - about: three conditions (control, contralateral ZX1, ipsilateral ZX1)
+    test: one-way repeated measure ANOVA
+    statistic: F = 33.44
+    p: 4.1e-5
+    n: three mice
+  - about: control against contralateral ZX1
+    test: Bonferroni's multiple-comparisons test
+    p: 0.016
+    corrected: Bonferroni
+  criterion: Group E, widefield dF/F of right A1 to broadband noise (6 to 64 kHz, 100 ms, 30 to 80 dB SPL,
+    Fig. 5b axis, d legend), F0 the 1 s mean before sound onset (carried over from Methods, Widefield
+    imaging, which states it for the pure-tone mapping, not for Fig. 5). The paper does not give the
+    A1 region, the response measure or window, or what the repeated measures are. Readings, run each -
+    measure, (a) peak dF/F, (b) mean dF/F, in the 1 s after onset (standard window). Repeated units -
+    with three conditions, F = 33.44 gives p = 0.0032 on (2,4) df (three mice), 9e-9 on (2,34) df
+    (three mice by six levels), and 3.7e-5 on (2,10) df, close to the reported 4.1e-5; so the units
+    are read as the sound levels (six on the Fig. 5b axis, 30 to 80 dB SPL), with values averaged over
+    mice, and with and without a Greenhouse-Geisser correction. Units of mice, and of mouse by level,
+    are variants shown. A1 is the region the dataset marks as A1, if it does; else this claim is
+    blocked. Reproduced when the ANOVA has p < 0.05 and contralateral ZX1 exceeds control at
+    Bonferroni p < 0.05 under every measure reading; methods_underspecified if they disagree.
+- id: fig5-ipsilateral-zx1-reduces
+  statement: Subsequent ZX1 infusion into the ipsilateral ACtx reduces sound-evoked A1 responses compared
+    with contralateral ZX1 (p = 3.2e-5, Bonferroni).
+  source: Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high-
+    versus low-contrast sound, paragraph 4; Figure 5d-f
+  quote: subsequent infusion of ZX1 to ipsilateral ACtx reduced the sound-evoked responses of A1 PNs (Fig.
+    5d–f; ZX1 in contralateral vs ipsilateral ACtx, p = 3.2 × 10−5, Bonferroni's multiple-comparisons test)
+  statistics:
+  - test: Bonferroni's multiple-comparisons test
+    p: 3.2e-5
+    corrected: Bonferroni
+  criterion: As fig5-contralateral-zx1-increases. Reproduced when ipsilateral ZX1 is below contralateral
+    ZX1 at Bonferroni p < 0.05 under every reading.
+  depends_on:
+  - fig5-contralateral-zx1-increases
+- id: fig5c-no-dye-in-other-hemisphere
+  statement: After infusion of ZX1 with Alexa Fluor 594 into the left ACtx, no Alexa Fluor 594 is seen in
+    the right ACtx, suggesting ZX1 does not travel to the other hemisphere.
+  source: Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high-
+    versus low-contrast sound, paragraph 3; Figure 5c
+  quote: We found that the infusion of ZX1 + Alexa Fluor 594 to the left (contralateral) ACtx does not show
+    the presence of Alexa Fluor 594 in the ipsilateral ACtx under the red channel (Fig. 5c)
+  criterion: Shown with a representative red-channel image and no measure. Testable only if the dataset
+    holds the red-channel images of the right ACtx before and after contralateral infusion; the paper
+    gives no threshold for presence, so the claim is reported as methods_underspecified with the mean
+    red intensities shown, unless the images make the answer plain both ways (no change at all, or a
+    change of the order seen after the ipsilateral infusion).
+- id: fig6a-baseline-pd-drift
+  statement: Baseline PD increases with recording time in both ZX1 (slope 95% CI 0.0798 to 0.183, p =
+    1.26e-6) and ACSF experiments (95% CI 0.0159 to 0.279, p = 0.0282), and the intervals overlap.
+  source: Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high-
+    versus low-contrast sound, paragraph 5; Figure 6a
+  quote: We observed a significant time-dependent increase in baseline PD across the recording duration of
+    ZX1 experiments [Fig. 6a; slope 95% CI = (0.0798, 0.183), p = 1.26 × 10−6] ... we used ACSF as a control
+    and found a similar time-dependent increase in baseline PD [Fig. 6a; slope 95% CI = (0.0159, 0.279), p =
+    0.0282]
+  statistics:
+  - about: ZX1 experiments
+    test: linear regression
+    p: 1.26e-6
+    ci:
+      level: 0.95
+      low: 0.0798
+      high: 0.183
+  - about: ACSF experiments
+    test: linear regression
+    p: 0.0282
+    ci:
+      level: 0.95
+      low: 0.0159
+      high: 0.279
+  criterion: Per trial, baseline PD (% animal max, over -4 to 0 s) against recording time in minutes
+    (Fig. 6a axes; the time origin, the first trial, changes no slope), all trials of the experiment,
+    pooled over mice, ordinary least squares (Methods, Statistics). Which ZX1 experiments is open, run
+    each - (a) groups C and D, (b) group C only, (c) groups B, C and D. ACSF is group F. Reproduced when
+    both slopes are positive with p < 0.05 and their 95% CIs overlap, under every ZX1 reading; the slopes
+    and intervals are compared with the reported ones.
+- id: fig6b-acsf-contrast-effect
+  statement: After ACSF injection the contrast effect on evoked PD remains, on both the GCA intercept
+    (F(1,2558.3) = 46.22, p = 1.31e-11) and slope (F(1,2558) = 15.076, p = 1.10e-4).
+  source: Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high-
+    versus low-contrast sound, paragraph 5; Figure 6b
+  quote: following ACSF injection, unlike following ZX1 injection (Fig. 4a,c,e), we observed a significant
+    effect of contrast on both the intercept and fitted slope coefficient of the first-order time polynomial
+    (Fig. 6b; intercept, F(1,2558.3) = 46.22, p = 1.31 × 10−11; slope, F(1,2558)= 15.076, p = 1.10× 10−4)
+  statistics:
+  - about: contrast, intercept
+    test: LME growth curve analysis
+    statistic: F(1,2558.3) = 46.22
+    p: 1.31e-11
+  - about: contrast, slope
+    test: LME growth curve analysis
+    statistic: F(1,2558) = 15.076
+    p: 1.10e-4
+  criterion: Group F, baseline PD < 50%. Open, run each - (a) trials after ACSF only, pupil ~ (tPoly1 +
+    tPoly2) x contrast + (1 | subject); (b) trials before and after ACSF, the model of
+    fig4c-wt-contrast-zx1-effects with ACSF as treatment, the contrast terms (and the contrast effect
+    within ACSF from emmeans). Reproduced when the contrast intercept and slope terms both have p < 0.05
+    with HIGH above LOW under every reading; methods_underspecified if they disagree. Row counts are shown
+    against the df (about 2560 rows).
+- id: fig6c-no-baseline-evoked-correlation
+  statement: Below 50% of animal max baseline PD, baseline PD and evoked PD at 1-2 s are not significantly
+    correlated (r(238) = -0.0928, p = 0.1537).
+  source: Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high-
+    versus low-contrast sound, paragraph 5; Figure 6c
+  quote: we limited our pupil response analyses to the 50th percentile of baseline PD ... at which there was
+    no significant correlation between baseline PD and evoked PD (Fig. 6c; Pearson's correlation
+    coefficient, r(238) = −0.0928, p = 0.1537)
+  statistics:
+  - test: Pearson's correlation coefficient
+    statistic: r(238) = -0.0928
+    p: 0.1537
+    n: 240 responses
+  expected:
+  - quantity: responses
+    value: 240
+    tolerance: 24
+  criterion: Per trial, baseline PD (% animal max) against mean evoked PD over 1 to 2 s (% baseline), both
+    contrasts, baseline PD < 50% (Fig. 6c legend). Which experiments is not given; the readings are each
+    group (A, B before ZX1, C, D, F) and the CTRL or all trials of each, and the reading used is the one
+    whose count of responses is within tolerance of 240. A claim of absence, judged on the paper's test -
+    reproduced when that reading's Pearson correlation has p >= 0.05. If no reading or more than one
+    matches the count, every result is shown, and the claim is methods_underspecified unless all agree.
+- id: methods-baseline-evoked-correlation
+  statement: Evoked pupil responses are negatively correlated with baseline PD over all responses (r(624) =
+    -0.35, p = 1.20e-19), and the correlation is small and not significant below 50% of animal max PD
+    (r(382) = -0.055, p = 0.285).
+  source: Materials and Methods, Pupillometry, analysis, paragraph 2
+  quote: evoked pupil responses are significantly negatively correlated with baseline PD (data not shown;
+    r(624) = −0.35, p = 1.20 × 10−19). At PDs <50% of maximum animal PD, this correlation becomes much
+    smaller and is no longer significant (Fig. 6b; r(382) = −0.055, p = 0.285)
+  statistics:
+  - about: all responses
+    test: Pearson's correlation
+    statistic: r(624) = -0.35
+    p: 1.20e-19
+    n: 626 responses
+  - about: responses with baseline PD below 50% of animal max
+    test: Pearson's correlation
+    statistic: r(382) = -0.055
+    p: 0.285
+    n: 384 responses
+  expected:
+  - quantity: correlation, all responses
+    value: -0.35
+    tolerance: 0.035
+  - quantity: responses, all
+    value: 626
+    tolerance: 62.6
+  - quantity: responses below 50%
+    value: 384
+    tolerance: 38.4
+  criterion: Measures as in fig6c-no-baseline-evoked-correlation (evoked PD at 1-2 s; the paper does not
+    name the window here, 0 to 2 s and 0 to 8 s are variants). The data set is not named (the text cites
+    Fig. 6b, an ACSF panel, which has no correlation); the readings are those of
+    fig6c-no-baseline-evoked-correlation, and the one used is the one whose counts are within tolerance
+    of 626 and 384. Reproduced when, on that reading, the correlation over all responses is negative with
+    p < 0.05 and within tolerance, and the one below 50% has p >= 0.05. If no reading or more than one
+    matches the counts, every result is shown, and the claim is methods_underspecified unless all agree.
+- id: fig6d-ko-reduced-high-contrast
+  statement: Before ZX1, ZnT3-KO mice have smaller evoked PD increases to high-contrast sound than
+    ZnT3-WT mice, a genotype effect on the GCA slope (F(1,3869) = 22.37, p = 2.33e-6).
+  source: Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high-
+    versus low-contrast sound, paragraphs 6 and 7; Figure 6d
+  quote: observed a significant effect of genotype on the slope coefficient of the first-order time
+    polynomial (Fig. 6d; F(1,3869) = 22.37, p = 2.33 × 10−6). Namely, ZnT3-KO mice have reduced PD responses
+    in high contrast
+  statistics:
+  - test: LME growth curve analysis, genotype on slope
+    statistic: F(1,3869) = 22.37
+    p: 2.33e-6
+  criterion: CTRL high-contrast trials of groups C and D (Fig. 6d legend, the light orange responses of
+    Fig. 4a, b), baseline PD < 50%. GCA as in the shared methods with pupil ~ (tPoly1 + tPoly2) x genotype
+    + (1 | subject) (Methods); the factor coding is open as in the shared methods, (a) reference coding
+    with WT as reference, (b) effects coding, both run. Reproduced when the tPoly1 x genotype term has
+    p < 0.05 and the KO slope is below the WT slope. Row count shown against the df (about 3870 rows).
+- id: discussion-zx1-wt-like-ko
+  statement: After ZX1, high-contrast PD responses of ZnT3-WT mice peak at about 110% of baseline, like the
+    high-contrast responses of ZnT3-KO mice, and with zinc signaling blocked both contrasts resemble
+    low-contrast responses.
+  source: Discussion, paragraphs 6 and 7; Figure 4c, d
+  quote: upon blockade, responses to both low and high contrast resembled low-contrast responses, which were
+    of comparable magnitude in ZnT3-WT and ZnT3-KO mice (Fig. 4) ... the magnitude of PD responses to
+    high-contrast sound after ZX1 infusion in ZnT3-WT mice (Fig. 4c; peak at ∼110% PD) is not different from
+    the magnitude of high-contrast PD responses in ZnT3-KO mice (Fig. 4d; peak at ∼110% PD)
+  expected:
+  - quantity: peak rise of the mean high-contrast response, ZnT3-WT after ZX1, over 0 to 2 s
+    value: 10
+    tolerance: 2.5
+    unit: percent of baseline
+  - quantity: peak rise of the mean high-contrast response, ZnT3-KO, over 0 to 2 s
+    value: 10
+    tolerance: 2.5
+    unit: percent of baseline
+  criterion: The peaks are given as approximate ("∼110%"), read from Fig. 4c, d, and no test is named for
+    "not different". The quantity is the maximum of the trial-mean trace (% baseline, baseline PD < 50%)
+    within 0 to 2 s (the Fig. 4c, d window), minus 100. The tolerance is a quarter of the 10 point rise,
+    as the paper gives the values only to the nearest few percent; 10% of the 110 would accept no rise at
+    all. Which KO trials is open, (a) CTRL, (b) CTRL and ZX1 pooled; both run, and the claim holds when
+    the WT value and the KO value under one reading are within tolerance.
+  depends_on:
+  - fig4c-wt-contrast-zx1-effects
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Checker flags 3.1e-06 (fig1i-baseline-contrast-interaction) and 0.00011 (fig6b-acsf-contrast-effect) as not found; the text prints them as "3.10 × 10−6" and "1.10× 10−4", so both are correct and unchanged.
+  - Shared methods, cell inclusion. The claim that the d' rule compares the 2-2.8 s peak with the 1-2 s baseline was not from the paper; it is now open, with the FRA mapping responses (Methods, Frequency response area mapping) as a second reading.
+  - Shared methods, peak pure-tone response. The paper states the 800 ms window only for the responsiveness test; the peak window is now open, 2-2.8 s or 2-3.2 s (the reliability window).
+  - fig1h-cgc-evident-all-bins. One-sided testing was a choice of the writer; the paper gives no sidedness, so one-sided and two-sided are both run.
+  - fig1i-contrast-effect-intermediate-only. The Bonferroni family of seven was a choice of the writer with 91 pairs as a variant; both are now readings that must agree.
+  - fig2b-evoked-pd-whole-drc (and fig2c by reference). Added the reading that groups A and B are pooled, since the Methods list both for Fig. 2a-c.
+  - fig3b-lme-coefficients (and fig3c by reference). Restricting to cells responsive in both contrasts was not stated for Fig. 3; all tone-responsive cells added as a second reading.
+  - fig5-contralateral-zx1-increases (and fig5-ipsilateral by reference). F = 33.44 with three conditions gives p = 0.0032 on three mice and 9e-9 on mouse by level, neither near the reported 4.1e-5; (2,10) df gives 3.7e-5, so the repeated units are read as sound levels averaged over mice, and the other two are variants. Noted that F0 over 1 s is carried over from the pure-tone mapping Methods.
+  - fig6d-ko-reduced-high-contrast. "WT as reference (Methods)" is not in the Methods; the coding is open as in the shared methods and the criterion now asks that the KO slope be below WT's.
+  - Open, not settled. Paragraph numbers in the last Results section (fig5, fig6 claims) could not be checked against the PDF layout; the text extraction suggests the Fig. 5 results sit in paragraph 3, not 4, and the Fig. 6 paragraphs shift by one with it. The figure panels in each source still locate the findings.
+  - Open, not settled. discussion-zx1-wt-like-ko states that both contrasts resemble low-contrast responses after blockade, but its criterion tests only the peaks; that part is covered for WT by fig4-wt-posthoc.

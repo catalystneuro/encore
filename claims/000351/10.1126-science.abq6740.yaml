@@ -1,0 +1,1106 @@
+# Claims for Jeong, Taylor, Floeder et al. (2022), Science 378, eabq6740, on dandiset 000351.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23, under
+# docs/protocol.md, version pilot-10.
+#
+# Text read: the accepted author manuscript in PubMed Central (PMC9910357, NIHMS1867344), main
+# text and figure legends, and its supplement (NIHMS1867344-supplement-Supplementary_information.docx,
+# as text): legends of Figs S1 to S15, Supplementary Notes 1 to 10, Materials and Methods, and
+# Table S1 (statistical results). No PDF was available, so no figure was seen. The equations of
+# the Methods (the Weibull and constant models, the AIC, the model equations) are lost from the
+# text; where a criterion needs one, it is taken from the code. The text read may predate a later
+# correction of Fig S13 (see figs13-ramping).
+#
+# Code read: github.com/namboodirilab/ANCCR at commit cff44144e60a4313a30ffbb4bb8a1f3dd398b525
+# (2025-08-28). The analysis scripts (analysis/, Matlab for Experiments 1 to 6, Python for
+# Experiment 7) were last changed on 2022-11-07, before publication. The simulations
+# (simulation/, Matlab) use functions/calculateANCCR.m (last changed 2022-11-07); a second model
+# version (calculateANCCR_v2.m, 2023-02-13) and corrected Fig S13 ramping scripts (2023-05-10)
+# were added after publication. The paper also cites a Zenodo record of the code (record
+# 7302777, Version 1, 2022). The scripts run the tests of Figs 3E, 3G, 5D, 6B, 6G, 6I and S10B;
+# the other tests below are known only from Table S1 and the legends.
+#
+# Data the paper used (Methods, Subjects and Behavioral task). Head-fixed, water-restricted
+# mice; dopamine release in the nucleus accumbens core measured with dLight1.3b by fiber
+# photometry (405 nm isosbestic and 470 nm signals, Doric system demodulated to 120 Hz or
+# pyPhotometry at 130 Hz; dF/F = (470 - fitted 405) / fitted 405); licks recorded.
+# - Experiment 1, random rewards: 8 wild type mice (six males; one male only in Experiment 1),
+#   experimentally naive, 3 ul of 15% sucrose at exponential inter-reward intervals (IRI, mean
+#   12 s), about 100 rewards per session, 4 to 11 sessions. Code subjects HJ_FP_M2, M3, M4, F1, F2,
+#   M6, M7, M8; only sessions before the first session named "30s" are used (12 s IRI).
+# - Experiments 2 to 5, the same animals but M8 (n = 7): Pavlovian conditioning with a 2 s CS+
+#   (reward after a 1 s trace) and a CS- (12 kHz continuous or 3 kHz pulsed tone), ITI truncated
+#   exponential (mean 30 s, max 90 s), 100 trials per session (Experiment 2); then the cue
+#   lengthened to 8 s (Experiment 3), background rewards every 6 s on average during the ITI with
+#   40 trials per session (Experiment 5), back to Experiment 3, then extinction (Experiment 4).
+# - Experiment 6, the same 7 animals: "trial-less" conditioning, a 250 ms cue at exponential
+#   inter-cue intervals (mean 33 s, 0.25 to 99 s), reward 3 s after each cue.
+# - Experiment 7, a different set: 7 DAT-Cre mice with stGtACR2 in VTA and 7 wild type controls,
+#   one random reward session, then sequential conditioning (CS1 1 s, 0.5 s gap, CS2 1 s, 0.5 s
+#   trace, reward; ITI mean 60 s), 473 nm light to VTA from CS2 onset to reward in both groups,
+#   about 50 trials per session. One DAT-Cre mouse is excluded (Fig S12D). Code subjects
+#   HJ-FP-datHT-stGtACR-M2 to M8 (M8 the excluded one), HJ-FP-datWT-stGtACR-F1 and
+#   HJ-FP-WT-stGtACR-F1, F2, F3, M1, M2, M3 (the 7 controls).
+# - Fig S8L: 6 further wild type mice (four males), random rewards at IRI 6, 12 and 30 s, two
+#   sessions each (code subjects F1, F2, M1, M2, M3, M4 of a folder "DB_longITI_C1_").
+#
+# Outside material. The dandiset's description points to a spreadsheet, "Subject and session
+# information" (docs.google.com/spreadsheets/d/1pmpQ5JFhg4Q7h18DQYifjNrW17HtaoPHBt2vJF4mxiU), that
+# names the animals and sessions used for each figure; it was not read here. The Matlab scripts
+# select each animal's sessions by "Day" numbers written into the code (startday, endday,
+# learnedday), and the Python loader (functions/load.py, load_dandi_url) reads those Day numbers
+# from the dandiset's file paths. Claims that need these lists use data with_labels and depend on
+# session-day-link.
+#
+# Fixed for all claims, from the code where the Methods are silent:
+# - Signals and events: dF/F is processing/photometry/dff and events are acquisition/eventlog of
+#   each NWB file (load.py, the Experiment 7 scripts). Event codes (eventfrompavlovian.m and the
+#   scripts): 5 lick, 7 random or background reward, 10 cue-associated reward (with a no-solenoid
+#   flag marking omitted rewards), 15 and 16 the two cues, 14 trial end, 0 session end. In
+#   Experiment 7 code 15 marks both cues; odd occurrences are CS1 and even ones CS2. The CS+ is
+#   the cue whose reward is delivered, taken from the first session of the condition.
+# - AUC is the sum of the dF/F samples in the window times the mean sample interval
+#   (aucsignal.m, plot.py calculate_auc); aucsignal2event.m (Experiment 1) leaves out the
+#   interval, a constant scale per session. A baseline-subtracted response is the window AUC minus
+#   the baseline AUC, each over windows of equal length (in the Matlab scripts the 2 s cue AUC is
+#   halved before subtracting a 1 s baseline). The Experiment 2 to 5 cue traces and the
+#   Experiment 6 reward traces are smoothed before the AUC with a Gaussian kernel of sigma 10
+#   samples, 50 samples wide (alignsignal2event.m, resolution 10), a step the Methods do not name;
+#   other traces are not smoothed.
+# - The first lick after a reward is the first lick before the next reward (Experiment 1), before
+#   the trial end or 1 s before the next cue (Experiments 2 to 5), without a limit (Experiment 6),
+#   or within 5 s (Experiment 7, 3 s in measure_inhibition_sequential.py).
+#
+# Open for all claims: the paper names no significance level. The tests below are two-tailed as
+# Table S1 prints them, at p < 0.05, a standard choice; the paper treats p = 0.0531 (Fig 4L) as
+# no claim of a difference. Where Methods and code disagree, the Methods give the main reading and
+# the code's choice is run as a variant. Where a criterion names readings of a method detail that
+# neither fixes, every reading is run; the outcome is the one they all give, and the claim is
+# blocked as methods_underspecified when they differ. Where readings are named for what a reported
+# number means, the claim holds if it matches under any of them.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000351"
+paper: doi:10.1126/science.abq6740
+claims:
+- id: session-day-link
+  kind: link
+  statement: The subjects and "Day" numbers that the paper's analysis code names for each
+    experiment are sessions of the dandiset, so that the code's selection of sessions can be
+    applied to it.
+  source: Data and materials availability; README.md and functions/load.py of
+    github.com/namboodirilab/ANCCR at commit cff4414; dandiset description (related resource
+    "Subject and session information")
+  data: with_labels
+  criterion: Subject names are matched with "_" read as "-" (HJ_FP_M2 as HJ-FP-M2), and sessions
+    by the number after "Day" in the file path, as load_dandi_url does. The link holds
+    (reproduced) when every subject of the Matlab scripts' lists exists in the dandiset and every
+    Day number from startday to endday (and each learnedday) of analysis/fig4/cumsum_pavlovian.m,
+    analysis/fig4/cumsum_bgdrw_vs_extinction.m, analysis/fig5/intermediate_rsp_trialless.m,
+    analysis/fig6/backpropagation_pavlovian.m, analysis/figS10/cue_acquisition.m and
+    analysis/figS10/omission.m is a session of that subject of the task the script names
+    (Pavlovian or Poisson), with the cue durations and reward schedule of the condition (2 s cue
+    for Experiment 2, 8 s cue for Experiment 3, background rewards for Experiment 5, omitted
+    rewards for Experiment 4, a 250 ms cue for Experiment 6). Partially reproduced when the
+    subjects match and at least 90% of the listed days do; not reproduced otherwise. The
+    spreadsheet named in the dandiset's description is compared with these lists where the
+    author can pin a copy of it.
+- id: methods-session-counts
+  statement: Animals were trained for 7 +/- 2.1 sessions of random rewards, 13.3 +/- 2.7 sessions
+    of initial conditioning, 4.3 +/- 0.8 sessions with the 8 s cue, 8.1 +/- 2.5 sessions with
+    background rewards and 2.6 +/- 0.8 sessions of extinction; in sequential conditioning, 5.6 +/-
+    2.4 (wild type) and 7.1 +/- 0.7 (DAT-Cre) sessions (mean +/- SD).
+  source: Methods, Behavioral task, paragraphs 1 to 5
+  quote: Animals were trained on Experiment 1 for 4-11 sessions (7 ± 2.1 sessions, mean ± std) ...
+    (13.3 ± 2.7 sessions in total) ... (4.3 ± 0.8 sessions) ... (8.1 ± 2.5 sessions) ... (2.6 ± 0.8
+    sessions) ... (5.6 ± 2.4 and 7.1 ± 0.7 sessions for WT and DAT-Cre, respectively)
+  data: with_labels
+  depends_on:
+  - session-day-link
+  expected:
+  - quantity: Experiment 1 sessions per animal, mean over 8 animals
+    value: 7
+    tolerance: 2.1
+  - quantity: Experiment 2 sessions per animal, mean over 7
+    value: 13.3
+    tolerance: 2.7
+  - quantity: Experiment 3 sessions (first round, 8 s cue) per animal, mean over 7
+    value: 4.3
+    tolerance: 0.8
+  - quantity: Experiment 5 sessions per animal, mean over 7
+    value: 8.1
+    tolerance: 2.5
+  - quantity: Experiment 4 sessions per animal, mean over 7
+    value: 2.6
+    tolerance: 0.8
+  - quantity: Experiment 7 sequential conditioning sessions, wild type, mean over 7
+    value: 5.6
+    tolerance: 2.4
+  - quantity: Experiment 7 sequential conditioning sessions, DAT-Cre, mean over 7
+    value: 7.1
+    tolerance: 0.7
+  criterion: Tolerances are the stated SDs. Sessions are counted per animal from the dandiset's
+    session labels; for Experiments 2 to 5 the conditions are those of the code's Day ranges
+    (startday to endday, which give these means and SDs; the 3 pre-condition sessions of
+    Experiment 3 and the 1 before extinction are not counted). Experiment 1 counts the 12 s IRI
+    random reward sessions of the 8 animals; Experiment 7 counts all sequential conditioning
+    sessions after the random reward session. Reproduced when all seven means are within
+    tolerance; partially reproduced for five or six.
+- id: exp1-excluded-rewards
+  statement: In Experiment 1, 22.6 +/- 2.4% of rewards came less than 3 s after the previous
+    reward and 5.7 +/- 0.1% had no lick before the next reward; both were excluded.
+  source: Methods, Data analysis, Experiment 1, paragraph 2
+  quote: we excluded rewards with less than 3 s IRI from the previous reward (22.6±2.4%) for the
+    above analyses. Rewards without lick until the next reward (5.7±0.1%) were also excluded from
+    analyses.
+  expected:
+  - quantity: Rewards with IRI under 3 s, percent
+    value: 22.6
+    tolerance: 2.4
+    unit: "%"
+  - quantity: Rewards with no lick before the next reward, percent
+    value: 5.7
+    tolerance: 0.1
+    unit: "%"
+  criterion: Tolerances are the stated spreads. Per session, the fraction of rewards (the first of
+    the session not counted as short) with IRI under 3 s, and the fraction with no lick before the
+    next reward or the session end, as in analysis/fig3/corr_randomrewards.m (out_bgd,
+    out_nolick), over the 12 s IRI sessions of the 8 animals. The paper does not say how the
+    percentages are averaged; readings are (a) the mean over animals of each animal's mean over
+    sessions, (b) the mean over all sessions pooled. Reproduced when both values fall within
+    tolerance under one reading; partially reproduced when one does.
+- id: fig3e-reward-response-increases
+  statement: In experimentally naive mice given unpredicted sucrose, the dopamine response to
+    reward increases with the number of rewards experienced, in every animal (Test 1).
+  source: Figure 3D and 3E; Results, Tests 1 and 2, paragraph 3
+  quote: Every animal showed an increasing sucrose response that reached a high positive asymptote.
+  statistics:
+  - test: one sample t-test against zero, of per-animal correlations
+    statistic: t(7) = 4.40
+    p: 0.0031
+    n: 8 animals
+  criterion: Methods, Data analysis, Experiment 1, and analysis/fig3/corr_randomrewards.m. Per
+    animal, the 12 s IRI random reward sessions in order; rewards excluded when the IRI from the
+    previous reward is under 3 s or no lick follows before the next reward (the first reward of a
+    session is kept). Reward response is the AUC of dF/F from -0.5 to 1 s around the first lick
+    after the reward minus the AUC from -2 to -0.5 s. Reward number is the reward's position among
+    all of the animal's rewards, excluded ones counted (code). Pearson r between response and
+    reward number over all the animal's sessions pooled; two-tailed one-sample t-test of the 8
+    values against 0. Reproduced when t > 0 with p < 0.05 and r > 0 in all 8 animals; partially
+    reproduced when the t-test holds and r > 0 in fewer than 8.
+- id: fig3g-response-iri-positive
+  statement: The dopamine response to an unpredicted reward is positively correlated with the
+    interval since the previous reward (Test 2).
+  source: Figure 3G; Results, Tests 1 and 2, paragraph 5
+  quote: The experimentally observed correlation between dopamine response to sucrose and the
+    previous IRI was positive, thereby being consistent with ANCCR but not RPE.
+  statistics:
+  - test: one sample t-test against zero, of per-animal correlations
+    statistic: t(7) = 5.95
+    p: 5.7e-4
+    n: 8 animals
+  criterion: Rewards, exclusions and response as in fig3e-reward-response-increases. Per session,
+    Pearson r between response and the previous IRI (the first reward of a session has none);
+    per animal, the mean of r over its sessions; two-tailed one-sample t-test of the 8 means
+    against 0 (analysis/fig3/corr_randomrewards.m). Reproduced when t > 0 and p < 0.05.
+- id: figs8k-iri-correlation-stable
+  statement: The positive correlation between reward response and previous IRI holds across
+    sessions and does not change over the first 7 sessions.
+  source: Figure S8K; Results, Tests 1 and 2, paragraph 5; Table S1
+  quote: The correlation between dopamine response to a reward and the previous IRI remains
+    positive across sessions.
+  statistics:
+  - about: change of the per-session correlation over the first 7 sessions
+    test: linear regression
+    statistic: t = -0.04
+    p: 0.9707
+    n: 50 sessions from 8 animals
+  depends_on:
+  - fig3g-response-iri-positive
+  criterion: The per-session r of fig3g-response-iri-positive, for sessions 1 to 7 of each animal.
+    A claim of absence, judged on the paper's test, a linear regression of r on session number
+    over the pooled sessions (the paper's n is 50). Reproduced when the slope has p >= 0.05 and the
+    mean r over animals is above 0 in each of sessions 1 to 7 (legend; Results "consistently
+    positive"); not reproduced when the slope is significant. Slope, its t and the per-session
+    means are reported.
+- id: figs8b-lick-rates-constant
+  statement: Total, consummatory and non-consummatory lick rates do not change across the first 7
+    random reward sessions.
+  source: Figure S8B; Supplementary Note 3, point 1; Table S1
+  quote: The lick rates generally remained constant across repeated sessions.
+  statistics:
+  - about: total lick rate across sessions
+    test: linear regression
+    statistic: t = -0.79
+    p: 0.4389
+    n: 50 sessions from 8 animals
+  - about: consummatory lick rate across sessions
+    test: linear regression
+    statistic: t = -0.20
+    p: 0.8397
+    n: 50 sessions from 8 animals
+  - about: non-consummatory lick rate across sessions
+    test: linear regression
+    statistic: t = -0.58
+    p: 0.5618
+    n: 50 sessions from 8 animals
+  criterion: Methods, Data analysis, Experiment 1, paragraph 2, and
+    analysis/figS8/lick_rsp_randomrewards.m with functions/classifylicks.m. A lick bout is a run of
+    licks less than 1 s apart; consummatory licks are those of the first bout after each reward
+    (to its end, the next reward or the session end, as classifylicks.m). Per session, total rate
+    = all licks over session duration; consummatory rate = consummatory licks over the summed
+    consummatory bout durations; non-consummatory rate = the other licks over the rest of the
+    session. A claim of absence, judged on the paper's test, a linear regression of each rate on
+    session number (1 to 7) over the pooled sessions. Reproduced when all three slopes have p >=
+    0.05; not reproduced when any is significant. Slopes and t are reported.
+- id: figs8d-consummatory-lick-uncorrelated
+  statement: The consummatory lick rate after a reward is not correlated with the dopamine response
+    to that reward.
+  source: Figure S8C and S8D; Table S1
+  quote: The consummatory lick rate is not correlated with dopamine reward response.
+  statistics:
+  - test: one sample t-test of per-animal correlations
+    statistic: t = 0.23
+    p: 0.8245
+    n: 8 animals
+  criterion: analysis/figS8/lick_rsp_randomrewards.m. Per reward, consummatory licks after it
+    divided by its consummatory bout length; reward response as in
+    fig3e-reward-response-increases; rewards excluded when the IRI is under 3 s or the lick bout
+    runs on from the previous reward (the code's separatebout test). Per animal, Pearson r over all
+    its sessions pooled. A claim of absence, judged on the paper's test, a two-tailed one-sample
+    t-test of the 8 r against 0. Reproduced when p >= 0.05; not reproduced otherwise. Mean r is
+    reported.
+- id: figs8e-lick-bout-responses
+  statement: Dopamine rises at the onset of consummatory lick bouts but falls slightly at the onset
+    of non-consummatory (dry) lick bouts, so the rising reward response is not a general response
+    to licking.
+  source: Figure S8E; Table S1
+  quote: The average lick bout onset response was positive for consummatory lick bouts (during
+    sucrose consumption) but was slightly negative for dry lick bout onsets away from reward
+    consumption.
+  statistics:
+  - about: consummatory against non-consummatory bout onset response
+    test: paired t-test
+    statistic: t = 3.28
+    p: 0.0134
+    n: 8 animals
+  - about: consummatory bout onset response against zero
+    test: one sample t-test
+    statistic: t = 3.03
+    p: 0.0191
+    n: 8 animals
+  - about: non-consummatory bout onset response against zero
+    test: one sample t-test
+    statistic: t = -2.55
+    p: 0.0379
+    n: 8 animals
+  criterion: Legend of Figure S8E and analysis/figS8/lick_rsp_randomrewards.m. Consummatory onsets
+    are the first licks after rewards; non-consummatory onsets are bout-onset licks (1 s rule) that
+    are not consummatory. Per session, dF/F aligned to each onset from -3 to 6 s, z-scored with
+    the mean and SD over onsets of each onset's mean dF/F from -1.5 to -0.5 s, averaged over
+    onsets; per animal, the mean over sessions. The window in which the response is measured for
+    the tests is given by neither the Methods, the legend nor the code; readings are the mean z
+    over (a) 0 to 1 s, (b) -0.5 to 1 s (the Experiment 1 reward window), (c) 0 to 0.5 s from
+    onset. Reproduced when, under every reading, the consummatory response is above 0, the
+    non-consummatory response below 0 and their paired difference positive, each two-tailed at p
+    < 0.05.
+- id: figs8g-baseline-unchanged
+  statement: Spontaneous baseline dopamine events, away from rewards and licks, do not change in
+    size across random reward sessions.
+  source: Figure S8F and S8G; Methods, Data analysis, Experiment 1, paragraph 3; Table S1
+  quote: There was no change in the baseline dopamine activity across sessions.
+  statistics:
+  - test: one sample t-test of per-animal correlations
+    statistic: t = 0.11
+    p: 0.9190
+    n: 8 animals
+  criterion: Methods, Experiment 1, paragraph 3, and analysis/figS8/baseline_activity_randomrewards.m.
+    Peaks of dF/F found with a minimum distance of 50 samples, a minimum height of 20% of the mean
+    of the top 5% of peaks of the animal's first session, and a minimum prominence of half that
+    height (code). Peaks are kept when more than 0.5 s from any lick and more than 2 s from reward
+    (Methods); the code instead drops peaks from 0 to 2 s after each first lick after reward, run
+    as a variant. Per session, the mean peak size; per animal, Pearson r between session number
+    and that mean. A claim of absence, judged on the paper's test, a two-tailed one-sample t-test
+    of the 8 r against 0. Reproduced when p >= 0.05; not reproduced otherwise. Mean r is reported.
+- id: figs8h-baseline-uncorrelated-with-reward-change
+  statement: Across animals, the change of baseline dopamine activity over sessions is not
+    correlated with the change of the reward response over sessions.
+  source: Figure S8H; Supplementary Note 3, point 4
+  quote: Dopamine baseline activity change across sessions is uncorrelated with dopamine reward
+    response change across sessions.
+  depends_on:
+  - figs8g-baseline-unchanged
+  criterion: analysis/figS8/baseline_activity_randomrewards.m. Per animal, Pearson r between
+    session number and the session mean reward response (rewards with IRI of 3 s or more, response
+    as in fig3e-reward-response-increases), and the r of figs8g-baseline-unchanged. Table S1 gives
+    no test; the code computes the Pearson correlation of the two over the 8 animals and its p. A
+    claim of absence. Reproduced when that p >= 0.05; not reproduced otherwise. r and p are
+    reported.
+- id: figs8l-lick-rate-tracks-iri
+  statement: In a separate group of 6 mice, the non-consummatory lick rate depends on the session's
+    mean IRI (6, 12 or 30 s) while the consummatory lick rate does not, so animals learn the
+    average reward rate within at most two sessions.
+  source: Figure S8L; Table S1
+  quote: The non-consummatory exploratory licks made by the animals depended on the average IRI for
+    a given session. Thus, animals learn the average reward rate of an environment within at most
+    two sessions.
+  statistics:
+  - about: non-consummatory lick rate against IRI condition
+    test: linear regression
+    statistic: t = -2.73
+    p: 0.0147
+    n: 18 sessions from 6 animals
+  - about: consummatory lick rate against IRI condition
+    test: linear regression
+    statistic: t = 1.00
+    p: 0.3338
+    n: 18 sessions from 6 animals
+  criterion: analysis/figS8/lick_across_iri_randomrewards.m. Per session, consummatory and
+    non-consummatory rates as in figs8b-lick-rates-constant; per animal and IRI, the mean of its
+    two sessions (18 values). Linear regression of each rate on the IRI condition. The regressor is
+    not given; readings are (a) the IRI in seconds, (b) the condition rank 1 to 3; both give the
+    same sign. Reproduced when, under both, the non-consummatory slope is negative with p < 0.05
+    and the consummatory slope has p >= 0.05; partially reproduced when the non-consummatory part
+    holds alone.
+- id: fig4ef-dopamine-leads-behavior
+  statement: During initial cue-reward learning, the dopamine response to CS+ develops before
+    anticipatory licking, and behavioral learning is much more abrupt than dopaminergic learning
+    (Test 3).
+  source: Figure 4C to 4F; Results, Tests 3-7, paragraph 1
+  quote: Dopamine cue response considerably leads behavior across animals. ... Behavioral learning
+    is much more abrupt than dopaminergic learning (paired t test for abruptness of change; t(6) =
+    9.06; two-tailed p = 1.0×10-4; paired t test for change trial; t(6) = -2.93; two-tailed p =
+    0.0263; n=7 animals)
+  statistics:
+  - about: abruptness of change, lick against dopamine
+    test: paired t-test
+    statistic: t(6) = 9.06
+    p: 1.0e-4
+    n: 7 animals
+  - about: change trial, lick against dopamine
+    test: paired t-test
+    statistic: t(6) = -2.93
+    p: 0.0263
+    n: 7 animals
+  data: with_labels
+  depends_on:
+  - session-day-link
+  criterion: Methods, Data analysis, Experiments 2-5, paragraph 1, and
+    analysis/fig4/cumsum_pavlovian.m (condition 1). Per animal, Experiment 2 sessions from
+    startday to endday, CS+ trials in order. Lick measure, Methods, the lick rate in the 2 s from
+    CS+ onset minus that in the 1 s before; the code counts licks from cue onset to the end of the
+    trace (3 s), as a rate, minus the 1 s baseline rate, run as a variant. Dopamine, AUC from 0 to
+    2 s after CS+ onset halved minus the AUC from -1 to 0 s (smoothed traces, code). Trials used,
+    the first round(1.5 x n) where n is the number of trials before the animal's learnedday
+    (code). Cumulative sums of each, smoothed with a Gaussian kernel (sigma 2 trials, 10 wide,
+    valid convolution) and divided by their last value; the distance of each point from trial 5
+    to the end minus 5 to the line from its first point to (end - 5, 1) (point2line.m). Abruptness
+    is the largest distance and the change trial its position. Two-tailed paired t-tests over 7
+    animals. Reproduced when lick abruptness exceeds dopamine abruptness and the dopamine change
+    trial is earlier than the lick change trial, each at p < 0.05. The paper's sign for the change
+    trial (t = -2.93) and for abruptness (t = 9.06) cannot both be lick minus dopamine if dopamine
+    leads; the direction is judged from the Results ("dopamine response to CS+ was evident long
+    before animals showed anticipatory licking") and the sign of t is reported.
+- id: figs10c-cue-response-at-acquisition
+  statement: By the session at which behavior was acquired, the dopamine cue response had reached
+    93% of its value on the final session (about 100% relative to the mean of the last two
+    sessions).
+  source: Figure S10C; Supplementary Note 5, paragraph 2
+  quote: Dopamine cue response reaches 93% of its response on the final session (~100% if
+    normalized relative to average cue response on session n and n-1).
+  data: with_labels
+  depends_on:
+  - session-day-link
+  expected:
+  - quantity: cue response at acquisition session over that of the final session
+    value: 0.93
+    tolerance: 0.093
+  - quantity: cue response at acquisition session over the mean of the last two sessions
+    value: 1.0
+    tolerance: 0.1
+  criterion: analysis/figS10/cue_acquisition.m (the Methods give no measure for this panel). Per
+    animal, Experiment 2 sessions from startday to endday; per session the mean over CS+ trials of
+    the AUC of unsmoothed dF/F from 0 to 1 s after cue onset, without baseline subtraction (code);
+    session x is the animal's learnedday, n the last session. The averaging is not stated;
+    readings are (a) the mean over the 7 animals of each animal's ratio (code), (b) the ratio of
+    the means over animals. Reproduced when both values are within tolerance under one reading;
+    partially reproduced when one is. The Fig 4 baseline-subtracted 0 to 2 s measure is shown as a
+    variant.
+- id: fig4hi-delay-change-behavior-changes
+  statement: When the cue is lengthened from 2 s to 8 s (cue-reward delay 3 s to 9 s), animals
+    change the timing of anticipatory licking abruptly, and this change is better fit by a
+    changing model than by a constant one.
+  source: Figure 4G to 4I; Results, Tests 3-7, paragraph 2
+  quote: Behavior is learned abruptly by all animals, but the dopaminergic cue response shows little
+    to no change. ... Paired t test for abruptness of change; t(6) = 22.92; two-tailed p =
+    4.52×10-7; one-sample t test for ΔAIC against a null of zero; t(6) = 7.49 for lick
+  statistics:
+  - about: abruptness of change, lick against dopamine
+    test: paired t-test
+    statistic: t(6) = 22.92
+    p: 4.52e-7
+    n: 7 animals
+  - about: delta AIC for licking against zero
+    test: one sample t-test
+    statistic: t(6) = 7.49
+    p: 2.9e-4
+    n: 7 animals
+  data: with_labels
+  depends_on:
+  - session-day-link
+  criterion: Methods, Experiments 2-5, paragraphs 1 to 3, and analysis/fig4/cumsum_pavlovian.m
+    (condition 2). Per animal, the 3 sessions before startday and those up to endday; CS+ trials
+    with at least one lick in cue and trace (others dropped); behavior is the median time from cue
+    onset of the licks in cue and trace; dopamine as in fig4ef-dopamine-leads-behavior; trials
+    used, the first round(1.9 x n), n the trials before startday. Abruptness from the cumulative
+    sums as in fig4ef-dopamine-leads-behavior (for behavior, the cumulative sum of median lick
+    time). Model comparison, from the code since the Methods' equations are lost from the text,
+    changing model A(1 - 2^(-(x/L)^S)) + b, x the trial number, fitted by least squares to the
+    per-trial values (not to the cumulative sums; code) with bounds A 0 to 9000, L n-10
+    to the number of trials, S 0 to 100, b 0 to 4000 for licks; constant model b; AIC = 2k + N
+    ln(RSS) with N trials. The Methods name A, L and b as the free parameters, three, where the
+    code fits four; k = 4 (code) is the main reading and k = 3 a variant. Delta AIC = AIC(constant)
+    - AIC(changing), two-tailed one-sample t-test over 7 animals. Reproduced when lick abruptness
+    exceeds dopamine abruptness at p < 0.05 and lick delta AIC is above 0 at p < 0.05.
+- id: fig4hi-delay-change-dopamine-unchanged
+  statement: After the cue-reward delay is lengthened, the dopamine cue response shows no
+    significant change (Test 4).
+  source: Figure 4G to 4I; Results, Tests 3-7, paragraph 2
+  quote: Experimentally, we observed that while the animals learned the new delay rapidly,
+    dopaminergic cue response showed no significant change (Fig 4 G-I).
+  statistics:
+  - about: delta AIC for dopamine against zero
+    test: one sample t-test
+    statistic: t(6) = -0.86
+    p: 0.4244
+    n: 7 animals
+  data: with_labels
+  depends_on:
+  - session-day-link
+  criterion: Trials and dopamine measure as in fig4hi-delay-change-behavior-changes; changing model
+    bounds for dopamine A -2 to 50, L n-10 to the number of trials, S 0 to 10, b -10 to 10
+    (code). A claim of absence, judged on the paper's test, a two-tailed one-sample t-test of
+    delta AIC = AIC(constant) - AIC(changing) for dopamine against 0, fitted to the per-trial
+    values as for licks. Reproduced when p >= 0.05 or the mean delta AIC is below 0 (the constant
+    model fits better, no change found); not reproduced when delta AIC is significantly above 0. Mean delta AIC is reported, with k = 3
+    as a variant.
+- id: figs10b-no-omission-response
+  statement: After the delay change, there is no suppression of dopamine at the old reward time (3
+    s) in any animal, whereas omission of the reward in extinction does suppress dopamine at the
+    reward time (Test 5).
+  source: Figure 4J and S10B; Results, Tests 3-7, paragraph 2; Methods, Experiments 2-5,
+    paragraph 4
+  quote: Omission response is not negative with respect to pre-cue baseline for any animal after cue
+    duration change but was negative during extinction.
+  statistics:
+  - about: cumulative omission-window response, delay change against extinction
+    test: paired t-test
+    statistic: t = 3.37
+    p: 0.0150
+    n: 7 animals
+  data: with_labels
+  depends_on:
+  - session-day-link
+  criterion: Methods, Experiments 2-5, paragraph 4, and analysis/figS10/omission.m. Per animal, the
+    first session of Experiment 3 and the first extinction session (code day lists); CS+ trials;
+    response is the AUC from 3 to 4 s after cue onset (Experiment 3) or 9 to 10 s (extinction, 1 s
+    after the trace, the original reward time) minus the AUC from -1 to 0 s (Methods; the code
+    divides the window AUC by 1000 and not the baseline, run as a variant); smoothed traces
+    (code); cumulative sum over trials, its last value per session. Reproduced when the paired
+    two-tailed t-test gives Experiment 3 above extinction at p < 0.05 and the Experiment 3 value is
+    at or above 0 in all 7 animals and the extinction value below 0 (for extinction, the legend
+    allows (a) in every animal or (b) on average; either suffices).
+- id: fig4kl-extinction-abrupt-behavior
+  statement: Behavioral learning of extinction is abrupt, much more so than the change of the
+    dopamine cue response.
+  source: Figure 4J to 4L
+  quote: Across all animals, the dopaminergic cue response remains significantly positive despite
+    abrupt behavioral learning of extinction (paired t test for abruptness of change; t(6) = 5.67;
+    two-tailed p = 0.0013; paired t test for change trial; t(6) = -2.40; two-tailed p = 0.0531;
+    n=7 animals).
+  statistics:
+  - about: abruptness of change, lick against dopamine
+    test: paired t-test
+    statistic: t(6) = 5.67
+    p: 0.0013
+    n: 7 animals
+  - about: change trial, lick against dopamine
+    test: paired t-test
+    statistic: t(6) = -2.40
+    p: 0.0531
+    n: 7 animals
+  data: with_labels
+  depends_on:
+  - session-day-link
+  criterion: As fig4ef-dopamine-leads-behavior with analysis/fig4/cumsum_pavlovian.m condition 3,
+    the session before extinction and those to endday, trials the first round(2.5 x n) with n the
+    trials before extinction. Reproduced when lick abruptness exceeds dopamine abruptness at p <
+    0.05. The change-trial comparison is reported; it is not part of the finding.
+- id: fig4jl-extinction-cue-response-positive
+  statement: The dopamine cue response remains significantly positive well after animals stop
+    licking to the cue in extinction (Test 6).
+  source: Figure 4J to 4L; Results, Tests 3-7, paragraph 3
+  quote: As predicted by ANCCR but not RPE, dopamine cue response remained significantly positive
+    well after animals cease to behaviorally respond to the cues (Fig 4J-L)
+  data: with_labels
+  depends_on:
+  - session-day-link
+  - fig4kl-extinction-abrupt-behavior
+  criterion: Dopamine measure as in fig4ef-dopamine-leads-behavior, extinction sessions of the
+    code's day lists. The paper reports no test for "significantly positive". Readings are (a) a
+    two-tailed one-sample t-test over the 7 animals of the mean CS+ response in the last
+    extinction session against 0; (b) the same over all CS+ trials after the lick change trial of
+    fig4kl-extinction-abrupt-behavior; (c) per animal, a one-sample t-test over the trials of the
+    last extinction session, positive at p < 0.05 in all 7. Reproduced when every reading gives a
+    positive response at p < 0.05.
+- id: fig4p-background-faster-decay
+  statement: When unpredicted rewards are added during the ITI, the dopamine cue response stays
+    positive but decreases faster over trials than during extinction (Test 7).
+  source: Figure 4M to 4P; Results, Tests 3-7, paragraph 4
+  quote: The dopamine cue response remained significantly positive but decayed across trials faster
+    than during extinction (Fig 4M-P).
+  statistics:
+  - about: background rewards against extinction
+    test: paired t-test
+    statistic: t(6) = -3.51
+    p: 0.0126
+    n: 7 animals
+  data: with_labels
+  depends_on:
+  - session-day-link
+  criterion: analysis/fig4/cumsum_bgdrw_vs_extinction.m. Per animal and condition (Experiment 5,
+    background rewards; Experiment 4, extinction), the 2 sessions before startday and those to
+    endday; CS+ response as in fig4ef-dopamine-leads-behavior; 140 trials starting 50 trials
+    before the condition starts; cumulative sum divided by the sum of the first 50. What the
+    paired t-test compares is not in the Methods, legend or code; readings are (a) the normalized
+    cumulative sum at trial 140, (b) its mean over the 90 trials after the change, (c) the mean
+    post-change response divided by the mean of the 50 pre-change trials. Reproduced when, under
+    every reading, background is below extinction at p < 0.05 (two-tailed paired t-test) and the
+    mean background cue response over the 90 post-change trials is above 0 by a two-tailed
+    one-sample t-test over animals at p < 0.05 (the paper gives no test for "remained
+    significantly positive"; this one is set here).
+- id: fig5d-intermediate-cue-positive
+  statement: In the trial-less task, the dopamine response to an intermediate cue (one arriving
+    before the previous cue's reward) is positive but weaker than the response to the previous cue
+    (Test 8).
+  source: Figure 5C and 5D; Results, Test 8, paragraph 3
+  quote: We did not observe any negative dopamine response to the intermediate cue regardless of
+    how baseline was measured, and instead observed a positive but weaker response
+  statistics:
+  - about: ratio of intermediate to previous cue response against zero
+    test: one sample t-test
+    statistic: t(6) = 6.64
+    p: 5.6e-4
+    n: 7 animals
+  data: with_labels
+  depends_on:
+  - session-day-link
+  criterion: Methods, Data analysis, Experiment 6, and analysis/fig5/intermediate_rsp_trialless.m.
+    Per animal, the Experiment 6 sessions from learnedday to endday (sessions after the animals
+    lick in anticipation, Methods). An intermediate cue follows the previous cue by less than the
+    mean cue-reward delay. Excluded (code), any cue of a run of three where both intervals are
+    short; pairs 0.5 s apart or less; and intermediate cues 2.5 to 3 s after the previous cue
+    (within 0.5 s of its reward, Methods). Cue response is the AUC from 0 to 0.5 s after the cue
+    minus the AUC 0.5 s before the previous cue, for both cues of a pair (unsmoothed). Per session
+    the mean over pairs, then the mean over sessions; the ratio intermediate over previous per
+    animal; two-tailed one-sample t-test against 0. Reproduced when t > 0 at p < 0.05 and the mean
+    ratio is below 1; partially reproduced when the ratio is positive but not below 1.
+- id: fig5d-intermediate-reward-larger
+  statement: The dopamine response to the reward paired with an intermediate cue is larger than the
+    response to the reward of the previous cue (the ratio is above 1).
+  source: Figure 5D, right
+  quote: and reward response (One sample t test against a null of one; t(6) = 2.95; two-tailed p
+    value = 0.0256; n=7 animals)
+  statistics:
+  - about: ratio of intermediate to previous reward response against one
+    test: one sample t-test
+    statistic: t(6) = 2.95
+    p: 0.0256
+    n: 7 animals
+  data: with_labels
+  depends_on:
+  - session-day-link
+  criterion: Pairs and baseline as in fig5d-intermediate-cue-positive. Reward response is the AUC
+    from 0 to 0.5 s after the first lick after the reward (smoothed trace, code) minus the same
+    baseline; rewards whose first lick follows the next reward are dropped (Methods; code). Per
+    animal the ratio of session-averaged responses, intermediate over previous; two-tailed
+    one-sample t-test against 1. Reproduced when the mean ratio exceeds 1 at p < 0.05.
+- id: figs11de-intermediate-cue-local-baseline
+  statement: With the baseline taken immediately before the intermediate cue and the response
+    measured as a peak, the intermediate cue response is still positive.
+  source: Figure S11D and S11E; Methods, Experiment 6, paragraph 2
+  quote: Here, we measure baseline as the dopamine fluorescence immediately prior to the
+    intermediate cue delivery, as opposed to the baseline prior to the first cue in Fig 5C, D. Cue
+    response was defined as baseline subtracted peak response. The intermediate cue response was
+    still positive.
+  statistics:
+  - test: one sample t-test of the cue response ratio
+    statistic: t = 10.42
+    p: 4.6e-5
+    n: 7 animals
+  data: with_labels
+  depends_on:
+  - session-day-link
+  criterion: Sessions and pairs as in fig5d-intermediate-cue-positive. Response, the peak dF/F
+    after each cue minus the dF/F immediately before it (Methods); the code holds no script for
+    this panel. The peak window and the baseline are not fixed; readings are peak over (a) 0 to
+    0.5 s or (b) 0 to 1 s after the cue, each with baseline (i) the last sample before the cue or
+    (ii) the mean over the 0.5 s before it. Ratio intermediate over previous per animal,
+    two-tailed one-sample t-test against 0. Reproduced when every reading gives t > 0 at p <
+    0.05.
+- id: fig6b-no-backpropagation
+  statement: During initial cue-reward learning, dopamine activity does not shift backward from
+    just before reward to the cue; the late (pre-reward) response does not differ from the early
+    (cue) response in the first 100 trials (Test 9).
+  source: Figure 6A and 6B; Results, Tests 9-11, paragraph 2; Supplementary Note 9
+  quote: Our observations were not consistent with a backpropagating bump of activity and were
+    instead consistent with an increase in cue response over trials of learning (Fig 6B)
+  statistics:
+  - about: late minus early normalized response, first 100 trials
+    test: paired t-test
+    statistic: t = -0.16
+    p: 0.8771
+    n: 7 animals
+  data: with_labels
+  depends_on:
+  - session-day-link
+  criterion: Methods, Experiments 2-5, paragraph 5, and analysis/fig6/backpropagation_pavlovian.m.
+    Per animal, Experiment 2 sessions startday to endday, CS+ trials in order, the first 400.
+    Early is the AUC from 0 to 1 s after cue onset and late from 2 to 3 s (the 1 s before
+    reward). The Methods subtract a baseline (the 1 s before CS+ onset, the Experiments 2-5
+    baseline); the code does not, run as a variant. Both are divided by the mean early response
+    over trials 351 to 400 (code, where the Methods say "last 50 trials"). The animal's value is
+    the mean of late minus early over the first 100 trials over that normalizer. A claim of
+    absence, judged on the paper's test, a two-tailed paired t-test (one-sample on the
+    differences) over 7 animals. Reproduced when p >= 0.05; not reproduced when late minus early
+    differs significantly. The mean and t are reported.
+- id: fig6d-cues-increase-together
+  statement: In sequential conditioning without inhibition, the dopamine responses to CS2 and CS1
+    increase together early in learning (no difference in the first 50 trials) (Test 10).
+  source: Figure 6C and 6D; Results, Tests 9-11, paragraph 2
+  quote: Consistent with ANCCR, we experimentally found that cue2 and cue1 responses increased
+    together early in learning prior to separating later in learning (Fig 6D).
+  statistics:
+  - about: CS2 minus CS1 normalized response, early in learning
+    test: paired t-test
+    statistic: t = -0.03
+    p: 0.9752
+    n: 7 animals
+  criterion: Methods, Experiment 7 analysis, and analysis/fig6/backpropagation_sequential.py.
+    The 7 control animals; their sequential conditioning sessions in Day order; CS1 and CS2 the
+    odd and even code-15 events; AUC from 0 to 1 s after each cue. The Methods subtract a baseline
+    the code does not apply (variant); its window is not given, readings (i) the 1 s or (ii) the
+    1.5 s before CS1 (the Fig 6I baseline). The normalizer is the mean CS1 response over trials
+    151 to 200 (code; Methods "last 50 trials" of the first 200). Value per animal, the mean of
+    CS2 minus CS1 over the first 50 trials over the normalizer (code). A claim of absence, judged on
+    the paper's test, a two-tailed paired t-test over 7 animals. Reproduced when p >= 0.05; not
+    reproduced otherwise. The mean and t are reported.
+- id: fig6d-cs2-below-cs1-late
+  statement: Later in sequential conditioning, the CS2 response falls below the CS1 response (the
+    two separate).
+  source: Figure 6D, right; Results, Tests 9-11, paragraph 2
+  quote: cue2 and cue1 responses increased together early in learning prior to separating later in
+    learning
+  depends_on:
+  - fig6d-cues-increase-together
+  criterion: Responses as in fig6d-cues-increase-together; per animal the mean CS2 response over
+    trials 151 to 200 divided by the mean CS1 response over the same trials (code, Fig 6D right).
+    The paper gives no test. Set here, reproduced when the mean ratio over the 7 animals is below 1
+    with a two-tailed one-sample t-test against 1 at p < 0.05; partially reproduced when the mean
+    is below 1 without significance.
+- id: fig6g-inhibition-magnitude
+  statement: Optogenetic inhibition of VTA dopamine neurons strongly suppresses NAcc dopamine
+    during the CS2-to-reward delay in DAT-Cre mice (to about -0.6 times the reward response on day
+    1) and reduces their reward response, compared with controls.
+  source: Figure 6F and 6G; Results, Tests 9-11, paragraph 2; Supplementary Note 10
+  quote: we first verified robust inhibition of mesolimbic dopamine release during the cue2→reward
+    delay in the experimental group (~0.6 times the reward response on day 1 of conditioning)
+  statistics:
+  - about: dopamine in the last 0.5 s before reward, DAT-Cre against controls
+    test: two sample t-test
+    statistic: t = -5.74
+    p: 1.3e-4
+    n: 13 animals
+  - about: reward response on day 1, DAT-Cre against controls
+    test: two sample t-test
+    statistic: t = -3.99
+    p: 0.0021
+    n: 13 animals
+  expected:
+    quantity: DAT-Cre mean dopamine in the last 0.5 s before reward, over the day 1 reward response
+    value: -0.6
+    tolerance: 0.06
+  criterion: Methods, Experiment 7 analysis, and analysis/fig6/measure_inhibition_sequential.py.
+    6 DAT-Cre (M2 to M7) and 7 controls; the random reward session and the first conditioning
+    session (the first two in Day order). Baseline, the mean AUC over the 0.5 s before CS1 (before
+    the reward in the random reward session, code). Inhibition, the mean AUC from 1 to 1.5 s after
+    CS2 onset minus baseline (the last 0.5 s before reward; the code's bins run from -0.5 to 1.5
+    s, the Methods' to 2 s; this bin is in both), divided by the reward response of the same
+    session. Reward response, the mean AUC over 1 s after the first lick after reward minus
+    baseline (Methods; the code's 0.5 s is a variant). Day 1 reward response over the random reward
+    session's. Two-tailed two-sample t-tests. The ratio of a 0.5 s AUC to a 1 s AUC depends on the
+    window lengths, and Supplementary Note 10 gives the -0.6 as the dopamine level at 1.5 s after
+    inhibition onset relative to the reward response magnitude. The readings for the expected value
+    are (a) the AUC ratio with the Methods' 1 s reward window, (b) the AUC ratio with the code's
+    0.5 s reward window (equal windows, as in measure_inhibition_sequential.py), (c) the ratio of
+    mean dF/F levels (each AUC over its window length) with the 1 s reward window; the value holds
+    if it matches under any of them. Reproduced when both tests give DAT-Cre lower at p < 0.05 and
+    the DAT-Cre mean inhibition is within tolerance (10% of 0.6) under one reading; partially
+    reproduced when the tests hold and the mean is outside tolerance under all.
+- id: fig6i-learning-despite-inhibition
+  statement: Despite inhibition of dopamine from CS2 to reward, every DAT-Cre animal learns
+    anticipatory licking and acquires a positive dopamine response to CS1, both increasing over
+    sessions as in controls (Test 11).
+  source: Figure 6I; Results, Tests 9-11, paragraph 2; Table S1
+  quote: Consistent with ANCCR, we observed that every experimental animal learned the task and
+    that mesolimbic dopamine acquired positive responses to cue1 in all experimental animals (Fig
+    6I).
+  statistics:
+  - about: CS1 response across sessions, wild type
+    test: linear regression
+    statistic: t = 5.49
+    p: 4.35e-6
+    n: 35 sessions from 7 WT animals
+  - about: CS1 response across sessions, DAT-Cre
+    test: linear regression
+    statistic: t = 2.55
+    p: 0.0166
+    n: 30 sessions from 6 DAT-Cre animals
+  - about: anticipatory licks across sessions, wild type
+    test: linear regression
+    statistic: t = 3.61
+    p: 9.9e-4
+    n: 35 sessions from 7 WT animals
+  - about: anticipatory licks across sessions, DAT-Cre
+    test: linear regression
+    statistic: t = 4.92
+    p: 3.40e-5
+    n: 30 sessions from 6 DAT-Cre animals
+  criterion: Methods, Experiment 7 analysis, and analysis/fig6/learnign_curve_sequential.py. Per
+    animal, conditioning sessions in Day order, the first three and the last two. CS1 response,
+    AUC from 0 to 1.5 s after CS1 minus AUC from -1.5 to 0 s, session mean, divided by the mean
+    reward response of the first conditioning session (AUC 0 to 1.5 s after the first lick within
+    5 s of reward minus the same baseline). Licks, count from 0 to 3 s after CS1 minus count from
+    -3 to 0 s, session mean. Per group, linear regression of the values on session position 0 to
+    4 pooled over animals (code). Reproduced when all four slopes are positive at p < 0.05 and, in
+    each of the 6 DAT-Cre animals, the last session's CS1 response and licks are above 0;
+    partially reproduced when the slopes hold but not every animal.
+- id: fig6i-lower-cs1-asymptote
+  statement: With inhibition, the CS1 dopamine response reaches a lower level in the last session
+    than in controls.
+  source: Figure 6I; Supplementary Note 10, paragraph 2; Table S1
+  quote: mesolimbic dopamine acquired positive responses to cue1 in all experimental animals,
+    albeit at a lower asymptote relative to the control group (Fig 6I)
+  statistics:
+  - test: two sample t-test
+    statistic: t = 2.80
+    p: 0.0171
+    n: 13 animals
+  depends_on:
+  - fig6i-learning-despite-inhibition
+  criterion: Last-session normalized CS1 response of fig6i-learning-despite-inhibition, controls
+    against DAT-Cre, two-tailed two-sample t-test. Reproduced when DAT-Cre is lower at p < 0.05.
+- id: fig6i-last-session-licking-similar
+  statement: In the last session, anticipatory licking does not differ between DAT-Cre and control
+    animals.
+  source: Figure 6I, right; Table S1
+  inferred: Only Table S1 gives this comparison (Behavior (right), t = 0.88, p = 0.3999); no
+    sentence states it. The Supplementary Note 10 says the experimental animals learned "albeit
+    slower than control animals".
+  statistics:
+  - test: two sample t-test
+    statistic: t = 0.88
+    p: 0.3999
+    n: 13 animals
+  depends_on:
+  - fig6i-learning-despite-inhibition
+  criterion: Last-session licks of fig6i-learning-despite-inhibition. A claim of absence, judged on
+    the paper's test, a two-tailed two-sample t-test. Reproduced when p >= 0.05; not reproduced
+    otherwise. The difference is reported.
+- id: figs12f-pre-cs2-licking
+  statement: Anticipatory licking between CS1 and CS2, before inhibition starts, increases from the
+    first to the last session (main effect of session), with no effect of genotype and no
+    genotype by session interaction.
+  source: Figure S12F; Table S1
+  quote: Quantification of pre-CS2 anticipatory licks showing reward-seeking prior to CS2 (onset of
+    dopamine neuron inhibition).
+  statistics:
+  - about: session effect
+    test: two-way mixed ANOVA
+    statistic: F = 9.07
+    p: 0.0118
+    n: 13 animals
+  - about: genotype effect
+    test: two-way mixed ANOVA
+    statistic: F = 0.25
+    p: 0.6241
+    n: 13 animals
+  - about: genotype by session interaction
+    test: two-way mixed ANOVA
+    statistic: F = 0.07
+    p: 0.7915
+    n: 13 animals
+  criterion: Methods, Experiment 7 analysis (licks "from CS1 until ... CS2"), and
+    analysis/fig6/learnign_curve_sequential.py. Per animal, the first and last conditioning
+    sessions; licks from 0 to 1.5 s after CS1 minus licks in the 1.5 s before CS1, session mean.
+    The code's baseline window is written in milliseconds on times in seconds (it starts 1500 s
+    before CS1), run as a variant. Two-way mixed ANOVA, genotype between and session within, 6
+    DAT-Cre and 7 controls. Table S1 prints these p as one-tailed; the F-test p is used as is.
+    Reproduced when the session effect is significant at p < 0.05 with more licks in the last
+    session, and the genotype effect and interaction have p >= 0.05.
+- id: fig2-anccr-classic-results
+  statement: Simulated ANCCR reproduces classic findings taken as support for RPE coding,
+    including conditioned inhibition, blocking, overexpectation, trial-by-trial behavioral changes
+    after dopamine inhibition at reward, and unblocking by dopamine activation.
+  source: Figure 2D to 2I; Table S1
+  quote: Simulations of ANCCR learning produces behavior consistent with conditioned inhibition
+    (D), blocking (E), and overexpectation (F). ... H. Simulation of dopamine inhibition at reward
+    time produces trial-by-trial changes in behavior (similar to (81)). I. Simulation of unblocking
+    due to dopamine activation at reward during blocking (similar to (14)).
+  statistics:
+  - about: conditioned inhibition, probability of lick to CS
+    test: paired t-test
+    statistic: t = 4.42
+    p: 3.0e-4
+    n: 20 iterations
+  - about: blocking, probability of lick to CS2
+    test: two sample t-test
+    statistic: t = 7.32
+    p: 9.2e-7
+    n: 20 iterations
+  - about: overexpectation, probability of lick to CS1
+    test: paired t-test
+    statistic: t = 4.09
+    p: 6.2e-4
+    n: 20 iterations
+  - about: inhibition at reward, probability of Action 1
+    test: paired t-test
+    statistic: t = 7.06
+    p: 1.0e-6
+    n: 20 iterations
+  - about: unblocking, probability of lick to CS2
+    test: two sample t-test
+    statistic: t = -6.33
+    p: 2.0e-7
+    n: 20 iterations
+  criterion: A simulation, not a test on recorded data. Parameters from Methods, Simulations,
+    Previously reported experiments, and the scripts simulation/fig2/*.m at the commit read, with
+    functions/calculateANCCR.m. Reproduced when each of the five tests has the sign of Table S1 at
+    p < 0.05 over 20 iterations; partially reproduced for three or four.
+- id: fig3cf-simulated-unpredicted-rewards
+  statement: In simulations of random rewards, TDRL RPE (CSC and microstimulus) predicts a reward
+    response that decreases with experience and is negatively correlated with the previous IRI,
+    while ANCCR predicts an increasing response positively correlated with the previous IRI.
+  source: Figure 3B, 3C and 3F
+  quote: C. Simulations confirming the intuitive reasoning from B for Test 1. ... F. Simulations
+    confirming the intuitive reasoning from B for Test 2
+  statistics:
+  - about: Test 1, RPE (CSC)
+    test: one sample t-test against zero
+    statistic: t(99) = -65.74
+    p: 1.7e-83
+    n: 100 simulations
+  - about: Test 1, RPE (MS)
+    test: one sample t-test against zero
+    statistic: t(99) = -27.57
+    p: 3.0e-48
+    n: 100 simulations
+  - about: Test 1, ANCCR
+    test: one sample t-test against zero
+    statistic: t(99) = 18.60
+    p: 4.5e-34
+    n: 100 simulations
+  - about: Test 2, RPE (CSC)
+    test: one sample t-test against zero
+    statistic: t(99) = -1.7×10^3
+    p: 5.0e-223
+    n: 100 iterations
+  - about: Test 2, RPE (MS)
+    test: one sample t-test against zero
+    statistic: t(99) = -151.28
+    p: 6.3e-119
+    n: 100 iterations
+  - about: Test 2, ANCCR
+    test: one sample t-test against zero
+    statistic: t(99) = 335.03
+    p: 4.8e-153
+    n: 100 iterations
+  criterion: A simulation, not a test on recorded data. simulation/fig3/randomreward.m with the
+    Methods' parameters (Model 1 CSC and microstimulus, Model 2; 50,000, 20,000 and 2,000 trials;
+    rewards with IRI under 3 s dropped; for Test 1 only trials up to 95% of a fitted Weibull
+    asymptote). Reproduced when all six correlations have the reported sign at p < 0.05.
+- id: fig5b-simulated-intermediate-cue
+  statement: In simulations of the trial-less task, TDRL RPE predicts a negative response to an
+    intermediate cue relative to the previous cue, while ANCCR predicts a positive one; both
+    predict a reward response ratio (intermediate over previous reward) above 1.
+  source: Figure 5A and 5B; Results, Test 8, paragraphs 2 and 3
+  quote: B. Confirmation of these intuitions based on simulations (Methods) (One sample t test
+    against a null of zero; t(99) = RPE (CSC), -114.74; RPE (MS), -181.32; ANCCR, 322.53 ...
+    Reward responses are predicted to be positive by both models (One sample t test against a null
+    of one
+  statistics:
+  - about: cue ratio, RPE (CSC)
+    test: one sample t-test against zero
+    statistic: t(99) = -114.74
+    p: 4.1e-107
+    n: 100 iterations
+  - about: cue ratio, RPE (MS)
+    test: one sample t-test against zero
+    statistic: t(99) = -181.32
+    p: 1.1e-126
+    n: 100 iterations
+  - about: cue ratio, ANCCR
+    test: one sample t-test against zero
+    statistic: t(99) = 322.53
+    p: 2.1e-151
+    n: 100 iterations
+  - about: reward ratio against one, RPE (CSC)
+    test: one sample t-test against one
+    statistic: t(99) = 87.67
+    p: 1.2e-95
+    n: 100 iterations
+  - about: reward ratio against one, RPE (MS)
+    test: one sample t-test against one
+    statistic: t(99) = 62.86
+    p: 1.3e-81
+    n: 100 iterations
+  - about: reward ratio against one, ANCCR
+    test: one sample t-test against one
+    statistic: t(99) = 16.78
+    p: 1.1e-30
+    n: 100 iterations
+  criterion: A simulation, not a test on recorded data. simulation/fig5/poisson.m with the Methods'
+    parameters (Model 2 pre-trained on Experiment 1; 1,000 cues per simulation, 100 repeats).
+    Reproduced when the cue ratio is below 0 for both RPE models and above 0 for ANCCR, each at p
+    < 0.05; the reward ratio above 1 at p < 0.05 for all three models is also required, and when
+    the cue part holds without it the claim is partially reproduced.
+- id: fig6h-simulated-inhibition
+  statement: With dopamine inhibited from CS2 to reward, TDRL RPE predicts a negative CS1 response
+    and no learning, while ANCCR predicts a positive but reduced CS1 response.
+  source: Figure 6H and S12A to S12C; Results, Tests 9-11, paragraph 2
+  quote: With such strong inhibition, TDRL RPE predicted no behavioral learning in this experiment,
+    and a strong negative cue1 dopamine response (Figs 6H, S12). In contrast, ANCCR predicted
+    largely intact learning of cue1, but with slower behavioral learning and reduced cue1 response
+  statistics:
+  - about: CS1 response, inhibited against control, RPE
+    test: two sample t-test
+    statistic: t = -379.13
+    p: 1.3e-69
+    n: 20 iterations
+  - about: CS1 response, inhibited against control, ANCCR
+    test: two sample t-test
+    statistic: t = -10.22
+    p: 1.9e-12
+    n: 20 iterations
+  criterion: A simulation, not a test on recorded data. simulation/fig6/serialcue.m and
+    serialcue_rpe.m with the Methods' parameters (800 and 400 trials, inhibition -0.6 from CS2 to
+    reward, lambda 0.95 for Fig 6). Reproduced when both models give a lower CS1 response with
+    inhibition at p < 0.05, the RPE CS1 response with inhibition is below 0 and the ANCCR one above
+    0.
+- id: figs6-learns-causal-structure
+  statement: In simulations where cues arrive at exponential intervals and each is followed by
+    reward at a fixed delay, ANCCR for the cue is significantly positive at every ratio of delay to
+    inter-cue interval, while TDRL RPE is often lower than without an association.
+  source: Figure S6A; Results, A retrospective causal learning algorithm, paragraph 2
+  quote: However, across all ratios shown, contingency learning signals a significantly positive
+    ANCCR for the cue, implying that the algorithm learns the cue-reward association without loss
+    of generality.
+  criterion: A simulation, not a test on recorded data. simulation/figS6/timescale.m with the
+    Methods' parameters (inter-cue interval 12 s, seven delays from 0.05 to 5 times it, T 5 times
+    the IRI, exact means of eligibility traces, 100 repeats of 1,000 cues). The paper reports no
+    test; set here, reproduced when at every ratio the cue ANCCR with the association is above 0 by
+    a two-tailed one-sample t-test over the 100 repeats at p < 0.05, and above the value without
+    the association. The TDRL comparison is reported.
+- id: figs5-timescale-invariance
+  statement: Simulated ANCCR reproduces the timescale invariance of learning (trials to acquisition
+    grow with the cue-reward delay only when the ITI is fixed, not when it is scaled with the
+    delay), and TDRL does not.
+  source: Figure S5C and S5D; Results, A retrospective causal learning algorithm, paragraph 2
+  quote: C. Simulations demonstrating that TDRL cannot explain the timescale invariance, but that
+    retrospective causal learning explains these results (Methods).
+  criterion: A simulation, not a test on recorded data. simulation/figS5/scaledITI_acquisition.m
+    with the Methods' parameters (delays 3 to 10 s, ITI 30 s fixed or 10 times the delay,
+    acquisition when the 30-trial moving average of the cue response crosses 0.6 for Model 2 and
+    0.08 for Model 1, 100 repeats). The paper reports no test; set here, over the 8 mean trials to
+    acquisition per condition, a Spearman correlation with delay. Reproduced when, for Model 2, it
+    is positive at p < 0.05 with fixed ITI and has p >= 0.05 with scaled ITI, and for Model 1 the
+    scaled-ITI correlation is significant (not invariant). The reward probability simulation
+    (rewardprobability_acquisition.m, Fig S5D) is reported.
+- id: figs13-ramping
+  statement: Simulated ANCCR reproduces dopamine ramps when a series of cues predicts reward, and
+    the changes of the ramp when the subject is teleported closer to reward or the cue speed
+    changes.
+  source: Figure S13A to S13D; Table S1
+  quote: ANCCR signaling not only ramps up when a series of cues predicts reward, but also captures
+    observed changes in dopamine activity when a subject was teleported to a moment closer to
+    reward (A-B) or the speed of cue presentation changed (C-D).
+  statistics:
+  - about: teleport T1 against standard
+    test: paired t-test
+    statistic: t = 4.36
+    p: 3.2e-5
+    n: 100 iterations
+  - about: teleport T2 against standard
+    test: paired t-test
+    statistic: t = 23.42
+    p: 3.7e-42
+    n: 100 iterations
+  - about: teleport T3 against standard
+    test: paired t-test
+    statistic: t = 29.75
+    p: 3.6e-51
+    n: 100 iterations
+  - about: slow against standard speed
+    test: paired t-test
+    statistic: t = -129.07
+    p: 5.6e-105
+    n: 100 iterations
+  - about: fast against standard speed
+    test: paired t-test
+    statistic: t = 109.14
+    p: 3.9e-112
+    n: 100 iterations
+  criterion: A simulation, not a test on recorded data. simulation/figS13/ramping_teleport.m and
+    ramping_speedchange.m with the Methods' parameters. These scripts were changed on 2023-05-10
+    ("codes for correction"), after the text read; both the version before (commit eca96a2,
+    2023-02-13) and the one at the commit read are run, and the outcome is stated
+    for each. Reproduced when the five comparisons have the sign of Table S1 at p < 0.05.
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig4hi-delay-change-behavior-changes, criterion now says the Weibull and constant models are
+    fitted to the per-trial values, not the cumulative sums (cumsum_pavlovian.m, lickdata and
+    aucdata); it was left unstated.
+  - fig4hi-delay-change-dopamine-unchanged, criterion now says the fit is to per-trial values, and
+    counts a mean delta AIC below 0 (constant model better) as no change found; the outcome for a
+    significantly negative delta AIC was left unstated.
+  - fig6b-no-backpropagation, statement says the late response does not differ from the early one,
+    in place of does not exceed it; the paper's test is two-tailed (Table S1, t = -0.16).
+  - fig6g-inhibition-magnitude, criterion names three readings for the expected -0.6 (AUC ratio
+    with the Methods' 1 s reward window, AUC ratio with the code's 0.5 s window, ratio of mean
+    levels); the 0.5 s inhibition AUC over a 1 s reward AUC is about half the equal-window ratio
+    the code computes, and Supplementary Note 10 gives the value as a level relative to the reward
+    response.
+  - figs12f-pre-cs2-licking, statement says the session effect is a main effect; it said the
+    increase holds in both groups, which the two-way ANOVA does not test.
+  - fig5b-simulated-intermediate-cue, added the Fig 5B right reward ratio tests (Table S1, against
+    a null of one) to the statement, quote, statistics and criterion; the legend reports them and
+    the claim left them out.
+  - Checker flag on fig6i-learning-despite-inhibition p 3.4e-05 confirmed by reading; Table S1
+    prints 3.40×10-5, which YAML stores as 3.4e-05. No change.
+  - Verified against github.com/namboodirilab/ANCCR at cff4414 the code details cited in the
+    criteria of fig4hi (bounds, AIC), fig6d (trials 1 to 50, normalizer 151 to 200), fig6g (bins,
+    baselines, sessions), fig6i (windows, normalizer, sessions), figs8e (z-score), figs8l (mean of
+    two sessions per IRI) and figs12f (baseline window in ms, first and last session); they agree.
+  - Open, not settled. fig4ef-dopamine-leads-behavior, the signs of the two paired t values imply
+    different subtraction orders; the criterion judges direction from the Results, which is
+    reasonable but rests on the text, not on a printed order.
+  - Open, not settled. Several criteria set a test where the paper gives none (fig4jl, fig4p
+    "remained significantly positive", fig6d-cs2-below-cs1-late, figs5, figs6); each says so, and
+    the paper fixes no alternative.
+  - Open, not settled. Minor findings without a claim, none with a test (Fig S11B-C, rapid learning
+    of the trial-less task; Fig S9, baseline licking rising with background rewards; Fig 2A-C, 2G
+    and S13E simulations); left out as not main findings.

@@ -1,0 +1,1162 @@
+# Claims for Padilla-Coreano, Batra, Patarino et al. (2022), Nature 603, 667-671, on dandiset 001749.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: paper/10.1038-s41586-022-04507-5.txt. It holds the PMC author manuscript (PMC9576144,
+# NIHMS1838406): main text, legends of Figures 1 to 4 and Extended Data Figures 1 to 10. It also
+# holds the Nature supplementary information (41586_2022_4507_MOESM1_ESM.pdf, extracted with
+# PyMuPDF), which contains the Methods (sections 1 to 17). The main-text PDF is not
+# present; all numbers used here are printed in the legends. The equations in the supplement are
+# garbled by the extraction; only the alignment index (Methods 14) is needed, and it is read as
+# Tr(P1' Cov(D2) P1) / Tr(P2' Cov(D2) P2), after Miri et al. (2017), which the Methods cite.
+#
+# Code read: github.com/Tyelab/HMMGLM at commit 3fc3567815b9c891402635664a844320136d2fac
+# (run_model.m, model_HMMGLM.m; it also holds dataset_forHMMGLM_proc.mat, the paper's processed
+# HMM-GLM input of 1.5 MB, which was not opened here). The code fixes, for the HMM-GLM, 6 hidden
+# states; 100 epochs of gradient ascent on the Baum-Welch auxiliary function; learning rate
+# 1e-6/(1 + epoch/128); Gaussian initialisation with mean 0 and SD 0.001 and a matching Gaussian
+# penalty (1/0.001); a uniform initial state prior; 10 folds formed as contiguous blocks of trials
+# in the order of the input file; one-step prediction; and per-behaviour, per-fold AUCs
+# (MATLAB perfcurve, one against all, on every time point of the held-out trials), computed both
+# without and with the one-bin shift (auc_ROC and auc_ROC_delay). AlphaTracker
+# (github.com/ZexinChen/AlphaTracker, head 43e1264294c8732a83ee21a05014f38ff6cf16b4, linked from
+# tyelab.org/tools) was surveyed: it holds the tracking, clustering and correction interface, and
+# no analysis of rank, trials or neurons. No code is linked for the PCA trajectories, SVM decoding,
+# single-unit responses, phototagging or behavioural statistics; those methods come from the
+# Methods and legends alone. The paper's analyses were run in MATLAB (Methods 14, 17); where a
+# MATLAB default is named below it is the default of the function the Methods name.
+#
+# The data the paper used, as it reports them:
+# - Subjects: adult male C57BL/6J mice housed in cages of 3 to 4; ranks 1 (dominant) to 4 from a
+#   round-robin tube test, stable for 3 or more days. In a competition the higher-ranked mouse of
+#   the pair is the relative dominant (dom), the other the relative subordinate (sub).
+# - Task: 10 s tone (5 kHz, 60 dB) and LED; 10 uL Ensure delivered 2 s after tone onset; ITI 60 to
+#   100 s; port entries by lickometer or infrared beam. Competition sessions of two cagemates;
+#   20 or 30 trials. The winner of a trial is the mouse at the port 1.5 to 3 s after tone onset, or
+#   the first to the port after delivery when the port was empty; trials with a switch are
+#   excluded. Pushing, resisting and displacement were hand-scored; video at 25 or 30 fps;
+#   nose, ears and tail base tracked with AlphaTracker.
+# - Unimplanted validation cohort (Figure 1b-c, Extended Data Fig. 1): 8 mice, 12 dyads.
+# - mPFC recordings: 32-wire bundles, SpikeGadgets MiniLogger, 600 to 6,000 Hz, common average
+#   reference, Klusta spike sorting with manual curation. 24 mice implanted, 20 with cells (998
+#   cells; 913 kept for clustering). 24 mice recorded alone before any competition (17 of the
+#   competition mice and 7 more). In 15 of the 20, alone trials followed by competition trials in
+#   one session. Figure 2a: 20 mice, 27 sessions, 507 dom and 490 sub cells.
+# - HMM-GLM dataset: 13 mice with equivalent video conditions, 965 trials from 32 sessions,
+#   multi-unit rates on 32 channels (threshold 4 SD after common average reference), 70 bins of
+#   200 ms, one of 9 behaviour labels per bin (Figure 1f). The dandiset description places the hand
+#   scoring at -2 s to +12 s from tone onset, which is 70 bins of 200 ms; the paper gives the
+#   length but not the alignment.
+# - Projection-defined cells: ChrimsonR in mPFC-LH or mPFC-BLA neurons (CAV2-Cre in LH or BLA);
+#   red light (635 nm, 5 ms pulses at 10 or 20 Hz, 8 mW) after the session; tagged cells in 3 of 12
+#   LH mice and 3 of 8 BLA mice. Ex vivo latencies from a separate cohort of 6 mice.
+# - Optogenetics: ChR2 or eYFP in mPFC-LH neurons, 473 nm bursts (four 5 ms pulses at 100 Hz every
+#   200 ms) in 5 min epochs, to the relative subordinate only; 9 ChR2 and 7 eYFP mice.
+# The dandiset is described as holding the mPFC ("ephys"), mPFC-BLA ("BLA") and mPFC-LH
+# ("chrimson") recordings with behaviour, ranks, port entries, identity-corrected AlphaTracker
+# poses and the 9 hand-scored behaviour labels. Whether it holds the unimplanted cohort, the alone
+# sessions, the ex vivo or the optogenetic data is the author's to find.
+#
+# Shared methods used by several criteria below (cited once here, from the Methods):
+# - Trajectories (Methods 14, Neural trajectories): one global PCA on a matrix of neurons by the
+#   concatenated mean firing rates of six events (win trials, lose trials, self and other port
+#   entries during the tone, self and other port entries during the ITI), -5 to 5 s around each
+#   event in 100 ms bins, neurons of all animals together. As the Methods say coefficients are
+#   per cell, neurons are the variables and time bins the observations; MATLAB pca centres the
+#   columns by default. Group trajectories are the PCA coefficients times the group's mean
+#   firing rates; length is the sum of Euclidean distances between adjacent 100 ms bins over
+#   the first 148 PCs (90% of variance); distance between trajectories is the bin-by-bin
+#   Euclidean distance; group sizes in neurons are matched; statistics run over leave-one-animal-
+#   out iterations, one per mouse in the group. The Figure 2 legend says the 2-way ANOVAs are for
+#   rank and event (baseline against event) or rank and trial type; baseline is read as -5 to 0 s
+#   and event as 0 to 5 s.
+#   Open, with readings: (a) 148 PCs as printed, (b) as many PCs as reach 90% of variance in the
+#   reproduction; neuron matching by (a) one random subsample of the larger group, (b) a new
+#   subsample in each iteration. The firing rates are used as rates, not z-scores, as the
+#   Methods say "mean firing rate".
+# - SVM (Methods 14, SVM classifier): single-trial trajectories from the global PCA
+#   coefficients; features are the first 8 PCs at each time bin, from -30 to 30 s or -5 to 5 s
+#   around the cue; Gaussian-kernel SVM with MATLAB R2019b fitcsvm defaults (box constraint 1,
+#   kernel scale 1, no standardisation); Platt posterior; 10-fold cross-validation; AUC on each
+#   test fold; classes balanced "where possible". The legend p-value 2e-4 is what MATLAB ranksum
+#   (normal approximation with continuity correction) gives for 10 fold AUCs that all exceed 10
+#   shuffled AUCs, so each comparison is read as a Wilcoxon rank-sum of 10 against 10 fold AUCs.
+#   Open, with readings: the shuffle is a permutation of trial labels run through the same
+#   pipeline; the bin width of single-trial features is 100 ms, as in the PCA (a standard
+#   choice); class balance by (a) all trials, (b) random subsampling of the larger class.
+# - Responsive cells (Methods 14, Firing rate analysis): Wilcoxon signed-rank test of per-trial (or
+#   per-entry) firing rate in a 5 s baseline against the 5 s after the event; excited or inhibited
+#   by the sign of the mean z-score over the 5 s response window; mean rates per trial type
+#   smoothed with MATLAB smoothdata (default moving mean) before z-scoring. Response magnitude is
+#   that mean z-score. Fisher's exact test on responsive against non-responsive cells per group;
+#   Wilcoxon rank-sum on magnitudes of excited, and of inhibited, cells. Open, with readings: the
+#   significance level of the signed-rank test is not given, (a) 0.05, (b) 0.01; the z-score is
+#   taken (a) against the -5 to 0 s baseline, (b) against the whole -5 to 5 s window; bins of
+#   100 ms as in the PCA (a standard choice); the Fisher denominator is (a) all cells of the
+#   group, (b) the cells with baseline rate at or above 0.05 Hz.
+# - Phototagging (Methods 12): mean rate 10 ms before against 10 ms after each pulse, Wilcoxon
+#   signed-rank at alpha 0.001, and latency (first 1 ms bin above baseline mean plus 4 SD) of 7 ms
+#   or less.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001749"
+paper: doi:10.1038/s41586-022-04507-5
+claims:
+- id: fig1b-dominants-more-rewards
+  statement: In the unimplanted cohort, relative dominants collected more rewards than relative
+    subordinates when competing in dyads.
+  source: Figure 1b; Results, first paragraph
+  quote: Mice with higher relative ranks (dominant; Dom ) collected more rewards than relative subordinates ( Sub ) when competing in dyads
+  statistics:
+  - test: Sign rank test on total rewards
+    p: 0.008
+    n: 12 dyads
+  criterion: Per dyad, total rewards won by the relative dominant and the subordinate over the
+    session, as in the legend; Wilcoxon signed-rank test across the 12 dyads. Reproduced when
+    p < 0.05 with dominants higher. Percent competitions won by absolute rank (6 per rank, Figure
+    1b right) is reported and not judged, as the text states no result for it.
+- id: fig1c-port-pushing-displacement
+  statement: In the unimplanted cohort, relative dominants had higher port occupation, higher
+    pushing success, and higher time displaced from the port (as the legend words it) than
+    relative subordinates.
+  source: Figure 1c
+  quote: Port occupation, pushing success (pushing that resulted in displacement of competitor), and time displaced from port was higher for relative dominants
+  statistics:
+  - about: port occupation
+    test: Sign rank test
+    p: 0.04
+    n: 12 dyads
+  - about: pushing success
+    test: Sign rank test
+    p: 0.02
+    n: 12 dyads
+  - about: time displaced from port
+    test: Sign rank test
+    p: 0.016
+    n: 12 dyads
+  criterion: Per dyad, dominant against subordinate, Wilcoxon signed-rank tests on port occupation
+    time, pushing success (percent of pushes that displaced the competitor, Methods 6, Reward
+    competition behavioral analysis) and time displaced. The legend leaves open which way the
+    displacement measure runs; readings (a) time spent displacing the competitor, as the main text
+    says dominants "were more successful at displacing competitors", (b) time being displaced, as
+    printed. Reproduced when all three tests give p < 0.05 with dominants higher under one reading.
+- id: ed1d-pushing-success
+  statement: In the unimplanted cohort, relative dominants have higher pushing success during the
+    tone.
+  source: Extended Data Fig. 1d
+  quote: Relative dominant mice have higher pushing success during the tone (n=12 per group, paired t-test p=0.025)
+  statistics:
+  - test: paired t-test
+    p: 0.025
+    n: 12 per group
+  criterion: Pushing success (percent of pushes that displaced the competitor, Methods 6) during the
+    10 s tone, per mouse, paired across the 12 dyads. Reproduced when the paired t-test gives p <
+    0.05 with dominants higher.
+- id: ed1g-distance-by-outcome-not-rank
+  statement: In the unimplanted cohort, the distance to the reward port around the tone differs by
+    trial outcome (win against lose) but not by relative rank.
+  source: Extended Data Fig. 1g
+  quote: Distance to reward port across time by trial type and relative rank
+  statistics:
+  - about: mean distance -5 s to cue onset, trial type
+    test: 2-way ANOVA
+    statistic: F(1,180) = 44.4
+    p: 3.0e-10
+    n: dom win 68, dom lose 24, sub win 24, sub lose 68 trials from 12 dyads
+  - about: mean distance -5 s to cue onset, rank
+    test: 2-way ANOVA
+    p: 0.94
+  - about: mean distance -5 s to 10 s, trial type
+    test: 2-way ANOVA
+    statistic: F(1,180) = 68
+    p: 2.5e-14
+  - about: mean distance -5 s to 10 s, rank
+    test: 2-way ANOVA
+    p: 0.071
+  criterion: Per trial, the mean AlphaTracker distance to the human-marked port location over the
+    windows the legend gives (-5 s to tone onset; -5 s to +10 s); 2-way ANOVA of trial type by
+    relative rank on trials. Reproduced when trial type has p < 0.05 and rank has p >= 0.05 in
+    both windows; the legend gives no direction for trial type, which is reported. The rank result is a claim of absence judged on this test.
+- id: fig1e-alphatracker-precision
+  statement: AlphaTracker tracks two unmarked mice with higher precision than human annotators.
+  source: Figure 1e; Extended Data Fig. 2
+  quote: AlphaTracker performance surpasses human accuracy when tracking 2 or 4 mice
+  criterion: Needs the annotated evaluation frames of Methods 15 (800 frames from 4 videos, 200
+    double-annotated), which the paper does not deposit. Reproduced when AlphaTracker's average
+    precision over body parts exceeds the between-human precision on those frames.
+- id: fig1i-hmmglm-decodes-behaviour
+  statement: A 6-state HMM-GLM decodes the 9 behaviour labels from mPFC multi-unit activity above
+    chance and better than a GLM or an ensemble of 9 GLMs, while the GLM and the 9 GLMs do not
+    differ.
+  source: Figure 1i; Extended Data Fig. 5j; Methods 17
+  quote: An HMM-GLM model with 6 hidden states decoded behavioral labels from neural activity with superior cross-validated performance to static models
+  statistics:
+  - about: across the five models
+    test: Kruskal Wallis test
+    p: 6.7e-8
+    n: 9 behaviours per model
+  - about: HMM-GLM, 9 GLMs and GLM against chance
+    test: sign test
+    p: 0.004
+    n: 9 behaviours
+  - about: HMM-GLM against GLM
+    test: Wilcoxon rank sum
+    p: 4.0e-5
+    n: 9 behaviours per model
+  - about: HMM-GLM against 9 GLMs
+    test: Wilcoxon rank sum
+    p: 4.0e-5
+    n: 9 behaviours per model
+  - about: GLM against 9 GLMs
+    test: Wilcoxon rank sum
+    p: 0.54
+    n: 9 behaviours per model
+  - about: HMM-GLM with leave-one-animal-out cross-validation against chance
+    test: Sign test
+    p: 0.004
+    n: 9 behaviour labels
+  expected:
+  - quantity: trials in the HMM-GLM dataset
+    value: 965
+    tolerance: 96
+  - quantity: sessions
+    value: 32
+    tolerance: 3
+  - quantity: mice
+    value: 13
+    tolerance: 1
+  criterion: Input, from Methods 17 (Dataset), multi-unit rates on the 32 channels after common
+    average reference, spikes at 4 SD from the mean, in 70 bins of 200 ms per trial (aligned at -2
+    to +12 s from tone onset, from the dandiset description; the paper gives no alignment), and
+    one of the 9 labels per bin. HMM-GLM as fixed by run_model.m and model_HMMGLM.m (see the opening
+    comment). FT, GLM (multinomial logit, 9-output softmax), SVM (Gaussian kernel, one against
+    all) and 9 GLMs (one logit GLM per label) as Methods 17 describe. Per behaviour, the AUC is the
+    mean over the 10 folds. Tests as the legend gives them; the printed p-values match a two-sided
+    sign test of 9 of 9 AUCs above 0.5 (0.0039) and an exact rank-sum with no overlap between 9 and
+    9 (4.1e-5). Reproduced when HMM-GLM AUCs exceed 0.5 by the sign test (p < 0.05), exceed the
+    GLM and 9-GLM AUCs by rank-sum (p < 0.05), and the GLM against 9 GLMs rank-sum gives p >= 0.05
+    (a claim of absence, judged on that test). Open, with readings; spike threshold (a) negative
+    crossings below mean minus 4 SD, (b) crossings in either direction; rates (a) counts per bin,
+    (b) z-scored per channel; AUC (a) with the one-bin backward shift the Methods describe
+    (auc_ROC_delay), (b) without (auc_ROC); folds (a) contiguous in session order, as the code
+    forms them, (b) random. The processed input in the code repository is a variant input, not
+    the basis of the outcome.
+- id: ed5j-six-states
+  statement: Held-out log-likelihood of the HMM-GLM increases with the number of hidden states and
+    plateaus at 6 states.
+  source: Extended Data Fig. 5j, left; Methods 17, Cross-validation and Model Selection
+  quote: We found that as you increase the number of hidden states, the log likelihood increases, reaching a plateau at the 6-state model
+  depends_on:
+  - fig1i-hmmglm-decodes-behaviour
+  criterion: Per number of states, the trial-averaged held-out log-likelihood over 10 folds, with
+    SEM across folds (Methods 17), other settings as in fig1i-hmmglm-decodes-behaviour. The number
+    of states tried is not given; read as 1 to 10. "Plateau" is not defined; readings (a) 6 is the
+    smallest number whose mean lies within one SEM of the best mean, (b) 6 has the highest mean.
+    Reproduced when one reading selects 6, partially reproduced when it selects 5 or 7.
+- id: ed5k-hmmglm-generalizes-across-rank
+  statement: The 6-state HMM-GLM predicts behaviour above chance whichever relative rank group is
+    used for training and for testing.
+  source: Extended Data Fig. 5k; Results, mPFC neurons encode competition behavior
+  quote: The model performed equally well when training for one relative rank and testing on the other
+  statistics:
+  - test: Sign test performance vs 0.5 (chance)
+    p: 0.004
+    n: 9 behaviour labels, 482 dom and 478 sub trials
+  depends_on:
+  - fig1i-hmmglm-decodes-behaviour
+  criterion: The model of fig1i-hmmglm-decodes-behaviour trained on dom trials and tested on sub
+    trials, and the reverse, plus within-group 10-fold runs. Per behaviour the AUC on the test
+    trials. Reproduced when every train and test combination gives a sign test of the 9 AUCs
+    against 0.5 at p < 0.05.
+- id: ed5b-rank1-wins-most
+  statement: In the recording cohort, rank 1 mice won the highest percentage of competitions.
+  source: Extended Data Fig. 5b
+  quote: Percent competitions won by absolute rank is highest for rank 1 mice in dataset used for mPFC recordings
+  expected:
+  - quantity: competitions, rank 1
+    value: 12
+    tolerance: 1.2
+  - quantity: competitions, rank 2
+    value: 12
+    tolerance: 1.2
+  - quantity: competitions, rank 3
+    value: 15
+    tolerance: 1.5
+  - quantity: competitions, rank 4
+    value: 14
+    tolerance: 1.4
+  criterion: A competition is won by the mouse that won more of its trials (the meaning ED Fig.
+    8d gives to a winner). Ties are not covered by the paper; readings (a) a tie counts as not won,
+    (b) ties are left out. Reproduced when rank 1 has the highest percentage under one reading.
+- id: ed5c-rewards-not-different
+  statement: Among mice wearing loggers, relative dominants and subordinates obtained similar
+    numbers of rewards, while the body weight difference between competitors correlated with
+    rewards won.
+  source: Extended Data Fig. 5c
+  quote: number of rewards obtained by relative dominants ( dom ) and subordinates ( sub ) during the reward competitions between animals wearing loggers
+  statistics:
+  - about: rewards, dom against sub
+    test: paired t-test
+    p: 0.86
+    n: 22 mice per group
+  - about: percent body weight difference against rewards won
+    test: Pearson's correlation
+    p: 0.01
+    n: sub 19, dom 20
+  criterion: The rewards part is a claim of absence judged on the paired t-test across the 22
+    pairs (reproduced when p >= 0.05). The correlation holds when Pearson p < 0.05, using only mice
+    with a same-day weight.
+- id: ed5d-subordinates-slower-latency
+  statement: In win trials, relative subordinates had longer latencies to pick up the reward than
+    relative dominants.
+  source: Extended Data Fig. 5d
+  quote: Subordinates had longer latencies to pick up the reward during win trials
+  statistics:
+  - test: Wilcoxon rank-sum
+    p: 0.012
+    n: 326 dom and 358 sub trials
+  - test: Two-sample Kolmogorov-Smirnov test
+    p: 0.015
+    n: 326 dom and 358 sub trials
+  - test: One way RM-ANOVA
+    statistic: F(1,24) = 2.06
+    p: 0.002
+  criterion: Latency of the winner's port entry to pick up the reward in win trials. No section of
+    the Methods defines this latency; Methods 5 and ED Fig. 1a measure reward latency from tone
+    onset. Readings (a) from tone onset, (b) from delivery at 2 s, which differ by a constant and
+    give the same tests. Reproduced when the rank-sum gives p < 0.05 with subordinates slower. The
+    RM-ANOVA is recorded as printed; its F and p do not agree (F(1,24) = 2.06 gives p near 0.16)
+    and its factors are not given, so it is not judged.
+- id: ed5e-port-occupancy-not-different
+  statement: Percent port occupancy during the tone did not differ by relative rank in the recording
+    cohort.
+  source: Extended Data Fig. 5e
+  quote: Percent port occupancy during tone across relative rank (n=31 sessions, paired t-test p=.90)
+  statistics:
+  - test: paired t-test
+    p: 0.9
+    n: 31 sessions
+  criterion: A claim of absence, judged on a paired t-test of percent of the 10 s tone spent at the
+    port, dom against sub per session. Reproduced when p >= 0.05; the difference is reported.
+- id: ed5f-dominants-displace-more
+  statement: Relative dominants were more successful at displacing subordinates from the port,
+    over the whole competition and during the tone.
+  source: Extended Data Fig. 5f
+  quote: Relative dominants were more successful displacing subordinates from the reward port throughout the competition
+  statistics:
+  - about: whole competition
+    test: paired t-test
+    p: 0.002
+    n: 32 sessions
+  - about: during the tone
+    test: paired t-test
+    p: 0.005
+    n: 31 sessions
+  criterion: Displacement success as Methods 6 define pushing success (percent of pushes that
+    displaced the competitor), from the hand-scored labels, dom against sub per session, paired
+    t-test. Reproduced when both give p < 0.05 with dominants higher.
+- id: ed5g-time-displaced-not-different
+  statement: Total time being displaced from the port did not differ by relative rank in the
+    recording cohort.
+  source: Extended Data Fig. 5g
+  quote: Total time being displaced from reward port by relative rank in dataset used for mPFC recordings (n=31 sessions; paired t-test p=0.15)
+  statistics:
+  - test: paired t-test
+    p: 0.15
+    n: 31 sessions
+  criterion: A claim of absence, judged on a paired t-test of total time labelled displaced, dom
+    against sub per session. Reproduced when p >= 0.05.
+- id: fig2a-win-lose-segregated-before-cue
+  statement: mPFC trajectories for win and lose trials, and for self and other port entries,
+    occupy segregated subspaces, already before cue onset.
+  source: Figure 2a; Results, mPFC reflects rank and winning
+  quote: Neural trajectories during the cue and port entries of the self or other (competitor) for win or lose trials occupied segregated neural activity subspaces even before the cue onset
+  criterion: The paper gives no test and no measure of segregation. With the shared trajectory
+    method, the bin-by-bin distance between the win and lose trajectories over -5 to 0 s is
+    compared with the distance between trajectories of two random halves of the data over 50
+    iterations, the only reference distance the paper reports (ED Fig. 7g-h, right). The paper
+    gives no threshold for this comparison; readings (a) the win against lose distance exceeds the
+    mean random-half distance, (b) it exceeds the 95th percentile of the random-half distances.
+    Reproduced when, for dom and for sub, both readings agree that it exceeds; when they disagree
+    the claim is methods_underspecified.
+- id: ed6d-alignment-lower-dominants
+  statement: The alignment of win and lose trajectories is lower for relative dominants than for
+    relative subordinates.
+  source: Extended Data Fig. 6d
+  quote: alignment of win and lose trajectories was significantly lower for dominant mice
+  statistics:
+  - test: Wilcoxon rank-sum
+    p: 1.5e-5
+    n: 13 per group
+  criterion: Alignment index of Methods 14 (after Miri et al.), Tr(P1' Cov(D2) P1) / Tr(P2' Cov(D2) P2),
+    with D1 and D2 the neurons by time-bin mean rates for win and lose trials (-5 to 5 s, 100 ms)
+    and P1, P2 their principal components, per leave-one-animal-out iteration (13 per group). The
+    number of PCs is not given; readings (a) as many as reach 90% of each condition's variance, (b)
+    the first 8, as in the SVM, (c) the first 3, as plotted. Reproduced when the rank-sum gives
+    p < 0.05 with dominants lower.
+- id: fig2b-subordinates-longer-trajectories
+  statement: Relative subordinates have longer neural trajectories than relative dominants for win
+    and for lose trials.
+  source: Figure 2b; Results, mPFC reflects rank and winning
+  quote: Relative subordinates had longer neural trajectories compared to relative dominants
+  statistics:
+  - about: win trials, relative rank
+    test: 2-way RM-ANOVA
+    statistic: F(1,25) = 1090
+    p: 2.0e-16
+  - about: win trials, interaction
+    test: 2-way RM-ANOVA
+    statistic: F(1,25) = 1660
+    p: 3.0e-14
+  - about: lose trials, relative rank
+    test: 2-way RM-ANOVA
+    statistic: F(1,25) = 883
+    p: 9.0e-16
+  - about: lose trials, interaction
+    test: 2-way RM-ANOVA
+    statistic: F(1,25) = 2995
+    p: 9.0e-16
+  expected:
+  - quantity: dom cells
+    value: 507
+    tolerance: 51
+  - quantity: sub cells
+    value: 490
+    tolerance: 49
+  - quantity: mice
+    value: 20
+    tolerance: 2
+  - quantity: sessions
+    value: 27
+    tolerance: 3
+  criterion: Shared trajectory method, tone-aligned win and lose trials, groups by relative rank in
+    the session. Per leave-one-animal-out iteration (14 dom, 13 sub, giving 25 error df), length
+    over baseline (-5 to 0 s) and over event (0 to 5 s); 2-way RM-ANOVA, rank between and event
+    within. Reproduced when, for win and for lose, the rank effect has p < 0.05 with sub longer,
+    under the shared readings.
+- id: fig2b-subordinates-larger-variance
+  statement: Firing rate variance is higher for relative subordinates, and firing rates do not
+    change faster for them.
+  source: Figure 2b, right; Results, mPFC reflects rank and winning
+  quote: our analyses revealed larger firing rate variance, but not faster firing rate changes, for relative subordinate mice
+  statistics:
+  - about: win trials
+    test: KS test
+    p: 0.01
+  - about: win trials
+    test: Wilcoxon rank-sum
+    p: 0.19
+  - about: lose trials
+    test: KS test
+    p: 5.0e-7
+  - about: lose trials
+    test: Wilcoxon rank-sum
+    p: 2.0e-9
+  criterion: Per neuron, dom against sub, KS test and Wilcoxon rank-sum as in the legend. Variance
+    is not defined; readings (a) variance over 100 ms bins of the trial-averaged rate from -5 to 5
+    s, (b) the same over 0 to 5 s, (c) variance across trials of the 0 to 5 s rate. Reproduced
+    when, under one reading, lose trials give p < 0.05 in both tests and win trials give KS p <
+    0.05, with sub higher.
+- id: ed6c-rate-of-change-dominants-win
+  statement: Firing rate rate of change is higher for relative dominants in win trials only.
+  source: Extended Data Fig. 6c
+  quote: Firing rate rate of change is higher for relative dominants only in win trials
+  statistics:
+  - about: win trials
+    test: Kolmogorov-Smirnov (KS) test
+    p: 0.009
+  - about: win trials
+    test: Wilcoxon rank sum
+    p: 0.01
+  - about: lose trials
+    test: KS test
+    p: 0.4
+  - about: lose trials
+    test: Wilcoxon rank sum
+    p: 0.19
+  criterion: Per neuron, dom against sub. Rate of change is not defined; readings (a) mean absolute
+    difference between adjacent 100 ms bins of the trial-averaged rate over -5 to 5 s, (b) the same
+    over 0 to 5 s. Reproduced when, under one reading, win trials give p < 0.05 in both tests
+    with dom higher and lose trials give p >= 0.05 in both (absence judged on those tests).
+- id: ed6b-intermediates-relative-rank
+  statement: Within intermediate-rank mice (ranks 2 and 3), trajectories for win and lose trials are
+    longest when the mouse is the relative subordinate.
+  source: Extended Data Fig. 6b
+  quote: Neural trajectory lengths (using principal components that captured 90% of variance) for win and lose trials are highest for relative subordinates in intermediate (ranks 2 or 3) mice
+  statistics:
+  - about: win trials
+    test: 2-way RM-ANOVA main effect of relative rank
+    statistic: F(1,14) = 165
+    p: 2.0e-6
+  - about: lose trials
+    test: 2-way RM-ANOVA effect of relative rank
+    statistic: F(1,14) = 262
+    p: 6.0e-7
+  criterion: Shared trajectory method restricted to sessions of rank 2 and 3 mice, grouped by
+    relative rank. Reproduced when both rank effects have p < 0.05 with sub longer.
+- id: ed6ef-port-entry-trajectories
+  statement: Trajectory lengths for self and other port entries, during the tone and during the
+    ITI, are higher for relative subordinates.
+  source: Extended Data Fig. 6e-f
+  quote: trajectory lengths (using PCs that captured 90% of variance) for self entry (top) and other entry (bottom) during the tone are higher for relative subordinates
+  statistics:
+  - about: self entry, tone
+    test: 2-way RM-ANOVA effect of relative rank
+    statistic: F(1,25) = 452
+    p: 5.0e-14
+  - about: other entry, tone
+    test: 2-way ANOVA effect of relative rank
+    statistic: F(1,25) = 728
+    p: 3.0e-15
+  - about: self entry, ITI
+    test: 2-way RM-ANOVA main effect of rank
+    statistic: F(1,25) = 77.7
+    p: 1.0e-9
+  - about: other entry, ITI
+    test: 2-way RM-ANOVA main effect of rank
+    statistic: F(1,25) = 110
+    p: 2.0e-10
+  criterion: Shared trajectory method on port entries of the subject (self) and of the competitor
+    (other), during the tone or outside it (ITI). Reproduced when all four rank effects have p < 0.05
+    with sub longer; partially reproduced for two or three.
+- id: ed7b-distance-by-trial-type-not-rank
+  statement: In the recording cohort, distance to the reward port differed by trial type but not by
+    rank.
+  source: Extended Data Fig. 7b
+  quote: Distance to reward port differed by trial-type but not by rank
+  statistics:
+  - about: trial type
+    test: 2-way ANOVA
+    statistic: F(1,1274) = 353
+    p: 8.8e-70
+    n: dom win 290, dom lose 349, sub win 349, sub lose 290 trials
+  - about: rank
+    test: 2-way ANOVA
+    p: 0.098
+  - about: interaction
+    test: 2-way ANOVA
+    p: 0.066
+  criterion: Per trial, mean AlphaTracker distance to port; the window is not given, readings (a)
+    -5 to 0 s, (b) 0 to 5 s, (c) -5 to 5 s from tone onset, from ED Fig. 7a. Reproduced when, under
+    one reading, trial type has p < 0.05 and rank has p >= 0.05.
+- id: ed7c-distance-correlation-not-rank
+  statement: The correlation of single-unit firing rate with distance to port does not differ by
+    rank.
+  source: Extended Data Fig. 7c
+  quote: Distribution of the correlation coefficients for firing rate and distance to port for the population of mPFC single units did not differ by rank
+  statistics:
+  - test: KS test
+    p: 0.48
+    n: 321 dom and 479 sub units
+  criterion: A claim of absence. Per unit, the correlation of binned firing rate with distance to
+    port over the session; bin width not given, 100 ms (the PCA bin) is used as a standard choice,
+    and Pearson as the default correlation. Reproduced when the KS test gives p >= 0.05.
+- id: ed7de-trajectories-close-far
+  statement: Trajectories are longer for relative subordinates in win and lose trials whether the
+    mice were close to or far from the port at tone onset.
+  source: Extended Data Fig. 7d-e
+  quote: Neural trajectory lengths were higher for relative subordinates during win trials in which mice were close or far to the reward port during tone onset
+  statistics:
+  - about: win, close
+    test: 2-way RM-ANOVA main effect of rank
+    statistic: F(1,35) = 738
+    p: 5.0e-21
+  - about: win, far
+    test: 2-way RM-ANOVA main effect of rank
+    statistic: F(1,35) = 588
+    p: 3.0e-20
+  - about: lose, close
+    test: 2-way RM-ANOVA main effect of rank
+    statistic: F(1,35) = 588
+    p: 3.0e-20
+  - about: lose, far
+    test: 2-way RM-ANOVA main effect of rank
+    statistic: F(1,35) = 46.7
+    p: 5.0e-11
+  criterion: Shared trajectory method on sessions with matched video conditions (dom 19, sub 18
+    sessions, leaving out one session per iteration). The split between close and far is not
+    given; readings (a) median split of distance at tone onset, (b) within or outside the port
+    contact range. Reproduced when all four rank effects have p < 0.05 with sub longer under one
+    reading.
+- id: ed7f-trajectories-without-place-cells
+  statement: Trajectories remain longer for relative subordinates after removing cells correlated
+    with distance to port.
+  source: Extended Data Fig. 7f
+  quote: neural trajectories for self entry during the tone are highest for relative subordinates without the distance correlated cells
+  statistics:
+  - about: self entry, tone
+    test: 2-way RM-ANOVA main effect of rank
+    statistic: F(1,34) = 94.4
+    p: 1.0e-13
+  - about: second panel, excluding correlated cells
+    test: 2-way RM-ANOVA main effect of rank
+    statistic: F(1,34) = 100
+    p: 1.0e-13
+  depends_on:
+  - ed7c-distance-correlation-not-rank
+  criterion: Shared trajectory method on 18 dom and 18 sub sessions after removing cells whose
+    correlation with distance (ed7c) is significant; the level is not given, readings (a) p <
+    0.05, (b) p < 0.01. The second panel's event is not named; it is read as win trials. Reproduced
+    when both rank effects have p < 0.05 with sub longer.
+- id: ed7hij-random-halves-no-group-effect
+  statement: Trajectory lengths from two random halves of the data show no group effect, so the
+    rank effect is not due to chance.
+  source: Extended Data Fig. 7g-j
+  quote: trajectory lengths for win and lose trials when data is divided randomly show no effect of group indicating that the effect of rank is not due to chance
+  statistics:
+  - about: win, group
+    test: 2-way ANOVA
+    p: 0.62
+    n: 50 iterations
+  - about: lose, group
+    test: 2-way ANOVA
+    p: 0.65
+  - about: self entry tone, group
+    test: 2-way ANOVA
+    p: 0.97
+  - about: other entry tone, group
+    test: 2-way ANOVA
+    p: 0.31
+  - about: self entry ITI, group
+    test: 2-way ANOVA
+    p: 0.93
+  - about: other entry ITI, group
+    test: 2-way ANOVA
+    p: 0.87
+  criterion: A claim of absence. 50 random splits of the data from 49 sessions of 20 mice into two
+    halves; per split, trajectory lengths of each half for baseline and event; 2-way ANOVA of event
+    by group on the 50 iterations (F(1,196) fits 50 x 2 x 2 values). What is split is not given;
+    readings (a) sessions, (b) neurons. The legend says "bootstrapping"; halves are drawn without
+    replacement, as "halves" implies. Reproduced when all six group effects have p >= 0.05 under
+    the paper's test.
+- id: fig2c-svm-decodes-rank-and-outcome
+  statement: An SVM decodes competitive success and relative rank from single-trial mPFC
+    population activity above chance, and rank more accurately than outcome.
+  source: Figure 2c; Results, mPFC predicts future wins
+  quote: An SVM was able to decode both competitive success and relative rank
+  statistics:
+  - about: competitive success against shuffled
+    test: Wilcoxon rank-sum
+    p: 2.0e-4
+  - about: relative rank against shuffled
+    test: Wilcoxon rank-sum
+    p: 2.0e-4
+  - about: competitive success against relative rank
+    test: Wilcoxon rank-sum
+    p: 2.0e-4
+  depends_on:
+  - fig2b-subordinates-longer-trajectories
+  criterion: Shared SVM method, labels win against lose, or dom against sub. Which window forms the
+    features of Figure 2c is not fixed; readings (a) -5 to 5 s, (b) -30 to 30 s. Reproduced when,
+    under one reading, both AUC sets exceed shuffled by rank-sum at p < 0.05 and rank AUCs exceed
+    outcome AUCs at p < 0.05.
+- id: fig2c-predicts-before-trial
+  statement: mPFC activity predicts whether the next trial will be won or lost about 30 s before the
+    trial begins, with decoding above chance across the trial.
+  source: Results, mPFC predicts future wins; Figure 2c
+  quote: PFC neural activity could predict whether the next trial would be a win or a loss ~30 seconds before the competition trial began
+  depends_on:
+  - fig2c-svm-decodes-rank-and-outcome
+  criterion: Shared SVM method on win against lose with features from -30 to 0 s before the cue
+    only. The time resolution of Figure 2c is not given; readings (a) one model on all of -30 to 0
+    s, (b) separate models on 5 s windows from -30 s, as the -5 to 5 s feature window suggests.
+    Reproduced when AUCs exceed shuffled by rank-sum at p < 0.05 for reading (a), or for the
+    -30 to -25 s window and every later window under reading (b).
+- id: ed8bc-outcome-generalizes-dom-to-sub
+  statement: Win and lose decoding trained on relative dominants generalizes to subordinates, but
+    decoding trained on subordinates does not generalize to dominants.
+  source: Extended Data Fig. 8b-c
+  quote: mPFC population encoding of win/lose in relative dominants generalizes to relative subordinates
+  statistics:
+  - about: dom/dom
+    test: Wilcoxon rank sum
+    p: 0.0002
+  - about: dom/sub
+    test: Wilcoxon rank sum
+    p: 0.003
+  - about: sub/sub
+    test: Wilcoxon rank sum
+    p: 0.0002
+  - about: sub/dom
+    test: Wilcoxon rank sum
+    p: 0.14
+  criterion: Shared SVM method on win against lose, trained on one group's trials and tested on the
+    other's (10 models from the folds of the training group). Reproduced when dom/dom, dom/sub and
+    sub/sub exceed shuffled at p < 0.05 and sub/dom gives p >= 0.05 (absence judged on that test).
+- id: ed8d-outcome-winner-loser
+  statement: Competition outcome decoders trained on winner mice and tested on loser mice, and the
+    reverse, perform above chance during the cue, and better during the cue than at baseline.
+  source: Extended Data Fig. 8d
+  quote: Decoder performance for classifying competition outcome using training data from winner data
+  statistics:
+  - about: winner to loser, baseline against shuffle
+    test: Wilcoxon rank sum
+    p: 0.1
+  - about: winner to loser, cue against shuffle
+    test: Wilcoxon rank sum
+    p: 0.0002
+  - about: loser to winner, baseline against shuffle
+    test: Wilcoxon rank sum
+    p: 0.02
+  - about: loser to winner, cue against shuffle
+    test: Wilcoxon rank sum
+    p: 0.0002
+  - about: loser, baseline against cue
+    test: Wilcoxon sign rank
+    p: 0.002
+  - about: winner, baseline against cue
+    test: Wilcoxon sign rank
+    p: 0.004
+  criterion: Winner and loser mice are those that won or lost the majority of trials. Baseline is
+    read as -5 to 0 s and cue as 0 to 5 s (the -5 to 5 s window of the Methods). The legend does
+    not say which panel is which; the order of the sentence is used (left winner to loser).
+    Reproduced when both cue decoders beat shuffle at p < 0.05 and both sign-rank tests on the 10
+    folds give p < 0.05 with cue higher.
+- id: ed8e-relative-rank-intermediates
+  statement: Relative rank can be decoded in intermediate-rank mice (ranks 2 and 3).
+  source: Extended Data Fig. 8e; Results, mPFC predicts future wins
+  quote: SVM performance for decoding relative rank specifically for intermediate (ranks 2 or 3) mice
+  statistics:
+  - test: Wilcoxon rank sum
+    p: 0.0002
+  criterion: Shared SVM method on trials of rank 2 and 3 mice, labelled by relative rank. Reproduced
+    when AUCs exceed shuffled at p < 0.05.
+- id: ed8fgh-absolute-rank
+  statement: Absolute rank can be decoded from mPFC population activity during competition (one model
+    per rank, and rank 1 against rank 4) and while mice perform the task alone.
+  source: Extended Data Fig. 8f-h; Results, mPFC predicts future wins
+  quote: Notably, we can decode the absolute social rank of individuals from mPFC activity, even when alone
+  statistics:
+  - about: competition, one model per rank
+    test: Wilcoxon rank sum
+    p: 0.0002
+  - about: competition, rank 1 against rank 4
+    test: Wilcoxon rank sum
+    p: 0.0002
+  - about: alone, one model per rank
+    test: Wilcoxon rank sum
+    p: 0.0002
+  criterion: Shared SVM method, one against all for each absolute rank (Methods 14). "Mean
+    performance across ranks" is read as the per-fold AUC averaged over the four models, against
+    the same for shuffled labels. Reproduced when all three comparisons give p < 0.05.
+- id: ed8ij-alone-vs-competition
+  statement: mPFC activity decodes alone tone trials from win trials of the same session, but does
+    not decode early from late trials within a task.
+  source: Extended Data Fig. 8i-j
+  quote: mPFC population activity can decode between alone tone presentations and win trials during the competition trials
+  statistics:
+  - about: alone against win
+    test: Wilcoxon rank sum
+    p: 0.0002
+    n: 15 mice
+  - about: early against late, alone
+    test: Wilcoxon sum rank
+    p: 0.47
+  - about: early against late, competition
+    test: Wilcoxon sum rank
+    p: 0.47
+  criterion: Shared SVM method on the sessions with alone trials followed by competition trials.
+    Early and late are not defined; read as the first and second half of the trials of each task.
+    Reproduced when alone against win exceeds shuffled at p < 0.05 and both early against late
+    tests give p >= 0.05 (absence judged on them).
+- id: fig2e-alone-vs-competition-trajectories
+  statement: Tone trajectories are longer for subordinates during competition, and the distance
+    between alone and competition tone trajectories increases from rank 1 to rank 4.
+  source: Figure 2d-e; Results, mPFC predicts future wins
+  quote: Subordinate mice (rank 4) had larger changes induced by competition with longer tone trajectory lengths during competition
+  statistics:
+  - about: trajectory length, rank
+    test: 2-way ANOVA
+    statistic: F(2,38) = 30.4
+    p: 1.0e-8
+  - about: trajectory length, task
+    test: 2-way ANOVA
+    statistic: F(1,38) = 26.1
+    p: 9.0e-6
+  - about: trajectory length, interaction
+    test: 2-way ANOVA
+    statistic: F(2,38) = 70.1
+    p: 1.0e-13
+  - about: alone against competition distance by rank
+    test: 1-way ANOVA
+    statistic: F(2,187) = 536
+    p: 3.0e-78
+  expected:
+  - quantity: neurons alone, rank 1
+    value: 111
+    tolerance: 11
+  - quantity: neurons alone, ranks 2 and 3
+    value: 259
+    tolerance: 26
+  - quantity: neurons alone, rank 4
+    value: 140
+    tolerance: 14
+  - quantity: neurons competition, rank 1
+    value: 309
+    tolerance: 31
+  - quantity: neurons competition, ranks 2 and 3
+    value: 359
+    tolerance: 36
+  - quantity: neurons competition, rank 4
+    value: 330
+    tolerance: 33
+  criterion: Shared trajectory method, groups by absolute rank (1, 2 and 3, 4) and task (alone,
+    competition), tone-aligned; for competition all trials are read as used. How the common
+    subspace is built is not given; readings (a) one PCA on alone and competition tone rates
+    together, (b) the competition global PCA with alone rates projected. The distance is over all
+    pairs of alone and competition leave-one-out trajectories. Reproduced when rank 4 has the
+    longest competition trajectory with the interaction p < 0.05, and the distance rises from
+    rank 1 to rank 4 with the 1-way ANOVA p < 0.05, under one reading.
+- id: fig3a-functional-clusters
+  statement: mPFC single units have diverse responses to tone and port-entry events, form functional
+    clusters, and the distribution across clusters differs between relative dominants and
+    subordinates.
+  source: Figure 3a; Extended Data Fig. 9a; Methods 14
+  quote: mPFC single units showed diverse responses to the tone for win or lose trials and to port entries performed by self or the other
+  expected:
+  - quantity: cells clustered
+    value: 913
+    tolerance: 91
+  - quantity: strongly responsive dom cells shown
+    value: 326
+    tolerance: 33
+  - quantity: strongly responsive sub cells shown
+    value: 306
+    tolerance: 31
+  criterion: As Methods 14 describe, the concatenated mean rates of the six events, cells with
+    baseline rate at or above 0.05 Hz, agglomerative clustering on Euclidean distance cut at 0.4.
+    The linkage is not given; readings (a) MATLAB linkage default (single), (b) Ward. Strong
+    responders have a mean z-score of at least 2 or at most -1 for at least one event (Methods 14,
+    ED Fig. 9a). The paper reports no test of the rank difference in cluster distribution, only the
+    percent enrichment per cluster (Figure 3a right); that part is shown, under each linkage, and
+    not judged. The outcome rests on the counts against the expected values.
+- id: fig3b-win-trials-larger-sub-excitation
+  statement: In win trials, excitation magnitude differs by relative rank (larger in subordinates)
+    with no difference in the number of responsive cells; lose trials differ in neither.
+  source: Figure 3b; Results, Rank-dependent mPFC representations
+  quote: subordinates had larger responses to win trials and port entries of the other
+  statistics:
+  - about: win, total responsive
+    test: Fisher's exact test
+    p: 0.3
+  - about: win, excited magnitude
+    test: Wilcoxon rank-sum
+    p: 0.01
+  - about: win, inhibited magnitude
+    test: Wilcoxon rank-sum
+    p: 0.06
+  - about: lose, total responsive
+    test: Fisher's exact test
+    p: 0.17
+  - about: lose, excited magnitude
+    test: Wilcoxon rank-sum
+    p: 0.62
+  - about: lose, inhibited magnitude
+    test: Wilcoxon rank-sum
+    p: 0.28
+  criterion: Shared responsive-cell method, tone-aligned win and lose trials, groups by relative
+    rank, 20 mice. Reproduced when win excited magnitude gives p < 0.05 with sub higher, and the
+    four lose tests and the win Fisher test give p >= 0.05 (absence judged on them).
+- id: fig3c-tone-port-entries
+  statement: Relative dominants have more cells responsive to their own port entries during the
+    tone; for the competitor's port entries the number does not differ but excitation magnitude is
+    larger in subordinates.
+  source: Figure 3c
+  quote: number of mPFC self tone port entry responsive cells was higher for relative dominants
+  statistics:
+  - about: self entries, total responsive
+    test: Fisher's exact test
+    p: 0.0003
+  - about: self entries, excitation
+    test: Wilcoxon rank-sum
+    p: 0.28
+  - about: self entries, inhibition
+    test: Wilcoxon rank-sum
+    p: 0.99
+  - about: other entries, total responsive
+    test: Fisher's exact test
+    p: 0.84
+  - about: other entries, excitation
+    test: Wilcoxon rank-sum
+    p: 0.006
+  - about: other entries, inhibition
+    test: Wilcoxon rank-sum
+    p: 0.11
+  criterion: Shared responsive-cell method on port entries during the tone, by self or by the
+    competitor. Reproduced when self Fisher gives p < 0.05 with dom more and other excitation gives
+    p < 0.05 with sub larger, and other Fisher gives p >= 0.05.
+- id: fig3d-iti-port-entries
+  statement: During the ITI, relative dominants have more cells responsive to self and to other
+    port entries, while subordinates have larger excitation magnitudes.
+  source: Figure 3d
+  quote: relative dominants had more mPFC responsive cells to self port entries during the ITI while relative subordinates had larger excitation magnitude
+  statistics:
+  - about: self entries, total responsive
+    test: Fisher's exact test
+    p: 9.8e-6
+  - about: self entries, excitation
+    test: Wilcoxon rank-sum
+    p: 0.006
+  - about: self entries, inhibition
+    test: Wilcoxon rank-sum
+    p: 0.28
+  - about: other entries, total responsive
+    test: Fisher's exact test
+    p: 0.00019
+  - about: other entries, excitation
+    test: Wilcoxon rank-sum
+    p: 0.015
+  - about: other entries, inhibition
+    test: Wilcoxon rank-sum
+    p: 0.04
+  criterion: Shared responsive-cell method on port entries outside the tone. Reproduced when both
+    Fisher tests give p < 0.05 with dom more and both excitation tests give p < 0.05 with sub
+    larger.
+- id: ed9b-alone-no-rank-difference
+  statement: While mice perform the task alone, rank 1 and rank 4 mice do not differ in the number
+    of responsive cells or response magnitude to the tone, tone port entries or ITI port entries.
+  source: Extended Data Fig. 9b; Results, Rank-dependent mPFC representations
+  quote: During competition, but not while alone, relative dominants had more cells that were responsive to self port entries
+  statistics:
+  - about: tone, total responsive
+    test: Fisher's exact test
+    p: 0.16
+  - about: tone port entries, total responsive
+    test: Fisher's exact test
+    p: 0.09
+  - about: ITI port entries, total responsive
+    test: Fisher's exact test
+    p: 0.06
+  - about: tone, excited magnitude
+    test: Wilcoxon rank sum
+    p: 0.87
+  - about: tone, inhibited magnitude
+    test: Wilcoxon rank sum
+    p: 1.0
+  - about: tone port entries, excited magnitude
+    test: Wilcoxon rank sum
+    p: 0.23
+  - about: tone port entries, inhibited magnitude
+    test: Wilcoxon rank sum
+    p: 0.62
+  - about: ITI port entries, excited magnitude
+    test: Wilcoxon rank sum
+    p: 0.84
+  - about: ITI port entries, inhibited magnitude
+    test: Wilcoxon rank sum
+    p: 0.17
+  expected:
+  - quantity: tone responsive, rank 1 excited
+    value: 8
+    tolerance: 0.8
+  - quantity: tone responsive, rank 1 inhibited
+    value: 8
+    tolerance: 0.8
+  - quantity: tone responsive, rank 4 excited
+    value: 8
+    tolerance: 0.8
+  - quantity: tone responsive, rank 4 inhibited
+    value: 4
+    tolerance: 0.4
+  criterion: A claim of absence. Shared responsive-cell method on alone sessions of rank 1 and rank
+    4 mice. Reproduced when the three Fisher tests and the rank-sum tests on magnitudes all give p
+    >= 0.05; counts are reported against the legend's.
+- id: ed9cd-self-entry-cells-competition
+  statement: During competition, dominants have more cells responsive to self port entries than
+    subordinates by absolute rank (1 against 4, during the tone and the ITI), and within intermediate
+    mice by relative rank during the tone (not significant during the ITI, p = 0.06).
+  source: Extended Data Fig. 9c-d
+  quote: Total responsive cells and response magnitude to task-relevant event during social competition for absolute rank 1 vs rank 4
+  statistics:
+  - about: rank 1 against 4, self entries tone
+    test: Fisher's exact test
+    p: 0.006
+  - about: rank 1 against 4, self entries ITI
+    test: Fisher's exact test
+    p: 2.0e-5
+  - about: intermediates, self entries tone
+    test: Fisher's exact test
+    p: 0.01
+  - about: intermediates, self entries ITI
+    test: Fisher's exact test
+    p: 0.06
+  expected:
+  - quantity: rank 1 self entries tone, excited
+    value: 23
+    tolerance: 2.3
+  - quantity: rank 1 self entries tone, inhibited
+    value: 57
+    tolerance: 5.7
+  - quantity: rank 4 self entries tone, excited
+    value: 24
+    tolerance: 2.4
+  - quantity: rank 4 self entries tone, inhibited
+    value: 32
+    tolerance: 3.2
+  criterion: Shared responsive-cell method. Reproduced when the rank 1 against 4 self entry tests
+    (tone and ITI) and the intermediate tone test give p < 0.05 with dominants having more. The
+    intermediate ITI test is reported and not judged.
+- id: fig4a-ex-vivo-latency
+  statement: Ex vivo, ChrimsonR-expressing mPFC-BLA and mPFC-LH cells respond to red light with
+    shorter latencies than neighbouring cells, which sets the phototagging latency threshold.
+  source: Figure 4a
+  quote: average photo-latency of action potentials (AP) or excitatory postsynaptic potentials (EPSPs) for mPFC-BLA (left plot) and mPFC-LH (right plot) ChrimsonR+ cells compared to neighboring cells
+  statistics:
+  - about: mPFC-BLA
+    test: t-test
+    p: 0.0001
+    p_relation: "<"
+    n: 12 ChrimsonR+ and 10 neighbours
+  - about: mPFC-LH
+    test: t-test
+    p: 0.0001
+    p_relation: "<"
+    n: 9 ChrimsonR+ and 8 neighbours
+  criterion: Latency from light onset to the peak AP or EPSP, averaged over 10 pulses (Methods 16).
+    Reproduced when both t-tests give p < 0.05 with ChrimsonR+ shorter.
+- id: fig4b-phototagged-counts
+  statement: Phototagging identified mPFC-LH and mPFC-BLA neurons in 3 of 12 and 3 of 8 mice.
+  source: Methods 12; Figure 4b; Extended Data Fig. 10c
+  quote: 3 out of 8 mice had mPFC-BLA phototagged cells and 3 out of 12 mice had mPFC-LH phototagged cells
+  expected:
+  - quantity: mPFC-LH tagged neurons, competition
+    value: 42
+    tolerance: 4.2
+  - quantity: mPFC-BLA tagged neurons, competition
+    value: 10
+    tolerance: 1
+  - quantity: mPFC-LH tagged neurons, alone
+    value: 13
+    tolerance: 1.3
+  - quantity: mPFC-BLA tagged neurons, alone
+    value: 5
+    tolerance: 0.5
+  criterion: Phototagging as the shared method gives. ED Fig. 10c gives 43 mPFC-LH neurons and Figure
+    4b 42; both readings are accepted. Mouse counts are compared exactly.
+- id: fig4b-lh-stronger-reward-excitation
+  statement: mPFC-LH neurons fire more than mPFC-BLA neurons during reward delivery in win trials of
+    the competition, but not when the task is performed alone; mPFC-LH tone responses differ
+    between alone and competition.
+  source: Figure 4b; Results, mPFC-LH neurons modulate dominance
+  quote: We found that mPFC-LH neurons had stronger excitation to reward delivery than mPFC-BLA neurons during reward competition, but not when performing the task alone
+  statistics:
+  - about: competition, LH against BLA
+    test: Wilcoxon rank-sum
+    p: 0.015
+    n: 10 mPFC-BLA and 42 mPFC-LH neurons
+  - about: alone, LH against BLA
+    test: Wilcoxon rank-sum
+    p: 0.5
+    n: 5 mPFC-BLA and 13 mPFC-LH neurons
+  - about: mPFC-LH, alone against competition mean Z-score during tone
+    p: 0.0189
+  - about: mPFC-BLA, alone against competition mean Z-score during tone
+    p: 0.43
+  depends_on:
+  - fig4b-phototagged-counts
+  criterion: Per tagged neuron, the mean response over win trials (competition) or tone trials
+    (alone). The legend's "reward delivery (0-2 s)" is read (a) as 0 to 2 s after delivery (2 to 4
+    s after tone onset), (b) as 0 to 2 s after tone onset; the measure is (a) z-scored rate, as the
+    legend's alone comparison uses, (b) raw rate. The alone against competition test is not named;
+    it is read as a rank-sum (different neuron counts), over the tone read as (a) 0 to 10 s, (b) 0
+    to 5 s. Reproduced when, under one reading, LH exceeds BLA at p < 0.05 in competition, the alone
+    comparison gives p >= 0.05, and mPFC-LH alone against competition gives p < 0.05.
+- id: ed10c-lh-responsive-proportions
+  statement: Proportions of cells responsive to tones and port entries differ between mPFC-LH and
+    non-phototagged cells.
+  source: Extended Data Fig. 10c
+  quote: Responsive cells to tones and port entries while performing the reward task alone vs in social competition
+  statistics:
+  - about: non-phototagged against mPFC-LH
+    test: Fisher's exact test
+    p: 0.011
+  expected:
+  - quantity: competition self entries during ITI, mPFC-LH responsive
+    value: 19
+    tolerance: 1.9
+  - quantity: competition self entries during ITI, non-phototagged responsive
+    value: 271
+    tolerance: 27
+  - quantity: alone entries during tone, mPFC-LH responsive
+    value: 8
+    tolerance: 0.8
+  - quantity: alone entries during tone, non-phototagged responsive
+    value: 115
+    tolerance: 11.5
+  depends_on:
+  - fig4b-phototagged-counts
+  criterion: Shared responsive-cell method. The legend does not say which event the Fisher test is
+    for; a Fisher test on the printed counts gives 0.006 for alone entries during tone and 0.06 for
+    competition self entries during ITI, neither 0.011. Readings are each event of the legend.
+    Reproduced when, under one reading, the responsive fraction of mPFC-LH cells exceeds that of
+    non-phototagged cells at p < 0.05, and the counts are within tolerance.
+- id: fig4d-lh-stimulation-dominance
+  statement: Stimulating mPFC-LH neurons in subordinate mice increased trials won and reward port
+    occupation and decreased time being displaced.
+  source: Figure 4c-d; Results, mPFC-LH neurons modulate dominance
+  quote: ChR2-expressing mice won more rewards during the entire competition, had greater reward port occupation, and spent less time being displaced when they received optical stimulation
+  statistics:
+  - about: trials won, virus by light interaction
+    test: 2-way RM ANOVA
+    statistic: F(1,14) = 5.22
+    p: 0.03
+    n: 9 ChR2 and 7 eYFP mice
+  - about: trials won, ChR2 light off against on
+    test: Bonferroni corrected t-test
+    p: 0.01
+    corrected: Bonferroni
+  - about: port occupation, interaction
+    test: 2-way RM ANOVA
+    statistic: F(1, 14) = 6.73
+    p: 0.02
+  - about: port occupation, ChR2
+    test: Bonferroni corrected t-test
+    p: 0.02
+    corrected: Bonferroni
+  - about: time displaced, ChR2
+    test: paired t-test
+    p: 0.005
+    n: 9 ChR2 mice
+  - about: time displaced, eYFP
+    test: paired t-test
+    p: 0.28
+    n: 7 eYFP mice
+  criterion: Light OFF session against light ON session, per mouse, whole session (Methods 5).
+    Reproduced when the two interactions give p < 0.05, the ChR2 post hoc tests give p < 0.05 with
+    ON higher, and the ChR2 displacement test gives p < 0.05 with ON lower.
+- id: ed10ek-no-other-behaviour-effects
+  statement: mPFC-LH stimulation did not change reward latency alone, home-cage feeding, social
+    preference, open-field anxiety, place preference or effort-based choice.
+  source: Extended Data Fig. 10e-k; Results, mPFC-LH neurons modulate dominance
+  quote: stimulating mPFC-LH neurons did not affect reward-seeking behavior while performing the reward competition assay alone, feeding in the home cage, anxiety, sociability, place preference or general effort
+  statistics:
+  - about: latency alone
+    test: paired t-test
+    p: 0.42
+    n: 10 ChR2 mice
+  - about: three-chamber social time
+    test: paired t-test
+    p: 0.79
+    n: 10 ChR2 mice
+  criterion: A claim of absence, judged on the paper's tests; paired t-tests for e and g, and 2-way
+    RM ANOVA (light, virus, interaction) for f, h, i and k. Reproduced when none finds an effect
+    at p < 0.05.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: "claude-opus-5-5"
+  ready: true
+  changes:
+  - fig1b-dominants-more-rewards; removed "rank 1 mice won the largest share of competitions" from the statement and criterion, as no sentence of the paper states it (the Figure 1b legend only names the panel).
+  - ed1g-distance-by-outcome-not-rank; dropped the "win closer" direction from the criterion, as the legend gives no direction for trial type.
+  - ed5d-subordinates-slower-latency; the criterion cited Methods 6 for a latency from reward delivery, which Methods 6 does not define; reworded to say no section defines it and Methods 5 and ED Fig. 1a count latency from tone onset. Added the legend's one-way RM-ANOVA (F(1,24) = 2.06, p = 0.002) as printed, noted as not judged since F and p disagree.
+  - fig2a-win-lose-segregated-before-cue; the 95th percentile threshold was not from the paper; the criterion now names two readings (mean, 95th percentile of the random-half distance) and makes a disagreement methods_underspecified.
+  - ed7hij-random-halves-no-group-effect; the criterion said sessions were split, which the legend does not say; the unit split is now open, (a) sessions, (b) neurons.
+  - fig3a-functional-clusters; the chi-square test of cluster membership was not from the paper, which reports no test of the rank difference; that part is now shown and not judged, and the outcome rests on the counts.
+  - ed9b-alone-no-rank-difference; added the six Wilcoxon rank-sum p-values on magnitudes from the ED Fig. 9b legend, which the criterion already judges.
+  - ed9cd-self-entry-cells-competition; the statement said intermediates have more self entry cells without qualification, while the ITI test gives p = 0.06; the statement now says so and the criterion reports that test without judging it.
+  - Open, not settled; ed5j-six-states reads the number of states tried as 1 to 10 and grades 5 or 7 as partial, neither from the paper; the paper gives no range of states.
+  - Open, not settled; ed7de-trajectories-close-far records the paper's identical F and p for win far and lose close (F(1,35) = 588, p = 3e-20), which may be a copying error in the legend.
+  - Open, not settled; ed10c-lh-responsive-proportions, the printed Fisher p = 0.011 matches no event of the legend on the printed counts (0.006 alone tone entries, 0.06 competition self ITI entries, recomputed here).
+  - Coverage; ED Fig. 1c (no weight correlation, unimplanted), 1h (distance travelled) and 5a (logger does not change latency) are controls with no claim; the main findings of Figures 1 to 4 and Extended Data 5 to 10 each have one.

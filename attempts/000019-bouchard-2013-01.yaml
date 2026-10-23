@@ -1,0 +1,775 @@
+schema_version: 2
+id: 000019-bouchard-2013-01
+dataset:
+  archive: dandi
+  id: "000019"
+  version: 0.220126.2148
+  doi: 10.48324/dandi.000019/0.220126.2148
+paper: doi:10.1038/nature11911
+date: 2026-10-21
+entry: 000019-bouchard-2013
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-10
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39692741052
+inputs:
+- what: The articulator state matrix (Supplementary Figure 1d) and the phonetic feature matrix
+    (Supplementary Figure 12), transcribed from the figures of the paper's supplement. They define
+    the paper's variables for each syllable; they hold no measurements.
+  source: doi:10.1038/nature11911 (supplement, NIHMS436351-supplement-1.pdf, pages 2 and 15)
+outcomes:
+- claim: data-composition
+  outcome: partially_reproduced
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:data-composition
+  measured:
+  - 3
+  - 169
+  - 3051.76
+  notes: The dandiset holds four subjects (EC2, EC9, GP31, GP33); EC2, GP31 and GP33 are taken to be
+    the paper's EC2, EC31 and EC33, and EC9 is not in the paper. The rate is 3051.76 Hz. The three
+    subjects have 57, 55 and 57 CVs (169, paper 168), each with 19 consonants, and 2 to 107
+    renditions per CV (EC2 /thi/ 10, GP31 /thi/ 2, 33 GP31 CVs above 100); leaving out CVs below 15
+    renditions gives 56 + 54 + 57 = 167. The audio was removed. EC2 and GP31 have negative x
+    coordinates (left hemisphere if x is the usual axis); GP33 has no coordinates, so the right
+    hemisphere of EC33 cannot be checked. The answer of 2026-10-22 on CVs with fewer than 15
+    renditions leaves this claim as it was; the paper's 168 CVs fit neither reading, and the outcome
+    is unchanged. No field in the files links GP31 and GP33 to EC31 and EC33; the subject fields
+    hold only species and id, and the session descriptions name only the block. The electrode group
+    of EC2 and GP31 is named `L256Grid electrodes` in every file, which fits a left hemisphere; that
+    of GP33 is `auto_group`, with location `location`. In EC2 and GP31, 18 consonants have all three
+    vowels with 15 or more renditions each, and in GP33 19, so GP31 fits the paper's subject with 18
+    consonants and 54 CVs.
+  deviations:
+  - The correspondence of GP31 and GP33 to the paper's EC31 and EC33 is an assumption; no metadata
+    links them.
+- claim: active-electrodes
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:active-electrodes
+  measured: 24.33
+  notes: Mean active vSMC electrodes per subject. With every CV, 24.3 with the pre-utterance
+    baseline (EC2 15, GP31 49, GP33 9), 21.3 with the whole block and 34.0 with the rest period;
+    none is within 27 to 33, so this CV reading gives not reproduced. With only CVs of 15 or more
+    renditions, 10.7, 7.0 and 27.0 (rest; EC2 29, GP31 31, GP33 21), so one baseline is within
+    tolerance, at its lower edge, and this reading gives partially reproduced. Both readings of the
+    change give the same counts. The count depends strongly on the threshold (41.7 at 1.5, 11.7 at
+    2.5, pre baseline, every CV). What the answers changed. The rest period, a variant in the first
+    run, is now baseline reading (c) of the claims file, and the CV set is now a reading of the
+    claims file whose two readings give different outcomes. The first run recorded not reproduced;
+    the outcome is now blocked as methods_underspecified. Measured is the first reading (pre, every
+    CV). The CV split comes from one syllable. Every GP31 electrode active with every CV but not with
+    the 15+ CVs is above 2 for /thi/, which GP31 has 2 renditions of (40 electrodes under pre, 43
+    under whole, 20 under rest); in EC2 one electrode is active through /thi/ (10 renditions). A
+    variant that leaves out the 162 trials overlapping intervals marked as ECoG artifacts, not a
+    reading of the claims file, gives means of 22.7, 21.0 and 26.0 with every CV and 8.0, 6.7 and
+    15.0 with the 15+ CVs, none within 27 to 33; GP31's count under rest with the 15+ CVs falls from
+    31 to 2, so the one reading within tolerance rests on trials the files mark as artifacts.
+  deviations:
+  - High gamma computed from the raw ECoG with a filter bank whose widths the paper does not give
+    (standard choice); bad channels from the dataset's flags.
+  - vSMC taken as the electrodes labelled precentral or postcentral, good in every block (268 over
+    the three subjects, paper 266); no label marks the guenon.
+- claim: fig1c-e-articulator-electrodes
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:fig1c-e-articulator-electrodes
+  notes: No subject, numbering from 1 or from 0, puts all six named electrodes on vSMC. The most is 5
+    of 6, in EC2 counted from 0, where e129 is labelled middle temporal; GP31 has at most 4 and GP33
+    at most 3. The criterion blocks the claim in that case. The dataset does not say how the paper
+    numbered electrodes, and gives no distance from the Sylvian fissure for the order part. For
+    information, in EC2 counted from 1 (3 of 6 on vSMC), five of the six named electrodes prefer
+    their syllable under both measures and all three baselines; counted from 0, two or three do. The answer of 2026-10-22 to the question on positions says the paper measures them on
+    each subject's MRI reconstruction and gives no way to derive them from grid geometry, unlabelled
+    coordinates or atlas labels, so the block stands.
+- claim: fig1f-h-phonetic-contrasts
+  outcome: not_reproduced
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:fig1f-h-phonetic-contrasts
+  notes: Under all 96 readings (3 baselines, 2 CV sets, 8 timing readings for T_A, 2 p-value
+    readings) no GLM electrode with a positive lips weight has z above 2 for /ju/ at +250 ms and
+    below 2 for /ja/ and /ji/ in any subject. With the rest baseline some lips-positive electrodes
+    exceed 2 for /ju/ (13 of 96 readings, largest 3.54), but at each of them /ja/ or /ji/ is above 2
+    as well; under the pre and whole baselines the largest /ju/ value is below 2. The fricative and
+    manner contrasts are not judged, as the claims file says. What the answers changed. The rest
+    baseline and the CV set are now readings of the claims file; the 32 rest readings added give the
+    same outcome, not reproduced, as in the first run. Without the GLM selection, among all vSMC
+    electrodes, one EC2 electrode under rest (both CV sets) has /ju/ above 2 and /ja/ and /ji/ below
+    2; under pre and whole no vSMC electrode in any subject reaches 2 for /ju/ (largest 1.19), so
+    there the result does not come from the selection.
+  deviations:
+  - The lips weights come from the GLM of fig2a-lips-dorsal, which is blocked for its spatial
+    judgement only; the weights and electrode selection need no positions and are computed, so this
+    claim is tested.
+- claim: fig2a-lips-dorsal
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_bouchard_2013.ipynb
+  notes: The claim judges where the lips and tongue weights lie as dorsal-ventral distance from the
+    Sylvian fissure. The dandiset gives no electrode position relative to the Sylvian fissure or the
+    central sulcus. EC2 and GP31 have x, y, z coordinates with no unit or frame; GP33 has none. The
+    GLM electrodes and weights are computed (they need no positions) and used by fig1f-h, suppfig6
+    and suppfig9. For information only, under the first reading the median z coordinate of the top
+    10% of lips weights is above that of the tongue weights in EC2 (36.6 against 15.6); GP31 has no
+    tongue window in that reading, so it gives no comparison. The answer of 2026-10-22
+    to the question on positions says the paper measures them on each subject's MRI reconstruction
+    and gives no way to derive them from grid geometry, unlabelled coordinates or atlas labels, so
+    the block stands.
+- claim: fig2b-somatotopic-sequence
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs positions relative to the central sulcus and Sylvian fissure in all three subjects
+    (see fig2a-lips-dorsal). The answer of 2026-10-22 to the question on positions says the paper
+    measures them on each subject's MRI reconstruction and gives no way to derive them from grid
+    geometry, unlabelled coordinates or atlas labels, so the block stands.
+- claim: suppfig3b-spatial-clustering
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the smoothed maps in the plane of distances from the central sulcus and Sylvian
+    fissure (see fig2a-lips-dorsal). The answer of 2026-10-22 to the question on positions says the
+    paper measures them on each subject's MRI reconstruction and gives no way to derive them from
+    grid geometry, unlabelled coordinates or atlas labels, so the block stands.
+- claim: suppfig3d-cross-subject
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs maps in a common frame across subjects, from distances to the central sulcus and
+    Sylvian fissure (see fig2a-lips-dorsal); GP33 has no coordinates at all. The answer of
+    2026-10-22 to the question on positions says the paper measures them on each subject's MRI
+    reconstruction and gives no way to derive them from grid geometry, unlabelled coordinates or
+    atlas labels, so the block stands.
+- claim: suppfig3f-dv-sequence
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the maps of suppfig3b-spatial-clustering (see fig2a-lips-dorsal). The answer of
+    2026-10-22 to the question on positions says the paper measures them on each subject's MRI
+    reconstruction and gives no way to derive them from grid geometry, unlabelled coordinates or
+    atlas labels, so the block stands.
+- claim: suppfig5-intermediate-organization
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs Euclidean distances in mm between electrodes in the paper's plane (see
+    fig2a-lips-dorsal). The EC2 and GP31 coordinates have no stated unit or frame, and GP33 has
+    none. The answer of 2026-10-22 to the question on positions says the paper measures them on each
+    subject's MRI reconstruction and gives no way to derive them from grid geometry, unlabelled
+    coordinates or atlas labels, so the block stands.
+- claim: suppfig6-mixed-tuning
+  outcome: reproduced
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:suppfig6-mixed-tuning
+  notes: Under all 96 readings, each group of GLM electrodes (grouped by largest weight) has its
+    preferred articulator with the largest mean share of positive weight (lips 63 to 79%, tongue 48
+    to 96%, larynx 49 to 84%, jaw 69 to 84%) and non-zero shares of the others; in one reading no
+    electrode prefers the tongue. The GLM electrodes number 49 to 117 over the three subjects. In
+    the readings where a subject has no window T_A for an articulator, its weights there are
+    missing. What the answers changed. The rest baseline and the CV set are now readings of the
+    claims file; the 32 rest readings added hold as well, and the outcome is reproduced, as in the
+    first run. The criterion barely discriminates. On weights permuted across each subject's
+    electrodes, which removes any tuning of single electrodes, the same test holds in 94 of 96
+    readings, because grouping by the largest weight puts the preferred articulator first almost by
+    construction. The outcome follows the criterion; a clear preferred articulator beyond what the
+    grouping gives is not shown by it.
+  deviations:
+  - Uses the GLM weights of fig2a-lips-dorsal, which is blocked for its spatial judgement only.
+- claim: fig3d-timing-sequence
+  outcome: not_reproduced
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:fig3d-timing-sequence
+  measured:
+  - 175
+  - 270
+  notes: Under all 96 readings (3 baselines, 2 CV sets, threshold per subject or pooled and over all
+    articulators or per articulator, onset at threshold or half peak, ANOVA on onset or peak) none
+    of the three order conditions holds. Mean lips onsets are -270 to -54 ms, but tongue onsets are
+    -26 to +290 ms, so lips and tongue both precede the substitute acoustic onset (-110 ms, CV range
+    -257 to -11 ms) in no reading; jaw onsets are -270 to -116 ms, as early as the lips; high-tongue
+    peaks are 276 to 325 ms. Against t = 0, shown beside it as the criterion now asks, lips and
+    tongue both begin before 0 ms in 2 of 96 readings and the outcome is the same. The ANOVA has F =
+    9.4 to 39.2 with p below 1e-10 in 76 of 96 readings. Electrodes 162 to 226 (paper 211). Measured
+    values are from the first reading (175 electrodes; mean of back and high tongue peaks, 235 and
+    305 ms). What the answers changed. The criterion now allows the hand-marked syllable start as
+    the acoustic onset, as a deviation, which the first run had used while asking; the rest baseline
+    and the CV set are now readings. The outcome is not reproduced, as in the first run. Tongue
+    electrodes number 2 to 7 under the readings with one threshold for all six articulators (2 to 45
+    over all readings), so those tongue onsets rest on few electrodes. A variant that leaves out the
+    trials overlapping intervals marked as ECoG artifacts gives the same outcome (one condition holds
+    in 4 of 96 readings, none in the others; lips onsets -338 to -125 ms, tongue -6 to 289 ms).
+  deviations:
+  - The acoustic onset is the hand-marked syllable start of the trial table, averaged per CV, as the
+    audio is not in the dandiset; the criterion allows this substitute since the answer of
+    2026-10-22. The outcome against t = 0 is the same.
+- claim: suppfig7-no-latency-difference
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs electrodes within 10 mm anterior and posterior of the central sulcus and the guenon's
+    boundary; the dandiset gives no distances to the central sulcus and no guenon label. The answer
+    of 2026-10-22 to the question on positions says the paper measures them on each subject's MRI
+    reconstruction and gives no way to derive them from grid geometry, unlabelled coordinates or
+    atlas labels, so the block stands.
+- claim: pca-nine-components
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:pca-nine-components
+  measured: 0.625
+  notes: With row z-scoring, nine PCs explain a mean of 0.60 to 0.66 over subjects, within 0.54 to
+    0.66 in 11 of 12 baseline, CV set and window readings (rest, every CV, -375 to 620 ms gives
+    0.661). With time z-scoring, 0.49 to 0.56, within under the rest baseline (4 readings) and once
+    under the whole block, outside in the other 7. The readings give different outcomes (16 within,
+    8 not). The variance explained does not depend on the input projected. No sharp change at the
+    ninth eigenvalue is seen; not judged. Measured is the first reading (pre, row, every CV, epoch).
+    What the answers changed. The paper fixes neither z-scoring nor the CV set, which the claims
+    file now names as readings, and the rest period is now a baseline reading; the outcome stays
+    blocked as methods_underspecified, as in the first run. The z-scoring decides most of the split
+    (row 11 of 12 within, time 5 of 12); the CV set and the window do not change the count (8 of 12
+    within each).
+- claim: fig4a-consonant-clusters
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:fig4a-consonant-clusters
+  measured:
+  - 0.281
+  - 0.4
+  - 0.231
+  notes: Under 23 of the 24 readings (3 baselines, 2 z-scorings, 2 projections, 2 CV sets) k = 3
+    does not have the highest mean silhouette (not reproduced). Under one, rest baseline, time
+    z-scoring, projection (i) and every CV, k = 3 is highest by a small margin (0.333 against 0.329
+    for k = 2 and 0.241 for k = 4), with values outside tolerance (partially reproduced). k = 3
+    gives 0.19 to 0.36 against the paper's 0.47. GP31's k = 2 silhouette is 0.35 to 0.80 with every
+    CV and 0.24 to 0.68 with CVs of 15 or more renditions. Measured values are the first reading
+    (pre, row, projection i, every CV) for k = 3, 2 and 4. What the answers changed. The rest
+    baseline and projection (ii) are now readings, and one of the readings added gives partially
+    reproduced, so the readings differ. The first run recorded not reproduced; the outcome is now
+    blocked as methods_underspecified. Over the 24 readings k = 2 has the highest mean silhouette in
+    20, k = 4 in 3 and k = 3 in 1.
+- claim: suppfig11-co-clustering
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:suppfig11-co-clustering
+  measured:
+  - 0.75
+  - 0.395
+  - 0.486
+  - 0.386
+  notes: Clusters match the major articulators beyond chance in every reading (consonant p from
+    9e-23 to 3e-13). Observed consonant medians 0.633 to 0.909 with labels (a) and 0.595 to 0.800
+    with labels (b) (paper 0.50 +- 0.05), vowel medians 0.41 to 0.70 (paper 0.65 +- 0.065), nulls
+    0.336 to 0.412 for consonants and 0.343 to 0.430 for vowels (paper 0.32 and 0.37). Of the 48
+    readings (24 by two label readings) 38 give partially reproduced. In five readings, all with
+    projection (i) (row with 15+ CVs under each baseline, rest with row and every CV, rest with time
+    and 15+ CVs), the vowel test gives p from 3e-10 to 5e-07, above 1e-10, and not reproduced under
+    both label readings. Projection (ii) gives partially reproduced in all 24 of its readings. Each
+    label reading is judged with its own consonant test and the vowel test. Measured is the first reading
+    (pre, row, projection i, every CV, labels a). What the answers changed. The answers left
+    z-scoring and the CV set open and added the rest baseline and projection (ii) as readings;
+    projection (ii) gives partially reproduced in every reading, and the outcome stays blocked as
+    methods_underspecified, as in the first run.
+- claim: fig4c-d-hierarchy
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:fig4c-d-hierarchy
+  notes: Both splits hold together in at most one subject, EC2 (14 of 24 readings), so no reading
+    gives reproduced; 28 of the 48 readings (with the two label readings) give partially reproduced
+    and 20 not reproduced. Under time z-scoring with projection (i) no subject meets both. The vowel
+    split never holds in GP31. The purity rule of two thirds is the claims file's own. What the
+    answers changed. The rest baseline and projection (ii) are now readings, and z-scoring and the
+    CV set stay open; the outcome stays blocked as methods_underspecified, as in the first run.
+    Projection (ii) gives partially reproduced in 20 of 24 readings and projection (i) in 8 of 24;
+    the CV set and the label reading do not change the counts (14 of 24 each).
+- claim: fig4ef-feature-correlations
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:fig4ef-feature-correlations
+  notes: Early window, location over degree over vowel with p < 1e-10 under every Euclidean reading
+    (n = 297) except two (rest, projection i, 15+ CVs, location over degree p = 3e-05 and 3e-04).
+    Late window, the vowel features correlate more than both other sets with p < 1e-10 in 10 of 24
+    readings (reproduced), every 15+ reading with projection (ii) among them; the other 14 give
+    partially reproduced, mostly with every CV, where location correlates as much as or more than
+    the vowel features. Hamming distances are a variant and are not judged. What the answers
+    changed. The rest baseline and projection (ii) are now readings, and z-scoring and the CV set
+    stay open; the readings still give reproduced and partially reproduced, and the outcome stays
+    blocked as methods_underspecified, as in the first run. Projection (ii) gives 8 of the 10
+    reproduced readings, and the 15+ CVs 8 of 10.
+- claim: fig5c-separability-timing
+  outcome: not_reproduced
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:fig5c-separability-timing
+  measured:
+  - 5
+  - -240
+  - 200
+  - 105
+  notes: Under all 120 readings (24 baseline, z-scoring, projection and CV readings by five cluster
+    readings) the peaks are not both within tolerance. With phonetic groups the consonant peak is at
+    -155 to +15 ms (paper -200) and the vowel peak at 155 to 235 ms; with k-means at each time one
+    curve serves both, peaking between -170 and 375 ms. Consonant onsets (reading a) are -375 to
+    -180 ms, vowel onsets 55 to 105 ms. Measured is the first reading (pre, row, projection i, every
+    CV, groups a; onset reading a). What the answers changed. The rest baseline and projection (ii)
+    are now readings; the readings added give the same outcome, not reproduced, as in the first run.
+    After the first verification the bootstrap no longer pairs a token with its own copies, which
+    changes only the s.e. of onset reading (a) (first reading's vowel onset 100 to 105 ms); every
+    reading factor still gives not reproduced in all its readings.
+  deviations:
+  - The onset reading (a) takes the curve's value at -500 ms as its pre-epoch level, the earliest
+    time of the epoch. The claims file says "pre-epoch level" without a time; this is the attempt's
+    choice, and it decides only the onset, not the peaks on which the outcome rests.
+- claim: fig5d-separability-coupling
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:fig5d-separability-coupling
+  notes: With phonetic-group clusters and the matching feature set (location for consonants, vowel
+    for vowels), the six R2 lie within 0.38 to 1 with p < 1e-10 in 80 of 96 readings, are positive
+    and significant with some below 0.38 in 15, and fail in 1 (R2 0.14 to 0.99). With the mean of
+    the three feature sets, or with k-means clusters, the coupling fails in every reading. The
+    claims file's own readings give different outcomes. What the answers changed. The rest baseline
+    and projection (ii) are now readings; the outcome stays blocked as methods_underspecified, as in
+    the first run. Two readings of the claims file decide the split, that of R and that of the
+    clusters. With the mean of three feature sets all 120 readings fail, and with k-means clusters
+    all 48 fail, the 24 with the matching feature set among them. Every level of the baseline,
+    z-scoring, projection and CV set has both reproduced and not reproduced readings, so the split
+    does not come from these details.
+- claim: suppfig13-consonant-vowel-distance
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:suppfig13-consonant-vowel-distance
+  notes: With row z-scoring, and with time z-scoring and projection (ii), consonant-vowel distances
+    exceed consonant-consonant ones, which exceed vowel-vowel ones, with corrected p < 1e-10; with
+    time z-scoring and projection (i) the consonant-vowel distances are shorter than the
+    consonant-consonant ones in every baseline and CV set. The pairs number 4677 (every CV) or 4567
+    (15+ CVs), not 4623, so no reading meets the criterion as written. The criterion defines only
+    reproduced; a reading where all orderings hold and only the pair count differs is counted as
+    partially reproduced (36 of 48), by the protocol's general definition of an effect that holds
+    in part, and one where an ordering fails as not reproduced (12, all with time z-scoring and
+    projection (i)). Read strictly, every reading is not reproduced; the outcome is kept blocked
+    because the pair count is fixed by the dataset's syllables (data-composition), while whether
+    the orderings hold depends on readings the paper does not fix. What the answers changed. The
+    paper fixes neither z-scoring nor the CV set, and projection (ii), added as a reading, gives the
+    orderings under both z-scorings; the outcome stays blocked as methods_underspecified, as in the
+    first run.
+- claim: suppfig9-pc-articulator-weights
+  outcome: not_reproduced
+  notebook: reproduce_bouchard_2013.ipynb
+  output: claim:suppfig9-pc-articulator-weights
+  measured: 268
+  notes: Under all 288 readings the condition fails in all three PCs; tongue weights are not larger
+    than lips weights. In the reading printed in full (268 vSMC electrodes, pre, every CV) lips
+    minus tongue has a median paired difference of +0.03 in log10 (corrected p = 1), and jaw and
+    larynx differ (corrected p = 5e-11). By Methods Eq. 6 the PC term cancels in paired comparisons
+    of one electrode's articulators, so the three PCs give the same tests. What the answers changed.
+    The rest baseline is now a reading (96 readings added); the input projected does not enter this
+    test. The outcome is not reproduced, as in the first run. Electrodes without a window T_A for an
+    articulator are dropped, none in 168 readings, up to 83 in the others (GP31 lacks a tongue
+    window in some timing readings), leaving 32 to 268 electrodes; every reading fails either way.
+  deviations:
+  - Uses the GLM weights of fig2a-lips-dorsal, which is blocked for its spatial judgement only.
+findings:
+- kind: metadata_insufficient
+  statement: No electrode has a position relative to the central sulcus or the Sylvian fissure, the
+    frame of the paper's spatial analyses. EC2 and GP31 have x, y, z coordinates with no unit or
+    coordinate frame described; GP33 and EC9 have none. No electrode is labelled as on the guenon.
+    Seven spatial findings of the paper cannot be tested.
+- kind: data_missing
+  statement: The microphone recordings were removed (dandiset description), so the acoustic onset,
+    peak and offset of each syllable used by the paper cannot be computed; only hand-marked start,
+    C-V transition and stop times are given.
+- kind: identifier_missing
+  statement: Subjects GP31 and GP33 do not carry the paper's names (EC31, EC33), and nothing links
+    them. GP31's coordinates fit a left hemisphere, as the paper's EC31; GP33 has no coordinates, so
+    the right hemisphere of EC33 cannot be checked. The subject fields hold only species and id.
+    The electrode group of EC2 and GP31 is `L256Grid electrodes`; that of GP33 is `auto_group`, with
+    location `location`, so no field gives GP33's hemisphere.
+- kind: other
+  statement: The dandiset holds a fourth subject, EC9 (7 blocks, 1653 trials), that is not in the
+    paper. It has extra syllables (/ch/, /dh/, /j/, /sk/), labels on 79 of 256 electrodes and no
+    coordinates.
+- kind: selection_undocumented
+  statement: Renditions per syllable range from 2 to 107 (GP31 /thi/ 2, EC2 /thi/ 10, GP31 up to 107)
+    against the paper's 15 to 100, and GP31 lacks /tha/ and /thu/. The three subjects have 169
+    distinct syllables against the paper's 168 (57 + 57 + 54). The dandiset does not say which
+    trials or syllables the paper used.
+- kind: metadata_error
+  statement: The raw ElectricalSeries gives unit volt with a conversion factor of 0.001, but the
+    stored values have an SD of a few 1e-5, which is a usual ECoG amplitude if read as volts and tens
+    of nanovolts with the factor; the data are consistent with values already in volts.
+- kind: metadata_error
+  statement: Two syllable labels are misspelt (`she` for `shee` in EC2 and EC9, `ha` for `haa` in
+    GP33 and EC9). Electrode ids start at 0 in EC2 and GP31 and at 1 in GP33 and EC9.
+- kind: other
+  statement: The archive summary counts four subjects and 31 files; bad-channel flags differ between
+    blocks of one subject (EC2 has none in two blocks and up to 10 in others), and 162 of 9370
+    analysed trials overlap intervals marked as ECoG artifacts (38 in GP31 block 63, whose rest
+    period has a high-gamma SD of 0.3 times the block's). One file (EC2 block 1) holds a power
+    spectrum of the 256 channels in a processing module; no other file has one.
+verifications:
+- date: '2026-10-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The handover of the run after the answers of 2026-10-22, the executed notebook with
+    the conclusions and summary removed, the helper module and the claims file. The verifier also read
+    the paper under paper/, checked the archive's asset list through the API, checked the helpers on synthetic
+    inputs and compared the transcription of Supplementary Figure 1d with the supplement. Cell numbers in
+    the reasons are those of the round-1 notebook.
+  results:
+  - claim: data-composition
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Three subjects, 3051.76 Hz (within 1 Hz). But there is no audio, the subjects have 19/19/19
+      consonants and 57+55+57 = 169 CVs, renditions run from 2 to 107, and GP33''s hemisphere cannot be
+      determined (cells 8, 18). Subject identity is assumed (B2): GP31 = EC31 and GP33 = EC33 is an assumption,
+      GP33 has no coordinates, and GP31, with only 18 consonants that have all three vowels, fits the
+      paper''s 54-CV subject but this is not stated.'
+    response: 'Outcome kept. The data check now reads the subject fields, electrode groups and descriptions
+      of every file of the three subjects: the subject fields hold only species and id, the EC2 and GP31
+      group is `L256Grid electrodes` (fits a left hemisphere), and GP33''s is `auto_group` with location
+      `location`, so nothing links GP31 and GP33 to EC31 and EC33 or gives GP33''s hemisphere. The notebook
+      and notes now say that GP31 is the subject with 18 consonants that have all three vowels, which
+      fits the paper''s 54-CV subject. The finding on identifiers names the group fields.'
+  - claim: active-electrodes
+    agrees: true
+    outcome: blocked
+    reason: With all CVs, no baseline gives a mean in 27-33 (24.3, 21.3, 34.0). With 15+ CVs only `rest`
+      does (27.0), which is partial. The split comes from GP31's /thi/, which has 2 renditions (GP31 counts
+      49 to 9 and 43 to 0). One GP31 CV with 2 renditions drives the threshold count. It also flips silhouettes
+      (GP31 k = 2 at 0.78 against 0.37) and the fig4ef late-window tests. Many methods_underspecified outcomes
+      come from this split (B3). The verifier asked for the counts with the 177 artifact-interval
+      trials excluded (B11).
+    response: 'Outcome kept. The notebook now prints, per baseline and subject, the electrodes active
+      with every CV but not with the 15+ CVs and the CVs above 2 there: all are GP31''s /thi/ (40, 43
+      and 20 electrodes) and one EC2 electrode through /thi/. A variant leaving out the trials that overlap
+      artifact intervals (162 trials; the 177 counted some trials twice) gives no mean within 27 to 33
+      under either CV set; GP31''s rest count with 15+ CVs falls from 31 to 2, so the one reading within
+      tolerance rests on artifact trials. This is stated in the conclusion and notes; the variant is not
+      a reading of the claims file and does not set the outcome.'
+  - claim: fig1c-e-articulator-electrodes
+    agrees: true
+    outcome: blocked
+    reason: No subject and numbering puts all six named electrodes on vSMC (at most 5 of 6, cell 22 prints
+      `[]`). The criterion blocks it in that case. Cell 0 lists it as tested, though its criterion makes
+      it blocked (B4).
+    response: Outcome kept. The conclusion and notes said at most 4 of 6; they now say 5 of 6, in EC2
+      counted from 0 (e129 is labelled middle temporal), as the output shows. The header table now says
+      the claim is run and blocked by its criterion.
+  - claim: fig1f-h-phonetic-contrasts
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 96 readings have a lips-positive GLM electrode with /ju/ above 2 and /ja/, /ji/ below
+      2. The largest /ju/ under `pre` and `whole` is about 1.2. The 13 readings with /ju/ above 2 (`rest`
+      only) also have /ja/ or /ji/ above 2. The qualitative parts are not judged. It relies on fig2a's
+      GLM selection and weights, which need no positions; defensible, but the dependency is on a blocked
+      claim (B9).
+    response: 'Outcome kept. Added the count the verifier asked for, over all vSMC electrodes without
+      the GLM selection, per subject, baseline and CV set: only one EC2 electrode under rest has /ju/
+      above 2 and /ja/, /ji/ below 2, and under pre and whole no vSMC electrode reaches 2 for /ju/ (largest
+      1.19). The dependency on fig2a''s position-free part stays recorded as a deviation.'
+  - claim: fig2a-lips-dorsal
+    agrees: true
+    outcome: blocked
+    reason: No distances from the Sylvian fissure in the archive (see B17). The archive has 31 NWB files
+      and no other assets; none carries distances to the central sulcus or Sylvian fissure, or guenon
+      labels.
+    response: Outcome kept. No change.
+  - claim: fig2b-somatotopic-sequence
+    agrees: true
+    outcome: blocked
+    reason: Same reason; the archive has no distances from the Sylvian fissure (see B17).
+    response: Outcome kept. No change.
+  - claim: suppfig3b-spatial-clustering
+    agrees: true
+    outcome: blocked
+    reason: Same reason; the archive has no distances from the Sylvian fissure (see B17).
+    response: Outcome kept. No change.
+  - claim: suppfig3d-cross-subject
+    agrees: true
+    outcome: blocked
+    reason: Same reason; GP33 also has no coordinates.
+    response: Outcome kept. No change.
+  - claim: suppfig3f-dv-sequence
+    agrees: true
+    outcome: blocked
+    reason: Same reason; the archive has no distances from the Sylvian fissure (see B17).
+    response: Outcome kept. No change.
+  - claim: suppfig5-intermediate-organization
+    agrees: true
+    outcome: blocked
+    reason: Same reason. Parts could be run only as recorded substitutes, such as within-subject Euclidean
+      distances from x, y, z for EC2 and GP31 only.
+    response: 'Outcome kept. The substitute was not run: the claims file''s answer of 2026-10-22 says
+      the paper gives no way to derive the positions from unlabelled coordinates, and the claims file
+      names no substitute, so running one would apply a method the claims file lacks.'
+  - claim: suppfig6-mixed-tuning
+    agrees: true
+    outcome: reproduced
+    reason: Holds in 96 of 96 readings, with preferred shares of 48-96% and nonzero shares for other articulators.
+      The criterion is close to guaranteed by grouping on the largest weight (B10); the claim is reproduced
+      by a test that would barely discriminate, a weakness in the claims file, not the code.
+    response: 'Outcome kept, as the criterion decides it. Added a null, the same test on weights permuted
+      across each subject''s electrodes: it holds in 94 of 96 readings, which confirms the verifier''s
+      point. The conclusion and notes now say the test barely discriminates and that a clear preferred
+      articulator beyond what the grouping gives is not shown.'
+  - claim: fig3d-timing-sequence
+    agrees: true
+    outcome: not_reproduced
+    reason: None of the three order conditions holds in any of 96 readings, measured against both the
+      substitute onset and t = 0. Tongue onsets run -26 to +290 ms, jaw is earliest, and High Tongue peaks
+      at 276-325 ms. ANOVA p < 1e-10 in 76 of 96; total electrodes 162-226 against 211. Under 'all six'
+      readings only 1-5 tongue electrodes are selected, so tongue onset means rest on very few electrodes
+      (B15). The verifier asked for fig3d with invalid-interval trials excluded.
+    response: Outcome kept. The notebook prints the electrodes per articulator over readings (tongue 2
+      to 7 under the 'all six' readings, as the per-reading table counts them over subjects) and says
+      so in the conclusion. The variant leaving out artifact trials gives the same outcome (one condition
+      in 4 of 96 readings, none in the others).
+  - claim: suppfig7-no-latency-difference
+    agrees: true
+    outcome: blocked
+    reason: There are no +-10 mm distances and no guenon labels. Only a label-based substitute could be
+      run (precentral against postcentral electrodes from the dataset's own labels).
+    response: 'Outcome kept. The substitute was not run, for the reason given under suppfig5: the claims
+      file names no such substitute.'
+  - claim: pca-nine-components
+    agrees: true
+    outcome: blocked
+    reason: The `row` z-scoring gives 0.598-0.661, within 0.54-0.66 in 11 of 12 combinations. The `time`
+      z-scoring gives 0.49-0.564; under the `pre`/`whole` baselines it falls outside in 7 of 8. 16 readings
+      are in, 8 out.
+    response: 'Outcome kept. Added outcome counts per reading factor, as asked: the z-scoring decides
+      most of the split (row 11 of 12, time 5 of 12), the CV set and window none.'
+  - claim: fig4a-consonant-clusters
+    agrees: true
+    outcome: blocked
+    reason: 23 readings are not reproduced and 1 is partial; no reading reproduces. Across readings the
+      k = 3 silhouette is 0.19-0.36 (against 0.47), and k = 2 is usually highest.
+    response: Outcome kept. Added outcome counts per reading factor and the count of readings by the k
+      with the highest silhouette (k = 2 in 20, k = 4 in 3, k = 3 in 1).
+  - claim: suppfig11-co-clustering
+    agrees: true
+    outcome: blocked
+    reason: 38 readings are partial and 10 not reproduced. None reproduces, because consonant co-clustering
+      is 0.63-0.91 against 0.50 +- 0.05. Vowel medians are 0.41-0.70. The chance levels are near the paper's.
+      `ok_tests` combines the cons-(a), cons-(b) and vowel tests, so the outcome for label reading (a)
+      depends on reading (b)'s test; nothing changes as all cons-(b) p are below 1e-10 (B6).
+    response: Outcome kept. Each label reading is now judged with its own consonant test and the vowel
+      test; the counts are unchanged (38 and 10). The conclusion and notes now give the consonant medians
+      per label reading (0.633 to 0.909 for (a), 0.595 to 0.800 for (b)); the earlier 0.60 lower bound
+      was reading (b)'s. Added outcome counts per reading factor.
+  - claim: fig4c-d-hierarchy
+    agrees: true
+    outcome: blocked
+    reason: 28 readings are partial and 20 not reproduced. The consonant and vowel rules never both hold
+      in more than one subject (only EC2). The vowel rule accepting a /u/ majority in either cluster is
+      correct (B16).
+    response: Outcome kept. Added outcome counts per reading factor; projection decides most of the split.
+  - claim: fig4ef-feature-correlations
+    agrees: true
+    outcome: blocked
+    reason: Euclidean distances give 10 reproduced readings and 14 partial. Reproduced mostly with 15+
+      CVs or projection (ii). With projection (i) and all CVs, 'late vowel > location' fails.
+    response: Outcome kept. Added outcome counts per reading factor (projection (ii) 8 of the 10 reproduced
+      readings, 15+ CVs 8 of 10).
+  - claim: fig5c-separability-timing
+    agrees: true
+    outcome: not_reproduced
+    reason: No reading reproduces. Consonant peak -155 to +15 ms (paper -200 +- 20), vowel peak 155-235
+      ms; the k-means curve peaks anywhere from -170 to 375 ms. In `B.separability` with bootstrap weights,
+      duplicated tokens count as within-cluster pairs at distance 0, which biases the bootstrap s.e. used
+      by onset reading (a), and onset reading (a) takes the value at -500 ms as the pre-epoch level, the
+      author's choice; the peaks fail regardless (B7).
+    response: Outcome kept. The helper now leaves out pairs of a token with its own copies in a bootstrap
+      sample (checked against a direct computation on synthetic data); this moves the consonant onset
+      range to -375 to -180 ms and the first reading's vowel onset from 100 to 105 ms (measured updated).
+      The -500 ms level stays recorded as a deviation; it decides only the onsets, not the peaks on which
+      every reading fails, so no question was asked. Added outcome counts per reading factor.
+  - claim: fig5d-separability-coupling
+    agrees: true
+    outcome: blocked
+    reason: Phonetic groups with the matching feature set reproduce (80 readings). The mean-of-three-sets
+      reading and the k-means readings are not reproduced (145; minimum r -0.43 to -0.69). 15 readings
+      are partial.
+    response: Outcome kept. Added outcome counts per reading factor; the conclusion now says the reading
+      of R decides the split.
+  - claim: suppfig13-consonant-vowel-distance
+    agrees: true
+    outcome: blocked
+    reason: Orderings hold in 36 readings and fail in 12 (`time` z-scoring with projection (i) gives CV
+      < CC). The pair count is 4677 or 4567, never 4623, so no reading can reproduce. Labelling 'orderings
+      hold but n differs' as partial is the author's own category; the criterion defines no partial outcome
+      (B5).
+    response: 'Outcome kept, with the verifier. The notebook now prints that no reading meets the criterion
+      as written (0 of 48), and the conclusion and notes say that the partial label is this attempt''s
+      use of the protocol''s general definition, that read strictly every reading is not reproduced, and
+      why the outcome stays blocked: the pair count is fixed by the dataset''s syllables while the orderings
+      depend on readings the paper does not fix. Added outcome counts per reading factor.'
+  - claim: suppfig9-pc-articulator-weights
+    agrees: true
+    outcome: not_reproduced
+    reason: All 288 readings are not reproduced. Tongue is not above lips (corrected p = 1), and jaw differs
+      from larynx at p = 5e-11 where the paper reports p > 0.2. Electrodes that lack a T_A for any articulator
+      are dropped, giving n = 185 under the 'all six' readings as GP31 has no Tongue window; every reading
+      fails anyway (B8).
+    response: Outcome kept. The table now has a column of electrodes dropped for lack of a window (none
+      in 168 readings, up to 83 in the others), and the conclusion and notes say so.
+- date: '2026-10-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the run after round 1, with its conclusions and summary,
+    the README, the helper module, the attempt record and the claims file. The verifier also read the paper,
+    read the `separability` code of the helper module and checked the transcription of Supplementary Figure
+    12 against the image in the supplement PDF. Cell numbers in the reasons are those of the round-2 notebook.
+  results:
+  - claim: data-composition
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. B2 is still open and bears on this conclusion: that GP31 is EC31 and GP33 is EC33 remains
+      an assumption, and GP33''s hemisphere cannot be checked. It is recorded as a deviation; no field in
+      the files can settle it. Cell 10, a note and not a conclusion, says "EC9 has 24 consonant labels";
+      cell 8 gives 19 plus /ch/, /dh/, /j/ and /sk/, which is 23.'
+    response: Outcome kept. Cell 10 now says 23 consonant labels, as cell 8 prints. The identity of GP31 and
+      GP33 stays an assumption, recorded as a deviation and a finding, since no field in the files settles it.
+  - claim: active-electrodes
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. B3 is still open: GP31''s /thi/, with 2 renditions, alone creates the CV-set split. The
+      one reading within tolerance (rest, 15+ CVs: 27.0) relies on trials the files mark as ECoG artifacts.
+      Without them, GP31''s count falls from 31 to 2 and the mean to 15.0. The blocked outcome stands, but
+      under every variant tried no reading supports about 30 electrodes. The round-1 record dropped part of
+      B3: that the /thi/ split also flips GP31''s silhouettes and the fig4ef late-window tests.'
+    response: Outcome kept; the notes already state the artifact variant and the fall from 31 to 2. The round-1
+      reason now carries the dropped part of B3.
+  - claim: fig1c-e-articulator-electrodes
+    agrees: true
+    outcome: blocked
+    reason: Agrees (metadata_insufficient). The round-1 cell numbers in the record are stale; "cell 22 prints
+      `[]`" now refers to cell 26.
+    response: Outcome kept. The round-1 entry now says its cell numbers are those of the round-1 notebook.
+  - claim: fig1f-h-phonetic-contrasts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The counts and values in the record match the printed outputs.
+    response: Outcome kept. No change.
+  - claim: fig2a-lips-dorsal
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees (metadata_insufficient). The notes say "the median z coordinate of the top 10% of lips
+      weights is above that of the tongue weights in EC2 (36.6 against 15.6) and GP31." Cell 32 prints `GP31:
+      ... Tongue no window`, so there is no GP31 comparison. This is for information only and affects no outcome.'
+    response: Outcome kept. The notes now give the EC2 comparison only and say that GP31 has no tongue window
+      in that reading.
+  - claim: fig2b-somatotopic-sequence
+    agrees: true
+    outcome: blocked
+    reason: Agrees (metadata_insufficient).
+    response: Outcome kept. No change.
+  - claim: suppfig3b-spatial-clustering
+    agrees: true
+    outcome: blocked
+    reason: Agrees (metadata_insufficient).
+    response: Outcome kept. No change.
+  - claim: suppfig3d-cross-subject
+    agrees: true
+    outcome: blocked
+    reason: Agrees (metadata_insufficient).
+    response: Outcome kept. No change.
+  - claim: suppfig3f-dv-sequence
+    agrees: true
+    outcome: blocked
+    reason: Agrees (metadata_insufficient).
+    response: Outcome kept. No change.
+  - claim: suppfig5-intermediate-organization
+    agrees: true
+    outcome: blocked
+    reason: Agrees (metadata_insufficient).
+    response: Outcome kept. No change.
+  - claim: suppfig6-mixed-tuning
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. A place where the claims file may misread the paper: grouping electrodes by their largest
+      weight almost guarantees the result, and the test also holds on permuted weights in 94 of 96 readings
+      (cell 34). It is reproduced under a criterion that barely discriminates; the outcome is correct under
+      that criterion, but it shows little.'
+    response: Outcome kept, as the criterion decides it; the notes already say the test barely discriminates.
+      The point is now a question for a reader in questions/000019.yaml; the claim is not changed.
+  - claim: fig3d-timing-sequence
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The counts and values in the record match the printed outputs.
+    response: Outcome kept. No change.
+  - claim: suppfig7-no-latency-difference
+    agrees: true
+    outcome: blocked
+    reason: Agrees (metadata_insufficient).
+    response: Outcome kept. No change.
+  - claim: pca-nine-components
+    agrees: true
+    outcome: blocked
+    reason: Agrees (methods_underspecified).
+    response: Outcome kept. No change.
+  - claim: fig4a-consonant-clusters
+    agrees: true
+    outcome: blocked
+    reason: Agrees (methods_underspecified).
+    response: Outcome kept. No change.
+  - claim: suppfig11-co-clustering
+    agrees: true
+    outcome: blocked
+    reason: Agrees (methods_underspecified). The Supplementary Figure 12 transcription was checked against the
+      image extracted from the supplement PDF, and all 15 consonant rows and the 4 vowel rows match cell 16.
+    response: Outcome kept. No change.
+  - claim: fig4c-d-hierarchy
+    agrees: true
+    outcome: blocked
+    reason: Agrees (methods_underspecified).
+    response: Outcome kept. No change.
+  - claim: fig4ef-feature-correlations
+    agrees: true
+    outcome: blocked
+    reason: Agrees (methods_underspecified).
+    response: Outcome kept. No change.
+  - claim: fig5c-separability-timing
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The `separability` code in `bouchard.py` now leaves out a token's pairs with its own copies,
+      correctly (B7 resolved).
+    response: Outcome kept. No change.
+  - claim: fig5d-separability-coupling
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees (methods_underspecified). The README sentence that the claims blocked as methods underspecified
+      depend on the CV set, baseline, z-scoring and projection, and the summary''s "The blocked outcomes of
+      the state-space claims and of active-electrodes come from these readings giving different results", do
+      not hold for fig5d. Cell 58 shows its split comes from the reading of R (all 120 "mean of three" readings
+      fail) and from the cluster reading (all 48 k-means readings fail); the four listed factors show similar
+      mixes at every level. Cell 59 and the notes, "the reading of R decides the split", are incomplete: with
+      the matching feature set, k-means clusters still fail all 24 readings, so the cluster reading also splits
+      the outcome.'
+    response: Outcome kept. Cell 59, the notes, the summary and the README now say that the readings of R and
+      of the clusters decide the split, with the k-means count (48 of 48 fail, the 24 with the matching set
+      among them), and that every level of the four other details has both reproduced and not reproduced readings.
+  - claim: suppfig13-consonant-vowel-distance
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. A place where the claims file may misread the paper: a reading reproduces only if the pair
+      count is 4623, a count fixed by which syllables the dataset holds, not by the effect the paper reports.
+      Read strictly, every reading is not reproduced. Its outcome stays blocked only because the attempt treats
+      the pair-count failure as partial, which rests on that claims-file issue.'
+    response: Outcome kept, as verified; the notes already say that read strictly every reading is not reproduced.
+      The pair-count condition is now a question for a reader in questions/000019.yaml; the claim is not changed.
+  - claim: suppfig9-pc-articulator-weights
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. A place where the claims file may misread the paper: jaw against larynx is judged at p >
+      0.05, but the paper says P > 0.2. This does not change the outcome, since the measured p is 5e-11.'
+    response: Outcome kept. The threshold is now a question for a reader in questions/000019.yaml; the claim
+      is not changed, and no reading is near either threshold.

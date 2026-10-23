@@ -1,0 +1,1073 @@
+schema_version: 2
+id: 000045-ibl-2021-01
+dataset:
+  archive: dandi
+  id: "000045"
+  version: 0.211209.1413
+  doi: 10.48324/dandi.000045/0.211209.1413
+paper: doi:10.7554/elife.63711
+date: 2026-10-22
+entry: 000045-ibl-2021
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-10
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39727768301
+inputs:
+- what: The code's lab numbers (Lab 1 to 7) by institution and the labs' time zones (Europe 0,
+    New York -5, Los Angeles -7 hours), as the claims file header gives them from the paper's code.
+    The lab numbers serve every lab comparison and the time zones fig3f-positive-control.
+  source: https://github.com/int-brain-lab/paper-behavior at commit edc453189104a1f76f4b2ab230cd86f2140e3f63
+outcomes:
+- claim: cohort-counts
+  outcome: not_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:cohort-counts
+  measured: [136, 83, 60]
+  notes: The dataset holds 177 mice of the paper's project; 136 have their whole training in it
+    (first session a first-stage session), against 206 that started training. Under the main
+    reading 83 reach basic task proficiency (61 first with status 1a, 22 with 1b), against 140; the
+    pipeline's contrast check gives 85, and 1b replacing 1a from 2019-09-12 gives 70 and 71. 60
+    reach full task proficiency, against 98. No count is within tolerance under any reading. The
+    answers of 2026-10-22 changed P1 (each session and the two before it, any protocol; all trials
+    counted; percent correct over 50% and 100% contrasts; 1a or 1b at any date), which moved the
+    count from 75 to 84 under the earlier readings to 83 under the main one; the outcome is the same
+    as before (not_reproduced). The dataset holds sessions from 2019-06-11 to 2020-03-23; the
+    Methods say training of these mice began in January 2019. No window fails the 1b or P2 criteria
+    only because missing stimulus onsets leave its reaction time undefined (0 windows under every
+    reading), so the missing onsets do not lower the counts. P2 slides over full-task days; 10 days
+    with more than one full-task session fall at or before a mouse's P2 day, or on any day of a
+    mouse without P2, in 7 mice, so a count over sessions could differ for at most 7 mice.
+  deviations:
+  - Proficiency is recomputed from the trials, as the files carry no training status.
+  - P2 is computed over three consecutive full-task days, not sessions (see notes).
+  - Mice whose first session in the dataset is not a first-stage session (41) are left out, as
+    their training began before the dataset does.
+- claim: fig2g-days-to-proficiency
+  outcome: partially_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig2g-days-to-proficiency
+  measured: [19.87, 11.39, 5, 58]
+  notes: Under the main reading (83 mice) the mean days to P1 is 19.87 counting the P1 day and
+    18.87 without, both within 18.4 +- 1.84, and the slowest mouse takes 58 and 57 days, within 59
+    +- 5.9. The s.d. is 11.39 (against 13.0 +- 1.3) and the fastest mouse takes 5 or 4 days (against
+    3 +- 0.3); two of four values are within tolerance. The variants give means of 17.73 to 23.17
+    days and at most two values within tolerance. Six of the 136 whole-training mice have their
+    first session in the dataset's first 7 days, where an earlier start would go unseen; without the
+    2 of them that reach P1 the mean is 19.40 days (s.d. 10.98, fastest 5, slowest 58), again two of
+    four within tolerance. The five fastest mice start between 2019-08-06 and 2019-11-21. The
+    answers changed P1 (see cohort-counts); the outcome is the same as before
+    (partially_reproduced). Measured is the main reading, counting the P1 day.
+  deviations:
+  - 83 mice, against 140.
+- claim: fig2g-days-differ-across-labs
+  outcome: partially_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig2g-days-differ-across-labs
+  measured: [7.75, 5.75]
+  notes: Kruskal-Wallis across labs p = 0.029 under the main reading (0.023 to 0.088 under the
+    variants), never below 0.001; the code's switch gives the same tests. Lab 2 interquartile range
+    7.75 days (within 8 +- 0.8), Lab 6 5.75 days (against 22 +- 2.2). The labs differ at p < 0.05
+    but not at the p < 0.001 the criterion requires, and one of the two ranges matches, so the
+    effect is present but weaker. Changed from not_reproduced after the verifier's round 1, which
+    gave partially_reproduced for this reason.
+  deviations:
+  - 6 to 26 mice per lab.
+- claim: fig2s1-trials-to-proficiency
+  outcome: partially_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig2s1-trials-to-proficiency
+  measured: [11839, 7515, 2357, 34998, 7329]
+  notes: Under the main reading the mean trials to P1 is 11,839 counting the P1 day and 11,104
+    without, within 10,800 +- 1,080; the s.d. (7,515 and 7,472), fastest (2,357 and 1,687) and
+    slowest (34,998 and 34,265) are outside tolerance. The mean cumulative trials when mean
+    easy-trial performance first exceeds 80% is 7,329 (within 7,400 +- 740), and 6,659 to 7,306
+    under the variants. The answers changed P1; the outcome is the same as before
+    (partially_reproduced).
+  deviations:
+  - The median filter over 3 sessions is pandas' centred rolling median with partial windows at
+    the ends, a standard choice; the claims file does not fix the edges.
+- claim: fig2h-proportion-learned-40-days
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig2h-proportion-learned-40-days
+  measured: 0.749
+  notes: Over the 136 mice that started training in the dataset, mice without P1 censored, the
+    Kaplan-Meier proportion at day 40 is 0.749 counting the P1 day and 0.749 without under the main
+    reading, within 0.8 +- 0.08, and 1.000 at the last day. Since round 1 a mouse without P1 is
+    censored at its last training day counted the same way as the events (before, at the count
+    including the P1 day under both counts), which moved the count without the P1 day from 0.741
+    to 0.749. The pipeline's contrast check, a variant, gives 0.768; 1b replacing 1a from
+    2019-09-12 gives 0.600 to 0.602, outside tolerance. The code's variant, leaving out mice still
+    in training at the cutoff, gives 0.815 under the main reading. The answer to the question on "all contrasts introduced" (each of
+    the three sessions, the main reading; the pipeline's check of the current session a variant;
+    pooling given by neither) settled the reading that blocked the claim, and the change of P1 to
+    the pipeline's computation moved the proportion under that reading from 0.670 to 0.678 to 0.741
+    to 0.749. Earlier outcome blocked (methods_underspecified).
+  deviations:
+  - Without status labels, time is the training days to P1 for proficient mice and the total
+    training days otherwise, as the criterion says; mice without P1 are censored.
+  - The variant takes "still in training at the cutoff" as a session in the last 7 days of the
+    dataset, a choice for a variant that decides nothing.
+- claim: fig2bc-threshold-bias-iqr
+  outcome: partially_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig2bc-threshold-bias-iqr
+  measured: [11.1, 24.3, 11.5, 23.7, -8.4, 6.1, -8.8, 7.5]
+  notes: Under every reading the threshold interquartile range narrows after day 10 (main, filtered,
+    days 10 to 39, 11.5-23.7% against 11.1-24.3%), but no reading puts all eight bounds within
+    tolerance; the main reading puts at most four (filtered, days 10 on). The answer on 50:50
+    sessions (the basic-task sessions with all their trials) confirms the sessions used; the change
+    of P1 changed the mice. Earlier outcome the same (partially_reproduced). Measured is the main
+    reading, filtered, days 10 to 39.
+  deviations:
+  - Fits are per training day, all sessions of the day pooled (1,427 days).
+- claim: fig2-abs-bias-threshold-during-training
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig2-abs-bias-threshold-during-training
+  measured: [8.821, 6.392, 18.392, 8.849]
+  notes: Under the main reading both means are within tolerance under every reading pooled over
+    sessions. Under the first reading listed (filtered, pooled) the absolute bias is 8.821 and the
+    threshold after day 10 18.39%; without the filter 9.759 and 18.56%. The s.d.s are below the
+    paper's under every reading (6.30 to 8.72 against 12.1; 8.55 to 9.89 against 11.7). The
+    statement's "similar across laboratories" is not tested by the criterion; lab means of the
+    signed bias run from -5.11 to 2.55 (main, filtered). The answers changed P1; earlier outcome the
+    same (reproduced).
+- claim: fig2s2-variability-decreases
+  outcome: partially_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig2s2-variability-decreases
+  measured: [86.13, 91.11, 15.17, 7.98]
+  notes: The mean rises and the s.d. falls between days 15 and 40 under every reading, and the means
+    are within tolerance under every reading, but no reading has both s.d.s within tolerance (15.03 to 17.12%
+    at day 15 against 19.1%; 6.86 to 12.19% at day 40 against 10.1%). The answers changed P1 and
+    confirm the 50:50 sessions of reading (2); earlier outcome the same (partially_reproduced).
+  deviations:
+  - Reading (3) averages each mouse's days within the bin before taking the mean and s.d. over mice;
+    the claims file does not say how the bin is pooled.
+- claim: early-sessions-predict-slow-learners
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:early-sessions-predict-slow-learners
+  measured: [0.381, 0.048]
+  notes: Under the main reading of P1 the criterion's readings disagree on whether the accuracy is
+    near 53%; 3 of 20 accuracy values are within 0.53 +- 0.053 (features (b), four quartiles from
+    days, recall 0.571, four-class accuracy 0.518, precision 0.571), the others run from 0.143 to
+    0.667. Top-quartile mice classed as bottom quartile, 0.000 to 0.143. The answers changed P1 but
+    not the readings that block the claim; earlier outcome the same. Measured is features (a), four
+    quartiles from days, recall.
+  deviations:
+  - The Random Forest's seed is a standard choice (0).
+  - The criterion's readings are run under the main reading of P1 only, to keep the notebook within
+    its time limit.
+- claim: fig3c-easy-errors-basic
+  outcome: partially_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig3c-easy-errors-basic
+  measured: [8.41, 3.79]
+  notes: Under the main reading easy-trial errors at proficiency are 8.41 +- 3.79% (81 mice); the
+    s.d. is within tolerance, the mean just outside 9.5 +- 0.95. The pipeline's contrast check, a
+    variant, gives 9.66 +- 3.69% (85 mice), both within tolerance; 1b replacing 1a gives 5.26 and
+    5.84%. Two of the 83 mice with P1 have no basic-task session in S1. The answers changed P1, and
+    the main reading now decides; earlier outcome reproduced (8.56 +- 3.77% under 1a/each). The
+    statement's "no significant difference across laboratories" is
+    fig3cde-no-lab-difference-medians.
+- claim: fig3de-threshold-bias-basic
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig3de-threshold-bias-basic
+  measured: [14.09, -0.46, 3.80, 8.09]
+  notes: Over mice, under the main reading, threshold 14.09 +- 3.80 and bias -0.46 +- 8.09, all four
+    within tolerance; also under the pipeline's contrast check (13.89 +- 3.92 and 0.16 +- 9.05).
+    Over the seven lab means the s.d.s are 1.14 to 2.24. The answers changed P1; earlier outcome the
+    same (reproduced).
+- claim: fig3cde-no-lab-difference-medians
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig3cde-no-lab-difference-medians
+  notes: Under the main reading the corrected Kruskal-Wallis p are 0.287 (performance), 0.439
+    (threshold) and 0.730 (bias), all >= 0.05; the code's switch to ANOVA gives the same. Lab
+    medians, performance 89.0 to 93.1%, threshold 12.3 to 17.1, bias -6.1 to 1.8. The pipeline's
+    contrast check gives the same outcome (smallest 0.395); with 1b replacing 1a from 2019-09-12, a
+    variant, performance differs across labs (corrected p = 0.038 and 0.026). The answers removed
+    the pooled reading of "all contrasts introduced" and made "1a or 1b at any date" the main
+    reading, so the readings that disagreed no longer decide. Earlier outcome blocked
+    (methods_underspecified).
+  deviations:
+  - 6 to 25 mice per lab.
+- claim: fig3cde-no-lab-difference-variances
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig3cde-no-lab-difference-variances
+  notes: Corrected Levene p for performance, threshold and bias are 0.268, 0.268 and 0.299 under the
+    main reading and all >= 0.05 under every variant (smallest 0.212). Lab s.d.s (main), performance
+    1.48 to 4.35, threshold 2.35 to 4.75, bias 4.66 to 10.57. The answers changed P1; earlier
+    outcome the same (reproduced).
+  deviations:
+  - Trials per minute uses the session duration from the file's start and end times.
+- claim: fig3s2a-trial-duration
+  outcome: partially_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig3s2a-trial-duration
+  measured: [420.45, 219.4]
+  notes: Under the main reading the median trial duration is 420.45 ms, just below 468 +- 46.8, with
+    s.d. 219 ms (within 221 +- 22.1). The Kruskal-Wallis test across labs gives p = 0.061
+    uncorrected (0.12 corrected), and 0.068 to 0.40 under the variants, so the difference across
+    labs that the criterion requires (p < 0.05) is not found. Lab 4's median is 702 ms against 370
+    to 455 ms for the others. One of the two values is within tolerance and the other just outside,
+    and the lab difference is not significant, so the claim holds in part. Changed from
+    not_reproduced after the verifier's round 1, which gave partially_reproduced.
+  deviations:
+  - Trials without a stimulus onset time (6% of all trials) have no duration and are left out.
+- claim: fig3s2b-trials-per-session
+  outcome: partially_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig3s2b-trials-per-session
+  measured: [706.8, 196.9]
+  notes: Under the main reading 706.8 trials per session (within 719 +- 71.9), s.d. 196.9 (outside
+    223 +- 22.3). One-way ANOVA p = 1.2e-04, below 0.05 and not below 1e-6; the five significant
+    Tukey pairs all involve Lab 7 (412 trials per session against 635 to 836). The variants give p =
+    9.2e-05 to 0.0026, every pair with Lab 7. The answers changed P1; earlier outcome the same
+    (partially_reproduced).
+- claim: fig3f-classifier-chance-basic
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig3f-classifier-chance-basic
+  measured: [0.140, 0.106]
+  notes: The answer on the subsample size (the Methods' rule, the lowest lab count over the datasets
+    classified, one size for every classifier claim) let the classifier run with 5 mice per lab
+    (Lab 4 and Lab 7 in S2, Lab 7 in the first full-task sessions). Naive Bayes on S1 (81 mice)
+    has accuracy 0.140 +- 0.063 (within 0.12 +- 0.051) against a shuffled mean of 0.106 (within
+    0.11 +- 0.011); its 2.5th percentile, 0.029, is below the shuffled mean, so it is not above
+    chance. Under the pipeline's contrast check, 0.138, 2.5th percentile 0.029, null 0.110. The
+    code's 8 mice per lab cannot run (Lab 4 and Lab 7 hold 7 and 6 mice in S1). Earlier outcome
+    blocked (other, fewer than 8 mice in some labs).
+  deviations:
+  - 5 mice per lab, 35 per subsample, against 8 and 56 in the paper.
+  - The leave-one-out Naive Bayes is computed directly; it agrees with scikit-learn's GaussianNB on
+    every subsample checked (synthetic data and 20 subsamples of S1).
+- claim: fig3f-positive-control
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig3f-positive-control
+  notes: With the time zone as a fourth feature and 5 mice per lab, accuracy 0.405 +- 0.084; the
+    2.5th percentile (0.257) and the code's 0.001th percentile (0.171) are above the shuffled mean
+    of 0.118. In the mean confusion matrix all off-diagonal mass lies on labs in the same time zone
+    (4.166 over 12 cells, against 0.000 over 30 cells of other zones); Lab 7, alone in its zone, is
+    always classified correctly. The time zones come from the code (lab-link); the start times in
+    the files cannot confirm them. The subsample answer let the claim run; earlier outcome blocked
+    (other).
+  deviations:
+  - 5 mice per lab, as for fig3f-classifier-chance-basic.
+- claim: fig3s3-other-classifiers
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig3s3-other-classifiers
+  measured: [0.035, 0.100]
+  notes: With 5 mice per lab (answer of 2026-10-22), Logistic Regression is not above chance
+    (accuracy 0.071 +- 0.054, 2.5th percentile 0.000, shuffled mean 0.070, 2000 subsamples). The
+    Random Forest (100 trees, leave-one-out) now runs in 4 processes at 3.7 s per subsample, about
+    2 h for the 2000 subsamples of the criterion, so the first 50 of the same sequence are run; its
+    accuracy is 0.130 +- 0.055, 2.5th percentile 0.035 (bootstrap 95% interval 0.029 to 0.057)
+    against a shuffled mean of 0.100, so it is not above chance; the first 25 give the same (0.046
+    against 0.098). Earlier
+    outcome blocked (not_runnable), with 6 subsamples; the verifier's round 1 noted the run time is
+    not a data limit and asked for a larger run. Measured is the Random Forest's 2.5th percentile
+    and shuffled mean.
+  deviations:
+  - The Random Forest is run on the first 50 of the 2000 subsamples, to keep the notebook within
+    its time limit.
+  - Logistic Regression with solver liblinear is fitted one-vs-rest, as scikit-learn did for
+    several classes with this solver when the paper's code ran (the installed version refuses more
+    than two classes); the direct Newton fit of liblinear's objective agrees with scikit-learn's
+    OneVsRestClassifier on every subsample checked.
+- claim: lab-link
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:lab-link
+  notes: The 7 institutions in the files match the code's 7 labs one to one; CSHL holds
+    churchlandlab and zadorlab, SWC hoferlab and mrsicflogellab. The start times do not bear out
+    the time zones, as they are local clock times stated as UTC (median start hours 11.0 to 14.4 h
+    in every lab, Lab 7 at 11.0 h). Not affected by the answers.
+- claim: fig3s1a-choice-consistency-basic
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig3s1a-choice-consistency-basic
+  notes: Within-lab consistency is not above the shuffles (main reading p = 0.458 on S1 and 0.535 on
+    the code's sessions; variants 0.440 to 0.861). The answers changed P1; earlier outcome the same
+    (reproduced).
+  deviations:
+  - The code's sessions (P1 day and two after) take the basic-task trials and the 50:50 trials of
+    full-task sessions on those days.
+- claim: fig3s1bc-choice-consistency-full
+  outcome: not_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig3s1bc-choice-consistency-full
+  notes: Choices per contrast and block are more consistent within labs than in shuffles
+    (consistency 98.2 against a null mean of 82.5, p = 0.017, 60 mice). The bias shift is not (p =
+    0.154), as in the paper. Not affected by the answers (P2 is unchanged).
+  deviations:
+  - 60 mice, against 98; 5 to 21 per lab.
+- claim: fig3s4-looser-criterion
+  outcome: partially_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig3s4-looser-criterion
+  measured: 91
+  notes: 91 mice meet the looser criterion (against 150 +- 15). Trials per session differ across
+    labs (corrected p = 0.0022), and so do trials per minute (corrected p = 0.0022), against the
+    criterion's other five >= 0.05. With the subsample answer the classifier now runs (5 mice per
+    lab) and is not above chance (accuracy 0.117 +- 0.058, 2.5th percentile 0.029, shuffled mean
+    0.110), as the criterion requires. The other four lab tests give corrected p 0.078 to 0.92. One
+    of the six lab tests differs from the criterion and the count is far below the paper's, so the
+    claim holds in part. Changed from not_reproduced after the verifier's round 1, which gave
+    partially_reproduced.
+- claim: fig3s5-first-full-sessions
+  outcome: not_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig3s5-first-full-sessions
+  notes: On the legend's sessions from P1b, now the first full-task session at or after P1 by the
+    answer of 2026-10-22 (72 mice), three of the seven Kruskal-Wallis p are below 0.05 (threshold
+    in 20:80 blocks 0.022, in 50:50 blocks 0.038, performance on 100% contrast 0.022). Every variant
+    also has a p below 0.05 (smallest 0.001 to 0.025; the code's P1b, 66 mice, 0.007). With the
+    code's Holm-Sidak correction, a variant, the smallest is 0.141. The classifier now runs (5 mice
+    per lab) and is not above chance (accuracy 0.170 +- 0.048, 2.5th percentile 0.086, shuffled mean
+    0.114). Earlier outcome the same (not_reproduced).
+- claim: fig3s5a-prior-used-from-first-sessions
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig3s5a-prior-used-from-first-sessions
+  notes: Bias is higher in 80:20 than in 20:80 blocks in the first full-task sessions under every
+    reading (main, legend sessions, median difference 4.45, 69 of 72 mice, Wilcoxon p = 2.1e-13; all
+    readings, median 4.35 to 6.40, p <= 2.0e-12), with P1b as the answer gives it and with the
+    code's P1b. The variant against the proficiency threshold of 5 finds 30 of 73 to 39 of 66 mice
+    above it. Earlier outcome the same (reproduced).
+- claim: full-task-training-time
+  outcome: partially_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:full-task-training-time
+  measured: [29.4, 14.1, 19637, 9173, 10, 64, 5592, 43500]
+  notes: 60 mice reach P2 in 29.4 +- 14.1 days and 19,637 +- 9,173 trials; the means are within
+    tolerance, the s.d.s and extremes are not (fastest 10 days and 5,592 trials, slowest 64 days and
+    43,500 trials, against 8, 4,691, 81 and 61,316). 30 mice without P2 still had sessions in the
+    dataset's last week, which cuts off the slowest learners. Not affected by the answers.
+- claim: fig4cd-biasshift-largest-at-zero
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig4cd-biasshift-largest-at-zero
+  measured: 28.00
+  notes: Mean shift at 0% contrast 28.00% over 60 mice (within 28.5 +- 2.85); the lab mean is
+    highest at 0% in all 7 labs (23.0 to 36.2%). Not affected by the answers.
+- claim: fig4de-biasshift-no-lab-difference
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig4de-biasshift-no-lab-difference
+  notes: One-way ANOVA across labs F = 2.07, p = 0.072 (paper F = 1.345, p = 0.2455); lab means
+    23.0 to 36.2%. Not affected by the answers.
+- claim: fig4f-threshold-unchanged-by-block
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig4f-threshold-unchanged-by-block
+  notes: Threshold 20:80 minus 80:20, median 0.08, 31 of 60 positive, Wilcoxon p = 0.80. Not
+    affected by the answers.
+- claim: fig4gh-lapses-change-with-block
+  outcome: partially_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig4gh-lapses-change-with-block
+  notes: Left lapse higher in 20:80 (median 0.015, 46 of 60, p = 2.3e-06) and right lapse higher in
+    80:20 (0.018, 45 of 60, p = 2.2e-05); the directions hold with p < 0.05 but not with p < 1e-6
+    and 1e-7. Not affected by the answers.
+  deviations:
+  - 60 mice, against 98.
+- claim: fig4i-bias-shifts-with-block
+  outcome: partially_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig4i-bias-shifts-with-block
+  notes: Bias higher in 80:20 than in 20:80 in all 60 mice (median 7.11, p = 1.6e-11). This is the
+    smallest p a Wilcoxon test gives with 60 mice, so the paper's p < 1e-16 cannot be reached; the
+    criterion gives partial. Not affected by the answers.
+  deviations:
+  - 60 mice, against 98.
+- claim: fig4fi-no-lab-difference
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig4fi-no-lab-difference
+  notes: Corrected p for the eight per-block parameters 0.19 to 0.88 (code's test switch, FDR). Not
+    affected by the answers.
+- claim: fig4j-classifier-chance-full
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig4j-classifier-chance-full
+  notes: With the subsample answer the classifier runs with 5 mice per lab. Naive Bayes on the eight
+    per-block values of S2 (60 mice) has accuracy 0.176 +- 0.046; its 2.5th percentile (0.086) is
+    below the shuffled mean of 0.107, so it is not above chance. The code's 8 mice per lab cannot
+    run, as five labs hold fewer. Earlier outcome blocked (other).
+  deviations:
+  - 5 mice per lab, as for fig3f-classifier-chance-basic.
+- claim: fig5cf-glm-weights
+  outcome: partially_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig5cf-glm-weights
+  measured: [0.2021, 0.4299, 0.2974, 0.4404]
+  notes: Under the main reading of P1b the 100% weight is above 3 in both tasks (3.48 to 3.83) and
+    the history weights are positive, but no reading meets all parts. On the code's sessions with
+    reading (a), the 50% weight kept for the 7 of 70 mice shown 50% trials in the basic task, the
+    four history weights are within tolerance (0.2021, 0.4299, 0.2974, 0.4404) but the mean visual
+    weights do not increase with contrast; with reading (b), 50% trials dropped, they increase and
+    the basic unrewarded weight is 0.2966, just below 0.297. With the code's P1b, a variant, the
+    sessions of reading (b) meet all parts under both 50% readings, as does the pipeline's contrast
+    check on the code's sessions with reading (b). The answer on P1b (first full-task session at or
+    after P1) confirms the sessions used; the answer on the 50% weight names the two readings run,
+    and both give partial. The failure to increase under reading (a) is not an effect of averaging
+    the 50% weight over 7 mice and the others over 70; over the 7 mice with every weight the means
+    for 6.25% to 100% are 0.93, 1.55, 2.35, 8.05 and 3.25. Earlier outcome the same
+    (partially_reproduced). Measured is the code's sessions, reading (a).
+- claim: fig5dg-history-weights-higher-full
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig5dg-history-weights-higher-full
+  notes: On the code's sessions both weights are larger in the full task under every reading and
+    both 50% readings (main, rewarded t = 9.91 and 9.94, unrewarded t = 3.54 and 3.56, p < 0.001;
+    all readings, rewarded t = 8.91 to 10.69, unrewarded 3.54 to 3.79). On the sessions of reading
+    (b) the unrewarded difference is not significant (p = 0.10 to 0.39). The criterion takes its
+    weights from fig5cf-glm-weights, whose sessions are the code's with (b) a reading of the
+    Methods, and which allows a match under one reading; the code's sessions match here. The answers
+    changed P1 and named the 50% readings, which agree; earlier outcome the same (reproduced). The
+    verifier's round 1 gave partially_reproduced (see verifications).
+- claim: fig5s2-glm-accuracy
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig5s2-glm-accuracy
+  measured: [81.9, 83.5, 2.38, 3.14]
+  notes: Under the main reading, on the code's sessions, the legend's accuracy is 81.9% (basic) and
+    83.5% (full), within tolerance, and the full-task condition number 3.14 is within 3.2 +- 0.32.
+    The basic-task condition number is 2.38 under reading (b), 50% trials dropped (within 2.4 +-
+    0.24), and 2.89 under reading (a), the 50% weight kept for the 7 mice shown 50% trials
+    (outside). The criterion takes the fits of fig5cf-glm-weights and allows a match under one
+    reading, and all four values are within tolerance under reading (b). The code's accuracy reading gives
+    74.3% and 76.4%, also within tolerance; accuracy varies by less than 0.1% over fold seeds. The
+    revision before round 1 had blocked the claim under the notebook's own rule that readings of an
+    open detail must agree, which the criterion does not state; the verifier's round 1 gave
+    reproduced, and the rule is dropped. Measured is the code's sessions, reading (b).
+  deviations:
+  - The cross-validation seed is a standard choice (0), with seeds 0 to 4 shown.
+- claim: fig5s2-weights-similar-across-labs
+  outcome: not_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig5s2-weights-similar-across-labs
+  notes: Under the main reading 6 (code's sessions) and 7 (sessions of reading (b)) of the 19 lab
+    tests give p < 0.05, under both 50% readings, mostly visual weights (6.25% contrast in both
+    tasks, p = 0.001 to 0.046); the criterion allows two for partial. With the code's P1b, a
+    variant, 2 and 4 tests do; under the other variants 2 to 8. The answers changed P1 and P1b and
+    added reading (a) to the tests; earlier outcome the same (not_reproduced).
+- claim: fig5s1b-win-stay-lose-switch
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig5s1b-win-stay-lose-switch
+  notes: More than half the mice have both a positive corrected post-reward shift and a negative
+    corrected post-error shift, in each task (main, basic 0.587 of 63 mice, full 0.859 of 71; code
+    P1b, 0.596 and 0.833). The answers changed P1 and P1b; earlier outcome the same (reproduced).
+  deviations:
+  - '"More than half the mice have a positive ... and a negative ..." is read as mice with both;
+    the fractions for each alone are shown (0.71 to 0.97).'
+  - Run under the main reading of P1, with both readings of P1b, to keep the notebook within its
+    time limit.
+- claim: fig5s1c-updating-by-contrast
+  outcome: reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:fig5s1c-updating-by-contrast
+  notes: After rewarded trials, mean corrected updating after 0% and after 6.25% contrast exceeds
+    that after 100% in both tasks (main, full task 11.35 and 8.44 against 6.73%; basic 15.48 and
+    10.87 against 5.13%), and with the code's P1b. In the basic task the 0% value rests on 4 mice;
+    with 0% and 6.25% pooled the result is the same. The answers changed P1 and P1b; earlier outcome
+    the same (reproduced).
+  deviations:
+  - Run under the main reading of P1, with both readings of P1b, as for
+    fig5s1b-win-stay-lose-switch.
+- claim: session-end-criteria
+  outcome: not_reproduced
+  notebook: reproduce_ibl_2021.ipynb
+  output: claim:session-end-criteria
+  measured: [6539, 5698, 16.0, 14.0]
+  notes: The project mice have 6,539 sessions (against 10,903). 5,698 met an end criterion and 841
+    ended earlier (13%, against 5,316 of 10,903, 49%). Extra trials median 16.0, m.a.d. 14.0,
+    against 19 +- 1.9 and 16 +- 1.6. Only the count of sessions meeting a criterion is within
+    tolerance, while the share differs. Per training day, counting a day as met when a session met
+    a criterion or the day's sessions lasted 90 minutes or more, 5,683 of 6,435 days met one. The
+    criterion defines the count per training day, but the outcome is decided on the per-session
+    count; the outcome is the same either way.
+    Recomputing the criteria also for the 722 sessions whose status is False, a variant, gives
+    5,734 of 6,539 (88%), with the same extra trials. Not affected by the answers.
+  deviations:
+  - The end status is the rig setting SUBJECT_DISENGAGED_TRIGGERED with its trial number, taken as
+    the pipeline's SessionEndCriteriaImplemented; for the 486 sessions without it the criteria of
+    the legend are recomputed, and a status of False counts as not met (recomputed in a variant).
+findings:
+- kind: data_missing
+  statement: The dandiset holds 178 mice and 6,615 sessions from 2019-06-11 to 2020-03-23. The
+    paper's mice began training in January 2019 (206 mice, 10,903 sessions), so 41 mice of the
+    project begin mid-training in the dandiset and the mice trained before June 2019 are missing.
+- kind: data_missing
+  statement: The training status of each session (in_training, trained_1a, trained_1b,
+    ready4ephysrig and so on), on which every analysis of the paper selects sessions, is not in the
+    files. It has to be recomputed from the trials, which leaves open details of the criteria.
+- kind: other
+  statement: One recording is deposited twice, under two mice (CSHL_013 and CSHL_015, 2019-07-15,
+    identical trials and start time).
+- kind: metadata_error
+  statement: probabilityLeft is described as the probability of a left stimulus for the current
+    block, but in every basic-task session it varies from trial to trial between 0 and 1 (24% of
+    basic-task trials are not 0.5), with the stimulus side following it.
+- kind: metadata_error
+  statement: session_start_time is stated in UTC (+00:00) but holds local clock times; all seven
+    labs, from London to Berkeley, have median start hours between 11.0 and 14.4 h.
+- kind: format_error
+  statement: In 807 files the wheel position data and its timestamps differ in length (for example
+    181,623 samples against 340,799 timestamps); 16 files have
+    no wheel series. In one session checked (ibl_witten_07), the wheel moves the opposite way to the
+    choice on every trial.
+- kind: other
+  statement: 257,021 trials (6%) have no stimulus onset time, and 185 sessions have none; 1,541
+    trials in 220 sessions have a response time before the stimulus onset (down to -5,638 s). No
+    proficiency window of this attempt fails for the missing onsets alone.
+- kind: other
+  statement: One session (ZM_1367, 2019-06-11) uses contrasts of 4% and 8%, which the paper does
+    not describe.
+- kind: paper_inconsistency
+  statement: The Methods give the 1a/1b performance criterion on easy trials and the Results give
+    the lapse criterion as a maximum of 0.2 for the sum of the lapses, while Appendix 1, table 1d
+    gives performance on 100% contrast and a bound on each lapse rate. After the answers of
+    2026-10-22 the claims file follows the pipeline's code for performance (easy trials) and the
+    table for the lapses; with performance on 100% contrast only, 84 mice reach P1 against 83.
+- kind: metadata_insufficient
+  statement: The dandiset's metadata do not say which of its 178 mice are the paper's; one mouse
+    (SWC_029) belongs to another project by its subject record.
+verifications:
+- date: '2026-10-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The executed notebook of the run after the answers of 2026-10-22 (commit 64c34593), with the
+    conclusion cells and the summary removed, the helper module, the claims file and the paper. The verifier
+    tested helper functions on synthetic inputs and checked the archive's versions and file lists. Report
+    in transcripts/000045/verifier-1-report.md. The cell numbers in the reasons below refer to that
+    notebook, not to the current one.
+  results:
+  - claim: cohort-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Cells 9 and 12 give 136 started, 83 at P1 (main reading) and 60 at P2, against 206/140/98.
+      The dataset only covers 2019-06-11 to 2020-03-23 (178 subjects). The criterion judges on the counts.
+      It also asked (problem 1) how many 1b or P2 windows fail only because missing stimOn leaves the
+      median 0% reaction time NaN, as P1 status, the P1b variant and P2 could be undercounted, and (problem
+      8) noted that full_proficiency slides over full-task days, not sessions, which can differ on the
+      73 days with more than one session.
+    response: 'No change of outcome. Added the windows that meet every 1b or P2 criterion but an undefined
+      reaction time: 0 under every reading of P1 and 0 for P2, so no count changes. Added the full-task
+      days with more than one full-task session at or before P2 (or on any day of a mouse without P2):
+      10 days in 7 mice, which bounds the effect of counting over days.'
+  - claim: fig2g-days-to-proficiency
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 14, main/incl: mean 19.87 and max 58 are in tolerance; s.d. 11.39 (needs >= 11.7) and
+      min 5 (needs 3) are not. The excl count gives the same split. It also noted (problem 2) that a mouse
+      that started stage 1 before 2019-06-11 would pass the complete-history test with its training days
+      undercounted, and that the notebook never shows how many complete mice start on that date.'
+    response: 'No change of outcome. Added the first-session dates of the 136 whole-training mice: 5 start
+      on 2019-06-11 and 6 in the dataset''s first 7 days. Without the 2 of them that reach P1 the mean
+      is 19.40 days, s.d. 10.98, min 5, max 58, two of four in tolerance. The five fastest mice start
+      between 2019-08-06 and 2019-11-21.'
+  - claim: fig2g-days-differ-across-labs
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cell 16: Kruskal-Wallis p=0.029, so the labs differ at 0.05 but not at the required <0.001.
+      Lab 2 IQR 7.75 is in tolerance; Lab 6 IQR 5.75 is far from 22.'
+    response: 'Outcome changed from not_reproduced to partially_reproduced: the difference across labs
+      is present but weaker, and one of the two ranges matches.'
+  - claim: fig2s1-trials-to-proficiency
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 18: the mean of 11,839 and the 7,329 trials to reach 80% are in tolerance. s.d. 7,515,
+      min 2,357 and max 34,998 are not.'
+    response: No change of outcome.
+  - claim: fig2h-proportion-learned-40-days
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 20, main reading: Kaplan-Meier 0.749 (incl) / 0.741 (excl) at day 40, within 0.8+-0.08,
+      and 1.0 at the last day; over 136 mice, not 206. It also noted (problem 6) that the excl count gives
+      events p1_tday0 but leaves censored mice at max(tday0)+1, mixing the two counts, and that the drop_in_training
+      rule (a session in the last 7 days) is the author''s own and only a variant.'
+    response: No change of outcome. Mice without P1 are now censored at their last training day counted
+      the same way as the events; the excl count moves from 0.741 to 0.749. The drop_in_training rule
+      stays a variant and is listed as a deviation.
+  - claim: fig2bc-threshold-bias-iqr
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 22: at most 4 of 8 bounds are in tolerance under any reading. The early bias IQR (-8.4
+      to 6.1) and the early threshold upper bound (24.3 vs 29) miss. The threshold IQR does narrow.'
+    response: No change of outcome.
+  - claim: fig2-abs-bias-threshold-during-training
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 24, main/filtered/pooled: means 8.82 and 18.39 are in tolerance, which is what the criterion
+      requires. The s.d.s (6.4 vs 12.1; 8.8 vs 11.7) are well below the paper''s.'
+    response: No change of outcome.
+  - claim: fig2s2-variability-decreases
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 26: the mean rises and the s.d. falls under every reading. At most 3 of 4 values are
+      in tolerance (day-15 s.d. is 15-17 vs 19.1).'
+    response: No change of outcome.
+  - claim: early-sessions-predict-slow-learners
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 28: accuracy readings range 0.14-0.67. Some are near 0.53 and some are at chance (base
+      rate 0.253), so the readings disagree. The criterion says that case is blocked.'
+    response: No change of outcome.
+  - claim: fig3c-easy-errors-basic
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 32, main reading: s.d. 3.79 is in tolerance; mean 8.41 is just outside 9.5+-0.95.'
+    response: No change of outcome.
+  - claim: fig3de-threshold-bias-basic
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 34, main reading over mice: all four values (14.09, 3.80, -0.46, 8.09) are in tolerance.'
+    response: No change of outcome.
+  - claim: fig3cde-no-lab-difference-medians
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 37, main reading: smallest FDR-corrected Kruskal-Wallis p is 0.287. (Both 1b-replace
+      variants fail.)'
+    response: No change of outcome.
+  - claim: fig3cde-no-lab-difference-variances
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 37: smallest FDR-corrected Levene p is 0.268.'
+    response: No change of outcome.
+  - claim: fig3s2a-trial-duration
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cell 39: s.d. 219 ms is in tolerance. Median 420.4 ms is just outside (needs >= 421.2). Lab
+      p=0.061 uncorrected, so the lab difference is not shown.'
+    response: 'Outcome changed from not_reproduced to partially_reproduced: one of the two values is within
+      tolerance and the other just outside. The measured median is recorded as 420.45 ms, as printed.'
+  - claim: fig3s2b-trials-per-session
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 41: ANOVA p=1.2e-4 (not <1e-6), s.d. 197 is out of tolerance, the mean is in. All significant
+      Tukey pairs involve Lab 7. It also noted (problem 5) that the column p_anova_fdr holds a Kruskal-Wallis
+      FDR value, not an ANOVA one.'
+    response: No change of outcome. The column is renamed p_kw_fdr.
+  - claim: fig3f-classifier-chance-basic
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 73: accuracy 0.140+-0.063; 2.5th percentile 0.029 <= null 0.106. The notebook''s chance
+      level of 0.106 matches the paper''s 0.11.'
+    response: No change of outcome.
+  - claim: fig3f-positive-control
+    agrees: true
+    outcome: reproduced
+    reason: 'Cells 73-74: 2.5th percentile 0.257 > null 0.118. All off-diagonal mass falls on same-time-zone
+      labs.'
+    response: No change of outcome.
+  - claim: fig3s3-other-classifiers
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cell 73: Logistic Regression is not above chance (2.5th percentile 0.000 vs 0.070). Cell
+      75: Random Forest ran only 6 of the 2000 subsamples; those 6 are not above chance, but that decides
+      nothing. It also noted (problem 4) that the Random Forest needs about 4.9 h single-threaded on data
+      already loaded, a block that is not a data limit, and asked for the full 2000-subsample run in parallel.'
+    response: Outcome changed from blocked (not_runnable) to reproduced. The classifier now runs in 4
+      processes, drawing the same sequence of subsamples; 2000 would still take about 2 h, beyond the
+      30-minute limit, so the first 50 are run, with a bootstrap interval. Its 2.5th percentile is 0.035
+      (95% interval 0.029 to 0.057) against a shuffled mean of 0.100, so it is not above chance, as for
+      Logistic Regression. The 50 subsamples are recorded as a deviation.
+  - claim: lab-link
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 43: the 7 institutions map one-to-one to the 7 labs. The start times labelled +00:00
+      are not UTC (Berkeley''s median of 11.0 would be 04:00 local); they look like local times.'
+    response: No change of outcome.
+  - claim: fig3s1a-choice-consistency-basic
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 45: p=0.458 on S1, and >= 0.44 under all variants.'
+    response: No change of outcome.
+  - claim: fig3s1bc-choice-consistency-full
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 49: choice consistency by block gives p=0.0168 (<0.05). The bias-shift test gives p=0.154.'
+    response: No change of outcome.
+  - claim: fig3s4-looser-criterion
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cell 51: 91 mice vs 150+-15. Trials per session differs (FDR p=0.002) as claimed, but trials
+      per minute also differs (FDR p=0.002). Cell 73: the classifier is not above chance.'
+    response: 'Outcome changed from not_reproduced to partially_reproduced: trials per session differs,
+      four of the other five variables do not, and the classifier is at chance; trials per minute and
+      the count do not match.'
+  - claim: fig3s5-first-full-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 56, main reading: threshold 20:80 p=0.022, threshold 50:50 p=0.038 and 100%-contrast
+      performance p=0.022 (Kruskal-Wallis, uncorrected as the legend names it). Only the code''s Holm-Sidak
+      variant passes (min 0.14).'
+    response: No change of outcome.
+  - claim: fig3s5a-prior-used-from-first-sessions
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 59: median bias difference 4.45, 69 of 72 mice positive, p=2e-13.'
+    response: No change of outcome.
+  - claim: full-task-training-time
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 61: mean days 29.4 and mean trials 19,637 are in tolerance. Both s.d.s, the min and
+      the max (days and trials) are out, over 60 mice.'
+    response: 'No change of outcome. The checks added for cohort-counts (missing onsets, days with several
+      sessions) bear on P2 here too: no P2 window fails for the missing onsets alone.'
+  - claim: fig4cd-biasshift-largest-at-zero
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 63: mean 28.0 vs 28.5+-2.85, and the lab mean peaks at 0% in all 7 labs.'
+    response: No change of outcome.
+  - claim: fig4de-biasshift-no-lab-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 65: ANOVA p=0.072.'
+    response: No change of outcome.
+  - claim: fig4f-threshold-unchanged-by-block
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 67: Wilcoxon p=0.80.'
+    response: No change of outcome.
+  - claim: fig4gh-lapses-change-with-block
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 68: both directions hold, but p=2.3e-6 and 2.2e-5 miss the 1e-6 and 1e-7 bounds, which
+      n=60 could reach.'
+    response: No change of outcome.
+  - claim: fig4i-bias-shifts-with-block
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 69: all 60 mice go the right way, p=1.6e-11. That is the floor for n=60, so p<1e-16
+      cannot be reached with this sample.'
+    response: No change of outcome.
+  - claim: fig4fi-no-lab-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 71: smallest FDR-corrected p is 0.189.'
+    response: No change of outcome.
+  - claim: fig4j-classifier-chance-full
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 73: 2.5th percentile 0.086 <= null 0.107.'
+    response: No change of outcome.
+  - claim: fig5cf-glm-weights
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 80, main reading: 100% weight is 3.6 in both tasks. Without the 50% weight, the unrewarded
+      basic weight of 0.2966 misses tolerance (>= 0.297) by 0.0004. With it, all 4 history weights are
+      in tolerance but the increasing check fails, which may be an artifact of comparing the mean 50%
+      weight over the 7 mice that have it with means over about 70 mice (problem 3); the per-contrast
+      means are not printed. Only the variant P1b passes everything.'
+    response: No change of outcome. Added the mean visual weights per contrast, over all mice and over
+      the mice with every weight. Over the 7 mice with a 50% weight the means for 6.25% to 100% are 0.93,
+      1.55, 2.35, 8.05 and 3.25, so the 50% weight exceeds the 100% weight in those mice too, and the
+      failure is not an artifact of the denominators.
+  - claim: fig5dg-history-weights-higher-full
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cell 82: the rewarded test passes under every reading (t about 9.9). The unrewarded test
+      passes with the code''s sessions (t=3.54, p=7e-4) but fails with reading (b) (p=0.30).'
+    response: Outcome kept as reproduced; the disagreement is recorded. The criterion takes its weights
+      from fig5cf-glm-weights, whose sessions are the code's, with (b) a reading of the Methods, and which
+      is reproduced when it matches under one reading; the verifier applies that rule to fig5s2-glm-accuracy,
+      and on the code's sessions both tests pass under both 50% readings. The notebook's conclusion now
+      says this.
+  - claim: fig5s2-glm-accuracy
+    agrees: false
+    outcome: reproduced
+    reason: 'Cell 84: accuracy (81.9 / 83.5) and full-model condition number 3.14 are in tolerance under
+      every reading. Basic condition number is 2.38 under the code''s model (no 50% trials), which reproduces
+      as fig5cf''s under-one-reading rule allows. The notebook''s blocked depends on its own agree-or-block
+      rule, not on the criterion (problem 4).'
+    response: Outcome changed from blocked (methods_underspecified) to reproduced, measured under reading
+      (b). The rule that readings of a detail the paper does not fix must agree is removed from the notebook's
+      header; no other outcome rested on it.
+  - claim: fig5s2-weights-similar-across-labs
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 86, main reading: 6-7 of 19 lab tests give p<0.05, all on visual weights. The criterion
+      allows at most 2 for partial.'
+    response: No change of outcome.
+  - claim: fig5s1b-win-stay-lose-switch
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 88: share of mice with both signs is 0.587 (basic) and 0.859 (full).'
+    response: No change of outcome.
+  - claim: fig5s1c-updating-by-contrast
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 90: updating after 0% and after 6.25% exceeds that after 100% in both tasks. The basic-task
+      0% mean rests on only 4 mice; the pooled 0+6.25% value (69 mice) agrees.'
+    response: No change of outcome.
+  - claim: session-end-criteria
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 92: 6,539 sessions, 5,698 met a criterion (87% vs the paper''s 51%), extra trials median
+      16 / m.a.d. 14 vs 19+-1.9 / 16+-1.6. It also noted (problem 7) that sessions with disengaged ==
+      False (727) count as not met with no recomputation while None is recomputed, which is not justified,
+      though the totals miss tolerance either way.'
+    response: 'No change of outcome. Added a variant that recomputes the criteria also for the 722 project-mouse
+      sessions with status False: 5,734 of 6,539 (88%) meet a criterion, extra trials median 16.0, m.a.d.
+      14.0.'
+- date: '2026-10-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the run after the first revision (commit 93266b68), the helper module, the claims
+    file, the paper and this record. Report in transcripts/000045/verifier-2-report.md. Points not tied to a claim were
+    fixed as follows. The loading time is now given as three to four minutes in the README and cells 0 and 2 (cell 3
+    prints 3.4 min in the reviewed run, 3.6 min in the re-run). The round-1 record now says its cell numbers refer to
+    the round-1 notebook. The entry was re-run; every conclusion matches the new outputs.
+  results:
+  - claim: cohort-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees. B1 resolved, cell 12 shows 0 windows that fail only on an undefined reaction time,
+      under every reading and for P2; B2 resolved, cell 9 shows 5 whole-training mice start on 2019-06-11 and
+      6 in the first week; B8 resolved, at most 7 mice could change (cell 12), which cannot close the gap of
+      60 against 98."
+    response: "No change of outcome. The data finding on the wheel no longer says the timestamps are not
+      monotonic, which no output shows (the verifier noted that cell 7 prints only the length mismatch)."
+  - claim: fig2g-days-to-proficiency
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. B2 resolved, cell 15: dropping the 2 early-start mice that reach P1 leaves two of four
+      values in tolerance; the five fastest mice start between August and November."
+    response: "No change of outcome."
+  - claim: fig2g-days-differ-across-labs
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees, as in round 1. Cell 18, p = 0.029. Lab 2 IQR is 7.75 (in tolerance), Lab 6 IQR is 5.75
+      (not)."
+    response: "No change of outcome."
+  - claim: fig2s1-trials-to-proficiency
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig2h-proportion-learned-40-days
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees. B6 resolved; censoring now uses the same day count as the events (cell 24)."
+    response: "No change of outcome."
+  - claim: fig2bc-threshold-bias-iqr
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. Cell 28 says the bias ranges are shifted to the left; the early range is shifted, but
+      the later range (-8.6 to 7.1 against -5.6 to 6.5) is wider, not just shifted, with its upper bound above
+      the paper's."
+    response: "No change of outcome. The conclusion now says the early bias range is shifted to the left and
+      the later one is wider than the paper's, with its upper bound above it."
+  - claim: fig2-abs-bias-threshold-during-training
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig2s2-variability-decreases
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. Cell 34 and the record say the two means are within tolerance under most readings; cell
+      33 shows both means within tolerance under every reading, all 20 rows, so the sentence understates the
+      result."
+    response: "No change of outcome. The conclusion and the record now say the means are within tolerance
+      under every reading (cell 33, all 20 rows)."
+  - claim: early-sessions-predict-slow-learners
+    agrees: true
+    outcome: blocked
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3c-easy-errors-basic
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3de-threshold-bias-basic
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3cde-no-lab-difference-medians
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3cde-no-lab-difference-variances
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3s2a-trial-duration
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. Cell 52, median 420.45 ms, s.d. 219 ms, Kruskal-Wallis p = 0.061."
+    response: "No change of outcome."
+  - claim: fig3s2b-trials-per-session
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. B5 resolved; the column is now p_kw_fdr (cell 55)."
+    response: "No change of outcome."
+  - claim: fig3f-classifier-chance-basic
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3f-positive-control
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3s3-other-classifiers
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; in round 1 it gave partially_reproduced. Logistic Regression ran the full 2000
+      subsamples (2.5th percentile 0.000 against a shuffled mean of 0.070). The Random Forest ran 50 of the
+      2000 (cell 101); its 2.5th percentile is 0.035 and the bootstrap 95% interval tops out at 0.057, well
+      under the shuffled mean of 0.100, so more subsamples are very unlikely to change the result; the 50 are
+      recorded as a deviation. B4 resolved. The record's sentence that a run of 100 subsamples while preparing
+      agreed is supported by no printed output."
+    response: "No change of outcome. The sentence on the run of 100 subsamples is removed from the record.
+      The 50 subsamples remain a deviation; 2000 would take about 122 min (cell 101)."
+  - claim: lab-link
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3s1a-choice-consistency-basic
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3s1bc-choice-consistency-full
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3s4-looser-criterion
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. Cell 69, 91 mice; trials per minute has corrected p = 0.0022. Cell 99, the classifier
+      is not above chance."
+    response: "No change of outcome."
+  - claim: fig3s5-first-full-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3s5a-prior-used-from-first-sessions
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: full-task-training-time
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig4cd-biasshift-largest-at-zero
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig4de-biasshift-no-lab-difference
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig4f-threshold-unchanged-by-block
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig4gh-lapses-change-with-block
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig4i-bias-shifts-with-block
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig4fi-no-lab-difference
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig4j-classifier-chance-full
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig5cf-glm-weights
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. B3 resolved, cell 112: over the 7 mice that have every weight, 0.93, 1.55, 2.35, 8.05
+      and 3.25 for 6.25% to 100%; the 50% weight is above the 100% weight, so the failure to increase is real.
+      Under the main reading of P1b it meets every part under no reading; it passes only under variants (rows
+      6, 7 and 9)."
+    response: "No change of outcome. The notes of fig5dg and fig5s2-glm-accuracy no longer say fig5cf
+      matches under one reading (see those claims)."
+  - claim: fig5dg-history-weights-higher-full
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; in round 1 it said partially_reproduced. The criterion takes the weights from fig5cf,
+      whose criterion names the code's sessions first and treats (b) as a reading of the Methods; on the
+      code's sessions both t-tests pass under every reading of P1 and both 50% readings (cell 115). It
+      accepted a match under one reading for fig5s2-glm-accuracy in round 1, so the same rule applies; the
+      failure under (b) (p = 0.10 to 0.39) is disclosed. Cell 119 and the record say fig5cf is one which
+      matches under one reading; under the main reading of P1b fig5cf meets every part under no reading, so
+      the sentence should say the criterion allows a match under one reading. The outcome does not depend on
+      this wording."
+    response: "No change of outcome. The conclusion and the record now say the criterion allows a match
+      under one reading, not that fig5cf matched."
+  - claim: fig5s2-glm-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees, as in round 1. Cell 118, code's sessions with 50% trials dropped, 81.9, 83.5, 2.38 and
+      3.14, all in tolerance. The same wording point as fig5dg applies to its sentence that fig5cf matches
+      under one reading; the outcome does not depend on it."
+    response: "No change of outcome. The conclusion and the record now say the criterion takes the fits of
+      fig5cf-glm-weights and allows a match under one reading."
+  - claim: fig5s2-weights-similar-across-labs
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig5s1b-win-stay-lose-switch
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig5s1c-updating-by-contrast
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: session-end-criteria
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees. B7 resolved by a variant, 5,734 of 6,539 meet a criterion (cell 130). The record's
+      \"Per training day, 5,683 of 6,435 met a criterion\" uses a count that cell 130 labels \"met (status or
+      90 min)\", so the 90-minute rule is included; also the criterion defines the count per training day
+      while the notebook decides on the per-session count. The outcome is the same either way."
+    response: "No change of outcome. The record now says the per-day count includes days whose sessions
+      lasted 90 minutes or more, and that the outcome is decided on the per-session count, with the same
+      outcome either way."

@@ -1,0 +1,121 @@
+I ran `tools/readme_row.py 000013 --write`, which added the 000013 row to README.md (22 reproduced, 1 partially, 8 not reproduced, 14 blocked). I then added the subsection below at the end of `docs/pilot-notes.md`. The `catalystneuro` field for 000013 is empty, so the CatalystNeuro opening sentence is left out. The run had only two verification rounds and no step failed. Nothing is committed.
+
+### 000013, Hires et al. 2015
+
+Twenty-two claims reproduced, one partially, eight not reproduced and
+fourteen blocked, all on the dandiset and all blocked as
+`methods_underspecified`. It pins version 0.220126.2143, the only published
+version, as the paper predates the dandiset and cites none; the draft holds
+the same 52 blobs. The claims check added `example-cell-phase-modulation`, so
+the file has 45 claims. The author put seven questions to a reader; the
+answers changed four outcomes. They set the start of the touch response
+cutoff search at the transition where the curve levels off, keeping the
+literal search from 1 ms only as a variant, so `table1-l4-c2` moved from
+blocked to reproduced and `table1-l5` from blocked to partially reproduced;
+they made the phase decoder use the phase-tuning cycles, so
+`fig4c-phase-decoding` moved from not reproduced to blocked; and they made
+"median higher" the median of the per-cell differences, so
+`whisking-rate-l5-increase` moved from partially reproduced to reproduced.
+Round 1 gave its own outcome for each claim from the executed notebook with
+its conclusions and summary removed and agreed with 36 of 45.
+`behavior-whisking-bouts`, `behavior-touches-reaction` and
+`example-cell-touch-window` moved from partially reproduced to not
+reproduced, as their criteria need every value within tolerance and give no
+rule for a partial match. With the whisking periods corrected,
+`whisking-rate-l4-no-change` moved from partially reproduced to blocked (L4
+C2 p = 0.595 with touch epochs left out of whisking, p = 1.28e-7 with them
+in), and with phase cycles taken from the whole trial fig4c moved from
+blocked to not reproduced. The author kept `example-cell-ff-around-touch`,
+`table1-l4-outside` and `fig5-modulation-correlations` blocked because their
+readings disagree, and `fig3c-touch-spikes-outside`,
+`fig3d-touch-phase-outside` and `fig4a-touch-detection-outside` blocked
+because they depend on blocked claims; round 2 accepted these and agreed
+with all 45, so there was no third round. The paper, "Low-noise encoding of
+active touch by layer 4 in the somatosensory cortex" in eLife, describes 52
+loose-seal cell-attached recordings from L4 cells in the C2 barrel, L4 cells
+outside C2 and L5 cells near C2 in mice trimmed to the C2 whisker and
+localizing a pole in a go/no-go task, and reports that L4 C2 touch responses
+are temporally precise, that 15 L4 C2 neurons detect 95% of touches, that 200
+of them decode the time since touch with a minimum uncertainty of 0.55 ms,
+and that the Fano factor after touch lies close to the binomial limit. No
+claim is blocked for lack of data, so the recordings, behaviour, the example
+cell, Table 1, phase modulation, whisking rates, touch-coupled spikes, the
+decoders, modulation indices and Fano factors were all tested.
+`recordings-mice` is not reproduced because the files hold 23 subjects
+against 21 mice, `latency-determinable` because 7 (first touches) or 10 (all
+touches) L4 cells outside C2 have a latency against 4,
+`fig4b-touch-time-precision` because the RMS error is 1.09 to 1.40 ms against
+0.55 +/- 0.055, `text-whisking-rates` because no reading puts both rates in
+tolerance, and fig4c because C2 is far from 24 +/- 2.4 deg and worse than
+outside C2 under every reading. `fig3c-touch-spikes-l4c2`, on which the
+other Figure 3 claims depend, `fig4a-touch-detection-c2` (12 to 30 neurons,
+only one reading at 14 within 15 +/- 1.5) and `fig6d-not-refractory` are
+blocked because their readings disagree. Some
+outcomes rest on weak ground: table1-l4-c2 sits exactly at its threshold, 15
+of 18; the criterion's latency rule gives noise latencies of 0 and 1 ms that
+count as determined; fig4c's criterion ends "else methods_underspecified",
+which the record reads as its rule for readings that disagree, a reading
+round 2 called reasonable but not the literal text; and among the claims
+blocked by dependency, the fig3c and fig3d outside claims fail under every
+reading and fig4a-touch-detection-outside holds under every reading.
+
+All 52 recordings are present and none is deposited twice. In 36 files the
+SpikeTrain timestamps run 10 ms before the CurrentClampSeries timestamps of
+the same samples; under the spike timestamps the median L4 C2 touch-response
+peak is 8 ms in the files without the offset and 12 ms in those with it (rank
+sum p = 0.016), and 8 and 22 ms under the voltage timestamps, so the data are
+consistent with the voltage timestamps of the 36 files being 10 ms late, and
+a residual 4 ms difference is not explained. In 38 files the
+CurrentClampSeries data, with the stated conversion of 0.001 to volts, span
+only 2 to 26 microvolts, so the conversion is off by 1000 (the other 14 span
+3 to 28 mV). In 38 files theta_filt, described as theta_at_base filtered 6 to
+60 Hz, is not the signal the stored amplitude and phase come from (up to 46
+deg apart), while in 14 it equals amplitude times cos(phase); the stored
+amplitude and phase match a 6 to 60 Hz Butterworth band-pass and Hilbert
+transform of theta_at_base. set_point is described as the amplitude of the
+Hilbert transform but follows theta minus its band-passed part (r 0.96 to
+1.00) and holds missing values in 23 files. pole_position is described in mm,
+but its values range from 0.2 to 1.6 in some files, 992 to 13888 (motor
+steps) in others, about 1e8 in others and up to 1.4e12 in one. Three subjects
+(anm211295, anm215592, anm217330; six cells) have no genotype, the paper's
+VGAT-ChR2 mice by their counts, and the files hold 23 subjects where the
+paper reports 21 mice, with the C57BL6 and Ai32 x PV-Cre counts off by one
+cell each, so the mapping of subjects to the paper's animals is not given.
+Other findings: 30 files are named with an ogen suffix, but no file holds an
+optogenetic stimulus series and stim_present is 0 in every trial;
+first_lick_time disagrees with the lick onset series by up to 3.1 s, with 47
+trials having licks and no first_lick_time and 136 a first_lick_time and no
+lick; and the paper's analysis code is not public, the repository it links
+holding only the contact detection.
+
+The notebook ran in 8.7 minutes (530 s) in three runs through `entry.py all`,
+all passing, 8.7 minutes after the answers, 12.1 minutes after round 1 and
+7.5 minutes in the last of two runs after round 2. During development the
+first loader took 13 minutes, until loading in separate processes cut it to
+80 s. Round 1's points led to whisking periods that leave out licking cycles
+and the 70 ms after each touch, phase tuning over every phase-analysis cycle
+of the trial and not only the sample epoch, a touch detector that reads the
+fraction detected at the time point of best percent correct with ties broken
+at the middle threshold (the earlier rule counted every sample as a touch),
+50 repetitions in place of 20, the zero-median checks counted in Table 1, and
+per-file touch-peak latencies by clock offset, per-cell touch windows and the
+rows where cell 11 matches. Round 2 could not check the dependency rule, as
+the protocol was not among its materials, and found statements the outputs
+did not support, among them l5-higher-rates medians from the earlier
+whisking mask, p = 0.971 where the output printed 0.798, fig4c medians that
+hold only over the 42 and 38 of 100 runs reaching 76% correct, a README run
+time of twelve minutes against 8.8 printed, and a synthetic detector value of
+0.15 that no output showed, which a new cell now gives as 0.329 at 0.541
+percent correct; these were corrected. Untracked dotfiles in the repository
+root that the author did not create were left alone. The author's points on
+the protocol: one literal reading can block many claims, as ten claims hinge
+on two readings of the cutoff rule, one of them degenerate; a blocked
+dependency hides a clear failure, as in fig3c-touch-spikes-outside; a
+criterion's fallback can conflict with the protocol, as fig4c's does; Table
+1's 256 combinations of readings make an agreed outcome nearly impossible;
+"any cell" criteria let chance decide, as cell 11 matches in 2 of 394 tries;
+`measured` has no slot for a value never reached; the suggested clock check
+does not fit continuous trial data; no published version is cited; the
+no-download rule left the author caching reduced arrays in `$TMPDIR` while
+developing; and the advice that h5py with remfile serialises reads across
+threads, so loading needs separate processes, belongs in `docs/archives.md`.
