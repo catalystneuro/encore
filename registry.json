@@ -3474,6 +3474,10 @@
     "ready": null,
     "date": null
    },
+   "dandi:000402": {
+    "ready": true,
+    "date": "2026-10-23"
+   },
    "dandi:000404": {
     "ready": true,
     "date": "2026-10-23"
@@ -13924,6 +13928,270 @@
       "source": "Figure 7H to 7K; Results, Radial Astrocytes Integrate Evidence that Actions Are Futile, paragraph 1",
       "quote": "Glial Ca2+ rose fastest when P = 0 (always futile), did not rise when P = 1 (always effective), and increased at intermediate rates for intermediate P ... Glial signals increased with number of failed bouts",
       "criterion": ""
+     }
+    ]
+   }
+  ],
+  "dandi:000402": [
+   {
+    "path": "claims/000402/10.1038-s41586-025-08790-w.yaml",
+    "paper": "10.1038/s41586-025-08790-w",
+    "check": {
+     "ready": true,
+     "date": "2026-10-23"
+    },
+    "claims": [
+     {
+      "id": "scans-14-p75-p81",
+      "statement": "The calcium imaging data comprise 14 scans of one mouse, collected between P75 and P81, spanning a volume of about 1,200 x 1,100 x 500 um.",
+      "source": "Results, 2P calcium imaging, paragraph 1; Methods, 2P functional imaging",
+      "quote": "The dataset contains 14 individual scans, collected between postnatal day 75 (P75) and P81, spanning a volume of approximately 1,200 \u00d7 1,100 \u00d7 500 \u00b5m 3",
+      "criterion": "Count the distinct scans (session and scan index) and the distinct days on which they were recorded. The scan count is exact, as it is a count of files the paper lists. The ages are judged from the recording dates against the birth date of 19 December 2017 (Methods, Timeline); P75 to P81 (main text) and P75 to P80 (Methods timeline) are both readings the paper allows, and the claim holds when the dates fall within P75 to P81. The 6 days are the days of imaging of the 19 completed scans (Methods, 2P functional imaging); the 14 kept scans may span fewer, so a count of 6 or fewer days is consistent with the paper."
+     },
+     {
+      "id": "scan-configurations",
+      "statement": "Eleven scans were imaged at 6.3 Hz with four depths (eight fields), two at 8.6 Hz with three depths (six fields) and one at 9.6 Hz with two depths (four fields); in the 11 scans the four planes span roughly 300 to 400 um.",
+      "source": "Methods, 2P functional imaging, paragraph 1; Results, 2P calcium imaging, paragraph 2",
+      "quote": "For 11 scans, imaging was performed at 6.3 Hz, collecting eight 620 \u00d7 1,100 \u03bcm fields per frame ... For 2 scans, imaging was performed at 8.6 Hz, collecting six 620 \u00d7 1,100 \u03bcm fields per frame ... For 1 scan, imaging was performed at 9.6 Hz, collecting four 620 \u00d7 1,000 \u03bcm fields per frame",
+      "criterion": "Per scan, the imaging rate, the number of fields and of distinct depths, from the dataset's imaging metadata. A scan matches a group when its rate is within 0.1 Hz of the group's (a standard choice, as the rates are printed to one decimal) and its number of depths is the group's; a field is one 620 um wide strip, and two fields per depth tile the field of view (Methods). The counts are exact. The depth span is the range from 300 to 400 um widened by 10% of each bound (270 to 440 um), as the protocol sets for a range. The paper does not say whether the range bounds every scan or describes the typical scan; the readings are (a) the span of each of the 11 scans lies in 270 to 440 um; (b) the median span of the 11 scans does."
+     },
+     {
+      "id": "masks-125413-somatic-115372",
+      "statement": "In total 125,413 masks were segmented across the 14 scans, of which 115,372 were classified as somatic by a trained classifier (8.1% excluded).",
+      "source": "Results, 2P calcium imaging, paragraph 2; Methods, 2P functional imaging, paragraph 3",
+      "quote": "In total, 125,413 masks were generated across 14 scans, of which 115,372 were automatically classified as somatic masks by a trained classifier",
+      "criterion": "Count all segmented masks (units) over the 14 scans, and those the dataset marks as somatic. The paper does not say whether the dataset holds the non-somatic masks. The readings are (a) the dataset holds all masks with a somatic label, and both counts are tested; (b) it holds only the somatic masks, and only the 115,372 is tested, the total being untestable. The Methods' 8.1% does not equal 1 - 115,372/125,413 (8.0%); both are within the tolerance."
+     },
+     {
+      "id": "unique-neurons-75909",
+      "statement": "Consolidating masks imaged in more than one scan by their 3D position in the structural stack gives an estimated 75,909 unique functionally imaged neurons.",
+      "source": "Results, 2P calcium imaging, paragraph 4; Methods, 2P structural stack, paragraph 2",
+      "quote": "we estimate the functional imaging volume contains 75,909 unique functionally imaged neurons consolidated from 115,372 segmented somatic masks, with many neurons imaged in 2 or more scans",
+      "criterion": "The method is from the Methods (2P structural stack). Each scan field is registered into the structural stack and each somatic mask gets a 3D centroid; the closest 2 cells from different scans are grouped, iteratively, until all pairs are at least 10 um apart or a further join produces a mask taller than 20 um in z. The paper does not say how the height of a group is measured. The readings are (a) the range in z of the centroids in the group; (b) that range plus the z extent of one field's mask. It also does not say whether distances to a group are taken from its mean centroid or from its nearest member; the readings are (i) mean centroid, (ii) nearest member. The count is judged under each combination. If the dataset holds no stack coordinates for the masks, the claim cannot be tested from it."
+     },
+     {
+      "id": "area-split-half-visp",
+      "statement": "The imaging volume is roughly 50% VISp and 50% higher visual areas (VISlm, VISrl and VISal), with each functional unit assigned an area from its position in the stack.",
+      "source": "Methods, Imaging site selection, paragraph 1; Methods, 2P structural stack, paragraph 3; Fig. 3a,d",
+      "quote": "This resulted in an imaging volume that was roughly 50% VISp and 50% higher visual area (HVA)",
+      "criterion": "The share of units labelled VISp among units with an area label. The paper's \"roughly\" gives no bound; 15 percentage points is set here, as 10% of 50 would read \"roughly\" more narrowly than the word allows. The paper does not say whether the share is of volume or of neurons, or which units count. The readings are (a) all somatic masks over the 14 scans; (b) one per unique neuron, when the dataset identifies them; (c) the area of the field of view. The claim holds when one reading is within the tolerance."
+     },
+     {
+      "id": "z-drift-under-10um",
+      "statement": "All scans drifted less than 10 um in z over the recording, and most less than 5 um.",
+      "source": "Methods, 2P structural stack, paragraph 2",
+      "quote": "All scans had less than 10-\u03bcm drift over the 1.5-h recording, and for most of them drift was limited to <5 \u03bcm",
+      "criterion": "The Methods say drift was found by sequential registration of sections of each scan into the structural stack; the length of a section and the registration of each are not given. The readings are (a) consecutive blocks of about 10 min (the stimulus blocks); (b) the two halves of the scan (the stimulus repeats one in each half). Drift is the range of the registered z of a field over the sections. Reproduced when every scan's drift is below 10 um and more than half of the scans are below 5 um, under one reading. If the dataset holds neither the stack nor the raw frames, the claim cannot be tested from it."
+     },
+     {
+      "id": "structural-stack",
+      "statement": "A two-channel structural stack (green GCaMP and red vasculature) of 1,412 x 1,322 x 670 um at 0.5 pixels per um was collected after Texas Red injection.",
+      "source": "Results, 2P calcium imaging, paragraph 3; Methods, 2P structural stack, paragraph 1",
+      "quote": "a 2-channel (green, red) 1,412 \u00d7 1,322 \u00d7 670 \u03bcm 3 (anteroposterior \u00d7 mediolateral \u00d7 radial depth) structural stack was collected at 0.5 pixels per \u03bcm",
+      "criterion": "Reproduced when the dataset holds the stack with two channels and its extent and resolution are within tolerance; the extent is the number of voxels divided by the resolution."
+     },
+     {
+      "id": "stimulus-composition",
+      "statement": "Each scan's stimulus lasted about 84 min and was made of 6 oracle clips of 10 s repeated 10 times (10 min), 144 unique natural clips of 10 s (24 min), 90 natural clips of 10 s shown twice (30 min), and 20 Trippy and 20 Monet2 seeds of 15 s each shown twice (10 min each).",
+      "source": "Methods, Stimulus composition; Results, Behavioural tracking and visual stimulation, paragraph 1",
+      "quote": "Each scan stimulus was approximately 84 min in duration and comprised",
+      "criterion": "Per scan, from the stimulus table, count the clips of each class and their repeats and sum the durations of the stimulus presentations. Counts are exact; the duration is the sum of trial durations (readings (a) trial start to trial end, as the stimulus table gives; (b) the nominal 10 s or 15 s per trial). Reproduced when all 14 scans match. The share of clips in each natural category (2 oracle, 48 unique and 30 repeated clips per category) is tested when the dataset names the category."
+     },
+     {
+      "id": "stimulus-conserved-across-scans",
+      "statement": "The oracle clips, the 90 twice-repeated clips and 10 of the 20 seeds of each parametric stimulus were the same in every scan; the 144 unique clips and the other 10 seeds differed between scans.",
+      "source": "Methods, Stimulus composition; Results, Behavioural tracking and visual stimulation, paragraph 2",
+      "quote": "The stimulus composition included a mixture of unique stimuli for each scan, some that were repeated across every scan, and some that were repeated within each scan",
+      "criterion": "Clips and seeds are identified by the stimulus identifiers the dataset gives (a condition hash, clip name or seed). Reproduced when the 6 oracle clips and 90 repeated clips occur in all 14 scans, 10 Monet2 and 10 Trippy seeds occur in all 14 scans, and the remaining clips and seeds each occur in one scan only. If the dataset gives no identifier for clips, the claim cannot be tested from it."
+     },
+     {
+      "id": "oracle-same-order",
+      "statement": "The six oracle clips were repeated in the same order ten times per scan.",
+      "source": "Results, Behavioural tracking and visual stimulation, paragraph 2",
+      "quote": "6 natural film stimuli clips totalling 1 min (oracle natural videos) were repeated in the same order 10 times per scan",
+      "criterion": "Per scan, find the 6 clips shown 10 times. The paper's code (Fig 3/panel_f/get_data.ipynb) takes each repeat as the 6 trials that follow the first oracle clip's onset in trial order. Reproduced when, in every scan, each of the 10 repeats shows the same 6 clips consecutively and in the same order."
+     },
+     {
+      "id": "spontaneous-periods",
+      "statement": "Each scan was preceded by 0.15 to 5.5 min with the monitor on and followed by 8.3 to 21.2 min with the monitor off, to record spontaneous activity.",
+      "source": "Methods, Stimulus composition, last paragraph",
+      "quote": "Each scan was also preceded by 0.15\u20135.5 min with the monitor on, and followed by 8.3\u201321.2 min with the monitor off, in order to collect spontaneous neural activity",
+      "criterion": "Per scan, the time from the first imaging frame to the first stimulus onset, and from the last stimulus offset to the last imaging frame. Reproduced when every scan's values fall in the reported ranges widened by 10% of each bound (0.135 to 6.05 min and 7.47 to 23.32 min)."
+     },
+     {
+      "id": "monet2-directions",
+      "statement": "Each 15 s Monet2 block holds 16 equal periods of motion, one for each of 16 directions between 0 and 360 degrees, at 42.8 degrees per second.",
+      "source": "Methods, Global directional parametric stimulus; Fig. 3g legend",
+      "quote": "Each 15-s block consisted of 16 equal periods of motion along one of 16 unique directions of motion between 0\u2013360\u00b0 with a velocity of 42.8\u00b0 s \u22121 at the nearest point on the monitor",
+      "criterion": "From the Monet2 trial table (directions and onsets per trial, as the code reads them in Fig 3/panel_g/get_data.ipynb). Reproduced when every Monet2 trial has 16 distinct directions in 0 to 360 degrees and periods within tolerance of 15 s / 16; the Fig. 3g legend gives 937 ms. The paper says the directions are unique, not that they are evenly spaced, so the spacing is reported and is not part of the outcome. The speed is checked only if the dataset gives it."
+     },
+     {
+      "id": "fig3f-oracle-reliability",
+      "statement": "Neurons differ in how reliably they respond to the repeated oracle clips; units with high oracle scores give repeat-to-repeat responses that are consistent, and units with low scores do not.",
+      "source": "Fig. 3f; Results, Behavioural tracking and visual stimulation, paragraph 2; Methods, Oracle score",
+      "quote": "Raster of deconvolved calcium activity for three neurons to repeated stimulus trials (oracle trials; ten repeats of six sequential clips, with each repeat normalized independently). Rasters for high (top), medium (middle) and low (bottom) oracle scores",
+      "criterion": "The oracle score is, per unit, the jackknife mean of correlations between each oracle trial and the mean of the remaining trials (Methods, Oracle score), on the deconvolved trace interpolated at the scan's frame rate onto the oracle frames, with the unit's ms delay added to its frame times (code, Fig 3/panel_f/get_data.ipynb). The paper's code reads the score from a precomputed table, so the unit of a trial is open. The readings are (a) one trial is one repeat of the 6 clips, concatenated (10 trials); (b) each clip is scored apart over its 10 repeats, and the 6 scores are averaged. Units at the 99th, 79th and 34th percentiles of the score (the code's choices for the figure) are selected and their rasters shown. The paper's measure of repeat-to-repeat consistency is the oracle score itself (Results, paragraph 2; Methods, Oracle score), and it gives no other measure or test. Reproduced when, under both readings, the score can be computed for the units of the 14 scans and the scores of the three selected units are increasing from the 34th to the 99th percentile with the 99th percentile unit's score above 0, so that consistent and inconsistent units both occur. The mean pairwise Pearson correlation between single repeats of the 100 units nearest each percentile is shown as a variant; that measure is set here and is not the basis of the outcome."
+     },
+     {
+      "id": "fig3g-direction-tuning",
+      "statement": "Monet2 drives direction-tuned responses; neurons can be found preferring each of the 16 directions, and their trial-averaged responses peak at their preferred direction.",
+      "source": "Fig. 3g; Results, Behavioural tracking and visual stimulation, paragraph 2",
+      "quote": "Trial-averaged raster (central 500 ms of trial-average raster for each direction, out of 937 ms) of deconvolved calcium activity for 80 neurons in 40 Monet2 trials (16 randomly ordered directions) grouped by preferred direction (5 neurons per direction",
+      "criterion": "From the code (Fig 3/panel_g/get_data.ipynb). Per unit, the deconvolved trace is interpolated, with its ms delay, at 6.3 Hz over each direction period less (15/16 - 0.5)/2 s at each end (the central 500 ms), and averaged over the 40 Monet2 trials. The code takes the preferred direction from a von Mises fit (pipeline_radtune.VonFit, method 3, direction) and the 5 units per direction bin with the highest von_pred_adv, among units in nda.ScanInclude; the fit is not described in the paper and its code is not in the repository. The readings are (a) the preferred direction is the direction with the highest mean response over the central window; (b) the peak of a von Mises function fitted to the 16 mean responses. Reproduced when, under both readings, every one of the 16 directions is preferred by at least 5 units (the figure's 5 per direction). The paper gives no measure or test of tuning strength. Two choices set here, not from the paper, that do not decide the outcome, are the following. The 5 units shown per direction are those with the highest ratio of the response at the preferred direction to the mean over all directions; and a split-half check (preferred direction from the first 20 trials, response from the last 20) of whether their response at the preferred direction exceeds the mean at the other 15 is shown as a variant."
+     },
+     {
+      "id": "behaviour-recorded",
+      "statement": "Treadmill velocity, and the pupil position and diameter from video of the left eye, were recorded throughout each scan.",
+      "source": "Results, Behavioural tracking and visual stimulation, paragraph 1; Methods, Eye and face camera; Methods, Treadmill",
+      "quote": "Treadmill rotation (single axis) and video of the left eye were captured throughout the scan, yielding locomotion velocity, eye movements and pupil diameter data",
+      "criterion": "Reproduced when all 14 scans hold treadmill velocity and pupil position and diameter covering the imaging period (from the first to the last imaging frame, gaps within it allowed as the Methods say untracked frames are stored as NaN), with every scan's treadmill rate in 51.3 to 110 Hz (the range widened by 10% of each bound) and the eye camera rate within tolerance. The share of eye frames with a pupil fit is reported per scan; the paper gives no value for it."
+     },
+     {
+      "id": "photodiode-89pct",
+      "statement": "The binary flip code of the photodiode signal, used to align stimulus and behaviour clocks, was recovered for 89% of trials.",
+      "source": "Methods, Stimulus alignment",
+      "quote": "The encoded binary signal was reconstructed for 89% of trials",
+      "criterion": "Needs the raw photodiode signal at 10 MHz, or a per-trial flag of whether the code was read. The decoding is given only in outline (a sine convolution and local peak detection on a three-level signal), so if the dataset holds the raw signal the claim is tested with each of (a) a flag stored by the pipeline, if present, and (b) a decode of the three-level signal by peak detection, and holds when one reading is within tolerance. If the dataset holds only the aligned stimulus times, the claim cannot be tested from it."
+     },
+     {
+      "id": "manual-coreg-19181",
+      "statement": "Experts manually matched 19,181 functional ROIs from 14 scans to 15,439 individual EM neurons.",
+      "source": "Results, Functional\u2013structural co-registration, paragraph 2",
+      "quote": "we used the results of the transform to guide a group of experts to manually match 19,181 functional ROIs from 14 scans to 15,439 individual EM neurons",
+      "criterion": "The match table is CAVE table coregistration_manual_v4 (Methods, Assigning manual matches), matched to the dataset's units by session, scan index and unit id, as the Fig. 6k code does. The paper gives no materialization version for the counts; the readings are (a) the version its code uses, 1181; (b) the latest public version. Reproduced when, under one reading, the counts are within tolerance. The share of the table's ROIs found in the dataset is reported; the paper gives no value for it, so it is not part of the outcome. Counting the EM identifiers the dataset itself holds in its plane segmentation columns is shown as a variant."
+     },
+     {
+      "id": "ed4-matched-higher-signal-correlation",
+      "statement": "Units independently matched to the same EM neuron in two scans have higher signal correlation than each matched unit with the nearest unmatched unit in the other scan, more clearly for units with oracle score above 0.2.",
+      "source": "Results, Functional\u2013structural co-registration, paragraph 2; Methods, Evaluating manual matches; Extended Data Fig. 4f\u2013h",
+      "quote": "ROIs with at least moderate visual responses that are independently matched to the same neuron across multiple scans have higher signal correlations than adjacent neurons",
+      "criterion": "From the Methods (Evaluating manual matches). For every EM neuron matched to at least two scans, the signal correlation is the Pearson correlation between trial-averaged responses to the oracle stimuli of the matched unit in scan A and the matched unit in scan B; the two controls are the matched unit in scan A with the nearest unit in scan B not matched to the neuron, and the converse. The paper does not define nearest (in which space) or how a neuron matched in more than two scans contributes. The readings for nearest are (a) nearest by 3D centroid in the structural stack; (b) nearest in the same field in 2D. Pairs are all pairs of scans for the neuron, a choice set here, as the paper's scan A and scan B fix no rule. The paper reports no test; reproduced when, under both readings, the matched correlation exceeds both control correlations for more than half of the pairs, and the median difference is larger when both matched units have oracle score above 0.2 than over all pairs. A two-sided Wilcoxon signed-rank test of matched against control is reported."
+     },
+     {
+      "id": "fiducial-automatch",
+      "statement": "The fiducial-based automatch assigns 84,198 functional ROIs to 37,364 EM neurons with 83% precision against manual matches; dropping the bottom 30% of separation scores gives 90% precision with 59,934 ROIs and 31,042 neurons.",
+      "source": "Results, Functional\u2013structural co-registration, paragraph 3; Extended Data Fig. 5",
+      "quote": "This method (referred to as the fiducial-based automatch table) resulted in 84,198 functional ROIs matched to 37,364 EM neurons. Considering all matches, this method achieved 83% precision relative to manual matchers, but filtering out matches in the bottom 30% of separation scores yields 90% precision, while still including 59,934 functional ROIs and 31,042 EM neurons",
+      "criterion": "Precision as the Methods define it (Evaluating automatch tables). Both tables are first restricted to rows where the functional unit or the EM neuron was attempted by the manual matchers; true positives are rows in both tables, false positives rows only in the automatch. Separation scores are turned into percentiles and the threshold is a minimum (Methods). The paper does not say how attempted is decided; the readings are (a) the unit or the neuron occurs in the manual table; (b) the unit's scan field was attempted, any unit of a scan in the manual table. Reproduced when all values are within tolerance under one reading."
+     },
+     {
+      "id": "vessel-automatch",
+      "statement": "The vessel-based automatch, without fiducials, assigns 75,856 functional ROIs to 34,712 EM neurons with 84% precision; dropping the bottom 30% of separation scores gives 90% precision with 53,248 ROIs and 28,233 neurons.",
+      "source": "Results, Functional\u2013structural co-registration, paragraph 4; Extended Data Fig. 5",
+      "quote": "This table (referred to as the vessel-based automatch table) contains 75,856 functional ROIs matched to 34,712 EM neurons. Remarkably, this fiducial-free method performed as well as the fiducial-based method, achieving 84% precision with manual matches",
+      "criterion": "As for fiducial-automatch, with the same readings of attempted."
+     },
+     {
+      "id": "hybrid-automatch",
+      "statement": "Keeping only the matches on which both automated methods agree gives 89% agreement with manual matches, with 60,091 ROIs and 29,620 EM neurons.",
+      "source": "Results, Functional\u2013structural co-registration, paragraph 5; Methods, Generating the fiducial-vessel agreement automatch table",
+      "quote": "this hybrid automated table achieves 89% agreement with no additional filtering, yielding 60,091 functional ROIs and 29,620 EM neurons",
+      "criterion": "The two automatch tables merged on session, scan_idx, field, unit_id and target_id (Methods); agreement is precision as in fiducial-automatch, with the same readings of attempted."
+     },
+     {
+      "id": "fiducial-transform-residual",
+      "statement": "A co-registration transform built from 2,934 expert-matched fiducials (1,994 somata and 942 blood vessels) has an average residual of 3.8 um; the staged transform lowers the residual from about 10 um to 5.6, 4.6, 3.9, 3.5, 3.1 and 2.9 um.",
+      "source": "Results, Functional\u2013structural co-registration, paragraph 1; Methods, Co-registration Transform",
+      "quote": "In the first step, we generated a co-registration transform using a set of 2,934 expert-matched fiducials ... The average residual was 3.8 \u03bcm",
+      "criterion": "Count the released fiducials by kind. The paper gives the total as 2,934 but its parts sum to 2,936, so the tolerance of 2 admits both readings of the total and no other count. The 3.8 um is not tied to a stage of the Methods' transform, whose stages give 10, 5.6, 4.6, 3.9, 3.5, 3.1, 2.9 and 0.003 um. The readings are (a) the leave-one-out residual of the full transform (Methods); (b) the residual after the first thin plate spline step of the third group (n = 3, 3.9 um, within tolerance). Reproduced when, applying the released transform to the released fiducials, one reading gives a value within tolerance."
+     },
+     {
+      "id": "em-sections",
+      "statement": "The block was cut into 27,972 sections of 40 nm, 26,652 were imaged by five autoTEMs, and an 800 um region of sections 7,931 to 27,904 was processed, split into two subvolumes of about 35% and 65% of the sections.",
+      "source": "Results, The EM volume, paragraphs 1 and 2",
+      "quote": "The tissue sample was trimmed and sectioned into 27,972 serial sections (nominal thickness 40 nm) ... A total of 26,652 sections were imaged by 5 customized automated TEMs",
+      "criterion": "The released imagery and its metadata give the sections of each subvolume (7,931 to 14,815 and 14,816 to 27,904). The processed region is 27,904 - 7,931 + 1 sections. Counts of sections cut and imaged are reported if the released metadata give them."
+     },
+     {
+      "id": "synapse-detection",
+      "statement": "Automated detection found 524 million synaptic clefts (186 million in subvolume 35, 337 million in subvolume 65), with 96% precision and 89% recall against 8,611 manually annotated synapses in 70 subvolumes, and 98% partner assignment accuracy on 191 held-out synapses.",
+      "source": "Results, Automated reconstruction, paragraph 3; Extended Data Fig. 1",
+      "quote": "We automatically detected and associated a total of 524 million synaptic clefts across both subvolumes ... We manually identified synapses in 70 small subvolumes ( n = 8,611 synapses) distributed across the dataset, giving the automated detection an estimated precision of 96% and recall of 89%",
+      "criterion": "Counts from the released synapse tables. Precision and recall can be tested only if the manual annotations of the 70 test subvolumes are public; the paper does not say how a detection is matched to a manual synapse, so if they are, the readings are (a) overlap of the cleft with the annotation point; (b) cleft centroid within 100 nm of the point."
+     },
+     {
+      "id": "nuclei-144120",
+      "statement": "Nuclei were automatically segmented in subvolume 65, 144,120 in all.",
+      "source": "Results, Automated reconstruction, paragraph 2",
+      "quote": "Nuclei were also automatically segmented ( n = 144,120) within subvolume 65",
+      "criterion": ""
+     },
+     {
+      "id": "cell-classification",
+      "statement": "An SVM on nucleus features detects neurons with 96.9% precision and 99.6% recall, predicting 82,247 neurons in subvolume 65, of which 69,957 have well-segmented somata; a multilayer perceptron separates excitatory from inhibitory neurons with 97% accuracy (96% precision and 94% recall for inhibitory calls).",
+      "source": "Methods, Cell classification",
+      "quote": "This model predicted 82,247 neurons detected within the larger subvolume ... We estimate from this test that the classifier had an overall accuracy of 97% with an estimated 96% precision and 94% recall for inhibitory calls",
+      "criterion": "Counts from the released tables. The accuracies rest on manual labels (a 100 um column and 350 further sampled cells) that the paper does not say are released; they are tested only if those labels are public."
+     },
+     {
+      "id": "proofreading-scale",
+      "statement": "The released segmentation holds 1,046,656 proofreading edits as of 16 September 2024; 1,433 neurons have proofread axons, 85 excitatory neurons have fully proofread axons and dendrites, and 1,188 excitatory neurons have proofread dendrites.",
+      "source": "Results, Proofreading, paragraphs 1 to 3",
+      "quote": "The released segmentation now contains all 1,046,656 edits of the proofreading that had occurred as of 16 September 2024",
+      "criterion": "Neurons with proofread axons are rows with status_axon true in proofreading_status_and_strategy (Methods). The readings for the version are (a) 1181, as the code uses; (b) the version nearest after 16 September 2024. The 85 and 1,188 are groups of other studies that the table may not label; they are tested only if a released table names them."
+     },
+     {
+      "id": "dendrite-input-precision",
+      "statement": "Comparing proofread with automated dendrites, 99% of inputs assigned to a postsynaptic soma in the automated segmentation were correct.",
+      "source": "Results, Proofreading, paragraph 3; Results, Integrated analysis, paragraph 5",
+      "quote": "From the proofread dendrites, we determined that 99% of inputs were correct when assigned to a postsynaptic soma in the automated segmentation",
+      "criterion": "For neurons with status_dendrite true, the input synapses on the root before proofreading against those on the proofread root; precision is the share of pre-proofreading inputs that remain. The tolerance is 1 point, as the 10% rule would allow values above 100%. The paper does not say which root counts as before proofreading; the readings are (a) the root at the earliest materialization in which the nucleus occurs; (b) the root before the first edit in the edit history."
+     },
+     {
+      "id": "axon-lengths",
+      "statement": "The longest proofread excitatory axon measures 18.9 mm with 2,483 synaptic outputs; inhibitory axons range from 1.1 to 32.3 mm in length with a mean of 2,754 outputs (range 99 to 14,019).",
+      "source": "Results, Proofreading, paragraph 3",
+      "quote": "the longest excitatory axon measuring 18.9 mm with 2,483 synaptic outputs and inhibitory axons ranging from in length from 1.1 to 32.3 mm with a mean of 2,754 synaptic outputs (range 99\u201314,019)",
+      "criterion": "Axon length from the skeleton of each neuron with a proofread axon, axon compartment only. The paper does not say how length or the axon compartment is obtained; the readings are (a) the released skeletons' axon labels; (b) NEURD's axon split. The inhibitory range is judged as a range widened by 10% of each bound."
+     },
+     {
+      "id": "multisoma-split",
+      "statement": "The automated segmentation had 7,050 objects merging 17,753 neurons; after manual and automated splitting the total of individually segmented neurons is 84,035, and NEURD made more than 164,000 edits.",
+      "source": "Results, Proofreading, paragraph 4; Extended Data Fig. 3",
+      "quote": "there were 7,050 segmented objects consisting of a total of 17,753 neurons that were merged together (based on nucleus segmentation) ... bringing the total number of individually segmented neurons to 84,035",
+      "criterion": "A neuron is individually segmented when its root id holds one neuronal nucleus (Extended Data Fig. 3 uses nucleus_ref_neuron_svm). The before counts (7,050 and 17,753) are tested only if the first materialization is public."
+     },
+     {
+      "id": "fig6f-outputs-mapped",
+      "statement": "Between 60% and 95% of the output synapses of proofread axons map to postsynaptic targets with a known soma, depending on cell type and location.",
+      "source": "Fig. 6f; Results, Integrated analysis, paragraph 5",
+      "quote": "between 60 and 95% of those outputs can be accurately mapped onto their postsynaptic targets with a known soma location, depending on the cell type and its spatial location in the volume",
+      "criterion": "For each neuron with a proofread axon, the fraction of its output synapses whose postsynaptic root holds exactly one nucleus. The range is widened by 10% of each bound (54 to 100%, as a fraction cannot pass 100%). The paper says the fraction depends on cell type and location but not what the range bounds; the readings are (a) the fraction of every neuron with a proofread axon lies in the widened range; (b) the mean fraction of each cell class (the colours of Fig. 6f) does. Reproduced when one reading holds; the share of neurons in the range is reported."
+     },
+     {
+      "id": "fig6gh-example-cell",
+      "statement": "For the example proofread L2/3 VISp pyramidal cell, 74.5% (1,053 of 1,412) of its output synapses are onto objects with a single nucleus (275 onto inhibitory, 662 onto excitatory and 116 onto unclassified cells), 359 onto orphan fragments, and 365 onto functionally matched cells.",
+      "source": "Fig. 6g,h; Results, Integrated analysis, paragraphs 5 and 6",
+      "quote": "For this particular proofread neuron, 74.5% (1,053 out of 1,412 synapses) are onto objects with a single nucleus (as determined from automated detection), with 275 synapses onto cells classified as inhibitory, 662 synapses onto cells classified as excitatory, and 116 synapses onto cells whose soma did not pass classification quality control",
+      "criterion": "Output synapses of nucleus 294657's root, excluding autapses, merged with the nucleus table on the postsynaptic root (code). The code does not count classes; the class table is not named, and the readings are (a) aibs_metamodel_mtypes_v661_v2, as the Fig. 7 code uses; (b) the cell class table the Methods' classifier fills (Cell classification). Matched cells are those in coregistration_manual_v4."
+     },
+     {
+      "id": "fig6k-target-responses",
+      "statement": "The oracle responses of the example cell's functionally co-registered postsynaptic targets can be retrieved from the functional data and set beside the presynaptic cell's.",
+      "source": "Fig. 6k; Results, Integrated analysis, paragraph 6",
+      "quote": "By filtering the synaptic targets with functionally matched neurons (Fig. 6k ), one can further identify which targets have been matched to the functional experiments (365 out of 1,412) and use DataJoint to query the functional data or read NWB files deposited in the DANDI data archive",
+      "criterion": "From the code (Fig 6/panel_k/get_data.ipynb). The targets of nucleus 294657 are matched to units in coregistration_manual_v4; per target nucleus, the scan with the highest oracle score is kept, and targets are sorted by summed synapse size. Each unit's oracle trace is averaged over the 10 repeats at 6.3 Hz and min-max normalized. Reproduced when the presynaptic cell and every matched target nucleus of the table have units with oracle trials in the dataset; any target not found is listed. The figure carries no finding beyond this; no response measure is compared."
+     },
+     {
+      "id": "outputs-94-axons",
+      "statement": "From 94 proofread excitatory axons one can query 69,962 output synapses, onto 20,112 distinct neuron somata.",
+      "source": "Discussion, Importance of functional connectomics, paragraph 3",
+      "quote": "from just 94 proofread excitatory axons, one can query 69,962 output synapses, which map to 20,112 distinct neuron soma in the volume",
+      "criterion": "The paper does not say which 94 axons. The readings are (a) excitatory neurons with strategy_axon axon_fully_extended; (b) those with fully or partially extended axons whose count is 94 at some public version. Reproduced when one reading gives 94 axons (tolerance 9) and both counts within tolerance."
+     },
+     {
+      "id": "fig7abc-laminar-connectivity",
+      "statement": "The outputs of proofread neurons, more than 900,000 synaptic connections, show differences in interlaminar communication between excitatory and inhibitory neurons.",
+      "source": "Fig. 7a\u2013c; Results, Cell types, paragraph 2",
+      "quote": "Examining the output of proofread neurons, which includes more than 900,000 synaptic connections between neurons, reveals key differences in the interlaminar communication between excitatory and inhibitory neurons",
+      "criterion": "From the code. Presynaptic neurons are those with strategy_axon axon_partially_extended, axon_fully_extended or axon_interareal; postsynaptic cells are those with a unique entry in aibs_metamodel_mtypes_v661_v2; soma depth from the minnie_ds transform. The code's edge list sums to 812,686 synapses onto typed cells, short of \"more than 900,000\". The readings of the count are (a) synapses onto typed cells, as plotted; (b) all output synapses of those neurons, typed or not. The paper reports \"more than 900,000\", a lower bound, so the count holds when it is at least 810,000 (900,000 less 10%), with no upper limit. The paper names the differences only in the figure and gives no measure or test of them. Reproduced when the count holds under one reading; the difference part of the claim is recorded as methods_underspecified. The share of each panel's synapses whose presynaptic and postsynaptic somata lie in the same layer (layer bounds from layer_bounds_v3.npy, code) is shown as a description for E to E, E to I and I to E; that measure is set here."
+     },
+     {
+      "id": "fig7d-l3-two-hop",
+      "statement": "Seven layer 3 pyramidal cells can be followed through their first-order excitatory and inhibitory targets to the second-order excitatory targets of those inhibitory cells, grouped by inhibitory targeting type (DTC, PTC, ITC, STC).",
+      "source": "Fig. 7d; Results, Cell types, paragraph 2",
+      "quote": "we can follow a collection of layer 3 pyramidal neurons and compare their first-order (direct) connectivity onto excitatory cell types and inhibitory neurons as well as the second-order (two-hop) connectivity of those inhibitory neurons that are targeted by the layer 3 cells",
+      "criterion": "The paper names no finding beyond the display. Reproduced when the seven cells' first and second order synapse counts recomputed from CAVE (version 1181) agree with the repository's csv files to within 10% per cell and type."
      }
     ]
    }
@@ -51854,6 +52122,12 @@
    "verifier-2-report.md",
    "verifier-2.md"
   ],
+  "dandi:000402": [
+   "claims-check-report.md",
+   "claims-check.md",
+   "claims-report.md",
+   "claims.md"
+  ],
   "dandi:000404": [
    "claims-check-report.md",
    "claims-check.md",
@@ -53278,7 +53552,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-23T15:33:16+00:00",
+ "generated": "2026-10-23T15:36:23+00:00",
  "queue_generated": "2026-10-23T11:39:25+00:00",
  "queue_counts": {
   "public_dandisets": 661,
@@ -118299,7 +118573,6 @@
  "noindex": false,
  "queue": {
   "full": [
-   "000055",
    "000232",
    "000233",
    "000727",
@@ -118320,6 +118593,7 @@
    "000294",
    "000336",
    "000351",
+   "000402",
    "000404",
    "000447",
    "000458",
@@ -118482,7 +118756,6 @@
    "000727",
    "000233",
    "000232",
-   "000055",
    "000252"
   ],
   "branches": [
@@ -118491,7 +118764,7 @@
    "000017",
    "000053",
    "000054",
-   "000402",
+   "000055",
    "000448",
    "000548",
    "000549",
@@ -118519,12 +118792,12 @@
   },
   "hours": {
    "full": 3.8680555555555554,
-   "claims": 0.2922222222222222
+   "claims": 0.29236111111111107
   },
   "running": {
-   "000402": {
+   "000055": {
     "kind": "full",
-    "hours": 5.610773395833334
+    "hours": 5.69744718888889
    }
   }
  },
