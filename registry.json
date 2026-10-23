@@ -3494,6 +3494,10 @@
     "ready": true,
     "date": "2026-10-20"
    },
+   "dandi:000623": {
+    "ready": true,
+    "date": "2026-10-23"
+   },
    "dandi:000625": {
     "ready": null,
     "date": null
@@ -13428,6 +13432,235 @@
       "source": "Main text, paragraph 6; Fig. 4C",
       "quote": "The yintercept of the regression line was positive in 422 out of 423 cells (Fig. 4C). Average rates at the lowest velocity (0 to 3 cm/s) were 2.26 T 0.03 Hz (grid cells), 2.50 T 0.02 Hz (headdirection cells) and 2.39 T 0.05 Hz (grid ... head-direction cells).",
       "criterion": "Regressions and readings as in the speed claim. The tolerances on the rates are the paper's printed spread, whose kind (SEM or SD) is not stated. The paper does not say how the average was taken; readings are (a) the mean over cells of each cell's mean rate in the 1-s bins with speed from 0 to 3 cm/s; (b) the mean over all such bins of all cells of a class pooled. Reproduced when, under a reading, the fraction is within tolerance and the three rates are within their tolerances; partially reproduced when the fraction holds and the rates are within 10% of the printed values."
+     }
+    ]
+   }
+  ],
+  "dandi:000623": [
+   {
+    "path": "claims/000623/10.1038-s41597-024-03029-1.yaml",
+    "paper": "10.1038/s41597-024-03029-1",
+    "check": {
+     "ready": true,
+     "date": "2026-10-23"
+    },
+    "claims": [
+     {
+      "id": "cohort-emu-sessions",
+      "statement": "The electrophysiology data come from 16 participants and 29 EMU sessions (runs); 13 participants performed two runs and P44CS, P58CS and P60CS one, as Table 1 lists.",
+      "source": "Table 1; Technical Validation, Number of neurons isolated and spike-sorting quality metrics",
+      "quote": "We recorded 1450 neurons in total from the amygdala, hippocampus, vmPFC, ACC, and preSMA across 29 sessions involving 16 subjects",
+      "criterion": "Sessions are NWB files, participants their subject identifiers. Reproduced when the counts match and each participant's number of runs matches its Table 1 row (P41CS, P42CS, P43CS, P47CS, P48CS, P49CS, P51CS, P53CS, P54CS, P55CS, P56CS, P57CS, P62CS two; P44CS, P58CS, P60CS one)."
+     },
+     {
+      "id": "table1-demographics",
+      "statement": "Of the 20 participants 11 are female, and their mean age is 37.75 years (SD 13.86); the age, sex and epilepsy diagnosis of each participant are as in Table 1.",
+      "source": "Table 1",
+      "quote": "",
+      "criterion": "As gen_table1_subj_info.py does. For the 16 EMU participants, age (subject.age, \"P..Y\"), sex and diagnosis (subject.description) from the NWB files; for the four fMRI-only participants the Table 1 values. Mean and SD (numpy ddof 0, as the code) over the 20. Reproduced when every EMU participant's age, sex and diagnosis match Table 1 and the totals are within tolerance."
+     },
+     {
+      "id": "neurons-total-and-areas",
+      "statement": "The dataset holds 1450 single units from amygdala (479), hippocampus (261), ACC (236), preSMA (299) and vmPFC (175).",
+      "source": "Technical Validation, Number of neurons isolated and spike-sorting quality metrics; Fig. 2h; Technical Validation, Neuronal responses (movie watching phase), paragraph 1",
+      "quote": "We recorded 1450 neurons in total from the amygdala, hippocampus, vmPFC, ACC, and preSMA across 29 sessions involving 16 subjects (Fig. 2h )",
+      "criterion": "The per-area counts are shown only in Fig. 2h; they are taken from the denominators of the scene-cut analysis (Neuronal responses (movie watching phase), paragraph 1), which included every unit (479 + 261 + 236 + 299 + 175 = 1450). Units of set U (at least one spike in the movie window), as in gen_figure2ah_singleunitQC.py, by electrode location without hemisphere. The count of all units in the files, with no spike rule, is shown as a variant."
+     },
+     {
+      "id": "units-per-wire",
+      "statement": "There were on average 1.99 units per wire, counting only wires with at least one unit.",
+      "source": "Technical Validation, Number of neurons isolated and spike-sorting quality metrics; Fig. 2a",
+      "quote": "There were on average 1.99 units per wire (only counting wires with at least one isolated neuron)",
+      "criterion": "As gen_figure2ah_singleunitQC.py. Per session, the number of units (all units in the file) on each electrode_id; the mean over all session and wire pairs."
+     },
+     {
+      "id": "firing-rate",
+      "statement": "The mean firing rate of the neurons was 2.47 +- 3.32 spikes/s (mean +- s.d.).",
+      "source": "Technical Validation, Number of neurons isolated and spike-sorting quality metrics; Fig. 2b",
+      "quote": "the mean firing rate of neurons was 2.47 \u00b1 3.32 (mean \u00b1 standard deviation, s.d.; Fig. 2a,b )",
+      "criterion": "As gen_figure2ah_singleunitQC.py. For each unit of U, the spike count in the movie window divided by its duration; mean and s.d. over units (ddof 0, ddof 1 shown; open detail 2). The paper gives no unit; spikes/s is the axis of Fig. 2b in the code."
+     },
+     {
+      "id": "isi-violations",
+      "statement": "The percentage of interspike intervals below 3 ms was 0.40% +- 0.53%.",
+      "source": "Technical Validation, Number of neurons isolated and spike-sorting quality metrics; Fig. 2c",
+      "quote": "the percentage of interspike intervals (ISIs) below 3 ms was 0.40% \u00b1 0.53% (Fig. 2c )",
+      "criterion": "The units table's isibelow column for the units of U (gen_figure2ah_singleunitQC.py). Open detail 1, two readings: (a) all units of U; (b) units of U with isibelow < 3, the set plotted in Fig. 2c. Reproduced when both values are within tolerance under one reading."
+     },
+     {
+      "id": "waveform-snr",
+      "statement": "The peak SNR of the mean waveform was 5.95 +- 3.48 and the mean SNR of the whole waveform 2.07 +- 1.13.",
+      "source": "Technical Validation, Number of neurons isolated and spike-sorting quality metrics; Fig. 2d,e",
+      "quote": "the ratio between peak amplitude of the mean waveform of each cluster and the standard deviation of the noise was 5.95 \u00b1 3.48 (Fig. 2d ; peak SNR) and the mean SNR was 2.07 \u00b1 1.13",
+      "criterion": "The units table's peakSNR and meanSNR columns for the units of U (gen_figure2ah_singleunitQC.py); mean and s.d. over units (open detail 2)."
+     },
+     {
+      "id": "projection-distance",
+      "statement": "The pairwise projection distance between neurons isolated on the same wire was 11.98 +- 8.93 s.d. units.",
+      "source": "Technical Validation, Number of neurons isolated and spike-sorting quality metrics; Fig. 2f",
+      "quote": "the pairwise projection distance in clustering space between all neurons isolated on the same wire was 11.98 \u00b1 8.93 (Fig. 2f , projection test; in units of s.d. of the signal)",
+      "criterion": "As gen_figure2ah_singleunitQC.py. The electrodes table's pairwise_distances column, entries \"NA\" and empty skipped, each entry split on \"_\" into numbers; all pairs of all sessions pooled; mean and s.d. (open detail 2)."
+     },
+     {
+      "id": "isolation-distance",
+      "statement": "The median isolation distance of the units was 24.90.",
+      "source": "Technical Validation, Number of neurons isolated and spike-sorting quality metrics; Fig. 2g",
+      "quote": "the median isolation distance was 24.90 (Fig. 2g )",
+      "criterion": "As gen_figure2ah_singleunitQC.py. The isolationdist column for the units of U, NaN values and values of 1e18 or more removed (the code's outlier rule); the median."
+     },
+     {
+      "id": "gaze-missing-p53cs",
+      "statement": "Gaze data were missing for more than half of the movie only for P53CS (74% in run 1, 84% in run 2), whose gaze was excluded from the eye-tracking analysis.",
+      "source": "Technical Validation, Eye tracking data quality (behavior), paragraph 1",
+      "quote": "The gaze data was missing at more than half of the movie watching duration only for one participant (P53CS, the percentage of missing data was 74% in the first run and 84% in the second run of the movie watching phase)",
+      "criterion": "As gen_figure3_eyetracking.py. Gaze samples (processing[\"behavior\"][\"EyeTracking\"] [\"SpatialSeries\"]) in the movie window, mapped to the 640 x 480 movie frame with the display geometry in the series' comments; samples outside the frame set missing; samples grouped in 1-s bins over the 479 s of the movie (11971 frames at 25 Hz), empty bins filled as missing; missing fraction = missing samples over all samples. Reproduced when P53CS's two runs are within tolerance and are the only sessions at or above 50%."
+     },
+     {
+      "id": "gaze-similarity",
+      "statement": "Each participant's gaze was highly correlated with the reference heatmap of the other participants (Pearson's r = 0.75 +- 0.12) and little gaze was missing (7% +- 8%).",
+      "source": "Technical Validation, Eye tracking data quality (behavior), paragraph 1; Fig. 3a",
+      "quote": "We found that the individual participant's gaze patterns were highly correlated with the reference visual salience (Pearson's r = 0.75 \u00b1 0.12, mean \u00b1 s.d., across participants and runs ... while having low percentages of missing gaze data (7% \u00b1 8%) (Fig. 3a )",
+      "criterion": "As gen_figure3_eyetracking.py, after the sessions of claim gaze-missing-p53cs at or above 50% missing are removed. Per 1-s bin, a reference heatmap from the pooled samples of all other participants' sessions (both runs of the same participant left out) and the session's own heatmap, each a 2-D histogram on the 640 x 480 frame downsampled by 5 and Gaussian-smoothed with sigma = the mean over sessions of pixels per degree (compute_pixelperDVA, 40 x 30 cm screen at 60 cm, divided by 5); the session's heatmap is skipped when half or more of the bin's samples are missing; Pearson r of the flattened maps. Per session, the tanh of the mean Fisher z over bins; the reported mean is tanh of the mean of these session z-means and the s.d. tanh of their s.d. (ddof 0), as the code prints. Missing gaze as in gaze-missing-p53cs; open detail 3, mean and s.d. over (a) the remaining sessions or (b) all 29. Reproduced when the correlation values are within tolerance and the missing-gaze values are within tolerance under one reading."
+     },
+     {
+      "id": "recognition-auc",
+      "statement": "Participants remembered the movie well; their recognition accuracy across confidence levels was 0.79 +- 0.19 AUC.",
+      "source": "Technical Validation, New-old task performance (behavior) in EMU, paragraph 1; Fig. 3b",
+      "quote": "Participants had excellent memory: their average accuracy across all confidence levels was 0.79 \u00b1 0.19 AUC (Fig. 3b )",
+      "criterion": "As gen_figure3_recogtask_roc.py. Per session, the recognition trials (trials table after the encoding row); cumulative hit and false-alarm rates from confidence 6 down to 1, adjusted for 0 and 1 (adjustHF), and the AUC by the trapezoid rule (cal_auc). Open detail 4, mean and s.d. over (a) the 29 sessions or (b) the 16 participants after averaging their runs; ddof as open detail 2. Reproduced when both values are within tolerance under one reading."
+     },
+     {
+      "id": "auc-run1-vs-run2",
+      "statement": "Memory accuracy did not differ between the first and second run for the 13 participants with two runs (0.79 +- 0.14 against 0.79 +- 0.24 AUC, p = 0.960, paired t-test).",
+      "source": "Technical Validation, New-old task performance (behavior) in EMU, paragraph 1",
+      "quote": "there was no significant difference in memory accuracy between the first and second run for the 13 participants who performed the two runs of movie watching and recognition memory tasks (run #1: 0.79 \u00b1 0.14; run #2: 0.79 \u00b1 0.24 AUC; p = 0.960, paired t-test)",
+      "criterion": "A claim of absence. Per-session AUC as in recognition-auc; run number from the session identifier; the 13 participants with two runs. The paper's test, a paired t-test, two-sided (open detail 7). Reproduced when p >= 0.05, not reproduced when p < 0.05; the mean difference and the values against tolerance are reported either way."
+     },
+     {
+      "id": "confidence-accuracy",
+      "statement": "Recognition accuracy was significantly higher for high-confidence than for low-confidence judgments (p < 0.001, paired t-test).",
+      "source": "Technical Validation, New-old task performance (behavior) in EMU, paragraph 1; Fig. 3c legend",
+      "quote": "Accuracy was significantly different between high- versus low-confidence trials (p < 0.001, paired t-test)",
+      "criterion": "As gen_figure3_recogtask_roc.py. Sessions included by check_inclusion (AUC >= 0.6, and no more than one unused confidence level among 1 to 3 or among 4 to 6); high and low confidence split per session by dynamic_split, split 1 (high 1 and 6; low 2, 3 and 4, with rating 5 in neither class, as the code does) or split 2 (high 1, 2, 5 and 6; low 3 and 4), whichever is more balanced, split 2 when 1 or 6 is unused and split 1 when 2 or 5 is unused; accuracy = correct over all trials of each confidence class; scipy ttest_rel of high against low. Reproduced when p < 0.001 with high above low."
+     },
+     {
+      "id": "memory-sessions-included",
+      "statement": "Of the 1450 neurons, 1266 entered the memory analysis; the rest came from runs excluded for poor behavior (P44CS run 1, P51CS run 2, P56CS run 2, P57CS runs 1 and 2).",
+      "source": "Technical Validation, Neuronal responses (recognition memory phase), paragraph 1",
+      "quote": "Of the overall 1450 recorded neurons, 1266 were included in this analysis. The remainder was excluded based on these behavioral criteria ... Excluded patients and runs were P44CS run 1, P51CS run 2, P56CS run 2, P57CS runs 1 and 2",
+      "criterion": "Units of U in the sessions kept. Open detail 5, (a) rule R (the code), (b) the five listed runs removed, and (c) the text's two criteria (AUC at or below 0.6, or fewer than 10 correct trials in either condition). Reproduced when the count is 1266 under one reading; the sessions each reading removes, and whether they are the five listed, are reported."
+     },
+     {
+      "id": "memory-cells-significant",
+      "statement": "Significant proportions of cells were memory selective in the amygdala (32/436, p = 0.015), ACC (22/186, p = 0.002) and vmPFC (14/150, p = 0.016).",
+      "source": "Technical Validation, Neuronal responses (recognition memory phase), paragraph 1",
+      "quote": "Significant proportions of cells were memory selective in the amygdala (32/436, p = 0.015, permutation test with 2,000 shuffling of average firing rates across trials for each cell), ACC (22/186, p = 0.002), and vmPFC (14/150, p = 0.016)",
+      "criterion": "As examine_neurons_recognitiontask.py. Units of U in the sessions of memory-sessions-included; firing rate in 0.2 to 1.7 s after each recognition trial's start_time; correct trials only; selection by bootstrap B (novel against familiar, balanced); area p by permutation test P. Reproduced when each of the three areas has p < 0.05 and its counts are within tolerance; partially reproduced when all three have p < 0.05 but a count is outside tolerance."
+     },
+     {
+      "id": "memory-cells-not-significant",
+      "statement": "The proportions of memory-selective cells in the hippocampus (14/238, p = 0.30) and preSMA (17/256, p = 0.17) were not significant.",
+      "source": "Technical Validation, Neuronal responses (recognition memory phase), paragraph 1",
+      "quote": "but not the hippocampus (14/238, p = 0.30) and preSMA (17/256, p = 0.17)",
+      "criterion": "A claim of absence, on the paper's test as in memory-cells-significant. Reproduced when both areas have permutation p >= 0.05; not reproduced when either has p < 0.05. Counts and p are reported either way."
+     },
+     {
+      "id": "memory-lfp",
+      "statement": "For microwire LFP HFB power, significant proportions of channels were memory selective in the amygdala (37/368, p = 0.002), ACC (33/368, p = 0.028) and preSMA (40/368, p = 0.001), but not in the hippocampus (17/368, p = 0.90) or vmPFC (28/336, p = 0.05).",
+      "source": "Technical Validation, Neuronal responses (recognition memory phase), paragraph 2",
+      "quote": "For the LFP, significant proportions of channels were memory selective in the amygdala (37/368, p = 0.002, permutation test with 2,000 shuffling of average HBF power across trials for each channel), ACC (33/368, p = 0.028), and preSMA (40/368, p = 0.001) but not hippocampus (17/368, p = 0.90) and vmPFC (28/336, p = 0.05)",
+      "criterion": "As examine_channels_recognitiontask.py on the micro channels. HFB by pipeline H on the recognition block; mean HFB in 0.2 to 1.7 s after each trial's start_time; sessions by rule R (open detail 5 readings shown); correct trials; selection by bootstrap B and area p by permutation test P, areas AMY, HIP, ACC, SMA, OFC. Reproduced when amygdala, ACC and preSMA have p < 0.05 and hippocampus and vmPFC have p >= 0.05 (the absence half judged on the paper's test; the paper's vmPFC p of 0.05 sits at the threshold, so its p is reported with its Monte Carlo error, open detail 8), with counts within tolerance; partially reproduced when the significance pattern holds but a count is outside tolerance, or when only the vmPFC decision differs."
+     },
+     {
+      "id": "memory-ieeg",
+      "statement": "For macroelectrode iEEG HFB power, significant proportions of channels were memory selective in the ACC (41/368, p < 0.001), vmPFC (34/368, p = 0.012) and preSMA (45/368, p < 0.001), but not in the amygdala (25/368, p = 0.47) or hippocampus (32/368, p = 0.067).",
+      "source": "Technical Validation, Neuronal responses (recognition memory phase), paragraph 2",
+      "quote": "At the iEEG level (macro channels), significant proportion of channels in the ACC (41/368, p < 0.001), vmPFC (34/368, p = 0.012), and preSMA (45/368, p < 0.001) but not the amygdala (25/368, p = 0.47) and hippocampus (32/368, p = 0.067) were memory selective for HFB power",
+      "criterion": "As memory-lfp, on the macro channels (LFP_macro). Reproduced when ACC, vmPFC and preSMA have p < 0.05 and amygdala and hippocampus have p >= 0.05 (absence on the paper's test), with counts within tolerance; partially reproduced when the significance pattern holds but a count is outside tolerance."
+     },
+     {
+      "id": "memory-modalities-differ",
+      "statement": "The areas with memory selectivity differ by modality; the ACC is selective in all three (cells, LFP, iEEG), the hippocampus in none, and the amygdala in cells and LFP but not iEEG.",
+      "source": "Technical Validation, Neuronal responses (recognition memory phase), paragraph 3",
+      "quote": "For example, the ACC showed memory selectivity in all three modalities, the hippocampus showed selectivity in none of them, and the amygdala showed selectivity at the single-cell and LFP but not iEEG level",
+      "criterion": "Read from the area p-values of the four claims it depends on, at p < 0.05. Reproduced when the ACC is significant in all three modalities, the hippocampus in none, and the amygdala in cells and LFP but not iEEG."
+     },
+     {
+      "id": "fig6-examples",
+      "statement": "Example memory-selective units and channels; a preSMA neuron firing more to familiar images (p = 0.003), an ACC neuron firing more to novel images (p < 0.001), and a preSMA macro channel and an ACC microwire channel with higher HFB to novel images (both p < 0.001).",
+      "source": "Fig. 6 legend",
+      "quote": "Significance of selection criteria (bootstrap test, novel versus familiar) was p = 0.003 ( a ), p < 0.001( b ), p < 0.001 ( c ), p < 0.001 ( d )",
+      "criterion": "The examples are the code's plot lists. Cells P53CS_R1_11_1_3077 and P58CS_R1_34_2_3239 (unit_id_session; the code does not say which is panel a, so each is matched to the panel whose area and direction it shows), macro channel P42CS_R2_RSMA3 (6c) and micro channel P58CS_R1_RACC2 (6d). Bootstrap B as in the memory claims. Reproduced when each has the legend's area, the stated direction (familiar above novel for 6a, novel above familiar for the others) and a p-value matching the legend (0.003 within 10%, the others below 0.001)."
+     },
+     {
+      "id": "scenecut-labels",
+      "statement": "The movie has 80 continuity cuts and 13 scene changes, and the annotation file's cuts can be placed in each session through the frame times in the NWB files.",
+      "source": "Methods, Movie annotations, paragraph 2; Usage Notes, paragraph 1",
+      "quote": "The movie contained 80 continuity cuts and 13 scene changes",
+      "criterion": "Labels from scenecut_info.csv in the code repository at commit 8c35290 (the paper's Figshare annotations, doi:10.6084/m9.figshare.25037045.v4, are the other copy), classified by rule S. Reproduced when the counts match and every cut's shot_start_fr has a movieframe_time entry in every session, so that onsets fall inside the movie window."
+     },
+     {
+      "id": "event-cells",
+      "statement": "Significant proportions of cells were event selective (scene change against continuity cut) in the vmPFC (10/175, p = 0.005) and preSMA (20/299, p < 0.001), but not in the amygdala (15/479, p = 0.081), ACC (7/236, p = 0.224) or hippocampus (8/261, p = 0.199).",
+      "source": "Technical Validation, Neuronal responses (movie watching phase), paragraph 1",
+      "quote": "Significant proportions of cells were event selective in the vmPFC (10/175, p = 0.005, permutation test) and preSMA (20/299, p < 0.001) but not in the amygdala (15/479, p = 0.081), ACC (7/236, p = 0.224), and hippocampus (8/261, p = 0.199",
+      "criterion": "As examine_neurons_scenecuts.py. All units of U in all 29 sessions; firing rate in 0 to 1.0 s after each cut onset (rule S); selection by bootstrap B (scene change minus continuity cut, unbalanced, counted when the difference is positive and p < 0.05); area p by permutation test P with the same positive-difference rule. Open detail 6, the count in either direction is shown as a variant. Reproduced when vmPFC and preSMA have p < 0.05 and amygdala, ACC and hippocampus p >= 0.05 (absence on the paper's test), with counts within tolerance; partially reproduced when the significance pattern holds but a count is outside tolerance."
+     },
+     {
+      "id": "event-lfp",
+      "statement": "For microwire LFP HFB power, significant proportions of channels were event selective in all five areas; amygdala 20/448 (p = 0.005), hippocampus 40/448 (p < 0.001), ACC 33/448 (p < 0.001), vmPFC 15/400 (p = 0.015), preSMA 22/448 (p = 0.001).",
+      "source": "Technical Validation, Neuronal responses (movie watching phase), paragraph 2",
+      "quote": "For the LFP, significant proportions of channels were event selective in the amygdala (20/448, p = 0.005, permutation test), hippocampus (40/448, p < 0.001), ACC (33/448, p < 0.001), vmPFC (15/400, p = 0.015), and preSMA (22/448, p = 0.001)",
+      "criterion": "As examine_channels_scenecuts.py on the micro channels. HFB by pipeline H on the movie window; mean HFB in 0 to 1.0 s after each cut onset (rule S); all sessions; bootstrap B and permutation test P with the positive-difference rule (open detail 6, either direction shown as a variant). Reproduced when all five areas have p < 0.05 with counts within tolerance; partially reproduced when four of five have p < 0.05, or all five do but a count is outside tolerance."
+     },
+     {
+      "id": "event-ieeg",
+      "statement": "For macroelectrode iEEG HFB power, significant proportions of channels were event selective in all five areas; amygdala 67/448, hippocampus 41/448, ACC 25/448, vmPFC 33/449 (all p < 0.001) and preSMA 21/448 (p = 0.002).",
+      "source": "Technical Validation, Neuronal responses (movie watching phase), paragraph 2",
+      "quote": "At the iEEG level (macro channels), significant proportion of channels in the amygdala (67/448, p < 0.001), hippocampus (41/448, p < 0.001), ACC (25/448, p < 0.001), vmPFC (33/449, p < 0.001), and preSMA (21/448, p = 0.002) were event selective",
+      "criterion": "As event-lfp, on the macro channels (LFP_macro). The vmPFC denominator of 449 is printed as in the text and may be a misprint of 448; the count found is reported. Reproduced when all five areas have p < 0.05 with counts within tolerance; partially reproduced when four of five have p < 0.05, or all five do but a count is outside tolerance."
+     },
+     {
+      "id": "fig7-examples",
+      "statement": "Example event-selective units and channels; a preSMA neuron (p = 0.024) and a vmPFC neuron (p = 0.030), a hippocampal macro channel (p = 0.026) and a preSMA microwire channel (p < 0.001), each responding differently to scene changes than to continuity cuts.",
+      "source": "Fig. 7 legend",
+      "quote": "Significance of selection criteria (bootstrap test, scene change versus continuity cut) was p = 0.024 ( a ), p = 0.030 ( b ), p = 0.026 ( c ), p < 0.001 ( d )",
+      "criterion": "The examples are the code's plot lists. Cells P42CS_R1_47_2_1347 and P47CS_R1_78_1_2233 (matched to panels a and b by area), macro channel P62CS_R2_RHIP6 (7c) and micro channel P51CS_R2_RSMA8 (7d). Bootstrap B as in the event claims (seed 13). Reproduced when each has the legend's area, scene change above continuity cut, and a p-value within tolerance (7d below 0.001)."
+     },
+     {
+      "id": "nwb-contents",
+      "statement": "Each NWB file holds spike times of all sorted neurons, LFP from all microwires and field potentials from all macro contacts downsampled to 1000 Hz, behavior, electrode locations, spike-sorting quality metrics and eye-tracking data; spike times are referenced to movie start and the LFP starts 10 s before it.",
+      "source": "Data Records, Electrophysiology; Usage Notes, paragraph 1",
+      "quote": "Each NWB file includes various types of data: (1) spike times of all sorted neurons; (2) the LFP from all microwires, which were downsampled to 1000 Hz ... (3) the field potentials from all iEEG macroelectrodes, similarly downsampled to 1000 Hz; (4) behavior; (5) electrode locations; (6) spike sorting quality metrics; and (7) eye tracking data",
+      "criterion": "Checked in each of the 29 files. Reproduced when every file has units with spike times and electrode ids; LFP_micro and LFP_macro electrical series at 1000 Hz (rate, or timestamps 1 ms apart) whose first sample lies 10 s before movie start (Usage Notes); behavior in the trials table; an electrodes table with locations; the per-unit metrics used above (isibelow, peakSNR, meanSNR, isolationdist) and pairwise_distances; gaze in processing[\"behavior\"]; and movieframe_time; and when the movie window starts at time 0 within 1 frame (40 ms). A file lacking macro channels (the code allows for it) is reported, not counted against the claim."
+     },
+     {
+      "id": "scanner-questions",
+      "statement": "In the scanner, participants answered on average 5.97 +- 0.98 of seven questions on the movie correctly (across participants and runs).",
+      "source": "Methods, Task, paragraph 3",
+      "quote": "Participants answered on average 5.97 \u00b1 0.98 (mean \u00b1 s.d., across participants and runs) questions correctly",
+      "criterion": "Not tested on the dandiset."
+     },
+     {
+      "id": "fmri-motion",
+      "statement": "Participants moved little in the scanner; median framewise displacement 0.15 mm (per-participant medians 0.09 to 0.38 mm), with a median of 1.8% of volumes (0.2% to 14.8%) marked as motion outliers.",
+      "source": "Technical Validation, Imaging data quality, paragraph 1; Fig. 4a",
+      "quote": "participants exhibited minimal motion, with a low median framewise displacement of 0.15 mm (minimum median across participants was 0.09 mm, maximum was 0.38 mm, see Fig. 4a ), and a small percentage of volumes (median = 1.8%; min 0.2%, max 14.8%) marked as motion outliers by fMRIprep",
+      "criterion": "Not tested on the dandiset."
+     },
+     {
+      "id": "fmri-tsnr",
+      "statement": "The mean whole-brain tSNR across participants was 67.56 +- 8.29, higher in dorsal areas and lower in anterior temporal, orbitofrontal and subcortical regions.",
+      "source": "Technical Validation, Imaging data quality, paragraph 2; Fig. 4b,c",
+      "quote": "The mean whole-brain tSNR across participants was 67.56 \u00b1 8.29, mean \u00b1 s.d., consistent with previous datasets",
+      "criterion": "Not tested on the dandiset."
+     },
+     {
+      "id": "fmri-isc",
+      "statement": "Inter-subject correlation of BOLD responses to the movie was high in visual and auditory areas and elevated in social regions (precuneus, TPJ, MPFC).",
+      "source": "Technical Validation, Imaging data quality, paragraph 3; Fig. 5",
+      "quote": "The ISC analysis confirmed that the stimulus elicited comparable brain responses among participants, showing high ISC values in visual and auditory areas as expected for an audio-visual movie stimulus",
+      "criterion": "Not tested on the dandiset."
      }
     ]
    }
@@ -46925,6 +47158,12 @@
    "verifier-2-report.md",
    "verifier-2.md"
   ],
+  "dandi:000623": [
+   "claims-check-report.md",
+   "claims-check.md",
+   "claims-report.md",
+   "claims.md"
+  ],
   "dandi:000625": [
    "author-report.md",
    "author-revise-1-report.md",
@@ -48167,7 +48406,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-23T08:08:21+00:00",
+ "generated": "2026-10-23T08:24:08+00:00",
  "queue_generated": "2026-10-22T11:52:56+00:00",
  "queue_counts": {
   "public_dandisets": 661,
@@ -111594,7 +111833,6 @@
    "001893",
    "001868",
    "001521",
-   "000623",
    "000579",
    "000576",
    "000575",
@@ -111669,12 +111907,12 @@
   },
   "hours": {
    "full": 3.82125,
-   "claims": 0.29083333333333333
+   "claims": 0.29055555555555557
   },
   "running": {
    "000023": {
     "kind": "full",
-    "hours": 1.2153067619444444
+    "hours": 0.9521463255555556
    }
   }
  },
