@@ -1,0 +1,1153 @@
+# Claims for Schiavo, Valtcheva, Bair-Marshall, Song, Martin & Froemke (2020), Nature 587, 426-431,
+# on dandiset 000249.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23, protocol
+# pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the NIH author manuscript in PubMed Central (PMC7677212, NIHMS1609780), as served by
+# ncbi_pmc: main text, Methods, the ten Extended Data figure legends and the four main figure legends.
+# It is the accepted manuscript, not the version of record, and its title reads "Innate and plastic
+# mechanisms in auditory cortex for maternal behavior". The paper has no separate supplement beyond
+# Extended Data; the source data Excel sheet it mentions was not available and no claim relies on it.
+# No PDF was read.
+#
+# Code. The paper's data and code statements point to figshare doi:10.35092/yhjc.c.5037737, which
+# did not resolve on 2026-10-23 (doi.org, DataCite and the figshare API all return not found). The
+# dandiset links figshare collection doi:10.6084/m9.figshare.c.5043830.v6, same title as the
+# manuscript. Its only code item is "Behavior code" (doi:10.6084/m9.figshare.13054076.v1), read in
+# full; it holds MATLAB scripts (KAMB_OperantTask_prototypes.m, _fast.m, _slows.m, a circuit loader
+# and a date helper) and RPvdsEx circuits that run the operant task. They run 30 min sessions (1800 s)
+# and append to a csv the time of every polling sample at which the touch sensor reads a touch; they
+# hold no analysis. No analysis code for imaging, whole-cell or behaviour was found, so every method
+# detail below comes from the Methods and legends, and what they leave open is named in the criteria.
+# The same collection holds per-mouse imaging items (titled e.g. EV27_Experienced_Exc,
+# NV33_Naive_Inh, EV123_Experienced-Right ACtx_Exc, OXTHALO-19_Naive_Synapsin, M001_Dam_Exc), the
+# in vivo and in vitro whole-cell recordings, and the operant touch-time files; only titles and
+# descriptions were read, not data.
+#
+# The dandiset (title as the paper; 777 NWB files, 54 subjects, two-photon microscopy, variables
+# TwoPhotonSeries, ImagingPlane, OpticalChannel) holds the two-photon calcium imaging. The behavioural
+# assays, whole-cell recordings, in vitro slices and vocalization recordings are not described by it.
+#
+# Data the paper used, as it reports them.
+# - Subjects. C57BL/6 virgin females 6-48 weeks old; naive virgins (NV, no retrieval at baseline);
+#   experienced virgins (EV, cohoused with a dam and litter at least 72 h); lactating dams; Gad2-IRES-Cre
+#   mice for interneurons; Oxt-IRES-Cre and Oxt-IRES-Cre x Ai39 mice for oxytocin neuron inhibition.
+# - Stimuli. 6-9 prototypical pup calls (4-5 syllables, ISI 175 +/- 25 ms, about 1 s long) and for
+#   each seven temporal morphs with ISI bin centres 75, 125, 225, 275, 375, 575 and 975 ms; pure tones
+#   (4-64 kHz, 500 ms, 70 dB SPL, 0.2 Hz) and tone-pip sequences at the best frequency with ISIs 75,
+#   175, 375 and 575 ms. Calls played in pseudorandom order at 0.1 Hz; morphs played only for the
+#   prototypes that evoked responses.
+# - Imaging. Awake head-fixed mice, layer 2/3 of left auditory cortex (right in Extended Data Fig.
+#   4a-c), GCaMP6f in excitatory neurons (AAV9.CamKII) or interneurons (mDLX, or Flex in Gad2-Cre),
+#   pan-neuronal (Syn.Flex) in the oxytocin-inhibition mice; 256x256 pixels at 4 Hz (0.26 s per
+#   frame), one example at 16 Hz. Groups and counts: EV excitatory N=9 mice, NV excitatory N=12,
+#   EV interneurons N=5, NV interneurons N=6, EV right cortex N=4, one dam; chronic imaging through
+#   cohousing (N=13 virgins, retrieval tested every 12 h, imaged at least every 24 h, always at first
+#   retrieval and 24 h after); non-cohoused controls (3 sessions); CH+575 virgins (N=6); CH+575
+#   opto-OT virgins (N=4).
+# - Behaviour. Cold pup retrieval assay with dubbed calls (trials, % retrieved, latency), y-maze,
+#   operant lever task (N=7 per group, 8 sessions). Whole-cell in vivo (EPSC, IPSC per cell and ISI)
+#   and in vitro (short-term depression; oxytocin spike probability).
+#
+# Imaging method from the Methods, used by every imaging claim below ("the imaging method").
+# ROIs drawn by hand on the average image after TurboReg x-y registration (Fiji). A cell responds to a
+# prototype when the integral of fluorescence in the stimulus epoch (from 250 ms after call onset,
+# 1 s long) is significantly above baseline (F0, the 1 s before onset) by a paired one-tailed
+# Student's t-test across trials at p < 0.05 and is at least 1.5 standard deviations above baseline.
+# dF/F (%) is the mean of (Ft - F0)/F0 x 100 over the epoch; for morphs the epoch gains or loses a
+# frame for each 500 ms added to or taken from the call, and the window is shifted to the signal's
+# peak cell by cell. Each responsive cell and prototype gives one tuning curve. Normalized dF/F for a
+# morph is 1 - |(P - M)/(P + M)|, P and M the prototype- and morph-evoked dF/F. Tuning width is the
+# mean normalized dF/F over the behaviourally salient ISIs 75:375 ms. Slope at the transition is the
+# slope of the line between 375 and 975 ms.
+# Open in the imaging method, with the readings the text allows.
+# (i) ROIs. The paper's ROIs were drawn by hand. If the dataset holds them they are used; if not,
+#     any segmentation is not the paper's and is recorded as a deviation.
+# (ii) The 1.5 SD rule. (a) The trial-averaged epoch mean exceeds the baseline mean by 1.5 SD of the
+#     baseline frames pooled over trials; (b) by 1.5 SD of the trial-wise baseline means.
+# (iii) The peak shift. (a) One shift per cell, from the peak of the mean prototype response, applied
+#     to all its stimuli; (b) a shift per stimulus from that stimulus's own mean response peak. The
+#     maximal shift is not given; a shift that keeps the epoch inside the inter-call interval is used.
+# (iv) Tuning width. Whether the prototype (normalized value 1 by definition) is in the average is not
+#     said; including it is an affine change of every width and changes no test, so it is left out,
+#     a standard choice.
+# (v) Slope. (a) The two-point slope (y975 - y375)/600 per ms; (b) the least-squares slope over the
+#     points 375, 575 and 975 ms.
+# (vi) Population tuning of a mouse. (a) The mean over that mouse's single-cell normalized curves;
+#     (b) normalized from the mouse's mean raw dF/F curve (Extended Data Fig. 3g,h shows raw population
+#     tuning "summarized in Fig. 1f").
+# (vii) Normalized dF/F when P + M is near zero or of mixed sign is not addressed; values are used as
+#     computed, and the count of curves with P + M <= 0 is reported.
+# Readings (ii), (iii), (v) and (vi) are method details. Unless a claim says otherwise, its outcome is
+# the one every combination of them gives, and it is blocked as methods_underspecified when they
+# disagree, with every result shown.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000249"
+paper: doi:10.1038/s41586-020-2807-6
+claims:
+- id: subject-group-link
+  kind: link
+  statement: The dandiset's subjects can be assigned to the paper's imaging groups (experienced or
+    naive virgin, dam, right cortex, cohousing, CH+575, opto-OT; excitatory, inhibitory or
+    pan-neuronal indicator), with stimulus identity (prototype or morph ISI) for each presentation.
+  source: Methods, Data availability statement; Methods, In vivo two-photon calcium imaging
+  quote: "The data that support the findings of this study are further available at figshare"
+  data: with_labels
+  criterion: Reproduced when every subject carries a group and indicator, from the dataset's own
+    metadata or from the title of the figshare item (collection doi:10.6084/m9.figshare.c.5043830.v6)
+    with the same mouse ID, and every imaging presentation can be assigned its call and ISI bin.
+    The counts per group are compared with the paper's (EV excitatory N=9, NV excitatory N=12, EV
+    interneurons N=5, NV interneurons N=6, EV right cortex N=4, dam N=1, CH+575 N=6, CH+575 opto-OT
+    N=4, chronic cohousing N=13). Partially reproduced when groups can be assigned but stimulus
+    identity cannot, or counts differ for some groups; not reproduced when groups cannot be assigned.
+
+- id: fig1a-isi-distribution
+  statement: Pup distress call ISIs (5,355 intervals from 37 recordings of pups at postnatal days
+    1-8) follow a lognormal distribution; calls with ISIs around the median (175 +/- 25 ms) serve as
+    prototypes, and ISIs of 575 ms or more essentially never occur.
+  source: Figure 1a; Methods, Stimulus library and vocalization analysis
+  quote: "5,355 inter-syllable intervals were measured from 37 audio recordings ... and a lognormal frequency distribution was generated"
+  expected:
+  - quantity: number of ISIs measured
+    value: 5355
+    tolerance: 0
+  - quantity: number of audio recordings
+    value: 37
+    tolerance: 0
+  criterion: From the vocalization recordings, the ISIs measured and binned at +/-25 ms. Reproduced
+    when the counts match, a lognormal fits (the median lies in the 150-200 ms bin), and fewer than
+    1% of ISIs are 550 ms or longer. The 1% bound is not in the paper; it reads "essentially never".
+
+- id: fig1c-warm-vs-cold
+  statement: Experienced females (dams and experienced virgins pooled) retrieve cold, silent pups on
+    fewer trials than warm, vocalizing pups (32.0% against 80.0%).
+  source: Figure 1c; main text, paragraph citing Fig. 1c
+  quote: "Experienced females retrieved cold, silent pups on fewer trials than warm, vocalizing pups (retrieval (cold) : 32.0% of trials, retrieval (warm) : 80.0%"
+  statistics:
+  - about: warm against cold, single syllable and 575 ms
+    test: two-tailed Fisher's test, FDR correction
+    p: 0.0003
+    corrected: FDR (Benjamini-Hochberg)
+    n: warm 55 trials, cold 25, single 20, 575 ms 22
+  expected:
+  - quantity: retrieval, cold pups
+    value: 32.0
+    tolerance: 3.2
+    unit: "% of trials"
+  - quantity: retrieval, warm pups
+    value: 80.0
+    tolerance: 8.0
+    unit: "% of trials"
+  criterion: Reproduced when both rates are within tolerance and warm against cold is significant by
+    two-tailed Fisher's exact test with Benjamini-Hochberg correction at p < 0.05. The family of
+    comparisons is not stated (Methods, Statistics, say only that FDR was corrected in Fisher's
+    tests with multiple comparisons). The readings are (a) every condition tested (cold, prototypes,
+    each morph tested, single syllables) against warm, (b) the three comparisons the legend reports
+    (cold, single, 575 against warm). The outcome is the one both give; blocked as
+    methods_underspecified when they disagree. Uncorrected p-values are shown as a variant.
+
+- id: fig1c-salient-isis-retrieved
+  statement: Cold pups dubbed over with prototypes (76.7%) or with morphs of ISIs 75 to 375 ms
+    (73.7-81.0%) are retrieved at rates similar to warm pups.
+  source: Figure 1c; main text, paragraph citing Fig. 1c
+  quote: "Cold pups dubbed over with prototypes (76.7%), as well as morphs with ISIs between 75:375 ms (73.7–81.0%), were retrieved at similar rates to warm pups"
+  expected:
+  - quantity: retrieval, prototypes
+    value: 76.7
+    tolerance: 7.7
+    unit: "% of trials"
+  - quantity: retrieval range over morphs 75 to 375 ms, low bound
+    value: 73.7
+    tolerance: 7.4
+    unit: "% of trials"
+  - quantity: retrieval range over morphs 75 to 375 ms, high bound
+    value: 81.0
+    tolerance: 8.1
+    unit: "% of trials"
+  criterion: A claim of absence. Each of prototypes and morphs 75, 125, 225, 275, 375 ms against warm
+    by two-tailed Fisher's exact test with Benjamini-Hochberg correction over reading (a) of the
+    family in fig1c-warm-vs-cold (reading (b) does not hold these comparisons). Reproduced when none differs at p < 0.05 and the rates lie within the range
+    widened by 10% of each bound; the differences from warm are reported.
+  depends_on:
+  - fig1c-warm-vs-cold
+
+- id: fig1c-slow-and-single-not-retrieved
+  statement: ISIs slower than 575 ms (27.3%) and single syllables (15.0%) do not effectively elicit
+    retrieval, being retrieved less than warm pups.
+  source: Figure 1c; main text, paragraph citing Fig. 1c
+  quote: "In contrast, ISIs slower than 575 ms (27.3%) and single syllables (15.0%) did not effectively elicit retrieval"
+  statistics:
+  - about: warm against cold, single syllable and 575 ms
+    test: two-tailed Fisher's test, FDR correction
+    p: 0.0003
+    corrected: FDR (Benjamini-Hochberg)
+    n: warm 55 trials, single 20, 575 ms 22
+  expected:
+  - quantity: retrieval, 575 ms morphs
+    value: 27.3
+    tolerance: 2.7
+    unit: "% of trials"
+  - quantity: retrieval, single syllables
+    value: 15.0
+    tolerance: 1.5
+    unit: "% of trials"
+  criterion: Reproduced when both rates are within tolerance and each is below warm by two-tailed
+    Fisher's exact test with Benjamini-Hochberg correction (both family readings of
+    fig1c-warm-vs-cold, with the same rule) at p < 0.05. The 975 ms morph is reported but not required, since the text names 575 ms.
+  depends_on:
+  - fig1c-warm-vs-cold
+
+- id: ed2a-dams-evs-similar
+  statement: Dams and experienced virgins do not differ in retrieval of warm pups, prototype-dubbed
+    pups or cold pups.
+  source: Extended Data Fig. 2a
+  quote: "Dams and EVs did not differ in their retrieval behavior"
+  statistics:
+  - about: warm, dams 85.2% (27 trials) against EVs 77.0% (26)
+    test: two-tailed Fisher's test
+    p: 0.50
+  - about: prototypes, dams 91.7% (12) against EVs 66.7% (18)
+    test: two-tailed Fisher's test
+    p: 0.19
+  - about: cold, dams 25.0% (12) against EVs 38.5% (13)
+    test: two-tailed Fisher's test
+    p: 0.67
+  criterion: A claim of absence. Two-tailed Fisher's exact test, dams against EVs, for each of warm,
+    prototype and cold. Reproduced when none has p < 0.05; the rates are reported.
+
+- id: ed2b-latency-slow-longer
+  statement: On successful trials, latencies to retrieve cold pups and pups dubbed with slow stimuli
+    (single syllables and 575 ms) are longer than for warm pups and for pups dubbed with 75 to 375 ms
+    ISIs.
+  source: Extended Data Fig. 2b
+  quote: "Latencies to retrieve cold pups and cold pups dubbed over with slow morphs (single syllables (‘SS’) and 575 ms ISIs) were longer than for warm pups (p=0.02) or cold pups dubbed over with morphs containing ISIs between 75:375 ms (p=0.001)"
+  statistics:
+  - about: slow and cold against warm
+    test: Kruskal-Wallis H-test with Dunn's correction
+    p: 0.02
+  - about: slow and cold against 75:375 ms morphs
+    test: Kruskal-Wallis H-test with Dunn's correction
+    p: 0.001
+  criterion: Latencies of successful trials in three bins (warm; morphs 75 to 375 ms; cold, single
+    syllable and 575 ms). Whether prototypes are in the 75 to 375 ms bin is not said; the readings
+    are with and without prototypes. Reproduced when, under one reading, the Kruskal-Wallis test
+    with Dunn's post hoc shows the slow bin longer than both others at p < 0.05.
+
+- id: ed2d-ymaze-approach
+  statement: In a y-maze, experienced females show no preference between a prototype and a morph
+    with ISIs 25 to 350 ms, but approach prototypes more than morphs slower than 350 ms (425 ms 25.0%,
+    575+ ms 15.8% of trials approaching the morph).
+  source: Extended Data Fig. 2d; main text, paragraph citing Extended Data Fig. 2c,d
+  quote: "Mice showed a significant preference to approach prototypes when ISIs were slower than 350 ms"
+  statistics:
+  - about: 62.5 ms bin, 44.2%, 52 trials
+    test: two-tailed binomial test against 0.50
+    p: 0.49
+  - about: 275 ms bin, 55.6%, 45 trials
+    test: two-tailed binomial test against 0.50
+    p: 0.46
+  - about: 425 ms bin, 25.0%, 20 trials
+    test: two-tailed binomial test against 0.50
+    p: 0.04
+  - about: 575+ ms bin, 15.8%, 19 trials
+    test: two-tailed binomial test against 0.50
+    p: 0.005
+  expected:
+  - quantity: morph approach, 425 ms bin
+    value: 25.0
+    tolerance: 2.5
+    unit: "% of trials"
+  - quantity: morph approach, 575+ ms bin
+    value: 15.8
+    tolerance: 1.6
+    unit: "% of trials"
+  criterion: First room entry per trial, bins of +/-75 ms except 575+. Reproduced when the 425 and
+    575+ bins differ from 0.5 by two-tailed binomial test at p < 0.05 with values in tolerance, and
+    the 62.5 and 275 ms bins do not.
+
+- id: ed3e-prototype-responsive-fraction
+  statement: About 16% of excitatory neurons in left auditory cortex respond to prototypes,
+    regardless of maternal experience.
+  source: Extended Data Fig. 3e; main text, paragraph citing it
+  quote: "We observed robust responses to prototypes in ~16% of excitatory neurons regardless of maternal experience"
+  statistics:
+  - test: two-tailed unpaired t-test
+    p: 0.74
+    n: 9 experienced and 12 naive virgins
+  expected:
+    quantity: prototype-responsive excitatory neurons
+    value: 16
+    tolerance: 1.6
+    unit: "% of neurons"
+  criterion: Per mouse, the responsive ROIs (the imaging method, responsive to any of the 6-9
+    prototypes) over all ROIs. Whether ~16% is the mean over mice or over neurons pooled is not
+    said; both readings are computed. Reproduced when, under one reading, the value is within
+    tolerance and the per-mouse percentages of EV and NV do not differ by two-tailed unpaired t-test
+    at p < 0.05.
+
+- id: fig1f-ev-broader-than-nv
+  statement: Excitatory neuronal tuning to temporal morphs is broader in experienced than in naive
+    virgins across the ISIs that elicit retrieval; naive cortex responds less to morphs than to
+    prototypes.
+  source: Figure 1f; main text, paragraph citing Fig. 1e,f
+  quote: "Compared to naive virgins, temporal tuning was broader in experienced virgins across ISIs that reliably elicited pup retrieval"
+  statistics:
+  - about: EV against NV at 375 ms
+    test: one-way ANOVA, Bonferroni correction
+    p: 0.050
+    corrected: Bonferroni
+    n: 9 experienced and 12 naive virgins
+  criterion: Per-mouse population tuning curves of normalized dF/F (the imaging method, readings (vi)
+    a and b). The ANOVA design is not given; the readings are (a) a one-way ANOVA over all group and
+    ISI cells with Bonferroni-corrected EV against NV comparisons at each of the seven morph ISIs;
+    (b) EV against NV t-tests per morph ISI, Bonferroni over the seven. Reproduced when the EV mean
+    exceeds the NV mean at each of 75, 125, 225, 275 and 375 ms and the 375 ms comparison has
+    p <= 0.05 under every reading (of the design and of (vi)); partially reproduced when EV exceeds
+    NV at all five but no reading gives p <= 0.05 at 375 ms; blocked as methods_underspecified when
+    the readings disagree.
+
+- id: ed6c-tuning-width-groups
+  statement: Tuning width over 75 to 375 ms is broader for excitatory neurons in experienced than in
+    naive virgins; in naive cortex interneurons are more broadly tuned than excitatory neurons; and
+    interneuron tuning width does not differ between experienced and naive virgins.
+  source: Extended Data Fig. 6c
+  quote: "Excitatory neuronal tuning curves were significantly broader in EVs (N=9 mice) than in NVs (N=12; p=0.001), and interneuron tuning was broader than excitatory tuning in naive cortex (Inh: N=6; p=0.04). Interneuron tuning width did not differ between experienced (N=5) and naive virgins (p>0.99; one-way ANOVA, Bonferroni correction)"
+  statistics:
+  - about: EV against NV excitatory
+    test: one-way ANOVA, Bonferroni correction
+    p: 0.001
+    corrected: Bonferroni
+    n: 9 EV and 12 NV mice
+  - about: NV interneurons against NV excitatory
+    test: one-way ANOVA, Bonferroni correction
+    p: 0.04
+    corrected: Bonferroni
+    n: 6 and 12 mice
+  - about: EV against NV interneurons
+    test: one-way ANOVA, Bonferroni correction
+    p: 0.99
+    p_relation: ">"
+    corrected: Bonferroni
+    n: 5 and 6 mice
+  criterion: Per-mouse tuning widths (the imaging method, readings (vi) a and b) in four groups (EV
+    and NV, excitatory and interneuron); one-way ANOVA with Bonferroni post hoc comparisons. Which
+    pairs form the Bonferroni family is not stated; the readings are (a) the three pairs reported,
+    (b) all six pairs. Reproduced when, under every reading (of the family and of (vi)), EV
+    excitatory exceeds NV excitatory and NV interneurons exceed NV excitatory, each at p < 0.05, and
+    EV against NV interneurons is not significant; blocked as methods_underspecified when the
+    readings disagree.
+
+- id: ed3k-tones-no-experience-effect
+  statement: The narrow tuning in naive cortex does not extend to temporally modulated pure tones;
+    tuning width to tone sequences does not differ between experienced and naive virgins.
+  source: Extended Data Fig. 3k; main text, paragraph citing Extended Data Fig. 3i-m
+  quote: "the narrow tuning in naive cortex did not extend to temporally-modulated pure tones"
+  statistics:
+  - test: unpaired two-tailed t-test
+    p: 0.97
+    n: experienced 3 mice, 94 neurons; naive 4 mice, 45 neurons
+  criterion: A claim of absence. Cells responsive to the best frequency and to the 175 ms (5 Hz)
+    sequence by paired one-tailed t-test at p < 0.05; normalized dF/F of the 75, 375 and 575 ms
+    sequences to the 175 ms one; width as the mean "across all stimuli" (the legend), the readings
+    being with or without the 175 ms value (an affine change, so one is used). Unpaired two-tailed
+    t-test. The legend gives both mice (3 and 4) and neurons (94 and 45) and does not say which is
+    the unit; the readings are (a) neurons, (b) per-mouse mean widths. Reproduced when p >= 0.05
+    under both, not reproduced when p < 0.05 under both, blocked as methods_underspecified when they
+    disagree; the difference is reported.
+
+- id: ed3m-tones-broader-than-calls-naive
+  statement: In naive auditory cortex, normalized responses to temporally modulated tones are higher
+    than to pup call morphs at 75, 375 and 575 ms.
+  source: Extended Data Fig. 3m
+  quote: "We observed higher normalized ΔF/Fs to temporally-modulated tones (N=5 mice) than to pup call morphs (n=11–12) in naive auditory cortex"
+  statistics:
+  - about: 75 ms
+    test: unpaired two-tailed Mann-Whitney test
+    p: 0.009
+  - about: 375 ms
+    test: unpaired two-tailed Mann-Whitney test
+    p: 0.04
+  - about: 575 ms
+    test: unpaired two-tailed Mann-Whitney test
+    p: 0.004
+  criterion: Normalized dF/F to tone sequences (normalized to the 175 ms sequence, Methods) per
+    naive mouse (N=5) against normalized dF/F to call morphs per naive excitatory mouse of Fig. 1f
+    (n=11-12, the count varying by ISI), at 75, 375 and 575 ms. The legend gives N=5 tone mice where
+    Extended Data Fig. 3k gives N=4 naive mice; the difference is not explained, and the mice
+    reached are reported. Whether the per-mouse value is the mean of single-cell curves or comes from
+    the mean raw curve is reading (vi). Reproduced when, under every reading, tones exceed calls at
+    all three ISIs by unpaired two-tailed Mann-Whitney test at p < 0.05.
+
+- id: ed4c-left-broader-than-right
+  statement: Broad temporal tuning in experienced virgins is left-lateralized; tuning width (75 to
+    375 ms) is larger in left than in right auditory cortex.
+  source: Extended Data Fig. 4a-c
+  quote: "broad temporal tuning was left-lateralized in experienced females"
+  statistics:
+  - test: unpaired two-tailed Mann-Whitney test
+    p: 0.003
+    n: 9 left and 4 right experienced virgins
+  criterion: Per-mouse tuning widths (the imaging method) of EV excitatory neurons, left (the nine of
+    Fig. 1f) against right (N=4). The unit is mice, since panel c is "from animals in (b)", and p = 0.003
+    matches the smallest exact two-sided Mann-Whitney p for 9 against 4 mice (2/715, about 0.0028,
+    complete separation). Reproduced when left exceeds right at p < 0.05 by unpaired two-tailed
+    Mann-Whitney test over mice; single-cell curves are shown as a variant.
+
+- id: ed4d-response-tracks-isi-probability
+  statement: In experienced virgins, call-evoked dF/F across ISI bins is correlated with the
+    probability of each ISI in natural pup calls.
+  source: Extended Data Fig. 4d
+  quote: "In EVs (N=9 mice), evoked ΔF/Fs were correlated with ISI probability from the distribution in Fig. 1a (Pearson’s r=0.86, p=0.007; two-tailed)"
+  statistics:
+  - test: two-tailed Pearson correlation
+    statistic: r = 0.86
+    p: 0.007
+    n: 9 experienced virgins; 8 ISI bins
+  expected:
+    quantity: Pearson r, dF/F against ISI probability
+    value: 0.86
+    tolerance: 0.086
+  data: with_inputs
+  criterion: The mean dF/F per ISI bin over the nine EV mice (eight points, prototype and seven
+    morphs) against the probability of that bin in the Fig. 1a distribution. The ISI distribution is
+    not in the dataset; it comes from fig1a-isi-distribution or from the source data. The legend says
+    "evoked ΔF/Fs", the term the paper uses for raw responses as against "normalized ΔF/F", so raw
+    dF/F is used and normalized dF/F is shown as a variant. Reproduced when r is within tolerance and
+    p < 0.05.
+  depends_on:
+  - fig1a-isi-distribution
+
+- id: ed4e-dam-broad-tuning
+  statement: Qualitatively, the left auditory cortex of a lactating dam shows broad temporal tuning,
+    similar to that of experienced virgins.
+  source: Extended Data Fig. 4e; main text, paragraph citing Extended Data Fig. 4d,e
+  quote: "Qualitatively, we observed broad temporal tuning in the left auditory cortex of a lactating dam (N=1 dam, n=10 single-cell tuning curves)"
+  criterion: The dam's mean normalized curve (10 single-cell curves). The paper gives no test ("we
+    observed similar tuning in a lactating dam", main text). Reproduced when its tuning width lies
+    within the range of the nine EV mice's widths and above the NV median; these bounds are a
+    reading of "similar" and "broad", not the paper's.
+
+- id: ed4g-broadening-with-reliable-retrieval
+  statement: In virgins retrieving on 10-30% of trials, temporal tuning was sharper before the
+    onset of reliable retrieval; more neurons are broadly tuned once they retrieve on 100% of trials.
+  source: Extended Data Fig. 4f,g
+  quote: "A larger proportion of neurons were more broadly tuned (higher normalized ΔF/Fs) when EVs retrieved on 100% of trials (p<0.0001; two-tailed unpaired Kolmogorov-Smirnov test)"
+  statistics:
+  - test: two-tailed unpaired Kolmogorov-Smirnov test
+    p: 0.0001
+    p_relation: "<"
+    n: 2 mice, 78 neurons before and 52 after
+  criterion: Single-cell tuning widths of the two virgins before (n=78) and after (n=52) reliable
+    retrieval (Extended Data Fig. 4f, the 10% virgin day 0 n=21 and day 2 n=26, the 30% virgin
+    day 1 n=57 and day 2 n=26). Reproduced when the after distribution lies to the right (higher median) and the
+    two-sample KS test has p < 0.0001; partially reproduced when p < 0.05.
+
+- id: fig1g-ipsc-depress-faster
+  statement: In pup-naive auditory cortical slices, IPSCs depress faster than EPSCs at the
+    prototypical stimulation rate (175 ms), while EPSCs and IPSCs depress similarly at 75 or 575 ms.
+  source: Figure 1g; main text, paragraph citing Fig. 1g
+  quote: "whole-cell recordings in pup-naive auditory cortical slices revealed that IPSCs adapted out faster than EPSCs at prototypical repetition rates, while PSCs were similarly depressed at faster or slower stimulation rates"
+  data: elsewhere
+  where: figshare doi:10.6084/m9.figshare.12611522.v1 (ACtx slice recordings - Repeated stimulation),
+    in collection doi:10.6084/m9.figshare.c.5043830.v6; the paper's own figshare DOI did not resolve
+  criterion: Peak PSCs normalized to the first (Sn/S1) per cell; 75 ms n=10 cells, 175 ms n=14,
+    575 ms n=13; one-way ANOVA with Bonferroni correction (legend). The p-value is not printed (the
+    legend marks significance with asterisks), and the ANOVA factors are not given; the readings are
+    (a) IPSC against EPSC Sn/S1 at each pulse, Bonferroni over pulses, per rate; (b) the mean Sn/S1
+    over pulses 2 to 5, IPSC against EPSC, per rate. The number of pulses per train is not given in
+    the text. Reproduced when, under every reading, IPSCs are lower than EPSCs at p < 0.05 at 175 ms
+    and not at 75 or 575 ms; blocked as methods_underspecified when the readings disagree.
+
+- id: fig1i-operant-prototypes
+  statement: Of naive virgins able to silence playback with a lever press, only those hearing
+    prototypes significantly increased their press duration by session 8.
+  source: Figure 1h,i; main text, paragraph citing Fig. 1h,i
+  quote: "Only virgins listening to prototypes exhibited a significant increase in press duration by session 8 (p=0.03)"
+  statistics:
+  - about: prototypes (175 ms)
+    test: paired two-tailed t-test
+    p: 0.03
+    n: 7 virgins
+  - about: fast morphs (75 ms)
+    test: paired two-tailed t-test
+    p: 0.24
+    n: 7 virgins
+  - about: slow morphs (575 ms)
+    test: paired two-tailed t-test
+    p: 0.13
+    n: 7 virgins
+  data: elsewhere
+  where: figshare doi:10.6084/m9.figshare.13056584.v1 (Behavior files, touch times), in collection
+    doi:10.6084/m9.figshare.c.5043830.v6; the paper's own figshare DOI did not resolve
+  criterion: Touch-time files of 30 min sessions (KAMB_OperantTask_*.m write the time of each
+    polling sample with a touch). A press is a run of consecutive touch samples; the gap that ends a
+    press is not given, and the readings are gaps above (a) the median inter-sample interval times
+    2, (b) 100 ms. The mean press duration per session; files marked b (e.g. v4b) are joined to
+    their session. The comparison is not stated; the readings are (a) session 1 against session 8,
+    (b) the mean of sessions 1-2 against 7-8. Reproduced when, under every reading, prototypes give
+    p < 0.05 by paired two-tailed t-test with an increase and the other groups do not; blocked as
+    methods_underspecified when the readings disagree.
+
+- id: ed5b-press-count-unchanged
+  statement: The number of lever presses per session did not increase by session 8 in any of the
+    three groups.
+  source: Extended Data Fig. 5b
+  quote: "The total number of levers presses in a session (which turns off continuously playing prototypes or morphs) did not increase by session 8, regardless of the stimulus group"
+  statistics:
+  - about: 175 ms
+    test: paired two-tailed t-test
+    p: 0.44
+  - about: 75 ms
+    test: paired two-tailed t-test
+    p: 0.19
+  - about: 575 ms
+    test: paired two-tailed t-test
+    p: 0.14
+  data: elsewhere
+  where: figshare doi:10.6084/m9.figshare.13056584.v1 (Behavior files, touch times)
+  criterion: A claim of absence. Presses counted as in fig1i-operant-prototypes, under both of its
+    press readings and both of its comparison readings; paired two-tailed t-test per group (N=7).
+    Reproduced when no group shows an increase at p < 0.05 under every reading, not reproduced when
+    one does under every reading, blocked as methods_underspecified when they disagree.
+  depends_on:
+  - fig1i-operant-prototypes
+
+- id: fig2d-interneuron-slope-sharper
+  statement: Interneurons are broadly tuned regardless of experience, but their tuning curve slopes
+    at the transition between retrieved (75:375 ms) and ignored (575:975 ms) ISIs are sharper in
+    experienced virgins.
+  source: Figure 2c,d; main text, paragraph citing Fig. 2
+  quote: "tuning curve slopes at the transition between ISIs eliciting retrieval (75:375 ms, Fig. 1c ) and ignored ISIs (575:975 ms) were significantly sharper in experienced virgins (p=0.03"
+  statistics:
+  - test: unpaired two-tailed t-test
+    p: 0.03
+    n: 5 experienced and 6 naive virgins
+  criterion: Per-mouse population curves of interneurons (the imaging method, readings (v) and (vi));
+    slope 375 to 975 ms. Reproduced when the EV slope is more negative than the NV slope at p < 0.05
+    by unpaired two-tailed t-test under every reading of (v) and (vi); blocked as
+    methods_underspecified when they disagree.
+
+- id: ed6d-slopes-negative-in-ev
+  statement: Population tuning slopes at the behavioural transition (375:975 ms) are significantly
+    negative in experienced virgins, for excitatory neurons and interneurons, and not in naive
+    virgins.
+  source: Extended Data Fig. 6d; main text, paragraph citing Fig. 2e
+  quote: "Slopes in EVs were significantly negative"
+  statistics:
+  - about: EV excitatory
+    test: one-sample t-test to 0.0
+    p: 0.02
+    n: 7 mice
+  - about: EV interneurons
+    test: one-sample t-test to 0.0
+    p: 0.007
+    n: 5 mice
+  - about: NV excitatory
+    test: one-sample t-test to 0.0
+    p: 0.84
+    n: 11 mice
+  - about: NV interneurons
+    test: one-sample t-test to 0.0
+    p: 0.29
+    n: 6 mice
+  criterion: Per-mouse population slopes (readings (v) and (vi)). The mice counts (7 and 11) are
+    fewer than in Fig. 1f (9 and 12); which were left out is not said, so all mice with a 975 ms
+    response are used and the counts reported. Reproduced when both EV groups have slopes below zero
+    at p < 0.05 and neither NV group does, under every reading; blocked as methods_underspecified
+    when they disagree.
+
+- id: fig2e-ev-matched-ei-tuning
+  statement: In experienced virgins, excitatory and inhibitory single-cell tuning are matched across
+    behaviourally salient ISIs and differ at 575 and 975 ms.
+  source: Figure 2e
+  quote: "Excitatory and inhibitory neuronal tuning were also matched in experienced virgins, responding similarly across behaviorally-salient ISIs and with negative slopes between 375:975 ms"
+  statistics:
+  - about: excitatory against inhibitory at 575 ms
+    test: one-way ANOVA, Bonferroni correction
+    p: 0.009
+    corrected: Bonferroni
+    n: 366 excitatory and 260 inhibitory single-cell tuning curves
+  - about: excitatory against inhibitory at 975 ms
+    test: one-way ANOVA, Bonferroni correction
+    p: 0.048
+    corrected: Bonferroni
+    n: 366 excitatory and 260 inhibitory single-cell tuning curves
+  criterion: Single-cell normalized curves of EV excitatory and inhibitory neurons; one-way ANOVA over
+    cell type and ISI cells with Bonferroni-corrected comparisons, excitatory against inhibitory at
+    each morph ISI. The direction at 575 and 975 is not stated in the text; it is reported. Reproduced
+    when 575 and 975 differ at p < 0.05 and none of 75 to 375 ms does.
+
+- id: fig2f-nv-mismatched-ei-tuning
+  statement: In naive cortex, interneurons are more broadly tuned than excitatory neurons but lack a
+    sharp boundary at the behavioural transition.
+  source: Figure 2f; main text, paragraph citing Fig. 2f
+  quote: "while interneurons in naive cortex were more broadly tuned than excitatory neurons, the lack of a sharp boundary suggests interneurons were still relatively untuned to relevant statistics"
+  statistics:
+  - about: NV interneuron against NV excitatory tuning width (Extended Data Fig. 6c)
+    test: one-way ANOVA, Bonferroni correction
+    p: 0.04
+    corrected: Bonferroni
+    n: 6 and 12 mice
+  - about: NV interneuron population slope against zero (Extended Data Fig. 6d)
+    test: one-sample t-test to 0.0
+    p: 0.29
+    n: 6 mice
+  criterion: The sentence cites Fig. 2f and Extended Data Fig. 6c,d. Fig. 2f (268 excitatory and 128
+    inhibitory NV single-cell curves, one-way ANOVA, Bonferroni) prints no p, so the claim is judged
+    on the Extended Data tests. Reproduced when NV interneuron width exceeds NV excitatory width as
+    in ed6c-tuning-width-groups and the NV interneuron slope does not differ from zero as in
+    ed6d-slopes-negative-in-ev (one-sample t-test, p >= 0.05). The Fig. 2f per-ISI comparisons are
+    reported.
+  depends_on:
+  - ed6c-tuning-width-groups
+  - ed6d-slopes-negative-in-ev
+
+- id: ed6ef-epsc-tuning
+  statement: In experienced females, prototype- and morph-evoked EPSCs are similar and negatively
+    correlated with ISI; in naive cortex morph-evoked EPSCs are weaker than prototype-evoked ones
+    and uncorrelated with ISI.
+  source: Extended Data Fig. 6e,f; main text, paragraph citing Fig. 2g
+  quote: "In experienced females, prototype- and morph-evoked EPSCs were similar in magnitude and negatively correlated with ISI duration"
+  statistics:
+  - about: NV 175 against 125 ms
+    test: repeated measures one-way ANOVA, Bonferroni correction
+    p: 0.006
+  - about: NV 175 against 275 ms
+    test: repeated measures one-way ANOVA, Bonferroni correction
+    p: 0.003
+  - about: NV 175 against 575 ms
+    test: repeated measures one-way ANOVA, Bonferroni correction
+    p: 0.02
+  - about: EV EPSC against ISI
+    test: two-tailed Pearson correlation
+    statistic: r = -0.37
+    p: 0.01
+    n: 12 cells
+  - about: NV EPSC against ISI
+    test: two-tailed Pearson correlation
+    statistic: r = -0.13
+    p: 0.35
+    n: 14 cells
+  data: elsewhere
+  where: figshare doi:10.6084/m9.figshare.12611657.v3 (experienced) and
+    doi:10.6084/m9.figshare.12613496.v2 (naive), in collection doi:10.6084/m9.figshare.c.5043830.v6
+  criterion: PSC area over the window from call onset to 250 ms after offset, divided by its length,
+    minus the 1 s baseline, mean of the largest 5-10 trials (the readings 5 and 10 are both run).
+    Experienced cells are dams and EVs pooled (Methods, In vivo whole-cell recordings). The legends
+    use 125, 175, 275 and 575 ms, while the Methods list morphs of 125, 225 and 575 ms; the legends'
+    ISIs are used. Correlation over all cell and ISI points (n=12 cells by 4 ISIs, matching the p
+    for r=-0.37). Reproduced when, under every reading, NV prototype exceeds 125, 275 and 575 ms at p < 0.05 by
+    repeated measures ANOVA with Bonferroni, no EV pair differs, the EV correlation is negative at
+    p < 0.05 and the NV one is not significant.
+
+- id: fig2h-epsc-enhanced-ev
+  statement: Prototype-evoked EPSCs are similar between groups, but EPSCs evoked by non-prototypical
+    ISIs are larger in experienced than in naive females.
+  source: Figure 2h; main text, paragraph citing Fig. 2h
+  quote: "While prototype-evoked EPSCs were similar, responses to non-prototypical ISIs were enhanced in experienced females"
+  statistics:
+  - about: 125 ms
+    test: unpaired one-tailed t-test
+    p: 0.001
+    n: 12 EV and 14 NV cells
+  - about: 275 ms
+    test: unpaired one-tailed t-test
+    p: 0.03
+  - about: 575 ms
+    test: unpaired one-tailed t-test
+    p: 0.04
+  data: elsewhere
+  where: figshare doi:10.6084/m9.figshare.12611657.v3 and doi:10.6084/m9.figshare.12613496.v2
+  criterion: EPSC magnitudes as in ed6ef-epsc-tuning. Reproduced when EV exceeds NV at 125, 275 and
+    575 ms at p < 0.05 by unpaired one-tailed t-test and the prototype comparison is not significant.
+  depends_on:
+  - ed6ef-epsc-tuning
+
+- id: fig2i-ipsc-weaker-nv
+  statement: IPSCs are broadly tuned in both groups but weaker in naive virgins at every ISI.
+  source: Figure 2i; Extended Data Fig. 6i-k
+  quote: "IPSCs were broadly tuned in both groups ( Extended Data Figure 6i – k ), albeit weaker in naive virgins"
+  statistics:
+  - about: 125 ms
+    test: unpaired two-tailed t-test
+    p: 0.047
+    n: 6 cells each
+  - about: 175 ms
+    test: unpaired two-tailed t-test
+    p: 0.009
+  - about: 275 ms
+    test: unpaired two-tailed t-test
+    p: 0.01
+  - about: 575 ms
+    test: unpaired two-tailed t-test
+    p: 0.004
+  - about: EV IPSC against ISI
+    test: two-tailed Pearson correlation
+    statistic: r = 0.33
+    p: 0.11
+    n: 6 cells
+  - about: NV IPSC against ISI
+    test: two-tailed Pearson correlation
+    statistic: r = 0.13
+    p: 0.56
+    n: 6 cells
+  data: elsewhere
+  where: figshare doi:10.6084/m9.figshare.12611657.v3 and doi:10.6084/m9.figshare.12613496.v2
+  criterion: IPSC magnitudes as in ed6ef-epsc-tuning. Reproduced when EV exceeds NV at all four ISIs
+    at p < 0.05 by unpaired two-tailed t-test, and neither correlation with ISI is significant.
+  depends_on:
+  - ed6ef-epsc-tuning
+
+- id: fig2j-ie-ratio-tracks-isi
+  statement: In experienced females the IPSC-EPSC ratio is positively correlated with ISI, so that
+    the balance shifts toward inhibition for slower ISIs; not so in naive females.
+  source: Figure 2j; main text, paragraph citing Fig. 2j
+  quote: "In experienced females, this ratio was positively correlated with ISI duration (Pearson’s r=0.47, p=0.02"
+  statistics:
+  - about: experienced
+    test: two-tailed Pearson correlation
+    statistic: r = 0.47
+    p: 0.02
+    n: 6 cells
+  - about: naive
+    test: two-tailed Pearson correlation
+    statistic: r = 0.01
+    p: 0.96
+    n: 6 cells
+  expected:
+    quantity: Pearson r, IPSC-EPSC ratio against ISI, experienced
+    value: 0.47
+    tolerance: 0.047
+  data: elsewhere
+  where: figshare doi:10.6084/m9.figshare.12611657.v3 and doi:10.6084/m9.figshare.12613496.v2
+  criterion: (IPSC - EPSC)/(IPSC + EPSC) per cell and ISI, from cells with both currents recorded,
+    correlated with ISI over all cell and ISI points. Reproduced when the EV r is within tolerance
+    with p < 0.05 and the NV correlation is not significant.
+  depends_on:
+  - ed6ef-epsc-tuning
+
+- id: fig2k-ipsc-exceeds-epsc-575
+  statement: Within cells of experienced cortex, 575 ms-evoked IPSCs are stronger than EPSCs, while
+    the two do not differ at 125, 175 or 275 ms.
+  source: Figure 2k; Extended Data Fig. 6l
+  quote: "575-evoked IPSCs were significantly stronger than EPSCs (p=0.03"
+  statistics:
+  - about: 575 ms
+    test: paired two-tailed t-test
+    p: 0.03
+    n: 6 cells
+  - about: 125 ms
+    test: two-tailed paired t-test
+    p: 0.47
+  - about: 175 ms
+    test: two-tailed paired t-test
+    p: 0.26
+  - about: 275 ms
+    test: two-tailed paired t-test
+    p: 0.44
+  data: elsewhere
+  where: figshare doi:10.6084/m9.figshare.12611657.v3
+  criterion: Reproduced when IPSC exceeds EPSC at 575 ms at p < 0.05 by paired two-tailed t-test and
+    the other ISIs are not significant.
+  depends_on:
+  - ed6ef-epsc-tuning
+
+- id: ed6h-dams-evs-epsc-similar
+  statement: Prototype- and morph-evoked EPSCs do not differ between lactating dams and experienced
+    virgins, justifying their pooling.
+  source: Extended Data Fig. 6g,h
+  quote: "Prototype and morph-evoked EPSCs did not differ between dams (n=4 cells) and EVs (n=8)"
+  statistics:
+  - about: 125 ms
+    test: unpaired two-tailed t-test
+    p: 0.11
+  - about: 175 ms
+    test: unpaired two-tailed t-test
+    p: 0.80
+  - about: 275 ms
+    test: unpaired two-tailed t-test
+    p: 0.85
+  - about: 575 ms
+    test: unpaired two-tailed t-test
+    p: 0.85
+  data: elsewhere
+  where: figshare doi:10.6084/m9.figshare.12611657.v3
+  criterion: A claim of absence. Unpaired two-tailed t-test, dams (n=4) against EVs (n=8), per ISI.
+    Reproduced when none has p < 0.05.
+  depends_on:
+  - ed6ef-epsc-tuning
+
+- id: ed7bc-tracked-responsiveness
+  statement: During cohousing prototype-responsive interneurons are relatively stable while the set
+    of prototype-responsive excitatory neurons changes; about 18.8% of excitatory and 72.3% of
+    inhibitory neurons responsive at baseline remain responsive in the final session.
+  source: Extended Data Fig. 7a-c; main text, paragraph citing Fig. 3b
+  quote: "Of the neurons that were prototype-responsive at baseline and successfully tracked, ~18.8% of excitatory neurons and ~72.3% of inhibitory neurons remained responsive in the final imaging session"
+  statistics:
+  - about: excitatory, baseline against post-onset prototype dF/F
+    test: two-tailed Spearman correlation
+    statistic: r = -0.40
+    p: 0.0001
+    p_relation: "<"
+    n: 104 neurons
+  - about: inhibitory
+    test: two-tailed Spearman correlation
+    statistic: r = 0.46
+    p: 0.0001
+    p_relation: "<"
+    n: 122 neurons
+  expected:
+  - quantity: excitatory neurons remaining responsive
+    value: 18.8
+    tolerance: 1.9
+    unit: "%"
+  - quantity: inhibitory neurons remaining responsive
+    value: 72.3
+    tolerance: 7.2
+    unit: "%"
+  - quantity: Spearman r, excitatory
+    value: -0.40
+    tolerance: 0.04
+  - quantity: Spearman r, inhibitory
+    value: 0.46
+    tolerance: 0.046
+  criterion: Chronic imaging virgins. ROIs matched across days by spatial cross-correlation of the
+    100x100-pixel image around each ROI; cells below the 95th percentile of the across-ROI null are
+    dropped. Prototype dF/F at baseline and in the final session (+24 to 96 h), zero for
+    non-responsive cells. Reproduced when the percentages and r values are within tolerance and
+    both correlations have p < 0.0001; partially reproduced when the signs and p < 0.05 hold.
+
+- id: fig3e-exc-broadens-after-onset
+  statement: During cohousing, excitatory single-cell tuning broadens between 75 and 375 ms after
+    retrieval onset, while interneuron tuning does not broaden; excitatory and inhibitory tuning,
+    mismatched at first, become similar 24 hours after first retrieval.
+  source: Figure 3e-g; main text, paragraph citing Fig. 3e
+  quote: "Excitatory population tuning broadened between 75:375 ms ( Fig. 3e , f ), elaborating on the initial preference for prototypes. Interneurons did not broaden their tuning"
+  statistics:
+  - about: excitatory widths before against after onset
+    test: unpaired two-tailed Kolmogorov-Smirnov test
+    p: 0.0001
+    p_relation: "<"
+    n: 165 naive and 70 (+24 h) excitatory curves
+  - about: interneuron widths before against after onset
+    test: unpaired two-tailed Kolmogorov-Smirnov test
+    p: 0.16
+    n: 128 naive and 86 (+24 h) interneuron curves
+  criterion: Chronic imaging, sessions aligned to first retrieval, binned +/-12 h. "Before and after
+    retrieval onset" is naive (baseline) against +24 h; the counts fix it (Fig. 3e +24 h n=70
+    excitatory and 86 inhibitory, the "retrieving" n of Extended Data Fig. 8a,b). Reproduced when
+    the excitatory width distribution shifts up with KS p < 0.0001, the interneuron KS has
+    p >= 0.05, and, by one-way ANOVA with Bonferroni-corrected excitatory against inhibitory
+    comparisons at each morph ISI (Fig. 3e legend), the two differ at one or more ISIs at baseline
+    and at none of 75 to 375 ms at +24 h ("matched ... over the range of behaviorally-relevant ISIs
+    (+24 hours, Fig. 3e)", main text). The ANOVA design is open as in fig1f-ev-broader-than-nv and
+    both designs are run, the outcome being the one both give. Partially reproduced when the width
+    parts hold and the matching part does not.
+
+- id: fig3h-slopes-sharpen
+  statement: Both excitatory and inhibitory population tuning sharpen at the transition 375 to 975
+    ms after virgins start retrieving.
+  source: Figure 3h
+  quote: "both excitatory and inhibitory tuning selectively sharpened between 375:975 ms"
+  statistics:
+  - about: excitatory
+    test: one-tailed paired t-test
+    p: 0.02
+    n: 6 mice
+  - about: inhibitory
+    test: one-tailed paired t-test
+    p: 0.02
+    n: 6 mice
+  criterion: Per-mouse population slopes (readings (v) and (vi)) before cohousing against after
+    retrieving. "After virgins were successfully retrieving" is read as (a) +24 h after first
+    retrieval, (b) the last session. Reproduced when, under every reading, slopes become more
+    negative at p < 0.05 by one-tailed paired t-test in both cell types; blocked as
+    methods_underspecified when they disagree. The single-cell slopes of Fig. 3i (one-way ANOVA
+    against baseline, Bonferroni; no p printed) are reported.
+
+- id: fig3-retrieval-onset-range
+  statement: Retrieval onset ranged from 12 to 109 hours of cohousing in the 13 chronically imaged
+    virgins.
+  source: Methods, In vivo two-photon calcium imaging
+  quote: "Retrieval onset ranged from 12–109 hours of cohousing in N=13 virgins"
+  expected:
+  - quantity: earliest retrieval onset
+    value: 12
+    tolerance: 1.2
+    unit: hours
+  - quantity: latest retrieval onset
+    value: 109
+    tolerance: 10.9
+    unit: hours
+  - quantity: chronically imaged virgins
+    value: 13
+    tolerance: 0
+
+- id: ed8cd-no-change-without-cohousing
+  statement: Pup-naive virgins imaged on three consecutive days without cohousing show no systematic
+    change in temporal tuning.
+  source: Extended Data Fig. 8c,d
+  quote: "non-cohoused controls only exposed to calls during consecutive imaging sessions showed no systematic tuning changes"
+  criterion: A claim of absence. Single-cell normalized curves, session 1 (N=4 mice, n=53) against
+    session 3 (N=5, n=48), one-way ANOVA with Bonferroni-corrected session 1 against session 3 at
+    each morph ISI. No p is reported. Reproduced when no ISI differs at p < 0.05.
+
+- id: fig4b-ch575-broader-at-575
+  statement: Virgins that heard slow morphs (575 ms) during cohousing have excitatory tuning broader
+    at 575 ms than standard cohoused virgins.
+  source: Figure 4b; main text, paragraph citing Fig. 4b
+  quote: "prototype-responsive neurons in virgins that heard slow exemplars were more broadly tuned to 575 ms ISIs"
+  statistics:
+  - test: one-way ANOVA, Bonferroni correction
+    p: 0.007
+    corrected: Bonferroni
+    n: 6 CH+575 and 5 CH virgins
+  criterion: Population curves 24 h after first retrieval, CH+575 against CH (the +24 h mice of
+    Fig. 3e, per Methods; reading (vi)). The ANOVA design is open as in fig1f-ev-broader-than-nv.
+    Reproduced when CH+575 exceeds CH at 575 ms at p < 0.05 with Bonferroni over the seven morph
+    ISIs, under every reading; blocked as methods_underspecified when they disagree.
+
+- id: fig4c-ch575-retrieve-slow
+  statement: Virgins exposed to slow morphs during cohousing retrieve pups dubbed with slow morphs
+    more reliably than standard cohoused virgins (75% against 14.3% of trials).
+  source: Figure 4c; main text, paragraph citing Fig. 4c
+  quote: "virgins in the CH+575 group retrieved cold pups dubbed over with slow morphs (ISI:575 ms; 75% of trials) more reliably than controls (14.3%"
+  statistics:
+  - test: two-tailed Fisher's test
+    p: 0.001
+    n: CH 14-26 trials, CH+575 12-16 trials
+  expected:
+  - quantity: CH+575 retrieval of slow morphs
+    value: 75
+    tolerance: 7.5
+    unit: "% of trials"
+  - quantity: CH retrieval of slow morphs
+    value: 14.3
+    tolerance: 1.4
+    unit: "% of trials"
+  criterion: CH are the experienced virgins of Fig. 1c (Methods, Statistics, item 1). Reproduced
+    when both rates are within tolerance and the two-tailed Fisher's exact test gives p < 0.05.
+    Latencies (Extended Data Fig. 8f, p=0.73, Mann-Whitney) are reported.
+
+- id: fig4d-actx-inhibition-blocks
+  statement: Photoinhibiting left auditory cortex only during slow morph playback blocks the learning
+    of slow ISIs (18.8% against 66.7% in shams) without affecting retrieval of prototypes or
+    latencies.
+  source: Figure 4d; Extended Data Fig. 8g
+  quote: "Photoinhibiting left auditory cortex (ACtx) exclusively during slow morph playback selectively blocked the learning of slow ISIs compared to shams"
+  statistics:
+  - about: slow morphs, sham against opto-ACtx
+    test: two-tailed Fisher's test
+    p: 0.02
+    n: sham 3 mice 12 trials, opto 4 mice 16 trials
+  - about: latencies
+    test: unpaired two-tailed Mann-Whitney test
+    p: 0.19
+    n: 26 and 23 trials
+  expected:
+  - quantity: sham retrieval of slow morphs
+    value: 66.7
+    tolerance: 6.7
+    unit: "% of trials"
+  - quantity: opto-ACtx retrieval of slow morphs
+    value: 18.8
+    tolerance: 1.9
+    unit: "% of trials"
+  criterion: Reproduced when both rates are within tolerance, slow differs at p < 0.05 by two-tailed
+    Fisher's exact test, prototypes do not, and latencies on successful trials do not differ by
+    unpaired two-tailed Mann-Whitney test (p >= 0.05).
+
+- id: ed8hi-single-syllables-not-learned
+  statement: Virgins hearing single syllables during cohousing do not learn to retrieve pups dubbed
+    with single syllables.
+  source: Extended Data Fig. 8h,i; main text, paragraph citing it
+  quote: "virgins hearing single syllables (ISI:30s) during cohousing were unable to associate these calls with isolated pups"
+  statistics:
+  - about: single syllable, CH 22.2% (9 trials) against CH+SS 25.0% (16)
+    test: two-tailed Fisher's exact test
+    p: 0.99
+    p_relation: ">"
+  - about: warm, CH 84.6% (13) against CH+SS 85.7% (14)
+    test: two-tailed Fisher's exact test
+    p: 0.99
+    p_relation: ">"
+  - about: latencies
+    test: unpaired two-tailed Mann-Whitney test
+    p: 0.98
+    n: 17 trials each
+  criterion: A claim of absence. Two-tailed Fisher's exact test, CH against CH+SS, single syllable
+    trials. Reproduced when p >= 0.05; the rates are reported.
+
+- id: ed9b-oxytocin-enhances-spiking
+  statement: Oxytocin enhances spiking to repeated 575 ms pulses in auditory cortical slices from
+    stimulus 2 on, while stimulation without oxytocin does not change spike probability.
+  source: Extended Data Fig. 9a,b
+  quote: "evoked spike probability was significantly enhanced 15–30 minutes following the onset of oxytocin wash"
+  statistics:
+  - about: stim 1
+    test: one-way Friedman test with Dunn's correction
+    p: 0.34
+    n: 9 cells
+  - about: stim 2
+    test: one-way Friedman test with Dunn's correction
+    p: 0.009
+  - about: stim 3
+    test: one-way Friedman test with Dunn's correction
+    p: 0.008
+  - about: stim 4
+    test: one-way Friedman test with Dunn's correction
+    p: 0.001
+  - about: stim 5
+    test: one-way Friedman test with Dunn's correction
+    p: 0.04
+  data: elsewhere
+  where: figshare doi:10.6084/m9.figshare.12613811.v1 (In vitro recordings_oxytocin)
+  criterion: Spike probability per pulse, baseline against 15-30 min after wash onset. Reproduced
+    when stimuli 2 to 5 increase at p < 0.05 by Friedman test with Dunn's post hoc, stimulus 1 does
+    not, and ACSF controls (n=7) show no change at p < 0.05.
+
+- id: fig4e-ot-inhibition-deficits
+  statement: Inhibiting oxytocin neurons during slow morph playback lowers retrieval of warm pups
+    (43.8% against 92.3%), prototype-dubbed pups (36.8% against 83.3%) and slow-morph-dubbed pups
+    (33.3% against 83.3%), and changes retrieval latencies.
+  source: Figure 4e; Extended Data Fig. 9d
+  quote: "we observed deficits in retrieval rates for warm pups (CH+575 sham : 92.3% vs. CH+575 opto-OT : 43.8% of trials), as well as cold pups dubbed over with prototypes (83.3% vs. 36.8%) and slow morphs (83.3% vs. 33.3%"
+  statistics:
+  - about: warm
+    test: two-tailed Fisher's test
+    p: 0.008
+    n: sham 3 mice 12-13 trials, opto-OT 5 mice 16-19 trials
+  - about: prototypes
+    test: two-tailed Fisher's test
+    p: 0.02
+  - about: slow
+    test: two-tailed Fisher's test
+    p: 0.01
+  - about: latencies
+    test: unpaired two-tailed Mann-Whitney test
+    p: 0.0003
+    n: 32 and 20 trials
+  expected:
+  - quantity: warm, sham
+    value: 92.3
+    tolerance: 9.2
+    unit: "% of trials"
+  - quantity: warm, opto-OT
+    value: 43.8
+    tolerance: 4.4
+    unit: "% of trials"
+  - quantity: prototypes, sham
+    value: 83.3
+    tolerance: 8.3
+    unit: "% of trials"
+  - quantity: prototypes, opto-OT
+    value: 36.8
+    tolerance: 3.7
+    unit: "% of trials"
+  - quantity: slow, sham
+    value: 83.3
+    tolerance: 8.3
+    unit: "% of trials"
+  - quantity: slow, opto-OT
+    value: 33.3
+    tolerance: 3.3
+    unit: "% of trials"
+  criterion: Reproduced when all six rates are within tolerance, each pair differs at p < 0.05 by
+    two-tailed Fisher's exact test, and latencies on successful trials differ at p < 0.05 by
+    unpaired two-tailed Mann-Whitney test. The text does not give the direction of the latency
+    change; it is reported.
+
+- id: fig4g-ot-inhibition-narrow-tuning
+  statement: Virgins with oxytocin neurons inhibited during cohousing have uncharacteristically
+    narrow tuning 24 hours after first retrieval, narrower than cohoused virgins' excitatory and
+    inhibitory tuning.
+  source: Figure 4f,g; Extended Data Fig. 9e
+  quote: "These behavioral deficits were associated with uncharacteristically narrow temporal tuning in auditory cortex 24 hours after first retrieval"
+  statistics:
+  - about: opto-OT against CH excitatory
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.008
+    n: 4 opto-OT and 14 CH mice
+  - about: opto-OT against CH inhibitory
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.03
+    n: 4 opto-OT and 10 CH mice
+  criterion: Per-mouse tuning widths (reading (vi)); CH is all retrieving virgins imaged (Methods),
+    excitatory N=14 and inhibitory N=10. Reproduced when opto-OT is lower than both at p < 0.05 by
+    Kruskal-Wallis with Dunn's post hoc. Which mice make up the 14 and 10 is not listed; the
+    counts reached are reported.
+
+- id: fig4h-ot-like-unreliable-retrievers
+  statement: Single-cell tuning in opto-OT virgins is narrower than in reliably retrieving virgins
+    but similar to virgins retrieving on 10-30% of trials.
+  source: Figure 4h; main text, paragraph citing Fig. 4h
+  quote: "Single-cell tuning curves in CH+575 opto-OT virgins were significantly narrower compared to reliably retrieving virgins"
+  statistics:
+  - about: against CH 100%
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0001
+    p_relation: "<"
+    n: 40 opto-OT and 52 CH 100% curves
+  - about: against CH 10-30%
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.99
+    p_relation: ">"
+    n: 40 opto-OT and 78 CH 10-30% curves
+  criterion: Single-cell widths of opto-OT (N=4, n=40) and the two virgins of Extended Data Fig. 4g
+    before (n=78) and after (n=52) reliable retrieval. Reproduced when opto-OT is lower than CH 100%
+    at p < 0.05 and does not differ from CH 10-30%, by Kruskal-Wallis with Dunn's post hoc.
+  depends_on:
+  - ed4g-broadening-with-reliable-retrieval
+
+- id: ed3bc-neuropil-no-effect
+  statement: Neuropil correction has no significant effect on prototype-evoked dF/F in excitatory or
+    inhibitory neurons.
+  source: Extended Data Fig. 3a-c; Methods, Image processing and analysis
+  quote: "Neuropil correction had no significant effect on call-evoked ΔF/Fs in excitatory or inhibitory neurons"
+  statistics:
+  - about: excitatory
+    test: two-tailed unpaired Kolmogorov-Smirnov test
+    p: 0.57
+    n: 52 neurons, one region
+  - about: inhibitory
+    test: two-tailed unpaired Kolmogorov-Smirnov test
+    p: 0.14
+    n: 64 neurons, one region
+  criterion: A claim of absence. F_true = F_raw - r F_neuropil, r = F_blood_vessel / F_neuropil, on
+    one excitatory and one inhibitory region; which regions is not said, so every region is run and
+    the claim judged on the regions with 52 and 64 responsive neurons if they can be identified, and
+    on all otherwise. Reproduced when the two-sample KS test of corrected against uncorrected
+    prototype dF/F gives p >= 0.05 in both.
+
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, added the rule that readings (ii), (iii), (v) and (vi) of the imaging method are method details whose outcome must agree across readings, else blocked, as docs/protocol.md requires; several criteria passed on any one reading of a method detail.
+  - fig1c-warm-vs-cold, the FDR family was fixed by the reader's inference from the legend; the Methods do not fix it, so the criterion now names both readings (every condition against warm, or the three reported comparisons) and blocks when they disagree.
+  - fig1c-salient-isis-retrieved and fig1c-slow-and-single-not-retrieved, aligned with the two family readings of fig1c-warm-vs-cold.
+  - fig1f-ev-broader-than-nv, ed6c-tuning-width-groups, fig1g-ipsc-depress-faster, ed6ef-epsc-tuning, ed3m-tones-broader-than-calls-naive, fig4b-ch575-broader-at-575, changed "under one reading" to "under every reading", blocked when they disagree, since the readings are method details (ANOVA design, Bonferroni family, PSC trials, normalization) and not readings of a reported number.
+  - ed3m-tones-broader-than-calls-naive, rewrote the sample definition (tone mice N=5 against the naive excitatory mice of Fig. 1f, n=11-12) and named the unexplained N=5 against N=4 of Extended Data Fig. 3k.
+  - ed3k-tones-no-experience-effect, the unit of the t-test (neurons or mice) is not given in the legend, which reports both; the criterion now names both readings in place of choosing neurons.
+  - ed4c-left-broader-than-right, the legend fixes the unit as mice (panel c is "from animals in (b)"); removed the single-cell reading as a way to reproduce and kept it as a variant.
+  - ed4d-response-tracks-isi-probability, the legend says "evoked ΔF/Fs", the paper's term for raw responses; raw dF/F is now the measure and normalized a variant.
+  - ed4e-dam-broad-tuning, added "similar to experienced virgins" from the main text, which the criterion's comparison with EV mice rests on, and stated that its bounds are a reading of "similar" and "broad".
+  - ed4g-broadening-with-reliable-retrieval, added the per-session counts of Extended Data Fig. 4f that make up n=78 and n=52.
+  - fig1g-ipsc-depress-faster, removed the statistics entry (p < 0.05); the legend prints no p and the asterisks are not in the text. The test and cell counts are now in the criterion.
+  - ed5b-press-count-unchanged, used session 1 against 8 only, while fig1i-operant-prototypes names two press and two comparison readings; the criterion now uses all of them.
+  - fig2f-nv-mismatched-ei-tuning, the statistics entry (p < 0.05) was not printed for Fig. 2f, and the criterion's "two or more ISIs" and one-sample test over curves were made up; replaced by the Extended Data Fig. 6c,d tests the sentence cites (p=0.04, p=0.29), with depends_on.
+  - ed6ef-epsc-tuning, added that experienced cells pool dams and EVs (Methods), and named the Methods (125, 225, 575 ms) against legends (125, 175, 275, 575 ms) discrepancy.
+  - fig3e-exc-broadens-after-onset, reading (b) (first retrieval and +24 h pooled) is excluded by the counts (retrieving n=70 and 86 equal the +24 h n), so removed; the statement's excitatory-inhibitory matching was not judged and is now part of the criterion, from the Fig. 3e legend.
+  - fig3h-slopes-sharpen, the single-cell slopes of Fig. 3i had no claim; they are now reported.
+  - fig4c-ch575-retrieve-slow, added that CH are the experienced virgins of Fig. 1c (Methods, Statistics).
+  - fig4d-actx-inhibition-blocks, the statement says latencies are unaffected but the criterion did not test it; added the Mann-Whitney test of Extended Data Fig. 8g.
+  - fig4e-ot-inhibition-deficits, "lengthens latencies" is not in the text (Extended Data Fig. 9d gives only p=0.0003); the statement now says latencies change, and the criterion tests it with direction reported.
+  - Open, fig1a-isi-distribution, the 1% bound for "essentially never" is not the paper's; no number in the text replaces it.
+  - Open, ed6d-slopes-negative-in-ev, which mice make up N=7 and N=11 (against 9 and 12 in Fig. 1f) is not said.
+  - Open, fig2e-ev-matched-ei-tuning and fig4g-ot-inhibition-narrow-tuning, the ANOVA design and which mice form CH (N=14 and 10) are not given.
+  - Open, ed3bc-neuropil-no-effect, the two corrected regions are not identified in the paper.
+  - Open, the paper's figshare DOI (doi:10.35092/yhjc.c.5037737) did not resolve; the data elsewhere come from the collection linked by the dandiset, which should be confirmed to be the paper's.
