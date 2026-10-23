@@ -3478,6 +3478,10 @@
     "ready": null,
     "date": null
    },
+   "dandi:000462": {
+    "ready": true,
+    "date": "2026-10-23"
+   },
    "dandi:000463": {
     "ready": true,
     "date": "2026-10-23"
@@ -13974,6 +13978,305 @@
       "source": "Results, Neural analyses, paragraph 8; Extended Data Fig. 4",
       "quote": "High Granger interaction scores were obtained for region pairs from all major brain regions, which were weakly correlated with anatomical distance and mostly bidirectional.",
       "criterion": ""
+     }
+    ]
+   }
+  ],
+  "dandi:000462": [
+   {
+    "path": "claims/000462/10.1038-s41467-022-34465-5.yaml",
+    "paper": "10.1038/s41467-022-34465-5",
+    "check": {
+     "ready": true,
+     "date": "2026-10-23"
+    },
+    "claims": [
+     {
+      "id": "session-lap-counts",
+      "statement": "Mice ran on average 34 laps in R, 28 in UR and 27 in RR (mean +/- 95% CI 34 +/- 2, 28 +/- 4 and 27 +/- 3), and 31 +/- 5 laps in the novel rewarded environment.",
+      "source": "Methods, Imaging sessions, paragraph 1",
+      "quote": "Mice on average ran 34 \u00b1 2 (mean \u00b1 95% CI) laps in the Rewarded condition, at which point, reward was turned off and imaging in the Unrewarded environment continued (28 \u00b1 4 laps)",
+      "criterion": "A lap is one traversal from 0 to 200 cm ending at the track end. Whether a partial last lap counts is not said; the count with and without it is shown, and the claim holds when either matches."
+     },
+     {
+      "id": "lick-persistence-ur",
+      "statement": "After reward removal mice kept pre-licking for about 5 laps (5 +/- 1) before stopping; 4 of 12 mice licked randomly in later laps.",
+      "source": "Methods, Licking behavior; Results, Lowering reward expectation changes spatial encoding, paragraph 1; Supplementary Fig. 1",
+      "quote": "This anticipatory licking behavior continued for a few laps in UR (5 \u00b1 1 lap) and decayed exponentially (Fig. 1e ) except for some animals (4/12) that randomly licked in later laps",
+      "criterion": "The lick stop as defined in the opening comment, under readings L1, L2 and L3; the number of RE high laps per mouse is averaged over the 12 mice. The paper's \"5 +/- 1\" is read as mean +/- 95% CI, as for the lap counts in the Methods. What \"randomly licked in later laps\" counts is open, and the paper contradicts itself - the Methods (Engagement with VR, approach behavior) say \"Only one animal continued to randomly pre-lick at laps after our definition of lick stop\" (10 laps), against 4/12 in the quoted sentence. Readings for the 4 mice - (a) any RE low lap with a lick in the reward zone (the Methods sentence implies this gives 1 mouse); (b) any RE low lap with a lick anywhere on the track; (c) any UR lap after the first no-lick lap with a lick in the reward zone. The count is reported under each reading, with which ones give 4 and which give 1. Holds when, under one lick stop reading, the mean is within tolerance and one reading of the random licking gives 4 mice."
+     },
+     {
+      "id": "fig1d-decoder-drop-ur",
+      "statement": "A naive Bayes decoder trained on initial R laps predicts position accurately on the final R laps and on the first UR laps, then abruptly underperforms later in UR.",
+      "source": "Results, Lowering reward expectation changes spatial encoding, paragraph 2; Figure 1d",
+      "quote": "We found that the decoder was able to accurately predict position on the final laps in R and initial laps in UR before abruptly underperforming",
+      "criterion": "Decoder as in the Methods (Position decoding) - Gaussian naive Bayes on the dF/F of all cells, running frames only, 40 position bins of 5 cm, track treated as circular, trained on the first 60% of R laps, R2 between true and predicted bin computed per lap. Code variant (RunControlmodelonothertasks.py) - trained on the first 50% of R running frames, and the prediction unwrapped circularly before R2 (yang_trace); laps with 100 frames or fewer are dropped. Holds, per mouse, when the mean R2 of the first 3 UR laps is within 0.1 of the mean R2 of the held-out R laps and the mean R2 of the RE low laps is below both; reproduced when this holds in at least 9 of the 12 mice, under readings L1 to L3 for RE low. The thresholds (0.1, 3 laps, 9 of 12) are fixed here; the paper gives none, and the lap by lap R2 traces are shown."
+     },
+     {
+      "id": "fig1e-decoder-follows-licking",
+      "statement": "Averaged over 12 mice, lap by lap decoder R2 in UR falls as an S-shaped curve around the lap where pre-licking reaches zero; a reverse Boltzmann sigmoid fits the mean R2 with r = 0.94, and its point of maximum change is at lap 10.",
+      "source": "Results, Lowering reward expectation changes spatial encoding, paragraph 2; Figure 1e; Methods, Decoder performance with different behavioral parameters, Licking behavior",
+      "quote": "On average, pre-licking continued for a few laps before rapidly dropping, and interestingly, decoder performance sharply dropped around the same lap when pre-licking reached zero",
+      "criterion": "Per mouse, the UR lap by lap decoder R2 (decoder as in fig1d-decoder-drop-ur) and the lap by lap lick frequency in the reward zone are smoothed with a 3-lap rolling average, then averaged across the 12 mice lap by lap; the mean R2 is fitted with a reverse Boltzmann sigmoid (scipy curve_fit). The Methods call 0.94 both \"r\" and \"coefficient of determination of curve fit\"; both the correlation of fit and data and the R2 of the fit are shown, and either may match. The lap of maximum change is the first lap where the second derivative of the fit reaches zero, rounded to a whole lap. How mice with fewer UR laps enter the lap by lap average is not said; the average over the mice present at each lap is used and the lap range kept is the first 15 laps, as in the code (get_bayeserror_with_slidingwindow, totalnumlaps=15). Holds when both values are within tolerance and the normalised lick curve reaches its minimum within 3 laps of the lap of maximum change (the 3 laps are fixed here; the paper says only \"around the same lap\"). The paper reports no test for this finding."
+     },
+     {
+      "id": "fig1f-decoder-r2",
+      "statement": "Mean decoder R2 is 0.95 in R, 0.90 in RE high laps (similar to R), 0.65 in RE low laps (significantly lower), and 0.82 in RR, which recovers somewhat but stays below R.",
+      "source": "Results, Lowering reward expectation changes spatial encoding, paragraph 3; Figure 1f",
+      "quote": "Indeed, decoder accuracy in RE high laps was similar to R and was significantly lower in RE low laps (Fig. 1f , mean decoder R 2 [95% confidence intervals (CIs)] ... R = 0.95 [0.93 0.97], RE high = 0.90 [0.87 0.93], RE low = 0.65 [0.54 0.75]). ... The decoder accuracy somewhat recovered following reward re-introduction in RR laps, although it remained lower than in R (RR = 0.82 [0.77 0.87])",
+      "criterion": "Decoder as in fig1d-decoder-drop-ur. Per mouse, the mean of the lap R2 values in each condition, then the mean over mice with a 95% CI (t). The Methods do not say which laps enter the per-mouse mean; the code settles it (Bayesanalysis_withlicks.py, plot_shuffleerror_withlickstop) - the mean over 1000 random draws of 4 of the last 5 R laps, up to 4 RE high laps, min(3, lick stop) RE low laps and min(4, lick stop) RR laps; this is the main reading, and all tested laps of each condition is shown as a variant. Training on the first 60% of R laps (Methods) is the main reading; the code's first 50% of R frames is a variant. Lick stop readings L1 to L3. Tests (Figure 1f legend) - two-sided paired t-tests between conditions, over mice. Reproduced when, under one lick stop reading, the four means are within tolerance, R against RE low and R against RR have p < 0.05, and R against RE high has p >= 0.05. The legend names no correction and the Methods say multiple comparisons were Bonferroni corrected; the tests are judged both uncorrected and with Bonferroni over the six pairwise comparisons of the four conditions, under the rule for open method details."
+     },
+     {
+      "id": "fig1g-decoder-error-all-locations",
+      "statement": "In RE low laps decoder error increases at all locations along the track (start, middle and end), not only near the reward; in RR the error decreases across the track.",
+      "source": "Results, Lowering reward expectation changes spatial encoding, paragraph 4; Figure 1g",
+      "quote": "Interestingly, in RE low , decoder error had increased at all locations across the track (Fig. 1g ), and not just around the reward site",
+      "criterion": "Decoder error = absolute distance in cm between true and decoded position, per frame, averaged per mouse in 5 cm bins for each condition. Position groups as the Figure 5d legend defines S, M and E for the same track (start 0 to 50 cm, middle 50 to 150 cm, end 150 to 200 cm); Figure 1g marks them with gray bars that the text does not give, so this is a reading. Two-sided paired t-test over the 12 mice of R against RE low in each group. Reproduced when the RE low error is higher with p < 0.01 in all three groups, under one of the decoder readings of fig1f-decoder-r2; partially reproduced when two of three. The R against RR comparison is shown."
+     },
+     {
+      "id": "supp4-lickstop-definition-robust",
+      "statement": "The drop in decoder R2 from RE high to RE low holds whether the lick stop is the first no-lick lap or after 2 or 4 consecutive no-lick laps, or when laps are grouped by presence of licks; with 6 consecutive no-lick laps the result differs. Median R2 is 0.96 in R and 0.80 in RR, and about 0.87 to 0.93 in RE high and 0.69 to 0.70 in RE low across definitions.",
+      "source": "Methods, Decoder performance with different behavioral parameters, Licking behavior; Supplementary Fig. 4",
+      "quote": "We found that if we instead used different criteria to identify when licking had stopped, i.e., the first lap with no licks, or 4 consecutive laps with no licks, our results were unaffected. ... However, with 6 consecutive laps with no licks, our results differed",
+      "criterion": "Lick stop definitions - first lap with no licks; 2, 4 and 6 consecutive no-lick laps; and laps grouped by presence or absence of licks. For the N consecutive laps definitions, where RE low starts is read three ways as for L1 to L3 in the opening comment (the first of the N laps, as in LickStopAnalysis.py; the Nth, as the Supplementary Fig. 4 legend says for N = 2; the lap after them). Decoder and per-mouse means as in fig1f-decoder-r2. Supplementary Fig. 4 panels a to e are titled in the figure, not in the legend, so which median belongs to which definition is not fixed; the medians are compared as a range (widened by 10% of each bound). Reproduced when, under one start reading, for the first lap, 2 and 4 laps definitions and the grouping by presence of licks, RE low R2 is below RE high by a two-sided paired t-test with p < 0.05 (Bonferroni over the panel comparisons, legend) and the medians fall in the ranges. The claim that the 6-lap definition differs is reported, not judged, since the paper does not say how."
+     },
+     {
+      "id": "supp4-lapwise-r2",
+      "statement": "Over all laps pooled, decoder R2 is 0.97 (SD 0.046) in R (399 laps), 0.86 (0.14) in RE high (90 laps), 0.56 (0.34) in RE low (244 laps) and 0.79 (0.19) in RR (121 laps).",
+      "source": "Supplementary Fig. 4f",
+      "quote": "Decoder R2 for each lap in each mouse (circles) in different conditions (Number of laps: R = 399, REhigh = 90, RElow = 244, RR = 121). Mean ! standard deviation is shown alongside (Mean (standard deviation): R = 0.97 (0.046), REhigh = 0.86 (0.14), RElow = 0.56 (0.34), RR = 0.79 (0.19)",
+      "criterion": "Tolerance of each mean R2 is the stated SD. R laps here are all 399 R laps, so the R2 of R includes training laps unless the decoder is retrained; both the all-laps and the held-out laps values are shown. Lick stop readings L1 to L3. Holds when, under one reading, the lap counts and means are within tolerance."
+     },
+     {
+      "id": "supp2-decoder-stable-control",
+      "statement": "In control mice that stay in R for a matched time, decoder R2 stays high across the session (median 0.95 in the first half and 0.90 in the second half of tested laps).",
+      "source": "Supplementary Fig. 2C; Results, Lowering reward expectation changes spatial encoding, paragraph 1",
+      "quote": "Tested laps were divided into two halves and boxplots display median R2 of true vs predicted position for each mouse in each half of the session (n = 6 mice). Median: 1st half of session = 0.95, 2nd half of session = 0.90",
+      "criterion": "Control mice (n = 6), decoder trained on the initial R laps as in fig1d-decoder-drop-ur and tested on the rest, split into two halves by lap. Holds when both medians are within tolerance. The paired t-test is shown; the paper reports its p only in the panel."
+     },
+     {
+      "id": "supp5-not-running-speed",
+      "statement": "The drop in decoder performance in UR is not due to running; 70% of UR laps (233 of 334) have lap times matched to R, and decoder R2 falls in matched laps as in slower laps (median R 0.96, matched 0.76, slower 0.71). Matched laps take 7.34 s in R and 7.4 s in UR, slower laps 20 s.",
+      "source": "Supplementary Fig. 5; Methods, Time taken to complete a lap",
+      "quote": "70% of the laps in UR had lap speeds that matched lap speeds in R (matched speed laps = 233, slower speed laps = 101)",
+      "criterion": "Lap time = time from 0 to 200 cm. Matched laps are UR laps whose lap time falls within the range of the R lap time histogram of the same mouse (Methods); the histogram bins are not given, so the range of R lap times (minimum to maximum) is the reading used, and the R 5th to 95th percentile is shown as a variant. Tolerances of lap times are the CI half-widths of Supplementary Fig. 5a. Holds when the counts and medians are within tolerance and matched UR laps have lower R2 than R by a two-sided Wilcoxon signed rank test over the 12 mice at p < 0.05 with Bonferroni correction (legend)."
+     },
+     {
+      "id": "approach-ratio",
+      "statement": "Mice slow down approaching the track end; the middle to end velocity ratio is 1.01 in the dark, 1.3 in R and 1.22 in UR, so approach behaviour is an engagement readout.",
+      "source": "Methods, Engagement with VR, approach behavior; Supplementary Fig. 6a",
+      "quote": "On average (mean \u00b1 95% CI), this ratio was 1.01 \u00b1 0.03 in the Dark, 1.3 \u00b1 0.02 in the Rewarded condition and 1.22 \u00b1 0.02 in the Unrewarded condition",
+      "criterion": "Approach ratio as in the opening comment, per lap, averaged over all laps pooled across mice (399 R laps, 334 UR laps, 226 dark laps, Supplementary Fig. 6a), mean +/- 95% CI. Whether the mean is over laps or over mice is not said; both are shown and either may match. The code variant of the ratio is shown."
+     },
+     {
+      "id": "engaged-lap-counts",
+      "statement": "Approach behaviour stays on most UR laps after licking stops; 170 of 244 RE low laps (70%) are engaged and 74 (30%) disengaged, with 90 RE high laps.",
+      "source": "Results, Changes in spatial encoding associated with diminished reward expectation are not due to disengagement, paragraph 1; Methods, Engagement with VR, approach behavior",
+      "quote": "In UR we observed changes in velocity throughout the track, but approach behavior remained intact on most laps in UR ( n = 12, 170/244 laps, 70%)",
+      "criterion": "Engagement rule and lick stop readings L1 to L3 as in the opening comment, 12 mice. Holds when, under one reading, the counts are within tolerance."
+     },
+     {
+      "id": "supp6b-decoder-engaged-laps",
+      "statement": "Decoder R2 is as low in engaged RE low laps (0.65) as in all RE low laps, while disengaged laps reduce it further (0.31).",
+      "source": "Results, Changes in spatial encoding associated with diminished reward expectation are not due to disengagement, paragraph 1; Supplementary Fig. 6b",
+      "quote": "Importantly, we found a similar reduction in decoder performance in UR when using only RE low engaged laps (Supplementary Fig. 6B , Mean decoder R 2 [95% CI]: ... RE low : Engaged = 0.65 [0.49 0.81]), although disengaged laps did further reduce decoder performance (RE low : Disengaged = 0.31 [0.06 0.5])",
+      "criterion": "Decoder and per-mouse means as in fig1f-decoder-r2, engaged laps as in engaged-lap-counts. Holds when, under one reading, both means are within tolerance, RE low engaged is below R by a two-sided Wilcoxon signed rank test over mice at p < 0.05 (legend), and disengaged is below engaged."
+     },
+     {
+      "id": "disengaged-laps-uniform",
+      "statement": "Disengaged laps are spread evenly through RE low; their probability in the first half of RE low is similar to the second half (P = 0.14) and their distribution does not differ from uniform (P = 0.7).",
+      "source": "Results, Changes in spatial encoding associated with diminished reward expectation are not due to disengagement, paragraph 1",
+      "quote": "The probability of disengaged laps in the first half of RE low was similar to the second half ( P = 0.14). Furthermore, the distribution of disengaged laps throughout the session did not differ from a uniform distribution ( P = 0.7)",
+      "criterion": "A claim of absence. The paper does not name either test. Readings - first against second half - a paired test over mice of the per-mouse fraction of disengaged laps in each half (paired t-test or Wilcoxon signed rank, by the Shapiro-Wilk rule in Methods, Statistics); uniformity - a two-sided one-sample KS test of the positions of disengaged laps, as fraction of each mouse's RE low laps, pooled, against uniform on 0 to 1 (Methods, Statistics, uses KS to compare distributions). Reproduced when both tests give p >= 0.05; the fractions are shown."
+     },
+     {
+      "id": "supp6-pupil-engagement",
+      "statement": "By pupil area, mice are engaged on most RE low laps (80 of 106, 75%, n = 5), 71% of these (57 of 80) are also engaged by approach behaviour, and decoder R2 is reduced on these laps (R 0.91, RE high 0.83, RE low engaged 0.57, RE low disengaged 0.43).",
+      "source": "Results, Changes in spatial encoding associated with diminished reward expectation are not due to disengagement, paragraph 2; Supplementary Fig. 6c to f",
+      "quote": "We again found that animals were engaged on most laps in UR ( n = 5, 80/106, 75%) after licking stopped (RE low : Engaged, Supplementary Fig. 6E ) and found a similar reduction in decoder performance when using only these laps (Supplementary Fig. 6F , mean decoder R 2 [95% CI]: R = 0.91 [0.81 1.00], RE high = 0.83 [0.71 0.94], RE low : Engaged = 0.57 [0.34 0.79], RE low : Disengaged = 0.43 [0.13 0.74])",
+      "criterion": "Pupil area from FaceMap on inverted images, blinks (blink area below mean - 2 SD) removed and interpolated to 30 Hz, running frames only, mean per 5 cm bin per lap; template = mean over R laps; per lap Pearson r with the template. The engagement threshold is given three ways - (P1) r >= mean r of R laps (Results); (P2) r >= mean - 1.5 SD of r of R laps (Methods, Pupil area correlation); (P3) r >= mean r of UR laps (Supplementary Fig. 6e legend). All three are run, with lick stop readings L1 to L3; holds when one reading puts the counts and means within tolerance. Needs the pupil video or its traces, which the dandiset description does not mention."
+     },
+     {
+      "id": "fig2a-pv-cluster-transition",
+      "statement": "Lap by lap population vector correlations of R place cells show a transition around the lick stop (RE high to RE low) and again after reward returns; the probability of laps belonging to the R cluster dips from RE high to RE low, not from R to RE high, and rises to some extent in RR (fully only in mouse 1).",
+      "source": "Results, Lowering reward expectation induces place cell remapping, paragraph 1; Figure 2a",
+      "quote": "The lap-wise cluster probability traces revealed dips in probability when transitioning from RE high to RE low and not between R and RE high",
+      "criterion": "Place cells defined in R; per lap a population vector of each place cell's mean dF/F in each of 40 bins; lap by lap correlation averaged over bins; UR laps limited to RE high and RE low engaged laps; the 3 mice of Figures 2 and 3. k-means on the lap-wise population vectors with 3 clusters (elbow method, Methods), run 1000 times; the R cluster is the cluster holding most R laps; per lap, the fraction of runs in which it falls in the R cluster. Holds per mouse when the mean probability of RE high laps is within 0.2 of that of R laps and the mean of RE low laps is at least 0.3 below RE high; reproduced when this holds in at least 2 of the 3 mice, under one lick stop reading. The thresholds 0.2 and 0.3 are fixed here (the paper gives none) and all traces are shown. The paper notes that in mouse 3 the drop comes one lap before the lick stop."
+     },
+     {
+      "id": "fig2c-spatial-correlation-drop",
+      "statement": "Place fields defined in R partially remap in RE low (engaged laps), with a lower spatial correlation between R and RE low than within R, and remap less in RR.",
+      "source": "Results, Lowering reward expectation induces place cell remapping, paragraph 2; Figure 2b, 2c",
+      "quote": "We found RE low caused partial remapping as shown by a drop in the spatial correlation of place fields between R and UR conditions (using only RE low : Engaged laps; Fig. 2b\u2013d )",
+      "criterion": "Spatial correlation as in the opening comment, for the 605 place cells defined in R in the 3 mice. The within-R value comes from the control mice, first against second half of a rewarded session (Methods, Spatial correlation with Rewarded condition); the Figure 2c legend calls it \"within R condition\" and the test \"paired\", which a comparison with other mice cannot be. Readings - (S1) within-R from the control mice, compared with R against RE low by a two-sided unpaired t-test (Mann-Whitney U when not normal); (S2) within-R from the first against second half of R laps in the same 3 mice, compared by a two-sided paired t-test over the 605 cells. S1 and S2 are what the measure is compared with, so both are run and must agree. Reproduced when R against RE low is lower than within R at p < 0.05 and R against RR lies between them, higher than R against RE low at p < 0.05 by a paired t-test over the 605 cells."
+     },
+     {
+      "id": "fig2d-remapping-all-locations",
+      "statement": "The drop in spatial correlation in RE low occurs at all track locations, not only near the reward site.",
+      "source": "Results, Lowering reward expectation induces place cell remapping, paragraph 2; Figure 2d",
+      "quote": "Interestingly, partial remapping caused by RE low occurred at all locations throughout the environment, and not just at locations near the reward site (Fig. 2d )",
+      "criterion": "Spatial correlation per place cell as in fig2c-spatial-correlation-drop, grouped by the cell's R COM into start (0 to 50 cm), middle (50 to 150 cm) and end (150 to 200 cm), the groups the Figure 5d legend defines (Figure 2d shows them as gray lines only). Within-R readings S1 and S2 of fig2c-spatial-correlation-drop, which must agree. Reproduced when the RE low correlation is lower than within R at p < 0.01 in all three groups; partially reproduced for two."
+     },
+     {
+      "id": "fig2e-place-field-fates",
+      "statement": "Of 605 R place fields (3 mice), 169 (27.9%) stay stable through R, RE low and RR; in RE low 222 (36.7%) stay stable, 249 (41.2%) disappear and 134 (22.1%) remap, and 296 of the 663 RE low fields (44.6%) are new. In RR 311 R fields (51.4%) are stable and 89 (14.7%) remapped, 126 of the 249 lost fields (50.6%) reappear, 64 of the 296 new RE low fields (21.6%) stay and 204 (68.9%) disappear, and 140 of 674 RR fields (20.8%) are new.",
+      "source": "Results, Lowering reward expectation induces place cell remapping, paragraph 3; Figure 2e",
+      "quote": "We found 27.9% of place fields found in R (605 PFs in R, n = 3) remained stable throughout R-RE low -RR (169/605; Fig. 2e blue throughout). In RE low , R place fields either remained stable (222/605, 36.7%; Fig. 2e blue, middle column), disappeared (249/605, 41.2%; Fig. 2e black, middle column), or remapped (134/605, 22.1%; Fig. 2e cyan, middle column)",
+      "criterion": "Place fields defined independently in R, in RE low engaged laps and in RR, as in the opening comment, in the 3 mice. A field disappears when its cell has no field in the later condition and is new when its cell had none in the earlier. The paper does not define \"stable\" against \"remapped\" (the Methods are silent and the code is not in the repository). Readings - (F1) stable when the cell's field in the later condition overlaps the extent of the earlier field, remapped otherwise; (F2) stable when the later field's COM lies within the earlier field's extent; (F3) stable when the COMs differ by less than one bin of the Figure 2d position groups, that is in the same S, M or E group. F1 to F3 are definitions made by the reader, not readings of a number the paper defines, so they follow the rule for open method details - all are run, the stable and remapped percentages are judged under each, the outcome is the one they all give, and when they differ the claim is blocked as methods_underspecified. The counts of fields, of disappeared and of new fields do not depend on F1 to F3. With several fields per cell, each field is matched to the nearest field of the same cell."
+     },
+     {
+      "id": "fig3a-field-numbers-similar",
+      "statement": "The total number of place fields tiling the track is similar in R, RE low (engaged laps) and RR (605, 663 and 674 fields in 3 mice).",
+      "source": "Results, Place fields show diminished reliability, paragraph 1; Figure 3a; Figure 3 legend",
+      "quote": "Plotting place fields defined in each condition, we found a total number of place fields that tiled the track to be similar in R, RE low (using only Engaged laps), and RR",
+      "criterion": "Place field definition as in the opening comment. Holds when the three counts are within tolerance."
+     },
+     {
+      "id": "fig3b-reliability",
+      "statement": "Place field trial to trial reliability falls from 0.47 in R to 0.32 in RE low (engaged laps) and returns towards R in RR (0.41).",
+      "source": "Results, Place fields show diminished reliability, paragraph 1; Figure 3b",
+      "quote": "place field trial-to-trial reliability 23 (Rewarded = 0.47 [0.38 0.57], RE low : Engaged = 0.32 [0.15 0.48])",
+      "criterion": "Reliability as in the opening comment, per place field in each condition. The CIs are read as over the 3 per-mouse means (Figure 3b shows boxplots of the average per animal); the mean over all fields pooled is a second reading, and either may match. Reproduced when, under one reading, the three values are within tolerance and RE low is below R. The legend's two-sided t-test is shown on the pooled fields (unpaired, R against RE low; the populations differ) and on the cumulative distributions by KS test."
+     },
+     {
+      "id": "fig3b-out-in-ratio",
+      "statement": "The out/in place field firing ratio rises from 0.10 in R to 0.16 in RE low (engaged laps) and returns towards R in RR (0.12).",
+      "source": "Results, Place fields show diminished reliability, paragraph 1; Figure 3b",
+      "quote": "out/in place field firing ratio (Rewarded = 0.10 [0.07 0.13]; RE low : Engaged = 0.16 [0.12 0.20])",
+      "criterion": "Out/in ratio as in the opening comment; per-mouse and pooled readings and tests as in fig3b-reliability. Reproduced when, under one reading, the three values are within tolerance and RE low is above R."
+     },
+     {
+      "id": "fig3b-width-intensity",
+      "statement": "Place fields widen from 53.34 cm in R to 60.56 cm in RE low (54.08 in RR), and firing intensity falls slightly from 0.36 to 0.31 and stays low in RR (0.29).",
+      "source": "Results, Place fields show diminished reliability, paragraph 1; Figure 3b",
+      "quote": "place field width (Rewarded = 53.34 [43.87 62.81]; RE low : Engaged = 60.56 [48.07 73.06]), across all locations (Fig. 3b ). There was also a small decrease observed in firing intensity (Rewarded = 0.36 [0.31 0.40]; RE low : Engaged = 0.31 [0.23 0.40])",
+      "criterion": "Width and firing intensity as in the opening comment (firing intensity in dF/F units as the traces give them); per-mouse and pooled readings as in fig3b-reliability. Reproduced when, under one reading, the six values are within tolerance, RE low width is above R and RE low intensity below R."
+     },
+     {
+      "id": "fig3c-degradation-all-locations",
+      "statement": "The degradation of place fields in RE low (reliability and out/in ratio) is seen at all track locations.",
+      "source": "Results, Place fields show diminished reliability, paragraph 1; Figure 3c",
+      "quote": "This demonstrates that diminished reward expectation leads to a spatial code in CA1 with low quality place fields at all locations",
+      "criterion": "Fields grouped by COM into start (0 to 50 cm), middle (50 to 150 cm) and end (150 to 200 cm) as in fig2d-remapping-all-locations. Per group, a two-tailed KS test of R against RE low field values (Figure 3c legend). Reproduced when reliability is lower and the out/in ratio higher in RE low with p < 0.01 in all three groups; partially reproduced when this holds in two groups for both measures, or three groups for one."
+     },
+     {
+      "id": "supp11-all-mice-parameters",
+      "statement": "With all mice and both engaged and disengaged RE low laps, place field medians show the same degradation and return - reliability R 0.48, RE low 0.26, RR 0.44; out/in ratio 0.10, 0.19, 0.13; width 50.21, 54.96, 45.71 cm; firing intensity 0.34, 0.26, 0.28.",
+      "source": "Supplementary Fig. 11b",
+      "quote": "Medians: Reliability - R = 0.48, RElow = 0.26, RR = 0.44. Out/In Field Firing - R = 0.10, RElow = 0.19, RR = 0.13. Place field width (cm) - R= 50.21, RElow = 54.96, RR = 45.71. Firing Intensity - R = 0.34, RElow = 0.26, RR = 0.28",
+      "criterion": "All 12 mice in R and RE low, 6 in RR; RE low fields from all laps after the lick stop (engaged and disengaged). The legend says the boxplots show the average per animal; readings for \"median\" - (a) the median over mice of the per-mouse mean; (b) the median over all fields pooled. Lick stop readings L1 to L3. Reproduced when, under one reading, at least 10 of the 12 medians are within tolerance (the counts 10 and 7 to 9 are fixed here) and the directions (RE low below R in reliability and intensity, above R in out/in ratio and width) hold; partially reproduced for 7 to 9."
+     },
+     {
+      "id": "fig3d-reward-overrepresentation",
+      "statement": "Place fields over-represent the reward site at the track end in R; the over-representation disappears in RE low and reappears in RR. Gaussian fits to field COMs are 114 +/- 55 cm in R, 102 +/- 54 in UR and 112 +/- 58 in RR.",
+      "source": "Results, Lowering reward expectation eradicates the over-representation of reward location, paragraph 1; Figure 3d to f; Methods, Reward over-representation",
+      "quote": "We similarly found an over-representation of place fields near the reward site in R (Fig. 3d\u2013f left, I; Supplementary Fig. 11C\u2013E ). Interestingly, this over-representation disappeared once reward expectation diminished",
+      "criterion": "COM per field as in the Methods (sum of F x over sum of F over the lap-averaged map), 3 mice, RE low engaged laps. Per mouse, the percentage of fields with COM in the end (150 to 200 cm) minus the mean percentage per 50 cm bin of the middle (50 to 150 cm), as the Methods and Figure 3e, f define it; a uniform distribution gives 0. Reproduced when the end minus middle difference is above 0 in R and RR in all 3 mice, in RE low is below that of R in all 3 mice and its mean over the 3 mice is not above 0 (the over-representation \"disappeared\"), and the Gaussian means and SDs are within tolerance. The rule \"all 3 mice\" and the bound of 0 for RE low are fixed here; the paper gives no threshold. The paper's per-condition test (two-sided t-test of the COM density against uniform) is shown; with 3 mice the Methods call for a non-parametric test, so a Wilcoxon signed rank test is shown as well."
+     },
+     {
+      "id": "reward-zone-field-turnover",
+      "statement": "Of the R place fields that disappear in RE low, 41.8% (104 of 249) are at the track end (150 to 200 cm); new RE low fields are spread evenly (26, 28, 21 and 25% per 50 cm). In RR only 61 of the 104 lost end fields return (58.6%), and new RR fields cluster at the end (31, 24, 18 and 67 of 140, 48% at 150 to 200 cm).",
+      "source": "Results, Lowering reward expectation eradicates the over-representation of reward location, paragraph 1",
+      "quote": "Of the place cells in R that disappeared in RE low , 41.8% (104/249, n = 3) were at the end of the track (150\u2013200 cm). Furthermore, the new place cells that appeared in RE low , were equally distributed on the track length (0\u201350 cm: 77/296 (26%), 50\u2013100 cm: 83/296 (28%), 100\u2013150 cm: 62/296 (21%), 150\u2013200 cm: 74/296 (25%))",
+      "criterion": "Fates as in fig2e-place-field-fates (definitions F1 to F3 bear only on \"reappear\", and follow the rule for open method details given there), bins by field COM. Holds when the counts are within tolerance, under one lick stop reading and under every one of F1 to F3 for the reappearing count."
+     },
+     {
+      "id": "controls-no-change-over-time",
+      "statement": "In control mice that stay in R for a matched number of laps, place field dynamics and parameters do not change as they do after reward removal (median reliability 0.50 and 0.58 in the two halves, out/in ratio 0.09 and 0.10, width 52.03 and 49.52 cm, firing intensity 0.42 and 0.47).",
+      "source": "Results, Lowering reward expectation induces place cell remapping, paragraph 3, and Place fields show diminished reliability, paragraph 1; Supplementary Figs. 10 and 12",
+      "quote": "These place field dynamics were also observed when place fields from all mice were analyzed that included engaged and disengaged laps (Supplementary Fig. 9 ) and were not observed in control mice that stayed in R for a matched number of laps (Supplementary Fig. 10 )",
+      "criterion": "Control mice (n = 6), the rewarded session split into two halves by lap, place fields defined in each half. Median readings (a) and (b) of supp11-all-mice-parameters. Reproduced when the second half shows no drop in reliability and no rise in out/in ratio by two-sided paired t-tests over the 6 mice at p < 0.05 (Supplementary Fig. 12 legend), and at least 6 of the 8 medians are within tolerance (a count fixed here). The Methods give the control session as 20 min and Supplementary Figs. 2 and 10 as 15 min; the session as recorded is used."
+     },
+     {
+      "id": "supp13-novel-environment",
+      "statement": "In a novel, never reinforced environment, decoding and place field reliability and out/in ratio are poor in early laps and improve over the session as mice develop reward expectation, becoming comparable to R and RR; RE low reliability and out/in ratio match the early novel laps.",
+      "source": "Results, Place fields show diminished reliability, paragraph 2; Supplementary Fig. 13",
+      "quote": "We found that the spatial decoding and place cell parameters were poor in the initial laps of the novel environment, however, with time, as the animal learned the environment and developed reward expectation (Supplementary Fig. 13B ), these properties became better and comparable to properties in R and RR",
+      "criterion": "The 6 mice with a novel rewarded session. Early = first 12 laps, late = last 12 laps (Supplementary Fig. 13b). Decoders trained and tested within each condition with the sliding cross-validation of the Methods (test 20% of laps, train on 80%, slide by one lap), each condition down-sampled to the fewest laps. Reproduced when in the novel session late laps have higher pre-licking, decoder R2 and reliability and lower out/in ratio than early laps, each by a two-sided paired t-test over the 6 mice at p < 0.05 (legend); partially reproduced when 2 or 3 of the 4 hold. How place field parameters are computed for 12-lap blocks (fields defined in the block, or fields defined over the session and measured in the block) is not said; both are run."
+     },
+     {
+      "id": "supp14-reward-cells",
+      "statement": "A small population of reward cells (43 cells, 0.9% of active cells, 6 mice) fires near the reward in both familiar and novel environments; they do not account for the R over-representation, and their activity correlation between R and RE low is lower than within R or between R and RR, while RE high laps are not affected.",
+      "source": "Results, Lowering reward expectation eradicates the over-representation of reward location, paragraph 2; Methods, Reward cells; Supplementary Fig. 14",
+      "quote": "We also found that the correlation of reward cell activity between R and RE low was significantly less than within R or between R and RR (Supplementary Fig. 14C, D )",
+      "criterion": "Reward cells per the Methods - cells that fire in a reward zone on the track (40 cm before reward) in both R and the novel rewarded condition (30 cells), plus cells whose firing peaks around reward delivery in both (13 cells). The window around delivery is 2 s before and after in the Methods and 1.5 s in the Supplementary Fig. 14a legend; both are run. Within-R correlation as for place cells (readings S1 and S2 of fig2c-spatial-correlation-drop, which must agree), on the lap-wise activity binned in time around reward delivery. The bin width is not given and could change the correlation; 0.25 s and 0.5 s bins are both run and must agree. Reproduced when, under one window, the count is within tolerance and R against RE low correlation is below within-R and below R against RR by two-sided paired t-tests at p < 0.05 (Supplementary Fig. 14c legend), and, with reward cells removed, the end percentage of R place fields still exceeds the middle percentage by the two-sided paired t-test over the 6 mice at p < 0.05 (Supplementary Fig. 14b legend). That RE high laps are not affected rests on example cells (Supplementary Fig. 14d); the R against RE high correlation is shown, not judged."
+     },
+     {
+      "id": "supp16-dreadd-running-speed",
+      "statement": "DCZ and CNO slow lap running speed in R (from about 42 to about 26), while saline does not, and approach behaviour and anticipatory licking remain.",
+      "source": "Results, Bilateral VTA inhibition largely replicates lowering reward expectation, paragraph 3; Supplementary Fig. 16",
+      "quote": "DCZ and CNO administration caused a decrease in lap running speed in R (Supplementary Fig. 16 , Mean speed (m/s) [95% CI]: Before Saline 42.74 [41.12 44.36], After Saline 42.75 [41.34 44.17], Before DCZ 41.99 [40.26 43.73], After DCZ 25.96 [24.30 27.62], Before CNO 43.18 [41.26 45.10], After CNO 25.71 [24.03 27.39]) but approach behavior (demonstrating engagement) and anticipatory licking remained",
+      "criterion": "The paper prints the unit as m/s; 42 m/s is impossible on a 2 m track, so the values are read as cm/s, and lap speed as 200 cm over the time from 0 to 200 cm. Whether lap speed is that or the mean instantaneous running speed over running frames is not said; both are shown. The CIs are read as over laps pooled across mice (n = 5 saline, 6 DCZ and CNO), since Supplementary Fig. 16b shows the lap speed distribution of all animals; the mean over per-mouse means is a second reading. Reproduced when, under one reading, the six means are within tolerance and after DCZ and after CNO are lower than before by the legend's two-tailed t-test (read as unpaired, over laps) at p < 0.05, and after saline is not. Anticipatory licking after DCZ and CNO is checked as the presence of licks in the reward zone before delivery on most laps, and reported."
+     },
+     {
+      "id": "fig4f-dreadd-spatial-correlation",
+      "statement": "Spatial correlation of place fields before and after DCZ (and CNO) falls at all track locations, as in RE low, while it does not fall after saline.",
+      "source": "Results, Bilateral VTA inhibition largely replicates lowering reward expectation, paragraph 3; Figure 4d to g; Supplementary Fig. 17a to c",
+      "quote": "We then measured spatial correlation of place fields before and after DCZ/CNO administration and found a reduction at all locations across the track, similar to the effects in RE low (Fig. 4d\u2013g and Supplementary Fig. 17A\u2013C ). This decrease was not observed in the saline control",
+      "criterion": "Place cells defined in the first condition of each pair (R, before saline, before DCZ, before CNO) and correlated with the second (RE low, after saline, after DCZ, after CNO), 6 mice (5 for saline). Whether the R/RE low pair here uses engaged laps only is not said; both are run. Two-tailed KS tests between the distributions of correlations (Figure 4f legend; the legend does not say which pairs are compared, and the text reads the saline pair as the control). Reproduced when the DCZ and CNO correlations are lower than the saline correlations at p < 0.05 overall, the place cell counts are within tolerance, and, per position, by the test the Figure 4g and Supplementary Fig. 17c legends give (two-tailed KS test, p < 0.01, \"comparing UR (red) with other tasks\", that is R/RE low against each other pair, in the S, M and E groups of fig2d-remapping-all-locations), the saline pair is above R/RE low in each group while the DCZ and CNO means lie below the saline mean in each group. The text does not say which per-position tests in Figure 4g are significant; the DCZ and CNO against R/RE low tests, and DCZ and CNO against saline per position, are shown, not judged."
+     },
+     {
+      "id": "supp18-saline-slow-laps",
+      "statement": "Splitting saline data into fast (before) and slow (after) laps gives only a small drop in spatial correlation, much smaller than DCZ or CNO, and no change in reliability (0.51 against 0.45) or out/in ratio (0.09 against 0.09).",
+      "source": "Results, Bilateral VTA inhibition largely replicates lowering reward expectation, paragraphs 3 and 4; Supplementary Fig. 18",
+      "quote": "We found a small reduction in spatial correlation on the slow velocity laps compared to the fast laps (Supplementary Fig. 18B, C ), but this was much smaller than the effects induced by DCZ and CNO",
+      "criterion": "Laps split as Supplementary Fig. 18a states - before saline laps above the 60th percentile of mean lap speed, after saline laps \"above the 40th percentile\", which contradicts \"slower laps\"; readings (a) after saline laps below the 40th percentile, (b) above it as printed. Percentiles taken within each mouse and condition, or pooled; both are run. Reproduced when, under one reading, the values are within tolerance and the mean drop in spatial correlation (before against after saline split) is less than half of the drop for DCZ in fig4f-dreadd-spatial-correlation. The factor of one half is fixed here for \"much smaller\"."
+     },
+     {
+      "id": "fig4h-dreadd-reliability-outin",
+      "statement": "DCZ and CNO lower place field reliability and raise out/in field firing, as RE low does, while saline does not - reliability R 0.41 against RE low 0.29, before 0.48 against after DCZ 0.41, before 0.42 against after CNO 0.35, before 0.45 against after saline 0.46; out/in ratio R 0.10 against RE low 0.17, DCZ 0.10 against 0.12, CNO 0.10 against 0.12, saline 0.09 against 0.09.",
+      "source": "Results, Bilateral VTA inhibition largely replicates lowering reward expectation, paragraph 4; Figure 4h to j; Supplementary Fig. 17d",
+      "quote": "We found a similar decrease in place field reliability and increase in out-of-field firing in DCZ and CNO as in RE low (Fig. 4h, j , Supplementary Fig. 17D , Mean [95%CI]: Reliability: Rewarded = 0.41 [0.31 0.52], RE low = 0.29 [0.17 0.40], Before DCZ = 0.48 [0.38 0.58], After DCZ = 0.41 [0.31 0.51], Before CNO = 0.42 [0.31 0.52], After CNO = 0.35 [0.24 0.47]. Out/In Field Firing: Rewarded = 0.10 [0.06 0.13], RE low = 0.17 [0.06 0.29], Before DCZ = 0.10 [0.05 0.14], After DCZ = 0.12 [0.08 0.16], Before CNO = 0.10 [0.05 0.15], After CNO = 0.12 [0.07 0.17]). This was not the case in the saline controls (Fig. 4i , Mean [95%CI]: Reliability: Before Saline = 0.45 [0.34 0.55], After Saline = 0.46 [0.39 0.54], Out/In Field Firing: Before Saline = 0.09 [0.04 0.14], After Saline = 0.09 [0.04 0.14])",
+      "criterion": "Place fields defined independently in each condition, parameters as in the opening comment, 6 mice (5 for saline); the R/RE low pair is day 1 of the DREADD mice. Per-mouse and pooled readings as in fig3b-reliability. Reproduced when, under one reading, at least 14 of the 16 means are within tolerance (a count fixed here), reliability is lower and out/in ratio higher after DCZ and after CNO than before, and saline changes neither. The absence for saline is judged on the legend's test (Figure 4h to j, two-sided paired t-test, p >= 0.05); what it pairs is open (per-animal means, n = 5, or the bins of the cumulative histograms), so both are run and must agree. The paired t-tests for DCZ and CNO are shown."
+     },
+     {
+      "id": "fig4m-dreadd-overrepresentation",
+      "statement": "DCZ and CNO tend to reduce place field over-representation of the reward site compared with saline, but not significantly (P = 0.06), and less than RE low does.",
+      "source": "Results, Bilateral VTA inhibition largely replicates lowering reward expectation, paragraph 5; Figure 4k to m; Supplementary Fig. 17e; Methods, Reward over-representation",
+      "quote": "Lastly, we found DCZ and CNO tended to induce a reduction in place field over-representation of the reward site compared to saline controls, but this did not reach significance (Fig. 4m ; P = 0.06) and the effect size was less than RE low",
+      "criterion": "End minus middle place field percentage per mouse as in fig3d-reward-overrepresentation. A claim of absence for the DCZ against saline difference - judged on the paper's test, a two-sided paired t-test (Figure 4k to m legend), though the saline group has 5 mice and DCZ 6, so it is run on the 5 mice with both. Reproduced when the after minus before change in end minus middle percentage is more negative for DCZ than saline and that test gives p >= 0.05, and the RE low change is larger in size than the DCZ change. Supplementary Fig. 17e uses a two-tailed Wilcoxon signed rank test for CNO; it is shown as a variant. Gaussian fits are compared with their tolerances and reported."
+     },
+     {
+      "id": "supp15-tdtomato-controls",
+      "statement": "In control mice with tdTomato in VTA DA neurons (n = 3), CNO and DCZ lower lap speed (P < 0.001) but do not change spatial correlation, reliability, out/in ratio or reward over-representation as in DREADD mice.",
+      "source": "Results, Bilateral VTA inhibition largely replicates lowering reward expectation, paragraphs 3 and 5; Supplementary Fig. 15",
+      "quote": "Interestingly, we found a decrease in lap velocity in control mice following injections (CNO injected in mice with no DREADD expression; Supplementary Fig. 15C , P < 0.001). However, this decreased lap speed did not lead to the same changes in place cells we observed in our experimental groups",
+      "criterion": "The 3 tdTomato mice, analysed as in fig4f-dreadd-spatial-correlation and fig4h-dreadd-reliability-outin. Reproduced when after CNO lap speed is lower than before by a two-sided unpaired t-test over laps at p < 0.001 (Supplementary Fig. 15c), and after CNO and after DCZ the spatial correlation is not lower than after saline by a two-tailed KS test at p < 0.05 (Supplementary Fig. 15d; a claim of absence on the paper's test), and reliability and out/in ratio do not change after CNO or DCZ by the two-tailed t-test of Supplementary Fig. 15f at p < 0.05 (absence; the legend applies it to both the per-animal boxplots, n = 3, and the cumulative histograms, so both are run and must agree). The end minus middle place field percentages of Supplementary Fig. 15g are shown; the legend gives no test for them."
+     },
+     {
+      "id": "fig5-da-axon-ramps",
+      "statement": "VTA DA axons in CA1 ramp up in activity as mice approach the reward in R (7 axons, 6 mice), peak just before the reward site and return to baseline after reward; the ramps decay in UR and disappear in RE low.",
+      "source": "Results, VTA inputs to CA1 encode reward expectation through a proximity to reward signal, paragraph 1; Figure 5b to d",
+      "quote": "We found that individual DA axons ramped up in activity as mice moved closer to the reward site on each traversal of the environment in R (Fig. 5b\u2013d ; n = 7 axons from 6 mice)",
+      "criterion": "Axon ROIs as in the Methods (Suite2p plus hand drawn segments, ROIs with r >= 0.7 merged, dF/F with a 2000-frame baseline window). Position bins (40 of 5 cm) and time bins (34 before reward, 6 after); per lap, minus the lap's minimum bin, divided by the mouse's maximum bin, pooled (Methods, Axon imaging analysis). Position groups as the Figure 5d legend gives them - start 50 cm (S), middle 100 cm (M), end 50 cm (E). The paper's test (Figure 5d legend) compares R with RE high and with RE low at each position by a two-sided paired t-test over the 7 axons, P < 0.01; it gives no test of the ramp within R. Reproduced when, in R, mean fluorescence in E exceeds S in at least 6 of the 7 axons and the maximum time bin of the mean lies before reward delivery (both fixed here, for the ramp the paper shows in a figure only), and RE low is below R in E by the paper's test at p < 0.01. The other position and RE high tests are shown. Needs the axon imaging, which the dandiset description does not mention."
+     },
+     {
+      "id": "fig5k-ramp-slope-max",
+      "statement": "DA axon ramps (slope x max, normalised to R) are smaller in RE high laps (0.57) and nearly vanish in RE low laps (0.24); slope alone is R 1.00, RE high 0.69, RE low 0.35 and max alone 1.00, 0.79, 0.53.",
+      "source": "Results, VTA inputs to CA1 encode reward expectation through a proximity to reward signal, paragraph 2; Figure 5j, k; Supplementary Fig. 19",
+      "quote": "DA-axon-ramps were on average smaller in UR compared to R during RE High laps but disappeared in RE low laps (Fig. 5k ; n = 7, Mean [95%CI]: Slope*max: R = 1.00 [1.00, 1.00], RE High = 0.57 [0.40, 0.74], RE low = 0.24 [0.03, 0.45])",
+      "criterion": "Per lap, from the time-binned data - max = the maximum bin, divided by the mouse's mean R max; slope = slope of a linear fit (MATLAB fitlm) between the minimum within the first 25 bins and the maximum within the last 15 bins (in other conditions the search range is limited to the bins where they fell in R), divided by the mean R slope; slope x max divided by its R mean (Methods; find_slope.m). Per axon mean per condition. RE high and RE low by the lick stop readings L1 to L3; the code (VTA_ramping_analysis.m) instead hard-codes frame ranges per mouse, which is shown as a variant if the frames can be located. Reproduced when, under one reading, the slope x max values are within tolerance and RE low is below R by a two-sided paired t-test over the 7 axons at p < 0.05 with Bonferroni correction (Supplementary Fig. 19 legend)."
+     },
+     {
+      "id": "fig5l-ramps-return-rr",
+      "statement": "DA axon ramps return in RR and do not differ from R (slope x max RR 1.23, 95% CI -0.28 to 2.74, n = 5 axons); ramps start to return early in RR and are near R levels late in RR.",
+      "source": "Results, VTA inputs to CA1 encode reward expectation through a proximity to reward signal, paragraphs 1 and 2; Figure 5f to h, l; Supplementary Fig. 19c, f",
+      "quote": "DA-axon-ramps were not different in R versus RR (Fig. 5k ; n = 5, Mean [95%CI]: Slope*max: R = 1.00 [1.00, 1.00], RR = 1.23 [\u22120.28, 2.74])",
+      "criterion": "A claim of absence. As in fig5k-ramp-slope-max for the 5 axons imaged in RR. Reproduced when the two-sided paired t-test of R against RR slope x max over the 5 axons (Figure 5l legend) gives p >= 0.05; the mean is compared with its tolerance and reported. The Methods (Statistics) say samples of five or fewer get only a non-parametric test; a two-sided Wilcoxon signed rank test is shown as a variant (with 5 pairs it cannot reach p < 0.05). Supplementary Fig. 19c gives for the same R against RR slope x max panel \"Mean - slope - R = 1.00, RR = 1.01\", which differs from the 1.23 of the text; both are reported, and the claim is judged against 1.23. The early against late RR return (Figure 5h) is shown, not judged; the paper does not say how laps are split."
+     },
+     {
+      "id": "supp20-novel-axons",
+      "statement": "In a novel environment DA axon activity has much lower peaks and is locked to reward delivery instead of ramping; peaks grow and ramps begin to develop late in the session (5 axons, 5 mice).",
+      "source": "Results, VTA inputs to CA1 encode reward expectation through a proximity to reward signal, paragraph 3; Supplementary Fig. 20",
+      "quote": "We found DA axon activity had much lower peaks in N and were much more locked to reward delivery ... However, activity peaks increased with experience in N and DA-axon-ramps started to develop towards the end of the session",
+      "criterion": "Time and position binning as in fig5-da-axon-ramps, for the 5 axons with a novel session. The paper gives no test or split; early and late are read as the first and second halves of the novel laps. Reproduced when the mean peak in the novel session is below R, the time bin of the peak is at or after reward delivery in the early half, and the late half has a higher peak and a positive slope (as in fig5k-ramp-slope-max) than the early half, in at least 4 of the 5 axons. The halves and the 4 of 5 rule are fixed here."
+     },
+     {
+      "id": "supp21-heterogeneous-axons",
+      "statement": "Two axons do not ramp to reward; one encodes running velocity and is insensitive to the R to UR switch, the other decreases its activity in VR compared with darkness.",
+      "source": "Results, VTA inputs to CA1 encode reward expectation through a proximity to reward signal, paragraph 4; Supplementary Fig. 21",
+      "quote": "We found two axons with distinct types of signals that did not ramp to reward (Supplementary Fig. 21 ). One of these encoded the animal's velocity and was not sensitive to the R-UR transition",
+      "criterion": "Velocity encoding as in the Methods - motion epochs with velocity >= 1 cm/s for at least 1 s, aligned to motion onset, dF/F and velocity from 2 s before to 8 s after, velocity normalised to the epoch maximum. Reproduced when the velocity axon's mean dF/F follows velocity (Pearson r of the mean traces above 0.5, a threshold fixed here) in both R and RE low, and the second axon has lower mean dF/F in VR than in the dark. Needs the axon imaging."
      }
     ]
    }
@@ -50638,6 +50941,12 @@
    "verifier-3-report.md",
    "verifier-3.md"
   ],
+  "dandi:000462": [
+   "claims-check-report.md",
+   "claims-check.md",
+   "claims-report.md",
+   "claims.md"
+  ],
   "dandi:000463": [
    "claims-check-report.md",
    "claims-check.md",
@@ -52020,7 +52329,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-23T13:32:05+00:00",
+ "generated": "2026-10-23T13:48:38+00:00",
  "queue_generated": "2026-10-23T11:39:25+00:00",
  "queue_counts": {
   "public_dandisets": 661,
@@ -115447,7 +115756,6 @@
    "001893",
    "001868",
    "001521",
-   "000462",
    "000458",
    "000448",
    "000447",
@@ -115510,7 +115818,7 @@
   },
   "hours": {
    "full": 3.8680555555555554,
-   "claims": 0.2915277777777778
+   "claims": 0.2922222222222222
   },
   "running": {}
  },
