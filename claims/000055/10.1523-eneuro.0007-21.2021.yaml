@@ -68,7 +68,10 @@
 # variant. Coefficients are averaged over splits. Recording day and time of day are
 # summarised by the SD of their one-hot coefficients (Figure 6 legend, code). Figure 6b-d
 # show only models with withheld R2 > 0.05 (legend), judged per band; the code selects
-# electrodes for both bands by the LFB R2, shown as a variant.
+# electrodes for both bands by the LFB R2, shown as a variant. The code also fits models at
+# electrodes marked bad, and its Figure 6c-d box plots do not drop them (Regression_results_Fig6,
+# pos_r2_inds); the Methods and the Figure 1 legend remove bad electrodes from further analysis,
+# so good electrodes are the main result and the code's inclusion of bad ones a variant.
 #
 # Data the paper used. 12 subjects (8 male, 4 female, 29.4 +- 7.9 years) in clinical epilepsy
 # monitoring at the University of Washington, with ECoG grids over motor cortex (87.0 +- 12.9
@@ -92,6 +95,8 @@
 #
 # Subjects S01 to S12 are assumed to be the dataset's subjects 01 to 12 in order; claim
 # subject-days checks this.
+#
+# Claim extfig2-1c-contralateral-larger was added by the check of 2026-10-23.
 schema_version: 2
 dataset:
   archive: dandi
@@ -187,7 +192,8 @@ claims:
     Reproduced when p < 0.001 for all ten features; not reproduced otherwise, with every p
     reported.
 - id: fig2-reach-shape
-  statement: Most reaches last under 2 s and cover under 200 pixels, and reach angle
+  statement: Reach duration and reach magnitude vary little across subjects, with most reaches
+    lasting under 2 s and covering under 200 pixels, and reach angle
     distributions tend to be bimodal with peaks near +90 and -90 degrees, with few side-to-side
     reaches.
   source: Results, Behavior during naturalistic movements, paragraph 3; Figure 2
@@ -200,7 +206,9 @@ claims:
     -90 to 90 degrees) is judged on a Gaussian kernel density with Scott's bandwidth, the
     seaborn kdeplot default the Figure 2 code uses, evaluated on -90 to 90; a subject is bimodal
     with peaks at +-90 when the density's two highest local maxima lie within 15 degrees of -90
-    and of +90 and the density at 0 degrees is below both. Reproduced when the duration and
+    and of +90 and the density at 0 degrees is below both. "Minimal intersubject variability" is
+    read as the duration and magnitude parts holding in at least 10 of 12 subjects; the
+    per-subject medians are reported. Reproduced when the duration and
     magnitude parts hold pooled and in at least 10 of 12 subjects, and the angle part holds
     pooled and in more than half of the subjects ("tend to"). Partially reproduced when one of
     the two parts holds.
@@ -216,11 +224,36 @@ claims:
   criterion: The paper gives no measure, so it is read as follows. Bimanual ratio (missing
     values 0.5, code) skewed toward unimanual when its median is below 0.5; bimanual overlap
     (seconds) skewed toward unimanual when its sample skewness (Fisher-Pearson) is positive;
-    bimanual class mostly bimanual when more than half the events are bimanual. "Less skew" for
-    S02, S04 and S05 when each is among the five subjects with the highest median bimanual
-    ratio. Reproduced when the ratio and overlap parts hold pooled and in at least 9 of 12
+    bimanual class mostly bimanual when more than half the events are bimanual. The paper's
+    "less skew" for S02, S04 and S05 refers to both ratio and overlap, so it holds when each of
+    the three is among the five subjects with the highest median bimanual ratio and among the five
+    with the lowest overlap skewness; the two features are reported separately. Reproduced when the ratio and overlap parts hold pooled and in at least 9 of 12
     subjects, the class part holds pooled and in more than half the subjects, and the S02, S04,
     S05 part holds; partially reproduced when some but not all of these hold.
+- id: extfig2-1c-contralateral-larger
+  statement: Across all 12 subjects, the median displacement of the contralateral wrist after
+    movement onset is substantially greater than that of the ipsilateral wrist, confirming that
+    event detection mainly picked contralateral movements.
+  source: Extended Data Figure 2-1c legend; Results, Behavior during naturalistic movements,
+    paragraph 2
+  quote: Because we selected movement initiation events of the wrist contralateral to the
+    hemisphere with implanted electrodes, the median contralateral wrist displacements (orange
+    lines) across all 12 subjects are substantially greater than ipsilateral wrist displacements
+    (gray lines).
+  criterion: Per subject, the median over events of each wrist's displacement in pixels from its
+    rest position, with events aligned at movement onset (Extended Data Figure 2-1b and c
+    legends). The current code holds no script for this panel. The rest position is open;
+    readings are (a) the mean position over -1.5 to -1 s, the behavioural baseline of the code
+    (config.baseline_vals_movement; compute_wrist_radial_distance, used by archived figure code,
+    takes the absolute change of the radial distance from the image origin over that baseline),
+    and (b) the position at movement onset (the Methods' reach definition). Displacement is the
+    Euclidean distance from the rest position. The window is 0 to 1.5 s, the end of the time
+    axis of the archived plotting code (plot_behavior_traces). "Substantially greater" has no
+    measure; the part holds in a subject when the peak of the contralateral median exceeds the
+    peak of the ipsilateral median, and the ratio is reported. Event set as in
+    fig2-event-counts reading b. Reproduced when this holds in all 12 subjects under both
+    readings; partially when it holds in 10 or 11. Blocked as methods_underspecified when the
+    readings give different outcomes.
 - id: extfig2-2-feature-correlations
   statement: Over all events, reach magnitude correlates with reach duration (r = 0.26) and
     onset speed (r = 0.56), reach duration with bimanual overlap (r = 0.48), and the bimanual
@@ -352,7 +385,10 @@ claims:
     frequency bands compared with the other subjects.
   data: with_inputs
   criterion: Per subject, the unmasked median over events of precentral power (Figure 4 legend,
-    no statistical masking), averaged over 0 to 0.5 s to give a spectrum. The paper gives no
+    no statistical masking), with the mean of that median over -1.5 to -1 s subtracted again, as
+    plot_specs_single_region in the code does, averaged over 0 to 0.5 s (the window of the
+    paper's banded analyses, Methods; Figure 4 itself shows whole spectrograms and fixes no
+    window) to give a spectrum. The paper gives no
     measure, so the parts are read as follows. (1) Every subject has a negative mean over 8-32
     Hz and a positive mean over 76-100 Hz. (2) For S03, S06, S07, S08 and S11 the 116 and 121
     Hz bins are positive. (3) For S09 and S12 the largest value among the 56-121 Hz bins is at
@@ -462,6 +498,8 @@ claims:
   quote: Baseline subtraction reduces the variation across recording days, as expected, but clear
     variability remains.
   data: with_inputs
+  depends_on:
+  - fig5-recording-day-effects
   criterion: The legend gives the measure, the SD across recording days of the average LFB
     (8-32 Hz) and HFB (76-100 Hz) power, with and without baseline subtraction. The figure could
     not be read and no code for it is in the repository, so what is averaged is open. Readings
@@ -469,8 +507,11 @@ claims:
     band power; (b) the same per good electrode, pooled over electrodes and subjects. Without
     baseline means the 10*log10 band power with no subtraction. Reproduced when, under both
     readings and in both bands, the SD with baseline is below the SD without it for more than
-    half of the units (subjects or electrodes) and the median SD with baseline is above 0.
-    Blocked as methods_underspecified when the readings disagree.
+    half of the units (subjects or electrodes). The paper gives no measure for "clear variability
+    remains"; the Results tie it to the recording-day effects that persist after baseline
+    subtraction (paragraph 4), so that part is judged by claim fig5-recording-day-effects
+    finding a significant day effect in at least one subject, and the SDs with baseline are
+    reported. Blocked as methods_underspecified when the readings disagree.
 - id: discussion-day-changes-small
   statement: Day-to-day changes in baseline-subtracted spectral power are small (about 1-2 dB)
     compared with spectral power without baseline subtraction (about 10-50 dB).
@@ -534,7 +575,7 @@ claims:
     day have the two largest median Delta R2 of the ten features in the LFB. The HFB ranking is
     reported, and the claim is partially reproduced when only one of the two is in the LFB top
     two. Shown as variants are the code's Delta R2 (shuffling test events too), the code's
-    selection by LFB R2, and the code's 80/20 split.
+    selection by LFB R2, the code's 80/20 split, and the code's inclusion of bad electrodes.
 - id: extfig6-2-angle-most-retained
   statement: Reach angle is the feature most often retained by forward selection in sensorimotor
     regions, followed by reach duration, reach magnitude, bimanual ratio and bimanual overlap.
@@ -548,9 +589,15 @@ claims:
     feature). The legend projects the retention probability onto the eight regions and averages
     across subjects; the code of this step is not in the repository. It is read as the
     projection-weighted mean over the subject's good electrodes, then the mean over subjects, as
-    for power. Reproduced when reach angle has the highest retention probability among the ten
-    features in precentral, postcentral and inferior parietal for both bands. The order of the
-    next four features is reported and compared with the legend's.
+    for power. The angle part holds when reach angle has the highest retention probability
+    among the ten features in precentral, postcentral and inferior parietal for both bands. The
+    legend does not say over which regions and bands its order of the next four features holds.
+    Readings are (a) the retention probability averaged over the three sensorimotor regions and
+    both bands and (b) the same over all eight regions; the order part holds when the features
+    ranked second to fifth are reach duration, reach magnitude, bimanual ratio and bimanual
+    overlap in that order. Reproduced when the angle part holds and the order part holds under
+    both readings; partially reproduced when only the angle part holds. Blocked as
+    methods_underspecified when the readings give different outcomes for the order part.
 - id: fig6d-upward-reaches-enhance-pattern
   statement: Upward reaches are associated with lower low-frequency power and higher
     high-frequency power, that is, a larger version of the average movement response.
@@ -562,7 +609,7 @@ claims:
   criterion: Reach angle coefficient (positive angle is upward, standardised feature), averaged
     over splits, over electrodes with withheld R2 > 0.05 in that band. Reproduced when the median
     coefficient is below 0 for LFB and above 0 for HFB; partially when it holds in one band. The
-    code's selection by LFB R2 is shown as a variant.
+    code's selection by LFB R2 and its inclusion of bad electrodes are shown as variants.
 - id: fig6d-angle-and-day-largest-coefficients
   statement: Reach angle and day of recording have the largest coefficient magnitudes among the
     features, and the SD of the recording-day coefficients is large.
@@ -570,9 +617,33 @@ claims:
     features, paragraph 2
   quote: In addition, both reach angle and day of recording have the largest coefficient
     magnitudes among behavioral features in the regression models ( Fig. 6 c ).
-  criterion: Per electrode with withheld R2 > 0.05 in the band, the absolute split-averaged
-    coefficient of each continuous or binary feature, and for day and time of day the SD of
-    their one-hot coefficients (Figure 6 legend, code). The summary across electrodes is the
-    median, as in the box plots. Reproduced when reach angle and recording day have the two
-    largest medians in both bands; partially when in one band. Variants as for
+  criterion: Per electrode with withheld R2 > 0.05 in the band, the split-averaged coefficient
+    of each continuous or binary feature, and for day and time of day the SD of their one-hot
+    coefficients (Figure 6 legend, code). The Results cite Fig. 6c for this sentence, but the
+    coefficients are in Fig. 6d, whose box plots show the signed coefficients (code). The paper
+    does not say how magnitude is summarised across electrodes. Readings are (a) the median of
+    the absolute coefficients and (b) the absolute value of the median coefficient, the box-plot
+    centre. Reproduced when, under both readings, reach angle and recording day have the two
+    largest values in both bands; partially when in one band. Blocked as
+    methods_underspecified when the readings give different outcomes. Variants as for
     fig6c-angle-and-day-most-informative.
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Read the code at the cited commit (04c6faf) to check every criterion that cites it. The spectral, projection, masking, regression and plotting details in the header and criteria match the code, except as below.
+  - Header. Added that the code fits models at bad electrodes and keeps them in the Figure 6c-d box plots; the Methods and the Figure 1 legend remove bad electrodes, so good electrodes stay the main result and the code's choice is a variant.
+  - fig2-reach-shape. The statement left out the paper's "minimal intersubject variability" for duration and magnitude. Added it, and the criterion now says it is read through the 10 of 12 subject rule already there.
+  - fig2-bimanual-skew. The paper's "less skew for subjects 02, 04, and 05" applies to both ratio and overlap; the criterion judged it on the ratio only. It now uses both features.
+  - fig4-precentral-subject-variability. Added the code's second subtraction of the -1.5 to -1 s mean from each subject's median (plot_specs_single_region), and said where the 0 to 0.5 s window comes from (the Methods' banded window; Figure 4 fixes none).
+  - extfig5-1-baseline-reduces-day-variability. The test for "clear variability remains" (median SD above 0) was always true. It is now judged through the day effects of fig5-recording-day-effects, which the Results give as the variability that remains; added depends_on.
+  - fig6c-angle-and-day-most-informative and fig6d-upward-reaches-enhance-pattern. Added the code's inclusion of bad electrodes as a variant.
+  - fig6d-angle-and-day-largest-coefficients. The criterion took the median of absolute coefficients as the only measure; the paper does not say how magnitude is summarised and its box plots show signed values. Named two readings (median of absolute values, absolute value of the median) with the blocking rule. Noted that the Results cite Fig. 6c for coefficients that are in Fig. 6d.
+  - extfig6-2-angle-most-retained. The statement includes the legend's order of the next four features, but the criterion only reported it. The order is now judged, under two readings of the regions it covers, and failing it gives a partial outcome.
+  - Added claim extfig2-1c-contralateral-larger (Extended Data Figure 2-1c, cited in the Results), a panel-level finding with no claim. No current code makes the panel; the criterion names the readings of the rest position and says the threshold for "substantially" is its own.
+  - Open, not settled. Many criteria turn words the paper leaves unmeasured into thresholds of the file's own (for example "most" as more than half, 10 of 12 subjects, peaks within 15 degrees of +-90, waking hours as 08:00 to 24:00, the parts of fig4-precentral-subject-variability). They are readings, not the paper's methods.
+  - Open, not settled. discussion-day-changes-small reads the "day-to-day changes" of +-1-2 dB as the largest deviation of a day mean from the subject mean; the paper does not define them, and the range of day means is another reading, about twice as large. The voltage unit for the 10-50 dB level is also not stated.
+  - Open, not settled. cohort uses the stated SDs as tolerances on the means, as the protocol's "stated spread" allows; that is wide (for example 29.4 +- 7.9 years).
+  - Open, not settled. Extended Data Figures 1-1, 2-3, 2-4, 3-1, 4-1 to 4-7, 5-1, 6-1 and 6-2 are EPS files not in the text, and no PDF was supplied, so their contents could not be checked; the claims that rest on them use their legends.
