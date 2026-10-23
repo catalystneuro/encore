@@ -55,7 +55,9 @@ outcomes:
     agree on every shared feature and 248 on at least 80% of them, and a match on the features alone,
     within donor, picks the M2 cell for 261 of 261 files. With IPFX's sweep QC alone the agreement is
     closer (145 cells identical on every shared feature; 1 of the code's cells with no features here,
-    against 22). The 35 cells with no features in the code cannot be checked by features; for all 35
+    against 22), and the match on features alone picks the M2 cell for 282 of 282 files, 21 of 21 among
+    those with no features under the Methods' sweep QC; the remaining cell of the 283
+    (H18.03.322.11.11.01.02) gives features under neither QC, and its sample date matches. The 35 cells with no features in the code cannot be checked by features; for all 35
     the date in the cell's sample_id equals the file's local recording date (279 of the 283 checked
     cells too, the other 4 started after midnight, the day after the sample's date), and in each of 71
     rig-days with two or more files (253 files, 27 of the 35) tube numbers rise with recording time
@@ -65,8 +67,9 @@ outcomes:
     code's table. Every claim that needs a label uses M2 and says so.
   deviations:
   - The SpecimenID of each file was recovered from its session id and donor, not read from the file;
-    the code's per-cell features confirm the match for the 283 cells that have them, and the sample
-    dates and tube order support it for the other 35.
+    the code's per-cell features confirm the match for 261 of the 283 cells that have them under the
+    Methods' sweep QC and for 282 under IPFX's sweep QC alone, and the sample dates and tube order
+    support it for the 35 cells without features in the code.
   - Features computed with IPFX 2.1.2 (the paper gives no version), read from its output as the
     code's feature names imply (patchseq_l23.FEATURE_SOURCES); the code does not hold that step.
   - The sweep QC is the Methods'. IPFX 2.1.2 applies only the noise limits to sweeps, so the Methods'
@@ -84,7 +87,7 @@ outcomes:
     features are 280 under reading (a), 241 under (b) and 280 under (c), none 283; with IPFX's sweep QC
     alone they are 307, 256 and 307. The code's own table has features for exactly 283 human cells,
     all with a file here; 22 of them give no features here under the Methods' sweep QC, against 1
-    under IPFX's sweep QC alone (IPFX fails on its f-I fit), and 19 cells give features here but have none in the code (2 of them fail IPFX cell QC). M2 gives
+    under IPFX's sweep QC alone (IPFX raises a ValueError, `ydata` must not be empty), and 19 cells give features here but have none in the code (2 of them fail IPFX cell QC). M2 gives
     every file a cell of the table, so no other cell can be found among the files.
     Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be
     tested.
@@ -444,8 +447,9 @@ outcomes:
   notes: Changed from partially reproduced after the first verification round, as the mouse port now
     gives Code7's printed values (see fig1b-density). Pooled over all somata of a species, as the
     criterion says, the mouse quartiles are 44.7 and 96.5 um2 and the human quartiles 107.5 and 252.6
-    um2, all within tolerance and equal to Code7's printed quantiles, and the largest human soma is
-    886.4 um2. Per section, reported only, the means of section quartiles are 110.8 and 254.1 (human)
+    um2, all within tolerance, and the largest human soma is 886.4 um2. All eight pooled quantiles of
+    each species and the six largest somata equal those Code7 prints (the notebook's table of the port
+    against Code6's and Code7's printed values). Per section, reported only, the means of section quartiles are 110.8 and 254.1 (human)
     and 50.1 and 91.8 (mouse). In human the mean area rises from 127.0 um2 in the shallowest kept bin
     to 245.4 at its peak; in mouse it ranges from 59.3 to 81.5 um2.
   deviations:
@@ -459,10 +463,17 @@ outcomes:
     verification round traced to the port, not the data (see fig1b-density). With deep L3 as Code7's
     five bins (D1, as the criterion says), the mean SD of soma area is 117.6 um2 in human (948 somata)
     and 29.8 um2 in mouse (357 somata), a ratio of 3.94, within 4 +/- 0.4. The variant D2 gives 3.83.
+    Code7 prints 4.0; 3.94 rounds to 3.9. Code6 never resets q9, so cbind repeats each human section's
+    bins k + s times (section k of 5, s the sections' worth of q9 present when Code6 starts, unknown);
+    with these repeated rows the ratio is 4.02, 4.00 and 3.99 for s = 0, 1 and 2, all within tolerance,
+    and with s = 1 or 2 the port gives all four human/mouse ratios Code7 prints (2.1, 3.0, 2.4, 4.0),
+    against two of four counting each section once.
     Binning the areas as the density is binned (right-closed) gives 3.94 again; the scripts bin them
     left-closed, which leaves 5 human somata at scaled depth exactly 0 in no area bin, none in deep L3.
   deviations:
-  - Code7's per-bin SD ported from R to Python, with the mouse reading of fig1b-density.
+  - Code7's per-bin SD ported from R to Python, with the mouse reading of fig1b-density. Each section
+    counts once in the mean over bins and sections, as the criterion says, not as Code6's repeated rows
+    weight them.
 - claim: fig1f-frem3-heterogeneity
   outcome: blocked
   blocked_by: other
@@ -492,9 +503,10 @@ findings:
 - kind: identifier_missing
   statement: The files carry no SpecimenID, the identifier by which the paper's code and tables name
     cells. Each file can be linked only by its donor and its ephys session id, which lies 13 to 685
-    below the cell's SpecimenID; the code's per-cell features confirm the link for every cell that
-    has them, and for the other 35 the sample dates and tube order in the code's sample_id are
-    consistent with it.
+    below the cell's SpecimenID. The code's per-cell features confirm the link for 261 of the 283 cells
+    that have them under the Methods' sweep QC and for 282 under IPFX's sweep QC alone (one gives no
+    features under either); for the 35 cells without features in the code, the sample dates and tube
+    order in the code's sample_id are consistent with it.
 - kind: metadata_insufficient
   statement: The files carry no t-type, soma depth, brain region or medical condition, on which every
     finding of the paper rests; they must be taken from the paper's code. session_description and the
@@ -526,8 +538,17 @@ findings:
     all three mouse sections, which gives mouse L2/3 thicknesses of 32, 133 and 90 um (printed 281,
     223 and 257), a density of 350 thousand per mm3 (printed 165) and puts every mouse soma below the
     lower L2/3 line. Reading the lines as L1 to L4, as Code6 reads the human ones, with case_set_1 at
-    100 um = 165 pixels, the scale its own comment gives, reproduces every printed value (thicknesses,
-    L2 fractions, density 165 +/- 24.9 and the pooled area quantiles).
+    100 um = 165 pixels, the scale its own comment gives, reproduces its printed thicknesses, L2
+    fractions, densities (165 +/- 24.9 and 27.7 +/- 4.46), pooled area quantiles and six largest areas,
+    and its two ratios of mean soma area; its two ratios of SD need the repeated rows of the next
+    finding.
+- kind: code_mismatch
+  statement: Code6_cortical_depth_code_human.r never sets q9 to NULL (Code7 does, for each section), and
+    run on its own stops at q9. When q9 is present, it grows from section to section, and cbind repeats
+    each human section's 20 bins once per 20 values of q9, so the human bin table Code7 averages counts
+    the five sections unequally. Counting each section once gives SD ratios of 2.33 (L2) and 3.94 (deep
+    L3), against the 2.4 and 4.0 Code7 prints; with the repeated rows and one or two sections' worth of
+    q9 at the start, the port gives all four printed ratios.
 - kind: code_mismatch
   statement: The code's gene-depth table (frem_genes_depth.csv) is from the revision (4417 genes at
     FDR below 0.05), not the preprint (790), and the Patch-seq transcriptomes behind either are not in
@@ -546,7 +567,9 @@ verifications:
     the archive through the API and checked the helper functions by reading only (numpy, scipy and
     statsmodels were not installed for it). Its report gives its own outcome for 32 claims; it gives
     none for fig6-deep-morph-anova, which is left out below. Of the 32, its outcome matches the
-    record's on 26; on six blocked claims it gives data_missing where the record gives other. It found
+    round-1 record's on 26 (on 22 of the current record's, since fig1b-density, fig1c-soma-area,
+    fig1c-soma-variation and fig6-deep-ephys-anova changed after this round, so `agrees` on those four
+    refers to the round-1 outcome); on six blocked claims it gives data_missing where the record gives other. It found
     the mouse section port faulty, which bears on fig1b-density, fig1c-soma-area and
     fig1c-soma-variation, and asked for checks of the 35 links the features cannot confirm and of the
     sweep QC.
@@ -799,3 +822,242 @@ verifications:
     outcome: blocked
     reason: Not in the archive (data_missing).
     response: Kept as blocked by other, as for fig1f-frem3-heterogeneity.
+- date: '2026-10-23'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the author-revise-1 revision, the helper module, the
+    claims file and the attempt record, with the paper. The verifier agreed with all 33 outcomes, four of
+    them as fragile (fig4-glp2r-sag, edtable1-species-ephys, fig6-deep-ephys-anova, fig2ef-pathology-ephys).
+    It found the run times stale (14 minutes stated, 21.0 printed), the link said to be confirmed by
+    features for all 283 cells where 261 have features on both sides, the cohort-cells note naming the
+    f-I fit for an error that does not name it, Code6's printed human L2 fractions misquoted (-0.179 to
+    -0.199, while -0.1639 is among them), the comparison with Code7's printed quantiles and ratio not
+    shown, and the round-1 count of agreeing outcomes true only of the round-1 record. Open points it
+    lists as bearing on a conclusion are cell QC, the 35 links without features, which sweep QC to use
+    and the exact tolerances on small counts. The revision corrected the text, added a table of the port
+    against every value Code6 and Code7 print, and a match on features alone under IPFX's sweep QC. No
+    outcome changed and none is proposed.
+  results:
+  - claim: features-and-labels-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with no caveat. Cell 97 says the link is one "which the features confirm for the 283
+      cells with features in the code", the record's deviation says "the code's per-cell features
+      confirm the match for the 283 cells that have them", and its identifier_missing finding says
+      "confirm the link for every cell that has them". Under the main QC only 261 of the 283 have
+      features on both sides; the feature-only match is 261 of 261, and 22 of the 283 give no features
+      here. The IPFX variant prints only median agreement and runs no per-cell match. Still open,
+      the 35 links without features (problem 1); the date check and tube order support them but do not
+      prove them. Which sweep QC to use is open too; the code's table matches IPFX's QC alone better
+      (145 against 128 identical cells, 1 against 22 without features here), so the Methods' limits as
+      applied here are not what made the paper's numbers; the 15%-of-Rin limit fails the most sweeps
+      (469) and uses an input resistance the Methods do not fix, and 1118 sweeps without a bias current
+      are kept.
+    response: The summary, the README, the deviation and the finding now say the features confirm 261
+      of the 283 under the Methods' sweep QC. Added the match on features alone under IPFX's sweep QC; it
+      picks the M2 cell for 282 of 282 files, 21 of 21 among those with no features under the Methods'
+      sweep QC, and the one cell left gives features under neither QC (its date matches); the conclusion,
+      notes and summary say so. The 35 links stay supported, not proven, as the notes say. The sweep QC
+      question is in questions/000023.yaml and not yet answered, so the criterion's Methods' sweep QC
+      stays the main reading.
+  - claim: cohort-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, with no caveat. The record's note says "(IPFX fails on its f-I fit)", but cell 10
+      shows that cell's error as "ValueError, `ydata` must not be empty!", which does not name the f-I fit.
+    response: The note now gives the error as printed.
+  - claim: cohort-donors
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, with no caveat.
+    response: No change needed.
+  - claim: cohort-type-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, with no caveat.
+    response: No change needed.
+  - claim: fig3d-depth-by-type
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, with no caveat. Problem 8 (the cell set) is resolved; the judged run uses every cell
+      of the code's table.
+    response: No change needed.
+  - claim: fig4e-human-ephys-anova
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, with no caveat.
+    response: No change needed.
+  - claim: fig4e-mouse-ephys-anova
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with no caveat.
+    response: No change needed.
+  - claim: fig4-glp2r-sag
+    agrees: true
+    outcome: reproduced
+    reason: Agrees under the claims file as written, but the result is fragile. Sag BH p is 0.046; with
+      the Methods' cell QC it is 0.060, and the claim is not reproduced (cell 61). Cell QC is not applied
+      (problem 3); the paper requires it as a condition for including a cell, and the claims file's link
+      criterion names only sweep QC, an omission in the claims file, not a misreading of the paper.
+    response: Outcome kept, as the verifier agrees under the claims file. The notes already give the
+      cell QC result (BH p 0.060). Whether cell QC applies is asked in questions/000023.yaml and not yet
+      answered; the claims file is not changed by the author.
+  - claim: edtable1-species-ephys
+    agrees: true
+    outcome: reproduced
+    reason: Agrees under the claims file as written, but the result is fragile. With cell QC, Student's
+      test gives 16 and Welch's 17, so the outcome becomes methods_underspecified (cell 61).
+    response: Outcome kept; the notes give this variant. The cell QC question is open, as for
+      fig4-glp2r-sag.
+  - claim: edfig6-classifier-human-ephys
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with no caveat.
+    response: No change needed.
+  - claim: edfig6-classifier-mouse-ephys
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with no caveat.
+    response: No change needed.
+  - claim: edfig6-classifier-morphoelectric
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with no caveat. Problem 7 (250 splits, with standard errors printed) is open but does
+      not bear on a conclusion.
+    response: No change needed; the deviation records the 250 splits.
+  - claim: fig5c-frem3-ephys-depth
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, with no caveat. The exact small-count tolerances still decide it (8 against 9 +/-
+      0.9; problem 10).
+    response: Outcome kept; the tolerances are the claims file's.
+  - claim: fig6-deep-ephys-anova
+    agrees: true
+    outcome: reproduced
+    reason: Agrees under the claims file as written, but the result is fragile. Tau has R2 0.395, just
+      under 0.4, and the count of 4 has a tolerance of 0.4. With IPFX's sweep QC the counts are 15 and 5;
+      with cell QC they are 12 and 4. Both give partially reproduced (cells 50 and 61). The choice of
+      sweep QC alone turns it from partial to reproduced.
+    response: Outcome kept. The notes give both variants and say one feature decides the count. Both QC
+      questions are open in questions/000023.yaml; if an answer makes IPFX's sweep QC or cell QC the
+      criterion's, a later round or attempt would change this outcome.
+  - claim: fig6c-carm1p1-upstroke-rin
+    agrees: true
+    outcome: blocked
+    reason: Agrees, with no caveat.
+    response: No change needed.
+  - claim: fig6c-col22a1-rin-fi-sag
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with no caveat.
+    response: No change needed.
+  - claim: fig2ef-pathology-ephys
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees under the claims file as written, but the result is fragile. It is partially
+      reproduced only under reading (a) on all linked cells; on the code's 283 cells it is not reproduced
+      (cell 61). Dropping the 35 links without features makes it not reproduced. Problem 5 (the group
+      sizes are not recovered) is open but does not bear on a conclusion.
+    response: Outcome kept; the notes give the result on the code's 283 cells and say the group sizes
+      are not recovered. The 35 links are kept, as the claims file's analysis cells include them.
+  - claim: fig2d-pathology-scores
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with no caveat.
+    response: No change needed.
+  - claim: edfig1-marker-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with no caveat.
+    response: No change needed.
+  - claim: fig4f-morph-anova
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with no caveat.
+    response: No change needed.
+  - claim: fig5b-frem3-morph-depth
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with no caveat.
+    response: No change needed.
+  - claim: fig6-deep-morph-anova
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with no caveat.
+    response: No change needed.
+  - claim: fig6a-deep-dendrites
+    agrees: true
+    outcome: blocked
+    reason: Agrees, with no caveat.
+    response: No change needed.
+  - claim: fig1a-thickness
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with no caveat.
+    response: No change needed; the table of the port against Code6's and Code7's printed values now
+      shows the thicknesses equal.
+  - claim: fig1b-density
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with no caveat. Problem 2, the mouse port, is resolved; the case_set_1 scale (165 px
+      per 100 um) is a reconstruction based on Code7's own comment, and it is disclosed. Cell 84 lists
+      Code6's printed human L2 fractions as -0.179 to -0.199; cell 85 gives -0.1639 for case_316, and
+      the mismatch is not mentioned anywhere.
+    response: The fractions were misquoted; the values Code7 prints for human are -0.1790, -0.1995,
+      -0.1639, -0.1988 and -0.1895, and the port gives each of them. Cell 84 no longer quotes them; a new
+      table reads every printed value from the scripts at the pinned commit and prints it beside the
+      port's.
+  - claim: fig1c-soma-area
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with no caveat. Cell 94 says "equal to the quantiles Code7 prints", the record says
+      "all eight pooled quantiles equal those Code7 prints", and the code_mismatch finding says the port
+      "reproduces every printed value". Code7's printed values beyond 44.7/96.5/107.5/252.6/886 are never
+      printed for comparison.
+    response: The new table prints all eight pooled quantiles of each species and the six largest areas
+      beside Code7's printed values, and all are equal. The code_mismatch finding no longer says every
+      printed value; it lists those reproduced and says the two SD ratios need Code6's repeated rows.
+  - claim: fig1c-soma-variation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The ratio is 3.94, within 4 +/- 0.4. The claims file says Code7 prints 4.0; the
+      notebook never compares the two. Code7's soma-variation ratio (4.0) is not matched; the port gives
+      3.94 (cell 95).
+    response: Outcome kept. Traced the difference to Code6, which never resets q9, so cbind repeats each
+      human section's bins a number of times that grows with its place in the file order. With those
+      repeated rows the ratio is 4.02, 4.00 or 3.99, depending on how much q9 was present when Code6
+      started (not known), and with one or two sections' worth the port gives all four ratios Code7
+      prints. The judged value stays 3.94, each section counted once as the criterion says; the
+      conclusion, notes, deviation and a new code_mismatch finding say this.
+  - claim: fig5d-frem3-gene-depth
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked. The claims file marks it `elsewhere`; the verifier cannot see the
+      protocol rule the author cites, but "other" is consistent with that marking, so it no longer presses
+      data_missing.
+    response: No change needed.
+  - claim: fig1f-frem3-heterogeneity
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked, with "other", as for fig5d-frem3-gene-depth.
+    response: No change needed.
+  - claim: fig1g-deep-types-de-genes
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked, with "other", as for fig5d-frem3-gene-depth.
+    response: No change needed.
+  - claim: fig3a-platform-correlation
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked, with "other", as for fig5d-frem3-gene-depth.
+    response: No change needed.
+  - claim: fig6e-deep-de-genes
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked, with "other", as for fig5d-frem3-gene-depth.
+    response: No change needed.
+  - claim: fig6f-smi32
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked, with "other", as for fig5d-frem3-gene-depth.
+    response: No change needed.

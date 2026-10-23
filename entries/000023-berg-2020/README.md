@@ -6,9 +6,10 @@ whole-cell current-clamp recordings of 318 human L2/3 glutamatergic neurons from
 donors. The files carry no t-type, depth or specimen ID: each recording is linked to the paper's
 per-cell table, in its code at
 [AllenInstitute/patchseq_human_L23@3daf9f0](https://github.com/AllenInstitute/patchseq_human_L23/tree/3daf9f0803ea0c220a040ea523f23af5f93c56ac),
-through the file's session id. The link is confirmed by the electrophysiological features, which
-equal the code's in most cells, and for the 35 cells without features in the code it is supported by
-the sample dates and tube order of the code's table.
+through the file's session id. The electrophysiological features confirm the link for 261 of the 283
+cells with features in the code under the Methods' sweep QC, and for 282 under IPFX's sweep QC alone;
+for the 35 cells without features in the code it is supported by the sample dates and tube order of
+the code's table.
 
 | Claim | Outcome |
 |---|---|
@@ -36,9 +37,9 @@ reasons and the differences from the paper's method, is
 [`attempts/000023-berg-2020-01.yaml`](../../attempts/000023-berg-2020-01.yaml); the questions to
 the readers, and their answers, are in [`questions/000023.yaml`](../../questions/000023.yaml).
 
-- `reproduce_berg_2020.ipynb`: the analysis. It took 14 minutes in its last run (26 in an earlier one,
-  at a slower network): about 5 to stream the 12.4 GB of recordings and run IPFX on four processes,
-  about 6 for the two electrophysiology classifiers and about 2 for the morpho-electric ones.
+- `reproduce_berg_2020.ipynb`: the analysis. It took about 21 minutes in its last run: about 7 to stream
+  the 12.4 GB of recordings and run IPFX on four processes, about 9 for the two electrophysiology
+  classifiers and about 3.5 for the morpho-electric ones.
 - `patchseq_l23.py`: listing and streaming the files, IPFX feature extraction with the paper's
   feature names and the Methods' sweep QC, the statistics of the claims file, and a port of the code's
   R scripts for the NeuN sections. Other notebooks on this dandiset can import it.

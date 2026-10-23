@@ -577,6 +577,61 @@ def section_tables(species, mouse_reading="printed"):
     return out
 
 
+CODE_SCRIPTS = f"https://raw.githubusercontent.com/AllenInstitute/patchseq_human_L23/{CODE_COMMIT}/scripts/"
+
+
+def code_printed_values():
+    """The values Code6 and Code7 print, read from the output the scripts carry as comments.
+
+    Keys: thickness_human, thickness_mouse (um per section), l2_fraction_human, l2_fraction_mouse,
+    density_human, density_mouse (mean, SD), quantiles_human, quantiles_mouse (at QUANTILE_P),
+    largest_human, largest_mouse (six largest areas), and the four ratios Code7 prints
+    (area_l2, area_deep_l3, sd_l2, sd_deep_l3, to two significant figures)."""
+    import re
+    c6 = read_bytes(CODE_SCRIPTS + "Code6_cortical_depth_code_human.r").decode()
+    c7 = read_bytes(CODE_SCRIPTS + "Code7_cortical_depth_code_mouse.r").decode()
+
+    def nums(line):
+        return [float(v) for v in re.findall(r"-?\d+\.?\d*", line.split("]", 1)[-1])]
+
+    out = {"thickness_human": [float(v) for v in re.findall(r'#\[1\] "Average L23 depth for case_\d+ = (\d+)"', c6)],
+           "thickness_mouse": [float(v) for v in re.findall(r'#\[1\] "Average L23 depth for case_set_\d = (\d+)"', c7)]}
+    lines = c7.splitlines()
+    for i, ln in enumerate(lines):
+        if ln.startswith("print(l2)"):
+            out["l2_fraction_mouse"] = nums(lines[i + 1])
+        elif ln.startswith("print(l2H)"):
+            out["l2_fraction_human"] = nums(lines[i + 1])
+        elif ln.startswith("print(quantile(a,p))"):
+            key = "quantiles_mouse" if "quantiles_mouse" not in out else "quantiles_human"
+            out[key] = [float(v) for v in lines[i + 2].lstrip("#").split()]
+        elif ln.startswith("head(-sort(-a))"):
+            key = "largest_mouse" if "largest_mouse" not in out else "largest_human"
+            out[key] = nums(lines[i + 1])
+    for sp in ("Mouse", "Human"):
+        m = re.search(rf'#\[1\] "{sp} density \(mm\^3\) = ([\d.]+) \+/- ([\d.]+)"', c7)
+        out[f"density_{sp.lower()}"] = [float(m.group(1)), float(m.group(2))]
+    for key, pat in [("area_l2", r"Average human / mouse cross-sectional area \(L2\): ([\d.]+)"),
+                     ("area_deep_l3", r"Average human / mouse cross-sectional area \(deep L3\): ([\d.]+)"),
+                     ("sd_l2", r"SD human / mouse cross-sectional area \(L2\): ([\d.]+)"),
+                     ("sd_deep_l3", r"SD human / mouse cross-sectional area \(deep L3\): ([\d.]+)")]:
+        out[key] = float(re.search(r'#\s*\[1\] "' + pat, c7).group(1))
+    return out
+
+
+QUANTILE_P = [0, 0.05, 0.25, 0.5, 0.75, 0.9, 0.99, 1]  # Code7's p
+
+
+def code6_recycled(dens, cases, start=0):
+    """The human bin table as Code6 builds it. Code6 never sets q9 to NULL (Code7 does, per section),
+    so q9 grows across sections: with `start` sections' worth of values (20 each) already in q9 when
+    Code6 runs, section k (in file order, from 1) has 20 (k + start) values of q9, and cbind recycles
+    its 20 bins k + start times. Means over the table's rows then count section k k + start times.
+    Code6 run alone stops at q9, so some q9 must be present; how much is not known. Shown as a variant,
+    to explain Code7's printed ratios."""
+    return pd.concat([dens[dens.case == c] for k, c in enumerate(cases) for _ in range(k + 1 + start)])
+
+
 def density_profile(case_tables, area_bins="left"):
     """Per case and bin: density (R's hist density), mean and SD of soma area; and cells per mm3.
 
