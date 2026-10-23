@@ -1,0 +1,79 @@
+dandiset: "000115"
+paper: doi:10.1016/j.neuron.2021.07.029
+questions:
+- claim: fig1d-sessions-blocks
+  asked: 2026-10-22
+  question: >-
+    Which two run sessions of subject 1 (jaq) are "sessions 1 and 3"? The files do not mark
+    them. Numbered in order of recording, they are day 6 epochs 2 and 5, and all eight arms are
+    visited in both; the only jaq session with fewer than eight arms visited is day 6 epoch 4
+    (session 2 in that order), which fits the Methods' description of the second excluded
+    session. Does the paper number sessions in order of recording, or some other way? The same
+    choice sets the sessions of fig1ef-reward-rate and of every later claim.
+  passage: >-
+    We excluded two sessions (sessions 1 and 3 of subject 1) due to decoding issues; for the
+    first, a much lower fraction of samples was on the same segment (<75%), and for the second,
+    not all arms were visited during the session, so not all positions were decodable. (STAR
+    Methods, Spatial decoding)
+  why: >-
+    The files hold 27 jaq run sessions, so excluding a different pair changes the jaq block
+    count (88 with day 6 epochs 2 and 5 left out, 91 with day 6 epochs 2 and 4, against 89).
+    Both readings were run and give the same outcome here (reproduced), but a later claim that
+    uses jaq's sessions could differ.
+  answered: 2026-10-22
+  answer: >-
+    The paper does not say. The Methods name the sessions only as "sessions 1 and 3 of subject
+    1" and describe them ("a much lower fraction of samples was on the same segment (<75%)",
+    "not all arms were visited during the session"). The code (dfs_ripcontent.m at 1be6a6a)
+    selects sessions with "$gooddecode==1" and has a per-animal "$session" field (for example
+    "$session==27"), both from task records not in the repository, so it does not fix the
+    numbering either. The criterion of fig1d-sessions-blocks now names two readings, (a) the
+    first and third run sessions in order of recording and (b) the two sessions that match the
+    Methods' description; both are run, and (b) decides when they differ.
+- claim: fig1d-sessions-blocks
+  asked: 2026-10-22
+  question: >-
+    When the goal changes and the rat's next valid trial is not a visit to the old goal, which
+    trial closes the old block? The claims file gives n + 0.9 for "the final unrewarded visit
+    to the old goal", but not what happens when the first trial after the switch goes to
+    another arm. Two readings were run, (a) only a visit to the old goal closes the block
+    (otherwise the trial is the first search trial of the new block), and (b) the first trial
+    after the switch always closes the old block, as dfa_ripcontent.m shifts `contingency` by
+    one trial. This also applies to fig1ef-reward-rate and every claim that uses task phase.
+  passage: >-
+    "trips.contingency(nonlocktrials) = [1 ctemp(1:end-1)];  % shifted by 1 since the goal
+    change happens on the last trial of the cont" (dfa_ripcontent.m, LorenFrankLab/
+    Gillespie_Neuron_2021 at 1be6a6a); label_trial_interval.m assigns .9 when "you visit the
+    goal arm but didnt get reward, must be end".
+  why: >-
+    The two readings move one trial between blocks at some switches (montague has 167 or 166
+    full blocks, against 166). No outcome of this attempt changes, but block lengths, search
+    lengths and the trial sets of the replay claims would.
+  answered: 2026-10-22
+  answer: >-
+    The code settles it as reading (b). In label_trial_interval.m the block bounds are
+    "goalbounds = [0; 1+find(diff(valoutersgoals(:,2))~=0); sum(valtrials)]", so each block
+    keeps the first trial whose goal field holds the new goal, and dfa_ripcontent.m does the
+    same with "[1 ctemp(1:end-1)]". That trial is n + 0.9 when it visits the old goal and an
+    error (n + 0.3, 0.5 or 0.8) when it visits another arm; the next trial starts the search.
+    The Methods only say the unrewarded visit to the old goal "are considered correct trials".
+    Written into the opening comment and the criterion of fig1d-sessions-blocks; statement and
+    expected values unchanged.
+- claim: fig6b-visits-decay
+  asked: 2026-10-22
+  question: >-
+    Which form of the Wilcoxon rank-sum test does the criterion mean for the per-trial
+    comparison of goal and never-goal visits, which are 0 or 1 and so almost all ties? With the
+    normal approximation corrected for ties (as scipy's mannwhitneyu, and Matlab's ranksum for
+    large samples, compute it), roquefort's trial +29 is significant (9 of 39 goal traces against
+    8 of 170, p = 1.6e-4, below 0.05/80); without the tie correction (scipy's ranksums) it is not
+    (p = 0.074).
+  passage: >-
+    For all panels, red dots indicate which comparisons exceed a 0.05 significance threshold
+    after Bonferroni correction for multiple comparisons (80 comparisons each for (A) and (B); 6
+    comparisons for (C)). (Figure 6 legend)
+  why: >-
+    The criterion takes the last significant trial after 0. With the tie correction it is +29
+    for roquefort, beyond both bounds (+3 and +5), and the behavioural half of the claim fails;
+    without it every subject ends at +2. The claim stays blocked here because its replay half
+    needs the decoder, but a later attempt that can run the replay half would need the answer.
