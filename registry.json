@@ -3478,6 +3478,10 @@
     "ready": null,
     "date": null
    },
+   "dandi:000469": {
+    "ready": true,
+    "date": "2026-10-23"
+   },
    "dandi:000483": {
     "ready": true,
     "date": "2026-10-23"
@@ -12711,6 +12715,158 @@
       "source": "Results, Neural analyses, paragraph 8; Extended Data Fig. 4",
       "quote": "High Granger interaction scores were obtained for region pairs from all major brain regions, which were weakly correlated with anatomical distance and mostly bidirectional.",
       "criterion": ""
+     }
+    ]
+   }
+  ],
+  "dandi:000469": [
+   {
+    "path": "claims/000469/10.1038-s41597-024-02943-8.yaml",
+    "paper": "10.1038/s41597-024-02943-8",
+    "check": {
+     "ready": true,
+     "date": "2026-10-23"
+    },
+    "claims": [
+     {
+      "id": "subjects-sessions",
+      "statement": "The dataset holds 41 recording sessions from 21 patients, every patient with a Sternberg session and all but one (P47HMH) with a screening session.",
+      "source": "Methods, Subjects, paragraph 1; Table 1 and its legend",
+      "quote": "In total, 41 recording sessions were completed across 21 patients with intractable localization-related epilepsy (Table 1 ). ... Screening sessions are available for all subjects except for 'P47HMH', for whom screening was not performed.",
+      "criterion": "Counted from the subjects and the session files. Counts of subjects and sessions are exact, so the tolerance is zero. The text gives ages of 17 to 71, while Table 1 lists ages of 17 to 70; the ages are reported against both and do not decide the claim."
+     },
+     {
+      "id": "sternberg-unit-yield",
+      "statement": "In the Sternberg task 902 units were recorded, 190 in the hippocampus, 259 in the amygdala, 171 in the dACC, 250 in the pre-SMA and 32 in the vmPFC.",
+      "source": "Technical Validation, Data recorded and spike sorting quality metrics, paragraph 1; Figure 3b",
+      "quote": "In the Sternberg task, we recorded a total of 902 neurons (190 hippocampus, 259 Amygdala, 171 dorsal anterior cingulate cortex, 250 pre-supplementary motor area, 32 ventromedial prefrontal cortex) (Fig. 3b ).",
+      "criterion": "Units in the units table of the ses-2 files, assigned to an area by the location of their electrode, left and right merged, as in NWB_countAreas.m and translateArea_SB.m. Tolerances are the protocol's 10%; the exact counts are reported."
+     },
+     {
+      "id": "screening-unit-yield",
+      "statement": "In the screening task 907 units were recorded, 449 of them in the MTL.",
+      "source": "Technical Validation, Data recorded and spike sorting quality metrics, paragraph 1; Figure 3a",
+      "quote": "In the screening task, we recorded 907 neurons (Fig. 3a ). Of these, 449 were recorded in the MTL.",
+      "criterion": "Units in the ses-1 files, assigned to areas as for sternberg-unit-yield. The MTL count of 449 equals the Sternberg MTL count (190 + 259), while the screening percentages of claims screening-concept-mtl and screening-concept-mfc imply about 421 MTL and 486 MFC units (138 / 0.3278 and 26 / 0.0535). Both 449 and 421 are readings of the MTL count; the claim holds when the count is within 10% of either, and the notes say which."
+     },
+     {
+      "id": "behavior-accuracy",
+      "statement": "Subjects answered on average 88.73% of Sternberg trials correctly.",
+      "source": "Technical Validation, Behavior, paragraph 1; Figure 1d",
+      "quote": "During the working memory task (Fig. 1b ), subjects answered on average 88.73% of trials correctly (Fig. 1d ).",
+      "criterion": "As in NWB_QA_graphs.m, the percent of trials with response_accuracy 1 in each Sternberg session, over all trials, averaged over sessions (Fig. 1d shows the session values with mean and s.e.m.)."
+     },
+     {
+      "id": "behavior-rt-load",
+      "statement": "Reaction times grew with memory load; a repeated-measures ANOVA of per-session median reaction times found a load effect.",
+      "source": "Technical Validation, Behavior, paragraph 1; Figure 1c",
+      "quote": "Accuracy and reaction time varied as a function of load as expected (Fig. 1c ), with higher loads resulting in slower and less accurate answers (F 2,40 = 7.92, P = 0.0013, repeated-measures ANOVA of median reaction times).",
+      "criterion": "As in NWB_QA_graphs.m, the reaction time is timestamps_Response minus timestamps_Probe, on correct trials only (filter_correct = 1; the paper does not say, the code settles it); the median per session and load; an ANOVA (anovan) with session as a random factor and load as a fixed factor, the code's form of the repeated-measures ANOVA. Reproduced when the load effect has p < 0.05, F is within tolerance, and the mean of the session medians rises from load 1 to load 3; partially reproduced when p < 0.05 and the rise hold but F is outside tolerance. The same test on all trials is shown as a variant."
+     },
+     {
+      "id": "behavior-accuracy-load",
+      "statement": "Accuracy was lower at higher memory loads.",
+      "source": "Technical Validation, Behavior, paragraph 1; Figure 1c",
+      "quote": "Accuracy and reaction time varied as a function of load as expected (Fig. 1c ), with higher loads resulting in slower and less accurate answers",
+      "criterion": "The paper reports no test for accuracy and the code computes none. Percent correct per session and load, averaged over sessions. Reproduced when the mean accuracy falls from load 1 to load 2 to load 3; partially reproduced when load 3 is below load 1 but the order is not monotonic; not reproduced otherwise. The per-load values are reported."
+     },
+     {
+      "id": "isi-violations",
+      "statement": "Across Sternberg units, refractory period violations (ISIs shorter than 3 ms) were 0.41% of ISIs on average, with a standard deviation of 0.50%.",
+      "source": "Technical Validation, Data recorded and spike sorting quality metrics, paragraph 2; Figure 3d",
+      "quote": "On average across all neurons in the Sternberg task, ( i ) refractory period violations were 0.41% \u00b1 0.50% of interspike intervals (ISIs) (Fig. 3d )",
+      "criterion": "Per unit, the percent of consecutive spike time differences below 3 ms over the whole session, as in NWB_QA_graphs.m. The text says all neurons; the code averages only the units whose value is below 4% (thresh_isi = 4). The text gives the main reading (all units); the code's filter is a variant, and the claim is reproduced when either reading puts both values within tolerance, the notes saying which. The 0.50% is the spread of the units, not an uncertainty of the mean, so each value has the protocol's 10%."
+     },
+     {
+      "id": "firing-rate",
+      "statement": "Sternberg units fired at 2.55 Hz on average, ranging from 0.11 to 33.82 Hz.",
+      "source": "Technical Validation, Data recorded and spike sorting quality metrics, paragraph 2; Figure 3e",
+      "quote": "(ii) average firing rate was 2.55 Hz, with a range of 0.11\u201333.82 Hz (Fig. 3e )",
+      "criterion": "Per unit, the number of spikes divided by the time from first to last spike, as in NWB_QA_graphs.m, over all Sternberg units; mean, minimum and maximum. The range holds when the minimum and maximum lie within 10% of each bound."
+     },
+     {
+      "id": "projection-distance",
+      "statement": "The pairwise projection distance between units isolated on the same wire was 13.77 plus or minus 7.32 s.d. of the signal.",
+      "source": "Technical Validation, Data recorded and spike sorting quality metrics, paragraph 2; Figure 3i",
+      "quote": "( iii ) the pairwise projection distance in clustering space between neurons isolated on the same wire was 13.77 \u00b1 7.32 (projection test; in units of s.d. of the signal)",
+      "criterion": "The stored waveforms_mean_proj_dist of the Sternberg units, zeros removed, mean and standard deviation, as in NWB_QA_graphs.m. The text cites Fig. 3g; the legend places the projection distance in panel i."
+     },
+     {
+      "id": "waveform-snr",
+      "statement": "The ratio between the s.d. of the noise and the peak amplitude of the mean waveform (an SNR) was 6.62 plus or minus 3.63 across Sternberg units.",
+      "source": "Technical Validation, Data recorded and spike sorting quality metrics, paragraph 2; Figure 3g,h",
+      "quote": "( iv ) the ratio between the s.d. of noise and the peak mean waveform amplitude was 6.62 \u00b1 3.63 (Fig. 3g,h )",
+      "criterion": "The sentence describes the peak SNR (Fig. 3g) but cites panels g and h, the second being the mean SNR. Readings are (a) the stored waveforms_peak_snr and (b) the stored waveforms_mean_snr, each as mean and standard deviation over Sternberg units, as NWB_QA_graphs.m computes them. Reproduced when either reading puts both values within tolerance; the notes say which."
+     },
+     {
+      "id": "cv2",
+      "statement": "The modified coefficient of variation of the ISIs (CV2) was 0.94 plus or minus 0.14 across Sternberg units.",
+      "source": "Technical Validation, Data recorded and spike sorting quality metrics, paragraph 2; Figure 3f",
+      "quote": "(v) the modified coefficient of variation of the ISIs (CV2 52 ) was 0.94 \u00b1 0.14 (Fig. 3f )",
+      "criterion": "Per unit, CV2 as in calcCV2.m with ignoreMode 1, the mean over pairs of consecutive ISIs of 2 times the absolute difference over the sum, leaving out pairs in which either ISI exceeds 1 s; over the whole session; mean and standard deviation over Sternberg units, as in NWB_QA_graphs.m."
+     },
+     {
+      "id": "isolation-distance",
+      "statement": "The median isolation distance of Sternberg units was 31.14.",
+      "source": "Technical Validation, Data recorded and spike sorting quality metrics, paragraph 2; Figure 3j",
+      "quote": "(vi) median isolation distance 53 was 31.14 (Fig. 3j )",
+      "criterion": "The stored waveforms_isolation_distance of the Sternberg units, undefined (NaN) values removed as in NWB_QA_graphs.m, median."
+     },
+     {
+      "id": "screening-concept-mtl",
+      "statement": "In the screening task, 138 MTL units (32.78%) qualified as concept cells.",
+      "source": "Technical Validation, Proportion of selective cells, paragraph 2",
+      "quote": "Screening task: Of the MTL cells, 138 (32.78%) qualified as concept cells (Fig. 4 shows examples).",
+      "criterion": "Per screening unit, the firing rate 200 to 1000 ms after each image onset (trial start_time; image from StimulusPresentation), all presentations, as in NWB_calcSelective_SC.m. Following the Methods (Cell selection, concept cells), a concept cell passes a permuted one-way ANOVA on image identity (54 to 64 groups) at P < 0.05, and then a permutation t-test of the presentations of the image with the highest mean rate against all other presentations at P < 0.05. The number of permutations is not given; 2000 is used, as in the code's commented permutation alternative (a resolution detail). The Methods say the preferred response must be significantly larger; the code's test is two-sided. Readings of the second test are (a) two-sided and (b) one-sided, larger. The code's parametric version (anovan, then a binarized anovan) is a variant. MTL is amygdala and hippocampus; the percent is taken over the MTL screening units (see screening-unit-yield for the 421 against 449 denominator). Reproduced when the count and percent are within tolerance under both readings of the test; blocked as methods_underspecified when the readings disagree. Every result is shown."
+     },
+     {
+      "id": "screening-concept-mfc",
+      "statement": "In the screening task only 26 MFC units (5.35%) were concept cells, far fewer than in the MTL, so that concept cells are largely found in the MTL.",
+      "source": "Technical Validation, Proportion of selective cells, paragraph 2",
+      "quote": "In contrast, only 26 (5.35%) of cells in the MFC were concept cells, reproducing our earlier finding that concept cells are largely only found in the MTL.",
+      "criterion": "The concept cell test and its readings as in screening-concept-mtl, over MFC screening units (dACC, pre-SMA and vmPFC). Reproduced when the count and percent are within tolerance and the MFC percent is below the MTL percent of screening-concept-mtl; partially reproduced when only the comparison holds. The paper reports no test of the comparison."
+     },
+     {
+      "id": "fig4-screening-examples",
+      "statement": "Five example screening units (Fig. 4a to e) are concept cells.",
+      "source": "Figure 4 legend",
+      "quote": "Shown are five ( a \u2013 e ) neurons classified as concept cells.",
+      "criterion": "The units listed for Fig. 5a to e (the paper's Fig. 4) in NWB_SB_plotCell_Screening.m, given as subject ID and 1-based unit index (NWB units id plus 1) of the ses-1 files, are (4, 16), (7, 24), (15, 3), (16, 22) and (21, 15). Reproduced when all five pass the concept cell test of screening-concept-mtl, under the readings named there; partially reproduced for three or four."
+     },
+     {
+      "id": "sternberg-concept-mtl",
+      "statement": "In the Sternberg task, 94 MTL units (20.94%) qualified as concept cells during the encoding period.",
+      "source": "Technical Validation, Proportion of selective cells, paragraph 3",
+      "quote": "Working memory task: In the MTL, 94 (20.94%) neurons qualified as concept cells during the encoding period (Fig. 5 shows examples).",
+      "criterion": "Per Sternberg unit, the firing rate 200 to 1000 ms after Encoding 1 onset, all trials, grouped by the Encoding 1 image (5 groups). The Methods say only following stimulus onset; the code (NWB_calcSelective_SB.m) settles it as Encoding 1 only. The tests follow the Methods, a permuted one-way ANOVA at P < 0.05, then a permutation t-test of the trials of the image with the highest mean rate against all other trials at P < 0.05, with 2000 permutations as in screening-concept-mtl and the same two readings of the second test's sidedness. The code's parametric version (anovan twice) is a variant. Percent over the 449 MTL Sternberg units. Reproduced when count and percent are within tolerance under both readings; blocked as methods_underspecified when they disagree."
+     },
+     {
+      "id": "persistent-activity",
+      "statement": "As a group, concept cells fired more during the maintenance period when their preferred image was held in memory than when it was not (4.76 against 2.67 Hz).",
+      "source": "Technical Validation, Proportion of selective cells, paragraph 3",
+      "quote": "As a group, concept cells continued to fire during the maintenance period if their preferred stimulus was held in WM (4.76 \u00b1 4.71 Hz vs. 2.67 \u00b1 3.66 Hz; p = 1.38 \u00d7 10 \u221221 for pref. vs. non-pref. trials, paired one-sided t-test).",
+      "criterion": "The preferred image is the Encoding 1 image with the highest mean rate in the concept cell test (code). Per cell, the mean maintenance rate 0 to 2500 ms after maintenance onset (the window of the Methods for maintenance cells) over preferred trials and over non-preferred trials; a paired one-sided t-test across cells (paper); values are mean and standard deviation over cells (the code prints std). Two readings of which cells, from the text, are (a) the MTL concept cells of sternberg-concept-mtl, as the sentence follows that count, and (b) all Sternberg concept cells in any area, as the code tests. Two readings of preferred trials, which the paper does not fix, are (i) trials in which the preferred image was shown in any encoding period, as the Fig. 5 maintenance raster in the code splits them, and (ii) trials whose Encoding 1 image is the preferred image, as the code's hzPref is labelled. Both trial readings are run for each cell reading. Reproduced when, for one cell reading, both trial readings give p < 0.05 with preferred higher and put all four expected values (means and standard deviations) within tolerance; blocked as methods_underspecified when the trial readings disagree for that cell reading; not reproduced otherwise. The code as written compares Encoding 1 window rates (200 to 1000 ms), with a mask that leaves no non-preferred trial; the same comparison in the Encoding 1 window with the intended mask is shown as a variant, as it may be what produced the printed numbers."
+     },
+     {
+      "id": "fig5-sternberg-examples",
+      "statement": "Two example amygdala units (Fig. 5a,b) are concept cells in the Sternberg task that also show persistent activity during maintenance.",
+      "source": "Figure 5 legend",
+      "quote": "( a,b ) Example responses from 2 neurons classified as concept cells in the Sternberg task that also exhibited persistent activity during the maintenance period. Both cells were recorded in the amygdala.",
+      "criterion": "The units listed for Fig. 5a,b in NWB_SB_plotCell_Sternberg.m, subject ID and 1-based unit index of the ses-2 files, are (7, 9) and (16, 16). Reproduced when both pass the concept cell test of sternberg-concept-mtl, both electrodes are in the amygdala, and both have a higher mean maintenance rate (0 to 2500 ms) on trials in which the preferred image was shown in any encoding period than on the other trials (the split the code plots). The paper gives no per-cell test of persistence, so none decides the claim. Partially reproduced when one unit meets all three."
+     },
+     {
+      "id": "maintenance-cells-mfc",
+      "statement": "In the MFC, 144 units (31.79%) qualified as maintenance cells.",
+      "source": "Technical Validation, Proportion of selective cells, paragraph 3",
+      "quote": "In the MFC, 144 (31.79%) cells qualified as maintenance cells and 122 (26.93%) as probe cells.",
+      "criterion": "Per Sternberg unit, all trials, the mean rate 0 to 2500 ms after maintenance onset against the rate 0 to 500 ms after fixation cross onset, by a one-sided permutation test (increase) at P < 0.05 (Methods; the Methods give the 500 ms baseline length, and the code, NWB_calcSelective_SB.m, places it at fixation onset; the fixation cross lasts 900 to 1000 ms). A unit that is also a concept cell (by the test of sternberg-concept-mtl) must in addition pass the same test on its non-preferred trials. The Methods do not say how the permutation is formed; readings are (a) shuffling the labels of the trial rates between the two periods, as the code's commented alternative permutationTest with sidedness larger, and (b) flipping the sign of the per-trial differences, a paired form. Non-preferred trials are read as (i) trials whose Encoding 1 image is not the preferred image (the code's intent), and (ii) trials in which the preferred image was not shown in any encoding period. 2000 permutations, as in the code's comment. The code's paired one-sided t-tests are a variant. Percent over MFC Sternberg units (dACC, pre-SMA, vmPFC; 453 by sternberg-unit-yield). Reproduced when count and percent are within tolerance under all readings; blocked as methods_underspecified when the readings disagree."
+     },
+     {
+      "id": "probe-cells-mfc",
+      "statement": "In the MFC, 122 units (26.93%) qualified as probe cells.",
+      "source": "Technical Validation, Proportion of selective cells, paragraph 3",
+      "quote": "In the MFC, 144 (31.79%) cells qualified as maintenance cells and 122 (26.93%) as probe cells.",
+      "criterion": "Per Sternberg unit, all trials, the rate 200 to 1000 ms after probe onset against the encoding rate (200 to 1000 ms) and, separately, against the maintenance rate (0 to 2500 ms), each by a one-sided permutation t-test (probe higher) at P < 0.05; a probe cell passes both (Methods). The Methods do not fix the encoding rate; readings are (i) the rate pooled over the 200 to 1000 ms windows of every encoding period shown in the trial, as the code intends, and (ii) Encoding 1 only. The permutation is read as (a) label shuffling and (b) paired sign flipping, as in maintenance-cells-mfc; 2000 permutations. The code's paired one-sided t-tests, with its Encoding 3 window taken at Encoding 2 onset, are a variant. Percent over the 453 MFC Sternberg units. Reproduced when count and percent are within tolerance under all readings; blocked as methods_underspecified when the readings disagree."
      }
     ]
    }
@@ -48716,6 +48872,12 @@
    "verifier-3-report.md",
    "verifier-3.md"
   ],
+  "dandi:000469": [
+   "claims-check-report.md",
+   "claims-check.md",
+   "claims-report.md",
+   "claims.md"
+  ],
   "dandi:000483": [
    "claims-check-report.md",
    "claims-check.md",
@@ -50080,7 +50242,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-23T12:31:55+00:00",
+ "generated": "2026-10-23T12:46:05+00:00",
  "queue_generated": "2026-10-22T11:52:56+00:00",
  "queue_counts": {
   "public_dandisets": 661,
@@ -113504,7 +113666,6 @@
    "001893",
    "001868",
    "001521",
-   "000469",
    "000467",
    "000463",
    "000462",
@@ -113570,7 +113731,7 @@
   },
   "hours": {
    "full": 3.82125,
-   "claims": 0.29083333333333333
+   "claims": 0.29055555555555557
   },
   "running": {
    "000023": {
