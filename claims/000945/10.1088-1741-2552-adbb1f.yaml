@@ -1,0 +1,518 @@
+# Claims for Ramachandran, Gao, Yttri, Yu & He (2025) on dandiset 000945.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-22,
+# protocol as stated in docs/protocol.md.
+# Source: the version of record (J Neural Eng 22(2) 026022, PMC11920894), full text as served by
+# Europe PMC: Abstract, Introduction, Methods, Results, figure legends and Discussion. No PDF was
+# supplied. The supplementary materials (headpiece design, surgery, training, hydrophone scanning,
+# supplementary figures 2 and 4, supplementary table 1 of ISPTA values) were not supplied. No
+# claim rests on them: the analysis methods and the ISPTA of each PRF condition are given in the
+# main text (Methods 2.3 to 2.6). The paper links no analysis code (it names "custom code" in
+# MATLAB R2019a with FieldTrip), so no code was read.
+#
+# Data the paper used, as it reports them. Adult male Wistar rats, awake and head-fixed, with a
+# chronic 32-channel micro-electrode array in S1; tFUS from a 128-element array (f0 1.5 MHz,
+# 114 kPa peak-to-peak in situ at 15 V), ultrasound duration 67 ms, one trial every 2.5 s with
+# 10% jitter, 505 trials per parameter set, the first 5 cut (500 used). TDT recordings at 24 kHz,
+# bandpass 300 Hz to 5 kHz, units sorted in Offline Sorter. Batch 1 (10 rats): awake PRF series
+# at 30, 300, 1500, 3000 and 4500 Hz with 200 us tone-burst duration (TBD), at about 7 months;
+# the same PRF series under isoflurane at 9 months; awake DC series at 1500 Hz with TBD 40, 200
+# and 400 us (DC 6, 30 and 60%) at 10 months. Batch 2 (5 rats, 7 months): awake and anesthetized
+# recordings at a low PRF and 1500 Hz with 200 us TBD, and a sham at 1500 Hz aimed off target at
+# the front of the skull. The low PRF of batch 2 is given as 30 Hz in Methods 2.3 and as 300 Hz
+# in the next sentences and in Results 3.2; the author takes the PRF the dataset records. ISPTA
+# of the PRF series is 0.6, 6.03, 30.13, 60.26 and 90.39 mW/cm2. Measured variables are sorted
+# units' spike times and waveforms and the ultrasound trigger times. The dandiset is titled
+# "Neural Spiking Data in the Awake Rat Somatosensory Cortex Responding to Trials of
+# Transcranial Focused Ultrasound Stimulation" (reference 50 of the paper).
+#
+# Methods shared by the claims, from Methods 2.4 to 2.6 and the figure legends. Where the paper
+# leaves a detail open, the readings it allows are named with a label; a criterion that says
+# "under every reading" means every combination. A reading that could change an outcome is run
+# in all its forms; the outcome is the one they all give, and when they differ the claim is
+# blocked as methods_underspecified with every result shown.
+#  - Units. Every sorted unit of a session is one observation of that session's condition; the n
+#    of a test is the number of neurons in each group across all animals (Methods 2.6). Units are
+#    not selected for responsiveness (Methods 2.4). Methods 2.4 excludes "PSTHs with visibly
+#    fluctuating baseline periods" and manually ignores movement episodes; neither is defined.
+#    E1, no exclusion; E2, if the dataset marks excluded units or invalid intervals, they are
+#    left out. A unit with no spike in the baseline window cannot be normalized and is left out
+#    (a standard choice, reported with its count).
+#  - Cell type (Methods 2.5; Figure 3B, 3C). Features are the initial phase (onset to first
+#    baseline crossing) and after-hyperpolarization phase (first crossing to recrossing) of the
+#    unit's action potential; k-means with two clusters; the cluster of shorter durations is FSU,
+#    the other RSU. The paper sorts ambiguous units by spike rate by hand, with no rule. K0, if
+#    the dataset carries the paper's RSU/FSU labels, those are used and K1/K2 are variants. K1,
+#    k-means per animal over its units (Figure 3B clusters "one animal's recordings"); K2,
+#    k-means over all units pooled. Features from the unit's mean waveform.
+#  - Trials. T1, trials 6 to 505 (Methods 2.4, "500 after 5 are cut from the beginning");
+#    T2, all 505 trials (legends of Figures 4 to 7, "over 505 trials").
+#  - Normalized rate (Methods 2.4). Time 0 is the ultrasound trigger. The PSTH runs from -0.5 to
+#    1.5 s, bin 35.7 ms (Figure 4 legend), with a bin edge at 0, divided by the number of trials.
+#    Baseline is the mean rate in [-0.5, 0) s. The response is the mean rate in a window as a
+#    percent of baseline. Windows (Figure 5 to 7 legends): time-locked 0 to 67 ms; delayed 0.5 to
+#    1 s in awake recordings and 0.2 to 0.7 s in anesthetized ones. Whether "percent of baseline"
+#    is the ratio or the percent change does not change any rank test; group means are reported
+#    as the ratio in percent. Open, how a window is measured, since 67 ms and 0.2 and 0.7 s do
+#    not fall on bin edges of the 35.7 ms PSTH: W1, the spikes in the exact window; W2, the PSTH
+#    bins that overlap the window (time-locked 0 to 71.4 ms). The 0.5 to 1 s window falls on bin
+#    edges and is the same under both.
+#  - Group tests (Methods 2.6; Figure 5 to 7 legends). Kruskal-Wallis across the conditions of a
+#    panel, then two-sided Wilcoxon rank-sum tests between conditions (the groups hold different
+#    sessions, so a paired test does not apply), Bonferroni-corrected. Open, the groups: G1, the
+#    parameter levels of the panel; G2, the levels plus the sham sessions of the same state and
+#    window (the Results compare levels with sham). Bonferroni family: all pairs among the
+#    groups of the Kruskal-Wallis (the paper does not give the number of comparisons). Methods
+#    2.3 does not say whether the batch 2 sham was recorded in both states; if the dataset holds
+#    no anesthetized sham, the parts of a criterion that compare with an anesthetized sham are
+#    reported as untestable and the claim is judged on its other parts. The significance level is not stated; 0.05 after correction
+#    is used, the level the paper calls significant in Results 3.2 paragraph 3; whether each
+#    corrected p is also below the bound the paper prints is reported.
+#  - Two-way ANOVA (Results 3.2). Factors anesthesia (awake, anesthetized) and PRF (five levels)
+#    on the batch 1 PRF series, unit normalized rates, each state's own window. The model is not
+#    given. A1, both main effects and their interaction, type II sums of squares; A2, main
+#    effects only.
+#  - Delayed-response latency (Methods 2.4; Figure 4H, 4I). A unit has a significant delayed
+#    response when at least three consecutive PSTH bins are at or above baseline plus one SEM;
+#    its latency is the time of the first of them. Open, the SEM: S1, the SEM over the 14
+#    baseline bins of the trial-averaged PSTH; S2, the SEM over trials of the per-trial baseline
+#    rate, in spikes per bin. Open, the first bin allowed ("any response after the ultrasound
+#    duration"): D1, bins starting at or after 67 ms; D2, bins ending after 67 ms. Open, the time
+#    of a bin: L1, its start; L2, its centre. Sessions: FSU at 1500 Hz PRF, 200 us TBD (Figure 4H).
+#    Q1, the batch 1 PRF series sessions of each state; Q2, every on-target 1500 Hz, 200 us
+#    session of each state (adding the awake 30% DC sessions and batch 2).
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000945"
+paper: doi:10.1088/1741-2552/adbb1f
+claims:
+- id: fig3-cell-type-sorting
+  statement: Units are sorted into fast spiking units (FSU) and regular spiking units (RSU) by
+    k-means clustering of the initial phase and after-hyperpolarization phase durations of their
+    action potentials; in one animal's recordings this gave 28 FSU and 32 RSU, 60 in total.
+  source: Figure 3B and 3C; Methods 2.5
+  quote: K -means clustering of detected neurons from one animal's recordings, showing 28 fast
+    spiking units (FSU) and 32 regular spiking units (RSU), for 60 total.
+  expected:
+  - quantity: FSU in the example animal
+    value: 28
+    tolerance: 2.8
+  - quantity: RSU in the example animal
+    value: 32
+    tolerance: 3.2
+  - quantity: units in the example animal
+    value: 60
+    tolerance: 6
+  criterion: The header's cell type method. The paper does not name the animal, nor whether its
+    "recordings" are one session or all of its sessions; the readings are R1, the units of one
+    session, and R2, the units of all of one animal's sessions in one series. Reproduced when,
+    under one reading, some animal gives all three counts within tolerance and the two clusters
+    separate on both features (the FSU cluster has the shorter median initial phase and
+    after-hyperpolarization phase). Partially reproduced when the clusters separate as stated
+    but no animal matches the counts. When the dataset carries the paper's labels (K0), the
+    agreement of K1 and K2 with them is reported.
+- id: fig4-rsu-time-locked-both-states
+  statement: RSUs show time-locked responses to tFUS, an increase in firing rate during the 67 ms
+    of stimulation, in both awake and anesthetized recordings.
+  source: Results 3.1, paragraph 1; Figure 4C and 4E
+  quote: We observed time-locked responses from RSU in both awake and anesthetized recordings, with
+    an observable increase in firing rate during tFUS stimulation
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: Figure 4 shows single examples at 1500 Hz PRF, 30% DC and reports no group test. The
+    paper's group test of a time-locked response is the comparison with sham (Results 3.2 and
+    3.3), so the claim is judged on it. RSU time-locked responses (0 to 67 ms) of the 1500 Hz,
+    200 us sessions against the sham sessions of the same state, two-sided Wilcoxon rank-sum, p
+    < 0.05, with the 1500 Hz mean above the sham mean and above 100%. Reproduced when this holds
+    in both states under every reading; partially reproduced when in one state only. The units
+    whose PSTH rises in 0 to 67 ms are counted per state.
+- id: fig4hi-fsu-delayed-latency
+  statement: FSU delayed responses to tFUS at 1500 Hz PRF begin later in awake rats (mean onset
+    0.51 s, spread 0.14 s) than under anesthesia (0.24 s, spread 0.08 s), and the onset
+    distributions differ significantly by a Wilcoxon rank-sum test.
+  source: Results 3.1, paragraph 1; Figure 4H and 4I
+  quote: In the anesthetized model, these delayed responses had an average onset latency of 0.24 s
+    ± 0.08 s, while in the awake model they had an average onset latency of 0.51 s ± 0.14 s ...
+    Comparing the distributions using the Wilcoxon rank-sum test, we found that delayed response
+    onset times varied significantly between awake and anesthetized models
+  statistics:
+  - test: Wilcoxon rank-sum test
+    p: 0.001
+    p_relation: "<"
+    n: FSU with a significant delayed response at 1500 Hz PRF, awake and anesthetized (counts
+      not given)
+  - about: as printed in the Figure 4 legend
+    test: Wilcoxon rank sum test
+    p: 0.0001
+    p_relation: "<"
+  expected:
+  - quantity: mean FSU delayed onset latency, anesthetized
+    value: 0.24
+    tolerance: 0.08
+    unit: s
+  - quantity: mean FSU delayed onset latency, awake
+    value: 0.51
+    tolerance: 0.14
+    unit: s
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: The header's latency method (readings S1/S2, D1/D2, L1/L2, Q1/Q2, T1/T2), FSU only.
+    The paper does not say whether the spread is an SD or an SEM; it is used as the tolerance.
+    Reproduced when, under every reading, both means are within tolerance and a two-sided
+    rank-sum test of awake against anesthetized latencies gives p < 0.001 with the awake values
+    later. Partially reproduced when the test holds with the awake values later but a mean is
+    outside tolerance. Not reproduced when the test fails or the direction is reversed.
+- id: fig4h-awake-latency-wider
+  statement: Awake FSU delayed-response onset latencies have a wider spread than anesthetized ones
+    and appear to have two peaks.
+  source: Results 3.1, paragraph 1; Figure 4H
+  quote: The awake model had a wider variance of onset latencies, and appears to have two peaks
+  depends_on:
+  - fig4hi-fsu-delayed-latency
+  criterion: Latencies as in fig4hi-fsu-delayed-latency. Reproduced when the SD of the awake
+    latencies exceeds that of the anesthetized latencies under every reading. The paper gives no
+    test of bimodality ("appears to have two peaks"), so the peaks do not decide the outcome; the
+    histogram in the paper's 35.7 ms bins and its local maxima are shown.
+- id: fig5a-rsu-time-locked-prf-awake
+  statement: In awake rats PRF is a significant factor for RSU time-locked responses; 30 Hz and
+    300 Hz PRF give lower responses than every higher PRF (so 30 Hz is also below 300 Hz), 1500,
+    3000 and 4500 Hz do not differ, and sham differs from every PRF but 30 Hz.
+  source: Results 3.2, paragraph 1; Figure 5A
+  quote: Examining the time-locked response from RSU in the awake model using Kruskal–Wallis ANOVA,
+    we find that PRF is a significant factor ... Post hoc tests show that 30 Hz and 300 Hz PRF
+    induced responses lower than all higher PRFs ... The sham condition was significantly different
+    than all but the 30 Hz condition ... 1500 Hz, 3000 Hz, and 4500 Hz showed no significant
+    differences
+  statistics:
+  - about: PRF as a factor
+    test: Kruskal-Wallis
+    p: 0.001
+    p_relation: "<"
+  - about: 30 and 300 Hz against each higher PRF
+    test: post hoc Wilcoxon
+    p: 0.001
+    p_relation: "<"
+    corrected: Bonferroni
+  - about: sham against 300, 1500, 3000 and 4500 Hz
+    test: post hoc Wilcoxon
+    p: 0.001
+    p_relation: "<"
+    corrected: Bonferroni
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: The header's group test, awake batch 1 PRF series, RSU, 0 to 67 ms; the sham is
+    the awake batch 2 sham. Six parts, each at corrected p < 0.05 - (1) the Kruskal-Wallis is
+    significant; (2) 30 Hz is below each of 300, 1500, 3000 and 4500 Hz; (3) 300 Hz is below each
+    of 1500, 3000 and 4500 Hz; (4) no pair among 1500, 3000 and 4500 Hz differs; (5) sham differs
+    from 300, 1500, 3000 and 4500 Hz; (6) sham does not differ from 30 Hz. Part (2) includes 300
+    Hz because 300 Hz is one of "all higher PRFs" for 30 Hz, and Results 3.2 says the only
+    difference under anesthesia is that 30 Hz and 300 Hz do not differ. Reproduced when all six
+    hold under every reading; partially reproduced when (1) and at least four others hold; not
+    reproduced otherwise.
+- id: fig5c-rsu-time-locked-prf-anesth
+  statement: Under anesthesia RSU time-locked responses depend on PRF as in the awake model, the
+    only difference being that 30 Hz and 300 Hz do not differ significantly.
+  source: Results 3.2, paragraph 1; Figure 5C
+  quote: The anesthetized model had similar statistical results, with the only difference being
+    that no significant difference was observed between 30 Hz and 300 Hz PRF levels
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: As fig5a-rsu-time-locked-prf-awake, on the anesthetized batch 1 PRF series with the
+    anesthetized batch 2 sham, with part (2) read as 30 Hz below each of 1500, 3000 and 4500 Hz
+    (not 300 Hz), and a seventh part, that 30 Hz and 300 Hz do not differ (corrected p >= 0.05).
+    Reproduced when all parts hold under every reading; partially reproduced when the
+    Kruskal-Wallis and at least five others hold; not reproduced otherwise.
+- id: rsu-time-locked-anesthesia-factor
+  statement: Anesthesia is a significant factor in the RSU time-locked response by two-way ANOVA,
+    and it lowers the average magnitude of RSU responses.
+  source: Results 3.2, paragraph 1; Discussion, paragraph beginning 'Although these results demonstrate'
+  quote: Two-way ANOVA additionally finds that anesthesia is a significant factor in the time-locked
+    response from RSU ... Anesthesia was observed to decrease the average magnitude of RSU responses
+  statistics:
+  - test: two-way ANOVA, anesthesia factor
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: The header's two-way ANOVA (A1 and A2) on RSU time-locked responses of the batch 1
+    PRF series. Reproduced when the anesthesia effect has p < 0.01 and the anesthetized mean,
+    over all PRF levels, is below the awake mean, under every reading. Partially reproduced when
+    the effect has 0.01 <= p < 0.05 with that direction. Per-PRF means of each state are shown.
+- id: fig5bd-fsu-time-locked-no-prf
+  statement: FSU time-locked responses show no significant differences across PRF levels, in
+    either the awake or the anesthetized model.
+  source: Results 3.2, paragraph 1; Figure 5B and 5D
+  quote: FSU in both the awake and the anesthetized model show no significant differences due to PRF
+    levels
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: A claim of absence, judged on the paper's test, the header's Kruskal-Wallis on FSU
+    time-locked responses (0 to 67 ms) across the five PRF levels of the batch 1 series (G1), in
+    each state at 0.05, with post hoc rank-sum tests at Bonferroni-corrected 0.05. Reproduced
+    when no Kruskal-Wallis and no post hoc pair is significant in either state; not reproduced
+    when any is. The effect sizes (the range of group medians) and the G2 test are shown.
+- id: fig5e-rsu-delayed-prf-awake
+  statement: Awake RSU delayed responses (0.5 to 1 s) depend on PRF, are highest at 1500 Hz and
+    3000 Hz with lower responses at both lower and higher PRFs, and every PRF is significantly
+    higher than sham.
+  source: Results 3.2, paragraph 2; Figure 5E
+  quote: RSUs in the awake rats had highest responses to 1500 Hz and 3000 Hz ... with a decrease at
+    both higher and lower frequencies, and all conditions found to be significantly higher than
+    sham
+  statistics:
+  - about: 1500 and 3000 Hz highest
+    test: post hoc Wilcoxon
+    p: 0.001
+    p_relation: "<"
+    corrected: Bonferroni
+  - about: each PRF against sham
+    test: post hoc Wilcoxon
+    p: 0.001
+    p_relation: "<"
+    corrected: Bonferroni
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: The header's group test, awake batch 1 PRF series and awake sham, RSU, 0.5 to 1 s.
+    Parts at corrected p < 0.05 - (1) the Kruskal-Wallis is significant; (2) each of 1500 and
+    3000 Hz is higher than each of 30, 300 and 4500 Hz; (3) each PRF is higher than sham. The
+    paper does not say whether 1500 and 3000 Hz must each beat every other level, so (2) is
+    also read as R2, the two highest means are those of 1500 and 3000 Hz and each is
+    significantly above 30 Hz and 4500 Hz. Reproduced when (1), (3) and (2) hold under one of
+    the readings of (2), under every other reading; partially reproduced when (1) and (3) hold
+    without (2), or (1) and (2) without (3).
+- id: fig5f-fsu-delayed-prf-awake
+  statement: Awake FSU delayed responses depend on PRF, are strongest at 4500 Hz, differ between
+    30 Hz and the three highest PRFs and between 300 Hz and the two highest, and at 30 Hz and
+    300 Hz are not significantly higher than sham.
+  source: Results 3.2, paragraph 2; Figure 5F
+  quote: FSUs in the awake model show the strongest responses to 4500 Hz PRF, with significant
+    differences between 30 Hz and the highest three PRFs, and 300 Hz and the highest two PRFs ...
+    30 Hz and 300 Hz were not found to be significantly higher than sham
+  statistics:
+  - test: post hoc Wilcoxon
+    p: 0.001
+    p_relation: "<"
+    corrected: Bonferroni
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: The header's group test, awake batch 1 PRF series and awake sham, FSU, 0.5 to 1 s.
+    Parts - (1) the Kruskal-Wallis is significant; (2) the 4500 Hz mean is the highest; (3) 30
+    Hz differs from 1500, 3000 and 4500 Hz; (4) 300 Hz differs from 3000 and 4500 Hz; (5)
+    neither 30 Hz nor 300 Hz is significantly higher than sham. Significance at corrected p <
+    0.05. Reproduced when all hold under every reading; partially reproduced when (1) holds with
+    at least three of the others; not reproduced otherwise.
+- id: fig5gh-delayed-prf-anesth
+  statement: Under anesthesia PRF is a significant factor for the delayed responses (0.2 to 0.7 s)
+    of both RSUs and FSUs, which broadly prefer higher PRFs.
+  source: Results 3.2, paragraph 2; Figure 5G and 5H
+  quote: PRF was found to be a significant factor for RSU and FSU in both awake and anesthetized
+    settings ... Both RSUs and FSUs in the anesthetized rats had similar sensitivity as their
+    time-locked responses, broadly preferring higher PRFs
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: The header's Kruskal-Wallis on the anesthetized batch 1 PRF series, 0.2 to 0.7 s,
+    for RSU and FSU separately (G1). "Broadly preferring higher PRFs" is read as the mean of
+    1500, 3000 and 4500 Hz pooled exceeding that of 30 and 300 Hz pooled, the split the paper
+    uses for time-locked responses (Results 3.2 paragraph 1). Reproduced when, for both cell
+    types, the Kruskal-Wallis has p < 0.05 and the higher PRFs have the higher mean, under every
+    reading; partially reproduced when this holds for one cell type.
+- id: delayed-anesthesia-factor
+  statement: Anesthesia is a significant factor in the delayed response for both RSUs and FSUs by
+    two-way ANOVA, and it lowers the average response magnitude.
+  source: Results 3.2, paragraph 2; Discussion, paragraph beginning 'Although these results demonstrate'
+  quote: Using two-way ANOVA, we found that anesthesia is a significant factor in the delayed
+    response for both RSU ... and FSU
+  statistics:
+  - about: RSU
+    test: two-way ANOVA, anesthesia factor
+    p: 0.001
+    p_relation: "<"
+  - about: FSU
+    test: two-way ANOVA, anesthesia factor
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: The header's two-way ANOVA (A1 and A2) on delayed responses of the batch 1 PRF
+    series, each state's own window. Reproduced when, under every reading, the anesthesia effect
+    has p < 0.001 for RSU and p < 0.01 for FSU, and in each cell type the anesthetized mean over
+    all PRF levels is below the awake mean (Discussion, "an average decrease in
+    response magnitude" for FSU). Partially reproduced when both effects have p < 0.05 with
+    that direction but a bound is missed, or when one cell type holds.
+- id: fig6ad-time-adjacent-batch
+  statement: In the five rats recorded awake and anesthetized in the same week, time-locked
+    responses to the low PRF and 1500 Hz differ significantly in both states, with a reduced
+    response under anesthesia.
+  source: Results 3.2, paragraph 3; Figure 6A to 6D
+  quote: In analysis of the time locked responses, we observed significant differences in response
+    to 300 Hz PRF and 1500 Hz PRF stimulation in both awake and anesthetized conditions ... but with
+    a reduced response under anesthesia
+  statistics:
+  - test: Kruskal-Wallis with post hoc Wilcoxon
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: Batch 2 on-target sessions; the low PRF is the one the dataset records (30 Hz in
+    Methods 2.3, 300 Hz here). The text does not name the cell type; the Figure 6 legend says
+    panels A to D repeat Figure 5A, 5B, 5E and 5F, and the time-locked RSU panel is the one where
+    the Figure 5 PRF effect holds, so the claim is judged on RSU, 0 to 67 ms; FSU and the
+    delayed windows are shown as variants. In each state, low PRF against 1500 Hz by two-sided
+    rank-sum, Bonferroni-corrected over the pairs of the groups (G1, the two PRFs; G2, with the
+    sham). Reduced under anesthesia is judged, as no test is named, by the anesthetized mean
+    being below the awake mean; the paper does not say at which PRF, so the readings are M1, at
+    each of the two PRFs, and M2, over both PRFs pooled; the rank-sum p of each is shown.
+    Reproduced when the PRF difference has corrected p < 0.05 in both states and the reduction
+    holds under M1 or M2, under every other reading; partially reproduced when the PRF
+    difference holds in one state.
+- id: fig6ef-rsu-ispta-rise-then-fall
+  statement: Awake RSU mean responses, time-locked and delayed, rise with ISPTA up to around 60
+    mW/cm2 and then decline.
+  source: Results 3.2, paragraph 4; Figure 6E and 6G
+  quote: We observe that RSU's in both their time-locked and delayed responses initially increase
+    till around 60 mW cm −2 , after which the response declines.
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: Means of the awake batch 1 PRF series RSU responses (Figure 5A and 5E values)
+    against the ISPTA of each PRF given in Methods 2.3. Results 3.2 paragraph 4 also says the
+    1500 Hz (30.13 mW/cm2) mean is the highest time-locked one, so the peak is read as the mean
+    at 1500 or 3000 Hz. Reproduced when, for both windows, the highest mean is at 1500 or 3000
+    Hz, the means rise from 30 Hz to that peak, and the 4500 Hz mean is below the peak, under
+    every reading. Partially reproduced when this holds for one window. No test is reported;
+    the SEM of each mean is shown.
+- id: fig6fh-fsu-ispta
+  statement: Awake FSUs show no time-locked response, and their delayed response increases almost
+    linearly with ISPTA.
+  source: Results 3.2, paragraph 4; Figure 6F and 6H
+  quote: FSU's show no time-locked response, and their delayed response increases almost linearly
+    with I SPTA .
+  depends_on:
+  - fig3-cell-type-sorting
+  - fig5bd-fsu-time-locked-no-prf
+  criterion: Means of the awake batch 1 PRF series FSU responses against ISPTA. The paper gives
+    no measure of "no time-locked response" beyond the absence of a PRF effect, so that part
+    takes the outcome of fig5bd-fsu-time-locked-no-prf for the awake state. The delayed part
+    holds when the five delayed means increase with ISPTA (Spearman rho = 1 over the five
+    points); "almost linearly" has no threshold in the paper, so the Pearson r of the means
+    against ISPTA is reported and does not decide. Reproduced when both parts hold under every
+    reading; partially reproduced when one does.
+- id: fig5a-1500-highest-time-locked-mean
+  statement: Among PRFs, 1500 Hz gives the highest mean RSU time-locked response in awake rats,
+    although not significantly above 3000 and 4500 Hz.
+  source: Results 3.2, paragraph 4; Figure 5A
+  quote: Although it is not statistically significant, we found that 1500 Hz produces the highest
+    mean time-locked response
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: Means of awake batch 1 PRF series RSU responses, 0 to 67 ms. Reproduced when the
+    1500 Hz mean is the highest of the five under every reading; the corrected rank-sum p of
+    1500 Hz against 3000 and 4500 Hz is shown.
+- id: fig7a-rsu-time-locked-dc
+  statement: Awake RSU time-locked responses at 1500 Hz PRF are significantly lower at 6% DC than
+    at 60% DC (and, by the Figure 7A legend, than at 30% DC), and every DC is significantly higher
+    than sham.
+  source: Results 3.3, paragraph 1; Figure 7A and its legend
+  quote: Time-locked responses from RSUs showed a significantly lower response to 6% DC than those
+    to 60%, with all conditions significantly higher than sham
+  statistics:
+  - test: Kruskal-Wallis with post hoc Wilcoxon
+    p: 0.001
+    p_relation: "<"
+    corrected: Bonferroni
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: The header's group test on the awake batch 1 DC series (6, 30, 60%) with the awake
+    sham, RSU, 0 to 67 ms. Parts at corrected p < 0.05 - (1) the Kruskal-Wallis is significant;
+    (2) 6% is below 60%; (3) each DC is above sham; (4) 6% is below 30% (Figure 7A legend, "6% DC
+    results in a significantly lower response than 30% or 60%"). Reproduced when all hold under
+    every reading; partially reproduced when (1) and at least one of the others hold.
+- id: fig7a-60-highest-time-locked-mean
+  statement: By mean values 60% DC gives the strongest RSU time-locked response, though it is only
+    significantly higher than 6%.
+  source: Results 3.3, paragraph 1; Figure 7A
+  quote: Based on mean values, 60% DC appears to produce the strongest time-locked response,
+    although it is only statistically significantly higher than the 6% condition.
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: Means of awake DC series RSU responses, 0 to 67 ms. Reproduced when the 60% mean is
+    the highest of the three under every reading; the corrected rank-sum p of 60% against 30%
+    is shown.
+- id: fig7b-fsu-time-locked-dc
+  statement: FSUs show no time-locked response across DC levels; no significant differences are
+    observed.
+  source: Results 3.3, paragraph 1; Figure 7B
+  quote: no time-locked response was observed as in the PRF study
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: A claim of absence, judged on the paper's test, the header's Kruskal-Wallis on FSU
+    time-locked responses across 6, 30 and 60% DC (G1) at 0.05, with post hoc rank-sum tests at
+    Bonferroni-corrected 0.05. Reproduced when none is significant; not reproduced when any is.
+    The group medians and the G2 test are shown.
+- id: fig7c-rsu-delayed-dc
+  statement: Awake RSU delayed responses prefer 30% DC over 6% and 60%, all three DCs differ (Figure
+    7C legend), and at 60% DC they do not differ from sham.
+  source: Results 3.3, paragraph 1; Figure 7C and its legend
+  quote: Delayed responses however preferred 30% DC over 6% and 60% ... and 60% DC showed no
+    significant difference from sham
+  statistics:
+  - test: Kruskal-Wallis with post hoc Wilcoxon
+    p: 0.001
+    p_relation: "<"
+    corrected: Bonferroni
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: The header's group test on the awake DC series with the awake sham, RSU, 0.5 to 1
+    s. Parts - (1) the Kruskal-Wallis is significant; (2) 30% is above 6% and above 60%; (3)
+    60% does not differ from sham; (4) 6% and 60% differ (Figure 7C legend, "Significantly
+    different responses are observed between all DCs"). Significance at corrected p < 0.05.
+    Reproduced when all hold under every reading; partially reproduced when (1) and (2) hold
+    without (3) or (4), or (1) and (3) with 30% above one of the two.
+- id: fig7d-fsu-delayed-dc
+  statement: Awake FSU delayed responses are significantly higher at 60% DC than at 6%, and at 6%
+    DC they do not differ from sham.
+  source: Results 3.3, paragraph 1; Figure 7D
+  quote: Delayed responses from FSUs showed a significantly higher response to 60% DC over 6% ...
+    with 6% DC found to be not significantly different from sham
+  statistics:
+  - test: Kruskal-Wallis with post hoc Wilcoxon
+    p: 0.001
+    p_relation: "<"
+    corrected: Bonferroni
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: The header's group test on the awake DC series with the awake sham, FSU, 0.5 to 1
+    s. Parts - (1) the Kruskal-Wallis is significant; (2) 60% is above 6% at corrected p <
+    0.05; (3) 6% does not differ from sham. Reproduced when all hold under every reading;
+    partially reproduced when (1) and (2) hold without (3).
+- id: sham-no-auditory-response
+  statement: The off-target sham at 1500 Hz PRF produced no significant response, so the
+    activation is not attributed to an auditory or skull-conduction confound.
+  source: Discussion, paragraph beginning 'One potential confound'; Methods 2.3
+  quote: In this study we additionally performed a sham condition delivering ultrasound off target
+    to the front of the skull, and did not observe any significant response.
+  depends_on:
+  - fig3-cell-type-sorting
+  criterion: A claim of absence. The paper names no test of the sham against baseline; its only
+    tests involving sham compare it with on-target conditions (Results 3.2, 3.3), and those are
+    judged in their own claims. The Methods tests (Kruskal-Wallis with post hoc rank-sum) have
+    no baseline group. What the sham is compared with is therefore open, and this file names
+    no reading the text supports; the sham's mean normalized rates for RSU and FSU in each
+    window and state are to be shown, and the claim is blocked as methods_underspecified.
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header. Added readings W1 and W2 for how a window is measured, since 67 ms, 0.2 s and 0.7 s are not edges of the 35.7 ms PSTH bins and the paper does not say whether responses come from spike times or bins.
+  - Header. Noted that the Bonferroni family size is not given in the paper, and that Methods 2.3 does not say whether the batch 2 sham was recorded under anesthesia; parts comparing with an anesthetized sham are untestable if the dataset holds none.
+  - fig5a-rsu-time-locked-prf-awake. Part (2) left out 30 Hz against 300 Hz and reported it only; the paper says 30 Hz is lower than "all higher PRFs" and that the only anesthetized difference is the absence of a 30 Hz against 300 Hz difference, so the awake difference is part of the finding. Added to part (2) and to the statement.
+  - fig5c-rsu-time-locked-prf-anesth. Restated part (2) as 30 Hz below 1500, 3000 and 4500 Hz only, to follow the change to fig5a, since the seventh part requires 30 Hz and 300 Hz not to differ.
+  - fig6ad-time-adjacent-batch. The reduction under anesthesia was judged at 1500 Hz only, a restriction the paper does not make; now judged at each PRF (M1) or pooled (M2).
+  - fig7a-rsu-time-locked-dc. The Figure 7A legend states 6% is significantly lower than 30%; this was reported without deciding. Made it part (4) and added it to the statement and source.
+  - fig7c-rsu-delayed-dc. The Figure 7C legend states all DCs differ; 6% against 60% was reported without deciding. Made it part (4) and added it to the statement and source.
+  - sham-no-auditory-response. The criterion named no reading but did not give the outcome; added that the claim is blocked as methods_underspecified, as the protocol requires when the paper gives no test.
+  - Open. fig5bd-fsu-time-locked-no-prf and fig7b-fsu-time-locked-dc are absence claims judged on a Kruskal-Wallis over the parameter levels (G1); the paper's panels may include sham in the test (G2), and the paper does not say which. Left as written, with G2 shown.
+  - Open. The two-way ANOVA claims use each state's own delayed window; the paper does not say which window entered the ANOVA, and this is the natural reading of the Figure 5 data it follows.
+  - Open. fig4-rsu-time-locked-both-states is judged on a rank-sum test against sham that the paper does not run for this finding (Figure 4 shows examples only); it follows the paper's sham comparisons in Results 3.2.

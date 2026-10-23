@@ -13,8 +13,9 @@
 # committed since the attempt began ($RUNNER_STATE/attempt-<dataset>), on its branch or already on main,
 # are skipped, and a run of the next role that is still going is waited for. When a new attempt starts, a
 # branch already merged into main belongs to an earlier attempt and is deleted first, so the attempt
-# starts from main; a branch merged while its attempt is going is kept. A run that fails on the subscription's session limit is retried after
-# 30 minutes from where it started; any other failure stops the chain.
+# starts from main; a branch merged while its attempt is going is kept. A run that fails on the subscription's session or weekly limit is retried after
+# 30 minutes from where it started; one that fails on the network or the machine (a dropped connection, a runner
+# shut down, no log) is retried twice after 5 minutes; any other failure stops the chain.
 #
 # Each role runs first on the unverified account (RUNNER_ACCOUNT=verified skips it). A run that
 # account's safety checks flag (FLAGGED), or that has no token for it (UNVERIFIED-UNAVAILABLE), is
@@ -23,8 +24,8 @@
 # the chain stops there instead, leaving $RUNNER_STATE/flagged-<dataset>, and the lane goes on to the
 # next dataset: for when the verified account has no budget left.
 #
-# Finishing takes a lock ($RUNNER_STATE/finalize.lock), so that one attempt at a time is rebased on
-# main, recorded (the recorder role adds the README row and the pilot notes) and merged once its
+# Finishing takes a lock ($RUNNER_STATE/finalize.lock), so that one attempt at a time has main
+# merged in, recorded (the recorder role adds the pilot notes) and merged once its
 # checks pass; each lands on a main that has the ones before it.
 #
 # A new attempt skips the claims and their check when main already has a claims file whose check
@@ -81,7 +82,7 @@ reset_branch(){ local start=$1
   else git push -q origin --delete "attempt/$d" 2>/dev/null || true; fi
   [ "$(remote_branch)" = "$start" ]; }
 
-run_role(){ local role=$1 tries=0 start before id st runlog acct
+run_role(){ local role=$1 tries=0 flaky=0 start before id st runlog acct
   while true; do
     fetch; start=$(remote_branch)
     read -r id st <<<"$(run_of "$role")"
@@ -89,8 +90,9 @@ run_role(){ local role=$1 tries=0 start before id st runlog acct
       log "$role: waiting for run $id, already going"
     else
       before=${id:-}
-      # The recorder reads no paper and writes only the README row and the pilot notes.
-      acct=$account; [ "$role" = recorder ] && acct=verified
+      # The recorder reads no paper, so it starts on the unverified account even for a dataset whose paper
+      # was flagged; only a flag on the recorder's own run moves it to the verified one.
+      acct=$account; [ "$role" = recorder ] && acct=${recorder_account:-${RUNNER_ACCOUNT:-unverified}}
       if [ "$role" = author ] && [ -n "$VERSION" ]; then
         gh workflow run attempt.yml -f dataset="$d" -f role="$role" -f version="$VERSION" -f account="$acct" || { sleep 60; continue; }
       else
@@ -114,14 +116,23 @@ run_role(){ local role=$1 tries=0 start before id st runlog acct
         touch "$STATE/flagged-$d"; log "STOPPED at $role: $last_why"; return 1
       fi
       log "$role: $why; on the verified account from here"
-      account=verified; touch "$STATE/verified-$d"
+      account=verified; recorder_account=verified; touch "$STATE/verified-$d"
       continue
     fi
-    if echo "$runlog" | grep -q "session limit" && [ $tries -lt 100 ]; then
+    if echo "$runlog" | grep -qE "session limit|weekly limit" && [ $tries -lt 100 ]; then
       tries=$((tries+1))
-      reset_branch "$start" || { last_why="could not reset attempt/$d after the session limit"; log "STOPPED: $last_why"; return 1; }
-      log "$role hit the session limit; branch reset, retry $tries in 30 minutes"
+      reset_branch "$start" || { last_why="could not reset attempt/$d after the usage limit"; log "STOPPED: $last_why"; return 1; }
+      log "$role hit a usage limit; branch reset, retry $tries in 30 minutes"
       sleep 1800; continue
+    fi
+    # A failure of the network or of the machine, not of the agent: a connection dropped or timed out, the runner
+    # was shut down, or the run left no log. Tried twice more; an agent that ran out of time is not.
+    if { [ -z "$runlog" ] || echo "$runlog" | grep -qE "ReadTimeout|ConnectionError|Connection (reset|aborted)|exit code 143|shutdown signal|lost communication"; } \
+       && ! echo "$runlog" | grep -q "timed out after" && [ $flaky -lt 2 ]; then
+      flaky=$((flaky+1))
+      reset_branch "$start" || { last_why="could not reset attempt/$d after a failed run"; log "STOPPED: $last_why"; return 1; }
+      log "$role failed on the network or the machine (run $id); branch reset, retry $flaky in 5 minutes"
+      sleep 300; continue
     fi
     last_why="the run of $role failed"; log "STOPPED at $role (run $id)"; return 1
   done; }
@@ -193,10 +204,18 @@ trap 'rmdir "$STATE/finalize.lock" 2>/dev/null; notify' EXIT
 log "finishing"
 fetch
 git checkout -q -B "attempt/$d" origin/attempt/"$d"
-if ! git rebase -q origin/main; then
-  git rebase --abort; end "$d STOPPED: the branch does not rebase on main"; exit 1
+# Merge main in, not rebase: main already has the checked claims (the checkpoint), so a rebase replays
+# the branch's claims, claims-check and answer commits onto them and stops on an add/add conflict. The
+# branch's claims file is the same or later (the reader's answers), so it is kept; any other conflict
+# stops the chain.
+if ! git merge -q --no-edit -m "Merge main into attempt/$d" origin/main >/dev/null; then
+  git checkout -q HEAD -- "claims/$d" 2>/dev/null
+  if [ -n "$(git diff --name-only --diff-filter=U)" ]; then
+    git merge --abort; end "$d STOPPED: the branch does not merge with main"; exit 1
+  fi
+  git commit -q --no-edit
 fi
-git push -q --force-with-lease origin "attempt/$d"
+git push -q origin "attempt/$d"
 is_done recorder || run_role recorder || { end "$d STOPPED at recorder"; exit 1; }
 fetch; git checkout -q -B "attempt/$d" origin/attempt/"$d"
 title=$(python "$here/describe.py" title "$d")
@@ -207,6 +226,11 @@ if [ -z "$pr" ]; then
 fi
 log "pull request $pr"
 while true; do
+  # GitHub runs no checks on a pull request that conflicts with main, so waiting for them would never end.
+  if [ "$(gh pr view "$pr" --json mergeable --jq .mergeable 2>/dev/null)" = CONFLICTING ]; then
+    last_why="$pr conflicts with main; merge main into attempt/$d, resolve the conflict, and start the chain again"
+    end "$d STOPPED: the pull request conflicts with main ($pr)"; exit 1
+  fi
   s=$(gh pr checks "$pr" --json bucket 2>/dev/null) || { sleep 60; continue; }
   echo "$s" | jq -e 'length>0 and all(.bucket!="pending")' >/dev/null && break
   sleep 60

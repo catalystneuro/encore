@@ -1,0 +1,156 @@
+# Questions from attempt 000045-ibl-2021-01 (author, 2026-10-22) about the claims file
+# claims/000045/10.7554-elife.63711.yaml. Each is asked under docs/protocol.md, Author, step 1.6;
+# the attempt runs every reading it can see and records the claims whose outcome depends on the answer.
+dandiset: "000045"
+paper: doi:10.7554/elife.63711
+questions:
+- claim: fig2h-proportion-learned-40-days
+  also: [cohort-counts, fig2g-days-to-proficiency, fig2g-days-differ-across-labs,
+    fig2s1-trials-to-proficiency, fig2bc-threshold-bias-iqr, fig2-abs-bias-threshold-during-training,
+    fig2s2-variability-decreases, early-sessions-predict-slow-learners, fig3c-easy-errors-basic,
+    fig3de-threshold-bias-basic, fig3cde-no-lab-difference-medians,
+    fig3cde-no-lab-difference-variances, fig3s2a-trial-duration, fig3s2b-trials-per-session]
+  asked: 2026-10-22
+  question: The dataset carries no training status, so P1 is recomputed from the trials with the
+    'Trained 1a/1b' criteria of Appendix 1, table 1d. One of them is "all contrasts introduced".
+    Is it met when each of the three sessions presents every contrast of the final set (100, 25,
+    12.5, 6.25 and 0%), or when the three sessions together do (a session can present fewer, for
+    example when a mouse is moved back a stage)?
+  passage: Appendix 1, table 1d, "For each of the last three sessions ... >80%/90% correct on 100%
+    contrast and all contrasts introduced". The Methods and the claims file do not say more.
+  why: P1 is reached by 75 mice when each session must present all contrasts and by 84 when the
+    three together must (1a criteria; 52 and 58 with 1a/1b). The Kaplan-Meier proportion at day 40
+    is 0.67 under the first reading and 0.76 under the second, so fig2h-proportion-learned-40-days
+    is blocked until this is answered; the other claims listed have the same outcome under both.
+  answer: >-
+    Each of the three sessions, as the main reading. Appendix 1, table 1d, puts the criterion
+    under "For each of the last three sessions: >200/400 trials completed, and >80%/90% correct
+    on 100% contrast and all contrasts introduced". The code that set the paper's status
+    (SessionTrainingStatus in IBL-pipeline, which the paper's code imports) checks only the
+    current session, for 0% and a contrast between 0.1 and 6.5% ("training in progress if the
+    current session does not have low contrasts"); that is a variant. Pooling the three sessions
+    is given by neither. Header P1 and the criterion of fig2h-proportion-learned-40-days now say
+    so; claims and expected values unchanged.
+  answered: 2026-10-22
+- claim: cohort-counts
+  also: [fig2g-days-to-proficiency, fig3cde-no-lab-difference-medians]
+  asked: 2026-10-22
+  question: The claims file's second P1 reading applies "the 1b criteria from their introduction
+    (Methods, September 2019, no day given)". From which day are the 1b criteria applied, and do
+    they replace the 1a criteria for a mouse still in training on that day (as run here), or is a
+    mouse proficient when it meets either?
+  passage: Methods, "The second set, called '1b', was introduced shortly afterwards (September
+    2019) and was applied to 60 of the 140 mice."
+  why: With 1b from 2019-09-01, 52 and 58 mice reach P1 under the two contrast readings; with
+    2019-09-30, 60 and 66. Under the 1a/1b readings with pooled contrasts, easy-trial performance
+    differs across labs (corrected p = 0.047), so the outcome of
+    fig3cde-no-lab-difference-medians depends on this reading.
+  answer: >-
+    The code settles it: a mouse is proficient at the first session that meets either set, at any
+    date. The paper's P1 is the first status trained_1a or trained_1b, and SessionTrainingStatus
+    tests the 1b criteria and then the 1a criteria at every session, with no date. The 1b
+    criteria were implemented on 2019-09-12 (text_trained1a_to_1b_sessions.py, "Date at which
+    trained_1b was implemented in DJ pipeline"); the Methods say only "September 2019" and do
+    not say 1b replaced 1a, so replacement from 2019-09-12 is a variant. Header P1 and the
+    criterion of cohort-counts now say so; claims unchanged.
+  answered: 2026-10-22
+- claim: cohort-counts
+  asked: 2026-10-22
+  question: The 1a/1b criteria require more than 200/400 "trials completed" in each session. Are
+    these all trials, or only trials with a response (no-response trials, choice 0, left out)?
+    The attempt counts all trials.
+  passage: Appendix 1, table 1d, ">200/400 trials completed"; Methods, "200/400 completed trials".
+  why: Counting only trials with a response changes P1 for 1 to 3 mice under the four readings;
+    no outcome is expected to change, but the counts move.
+  answer: >-
+    All trials, no-response trials included. The paper does not define "completed"; the status
+    code compares the session's n_trials with 200/400, and the pipeline sets n_trials =
+    len(trials['choice']), every trial of the session. Header P1 and the criterion of
+    cohort-counts now say so.
+  answered: 2026-10-22
+- claim: fig3s5-first-full-sessions
+  also: [fig3s5a-prior-used-from-first-sessions, fig5cf-glm-weights,
+    fig5dg-history-weights-higher-full, fig5s2-glm-accuracy, fig5s2-weights-similar-across-labs,
+    fig5s1b-win-stay-lose-switch, fig5s1c-updating-by-contrast]
+  asked: 2026-10-22
+  question: The claims file defines P1b as "the code's 'biased' criterion, the first
+    biased-protocol session with status trained_1b". The dataset has no status. Is P1b, without
+    it, the first full-task (biased protocol) session on or after P1 (as run here), or the first
+    full-task session at which the recomputed status is 1b, which under the 1a reading may never
+    come?
+  passage: Figure 3, figure supplement 5 legend, "the first three sessions of the full task";
+    Methods, "Once an animal was proficient in the basic task, it proceeded to the full task."
+  why: The window of every claim listed is counted from P1b. Under the reading run here, 51 to 71
+    mice have a P1b; under the 1b-status reading, fewer would, and the first-session windows would
+    move.
+  answer: >-
+    The legend's reading, the first full-task session on or after P1, is the main one; the
+    legend says "the first three sessions of the full task" and the Methods "Once an animal was
+    proficient in the basic task, it proceeded to the full task". The code's "biased" criterion
+    ('task_protocol LIKE "%biased%" AND training_status="trained_1b"') is a variant; in the
+    pipeline a 1a-only mouse keeps trained_1a on biased sessions until its last three sessions
+    meet the 1b criteria, and has no P1b if they never do. Header P1b and the criterion of
+    fig3s5-first-full-sessions now say so; claims unchanged.
+  answered: 2026-10-22
+- claim: fig2bc-threshold-bias-iqr
+  also: [fig2s2-variability-decreases]
+  asked: 2026-10-22
+  question: The criteria use "50:50 sessions". In this dataset, every basic-task session has trials
+    whose probabilityLeft is not 0.5 (0 to 1 in steps of 0.1, 24% of basic-task trials, with
+    the stimulus side following it), apparently from the bias-correcting repeat trials. Are 50:50
+    sessions the basic-task sessions (as run here), or only sessions in which every trial has
+    probabilityLeft 0.5 (none here)?
+  passage: Results, Training progression, "a basic task ... where the probability of a stimulus
+    appearing on the left or the right was equal (50:50)"; Methods, "If the response was incorrect
+    and the contrast was 'easy' (>=50%), a 'repeat' trial followed".
+  why: Under the second reading no session qualifies and the claims cannot be tested.
+  answer: >-
+    The basic-task sessions, with all their trials, as run. The Results define the basic task
+    as the one where left and right were "equal (50:50)"; the pipeline's per-day summary gives
+    prob_left 0.5 to all trials of a training-protocol day ("0.5 for trainingChoiceWorld") and
+    never reads the trial's probability, and the code's prob_left == 0.5 selects those days.
+    Header and the criterion of fig2bc-threshold-bias-iqr now say so.
+  answered: 2026-10-22
+- claim: fig3f-classifier-chance-basic
+  also: [fig3f-positive-control, fig3s3-other-classifiers, fig4j-classifier-chance-full,
+    fig3s4-looser-criterion, fig3s5-first-full-sessions]
+  asked: 2026-10-22
+  question: The classifier draws 8 mice from each laboratory. In this dataset some laboratories
+    hold fewer than 8 proficient mice under every reading (Lab 7 has only 7 mice with their whole
+    training in the dataset). The Methods say 8 was "the lowest number of mice over all different
+    datasets". May the subsample be the smallest laboratory's count here (6 or 7), or is the
+    claim blocked?
+  passage: Methods, Classification of laboratory membership, "The size of the subsample was chosen
+    because eight mice was the lowest number of mice over all different datasets for which
+    classification was performed."
+  why: The four classifier claims are blocked (other); with 6 mice per lab the Naive Bayes
+    classifier on the basic task is not above chance (2.5th percentile 0.071 against a null mean
+    of 0.113), shown as a variant that decides nothing. fig3s4 and fig3s5 are decided by their lab
+    tests without the classifier.
+  answer: >-
+    The subsample may be the smallest count. The Methods give the size as a rule, "eight mice
+    was the lowest number of mice over all different datasets for which classification was
+    performed", and the code hard-codes N_MICE = 8, the rule's value on the paper's data. Here
+    the rule gives the lowest lab count over all the datasets classified, one size for every
+    classifier claim; that is the main reading, and 8 (blocked) the code's. Header, Lab
+    classifier, and the criterion of fig3f-classifier-chance-basic now say so.
+  answered: 2026-10-22
+- claim: fig5cf-glm-weights
+  also: [fig5dg-history-weights-higher-full, fig5s2-glm-accuracy]
+  asked: 2026-10-22
+  question: Under the Methods' reading with 50% contrast in the model, most mice were not shown 50%
+    contrast in the sessions used (it is dropped late in basic training and absent from the full
+    task), so their 50% indicator is all zero and the model cannot be fitted. Is that weight left
+    out for those mice (as run here), or is the Methods' reading the code's (50% trials dropped)?
+  passage: Methods, Probabilistic choice model, "W c is the coefficient associated with the
+    contrast c in {6.25, 12.5, 25, 50, 100}".
+  why: Leaving the weight out changes the other weights by at most 0.002 in the means shown, and
+    the outcomes are the same with and without 50% trials.
+  answer: >-
+    The paper does not say. Equation 3 has W c for "c in {6.25, 12.5, 25, 50, 100}" and does not
+    say what is done for a mouse shown no 50% trials. The code drops 50% trials for every mouse
+    ("drop trials with contrast-level 50, only rarely present (should not be its own
+    regressor)", figure5_GLM_modelfit.py). Readings named in the criterion of
+    fig5cf-glm-weights, (a) W50 left out for those mice, as run, and (b) the code's; claims
+    unchanged.
+  answered: 2026-10-22

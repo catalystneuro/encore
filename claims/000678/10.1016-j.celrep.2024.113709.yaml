@@ -1,0 +1,904 @@
+# Claims for Hulsey, Zumwalt, Mazzucato, McCormick & Jaramillo (2024), "Decision-making dynamics
+# are predicted by arousal and uninstructed movements", Cell Reports 43(1), 113709, on dandiset
+# 000678.
+#
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the accepted author manuscript of the version of record in PubMed Central
+# (PMC11016285, NIHMS1970871), as served by ncbi_pmc, full text with Results, Discussion, STAR
+# Methods and figure legends, and its supplement (NIHMS1970871-supplement-1.pdf, the legends of
+# Figures S1 to S8, read as extracted text). The bioRxiv preprint (10.1101/2023.03.02.530651 v2)
+# is also under paper/ and was not used for claims. The main-text PDF is not under paper/, so the
+# main figures were not seen; where a significance mark appears only in a figure, it is taken from
+# the figure code below, which draws it.
+#
+# Code read: the analysis code the paper links, Zenodo doi:10.5281/zenodo.10306018
+# (hulsey2023.zip, folders hulsey2023_analysis, a minimal uobrainflex and the fork of ssm with
+# categorical emissions). The hulsey2023 scripts are also in github.com/sjara/uobrainflex at
+# commit ef48985192e4af332c64f9d2e70ddcfc78659040 (folder hulsey2023/), except FigureS7.py and
+# FigureS8.py, which are only in the Zenodo archive. The scripts are
+# data_processing_code/1_compile_data.py to 7_example_mouse_decoding.py and
+# figure_generation_code/Figure1.py to FigureS8.py; uobrainflex/nwb/loadbehavior.py and
+# uobrainflex/behavioranalysis/flex_hmm.py hold the trial loading, the 10-trial standard
+# deviations, the posterior threshold and the state permutation. Most p-values in the paper are
+# not computed in the code; the stars of Figures 2, 4 and S6 are drawn by it.
+#
+# The dandiset (title "Pupil and movement measurements during mouse auditory and visual
+# discrimination") describes 391 behavioral sessions from 13 subjects. The paper reports 381.
+#
+# Data the paper used (as the paper reports it). Head-fixed mice on a running wheel (C57BL/6J
+# background, wild type and CaMKII-Cre/tTA x GCaMP6s lines, female and male). 31 mice trained;
+# 13 met the inclusion criteria, 8 on an auditory task and 5 on a visual task; 381 of their 500
+# stage 5 and 6 sessions were included (sessions with at least 100 rewards, at least 20% of
+# rewards at each port; at least 10 sessions per mouse). Auditory stimuli are tone clouds with a
+# value from -1 to 1 (proportion of tones in the right-target octave minus the left-target
+# octave); visual stimuli are drifting Gabor patches with a value from 0 to 1 by the angle's
+# distance from 45 degrees, signed negative for left-target. Three difficulties per side in
+# stage 5; in stage 6 half the stimuli are distractors of the other modality. Each trial has the
+# stimulus value, the target side and an outcome (hit, error, no response); the choice is left,
+# right or none. ITI 5 +/- 2 s, stimulus 1.2 s, response up to 1 s after offset. Continuous
+# measures per session: pupil diameter (post hoc, long axis of a fit ellipse, normalized to the
+# session maximum), face motion energy (ROI anterior to the eye, normalized to the session
+# maximum), locomotion speed (m/s, rotary encoder); smoothed with second-order Savitzky-Golay
+# filters (200 ms face and locomotion, 500 ms pupil) and upsampled to 1 kHz.
+#
+# Methods common to the claims, from the STAR Methods, the supplement and the code.
+# (M1) Trials. Every stimulus presentation, no-response trials included. Distractor trials are
+#      dropped before modeling (flex_hmm.format_choice_behavior_hmm).
+# (M2) GLM-HMM. Per mouse, a hidden Markov model with multinomial GLM emissions over three
+#      choices (left, right, none), inputs the stimulus value and a constant (flex_hmm), fit by
+#      EM with the paper's ssm fork (tolerance 1e-4, at most 1000 iterations), each session a
+#      separate sequence. Number of states: 5-fold cross-validation over sessions, 1 to 7 states,
+#      10 random initializations each, MLE (standard transitions) and MAP (Gaussian prior on
+#      weights with variance 2, Dirichlet alpha 2, sticky transitions with kappa 0); test
+#      log-likelihood per trial, mean over folds, best initialization (2_n_states.py,
+#      3_generate_hmms.py). Final model: MLE on all sessions, 10 initializations, highest
+#      log-likelihood kept. A trial is in a state when its posterior is at least 0.8, otherwise
+#      indeterminate (flex_hmm.get_posterior_probs).
+# (M3) State labels. Optimal and disengaged are the states nearest (sum of absolute differences
+#      of the per-state psychometric choice probabilities) to a perfect psychometric and to all
+#      no-response (flex_hmm.permute_hmm). The others are matched to the four sub-optimal
+#      templates of Figure2.py (bias left, avoid right, bias right, avoid left). "Sub-optimal"
+#      pools every state other than optimal and disengaged (Figure3.py, Figure4.py).
+# (M4) Measures per trial. The value of each measure at the stimulus onset sample of the 1 kHz
+#      series (loadbehavior.fetch_trial_beh_measures takes sample round(t_stim / 1 ms)). The
+#      10-trial variability is the sample standard deviation of the current trial and the nine
+#      before it within the session (pandas rolling(10).std(), loadbehavior.py); the Methods
+#      say "over the past 10 trials" and the code settles it. Movement index is the z-score of
+#      face motion energy plus the z-score of locomotion speed over the trials each script uses
+#      (Figure3.py, Figure4.py, FigureS8.py: all trials of the analysis's sessions with the
+#      measures present; 5_decoding.py: discrete-state trials only);
+#      its variability is the same sum of the z-scored 10-trial standard deviations. Trials
+#      with any measure missing are dropped.
+# (M5) Sessions per analysis, from the code. Figures 3, 5, S6 and S8: sessions with more than
+#      10 optimal-state trials and a post hoc pupil. Figure 2: sessions in which the optimal
+#      state occurs. Figure 4: all sessions.
+# (M6) Statistics. Two-tailed Wilcoxon signed-rank (paired) or rank-sum (unpaired) tests over
+#      mice (N = 13) unless noted, SciPy; values are mean +/- SEM across mice.
+#
+# Details the paper leaves open, with the readings each criterion runs.
+# (O1) Number of states. The Methods take "the maximum of the plateau of the test MLE or test
+#      MAP log likelihoods"; Figure S2 uses the larger of the MLE and MAP counts; the code
+#      (3_generate_hmms.py) uses the MLE curve alone, with the plateau at the count of highest
+#      test log-likelihood among counts that raise it by more than 0.001 per trial. Readings
+#      are (a) the larger of the MLE and MAP plateaus, (b) the MLE plateau alone (code).
+# (O2) GLM-HMM fits depend on random initialization. If the dataset holds the paper's own state
+#      posteriors, they are used as a further reading and both are shown.
+# (O3) Session selection for the per-state means of Results paragraph "Arousal and uninstructed
+#      movement", paragraph 4 (no code). Readings are (a) sessions with more than 10
+#      optimal-state trials (as Figure3.py), (b) all sessions.
+# (O4) Wilcoxon signed-rank or rank-sum for Figure 2D: the Results say signed-rank, the legend
+#      rank-sum. The signed-rank test is run (paired mice, and p = 2.4e-4 is the smallest exact
+#      two-sided signed-rank p for 13 pairs); the rank-sum is shown.
+# (O5) Bins for the r2 of optimal-state probability against face motion energy, locomotion speed
+#      and movement index (no code). Readings are (a) the plotting bins of FigureS3_S4.py and
+#      Figure3.py (face 0.05, locomotion 0.02 m/s, movement index 0.25), (b) 50 equal-width bins
+#      over each mouse's range, as the 0.02 pupil bins span 0 to 1.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000678"
+paper: doi:10.1016/j.celrep.2024.113709
+claims:
+- id: cohort-inclusion
+  statement: Of 31 mice, 13 met the inclusion criteria (8 auditory, 5 visual task), with 381 of
+    their 500 stage 5 and 6 sessions included.
+  source: STAR Methods, Training and inclusion criteria, last paragraph; Results, Mice switch
+    between several performance states, paragraph 6
+  quote: 13 of 31 mice met inclusion criteria, with a total of 381 of their 500 stage 5 and 6
+    training sessions included for further analysis
+  expected:
+  - quantity: mice included
+    value: 13
+    tolerance: 0
+  - quantity: auditory-task mice
+    value: 8
+    tolerance: 0
+  - quantity: visual-task mice
+    value: 5
+    tolerance: 0
+  - quantity: sessions included
+    value: 381
+    tolerance: 0
+  criterion: Counts are exact. Sessions are counted when they are stage 5 or 6, have at least
+    100 rewards with at least 20% at each port, and belong to a mouse with at least 10 such
+    sessions (STAR Methods). The number of dandiset sessions that pass, and the number in the
+    dandiset, are both reported; a mismatch with 381 is reported with the sessions that differ.
+    The 500 stage 5 and 6 sessions and the 18 excluded mice are checked only if the dandiset
+    holds them.
+- id: training-duration
+  statement: Mice that reached proficiency took 21 +/- 8 training sessions to reach stage 5.
+  source: STAR Methods, Training and inclusion criteria, last paragraph
+  quote: Mice that reached proficiency took 21 ± 8 training sessions to reach stage 5
+  expected:
+    quantity: training sessions before stage 5, mean over the 13 mice
+    value: 21
+    tolerance: 8
+  criterion: Tolerance is the paper's stated spread (it does not say SD or SEM). Testable only if
+    the dataset holds the training sessions before stage 5 with their stage; the count per mouse
+    is the number of sessions before the first stage 5 session.
+- id: distractor-response-rate
+  statement: In stage 6, responses to distractors of the untrained modality were below 10%, with
+    no discernible change in task performance.
+  source: STAR Methods, Training and inclusion criteria, Stage 6
+  quote: There was no discernible change in task performance, and response rates to the
+    distractors were <10%
+  expected:
+    quantity: response rate to distractor trials, stage 6 sessions
+    value: 0.1
+    unit: fraction of distractor trials with a lick
+  criterion: The paper does not say whether the rate is per mouse, per session or pooled.
+    Readings are (a) pooled over all stage 6 distractor trials of each mouse, (b) mean over
+    stage 6 sessions of each mouse, (c) pooled over all mice. The paper does not say whether
+    the bound holds per mouse or overall. Reproduced when every mouse with stage 6 sessions is
+    below 0.10 under (a) or (b), or the overall rate is below 0.10 under (c); the readings met
+    are reported. "No discernible change" is not tested (no measure given).
+- id: figs2-n-states
+  statement: Cross-validated GLM-HMMs fit separately to each of the 13 mice gave between 3 and 5
+    states per mouse.
+  source: Results, Mice switch between several performance states, paragraph 6; Figure S2
+  quote: we fit GLM-HMMs separately to each of the 13 mice that reached proficiency on the sensory
+    discrimination task (8 auditory and 5 visual task performers). While there was diversity in
+    the best number of states across subjects (3–5 states
+  expected:
+  - quantity: smallest number of states over mice
+    value: 3
+    tolerance: 0.3
+  - quantity: largest number of states over mice
+    value: 5
+    tolerance: 0.5
+  criterion: Models fit as in M1 and M2, states counted under both readings of O1. A reported
+    range, so the claim holds when every mouse's number of states lies in 3 to 5 (the range
+    widened by 10% of each bound) under one reading. The counts per mouse are shown for each
+    reading. The model this claim selects is the one the later claims use.
+- id: fig1g-example-mouse-prediction
+  statement: For the example mouse, a 4-state GLM-HMM was selected; it predicted 78% of choices
+    against 70% for a one-state model.
+  source: Results, Mice switch between several performance states, paragraph 5; Figure 1G
+  quote: A one-state GLM-HMM, equivalent to assuming stationary performance during training,
+    correctly predicted the choice of the example mouse on 70% of trials, while the best-fit
+    4-state GLM-HMM correctly predicted 78% of choices
+  depends_on:
+  - figs2-n-states
+  - fig2d-prediction-accuracy
+  expected:
+  - quantity: one-state choice prediction accuracy, example mouse
+    value: 70
+    tolerance: 7
+    unit: '%'
+  - quantity: 4-state choice prediction accuracy, example mouse
+    value: 78
+    tolerance: 7.8
+    unit: '%'
+  - quantity: states selected for the example mouse
+    value: 4
+    tolerance: 0
+  criterion: The example mouse is subject BW046, a visual-task mouse (Figure1.py and
+    7_example_mouse_decoding.py name it). Accuracy computed as in fig2d-prediction-accuracy.
+    Reproduced when the three values are within tolerance under one reading of O1.
+- id: fig2a-state-types
+  statement: Six stereotyped performance states emerged across mice. Every mouse had an optimal
+    and a disengaged state and at least one sub-optimal state (bias left or right, avoid left or
+    right).
+  source: Results, Mice switch between several performance states, paragraph 6; Figure 2A
+  quote: Each subject exhibited both optimal (state 1) and disengaged (state 2) states, along with
+    at least one additional sub-optimal performance state
+  depends_on:
+  - figs2-n-states
+  criterion: States labelled as in M3. Reproduced when all 13 mice have an optimal and a
+    disengaged state and at least one other state, and each other state matches one of the four
+    sub-optimal templates. The counts of mice with each sub-optimal type, as Figure 2A labels them
+    (Figure2.py), are bias left 6, avoid right 4, bias right 5, avoid left 5; they are compared
+    and reported but do not decide the claim, as they rest on random fits.
+- id: fig2b-optimal-occupancy
+  statement: Mice spent the largest proportion of trials in the optimal state (around half),
+    more than in the disengaged, sub-optimal or indeterminate states; 13.1% +/- 1.6% of trials
+    were indeterminate.
+  source: Results, Mice switch between several performance states, paragraph 6; Figure 2B
+  quote: Subjects spent the largest proportion of trials in the optimal performance state ...
+    and only 13.1% ± 1.6% of trials were in an indeterminate state
+  depends_on:
+  - fig2a-state-types
+  statistics:
+  - about: optimal against disengaged occupancy
+    test: Wilcoxon signed-rank test
+    p: 0.00024
+    n: 13 mice
+  - about: optimal against sub-optimal occupancy
+    test: Wilcoxon signed-rank test
+    p: 0.00024
+    n: 13 mice
+  - about: optimal against indeterminate occupancy
+    test: Wilcoxon signed-rank test
+    p: 0.00024
+    n: 13 mice
+  expected:
+    quantity: fraction of trials indeterminate, mean over mice
+    value: 13.1
+    tolerance: 1.6
+    unit: '%'
+  criterion: Per mouse, trials of sessions in which the optimal state occurs (M5, Figure2.py),
+    pooled; fractions in optimal, disengaged, sub-optimal (pooled) and indeterminate. Tolerance
+    is the paper's SEM. Reproduced when the indeterminate fraction is within tolerance and the
+    optimal fraction is larger than each other fraction by two-tailed Wilcoxon signed-rank tests
+    at p < 0.05 over the 13 mice.
+- id: fig2c-dwell-times
+  statement: Epochs of the optimal state lasted longer than disengaged and sub-optimal epochs
+    (about 37 against about 15 trials), and the median transition between discrete states took
+    3.4 +/- 0.3 trials.
+  source: Results, Mice switch between several performance states, paragraph 6; Discussion,
+    paragraph beginning "Here, we used recently implemented GLM-HMMs"; Figure 2C
+  quote: Additionally, epochs of the optimal state lasted longer than those of sub-optimal states
+    ... and the median transition time between discrete states (dwell time in indeterminate
+    states) was 3.4 ± 0.3 trials
+  depends_on:
+  - fig2a-state-types
+  statistics:
+  - about: optimal against disengaged dwell times
+    test: Wilcoxon signed-rank test
+    p: 0.00024
+    n: 13 mice
+  - about: optimal against sub-optimal dwell times
+    test: Wilcoxon signed-rank test
+    p: 0.00024
+    n: 13 mice
+  expected:
+  - quantity: median transition time (indeterminate dwell), mean over mice
+    value: 3.4
+    tolerance: 0.3
+    unit: trials
+  - quantity: average dwell time in the optimal state
+    value: 37
+    tolerance: 3.7
+    unit: trials
+  - quantity: average dwell time in disengaged and sub-optimal states
+    value: 15
+    tolerance: 1.5
+    unit: trials
+  criterion: Epochs are runs of consecutive trials in one discrete state within a session
+    (flex_hmm.get_dwell_times, called as plot_dwell_times in Figure2.py). That function records
+    a dwell one trial longer than the run for every epoch but a session's last, and one trial
+    shorter for the last; the dwell is read both as (x) the run length and (y) the code's count.
+    The indeterminate dwell is the number of trials from the end of one discrete epoch (or the
+    session start) to the start of the next, zero for a direct transition (Figure2.py, first
+    trial minus the previous epoch's last_trial); a disengaged epoch of more than 40 trials that ends a session is left out
+    (Figure2.py). Per mouse, the median dwell of each state type (the first length at which its
+    cumulative distribution exceeds 0.499, as Figure2.py). The 3.4 is the mean over mice of the
+    median indeterminate dwell. The Discussion's 37 and about 15 can be read as (a) the mean over
+    mice of the per-mouse median dwell, (b) the mean over mice of the per-mouse mean dwell, (c)
+    the mean over all epochs pooled; for the 15, disengaged and sub-optimal are each compared.
+    Reproduced when optimal dwell exceeds disengaged and sub-optimal dwell by two-tailed Wilcoxon
+    signed-rank tests at p < 0.05, the 3.4 is within tolerance, and the 37 and 15 are within
+    tolerance under one reading of (a) to (c) with (x) or (y).
+- id: fig2d-prediction-accuracy
+  statement: The best-fit GLM-HMM predicted 75.7% +/- 1.7% of choices, a 10.8% +/- 1.3%
+    improvement over a one-state (static performance) model.
+  source: Results, Mice switch between several performance states, paragraph 6; Figure 2D
+  quote: the best-fit GLM-HMM correctly predicted 75.7% ± 1.7% of choices, a significant 10.8% ±
+    1.3% improvement over the classical static-performance assumption
+  depends_on:
+  - figs2-n-states
+  statistics:
+  - test: Wilcoxon signed-rank tests
+    p: 0.00024
+    n: 13 mice
+  expected:
+  - quantity: choice prediction accuracy, best-fit model, mean over mice
+    value: 75.7
+    tolerance: 1.7
+    unit: '%'
+  - quantity: improvement over the one-state model, mean over mice
+    value: 10.8
+    tolerance: 1.3
+    unit: '%'
+  criterion: As 6_predictive_accuracy.py. Per mouse, 5 folds; each fold holds out a contiguous
+    block of 20% of the trials of every session (StratifiedKFold on session index, fold order
+    permuted per session). On the training trials, concatenated, a one-state model and a model
+    with the mouse's selected number of states are fit (5 initializations, the best by test
+    log-likelihood kept). For each test trial, the state is the most likely next state from the
+    transition matrix given the most likely state of the posterior over the preceding test
+    trials (the initial distribution for the first), and the predicted choice is the most likely
+    choice of that state's GLM. Accuracy is the mean over folds. Tolerances are the paper's
+    SEMs. The improvement can be read as (a) percentage points, (b) relative to the one-state
+    accuracy. Reproduced when both values are within tolerance under one reading (and O1) and
+    the best model is better by a two-tailed Wilcoxon signed-rank test at p < 0.05 (O4; the
+    rank-sum is shown).
+- id: fig3c-inverted-u-pupil
+  statement: The probability of being in the optimal state follows an inverted-U function of
+    pupil diameter, highest at intermediate diameters, in nearly all mice.
+  source: Results, Arousal and uninstructed movement, paragraph 2; Figure 3C; Figure S3
+  quote: The inverted-U relationship was found in nearly all subjects, and the pupil diameter that
+    gave the highest probability for being in the optimal state was calculated for each
+  depends_on:
+  - fig2a-state-types
+  criterion: As 4_optimal_pupils.py and Figure3.py, on sessions of M5. Discrete-state trials are
+    binned by pupil diameter (0.02 of the session maximum); P(optimal) per bin with more than 5
+    trials (low bins merged into the first such bin). The polynomial degree (1 to 7) is the elbow
+    of the mean 5-fold test r2 against degree (largest height above the line from degree 1 to
+    degree 7); the final polynomial is fit to all bins and the optimal pupil is the maximum of
+    the fit on a 0.001 grid within the data range. The paper defines no per-mouse test of the
+    shape. Readings are (i) the fit's maximum lies inside the data range with lower fitted values
+    at both ends (Figure S3 legend), (ii) the quadratic term of a degree-2 fit is negative (the
+    sign Figure S8 uses for an inverted U). "Nearly all" is not defined; readings are (a) at
+    least 12 of 13 mice, (b) at least 11 of 13. Reproduced when (b) holds under (i) or (ii); the
+    counts under every reading are shown.
+- id: fig3d-optimal-pupil-modality
+  statement: The optimal pupil diameter is smaller in mice performing the auditory task than in
+    those performing the visual task.
+  source: Results, Arousal and uninstructed movement, paragraph 2; Figure 3D
+  quote: Subjects performing the auditory task had significantly smaller optimal pupil sizes than
+    those performing the visual task
+  depends_on:
+  - fig3c-inverted-u-pupil
+  statistics:
+  - test: Wilcoxon rank-sum test
+    p: 0.008
+    n: 8 auditory and 5 visual mice
+  criterion: Optimal pupils per mouse from fig3c-inverted-u-pupil. Reproduced when the auditory
+    median is below the visual median and a two-tailed Wilcoxon rank-sum test gives p < 0.05.
+- id: fig3e-u-disengaged-pupil
+  statement: Across mice, aligned to each mouse's optimal pupil, the probability of the optimal
+    state is an inverted U and the probability of the disengaged state a U of pupil diameter;
+    this holds also on trials when the mice were stationary.
+  source: Results, Arousal and uninstructed movement, paragraph 3; Figure 3E
+  quote: we found a prominent U relationship between the probability of being in the disengaged
+    state and pupil diameter ... These relationships were maintained when considering only trials
+    where the mice were stationary
+  depends_on:
+  - fig3c-inverted-u-pupil
+  criterion: P(state) per 0.02 pupil bin as in fig3c-inverted-u-pupil, shifted by each mouse's
+    optimal pupil and averaged over mice (Figure3.py). The paper reports no test. Read here as
+    the shape the text names, tested on the mean curve over bins with data from at least half
+    the mice. A second-order polynomial fit to the mean curve has a negative quadratic term for
+    optimal and a positive one for disengaged, with the vertex inside the range (the sign Figure
+    S8 uses for these shapes). The stationary
+    subset has no threshold in the paper. Readings are (a) locomotion speed of exactly zero,
+    (b) locomotion speed below 0.02 m/s (the lowest bin of FigureS3_S4.py). Reproduced when both
+    shapes hold on all trials and on the stationary subset under one reading; partially
+    reproduced when they hold on all trials only.
+- id: figs4-r2-individual-movement
+  statement: Second-order cross-validated regression fits of optimal-state probability are
+    poorer for face motion energy (r2 0.49 +/- 0.08) and locomotion speed (0.44 +/- 0.07) than
+    for pupil diameter (0.72 +/- 0.03).
+  source: Results, Arousal and uninstructed movement, paragraph 4; Figure S4
+  quote: 'pupil diameter: r 2 = 0.72 ± 0.03; face motion energy: r 2 = 0.49 ± 0.08, Wilcoxon
+    signed-rank test vs. pupil: p = 0.04, locomotion speed: r 2 = 0.44 ± 0.07, Wilcoxon
+    signed-rank test vs. pupil: p = 0.002'
+  depends_on:
+  - fig3c-inverted-u-pupil
+  statistics:
+  - about: face motion energy against pupil r2
+    test: Wilcoxon signed-rank test
+    p: 0.04
+    n: 13 mice
+  - about: locomotion speed against pupil r2
+    test: Wilcoxon signed-rank test
+    p: 0.002
+    n: 13 mice
+  expected:
+  - quantity: cross-validated r2, pupil diameter, mean over mice
+    value: 0.72
+    tolerance: 0.03
+  - quantity: cross-validated r2, face motion energy, mean over mice
+    value: 0.49
+    tolerance: 0.08
+  - quantity: cross-validated r2, locomotion speed, mean over mice
+    value: 0.44
+    tolerance: 0.07
+  criterion: For pupil, the mean over 5 folds of the test r2 of a degree-2 polynomial fit to
+    binned P(optimal), as 4_optimal_pupils.py computes it (trials split by KFold, bins with more
+    than 2 training or 3 test trials). The same for face motion energy and locomotion speed,
+    with bins under both readings of O5. Tolerances are the paper's SEMs. Reproduced when the
+    three values are within tolerance and both measures are below pupil by two-tailed Wilcoxon
+    signed-rank tests at p < 0.05 under one reading.
+- id: fig3f-movement-index-inverted-u
+  statement: Optimal-state probability peaks at intermediate values of the movement index, an
+    inverted U similar to pupil diameter (cross-validated r2 0.63 +/- 0.06, not different from
+    pupil).
+  source: Results, Arousal and uninstructed movement, paragraph 5; Figure 3F; Figure S5D
+  quote: Using this combined movement index, a clear inverted-U pattern emerged, showing that
+    optimal performance state occupancy peaked at intermediate levels of uninstructed movement,
+    similar to that of pupil diameter (regression of movement index vs. optimal state,
+    cross-validated r 2 = 0.63 ± 0.06
+  depends_on:
+  - figs4-r2-individual-movement
+  statistics:
+  - about: movement index against pupil r2
+    test: Wilcoxon signed-rank test
+    p: 0.34
+    n: 13 mice
+  expected:
+    quantity: cross-validated r2, movement index, mean over mice
+    value: 0.63
+    tolerance: 0.06
+  criterion: Movement index as M4; r2 as in figs4-r2-individual-movement under both readings of
+    O5. Inverted U as in fig3e-u-disengaged-pupil (negative quadratic term of a degree-2 fit to
+    the mean P(optimal) curve over 0.25 bins of Figure3.py, vertex inside the range). The paper's
+    "similar to" is judged by its test, a two-tailed Wilcoxon signed-rank test against pupil r2.
+    Reproduced when r2 is within tolerance under one reading, the shape holds, and that test
+    gives p >= 0.05; the difference in r2 is reported either way.
+- id: fig3f-movement-index-u-disengaged
+  statement: The probability of the disengaged state is a U-shaped function of the movement
+    index.
+  source: Figure 3F legend
+  quote: There is a marked U-shaped relationship between both pupil diameter and movement index
+    and the probability of being in the disengaged state
+  depends_on:
+  - fig2a-state-types
+  criterion: As Figure3.py, sessions of M5. P(disengaged) per 0.25 movement-index bin from -5
+    to 5 (bins with more than 5 discrete-state trials), averaged over mice. The paper reports no
+    test. Read, as in fig3e-u-disengaged-pupil, as the shape the text names, on the mean curve
+    over bins with data from at least half the mice; a second-order polynomial fit to it has a
+    positive quadratic term with the vertex inside the range. Reproduced when that holds. The
+    bin coverage rule and the fit are chosen here, not by the paper.
+- id: fig3-distance-from-optimal-pupil
+  statement: The absolute difference from the optimal pupil diameter is smaller in the optimal
+    state (7%) than in the disengaged (12.6%) and sub-optimal (9%) states.
+  source: Results, Arousal and uninstructed movement, paragraph 5
+  quote: 'These correlations translate to a significant decrease in the absolute difference from
+    the calculated optimal pupil diameter during optimal state occupancy as compared to
+    sub-optimal or disengaged states (optimal: 7% ± 0.3%, disengaged: 12.6% ± 1%, sub-optimal: 9%
+    ± 0.5%'
+  depends_on:
+  - fig3c-inverted-u-pupil
+  statistics:
+  - about: optimal against disengaged
+    test: Wilcoxon signed-rank tests
+    p: 0.00024
+    n: 13 mice
+  - about: optimal against sub-optimal
+    test: Wilcoxon signed-rank tests
+    p: 0.00048
+    n: 13 mice
+  expected:
+  - quantity: absolute difference from optimal pupil, optimal state, mean over mice
+    value: 7
+    tolerance: 0.3
+    unit: '% of session maximum'
+  - quantity: absolute difference from optimal pupil, disengaged state, mean over mice
+    value: 12.6
+    tolerance: 1
+    unit: '% of session maximum'
+  - quantity: absolute difference from optimal pupil, sub-optimal states, mean over mice
+    value: 9
+    tolerance: 0.5
+    unit: '% of session maximum'
+  criterion: Per trial, the absolute difference between pupil diameter and the mouse's optimal
+    pupil (STAR Methods, Determining optimal pupil diameters); per mouse, the mean in each state
+    (sub-optimal pooled); no code computes these, so the sessions are read both ways of O3.
+    Tolerances are the paper's SEMs. Reproduced when the three values are within tolerance under
+    one reading and the optimal state is lower than each other by two-tailed Wilcoxon
+    signed-rank tests at p < 0.05.
+- id: fig3-raw-face-energy-trend
+  statement: Raw face motion energy tends to be larger in the optimal state (0.48 a.u.) than in
+    the disengaged (0.43) and sub-optimal (0.44) states.
+  source: Results, Arousal and uninstructed movement, paragraph 5
+  quote: 'a trend toward larger raw face motion energy during optimal state occupancy (optimal:
+    0.48 ± 0.02 a.u., disengaged: 0.43 ± 0.3 a.u., sub-optimal: 0.44 ± 0.03 a.u.; opt. vs. dis. p
+    = 0.06, opt. vs. sub. p = 0.04'
+  depends_on:
+  - fig2a-state-types
+  statistics:
+  - about: optimal against disengaged
+    test: Wilcoxon signed-rank tests
+    p: 0.06
+    n: 13 mice
+  - about: optimal against sub-optimal
+    test: Wilcoxon signed-rank tests
+    p: 0.04
+    n: 13 mice
+  expected:
+  - quantity: face motion energy, optimal state, mean over mice
+    value: 0.48
+    tolerance: 0.02
+    unit: a.u.
+  - quantity: face motion energy, disengaged state, mean over mice
+    value: 0.43
+    tolerance: 0.043
+    unit: a.u.
+  - quantity: face motion energy, sub-optimal states, mean over mice
+    value: 0.44
+    tolerance: 0.03
+    unit: a.u.
+  criterion: Per mouse, the mean face motion energy at stimulus onset in each state (M4), with
+    sessions read both ways of O3. Tolerances are the paper's SEMs, except for disengaged, where
+    the printed SEM of 0.3 is larger than the value and reads as a misprint, so 10% is used.
+    Reproduced when the three values are within tolerance under one reading and the optimal mean
+    is the largest, with the optimal against sub-optimal two-tailed Wilcoxon signed-rank test at
+    p < 0.05; the optimal against disengaged p is reported.
+- id: fig3-raw-locomotion-no-difference
+  statement: Raw locomotion speed does not differ between optimal, disengaged and sub-optimal
+    states (0.14 m/s in each).
+  source: Results, Arousal and uninstructed movement, paragraph 5
+  quote: 'but no significant differences in raw locomotion speed (optimal: 0.14 ± 0.02 m/s,
+    disengaged: 0.14 ± 0.2 m/s, suboptimal: 0.14 ± 0.02 m/s; opt. vs. dis. p = 0.84, opt. vs.
+    sub. p = 1'
+  depends_on:
+  - fig2a-state-types
+  statistics:
+  - about: optimal against disengaged
+    test: Wilcoxon signed-rank tests
+    p: 0.84
+    n: 13 mice
+  - about: optimal against sub-optimal
+    test: Wilcoxon signed-rank tests
+    p: 1
+    n: 13 mice
+  expected:
+  - quantity: locomotion speed, optimal state, mean over mice
+    value: 0.14
+    tolerance: 0.02
+    unit: m/s
+  - quantity: locomotion speed, disengaged state, mean over mice
+    value: 0.14
+    tolerance: 0.014
+    unit: m/s
+  - quantity: locomotion speed, sub-optimal states, mean over mice
+    value: 0.14
+    tolerance: 0.02
+    unit: m/s
+  criterion: A claim of absence, judged on the paper's tests, two-tailed Wilcoxon signed-rank
+    tests over mice at p < 0.05 of per-mouse mean speeds at stimulus onset, optimal against
+    disengaged and against sub-optimal (pooled), sessions both ways of O3. Reproduced when
+    neither test finds a difference; not reproduced when either does. Tolerances are the SEMs,
+    except for the printed 0.2 for disengaged (larger than the value, read as a misprint, 10%
+    used). The differences are reported either way.
+- id: fig4a-lower-variability
+  statement: The 10-trial variability of pupil diameter, face motion energy and locomotion speed
+    is lower in the optimal state than in the disengaged and sub-optimal states.
+  source: Results, Arousal and uninstructed movement, paragraph 6; Figure 4A
+  quote: For all arousal measures recorded−pupil diameter, face motion energy, and locomotion
+    speed−we found significantly reduced variability during optimal performance state occupancy
+    as compared to sub-optimal or disengaged states
+  depends_on:
+  - fig2a-state-types
+  statistics:
+  - about: pupil, optimal against disengaged (stars drawn by Figure4.py)
+    test: Wilcoxon signed-rank tests
+    p: 0.001
+    p_relation: "<"
+    n: 13 mice
+  - about: pupil, optimal against sub-optimal
+    test: Wilcoxon signed-rank tests
+    p: 0.01
+    p_relation: "<"
+    n: 13 mice
+  - about: face motion energy, optimal against disengaged
+    test: Wilcoxon signed-rank tests
+    p: 0.01
+    p_relation: "<"
+    n: 13 mice
+  - about: face motion energy, optimal against sub-optimal
+    test: Wilcoxon signed-rank tests
+    p: 0.01
+    p_relation: "<"
+    n: 13 mice
+  - about: locomotion speed, optimal against disengaged
+    test: Wilcoxon signed-rank tests
+    p: 0.01
+    p_relation: "<"
+    n: 13 mice
+  - about: locomotion speed, optimal against sub-optimal
+    test: Wilcoxon signed-rank tests
+    p: 0.05
+    p_relation: "<"
+    n: 13 mice
+  criterion: As Figure4.py, on all sessions (M5). Per mouse, the mean over trials of each state of
+    the 10-trial standard deviation (M4) of each measure; sub-optimal pooled. Reproduced when for
+    all three measures the optimal mean is lower than the disengaged and the sub-optimal means
+    by two-tailed Wilcoxon signed-rank tests at p < 0.05 (six tests); partially reproduced when
+    all six differences have that sign and at least four tests pass.
+- id: fig4b-variability-at-transitions
+  statement: Variability of the measures decreases on entering the optimal state and increases
+    on leaving it.
+  source: Results, Arousal and uninstructed movement, paragraph 6; Figure 4B
+  quote: Strikingly, this decrease in variability predicts transitions into and out of the
+    optimal state
+  depends_on:
+  - fig2c-dwell-times
+  statistics:
+  - about: pupil, entry (as drawn by Figure4.py)
+    test: Wilcoxon signed-rank tests
+    p: 0.07
+    n: 13 mice
+  - about: pupil, exit
+    test: Wilcoxon signed-rank tests
+    p: 0.01
+    p_relation: "<"
+    n: 13 mice
+  - about: face motion energy, entry
+    test: Wilcoxon signed-rank tests
+    p: 0.01
+    p_relation: "<"
+    n: 13 mice
+  - about: face motion energy, exit
+    test: Wilcoxon signed-rank tests
+    p: 0.12
+    n: 13 mice
+  - about: locomotion speed, entry
+    test: Wilcoxon signed-rank tests
+    p: 0.05
+    p_relation: "<"
+    n: 13 mice
+  - about: locomotion speed, exit
+    test: Wilcoxon signed-rank tests
+    p: 0.01
+    p_relation: "<"
+    n: 13 mice
+  criterion: As Figure4.py, all sessions. Optimal epochs with a dwell above 9 as
+    flex_hmm.get_dwell_times counts it (see fig2c-dwell-times; a run of at least 9 trials for an
+    epoch that is not a session's last, at least 11 for the last); entries from a
+    non-optimal discrete state and exits to one. For each, the 10-trial standard deviation over
+    the 10 trials before and 10 after the boundary; per mouse, the mean over transitions. The
+    commented test in Figure4.py compares, per mouse, position 10 (the last trial before entry,
+    or the last optimal trial) with position 20 (the tenth trial after), two-tailed Wilcoxon
+    signed-rank over mice. Reproduced when all three measures decrease at entry and increase at
+    exit, and the four comparisons the figure marks significant (pupil exit, face entry,
+    locomotion entry and exit) give p < 0.05; partially reproduced when all six changes have the
+    stated sign and fewer tests pass.
+- id: fig4d-pupil-movement-decoupling
+  statement: The correlation between pupil diameter and the movement index is lower during the
+    optimal state than during the disengaged and sub-optimal states.
+  source: Results, Arousal and uninstructed movement, paragraph 7; Figures 4C and 4D
+  quote: During optimal state epochs, the correlation between pupil diameter and the movement
+    index is significantly reduced across subjects
+  depends_on:
+  - fig2a-state-types
+  statistics:
+  - about: optimal against disengaged (stars drawn by Figure4.py)
+    test: Wilcoxon signed-rank tests
+    p: 0.001
+    p_relation: "<"
+    n: 13 mice
+  - about: optimal against sub-optimal
+    test: Wilcoxon signed-rank tests
+    p: 0.01
+    p_relation: "<"
+    n: 13 mice
+  - about: disengaged against sub-optimal
+    test: Wilcoxon signed-rank tests
+    p: 0.05
+    p_relation: "<"
+    n: 13 mice
+  criterion: As Figure4.py, all sessions. Per mouse and state (sub-optimal pooled), the Pearson
+    r between movement index and pupil diameter over the state's trials. Reproduced when the
+    optimal r is lower than the disengaged and the sub-optimal r by two-tailed Wilcoxon
+    signed-rank tests at p < 0.05.
+- id: figs6-individual-measure-decoupling
+  statement: The correlations of pupil diameter with face motion energy and with locomotion speed
+    are also reduced during the optimal state.
+  source: Results, Arousal and uninstructed movement, paragraph 7; Figure S6B and S6D
+  quote: This decrease in correlation is also seen when considering individual measures of face
+    motion energy and locomotion speed
+  depends_on:
+  - fig2a-state-types
+  statistics:
+  - about: pupil and face motion energy correlation, optimal against other states
+    test: Wilcoxon signed rank tests
+    p: 0.05
+    p_relation: "<"
+    n: 13 mice
+  criterion: As FigureS6.py, sessions of M5. Per mouse and state, Pearson r of pupil with face
+    motion energy and with locomotion speed. The legend does not say which pairs are marked.
+    Reproduced when, for both pairs of measures, the optimal r is lower than the disengaged r or
+    the sub-optimal r by a two-tailed Wilcoxon signed-rank test at p < 0.05; partially
+    reproduced when this holds for one pair. The face-locomotion correlation (S6F) is reported.
+- id: fig5c-state-classification
+  statement: For every mouse, support vector machines on the value and 10-trial variability of
+    the measures predict the performance state above chance, with 88.2% +/- 1.8% accuracy for
+    optimal against disengaged and 77.7% +/- 2% for optimal against sub-optimal states.
+  source: Results, Arousal measures predict optimal performance state, paragraph 1; Figures 5B
+    and 5C
+  quote: 'We found that for all subjects, performance states could be significantly predicted
+    using the recorded arousal measures with high accuracy (opt. vs. dis. = 88.2% ± 1.8%; opt.
+    vs. sub. = 77.7% ± 2%'
+  depends_on:
+  - fig2a-state-types
+  expected:
+  - quantity: accuracy, optimal against disengaged, mean over 13 classifications
+    value: 88.2
+    tolerance: 1.8
+    unit: '%'
+  - quantity: accuracy, optimal against sub-optimal, mean over 19 classifications
+    value: 77.7
+    tolerance: 2
+    unit: '%'
+  criterion: As 5_decoding.py and Figure5.py, sessions of M5. For each mouse, optimal against
+    each other state separately (13 disengaged and 19 sub-optimal classifications), only when
+    the two classes give more than 30 trials. Equal numbers of trials per class, at most 1500,
+    sampled at random; features min-max scaled; RBF SVC (scikit-learn defaults); 5-fold KFold;
+    accuracy is the mean over folds and over 1000 runs. Features are the six of the Methods
+    (pupil, face motion energy, locomotion speed and their 10-trial SDs). Two code variants are
+    shown, the "All measures" points of Figure5.py and FigureS7.py, which are 5_decoding.py
+    condition 0 (all eight features, with the movement index and its SD shuffled in the training
+    set only), and the eight features unshuffled (condition 13). The null is 1000 runs
+    with all training features shuffled across trials (the code's surrogate; the Methods say
+    class labels are permuted, which is the same up to pairing); z is the mean over runs of
+    (accuracy minus null mean) over null SD. The Methods give no significance threshold;
+    Figure5.py draws a dashed line at z = 1.98. Readings are (a) z > 1.98 (that line), (b)
+    z > 1.645, (c) accuracy above the 95th percentile of the null.
+    Reproduced when both means are within tolerance (the paper's SEMs) and every classification
+    is significant under one reading.
+- id: figs7-pupil-best-raw-measure
+  statement: Pupil diameter (value and variability) is the best single raw measure for state
+    classification, better than face motion energy and only slightly better than locomotion
+    speed.
+  source: Results, Arousal measures predict optimal performance state, paragraph 2; Figure S7
+  quote: Pupil diameter (value and trial-to-trial variability) was the best individual raw
+    measure for state classification
+  depends_on:
+  - fig5c-state-classification
+  statistics:
+  - about: pupil against face motion energy (Results; the S7 legend prints p = 0.004)
+    test: Wilcoxon signed-rank tests over optimal state classifications
+    p: 0.0039
+    n: 32 classifications
+  - about: pupil against locomotion speed (Results; the S7 legend prints p = 0.14)
+    test: Wilcoxon signed-rank tests over optimal state classifications
+    p: 0.106
+    n: 32 classifications
+  criterion: Classifiers as fig5c-state-classification. The Results cite Figure S7 as a whole
+    for p = 0.0039 and 0.106; the Figure S7B legend gives p = 0.004 and 0.14 for the shuffling
+    comparison, so the Results values may come from S7A or from another run of S7B. Readings are
+    (a) Figure S7A, keeping only one measure's value and SD
+    (code conditions shuffling all other features), (b) Figure S7B, shuffling one measure's value
+    and SD (with the movement index, as 5_decoding.py conditions 6 to 8), comparing the drop.
+    The quantity compared can be (i) accuracy or (ii) z-score. Reproduced when, under one
+    reading, pupil exceeds face motion energy by a two-tailed Wilcoxon signed-rank test at
+    p < 0.05 over the 32 classifications and exceeds locomotion speed on average.
+- id: fig5c-movement-index-best
+  statement: The movement index is the best predictor of performance state, encoding more
+    information about states than pupil diameter.
+  source: Results, Arousal measures predict optimal performance state, paragraph 2; Figure 5C
+  quote: Interestingly, we found that the best predictor of performance state was the computed
+    movement index incorporating face motion energy and locomotion speed, which encoded more
+    information about states compared to pupil diameter
+  depends_on:
+  - fig5c-state-classification
+  statistics:
+  - test: Wilcoxon signed-rank tests over optimal state classifications
+    p: 0.024
+    n: 32 classifications
+  criterion: Classifiers as fig5c-state-classification on the eight features of 5_decoding.py,
+    keeping either the pupil value and SD or the movement index value and SD and shuffling all
+    others in the training set (Figure 5C legend). In 5_decoding.py the movement-index condition
+    (shuffle_schedule [1,2,3,4,5]) also keeps the pupil value unshuffled; that is shown as a
+    variant. In the final Figure5.py (idx = [0,1,2,3,4,5]) the legend label "Movement index"
+    falls on condition 1 (face and locomotion shuffled, pupil and movement index kept), while a
+    superseded line (idx = [0,5,2]) names condition 5; condition 1 is shown as a further
+    variant. The quantity compared can be (i) accuracy or (ii) z-score. Reproduced when the
+    movement index exceeds pupil by a two-tailed Wilcoxon signed-rank test at p < 0.05 over the
+    32 classifications under one of (i) and (ii).
+- id: figs8a-regression-weights
+  statement: In linear regressions of state probability on the measures, the quadratic weights
+    of pupil diameter and of locomotion speed are negative for the optimal state and positive
+    for the disengaged state, as are the weights of their 10-trial SDs, while face motion energy
+    weights center on zero.
+  source: Results, Arousal measures predict optimal performance state, paragraph 3; Figure S8A
+  quote: weights for the quadratic terms fit to predict optimal state probability were negative
+    for pupil diameter across mice ... and the weights were positive when fit to disengaged state
+    probabilities ... This was also true for quadratic terms of locomotion speed, while face
+    motion energy had weights centered around zero across subjects
+  depends_on:
+  - fig2a-state-types
+  criterion: As FigureS8.py, sessions of M5. Per mouse, OLS of each state's posterior probability
+    per trial on min-max scaled features (constant, pupil, face, locomotion, their squares and
+    pairwise products, their 10-trial SDs, and the triple product), the design min-max scaled
+    again. The paper reports no test for "across mice" and "consistently". Readings are (a) a
+    two-tailed Wilcoxon signed-rank test of the 13 weights against zero at p < 0.05 with the
+    stated sign (the paper's test family, M6), (b) the median weight over mice has the stated
+    sign; "centered around zero" is the test of (a) at p >= 0.05. Reproduced when this holds for the pupil and locomotion quadratic and SD weights in the
+    optimal (negative) and disengaged (positive) fits, and the face quadratic and SD weights do
+    not differ from zero; partially reproduced when the pupil terms hold and others do not.
+- id: figs8b-pupil-movement-interaction
+  statement: With the movement index, the quadratic movement weight is negative for the optimal
+    state, and the pupil-by-movement interaction is the only consistent weight for sub-optimal
+    states (0.42 +/- 0.11), differing from its weight for the optimal state (-0.95 +/- 0.21).
+  source: Results, Arousal measures predict optimal performance state, paragraph 3; Figure S8B
+  quote: the only consistently weighted feature across fits to sub-optimal state probabilities
+    was the interaction between pupil diameter and the movement index ( Figure S8B ; 0.42 ±
+    0.11), which was also significantly different than weights fit to optimal state probability
+    (−0.95 ± 0.21
+  depends_on:
+  - fig2a-state-types
+  statistics:
+  - test: Wilcoxon rank-sum test
+    p: 0.0000034
+    n: sub-optimal state fits against 13 optimal state fits
+  expected:
+  - quantity: pupil-by-movement weight, sub-optimal state fits, mean
+    value: 0.42
+    tolerance: 0.11
+  - quantity: pupil-by-movement weight, optimal state fits, mean
+    value: -0.95
+    tolerance: 0.21
+  criterion: As FigureS8.py (second model). Per mouse, OLS of each state's posterior probability
+    on min-max scaled constant, pupil, movement index, their squares and product, the pupil SD
+    and the movement SD index, the design min-max scaled again. Each sub-optimal state of each
+    mouse is one fit (the code pools them all). Tolerances are the paper's SEMs. Reproduced when
+    both means are within tolerance, the two sets differ by a two-tailed Wilcoxon rank-sum test
+    at p < 0.05, and the mean quadratic movement weight of the optimal fits is negative.
+- id: figs1-iti-independence
+  statement: The inter-trial interval is long enough that trial-evoked responses do not carry
+    over; correlations of the measures at trial start with the prior ITI are weak and centered on
+    zero, and evoked pupil responses do not differ across performance states.
+  source: Figure S1C and S1D
+  quote: Correlations between all measures at the start of a trial and prior inter trial intervals
+    are weak and centered around zero across mice. (D) Average evoked pupil responses of mice are
+    not significantly different across performance states
+  depends_on:
+  - fig2a-state-types
+  statistics:
+  - about: evoked pupil response across performance states
+    test: Kruskal-Wallis test
+    p: 0.54
+  criterion: As FigureS1.py, all sessions. Per mouse, Pearson r between each measure at
+    stimulus onset (pupil from the trial's pupil trace at onset, face motion energy and
+    locomotion speed as M4) and the preceding ITI, taken as the difference between consecutive
+    trial start times within a session; trials with any value missing are dropped. The paper
+    gives no threshold for "weak and centered around zero"; readings, chosen here and not from
+    the paper, are (a) median r over mice with absolute value below 0.1, (b) below 0.2, each
+    with a two-tailed Wilcoxon signed-rank test against zero at p >= 0.05. The ITI part holds
+    when it holds for all three measures under one reading. The evoked pupil response is
+    defined by FigureS1.py as follows. From onset to 2.5 s after, the largest rise and the largest fall of
+    pupil diameter from its onset value, keeping the one of larger absolute size, signed; per
+    mouse, the median over the trials of each state. The absence across states is judged on the
+    paper's test, a Kruskal-Wallis test over mice of these medians. For the groups,
+    FigureS1.py plots optimal, disengaged, sub-optimal (pooled) and indeterminate in the panel
+    whose legend gives p = 0.54, so the test is run on those four groups, as the paper's test of
+    absence; the three discrete states alone are shown as a variant. Reproduced when the
+    four-group test gives p >= 0.05 and the ITI part holds; the effect sizes are given either
+    way.
+- id: figs5-movement-index-correlations
+  statement: The movement index is equally correlated with face motion energy and with
+    locomotion speed, and highly correlated with both in each mouse.
+  source: Results, Arousal and uninstructed movement, paragraph 4; Figure S5B and S5C
+  quote: we combined these two measures into a single continuous measure of uninstructed movement
+    levels termed the “movement index,” which is equally correlated with each measure
+  criterion: Per mouse, Pearson r of the movement index (M4) with face motion energy and with
+    locomotion speed over the trials of M5 (Figure3.py). The sum of two z-scores has equal
+    correlation with each term by construction, so the test is that the two r agree to 0.01 in
+    every mouse. "Highly correlated" has no threshold in the paper; readings are (a) both r above
+    0.7 in every mouse, (b) both above 0.5. Reproduced when the r agree and (b) holds; the
+    reading met is reported.
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header. The GitHub commit ef48985 lacks FigureS7.py and FigureS8.py; said so (they are only in the Zenodo archive, which was read).
+  - Header M4. The movement index is z-scored over different trial sets per script (5_decoding.py uses discrete-state trials only); stated.
+  - distractor-response-rate. Added the reading pooled over all mice, since the paper does not say the bound is per mouse.
+  - fig2c-dwell-times. Source pointed at "Discussion, paragraph 3", which the text does not let one locate; now names the paragraph by its first words.
+  - fig2c-dwell-times. flex_hmm.get_dwell_times counts a dwell as the run plus one (minus one for a session's last epoch); added the code's count as a reading next to the run length. The indeterminate dwell in Figure2.py also counts the gap from session start and zero-length gaps; stated.
+  - fig4b-variability-at-transitions. Figure4.py keeps optimal epochs with code dwell above 9, which is not a run of at least 10 trials; corrected.
+  - fig5c-state-classification. The "All measures" points of Figure5.py and FigureS7.py are 5_decoding.py condition 0 (movement index and its SD shuffled in training); added as a code variant. Figure5.py draws the significance line at z = 1.98; reading (a) changed from 1.96 to 1.98.
+  - figs7-pupil-best-raw-measure. The criterion said the paper does not say which comparison gives the p-values; the Figure S7B legend gives p = 0.004 and 0.14 for the shuffling comparison. Corrected; both readings kept, since the Results' 0.106 differs from the legend's 0.14.
+  - fig5c-movement-index-best. The final Figure5.py labels condition 1 (face and locomotion shuffled) as "Movement index"; added as a further code variant.
+  - figs1-iti-independence. The evoked pupil response readings (4 s windows) were made up; FigureS1.py defines it (signed larger excursion from onset within 2.5 s, per-mouse median per state) and plots four groups including indeterminate. Criterion rewritten from the code. The ITI is the start-to-start interval (FigureS1.py). The 0.1 and 0.2 thresholds for "weak" are marked as not from the paper.
+  - fig3f-movement-index-u-disengaged. New claim. The Figure 3F legend's U-shaped relation between movement index and disengaged-state probability had no claim.
+  - Open. fig3e-u-disengaged-pupil, fig3f-movement-index-u-disengaged, fig3c-inverted-u-pupil, figs5-movement-index-correlations, figs8a-regression-weights and figs1-iti-independence judge shapes or "weak", "nearly all", "highly", "consistently" with thresholds and fits the paper does not give; they are named as readings, but they are choices made by the reader.
+  - Open. Figure 2D, the Results say signed-rank and the legend rank-sum (O4); the signed-rank p = 2.4e-4 matches the exact minimum for 13 pairs, so signed-rank is kept.
+  - Open. The stationary threshold (fig3e) and the session sets for the per-state means (O3) have no source in the paper or code.

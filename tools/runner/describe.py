@@ -54,10 +54,10 @@ def title(dandiset: str) -> str:
 
 def body(dandiset: str) -> str:
     from readme_row import row
-    return (f"Attempt on {dandiset}, run by the queue runner (`tools/runner`), which rebased it on main, "
-            "had the recorder run add the README row and the pilot notes, and merges it once the checks "
+    return (f"Attempt on {dandiset}, run by the queue runner (`tools/runner`), which merged main into it, "
+            "had the recorder run add the pilot notes, and merges it once the checks "
             f"pass.\n\n{row(dandiset)}\n\nThe outcomes, the verification rounds and the findings are in the "
-            "attempt record; the summary is in docs/pilot-notes.md.\n\n"
+            "attempt record; the summary is in docs/pilot-notes/.\n\n"
             "🤖 Generated with [Claude Code](https://claude.com/claude-code)\n")
 
 

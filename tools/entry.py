@@ -269,12 +269,19 @@ def check(entry_dir: Path) -> Report:
     return report
 
 
+def _local_data(code: str, start: int) -> bool:
+    """Whether a local path in the code is inside the dataset directory `encore check` gave (ENCORE_LOCAL_DATA):
+    the one local path an entry on a local dataset may name."""
+    allowed = os.environ.get("ENCORE_LOCAL_DATA", "").rstrip("/")
+    return bool(allowed) and code.startswith(allowed, start) and code[start + len(allowed):start + len(allowed) + 1] in ("/", "'", '"')
+
+
 def _derivation_checks(report: Report, where, code: str) -> None:
     if EMBEDDED_IMAGE.search(code):
         report.error(where, "contains an encoded image; figures must be computed from the data")
     if READS_A_FIGURE.search(code):
         report.error(where, "reads an image file; figures must be computed from the data")
-    if LOCAL_PATH.search(code):
+    if any(not _local_data(code, m.start() + 1) for m in LOCAL_PATH.finditer(code)):
         report.error(where, "names a local path; stream the data from the archive")
     if LONG_LITERAL.search(code):
         report.error(where, f"contains a literal of more than {MAX_LITERAL_NUMBERS} numbers; "

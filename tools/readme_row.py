@@ -1,7 +1,6 @@
 """The README's table row for a dataset, from its latest attempt.
 
     python tools/readme_row.py DATASET            # print the row
-    python tools/readme_row.py DATASET --write    # add it to README.md, or replace the dataset's row
 
 Counts are of the paper's findings on the dandiset, including those that name its codes from
 elsewhere (`with_labels`); findings that also use outside data (`with_inputs`) are shown in brackets;
@@ -66,31 +65,12 @@ def row(dandiset: str) -> str:
             + f" | [`{entry_dir.name}`](entries/{entry_dir.name}){note} |")
 
 
-def write(dandiset: str, readme: Path = ROOT / "README.md") -> None:
-    lines = readme.read_text().splitlines(keepends=True)
-    new = row(dandiset) + "\n"
-    mine = f"{lead(dandiset)} "
-    rows = [i for i, line in enumerate(lines) if line.startswith("| [") and "](entries/" in line]
-    if not rows:
-        raise SystemExit("error: no outcome table in README.md")
-    existing = [i for i in rows if lines[i].startswith(mine)]
-    if existing:
-        lines[existing[0]] = new
-    else:
-        lines.insert(rows[-1] + 1, new)
-    readme.write_text("".join(lines))
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("dataset")
-    parser.add_argument("--write", action="store_true", help="add the row to README.md")
     args = parser.parse_args()
     folder = datasets.folder(datasets.parse(args.dataset))
-    if args.write:
-        write(folder)
-    else:
-        print(row(folder))
+    print(row(folder))
     return 0
 
 

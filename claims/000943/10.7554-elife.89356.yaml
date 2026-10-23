@@ -1,0 +1,870 @@
+# Claims for Clark & Nolan (2024), eLife 12 RP89356, on dandiset 000943.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
+# protocol pilot-10 as stated in docs/protocol.md (Reader, steps 1 to 4).
+#
+# Text read: the version of record (eLife reviewed preprint, version 3, 28 March 2024), full text
+# from Europe PMC (PMC10977970) with Results, figure legends, figure supplement legends and
+# Materials and methods, the eLife assessment, reviews and author response; Supplementary file 1
+# (summary table of recorded cells per mouse, supp1.docx) and the MDAR checklist (supp2.docx).
+# No PDF was supplied, so values shown only in figures (Figure 2E percentages, Figure 6 hit
+# percentages, Figure 6F odds ratios, N per group in Figure 6) could not be read.
+#
+# Data the paper used (as reported). Nine male C57BL/6J mice (M1, M3, M6, M7, M10, M11, M12, M13,
+# M14; M3, M6, M7 also in Tennant et al. 2022) implanted with four tetrodes in the right MEC.
+# Each recording day had an open arena session (30 min, square box, cue card) and a virtual
+# linear track session, usually in that order, spike sorted together with MountainSort. 1881
+# units, 215 sessions, 103 grid cells in 61 sessions (233 +- 135 trials per session). Track 200 cm
+# long; 60 cm track zone, 20 cm reward zone, 60 cm track zone, 60 cm black box (the code places
+# black boxes at 0 to 30 and 170 to 200 cm and the reward zone at 90 to 110 cm). Trial types
+# (code in trial_type) are beaconed (0, reward zone cue visible, reward), non-beaconed (1, no cue,
+# reward) and probe (2, no cue, no reward), delivered in repeating blocks (e.g. BBN, BBBNBBBP).
+# Measured variables needed are spike times, open arena position, track position (60 Hz,
+# from Blender), trial number, trial type, stops and rewards. Data were deposited at Edinburgh
+# DataShare (doi:10.7488/ds/7684); whether dandiset 000943 (title "Clark and Nolan (2024)
+# Task-anchored grid cell firing is selectively associated with successful path
+# integration-dependent behaviour", NWB, electrophysiology) holds the open arena sessions,
+# the sorted units and the behaviour is for the author to find.
+#
+# Code read. The analysis code the paper links, github.com/MattNolanLab/eLife_Grid_anchoring_2024
+# at commit 670c45a43c46c337ec59f66bfa328ad885a0df70 (tag v1.0.0.0 is 152ef46, which differs only in
+# README and LICENSE; Zenodo doi:10.5281/zenodo.10698051). It holds vr_grid_cells.py (per session
+# periodograms, rolling classification, hit/try/run, spatial information, agreement with the
+# grid consensus), vr_grid_population_level_plots.py (cell exclusions, data frames for R and the
+# population figures), FieldShuffleAnalysis (field shuffle false alarm thresholds),
+# ToyGridCells (simulations), analysis_settings.py and R notebooks for the statistics of Figures
+# 2F, 3G, 4E, 4F, 6B, 6D, 6E, Figure 3-figure supplement 4 and Figure 6-figure supplement 2F-G.
+# No code was found for Figure 3-figure supplements 5 and 7 statistics. Its README sends
+# preprocessing (open arena rate maps, grid scores, grid cell classification) to
+# github.com/MattNolanLab/in_vivo_ephys_openephys, read at the default branch head f913080f253b
+# (15 March 2023); the paper pins no commit of it, so it ranks as other software.
+#
+# Methods common to the claims (cited; each criterion refers to these by name).
+# - Units (Methods, Spike sorting) are those with firing rate > 0.2 Hz, isolation > 0.9, noise
+#   overlap < 0.05 and peak SNR > 1. The code (vr_grid_population_level_plots.py, main) further
+#   keeps units with waveform peak to trough < 500 uV, open arena mean rate > 0.2 Hz, track length
+#   200 cm, at least 10 trials and some firing on the track (Lomb classifier not "Unclassified"),
+#   and drops mice M2, M4 and M15, which had no grid cells.
+# - Grid cells (Methods, Analysis of neural activity in the open arena) have a grid score and a
+#   first-half against second-half rate map correlation both above the 99th percentile of 1000
+#   shuffles, each shuffle adding one value drawn uniformly from 20 to 580 s to all spike times,
+#   wrapped. Rate maps use 2.5 cm bins; the Methods give no smoothing width; the preprocessing repo
+#   uses a 5 cm Gaussian kernel. Variant (preprocessing repo, PostSorting/OpenFieldShuffleAnalysis)
+#   is grid score and spatial information above the shuffle mean + 2.326 SD, shifts from 20 s to
+#   recording length - 20 s. Non-grid cells (NG) are all other kept units.
+# - Track rate maps (Methods) have 1 cm bins, spikes over occupancy time, Gaussian SD 2 cm.
+#   Spatial information is the Skaggs formula in bits per second (Methods; code
+#   vr_grid_cells.spatial_info).
+# - Periodogram (Methods; analysis_settings.py; vr_grid_cells.calculate_moving_lomb_scargle_periodogram)
+#   is astropy LombScargle on the flattened smoothed rate map against elapsed distance divided by
+#   200 cm, in 600 cm windows advanced 10 cm, frequencies 0.1 to 5 in steps of 0.02 cycles per
+#   trial; the session periodogram is the mean over windows and its peak is the maximum.
+# - False alarm threshold (Methods; FieldShuffleAnalysis) is the 99th percentile of the session
+#   periodogram peak power over 1000 field shuffles (fields from scipy find_peaks on the map
+#   smoothed with SD 4 cm, minimum peak distance 20 cm, field bins moved to random positions,
+#   other bins fill the gaps, then smoothed with SD 2 cm). The adjusted threshold for rolling
+#   windows is the 99th percentile over 1000 shuffles of the peak of the mean of the first 200
+#   periodograms.
+# - Session-level class (Methods) is aperiodic when peak power is not above the threshold,
+#   task-anchored (TA) when the peak frequency is within 0.05 of the nearest positive integer,
+#   task-independent (TI) otherwise. The Methods say <= 0.05 and the code < 0.05; on the 0.02 grid
+#   they agree.
+# - Trial-level class (Methods; vr_grid_cells.get_rolling_lomb_classifier_for_centre_trial and
+#   add_coding_by_trial_number) averages 200 consecutive periodograms centred on each window
+#   (windows truncated at the session ends in the code), classifies with the adjusted threshold,
+#   assigns each window to the trial nearest its midpoint, and gives each trial the most common
+#   class of its windows.
+# - Proportion of a session in a mode. The code (add_rolling_stats) counts it over the rolling
+#   windows, not over trial labels. A cell is "stable" when one mode holds >= 0.85 of windows
+#   in the Python code and > 0.85 in CompareGroups_StableCats.Rmd; the paper says ">85% of
+#   trials". Where a claim uses it, both readings (windows as the code, trials as the text) are
+#   named; the text's trial reading is the main one and the code's a variant, except for the counts
+#   of fig3f-switching-within-session, where any reading may match.
+# - Behaviour (Methods, Analysis of behaviour; vr_grid_cells.add_hit_miss_try). A hit is a trial
+#   with a stop (speed < 4.7 cm/s, registered by Blender) in the reward zone. Trials with mean speed
+#   outside the reward zone < 10 cm/s are rejected (unclassified). Misses are split by their mean
+#   reward zone speed. The Methods use the 95th percentile of hit trials' reward zone speeds
+#   (try below, run above). The code uses the normal 95% interval (mean +- 1.96 SD) of hit trials'
+#   reward zone speeds, try inside, run ("miss" in the code) outside. The Methods are the main
+#   reading and the code a variant.
+# - Stop density (Methods) counts stops in 1 cm bins divided by trials, smoothed with a Gaussian of
+#   SD 1 cm (the code, get_stop_histogram, uses SD 2 bins; a variant), minus the mean of profiles
+#   with stop locations drawn uniformly over the track (10 draws in the code).
+# - Statistics (Methods, Statistical analyses; R notebooks) are mixed models with random effects
+#   of session nested in mouse (and neuron where stated), compared with the null model by
+#   likelihood ratio (anova), with emmeans pairwise contrasts. Trials classified aperiodic are
+#   dropped from the Figure 6 analyses.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000943"
+paper: doi:10.7554/elife.89356
+claims:
+- id: grid-cell-count
+  statement: Of 1881 MEC neurons recorded in nine mice, 103 were classified as grid cells from
+    their open arena firing, 11.4 +- 17.4 grid cells per mouse, 0.4 to 9.5% of each mouse's
+    neurons.
+  source: Results, paragraph 1; Supplementary file 1
+  quote: we identified 103/1881 neurons as grid cells (11.4±17.4 grid cells/mouse, range 0.4–9.5%, Supplementary
+    file 1 )
+  expected:
+  - quantity: grid cells
+    value: 103
+    tolerance: 10.3
+  - quantity: neurons recorded
+    value: 1881
+    tolerance: 188.1
+  - quantity: lowest percentage of grid cells in a mouse
+    value: 0.4
+    tolerance: 0.04
+    unit: "%"
+  - quantity: highest percentage of grid cells in a mouse
+    value: 9.5
+    tolerance: 0.95
+    unit: "%"
+  criterion: Units and grid cells as in the opening comment (Methods, Spike sorting and Analysis
+    of neural activity in the open arena; exclusions from vr_grid_population_level_plots.py). The
+    counts are matched within tolerance; the per-mouse range holds inside 0.36 to 10.45%. The
+    preprocessing repo's classification (grid score and spatial information above mean + 2.326 SD
+    of the shuffles) is shown as a variant. Whether grid cells are counted once per session or once
+    per recording day is not said; the paper counts units per session (Supplementary file 1 gives
+    1881 cells over 215 sessions), and that is the reading used.
+- id: supp1-recording-summary
+  statement: Per mouse, the numbers of cells, sessions, trials per session and grid cells are as
+    in Supplementary file 1, in total 1881 cells and 215 sessions, with most grid cells from M11
+    (53) and M14 (26).
+  source: Supplementary file 1
+  inferred: Numbers from the table in Supplementary file 1; no sentence of the text states the
+    per-mouse values.
+  expected:
+  - quantity: sessions in total
+    value: 215
+    tolerance: 21.5
+  - quantity: grid cells, M11
+    value: 53
+    tolerance: 5.3
+  - quantity: grid cells, M14
+    value: 26
+    tolerance: 2.6
+  - quantity: cells, M11
+    value: 557
+    tolerance: 55.7
+  - quantity: mean over the nine mice of each mouse's mean trials per session
+    value: 179.1
+    tolerance: 17.9
+  criterion: Cells, sessions and grid cells per mouse counted as in grid-cell-count. Reproduced
+    when the listed totals are within tolerance and, for each of the nine mice, the number of
+    sessions is within 10% of the table (M1 11, M3 26, M6 21, M7 23, M10 16, M11 35, M12 21, M13 25,
+    M14 37).
+  depends_on:
+  - grid-cell-count
+- id: grid-field-size-spacing
+  statement: Grid cells had field sizes of 7.5 +- 3.3 cm and grid spacing of 72.5 +- 13.7 cm.
+  source: Results, paragraph 1
+  quote: These grid cells had field sizes of 7.5±3.3 cm and grid spacing of 72.5±13.7 cm
+  expected:
+  - quantity: mean field size
+    value: 7.5
+    tolerance: 0.75
+    unit: cm
+  - quantity: mean grid spacing
+    value: 72.5
+    tolerance: 7.25
+    unit: cm
+  criterion: The Methods do not define field size or grid spacing. The preprocessing repo
+    (PostSorting/open_field_grid_cells.py) fixes them; grid spacing is the median distance from
+    the autocorrelogram centre to the six ring fields times the bin size, and field size is
+    sqrt(area of the central autocorrelogram field in bins x bin size) / pi. That is used. Means
+    over the 103 grid cells (grid-cell-count), matched within tolerance; the SDs are reported.
+  depends_on:
+  - grid-cell-count
+- id: fig2-session-level-classes
+  statement: At the session level, 68 of 103 grid cells had periodogram peaks within 0.05 of an
+    integer spatial frequency (task-anchored), 32 had peaks elsewhere (task-independent) and 3
+    had no peak above the false alarm threshold (aperiodic), over 61 sessions with 233 +- 135
+    trials per session.
+  source: Results, Grid cells exhibit either task-anchored or task-independent firing, paragraph 2;
+    Figure 2D-E
+  quote: We found that 68 of 103 grid cells had peaks in their periodograms within 5% of an integer multiple
+    of the spatial frequency of the track repetition ... By contrast, 32 of 103 grid cells had periodograms
+    with peaks at frequencies outside 5% ... were rare (3/103)
+  expected:
+  - quantity: task-anchored grid cells
+    value: 68
+    tolerance: 6.8
+  - quantity: task-independent grid cells
+    value: 32
+    tolerance: 3.2
+  - quantity: aperiodic grid cells
+    value: 3
+    tolerance: 0.3
+  - quantity: sessions with grid cells
+    value: 61
+    tolerance: 6.1
+  - quantity: mean trials per session with grid cells
+    value: 233
+    tolerance: 23.3
+  criterion: Session-level class as in the opening comment (Methods; vr_grid_cells.get_lomb_classifier
+    with the field shuffle threshold). The counts are matched within tolerance (the 10% rule makes
+    the aperiodic count exact; it is reproduced at 3 and the count is reported otherwise). The
+    false alarm threshold uses random shuffles; the counts are shown for the run made.
+  depends_on:
+  - grid-cell-count
+- id: fig2e-nongrid-classes
+  statement: Among non-grid cells, the proportion with session-level task-anchored firing was
+    similar to that of grid cells, task-independent periodic firing was rarer and aperiodic firing
+    was more common.
+  source: Results, Grid cells exhibit either task-anchored or task-independent firing, paragraph 2;
+    Figure 2E
+  quote: When we carried out similar analyses for non-grid cells, we found that the proportion of neurons
+    with task-anchored firing was similar, but task-independent periodic firing was rarer, while aperiodic
+    firing neurons were more common
+  criterion: Session-level classes for grid (G) and non-grid (NG) cells as in fig2-session-level-classes.
+    The paper reports no test. "Rarer" and "more common" are judged by direction, NG TI percentage
+    below G and NG aperiodic percentage above G. The paper does not fix how "similar" is judged; the
+    readings are (a) the G against NG difference in TA percentage is smaller in absolute value than
+    both the TI and the aperiodic differences, (b) a two-sided Fisher exact test of TA against other
+    classes between G and NG is not significant at 0.05. Reproduced when both directions hold and
+    "similar" holds under both readings; if the readings disagree the claim is
+    methods_underspecified. Percentages are reported.
+  depends_on:
+  - fig2-session-level-classes
+- id: fig2f-spatial-information
+  statement: Session-level task-anchored grid cells had higher spatial information scores on the
+    track than task-independent grid cells.
+  source: Figure 2F; Results, Grid cells exhibit either task-anchored or task-independent firing,
+    paragraph 3
+  quote: These differences manifest as substantially higher spatial information scores, but similar average
+    firing rates, for grid cells with session-level task-anchored firing compared with task-independent
+    firing
+  statistics:
+  - about: effect of session-level class (TAG, TIG, AG)
+    test: linear mixed model on log spatial information, ANOVA against null model
+    statistic: Χ2 = 9.54, DF = 2
+    p: 0.008
+    n: 103 grid cells
+  - about: TAG against TIG
+    test: pairwise comparison of estimated marginal means
+    statistic: T = 2.815, DF = 73.6
+    p: 0.02
+  criterion: Per grid cell, spatial information (bits/s) of the whole-session track rate map.
+    As CompareGroups.Rmd does, lmer(log(SI) ~ class + (1 | mouse/session)) compared with the null
+    model by anova, then emmeans pairs (default Tukey adjustment). Reproduced when the class effect
+    has p < 0.05 and the TAG against TIG contrast is significant at 0.05 with TAG higher.
+  depends_on:
+  - fig2-session-level-classes
+- id: fig2f-firing-rate-similar
+  statement: Mean firing rates on the track did not differ between session-level task-anchored and
+    task-independent grid cells.
+  source: Figure 2F; Results, Grid cells exhibit either task-anchored or task-independent firing,
+    paragraph 3
+  quote: These differences manifest as substantially higher spatial information scores, but similar average
+    firing rates
+  statistics:
+  - about: TAG against TIG
+    test: pairwise comparison of estimated marginal means
+    statistic: T = 0.562, DF = 4.12
+    p: 0.8
+  criterion: A claim of absence, judged on the paper's test as in CompareGroups.Rmd, lmer(log(mean
+    track rate) ~ class + (1 | mouse/session)) and the emmeans TAG against TIG contrast (Tukey
+    adjusted). Reproduced when that contrast has p >= 0.05; not reproduced when p < 0.05. The ratio
+    of group means is reported either way.
+  depends_on:
+  - fig2-session-level-classes
+- id: fig2f-periodogram-features-similar
+  statement: Periodogram peak power and peak width did not differ between task-anchored and
+    task-independent grid cells.
+  source: Figure 2F; Results, Grid cells exhibit either task-anchored or task-independent firing,
+    paragraph 3
+  quote: Features of the periodogram such as peak power and peak width did not differ between task-anchored
+    grid cells and task-independent grid cells
+  statistics:
+  - about: peak power, TAG against TIG
+    test: pairwise comparison of estimated marginal means
+    statistic: T = 2.033, DF = 19.0
+    p: 0.13
+  - about: peak width, TAG against TIG
+    test: pairwise comparison of estimated marginal means
+    statistic: T = –1.029, DF = 3.27
+    p: 0.61
+  criterion: A claim of absence, judged on the paper's tests as in CompareGroups.Rmd, lmer(peak power
+    ~ class + (1 | mouse/session)) untransformed and lmer(log(peak width) ~ class + (1 |
+    mouse/session)), each with the emmeans TAG against TIG contrast. Peak width is not defined in the
+    Methods; the code (add_peak_width in vr_grid_population_level_plots.py) is followed. Reproduced
+    when both contrasts have p >= 0.05; not reproduced when either has p < 0.05.
+  depends_on:
+  - fig2-session-level-classes
+- id: fig2f-aperiodic-low-rate
+  statement: Aperiodic grid cells had much lower mean firing rates than task-anchored or
+    task-independent grid cells, suggesting their lack of periodicity reflects inactivity.
+  source: Figure 2F; Results, Grid cells exhibit either task-anchored or task-independent firing,
+    paragraph 3
+  quote: The aperiodic grid cells had much lower mean firing rates than the task-anchored grid or task-independent
+    grid cells suggesting that their apparent lack of periodicity reflects inactivity
+  statistics:
+  - about: effect of session-level class on log firing rate
+    test: linear mixed model, ANOVA against null model
+    statistic: Χ2 = 10.215, DF = 2
+    p: 0.006
+  - about: TAG against AG
+    test: pairwise comparison of estimated marginal means
+    statistic: T = 2.906, DF = 42.07
+    p: 0.02
+  - about: TIG against AG
+    test: pairwise comparison of estimated marginal means
+    statistic: T = 2.588, DF = 67.29
+    p: 0.03
+    n: 3 aperiodic grid cells
+  criterion: As in fig2f-firing-rate-similar (CompareGroups.Rmd). Reproduced when the class effect
+    has p < 0.05 and both the TAG against AG and TIG against AG contrasts are significant at 0.05
+    with AG lower; partially reproduced when only one contrast is.
+  depends_on:
+  - fig2-session-level-classes
+- id: fig3f-switching-within-session
+  statement: For 26.2% of grid cells (27/103) the trial-level classification was consistently
+    task-anchored or task-independent on more than 85% of trials, whereas for 73.8% (76/103) no
+    single coding scheme accounted for more than 85% of trials.
+  source: Results, Grid cells switch between task-anchored and task-independent firing, paragraph 2;
+    Figure 3F
+  quote: For 26.2% of grid cells (27/103) the classification was consistently (>85% of trials) task-anchored
+    or task-independent ( Figure 3F ), whereas for 73.8% of grid cells (76/103) no single coding scheme
+    accounted for more than 85% of trials
+  expected:
+  - quantity: grid cells with one mode on > 85% of trials
+    value: 27
+    tolerance: 2.7
+  - quantity: grid cells with no mode on > 85% of trials
+    value: 76
+    tolerance: 7.6
+  criterion: Trial-level classes as in the opening comment. The paper's text leaves two choices
+    open, and all four combinations are run. The proportion is either (a) of rolling windows, as
+    add_rolling_stats computes it, with the code's >= 0.85, or (b) of trial labels with > 0.85, as
+    the text says. The stable modes are either (i) TA or TI, as the first sentence says, or (ii)
+    TA, TI or aperiodic, as "no single coding scheme" and Figure 3-figure supplement 4 allow.
+    Reproduced when the counts are within tolerance under any combination.
+  depends_on:
+  - fig2-session-level-classes
+- id: fig3f-session-class-bias
+  statement: Grid cells classified as task-anchored at the session level were biased towards high
+    proportions of task-anchored trials, and session-level task-independent cells towards high
+    proportions of task-independent trials, though many varied between trials.
+  source: Results, Grid cells switch between task-anchored and task-independent firing, paragraph 2;
+    Figure 3F
+  quote: Grid cells identified as having task-anchored firing in our initial session-level analysis ( Figure
+    2 ) were biassed towards high proportions of task-anchored trials
+  criterion: The paper reports no test. Proportions of a session in each mode under readings (a)
+    windows and (b) trials, as in fig3f-switching-within-session. Reproduced when, under both
+    readings, the median TA proportion of TAG cells exceeds that of TIG cells and the median TI
+    proportion of TIG cells exceeds that of TAG cells. The medians and histograms are reported.
+  depends_on:
+  - fig3f-switching-within-session
+- id: fig3g-trial-spatial-information
+  statement: Within grid cells, spatial information was higher on trials classified as
+    task-anchored than on trials classified as task-independent.
+  source: Figure 3G; Results, Grid cells switch between task-anchored and task-independent firing,
+    paragraph 3
+  quote: This difference was associated with substantially lower spatial information scores for trials with
+    task-independent firing, while mean firing rates were similar
+  statistics:
+  - test: linear mixed model on log spatial information, ANOVA against null model
+    statistic: Χ2 = 30.98, DF = 1
+    p: 1.0e-7
+    p_relation: "<"
+  criterion: For each grid cell, spatial information (bits/s) over TA trials and over TI trials,
+    with the larger set randomly subsampled to the size of the smaller (Methods, Analysis of
+    neural activity during the location memory task). The code
+    (add_spatial_information_during_position_and_distance_trials) draws the trial numbers from
+    the rolling window centres, so a trial can be drawn more than once; the Methods' trial labels
+    are the main reading and the code a variant. As Compare_by_trial.Rmd does, lmer(log(SI) ~ mode
+    + (1 | mouse/session)) against the null model by anova. Reproduced when p < 0.05 with SI higher
+    on TA trials.
+  depends_on:
+  - fig3f-switching-within-session
+- id: fig3g-trial-firing-rate-similar
+  statement: Mean firing rates of grid cells were similar on task-anchored and task-independent
+    trials.
+  source: Figure 3G
+  quote: whereas the average firing rate was similar between task-anchored and task-independent trials (right)
+  statistics:
+  - test: linear mixed model on log firing rate, ANOVA against null model
+    statistic: Χ2 = 0.022, DF = 1
+    p: 0.88
+  criterion: A claim of absence, judged on the paper's test as in Compare_by_trial.Rmd, lmer(log(rate)
+    ~ mode + (1 | mouse/session)) against the null model, with the same trial subsets as
+    fig3g-trial-spatial-information. Reproduced when p >= 0.05; not reproduced when p < 0.05. The
+    ratio of means is reported.
+  depends_on:
+  - fig3f-switching-within-session
+- id: fig3s4-stable-cells
+  statement: Grouping grid cells by a stable mode over trials (more than 85%), stable task-anchored
+    cells had higher spatial information than stable task-independent cells while mean firing
+    rates did not differ, as with the session-level grouping.
+  source: Figure 3-figure supplement 4A-B; Results, Grid cells switch between task-anchored and
+    task-independent firing, paragraph 2
+  quote: Conclusions from this analysis are similar to those of Figure 2F
+  statistics:
+  - about: spatial information, effect of group
+    test: linear mixed model on log spatial information, ANOVA against null model
+    statistic: Χ2 = 21.47, DF = 2
+    p: 1.0e-4
+    p_relation: "<"
+  - about: spatial information, TA against TI
+    test: pairwise comparison of estimated marginal means
+    statistic: T = 4.229, DF = 89.9
+    p: 0.0002
+  - about: firing rate, TA against TI
+    test: pairwise comparison of estimated marginal means
+    statistic: T = –0.532, DF = 21.4
+    p: 0.86
+  criterion: As CompareGroups_StableCats.Rmd does, cells with a TA proportion > 0.85 form TA, with a
+    TI proportion > 0.85 form TI. The proportion is of trial labels, as the legend says (">85% of
+    trials"); the code's proportion of rolling windows is a variant and is shown. The third group is open. The legend reads it as stable aperiodic cells, while the code
+    puts every other grid cell in it ("None"); both are run. lmer(log(SI) ~ group + (1 |
+    mouse/session)) and lmer(log(rate) ~ group + (1 | mouse/session)), emmeans pairs. Reproduced when,
+    under both third-group readings, the SI TA against TI contrast is significant at 0.05 with TA
+    higher and the firing rate contrast has p >= 0.05.
+  depends_on:
+  - fig3f-switching-within-session
+- id: fig3s5-grid-vs-nongrid-modes
+  statement: Grid cells spent more of a session in task-independent periodic firing than non-grid
+    cells; the distributions of task-anchored, task-independent and aperiodic epochs differed
+    between grid and non-grid cells.
+  source: Figure 3-figure supplement 5B; Results, Grid cells switch between task-anchored and
+    task-independent firing, paragraph 2
+  quote: For non-grid cells, consistent with session-level analyses, we again found that a sub-population
+    showed task-anchored firing at a trial level, while task-independent periodic firing was substantially
+    less common than in the grid cell population
+  statistics:
+  - about: task-anchored epochs
+    test: Kolmogorov-Smirnov test
+    statistic: KS = 0.14
+    p: 0.035
+    n: 103 grid cells, 1778 non-grid cells
+  - about: task-independent epochs
+    test: Kolmogorov-Smirnov test
+    statistic: KS = 0.42
+    p: 1.0e-15
+    p_relation: "<"
+  - about: aperiodic epochs
+    test: Kolmogorov-Smirnov test
+    statistic: KS = 0.38
+    p: 1.0e-12
+    p_relation: "<"
+  expected:
+  - quantity: non-grid cells
+    value: 1778
+    tolerance: 177.8
+  criterion: Per cell, the proportion of the session in each mode, under readings (a) windows (the
+    code's rolling:proportion_encoding columns, which plot_proportion_of_session_encoding_mode
+    plots) and (b) trial labels. Two-sample KS tests (scipy ks_2samp) of grid against non-grid
+    cells per mode. No code was found for this test. Reproduced when, under a reading, the TI test
+    has p < 0.05 with grid cells higher and the other two tests also have p < 0.05; partially
+    reproduced when only the TI test does.
+  depends_on:
+  - fig3f-switching-within-session
+- id: fig3s6-block-lengths
+  statement: Periods of task-anchored or task-independent firing extended in blocks across multiple
+    trials, with a distribution of block lengths that differed from that of trial-shuffled data.
+  source: Figure 3-figure supplement 6B; Results, Grid cells switch between task-anchored and
+    task-independent firing, paragraph 3
+  quote: among all grid cells periods of task-anchored or task-independent firing extended in blocks across
+    multiple trials, with the distribution of block lengths substantially different to that generated
+    by shuffled data
+  statistics:
+  - test: Kolmogorov-Smirnov test
+    statistic: KS = 0.066
+    p: 0.0003
+    n: 1765 blocks (data), 2359 blocks (shuffled)
+  expected:
+  - quantity: blocks in the data
+    value: 1765
+    tolerance: 176.5
+  - quantity: blocks in the trial-shuffled data
+    value: 2359
+    tolerance: 235.9
+  criterion: As vr_grid_cells.add_rolling_stats_shuffled_test and get_block_lengths_any_code do, per
+    grid cell, runs of identical rolling window classes, excluding aperiodic runs, with lengths
+    divided by the number of windows in the session; shuffled data reorder the trials of the rate
+    map once per cell, recompute the periodograms and classify with the same adjusted threshold.
+    KS test of pooled data against pooled shuffled block lengths (plot_rolling_lomb_block_lengths_vs_shuffled).
+    Reproduced when p < 0.05 and the data have fewer blocks than the shuffled data (longer
+    blocks). The shuffle is random; the result of the run made is reported.
+  depends_on:
+  - fig3f-switching-within-session
+- id: fig3s7-trial-type-ratio
+  statement: The percentage of beaconed trials in a session did not affect how often grid cells
+    showed task-anchored coding.
+  source: Figure 3-figure supplement 7B
+  quote: The percentage of beaconed trials did not have a significant effect on the occurrence of task-anchored
+    coding
+  statistics:
+  - test: ANOVA comparison of binomial GLMMs with and without % beaconed trials
+    statistic: Χ2 = 0.032, DF = 1
+    p: 0.95
+  criterion: A claim of absence, judged on the paper's test as the legend gives it, binomial GLMMs
+    (logit) with and without percentage of beaconed trials as a fixed effect, random effects of
+    mouse, session and neuron, compared by likelihood ratio. No code for it is in the repository.
+    The response is not stated. The readings are (a) per trial, TA (1) against any other class (0),
+    and (b) per trial, TA against TI with aperiodic trials dropped. Reproduced when p >= 0.05 under
+    the reading run; if the readings give different outcomes the claim is methods_underspecified.
+    The fitted slope is reported.
+  depends_on:
+  - fig3f-switching-within-session
+- id: fig4e-grid-agreement-higher
+  statement: Simultaneously recorded grid cells agreed strongly in their trial-by-trial firing
+    mode, with agreement greater between grid cell pairs than between pairs involving non-grid
+    cells, whose agreement was more variable and lower on average.
+  source: Figure 4D-E; Results, Grid cells switch between task-anchored and task-independent firing,
+    paragraph 4
+  quote: Agreement was greater between grid cell pairs than between pairs involving non-grid cells
+  statistics:
+  - about: G-G against NG-NG
+    test: pairwise comparison of estimated marginal means
+    statistic: T = –10.455, DF = 10,720
+    p: 1.0e-4
+    p_relation: "<"
+  - about: G-G against G-NG
+    test: pairwise comparison of estimated marginal means
+    statistic: T = –8.415, DF = 10,710
+    p: 1.0e-4
+    p_relation: "<"
+  - about: NG-NG against G-NG
+    test: pairwise comparison of estimated marginal means
+    statistic: T = –6.853, DF = 10,352
+    p: 1.0e-4
+    p_relation: "<"
+  criterion: Agreement of a cell pair is the fraction of trials with the same trial-level class,
+    over each unordered pair of cells in a session, aperiodic trials included (Methods;
+    generate_agreement_dataframe). The pairwise contrasts have the denominator degrees of freedom of
+    the agreement_analysis.Rmd model on differences, lmerTest lmer(diff ~ comp + (1 |
+    mouse/session)) with emmeans, where diff is a pair's agreement minus the mean of its 10 shuffled
+    agreements. The shuffle splits the trial classes of one cell into runs and reorders them at
+    random. That model is the main reading, and the notebook's lmer on raw agreement is a variant.
+    The printed T values are all negative although G-G is reported higher, so the sign is taken
+    from the text. Reproduced when the G-G estimate exceeds both NG-NG and G-NG with p < 0.05 for
+    both contrasts.
+  depends_on:
+  - grid-cell-count
+- id: fig4e-agreement-above-shuffle
+  statement: For grid-grid, non-grid-non-grid and grid-non-grid pairs, agreement in firing mode
+    differed from that of shuffled trial classifications.
+  source: Figure 4E legend
+  quote: Agreement in the firing mode between each combination of grid (G) and non-grid (NG) cells and corresponding
+    scores for the shuffled data (lower), and the difference between the shuffled and actual scores
+  statistics:
+  - about: G-G, data against shuffled
+    test: generalised linear mixed model (beta), ANOVA
+    statistic: Χ2 = 58.89, DF = 1
+    p: 1.0e-13
+    p_relation: "<"
+  - about: NG-NG, data against shuffled
+    test: generalised linear mixed model (beta), ANOVA
+    statistic: Χ2 = 20.42, DF = 1
+    p: 1.0e-5
+    p_relation: "<"
+  - about: G-NG, data against shuffled
+    test: generalised linear mixed model (beta), ANOVA
+    statistic: Χ2 = 30.37, DF = 1
+    p: 1.0e-7
+    p_relation: "<"
+  criterion: As agreement_analysis.Rmd (mod_fit) does, per pair type, glmmTMB beta models of agreement
+    with and without a shuffled (0/1) fixed effect, pairs with agreement exactly 0 or 1 dropped,
+    compared by anova. The notebook fits two random-effect structures, which are the two readings.
+    They are (a) session nested in mouse and (b) cell j nested in cell i nested in session nested in
+    mouse; the Methods do not say which was reported. Reproduced when all three pair types have
+    p < 0.05 under both readings; if the readings differ the claim is methods_underspecified. The
+    direction of each difference (data against shuffled) is reported.
+  depends_on:
+  - fig4e-grid-agreement-higher
+- id: fig4f-nongrid-spatial-information
+  statement: The drop in spatial information when the grid population was task-independent, relative
+    to when it was task-anchored, was greater for grid cells than for non-grid cells, which kept
+    similar spatial information.
+  source: Figure 4F; Results, Grid cells switch between task-anchored and task-independent firing,
+    paragraph 4
+  quote: Non-grid cells also differed from the grid cell population in that their activity maintained similar
+    spatial information between trials when grid cells were task-anchored versus when they were task-independent
+  statistics:
+  - about: grid against non-grid difference
+    test: linear mixed model, ANOVA against null model
+    statistic: Χ2 = 21.1, DF = 1
+    p: 1.0e-5
+    p_relation: "<"
+  - about: grid cells against zero
+    test: estimated marginal mean against zero
+    statistic: T = 2.723, DF = 11.87
+    p: 0.018
+  - about: non-grid cells against zero
+    test: estimated marginal mean against zero
+    statistic: T = –1.278, DF = 2.58
+    p: 0.3
+  criterion: In each session with grid cells, the grid consensus class per trial is the mode of
+    the grid cells' trial classes. With two disagreeing cells, the Methods pick one at random; the
+    code (add_spatial_imformation_during_dominant_modes) takes scipy's mode, which resolves ties
+    to task-anchored; the Methods are the main reading and the code a variant. Equal numbers of
+    consensus TA and TI trials are drawn at random, and spatial information is computed for every
+    cell on each set. The measure is diff = (SI_TA - SI_TI) / SI_TA. As GridvsNonGrid.Rmd does,
+    lmer(diff ~ grid_cell + (1 | mouse/session)) against the null model, and emmeans of each group
+    tested against zero. Reproduced when the group effect has p < 0.05, the grid mean is above zero
+    with p < 0.05, and the non-grid mean has p >= 0.05 against zero.
+  depends_on:
+  - fig3f-switching-within-session
+- id: fig6b-stable-beaconed-similar
+  statement: In sessions with stable grid codes, the proportion of hit trials on cued (beaconed)
+    trials was similar whether grid firing was task-anchored or task-independent.
+  source: Figure 6B; Results, Task-anchored coding by grid cells is selectively associated with
+    successful path integration-dependent reward localisation, paragraph 2
+  quote: On cued trials the spatial organisation of stopping behaviour ( Figures 5C vs D and 6A ) and the proportion
+    of hit trials ( Figure 6B ) was similar for both groups
+  statistics:
+  - test: binomial GLMM, ANOVA against null model
+    statistic: Χ2 = 2.70, DF = 1
+    p: 0.1
+  criterion: A claim of absence, judged on the paper's test. Stable sessions are those with a grid
+    cell having one mode, TA or TI, on > 85% of its trials (Figure 6 legend); the code's >= 0.85
+    of rolling windows (generate_long_form_for_R_by_session) is a variant and is shown.
+    One cell represents a session (drop_duplicate_sessions keeps the first in table order, which
+    sets the class of a session holding both a stable TA and a stable TI cell; both assignments are
+    shown if such a session exists). Trials are those not rejected; hit = 1, try and run = 0. As
+    behaviour_analysis_grid_cells_stable_sessions.Rmd does, glmer(hit ~ class + (1 | mouse/session) +
+    (0 + class | mouse/session), binomial logit, bobyqa) against the null model on beaconed trials.
+    Reproduced when p >= 0.05; not reproduced when p < 0.05. Hit percentages per class are reported
+    (per session, then averaged over mice, as Figure 6B plots).
+  depends_on:
+  - fig3f-switching-within-session
+- id: fig6b-stable-uncued-reduced
+  statement: In sessions with stable grid codes, the proportion of hit trials on non-beaconed and
+    probe trials was substantially reduced when grid firing was task-independent.
+  source: Figure 6B; Results, Task-anchored coding by grid cells is selectively associated with
+    successful path integration-dependent reward localisation, paragraph 2
+  quote: while the proportion of hit trials was substantially reduced ( Figure 6B )
+  statistics:
+  - about: non-beaconed trials
+    test: binomial GLMM, ANOVA against null model
+    statistic: Χ2 = 5.24, DF = 1
+    p: 0.022
+  - about: probe trials
+    test: binomial GLMM, ANOVA against null model
+    statistic: Χ2 = 4.55, DF = 1
+    p: 0.033
+  criterion: Sessions, trials and model as in fig6b-stable-beaconed-similar, fitted to non-beaconed
+    and probe trials separately. Reproduced when both have p < 0.05 with the TI hit proportion
+    lower; partially reproduced when one does.
+  depends_on:
+  - fig6b-stable-beaconed-similar
+- id: fig6a-stable-stop-density
+  statement: In sessions with stable grid codes, stopping on non-beaconed and probe trials was
+    spatially organised around the reward zone when grid activity was task-anchored, but largely not
+    when it was task-independent; on cued trials it was similar in both.
+  source: Figure 6A; Figure 5C-D; Results, Task-anchored coding by grid cells is selectively
+    associated with successful path integration-dependent reward localisation, paragraph 2
+  quote: on non-beaconed and probe trials stopping behaviour was clearly spatial when grid activity was task-anchored,
+    but spatial organisation was largely absent when grid activity was task-independent
+  criterion: Stable sessions as in fig6b-stable-beaconed-similar (trial reading main, window reading
+    a variant), one cell per session within each class as
+    plot_stop_histogram_for_stable_cells_averaged_over_cells selects them, stop density relative to the uniform shuffled
+    baseline per session (Methods; SD 1 cm smoothing, the code's 2 bins as a variant), averaged over
+    sessions with SEM. The paper gives no measure of "spatial". The readings are (a) the mean
+    baseline-subtracted density in the reward zone (90 to 110 cm) is above zero by more than its SEM
+    across sessions, (b) the maximum of the averaged profile between 30 and 170 cm lies in the
+    reward zone. Reproduced when, under both readings, non-beaconed and probe trials are spatial for
+    TA and not for TI, and beaconed trials are spatial for both. If the readings differ the claim is
+    methods_underspecified.
+  depends_on:
+  - fig6b-stable-beaconed-similar
+- id: fig6d-epochs-beaconed-similar
+  statement: Over all sessions, at the trial level, the proportion of hits on beaconed trials was
+    similar whether grid cells were task-anchored or task-independent.
+  source: Figure 6D; Results, Task-anchored coding by grid cells is selectively associated with
+    successful path integration-dependent reward localisation, paragraph 3
+  quote: On cued trials the spatial organisation of stopping behaviour ( Figures 5E–F – 6C ), and the proportion
+    of hit trials ( Figure 6D ), was similar irrespective of whether grid cell fields were task-anchored
+    or task-independent
+  statistics:
+  - test: binomial GLMM, ANOVA against null model
+    statistic: Χ2 = 2.84, DF = 1
+    p: 0.09
+  criterion: A claim of absence, judged on the paper's test. One row per grid cell and trial; rejected
+    trials and trials classed aperiodic or unclassified dropped; hit = 1, try and run = 0. As
+    behaviour_analysis_grid_cells.Rmd does, glmer(hit ~ class + (1 | mouse/session/cell) + (0 + class
+    | mouse/session/cell), binomial logit, bobyqa) against the null model, beaconed trials.
+    Reproduced when p >= 0.05; not reproduced when p < 0.05. Hit percentages per class are reported,
+    per cell then averaged over sessions and mice as plot_percentage_hits_for_remapped_encoding_cells_averaged_over_cells does.
+  depends_on:
+  - fig3f-switching-within-session
+- id: fig6d-epochs-nonbeaconed-reduced
+  statement: Over all sessions, at the trial level, the proportion of hits on non-beaconed trials
+    was reduced when grid firing was task-independent.
+  source: Figure 6D; Results, Task-anchored coding by grid cells is selectively associated with
+    successful path integration-dependent reward localisation, paragraph 3
+  quote: and the proportion of successful trials was reduced compared with when grid firing was task-anchored
+    ( Figure 6D )
+  statistics:
+  - test: binomial GLMM, ANOVA against null model
+    statistic: Χ2 = 10.14, DF = 1
+    p: 0.001
+  criterion: Model as in fig6d-epochs-beaconed-similar, non-beaconed trials. Reproduced when p < 0.05
+    with the TA coefficient positive (more hits when task-anchored).
+  depends_on:
+  - fig6d-epochs-beaconed-similar
+- id: fig6d-epochs-probe
+  statement: On probe trials the proportion of hits was lower when grid firing was task-independent,
+    though the paper's test for probe trials was not significant.
+  source: Figure 6D; Results, Task-anchored coding by grid cells is selectively associated with
+    successful path integration-dependent reward localisation, paragraph 3
+  quote: On average, spatial stopping behaviour was reduced on non-beaconed and probe trials during which grid
+    firing was task-independent ( Figure 6C ), and the proportion of successful trials was reduced
+  statistics:
+  - test: binomial GLMM, ANOVA against null model
+    statistic: Χ2 = 1.70, DF = 1
+    p: 0.19
+  criterion: Model as in fig6d-epochs-beaconed-similar, probe trials. The text states a reduction and
+    the legend's test is not significant, so the claim is judged on direction. Reproduced when the
+    mean hit percentage for TI is below that for TA (per cell, then session, then mouse, as the
+    figure code averages) and the GLMM coefficient for TA is positive. The p-value is reported.
+  depends_on:
+  - fig6d-epochs-beaconed-similar
+- id: fig6c-epoch-stop-density
+  statement: Over all sessions, spatial stopping on non-beaconed and probe trials was reduced on
+    trials when grid firing was task-independent, while on cued trials it was similar.
+  source: Figure 6C; Results, Task-anchored coding by grid cells is selectively associated with
+    successful path integration-dependent reward localisation, paragraph 3
+  quote: On average, spatial stopping behaviour was reduced on non-beaconed and probe trials during which grid
+    firing was task-independent ( Figure 6C )
+  criterion: Per grid cell, baseline-subtracted stop density over its TA trials and over its TI
+    trials (rejected trials dropped), averaged across cells with weights equal to the cell's
+    fraction of trials in that mode times 1 / (grid cells in its session) (Methods, Analysis of
+    behaviour; get_session_weights). The readings for "spatial" are those of
+    fig6a-stable-stop-density, and "reduced" means the TA reward zone mean exceeds the TI mean.
+    Reproduced when, under both readings, non-beaconed and probe trials show TI below TA and
+    beaconed trials are spatial for both. If the readings differ the claim is
+    methods_underspecified.
+  depends_on:
+  - fig3f-switching-within-session
+- id: fig6e-hit-try-run
+  statement: Task-anchored firing occurred on a greater proportion of non-beaconed and probe hit
+    trials than task-independent firing, but on a smaller proportion of run trials.
+  source: Figure 6E; Results, Task-anchored coding by grid cells is selectively associated with
+    successful path integration-dependent reward localisation, paragraph 4
+  quote: task-anchored firing occurred on a greater proportion of non-beaconed and probe trials that were hits
+    compared with task-independent firing, but on a smaller proportion of run trials
+  statistics:
+  - about: beaconed trials
+    test: binomial GLMM, ANOVA against null model
+    statistic: Χ2 = 4.49, DF = 2
+    p: 0.11
+  - about: non-beaconed trials
+    test: binomial GLMM, ANOVA against null model
+    statistic: Χ2 = 7.75, DF = 2
+    p: 0.02
+  - about: probe trials
+    test: binomial GLMM, ANOVA against null model
+    statistic: Χ2 = 5.40, DF = 2
+    p: 0.07
+  criterion: Per grid cell and outcome (hit, try, run), the percentage of that outcome's trials that
+    are TA among TA and TI trials, averaged with weights (fraction of the trial type's trials with
+    that outcome) x 1 / (grid cells in the session), over cells having all three outcomes
+    (get_percentage_from_rolling_classifier_column). As behaviour_analysis_hit_try_run.Rmd does,
+    glmer(TA ~ outcome + (1 | mouse/session/cell) + (0 + outcome | mouse/session/cell), binomial)
+    against the null model per trial type. Reproduced when, for non-beaconed and probe trials, the
+    weighted TA percentage is above 50% for hits and below 50% for runs, and the non-beaconed model
+    has p < 0.05. Hit, try and run follow the Methods (95th percentile of hit trials' reward zone
+    speeds); the code's 95% normal interval (add_hit_miss_try) is a variant and is shown.
+  depends_on:
+  - fig6d-epochs-beaconed-similar
+- id: fig6f-odds-ratio
+  statement: The odds ratio for reward on task-anchored relative to task-independent trials was close
+    to 1 when cues were available but much larger without cues.
+  source: Figure 6F; Results, Task-anchored coding by grid cells is selectively associated with
+    successful path integration-dependent reward localisation, paragraph 4
+  quote: the odds ratio for receipt of reward on task-anchored versus task-independent trials was close to
+    1 when cues were available, but was much larger in the absence of cues
+  statistics:
+  - about: beaconed trials
+    test: odds ratio from binomial GLMM
+    p: 0.23
+  - about: non-beaconed trials
+    test: odds ratio from binomial GLMM
+    p: 0.001
+  - about: probe trials
+    test: odds ratio from binomial GLMM
+    p: 0.27
+  criterion: Odds ratios and their p-values from the full models of fig6d (exponentiated fixed
+    effect of task-anchored against task-independent, as sjPlot tab_model reports, Wald p) per
+    trial type (Methods, Statistical analyses). The odds ratio values appear only in the figure,
+    which was not available. Reproduced when the non-beaconed odds ratio is above 1 with p < 0.05
+    and is larger than the beaconed odds ratio, and the beaconed p >= 0.05.
+  depends_on:
+  - fig6d-epochs-beaconed-similar
+- id: fig6s1-speed-profiles
+  statement: The differences in outcome between task-anchored and task-independent trials were not
+    associated with differences in running speed profiles.
+  source: Figure 6-figure supplement 1B; Results, Task-anchored coding by grid cells is selectively
+    associated with successful path integration-dependent reward localisation, paragraph 3
+  quote: The differences in outcomes between task-anchored versus task-independent trials were not associated
+    with differences in running speed profiles
+  criterion: Speed in 1 cm bins per trial, Gaussian SD 2 cm (Methods), per trial type and outcome,
+    split by the grid cell's trial class, with trials used once per simultaneously recorded grid
+    cell (legend; plot_speed_profiles_between_p_and_d_groups). The paper reports no test. It plots
+    the mean with SD across trials, and that is the reading here. Reproduced when, for every trial
+    type and outcome with both classes present, the TA mean profile lies within the TI mean +- 1 SD
+    over the track and the TI mean lies within the TA mean +- 1 SD.
+  depends_on:
+  - fig6d-epochs-beaconed-similar
+- id: fig6s2-template-method
+  statement: Classifying trials by correlation with a template of task-anchored firing also gave
+    similar performance on cued trials but impaired performance on uncued trials when grid cells were
+    not task-anchored.
+  source: Figure 6-figure supplement 2F-H; Results, Task-anchored coding by grid cells is
+    selectively associated with successful path integration-dependent reward localisation,
+    paragraph 4
+  quote: also indicated a similar behavioural performance on cued trials, but impaired performance on uncued
+    trials when grid cells were in a task-independent mode
+  statistics:
+  - about: hits, beaconed trials
+    test: binomial GLMM, ANOVA against null model
+    statistic: Χ2 = 0.62, DF = 1
+    p: 0.43
+  - about: hits, non-beaconed trials
+    test: binomial GLMM, ANOVA against null model
+    statistic: Χ2 = 6.43, DF = 1
+    p: 0.01
+  - about: hits, probe trials
+    test: binomial GLMM, ANOVA against null model
+    statistic: Χ2 = 3.52, DF = 1
+    p: 0.06
+  - about: odds ratio, beaconed trials
+    test: odds ratio from binomial GLMM
+    p: 0.4
+  - about: odds ratio, non-beaconed trials
+    test: odds ratio from binomial GLMM
+    p: 0.002
+  - about: odds ratio, probe trials
+    test: odds ratio from binomial GLMM
+    p: 0.04
+  criterion: Template is the mean smoothed rate map over the cell's Lomb-Scargle TA trials; each
+    trial's Pearson correlation with it at >= 0.5 is TA+, otherwise TA- (Methods;
+    add_rolling_stats_by_trial_number_using_alternative_classification, add_alternative_classification).
+    The Methods discard units with < 15% TA trials; the code instead labels all their trials TA- and
+    keeps them, a variant. Aperiodic trials are dropped. Model as behaviour_analysis_grid_cells_altmethod.Rmd,
+    as in fig6d-epochs-beaconed-similar with the TA+/TA- class. Reproduced when beaconed p >= 0.05
+    and non-beaconed p < 0.05 with fewer hits on TA- trials.
+  depends_on:
+  - fig6d-epochs-beaconed-similar
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: "claude-opus-5-5"
+  ready: true
+  changes:
+  - supp1-recording-summary, expected 179.1 relabelled as the mean over the nine mice of each mouse's mean trials per session, since the table's Average row is a mean over mice (the nine per-mouse means average to 179.1), not over the 215 sessions.
+  - fig3s4-stable-cells, the trial-label proportion (> 85% of trials, as the legend says) is now the main reading and the code's window proportion a variant, as the protocol puts the paper's text before the code where they disagree.
+  - fig6b-stable-beaconed-similar, the same change for stable sessions (Figure 6 legend says > 85% of trials; the code's >= 0.85 of windows in generate_long_form_for_R_by_session is now a variant); fig6b-stable-uncued-reduced inherits it.
+  - fig6a-stable-stop-density, stable sessions now refer to fig6b-stable-beaconed-similar so that the same main and variant readings apply.
+  - fig6e-hit-try-run, the Methods' 95th percentile hit/try/run split is now the main reading and the code's 95% normal interval (add_hit_miss_try) a variant, in place of treating them as equal readings, matching the opening comment and the protocol's order of sources.
+  - fig4e-agreement-above-shuffle, the criterion no longer requires data agreement above shuffled, since the statement and the legend say only that the scores differ; the direction is reported.
+  - fig6s2-template-method, added the beaconed odds ratio p = 0.4 from the Figure 6-figure supplement 2H legend, which the statistics left out.
+  - opening comment, says which stability reading is main.
+  - Checked against the code at 670c45a (CompareGroups*.Rmd, agreement_analysis.Rmd, behaviour_analysis*.Rmd, GridvsNonGrid.Rmd, vr_grid_cells.add_hit_miss_try, generate_long_form_for_R_by_session); the other cited code details match.
+  - Open, fig2e-nongrid-classes, fig6a-stable-stop-density, fig6c-epoch-stop-density and fig6s1-speed-profiles judge words the paper does not quantify ("similar", "spatial", speed profiles not differing) by measures the claims file names as readings (Fisher test, reward zone mean against SEM, profile peak, mean within 1 SD); none is from the paper, and the outcomes rest on them.
+  - Open, fig4e-grid-agreement-higher, the printed T values are all negative and the legend calls the upper panel the difference between shuffled and actual scores, so the sign convention of the reported contrasts is unclear; the criterion takes the direction from the text. Its statement's "more variable" is not tested.
+  - Open, the per-session versus per-day counting of units (grid-cell-count) and the definitions of field size and grid spacing (grid-field-size-spacing, from the preprocessing repo at an unpinned commit) are not fixed by the paper.

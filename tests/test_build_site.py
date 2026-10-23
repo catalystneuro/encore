@@ -503,7 +503,7 @@ def test_a_dataset_with_claims_and_no_attempt_has_a_page_linked_from_the_pipelin
 def test_a_dataset_waiting_on_a_person_links_its_issue():
     data = site.collect()
     label = data["targets"][0]["label"]
-    data["issues"] = {label: "https://github.com/catalystneuro/reproduction-registry/issues/1"}
+    data["issues"] = {label: "https://github.com/catalystneuro/encore/issues/1"}
     row = next(r for r in site.pipeline_rows(data) if r["dataset"] == label)
     assert row["issue"] == data["issues"][label]
     page = site.page_pipeline(data)

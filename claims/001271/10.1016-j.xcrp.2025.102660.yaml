@@ -1,0 +1,552 @@
+# Claims for Semenov, Kim, Silkuniene & Pakhomov (2025), Cell Reports Physical Science 6, 102660,
+# on dandiset 001271.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-22, under
+# docs/protocol.md version pilot-10, as the reader.
+#
+# Text read. The NIH author manuscript (NIHMS2098259, PMC12320893) as served by Europe PMC, with its
+# main text, figure legends and STAR Methods, and the supplement (NIHMS2098259-supplement-1.pdf,
+# Figures S1 to S4 and Table S1, the Key Resource Table), all in
+# paper/10.1016-j.xcrp.2025.102660.txt. The version of record was not read. No main-text PDF was
+# available, so Figures 1 to 6 could not be looked at. Page 3 of the supplement PDF (Figure S2) was
+# looked at to read its layout, as its legend does not give it: three neurons, one vehicle
+# control tested at 45, 63 and 72 V/cm and two TTX neurons tested at 90, 108 and 117 V/cm and at
+# 54, 72 and 81 V/cm, each at the same fields before and after the solution change, with APs at
+# the lower fields and a depolarization with small oscillations at the highest before the change.
+# These values orient the author only; no claim rests on them.
+#
+# Code. The paper states "This paper does not report original code". It names the software used:
+# Fiji ImageJ 1.53C or MetaMorph 7.7 for soma emission, Grapher 16 for traces and linear
+# regression, Origin 8.0 for fits, Sim4Life 5.2 for the field, and RStudio in Table S1. No
+# repository was read, so no method detail below is settled by code.
+#
+# Data the paper used. E18 Sprague-Dawley rat hippocampal neurons (BrainBits), cultured about one
+# week on 12-mm coverslips. A single neuron with no apparent somatic contact is centred in the
+# field, with a bipolar tungsten electrode (two 100-um rods, 120-um gap, 45 degrees, tips 50 um
+# above the coverslip) and the neuron centred in the gap. Fast imaging of the optical membrane
+# potential, 64 x 64 pixels after 4 x 4 binning, at 3,130 or 3,086.4 frames/s, 1,200 images per
+# session (50 ms before, 250 ms during and about 90 ms after the stimulus), sessions 20 to 60 s
+# apart, fields escalated or in a random order. F is the emission over the entire soma, F0 its mean
+# before the stimulus, and dF = 100% (F - F0)/F0. Most neurons were stained with FluoVolt and
+# recorded with 250-ms unmodulated or 20-Hz modulated sine waves at 2 and 20 kHz (Figures 1, 2), in
+# NaCl (16.4 mS/cm) or sodium gluconate (8.4 mS/cm) solution (Figure 3A, 3B), with 2-s ramped 2-kHz
+# sine waves (Figure 3C), with Di-8-ANEPPS on eight neurons (Figure S1) and with 1 uM tetrodotoxin
+# (Figure S2). Strobe imaging with 2-us pulses and single sine wave beats measured membrane charging
+# (Figures 4 to 6, S3).
+#
+# This dandiset. Its title and description on DANDI ("Tetrodotoxin Blockade of Sodium Channels
+# Abolishes Action Potential Formation During Intense Sinewave Stimulation"; 1 uM TTX "suppressed
+# action potentials, as expected, and completely prevented sustained depolarization") match the
+# Figure S2 experiment. As the paper reports it, FluoVolt-stained neurons were stimulated by
+# unmodulated 250-ms, 2-kHz sine waves at several field strengths (V/cm) in the standard NaCl
+# solution, and again about 5 min after the solution was replaced by the same solution with 1 uM
+# TTX (Tocris) or without it (vehicle control). The measured variable is the soma emission per
+# frame; per session, the field strength, the solution (before, TTX, vehicle) and the session
+# order. The paper gives no count of TTX or vehicle neurons; the Methods say representative traces
+# come from at least 4, usually 8 to 15, replications in different cells. The claims on the Figure
+# S2 experiment are data dataset. The paper deposited its raw images in ten dandisets (Data and
+# code availability) without saying which figure is in which. From their titles only, 001030
+# (2-kHz sine waves, effect of the field) and 001032 to 001035 (sine wave stimulation at varying
+# frequencies) hold the FluoVolt experiments of Figures 1 to 3, 001272 Di-8-ANEPPS (Figure S1),
+# 001273 the 2-us pulse kinetics (Figure 4), 001274 sine wave polarization (Figures 5, 6, S3);
+# 001031 (100-kHz bipolar pulses) matches no figure. Claims on those are data elsewhere, and the
+# claims files of 001272, 001273 and 001274 hold fuller criteria for theirs.
+#
+# Method details fixed from the paper, used by the Figure S2 criteria.
+# (F1) F is the mean emission over the entire cell soma per frame, F0 the mean over an interval
+# before the stimulus, dF = 100% (F - F0)/F0 (Methods, Recording of the optical APs). FluoVolt
+# emission rises with depolarization, so traces are not inverted.
+# (F2) Traces are not filtered or modified in any way (Methods); no detrending or smoothing.
+# (F3) The stimulus is a 250-ms, 2-kHz unmodulated sine wave (Figure S2 legend), starting 50 ms into
+# the session (Methods); the onset, the field and the solution of each session are taken from the
+# dataset, and the 50 ms is used when the onset is not given there.
+# (F4) Sessions after the change are those about 5 min after the solution was replaced by TTX or
+# vehicle (Figure S2 legend); the solution of each session is taken from the dataset.
+# (F5) The maximum firing rate of a session is the inverse of the peak-to-peak interval between its
+# first two APs (Methods).
+# (F6) The two-sided Student's t test, paired or unpaired as appropriate, at p < 0.05, is the paper's
+# test where a criterion needs one (Methods, Quantification and statistical analysis). The paper
+# reports no test for Figure S2.
+#
+# Details the paper leaves open, with the readings named. Every Figure S2 criterion runs every
+# combination of the readings below; a claim is decided when all give its outcome, and blocked as
+# methods_underspecified when they give different outcomes.
+# (O1) The soma outline is not given. ROIs are taken from the dataset when it holds them. When it
+# does not, readings (a) the connected component nearest the image centre (the Methods centre the
+# neuron) of an Otsu threshold of the mean pre-stimulus frame, (b) that mask eroded by 2 pixels, to
+# leave out the neurite bases at its edge. Otsu and the 2 pixels are standard choices.
+# (O2) The length of the F0 interval is not given ("a time interval preceding the electrical
+# stimulation"); readings (a) all frames before the onset (about 50 ms), (b) the last 20 ms before
+# the onset. This is unlikely to change an outcome.
+# (O3) AP detection is given only as "brief emission upticks", in neurons selected for APs above 5%
+# dF lasting about 10 ms (typical 11.3% and 8 ms). An AP is a local maximum of dF with width at half
+# height between 2 and 20 ms ("about 10 ms"; the bounds are a standard choice) and at least 5 ms
+# from a larger maximum (standard choice; the paper's highest rates, 60 to 90 Hz, give intervals
+# over 11 ms). Readings of the height (a) above 5% dF (the Methods' selection level), (b) above 5 SD
+# of dF before the onset. After TTX, (a) and (b) are applied with the level of the same neuron's
+# sessions before the change, so that a drop of the baseline noise cannot create APs.
+# (O4) "Sustained depolarization" is not defined by a measure. It is no AP in the last 100 ms of the
+# stimulus while the mean dF over that window is above, reading (a) 5 SD of dF before the onset,
+# (b) half the median AP height of the neuron before the change. The 100-ms window is a standard
+# choice. "Sustained firing" is, as a standard choice, at least three APs with one in the last 50 ms
+# of the stimulus.
+# (O5) Which session pairs are compared before and after the change is not stated beyond the
+# legend's "recorded first ... and again"; readings (a) every field tested both before and after,
+# (b) only the highest field tested both before and after.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001271"
+paper: doi:10.1016/j.xcrp.2025.102660
+claims:
+- id: figs2-neurons-tested
+  statement: The tetrodotoxin experiment was replicated in several neurons, with vehicle controls; the
+    representative traces of Figure S2 come from at least 4 independent replications in different
+    cells.
+  source: Figure S2 legend; Methods, Quantification and statistical analysis
+  quote: Representative traces of the optical membrane potentials were selected from at least 4 and
+    usually 8-15 independent replications in different cells
+  expected:
+  - quantity: neurons in the TTX experiment, TTX alone or TTX and vehicle (readings in the criterion)
+    value: 4
+    tolerance: 0
+    unit: neurons, at least
+  criterion: Neurons are counted from the dataset's subjects, sessions or cell identifiers, each
+    recording counted once (author, step 1), and split into TTX and vehicle by the dataset's
+    session metadata. The paper does not say whether the 4 replications count TTX neurons alone;
+    readings (a) at least 4 TTX neurons, (b) at least 4 neurons over TTX and vehicle together.
+    As a reported number read two ways, reproduced when either reading holds (protocol, step 3).
+    The tolerance is 0 on a lower bound. The number of vehicle neurons is reported; the legend
+    gives no count and the figure shows one, so at least one vehicle neuron is expected and its absence is reported as a
+    finding.
+- id: figs2-before-firing-then-depolarization
+  statement: Before the drug, unmodulated 2-kHz sine waves evoked repetitive APs at lower fields and,
+    at the most intense fields, a sustained depolarization in which APs merged into small
+    oscillations.
+  source: Results, Tetrodotoxin blocks sustained depolarization, paragraph 1; Results, Stimulation by
+    2- and 20-kHz unmodulated sine waves, paragraph 1; Figure S2
+  inferred: The paper states this pattern for Figures 1 and 3 ("At the highest field strengths,
+    multiple APs coalesced into low-amplitude oscillations on top of a continuous depolarization");
+    for the Figure S2 neurons it is shown
+    only in the traces before the change, and the legend's "abolishes both firing and sustained
+    depolarization" implies both were present before.
+  criterion: F1 to F3, under O1 to O4, sessions before the change only. Per neuron, the session at its
+    highest field and its sessions at lower fields. Reproduced when every neuron (TTX and vehicle)
+    has APs in some session, and more than half of them (a standard choice; the paper gives no
+    fraction) show sustained depolarization (O4) at their highest field and APs without sustained
+    depolarization at a lower field. The AP count and the maximum firing rate (F5) per session are
+    reported against field.
+- id: figs2-depolarization-reversible
+  statement: The sustained depolarization induced by intense unmodulated sine waves reversed
+    immediately when the stimulus ended, so it was not membrane electroporation, which would take
+    seconds or longer to repair.
+  source: Results, Tetrodotoxin blocks sustained depolarization, paragraph 1
+  quote: The sustained depolarization induced by intense unmodulated sine waves ( Figures 1 and 3 )
+    was immediately reversible upon stimulus cessation. It was not related to membrane
+    electroporation, which would take seconds or longer to repair
+  depends_on:
+  - figs2-before-firing-then-depolarization
+  criterion: F1 to F3, under O1 to O4, all sessions with sustained depolarization (O4), before the
+    change and in vehicle neurons. "Immediately" is not quantified; readings of the window after
+    the stimulus (a) 10 to 40 ms after its end, (b) the last 40 ms of the recording (the Methods
+    give about 90 ms after the stimulus). Reproduced when, in every such session, the mean dF in
+    the window is below the O4 level of that reading. A further check, from the paper's "seconds or
+    longer", is that F0 of the next session of the same neuron (20 to 60 s later) is within 10%
+    (a standard choice) of the F0 of the session before; it is reported, not judged. Windows are
+    standard choices; the claim is tested on the Figure S2 neurons, while the paper's sentence
+    cites Figures 1 and 3.
+- id: figs2-ttx-abolishes-aps
+  statement: 1 uM tetrodotoxin abolished the APs evoked by unmodulated 250-ms, 2-kHz sine waves.
+  source: Results, Tetrodotoxin blocks sustained depolarization, paragraph 1; Figure S2 legend
+  quote: the inhibition of sodium channels with 1 μM tetrodotoxin not only abolished the APs
+  depends_on:
+  - figs2-before-firing-then-depolarization
+  criterion: F1 to F4, under O1 to O3 and O5. Per TTX neuron, session pairs at the same field before
+    and after TTX. Reproduced when, in every TTX neuron, no AP is detected in any session after
+    TTX at a field where APs were detected before; not reproduced when any such session has an
+    AP. The AP counts before and after per pair are reported.
+- id: figs2-ttx-blocks-sustained-depolarization
+  statement: Tetrodotoxin also fully blocked the sustained depolarization caused by intense sine
+    waves, consistent with the depolarization arising from repeated activation of voltage-gated
+    sodium channels by the cycling de- and hyperpolarization of the membrane.
+  source: Results, Tetrodotoxin blocks sustained depolarization, paragraph 1; Figure S2 legend
+  quote: Consistent with this hypothesis, the inhibition of sodium channels with 1 μM tetrodotoxin not
+    only abolished the APs but also fully blocked the sustained depolarization
+  depends_on:
+  - figs2-before-firing-then-depolarization
+  criterion: F1 to F4, under O1, O2, O4 and O5. Per TTX neuron, the session pairs at the same field
+    where sustained depolarization (O4) was present before TTX. Reproduced when, in every such pair,
+    sustained depolarization is absent after TTX, and the mean dF over the last 100 ms of the
+    stimulus after TTX is below the O4 level. "Fully" is read as that level; the mean dF over the
+    window before and after is reported per pair, with a two-sided paired t test (F6) over pairs
+    shown as a variant, not judged. Blocked (other) when no TTX neuron has sustained depolarization
+    before TTX.
+- id: figs2-vehicle-keeps-response
+  statement: In vehicle controls, recorded about 5 min after the solution was replaced by the same
+    solution without TTX, the firing and sustained depolarization persisted.
+  source: Figure S2 legend; Methods, Quantification and statistical analysis
+  inferred: No sentence states the vehicle result. The Figure S2 legend says the neurons were recorded
+    again after replacement by the same solution "with 1 μM TTX or without it (vehicle control)",
+    the Methods list "vehicle controls in experiments with tetrodotoxin", and the legend's title
+    attributes the loss of firing and depolarization to TTX, which implies the vehicle neurons kept
+    them; Figure S2 shows this in one neuron.
+  depends_on:
+  - figs2-before-firing-then-depolarization
+  criterion: F1 to F4, under O1 to O5. Per vehicle neuron, session pairs at the same field before and
+    after the change. Reproduced when, in every vehicle neuron, every pair with APs before has APs
+    after, and every pair with sustained depolarization (O4) before has it after. AP counts and
+    the maximum firing rate (F5) per pair are reported; the paper does not say whether the response
+    must be unchanged, so a decline is reported, not judged. Blocked (other) when the dataset holds
+    no vehicle neuron.
+- id: ap-amplitude-duration
+  statement: Neurons were selected for APs peaking above 5% dF and lasting about 10 ms; typical APs
+    were 11.3% dF high and 8 ms long, excluding the afterhyperpolarization.
+  source: Methods, Recording of the optical APs and data analyses
+  quote: we selected neurons whose APs peaked at a more than 5% Δ F and lasted about 10 ms (typical
+    values ... 11.3% ± 0.9% Δ F and 8 ± 0.7 ms duration, excluding afterhyperpolarization ... mean ±
+    SEM, n = 22)
+  expected:
+  - quantity: mean AP peak over neurons
+    value: 11.3
+    tolerance: 0.9
+    unit: percent dF
+  - quantity: mean AP duration over neurons
+    value: 8
+    tolerance: 0.7
+    unit: ms
+  criterion: F1 and F2, under O1 to O3, sessions before the change. The paper does not say which 22
+    neurons these are or which experiments they come from; the neurons of this dataset are tested
+    as neurons the same selection was applied to, and a mismatch may come from that. Per neuron,
+    the mean peak dF and duration of its APs. Which APs are measured is not given; readings (a) all
+    APs before the change, (b) the first AP of each session, which is not merged with others. The
+    duration measure is not given; readings (a) width at half height, (b) time from the rise to
+    the return to F0 on the decay, ending at the first crossing of F0 (so the afterhyperpolarization
+    is left out). These readings are method details that can change the outcome, so the header's
+    rule applies. Reproduced when the means over neurons are within the paper's SEM under every
+    reading; partially reproduced when, under every reading, every neuron has APs above 5% dF and
+    lasting 2 to 20 ms (O3) but a mean falls outside; blocked as methods_underspecified when the
+    readings give different outcomes. The number of neurons with APs above 5% is reported.
+- id: fig1-pure-sine-excites-all
+  statement: Unmodulated 250-ms sine waves at 2 and 20 kHz excited every neuron tested, with APs
+    100 to 200 ms after onset near threshold, firing rate rising to a ceiling of 60 to 90 Hz, and
+    sustained depolarization at the highest fields.
+  source: Results, Stimulation by 2- and 20-kHz unmodulated sine waves, paragraph 1; Figures 1A to 1C
+    and inset
+  quote: Pure sine waves at 2 and even 20 kHz excited 100% of neurons ... at near-threshold electric
+    field strengths, isolated APs emerged with a delay of 100-200 ms after the sine wave onset ...
+    The maximum firing rate increased linearly until reaching a ceiling of 60-90 Hz
+  data: elsewhere
+  where: DANDI:001030 and 001032 to 001035 (assigned from their titles; the paper does not map
+    figures to dandisets)
+  expected:
+  - quantity: fraction of neurons excited
+    value: 100
+    tolerance: 10
+    unit: percent
+  criterion: F1 to F3, F5, O1 to O4 of the header, for FluoVolt sessions of unmodulated sine waves.
+    A neuron's threshold is the lowest field of a session with at least one AP during the
+    stimulus (Figure 2D legend). Reproduced when, under every reading, at least 90% of neurons
+    are excited at each frequency, the median over neurons of the highest maximum firing rate lies
+    within 54 to 99 Hz (60 to 90 Hz widened by 10% of each bound) and the median first-AP latency
+    at threshold lies within 90 to 220 ms (100 to 200 ms widened the same way). Whether the
+    ceiling is meant for the median neuron or every neuron is open (the inset shows three); both
+    are reported and the median decides. Sustained depolarization (O4) at the highest field is
+    reported, not judged, as the paper gives no fraction of neurons.
+- id: fig1-20khz-needs-twice-the-field
+  statement: All excitation thresholds at 20 kHz were about 2-fold higher than at 2 kHz.
+  source: Results, Excitation thresholds are similar or lower for pure 2- and 20-kHz sine waves than
+    those for modulated sine waves, paragraph 1; Figure 2D
+  quote: All thresholds at 20 kHz were about 2-fold higher than at 2 kHz ( p < 0.0001, two-tailed
+    unpaired t test)
+  statistics:
+  - about: 20 kHz against 2 kHz, all thresholds
+    test: two-tailed unpaired t test
+    p: 0.0001
+    p_relation: "<"
+  data: elsewhere
+  where: DANDI:001032 to 001035 (assigned from their titles)
+  expected:
+  - quantity: ratio of mean 20-kHz to mean 2-kHz threshold, each stimulus and AP count
+    value: 2
+    tolerance: 0.2
+  criterion: Thresholds for at least 1 and at least 5 APs during the 250-ms stimulus (Figure 2D
+    legend), from the threshold search of the Methods (5% to 10% steps), with the AP readings of
+    the header. The paper gives one p over "all thresholds"; readings (a) one test per stimulus
+    (modulated or not) and AP count, each p < 0.0001, (b) one test pooling the four. Reproduced
+    when each ratio is within tolerance and 20 against 2 kHz reaches p < 0.0001 under every
+    reading; blocked as methods_underspecified when they disagree.
+- id: fig2d-modulated-thresholds-higher
+  statement: Thresholds for sine waves modulated at 20 Hz were significantly higher than for pure
+    sine waves at the same carrier, for 5 APs at 2 kHz and for 1 and 5 APs at 20 kHz, so modulation
+    did not lower excitation thresholds; the 2-kHz unmodulated 1-AP threshold was 57.7 V/cm.
+  source: Results, Excitation thresholds are similar or lower for pure 2- and 20-kHz sine waves than
+    those for modulated sine waves, paragraph 1; Figure 2D; Results, Asymmetric and less-efficient
+    membrane charging, last paragraph
+  quote: thresholds for modulated sine waves, which emulate the TI stimulus at the target, were
+    significantly higher than those for pure sine waves at the same frequency ... p = 0.0079 ...
+    p = 0.0142 and p = 0.0037
+  statistics:
+  - about: modulated against unmodulated, 2 kHz, 5 APs
+    test: two-tailed unpaired t test
+    p: 0.0079
+  - about: modulated against unmodulated, 20 kHz, 1 AP
+    test: two-tailed unpaired t test
+    p: 0.0142
+  - about: modulated against unmodulated, 20 kHz, 5 APs
+    test: two-tailed unpaired t test
+    p: 0.0037
+  data: elsewhere
+  where: DANDI:001032 to 001035 (assigned from their titles)
+  expected:
+  - quantity: mean unmodulated 2-kHz 1-AP threshold
+    value: 57.7
+    tolerance: 3.6
+    unit: V/cm
+  criterion: Thresholds as in fig1-20khz-needs-twice-the-field. Two-tailed unpaired t tests, as the
+    Figure 2D legend names them. Reproduced when the three modulated thresholds are higher with
+    p < 0.05 (Methods), the 1-AP threshold at 2 kHz is not lower for modulated waves at p < 0.05, and
+    the mean 2-kHz unmodulated 1-AP threshold is within the paper's SEM, under every AP reading. The
+    paper calls 57.7 V/cm "the AP threshold" for unmodulated 2-kHz sine waves (Figure 2D) without
+    saying 1 or 5 APs; it is read as the 1-AP threshold, the excitation threshold of Figures 2D and
+    3B, and the 5-AP mean is reported beside it;
+    blocked as methods_underspecified when they disagree.
+- id: fig2-modulated-locks-to-beats
+  statement: With 20-Hz modulation, firing above threshold locked to the beats, one AP near the peak
+    of each of the five beats and at most two per beat (ten in all), and modulated sine waves
+    triggered no sustained firing or sustained depolarization.
+  source: Results, Stimulation by 2- and 20-kHz sinusoids modulated at 20 Hz, paragraph 1; Figures 2A
+    and 2B
+  quote: single APs emerged near the peak of each beat, so the firing rate equaled the modulation
+    rate ... the maximum number of APs evoked by five beats was limited to ten. Unlike pure sine
+    waves, modulated stimuli did not trigger sustained firing or sustained depolarization
+  data: elsewhere
+  where: DANDI:001032 to 001035 (assigned from their titles)
+  criterion: AP readings of the header, modulated sessions only. The 250-ms wave holds five 50-ms
+    beats (Results), and modulated waves begin and end at minimal amplitude (Methods, Pulsed laser
+    fluorescence microscopy), so each beat peaks 25 ms into it; the dataset's stimulus record is
+    used instead when it gives the envelope. The paper does not quantify "near the peak"; as
+    standard choices, reproduced when no session has more than 10 APs, in sessions with 5 APs or
+    more most APs fall within 12.5 to 37.5 ms of each 50-ms beat, and no session shows sustained
+    firing or sustained depolarization (O4).
+- id: fig2c-pure-more-aps
+  statement: In the same neuron at the same field strength, pure sine waves triggered more APs than
+    modulated ones, and the threshold was typically lower for unmodulated signals.
+  source: Results, Stimulation by 2- and 20-kHz sinusoids modulated at 20 Hz, paragraph 2; Figures 2A
+    to 2C
+  quote: the threshold was typically lower for unmodulated signals ( Figures 2A - 2C ). At the same
+    field strengths, pure sine waves triggered a larger number of APs
+  data: elsewhere
+  where: DANDI:001032 to 001035 (assigned from their titles)
+  criterion: AP readings of the header. Pairs are a neuron's modulated and unmodulated sessions at the
+    same carrier and field. The paper reports no test; reproduced when the unmodulated count is
+    larger in more pairs than the reverse, and the unmodulated threshold lower in more neurons than
+    the reverse, under every reading. A two-sided paired t test (F6) of the counts is reported.
+- id: fig3b-low-conductivity-halves-threshold
+  statement: Lowering solution conductivity from 16.4 to 8.4 mS/cm with sodium gluconate reversibly
+    lowered excitation thresholds about 2-fold at all sine wave frequencies from 2 to 20 kHz.
+  source: Results, Decreased extracellular conductivity lowers excitation thresholds, paragraph 1;
+    Figures 3A and 3B
+  quote: Switching to the NaGlu-based solution reversibly and reproducibly decreased excitation
+    thresholds ~2-fold across all sine wave frequencies tested
+  data: elsewhere
+  where: DANDI:001030 and 001032 to 001035 (assigned from their titles)
+  expected:
+  - quantity: ratio of NaCl to NaGlu mean 1-AP threshold, each frequency
+    value: 2
+    tolerance: 0.2
+  criterion: 1-AP thresholds for 250-ms unmodulated sine waves per frequency and solution, 4 to 8
+    neurons per point (Figure 3B legend), AP readings of the header. Reproduced when the ratio is
+    within tolerance at every frequency under every reading.
+- id: fig3-not-heating
+  statement: Excitation by pure sine waves was not caused by heating; the adiabatic temperature rise
+    was 2.5 C after 250 ms at 63 V/cm in NaCl solution, at most 1.24 C for the same stimulus in
+    the low-conductivity solution, and 4.1 C at 81 V/cm in NaCl.
+  source: Results, Decreased extracellular conductivity lowers excitation thresholds, paragraph 2;
+    Figure 3A
+  quote: the maximum theoretical temperature rise (assuming no heat dissipation 43 ) was 2.5°C after
+    250 ms of near-threshold stimulation at 2 kHz, 63 V/cm, in the NaCl-based solution ... These
+    observations prove that excitation by pure sine waves was not caused by heating
+  data: elsewhere
+  where: DANDI:001030 or 001032 to 001035 for the Figure 3A responses (assigned from their titles);
+    the temperatures are calculated from the field, duration and conductivity, not measured
+  expected:
+  - quantity: adiabatic rise, 63 V/cm, 250 ms, 16.4 mS/cm
+    value: 2.5
+    tolerance: 0.25
+    unit: degrees C
+  - quantity: adiabatic rise, 63 V/cm, 250 ms, 8.4 mS/cm
+    value: 1.24
+    tolerance: 0.124
+    unit: degrees C
+  - quantity: adiabatic rise, 81 V/cm, 250 ms, 16.4 mS/cm
+    value: 4.1
+    tolerance: 0.41
+    unit: degrees C
+  criterion: The rise is sigma E^2 t over the volumetric heat capacity (reference 43, cited for the
+    adiabatic assumption). The paper does not give the heat capacity or whether E is the peak or
+    the RMS field; readings (a) peak, (b) RMS, each with the heat capacity of water (4.18 J per
+    cm3 per K, a standard choice). Reproduced when all three are within tolerance under a reading;
+    since these are calculated numbers read two ways, that reading is reported. Computed from the
+    paper's own values (1.64 S/m, 63 V/cm, 0.25 s), neither reading gives 2.5 C (peak about 3.9 C,
+    RMS about 1.95 C), while the ratios 4.1/2.5 and 1.24/2.5 follow the formula's scaling with E^2
+    and with conductivity. The heat capacity or field definition the paper used is therefore not
+    known; when no reading matches the absolute values but the two ratios are within 10%, the claim
+    is blocked as methods_underspecified, and it is not reproduced only when the ratios fail as
+    well. That the Figure 3A
+    neuron fired at 63 V/cm in NaGlu as at 81 V/cm in NaCl is tested as in
+    fig3b-low-conductivity-halves-threshold.
+- id: fig3c-sustained-firing-2s
+  statement: In the low-conductivity solution, a 2-s unmodulated 2-kHz sine wave ramped over 250 ms
+    evoked firing for its whole duration, rising with field until replaced by a firing block with
+    sustained depolarization.
+  source: Results, Decreased extracellular conductivity lowers excitation thresholds, paragraph 3;
+    Figure 3C
+  quote: we observed sustained firing for the entire duration of the sine wave ( Figure 3C ). The rate
+    of firing increased with the electric field strength until it was replaced by a firing block
+    and sustained depolarization
+  data: elsewhere
+  where: DANDI:001030 (assigned from its title)
+  criterion: Traces corrected for bleaching by subtracting a trace without APs (Methods); AP readings
+    of the header. Reproduced when an intermediate field has APs in the last 250 ms of the stimulus,
+    the AP count rises with field up to some field, and the highest field shows sustained
+    depolarization (O4, over the last 250 ms of the stimulus). The windows are standard choices.
+- id: figs1-di8-same-as-fluovolt
+  statement: With Di-8-ANEPPS in place of FluoVolt, in eight neurons, the effects of 2-kHz sine waves
+    were not different, so the excitation by unmodulated sine waves is not a sensitization by
+    FluoVolt.
+  source: Results, Sensitivity to unmodulated sine waves was not caused by FluoVolt dye, paragraph 1;
+    Figure S1
+  quote: Experiments were performed on eight neurons using different electric field strengths tested
+    in a random sequence ... Overall, stimulation effects were not different from those observed
+    with FluoVolt dye
+  data: elsewhere
+  where: DANDI:001272 (assigned from its title)
+  criterion: As in the claims file for DANDI:001272 (figs1-eight-neurons and
+    figs1-effects-same-as-fluovolt), which tests this finding on its own data.
+- id: fig4-pooled-time-constants
+  statement: Membrane charging by 2-us pulses is fast; pooled over 19 experiments, charging and
+    discharging time constants averaged 0.7 and 0.91 us at the cathodic pole and 0.65 and 0.8 us at
+    the anodic pole, so membranes charge fully within each sine wave cycle up to 100 to 200 kHz.
+  source: Results, Kinetics of membrane charging by pulsed electric fields, the paragraph after the
+    Figure 4 legend; Figures 4D and 4E
+  quote: The time constants pooled together for all cells averaged 0.7 ± 0.08 (charging) and 0.91 ±
+    0.08 (discharging) μs for the cathodic cell pole and 0.65 ± 0.05 and 0.8 ± 0.07 μs for the
+    anodic pole, respectively (mean ± SEM, n = 19)
+  data: elsewhere
+  where: DANDI:001273 (assigned from its title)
+  expected:
+  - quantity: charging tau, cathodic pole
+    value: 0.7
+    tolerance: 0.08
+    unit: us
+  - quantity: discharging tau, cathodic pole
+    value: 0.91
+    tolerance: 0.08
+    unit: us
+  - quantity: charging tau, anodic pole
+    value: 0.65
+    tolerance: 0.05
+    unit: us
+  - quantity: discharging tau, anodic pole
+    value: 0.8
+    tolerance: 0.07
+    unit: us
+  criterion: Fits and readings as in the claims file for DANDI:001273 (fig4-pooled-time-constants),
+    which tests this claim on its own data; tolerances are the paper's SEMs.
+- id: fig4-orientation-and-poles
+  statement: Aligning elongated cells with the field doubled the time constants; the maximum optical
+    TMP and the time constants did not differ between the cathode- and anode-facing poles; and
+    discharging was slower than charging except in elongated cells aligned with the field.
+  source: Results, Kinetics of membrane charging by pulsed electric fields, the paragraph after the
+    Figure 4 legend; Figures 4D and 4E
+  quote: Δ F max did not differ at the cathodic and anodic cell poles, indicating the lack of
+    rectification of the applied electric field ... Aligning elongated cells with the electric
+    field doubled the time constants ... discharging time constants were always larger than the
+    charging ones in the same cell ( p < 0.001, paired t test)
+  statistics:
+  - about: elongated cells, parallel against perpendicular
+    test: paired t test
+    p: 0.001
+    p_relation: "<"
+  - about: elongated parallel against random cells
+    test: unpaired t test
+    p: 0.01
+    p_relation: "<"
+  - about: discharging against charging tau
+    test: paired t test
+    p: 0.001
+    p_relation: "<"
+  data: elsewhere
+  where: DANDI:001273 (assigned from its title)
+  criterion: As in the claims file for DANDI:001273 (fig4-orientation-time-constants,
+    fig4-no-pole-difference and fig4-discharging-slower), which tests each part on its own data;
+    reproduced when all three are reproduced there. The Figure 4 legend gives other bounds and
+    test types for these comparisons (p < 0.01, paired two-tailed, charging against
+    discharging; p < 0.01, unpaired two-tailed, between orthogonal orientations); the statistics
+    above are the Results'.
+- id: fig6-sine-less-than-pulse
+  statement: FluoVolt sensitivity to 2-kHz sine waves (11.8% per 1 kV/cm) was 42% of that to 2-us
+    pulses (28% per 1 kV/cm) and smaller in every ROI, with sine waves polarizing the two poles more
+    asymmetrically than pulses.
+  source: Results, Asymmetric and less-efficient membrane charging by sine waves compared to pulses,
+    paragraphs 2 to 5; Figures 5, 6B to 6D and S3
+  quote: All numbers were invariably smaller than those measured for the same ROIs with the pulse (
+    Figure 6D ). The electric field sensitivity averaged across all ROIs in all the cells was 11.8% ±
+    1.7% per 1 kV/cm, just 42% of the value for the 2-μs pulses
+  data: elsewhere
+  where: DANDI:001274 (assigned from its title)
+  expected:
+  - quantity: mean pulse sensitivity over the 18 ROIs
+    value: 28
+    tolerance: 2.5
+    unit: percent per kV/cm
+  - quantity: mean sine wave sensitivity over the 18 ROIs
+    value: 11.8
+    tolerance: 1.7
+    unit: percent per kV/cm
+  - quantity: mean sine over mean pulse sensitivity
+    value: 42
+    tolerance: 4.2
+    unit: percent
+  criterion: Measures and readings as in the claims file for DANDI:001274 (fig6b-pulse-sensitivity,
+    fig6c-sine-sensitivity, fig6d-sine-less-than-pulse, fig5-sine-asymmetry-c7 and
+    figs3-sine-asymmetry-c8), which tests this finding on its own data; tolerances are the paper's
+    SEMs, and 10% for the ratio.
+- id: threshold-depolarization-estimate
+  statement: The 2-kHz AP threshold of 57.7 V/cm times the sine wave sensitivity gives a 0.68%
+    emission change, about 6.8 mV, so the threshold depolarization is 5 to 15 mV, as with
+    intracellular current injection.
+  source: Results, Asymmetric and less-efficient membrane charging by sine waves compared to pulses,
+    last paragraph
+  quote: This threshold corresponds to a 0.68% ± 0.11% FluoVolt emission change (11.8 × 57.7/1,000)
+    ... a 0.68% emission change corresponds to a 6.8-mV depolarization at the AP threshold
+  data: elsewhere
+  where: DANDI:001032 to 001035 for the threshold and DANDI:001274 for the sensitivity (assigned from
+    their titles)
+  depends_on:
+  - fig2d-modulated-thresholds-higher
+  - fig6-sine-less-than-pulse
+  expected:
+  - quantity: emission change at the 2-kHz AP threshold
+    value: 0.68
+    tolerance: 0.11
+    unit: percent
+  - quantity: depolarization at the 2-kHz AP threshold
+    value: 6.8
+    tolerance: 1.1
+    unit: mV
+  criterion: Mean sine sensitivity of fig6-sine-less-than-pulse times the mean unmodulated 2-kHz 1-AP
+    threshold of fig2d-modulated-thresholds-higher, divided by 1,000, and that times 10 mV per 1%
+    (the calibration of reference 47 as the paper uses it). Tolerances are the paper's, the last
+    being 0.11% times 10 mV per 1%. Reproduced when both are within tolerance.
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - ap-amplitude-duration, the outcome rule now follows the header's rule for method readings (all readings agree, else blocked as methods_underspecified); before, a mean outside the SEM under only one reading led to partially reproduced.
+  - fig3-not-heating, added that the paper's own values give neither 2.5 C with the peak field (about 3.9 C) nor with the RMS field (about 1.95 C) at 1.64 S/m and the heat capacity of water, while the ratios between the three temperatures follow E^2 and conductivity; with the heat capacity and field definition not given, a miss on the absolute values with ratios within 10% is now blocked as methods_underspecified.
+  - fig2d-modulated-thresholds-higher, named as a reading that the paper's "AP threshold" of 57.7 V/cm is the 1-AP threshold; the paper does not say 1 or 5 APs.
+  - figs2-neurons-tested, the expected quantity now names both readings of the criterion (TTX alone, or TTX and vehicle), as its label said TTX only; and the one vehicle neuron is attributed to the figure, as the legend gives no count.
+  - Open, figs2-vehicle-keeps-response, the requirement that every pair with APs before has APs after is a reader's standard choice; the paper gives no measure, and the rundown it reports (Figure 3A legend) could remove near-threshold APs in a vehicle neuron.
+  - Open, the header's description of the Figure S2 layout (fields per neuron, one vehicle and two TTX neurons) could not be checked here, as the supplement PDF could not be rendered; the text gives only "three representative neurons", and no claim's outcome rests on the layout.
