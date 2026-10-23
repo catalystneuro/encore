@@ -3474,6 +3474,10 @@
     "ready": null,
     "date": null
    },
+   "dandi:000289": {
+    "ready": true,
+    "date": "2026-10-23"
+   },
    "dandi:000294": {
     "ready": true,
     "date": "2026-10-23"
@@ -13982,6 +13986,109 @@
       "source": "Methods, \"PETH and NNMF clustering\", paragraph 5; Extended Data Fig. 4j,k",
       "quote": "We ran this method with the number of clusters set to each value from 6 to 20, and found that 13 clusters achieved the best consistency (Extended Data Fig. 4j)",
       "criterion": "Needs how cluster labels are matched across bootstrap iterations, which the Methods do not give."
+     }
+    ]
+   }
+  ],
+  "dandi:000289": [
+   {
+    "path": "claims/000289/10.1073-pnas.2210622120.yaml",
+    "paper": "10.1073/pnas.2210622120",
+    "check": {
+     "ready": true,
+     "date": "2026-10-23"
+    },
+    "claims": [
+     {
+      "id": "fig1-conflict-decreases-certainty",
+      "statement": "In the circular Kalman filter, an HD observation consistent with the current estimate increases certainty, while one that strongly conflicts with it (opposite direction) decreases certainty.",
+      "source": "Results, Circular Kalman Filtering, HD Observations, paragraph 1; Fig. 1 D and E",
+      "quote": "HD observations increase the observer\u2019s certainty if they are confirmatory ... if HD observations strongly conflict with the current estimate (e.g., if they point in the opposite direction), they actually decrease certainty",
+      "criterion": "The update is the vector addition of Fig. 1 D and E and the observation term of Eq. 9 (kappa changes by kappa_z cos(z - mu) dt). In the code's circKF step (vM_Projection in circularFiltering.py, kappa_phi = 1, kappa_v = 1, dt = 0.01) the observation enters as that vector addition on the natural parameters, followed by the prediction step. Take a state with certainty kappa_t (any of 1, 2, 5) and apply one step with an HD observation at z = mu (confirmatory) and one at z = mu + pi (opposite). The paper fixes no single reliability for this; use the per-step reliabilities the Methods give, xi_fun_inv(gamma_z dt) for gamma_z = 1/s (Fig. 3E) and 10/s (Fig. 2H). Compare (a) the certainty right after the observation update with the certainty before it (the update of Fig. 1 D and E alone, before the prediction step), and (b) the certainty after the full step with the certainty after the same step with no observation (kappa_z = 0). Reproduced when, under both comparisons, every kappa_t and both reliabilities, the confirmatory observation gives higher and the opposite one lower certainty."
+     },
+     {
+      "id": "fig2h-bump-tracks-circkf",
+      "statement": "In a simulated Bayesian ring attractor of 80 neurons, the bump position tracks HD about as accurately as the circular Kalman filter, the bump amplitude tracks the filter's certainty, and when the visual cue is removed the amplitude decays toward its baseline.",
+      "source": "Results, Neural Network Implementation, paragraph 6; Fig. 2H",
+      "quote": "This network exhibits a spatially localized bump whose position tracks HD, with an accuracy similar to that of the circular Kalman filter itself ( Fig. 2 H ). Meanwhile, the amplitude of the bump accurately tracks the fluctuating HD posterior certainty in the circular Kalman filter ... When the visual cue is removed, the bump amplitude decays toward baseline",
+      "criterion": "Run Figure2h.ipynb as released (seed 42, T = 15, dt = 0.01, kappa_phi = 1, kappa_v = 2, N = 80, cue off from 5 to 10 s, information rate 15). The Methods give gamma_z = 10/s; run that as a second reading of the cue strength. Bump position and amplitude are decoded as in the Methods (x = A r, position arctan2(x2, x1), amplitude the vector length), with the notebook's scaling x = (2/N) A r, which puts the amplitude on the scale of kappa. The paper gives no number for \"similar\" or \"accurately\"; readings for both cue strengths: (a) the mean absolute circular difference between the network's and the circKF's HD estimates is smaller than the circKF's own mean absolute error to the true HD, over the whole run; (b) the Pearson correlation between bump amplitude and circKF certainty over the cue periods is at least 0.9. Decay: over the darkness period (5 to 10 s) the bump amplitude falls and ends closer to the baseline kappa* = 1 (Methods, Bayesian ring attractor) than it started. Reproduced when the decay holds and (a) and (b) hold under both cue strengths."
+     },
+     {
+      "id": "fig2i-accuracy-and-certainty-vs-reliability",
+      "statement": "The Bayesian ring attractor tracks HD with the same accuracy as the circular Kalman filter when HD observations are reliable and with slightly lower accuracy when they are unreliable; in the unreliable regime its certainty stays near its baseline and overestimates the filter's certainty.",
+      "source": "Fig. 2I legend; Results, Neural Network Implementation, paragraph 7",
+      "quote": "The Bayesian ring attractor network tracks the true HD with the same accuracy ... if HD observations are reliable and, therefore, more informative but with slightly lower accuracy once they become less reliable, and therefore less informative. This drop co-occurs with an overestimate in the belief\u2019s certainty",
+      "criterion": "From figure2i.npz as Figure2i.ipynb reads it, compare the circKF (vonMises_stats) and the Bayesian ring attractor (vonMises_q_stats) over the 23 information rates (0.01 to 100/s, kappa_v = 1, T = 20). Accuracy is the stored |m1|, certainty the mean final kappa. The paper names no rate that separates reliable from unreliable; readings for the reliable set: (a) rates of 1/s and above, (b) rates of 3/s and above. \"Same accuracy\" readings: the absolute difference is at most (i) 0.01 or (ii) 0.02 at every reliable rate. Reproduced when, under every combination, the accuracies are the same on the reliable set, the attractor's accuracy is below the circKF's at the lowest rates (0.01 to 0.1/s), and at those rates its mean certainty is above the circKF's."
+     },
+     {
+      "id": "fig3b-bayesian-beats-conventional",
+      "statement": "A conventional ring attractor (fast decay to a fixed bump amplitude, with that amplitude optimized) is less accurate than the Bayesian ring attractor at every HD observation reliability, and reaches its accuracy only when observations are highly unreliable.",
+      "source": "Results, Bayesian vs. Conventional Ring Attractors, paragraphs 2 and 3; Fig. 3B",
+      "quote": "Even after this optimization of the conventional ring attractor, it does not rival the accuracy of the Bayesian ring attractor. The Bayesian attractor performs consistently better, regardless of the amount of information available to the network",
+      "criterion": "As in Figure3b,c,e,d_FigureS3.ipynb, the conventional attractor is the fixed-certainty filter (noUncert_stats) at the kappa* that maximizes the prior-weighted average accuracy (objective() with mean 0.5 and SD 1 over log rate, Methods, Performance measures, and Fig. 3B inset); the Bayesian ring attractor is vonMises_q_stats. Reproduced when the Bayesian attractor's accuracy is at least the conventional one's at every one of the 23 rates and strictly above it at every rate from 0.1/s to 10/s. The paper's \"only once HD observations become highly unreliable\" is checked as the difference being smallest at the lowest rates (0.01 and 0.03/s); reported, not judged."
+     },
+     {
+      "id": "fig3c-update-weights",
+      "statement": "The weight given to a new HD observation by the Bayesian ring attractor depends on both the observation's reliability and the current certainty and is close to that of the circular Kalman filter, deviating only for very uninformative observations; a conventional attractor weights observations by their reliability alone.",
+      "source": "Fig. 3C legend; Results, Bayesian vs. Conventional Ring Attractors, paragraph 3; SI Appendix, Fig. S3 legend",
+      "quote": "The update weight of the Bayesian attractor is close to optimal, visually indistinguishable from the circKF",
+      "criterion": "In the notebook, Fig. 3C plots the weight for a 90 degree observation as a map over the observation's and the posterior's informativeness and draws on it each model's mean certainty against information rate: circKF (vonMises_stats[0,:,2]) and Bayesian attractor (vonMises_q_stats[0,:,2]), both as Fisher information xi(kappa); the conventional attractor is a constant kappa*. Compute, at each of the 23 rates, the weight under the circKF's and under the attractor's mean certainty, with the per-observation reliability alpha = xi_fun_inv(rate x Delta t). The Methods and the code differ on the weight: readings (i) the Methods, w = (1/pi) tan^-1(alpha / kappa) with Delta t = 0.01 (10-ms observation, Fig. 3C legend and Methods); (ii) the notebook, w = arctan2(alpha, kappa) / (pi/2) with Delta t = 0.1. The paper gives no bound for \"close\"; readings: the absolute weight difference is at most (a) 0.02 or (b) 0.05 at every rate of 1/s and above. Reproduced when every combination holds and the largest difference falls at rates below 1/s (Fig. S3, \"only deviates ... for very uninformative observations\"). The conventional attractor's weight depending on reliability only follows from its constant kappa* and is not tested."
+     },
+     {
+      "id": "fig3d-best-network-slow-decay",
+      "statement": "Across ring attractors with different bump decay speeds and baseline amplitudes, the best network has a slow decay (low beta) and performs about as well as the Bayesian ring attractor; performance drops as decay speed increases, which a larger baseline amplitude partly offsets.",
+      "source": "Results, Bayesian vs. Conventional Ring Attractors, paragraph 4; Fig. 3D",
+      "quote": "The network with the best performance overall had a slow bump decay speed (low \u03b2 ), as expected ( Fig. 3 D and E ). While it featured similar performance to the Bayesian ring attractor, it had slightly different \u03b2 and \u03ba * parameters ... As the bump decay speed \u03b2 increased further, performance dropped.",
+      "criterion": "figure3d.npz holds MSE_array, the prior-weighted average accuracy over the grid of kappa* (0.1 to 2.5) and beta (0.1 to 8), normalized by the particle filter reference as in the notebook. The Bayesian ring attractor is kappa* = 1, beta = 1/(kappa_phi + kappa_v) = 0.5 (Methods). The best network is the grid maximum. Reproduced when (1) the best beta is at most 1 (the scanned values above 1 are 2, 4 and 8); (2) the best network differs from (1, 0.5) in kappa* or beta; (3) the Bayesian attractor's normalized performance is within 10% of the best (the paper's \"similar\", default tolerance); (4) for beta above the best, the maximum over kappa* falls as beta rises; (5) for beta above the best, the kappa* that maximizes performance is at least the best network's kappa*."
+     },
+     {
+      "id": "fig3f-noise-drop-below-70",
+      "statement": "In a network of 64 neurons with additive neural noise, inference accuracy drops below 70% of its noise-free value once the noise is large enough.",
+      "source": "Results, The Impact of Neural Noise on Inference Accuracy, paragraph 1; Fig. 3F",
+      "quote": "Indeed, simulating a network of 64 noisy neurons shows that, once the noise becomes sufficiently large, inference accuracy drops to below 70% of its noise-free value",
+      "criterion": "The paper states a bound, so no tolerance applies. The network without retuning keeps the kappa* and beta that are best at noise SD 0 (noretuning_MSE in the notebook). Normalization readings: (a) the notebook's, performance divided by the particle filter reference; (b) the legend's, performance divided by the same network's performance at noise SD 0. Range readings: (i) noise SD up to 10, the plotted range; (ii) up to 20, the largest simulated. Reproduced when the relative performance without retuning is below 70% at the largest noise SD under every combination."
+     },
+     {
+      "id": "fig3f-retuning-reduces-drop",
+      "statement": "Retuning the bump decay speed and baseline amplitude for each noise level reduces the drop in inference accuracy by about 35% compared with the network tuned for noise-free performance, and raises the signal-to-noise ratio.",
+      "source": "Results, The Impact of Neural Noise on Inference Accuracy, paragraph 3; Fig. 3F; SI Appendix, Fig. S4",
+      "quote": "Indeed, doing so reduced the drop in inference accuracy by about 35% when compared to the network tuned to optimize noise-free performance ( Fig. 3 D and F ) and also boosted the network\u2019s signal-to-noise ratio",
+      "criterion": "From the notebook, retuned performance is the grid maximum at each noise SD (max_MSE), and the untuned one the noise-free optimum's value (noretuning_MSE); signal-to-noise as the notebook computes it (mean kappa over the weighted average, divided by sigma / sqrt(N/2), Methods). The drop is 100% minus relative performance, and the reduction is 1 minus the retuned drop over the untuned drop. The paper does not say at which noise level the 35% is taken; readings: (a) noise SD 10, the largest plotted; (b) noise SD 20, the largest simulated; (c) the mean of the reduction over noise SD 1 to 10. Each under the two normalizations of fig3f-noise-drop-below-70. These are readings of which number the 35% is, so the value part holds when the reduction is within 31.5 to 38.5% under at least one of them (every reading is shown). Reproduced when the value part holds and the retuned signal-to-noise ratio is at least the untuned one at every noise SD above 0. Fig. S4's statement that larger noise needs larger kappa* and beta is reported from the same grid, not judged."
+     },
+     {
+      "id": "noise-effects-on-mu-and-kappa",
+      "statement": "Neural noise makes the bump position diffuse without bias and makes the bump amplitude drift upward and diffuse, which leads to overconfidence; for additive noise, a four-fold larger network halves the noise's effective SD.",
+      "source": "Results, The Impact of Neural Noise on Inference Accuracy, paragraphs 2 and 3; SI Appendix, section 5",
+      "quote": "First, it causes an unbiased random diffusion of \u03bc t and, thus, an increasingly imprecise memory of the HD estimate. Second, it causes a positive drift and random diffusion of \u03ba t",
+      "criterion": "The result is a derivation (SI Appendix, section 5); the Methods give the diffusion SD of kappa under additive noise as sqrt(sigma_nn^2 / N) per unit time. Test it with the code's RNN_filter_Run (with z=None added to its signature, see the code notes above) at the Bayesian ring attractor's parameters (kappa* = 1, beta = 0.5, tau = 1, so w_even = 1.5 and w_quad = 0.5 as in performance_scan_figure3f.py; stoch_corr 0, since it corrects for angular velocity input, which is absent here), with no HD input (I_ext = 0) and no angular velocity input (dy = 0), noise SD 1 and 2, N = 64 and 256, dt = 0.01, from a bump of amplitude 1, over 2,000 runs of T = 5. Reproduced when (1) the mean change of position is within 2 standard errors of 0 and its variance grows with time; (2) the mean amplitude at the end exceeds that of the noise-free run; (3) the SD of the one-step amplitude increments at N = 256 is half that at N = 64, within 10%. The run length, number of runs and starting amplitude are not given by the paper; they are standard choices that set only the precision."
+     },
+     {
+      "id": "fig4b-connectome-motifs",
+      "statement": "The connectivity among EPG, Delta7 and PEN1 neurons in the hemibrain connectome resembles the connectivity of a network that implements the approximate circular Kalman filter, with shifted PEN1 to EPG projections and broad EPG to Delta7 to EPG inhibition.",
+      "source": "Fig. 4 B and C legends; SI Appendix, section 4A",
+      "quote": "The connectivity profile of a recurrent neural network (RNN) ( Fig. 2 D \u2013 F ) that implements an approximate circKF is strikingly similar to the connectivity of neurons in the Drosophila HD system.",
+      "criterion": "Fig. 4B legend: connections from hemibrain:v1.2.1, total synapse count per cell pair as the connection strength, neurons sorted by spatial position as a proxy for preferred HD, Delta7 to Delta7 omitted. The code does not hold this analysis. Sorting is open; readings: (a) by the protocerebral bridge glomerulus in the neuron's name (L9 to R9), (b) by the ellipsoid body or gall position in the name. Reproduced when, under both, (1) PEN1 to EPG connections are offset from the EPG to PEN1 connections, in opposite directions for left and right PEN1 neurons; (2) each Delta7 neuron receives EPG input from, and sends output to, EPG neurons at more than half of the sorted positions (broad inhibition, Fig. 4E)."
+     },
+     {
+      "id": "fig4gh-drosophila-network-matches",
+      "statement": "A Drosophila-like multipopulation network, constrained by the connectome, tracks HD with an accuracy indistinguishable from the idealized Bayesian ring attractor across observation reliabilities.",
+      "source": "Results, Tuning a Biological Ring Attractor, paragraph 3; Fig. 4 G and H",
+      "quote": "We found that this network achieves a HD encoding accuracy which is indistinguishable from that of our idealized Bayesian ring attractor network ( Fig. 4 G and H ).",
+      "criterion": "From figure4g.npz as Figure4g,h.ipynb reads it, compare the Drosophila-like network (CX_stats) with the Bayesian ring attractor (vonMises_q_stats of the same file, same runs, dt = 0.001) at every information rate stored (the 23 rates of performance_scan_figure4g.py, since the notebook's glob over the empty data_raw/figure4g/ yields none). Readings for \"indistinguishable\": the absolute accuracy difference is at most (a) 0.01 or (b) 0.02 at every rate. Reproduced when both hold. The mean certainties (Fig. 4H) are reported, not judged."
+     },
+     {
+      "id": "figs2-performance-independent-of-n",
+      "statement": "The Bayesian ring attractor's inference accuracy depends little on its number of neurons.",
+      "source": "SI Appendix, Fig. S2 legend; Results, Neural Network Implementation, paragraph 6",
+      "quote": "Network inference performance is mostly independent of the number of neurons N in the Bayesian ring attractor network.",
+      "criterion": "figureS2.npz holds accuracy per information rate for N = 3, 4, 8, 16, 32, 64 and 128 (the notebook's N_array), and vonMises_q_stats.npz the quadratic circKF reference. \"Mostly\" is not quantified; readings: for (a) N of 8 and more, (b) N of 16 and more, the accuracy is within 0.02 of the reference at every rate. Reproduced when both hold. The values for N = 3 and 4 are reported."
+     },
+     {
+      "id": "prediction-bump-amplitude-cue-reliability",
+      "statement": "The paper predicts that the bump amplitude in the HD system is higher in the presence of reliable external HD cues, such as salient visual landmarks. The paper does not test this.",
+      "source": "Discussion, paragraph 7",
+      "quote": "Second, we predict that bump amplitude in the HD system should vary dynamically, with higher amplitudes in the presence of reliable external HD cues, such as salient visual landmarks.",
+      "criterion": "The paper gives the measure and nothing else. Bump amplitude is the length of the population vector of the activity's first Fourier component, ordered by preferred HD (Eq. 3; Methods, Simulation parameters, decoder A = (cos phi, sin phi)), in the EPG population that holds the HD bump (SI Appendix, section 4A). The paper does not say how cue reliability is set in an experiment, which activity signal (raw fluorescence or dF/F) feeds the decoder, the time windows, the unit of comparison or a test. Comparison as the paper's text allows: bump amplitude while the fly sees the more reliable cue against the less reliable cue, as the dataset labels them. Readings for the test: (a) per fly, mean amplitude higher with the more reliable cue in more than half of the flies; (b) a one-sided paired Wilcoxon signed-rank test over flies, p below 0.05. Activity signal readings: (i) dF/F, (ii) raw fluorescence minus baseline. Reproduced when every combination finds higher amplitude with the more reliable cue; blocked as methods_underspecified when they differ. The second half of the prediction (a high bump amplitude makes the bump position less sensitive to new cues) has no measure in the paper and is not tested."
      }
     ]
    }
@@ -52893,6 +53000,12 @@
    "verifier-2-report.md",
    "verifier-2.md"
   ],
+  "dandi:000289": [
+   "claims-check-report.md",
+   "claims-check.md",
+   "claims-report.md",
+   "claims.md"
+  ],
   "dandi:000294": [
    "claims-check-report.md",
    "claims-check.md",
@@ -54355,7 +54468,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-23T16:59:04+00:00",
+ "generated": "2026-10-23T17:02:07+00:00",
  "queue_generated": "2026-10-23T11:39:25+00:00",
  "queue_counts": {
   "public_dandisets": 661,
@@ -119392,6 +119505,7 @@
    "000248",
    "000249",
    "000253",
+   "000289",
    "000294",
    "000336",
    "000351",
@@ -119563,7 +119677,6 @@
    "000053",
    "000054",
    "000055",
-   "000289",
    "000448",
    "000548",
    "000549",
@@ -119591,16 +119704,12 @@
   },
   "hours": {
    "full": 3.8680555555555554,
-   "claims": 0.29444444444444445
+   "claims": 0.2961111111111111
   },
   "running": {
    "000055": {
     "kind": "full",
-    "hours": 2.4419692105555555
-   },
-   "000289": {
-    "kind": "claims",
-    "hours": 2.476611111111582e-05
+    "hours": 2.391480637222222
    }
   }
  },
