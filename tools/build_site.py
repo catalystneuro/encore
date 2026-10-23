@@ -277,7 +277,7 @@ def collect(executed: Path | None = None) -> dict:
         entry_list.append({
             "name": entry["name"], "type": entry["type"], "title": entry["title"],
             "description": squash(entry.get("description")),
-            "datasets": sorted({r["id"].split("/")[0] for r in related
+            "datasets": sorted({key_of(*r["id"].split("/")[0].split(":", 1)) for r in related
                                 if not r["id"].startswith(("doi:", "entry:"))}),
             "papers": [r["id"].split(":", 1)[1] for r in related if r["id"].startswith("doi:")],
             "derived_from": [r["id"].split(":", 1)[1] for r in related
