@@ -364,7 +364,9 @@ def load_day(asset):
             finite = np.isfinite(ts)
             tf = ts[finite]
             run.update(pos_key=best, pos_t=tf, pos_xy=xy[finite], pos_conv=conv, pos_n=len(ts),
-                       pos_nan_t=int((~finite).sum()), pos_nonincreasing=int(np.sum(np.diff(tf) <= 0)),
+                       pos_nan_t=int((~finite).sum()),
+                       pos_nan_tail=int(len(ts) - 1 - np.where(finite)[0].max()) if finite.any() else len(ts),
+                       pos_nonincreasing=int(np.sum(np.diff(tf) <= 0)),
                        pos_fs=1 / np.median(np.diff(tf)), pos_unit=_s(data.attrs.get("unit", "")),
                        pos_offset_start=float(tf[0] - start), pos_offset_stop=float(stop - tf[-1]))
         day["runs"].append(run)
@@ -429,6 +431,19 @@ def arm_from_position(run, shift_s=0.0):
         guess = min(cents, key=lambda a: np.sum((xy[i] - cents[a]) ** 2))
         correct += guess == arms[i]
     return correct / max(len(arms), 1), len(arms)
+
+
+def compare_versions():
+    """Per asset path, whether the pinned version's and the draft's content digests differ, and
+    the draft asset's modification date."""
+    out = {}
+    with DandiAPIClient() as client:
+        for v in (DANDISET_VERSION, "draft"):
+            out[v] = {a.path: (a.get_raw_metadata().get("digest", {}).get("dandi:sha2-256"), str(a.modified)[:10])
+                      for a in client.get_dandiset(DANDISET_ID, v).get_assets()}
+    pub, dr = out[DANDISET_VERSION], out["draft"]
+    return pd.DataFrame([{"path": k, "in_draft": k in dr, "content_differs": k in dr and dr[k][0] != pub[k][0],
+                          "draft_modified": dr[k][1] if k in dr else None} for k in sorted(pub)])
 
 
 def compare_with_draft(path, event="homebeam", series="series_1"):
