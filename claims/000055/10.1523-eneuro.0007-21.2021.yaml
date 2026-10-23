@@ -627,6 +627,34 @@ claims:
     largest values in both bands; partially when in one band. Blocked as
     methods_underspecified when the readings give different outcomes. Variants as for
     fig6c-angle-and-day-most-informative.
+- id: figshare-event-link
+  kind: link
+  statement: The paper's curated epoch files on Figshare (10.6084/m9.figshare.12115728.v1) hold the
+    same events as the dataset, so their false-positive flags can be applied to the dataset's
+    events.
+  source: Added by the author of attempt 000055-peterson-2021-01 (protocol, Author, step 4)
+  data: with_labels
+  criterion: Records are matched on the event time, the Figshare event_timestamp (ms from the start
+    of the file) against the dataset's reach start_time. The link holds (reproduced) when every
+    dataset event has exactly one Figshare record of the same subject and day with that time, and
+    the features both hold agree (reach magnitude and angle as stored; duration, onset speed and
+    bimanual overlap after converting frames at 30 frames per second; bimanual class, bimanual
+    ratio and speech ratio) to within 1e-6. Partially reproduced when at least 95% of events match.
+- id: figshare-roi-link
+  kind: link
+  statement: The paper's projection matrices from electrodes to AAL regions on Figshare
+    (10.6084/m9.figshare.12114408.v1) have one row per electrode of the dataset, in the dataset's
+    order.
+  source: Added by the author of attempt 000055-peterson-2021-01 (protocol, Author, step 4)
+  data: with_inputs
+  criterion: Per subject, the number of weight rows is compared with the dataset's channels. Rows
+    carry no identifier, so the order is checked through positions. For each electrode, the
+    weighted mean of the region centroids of the Figshare centroid file is compared with the
+    electrode's MNI position in the dataset, mirrored to the left. The link holds (reproduced)
+    when every subject has one row per channel, any extra rows are all zero, and the median distance
+    is below the smallest of 200 row-shuffled distances for every subject. The eight regions with
+    density averaged over subjects above 3 are also compared with the eight of the opening comment.
+    Partially reproduced when this holds for 10 or 11 subjects.
 checks:
 - date: 2026-10-23
   kind: agent

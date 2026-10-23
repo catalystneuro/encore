@@ -1,0 +1,37 @@
+dandiset: "000055"
+paper: doi:10.1523/eneuro.0007-21.2021
+questions:
+- claim: fig2-event-counts
+  asked: 2026-10-23
+  question: >-
+    Reading (b) of the event set drops "ECoG segments with power below 0 dB or with 115-125 Hz
+    power more than 3 SD above all segments". How is that power computed and over what? The
+    claims file does not say which spectral estimate is used (Welch, multitaper, the Morlet
+    power), over which frequencies the "power below 0 dB" is taken, whether it is judged per
+    electrode or on the mean over electrodes, whether bad electrodes count, whether the 3 SD
+    are over the segments of a subject or of a day, and in which unit (microvolts or volts) the
+    0 dB is set. The same choice sets the event set of every claim that uses reading (b).
+    This attempt runs two readings with a Welch estimate (1 s windows) in microvolts squared
+    per Hz: (b1) the PSD averaged over good electrodes, a segment dropped when the mean over
+    1-200 Hz is below 0 dB or the mean over 115-125 Hz is more than 3 SD above the subject's
+    segments; (b2) the same per good electrode, a segment dropped when any good electrode
+    fails. A first run showed segments whose ECoG is zeroed (the preprocessing zeroes
+    high-amplitude artifacts) inside the analysed window, which (b1) keeps because the Welch PSD of
+    the whole 10 s is above 0 dB; a third reading is run in the first notebook, (b3): as (b1), and
+    also dropping a segment whose Morlet power averaged over good electrodes and frequencies is
+    below 0 dB in any 0.1 s bin from -1.5 to 1.5 s. Is the paper's "power <0 dB" a PSD of the whole
+    segment (b1), per electrode (b2), or power over time within the segment (b3)?
+  passage: >-
+    "... computing the power spectral density for each segment and discarding segments with
+    power <0 dB or with abnormally high power at 115-125 Hz (>3 SDs) compared with all
+    segments." (Materials and Methods, ECoG-event synchronization). The paper's code at
+    04c6faf starts from the curated Figshare epochs and does not hold this step.
+  why: >-
+    In volts every segment is below 0 dB and all events would be dropped; per electrode, more
+    segments fail than on the mean. The event counts of fig2-event-counts are within tolerance
+    with the false positives alone removed, so a rule that drops many segments moves them out
+    of tolerance, and the drop changes the events of every reading-(b) claim. (b2) leaves no
+    events in three subjects (S09, S10, S12), so it cannot be the paper's rule. Between (b1) and (b3) 55
+    events differ; 42 of them have precentral band power near +-300 dB (zeroed ECoG), so means over events
+    differ widely: under (b1) the band-mean and event-mean reading of Table 1 matches 8 of 24
+    intervals.
