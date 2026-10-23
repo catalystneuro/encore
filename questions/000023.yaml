@@ -24,6 +24,16 @@ questions:
     features, the median relative difference from those computed here is 0 for all 18 features and
     275 of 282 cells agree on at least 80% of them, and a match on the features alone, within donor,
     picks the same cell for all 282 files whose cell has features in the table. The attempt runs M2 and records the missing identifier as a finding.
+  answer: >-
+    The paper does not say. The Methods name no identifier for linking a recording to a cell,
+    and the code joins its tables on SpecimenID only (hivscc_data.load_data); neither gives a
+    rule from a session id to a SpecimenID. Both readings are allowed, and the
+    features-and-labels-link criterion now names them, (M1) a SpecimenID stored in the files and
+    (M2) the SpecimenID recovered within donor, checked by the code's features. M2 is a
+    reconstruction the paper does not state; both are run and reported, the missing identifier
+    is a finding, and each dependent claim names the reading it uses. Statement and expected
+    values unchanged.
+  answered: 2026-10-23
 - claim: fig1c-soma-variation
   asked: 2026-10-23
   question: The criterion says the bins that make up deep L3 are not stated. The code that the claim's
@@ -36,6 +46,16 @@ questions:
     "het",c("species"))", printed as "SD human / mouse cross-sectional area (deep L3) 4.0".
   why: The ratio is a mean over the bins chosen, and deep bins differ most between species. The attempt
     runs both.
+  answer: >-
+    D1, from the code. The Methods define the boundary between superficial and deep L3 ("a nadir
+    of scaled density was identified at -0.575, which we define as a quantitative boundary
+    between superficial and deep L3 in this manuscript") but do not say which bins enter the
+    four-fold ratio. Code7 computes it on the bins with centres in scaled depth -0.95 to -0.7
+    (five bins, normalized depth 0.7 to 0.95), averaging the per-section, per-bin SD over those
+    bins and sections per species, and prints 4.0. The criterion now uses D1 and runs D2 (bins
+    deeper than 0.575, the deepest bin dropped as the Methods drop it) as a variant. Claim
+    unchanged.
+  answered: 2026-10-23
 - claim: fig1c-soma-area
   asked: 2026-10-23
   question: The criterion gives no method. Are the interquartile ranges of soma area (Q1) over all
@@ -46,6 +66,14 @@ questions:
     "print(quantile(roiInfoH[[i]][,"area"]))".
   why: Section quartiles differ (human first quartiles 89 to 132 um2). The attempt runs Q1 and shows
     each section and the mean of the section quartiles as Q2.
+  answer: >-
+    Q1, pooled. The Methods give no quartile rule ("1 section per donor for 5 donors" and "1
+    section per animal for 3 animals"), but Code7 computes the numbers the text gives from all
+    somata of a species concatenated across sections, printing 44.7 and 96.5 um2 for mouse and
+    107.5 and 252.6 um2 for human, with a largest human soma of 886 um2. The per-section
+    quantiles it also prints are for the histograms. The fig1c-soma-area criterion now says
+    this. Claim unchanged.
+  answered: 2026-10-23
 - claim: fig1a-thickness
   asked: 2026-10-23
   question: The `where` of the claim names the NeuN section measurements and Code6 and Code7. The
@@ -58,6 +86,15 @@ questions:
     thickness of the entire mouse cortex (1.06 ± 0.01 mm; Fig. 1a )".
   why: Without the mouse value the ratio of 1.16 cannot be tested. The attempt tests the human value
     and reports the mouse L2/3 thickness that the code computes.
+  answer: >-
+    The paper does not say where the mouse value comes from. The Methods (Quantification of soma
+    size) describe only the L1/L2 and L3/L4 borders, and no script computes the whole mouse
+    cortex; the mouse sections have no white matter line. The human value is from Code6, the
+    mean and SD over the 5 sections of the L1/L2 to L3/L4 thickness (it prints 1058 to 1387 um,
+    mean 1.23, SD 0.15 mm). The fig1a-thickness criterion now judges the human value alone,
+    reports the mouse L2/3 thickness of Code7, and records the mouse value and the ratio of 1.16
+    as untested. Expected values unchanged.
+  answered: 2026-10-23
 - claim: fig5b-frem3-morph-depth
   also: [fig6-deep-morph-anova, fig4f-morph-anova]
   asked: 2026-10-23
@@ -71,6 +108,17 @@ questions:
     Two of the 60 are the soma's location (soma_relative_depth_none, depth_from_pia), which a depth
     regression finds trivially; leaving them out gives 58. The attempt runs the common methods on
     all 60 and, for depth, on the 58 without the two location features.
+  answer: >-
+    Yes, the common methods, on all 60 features. The 58 is not the 60 less the two location
+    features. The code (run_regressions in morpho_electro_feature_analysis.ipynb, on
+    morph_df.columns) drops before the FDR correction any feature with no p-value; among the
+    FREM3 cells two are constant (apical_dendrite_pct_below_basal_dendrite_none,
+    basal_dendrite_pct_above_apical_dendrite_none), which leaves 58, and the notebook prints "37
+    28", the paper's "37 out of 58 morphological features were correlated with depth". For the
+    deep types it drops one feature and prints 24 and 20. The criteria of
+    fig5b-frem3-morph-depth, fig6-deep-morph-anova and fig4f-morph-anova now say this. Claims
+    unchanged.
+  answered: 2026-10-23
 - claim: fig6a-deep-dendrites
   asked: 2026-10-23
   question: The claim has no criterion. Which morphological features stand for total dendritic length
@@ -81,6 +129,16 @@ questions:
   why: The code's table has apical and basal total lengths and branch counts but no total; which of
     them is used and how decides the outcome. The claim is blocked as methods_underspecified until
     answered.
+  answer: >-
+    The paper does not say. It gives only "CARM1P1 neurons had the largest total dendritic
+    length of all the L2 and L3 t-types, despite having a shorter apical dendrite length on
+    average" and "COL22A1 had very sparse dendritic branching", with no test, and the
+    code computes neither. The fig6a-deep-dendrites criterion now names the readings, total
+    length as apical plus basal total length, FREM3 whole or split at 0.575, mean or median with
+    no test, and sparse branching as the fewest apical and basal branches among the three deep
+    types. The outcome must hold under all readings, methods underspecified otherwise. Claim
+    unchanged.
+  answered: 2026-10-23
 - claim: edfig6-classifier-morphoelectric
   asked: 2026-10-23
   question: The criterion says only that the claim needs the morphological features. Is the method that
@@ -92,3 +150,13 @@ questions:
     classifier_and_species_analysis.ipynb.
   why: The cells kept and the imputation change the accuracy, against tolerances of 0.069 and 0.06. The
     claim is blocked as methods_underspecified until answered.
+  answer: >-
+    Yes, the method of edfig6-classifier-human-ephys, on the cells of the three homologous types
+    with all 18 electrophysiological features (the code drops any cell with a missing one) and a
+    reconstruction, the 18 and the 60 morphological features combined; the Methods give one
+    classifier procedure for all inputs ("For classification of t-types, features were
+    normalized using the standard scaler"). Imputation does not arise. The KNNImputer(5) is
+    applied only in the morphology-only classifier, and none of the cells used (72 human, 50
+    mouse in the code's tables) has a missing morphological value. The code prints 0.686 for
+    human and 0.640 for mouse over 10 splits. The criterion now says this. Claim unchanged.
+  answered: 2026-10-23
