@@ -1,0 +1,931 @@
+# Claims for Dehaqani, Michelon, Patella, Petrucco, Piasini & Iurilli (2024), Cell Reports 43,
+# 114013, on dandiset 000931.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23, under
+# docs/protocol.md (Reader), protocol version pilot-10.
+#
+# Text read: the version of record (paper/10.1016-j.celrep.2024.114013.txt, extracted from the
+# publisher PDF supplied by a person): main text, figure legends, STAR Methods, and the
+# supplemental information (legends of Figures S1 to S6). No supplementary table exists. The PDF
+# was not opened; no figure value is needed beyond the legends and the text.
+#
+# Dataset: DANDI 000931, "A mechanosensory feedback that uncouples external and self-generated
+# sensory responses in the olfactory cortex", described as the dataset for this paper. Its data
+# were not looked at.
+#
+# Data the paper used (STAR Methods, Mice; Odor delivery; Artificial mechanical stimulation):
+# C57BL/6J mice, 6 to 9 weeks old, both sexes, head-fixed, Neuropixels 1.0 recordings in the
+# anterior piriform cortex (PCx, layers 2 and 3; 22 mice in all, Figure 1B) at 30 kHz. Groups:
+#  - concentration series, 4 mice: alpha-pinene and eucalyptol at 0.01, 0.1 and 1% v/v, 8 blocks
+#    (Figures 2, 5, 6; 464 neurons; the GLM and pseudo-population analyses);
+#  - two-concentration experiment, 2 mice: four odors at 0.01 and 0.1% v/v, 16 blocks. Pooled
+#    with the 4 mice above at 0.01 and 0.1% for Figure 1 (6 mice, 660 neurons, 205
+#    odor-responsive, "five odors"). The Methods list the odors inconsistently (three odors at
+#    "0.01 and 1%" in the odor panel), so the author takes the odors and concentrations from the
+#    files;
+#  - odor identity experiment, 4 mice: four odors at one concentration (0.01%) (Figure S5E);
+#  - awake mice without odor for airflow tuning and first sniffs: 10 control mice, 955 PCx
+#    neurons (Figures 3D to 3F, 4D to 4G); motor cortex (MCx) neurons, 548 (Figure S4C);
+#  - artificial airflow, 3 tracheostomized mice under urethane: 150 ms suction pulses of
+#    odorless air at 50, 100, 150, 200 and 250 ml/min, 252 neurons (Figures 3A to 3C, S3A, S3B);
+#  - bulbectomy, 4 awake mice, 153 PCx neurons (Figures 4, S4);
+#  - anterior ethmoidal nerve (AEN) neurectomy, 5 mice, 752 neurons (Figures S3C to S3E).
+# Signals besides spikes: nasal airflow from a flow sensor in the nose cone, odor from a
+# photo-ionization detector, a TTL at each odor trial and a TTL at each detected inhalation onset,
+# all at 30 kHz; odor pulses of 5 s triggered at an inhalation onset. Single units from Kilosort3
+# and Phy, kept above 0.5 Hz (0.1 Hz under urethane). Inhalations are sorted into slow and fast
+# ("sniff") per mouse by the clustering pipeline of STAR Methods, Inhalation clustering.
+#
+# Code read: iurillilab/mechano-olfactory_code, tag v1.1, commit 3bec502, from the Zenodo
+# deposit the key resources table gives (doi:10.5281/zenodo.10381293; zip md5
+# 0e4e72b5a207513498369615b50a9253). It holds per-panel MATLAB scripts and three Python
+# notebooks (encoding angle, Figure 6 simulation). Panel letters in file names follow the
+# bioRxiv preprint (code fig5_D = paper Figure 5C, code fig5_E_F = 5D, code fig5_G/H_I = 5E/5F).
+# The scripts load preprocessed .mat files and call helpers that are not in the repository
+# (get_aSample, get_removal_variables, get_goodAndSafe_units, the per-neuron odor-response
+# statistics, the CDI values, the first-sniff test tables), so some choices remain open.
+# Nothing in the code covers Figure 5G to 5I, the inhalation clustering, the phase decoding,
+# Figure S2C or Figure S6H.
+#
+# Choices fixed for all claims, with their sources:
+#  - Inhalation response: spike count in the 180 ms (or 70 ms) after inhalation onset (STAR
+#    Methods, Analysis of sniff-by-sniff responses).
+#  - Odor inhalations: the Methods take inhalations in a window "starting at the odor onset and
+#    lasting for 5 seconds"; the code (GLM_model.m, linear_model.m) takes those from 0.4 to 5 s
+#    after odor onset. The Methods window is the main reading, the code's a variant, for every
+#    claim on odor inhalations. The first two trials of each odor-concentration are dropped
+#    (Methods; trialsToRemove = 2 in the code).
+#  - Odorless inhalations: those 13 to 4 s before an odor onset (Methods).
+#  - Slow and fast labels: as the dataset gives them, produced by the paper's clustering; if the
+#    dataset lacks them, the clustering of STAR Methods, Inhalation clustering, is rerun and the
+#    claims depend on inhalation-sorting.
+#  - Concentration regressor in the GLM and the linear model: 0 for odorless inhalations, then
+#    0.33, 0.66 and 1 for 0.01, 0.1 and 1% (code, GLM_model.m and linear_model.m), which the
+#    Methods describe as the log concentration scaled from 0 to 1.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000931"
+paper: doi:10.1016/j.celrep.2024.114013
+claims:
+- id: inhalation-sorting
+  statement: Inhalation durations appear bimodal, and a Gaussian-mixture and hierarchical
+    clustering of inhalation waveforms sorts them into slow and fast inhalations; fast
+    inhalations are shorter and have steeper airflow changes than slow ones.
+  source: Results, Sniffing causes unstable odor responses in the PCx, paragraph 1; Figure 1C;
+    STAR Methods, Inhalation clustering
+  quote: Since the distribution of inhalation durations appeared bimodal, we developed a
+    semi-unsupervised method that sorted inhalations into slow and fast depending on their airflow
+    rate waveforms ... Fast inhalations had shorter duration and steeper changes in airflow rate
+    than slow inhalations.
+  expected:
+  - quantity: accuracy of the clustering on held-out mice (leave-one-mouse-out, eight mice)
+    value: 98
+    tolerance: 9.8
+    unit: percent
+  criterion: Per STAR Methods, Analysis of the breathing signal and Inhalation clustering (the
+    code does not hold this step). Breathing signal band-passed 0.5 to 50 Hz, smoothed with a
+    Gaussian of SD 25 ms; peaks at local minima, peaks closer than 65 ms to the next dropped;
+    onset and offset at the zero crossings around the peak. Waveforms of 100 ms centred on the
+    peak, normalised by their 2-norm, PCA to the fewest PCs explaining 98% of variance, GMM
+    (full covariance, regularisation 0.05, 15 replicates, 10,000 iterations) with the number of
+    clusters by the Calinski-Harabasz index, centroids merged by a correlation-distance
+    hierarchical dendrogram into two clusters, the one with shorter mean inhalation length
+    named fast. Where the dataset gives slow and fast labels, they are compared with this
+    output (fraction of agreement reported). Reproduced when, in every mouse, the fast class
+    has a shorter median inhalation length and steeper negative and positive inhalation slopes
+    (10% to 90% of peak amplitude, Methods) than the slow class, and the leave-one-mouse-out
+    accuracy is within tolerance. Open, and named as readings, is how the dendrogram is cut
+    when it gives three clusters ("two clusters were similar and stemmed from the same branch"
+    was decided by visual inspection) - (a) merge the two clusters sharing the nearest parent;
+    (b) cut the dendrogram at two clusters. Which eight mice formed the cross-validation is not
+    stated; all awake mice with breathing are used, and the eight-mouse sets are a variant
+    when the count differs.
+- id: figs1a-phase-decoding
+  statement: PCx population activity encodes the inhalation phase; a cross-validated support
+    vector regression predicts the phase above a shuffle null in individual mice.
+  source: Results, Sniffing causes unstable odor responses in the PCx, paragraph 3; Figures 1E
+    and S1A
+  quote: Hence, PCx activity encoded the phase and speed of each inhalation (Figures 1E and 1F;
+    Figures S1A and S1B).
+  depends_on:
+  - inhalation-sorting
+  criterion: Per STAR Methods, Inhalation phase decoding. Firing rates from spikes smoothed with
+    a Gaussian of SD 20 ms, downsampled to 10 ms bins; mice with at least 20 PCx neurons; PCs up
+    to a cumulative explained variance above 0.5 (at least two); phase in [0, 1] linearly from
+    onset to offset of each sorted inhalation; non-overlapping epochs of 30 s of concatenated
+    inhalation periods, all ordered pairs of epochs as train and test; SVR with scikit-learn
+    defaults (RBF kernel); score the squared Pearson correlation, averaged over pairs; null from
+    shuffling the phase array before prediction. Reproduced when in every mouse the R2 exceeds
+    the 95th percentile of its null; partially reproduced when that holds in most mice. The
+    number of shuffles is not given; 1000 is used, a standard choice that does not change the
+    outcome.
+- id: figs1b-speed-decoding-single-mice
+  statement: The inhalation speed (fast against slow) can be decoded above chance from the mean
+    firing rate in the first 180 ms of inhalation in individual mice.
+  source: Figure S1B; Results, Sniffing causes unstable odor responses in the PCx, paragraph 3
+  quote: Decoding the inhalation speed (fast versus slow) using the mean firing rate in the early
+    180 ms of inhalation in individual mice.
+  depends_on:
+  - inhalation-sorting
+  criterion: Per STAR Methods, Inhalation speed decoding, and decoding_of_inh_type_control.m and
+    decoding_of_inh_type_control_single_mice.m. Odorless inhalations, 180 ms spike counts, a
+    sample of 400 inhalations balanced between slow and fast, linear SVM (libsvm through the
+    Neural Decoding Toolbox), 10-fold cross-validation, z-scoring with training-set statistics,
+    100 resampling runs and 100 draws of inhalations. Whether 400 is the total or the count per
+    class is open; readings (a) 200 slow and 200 fast, (b) 400 of each. Reproduced when in every
+    mouse the mean accuracy minus one SD exceeds the 50% chance level (the panel shows mean and
+    SD with the chance line).
+- id: fig1-odor-responsive-fraction
+  statement: Of 660 PCx neurons in six mice, 31.1% (205) reliably respond to at least one odor
+    concentration.
+  source: Results, Sniffing causes unstable odor responses in the PCx, paragraph 3; Figure 1H
+    legend
+  quote: Of the recorded neurons, 31.1% reliably responded to at least one odor concentration
+    (205 of 660 neurons; six mice).
+  expected:
+  - quantity: odor-responsive neurons
+    value: 205
+    tolerance: 20.5
+    unit: neurons
+  - quantity: recorded neurons in the six mice
+    value: 660
+    tolerance: 66
+    unit: neurons
+  - quantity: fraction of neurons odor-responsive
+    value: 31.1
+    tolerance: 3.11
+    unit: percent
+  criterion: Neurons of the six mice with 0.01 and 0.1% concentrations, kept as in STAR Methods,
+    Spike sorting and inclusion criteria (above 0.5 Hz). A neuron is odor-responsive when, for
+    any odor at 0.01 or 0.1%, a Wilcoxon signed-rank test (Figure 1H legend) is significant at
+    p < 0.05 after Benjamini-Hochberg adjustment; the code (fig1_H_I_mech_induced_change_olf_resp.m)
+    adjusts across the odor-concentration tests of each neuron and calls the neuron responsive
+    if any adjusted p < 0.05. The paired values of the signed-rank test are not stated, and the
+    code loads them precomputed ("odorStatistics_wholeStimulus", a "greater" test). Readings
+    (a) per trial, the spike count over the whole 5 s odor period against the same-length
+    period before odor onset, one-sided (odor greater); (b) as (a), two-sided; (c) per trial,
+    the mean 180 ms inhalation response during the odor against the mean over odorless
+    inhalations of that trial, one-sided. Reproduced when one reading gives counts within
+    tolerance.
+- id: fig1hi-sniff-changes-responses
+  statement: In 72.2% of odor-responsive neurons (148 of 205) the response amplitude during
+    inhalation depends on how fast the animal inhales, more than expected by chance.
+  source: Results, Sniffing causes unstable odor responses in the PCx, paragraph 3; Figures 1H
+    and 1I
+  quote: Strikingly, how fast an animal inhaled influenced the response amplitude during
+    inhalation in 72.2% of those neurons (148 of 205 neurons; Figures 1G–1I).
+  depends_on:
+  - fig1-odor-responsive-fraction
+  expected:
+  - quantity: odor-responsive neurons with at least one response differing between fast and slow
+      inhalations
+    value: 148
+    tolerance: 14.8
+    unit: neurons
+  - quantity: fraction of odor-responsive neurons
+    value: 72.2
+    tolerance: 7.22
+    unit: percent
+  - quantity: odor-concentration responses of odor-responsive neurons tested
+    value: 750
+    tolerance: 75
+    unit: responses
+  criterion: Per the Figure 1H legend and fig1_H_I_mech_induced_change_olf_resp.m. For every
+    odor-responsive neuron and every odor and concentration (0.01, 0.1%) for which its adjusted
+    p < 0.05, the mean firing rate in 180 ms after onset of each fast and each slow odor
+    inhalation; two-sided Wilcoxon rank-sum test, fast against slow, at p <= 0.01. A neuron
+    counts when any of its responses differs. Figure 1I compares the count of differing
+    responses with a null from 1000 shuffles of the slow and fast labels; reproduced when the
+    counts are within tolerance and the observed number of differing responses exceeds the
+    95th percentile of the shuffle null (the paper gives no p-value for Figure 1I); whether it
+    exceeds every shuffle is reported. The odor-inhalation window follows the Methods
+    (0 to 5 s), with the code's 0.4 to 5 s as a variant.
+- id: fig1h-direction-of-change
+  statement: A faster inhalation increases 37.3% of odor responses and decreases 19.2% of them.
+  source: Results, Sniffing causes unstable odor responses in the PCx, paragraph 3; Figure 1H
+  quote: 'The impact of a faster inhalation was not uniform across odor responses: 37.3% of the
+    odor responses increased with a rapid inhalation, whereas 19.2% decreased in amplitude.'
+  depends_on:
+  - fig1hi-sniff-changes-responses
+  expected:
+  - quantity: odor-concentration responses larger during fast inhalations
+    value: 37.3
+    tolerance: 3.73
+    unit: percent
+  - quantity: odor-concentration responses smaller during fast inhalations
+    value: 19.2
+    tolerance: 1.92
+    unit: percent
+  criterion: As in fig1_H_I_mech_induced_change_olf_resp.m, over the same responses as
+    fig1hi-sniff-changes-responses, one-sided Wilcoxon rank-sum tests at p <= 0.005 each way
+    (fast greater; fast smaller), as fractions of all tested responses. A variant takes the
+    sign of the mean difference among the responses that differ in the two-sided test at p <=
+    0.01.
+- id: figs1c-early-70ms
+  statement: The sniff-driven variability in odor responses is already significant in the first
+    70 ms of an inhalation.
+  source: Results, Sniffing causes unstable odor responses in the PCx, paragraph 3; Figure S1C
+  quote: This sniffdriven variability in odor responses was already significant during the first
+    70 ms of an inhalation (Figure S1C).
+  depends_on:
+  - fig1-odor-responsive-fraction
+  criterion: As fig1hi-sniff-changes-responses with the 70 ms window after inhalation onset
+    (Figure S1C legend; two-sided rank-sum at p < 0.01; null from 1000 label shuffles).
+    "Significant" is read as the observed fraction of differing responses exceeding the 95th
+    percentile of the shuffle null; reproduced when it does.
+- id: figs1d-rs-fs-similar
+  statement: Regular-spiking (putatively excitatory or feedforward inhibitory) and fast-spiking
+    (putatively feedback inhibitory) neurons show similar effects of inhalation speed on their
+    odor responses.
+  source: Results, Sniffing causes unstable odor responses in the PCx, paragraph 3; Figure S1D
+  quote: After sorting neurons into regular spiking (RS; putatively excitatory or feedforward
+    inhibitory) and fast spiking (FS; putatively feedback inhibitory), we observed similar
+    effects of the inhalation speed in both types (Figure S1D).
+  depends_on:
+  - fig1hi-sniff-changes-responses
+  expected:
+  - quantity: RS neurons among the odor-responsive neurons
+    value: 127
+    tolerance: 12.7
+    unit: neurons
+  - quantity: FS neurons among the odor-responsive neurons
+    value: 78
+    tolerance: 7.8
+    unit: neurons
+  - quantity: odor-concentration responses of RS neurons (Figure S1D legend)
+    value: 440
+    tolerance: 44
+    unit: responses
+  - quantity: odor-concentration responses of FS neurons (Figure S1D legend)
+    value: 310
+    tolerance: 31
+    unit: responses
+  criterion: RS and FS units per STAR Methods, Spike sorting and inclusion criteria, k-means
+    (squared Euclidean, 10,000 iterations, 2,500 replicates) per mouse on trough-to-peak
+    latency, waveform asymmetry (p2 - p1)/(p2 + p1) and mean firing rate, the cluster with
+    higher rate, shorter latency and larger asymmetry named FS. Per mouse and type, the
+    fraction of responses enhanced by a fast inhalation, by a slow inhalation, and sniff
+    invariant (rank-sum, p < 0.01, as in the legend). The paper reports no test. Readings for
+    "similar" (a) for each of the three fractions, a Wilcoxon signed-rank test of RS against
+    FS over the six mice gives p >= 0.05; (b) the same with a Mann-Whitney test. Reproduced
+    when all three fractions pass under a reading and both types have a nonzero fraction of
+    responses changed by speed.
+- id: fig1j-sniff-change-larger-than-concentration
+  statement: Across odor-responsive neurons, the absolute response change caused by a
+    slow-to-fast switch in inhalation (at 0.01%) is larger than that caused by a tenfold
+    increase in concentration (0.01 to 0.1%, slow inhalations).
+  source: Results, Sniffing causes unstable odor responses in the PCx, paragraph 4; Figure 1J
+  quote: On average, sniffs caused a response amplitude change bigger than that caused by a
+    10-fold increase in odor concentration in the odor-responsive neurons (Figure 1J).
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.0001
+    p_relation: <
+    n: 477 neuron-odor pairs of odor-responsive neurons
+  depends_on:
+  - fig1-odor-responsive-fraction
+  expected:
+  - quantity: neuron-odor pairs
+    value: 477
+    tolerance: 47.7
+    unit: pairs
+  criterion: As fig1_J_slow_to_fast_change_vs_01_to_1.m. Pairs are odor-responsive neurons with
+    an odor for which either concentration is responsive (adjusted p < 0.05). Per pair, mean
+    rate at 0.01% fast minus 0.01% slow, and 0.1% slow minus 0.01% slow, in 180 ms after
+    inhalation onset; absolute values compared by a paired Wilcoxon signed-rank test (the
+    legend). Reproduced when the sniff change is larger (higher median) at p < 0.0001;
+    partially reproduced when p < 0.05 only. The code's tests (two-sided rank-sum and paired t
+    test) are reported as variants.
+- id: fig1l-cdi-mixed-lower
+  statement: Concentration discriminability (CDI) of single neurons is lower when slow and fast
+    inhalations are mixed than when computed within one inhalation speed.
+  source: Results, Sniffing causes unstable odor responses in the PCx, paragraph 4; Figure 1L
+  quote: Combining responses from slow and fast inhalations decreased the CDI compared with
+    responses observed during uniform inhalation speeds (Figure 1L).
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.0001
+    p_relation: <
+    n: 477 neuron-odor pairs
+  depends_on:
+  - fig1j-sniff-change-larger-than-concentration
+  criterion: Per STAR Methods, Concentration discrimination index. For each pair of
+    fig1j-sniff-change-larger-than-concentration, CDI = abs(1 - 2*auROC) of 180 ms spike counts
+    at 0.01% against 0.1%, from equal-size random samples of inhalations for the two
+    concentrations, 100 draws averaged, for slow, fast and mixed inhalations. The within-speed
+    value is the mean of the slow and fast CDI (fig1_L_CDI_svmAcc_typeSpecific_vs_mix.m).
+    Paired Wilcoxon signed-rank test of within against mixed; reproduced when mixed is lower at
+    p < 0.0001, partially when p < 0.05 only. The sample size per draw and the make-up of the
+    mixed sample are not given (the code loads the CDI precomputed). Readings (a) the sample
+    size is the smallest count over slow and fast at both concentrations, and the mixed sample
+    is half slow and half fast; (b) the same size, mixed sample drawn at random from all
+    inhalations; (c) per set, the smaller count of the two concentrations. The code's tests
+    (rank-sum, Kolmogorov-Smirnov) are variants.
+- id: fig2-glm-variance
+  statement: A regularised Poisson GLM with inhalation speed, concentration and their interaction
+    explains 91.9% of the variance in the mean spike count during the first 180 ms of odor
+    inhalation across neurons.
+  source: Results, PCx neurons randomly mix olfactory and non-olfactory inputs during
+    inhalations, paragraph 2
+  quote: This model explained 91.9% of the variance in the mean number of spikes generated
+    during the first 180 ms of odor inhalation across all neurons.
+  depends_on:
+  - fig2c-interaction-small
+  expected:
+    quantity: variance explained
+    value: 91.9
+    tolerance: 9.19
+    unit: percent
+  criterion: The GLM fits of fig2c-interaction-small. How the variance is computed is not
+    stated. Readings (a) R2 between predicted and observed mean spike counts per neuron-odor
+    pair and condition (4 concentrations by 2 speeds), pooled over all pairs; (b) the mean over
+    pairs of the same R2 within each pair; (c) the deviance explained of each fit on single
+    inhalations, averaged over pairs. Reproduced when one reading is within tolerance.
+- id: fig2c-interaction-small
+  statement: In the GLM, the interaction between inhalation speed and concentration has a small
+    effect on the odor response, while the inhalation-speed (non-olfactory) term has a larger
+    additive or subtractive effect.
+  source: Results, PCx neurons randomly mix olfactory and non-olfactory inputs during
+    inhalations, paragraph 3; Figure 2C
+  quote: The GLM analysis revealed that the interaction between inhalation speed and
+    concentration response had a small effect on the odor response amplitude during an inhalation
+    (Figure 2C). Instead, the non-olfactory input had a more significant additive or subtractive
+    effect (Figure 2C).
+  expected:
+  - quantity: neuron-odor pairs
+    value: 928
+    tolerance: 92.8
+    unit: pairs
+  - quantity: neurons in the four concentration-series mice
+    value: 464
+    tolerance: 46.4
+    unit: neurons
+  criterion: Per STAR Methods, Encoding models, and GLM_model.m with fig2_C_D_GLM_coeff.m. All
+    kept neurons of the four concentration-series mice, each odor separately. Spike count in
+    the 180 ms after inhalation onset; regressors I (fast 1, slow 0), C (0 odorless, 0.33, 0.66,
+    1 for 0.01, 0.1, 1%) and I*C; Poisson GLM with glmnet elastic net, alpha 0.95, the penalty
+    at lambda_1se of 10-fold cross-validation (nFold = min(smallest class - 3, 10)), as the
+    code settles; inhalations resampled to equal numbers per speed and concentration 100 times
+    and coefficients averaged. Reproduced when the median absolute interaction weight is below
+    the median absolute inhalation-speed weight, over all pairs. The 95th percentile of each
+    absolute weight is reported (the figure's whiskers).
+- id: fig2d-mixed-sensitivities
+  statement: The signs of the inhalation-speed and concentration weights can differ within a
+    neuron, so that a fast inhalation can raise or lower a response regardless of how the
+    neuron responds to a higher concentration; the combination is heterogeneous across neurons.
+  source: Results, PCx neurons randomly mix olfactory and non-olfactory inputs during
+    inhalations, paragraph 3; Figure 2D
+  quote: Importantly, the sign of the weight for the non-olfactory input and the odor
+    concentration factors could differ in the same neuron (Figure 2D). The non-olfactory input
+    caused by a fast inhalation could increase or decrease the odor response amplitude regardless
+    of how the neuron responded to a higher concentration of that odor.
+  depends_on:
+  - fig2c-interaction-small
+  criterion: The weights of fig2c-interaction-small. Reproduced when neuron-odor pairs with
+    nonzero weights lie in all four sign quadrants of inhalation against concentration weight,
+    including both opposite-sign quadrants. The Pearson correlation of the two weights (as
+    fig2_C_D_GLM_coeff.m computes it) and the count per quadrant are reported.
+- id: figs2ab-rs-fs-heterogeneous
+  statement: RS and FS neurons both show a heterogeneous distribution of inhalation-speed and
+    concentration sensitivities.
+  source: Results, PCx neurons randomly mix olfactory and non-olfactory inputs during
+    inhalations, paragraph 3; Figures S2A and S2B
+  quote: We similarly found a heterogeneous distribution of non-olfactory sensitivities in RS and
+    FS neurons (Figures S2A and S2B).
+  depends_on:
+  - fig2d-mixed-sensitivities
+  - figs1d-rs-fs-similar
+  expected:
+  - quantity: RS neurons among the 464
+    value: 289
+    tolerance: 28.9
+    unit: neurons
+  - quantity: FS neurons among the 464
+    value: 175
+    tolerance: 17.5
+    unit: neurons
+  criterion: The criterion of fig2d-mixed-sensitivities applied to RS and FS neurons separately,
+    with RS and FS as in figs1d-rs-fs-similar.
+- id: figs2c-waveform-no-prediction
+  statement: Spike waveform features (asymmetry and trough-to-peak delay) cannot predict a
+    neuron's inhalation-speed weight, concentration weight, or both, with any of three models.
+  source: Results, PCx neurons randomly mix olfactory and non-olfactory inputs during
+    inhalations, paragraph 3; Figure S2C; STAR Methods, Prediction of encoding properties from
+    waveforms
+  quote: In none of the 9 cases, the predictive model could extract a significant relationship
+    (as measured by the cross-validated R2 of the regression) between the spike waveform and the
+    encoding parameters.
+  depends_on:
+  - fig2c-interaction-small
+  criterion: Per STAR Methods, standardised features; elastic-net linear model (95% ridge, 5%
+    lasso, penalty by nested 10-fold CV), KNN regressor (k by nested CV), 1000 bagged trees
+    (minimum leaf 5); 10-fold CV over cells; targets a, b, and a and b jointly. The Methods do
+    not say which weights (GLM or linear model) are the a and b used, nor what makes an R2
+    significant. Readings for the weights (a) the GLM weights of fig2c-interaction-small; (b)
+    the linear-model weights of fig5ef-correlated-subpopulations. Readings for significance
+    (i) cross-validated R2 not above 0; (ii) R2 not above the 95th percentile of a null from
+    shuffling the targets across cells (1000 shuffles). Reproduced when no model and target
+    is significant under each reading.
+- id: figs2d-70ms-similar
+  statement: Restricting the GLM analysis to the first 70 ms of inhalation gives similar results.
+  source: Results, PCx neurons randomly mix olfactory and non-olfactory inputs during
+    inhalations, paragraph 3; Figure S2D
+  quote: Finally, restricting the analysis to the early 70 ms of inhalation also gave similar
+    results (Figure S2D).
+  depends_on:
+  - fig2c-interaction-small
+  criterion: The criteria of fig2c-interaction-small and fig2d-mixed-sensitivities with spike
+    counts in the 70 ms after inhalation onset; reproduced when both hold.
+- id: fig3c-airflow-tuning-anesthetized
+  statement: In tracheostomized anesthetized mice, 57.1% of PCx neurons (144 of 252) encode the
+    rate of artificial nasal airflow, 117 with positive and 27 with negative slopes.
+  source: Results, A mechanosensory input signals the nasal airflow rate to the PCx, paragraph
+    2; Figure 3C
+  quote: We found that 57.1% of neurons displayed mechanosensory responses, meaning that they
+    encoded the airflow rate.
+  expected:
+  - quantity: airflow-tuned neurons
+    value: 144
+    tolerance: 14.4
+    unit: neurons
+  - quantity: neurons recorded
+    value: 252
+    tolerance: 25.2
+    unit: neurons
+  - quantity: tuned neurons with positive slope
+    value: 117
+    tolerance: 11.7
+    unit: neurons
+  - quantity: tuned neurons with negative slope
+    value: 27
+    tolerance: 2.7
+    unit: neurons
+  criterion: As fig3_C_artificial_inhalation_expriment.m. Single units above 0.1 Hz in olfactory
+    areas (OLF, EPd, PIR) more than 50 um from an area border. Per pulse, firing rate in (0,
+    500] ms after pulse onset minus (-500, 0] ms; responses z-scored over all pulses of the
+    unit; linear regression on the airflow rank (1 to 5); tuned when the slope p <= 0.01 (t test
+    of the slope, as the legend says). Reproduced when all four counts are within tolerance;
+    partially when the tuned count is but the split by sign is not. If the dataset lacks the
+    anatomical labels, all units are used and the count of 252 is compared.
+- id: fig3b-latency-shortens
+  statement: Faster artificial airflow shortens response latency without significantly changing
+    the order in which neurons are activated.
+  source: Results, A mechanosensory input signals the nasal airflow rate to the PCx, paragraph
+    2; Figures 3B and S3B
+  quote: Faster airflow also decreased the response latency without significantly changing the
+    sequential activation order across neurons (Figure 3B; Figure S3B).
+  depends_on:
+  - fig3c-airflow-tuning-anesthetized
+  criterion: Over the 144 tuned neurons, the latency to the peak of the PETH (Gaussian of SD 10
+    ms, Methods and code) after onset of the 100 and the 250 ml/min pulses (Figure S3B). The
+    paper names no test. Readings (a) latency shorter at 250 ml/min by a paired Wilcoxon
+    signed-rank test at p < 0.05, and the activation order kept, read as a positive Spearman
+    correlation of the latencies at the two rates with p < 0.05; (b) the same with a paired t
+    test. Reproduced when both parts hold under a reading.
+- id: fig3f-airflow-tuning-awake
+  statement: In awake, normally breathing mice without odor, 78.3% of PCx neurons (748 of 955,
+    10 mice) and 77.2% of odor-responsive neurons encode the peak inhalation airflow with a
+    monotonic change; 36.7% increase and 41.7% decrease their response with faster inhalation.
+  source: Results, A mechanosensory input signals the nasal airflow rate to the PCx, paragraph
+    3; Figures 3E and 3F
+  quote: This analysis revealed that 78.3% of the PCx neurons (77.2% of the odorresponsive
+    neurons) encoded the peak inhalation airflow rate with a monotonic change in spiking activity
+    after the inhalation (Figure 3E) ... 36.7% of the neurons increased the amplitude of their
+    responses when the inhalation speed increased, and another 41.7% decreased their responses
+  expected:
+  - quantity: neurons tuned to peak airflow
+    value: 748
+    tolerance: 74.8
+    unit: neurons
+  - quantity: neurons recorded
+    value: 955
+    tolerance: 95.5
+    unit: neurons
+  - quantity: fraction tuned
+    value: 78.3
+    tolerance: 7.83
+    unit: percent
+  - quantity: fraction of odor-responsive neurons tuned
+    value: 77.2
+    tolerance: 7.72
+    unit: percent
+  - quantity: neurons with positive slope
+    value: 350
+    tolerance: 35
+    unit: neurons
+  - quantity: neurons with negative slope
+    value: 398
+    tolerance: 39.8
+    unit: neurons
+  criterion: As fig3_F_PCx_mech_tuning.m. Per mouse, odorless inhalations; peak airflow is the
+    absolute flow at the inhalation peak; ten quantile bins (MATLAB quantile with 9 cut points)
+    with equal counts; response is the 180 ms rate after inhalation onset, z-scored per neuron
+    over inhalations; linear regression of single-inhalation responses on the bin index (1 to
+    10); tuned when the slope p <= 0.01 (legend t test). Reproduced when the counts and
+    fractions are within tolerance. The 77.2% uses the odor-responsive neurons of
+    fig1-odor-responsive-fraction among these mice; it is reported, and checked only where
+    those neurons are among the 10 mice. The code also reports the Spearman correlation of the
+    bin means as "monotonic"; it is shown as a variant.
+- id: figs3-aen-neurectomy
+  statement: Cutting the anterior ethmoidal nerve leaves PCx responses to inhalation intact;
+    airflow tuning curves after neurectomy (551 of 752 neurons tuned, 5 mice) are similar to
+    those of control mice.
+  source: Results, A mechanosensory input signals the nasal airflow rate to the PCx, paragraph
+    4; Figures S3D and S3E
+  quote: Severing the AEN left intact the responses of PCx neurons to inhalations. The tuning
+    curves for the airflow rate after the neurectomy remained similar to those of control mice
+    (Figures S3D and S3E).
+  depends_on:
+  - fig3f-airflow-tuning-awake
+  expected:
+  - quantity: tuned neurons after neurectomy
+    value: 551
+    tolerance: 55.1
+    unit: neurons
+  - quantity: neurons recorded after neurectomy
+    value: 752
+    tolerance: 75.2
+    unit: neurons
+  criterion: The method of fig3f-airflow-tuning-awake on the neurectomy mice. The paper names no
+    test for "similar". Readings (a) a two-sample Kolmogorov-Smirnov test of tuning slopes,
+    neurectomy against control, gives p >= 0.05; (b) the fraction of tuned neurons and the
+    fractions with positive and negative slopes each differ from control by less than 10
+    percentage points. Reproduced when counts are within tolerance and a reading holds.
+- id: figs4-bulbectomy-no-odor-no-phase
+  statement: After bulbectomy, PCx neurons do not respond to odors and the population does not
+    encode the inhalation phase.
+  source: Results, A top-down input may supply behavioral state information during a sniff,
+    paragraph 2; Figures S4A and S4B
+  quote: In bulbectomized mice, PCx neurons were unresponsive to odors (Figure S4A). Moreover,
+    the population activity did not encode the inhalation phase (Figure 4B; Figure S4B).
+  depends_on:
+  - figs1a-phase-decoding
+  - fig1-odor-responsive-fraction
+  criterion: Phase decoding as in figs1a-phase-decoding; reproduced for this part when in no
+    bulbectomized mouse the R2 exceeds the 95th percentile of its null. Odor responses by the
+    test of fig1-odor-responsive-fraction (each of its readings); reproduced for this part when
+    the fraction of odor-responsive neurons is at or below the 5% false-positive rate. The
+    average odor PETH aligned to the first odor inhalation (Figure S4A) is shown. Both parts
+    must hold.
+- id: fig4-sniff-preferring-fraction
+  statement: After bulbectomy, 15.7% of PCx neurons still fire more during fast sniffs than
+    normal inhalations, against 29.7% in control mice.
+  source: Results, A top-down input may supply behavioral state information during a sniff,
+    paragraph 2; Figure 4D
+  quote: Nonetheless, 15.7% of PCx neurons exhibited increased spiking activity during fast
+    sniffs compared with normal inhalations (see example neuron in Figure 4C). For comparison,
+    this proportion was 29.7% in control mice.
+  depends_on:
+  - inhalation-sorting
+  expected:
+  - quantity: sniff-preferring PCx neurons, bulbectomized
+    value: 15.7
+    tolerance: 1.57
+    unit: percent
+  - quantity: sniff-preferring PCx neurons, control
+    value: 29.7
+    tolerance: 2.97
+    unit: percent
+  - quantity: sniff-preferring neurons, bulbectomized (23 of 153 in 4 mice, Figure 4D)
+    value: 23
+    tolerance: 2.3
+    unit: neurons
+  - quantity: sniff-preferring neurons, control (284 of 955 in 10 mice, Figure 4D)
+    value: 284
+    tolerance: 28.4
+    unit: neurons
+  criterion: Per STAR Methods, Analysis of sniff-by-sniff responses. Odorless inhalations only;
+    the first fast inhalation after at least five consecutive slow ones against the remaining
+    slow inhalations, spike counts 0 to 180 ms after onset; a t test at p < 0.01 (Figure S4C
+    legend), one-sided with sniff greater (the code's output folder is named
+    "0to180vsSLOW_ttest_RightTail_p001"), two-sample. Two readings of the percentages, as 23 of
+    153 is 15.0% and not 15.7% (a) pooled over neurons; (b) the mean of per-mouse fractions,
+    which fig4_C-E_bulbectomy_responses_firstsniff.m computes. Reproduced when the counts are
+    within tolerance and a reading puts both percentages within tolerance. A two-sided test is
+    a variant.
+- id: fig4e-sniff-response-smaller
+  statement: In bulbectomized mice the sniff-induced response of sniff-preferring PCx neurons
+    is smaller in amplitude than in control mice.
+  source: Results, A top-down input may supply behavioral state information during a sniff,
+    paragraph 2; Figure 4E
+  quote: However, the sniff-induced activity in bulbectomized mice was smaller in amplitude and
+    more variable across sniffs than in control mice (Figures 4D–4F).
+  statistics:
+  - test: two-tailed t test with unequal variances
+    p: 0.0002
+    n: 284 control and 23 bulbectomized sniff-preferring neurons
+  - about: PCx control, PCx bulbectomized and MCx control (Figure S4D)
+    test: 1-way ANOVA, Tukey-Kramer post hoc
+    p: 0.0001
+    p_relation: <
+  depends_on:
+  - fig4-sniff-preferring-fraction
+  criterion: Per sniff-preferring neuron, the mean 0 to 180 ms spike count (or rate) after first
+    sniffs minus that after slow inhalations; Welch two-sample t test, control against
+    bulbectomized, as the legend and fig4_C-E_bulbectomy_responses_firstsniff.m. Reproduced
+    when control is larger at p < 0.05, with p reported; the one-way ANOVA over the three
+    groups with Tukey-Kramer comparisons (Figure S4D) is reported as well.
+- id: fig4f-sniff-response-more-variable
+  statement: The coefficient of variation of the response across first sniffs is larger in
+    bulbectomized than in control mice.
+  source: Figure 4F; Results, A top-down input may supply behavioral state information during
+    a sniff, paragraph 2
+  quote: Coefficient of variation of the response amplitude across first sniffs in control and
+    bulbectomized mice (p < 0.0001; two-tailed t test).
+  statistics:
+  - test: two-tailed t test
+    p: 0.0001
+    p_relation: <
+    n: sniff-preferring neurons, 284 control and 23 bulbectomized
+  - about: PCx control, PCx bulbectomized and MCx control (Figure S4E)
+    test: 1-way ANOVA, Tukey-Kramer post hoc
+    p: 0.0001
+    p_relation: <
+  depends_on:
+  - fig4-sniff-preferring-fraction
+  criterion: As fig4_C-E_bulbectomy_responses_firstsniff.m. Per sniff-preferring neuron, the
+    mean spike count in 0 to 180 ms of each first sniff; CV = SD over mean across first sniffs.
+    Two-tailed two-sample t test, equal or unequal variances chosen by an F test (vartest2) as
+    the code does. Reproduced when bulbectomized CV is larger at p < 0.0001; partially when p <
+    0.05 only.
+- id: fig4g-sniff-decoding-reduced
+  statement: A linear classifier distinguishes sniffs from regular inhalations from PCx activity
+    in both control and bulbectomized mice, but with clearly lower accuracy after bulbectomy.
+  source: Results, A top-down input may supply behavioral state information during a sniff,
+    paragraph 2; Figure 4G
+  quote: Correspondingly, while a linear classifier could differentiate a sniff from a regular
+    inhalation based on PCx activity in both groups, its accuracy was notably reduced
+    post-bulbectomy (Figure 4G).
+  depends_on:
+  - inhalation-sorting
+  criterion: Per STAR Methods, Inhalation speed decoding, and decoding_of_inh_type_control.m and
+    decoding_of_inh_type_bulbectomized.m. Pseudo-population of each group, odorless
+    inhalations, 180 ms spike counts, 400 inhalations balanced slow and fast (readings as in
+    figs1b-speed-decoding-single-mice), linear SVM, 10-fold CV, training-set z-scoring; neuron
+    counts 5, 15, ... up to 175 (bulbectomy) and 195 (control), neurons drawn with
+    replacement, 100 resamples by 100 inhalation draws. Reproduced when at every neuron count
+    the control mean accuracy exceeds the bulbectomy mean, and in both groups the mean minus
+    one SD at the largest count exceeds 50%.
+- id: fig4d-pre-sniff-rise
+  statement: In bulbectomized mice the sniff-induced activity starts rising several tens of
+    milliseconds before the nominal sniff onset.
+  source: Results, A top-down input may supply behavioral state information during a sniff,
+    paragraph 2; Figure 4D
+  quote: Remarkably, the sniff-induced activity observed in the bulbectomized mice seemed to start
+    rising several tens of milliseconds before the nominal onset of the sniff.
+  depends_on:
+  - fig4-sniff-preferring-fraction
+  criterion: As fig4_C-E_bulbectomy_responses_firstsniff.m and the Figure 4D legend. For each
+    sniff-preferring neuron, PETHs (1 ms, -0.6 to 0.6 s) for first sniffs and slow inhalations,
+    averaged in 10 ms bins; per bin a one-sided paired t test (sniff greater) across neurons;
+    Benjamini-Hochberg at 0.05 over bins. Reproduced when the run of significant bins that
+    contains the post-onset response begins at or before -20 ms (several tens of ms read as at
+    least 20 ms); partially reproduced when it begins between -20 and 0 ms.
+- id: figs4-motor-cortex-sniff
+  statement: A similar peri-sniff increase occurs in motor cortex, where a slow inhalation
+    modulates 5.8% of neurons but 17.1% show a significant peri-sniff increase.
+  source: Results, A top-down input may supply behavioral state information during a sniff,
+    paragraph 3; Figure S4C
+  quote: Here, a slow inhalation modulated the activity of 5.8% of neurons (see STAR Methods). In
+    contrast, 17.1% of MCx neurons showed a significant peri-sniff increase in spiking activity
+  depends_on:
+  - fig4-sniff-preferring-fraction
+  expected:
+  - quantity: MCx neurons modulated by slow inhalation
+    value: 5.8
+    tolerance: 0.58
+    unit: percent
+  - quantity: MCx neurons preferring a sniff
+    value: 17.1
+    tolerance: 1.71
+    unit: percent
+  - quantity: sniff-preferring MCx neurons (94 of 548, Figure S4C)
+    value: 94
+    tolerance: 9.4
+    unit: neurons
+  criterion: Sniff preference as in fig4-sniff-preferring-fraction (t test, p < 0.01). Inhalation
+    modulation per STAR Methods, Analysis of sniff-by-sniff responses - spikes from -300 to +400
+    ms around onsets of odorless slow inhalations, adaptive bins of at least five spikes, a
+    chi-square test against a homogeneous Poisson process at the neuron's mean rate. The
+    chi-square threshold is not given; readings p < 0.05 and p < 0.01. Which mice hold MCx
+    neurons (the code takes them from both control and bulbectomized mice) is open; readings
+    (a) control mice only, as the legend says "mice with intact OBs"; (b) all mice with MCx
+    units. Reproduced when a reading gives values within tolerance.
+- id: fig5b-pc1-speed-pc23-concentration
+  statement: Inhalation speed is decoded with high accuracy from the first PC of the population
+    odor response but concentration is not; concentration (and odor identity) are decoded from
+    the second and third PCs, from which speed is not.
+  source: Results, Odor information and inhalation information are independent, paragraphs 2
+    and 3; Figures 5B, S5C and S5E
+  quote: Linear decoders—namely, linear support vector machine (lSVM) classifiers—could
+    discriminate the inhalation speed with high accuracy using the projection of neural activity
+    onto the first PC. In contrast, decoders could not classify an odor concentration using only
+    the activity explained by the first PC.
+  depends_on:
+  - inhalation-sorting
+  criterion: As fig5_Decoding_of_conc_and_type_in_each_PC.m (and the odor-identity version).
+    Pseudo-population of the four mice, odor inhalations of both odors at three concentrations,
+    balanced per speed and concentration, 180 ms counts; PCA on z-scored responses; for each of
+    the first 15 PCs, linear SVM (10-fold CV, 100 resamples, 100 draws) per odor for speed and
+    concentration. Read from mean and SD as the figure shows - "high accuracy" or "decoded" as
+    mean minus one SD above chance (50% speed, 33.3% concentration, 25% identity of four
+    odors), "could not" as chance within mean plus or minus one SD. Reproduced when, for both
+    odors, speed is decoded from PC1 and not from PC2 or PC3, and concentration is decoded from
+    PC2 or PC3 and not from PC1. Identity (four-odor experiment, Figure S5E) is reported the
+    same way.
+- id: fig5c-encoding-angles
+  statement: The population directions that separate concentrations during slow and during fast
+    inhalation differ but are more similar to each other than to the direction that separates
+    inhalation speeds.
+  source: Results, Odor information and inhalation information are independent, paragraph 4;
+    Figure 5C
+  quote: We found that, even though these two directions were different (as expected, given the
+    high dimensionality of the population response), they were more similar than the directions
+    that tell how fast a mouse breathes in apart from how concentrated the odor is (Figure 5C).
+  depends_on:
+  - inhalation-sorting
+  criterion: As STAR Methods, Angle between encoding axes, and fig5_encoding_angle_full.ipynb.
+    Per odor and for 100 pseudo-population samples, LDA (eigen solver, Ledoit-Wolf shrinkage)
+    on spike counts for concentration within fast, within slow, and for speed; first column of
+    the scalings; angles transformed to 90 - |90 - Q| (the notebook takes |90 - angle|, the
+    complement; the Methods form is used and the notebook's shown as a variant). Reproduced
+    when the mean slow-fast concentration angle is below the mean concentration-speed angle
+    for both odors. The number of neurons per sample is not given; readings (a) all 464
+    neurons with inhalations resampled, as the notebook's input file name suggests; (b) 143
+    neurons drawn at random, the size used elsewhere in Figure 5.
+- id: fig5d-sniff-invariant-decoding
+  statement: Concentration decoders trained on one inhalation speed generalize to the other
+    (trans-decoding) with performance similar to cis-decoding, both on PCs 2 and 3 and on the
+    full population, so the PCx representation of concentration is sniff invariant.
+  source: Results, The distributed representation of odor concentration is sniff invariant,
+    paragraph 1; Figures 5D and S5F
+  quote: A decoder using PCx response projections on the second and third PCs exhibited similar
+    cis- and trans-decoding performances, suggesting that PCx has sniffinvariant representations
+    of odor concentration (Figure 5D; Figures S5F and S5G).
+  depends_on:
+  - inhalation-sorting
+  criterion: As fig5_cis_and_trans_decoding_of_conc.m. Per odor and for 100 pseudo-population
+    samples, linear SVM of concentration (three classes) trained on slow or fast inhalations,
+    tested on held-out inhalations of the same speed (cis, 10-fold CV) or of the other (trans),
+    on PCs 2 and 3 of the z-scored pseudo-population and on the full population. Reproduced
+    when in both spaces trans accuracy minus one SD exceeds 33.3%, and for PCs 2 and 3 the
+    mean trans accuracy lies within one SD of the mean cis accuracy ("similar", read from the
+    mean and SD the panel shows). The gap between cis and trans is reported.
+- id: figs5gh-other-windows-and-codes
+  statement: Cis- and trans-decoding results are similar with spike counts over 70 ms or 180 ms
+    windows and with population vectors of 10 ms bins or phase bins over a respiratory cycle.
+  source: Results, The distributed representation of odor concentration is sniff invariant,
+    paragraph 1; Figures S5G and S5H
+  quote: We observed similar results when the decoders used spike counts summed over 70 or 180 ms
+    windows and spike counts for concatenated 10 ms or 10
+  depends_on:
+  - fig5d-sniff-invariant-decoding
+  criterion: Feature vectors per STAR Methods, Concentration decoding (one bin of 180 ms; 18
+    bins of 10 ms; 50 time bins over the cycle zero-padded to 500 ms; 36 phase bins from the
+    Hilbert phase), per mouse (four mice, Figure S5H), inhalations resampled 100 times, SVC
+    with linear kernel, C 1, 10-fold. The 70 ms window (Figure S5G) as fig5d with 70 ms counts.
+    Reproduced when the full-space condition of fig5d-sniff-invariant-decoding (trans above
+    chance by one SD) holds for every scheme and the 70 ms window.
+- id: fig5ef-correlated-subpopulations
+  statement: Trans-decoding of concentration falls to chance with sub-populations whose
+    inhalation and concentration sensitivities are correlated (positively or negatively), but
+    stays above chance with an uncorrelated sub-population.
+  source: Results, The distributed representation of odor concentration is sniff invariant,
+    paragraph 2; Figures 5E and 5F
+  quote: Thus, a trans-decoder performed at the chancelevel if it could use only the activity of
+    a neural population with correlated sensitivity for non-olfactory and olfactory inputs (Figure
+    5F).
+  depends_on:
+  - fig5d-sniff-invariant-decoding
+  expected:
+    quantity: neurons per sub-population
+    value: 143
+    tolerance: 14.3
+    unit: neurons
+  criterion: Weights a (speed) and b (concentration) from the linear model of STAR Methods,
+    Encoding models, as linear_model.m (z-scored 180 ms response, regressors I and C,
+    inhalations balanced by resampling 100 times, coefficients averaged). Selection per STAR
+    Methods, |b| between |a*tan(pi/12)| and |a*tan(5*pi/12)|, positive when a and b share sign,
+    negative otherwise, uncorrelated as their union; the code
+    (fig5_H_I_high_correlated_sub_units.m) uses a lower bound |a|*(pi/4 - pi/6), close to
+    tan(pi/12), shown as a variant. Equal random draws from the three groups (the smaller
+    group's size); cis and trans decoding as fig5d-sniff-invariant-decoding on the full space.
+    Reproduced when for both odors trans accuracy is within one SD of 33.3% for both correlated
+    groups and minus one SD above it for the uncorrelated group.
+- id: fig5gh-mechanosensitive-as-good
+  statement: A population of mechanosensitive neurons carries at least as much sniff-invariant
+    concentration information as a population of sniff-insensitive neurons.
+  source: Results, The distributed representation of odor concentration is sniff invariant,
+    paragraph 3; Figures 5G and 5H
+  quote: This analysis revealed that a population of mechanosensitive neurons carries at least as
+    much sniff-invariant information as a population of only sniff-insensitive neurons (Figure
+    5H).
+  depends_on:
+  - fig5ef-correlated-subpopulations
+  expected:
+    quantity: neurons per population
+    value: 143
+    tolerance: 14.3
+    unit: neurons
+  criterion: Speed coefficients from the linear model of fig5ef-correlated-subpopulations.
+    Sniff-invariant neurons have a coefficient within 0 +/- 0.75 SD, mechanosensitive neurons
+    beyond +/- 1.5 SD, equal numbers drawn (Results, paragraph 3); the code does not hold this
+    step. Open readings (a) SD of the coefficients over all neurons, per odor; (b) over all
+    neuron-odor pairs pooled. Trans-decoding as fig5d-sniff-invariant-decoding. "At least as
+    much" read as the mean mechanosensitive trans accuracy not lower than the sniff-invariant
+    mean by more than one SD. Reproduced when this holds for both odors under a reading.
+- id: fig5i-time-course-similar
+  statement: Over 20 consecutive 10 ms bins of an inhalation, concentration decoding within and
+    across inhalation speeds is similar for mechanosensitive and sniff-insensitive neurons.
+  source: Results, The distributed representation of odor concentration is sniff invariant,
+    paragraph 4; Figure 5I
+  quote: Linear decoders using only mechanosensitive or sniff-insensitive neurons performed
+    similarly throughout this inhalation window (Figure 5I).
+  statistics:
+  - test: two-way ANOVA
+    p: 0.05
+    p_relation: '>'
+    n: 143 neurons per sub-population
+  depends_on:
+  - fig5gh-mechanosensitive-as-good
+  criterion: A claim of absence. Populations of fig5gh-mechanosensitive-as-good; cis and trans
+    decoding as fig5d-sniff-invariant-decoding in each of 20 bins of 10 ms tiling 0 to 200 ms.
+    The paper's test is a two-way ANOVA at 0.05; its factors and units are not given. Readings
+    (a) population by time bin on trans accuracies of the resamples; (b) population by time bin
+    on cis and trans accuracies pooled. Reproduced when the population effect has p > 0.05;
+    not reproduced when p <= 0.05; the effect size is reported. If the readings differ the
+    claim is blocked as methods_underspecified.
+- id: figs5i-coefficients-similar
+  statement: Mechanosensitive and sniff-invariant neurons have similar distributions of
+    concentration coefficients.
+  source: Results, The distributed representation of odor concentration is sniff invariant,
+    paragraph 3; Figure S5I
+  quote: Cumulative distribution of concentration regressor coefficients for mechano-sensitive
+    and sniff-invariant neurons (Kolmogorov-Smirnov test, P-value = 0.4793).
+  statistics:
+  - test: Kolmogorov-Smirnov test
+    p: 0.4793
+  depends_on:
+  - fig5gh-mechanosensitive-as-good
+  criterion: A claim of absence. Concentration coefficients of the two populations of
+    fig5gh-mechanosensitive-as-good (all neurons meeting each rule); two-sample
+    Kolmogorov-Smirnov test; reproduced when p >= 0.05, not reproduced otherwise.
+- id: fig6-simulation-mechanosensory-rescues
+  statement: In a population simulated from the fitted coefficients, an inhalation-driven
+    concentration change makes concentration decoding across inhalation speeds worse than within
+    speed as the change grows, and adding the mechanosensory input restores decoding of the true
+    concentration for any change.
+  source: Results, Airflow information affords tolerance to flow-dependent concentration
+    fluctuations, paragraph 1; Figures 6B and 6C; STAR Methods, Simulation of sniff-induced
+    concentration changes
+  quote: Consistently, decoders trained on the responses during slow and fast inhalations
+    classified the odor concentration worse than decoders trained using only one inhalation speed
+    as the simulated influence of the airflow on the concentration increased (Figure 6C).
+    However, supplementing this population with mechanosensory responses was sufficient to reduce
+    ambiguity and retrieve the actual concentration for any DIC (Figures 6B and 6C).
+  depends_on:
+  - fig5ef-correlated-subpopulations
+  criterion: Simulated per STAR Methods, R = Poisson(a I + b Cn) with Cn = log(Ce + k I Ce), Ce
+    0.01, 0.1, 1%, k from 0 to 1, a and b the linear-model coefficients of
+    fig5ef-correlated-subpopulations, a set to 0 for the population without mechanosensory
+    input. The Methods do not say which neurons are simulated, how negative rates are handled
+    or how many events are drawn; the code (simulation_effect_of_inh_on_con_lrModel_exponential.ipynb
+    with coeff_for_simulation.m) settles these and is followed for them - it simulates only
+    neurons whose a or b is significant (linear-model ANOVA p-value averaged over resamples,
+    p <= 0.01), draws 100 events per speed and concentration, adds the fitted intercept, and
+    when a neuron has negative rates shifts them up by the minimum plus 0.025; it uses 20 k
+    values from 0 to 1, 500 simulations and a 10-fold linear SVC (C 1). The code also adds
+    the change as k*b*C*I on the 0.33/0.66/1 scale in place of the Methods' log form; that
+    form is a variant. A variant simulating all neurons is shown. Reproduced when,
+    without mechanosensory input, the mixed-speed decoder's accuracy falls below the
+    within-speed decoders' as k grows (lower at k = 0.7 by more than one SD), and with it the
+    mixed-speed accuracy stays within one SD of within-speed accuracy at every k.
+- id: figs6h-waveforms-homogeneous
+  statement: Classifiers cannot decode the experimental condition from the spike waveform
+    features of the recorded units, suggesting homogeneous sampling of cell types across
+    conditions.
+  source: Results, Sniffing causes unstable odor responses in the PCx, paragraph 2; Figures S6G
+    and S6H
+  quote: The distributions of the waveform features were comparable across experiments, and
+    neither crossvalidated linear nor non-linear classifiers could discriminate an experimental
+    condition based on the spike waveforms of the units recorded (see STAR Methods).
+  criterion: Per STAR Methods, Spike sorting and inclusion criteria, trough-to-peak latency and
+    asymmetry index of each unit; cross-validated Naive Bayes and linear SVM for each pair of
+    experimental conditions (AUC and accuracy). Neither the folds nor the threshold for
+    "could not" is given; 10-fold CV, a standard choice, and readings (a) mean AUC minus one SD
+    at or below 0.5; (b) mean AUC below 0.6 for every pair. Reproduced when a reading holds for
+    every pair and both classifiers.
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - inhalation-sorting, statement now says inhalation durations "appear" bimodal, as the paper says ("appeared bimodal"), not that they are.
+  - fig1hi-sniff-changes-responses, the shuffle criterion gave two thresholds ("every shuffle (or at least the 95th percentile)"); it now uses the 95th percentile and reports whether every shuffle is exceeded, as Figure 1I gives no p-value.
+  - figs1d-rs-fs-similar, added the expected counts of 440 RS and 310 FS odor-concentration responses from the Figure S1D legend.
+  - fig6-simulation-mechanosensory-rescues, the criterion left out choices the code settles and the Methods leave open; added from coeff_for_simulation.m and the simulation notebook (Zenodo 10.5281/zenodo.10381293, commit 3bec502, read for this check) that only neurons with a significant a or b (averaged ANOVA p <= 0.01) are simulated, 100 events per speed and concentration, the fitted intercept, and the rate shift; all-neuron simulation is a variant.
+  - Checked against the same code deposit, and found correct - the BH adjustment per neuron and the 0.005 one-sided tests (fig1_H_I), the pair selection and tests of fig1_J and fig1_L, the GLM settings (GLM_model.m), the sub-population bounds (angleRange 30 degrees), the airflow tuning (fig3_C, fig3_F), the first-sniff, CV and per-bin tests (fig4_C-E), the neuron counts and 400-inhalation samples of the speed decoders, and the notebook's |90 - angle| transform.
+  - Open, not settled - figs4-bulbectomy-no-odor-no-phase judges "unresponsive to odors" against a 5% false-positive rate, and fig4d-pre-sniff-rise reads "several tens of milliseconds" as at least 20 ms; the paper gives no test or number for either, so these are readings, not the paper's thresholds.
+  - Open, not settled - the "similar" criteria of figs1d-rs-fs-similar, figs3-aen-neurectomy and fig3b-latency-shortens, and the mean plus or minus one SD readings of the decoding claims (Figures 5B, 5D, 5F, 5H, S1B, 4G), use tests the paper does not report; each is named as a reading in its criterion.
+  - Not added - Figure S3A (tracheostomy interrupts the entrainment of PCx activity to breathing) is a control with no test or number in the paper and is left without a claim.

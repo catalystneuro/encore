@@ -1,35 +1,97 @@
-# 000006 · verifier-1 · run 38603858429
+# 000006 · verifier-1 · run 39508801865
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cd  ls -la; ls docs paper 2>/dev/null; cat *.y*ml *.json 2>/dev/null | head -200
+cd  ls -la; ls paper docs 2>/dev/null
 ```
 
 ```
-total 192
-drwxr-xr-x 5 runner runner    4096 Oct 14 17:16 .
-drwxr-xr-x 7 runner runner    4096 Oct 14 17:16 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 14 17:14 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 14 17:14 .bashrc
-drwxr-xr-x 5 runner runner    4096 Oct 14 17:16 .claude
--rw-r--r-- 1 runner runner       0 Oct 14 17:16 .env
--rw-r--r-- 1 runner runner       0 Oct 14 17:16 .env.development
--rw-r--r-- 1 runner runner       0 Oct 14 17:16 .env.development.local
--rw-r--r-- 1 runner runner       0 Oct 14 17:16 .env.local
--rw-r--r-- 1 runner runner       0 Oct 14 17:16 .env.production
--rw-r--r-- 1 runner runner       0 Oct 14 17:16 .env.production.local
--rw-r--r-- 1 runner runner       0 Oct 14 17:16 .env.test
--rw-r--r-- 1 runner runner       0 Oct 14 17:16 .env.test.local
-drwx------ 2 runner runner    4096 Oct 14 17:16 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 14 17:14 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 14 17:14 .github
--rw-r--r-- 1 runner runner       0 Oct 14 17:16 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 14 17:14 .idea
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 14 17:14 .mcp.json
-[... 118 more lines not kept]
+Exit code 2
+total 612
+drwxr-xr-x 6 runner runner    4096 Oct 20 22:42 .
+drwxr-xr-x 7 runner runner    4096 Oct 20 22:42 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 20 22:31 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 20 22:31 .bashrc
+drwxr-xr-x 5 runner runner    4096 Oct 20 22:42 .claude
+-rw-r--r-- 1 runner runner       0 Oct 20 22:42 .env
+-rw-r--r-- 1 runner runner       0 Oct 20 22:42 .env.development
+-rw-r--r-- 1 runner runner       0 Oct 20 22:42 .env.development.local
+-rw-r--r-- 1 runner runner       0 Oct 20 22:42 .env.local
+-rw-r--r-- 1 runner runner       0 Oct 20 22:42 .env.production
+-rw-r--r-- 1 runner runner       0 Oct 20 22:42 .env.production.local
+-rw-r--r-- 1 runner runner       0 Oct 20 22:42 .env.test
+-rw-r--r-- 1 runner runner       0 Oct 20 22:42 .env.test.local
+drwx------ 2 runner runner      40 Oct 20 22:42 .git
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 20 22:31 .gitconfig
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 20 22:31 .github
+-rw-r--r-- 1 runner runner       0 Oct 20 22:42 .gitmodules
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 20 22:31 .idea
+[... 23 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat 10.1038-s41586-018-0642-9.yaml
+```
+
+```
+<persisted-output>
+Output too large (58.7KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/012fb52b-8e06-472e-816f-7f67166e15df/tool-results/btu3jha2a.txt
+
+Preview (first 2KB):
+# Claims for Economo, Viswanathan, Tasic et al. (2018) on dandiset 000006.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-20, protocol
+# as stated in docs/protocol.md (pilot-10), Reader steps 1 to 4.
+#
+# Why this file was rewritten. The earlier file was written from the abstract only and is
+# deprecated. Read against the full text on 2026-10-20, its claims pt-lower-late-and-motor and
+# pt-types-differ-in-timing were tested with fractions of selective units and a label-shuffle null,
+# measures the paper does not use (it uses coding directions, a hierarchical bootstrap and single
+# neuron early selectivity), and eleven of the paper's findings on these data had no claim. This
+# file is written again from the full text. Ids are kept where the finding is the same:
+# pt-types-transcriptomic, pt-types-shared-targets, pt-upper-thalamus-projection,
+# pt-lower-medulla-projection, pt-preparatory-activity, pt-upper-early-preparatory,
+# pt-upper-persistent, pt-lower-late-and-motor and pt-types-differ-in-timing. All their criteria
+# are new; the old shuffle null, McNemar and Fisher tests are gone, as the paper uses none of them.
+# pt-lower-late-and-motor now tests selectivity along CDlate and CDgo (Fig. 6b, c; Extended Data
+# Fig. 7b); pt-types-differ-in-timing is now the summary of the coding direction claims it
+[... 10 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "10.1038-s41586-018-0642-9.yaml"
+}
+```
+
+```
+1	# Claims for Economo, Viswanathan, Tasic et al. (2018) on dandiset 000006.
+2	# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-20, protocol
+3	# as stated in docs/protocol.md (pilot-10), Reader steps 1 to 4.
+4	#
+5	# Why this file was rewritten. The earlier file was written from the abstract only and is
+6	# deprecated. Read against the full text on 2026-10-20, its claims pt-lower-late-and-motor and
+7	# pt-types-differ-in-timing were tested with fractions of selective units and a label-shuffle null,
+8	# measures the paper does not use (it uses coding directions, a hierarchical bootstrap and single
+9	# neuron early selectivity), and eleven of the paper's findings on these data had no claim. This
+10	# file is written again from the full text. Ids are kept where the finding is the same:
+11	# pt-types-transcriptomic, pt-types-shared-targets, pt-upper-thalamus-projection,
+12	# pt-lower-medulla-projection, pt-preparatory-activity, pt-upper-early-preparatory,
+13	# pt-upper-persistent, pt-lower-late-and-motor and pt-types-differ-in-timing. All their criteria
+14	# are new; the old shuffle null, McNemar and Fisher tests are gone, as the paper uses none of them.
+15	# pt-lower-late-and-motor now tests selectivity along CDlate and CDgo (Fig. 6b, c; Extended Data
+16	# Fig. 7b); pt-types-differ-in-timing is now the summary of the coding direction claims it
+17	# depends on. The other claims are new.
+18	#
+19	# Text read: the version of record (Nature 563, 79-84, 2018), as the PDF supplied by a person and
+20	# its text extraction (paper/10.1038-s41586-018-0642-9.txt): main text, Methods, Extended Data
+[... 864 more lines not kept]
 ```
 
 **Agent calls Bash**
@@ -42,43 +104,22 @@ for i,c in enumerate(nb['cells']):
     print('='*20,i,c['cell_type'])
     print(''.join(c['source']))
     for o in c.get('outputs',[]):
-        if 'text' in o: print('--OUT--');print(''.join(o['text'])[:5000])
-        elif 'data' in o:
-            d=o['data']
-            if 'text/plain' in d: print('--OUT--');print(''.join(d['text/plain'])[:5000])
-        if o.get('output_type')=='error': print('ERR',o['ename'],o['evalue'])
-"
+        if 'text' in o: print('--OUT--');print(''.join(o['text'])[:6000])
+        elif 'data' in o and 'text/plain' in o['data']: print('--OUT--');print(''.join(o['data']['text/plain'])[:6000])
+        elif o.get('output_type')=='error': print('--ERR--',o['ename'],o['evalue'])
+" > $TMPDIR/nb.txt; wc -l $TMPDIR/nb.txt
 ```
 
 ```
-<persisted-output>
-Output too large (60.2KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/5d64878e-9878-4674-8213-f410b3bb4c3c/tool-results/bkkiujan7.txt
-
-Preview (first 2KB):
-==================== 0 markdown
-# Reproducing Economo et al. (2018) from dandiset 000006
-
-**Paper.** Economo MN, Viswanathan S, Tasic B, et al. (2018). Distinct descending motor cortex
-pathways and their roles in movement. *Nature* 563, 79-84.
-[doi:10.1038/s41586-018-0642-9](https://doi.org/10.1038/s41586-018-0642-9). The paper is not open
-access and has no copy in PubMed Central, so this attempt used its **abstract only**. Its public
-Data availability statement was read to find the linked data and code.
-
-**Dandiset.** [DANDI:000006](https://dandiarchive.org/dandiset/000006/0.220126.1855), version
-0.220126.1855. The paper cites no DANDI version (it points to CRCNS and Figshare). This is the
-only published version, and it is pinned for that reason. The draft holds the same 53 files with
-the same sizes; it differs only in metadata added later (ORCID, affiliations, funders, anatomy
-terms and a link to the DataLad source), none of which the analysis uses.
-
-**What the dandiset holds.** Spike-sorted units from silicon probe recordings in the anterior
-[... 13 more lines not kept]
+2414 /tmp/claude-1001/nb.txt
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/5d64878e-9878-4674-8213-f410b3bb4c3c/tool-results/bkkiujan7.txt"
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "limit": 700
 }
 ```
 
@@ -86,64 +127,226 @@ terms and a link to the DataLad source), none of which the analysis uses.
 1	==================== 0 markdown
 2	# Reproducing Economo et al. (2018) from dandiset 000006
 3	
-4	**Paper.** Economo MN, Viswanathan S, Tasic B, et al. (2018). Distinct descending motor cortex
+4	Paper. Economo MN, Viswanathan S, Tasic B, et al. (2018). Distinct descending motor cortex
 5	pathways and their roles in movement. *Nature* 563, 79-84.
-6	[doi:10.1038/s41586-018-0642-9](https://doi.org/10.1038/s41586-018-0642-9). The paper is not open
-7	access and has no copy in PubMed Central, so this attempt used its **abstract only**. Its public
-8	Data availability statement was read to find the linked data and code.
-9	
-10	**Dandiset.** [DANDI:000006](https://dandiarchive.org/dandiset/000006/0.220126.1855), version
-11	0.220126.1855. The paper cites no DANDI version (it points to CRCNS and Figshare). This is the
-12	only published version, and it is pinned for that reason. The draft holds the same 53 files with
-13	the same sizes; it differs only in metadata added later (ORCID, affiliations, funders, anatomy
-14	terms and a link to the DataLad source), none of which the analysis uses.
-15	
-16	**What the dandiset holds.** Spike-sorted units from silicon probe recordings in the anterior
-17	lateral motor cortex (ALM) of 12 mice in a delayed response task (lick left or right after a go
-18	cue, depending on the position of a pole presented in the sample epoch), with trial tables and
-19	lick times. Tagged pyramidal tract (PT) units carry the label `PTupper` (8 mice) or `PTlower`
-20	(4 mice). The single-cell and bulk RNA-seq, the anatomy and the axonal reconstructions of the
-[... 853 more lines not kept]
+6	[doi:10.1038/s41586-018-0642-9](https://doi.org/10.1038/s41586-018-0642-9).
+7	
+8	Claims. The claims file `claims/000006/10.1038-s41586-018-0642-9.yaml` was written by a reader
+9	from the version of record (main text, Methods, Extended Data legends and the Reporting Summary)
+10	and checked by a second reader. It decides what is tested and how; this notebook does not change
+11	a claim or add a method detail it lacks. Where the file leaves a detail open, it names readings,
+12	and the notebook runs every one. Where it gives no reading for something the test needs, the
+13	question is in `questions/000006.yaml`, and the notebook runs each reading it can see. A reader
+14	answered this attempt's questions on 2026-10-20 and the claims file was updated with the answers;
+15	this run takes them up, and each claim's section says what its answer changed.
+16	
+17	This is the second attempt on the dandiset (`000006-economo-2018-02`). It replaces
+18	`000006-economo-2018-01`, whose claims were written from the abstract only. The claims file was
+19	rewritten from the full text; where a claim kept its id, the attempt record compares the outcomes.
+20	
+[... 680 more lines not kept]
 ```
+
+**Agent**
+
+Reading the notebook: data check done (dandiset has 44/56 included units vs paper's 61/69; 11 sessions missing). Continuing.
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/5d64878e-9878-4674-8213-f410b3bb4c3c/tool-results/bkkiujan7.txt",
- "offset": 874
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 700,
+ "limit": 800
 }
 ```
 
 ```
-874	Threshold p < 0.001: sample 0.357 against late delay 0.607; McNemar p = 0.003305
-875	Threshold p < 0.001: sample 0.357 against response 0.589; McNemar p = 0.01754
-876	
-877	Variant: response epoch rate differs from baseline (p < 0.01):
-878	           fraction   n  increased
-879	cell_type                         
-880	PTlower       0.946  56         13
-881	PTupper       0.841  44         10
-882	
-883	==================== 22 markdown
-884	## pt-types-differ-in-timing
-885	
-886	> The two PT types differ in when they carry information about the movement; the
-887	> thalamus-projecting type carries early preparatory activity, the medulla-projecting type mainly
-888	> late preparatory activity and motor commands.
-889	
-890	Criterion: (a) the fraction selective in the sample epoch is larger for PTupper than PTlower; (b)
-891	the fraction selective in the response epoch is larger for PTlower than PTupper; one-sided Fisher
-892	exact tests at p < 0.05. Both: reproduced; one: partially reproduced.
-893	==================== 23 code
-[... 149 more lines not kept]
+700	    for x in (-2.5, -1.3, 0):
+701	        ax.axvline(x, color="#999999", lw=0.8)
+702	    ax.axhline(0, color="#444444", lw=0.8, ls=":")
+703	    ax.set_title(f"CD{cd}")
+704	    ax.set_xlabel("Time from go cue (s)")
+705	axes[0].set_ylabel("Selectivity (a.u.)")
+706	axes[0].legend(frameon=False, fontsize=8)
+707	for ax in axes:
+708	    ax.spines[["top", "right"]].set_visible(False)
+709	plt.tight_layout()
+710	plt.show()
+711	print("Plotted ranges (5th to 95th percentile), all within the axes:")
+712	for cd, ct, lo, hi in ranges:
+713	    print(f"  CD{cd} {ct}: {lo:.2f} to {hi:.2f}")
+714	--OUT--
+715	<Figure size 1300x340 with 3 Axes>
+716	--OUT--
+717	Plotted ranges (5th to 95th percentile), all within the axes:
+718	  CDearly PTupper: -2.20 to 9.36
+719	  CDearly PTlower: -5.55 to 13.82
+[... 780 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "alm.py"
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 1500,
+ "limit": 920
+}
+```
+
+```
+File content (26240 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 1500,
+ "limit": 450
+}
+```
+
+```
+1500	 sel methods, range all, mouse subject, proj a (b) -2.5 to -1.5 s           3.544            1.713           1.746        True        False              0.332              0.246            False
+1501	 sel methods, range all, mouse subject, proj b (a) -2.5 to -2.1 s           4.053            2.032           2.013        True         True              0.311              0.303            False
+1502	 sel methods, range all, mouse subject, proj b (b) -2.5 to -1.5 s           3.631            1.657           1.890        True        False              0.343              0.304            False
+1503	  sel methods, range all, mouse animal, proj a (a) -2.5 to -2.1 s           3.860            1.804           1.667        True         True              0.310              0.294            False
+1504	  sel methods, range all, mouse animal, proj a (b) -2.5 to -1.5 s           3.544            1.713           1.752        True        False           
+1505	==================== 54 markdown
+1506	## pt-upper-persistent
+1507	
+1508	> In the PTupper population, selectivity along CDearly remains constant through the sample and
+1509	> delay epochs until the go cue.
+1510	
+1511	Criterion: PTupper CDearly selectivity, shared bootstrap. Readings: (a) the 5th percentile is above
+1512	zero at every bin from -2.1 s to the go cue; (b) the mean over -0.4 to 0 s is significant (fewer
+1513	than 5% of iterations at or below zero). Reproduced when the readings agree that it holds; the
+1514	ratio of the mean in -0.4 to 0 s to the mean in -2.5 to -2.1 s is reported.
+1515	==================== 55 code
+1516	span = (alm.TIME >= -2.1) & (alm.TIME < 0)
+1517	
+1518	
+1519	def persistent_row(s, label):
+[... 430 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 1950,
+ "limit": 470
+}
+```
+
+```
+1950	processed data, mouse subject, proj b                13.151    5.320        16.429         7.844              1.442              0.602
+1951	 processed data, mouse animal, proj a                13.607    5.263        16.930         7.845              1.622              0.602
+1952	 processed data, mouse animal, proj b                13.649    5.303        16.910         7.921              1.608              0.068
+1953	
+1954	==================== 70 markdown
+1955	## reaction-time (blocked)
+1956	
+1957	> The first detectable movement occurs about 50 ms after the go cue (99% confidence interval 38 to
+1958	> 56 ms).
+1959	
+1960	The test needs the 400 Hz side-view video. The data check shows that no file holds video; the
+1961	acquisition group of every file holds the lick times only.
+1962	==================== 71 code
+1963	print("Acquisition objects in the files:", sorted({k for s in sessions for k in s["meta"]["acquisition"]}),
+1964	      "; any video or image object:", any(s["meta"]["has_video"] for s in sessions))
+1965	--OUT--
+1966	Acquisition objects in the files: ['lick_times'] ; any video or image object: False
+1967	
+1968	==================== 72 markdown
+1969	## pt-cd-change-at-go-cue
+[... 446 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+import json
+nb=json.load(open('reproduce_economo_2018.ipynb'))
+for i in [3,27,67,76]:
+    c=nb['cells'][i]
+    print('='*20,i)
+    for o in c.get('outputs',[]):
+        if 'text' in o: t=''.join(o['text'])
+        elif 'data' in o and 'text/plain' in o['data']: t=''.join(o['data']['text/plain'])
+        else: continue
+        print(t[5900:] if i!=67 else t[5900:])
+"
+```
+
+```
+==================== 3
+372904     334     70        1        0            69 2.0.2   U       '' 2017-06-18T00:00:00
+anm372904 20170619       left       anm372904     254     66        1        0            65 2.0.2   U       '' 2017-06-19T00:00:00
+anm372905 20170715       left       anm372905     224      1        1        0             0 2.0.2   U       '' 2017-07-15T00:00:00
+anm372905 20170716       left       anm372905     277      2        2        0             0 2.0.2   U       '' 2017-07-16T00:00:00
+anm372905 20170717       left       anm372905     291      1        1        0             0 2.0.2   U       '' 2017-07-17T00:00:00
+anm372906 20170608       left       anm372906     306     57        4        0            53 2.0.2   U       '' 2017-06-08T00:00:00
+anm372906 20170610       left       anm372906     315      1        1        0             0 2.0.2   U       '' 2017-06-10T00:00:00
+anm372906 20170611       left       anm372906     227      1        1        0             0 2.0.2   U       '' 2017-06-11T00:00:00
+anm372906 20170612       left       anm372906     301      1        1        0             0 2.0.2   U       '' 2017-06-12T00:00:00
+anm372907 20170608       left       anm372907     319      2        2        0             0 2.0.2   U       '' 2017-06-08T00:00:00
+anm372907 20170610       left       anm372907     310      1        1        0             0 2.0.2   U       '' 2017-06-10T00:00:00
+anm372907 20170612       left       anm372907     312      1        1        0             0 2.0.2   U       '' 2017-06-12T00:00:00
+anm372907 20170613       left       anm372907     139      1        1        0             0 2.0.2   U       '' 2017-06-13T00:00:00
+anm372909 20170520       left       anm372909     241      1        1        0             0 2.0.2   U       '' 2017-05-20T00:00:00
+anm372909 20170522       left       anm372909     265     53        1        0            52 2.0.2   U       '' 2017-05-22T00:00:00
+
+related_publications in every file:
+[... 168 more lines not kept]
+```
+
+**Agent**
+
+Notebook read. Now the helper module.
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "^def \|^[A-Z_]* = " alm.py
+```
+
+```
+57:DANDISET_ID = "000006"
+58:DANDISET_VERSION = "0.220126.1855"
+60:EPOCHS = {                      # seconds from the go cue, defineDataset.m
+67:GOOD_QUALITY = {"Excellent", "Good", "single"}
+68:MIN_CORRECT = 50                # more than this many correct trials of each direction
+69:MIN_SPIKES_PER_TRIAL = 3.2
+70:MIN_PERFORMANCE = 0.65          # fraction correct, each direction
+71:EDGE_TRIALS = 10                # trials dropped at each end of a unit's range
+72:SELECTIVITY_P = 0.01
+73:TYPES = ("PTupper", "PTlower")
+74:PROJECTION = {"PTupper": "thalamus-projecting", "PTlower": "medulla-projecting"}
+76:DT = 0.005
+77:TIME = np.round(-3.3975 + DT * np.arange(1280), 4)
+78:SMOOTH = 10
+79:CD_WINDOWS = {"early": (-2.5, -2.1), "late": (-0.4, 0.0), "go": (0.0, 0.4)}
+80:N_BOOT = 1000
+81:BOOT_TRIALS = 50
+82:BURST_ISI = 0.005
+83:BURST_FRACTION = 0.1
+85:MP_ANIMALS = ("anm369962", "anm369963", "anm369964", "anm372794")
+[... 62 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "alm.py",
+ "offset": 1,
+ "limit": 780
 }
 ```
 
@@ -160,197 +363,123 @@ terms and a link to the DataLad source), none of which the analysis uses.
 10	and `cell_type` PTupper or PTlower; the other units are `unidentified`. Files are streamed from
 11	the archive at the pinned version; nothing is written to disk.
 12	
-13	Where the parameters come from. The paper's Methods were not available (the paper is not open
-14	access). Every choice below follows the analysis code the paper links to, the MATLAB scripts in
-15	Ephys.zip of the Figshare record doi:10.25378/janelia.7007846 (version 1):
+13	Where the parameters come from. The claims file (claims/000006/10.1038-s41586-018-0642-9.yaml)
+14	fixes every method; its opening comment and criteria cite the Methods, the figure legends and the
+15	paper's MATLAB code, Ephys.zip of the Figshare record doi:10.25378/janelia.7007846 (version 1).
 16	
-17	- `EPOCHS`, in seconds from the go cue: defineDataset.m.
-18	- `GOOD_QUALITY`, `MIN_CORRECT`, `MIN_SPIKES_PER_TRIAL`, `MIN_PERFORMANCE` and `EDGE_TRIALS`:
-19	  loadAndProcessData.m (unit inclusion, and the trial range of each unit in ObjToLickPSTH).
-20	  The code counts spikes per trial over the range of trials in which the unit fired.
-[... 376 more lines not kept]
+17	- `EPOCHS`, in seconds from the go cue: the code's epochs (defineDataset.m), as the claims file
+18	  gives them. Epoch means take bins with centres in (start, end] (getData); coding direction
+19	  windows take [start, end) (DirectionVector). On the 5 ms grid used here no bin centre falls on
+20	  a boundary, so both give the same bins.
+[... 760 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "10.1038-s41586-018-0642-9.yaml",
- "offset": 1,
- "limit": 5
+ "file_path": "alm.py",
+ "offset": 780,
+ "limit": 420
 }
 ```
 
 ```
-1	# Claims for Economo, Viswanathan, Tasic et al. (2018) on dandiset 000006.
-2	# Source: the abstract only. The paper is not open access (Nature, no copy in PubMed Central);
-3	# its public Data availability statement was read to find the linked data and code. The
-4	# claims are therefore at the level of the abstract's sentences and carry no reported numbers.
-5	#
+780	# and which of the paper's units the dandiset holds, and in variants that rerun tests on the
+781	# paper's units. No outcome rests on them.
+782	FIGSHARE_EPHYS_ZIP = "https://ndownloader.figshare.com/files/13292708"
+783	FIGSHARE_SEQ_ZIP = "https://ndownloader.figshare.com/files/13308305"
+784	FIGSHARE_AXONS_ZIP = "https://ndownloader.figshare.com/files/13308434"
+785	FIGSHARE_ANATOMY_ZIP = "https://ndownloader.figshare.com/files/13314290"
+786	
+787	
+788	class _Seekable(io.RawIOBase):
+789	    def __init__(self, f):
+790	        self.f = f
+791	
+792	    def seekable(self):
+793	        return True
+794	
+795	    def readable(self):
+796	        return True
+797	
+798	    def seek(self, *args):
+799	        return self.f.seek(*args)
+[... 361 more lines not kept]
 ```
 
 **Agent**
 
-Notebook and helper read. Next I'm checking the archive for the blocked claims and whether the paper's full text is available.
+Notebook and helper read. Next: test the helper functions on synthetic inputs, and query the DANDI archive for the blocked claims.
 
 **Agent calls Bash**
 
 ```bash
-cd  curl -s "https://www.ncbi.nlm.nih.gov/pmc/utils/idconv/v1.0/?ids=10.1038/s41586-018-0642-9&format=json"; echo; curl -s "https://api.dandiarchive.org/api/dandisets/000006/versions/0.220126.1855/" | python3 -c "import json,sys;d=json.load(sys.stdin);print(d.get('name'));print(d.get('description','')[:1500]);print(d.get('assetsSummary'));print(d.get('relatedResource'))"; curl -s "https://api.dandiarchive.org/api/dandisets/000006/versions/0.220126.1855/assets/?page_size=200" | python3 -c "import json,sys;d=json.load(sys.stdin);print(d['count']);[print(a['path'],a['size']) for a in d['results']]"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd  curl -sL "https://pmc.ncbi.nlm.nih.gov/tools/idconv/api/v1/articles/?ids=10.1038/s41586-018-0642-9&format=json"; echo; curl -s "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pmc&term=10.1038/s41586-018-0642-9[doi]&retmode=json"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd  mkdir -p paper; curl -s "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=10.1038/s41586-018-0642-9[doi]&retmode=json" | python3 -c "import json,sys;print(json.load(sys.stdin)['esearchresult']['idlist'])"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd  curl -sL "https://api.crossref.org/works/10.1038/s41586-018-0642-9" | python3 -c "import json,sys;m=json.load(sys.stdin)['message'];print(m.get('abstract','NO ABSTRACT'));print(m.get('license'))" ; curl -sL -o paper/nature_page.html -w "%{http_code}\n" "https://www.nature.com/articles/s41586-018-0642-9"; ls -la paper
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd paper; python3 - <<'E'
-import re,html
-t=open('nature_page.html').read()
-def strip(s): return html.unescape(re.sub(r'<[^>]+>',' ',s))
-m=re.search(r'id="Abs1-content".*?</div>',t,re.S)
-print(strip(m.group(0)) if m else 'no abs')
-print('Methods section present:', 'id="Sec' in t and 'Methods' in t, len(re.findall(r'<section',t)))
-for h in re.findall(r'<h2[^>]*>(.*?)</h2>',t): print('H2',strip(h))
-print('paywall' , 'Access options' in t or 'access through your institution' in t.lower())
-E
-```
-
-```
-id="Abs1-content"> Activity in the motor cortex predicts movements, seconds before they are initiated. This preparatory activity has been observed across cortical layers, including in descending pyramidal tract neurons in layer 5. A key question is how preparatory activity is maintained without causing movement, and is ultimately converted to a motor command to trigger appropriate movements. Here, using single-cell transcriptional profiling and axonal reconstructions, we identify two types of pyramidal tract neuron. Both types project to several targets in the basal ganglia and brainstem. One type projects to thalamic regions that connect back to motor cortex; populations of these neurons produced early preparatory activity that persisted until the movement was initiated. The second type projects to motor centres in the medulla and mainly produced late preparatory activity and motor commands. These results indicate that two types of motor cortex output neurons have specialized roles in motor control.  
-Methods section present: False 17
-H2 Abstract
-H2 Access options
-H2 Data availability
-H2 References
-H2 Acknowledgements
-H2 Author information
-H2 Ethics declarations
-H2 Additional information
-H2 Extended data figures and tables
-H2 Supplementary information
-H2 Rights and permissions
-H2 About this article
-H2 Comments
-H2 Associated content
-H2 Explore content
-H2 About the journal
-H2 Publish with us
-H2 Search
-[... 2 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd paper; python3 - <<'E'
-import re,html
-t=open('nature_page.html').read()
-def strip(s): return re.sub(r'\s+',' ',html.unescape(re.sub(r'<[^>]+>',' ',s)))
-i=t.find('Extended data figures and tables'); j=t.find('Supplementary information',i)
-ed=strip(t[i:j]); 
-k=t.find('>Data availability<'); da=strip(t[k:k+3000])
-open('abstract_and_public_sections.txt','w').write(strip(re.search(r'id="Abs1-content".*?</div>',t,re.S).group(0))+'\n\nDATA AVAILABILITY\n'+da+'\n\nEXTENDED DATA LEGENDS\n'+ed)
-print(len(ed)); print(ed[:6000]); print(da[:1200])
-E
-```
-
-```
-15895
-Extended data figures and tables"> Extended data figures and tables Extended Data Fig. 1 Differentially expressed genes in single-cell and bulk RNA-seq. a , b , Heat map of expression (from scRNA-seq) of differentially expressed genes identified from scRNA-seq ( a ) and bulk RNA-seq ( b ). Columns represent individual cells, grouped by transcriptomic cluster (indicated below each colour map; Slco2a1 , n = 203; Npsr1 , n = 43; Hpgd , n = 122) and retrograde labelling site (indicated above). Grey indicates cells isolated from transgenic lines or other targets. Rows represent genes differentially expressed between the Slco2a1 and Hpgd–Npsr1 clusters. Colour bar shows transcript expression in counts per million mapped reads (CPM + 1) on a log-scale. c , d , Heat map of expression (based on bulk RNA-seq) of differentially expressed genes identified from scRNA-seq ( c ) and bulk RNA-seq ( d ) datasets. Rows represent genes, coloured by differential bulk RNA-seq expression between thalamus-labelled and medulla-labelled PT neurons. Columns in the heat map represent individual replicates (six each for PT upper and PT lower ). Colours show log-transformed transcript intensity (CPM + 1) in z -scored units. Blue shows replicates with low expression ( z -score = −2); red shows replicates with high expression ( z -score = +2). Extended Data Fig. 2 Distribution of PT axon collaterals. a , Axonal lengths of single-neuron reconstructions within targets in thalamus and medulla (thalamus-targeting PT neurons, n = 8, green; medulla-targeting PT neurons, n = 4, magenta). b , Axonal lengths within other selected PT targets. c , Axonal termini in single-neuron reconstructions within thalamic and medullary targets. d , Axonal termini within other selected PT targets. e , Bulk projections of PT upper and PT lower populations. Groups of cortical neurons were labelled from the thalamus (PT upper ; mouse #1), the medulla (PT lower ; mouse #2), or both targets (mouse #3) using rAAV2-retro
-[... 1 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd paper; python3 -c "
-t=open('abstract_and_public_sections.txt').read(); i=t.find('Extended Data Fig. 5'); print(t[i:i+9000])"
-```
-
-```
-Extended Data Fig. 5 Electrophysiology and trial-averaged spike rates for identified PT neurons. a , PT upper neurons ( n = 61). Left, inter-spike interval histograms; right: trial-averaged activity on lick right (blue) and lick left trials (red). Grey shaded area in inter-spike interval histograms represents the interval of −2.5 ms to 2.5 ms. b , PT lower neurons ( n = 69). Boxed region indicates neurons recorded in the right ALM (ipsilateral to injection site in medulla). All other neurons were recorded in the left ALM (contralateral to injection site). c , Bursting cells (cells in which greater than 10% of inter-spike intervals were less than 5 ms) were rare in the PT upper population (3.3%) and more common in the PT lower population (18.8%; P = 0.006, Fisher’s exact test). Extended Data Fig. 6 Variance in trial-averaged activity explained by PT cell class. a , Green line: variance of trial-averaged activity explained by increasing numbers of principal components across the population of PT upper neurons ( n = 61). Dark green line and 95% confidence interval: expected variance explained by the same number of components for size-matched samples ( n = 1,000 repetitions) of simultaneously recorded, unidentified neurons. b , Ratio of variance explained between PT upper neurons and bootstrapped distribution of simultaneously recorded unidentified neurons. Error bars represent s.d. of distribution. c , d , As in a and b , but for PT lower neurons ( n = 69). Asterisks denote points significantly greater than unity ( P < 0.05, bootstrap). Extended Data Fig. 7 Late delay epoch coding direction and similarity with other trial epochs. a , Time course of the linear combination of neuronal activity that best differentiates trial types in the 400 ms immediately before the go cue (late coding direction; CD late ) on lick right (blue) and lick left (red) trials for PT upper (top; n = 61) and PT lower (bottom; n = 69) neurons. b , Difference in CD late projections on lick right a
-[... 1 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python3 - <<'E'
+cd  python3 -c "
+import sys, types
+for m in ['h5py','remfile','requests','dandi','dandi.dandiapi']:
+    try: __import__(m)
+    except Exception as e:
+        mod=types.ModuleType(m); sys.modules[m]=mod
+        if m=='dandi.dandiapi': mod.DandiAPIClient=None
 import numpy as np, alm
 from scipy import stats
 rng=np.random.default_rng(0)
-# epoch_rates
-sp=np.array([0.05,0.1,0.15,1.0,1.39,1.4]); print(alm.epoch_rates(sp,np.array([0.0,1.0]),(0,0.4)))  # expect [3/0.4, 2/0.4]
-# dprime vs manual
-r=rng.normal(size=100); lab=rng.random(100)<.5; r[lab]+=1
-print(alm.dprime(r,lab),(r[lab].mean()-r[~lab].mean())/np.sqrt(r[lab].var(ddof=1)+r[~lab].var(ddof=1)))
-# ranksum vs scipy ranksums w/ ties (integer counts)
-c=rng.poisson(3,120).astype(float); l=rng.random(120)<.5
-print(alm.ranksum_p(c,l), alm.shuffled_ranksum_p(c,l,np.arange(120)[None]))
-# shuffled ranksum p uniform null -> fraction <0.01
-c=rng.poisson(2,150).astype(float); l=rng.random(150)<.5
-ps=alm.shuffled_ranksum_p(c,l,alm.label_shuffles(150,20000,rng)); print('null frac<0.01',(ps<0.01).mean())
-# overlap flags
-print(alm.overlap_flags(np.array([1,2,3,2.5,4,5.])))
-# mcnemar/fisher from counts
-print(alm.mcnemar_one_sided(7,20), alm.mcnemar_one_sided(13,22))
-print(stats.fisher_exact([[27,17],[27,29]],alternative='greater').pvalue, stats.fisher_exact([[36,20],[37,7]],alternative='greater').pvalue)
-print(alm.null_p(0.72,np.zeros(1000)))
-# trial_of_spikes
-import pandas as pd
-print(alm.trial_of_spikes(np.array([-1,0,5,6.4,7]),pd.DataFrame({'start':[0,6.4]})))
-E
+# smooth: causal boxcar
+x=np.zeros(30); x[5]=1
+print('smooth', np.nonzero(alm.smooth(x))[0], alm.smooth(x)[5:15].sum())
+# trial_means vs direct
+import scipy.sparse as sp
+c=rng.poisson(0.05,(20,len(alm.TIME))).astype(float)
+cs=sp.csr_matrix(c)
+w=(-2.5,-2.1)
+direct=(alm.smooth(c)/alm.DT)[:, alm.bins(w,'cd')].mean(axis=1)
+print('trial_means ok', np.allclose(alm.trial_means(cs,np.arange(20),w,'cd'),direct))
+print('epoch vs cd bins equal', all((alm.bins(v)==alm.bins(v,'cd')).all() for v in alm.EPOCHS.values()), alm.bins(w,'cd').sum())
+# onset
+q=np.full(len(alm.TIME),-1.0); i0=np.flatnonzero(alm.TIME>0.03)[0]; q[i0:]=1
+print('onset', alm.onset(q), alm.onset(q,'end'), alm.onset(q,'start'), alm.TIME[i0])
+q2=q.copy(); q2[np.flatnonzero(alm.TIME>0.0)[0]]=1
+print('onset single early bin, k=1 vs 3', alm.onset(q2,'centre',1), alm.onset(q2,'centre',3))
+# burst
+t=np.array([0,0.001,0.1,0.2,0.2015,0.5]); b=np.zeros(5,bool)
+print('burst', alm.isi_burst_fraction(t,b), 'expected', 2/6)
+b2=b.copy(); b2[0]=True
+print('burst boundary', alm.isi_burst_fraction(t,b2), 'expected', 1/6)
+# boot dprime vs dprime with full counts
+xl=rng.normal(0,1,60); xr=rng.normal(0.5,1.2,70)
+cl=np.ones((1,60)); cr=np.ones((1,70))
+print('boot dprime', alm._boot_dprime(xl,xr,cl,cr)[0], alm.dprime(xl,xr))
+# roc
+acc,d=alm.roc(xl,xr)
+thr=np.unique(np.r_[xl,xr]); best=max(max(((xr>=t).sum()+(xl<t).sum()), ((xr<t).sum()+(xl>=t).sum())) for t in thr)/130
+print('roc acc', acc, 'brute', best)
+acc2,_=alm.roc(xr,xl); print('roc symmetric', acc2)
+# unit draws
+d=alm.unit_draws(['a']*3+['b']*5+['c']*2, rng, 2000)
+print('draw sums', set(d.sum(1)), 'mean per unit', d.mean(0).round(2))
+"
 ```
 
 ```
 Exit code 1
 Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
+  File "<string>", line 8, in <module>
+    import numpy as np, alm
 ModuleNotFoundError: No module named 'numpy'
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  ls ~/.venv* /opt 2>/dev/null | head; which -a python python3 uv pip 2>/dev/null
+cd  ls /usr/bin/python3* ; which -a python python3 pip pip3 uv 2>/dev/null; pip3 install --user numpy scipy pandas 2>&1 | tail -2
 ```
 
 ```
-/opt:
-actionarchivecache
-az
-containerd
-google
-hca
-hostedtoolcache
-microsoft
-pipx
-pipx_bin
+/usr/bin/python3
+/usr/bin/python3-config
+/usr/bin/python3.14
+/usr/bin/python3.14-config
 /opt/hostedtoolcache/Python/3.13.16/x64/bin/python
 /opt/hostedtoolcache/Python/3.13.16/x64/python
 /usr/bin/python
@@ -358,159 +487,357 @@ pipx_bin
 /opt/hostedtoolcache/Python/3.13.16/x64/bin/python3
 /usr/bin/python3
 /bin/python3
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/uv
 /opt/hostedtoolcache/Python/3.13.16/x64/bin/pip
 /usr/bin/pip
-[... 1 more lines not kept]
+/bin/pip
+/opt/hostedtoolcache/Python/3.13.16/x64/bin/pip3
+/usr/bin/pip3
+/bin/pip3
+/opt/hostedtoolcache/Python/3.13.16/x64/bin/uv
+[notice] A new release of pip is available: 26.2.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  uv venv -q $TMPDIR/v && uv pip install -q -p $TMPDIR/v numpy scipy pandas h5py remfile requests dandi 2>&1 | tail -2; $TMPDIR/v/bin/python -c "import numpy,scipy,dandi;print('ok')"
-```
-
-```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-cd  $TMPDIR/v/bin/python - <<'E'
-import numpy as np, alm, pandas as pd
+cd  cat > $TMPDIR/t.py <<'EOF'
+import sys, types
+for m in ['h5py','remfile','dandi','dandi.dandiapi']:
+    try: __import__(m)
+    except Exception:
+        mod=types.ModuleType(m); sys.modules[m]=mod
+        if m=='dandi.dandiapi': mod.DandiAPIClient=None
+sys.path.insert(0,'.')
+import numpy as np, alm
 from scipy import stats
+import scipy.sparse as sp
 rng=np.random.default_rng(0)
-sp=np.array([0.05,0.1,0.15,1.0,1.39,1.4]); print('rates',alm.epoch_rates(sp,np.array([0.0,1.0]),(0,0.4)))
-r=rng.normal(size=100); lab=rng.random(100)<.5; r[lab]+=1
-print('dprime',alm.dprime(r,lab),(r[lab].mean()-r[~lab].mean())/np.sqrt(r[lab].var(ddof=1)+r[~lab].var(ddof=1)))
-c=rng.poisson(3,120).astype(float); l=rng.random(120)<.5
-print('ranksum',alm.ranksum_p(c,l), alm.shuffled_ranksum_p(c,l,np.arange(120)[None]))
-c=rng.poisson(2,150).astype(float); l=rng.random(150)<.5
-ps=alm.shuffled_ranksum_p(c,l,alm.label_shuffles(150,20000,rng)); print('null frac<0.01',(ps<0.01).mean())
-print('flags',alm.overlap_flags(np.array([1,2,3,2.5,4,5.])))
-print('mcnemar',alm.mcnemar_one_sided(7,20), alm.mcnemar_one_sided(13,22))
-print('fisher',stats.fisher_exact([[27,17],[27,29]],alternative='greater').pvalue, stats.fisher_exact([[36,20],[37,7]],alternative='greater').pvalue)
-print('nullp',alm.null_p(0.72,np.zeros(1000)))
-print('trial',alm.trial_of_spikes(np.array([-1,0,5,6.4,7]),pd.DataFrame({'start':[0,6.4]})))
-# cosine-similarity null: two epochs with correlated trial noise, no selectivity -> null median >0?
-n=44; out=[]
-for _ in range(300):
-    ds=[];dl=[]
-    for u in range(n):
-        lab=rng.random(200)<.5; z=rng.normal(size=200); a=z+rng.normal(size=200); b=z+rng.normal(size=200)
-        ds.append(alm.dprime(a,lab)); dl.append(alm.dprime(b,lab))
-    out.append(alm.cosine(np.array(ds),np.array(dl)))
-print('cosine under no-selectivity, trial-correlated epochs: median',np.median(out))
-E
+x=np.zeros(30); x[5]=1
+print('smooth nonzero', np.nonzero(alm.smooth(x))[0])
+c=rng.poisson(0.05,(20,len(alm.TIME))).astype(float); cs=sp.csr_matrix(c)
+w=(-2.5,-2.1)
+direct=(alm.smooth(c)/alm.DT)[:, alm.bins(w,'cd')].mean(axis=1)
+print('trial_means ok', np.allclose(alm.trial_means(cs,np.arange(20),w,'cd'),direct), alm.bins(w,'cd').sum())
+print('epoch vs cd bins equal', all((alm.bins(v)==alm.bins(v,'cd')).all() for v in alm.EPOCHS.values()))
+q=np.full(len(alm.TIME),-1.0); i0=np.flatnonzero(alm.TIME>0.03)[0]; q[i0:]=1
+print('onset', alm.onset(q), alm.onset(q,'end'), alm.onset(q,'start'), alm.TIME[i0])
+q2=q.copy(); q2[np.flatnonzero(alm.TIME>0.0)[0]]=1
+print('onset k=1 vs 3', alm.onset(q2,'centre',1), alm.onset(q2,'centre',3))
+print('first_run_end', alm.first_run_end(q2))
+t=np.array([0,0.001,0.1,0.2,0.2015,0.5]); b=np.zeros(5,bool)
+print('burst', alm.isi_burst_fraction(t,b), 'expected', 2/6)
+b2=b.copy(); b2[0]=True
+print('burst boundary', alm.isi_burst_fraction(t,b2), 'expected', 1/6)
+xl=rng.normal(0,1,60); xr=rng.normal(0.5,1.2,70)
+print('boot dprime', alm._boot_dprime(xl,xr,np.ones((1,60)),np.ones((1,70)))[0], alm.dprime(xl,xr))
+acc,d=alm.roc(xl,xr)
+thr=np.unique(np.r_[xl,xr]); best=max(max(((xr>=t).sum()+(xl<t).sum()), ((xr<t).sum()+(xl>=t).sum())) for t in thr)/130
+print('roc acc', acc, 'brute both polarities', best)
+print('roc swapped', alm.roc(xr,xl)[0])
+# roc with ties / rectified zeros
+zl=np.r_[np.zeros(40),rng.random(20)]; zr=np.r_[np.zeros(20),rng.random(50)+0.3]
+best=max(max(((zr>=t).sum()+(zl<t).sum()), ((zr<t).sum()+(zl>=t).sum())) for t in np.unique(np.r_[zl,zr]))/130
+print('roc ties', alm.roc(zl,zr)[0], best)
+d=alm.unit_draws(['a']*3+['b']*5+['c']*2, rng, 4000)
+print('draw sums', set(d.sum(1)), 'mean per unit', d.mean(0).round(2))
+# ranksum p==1 rule
+print('ranksum', alm.ranksum_p(np.array([1,2,3.]),np.array([1,2,3.])))
+EOF
+python3 $TMPDIR/t.py
 ```
 
 ```
-rates [7.5 5. ]
-dprime 0.7793933738366211 0.7793933738366211
-ranksum 0.6151781571029878 [0.61517816]
-null frac<0.01 0.00955
-flags [False False  True False False False]
-mcnemar 0.0095786452293396 0.087732624495402
-fisher 0.1339693645712917 0.9935708410399458
-nullp 0.000999000999000999
-trial [-1  0  0  1  1]
-cosine under no-selectivity, trial-correlated epochs: median 0.5108577521396569
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python3 -c "
-import json
-nb=json.load(open('reproduce_economo_2018.ipynb'))
-for i in (3,7):
-  for o in nb['cells'][i]['outputs']:
-    t=''.join(o.get('text',''))
-    print(t[-4000:] if i==3 else t[-1500:])
-"
-```
-
-```
-0 2.0.2   U       '' 2017-06-17T00:00:00
-anm372904 20170615       left     345      1        1        0             0 2.0.2   U       '' 2017-06-15T00:00:00
-anm372904 20170616       left     314      1        1        0             0 2.0.2   U       '' 2017-06-16T00:00:00
-anm372904 20170617       left     304      1        1        0             0 2.0.2   U       '' 2017-06-17T00:00:00
-anm372904 20170618       left     334     70        1        0            69 2.0.2   U       '' 2017-06-18T00:00:00
-anm372904 20170619       left     254     66        1        0            65 2.0.2   U       '' 2017-06-19T00:00:00
-anm372905 20170715       left     224      1        1        0             0 2.0.2   U       '' 2017-07-15T00:00:00
-anm372905 20170716       left     277      2        2        0             0 2.0.2   U       '' 2017-07-16T00:00:00
-anm372905 20170717       left     291      1        1        0             0 2.0.2   U       '' 2017-07-17T00:00:00
-anm372906 20170608       left     306     57        4        0            53 2.0.2   U       '' 2017-06-08T00:00:00
-anm372906 20170610       left     315      1        1        0             0 2.0.2   U       '' 2017-06-10T00:00:00
-anm372906 20170611       left     227      1        1        0             0 2.0.2   U       '' 2017-06-11T00:00:00
-anm372906 20170612       left     301      1        1        0             0 2.0.2   U       '' 2017-06-12T00:00:00
-anm372907 20170608       left     319      2        2        0             0 2.0.2   U       '' 2017-06-08T00:00:00
-anm372907 20170610       left     310      1        1        0             0 2.0.2   U       '' 2017-06-10T00:00:00
-anm372907 20170612       left     312      1        1        0             0 2.0.2   U       '' 2017-06-12T00:00:00
-anm372907 20170613       left     139      1        1        0             0 2.0.2   U       '' 2017-06-13T00:00:00
-anm372909 20170520       left     241      1        1        0             0 2.0.2   U       '' 2017-05
-[... 72 more lines not kept]
+Exit code 1
+Traceback (most recent call last):
+  File "/tmp/claude-1001/t.py", line 8, in <module>
+    import numpy as np, alm
+  File "alm.py", line 49, in <module>
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  curl -s "https://api.dandiarchive.org/api/dandisets/000006/versions/0.220126.1855/assets/?page_size=200" | python3 -c "
-import json,sys
-d=json.load(sys.stdin)
-for a in d['results'][:53]:
-    if a['path'].endswith(('20170618.nwb','20170313.nwb')):
-        m=json.load(__import__('urllib.request').request.urlopen('https://api.dandiarchive.org/api/assets/'+a['asset_id']+'/'))
-        print(json.dumps({k:m.get(k) for k in ('wasGeneratedBy','about','variableMeasured','measurementTechnique','wasAttributedTo')},indent=0)[:2500])
-"; curl -s "https://api.dandiarchive.org/api/dandisets/000006/versions/0.220126.1855/" | grep -oiE ".{80}(thalam|medull|retro|inject|virus|tag).{80}" | head
+cd  python3 -m pip install --user pandas requests 2>&1 | tail -1; python3 $TMPDIR/t.py
+```
+
+```
+Exit code 1
+[notice] To update, run: pip install --upgrade pip
+Traceback (most recent call last):
+  File "/tmp/claude-1001/t.py", line 8, in <module>
+    import numpy as np, alm
+  File "alm.py", line 49, in <module>
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -m pip install --user pandas 2>&1 | grep -iv notice | tail -3; python3 -c "import sys;print(sys.version, sys.path)"
+```
+
+```
+Installing collected packages: pandas
+Successfully installed pandas-3.0.6
+
+3.13.16 (main, Oct  1 2026, 02:37:39) [GCC 15.2.0] ['', '/opt/hostedtoolcache/Python/3.13.16/x64/lib/python313.zip', '/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13', '/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/lib-dynload', '/home/runner/.local/lib/python3.13/site-packages', '/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages']
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 $TMPDIR/t.py
+```
+
+```
+Exit code 1
+Traceback (most recent call last):
+  File "/tmp/claude-1001/t.py", line 8, in <module>
+    import numpy as np, alm
+  File "alm.py", line 51, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -m pip install --user requests 2>&1 | grep -i success; python3 $TMPDIR/t.py
+```
+
+```
+Exit code 1
+Traceback (most recent call last):
+  File "/tmp/claude-1001/t.py", line 8, in <module>
+    import numpy as np, alm
+  File "alm.py", line 51, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'
+```
+
+**Agent**
+
+Stubbing `requests` instead, since it's only used for Figshare downloads.
+
+**Agent calls Bash**
+
+```bash
+cd  sed -i "s/for m in \['h5py','remfile','dandi','dandi.dandiapi'\]/for m in ['h5py','remfile','requests','dandi','dandi.dandiapi']/" $TMPDIR/t.py; python3 $TMPDIR/t.py
+```
+
+```
+Exit code 1
+Traceback (most recent call last):
+  File "/tmp/claude-1001/t.py", line 8, in <module>
+    import numpy as np, alm
+  File "alm.py", line 52, in <module>
+    import scipy.io as sio
+ModuleNotFoundError: No module named 'scipy'
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -m pip install --user scipy 2>&1 | grep -iE "success|error"; python3 $TMPDIR/t.py
+```
+
+```
+Successfully installed scipy-1.18.1
+smooth nonzero [ 5  6  7  8  9 10 11 12 13 14]
+trial_means ok True 80
+epoch vs cd bins equal True
+onset 0.0325 0.035 0.030000000000000002 0.0325
+onset k=1 vs 3 0.0025 0.0325
+first_run_end 0.0025
+burst 0.3333333333333333 expected 0.3333333333333333
+burst boundary 0.16666666666666666 expected 0.16666666666666666
+boot dprime 0.2819741495262043 0.2819741495262043
+roc acc 0.6384615384615384 brute both polarities 0.6384615384615384
+roc swapped 0.6384615384615384
+roc ties 0.7230769230769231 0.7230769230769231
+draw sums {np.float64(10.0)} mean per unit [1.08 1.05 1.08 0.9  0.88 0.86 0.91 0.88 1.18 1.18]
+ranksum 1.0
+```
+
+**Agent**
+
+Helper functions pass synthetic checks (smoothing, window means, onset, burst fraction, ROC accuracy, bootstrap d′, hierarchical draws). Now checking the archive's file list for the blocked claims.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; curl -s "https://api.dandiarchive.org/api/dandisets/000006/versions/0.220126.1855/assets/?page_size=200" -o assets.json; python3 -c "
+import json;d=json.load(open('assets.json'));print(d['count']);
+import collections
+for a in d['results']: print(a['path'], a['size'])
+" | head -70; curl -s "https://api.dandiarchive.org/api/dandisets/000006/versions/0.220126.1855/" -o ver.json; python3 -c "
+import json;d=json.load(open('$TMPDIR/ver.json'));print(d.get('assetsSummary'));print([k for k in d.keys()])"
 ```
 
 Result: the fetched text is not kept.
 
 **Agent**
 
-**A. Outcomes** (9 claims in the claims file; no attempt record was among my materials, so the count comes from the claims file only)
+Archive confirmed: 53 small NWB files (≤11.5 MB), no video, images or smFISH. Spot-checking the paper against a few claims-file readings.
+
+**Agent calls Bash**
+
+```bash
+cd paper; grep -n -iE "24 ms|48 ms|early selectivity|0\.41|chance|bootstrap|z-scor|depth-matched|276|first 400" 10.1038-s41586-018-0642-9.txt | head -40
+```
+
+```
+303:space that best discriminated trial types during the first 400 ms of the 
+313:cue; P = 0.34, bootstrap). This decay did not reflect a lack of selectivity 
+323:exhibited higher early selectivity (PTupper: 0.41 ± 0.04; mean ± s.e.m.; 
+431:population, significant selectivity emerged 24 ms after the go cue, 
+432:faster than in the PTupper population (48 ms) (Fig. 6c). The onset of 
+576:produced by hierarchical bootstrapping (n = 1,000 iterations) in a and 
+578:than zero, P < 0.05 one-sided test, bootstrap).
+736:neurons emerged 24 ms after the go cue, faster than in the PTupper 
+737:population (48 ms) and consistent with a role in movement initiation. 
+741:by hierarchical bootstrapping (n = 1,000 iterations) in a and 5–95% 
+743:zero, P < 0.05 one-sided test, bootstrap).
+870:features, extracted by weighted gene co-expression network analysis39, were clustered in an iterative and bootstrapped manner. The output of this procedure is a 
+872:any other cell in 100 bootstrapped iterative clustering rounds. The transcriptomic 
+1000:mean ± s.d.; range: 295–551). 95% confidence intervals for reaction time were calculated by bootstrapping session means across mice (n = 3) and sessions (n = 14). 
+1031:proportion as tagged neurons across animals. To produce depth-matched samples 
+1088:of the delay epoch (CDlate; 0.4 to 0.0 s before the go cue) and the first 400 ms of the 
+1121:are the results of a hierarchical bootstrapping procedure. For each population, 
+1122:1,000 bootstrapped projections were calculated. For each repetition, M mice were 
+1129:different from zero (P < 0.05, one-sided test, bootstrap).
+1135:trial-averaged activity patterns from all neurons were z-scored and time series 
+[... 17 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; sed -n 296,330p 10.1038-s41586-018-0642-9.txt; echo ----; sed -n 1026,1036p 10.1038-s41586-018-0642-9.txt; echo ---; sed -n 1412,1430p 10.1038-s41586-018-0642-9.txt; echo ---; sed -n 1117,1132p 10.1038-s41586-018-0642-9.txt
+```
+
+```
+left cells), representing a stable encoding of upcoming movement 
+direction1.
+We investigated the emergence and maintenance of preparatory 
+activity in populations of PTupper and PTlower cells. Neurons were pooled 
+across experiments and analysed in activity space, in which each dimension corresponds to the activity of one neuron27,28. Preparatory activity 
+for each movement corresponded to a distinct trajectory in activity 
+space. For each population, we computed the direction in activity 
+space that best discriminated trial types during the first 400 ms of the 
+sample epoch (CDearly: ‘early coding direction’). We then projected 
+the trial-averaged activity of all cells in the population along CDearly, 
+producing the one-dimensional projection of each activity space trajectory with maximal selectivity (Fig. 5a). In this projection, selectivity 
+was larger and more consistent across trials in the PTupper population 
+compared to the PTlower population (Fig. 5b). Furthermore, selectivity 
+in the PTupper population remained constant throughout the sample and 
+delay epochs until the go cue, implying retention of decision-related 
+information. By contrast, selectivity in the PTlower population decayed 
+rapidly along CDearly (no significant selectivity in 400 ms preceding go 
+cue; P = 0.34, bootstrap). This decay did not reflect a lack of selectivity 
+in the PTlower population: along a different direction in activity space, 
+which maximized selectivity at the end of the delay epoch, CDlate, selectivity was substantial in both cell types18 (Extended Data Fig. 7a, b; 
+[... 64 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; grep -n -A12 "^Fig. 5 |" 10.1038-s41586-018-0642-9.txt | head -30; grep -n -B2 -A10 "Extended Data Fig. 10 |" 10.1038-s41586-018-0642-9.txt | head -30
+```
+
+```
+567:Fig. 5 | Persistent preparatory activity in PTupper neurons. a, Time course 
+568-of the linear combination of neuronal activity that best differentiates 
+569-trial type after stimulus onset (CDearly) on lick right (blue) and lick left 
+570-(red) trials for PTupper (top) and PTlower (bottom) neurons. AU, arbitrary 
+571-units. b, Difference in CDearly projections on lick right and lick left trials 
+572-(selectivity) in PTupper (top; green) and PTlower (bottom; magenta) neurons. 
+573-c, Example identified PTupper neurons. Top, raster plots for correct lick 
+574-right trials (blue) and lick left trials (red). Bottom, trial-averaged spike 
+575-rates. Shaded regions represent the standard deviation of the distribution 
+576-produced by hierarchical bootstrapping (n = 1,000 iterations) in a and 
+577-5–95% confidence intervals in b (denoting region significantly greater 
+578-than zero, P < 0.05 one-sided test, bootstrap).
+579-8 2 | N A T U R E | V O L 5 6 3 | 1 N O V E M B E R 2 0 1 8
+1465-=== page 21 ===
+1466-Article RESEARCH
+1467:Extended Data Fig. 10 | Movement termination signals in PTlower 
+1468-neurons. a, Selectivity along CDlate (as in Extended Data Fig. 7b) for 
+1469-PTupper (green, left; n = 61) and PTlower neurons (magenta, right; n = 69) 
+1470-aligned to the last lick in the response epoch. b, Selectivity along CDgo 
+1471-(same as Fig. 6b) aligned to the last lick for each PT type. Shaded regions 
+[... 6 more lines not kept]
+```
+
+**Agent**
+
+**A. Outcomes (31 claims in the claims file)**
 
 | Claim | My outcome | Reason |
 |---|---|---|
-| pt-types-transcriptomic | blocked: data_missing | The archive holds only 53 NWB ephys files (variables Units, ElectrodeGroup, BehavioralEvents; 140 MB). No RNA-seq (the paper puts it in GEO GSE119182) and no reconstructions. |
-| pt-types-shared-targets | blocked: data_missing | There is no anatomy in the dandiset or the asset metadata. The units only carry `cell_type` labels. |
-| pt-upper-thalamus-projection | blocked: data_missing | `PTupper` is a label only. Neither the files nor the asset metadata name an injection site or projection target, and the label-to-target mapping comes from external MATLAB code (cell 4). |
-| pt-lower-medulla-projection | blocked: data_missing | Same as above. |
-| pt-preparatory-activity | reproduced | Cell 15: 72 of 100 units are delay-selective. The shuffle null has median 0.010 and 99th percentile 0.040, p = 0.001. This holds for each type, in all 12 animals (0.25 to 0.85), at thresholds 0.05 to 0.001, and in both variants. Depths are reported (430–1600 µm); layer cannot be checked. |
-| pt-upper-early-preparatory | reproduced | Cell 17: 27 of 44 PTupper units are sample-selective, against a null 99th percentile of 0.045, p = 0.001. The baseline reference is 2 of 44, and the variants agree. |
-| pt-upper-persistent | reproduced | Cell 19: (a) 27 of 44 are late-delay selective, p = 0.001. (b) The cosine is 0.495 against a null 95th percentile of 0.433, p = 0.016 (0.007 with another seed in cell 24). The Pearson variant gives r = 0.50, p = 6e-4. Persistence is moderate: only 17 of 27 sample-selective units keep their sign. |
-| pt-lower-late-and-motor | partially_reproduced | Cell 21: (a) sample 0.482 against late delay 0.714, McNemar p = 0.0096, which holds. (b) Sample against response 0.643, p = 0.088, which fails. This depends on the threshold: at p < 0.001 both parts pass, at p < 0.05 neither does. |
-| pt-types-differ-in-timing | not_reproduced | Cell 23: (a) sample 27/44 against 27/56, p = 0.134. (b) is reversed: response PTlower 0.643 against PTupper 0.841 (p = 0.022 for PTupper > PTlower). The by-animal comparison agrees. The paper's own measure points the other way: the coding-direction variant (cell 24) has PTupper 0.47 against PTlower 0.22, and the PTlower cosine shuffle p = 0.43, consistent with Extended Data Fig. 7c. That variant does not change the outcome. |
+| pt-types-transcriptomic | reproduced | Cell 25: the criterion's counting rule gives 27 clusters, and the PT cells fall in Slco2a1, Hpgd and Npsr1 only. |
+| pt-upper-thalamus-projection | reproduced | Cell 28: reading (c) gives 8 of 12, the same 8 as the thalamus group. Readings (a) and (b) give 11. A match under one reading is enough. |
+| pt-lower-medulla-projection | reproduced | Cell 28: reading (c) gives 4 of 12, and all 4 of the medulla group reach the intermediate reticular nucleus. |
+| pt-types-shared-targets | part 1 reproduced; part 2 blocked (methods_underspecified) | Superior colliculus 12 of 12 (cell 28). Part 2 can only be tested on the bulk-labelling images, and the paper gives no method for them. The test on the reconstructions is only a variant. |
+| pt-retrograde-sublaminae | blocked (methods_underspecified) | Anatomy.zip holds 657 jpgs and no counts (cell 34). The counting method is open, and no folder holds superior colliculus labelling. |
+| pt-projection-cluster-mapping | reproduced | Cell 30, reading (b): medulla 62 of 62 in Slco2a1; thalamus 72 + 19 = 91 of 94. |
+| pt-types-account-for-all-pt | partially_reproduced | Cell 28: superior colliculus 17 of 18 under both readings (AA0134 has 0 termini and 0 mm there); 0 of 18 lack both thalamus and medulla. The criterion has no partial rule, so this is my label for one part holding. |
+| pt-marker-genes | blocked (data_missing) | Confirmed: no smFISH data in the dandiset or in Anatomy.zip. |
+| pt-bulk-sc-fold-change-correlation | reproduced | Cell 32: r = 0.874 (0.87 ± 0.087). I checked the replicate columns against the sample key. |
+| pt-tagged-units | not_reproduced | Cell 36: 44 PTupper and 56 PTlower (code rule) or 42 and 63 (session rule), against 61 ± 6.1 and 69 ± 6.9; mice 8 and 4 match. The cause is missing data: on the processed data the same rule gives 61 and 69, and the dandiset lacks 11 sessions (cell 11). |
+| pt-depth | reproduced | Cell 38: 636 µm against 1004 µm, and 636 against 892 µm without the right hemisphere. |
+| pt-spike-rates-similar | not_reproduced | Cell 40, main reading: the peak t-test gives p = 0.030 (< 0.05). PTlower medians are also out of tolerance (6.69 Hz baseline, 20.96 Hz peak). |
+| pt-lower-heterogeneous-rates | reproduced | Cell 42: PTlower variance is larger. Bartlett and F test: baseline p = 0.002, peak p < 1e-4. |
+| pt-lower-bursting | partially_reproduced | Cell 44: Fisher p = 0.035; PTlower 19.6% is in tolerance, PTupper 4.5% (2 of 44) is not. With 44 units, 3.3 ± 0.33% cannot be reached (one unit is 2.3%). |
+| pt-selective-any-epoch | not_reproduced | Cell 46: 99 (or 96–100 under other readings) against 122 ± 12.2. The fraction is 0.99 against the paper's 0.94; the count fails because units are missing. |
+| pt-variance-explained | reproduced | Cell 48, main reading: maximum ratio 1.08 (PTupper) and 1.23 (PTlower), both ≤ 1.3. The session-rule variant exceeds the bound for PTlower (1.36). |
+| pt-preparatory-activity | partially_reproduced | Cell 51: part (b) holds under every reading. Part (a) counts are 29 and 38, against 40 ± 4 and 44 ± 4.4; as fractions, 66% and 68% against 66% and 64%. |
+| pt-upper-early-preparatory | methods_underspecified | Cell 53, main reading: "larger" holds under rule (i) and fails under (ii); "more consistent" fails (PTupper spread 0.31 against PTlower 0.25). That is partial under (i) and not reproduced under (ii). |
+| pt-upper-persistent | not_reproduced | Cell 55: reading (a) fails (68 to 165 of 420 bins not significant); reading (b) gives p = 0.053 and 0.058. Close to the threshold; the processed-data variant passes. |
+| pt-lower-cdearly-decay | reproduced | Cell 57: p from 0.30 to 0.40 under every reading (main 0.348; paper 0.34). |
+| pt-cd-stability | reproduced | Cell 59: PTupper is higher under both measures and every reading (r 0.49 against 0.18; inner product 0.46 against 0.22). |
+| pt-single-neuron-early-selectivity | reproduced | Cell 61, measure (a), unit range: 0.410 and 0.237, both in tolerance; t-test p = 0.0012, Mann-Whitney p = 0.0041. |
+| pt-upper-decoding | partially_reproduced | Cell 63: means 64.3% and 58.7% in tolerance; Mann-Whitney p = 1e-4; PTlower count 3 matches. PTupper count is 9 against 15 ± 1.5, and 8 (not 10) of the top 10 are PTupper. |
+| pt-upper-decoding-rectified | partially_reproduced | Cell 65: Mann-Whitney test holds, PTlower 0 reach 70%, PTupper mean 61.8% in tolerance. Out of tolerance: PTupper count 8 (15 ± 1.5), top 21 has 16 PTupper (20 ± 2), PTlower mean 56.20% (needs at least 56.3%). |
+| pt-lower-late-and-motor | reproduced | Cell 69: CDlate, larger (a and b), faster and longer all hold under all 16 readings. |
+| pt-cdgo-onset | partially_reproduced | Cell 67: PTlower is earlier under every reading, but the onsets are 30–45 ms and 75–85 ms, against 24 ± 5 and 48 ± 5. |
+| reaction-time | blocked (data_missing) | Confirmed in the archive: the files hold lick times only and no video. Lick latency (median 0.122 s, cell 7) measures something else. |
+| pt-cd-change-at-go-cue | methods_underspecified | Cell 73: level 0.5 meets the criterion (PTlower shorter and PTupper ≥ 0.2 s); level 0.75 gives PTupper 0.19 s < 0.2 s, so only partial. |
+| pt-lower-movement-termination | methods_underspecified (at best partial) | Cell 76: CDlate selectivity stays significant after the last lick under every reading (5–29 bins). CDgo passes only with window (a) and the subject reading of a mouse, so the windows and mouse readings give partial against not reproduced. |
+| pt-cohort-control | partially_reproduced | Cell 81, main reading: the CDgo onsets agree within the PT difference, but the PTlower-cohort CDearly median (9.82) lies above the PTupper-cohort 95th percentile (8.86). |
+| pt-types-differ-in-timing | partially_reproduced | Of the six claims it depends on, single-neuron early selectivity (PTupper side) and late-and-motor (PTlower side) are reproduced; persistent, early-preparatory and onset are not. |
 
-The paper is paywalled and not in PubMed Central. I saved the abstract, the Data availability statement and the public Extended Data legends in `paper/abstract_and_public_sections.txt`. None of these states a chance level for the fraction of selective units. The notebook's null median of about 0.01 matches the test level, as it should.
+No chance level is stated in the paper for any selection tested here.
 
 **B. Problems**
 
-1. [affects a conclusion] Cell 11 (`tagged_units`): the unit counts disagree with the paper and the notebook never checks this. The public Extended Data legends (Figs 5–10) give n = 61 PTupper and 69 PTlower. The dandiset holds 46 PTupper and 71 PTlower tagged units, and the notebook includes 44 and 56.
-   - About 15 PTupper units are missing from the archive. The dandiset description says some files were broken and left out.
-   - The inclusion rule drops 15 PTlower units (7 for low rate, 6 for quality, 2 for performance), while the paper's 69 suggests it kept most of them.
-   - This changes the populations behind the type comparisons (pt-types-differ-in-timing, pt-lower-late-and-motor).
-2. [affects a conclusion] Cells 21 and 23: units are pooled across sessions. 34 files hold 1 to 4 tagged units recorded on consecutive days in the same mouse (for example anm372904 has 1 PTupper unit on each of 5 days). These may be the same neuron, so the unit-level Fisher and McNemar p-values may overstate n. Cell 12 acknowledges this, and the by-animal tests (n = 4 against 8) are underpowered.
-3. [affects a conclusion] Cells 21 and 23: the McNemar response test (p = 0.088) and Fisher part (a) (p = 0.13) are close to the line and depend on the selectivity threshold (cell 21 thresholds). The "partial" outcome is fragile in both directions.
-4. [does not affect a conclusion] Cells 9–10 (`epoch_rates` on the file clock): the stored spikes are trial windows of about 6.4 s stitched onto trial start + cue, so neighbouring trials overlap. 11.7% of baseline-epoch spikes are flagged, against under 2% in the other epochs. Dropping the flagged spikes changes no outcome (cells 13–23), and the flagged share is only a lower bound.
-5. [does not affect a conclusion] Cell 7: the clock is unverified in 7 sessions. About 5 included single units sit in sessions where response-epoch decoding is at or below chance (anm372904 2017-06-16 is 0.19). If their clock is wrong they would dilute the fractions, which makes the tests conservative.
-6. [does not affect a conclusion] `unit_record`: `spikes_per_trial` divides by `last - first` where the trial count is `last - first + 1`. This is an off-by-one that only matters for units near 3.2 spikes per trial.
-7. [does not affect a conclusion] `decode_direction`: the z-scoring includes the left-out trial. This is minor leakage in a sanity check only.
-8. [does not affect a conclusion] Cells 13 and 15–17: the baseline-epoch selective fraction is 4.5% for PTupper (p = 0.079) and about 3% overall, against 1% nominal. This hints at slight inflation from slow drift or trial-order structure that a within-unit label shuffle cannot remove. It is negligible next to the 48–84% fractions.
-9. [does not affect a conclusion] Cell 0 still contains the author's outcome table, so the conclusions were not fully removed from my materials. I formed the outcomes above from the outputs.
+1. [affects a conclusion] Archive (cells 11–14): the dandiset lacks 11 processed sessions, holding 17 included PTupper and 13 included PTlower units, plus their unidentified units (232 against 495, 430 against 511). This alone explains the failures of pt-tagged-units and of the counts in pt-selective-any-epoch, pt-preparatory-activity (a), the two decoding claims and pt-cohort-control. All 117 tagged units the dandiset does hold agree with the processed data on cell type, inclusion and depth.
+2. [affects a conclusion] Claims file: these criteria judge raw counts and percentages from the paper's 130 units, which cannot be reached on 100 units: pt-selective-any-epoch, pt-preparatory-activity (a), the 70% counts and top-10/top-21 in the decoding claims, and the PTupper percentage in pt-lower-bursting. The fractions agree well (29/44 and 40/61 are both 66%). I am reporting this, not correcting it.
+3. [does not affect a conclusion] `binned_counts` (cells 9, 10): a trial's spikes are taken by time window on the file's clock. At least 11.65% of baseline-epoch spikes belong to the previous trial, which inflates baseline rates, the baseline subtraction of projections and the rectification threshold. Cell 11 shows the stored order is trial by trial, so spikes could have been assigned by order, but the notebook does not do this. The borderline results (pt-upper-persistent p = 0.053; rectified PTlower mean 56.20%) do not change outcome, because other conditions already decide those claims.
+4. [does not affect a conclusion] Cell 77: the criterion accepts the rebuilt last lick only if the outcome is unchanged when disagreeing trials are left out. The notebook's own check prints "Same holds/fails … False": subject, projection (a), CDgo, window (a) flips from True to False. The claim is methods_underspecified either way.
+5. [does not affect a conclusion] `binned_counts` with `align`: lick-aligned rates contain only spikes up to 3.0 s after the go cue, so later post-lick bins count as zero rate. This biases toward "selectivity ceases". It is not quantified, and the claim fails on CDlate anyway.
+6. [does not affect a conclusion] Claims file, pt-lower-movement-termination: the window readings fail for CDlate even on the paper's own processed units and licks (cell 76 variant). So the readings likely do not capture what the paper claims.
+7. [does not affect a conclusion] Claims file, pt-cohort-control: the CDearly test fails because the PTlower cohort is more selective than the PTupper cohort, the opposite direction to the PT-type difference. The criterion does not test whether the cohorts explain that difference.
+8. [does not affect a conclusion] pt-cdgo-onset (cell 67): the onsets are also out of tolerance on the paper's own units (37.5 and 57.5 ms, about 13 ms late for PTlower). That points to a systematic difference in the onset or projection method, which the notebook does not look into.
+9. [does not affect a conclusion] pt-cd-change-at-go-cue (cell 73): at level 0.5 the main reading separates the types by one bin (0.3675 against 0.3725 s), on a median with no uncertainty, and PTlower's 0.37 s is hardly "rapid". The code variant gives 0.07 s.
+10. [does not affect a conclusion] Cell 11: the processed data hold 150 tagged units, not the paper's 143; the notebook does not reconcile the two.
 
-All helpers behaved correctly on synthetic inputs: `epoch_rates`, `dprime`, `ranksum_p` and `shuffled_ranksum_p` (a null fraction below 0.01 came out at 0.0096), `overlap_flags`, `trial_of_spikes`, `null_p` and `mcnemar_one_sided`. I recomputed the McNemar (0.0096, 0.088) and Fisher (0.134, 0.994) p-values from the printed counts and they match. The cosine-similarity null correctly keeps the correlation between epochs within a trial; on synthetic data with no selectivity, the median null cosine is above 0. Inclusion uses no selectivity information, so there is no circularity.
+I tested the helpers on synthetic inputs: `smooth`, `trial_means`/`bins`, `onset`, `first_run_end`, `isi_burst_fraction`, `roc` (against a brute-force search, including ties), `_boot_dprime` (against `dprime`) and `unit_draws`. All behave as documented. The statistical tests are the ones the criteria name: Student's t, two-sided Fisher, two-sided Mann-Whitney, Bartlett and F. I found no train/test leakage; the single-unit accuracy is in-sample, which is the paper's own method.
 
 **C. What I could not check**
 
-- Whether the paper's inclusion rule gives 61/69 units (Methods paywalled). A cell listing each tagged unit's id, quality, spikes per trial, trial counts, performance and inclusion, next to the Figshare processed-data unit list for every session, would show which units the paper used and which are missing from the archive.
-- Whether units on consecutive days are the same neuron. Per-unit waveform, depth and ISI comparisons across days within each mouse, or results using one session per animal, would settle it.
-- The clock in sessions other than anm372906 2017-06-08. Running the `compare_with_processed` check for all 53 sessions, not just one, would confirm the spike-time reconstruction and the first-10-trial shift everywhere.
-- Per-unit p-values for the 7 sessions with unverified clocks, which would show whether those units are counted as selective.
-- A test against the paper's Extended Data Fig. 9 measure: single-unit decoding accuracy in the first 400 ms of the sample epoch, PTupper against PTlower (≥ 70% accuracy: paper 15/61 against 3/69). This would test pt-types-differ-in-timing part (a) the way the paper did.
+- How much the storage contamination (problem 3) moves results. Needed: per-unit baseline rates and the bootstrap with spikes assigned to trials by stored order, or the processed-data variant restricted to the 100 units the dandiset holds. The second would also separate the effect of missing units from the effect of the file format, for every claim.
+- Why AA0134 has no superior colliculus node. Needed: a list of the structures its axon nodes fall in.
+- The cause of the onset offset. Needed: the q5 curves from 0 to 0.1 s for the dandiset and the processed data.
+- How often the lick-aligned window is truncated. Needed: the fraction of correct trials whose last lick comes more than 2.5 s after the go cue.
+- Whether the Anatomy.zip H2B stacks (BL648) would allow the thalamus–medulla co-labelling count. Needed: a sample image and its resolution.
+- The Figshare sequencing and axon files themselves, which I did not download; I relied on the notebook's outputs for them.
 
 ## End of run
 
-20 turns, 3 minutes, result: success.
+27 turns, 6 minutes, result: success.

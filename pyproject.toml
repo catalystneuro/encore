@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "encore-science"
+dynamic = ["version"]
+description = "Check a dataset against the paper it came from: an AI agent reads the paper's claims and tests them on the data."
+readme = "docs/encore.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+dependencies = [
+  "pyyaml",
+  "jsonschema",
+  "nbformat",
+  "uv",
+  "pymupdf",
+]
+
+[project.urls]
+Homepage = "https://encorescience.org"
+Source = "https://github.com/catalystneuro/encore"
+
+[project.scripts]
+encore = "encore_science.cli:main"
+
+[tool.hatch.version]
+path = "encore_science/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["encore_science"]
+
+# The source package holds the package alone, not the registry around it.
+[tool.hatch.build.targets.sdist]
+include = ["encore_science", "docs/encore.md", "LICENSE", "pyproject.toml"]

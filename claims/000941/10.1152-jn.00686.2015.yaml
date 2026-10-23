@@ -1,0 +1,678 @@
+# Claims for Rouse & Schieber (2015), J Neurophysiol 114:3268-3282, on dandiset 000941.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
+# protocol pilot-10 as stated in docs/protocol.md (Reader, steps 1 to 4).
+#
+# Text read. The version of record (PDF supplied by a person, text extracted with PyMuPDF),
+# complete with Methods, Results, figure legends, Table 1 and Table 2. The paper has no
+# supplement. Some symbols are garbled in the extracted text (the "<", ">", "~", "x" glyphs
+# and the eta in "eta squared"); quotes are cut around them with "...". The sense of each
+# garbled comparison was taken from the sentence around it (e.g. "Qm ratios ... 0.5, indicating
+# larger location than object effects" is Qm > 0.5).
+#
+# Code read. The paper links no code and gives no code or data availability statement. Nothing
+# below rests on code; every method detail is from the Methods, the Results or the legends.
+#
+# Dataset. Dandiset 000941 is titled "FALCON Benchmark M1-A: primary motor cortex recordings in
+# primate during reach-to-grasp task" and lists this paper with three others from the same
+# laboratory (J Neurosci 2016, J Neurophysiol 2016 on EMG, Cell Reports 2018). Whether it holds
+# the kinematic data of this paper (marker positions or joint angles, for which monkeys and
+# sessions) is for the author to find.
+#
+# Data the paper used (as reported). Three male rhesus monkeys, L, X and Y, one session each:
+# L20120928, X20121219, Y20130516 (Table 2). Task: from a center coaxial cylinder the monkey
+# reached to, grasped and manipulated one of four peripheral objects (perpendicular cylinder,
+# coaxial cylinder, button, sphere), cued by blue LEDs; the object array was rotated to put the
+# objects at eight locations, 0 to 157.5 degrees in 22.5 degree steps, giving 24 location-object
+# combinations (sphere and button never at the leftmost locations, perpendicular cylinder not at
+# the rightmost). Events: Cue, release of center object, Contact (strain gauges), Switch.
+# Successful trials preceded by an error trial were excluded. 36 reflective markers tracked at
+# 200 frames/s (Vicon); 22 joint angles computed with a rigid body model (Table 1: ShoulderIER,
+# ShoulderFlex, ShoulderAbAd, ElbowFlex, ArmPS, WristFlex, WristRU, ThumbFlex, Index/Middle/Ring/
+# LittleMCP, ThumbAbAd, Index/Middle/Ring/LittleAbAd, ThumbMCP, Index/Middle/Ring/LittlePIP).
+# Measured variables needed: marker positions or joint angles, object and location per trial,
+# trial outcome and order, cue, movement onset and contact times.
+#
+# Methods common to the claims (each from the Methods unless said; criteria refer to them).
+# - Trials (Methods, Behavioral Task): successful trials, excluding successful trials preceded
+#   by an error trial.
+# - Movement onset (Methods, Temporal Normalization): speed of each of the 36 markers in 5 ms
+#   steps, averaged over markers; baseline mean and SD over 100 ms before to 100 ms after the
+#   cue across all successful trials of the session; onset is when the average speed exceeds 5
+#   SDs of the baseline. Open: whether the threshold is the baseline mean plus 5 SD or 5 SD
+#   alone, and whether the first crossing is sought after the cue or anywhere in the trial.
+#   Readings (a) mean + 5 SD, first crossing after the cue; (b) 5 SD alone, first crossing after
+#   the cue. If the dataset gives onset times, those are used and the readings are not needed.
+# - Time normalization (Methods): each joint angle linearly interpolated (interp1) between onset
+#   (M) and contact (C) to the session's median movement duration in 200 Hz samples (52, 48 and
+#   68 samples including M and C, Table 2); after C resampled at the same rate; before M left at
+#   200 Hz. Normalized time 0% is M and 100% is C. The 30% and 90% points are not tied to a sample;
+#   readings (a) nearest sample, (b) linear interpolation between samples; a standard choice that
+#   should not change outcomes, both shown.
+# - ANOVA (Methods, Data Analysis): at each normalized time point, each joint angle submitted to
+#   a two-way ANOVA with location, object and location x object. Effect size (Eq. 1) is
+#   eta2_i(t) = SS_i(t) / (SSLoc(t) + SSObj(t) + SSLocxObj(t) + max over time of SSError).
+#   Significance by the ANOVA F-test using the maximum SSError, at P < 0.05 divided by the number
+#   of time points (153 for L, 143 for X, 185 for Y). Open, could change magnitudes: (1) the sum of
+#   squares type for this unbalanced design with empty cells, readings type I (location first),
+#   type II and type III (the default of Matlab anovan, Matlab being the software the Methods
+#   name); (2) where the 153, 143 and 185 points lie, as the paper gives their number but not how
+#   many fall before M and after C (52, 48 and 68 lie from M to C); reading (a) the extra points
+#   split equally before M and after C (odd one after C), and reading (b) the maximum SSError
+#   taken from M to C only. Neither placement is given by the paper; (a) and (b) are both readings,
+#   and an outcome holds only when they agree. Qm = SSLoc/(SSLoc+SSObj) (Eq. 2); Qx = SSLocxObj/(SSLoc+SSObj+SSLocxObj)
+#   (Eq. 3).
+# - LDA (Methods, Linear discriminant analysis): five angle groups (shoulder: ShoulderIER,
+#   ShoulderAbAd, ShoulderFlex; wrist: ArmPS, WristFlex, WristRU; proximal digit F/E: ThumbFlex and
+#   the four finger MCP; digit Ab/Ad: the five AbAd; intermediate digit F/E: ThumbMCP and the four
+#   PIP). At each normalized time point, location classified given the object (4, 6 or 8 classes)
+#   and averaged over the four objects; object classified given the location (2, 3 or 4 classes)
+#   and averaged over the eight locations. 10-fold cross-validation on random partitions of the
+#   session's trials; 95% Clopper-Pearson intervals. Open: class priors (readings empirical, the
+#   default of Matlab classify and fitcdiscr, and uniform); whether folds are stratified (a
+#   standard choice, unstratified as written, stratified as a variant); how the interval is
+#   formed after averaging (readings (a) Clopper-Pearson on correct and total counts pooled over
+#   objects or locations, (b) on the mean accuracy with the total trial count). The fold seed is
+#   a standard choice.
+# - Epoch: the reach-to-grasp epoch is M to C. "Peak" below means the maximum over the samples
+#   from M to C, and "mean" the mean over those samples, unless said otherwise.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000941"
+paper: doi:10.1152/jn.00686.2015
+claims:
+- id: table2-trial-counts
+  statement: In the three sessions the monkeys performed 768, 824 and 745 trials (L, X, Y), of
+    which 717, 788 and 688 were successful and 685, 752 and 637 were analyzed.
+  source: Results, paragraph 1; Table 2
+  quote: during these sessions the monkeys performed from 745 to 824 total trials, of which from
+    688 to 798 were performed successfully, with from 637 to 752 trials being retained for analysis
+  expected:
+  - quantity: total trials, monkey L
+    value: 768
+    tolerance: 76.8
+  - quantity: total trials, monkey X
+    value: 824
+    tolerance: 82.4
+  - quantity: total trials, monkey Y
+    value: 745
+    tolerance: 74.5
+  - quantity: successful trials, monkey L
+    value: 717
+    tolerance: 71.7
+  - quantity: successful trials, monkey X
+    value: 788
+    tolerance: 78.8
+  - quantity: successful trials, monkey Y
+    value: 688
+    tolerance: 68.8
+  - quantity: analyzed trials, monkey L
+    value: 685
+    tolerance: 68.5
+  - quantity: analyzed trials, monkey X
+    value: 752
+    tolerance: 75.2
+  - quantity: analyzed trials, monkey Y
+    value: 637
+    tolerance: 63.7
+  criterion: Counts per session from the trial records; analyzed trials are successful trials
+    not preceded by an error trial (Methods, Behavioral Task). The text gives 798 as the largest
+    success count and Table 2 gives 788 for monkey X; the table's 788 is used, and 798 is a
+    second reading of that count. The exact counts are reported. Reproduced when all nine are
+    within tolerance; partially reproduced when the analyzed counts are within tolerance and some
+    other count is not.
+- id: table2-movement-time
+  statement: The median duration from movement onset to contact differs among the monkeys (255,
+    235 and 335 ms for L, X and Y; Kruskal-Wallis P < 0.001), giving 52, 48 and 68 normalized
+    samples from M to C.
+  source: Results, paragraph 1; Table 2
+  quote: The duration of the epoch from movement onset to peripheral object contact, which we
+    refer to as the reach-to-grasp epoch, differed among the three monkeys ... with medians
+    ranging from 235 to 335 ms
+  statistics:
+  - test: Kruskal-Wallis test
+    p: 0.001
+    p_relation: "<"
+    n: analyzed trials of three monkeys, one session each
+  expected:
+  - quantity: median movement time, monkey L
+    value: 255
+    tolerance: 25.5
+    unit: ms
+  - quantity: median movement time, monkey X
+    value: 235
+    tolerance: 23.5
+    unit: ms
+  - quantity: median movement time, monkey Y
+    value: 335
+    tolerance: 33.5
+    unit: ms
+  - quantity: normalized samples M to C, monkey L
+    value: 52
+    tolerance: 5.2
+  - quantity: normalized samples M to C, monkey X
+    value: 48
+    tolerance: 4.8
+  - quantity: normalized samples M to C, monkey Y
+    value: 68
+    tolerance: 6.8
+  criterion: Movement time from onset (common methods, both readings) to contact, over the
+    analyzed trials. The paper prints the bound as "P <10-3" with a garbled glyph; it is read as P
+    < 0.001. Table 2's footnote does not say whether the median and quartiles are over analyzed
+    or all successful trials; readings (a) analyzed trials, (b) all successful trials (the Fig. 5
+    legend speaks of "all successful trials"). Reproduced when, under one reading, the three
+    medians are within tolerance and a Kruskal-Wallis test across monkeys gives p < 0.001. The
+    sample counts follow from the medians at 200 Hz and are reported.
+- id: fig2-trial-count-coax-45
+  statement: Monkey L successfully reached to, grasped and manipulated the coaxial cylinder at
+    the 45 degree location in 28 trials of its session.
+  source: Figure 2 legend; Results, Temporal Trajectories of Individual Joint Angles, paragraph 1
+  quote: Each frame shows data from 28 successfully performed trials in which monkey L reached to,
+    grasped, and manipulated the coaxial cylinder at the 45° location
+  expected:
+    quantity: analyzed trials, monkey L, coaxial cylinder at 45 degrees
+    value: 28
+    tolerance: 2.8
+  criterion: Analyzed trials (common methods) of session L20120928 with that object and location.
+    The legend says "successfully performed"; readings (a) analyzed trials, (b) all successful
+    trials. Reproduced when either count is within tolerance.
+- id: fig2-joint-patterns
+  statement: In monkey L's movements to the coaxial cylinder at 45 degrees, the distal forearm
+    speed has a bell-shaped profile, ShoulderIER moves monophasically from one position to
+    another, and ElbowFlex first increases and then decreases.
+  source: Results, Temporal Trajectories of Individual Joint Angles, paragraph 2; Figure 2
+  quote: although the speed of the distal forearm point showed the conventional bell-shaped
+    profile, the trajectories of individual joint angles showed a variety of temporal patterns. Only
+    ShoulderIER showed a monophasic transition from one angular position to another. The elbow
+    flexion/extension (ElbowFlex) angle first increased and then decreased
+  depends_on:
+  - fig2-trial-count-coax-45
+  criterion: The trials of fig2-trial-count-coax-45, time-normalized (common methods), the mean
+    trajectory over trials from M to C. The paper gives no measure for these shapes, so they are
+    read as follows (open, a reading of the words). Bell-shaped is a single interior maximum of
+    the mean distal forearm speed; the distal forearm point is the point 1.1 cm deep to the five
+    distal forearm markers (Methods), and the mean of the five markers is a variant. Monophasic
+    is a mean ShoulderIER whose derivative keeps one sign from M to C. ElbowFlex is read as a
+    mean whose maximum lies inside the epoch with a rise before it and a fall after it.
+    Reproduced when all three hold; partially reproduced when two hold.
+- id: fig2-hand-opening-two-phases
+  statement: In the same movements, the ThumbFlex, four MCP, ThumbMCP, IndexPIP, MiddlePIP, RingPIP
+    and ThumbAbAd angles extend
+    (decrease) first, pause or slightly reverse near the middle of the epoch, near the time of peak
+    transport speed, then extend again, and keep extending, opening the hand, until just before
+    contact.
+  source: Results, Temporal Trajectories of Individual Joint Angles, paragraphs 2 and 3; Figure 2
+  quote: All of these angles initially decreased (extended), paused or slightly reversed near the
+    middle of the reach-to-grasp epoch, and then decreased again, apparently separating the time
+    course of hand opening into two phases ... all of these latter joints continued to extend
+    (decreasing values), opening the hand, until immediately prior to peripheral object contact
+  depends_on:
+  - fig2-trial-count-coax-45
+  criterion: The trials of fig2-trial-count-coax-45, the mean time-normalized trajectory of each
+    of the ten angles the paper lists (ThumbFlex, the four MCP, ThumbMCP, IndexPIP, MiddlePIP,
+    RingPIP and ThumbAbAd; LittlePIP is not in this list, the paper puts it with the angles that
+    decrease, increase and decrease again). No measure is given, so the words are read as
+    follows (open). A pause is a local minimum of the extension speed (the negative of the mean
+    angle's derivative), or a reversal to positive derivative, between 25% and 75% of normalized
+    time; its time is compared with that of peak distal forearm speed. Extension until just
+    before contact is the mean angle's minimum lying at or after 80% of normalized time.
+    Reproduced when both hold for at least 8 of the 10 angles; partially reproduced for 5 to 7.
+- id: fig4-armps-time-course
+  statement: For ArmPS in monkey L, the location effect rises until about midway between onset and
+    contact and then declines to small but still significant values before contact; the object
+    effect stays small until shortly before the midpoint and then rises until contact, when it
+    accounts for almost all the variance; the interaction is significant but small throughout.
+  source: Figure 4; Results, Effects of Location and Object on Joint Angles as a Function of Time,
+    paragraph 2
+  quote: After movement onset (M), the main effect of location (red) increased until
+    approximately midway between movement onset and peripheral object contact (C) and thereafter
+    decreased, reaching small but still significant values prior to contact. In contrast, the main
+    effect of object (blue) remained small until shortly before the midpoint and then rose
+    progressively until contact, at which time the object effect accounted for almost all of the
+    variance in ArmPS angle
+  statistics:
+  - test: two-way ANOVA F-test with the maximum SSError
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni, over 153 time points
+    n: analyzed trials of session L20120928
+  criterion: ANOVA effect sizes and significance as in the common methods, ArmPS, session
+    L20120928, each sum of squares reading. "Approximately midway" and "almost all" are not
+    given numbers; they are read as a location peak between 30% and 70% of normalized time, and
+    an object eta2 at C of at least 0.9 (the default 10% tolerance on all of the variance, 1.0).
+    Reproduced when, under every sum of squares reading, the location peak lies in that window,
+    location eta2 at C is below its peak and significant, object eta2 at C is at least 0.9,
+    object eta2 is below location eta2 at 30%, and the interaction eta2 is below both main effects
+    at C and significant at some time from M to C. Partially reproduced when the order of the
+    location peak and the object rise holds but a number does not. Readings that disagree make the
+    claim blocked as methods_underspecified.
+- id: fig5-location-proximal-object-distal
+  statement: Across the 22 angles in all three monkeys, the largest location effects are in the
+    shoulder and wrist angles and the largest object effects in the digit angles.
+  source: Figure 5; Results, Effects of Location and Object on Joint Angles as a Function of Time,
+    paragraph 3
+  quote: As expected, the largest effects of location were found in proximal joints, appearing as
+    prominent red traces in shoulder and wrist angles, while the largest effects of object were
+    found in the joints of the hand
+  criterion: ANOVA effect sizes from the common methods, each monkey. Reproduced when, in each
+    monkey, the angle with the largest peak location eta2 from M to C is a shoulder or wrist
+    angle (Table 1 groups Shoulder and Wrist), and the angle with the largest peak object eta2 is
+    one of the 15 digit angles. The mean peak location eta2 over shoulder and wrist angles, and
+    over digit angles, is reported, and likewise for object. Partially reproduced when this holds
+    in two monkeys.
+- id: fig5-early-significance-concurrent
+  statement: For a given angle, location and object effects both typically become significant
+    early in the movement, close to movement onset, and evolve concurrently, with small but
+    significant interaction effects.
+  source: Results, Effects of Location and Object on Joint Angles as a Function of Time,
+    paragraphs 3 and 5; Figure 5
+  quote: For any given joint angle, although location and object effects differed in magnitude,
+    both typically attained significance early in the course of the present movements and evolved
+    concurrently, with small but significant interaction effects (cyan traces) present as well
+  statistics:
+  - test: two-way ANOVA F-test with the maximum SSError
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni, over 153, 143 and 185 time points
+    n: analyzed trials of one session from each of three monkeys
+  criterion: ANOVA significance from the common methods. For each angle and monkey, the first
+    normalized time at or after M where the location effect is significant, and the same for
+    object and interaction. "Early" is not given a number; read as at or before 30% of
+    normalized time, the paper's early sample point. Reproduced when, in each monkey, both
+    location and object first become significant by 30% in more than half of the 22 angles
+    ("typically"), and the interaction is significant at some time from M to C in more than half.
+    Partially reproduced when this holds in two monkeys.
+- id: fig5-shoulderier-location
+  statement: ShoulderIER is dominated by location effects with little or no object effect.
+  source: Results, Effects of Location and Object on Joint Angles as a Function of Time,
+    paragraph 4; Figure 5
+  quote: ShoulderIER was dominated by location effects with little or no object effect
+  criterion: Qm of ShoulderIER (Eq. 2), each monkey. A Qm of 1 is a location effect with no object
+    effect (Methods); the paper gives no bound for "little or no object effect", and it is read
+    (a reading, not fixed by the paper) with the default 10% tolerance as Qm of at least 0.9. Reproduced when Qm is at least 0.9 at both the 30% and 90% points in all three
+    monkeys, and partially reproduced when Qm exceeds 0.5 at both points in all three but is
+    below 0.9 somewhere.
+- id: fig5-shoulder-object-effects
+  statement: ShoulderAbAd and ShoulderFlex both have clear object effects, in some cases
+    beginning early in the reach.
+  source: Results, Effects of Location and Object on Joint Angles as a Function of Time,
+    paragraph 4; Figure 5
+  quote: The other shoulder angles, ShoulderAbAd and ShoulderFlex, both had clear object effects,
+    however, in some cases beginning quite ... early in the reach-to-grasp
+  criterion: ANOVA significance from the common methods. "Quite early" is not given a number and
+    is read as by 30% of normalized time, the paper's early sample point (a reading). Reproduced when the object effect of both
+    angles is significant at some time from M to C in all three monkeys, and is significant by 30%
+    of normalized time in at least one angle and monkey. Partially reproduced when the object
+    effect is significant for both angles in two monkeys.
+- id: fig5-elbowflex-object
+  statement: ElbowFlex shows little location effect and a large object effect in each of the
+    three monkeys.
+  source: Results, Effects of Location and Object on Joint Angles as a Function of Time,
+    paragraph 4; Figure 5; compare Discussion, Effects of Object on Proximal Joint Angles,
+    paragraph 1
+  quote: the ElbowFlex angle showed surprisingly little location effect and instead had a large
+    object effect in each of the three monkeys
+  criterion: ANOVA effect sizes from the common methods. The paper describes ElbowFlex in two
+    ways, so two readings are listed. (a) The Results, object effect larger than location effect
+    in each monkey, judged as mean object eta2 from M to C above mean location eta2 in all three.
+    (b) The Discussion ("substantially larger than location effects in monkey L and similar in
+    magnitude to location effects in monkeys X and Y"), judged as mean object eta2 above mean
+    location eta2 in L, and the ratio of the two means between 0.5 and 2 in X and Y (the bounds of
+    "similar" are a reading, not fixed by the paper). Fig. 6A's Qm of 0.55 and 0.54 at 90% in X and
+    Y agrees with (b). Reproduced when either reading holds; the means and ratios are reported.
+- id: fig5-wrist-comparable
+  statement: The wrist angles ArmPS, WristRU and WristFlex each have location and object effects of
+    comparable magnitude.
+  source: Results, Effects of Location and Object on Joint Angles as a Function of Time,
+    paragraph 4; Figure 5
+  quote: The wrist angles, ArmPS, WristRU, and WristFE, each had location and object effects of
+    comparable magnitude
+  criterion: ANOVA effect sizes from the common methods; the text's WristFE is WristFlex. The paper
+    gives no bound for "comparable"; it is read as a ratio of peak object eta2 to peak location
+    eta2 from M to C between 0.5 and 2 (a reading, not fixed by the paper). Reproduced when this
+    holds for the three wrist angles in all three monkeys; partially reproduced when it holds for
+    at least 6 of the 9 angle-monkey pairs. The ratios are reported.
+- id: fig5-hand-object-predominates
+  statement: In all joint angles of the hand object effects predominate, with small location
+    effects in some, particularly in monkey L; object effects in proximal joints are somewhat more
+    marked than location effects in distal joints.
+  source: Results, Effects of Location and Object on Joint Angles as a Function of Time,
+    paragraph 4; Figure 5
+  quote: In all joint angles of the hand, object effects predominated. Nevertheless, small
+    location effects were present in some, particularly in monkey L ... Overall, object effects in
+    proximal joints were somewhat more marked than location effects in distal joints
+  criterion: ANOVA effect sizes from the common methods; hand angles are the 15 digit angles. The
+    paper gives no measure; predominate is read as peak object eta2 above peak location eta2 from
+    M to C (a reading). The paper uses "proximal" both for shoulder and wrist (paragraph 3) and for
+    shoulder and elbow as against the wrist and digits (paragraph 5), so proximal angles have two
+    readings, (a) the four shoulder and elbow angles, (b) these and the three wrist angles; distal
+    angles are the 15 digit angles in both. Reproduced when this holds for all 15 digit angles in all
+    three monkeys, the mean over digit angles of peak location eta2 is largest in monkey L, and
+    the mean peak object eta2 of the proximal angles exceeds the mean peak location eta2 of the 15
+    digit angles, pooled over monkeys, under either reading of proximal. Partially reproduced when the first part
+    holds for at least 40 of the 45 angle-monkey pairs.
+- id: fig5-location-early-object-late
+  statement: Location effects generally become large early in the movement and object effects
+    later, typically peaking only in the second half; in the shoulder, location effects keep
+    rising through the reach, while in the wrist and digits they rise, peak and decline as object
+    effects increase.
+  source: Results, Effects of Location and Object on Joint Angles as a Function of Time,
+    paragraph 5; Figure 5
+  quote: location effects generally became large early in the course of these movements, while
+    object effects generally became large later, typically reaching their maxima for a given joint
+    only in the second half of the movements. In the shoulder joints, location effects typically
+    continued to increase throughout the reach-to-grasp; but in the more distal joints of the
+    wrist and digits, location effects typically rose initially, peaked, and then declined as the
+    object effects increased
+  criterion: ANOVA effect sizes from the common methods. For each angle and monkey, the normalized
+    times of the location and object peaks from M to C. "Typically" is read as more than half of
+    the angles. Reproduced when, in each monkey, (1) the object peak lies after 50% for more than
+    half of the 22 angles, (2) the object peak is later than the location peak for more than half
+    of the 22 angles, (3) the location peak lies after 90% for at least two of the three shoulder
+    angles, and (4) the location peak lies before 90% and location eta2 at C is below the peak, for
+    more than half of the 18 wrist and digit angles. "Typically", the 90% bound for "continued to
+    increase" and "peaked, and then declined" are readings, not fixed by the paper. Partially reproduced when (1) and (2) hold in
+    all monkeys and (3) or (4) fails.
+- id: fig5-interaction-small
+  statement: Interaction effects, while often significant, are typically small; for no joint
+    angle does the interaction effect account for more variance than either main effect.
+  source: Results, Effects of Location and Object on Joint Angles as a Function of Time,
+    paragraph 6; Figure 5
+  quote: Third, interaction effects, while often significant, typically were small. For no joint
+    angle did the interaction effect account for more variance than either the location effect or
+    the object effect
+  criterion: ANOVA effect sizes from the common methods. The sentence allows two readings; the
+    Discussion adds that rarely was an interaction larger than both main effects. (a) For every
+    angle and monkey, the peak interaction eta2 from M to C is below the larger of the two peak
+    main effects. (b) For every angle and monkey, at no sample from M to C is the interaction eta2
+    above both main effects at that sample. Reproduced when either reading holds for all 66
+    angle-monkey pairs; partially reproduced when it holds for at least 60. The number of pairs and
+    samples where the interaction exceeds one or both main effects is reported.
+- id: fig6a-qm-30-90
+  statement: At the 30% point Qm varies widely across angles, while at the 90% point only the three
+    shoulder angles in each monkey, ElbowFlex in X and Y (0.55, 0.54) and WristRU in Y (0.56) have
+    Qm above 0.5; all other angles have Qm below 0.5.
+  source: Figure 6A; Results, Effects of Location and Object on Joint Angles as a Function of
+    Time, paragraph 7
+  quote: Figure 6A shows that, at the 30% time point, different joint angles had a wide variety of
+    Qm ratios, but by the 90% time point only a few joint angles, particularly all three shoulder
+    angles in each of the three monkeys, had Qm ratios ... 0.55 and 0.54, respectively) and WristRU
+    in monkey Y (0.56). At the 90% time point, all other joints had Qm ratios
+  expected:
+  - quantity: Qm of ElbowFlex at 90%, monkey X
+    value: 0.55
+    tolerance: 0.055
+  - quantity: Qm of ElbowFlex at 90%, monkey Y
+    value: 0.54
+    tolerance: 0.054
+  - quantity: Qm of WristRU at 90%, monkey Y
+    value: 0.56
+    tolerance: 0.056
+  criterion: Qm (Eq. 2) at the 30% and 90% points (common methods), each sum of squares reading.
+    Reproduced when, at 90%, the angles with Qm above 0.5 are exactly the nine shoulder
+    angle-monkey pairs plus ElbowFlex in X and Y and WristRU in Y, the three values are within
+    tolerance, and at 30% each monkey has Qm values on both sides of 0.5. Partially reproduced when
+    the nine shoulder pairs are above 0.5 and at most three of the other 57 pairs fall on the other
+    side of 0.5 from the paper. Readings that disagree make the claim blocked as
+    methods_underspecified.
+- id: fig6b-qx-small
+  statement: Qx is below 0.4 for the large majority of angles at both 30% and 90%; at 30% only
+    WristFlex and ThumbFlex in monkey X and ThumbFlex in monkey Y exceed 0.4, none in monkey L,
+    and at 90% all are below 0.4.
+  source: Figure 6B; Results, Effects of Location and Object on Joint Angles as a Function of
+    Time, paragraph 8
+  quote: At the 30% time point, only monkey X showed Qx ratios ... in two joints angles, WristFlex
+    and ThumbFlex, indicating substantial location ... object interactions early in the movement.
+    In monkey Y only ThumbFlex had a large Qx. In monkey L no joint angles had a large Qx at the 30%
+    time point. By the 90% time point, all Qx ratios were
+  criterion: Qx (Eq. 3) at the 30% and 90% points (common methods), each sum of squares reading.
+    Reproduced when the set of angle-monkey pairs with Qx above 0.4 at 30% is exactly WristFlex
+    and ThumbFlex in X and ThumbFlex in Y, and no pair exceeds 0.4 at 90%. Partially reproduced
+    when at most three of the 132 pair-time values fall on the other side of 0.4 from the paper.
+    Readings that disagree make the claim blocked as methods_underspecified.
+- id: fig7-mean-eta-30
+  statement: Averaged over the 22 angles at the 30% point, location effects are as large as or
+    larger than object effects (location/object/interaction, L 0.22/0.08/0.05, X 0.15/0.16/0.05,
+    Y 0.12/0.11/0.04).
+  source: Figure 7; Results, Effects of Location and Object on Joint Angles as a Function of
+    Time, paragraph 9
+  quote: >-
+    At the 30% time point, location effects were as large as, or somewhat larger than, object
+    effects (location/object/ interaction: monkey L: 0.22/0.08/0.05; monkey X: 0.15/0.16/ 0.05;
+    monkey Y: 0.12/0.11/0.04)
+  expected:
+  - quantity: mean location eta2 at 30%, monkey L
+    value: 0.22
+    tolerance: 0.022
+  - quantity: mean object eta2 at 30%, monkey L
+    value: 0.08
+    tolerance: 0.008
+  - quantity: mean interaction eta2 at 30%, monkey L
+    value: 0.05
+    tolerance: 0.005
+  - quantity: mean location eta2 at 30%, monkey X
+    value: 0.15
+    tolerance: 0.015
+  - quantity: mean object eta2 at 30%, monkey X
+    value: 0.16
+    tolerance: 0.016
+  - quantity: mean interaction eta2 at 30%, monkey X
+    value: 0.05
+    tolerance: 0.005
+  - quantity: mean location eta2 at 30%, monkey Y
+    value: 0.12
+    tolerance: 0.012
+  - quantity: mean object eta2 at 30%, monkey Y
+    value: 0.11
+    tolerance: 0.011
+  - quantity: mean interaction eta2 at 30%, monkey Y
+    value: 0.04
+    tolerance: 0.004
+  criterion: Mean over the 22 angles of eta2 (Eq. 1) for each effect at the 30% point, under every
+    sum of squares reading and both placements of the maximum SSError (common methods).
+    The tolerance is the default 10%, tight for two-decimal values; the values printed to two
+    decimals are compared after rounding. The sum of squares type and the SSError placement are
+    method details the paper leaves open, so the outcome is the one all combinations give.
+    Reproduced when all nine values are within tolerance under every combination; partially
+    reproduced when, under every combination, location is at least object minus 0.01 in every
+    monkey and some value misses tolerance. Combinations that give different outcomes make the
+    claim blocked as methods_underspecified. The values under every combination are shown.
+- id: fig7-mean-eta-90
+  statement: By the 90% point object effects are substantially larger on average than location
+    effects in all three monkeys (location/object/interaction, L 0.12/0.52/0.07, X 0.13/0.44/0.04,
+    Y 0.20/0.36/0.08).
+  source: Figure 7; Results, Effects of Location and Object on Joint Angles as a Function of
+    Time, paragraph 9
+  quote: >-
+    By the 90% time point, still prior to contact with the object, object effects were
+    substantially larger on average than location effects in all three monkeys (location/
+    object/interaction; monkey L: 0.12/0.52/0.07; monkey X: 0.13/ 0.44/0.04; monkey Y:
+    0.20/0.36/0.08)
+  expected:
+  - quantity: mean location eta2 at 90%, monkey L
+    value: 0.12
+    tolerance: 0.012
+  - quantity: mean object eta2 at 90%, monkey L
+    value: 0.52
+    tolerance: 0.052
+  - quantity: mean interaction eta2 at 90%, monkey L
+    value: 0.07
+    tolerance: 0.007
+  - quantity: mean location eta2 at 90%, monkey X
+    value: 0.13
+    tolerance: 0.013
+  - quantity: mean object eta2 at 90%, monkey X
+    value: 0.44
+    tolerance: 0.044
+  - quantity: mean interaction eta2 at 90%, monkey X
+    value: 0.04
+    tolerance: 0.004
+  - quantity: mean location eta2 at 90%, monkey Y
+    value: 0.20
+    tolerance: 0.02
+  - quantity: mean object eta2 at 90%, monkey Y
+    value: 0.36
+    tolerance: 0.036
+  - quantity: mean interaction eta2 at 90%, monkey Y
+    value: 0.08
+    tolerance: 0.008
+  criterion: As fig7-mean-eta-30, at the 90% point. Reproduced when all nine values are within
+    tolerance under every combination of readings; partially reproduced when, under every
+    combination, mean object eta2 exceeds mean location eta2 in all three monkeys and some value
+    misses tolerance. Combinations that give different outcomes make the claim blocked as
+    methods_underspecified.
+- id: fig7-time-course
+  statement: Averaged over angles, location and object effects begin to appear at about the same
+    time; after the 30% point object effects grow more than location effects, which decline
+    somewhat in L and X and stay about constant in Y; the proportions stay about constant after
+    contact; interaction effects stay small.
+  source: Figure 7; Results, Effects of Location and Object on Joint Angles as a Function of
+    Time, paragraph 9
+  quote: Main effects of location and of object began to appear at approximately the same time on
+    average ... Thereafter, object effects grew more than location effects, which actually
+    declined somewhat in monkeys L and X, although remaining relatively constant in monkey Y ...
+    The ratio of location, object, and interaction effects then remained relatively constant
+    after peripheral object contact
+  depends_on:
+  - fig7-mean-eta-30
+  - fig7-mean-eta-90
+  criterion: Mean eta2 over the 22 angles as a function of normalized time (common methods). The
+    paper gives no measure for these words; they are read as follows (open). Begin to appear is
+    the first sample at or after M where the mean exceeds 0.05; the two times are compared, and
+    "approximately the same" is a difference of at most 10% of normalized time. Growth from 30%
+    to 90% is larger for object than location in each monkey. Location at 90% is below location
+    at 30% in L and X, and not below it in Y (the paper's own values for Y rise from 0.12 to 0.20,
+    so "relatively constant" is read as not declining). Constant after contact is Qm of the mean
+    eta2 values staying within 0.1 of its value at C over the samples after C. The interaction
+    mean is below both main effect means from 30% to C. Reproduced when all parts hold in all
+    monkeys; partially reproduced when the growth part holds and another fails.
+- id: fig8a-lda-location
+  statement: Location given the object is best predicted by shoulder angles, which reach nearly
+    100% before contact, then by wrist angles, which match shoulder angles early but fall below them
+    by the midpoint; digit angle groups exceed chance early, become less accurate than proximal
+    groups shortly after onset, and still carry some location information just before contact.
+  source: Figure 8A; Results, LDA of Joint Angles as a Function of Time, paragraph 2
+  quote: In predicting location, shoulder joint angles (blue) were easily dissociated for different
+    locations of a given object, reaching nearly 100% correct before peripheral object contact.
+    Wrist angles (red) were next most strongly predictive of location. In the first part of the
+    movements, wrist angles predicted location as accurately as shoulder angles in all three
+    monkeys ... Nevertheless, note that just prior to peripheral object contact (C), wrist joints
+    and even digit joints still had some degree of discriminable information on location
+  criterion: LDA of location given object, from the common methods, each prior and interval
+    reading. Nearly 100% is read with the default 10% tolerance as at least 90% correct; "the first
+    part of the movements" as the 30% point and "by the temporal midpoint" as the 50% point (readings,
+    not fixed by the paper). In each monkey, (1) shoulder accuracy at least 90% at some sample from 90% to C; (2) the mean accuracy over
+    the samples from 50% to C orders shoulder above wrist, and wrist above each digit group; (3) the shoulder
+    and wrist 95% intervals overlap at the 30% point and wrist upper bound is below shoulder
+    accuracy at the 50% point; (4) each digit group's interval lower bound is above chance at the
+    30% point and at the 90% point; chance is the mean of 1/(locations available) over objects.
+    Reproduced when all parts hold in all three monkeys under every reading; partially reproduced
+    when (1) and (2) hold in all monkeys. Readings that disagree make the claim blocked as
+    methods_underspecified.
+- id: fig8b-lda-object
+  statement: Object given the location is predicted similarly by all five angle groups, each
+    reaching near 100% correct before contact in all three monkeys, including the shoulder angles.
+  source: Figure 8B; Results, LDA of Joint Angles as a Function of Time, paragraph 3
+  quote: In all three monkeys, all five joint-angle groups reached levels of object prediction close
+    to 100% correct prior to peripheral object contact
+  criterion: LDA of object given location, from the common methods, each prior and interval reading.
+    Close to 100% is read with the default 10% tolerance as at least 90% correct. Reproduced when
+    each of the five groups reaches at least 90% at some sample from 90% of normalized time to C,
+    in all three monkeys, under every reading; partially reproduced when this holds for at least
+    12 of the 15 group-monkey pairs. Readings that disagree make the claim blocked as
+    methods_underspecified.
+- id: fig9-hand-configuration-location
+  statement: At the 90% point in monkey L, index finger flexion varies modestly with location for
+    the perpendicular and coaxial cylinders but little for the button and sphere, and hand
+    configuration varies more with object than with location.
+  source: Figure 9; Results, Hand Configurations and Reach Trajectories, paragraphs 1 and 2
+  quote: Modest variation in the degree of index finger flexion is evident depending on location
+    for the perpendicular and coaxial cylinders, but relatively little if any variation in index
+    finger flexion was present for the button or sphere ... A modest degree of locationdependent
+    variation in hand configuration again can be appreciated, although more variation in hand
+    configuration depended on object
+  criterion: As in Fig. 9 (legend and Results), session L20120928, the 90% point, marker positions
+    averaged over successful trials of each location-object combination, translated and rotated
+    to co-register the five hand markers. The paper gives no measure of spread; the following is
+    a reading (open). Location spread per object is the mean distance of the four index finger
+    markers' combination means from their mean over locations; object spread per location
+    likewise over objects, using all 20 digit markers, compared with location spread using all 20
+    digit markers. Reproduced when index location spread is larger for each cylinder than for each
+    of button and sphere, and mean object spread exceeds mean location spread. Partially reproduced
+    when one of the two holds. If the dataset holds joint angles and not markers, the across-location
+    SD of mean IndexMCP and IndexPIP per object is used instead, as a variant.
+- id: fig10-forearm-trajectory-object
+  statement: Distal forearm point trajectories vary mainly with location, but at a given location
+    they also depend on the object from early in the reach, with little overlap between objects by
+    the end; at contact the point is typically highest for the sphere, intermediate for the coaxial
+    cylinder and lowest for the button.
+  source: Figure 10; Results, Hand Configurations and Reach Trajectories, paragraphs 3 and 4;
+    Discussion, Effects of Object on Proximal Joint Angles, paragraph 1
+  quote: At any given location, however, the trajectory of the distal forearm point through space
+    depended to some extent on the object to which the hand was being transported, beginning quite
+    early in the reach ... by the time of peripheral object contact, the distal forearm point
+    typically was positioned highest for the sphere (orange), intermediate for the coaxial cylinder
+    (cyan), and lowest for the button (violet) at any of the locations sampled
+  criterion: Distal forearm point from the distal forearm markers in earth-fixed coordinates (as
+    the Results say), successful trials, normalized time. Fig. 10 does not name the monkey; readings
+    (a) monkey L (as Figs. 3 and 9), (b) each monkey. The paper gives no measure here (its quantitative
+    support is Fig. 8B); the following is a reading (open). The LDA of object given location of the
+    common methods, run on the point's three coordinates; reproduced when its accuracy interval lower bound
+    exceeds chance by the 30% point and accuracy reaches at least 90% at C, and the mean up
+    coordinate at C is ordered sphere above coaxial cylinder above button at more than half of the
+    locations where all three were presented. Partially reproduced when one of these holds. Under
+    reading (b) the result per monkey is reported and the claim judged on L.
+- id: elbow-point-trajectory-object
+  statement: The elbow point trajectory, set by shoulder rotation alone, also varies mainly with
+    location and to some extent with object from early in the reach.
+  source: Results, Hand Configurations and Reach Trajectories, paragraph 4 (plots not illustrated)
+  quote: These plots likewise demonstrated variation depending primarily on location, but also
+    depending to some extent on the object, beginning early in the reach
+  criterion: The elbow point estimated as in the Methods (from the three upper arm and three
+    proximal forearm markers, 1.7 cm deep), the same reading and measure as
+    fig10-forearm-trajectory-object, without the vertical ordering, and with a location LDA given
+    object on the same coordinates. "Primarily on location" is read (a reading, the paper gives no
+    measure) as the comparison of accuracies above chance below. Reproduced when object classification given location exceeds
+    chance by the 30% point and, at C, location accuracy given object minus its chance level
+    exceeds object accuracy given location minus its chance level. The monkey is not named; judged on L
+    with the others reported.
+- id: fig8-hand-shape-invariant-to-location
+  statement: Late in the reach, location-dependent differences in hand shape are minor compared
+    with object-dependent differences in distal forearm position, as the lower accuracy of
+    predicting location from digit angles compared with the high accuracy of predicting object from
+    shoulder angles confirms; grasp shape is comparatively invariant to location.
+  source: Discussion, Effects of Location on Distal Joint Angles, paragraph 2; Figure 8; Abstract
+  quote: The late location-dependent differences in hand shape (Fig. 9) overall seemed relatively
+    minor compared with the objectdependent differences in distal forearm position (Fig. 10). This
+    impression was confirmed by the lower prediction accuracies of location from digit joint angles
+    compared with the high prediction accuracy of object from shoulder joint angles (Fig. 8)
+  depends_on:
+  - fig8a-lda-location
+  - fig8b-lda-object
+  criterion: LDA from the common methods, each prior and interval reading. The paper compares
+    percent correct and does not name the time; "late" is read as the 90% point (the time of Fig. 9)
+    and as C, two readings of the text. Reproduced when, in each monkey, the object accuracy given
+    location from shoulder angles exceeds the location accuracy given object from each of the three
+    digit groups, at the 90% point or at C; partially reproduced when this holds in two monkeys.
+    Accuracy above chance for each is reported as well. Prior and interval readings that disagree
+    make the claim blocked as methods_underspecified.
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2-hand-opening-two-phases, statement and criterion list the ten angles the Results name (ThumbFlex, four MCP, ThumbMCP, IndexPIP, MiddlePIP, RingPIP, ThumbAbAd); LittlePIP was wrongly included (eleven), the paper groups it with the decrease-increase-decrease angles; the count threshold is now 8 of 10.
+  - fig7-mean-eta-30 and fig7-mean-eta-90, reproduced required a match under any one combination of sum of squares type and SSError placement; these are open method details, so the protocol requires all combinations to agree, else blocked as methods_underspecified; criteria changed to that.
+  - Common methods, SSError placement, the second placement was called a variant; neither is from the paper, so both are now readings that must agree.
+  - fig5-location-early-object-late, part (4) restricted its denominator to angles whose location eta2 at C is below the peak, which conditions on the outcome; now the peak before 90% and the decline at C are both required over all 18 wrist and digit angles, and the bounds are named as readings.
+  - fig5-hand-object-predominates, the paper uses proximal both for shoulder and wrist and for shoulder and elbow; both readings now listed, and the predominance measure is named as a reading.
+  - fig5-shoulder-object-effects, quote extended to cover the statement's early-onset part, and the 30% bound for quite early named as a reading.
+  - fig5-shoulderier-location, the 0.9 bound named as a reading not fixed by the paper.
+  - fig8a-lda-location, part (2) was self-contradictory (at C and from 50% to C); rewritten as the mean accuracy from 50% to C; the 30% and 50% points named as readings.
+  - fig10-forearm-trajectory-object, quote extended to the Discussion sentence on vertical ordering that the statement and criterion use.
+  - elbow-point-trajectory-object, the accuracy-above-chance comparison named as a reading.
+  - fig8-hand-shape-invariant-to-location, added; the abstract's finding that grasp shape is comparatively invariant to location (Discussion, Effects of Location on Distal Joint Angles) had no claim.
+  - Open, table2-movement-time, the checker cannot find p 0.001 as the text garbles the bound ("P �10�3"); read as P < 0.001 from context, the PDF could not be rendered here to confirm the glyph.
+  - Open, many criteria rest on readings of qualitative words (bounds for early, comparable, similar, nearly 100%) that the paper does not fix; they are named as readings, and outcomes near those bounds should be read with that in mind.
+  - Open, Fig. 10 and the elbow point plots do not name the monkey; judged on monkey L (as in Figs. 3 and 9 and the Discussion's "this monkey"), with the others reported.
