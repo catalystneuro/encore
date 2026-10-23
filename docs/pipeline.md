@@ -19,7 +19,7 @@ dataset per step, and the dashboard's Pipeline page shows them.
 | 6 | Verification | yes | agents (verifier rounds, revisions), `papers` environment | the record's verifications |
 | 7 | Questions | yes | a reader, `papers` environment | answers in `questions/<folder>.yaml`, and in the claims |
 | 8 | Confirmation | no | CI | executed notebooks, passing checks |
-| 9 | Record | no | agent (recorder) | README row, pilot notes; merged |
+| 9 | Record | no | agent (recorder) | pilot notes; merged |
 | 10 | Report | no | script, sent by a person | issues to the dataset's owners |
 | 11 | Upkeep | depends | runner | deprecation; repeat attempts |
 
@@ -30,6 +30,9 @@ changed: new dandisets that name a paper, papers added to existing targets
 (an attempted one needs claims for each new paper), and new published versions
 of attempted dandisets, which are candidates for a repeat attempt. Merging the
 pull request puts the new targets in the runner's queue.
+A person asks for a particular attempt, such as a repeat after a conversion was
+fixed, with a run request ([queue.md](queue.md)); requests run before the
+targets the runner chooses itself.
 
 Steps 3 and 4 fix every claim and its method from the paper before anyone
 analyses the data: the claims agent never sees the dataset's contents. The
@@ -80,7 +83,8 @@ naming the usage policy means the run was flagged. A flagged run commits
 nothing and fails with `FLAGGED`. The runner then puts the branch back and
 runs the role again on the verified account, along with the dataset's
 remaining roles. A missing unverified token (`UNVERIFIED-UNAVAILABLE`) is
-treated the same way. The recorder always runs on the verified account. Each
+treated the same way. The recorder reads no paper, so it starts on the unverified account even for a
+dataset whose paper was flagged. Each
 run's commit records its account.
 
 ## The paper store

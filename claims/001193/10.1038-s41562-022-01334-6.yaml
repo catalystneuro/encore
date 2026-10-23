@@ -1,0 +1,587 @@
+# Claims for Zhu, Xu, Lu, Hu et al. (2022), Nature Human Behaviour 6, 1104-1111, on dandiset 001193.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-22, under
+# docs/protocol.md, version pilot-10.
+#
+# Text read: the version of record (paper/10.1038-s41562-022-01334-6.txt, from the publisher PDF
+# supplied by hand), with main text, figure legends, Methods and reporting summary, and the
+# Supplementary Information PDF (Supplementary Table 1, Supplementary Figures 1 to 10 and the list of
+# stimulus sentences). The Supplementary Excel file and the Source Data named in the paper were not
+# supplied; nothing below needs them except where said. Figure panels were not viewed (the PDF could
+# not be rendered here), so numbers printed only inside panels (the region counts of the Fig. 2b Venn
+# diagram) are not used.
+#
+# Code. The paper links no code: "The completely developed code that operates on the full data set
+# will be made available from the authors upon reasonable request" (Code availability). No repository
+# was read. Every method detail below is from the Methods, the figure legends or the supplement.
+#
+# Which dataset. The dandiset's title and description say it holds high-gamma (70-150 Hz) ECoG activity
+# from the paper's syntactic and semantic tasks in the inferior frontal gyrus, in NWB. Claims that need
+# other frequency bands (Fig. 1b, Supplementary Figs. 3, 4 and 7c) cannot be tested on high-gamma alone.
+#
+# Data the paper used (Results, paragraph 1; Methods, Participants, Stimuli design, Neural data
+# acquisition; Supplementary Table 1).
+# - Subjects. Ten native Mandarin speakers (4 male, 6 female, 19 to 50 years) in awake brain tumour
+#   surgery at Huashan Hospital. Two 128-channel high-density grids each (256 electrodes), over the
+#   left IFG and the left MFG or STG. Analyses use IFG electrodes only.
+# - Task. Written Chinese sentences, one word at a time: 800 ms fixation, 500 ms blank, each word 400 ms
+#   with a 100 ms interval; then a correctness judgement by button press (up to 3 s). Four blocks,
+#   each sentence shown once in random order. Conditions, 32 sentences each (supplement list): CORR
+#   (correct, 6 words), SYN-P (degree adverb before the object noun, 7 words), SYN-C (object noun
+#   replaced by an adjective, 6 words), SEM (verb's selectional restriction violated, 6 words), all ten
+#   participants. COM (SYN-P and SEM combined, 7 words), participants given in the text only as "five
+#   participants". NL, the other five: sequences of geometric shapes, changed (NL-VIO) or not (NL-CORR),
+#   with the number of shapes matched to the number of words. The keyword is the first object noun
+#   (the adjective in SYN-C): word 4 in CORR, SYN-C and SEM, word 5 in SYN-P and COM.
+# - Signals. TDT recording at 3,052 Hz, reference on the skull at Cz; bad channels and bad intervals
+#   excluded; downsampled to 400 Hz, notch at 50, 100, 150 Hz, common average reference per bank of 64
+#   channels. High-gamma activity (HGA), the first principal component of Hilbert amplitudes in eight
+#   bands from 70 to 150 Hz, downsampled to 100 Hz and z-scored within each block. Electrode
+#   coordinates on the MNI152 template and FreeSurfer anatomical labels.
+# - Behaviour. Button responses and response times (Supplementary Fig. 2b, 2d).
+#
+# Shared method. Criteria refer to these by letter. Each detail is from the place cited; a detail the
+# paper does not fix is named as open, with the readings its text allows, and the criterion holds when
+# all readings give the same outcome (otherwise the claim is blocked as methods_underspecified).
+# H, signal. The dataset's HGA. If it is not already z-scored within each block, z-score it so
+#   (Methods, Frequency component extraction, paragraph 2). Trials are aligned to keyword onset as T0
+#   (Methods, ERP amplitude), from the event times the dataset gives.
+# E, responsive IFG electrodes. Electrodes labelled pars opercularis or pars triangularis (FreeSurfer
+#   labels) whose response differs between resting state and stimuli by a one-way ANOVA (scipy
+#   f_oneway) at p < 0.01 (Methods, Electrode selection). Fig. 3d also includes precentral electrodes
+#   ("n = 106, electrodes in pars opercularis, pars triangularis and precentral"); E+ is E with the
+#   precentral gyrus added. Open, (E1) what "resting state" is: (a) the 800 ms fixation before the
+#   sentence, or (b) the fixation and the 500 ms blank (1,300 ms); the stimulus period is the sentence's
+#   word presentation. (E2) what is compared: per trial the mean HGA in the rest period against per
+#   trial the mean HGA in the stimulus period, the trials of all linguistic conditions pooled (the NL
+#   task for NL electrodes). No uncorrected or corrected alternative is named; p < 0.01 as printed.
+# V, violation electrodes. An electrode of E is a SYN-P, SYN-C or SEM (or COM) electrode when its HGA
+#   for that violation is reliably higher than for CORR: at each 10 ms sample after T0, a one-way ANOVA
+#   (f_oneway) over trials of the violation against CORR, two-tailed, p < 0.05/256 (Bonferroni for the
+#   256 electrodes of a participant), significant for more than 50 ms, with amplitude above 0.55 z
+#   (Methods, Electrode selection, paragraph 3; ERP amplitude; Results, paragraph 5). The violation
+#   mean must be above the CORR mean at the significant samples ("reliably higher"). Open, (V1) "more
+#   than 50 ms" as (a) a run of at least 6 consecutive significant samples, or (b) at least 6
+#   significant samples in total, or (c) a run spanning more than 50 ms from its first to its last
+#   sample (at least 7 consecutive samples); (V2) "> 0.55 z score in amplitude" as (a) the violation's mean HGA
+#   above 0.55 z at some significant sample, or (b) the violation minus CORR difference above 0.55 z at
+#   some significant sample. The window is 0 to 1,000 ms after T0, the extent of every keyword-locked
+#   figure (Fig. 1e, 2a, 3b, 3c); the paper names no other.
+# F, F value. The F statistic of the one-way ANOVA of the violation against CORR for an electrode
+#   (Fig. 2b legend). An electrode "strongly responded" to a violation when F > 4 (Results, paragraph
+#   5). Open, (F1) the maximum F over samples 0 to 1,000 ms; (F2) the mean F over the electrode's
+#   significant samples; (F3) the F of the trial-wise mean HGA over 0 to 1,000 ms.
+# L, latencies. Onset, peak and offset are the times at which 10%, 50% and 90% of the area of the
+#   keyword-locked mean response is reached (fractional area latency; Methods, ERP amplitude). Open,
+#   (L1) the response is (a) the violation's trial-mean HGA or (b) the violation minus CORR difference;
+#   (L2) the area is taken over (a) 0 to 1,000 ms or (b) the electrode's discriminating period (its
+#   significant samples under V, first to last); (L3) negative values are (a) set to zero or (b) kept.
+#
+# Data. Every claim uses the dataset alone unless it says otherwise. The paper uses no outside data,
+# except the word frequency corpus of the stimulus check (lingua.mtsu.edu/chinese-computing).
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001193"
+paper: doi:10.1038/s41562-022-01334-6
+claims:
+- id: participants
+  statement: Ten participants (four male, six female, 19 to 50 years) were recorded with two
+    128-electrode grids each; all ten did the CORR, SYN-P, SYN-C and SEM conditions, five of them the
+    combined violation (COM) and the other five the non-linguistic task (NL).
+  source: Methods, Participants, paragraph 1, and The Chinese language and stimuli design, paragraph 3;
+    Supplementary Table 1
+  quote: This study included ten participants (age range, 19–50 years; four males, six females) ...
+    All the ten participants performed under CORR, SYN-P, SYN-C and SEM conditions. Five participants
+    performed under COM and the other five performed under NL conditions.
+  expected:
+  - {quantity: participants, value: 10, tolerance: 0}
+  - {quantity: male participants, value: 4, tolerance: 0}
+  - {quantity: female participants, value: 6, tolerance: 0}
+  - {quantity: participants with COM, value: 5, tolerance: 0}
+  - {quantity: participants with NL, value: 5, tolerance: 0}
+  - {quantity: electrodes per participant, value: 256, tolerance: 0}
+  criterion: Counts of distinct subjects in the dataset, their sex, and the tasks each has. Tolerance
+    zero, as these are counts the paper gives exactly. Reproduced when all match; partially reproduced
+    when the dataset holds a subset of the participants with matching metadata. Ages are compared with
+    Supplementary Table 1 (30, 39, 19, 30, 50, 34, 42, 36, 40, 31 for participants 1 to 10) where the
+    dataset gives them.
+- id: task-structure
+  statement: Each of the CORR, SYN-P, SYN-C, SEM and COM conditions has 32 sentences, with six words per
+    sentence in CORR, SYN-C and SEM and seven in SYN-P and COM, each word shown for 400 ms with a 100 ms
+    interval after an 800 ms fixation and a 500 ms blank.
+  source: Methods, The Chinese language and stimuli design, paragraph 4; Supplementary Information,
+    stimulus sentence lists
+  quote: Each trial started with an 800 ms fixation followed by a 500 ms blank screen, and then each
+    word of the sentence (or geometric shape) was displayed for 400 ms, with a 100 ms interstimulus
+    interval. There were six words per sentence in the CORR, SYN-C and SEM conditions and seven words
+    in the SYN-P and COM conditions.
+  expected:
+  - {quantity: sentences per condition, value: 32, tolerance: 0}
+  - {quantity: words per sentence in CORR SYN-C and SEM, value: 6, tolerance: 0}
+  - {quantity: words per sentence in SYN-P and COM, value: 7, tolerance: 0}
+  - {quantity: word duration, value: 400, tolerance: 10, unit: ms}
+  - {quantity: word onset to next word onset, value: 500, tolerance: 10, unit: ms}
+  criterion: The 32 sentences per condition are read from the numbered lists in the supplement (no
+    sentence of the text gives the count). Per participant, the number of trials of each condition
+    (before bad-interval exclusion, where the dataset says which were excluded) and the word timing
+    from the event times. The timing tolerance of 10 ms is one sample of the 100 Hz HGA. Reproduced
+    when every count matches and the timings are within tolerance in every participant; partially
+    reproduced when they do in some.
+- id: behaviour-response-time
+  statement: Most participants responded fast and accurately in the linguistic task, most response times
+    lying around 0.5 to 1.0 s.
+  source: Results, paragraph 1; Supplementary Figure 2b legend
+  quote: Most of the responding time is around 0.5-1.0 second.
+  expected:
+  - {quantity: lower bound of the usual response time, value: 0.5, tolerance: 0.05, unit: s}
+  - {quantity: upper bound of the usual response time, value: 1.0, tolerance: 0.1, unit: s}
+  criterion: Response times of the linguistic trials of all ten participants pooled, measured from the
+    onset of the question as the dataset times it. The paper gives no measure of "most"; the reading
+    taken is that more than half of the response times lie in the range widened by 10% of each bound
+    (0.45 to 1.1 s), and no other is named in the text. Accuracy is reported (proportion of correct
+    judgements per participant) but has no number to match. Reproduced when more than half lie in the
+    range.
+- id: fig1b-high-gamma-best-band
+  statement: High-gamma components above 70 Hz classify the linguistic conditions with the highest
+    accuracy (above 80%), and the evoked responses are more prominent in the 70 to 150 Hz band than in
+    other bands.
+  source: Results, paragraph 3; Figure 1b; Supplementary Figure 3a to 3e
+  quote: Results showed that high-gamma (HG) components (>70 Hz) discriminated conditions with the
+    highest accuracy (>80%, Fig. 1b and Supplementary Fig. 3a) and ERPs were more prominent in the HG
+    band (70–150 Hz) compared with other frequency bands
+  expected:
+  - {quantity: best classification accuracy, value: 0.8, tolerance: 0.08}
+  criterion: Needs the broadband signal, from which the analytic amplitude of bands from 0 to 150 Hz in
+    10 Hz steps is taken as the first principal component across band-passes, and classified with the
+    SVM, logistic regression and k-nearest-neighbour settings of the Methods (Frequency component
+    extraction) into correct, syntactic violation, semantic violation and resting state. If the dataset
+    holds only high-gamma activity, as its description says, the claim cannot be tested. Otherwise,
+    open, the cross-validation and the features (time samples of the band amplitude in the keyword
+    window). The paper reports the band accuracies for the SVM (Fig. 1b legend) and for logistic
+    regression (Supplementary Fig. 3a legend) only; reproduced when, under both, a band with lower
+    bound at or above 70 Hz gives the highest accuracy and, for the SVM, it exceeds 0.72 (80% less
+    the tolerance). The kNN result is shown as a variant. The ERP part is judged from the measure of
+    Supplementary Fig. 3d (the peak power during violation against the peak power during CORR, per
+    responding electrode), and holds when the mean difference is largest in the 70 to 150 Hz band.
+- id: fig1c-responsive-in-ifg
+  statement: Most electrodes showing enhanced activity to linguistic stimuli lie in the IFG.
+  source: Results, paragraph 3; Figure 1c; Supplementary Figure 3f
+  quote: Most of the electrodes showing enhanced activities to linguistic stimuli were located in the
+    IFG
+  criterion: The rest against stimulus test of E (with readings E1a and E1b) applied to every electrode
+    of every participant, regardless of location, with HGA higher during stimuli. Reproduced when more
+    than half of the responsive electrodes carry an IFG label. Open, which labels form the IFG, (a)
+    pars opercularis and pars triangularis, the labels of E, or (b) these and pars orbitalis.
+- id: fig1d-only-after-keyword
+  statement: The enhanced activity for violation conditions relative to CORR appears only after the
+    keyword.
+  source: Results, paragraph 3; Figure 1d
+  quote: In the linguistic task, the enhanced activity of violation conditions relative to CORR was only
+    observed after the keywords, indicating that the responses were highly linked to the violation
+    manipulations (Fig. 1d).
+  depends_on:
+  - fig2b-violation-electrodes
+  criterion: A claim of absence before the keyword, judged on the paper's test, the test of V (the
+    discriminating period of Fig. 1e and the ERP amplitude Methods), applied to the electrodes of E
+    over the sentence before the keyword, aligned to the first word (words 1 to 3, 0 to 1,500 ms).
+    Reproduced when no electrode and condition pair passes V before the keyword; not reproduced when
+    any does. The count of passing pairs, before and after the keyword, is reported either way. The
+    SEM verb (word 2) differs from the CORR verb; the test without SEM samples 500 to 1,000 ms is
+    shown as a variant.
+- id: fig2b-violation-electrodes
+  statement: 58 IFG electrodes respond to at least one violation type more strongly than to correct
+    sentences.
+  source: Results, paragraph 5; Figure 2b
+  quote: we defined a significant effect in each electrode if its response to a certain type of
+    violation was reliably enhanced compared with the CORR condition for more than 50 ms (P < 0.05,
+    ANOVA, two tailed, Bonferroni correction for the number of electrodes, n = 256 for each
+    participant); there were 58 electrodes satisfying this criterion
+  expected:
+  - {quantity: electrodes passing V for any of SYN-P SYN-C and SEM, value: 58, tolerance: 5.8}
+  criterion: Electrodes of E (readings E1a, E1b) passing V (readings V1a, V1b, V2a, V2b) for at least
+    one of SYN-P, SYN-C and SEM, over the ten participants. Reproduced when the count is within
+    tolerance under at least one combination of readings (a count that a reading can move is a
+    reported number read in more than one way, so any reading may match); not reproduced when none
+    is. The count under every combination is reported.
+- id: fig2b-single-type
+  statement: Most responding electrodes (49 of 58) respond strongly to only one violation type; few (9
+    of 58) are co-activated by two types, mainly SYN-P and SYN-C.
+  source: Results, paragraph 5; Figure 2b
+  quote: We found that most of the electrodes (49 of 58) strongly responded to only one type of
+    violation (Fig. 2b, one-way ANOVA F statistic > 4). Only a few electrodes were co-activated by two
+    violation types (9 of 58) and were mainly co-activated by SYN-P and SYN-C
+  expected:
+  - {quantity: electrodes strongly responding to one type, value: 49, tolerance: 4.9}
+  - {quantity: electrodes co-activated by two types, value: 9, tolerance: 0.9}
+  depends_on:
+  - fig2b-violation-electrodes
+  criterion: Among the electrodes of fig2b-violation-electrodes, an electrode strongly responds to a
+    violation when its F (readings F1, F2, F3) exceeds 4. Counts of electrodes strongly responding to
+    exactly one, and to two, of the three types. Reproduced when, under one combination of readings,
+    both counts are within tolerance and the SYN-P and SYN-C pair is the most frequent pair among the
+    co-activated electrodes; partially reproduced when the single-type electrodes are a majority and
+    SYN-P with SYN-C is the most frequent pair, but the counts are outside tolerance under every
+    reading. The 10% tolerance on 9 is below one electrode, so the second count must match exactly.
+- id: suppfig6a-half-split
+  statement: When half of the sentences select the responding electrodes and the other half are
+    analysed, most electrodes (46 of 62) still respond to one violation type only and 16 of 62 to two,
+    mainly SYN-P and SYN-C.
+  source: Results, paragraph 5; Supplementary Figure 6a legend
+  quote: We used first half sentences to identify the linguistic responding electrodes and used the
+    remaining sentences for further analysis, to resolve non-independence issue. We found that most of
+    the electrodes (46/62) strongly responded to only one type of violation (below figure). Only a few
+    electrodes were ... by two violation types (16/62) and were mainly ... by SYN-P and SYN-C
+  expected:
+  - {quantity: responding electrodes, value: 62, tolerance: 6.2}
+  - {quantity: electrodes responding to one type, value: 46, tolerance: 4.6}
+  - {quantity: electrodes co-activated by two types, value: 16, tolerance: 1.6}
+  criterion: As fig2b-violation-electrodes and fig2b-single-type, with E and V computed on the trials of
+    the first half of the sentences and F on the remaining trials. Open, (a) "first half" as sentences
+    1 to 16 of each condition's list, or (b) the first half of each condition's trials in presentation
+    order. Reproduced when, under one combination of readings, all three counts are within tolerance and
+    SYN-P with SYN-C is the most frequent pair; partially reproduced when the single-type electrodes are
+    a majority and the pair is the most frequent, with counts outside tolerance.
+- id: suppfig6b-duration-metric
+  statement: When the length of the period differing from CORR is used in place of amplitude, most
+    electrodes (61 of 79) respond to one violation type only and 18 of 79 to two, mainly SYN-P and SYN-C.
+  source: Results, paragraph 5; Supplementary Figure 6b legend
+  quote: We found that most of the electrodes (61/ 79) strongly responded to only one type of violation
+    (below figure). Only a few electrodes were ... by two violation types (18/79) and were
+    mainly ... by SYN-P and SYN-C
+  expected:
+  - {quantity: responding electrodes, value: 79, tolerance: 7.9}
+  - {quantity: electrodes responding to one type, value: 61, tolerance: 6.1}
+  - {quantity: electrodes co-activated by two types, value: 18, tolerance: 1.8}
+  criterion: The paper does not say how 79 electrodes are selected or what length counts as a response.
+    Readings, (a) electrodes of E with a significant period (V, without the amplitude rule V2) of more
+    than 50 ms for a violation count as responding to it; (b) as (a) with the amplitude rule kept. The
+    length of an electrode's significant period is the number of significant samples times 10 ms.
+    Reproduced when, under one reading (crossed with V1a and V1b), all three counts are within
+    tolerance and SYN-P with SYN-C is the most frequent pair; partially reproduced when the single-type
+    electrodes are a majority and the pair is the most frequent, with counts outside tolerance.
+- id: fig2c-euclidean-similarity
+  statement: The response time courses of SYN-P and SYN-C are more similar (Euclidean distance 48.43)
+    than those of the syntactic and semantic conditions (62.17).
+  source: Results, paragraphs 5 and 6; Figure 2c
+  quote: the similarity between SYN-P and SYN-C (Euclidean distance, 48.43) was greater than that
+    between syntactic and semantic conditions (Fig. 2c, Euclidean distance, 62.17)
+  expected:
+  - {quantity: Euclidean distance SYN-P to SYN-C, value: 48.43, tolerance: 4.843}
+  - {quantity: Euclidean distance syntactic to semantic, value: 62.17, tolerance: 6.217}
+  depends_on:
+  - fig2b-violation-electrodes
+  criterion: Distances computed with scipy's hierarchical clustering on Euclidean distance (Methods,
+    Electrode selection, paragraph 3), between condition vectors built from the responding electrodes
+    of fig2b-violation-electrodes. Open, (a) each condition's vector is the trial-mean HGA from 0 to
+    1,000 ms of every responding electrode, concatenated over electrodes; (b) the trial-mean HGA time
+    course from 0 to 1,000 ms averaged over the responding electrodes (the Methods call it a
+    "time-course similarity", so a reading without time is not allowed); and the "syntactic to
+    semantic" distance read as (i) SEM to SYN-P, (ii) SEM to SYN-C, (iii) the mean of the two, or (iv)
+    the linkage height at which SEM joins the SYN-P and SYN-C cluster. Fig. 2c's y axis is a "relative
+    distance", so absolute values depend on the vector. Reproduced when, under every reading, the
+    syntactic to semantic distance is larger than SYN-P to SYN-C, and under at least one reading both
+    values are within tolerance; partially reproduced when the order holds under every reading but no
+    reading matches the values; not reproduced when the order fails under every reading; blocked
+    otherwise. The values under each reading are reported.
+- id: suppfig7a-com-overlap
+  statement: Of the electrodes responding to the combined violation (COM), 78.3% also respond to SYN-P
+    but only 26.1% to SEM.
+  source: Results, paragraph 6; Supplementary Figure 7a
+  quote: for the electrodes responding to the combined violation condition (COM), 78.3% of them also
+    showed enhanced activity to the syntactic violation (SYN-P), but only 26.1% of them responded to the
+    semantic violation (SEM)
+  expected:
+  - {quantity: COM electrodes also responding to SYN-P, value: 0.783, tolerance: 0.0783}
+  - {quantity: COM electrodes also responding to SEM, value: 0.261, tolerance: 0.0261}
+  criterion: In the five participants with COM, electrodes of E passing V for COM against CORR (COM
+    keyword at word 5, as in SYN-P). Fractions of those that also pass V for SYN-P, and for SEM. Open,
+    whether "responded" to SYN-P and SEM means passing V or having F > 4 (F1 to F3), as Supplementary
+    Fig. 7a plots F values. The smallest count the two percentages fit is 18 and 6 of 23 electrodes
+    (an inference; the paper gives no count), so the 10% tolerance on 26.1% is below one electrode
+    there. Reproduced when both fractions are within tolerance under one reading;
+    partially reproduced when, under every reading, the SYN-P fraction exceeds the SEM fraction but
+    the values are outside tolerance.
+- id: suppfig7b-not-nonlinguistic
+  statement: The electrodes responding to linguistic violations do not respond to the non-linguistic
+    violation in the high-gamma band.
+  source: Results, paragraph 6; Supplementary Figure 7b and 7c legend
+  quote: at 70 -150 Hz, the linguistic responding electrodes were almost completely not responding to
+    the non-linguistic task
+  depends_on:
+  - fig2b-violation-electrodes
+  criterion: A claim of absence. In the five NL participants, the electrodes of fig2b-violation-electrodes
+    tested for NL-VIO against NL-CORR with the test of V, NL trials aligned to the onset of the shape
+    in the keyword's position. The paper's NL test is a one-way ANOVA at P < 0.01, corrected
+    (Supplementary Fig. 4b); the threshold read is 0.01/256 per sample, with 0.05/256 (the linguistic
+    test) as a variant. "Almost completely not" is read as at most 5% of those electrodes passing, the
+    rate a test at the paper's alpha allows. Reproduced when no more than 5% pass; not reproduced
+    otherwise. The count and the electrodes' NL-VIO minus NL-CORR differences are reported either way.
+- id: fig2de-no-spatial-separation
+  statement: Across participants, the activation centres and epicentres of the SYN-P, SYN-C and SEM
+    electrodes are not spatially separated in the IFG.
+  source: Results, paragraph 7; Figure 2d and 2e; Supplementary Figure 8a
+  quote: Unlike the result at the electrode level, we failed to observe a tendency of spatial
+    separation for the activation centre of syntactic and semantic conditions. Likewise, the epicentre
+    of these responses failed to show separations using a permutation test of the clusters of electrodes
+    (Fig. 2e).
+  depends_on:
+  - fig2b-violation-electrodes
+  criterion: A claim of absence, judged on the paper's test, a non-parametric permutation test of the
+    spatial segregation among SYN-P, SYN-C and SEM electrodes on the MNI152 template (Methods, Spatial
+    organization). The Methods do not give the statistic or the permutation scheme. Readings, (a) for
+    each pair of conditions, the distance between the mean MNI coordinates of their electrodes; (b)
+    the distance between the peaks of their kernel density estimates (bandwidth 20, as the Methods
+    give, in mm); in both, condition labels permuted among the electrodes of the pair 1,000 times (the
+    permutation count the Methods give for ALE), two-sided, p < 0.05. Co-activated electrodes count in
+    each of their conditions. Reproduced when no pair is significant under every reading; not
+    reproduced when a pair is under every reading; blocked otherwise. The distances are reported. The
+    ALE analysis (GingerALE) is not repeated.
+- id: suppfig8b-individual-no-separation
+  statement: Even within individual participants the SYN-P, SYN-C and SEM electrodes show no clear
+    spatial separation.
+  source: Results, paragraph 7; Supplementary Figure 8b
+  quote: However, even at the individual level, we were unable to obtain a clear separation pattern
+    (Supplementary Fig. 8b).
+  depends_on:
+  - fig2b-violation-electrodes
+  criterion: The paper shows one representative participant and reports no test. The test of
+    fig2de-no-spatial-separation, reading (a), run per participant on native or MNI coordinates, for
+    pairs of conditions with at least three electrodes each (a standard minimum, not the paper's). A
+    claim of absence, reproduced when no participant has a pair significant at p < 0.05 uncorrected;
+    not reproduced otherwise. The number of participants with a significant pair is reported.
+- id: fig2f-circuit-diameter
+  statement: From the fraction of co-activated electrodes, the diameter of the functional circuits is
+    estimated as no greater than about 3.25 mm.
+  source: Results, paragraph 8; Figure 2f; Methods, Functional circuit size estimation
+  quote: The results showed that the diameter of functional circuits was no greater than ~3.25 mm (Fig.
+    2f)
+  expected:
+  - {quantity: functional circuit diameter, value: 3.25, tolerance: 0.325, unit: mm}
+  depends_on:
+  - fig2b-single-type
+  criterion: The Methods give p(co-activation) = 1 - (r - 0.5 mm)/r for an electrode of radius 0.5 mm
+    and a circuit of diameter r, so r = 0.5 mm / p. p is the fraction of co-activated electrodes from
+    fig2b-single-type (9 of 58 gives 3.22 mm, matching the paper's 15.6% and 3.25 mm on Fig. 2f).
+    Reproduced when r from the dataset's fraction is within tolerance under a reading that also
+    reproduces fig2b-single-type, or under any reading if none does.
+- id: suppfig9-predict-from-corr
+  statement: Electrode types (SYN-P, SYN-C, SEM, non-responding) can be predicted from responses to
+    correct sentences above the 25% chance level, with accuracies of 45.6%, 73.0%, 69.3% and 38.4%.
+  source: Results, paragraph 9; Supplementary Figure 9 legend; Methods, Predicting different types of
+    electrodes
+  quote: our data showed the predicted electrode types with accuracies significantly higher than chance
+    level (SYN-P 45.6%, SYP-C 73.0%, SEM 69.3%, and not-responding electrodes 38.4%; all P < 0.0001
+    relative to chance level 25%, Supplementary Fig. 9)
+  statistics:
+  - about: each class accuracy against chance level 25%
+    test: two-sided t-test
+    p: 0.0001
+    p_relation: "<"
+  expected:
+  - {quantity: SYN-P accuracy, value: 0.456, tolerance: 0.0456}
+  - {quantity: SYN-C accuracy, value: 0.73, tolerance: 0.073}
+  - {quantity: SEM accuracy, value: 0.693, tolerance: 0.0693}
+  - {quantity: non-responding accuracy, value: 0.384, tolerance: 0.0384}
+  depends_on:
+  - fig2b-single-type
+  criterion: k-nearest neighbours (Supplementary Fig. 9 legend) with the settings the Methods give for
+    the frequency decoding (5 neighbours, Minkowski p = 2, uniform weights; the Methods state them
+    for that analysis, and no other kNN settings are given), features from the CORR response of each
+    electrode only, onset, offset, peak (L), area and amplitude at T0 (Methods, Predicting different
+    types of electrodes). Open, (a) the electrodes and labels, single-type electrodes of
+    fig2b-single-type labelled by their type, and non-responding electrodes either (a1) the electrodes
+    of E that pass V for no condition or (a2) the IFG electrodes outside E; co-activated electrodes
+    left out;
+    (b) the cross-validation, (i) stratified 5-fold repeated 100 times with the t-test over repeats,
+    or (ii) leave-one-out with the t-test over electrodes of each class (correct as 1, wrong as 0);
+    (c) features standardized or raw; (d) L readings. Accuracy per class is the fraction of that class's
+    electrodes predicted correctly. Reproduced when, under one combination of readings, all four
+    accuracies are within tolerance and each exceeds 25% with two-sided t-test p < 0.0001; partially
+    reproduced when, under every combination, all four exceed chance at p < 0.0001 but the values miss
+    tolerance; not reproduced when any class fails to exceed chance under every combination.
+- id: fig3-latency-values
+  statement: SYN-P responses start and peak earliest (onset 113 ms, peak 480 ms), then SEM (122 ms,
+    524 ms) and SYN-C (283 ms, 579 ms).
+  source: Results, paragraph 10; Figure 3c, 3d and 3f
+  quote: The results suggested that the SYN-P (onset, 113 ms and peak, 480 ms) occurred earlier than SEM
+    (122 ms and 524 ms) and SYN-C (283 ms and 579 ms) in terms of both onset and peak of the response,
+    respectively.
+  expected:
+  - {quantity: SYN-P onset, value: 113, tolerance: 11.3, unit: ms}
+  - {quantity: SYN-P peak, value: 480, tolerance: 48, unit: ms}
+  - {quantity: SEM onset, value: 122, tolerance: 12.2, unit: ms}
+  - {quantity: SEM peak, value: 524, tolerance: 52.4, unit: ms}
+  - {quantity: SYN-C onset, value: 283, tolerance: 28.3, unit: ms}
+  - {quantity: SYN-C peak, value: 579, tolerance: 57.9, unit: ms}
+  depends_on:
+  - fig2b-violation-electrodes
+  criterion: Latencies L per electrode and condition, averaged (mean, as Fig. 3a's box centre is the
+    mean) over electrodes. Open, the electrodes, (a) for each condition the electrodes passing V for it;
+    (b) the electrodes of E+ (pars opercularis, pars triangularis and precentral, the set of the Fig. 3d
+    legend, n = 106), each giving latencies for all three conditions; with L1, L2, L3 and the readings
+    of E and V. Reproduced when, under one combination, all six values are within tolerance and SYN-P
+    precedes SEM and SYN-C in both onset and peak; partially reproduced when the order holds under
+    every combination but no combination puts all six within tolerance. The n of each reading is
+    reported against 106.
+- id: fig3d-latency-differences
+  statement: Onset and peak latencies differ significantly between each pair of SYN-P, SYN-C and SEM.
+  source: Results, paragraph 10; Figure 3d legend
+  quote: we estimated the latency differences based on ANOVA (Fig. 3d, P < 0.001, one-way ANOVA, two
+    tailed, Bonferroni, corrected for ten participants.
+  statistics:
+  - about: SEM onset against SYN-P onset
+    test: one-way ANOVA, two tailed
+    p: 1.83e-5
+    corrected: Bonferroni, for ten participants
+    n: 106 electrodes in pars opercularis, pars triangularis and precentral
+  - about: SEM onset against SYN-C onset
+    test: one-way ANOVA, two tailed
+    p: 1.93e-14
+    corrected: Bonferroni, for ten participants
+  - about: SYN-C onset against SYN-P onset
+    test: one-way ANOVA, two tailed
+    p: 5.85e-30
+    corrected: Bonferroni, for ten participants
+  - about: SEM peak against SYN-P peak
+    test: one-way ANOVA, two tailed
+    p: 3.26e-13
+    corrected: Bonferroni, for ten participants
+  - about: SEM peak against SYN-C peak
+    test: one-way ANOVA, two tailed
+    p: 1.02e-5
+    corrected: Bonferroni, for ten participants
+  - about: SYN-C peak against SYN-P peak
+    test: one-way ANOVA, two tailed
+    p: 9.3e-27
+    corrected: Bonferroni, for ten participants
+  depends_on:
+  - fig3-latency-values
+  criterion: For each pair of conditions and for onset and peak, a one-way ANOVA (f_oneway) of the
+    electrodes' latencies of the two conditions, p multiplied by 10 (Bonferroni "for ten participants",
+    as printed). Electrodes and latencies under the readings of fig3-latency-values. Reproduced when,
+    under every combination of readings, all six corrected p are below 0.001; partially reproduced
+    when at least four are under every combination; not reproduced when fewer than four are under
+    every combination; blocked otherwise. The paper's p for SEM against SYN-P onset (1.83e-5) with
+    means 9 ms apart is noted as surprising; it is matched as printed.
+- id: fig3-sync-latency-variability
+  statement: Onset and peak latencies vary more across electrodes for SYN-C than for SYN-P.
+  source: Results, paragraph 10; Figure 3c and 3d
+  quote: This possibility may help explain the results that relatively later (and also greater
+    variations of) onset and peak were observed for SYN-C than SYN-P.
+  depends_on:
+  - fig3-latency-values
+  criterion: The paper gives no measure or test of the variation. Electrodes and latencies under the
+    readings of fig3-latency-values; the spread is the standard deviation of the latencies across
+    electrodes (a standard choice; the interquartile range, which Fig. 3a's boxes show, as a variant).
+    Reproduced when the SYN-C spread exceeds the SYN-P spread for both onset and peak under every
+    reading; not reproduced when it does for neither under every reading; blocked otherwise.
+- id: fig3e-latency-not-location
+  statement: Response latencies do not depend on the location of the electrodes along the
+    anterior-posterior or superior-inferior axis, or across pars opercularis, pars triangularis and
+    precentral gyrus.
+  source: Results, paragraph 11; Figure 3e; Supplementary Figure 10c and 10d
+  quote: Moreover, response latencies did not depend on the spatial location of the electrodes (Fig. 3e
+    and Supplementary Fig. 10c,d).
+  depends_on:
+  - fig3-latency-values
+  criterion: A claim of absence, judged on the paper's test, a linear regression of latency on electrode
+    coordinate with its 95% confidence interval (Fig. 3e legend), for onset and peak, each condition,
+    and each axis. The legend calls the axes the x and y coordinates, while the panel names the
+    anterior-posterior and superior-inferior axes; on MNI152 these are y and z. Open, (a) MNI y and z;
+    (b) MNI x and y, as the legend prints. Reproduced when every slope's 95%
+    CI includes zero; not reproduced when any excludes it, under the readings of fig3-latency-values
+    and of the axes (blocked when they differ). Slopes are reported in ms per mm. The comparison across the three areas
+    (Supplementary Fig. 10c) has no test in the paper; a one-way ANOVA of latency on area at p < 0.05
+    is shown as a variant.
+- id: suppfig10a-separable-400-700
+  statement: The accuracy of classifying the conditions after the keyword peaks about 400 to 700 ms
+    after keyword onset.
+  source: Results, paragraph 10; Supplementary Figure 10a legend
+  quote: The accuracies for classifying different conditions peaked at about 400–700 ms after the
+    keywords, which indicated they were most separable in this time frame
+  expected:
+  - {quantity: start of peak accuracy window, value: 400, tolerance: 40, unit: ms}
+  - {quantity: end of peak accuracy window, value: 700, tolerance: 70, unit: ms}
+  criterion: The paper does not name the classifier, features, time resolution or cross-validation of
+    this panel. Readings, each of the three classifiers with the Methods settings (SVM, logistic
+    regression, kNN), classifying CORR, SYN-P, SYN-C and SEM trials together, or each violation
+    against CORR (the legend says "classification accuracy of each violation type"), from the HGA of
+    the responding electrodes of fig2b-violation-electrodes within each participant at each 10 ms
+    sample (or in 100 ms windows), 5-fold stratified cross-validation (a standard choice), accuracy
+    averaged over participants. Reproduced when, under every reading, the time of maximum accuracy
+    lies in 360 to 770 ms (the range widened by 10% of each bound); not reproduced when it lies
+    outside under every reading; blocked otherwise.
+- id: suppfig10b-duration-differs
+  statement: The total length of the significant difference from CORR differs between SYN-P, SYN-C and
+    SEM electrodes.
+  source: Results, paragraph 11; Supplementary Figure 10b legend
+  quote: The discrepancy in terms of the total length of the significant difference between respect
+    violation and correct sentence of each electrode (ANOVA). This also indicated temporal differences
+    in processing each linguistic component
+  statistics:
+  - test: one-way ANOVA, two tailed
+    p: 0.001
+    p_relation: "<"
+    corrected: Bonferroni
+  depends_on:
+  - fig2b-violation-electrodes
+  criterion: For each electrode and each violation it passes V for, the total length of significant
+    samples (times 10 ms). One-way ANOVA of these lengths across SYN-P, SYN-C and SEM, and pairwise
+    one-way ANOVAs Bonferroni-corrected for three pairs (the paper does not say what is corrected;
+    the three pairs are read). Reproduced when the three-group ANOVA has p < 0.001 and at least one
+    corrected pair has p < 0.001 under every reading of E and V; the group medians are reported.
+- id: nl-low-frequency
+  statement: In the non-linguistic task, the violation enhances activity mainly at lower frequencies
+    (4 to 10 Hz), where many electrodes respond to both linguistic and non-linguistic tasks, unlike
+    the high-gamma band.
+  source: Results, paragraph 3; Supplementary Figures 4 and 7c
+  quote: In contrast, in the NL task, the violation condition showed an enhanced activity mainly at the
+    lower frequency (Supplementary Fig. 4), indicating that neural oscillations during linguistic and NL
+    tasks may arise in different frequency bands.
+  criterion: Needs the 4 to 10 Hz amplitude, which a high-gamma dataset does not hold. If the broadband
+    signal is present, the test of V for NL-VIO against NL-CORR at P < 0.01 corrected (Supplementary
+    Fig. 4b) on the 4 to 10 Hz amplitude and on HGA; reproduced when more electrodes pass at 4 to 10 Hz
+    than in high gamma. The measure of Supplementary Fig. 4a (peak power during NL-VIO against peak
+    power during NL-CORR, per electrode and band) is shown with it.
+- id: stimuli-word-frequency
+  statement: Keyword frequencies are matched between CORR (shared by SYN-P and SEM; mean 31.88 per
+    million) and SYN-C (30.25 per million).
+  source: Methods, The Chinese language and stimuli design, paragraph 3
+  quote: the word frequencies were matched between CORR (same in SYN-P and SEM, mean frequency = 31.88
+    per million, s.d. = 35.14) and SYN-C (mean frequency = 30.25 per million, s.d. = 73.58) (t(62) =
+    0.11, P = 0.91)
+  data: with_inputs
+  statistics:
+  - test: t-test
+    statistic: t(62) = 0.11
+    p: 0.91
+    n: 32 CORR and 32 SYN-C keywords
+  expected:
+  - {quantity: CORR keyword mean frequency, value: 31.88, tolerance: 3.188, unit: per million}
+  - {quantity: SYN-C keyword mean frequency, value: 30.25, tolerance: 3.025, unit: per million}
+  criterion: Keywords from the supplement's sentence lists (word 4 of CORR and SYN-C), frequencies from
+    the corpus the paper names (lingua.mtsu.edu/chinese-computing, the Modern Chinese word frequency
+    list). Reproduced when both means are within tolerance and an independent two-sample t-test gives
+    p > 0.05.
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, V1. Added reading (c), a run spanning more than 50 ms from first to last sample (at least 7 consecutive samples), which the words "for more than 50 ms" also allow at 10 ms samples.
+  - behaviour-response-time. Statement said participants responded fast and accurately; the paper says most participants did.
+  - fig1b-high-gamma-best-band. The criterion required the best band under every classifier, kNN included; the paper reports band accuracies for the SVM (Fig. 1b) and logistic regression (Supplementary Fig. 3a) only, and the 80% figure from Fig. 1b. kNN is now a variant. Added a test for the ERP part of the statement, from the Supplementary Fig. 3d measure.
+  - fig1d-only-after-keyword. The criterion judged "only after the keywords" with a 5% threshold the paper does not give. It is now a claim of absence on the paper's test (V before the keyword, no passing pair), with the SEM verb exclusion as a variant, since the paper's statement covers the whole pre-keyword sentence.
+  - fig2c-euclidean-similarity. Reading (b), each electrode's mean HGA without time, is not allowed by the Methods ("time-course similarities"); replaced by the time course averaged over electrodes. The criterion decided on the order alone and ignored the expected values; it now needs the values within tolerance under at least one reading, with a partial outcome for order alone, and says when it is not reproduced or blocked.
+  - suppfig7a-com-overlap. Noted that 78.3% and 26.1% fit 18 and 6 of 23 electrodes at the smallest, so the tolerance on 26.1% is below one electrode.
+  - suppfig8b-individual-no-separation. Removed the partial outcome, which a claim of absence does not have, and marked the three-electrode minimum as a standard choice.
+  - suppfig9-predict-from-corr. Said the kNN settings are the ones the Methods give for frequency decoding; added the reading of non-responding electrodes as IFG electrodes outside E.
+  - fig3e-latency-not-location. The criterion said "both are used" without naming the readings of the legend's x and y coordinates; now names (a) MNI y and z and (b) MNI x and y.
+  - suppfig10a-separable-400-700. Added the reading of each violation against CORR (the legend's "each violation type"), marked the cross-validation as a standard choice, and said when the claim is not reproduced or blocked.
+  - nl-low-frequency. Added the Supplementary Fig. 4a measure to the criterion.
+  - Added claim fig3-sync-latency-variability, the main-text result that SYN-C onsets and peaks vary more than SYN-P's, which had no claim.
+  - Open. The Venn region counts of Fig. 2b, Supplementary Fig. 6 and Supplementary Fig. 7 could not be read (no PDF renderer here). The text layer of Fig. 2b holds the numbers 21, 6, 20, 2, 1 and 8, which sum to 58 and split into 49 single-type and 9 co-activated, but their regions cannot be assigned from text; per-type counts are therefore not expected values.
+  - Open. suppfig7b-not-nonlinguistic keeps a 5% ceiling for "almost completely not", which the paper does not quantify; the Supplementary Fig. 7b Venn count, once read, should replace it.
+  - Open. fig2b-violation-electrodes and the claims built on it treat the E and V readings as readings of a reported number (any reading may match), not as open method details (all must agree). The protocol allows the first for "which subset is meant"; the attempt should report every combination.
+  - Open. fig2f-circuit-diameter. The Methods formula is garbled in the text layer; r = 0.5 mm / p is the only reading that gives the paper's ~3.25 mm from 9 of 58, but the formula as printed could not be checked against the PDF.

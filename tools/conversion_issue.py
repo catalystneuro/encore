@@ -17,8 +17,8 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 from agent_run import attempt_of  # noqa: E402
 
-SITE = "https://catalystneuro.github.io/reproduction-registry"
-REPO = "https://github.com/catalystneuro/reproduction-registry"
+SITE = "https://encorescience.org"
+REPO = "https://github.com/catalystneuro/encore"
 
 
 def issue(dandiset: str) -> str:

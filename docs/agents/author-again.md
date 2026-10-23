@@ -15,4 +15,4 @@ Write prose plainly: no em dashes, never the word "rather", no bold except the "
 
 Your final message is a report with: (1) the outcome per claim, with the earlier outcome next to it; (2) for each earlier finding, whether it is fixed; (3) new findings; (4) anything in the protocol that did not fit a repeat attempt.
 
-Run every command in the foreground and wait for it to finish, however long it takes: the run ends when you stop, and anything still running is lost.
+Run every command in the foreground and wait for it to finish: the run ends when you stop, and anything still running is lost. Before a command that may take long, time it on a subset and estimate the whole (docs/protocol.md, "Develop on a subset").
