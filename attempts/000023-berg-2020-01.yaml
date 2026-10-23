@@ -45,41 +45,52 @@ outcomes:
   notebook: reproduce_berg_2020.ipynb
   output: claim:features-and-labels-link
   notes: No file carries a SpecimenID. The answer to the question (questions/000023.yaml) found that
-    the paper names no identifier and allows both readings, and the criterion now names them and asks
+    the paper names no identifier and allows both readings, and the criterion names them and asks
     for both to be run and reported; the outcome is under M2, and under M1 it would be not reproduced.
-    M1, a SpecimenID stored in the files, matches 0 files. M2, the
-    SpecimenID recovered from the file as the next SpecimenID of the same donor above the file's
-    session id (offsets 13 to 685, the next candidate at least 28 further), gives 318 distinct cells
-    of the 385-cell table, including all 283 cells with features in the code. For the 282 matched
-    cells with features on both sides, the median relative difference from the code's table is 0 for
-    all 18 features; 145 cells agree on every shared feature and 275 on at least 80% of them. A match
-    on the features alone, within donor, picks the M2 cell for 282 of 282 files. The donor table
-    agrees on sex for 55 of 56 donors and on age within a year for 55 of 56. The files hold no t-type
-    or depth, so every label comes from the code's table. Every claim that needs a label uses M2 and
-    says so. The answer changed no number; it made M2 one of the criterion's own readings, where before
-    it was a reading the attempt chose while it waited for an answer.
+    M1, a SpecimenID stored in the files, matches 0 files. M2, the SpecimenID recovered from the file
+    as the next SpecimenID of the same donor above the file's session id (offsets 13 to 685, the next
+    candidate at least 28 further), gives 318 distinct cells of the 385-cell table, including all 283
+    cells with features in the code. With the Methods' sweep QC, 261 of these have features on both
+    sides; the median relative difference from the code's table is 0 for all 18 features, 128 cells
+    agree on every shared feature and 248 on at least 80% of them, and a match on the features alone,
+    within donor, picks the M2 cell for 261 of 261 files. With IPFX's sweep QC alone the agreement is
+    closer (145 cells identical on every shared feature; 1 of the code's cells with no features here,
+    against 22). The 35 cells with no features in the code cannot be checked by features; for all 35
+    the date in the cell's sample_id equals the file's local recording date (279 of the 283 checked
+    cells too, the other 4 started after midnight, the day after the sample's date), and in each of 71
+    rig-days with two or more files (253 files, 27 of the 35) tube numbers rise with recording time
+    without exception. These checks support the 35 links without proving them, as the date separates
+    only cells recorded on different days. The donor table agrees on sex for 55 of 56 donors and on
+    age within a year for 55 of 56. The files hold no t-type or depth, so every label comes from the
+    code's table. Every claim that needs a label uses M2 and says so.
   deviations:
   - The SpecimenID of each file was recovered from its session id and donor, not read from the file;
-    the code's per-cell features confirm the match.
+    the code's per-cell features confirm the match for the 283 cells that have them, and the sample
+    dates and tube order support it for the other 35.
   - Features computed with IPFX 2.1.2 (the paper gives no version), read from its output as the
     code's feature names imply (patchseq_l23.FEATURE_SOURCES); the code does not hold that step.
+  - The sweep QC is the Methods'. IPFX 2.1.2 applies only the noise limits to sweeps, so the Methods'
+    bias current (0 +/- 100 pA) and bridge balance (below 20 MOhm and 15% of input resistance) limits
+    were added, with the input resistance of IPFX's cell QC for the 15% limit, which the Methods do not
+    fix (asked in questions/000023.yaml). Long squares without a bias current value were kept.
 - claim: cohort-cells
   outcome: not_reproduced
   notebook: reproduce_berg_2020.ipynb
   output: claim:cohort-cells
   measured:
   - 318
-  - 307
+  - 280
   notes: 318 cells of the code's 385-cell table have a recording in the dandiset. Cells giving
-    features are 307 under reading (a), 256 under (b) and 306 under (c), none 283. The code's own
-    table has features for exactly 283 human cells, all with a file here; 25 more cells give features
-    here but have none in the code (5 of them fail IPFX cell QC), and one of the 283
-    (H18.03.322.11.11.01.02) gives none here (IPFX fails on its f-I fit).
-    Uses reading M2 of features-and-labels-link, as the answer to the link question allows; under M1 no
-    cell is linked and the claim could not be tested. The answer changed no number here.
+    features are 280 under reading (a), 241 under (b) and 280 under (c), none 283; with IPFX's sweep QC
+    alone they are 307, 256 and 307. The code's own table has features for exactly 283 human cells,
+    all with a file here; 22 of them give no features here under the Methods' sweep QC, against 1
+    under IPFX's sweep QC alone (IPFX fails on its f-I fit), and 19 cells give features here but have none in the code (2 of them fail IPFX cell QC). M2 gives
+    every file a cell of the table, so no other cell can be found among the files.
+    Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be
+    tested.
   deviations:
-  - The cells with features are those for which IPFX 2.1.2 gives features after sweep QC; the paper's
-    rule for which recordings were complete enough is not given.
+  - The cells with features are those for which IPFX 2.1.2 gives features after the Methods' sweep
+    QC; the paper's rule for which recordings were complete enough is not given.
 - claim: cohort-donors
   outcome: not_reproduced
   notebook: reproduce_berg_2020.ipynb
@@ -88,55 +99,58 @@ outcomes:
   notes: Both readings give 56 donors. The code's cell table has 82 donors (54 among its 283 cells
     with features) and its pathology table 89 distinct donors in 90 rows, 52 of which have a file
     here.
-    Reading (b) uses reading M2 of features-and-labels-link, as the answer to the link question
-    allows; under M1 no cell is linked and only reading (a) could be tested. The answer changed no
-    number here.
+    Reading (b) uses reading M2 of features-and-labels-link; under M1 no cell is linked and only
+    reading (a) could be tested.
 - claim: cohort-type-counts
   outcome: not_reproduced
   notebook: reproduce_berg_2020.ipynb
   output: claim:cohort-type-counts
   measured:
-  - 75
-  - 25
-  - 156
-  - 28
-  - 18
+  - 71
+  - 24
+  - 136
+  - 24
+  - 16
   - 33
-  notes: Measured values are reading (a). At most two of six counts match under any reading; reading
-    (c) gives 75 LTK, 25 GLP2R, 156 FREM3, 28 deep FREM3, 17 CARM1P1 and 33 COL22A1 (GLP2R and
-    CARM1P1 match), reading (b) 65, 24, 123, 18, 12 and 32 (none). The code's 283 cells give 67, 25,
-    143, 25, 17 and 31 (two). 13 FREM3 cells have no depth.
-    Uses reading M2 of features-and-labels-link, as the answer to the link question allows; under M1 no
-    cell is linked and the claim could not be tested. The answer changed no number here.
+  notes: Measured values are reading (a). At most one of six counts matches under any reading;
+    readings (a) and (c) give 71 LTK, 24 GLP2R, 136 FREM3, 24 deep FREM3, 16 CARM1P1 and 33 COL22A1
+    (FREM3 matches), reading (b) 62, 23, 112, 16, 12 and 32 (none). The code's 283 cells give 67, 25,
+    143, 25, 17 and 31 (two), and IPFX's sweep QC alone, reading (a), 75, 25, 156, 28, 18 and 33 (one).
+    13 FREM3 cells have no depth.
+    Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be
+    tested.
 - claim: fig3d-depth-by-type
   outcome: partially_reproduced
   notebook: reproduce_berg_2020.ipynb
   output: claim:fig3d-depth-by-type
-  notes: Over the 288 cells with a depth, the LTK median (0.082) is below the GLP2R median (0.425),
-    which is below 0.575; FREM3 has cells shallower than the LTK median; all 18 CARM1P1 and 29
-    COL22A1 cells are deeper than 0.575, so both readings of "almost entirely" hold. No FREM3 cell is
-    deeper than 1 (deepest 0.992), so FREM3 does not continue into L4. Every cell of the code's table
-    with a depth gives the same (COL22A1 96.7% deeper than 0.575).
-    Uses reading M2 of features-and-labels-link, as the answer to the link question allows; under M1 no
-    cell is linked and the claim could not be tested. The answer changed no number here.
+  notes: Over every cell of the code's table with a depth, as the criterion says, the LTK median
+    (0.086) is below the GLP2R median (0.425), which is below 0.575; FREM3 has cells shallower than
+    the LTK median; all 18 CARM1P1 and 96.7% of 30 COL22A1 cells are deeper than 0.575, so both
+    readings of "almost entirely" hold. No FREM3 cell is deeper than 1 (deepest 0.992), so FREM3 does
+    not continue into L4. The 288 cells with a recording here and a depth give the same (LTK median
+    0.082, all 29 COL22A1 deeper than 0.575). The judged cell set does not use the link; the variant
+    uses reading M2.
 - claim: fig4e-human-ephys-anova
   outcome: partially_reproduced
   notebook: reproduce_berg_2020.ipynb
   output: claim:fig4e-human-ephys-anova
   measured:
-  - 0.141
-  - 3
-  notes: Three features have R2 above 0.1 at BH p below 1e-5, input resistance (0.141), rheobase
-    (0.116) and initial firing rate (0.101), not f-I slope (0.087); the maximum R2 is just outside
-    0.16 +/- 0.016. Input resistance and rheobase meet the partial criterion. With superficial FREM3
-    only (the code's revision) the result is partial too (0.148, 0.140). On the code's 283 cells
-    alone the three named features have R2 0.161, 0.122 and 0.120 at BH p below 1e-5 and the claim
-    is reproduced, so the difference comes from the 25 cells the paper's table lacks. Over 200 donor
-    resamples the R2 of f-I slope ranges from 0.026 to 0.174 (2.5 to 97.5%).
-    Uses reading M2 of features-and-labels-link, as the answer to the link question allows; under M1 no
-    cell is linked and the claim could not be tested. The answer changed no number here.
+  - 0.149
+  - 4
+  notes: Four features have R2 above 0.1 at BH p below 1e-5, input resistance (0.149), initial firing
+    rate (0.137), adaptation (0.117) and rheobase (0.110); f-I slope has 0.099. The maximum R2 is within
+    0.16 +/- 0.016, but the features above 0.1 are not the three named; input resistance and rheobase
+    meet the partial criterion. With superficial FREM3 only (the code's revision) the result is partial
+    too. On the code's 283 cells six features exceed 0.1 (maximum 0.170), all three named among them,
+    also partial; with IPFX's sweep QC alone on those cells the three named features are exactly the
+    ones above 0.1 (maximum 0.161) and the claim is reproduced, and on all linked cells it is partial
+    (maximum 0.141, f-I slope below 0.1). With cell QC applied it is partial. Over 200 donor resamples
+    the R2 of f-I slope ranges from 0.036 to 0.191 (2.5 to 97.5%).
+    Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be
+    tested.
   deviations:
-  - The analysis cells include 25 cells with features here and none in the paper's table.
+  - The analysis cells include 19 cells with features here and none in the paper's table, and lack 22
+    of the paper's 283 that give no features here under the Methods' sweep QC.
 - claim: fig4e-mouse-ephys-anova
   outcome: reproduced
   notebook: reproduce_berg_2020.ipynb
@@ -146,8 +160,9 @@ outcomes:
   - 3
   notes: Exactly downstroke (R2 0.123), input resistance (0.118) and AP width (0.116) have R2 above
     0.1, at BH p 0.008 to 0.013; the maximum, 0.123, is within 0.12 +/- 0.012 and below the human
-    maximum of 0.141. 120 mouse cells (60 Agmat, 51 Rrad, 9 Adamts2) from 72 mice. The test rests
-    wholly on the code's mouse features; the mouse recordings are not in the dandiset.
+    maximum of 0.149 (0.140 to 0.170 under the other cell sets of the notebook). 120 mouse cells (60
+    Agmat, 51 Rrad, 9 Adamts2) from 72 mice. The test rests wholly on the code's mouse features; the
+    mouse recordings are not in the dandiset.
   deviations:
   - Mouse features and t-types from the code's tables (the paper's revision), not computed from
     recordings.
@@ -155,34 +170,40 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_berg_2020.ipynb
   output: claim:fig4-glp2r-sag
-  notes: GLP2R sag (median 0.061, 25 cells) is above LTK sag (0.026, 74 cells), BH p 0.023; adaptation
-    does not differ (0.064 against 0.057, BH p 0.31). Input resistance, not judged, is 128 MOhm for
-    GLP2R, 119 for LTK (BH p 0.34) and 89 for FREM3 (GLP2R above FREM3 at BH p below 1e-5). The code's
-    283 cells give the same.
-    Uses reading M2 of features-and-labels-link, as the answer to the link question allows; under M1 no
-    cell is linked and the claim could not be tested. The answer changed no number here.
+  notes: GLP2R sag (median 0.054, 24 cells) is above LTK sag (0.025, 70 cells), BH p 0.046; adaptation
+    does not differ (0.060 against 0.057, BH p 0.37). Input resistance, not judged, is 128 MOhm for
+    GLP2R, 122 for LTK (BH p 0.38) and 90 for FREM3 (GLP2R above FREM3 at BH p 0.00001). The code's
+    283 cells give the same (sag BH p 0.049), as does IPFX's sweep QC alone (0.023). The sag result is
+    close to the threshold; with cell QC applied its BH p is 0.060 and the claim would not be
+    reproduced.
+    Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be
+    tested.
 - claim: edtable1-species-ephys
   outcome: reproduced
   notebook: reproduce_berg_2020.ipynb
   output: claim:edtable1-species-ephys
   measured: 17
   notes: Student's and Welch's t-tests each find 17 of 18 features different at BH p below 0.05; AP
-    width is the exception (BH p 0.23 and 0.24, Cohen's d 0.13). The code's Mann-Whitney test, on 212
-    human and 108 mouse cells with all 18 features, also gives 17 with AP width the exception.
-    Uses reading M2 of features-and-labels-link, as the answer to the link question allows; under M1 no
-    cell is linked and the claim could not be tested. The answer changed no number here.
+    width is the exception (BH p 0.46 and 0.47, Cohen's d 0.08). The code's Mann-Whitney test, on 197
+    human and 108 mouse cells with all 18 features, also gives 17 with AP width the exception. The
+    code's 283 cells give 17 and 17 too; with IPFX's sweep QC alone on the 283 cells, or with cell QC
+    applied, Student's test gives 16 and the claim would be methods underspecified or not reproduced.
+    Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be
+    tested.
   deviations:
   - Mouse features from the code's table.
 - claim: edfig6-classifier-human-ephys
   outcome: reproduced
   notebook: reproduce_berg_2020.ipynb
   output: claim:edfig6-classifier-human-ephys
-  measured: 0.632
-  notes: 212 human cells with all 18 features (123 FREM3, 65 LTK, 24 GLP2R). Mean test accuracy over
-    1000 splits 0.632 (SD 0.054, 2.5 to 97.5% 0.531 to 0.734), against 0.451 with shuffled labels
-    (100 splits) and 0.580 for always guessing FREM3. The code's 283 cells give 0.636 (100 splits).
-    Uses reading M2 of features-and-labels-link, as the answer to the link question allows; under M1 no
-    cell is linked and the claim could not be tested. The answer changed no number here.
+  measured: 0.622
+  notes: 197 human cells with all 18 features (112 FREM3, 62 LTK, 23 GLP2R). Mean test accuracy over
+    1000 splits 0.622 (SD 0.056, 2.5 to 97.5% 0.517 to 0.733), against 0.441 with shuffled labels
+    (100 splits) and 0.569 for always guessing FREM3; the paper states no chance level, and the margin
+    over the largest class is small. The code's 283 cells give 0.630 (100 splits); over 50 splits, the
+    283 cells give 0.641, the cells passing cell QC 0.612 and IPFX's sweep QC alone 0.642.
+    Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be
+    tested.
   deviations:
   - Shuffled labels were run on 100 splits only, as a reference.
 - claim: edfig6-classifier-mouse-ephys
@@ -191,7 +212,7 @@ outcomes:
   output: claim:edfig6-classifier-mouse-ephys
   measured: 0.571
   notes: 108 mouse cells with all 18 features. Mean accuracy over 1000 splits 0.571 (SD 0.071), below
-    the human 0.632, against 0.421 with shuffled labels and 0.491 for always guessing Agmat.
+    the human 0.622, against 0.421 with shuffled labels and 0.491 for always guessing Agmat.
   deviations:
   - Mouse features from the code's table.
 - claim: edfig6-classifier-morphoelectric
@@ -201,15 +222,15 @@ outcomes:
   measured:
   - 0.720
   - 0.582
-  notes: Earlier blocked (methods underspecified), since the criterion gave no method. The answer
-    gave it, the method of edfig6-classifier-human-ephys on the homologous cells with all 18
-    features and a reconstruction, the 18 and the 60 morphological features side by side, with no
-    imputation needed. On the code's tables, 72 human cells (42 FREM3, 20 LTK, 10 GLP2R) give a mean
-    test accuracy of 0.720 over 250 splits (SE 0.005) and 50 mouse cells (25 Agmat, 19 Rrad, 6
-    Adamts2) give 0.582 (SE 0.007), both within tolerance; no morphological value is missing. On the
-    same cells the 18 electrophysiological features alone give 0.679 and 0.527 (100 splits), so the
-    combined features raise accuracy, as the statement says. With the human features computed here
-    from the dandiset (reading M2 of the link, 75 cells), the combined accuracy is 0.702.
+  notes: The answer to the question gave the method, the method of edfig6-classifier-human-ephys on
+    the homologous cells with all 18 features and a reconstruction, the 18 and the 60 morphological
+    features side by side, with no imputation needed. On the code's tables, 72 human cells (42 FREM3,
+    20 LTK, 10 GLP2R) give a mean test accuracy of 0.720 over 250 splits (SE 0.005) and 50 mouse cells
+    (25 Agmat, 19 Rrad, 6 Adamts2) give 0.582 (SE 0.007), both within tolerance; no morphological value
+    is missing. On the same cells the 18 electrophysiological features alone give 0.679 and 0.527 (100
+    splits), so the combined features raise accuracy, as the statement says. With the human features
+    computed here from the dandiset (reading M2 of the link, 70 cells), the combined accuracy is 0.715
+    (100 splits).
   deviations:
   - 250 splits, not the 1000 of edfig6-classifier-human-ephys, to keep the notebook within the
     30-minute limit; the standard error of each mean is 0.007 or less, against tolerances of 0.069 and
@@ -221,71 +242,79 @@ outcomes:
   notebook: reproduce_berg_2020.ipynb
   output: claim:fig5c-frem3-ephys-depth
   measured:
-  - 10
+  - 8
   - 7
-  notes: Over 146 FREM3 cells with a depth from 40 donors, 10 features correlate with depth at BH p
-    below 0.05 (outside 9 +/- 0.9) and 7 below 0.01. The largest R2 are sag (0.485, increasing),
-    latency at rheobase (0.246, decreasing) and AP upstroke/downstroke ratio (0.229, increasing), as
-    stated, with BH p 5.2e-18, 6.2e-11 and 1.003e-07; the last is not below 1e-7. The code's 283 cells
-    give 8 and 7, with the same three features first.
-    Uses reading M2 of features-and-labels-link, as the answer to the link question allows; under M1 no
-    cell is linked and the claim could not be tested. The answer changed no number here.
+  notes: Over 146 FREM3 cells with a depth from 40 donors (125 with features), 8 features correlate
+    with depth at BH p below 0.05 (outside 9 +/- 0.9) and 7 below 0.01. The largest R2 are sag (0.487,
+    increasing), AP upstroke/downstroke ratio (0.252, increasing) and latency at rheobase (0.246,
+    decreasing), as stated, with BH p 2.6e-15, 4.4e-07 and 1.8e-09; the ratio's is not below 1e-7. The
+    code's 283 cells give 8 and 6, IPFX's sweep QC alone 10 and 7, and every cell set of the notebook
+    gives partially reproduced.
+    Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be
+    tested.
 - claim: fig6-deep-ephys-anova
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_berg_2020.ipynb
   output: claim:fig6-deep-ephys-anova
   measured:
-  - 15
-  - 5
-  notes: Over 28 deep FREM3, 18 CARM1P1 and 33 COL22A1 cells, 15 features differ at BH p below 0.05
-    and 5 have R2 above 0.4 (input resistance, AP width, downstroke, rheobase and tau 0.412),
-    outside 4 +/- 0.4; no homologous-type feature reaches 0.4 (maximum 0.141). The code's 283 cells
-    give 14 and 4, both within tolerance.
-    Uses reading M2 of features-and-labels-link, as the answer to the link question allows; under M1 no
-    cell is linked and the claim could not be tested. The answer changed no number here.
+  - 14
+  - 4
+  notes: Changed from partially reproduced after the first verification round, because the features
+    now follow the Methods' sweep QC, as the link criterion asks. Over 24 deep FREM3, 16 CARM1P1 and 33
+    COL22A1 cells, 14 features differ at BH p below 0.05 (within 15 +/- 1.5) and 4 have R2 above 0.4
+    (input resistance 0.600, AP width 0.525, rheobase 0.478 and downstroke 0.474), within 4 +/- 0.4; no
+    homologous-type feature reaches 0.4 (maximum 0.149). The code's 283 cells give 14 and 4 too. With
+    IPFX's sweep QC alone (the first round) the counts are 15 and 5, and with cell QC applied 12 and 4,
+    both partially reproduced; the count of 4 has a tolerance of 0.4, so one feature decides it.
+    Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be
+    tested.
   deviations:
-  - The analysis cells include cells with features here and none in the paper's table.
+  - The analysis cells include cells with features here and none in the paper's table, and lack
+    some of the paper's cells.
 - claim: fig6c-carm1p1-upstroke-rin
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_berg_2020.ipynb
   output: claim:fig6c-carm1p1-upstroke-rin
   notes: The two readings of "faster upstroke" give different outcomes. Under (a), upstroke rate,
-    CARM1P1 (374 mV/ms) is above deep FREM3 (330, BH p 0.010) and COL22A1 (298, BH p 0.00004), and the
-    claim is reproduced. Under (b), upstroke/downstroke ratio, CARM1P1 (4.58) is above deep FREM3
-    (3.72) but below COL22A1 (4.83, BH p 0.034), so only the input resistance part holds (partially
-    reproduced). CARM1P1 input resistance (119 MOhm) is above deep FREM3 (82, BH p 0.0019) under both.
-    Uses reading M2 of features-and-labels-link, as the answer to the link question allows; under M1 no
-    cell is linked and the claim could not be tested. The answer changed no number here.
+    CARM1P1 (371 mV/ms) is above deep FREM3 (330, BH p 0.017) and COL22A1 (298, BH p 0.0001), and the
+    claim is reproduced. Under (b), upstroke/downstroke ratio, CARM1P1 (4.63) is above deep FREM3
+    (3.76) but not above COL22A1 (4.83, BH p 0.054), so only the input resistance part holds
+    (partially reproduced). CARM1P1 input resistance (123 MOhm) is above deep FREM3 (86, BH p 0.0017)
+    under both. The readings differ under every cell set of the notebook.
+    Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be
+    tested.
 - claim: fig6c-col22a1-rin-fi-sag
   outcome: reproduced
   notebook: reproduce_berg_2020.ipynb
   output: claim:fig6c-col22a1-rin-fi-sag
-  notes: COL22A1 input resistance (297 MOhm) and f-I slope (0.170 Hz/pA) are above deep FREM3 (82,
-    0.056) and CARM1P1 (119, 0.116) at BH p 0.0023 or less, and COL22A1 sag (0.069) is below CARM1P1
-    (0.137, BH p 0.00001). The code's 283 cells give the same.
-    Uses reading M2 of features-and-labels-link, as the answer to the link question allows; under M1 no
-    cell is linked and the claim could not be tested. The answer changed no number here.
+  notes: COL22A1 input resistance (297 MOhm) and f-I slope (0.170 Hz/pA) are above deep FREM3 (86,
+    0.050) and CARM1P1 (123, 0.117) at BH p 0.005 or less, and COL22A1 sag (0.069) is below CARM1P1
+    (0.134, BH p 0.00003). All three parts hold under every cell set of the notebook.
+    Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be
+    tested.
 - claim: fig2ef-pathology-ephys
   outcome: partially_reproduced
   notebook: reproduce_berg_2020.ipynb
   output: claim:fig2ef-pathology-ephys
   measured:
-  - -4.10
-  - 81
-  - 145
-  - 201
+  - -4.28
+  - 73
+  - 139
+  - 187
   - 29
-  notes: Under reading (a), temporal cells with all 18 features (238), RMP under IBA1 is the only one
-    of 36 comparisons below 0.05/18 (p 0.00087) and high-IBA1 cells are more hyperpolarized, by 4.10
-    mV (medians) and 4.08 mV (means), both outside 5 +/- 0.5, so the size part does not depend on the
-    measure. Under reading (b), all regions (256 cells), RMP, latency and fast AHP under IBA1 are
-    significant. Neither reading gives the paper's group sizes (60 and 125 GFAP, 170 and 15 IBA1).
-    The two-sided test under (a) also finds RMP alone. The updated notebook's procedure, temporal
-    cells on the code's own features (221 cells), finds latency and RMP under IBA1, as that notebook
-    prints (2 of 18).
-    Uses reading M2 of features-and-labels-link, as the answer to the link question allows; under M1 no
-    cell is linked and the claim could not be tested. The answer changed no number here.
+  notes: Under reading (a), temporal cells with all 18 features (224), RMP under IBA1 is the only one
+    of 36 comparisons below 0.05/18 (p 0.00089) and high-IBA1 cells are more hyperpolarized, by 4.28
+    mV (medians) and 4.16 mV (means), both outside 5 +/- 0.5, so the size part does not depend on the
+    measure. Under reading (b), all regions (241 cells), latency and RMP under IBA1 are significant.
+    Neither reading gives the paper's group sizes (60 and 125 GFAP, 170 and 15 IBA1). The two-sided
+    test gives RMP alone under both readings. The updated notebook's procedure, temporal cells on the
+    code's own features (221 cells), finds latency and RMP under IBA1, and so do the code's 283 cells
+    here under reading (a), which would make the claim not reproduced; with IPFX's sweep QC alone, as
+    in the first round, it is partially reproduced. The donor with two rows in the pathology table
+    (H17.06.013, low in one row and high in the other) has no file here.
+    Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be
+    tested.
   deviations:
   - Donor scores from the code's pathology table, matched on the first 10 characters of the donor id
     as the code does; one donor has two rows.
@@ -314,12 +343,10 @@ outcomes:
   - 16
   - 12
   notes: Over 94 human reconstructions of the homologous types (25 LTK, 11 GLP2R, 58 FREM3), two
-    features have no p-value and are dropped before the BH correction, as the updated criterion says;
-    16 of the 58 kept have R2 above 0.15, all at BH p below 1e-3. Over 60 mouse reconstructions one
-    feature is dropped, and 12 of the 59 kept have R2 above 0.15, 10 of them at BH p below 0.05. With
-    superficial FREM3 only, 10 human features exceed 0.15. The answer (to the question on fig5b and
-    fig6-deep-morph) added the rule for features with no p-value; the counts are the same as before,
-    since the dropped features have no R2 above 0.15.
+    features have no p-value and are dropped before the BH correction, as the criterion says; 16 of
+    the 58 kept have R2 above 0.15, all at BH p below 1e-3. Over 60 mouse reconstructions one feature
+    is dropped, and 12 of the 59 kept have R2 above 0.15, 10 of them at BH p below 0.05. With
+    superficial FREM3 only, 10 human features exceed 0.15.
 - claim: fig5b-frem3-morph-depth
   outcome: reproduced
   notebook: reproduce_berg_2020.ipynb
@@ -331,10 +358,8 @@ outcomes:
     p-value (apical_dendrite_pct_below_basal_dendrite_none, basal_dendrite_pct_above_apical_dendrite_none);
     over the 58 kept, 37 correlate with depth at BH p below 0.05 and 28 below 0.01, the paper's counts.
     Apical height (r 0.94), maximum basal path distance (0.74) and soma radius (0.49, BH p 0.018) are
-    among them. The answer gave the method (the depth regression on all 60 features, dropping those
-    with no p-value, as the code does) and showed that the paper's 58 are the 60 less the two constant
-    features, not less the two location features. The outcome and counts are as before; the earlier
-    reading without the location features, now shown for reference only, gives 35 and 26.
+    among them. The earlier reading without the two location features, shown for reference only,
+    gives 35 and 26.
 - claim: fig6-deep-morph-anova
   outcome: reproduced
   notebook: reproduce_berg_2020.ipynb
@@ -344,25 +369,22 @@ outcomes:
   - 20
   notes: Over 8 deep FREM3, 5 CARM1P1 and 10 COL22A1 reconstructions, one feature has no p-value
     (basal_dendrite_pct_above_apical_dendrite_none) and is dropped before the BH correction; of the 59
-    kept, 24 differ at BH p below 0.05 and 20 have R2 above 0.4. The answer gave the method, the t-type
-    ANOVA on all 60 features dropping those with no p-value, as the code does; the outcome and counts
-    are as before.
+    kept, 24 differ at BH p below 0.05 and 20 have R2 above 0.4.
 - claim: fig6a-deep-dendrites
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_berg_2020.ipynb
   output: claim:fig6a-deep-dendrites
-  notes: Earlier blocked because the claim had no criterion. The answer found that the paper and the
-    code give no measure, cell set or test, and the criterion now names the readings and says the
-    claim is methods underspecified when they differ; it was run under all of them, and they differ.
-    With FREM3 whole (a), CARM1P1 has the largest total dendritic length (apical plus basal) by mean
-    (12011 um) and median (10447 um). With FREM3 split at 0.575 (b), CARM1P1 is largest by mean (12011
-    um against 11566 for deep FREM3), but deep FREM3 is largest by median (12024 um against 10447).
-    COL22A1 has the fewest apical and basal branches of the deep types by mean and median (24 and 19 by
-    mean, against at least 56 and 59). The apical part of the sentence does not hold under either
-    statistic, as CARM1P1's apical length (mean 6896, median 5864 um) is above that of deep FREM3 (5443,
-    5540 um). Groups are small (5 CARM1P1, 8 deep FREM3, 10 COL22A1 reconstructions), and 2 FREM3
-    reconstructions without a depth are left out of reading (b).
+  notes: The answer found that the paper and the code give no measure, cell set or test, and the
+    criterion names the readings and says the claim is methods underspecified when they differ; it was
+    run under all of them, and they differ. With FREM3 whole (a), CARM1P1 has the largest total
+    dendritic length (apical plus basal) by mean (12011 um) and median (10447 um). With FREM3 split at
+    0.575 (b), CARM1P1 is largest by mean (12011 um against 11566 for deep FREM3), but deep FREM3 is
+    largest by median (12024 um against 10447). COL22A1 has the fewest apical and basal branches of the
+    deep types by mean and median (24 and 19 by mean, against at least 56 and 59). The apical part of
+    the sentence does not hold under either statistic, as CARM1P1's apical length (mean 6896, median
+    5864 um) is above that of deep FREM3 (5443, 5540 um). Groups are small (5 CARM1P1, 8 deep FREM3, 10
+    COL22A1 reconstructions), and 2 FREM3 reconstructions without a depth are left out of reading (b).
 - claim: fig5d-frem3-gene-depth
   outcome: blocked
   blocked_by: other
@@ -372,76 +394,81 @@ outcomes:
     4417 genes at FDR below 0.05 (against 790) and 1917 below 0.01, the count the code's
     gene_depth_analysis.ipynb gives. The preprint's results and the Patch-seq transcriptomes needed
     to recompute them are not in the repository, and the Allen Brain Map project page has no pinned
-    version.
+    version. The claims file marks the claim `elsewhere`, so data_missing is not used.
 - claim: fig1a-thickness
   outcome: reproduced
   notebook: reproduce_berg_2020.ipynb
   output: claim:fig1a-thickness
   measured: 1.231
-  notes: Earlier blocked (methods underspecified), since the mouse value could not be measured. The
-    answer found that the paper does not say where the mouse value comes from, and the criterion now
-    judges the human value alone. The human L2 plus L3 thickness is 1.231 +/- 0.155 mm over 5 sections
-    (1058, 1293, 1387, 1073 and 1344 um, the values Code6 prints), within 1.23 +/- 0.15. The mouse
-    whole-cortex thickness (1.06 mm) and the ratio of 1.16 are untested, as the criterion says; the
-    mouse sections have no white matter line. The mouse L2/3 thickness from the repository's files,
-    reported only, is 32, 133 and 90 um, not the 281, 223 and 257 um Code7 prints (see fig1b-density).
-    The measured value is the human value only.
+  notes: The answer found that the paper does not say where the mouse value comes from, and the
+    criterion judges the human value alone. The human L2 plus L3 thickness is 1.231 +/- 0.155 mm over
+    5 sections (1058, 1293, 1387, 1073 and 1344 um, the values Code6 prints), within 1.23 +/- 0.15. The
+    mouse whole-cortex thickness (1.06 mm) and the ratio of 1.16 are untested, as the criterion says;
+    the mouse sections end at the L3/L4 border, with no white matter line. The mouse L2/3 thickness,
+    reported only, is 281, 223 and 257 um, the values Code7 prints, now that the port reads the mouse
+    files as Code7's printed values need (see fig1b-density). The measured value is the human value
+    only.
   deviations:
   - Code6 ported from R (RImageJROI) to Python (roifile); the port reproduces the five values Code6
     prints.
 - claim: fig1b-density
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_berg_2020.ipynb
   output: claim:fig1b-density
   measured:
   - 27.70
-  - 349.76
-  notes: The human density is 27.70 +/- 4.46 thousand cells/mm3, the value Code7 prints, highest just
-    below the L1/L2 border (density 1.742) and lowest at scaled depth -0.575 (0.745), about half. The
-    mouse density is 349.76 +/- 338.51, not 165 +/- 24.9; the repository's mouse section files do not
-    give Code7's printed values (L2/3 thicknesses 32, 133 and 90 um against 281, 223 and 257, and
-    every mouse soma below the second boundary line), so the mouse part likely reflects the
-    deposited files, not the paper.
+  - 164.74
+  notes: Changed from partially reproduced after the first verification round, which found the mouse
+    port faulty. Code7 as committed names the four mouse lines L2, L4, L5 and L6 and sets 330 pixels
+    per 100 um in every section; that gives none of the values it prints (L2/3 thickness 32, 133 and 90
+    um, density 349.8 +/- 338.5, every mouse soma below the lower L2/3 line). Reading the lines as L1
+    to L4, as Code6 reads the human ones, with case_set_1 at 165 pixels per 100 um (the scale Code7's
+    own comment gives), gives every value it prints, and is now used. The human density is 27.70 +/-
+    4.46 thousand cells/mm3 and the mouse density 164.74 +/- 24.91, both within tolerance. Human density
+    is highest just below the L1/L2 border (density 1.742) and lowest at scaled depth -0.575 (0.745), a
+    ratio of 0.43. Mouse density varies less with depth (lowest bin 0.74 of the highest, coefficient of
+    variation over bins 0.080 against 0.282 in human).
   deviations:
-  - Code6 and Code7 ported from R (RImageJROI) to Python (roifile); the port reproduces every human
-    value the scripts print.
+  - Code6 and Code7 ported from R (RImageJROI) to Python (roifile). For mouse, the lines and the
+    pixel scale of case_set_1 are read in the way that gives Code7's printed values, not as Code7's
+    code is committed; both are printed.
 - claim: fig1c-soma-area
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_berg_2020.ipynb
   output: claim:fig1c-soma-area
   measured:
-  - 24.4
-  - 61.0
+  - 44.7
+  - 96.5
   - 107.5
   - 252.6
-  notes: The answer settled the quartiles as pooled over all somata of a species, as the code
-    computes them, and added that the largest human soma must exceed 850 um2; the per-section
-    quartiles are now reported only. Pooled, the human quartiles are 107.5 and 252.6 um2, within
-    tolerance, and the largest human soma is 886.4 um2. The mouse quartiles are 24.4 and 61.0 um2, not
-    44 and 96; see fig1b-density on the mouse files. Two of four quartiles and the largest soma hold,
-    so the outcome is as before. Per section, reported only, the means of section quartiles are 110.8
-    and 254.1 (human) and 31.1 and 59.4 (mouse). In human the mean area rises from 127.0 um2 in the
-    shallowest kept bin to 245.4 at its peak (1.93 times).
+  notes: Changed from partially reproduced after the first verification round, as the mouse port now
+    gives Code7's printed values (see fig1b-density). Pooled over all somata of a species, as the
+    criterion says, the mouse quartiles are 44.7 and 96.5 um2 and the human quartiles 107.5 and 252.6
+    um2, all within tolerance and equal to Code7's printed quantiles, and the largest human soma is
+    886.4 um2. Per section, reported only, the means of section quartiles are 110.8 and 254.1 (human)
+    and 50.1 and 91.8 (mouse). In human the mean area rises from 127.0 um2 in the shallowest kept bin
+    to 245.4 at its peak; in mouse it ranges from 59.3 to 81.5 um2.
   deviations:
-  - Code7's quartiles ported from R to Python.
+  - Code7's quartiles ported from R to Python, with the mouse reading of fig1b-density.
 - claim: fig1c-soma-variation
-  outcome: blocked
-  blocked_by: other
+  outcome: reproduced
   notebook: reproduce_berg_2020.ipynb
   output: claim:fig1c-soma-variation
-  notes: The answer settled deep L3 as Code7's five bins (centres -0.925 to -0.725, reading D1), with
-    bins deeper than 0.575 without the deepest bin (D2) as a variant. The method no longer blocks the
-    claim, but the data still do. All 1419 mouse somata in the repository's section files fall below
-    the second boundary line (scaled depth -1), so the D1 bins hold no mouse soma and the ratio cannot
-    be computed. The human SD in the D1 bins is 117.6 um2 (948 somata). D2, now without the deepest
-    bin, holds no mouse soma either (human SD 115.4 um2); the 5.74 reported before came from the
-    deepest bin, which the variant now leaves out.
+  measured: 3.94
+  notes: Earlier blocked because every mouse soma fell below the lower L2/3 line, which the first
+    verification round traced to the port, not the data (see fig1b-density). With deep L3 as Code7's
+    five bins (D1, as the criterion says), the mean SD of soma area is 117.6 um2 in human (948 somata)
+    and 29.8 um2 in mouse (357 somata), a ratio of 3.94, within 4 +/- 0.4. The variant D2 gives 3.83.
+    Binning the areas as the density is binned (right-closed) gives 3.94 again; the scripts bin them
+    left-closed, which leaves 5 human somata at scaled depth exactly 0 in no area bin, none in deep L3.
+  deviations:
+  - Code7's per-bin SD ported from R to Python, with the mouse reading of fig1b-density.
 - claim: fig1f-frem3-heterogeneity
   outcome: blocked
   blocked_by: other
   notes: Needs the Allen Brain Map RNA-seq data (human MTG nuclei, mouse VISp cells), which have no
     DOI or versioned release that could be pinned, as the claims file notes. The analysis was not
-    attempted.
+    attempted. The claims file marks the claim `elsewhere`, so data_missing is not used.
 - claim: fig1g-deep-types-de-genes
   outcome: blocked
   blocked_by: other
@@ -466,7 +493,8 @@ findings:
   statement: The files carry no SpecimenID, the identifier by which the paper's code and tables name
     cells. Each file can be linked only by its donor and its ephys session id, which lies 13 to 685
     below the cell's SpecimenID; the code's per-cell features confirm the link for every cell that
-    has them.
+    has them, and for the other 35 the sample dates and tube order in the code's sample_id are
+    consistent with it.
 - kind: metadata_insufficient
   statement: The files carry no t-type, soma depth, brain region or medical condition, on which every
     finding of the paper rests; they must be taken from the paper's code. session_description and the
@@ -474,9 +502,10 @@ findings:
     ProcessingModule and the technique as "analytical technique".
 - kind: selection_undocumented
   statement: The dandiset holds 318 of the 385 cells of the paper's table, including all 283 cells
-    with electrophysiological features in the paper's code; the other 67 are absent. 25 of the 35
-    cells without features in the code give features with IPFX here (5 of them fail cell QC), and
-    which recordings were judged too incomplete, or why, is not said.
+    with electrophysiological features in the paper's code; the other 67 are absent. Of the 35 cells
+    without features in the code, 19 give features here under the Methods' sweep QC (2 of them fail
+    cell QC) and 25 under IPFX's sweep QC alone, and which recordings were judged too incomplete, or
+    why, is not said.
 - kind: metadata_error
   statement: Donor H18.03.318 is female in the files and male in the paper's donor table and cell
     table; donor H18.06.005 is 56 years old in the files (P20440.0D) and 57 in both tables.
@@ -486,16 +515,287 @@ findings:
     where the Methods describe adaptation at about 50 pA above rheobase, initial rate at rheobase and
     tau from short pulses. The features recomputed here match the code's table, not the Methods.
 - kind: code_mismatch
-  statement: The mouse NeuN section files in the paper's code repository do not give the values
-    Code7_cortical_depth_code_mouse.r prints (mouse L2/3 thickness 32, 133 and 90 um against 281, 223
-    and 257; density 350 against 165 thousand per mm3), and every mouse soma lies below the second
-    boundary line; the human files reproduce Code6's printed values exactly.
+  statement: The code's feature table is consistent with sweep QC on noise alone, as IPFX applies it,
+    not with the Methods' sweep QC. With the Methods' bias current and bridge balance limits (input
+    resistance from IPFX's cell QC for the 15% limit), 22 of its 283 cells have no features here,
+    against 1 with IPFX's sweep QC alone, and fewer features equal the table's. 29 of its 283 cells
+    fail the cell QC as IPFX computes it (seal, access resistance, electrode offset).
+- kind: code_mismatch
+  statement: Code7_cortical_depth_code_mouse.r as committed does not give the values its comments
+    print. It names the four mouse boundary lines L2, L4, L5 and L6 and sets 100 um = 330 pixels for
+    all three mouse sections, which gives mouse L2/3 thicknesses of 32, 133 and 90 um (printed 281,
+    223 and 257), a density of 350 thousand per mm3 (printed 165) and puts every mouse soma below the
+    lower L2/3 line. Reading the lines as L1 to L4, as Code6 reads the human ones, with case_set_1 at
+    100 um = 165 pixels, the scale its own comment gives, reproduces every printed value (thicknesses,
+    L2 fractions, density 165 +/- 24.9 and the pooled area quantiles).
 - kind: code_mismatch
   statement: The code's gene-depth table (frem_genes_depth.csv) is from the revision (4417 genes at
     FDR below 0.05), not the preprint (790), and the Patch-seq transcriptomes behind either are not in
     the repository.
 - kind: other
   statement: Spike times computed here with IPFX equal the spike times stored in each file's
-    processing/spikes for the rheobase sweep of all 307 cells with features, and no spike occurs in
+    processing/spikes for the rheobase sweep of all 280 cells with features, and no spike occurs in
     the second before any long-square step, so the stored spikes, responses and stimuli share one
     clock.
+verifications:
+- date: '2026-10-23'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the author-answers revision with the conclusion cells and
+    the summary removed, the helper module and the claims file, with the paper. The verifier queried
+    the archive through the API and checked the helper functions by reading only (numpy, scipy and
+    statsmodels were not installed for it). Its report gives its own outcome for 32 claims; it gives
+    none for fig6-deep-morph-anova, which is left out below. Of the 32, its outcome matches the
+    record's on 26; on six blocked claims it gives data_missing where the record gives other. It found
+    the mouse section port faulty, which bears on fig1b-density, fig1c-soma-area and
+    fig1c-soma-variation, and asked for checks of the 35 links the features cannot confirm and of the
+    sweep QC.
+  results:
+  - claim: features-and-labels-link
+    agrees: true
+    outcome: reproduced
+    reason: M1 links 0 files. Under M2, 318 files link to 318 distinct cells, and all 283 of the code's
+      cells that have features have a file. The median relative difference is 0 for all 18 features
+      over 282 cells, and a match on features alone picks the M2 cell 282 of 282 times. Problem 1,
+      labels for 35 of the 318 files are unverified; M2 links each file to the next SpecimenID above
+      its session id, which by construction links every file, so "files not matched to the table, 0"
+      is circular, and the claims file's "other cells, counted apart" can never be found. Problem 3,
+      cell QC is computed but not applied; the Methods require it, and the link criterion names only
+      sweep QC, an omission in the claims file. It could not check whether sweep QC worked as the
+      Methods say, and asked for the reasons sweeps failed QC, confirmation that the bias-current
+      criterion was used, and the IPFX version.
+    response: Outcome kept. Added the per-file table the verifier asked for (offset and gap to the next
+      candidate, split by whether the code's table has features for the cell) and two checks of M2 that
+      do not use the features; the date in the cell's sample_id equals the file's local recording date
+      for all 35 cells (279 of the 283, the other 4 started after midnight), and in 71 rig-days with two
+      or more files tube numbers rise with recording time without exception (27 of the 35 are in such
+      rig-days). The cohort-cells text now says M2 cannot find other cells. Printed the IPFX version
+      (2.1.2), the reasons long squares fail QC, and the bias currents. This showed that IPFX 2.1.2
+      applies only the noise limits to sweeps, not the Methods' bias current and bridge balance limits;
+      the helper now adds them, as the criterion asks for the Methods' sweep QC, and keeps IPFX's QC as
+      a variant. With them 22 of the code's 283 cells give no features (1 under IPFX's QC alone). Cell
+      QC is not applied, as the claims file asks for sweep QC only; it is run as a variant, and both QC
+      questions are asked in questions/000023.yaml.
+  - claim: cohort-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: 318 cells, not 385. 283 is not reached under any reading, (a) 307, (b) 256, (c) 306.
+    response: Outcome kept. Under the Methods' sweep QC the counts are 280, 241 and 280 (307, 256 and
+      307 under IPFX's sweep QC alone), none 283.
+  - claim: cohort-donors
+    agrees: true
+    outcome: not_reproduced
+    reason: 56 under both readings, not 90. The pathology table has 89 distinct donors in 90 rows.
+    response: No change needed.
+  - claim: cohort-type-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: At most 2 of 6 counts match under any reading. The criterion needs at least 3 for partial.
+    response: Outcome kept; under the Methods' sweep QC at most one of six matches (FREM3, 136).
+  - claim: fig1a-thickness
+    agrees: true
+    outcome: reproduced
+    reason: 1.231 +/- 0.155 mm over 5 sections, inside 1.23 +/- 0.15. The mouse value is untested, as the
+      criterion says.
+    response: Outcome kept. With the mouse port fixed (fig1b-density), the mouse L2/3 thicknesses,
+      reported only, are now 281, 223 and 257 um, the values Code7 prints.
+  - claim: fig1b-density
+    agrees: true
+    outcome: partially_reproduced
+    reason: Human 27.70 +/- 4.46, highest in L2 and falling to 0.43 times at -0.575. The mouse figure
+      (349.8) comes from a faulty port (problem 2), so the mouse part was not validly tested. Problem 2,
+      the mouse NeuN port in section_tables and _layer_matrix is wrong; mouse L2/3 thickness comes out
+      as 32, 133 and 90 um, against Code7's 281, 223 and 257 um, and the soma areas do not depend on
+      the boundary lines, so the soma selection or pixel scale is probably also wrong. Cell 0 blames
+      "mouse section files" for the blocking, which is the wrong reason. Problem 4, counts use
+      right-closed bins but the area and SD means use a left-closed mask, so somata clipped to exactly
+      0 are left out of the area and SD statistics.
+    response: Outcome changed to reproduced. The port followed Code7's code as committed, which does not
+      give Code7's printed values. Reading the mouse lines as L1 to L4, as Code6 reads the human ones,
+      with case_set_1 at 165 pixels per 100 um (Code7's own comment), gives every value Code7 prints;
+      the mouse density is now 164.74 +/- 24.91, within tolerance, and flat by comparison with human
+      (lowest bin 0.74 of the highest). Both readings are printed, and the code_mismatch finding now
+      describes the script, not the files. On the bins, the inconsistency is Code6's and Code7's own,
+      kept so the port gives their printed values; the right-closed variant is printed (fig1c-soma-variation).
+  - claim: fig1c-soma-area
+    agrees: true
+    outcome: partially_reproduced
+    reason: Human quartiles 107.5/252.6 and largest soma 886 um2 pass. Mouse quartiles 24.4/61.0 fail,
+      but they come from the faulty port; the claims file says Code7 prints 44.7/96.5 from the same
+      files.
+    response: Outcome changed to reproduced. With the fixed port the pooled mouse quartiles are 44.7
+      and 96.5 um2, and all eight pooled quantiles equal those Code7 prints.
+  - claim: fig1c-soma-variation
+    agrees: true
+    outcome: blocked
+    reason: The ratio is NaN because all 1419 mouse somata sit at scaled depth -1.0. This is a port
+      fault, not missing data, so the claim is testable.
+    response: Outcome changed to reproduced. With the fixed port the D1 ratio is 3.94, within 4 +/- 0.4
+      (D2 3.83, right-closed area bins 3.94).
+  - claim: fig1f-frem3-heterogeneity
+    agrees: false
+    outcome: blocked
+    reason: Not in the archive; it holds only 318 *_icephys.nwb files (checked through the API). The
+      verifier gives data_missing.
+    response: Kept as blocked by other. The claims file marks the claim `elsewhere`, and the protocol
+      does not allow data_missing for such a claim (tools/entry.py check rejects it); the reason
+      recorded is that the Allen Brain Map data cannot be pinned. The disagreement on the reason is
+      recorded here.
+  - claim: fig1g-deep-types-de-genes
+    agrees: false
+    outcome: blocked
+    reason: Same reason (not in the archive; data_missing).
+    response: Kept as blocked by other, as for fig1f-frem3-heterogeneity.
+  - claim: fig3a-platform-correlation
+    agrees: false
+    outcome: blocked
+    reason: Same reason (not in the archive; data_missing).
+    response: Kept as blocked by other, as for fig1f-frem3-heterogeneity.
+  - claim: fig2d-pathology-scores
+    agrees: true
+    outcome: reproduced
+    reason: Donor averages run from 0.056 to 1.833, and 86.7% of donors are below 1.0.
+    response: No change needed.
+  - claim: edfig1-marker-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Ki-67 with Nissl (cellularity) has the largest |r| of the 15 pairs, 0.391.
+    response: No change needed.
+  - claim: fig2ef-pathology-ephys
+    agrees: true
+    outcome: partially_reproduced
+    reason: Reading (a), temporal cells, only RMP under IBA1 is significant. The difference is -4.10 mV
+      (medians) and -4.08 mV (means), both outside -5 +/- 0.5. Reading (b) has 3 significant IBA1
+      features. Neither reading gives the paper's group sizes. Problem 5, the group sizes are not
+      recovered; the verdict function ignores the counts, consistent with the criterion, but the
+      paper's cell set is not reproduced. Problem 6, the pathology table has 90 rows but 89 distinct
+      donor ids; a donor with two rows could be put in both groups, and this is not checked.
+    response: Outcome kept. Under the Methods' sweep QC, reading (a) gives RMP alone (4.28 and 4.16 mV)
+      and reading (b) latency and RMP. The group sizes are reported in the notes as not recovered. The
+      donor with two rows (H17.06.013) is now printed; its rows fall in both groups for both markers,
+      and it has no file here. The notes add that the code's 283 cells give latency too under (a).
+  - claim: fig3d-depth-by-type
+    agrees: true
+    outcome: partially_reproduced
+    reason: The median order holds and CARM1P1 and COL22A1 are at least 90% deeper than 0.575. No FREM3
+      cell is deeper than 1 (maximum 0.992), in the linked cells or in the full table. Problem 8, the
+      main run uses the 318 linked cells, while the criterion names every cell of the code's table; the
+      full-table variant gives the same verdict.
+    response: Outcome kept. The judged run is now every cell of the code's table with a depth, as the
+      criterion says, and the linked cells are the variant.
+  - claim: fig4e-human-ephys-anova
+    agrees: true
+    outcome: partially_reproduced
+    reason: Features with R2 > 0.1 are input resistance, rheobase and first_isi_hero_inv; f-I slope has
+      0.087. Maximum R2 is 0.141, outside 0.16 +/- 0.016. On the code's 283 cells the claim reproduces.
+      Dropping the 35 unverified cells (problem 1) changes this claim from partial to reproduced.
+    response: Outcome kept. Under the Methods' sweep QC four features exceed 0.1 (maximum 0.149) and
+      the three named are not the set; on the code's 283 cells six exceed 0.1, also partial. It is
+      reproduced only on the 283 cells with IPFX's sweep QC alone. The 35 links are now supported by
+      the date and tube checks, and the claims file's analysis cells include them, so the main cell set
+      is unchanged; the section on cell sets gives the outcome under each set.
+  - claim: fig4e-mouse-ephys-anova
+    agrees: true
+    outcome: reproduced
+    reason: Exactly the three named features have R2 > 0.1 at BH p < 0.05. Maximum R2 0.123 is within
+      tolerance and below the human 0.141.
+    response: No change needed; the human maximum is now 0.149.
+  - claim: fig4f-morph-anova
+    agrees: true
+    outcome: reproduced
+    reason: 16 human features (all at FDR < 1e-3) and 12 mouse features (10 at FDR < 0.05).
+    response: No change needed.
+  - claim: fig4-glp2r-sag
+    agrees: true
+    outcome: reproduced
+    reason: GLP2R sag is above LTK (0.061 against 0.026, BH p 0.023). Adaptation does not differ (BH p
+      0.31).
+    response: Outcome kept. Under the Methods' sweep QC sag is 0.054 against 0.025 (BH p 0.046) and
+      adaptation does not differ (BH p 0.37); the notes say that with cell QC sag has BH p 0.060.
+  - claim: edtable1-species-ephys
+    agrees: true
+    outcome: reproduced
+    reason: 17 of 18 features under Student's and under Welch's test; width is the one not significant.
+    response: No change needed; the counts are the same under the Methods' sweep QC.
+  - claim: edfig6-classifier-human-ephys
+    agrees: true
+    outcome: reproduced
+    reason: 0.632 over 1000 splits, inside 0.67 +/- 0.067. The paper states no chance level. Here the
+      largest class is 0.580 and shuffled labels give 0.451, so the margin over chance is small.
+    response: Outcome kept. Under the Methods' sweep QC the accuracy is 0.622 (largest class 0.569,
+      shuffled labels 0.441); the conclusion and notes now say the margin over the largest class is
+      small.
+  - claim: edfig6-classifier-mouse-ephys
+    agrees: true
+    outcome: reproduced
+    reason: 0.571, inside 0.54 +/- 0.054, and below the human 0.632. Largest class 0.491, shuffled labels
+      0.421.
+    response: No change needed; the human accuracy is now 0.622.
+  - claim: edfig6-classifier-morphoelectric
+    agrees: true
+    outcome: reproduced
+    reason: Human 0.720 and mouse 0.582 over 250 splits (SE about 0.006), both inside tolerance. Problem
+      7, fewer classifier splits than the criterion (250 instead of 1000); the standard errors (0.007 or
+      less) are far smaller than the distance to the tolerance bounds.
+    response: Kept at 250 splits, recorded as a deviation; the standard errors are printed.
+  - claim: fig5c-frem3-ephys-depth
+    agrees: true
+    outcome: partially_reproduced
+    reason: 10 features at FDR < 0.05, outside 9 +/- 0.9; 7 at FDR < 0.01. The top three features and
+      their signs are right, but the upstroke/downstroke ratio has BH p 1.003e-7, not below 1e-7.
+      Problem 10, the 10% tolerances on small integers leave no room; this follows the claims file.
+    response: Outcome kept. Under the Methods' sweep QC the counts are 8 and 7 and the ratio's BH p is
+      4.4e-07; every cell set gives partially reproduced. The tolerances are the claims file's and are
+      not changed.
+  - claim: fig5b-frem3-morph-depth
+    agrees: true
+    outcome: reproduced
+    reason: 37 and 28 of the 58 kept features.
+    response: No change needed.
+  - claim: fig5d-frem3-gene-depth
+    agrees: false
+    outcome: blocked
+    reason: The repository's table gives 4417 genes at FDR < 0.05. It is the revision's table; the
+      preprint's results are not available anywhere. The verifier gives data_missing.
+    response: Kept as blocked by other, since the claims file marks the claim `elsewhere` and the
+      protocol does not allow data_missing for it; the disagreement on the reason is recorded here.
+  - claim: fig6-deep-ephys-anova
+    agrees: true
+    outcome: partially_reproduced
+    reason: 15 features at FDR < 0.05 passes. 5 features have R2 > 0.4, against 4 +/- 0.4; tau, at
+      0.412, is the fifth. On the code's 283 cells, 14 and 4. Dropping the 35 unverified cells (problem
+      1) changes this claim from partial to reproduced. Problem 10, the tolerance on the count of 4
+      decides this claim.
+    response: Outcome changed to reproduced, because the features now follow the Methods' sweep QC, as
+      the link criterion asks (see features-and-labels-link). Over all linked cells 14 features differ
+      and 4 have R2 above 0.4; the code's 283 cells give the same. With IPFX's sweep QC alone (the
+      verified run) it stays partial (15 and 5), and with cell QC applied it is partial (12 and 4); the
+      notes say one feature decides the count.
+  - claim: fig6c-carm1p1-upstroke-rin
+    agrees: true
+    outcome: blocked
+    reason: By upstroke rate, CARM1P1 is above both other types. By upstroke/downstroke ratio it is below
+      COL22A1 (4.58 against 4.83). The criterion makes this part methods_underspecified when the two
+      readings differ. The input resistance part holds.
+    response: No change needed; the readings differ under every cell set.
+  - claim: fig6c-col22a1-rin-fi-sag
+    agrees: true
+    outcome: reproduced
+    reason: All 3 parts hold.
+    response: No change needed; all three parts hold under every cell set.
+  - claim: fig6a-deep-dendrites
+    agrees: true
+    outcome: blocked
+    reason: Under reading (b) with medians, deep FREM3 has the largest total length (12024 um, CARM1P1
+      10447). The other readings hold.
+    response: No change needed.
+  - claim: fig6e-deep-de-genes
+    agrees: false
+    outcome: blocked
+    reason: Not in the archive (data_missing).
+    response: Kept as blocked by other, as for fig1f-frem3-heterogeneity.
+  - claim: fig6f-smi32
+    agrees: false
+    outcome: blocked
+    reason: Not in the archive (data_missing).
+    response: Kept as blocked by other, as for fig1f-frem3-heterogeneity.

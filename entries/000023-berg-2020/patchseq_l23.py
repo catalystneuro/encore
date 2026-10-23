@@ -14,10 +14,16 @@ Where the parameters come from:
   spike of the rheobase sweep; `_rel` relative to AP threshold; `adapt_mean` the mean adaptation
   over the spiking long squares, which matched the table where the hero sweep's adaptation did
   not), and the link claim checks it.
-- Sweep QC is IPFX's default criteria (ipfx/defaults/qc_criteria.json), whose values are the
-  Methods' (bridge balance and access below 20 MOhm and 15% of input resistance, bias current
-  within +/-100 pA, RMS noise below 0.07 and 0.5 mV). Cell QC is computed and reported but not used
-  to drop cells: the claims file asks for sweep QC only.
+- Sweep QC is the Methods' (the claims file's link criterion asks for it): bridge balance below
+  20 MOhm and below 15% of input resistance, bias current within +/-100 pA, and RMS noise below 0.07
+  mV (short windows) and 0.5 mV (long window). IPFX 2.1.2's own sweep QC (qc_current_clamp_sweep)
+  applies only the noise limits and a Vm-delta limit of its default criteria
+  (ipfx/defaults/qc_criteria.json); the bias current and bridge balance limits are in that file but
+  not applied to sweeps. So the Methods' two limits are added here (METHODS_SWEEP_QC) on IPFX's
+  sweep table (leak_pa, the bias current, and bridge_balance_mohm), with the input resistance of
+  IPFX's cell QC for the 15% limit; a sweep with no value is kept. The features under IPFX's sweep
+  QC alone are kept too, as a variant (columns prefixed `ipfxqc_`). Cell QC is computed and
+  reported but not used to drop cells: the claims file asks for sweep QC only.
 - Long squares are analysed as IPFX's extract_cell_long_square_features does, except that a cell
   with no hero sweep keeps its other features (IPFX would drop the whole long-square set); this is
   how the code's table has cells with first_isi_hero_inv or avg_rate_hero missing and other features
@@ -77,6 +83,9 @@ FEATURE_SOURCES = {
 }
 
 DROP_NONPOSITIVE = ["input_resistance", "fi_fit_slope", "sag"]
+
+# The Methods' sweep QC limits that IPFX 2.1.2 does not apply to sweeps (see the docstring).
+METHODS_SWEEP_QC = dict(bias_pa=100.0, bridge_mohm=20.0, bridge_frac_rin=0.15)
 
 TYPE_ORDER = ["LTK", "GLP2R", "FREM3", "CARM1P1", "COL22A1"]
 
@@ -299,19 +308,62 @@ def extract_cell(url, qc_criteria=None):
         out["cell_qc_tags"] = "; ".join(qc["cell_state"].get("fail_tags", []))
         out["cell_qc_features"] = {k: (float(v) if isinstance(v, (int, float, np.floating)) and v is not None else v)
                                    for k, v in se["cell_features"].items()}
+        # the Methods' bias current and bridge balance limits, which IPFX does not apply to sweeps
+        rin = out["cell_qc_features"].get("input_resistance_mohm")
+        rin = float(rin) if rin is not None and np.isfinite(rin) else np.nan
+        lim = METHODS_SWEEP_QC
+        for s in se["sweep_features"]:
+            s["ipfx_passed"] = bool(s["passed"])
+            extra = []
+            bias, bb = s.get("leak_pa"), s.get("bridge_balance_mohm")
+            if bias is not None and np.isfinite(bias) and abs(bias) > lim["bias_pa"]:
+                extra.append("bias current")
+            if bb is not None and np.isfinite(bb):
+                if bb > lim["bridge_mohm"]:
+                    extra.append("bridge balance")
+                elif np.isfinite(rin) and bb > lim["bridge_frac_rin"] * rin:
+                    extra.append("bridge balance over 15% of Rin")
+            s["methods_fail"] = "; ".join(extra)
+            s["passed"] = bool(s["passed"]) and not extra
         sw = pd.DataFrame(se["sweep_features"])
         ls_names = set(ont.long_square_names)
         is_ls = sw["stimulus_name"].isin(ls_names) if "stimulus_name" in sw else pd.Series(False, index=sw.index)
         out["n_iclamp_sweeps"] = int(len(sw))
         out["n_ls_sweeps"] = int(is_ls.sum())
         out["n_ls_passed"] = int((is_ls & sw["passed"].astype(bool)).sum()) if len(sw) else 0
+        out["n_ls_passed_ipfx"] = int((is_ls & sw["ipfx_passed"].astype(bool)).sum()) if len(sw) else 0
         out["ls_amps"] = sorted(float(a) for a in sw.loc[is_ls, "stimulus_amplitude"].dropna()) if len(sw) else []
         out["ls_durations"] = sorted(set(round(float(a), 4) for a in sw.loc[is_ls, "stimulus_duration"].dropna())) if len(sw) else []
+        # why long squares failed: IPFX's tags (by kind) and the Methods' added limits
+        reasons = {}
+        for st in qc["sweep_states"]:
+            if int(st["sweep_number"]) in set(sw.loc[is_ls, "sweep_number"].astype(int)):
+                for tag in st["reasons"]:
+                    k = tag.split(":")[0].strip()
+                    reasons[k] = reasons.get(k, 0) + 1
+        for v in sw.loc[is_ls, "methods_fail"]:
+            for k in filter(None, v.split("; ")):
+                reasons["methods: " + k] = reasons.get("methods: " + k, 0) + 1
+        out["ls_fail_reasons"] = reasons
+        out["ls_bias_pa"] = [float(v) if v is not None else np.nan for v in sw.loc[is_ls, "leak_pa"]] if "leak_pa" in sw else []
+        out["rin_cell_qc"] = rin
+        variant = None
+        if (sw["ipfx_passed"] != sw["passed"]).any():  # IPFX's sweep QC alone keeps other sweeps
+            kept = [s for s in se["sweep_features"] if s["ipfx_passed"]]
+            try:
+                variant = named_features(_long_square_features(EphysDataSet(data=ds_all._data, sweep_info=kept))[0])
+            except Exception as e:
+                variant = {k: np.nan for k in FEATURES}
+                out["ipfxqc_error"] = f"{type(e).__name__}: {e}"
         passed = [s for s in se["sweep_features"]]
         sp.drop_failed_sweeps(passed)
         ds = EphysDataSet(data=ds_all._data, sweep_info=passed)
+        if variant is not None:
+            out.update({"ipfxqc_" + k: v for k, v in variant.items()})
         ls, start, dur = _long_square_features(ds)
         out.update(named_features(ls))
+        if variant is None:
+            out.update({"ipfxqc_" + k: out[k] for k in FEATURES})
         out["has_hero"] = ls.get("hero_sweep") is not None
         spk = ls.get("spiking_sweeps")
         if spk is not None and len(spk):
@@ -411,11 +463,25 @@ def pairwise_mw(df, feature, group, groups):
 # human, 330 in mouse), the margin of 5% around the lines, the 20 bins of scaled depth, the 25 um
 # section thickness implied by the factor 40 that turns cells per mm2 into thousands per mm3, and the
 # use of only the first four lines in mouse.
+#
+# Two details of Code7 as committed do not give the values its comments print, and the port follows
+# the printed values (the notebook shows both). (1) Code7 names the four mouse lines L2, L4, L5 and L6
+# and takes L2/3 between the first two; its printed L2/3 thicknesses (281, 223 and 257 um) and L2
+# fractions come from reading the lines as Code6 reads the human ones, L1 to L4 with L2/3 from the
+# second to the fourth line. (2) Code7 sets 100 um = 330 pixels for all three mouse sections, but its
+# printed values for case_set_1 need 100 um = 165 pixels, the scale its own comment gives ("100um ~
+# 165 pixels"). With both, the port gives every value Code7 prints.
+#
+# Bins: as the scripts, the density uses R's hist (right-closed bins, the lowest included) and the
+# mean and SD of soma area use left-closed bins ((rng >= lower) & (rng < upper)), so a soma clipped to
+# scaled depth exactly 0 counts in the density and in no area bin.
 
 HUMAN_CASES = ["case_072", "case_246", "case_316", "case_360", "case_732"]  # file names in the repository
 MOUSE_CASES = ["case_set_1", "case_set_2", "case_set_3"]
 HUMAN_UM_PER_PX = 100 / 95
 MOUSE_UM_PER_PX = 100 / 330
+# The scale Code7's printed values need (see above); MOUSE_UM_PER_PX is the one its code sets for all.
+MOUSE_UM_PER_PX_PRINTED = {"case_set_1": 100 / 165, "case_set_2": 100 / 330, "case_set_3": 100 / 330}
 DENSITY_BREAKS = -np.arange(20, -1, -1) / 20
 
 
@@ -476,15 +542,22 @@ def _layer_matrix(lines, n_lines=None):
     return lay
 
 
-def section_tables(species):
-    """Per case: the L2/3 thickness (um), and a table of somata (x, depth, area in um2, scaled depth)."""
+def section_tables(species, mouse_reading="printed"):
+    """Per case: the L2/3 thickness (um), and a table of somata (x, depth, area in um2, scaled depth).
+
+    For mouse, `mouse_reading` is "printed" (lines read L1 to L4 and case_set_1 at 165 pixels per
+    100 um, which give Code7's printed values) or "as_committed" (lines read L2, L4, L5, L6 and 330
+    pixels per 100 um for every section, as Code7's code reads)."""
     sections = read_sections(species)
-    um = HUMAN_UM_PER_PX if species == "human" else MOUSE_UM_PER_PX
     out = {}
     for case, (lines, somata) in sections.items():
+        if species == "human":
+            um, top, bottom = HUMAN_UM_PER_PX, "l2", "l4"
+        elif mouse_reading == "printed":
+            um, top, bottom = MOUSE_UM_PER_PX_PRINTED[case], "l2", "l4"
+        else:
+            um, top, bottom = MOUSE_UM_PER_PX, "l1", "l2"
         lay = _layer_matrix(lines, None if species == "human" else 4)
-        # human columns are L1..L4 and L2/3 is L4 - L2; mouse columns are L2, L4, L5, L6 and L2/3 is L4 - L2
-        top, bottom = ("l2", "l4") if species == "human" else ("l1", "l2")
         lay["l23"] = lay[bottom] - lay[top]
         rows = []
         for r in somata:
@@ -496,27 +569,34 @@ def section_tables(species):
             scaled = float((row[top].iloc[0] - d) / row.l23.iloc[0]) if len(row) else np.nan
             rows.append(dict(x=x, depth=d, area=area, scaled_depth=scaled))
         cells = pd.DataFrame(rows)
+        cells["scaled_unclipped"] = cells.scaled_depth
         cells["scaled_depth"] = cells.scaled_depth.clip(-1, 0)
-        out[case] = dict(l23_um=float(lay.l23.mean() * um), cells=cells, lines=len(lines))
+        l2_frac = float(-(lay.l3 - lay.l2).mean() / lay.l23.mean()) if top == "l2" else np.nan
+        out[case] = dict(l23_um=float(lay.l23.mean() * um), cells=cells, lines=len(lines), um_per_px=um,
+                         l2_fraction=l2_frac)
     return out
 
 
-def density_profile(case_tables, um):
-    """Per case and bin: density (R's hist density), mean and SD of soma area; and cells per mm3."""
+def density_profile(case_tables, area_bins="left"):
+    """Per case and bin: density (R's hist density), mean and SD of soma area; and cells per mm3.
+
+    `area_bins` "left" bins the areas as the scripts do (left-closed); "right" uses the density's
+    right-closed bins, a variant."""
     br = DENSITY_BREAKS
     rows, per_mm3 = [], {}
     for case, t in case_tables.items():
         c = t["cells"]
+        um = t["um_per_px"]
         s = c.scaled_depth.values
         # R's hist: right-closed bins, the lowest included
         idx = np.clip(np.searchsorted(br, s, side="left") - 1, 0, len(br) - 2)
         counts = np.bincount(idx, minlength=len(br) - 1)
         dens = counts / (len(s) * np.diff(br))
         for k in range(len(br) - 1):
-            a = c.area[(s >= br[k]) & (s < br[k + 1])]
+            a = c.area[(s >= br[k]) & (s < br[k + 1])] if area_bins == "left" else c.area[idx == k]
             rows.append(dict(case=case, bin=k, centre=(br[k] + br[k + 1]) / 2, dens=dens[k],
                              area=a.mean(), het=a.std(ddof=1), n=len(a)))
-        area_um2 = np.ptp(c.x) * np.ptp(c.depth[c.x <= 200])
-        per_mm2 = 1e6 * len(c) / (area_um2 * um * um)
+        area_px = np.ptp(c.x) * np.ptp(c.depth[c.x <= 200])
+        per_mm2 = 1e6 * len(c) / (area_px * um * um)
         per_mm3[case] = 40 * per_mm2 / 1000
     return pd.DataFrame(rows), pd.Series(per_mm3)

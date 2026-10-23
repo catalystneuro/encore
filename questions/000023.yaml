@@ -160,3 +160,40 @@ questions:
     mouse in the code's tables) has a missing morphological value. The code prints 0.686 for
     human and 0.640 for mouse over 10 splits. The criterion now says this. Claim unchanged.
   answered: 2026-10-23
+- claim: features-and-labels-link
+  also: [cohort-cells, cohort-type-counts, fig4e-human-ephys-anova, fig4-glp2r-sag, edtable1-species-ephys,
+    edfig6-classifier-human-ephys, fig5c-frem3-ephys-depth, fig6-deep-ephys-anova, fig6c-carm1p1-upstroke-rin,
+    fig6c-col22a1-rin-fi-sag, fig2ef-pathology-ephys]
+  asked: 2026-10-23
+  question: The link criterion asks for "the sweep QC of the Methods" and no cell QC. The Methods also
+    give a cell QC ("a >1GOhm seal recorded before break-in and an initial access resistance <20 MOhm
+    and <15% of the Rinput"). Should cells failing the Methods' cell QC be left out of the analysis
+    cells? IPFX 2.1.2's cell QC, computed here, fails 35 of the 318 cells, 29 of them among the 283 cells
+    that have features in the paper's own table.
+  passage: Methods, Patch-clamp recording, "To be included in analysis, a cell needed to have a >1GOhm
+    seal recorded before break-in and an initial access resistance <20 MOhm and <15% of the Rinput."
+  why: With cell QC applied, fig4-glp2r-sag becomes not reproduced (sag BH p 0.060), edtable1-species-ephys
+    methods underspecified (Student 16, Welch 17) and fig6-deep-ephys-anova partially reproduced (12
+    features at FDR below 0.05). The attempt runs the criterion as written (no cell QC) and shows cell
+    QC as a variant. That the paper's own 283 cells include 29 that fail this cell QC suggests the paper
+    did not apply it as IPFX computes it.
+- claim: features-and-labels-link
+  also: [cohort-cells, cohort-type-counts, fig4e-human-ephys-anova, fig4-glp2r-sag, edtable1-species-ephys,
+    edfig6-classifier-human-ephys, fig5c-frem3-ephys-depth, fig6-deep-ephys-anova, fig6c-carm1p1-upstroke-rin,
+    fig6c-col22a1-rin-fi-sag, fig2ef-pathology-ephys]
+  asked: 2026-10-23
+  question: The sweep QC of the Methods includes a bridge balance below 20 MOhm and below 15% of "the
+    Rinput", and a bias current within 0 +/- 100 pA. IPFX 2.1.2, the release used, applies only the
+    noise limits to sweeps; these two limits are in its criteria file but not applied. The attempt adds
+    them, taking the input resistance of IPFX's cell QC for the 15% limit. Is that the Rinput meant, and
+    are the two limits to be applied when the paper's own feature table does not appear to have applied
+    them (with them, 21 of the 283 cells with features in the code's table lose every long square and
+    give no features here)?
+  passage: Methods, Patch-clamp recording, on the criteria for an individual sweep to be included, "(1)
+    the bridge balance was <20 MOhm and <15% of the Rinput; (2) bias (leak) current 0 +/- 100 pA; and
+    (3) root mean square noise measurements ..."
+  why: With the two limits (the main reading), fig6-deep-ephys-anova is reproduced (14 features at FDR
+    below 0.05, 4 with R2 above 0.4); with IPFX's sweep QC alone, as in round 1, it is partially
+    reproduced (15 and 5). The other outcomes are the same under both. The bridge balance limit at 15%
+    of input resistance drops the most sweeps (469 long squares), so which input resistance is meant
+    matters.
