@@ -4126,6 +4126,1257 @@
    "dandi:001754": 0,
    "dandi:001828": 0,
    "crcns:ret-1": 0
+  },
+  "question_items": {
+   "dandi:000005": [
+    {
+     "claim": "fs-vm-touch-whisking",
+     "asked": "2026-10-20",
+     "question": "At what resolution is dVm/dt of the touch-aligned average Vm taken for the latency rule, the recording's own sampling rate (10 or 20 kHz) or the average in 1 ms bins as for the spike PSTH? The same question applies to the laser-onset latencies of exc-thalamus-photoinhibition and to exc-vm-touch-whisking.",
+     "passage": "Touch latency was identified as the latency from touch onset to the time when dVm/dt crossed baseline (3x s.d. of the dVm/dt between 0 and 25 ms before touch). All touch-spike PSTHs were constructed with a bin size of 1 ms. (Online Methods, Data analysis)",
+     "why": "At the full sampling rate two of the five whole-cell FS cells cross the threshold at 0.0 and 0.3 ms and the mean latency is 1.88 ms (not reproduced); in 1 ms bins the mean over three cells is 3.67 to 4.17 ms (within 4.0 +- 0.4). For the thalamic and cortical light the full rate gives 0.1 ms for both, the 1 ms bins 5.0 and 2.0 ms.",
+     "answer": "The recording's sampling rate, not 1 ms bins. The Methods give 1 ms bins for spike PSTHs only (\"All touch-spike PSTHs were constructed with a bin size of 1 ms\"), and the paper's Vm latencies are not on a 1 ms grid. The FS onset has \"median, 4.2 ms, n = 7 neurons\" and the E latency \"median, 4.7 ms\" over 37; with an odd n each median is one cell's value. The laser latencies are 4.2 and 2.8 ms. The paper gives no smoothing and does not say whether a crossing was interpolated. Criteria of fs-vm-touch-whisking, exc-vm-touch-whisking and exc-thalamus-photoinhibition, and header O8, now say dVm/dt is taken at the sampling rate. Claims and expected values unchanged.",
+     "answered": "2026-10-20"
+    },
+    {
+     "claim": "fs-touch-response",
+     "asked": "2026-10-20",
+     "question": "The dPSTH/dt latency is found in 1 ms bins. Is the latency the bin's left edge or its centre? It applies also to vpm-touch and pv-enphr-suppression.",
+     "passage": "Latency for touch-evoked spikes was defined as the latency from touch onset to the time when dPSTH/dt crossed a threshold (Online Methods, Data analysis); the medians the paper reports (2.5 ms for VPM, 4.5 ms for FS) fall on half milliseconds.",
+     "why": "The two differ by 0.5 ms, more than the 0.32 ms tolerance of vpm-touch. No outcome of this attempt changes with it, but a later attempt could.",
+     "answer": "The paper does not say. The Methods define the latency as \"the latency from touch onset to the time when dPSTH/dt crossed a threshold\" with no bin time. The half-millisecond medians do not settle it: 4.5 ms is the median of 24 cells, an even n, so it can be the mean of two whole-millisecond values; the VPM latency n is not printed. Header O9 names (a) the left edge and (b) the centre of the crossing bin, and vpm-touch, fs-touch-response and pv-enphr-suppression now run both.",
+     "answered": "2026-10-20"
+    },
+    {
+     "claim": "fs-touch-response",
+     "asked": "2026-10-20",
+     "question": "The claims file defines FS cells as cells \"driven by 5 ms light pulses within 5 ms of onset\" and inside the waveform boundary of Supplementary Fig. 6. What test, against what baseline and at what threshold, decides that a cell is driven, and how are the peak, the trough and the spike duration of the boundary measured (the polarity of the cell-attached spike, the baseline, and whether duration is the time from peak to trough)? This decides the FS group of every FS claim and the excitatory group of every excitatory claim.",
+     "passage": "We recorded from neurons that were directly driven by light within 5 ms after photostimulus onset (Online Methods, Barrel cortex recordings); Supplementary Fig. 6, \"Definition of peak and trough is given in inset\".",
+     "why": "Here a cell is driven when a one-sided binomial test of a spike 0 to 5 ms after isolated pulses against the same 5 ms 50 ms earlier gives p < 0.001 (24 VGAT-ChR2 cells; 27 at p < 0.01), and duration is peak-to-trough time on the 300 Hz high-passed mean spike. With these, 8 of 20 driven cell-attached cells fall outside the boundary, leaving 12 where Supplementary Table 2 has 24, and the outcome of thalamus-drives-fs turns on it (5 cells inside, 9 without the boundary).",
+     "answer": "The paper does not give the test, the baseline or the threshold. It says only \"We recorded from neurons that were directly driven by light within 5 ms after photostimulus onset\", with \"Light pulses (5 ms) were delivered at either 5 or 10 Hz\" (Online Methods). Peak and trough are defined only graphically in the Supplementary Fig. 6 inset, which this run could not render; the text calls the duration \"spike peak to trough duration\" (Online Methods), so duration is peak-to-trough time. Polarity and baseline are not stated. The fs-touch-response criterion now names readings: driven at p < 0.001 and at p < 0.01, each with and without the approximate boundary. The check is the paper's counts: 19 ChR2-tagged control FS cells (5 whole-cell, 14 cell-attached), and 14 control plus 10 ION-cut cell-attached FS cells in VGAT-ChR2-EYFP mice (Supplementary Table 2). The 24 of Supplementary Table 2 includes the 10 ION-cut cells.",
+     "answered": "2026-10-20"
+    },
+    {
+     "claim": "behavior-false-alarms",
+     "asked": "2026-10-20",
+     "question": "Is the chi-squared test of no-lick performance with and without light corrected for continuity (Yates)?",
+     "passage": "In 8 mice tested, 6 showed a significant decrease of performance during Nolick trials with PV interneuron inactivation (p < 0.05, Chi-squared test, solid lines) (Supplementary Fig. 14c)",
+     "why": "With the correction, 4 mice (trials pooled) or 5 (any session) show a significant decrease; without it, 5 or 6, which moves the outcome between not reproduced, partially reproduced and reproduced.",
+     "answer": "The paper does not say. It gives only \"(p < 0.05, Chi-squared test, solid lines)\" (Supplementary Fig. 14c legend) and \"All statistical analyses were performed in Matlab\" (Online Methods). Matlab's crosstab returns the uncorrected Pearson chi-squared, but the paper does not name the function and no code was available. The behavior-false-alarms criterion now names (i) no correction and (ii) Yates's correction, each run.",
+     "answered": "2026-10-20"
+    },
+    {
+     "claim": "thalamus-drives-fs",
+     "asked": "2026-10-20",
+     "question": "Are the paired tests of light against control one-sided (light lower) or two-sided?",
+     "passage": "Photoinhibition reduced spike rates in FS interneurons during nonwhisking (to 4% of control ... (Results, Inhibition is driven by thalamus, paragraph 2)",
+     "why": "Only 5 FS cells by the claims file's rule have thalamic light; a two-sided signed-rank test with 5 cells cannot go below p = 0.0625, a one-sided one can reach 0.031.",
+     "answer": "Two-sided. The text does not state the sides, but the printed values fit exact two-sided signed-rank tests at the printed n: \"to 4% of control, P = 5 \u00d7 10\u22124, n = 13 neurons\" is the two-sided exact P when the cell with the smallest change goes up (4.9 x 10^-4), and no one-sided exact P at n = 13 rounds to 5 x 10^-4 (2.4, 3.7 and 6.1 x 10^-4). The P values for n = 15 and 14 (6 x 10^-5 and 1 x 10^-4) are the two-sided minima. The analyses were run in Matlab, whose signrank is two-sided by default. The thalamus-drives-fs criterion now says two-sided; the one-sided P is a reported variant. With 5 cells the claim cannot pass at 0.05, which is a matter of sample size, not of the test.",
+     "answered": "2026-10-20"
+    },
+    {
+     "claim": "behavior-touches",
+     "asked": "2026-10-20",
+     "question": "Do the touch counts and the performance include the trials with light?",
+     "passage": "Mice touched the pole at a proximal location multiple times (number of touches: 5.7 +- 5.3, mean +- s.d., 4,147 trials) (Online Methods, Behavior)",
+     "why": "With every trial (all sessions, principal whisker) the counts are 6.04 and 0.85, both within tolerance; without the light trials they are 5.74 and 0.80, and the no-lick count falls outside, which moves the outcome from partially reproduced to not reproduced.",
+     "answer": "The paper does not say. The Behavior paragraph gives \"5.7 \u00b1 5.3, mean \u00b1 s.d., 4,147 trials\" and performance \"during the recordings of 111 cells\" with no mention of light trials. The behavior-touches criterion now names light readings (x) every trial and (y) trials without light only, each run with its recording and whisker readings. The trial counts under each are reported against 4,147 and 4,173.",
+     "answered": "2026-10-20"
+    },
+    {
+     "claim": "exc-vm-touch-whisking",
+     "asked": "2026-10-20",
+     "question": "For whisking onsets, over which windows is \"the average whisking amplitude increased by at least 2 degrees\" judged, and which touches (onset or offset, which whiskers) bound the -10 to 100 ms exclusion around touches in the whisking epochs?",
+     "passage": "Transitions from nonwhisking to whisking ... were defined as the end of a nonwhisking epoch followed by a period in which the average whisking amplitude increased by least 2 degrees and no touch occurred within 250 ms (Online Methods, Data analysis)",
+     "why": "Here the amplitude 100 to 300 ms after the end of the nonwhisking period is compared with 0 to 200 ms before it, and touches of every tracked whisker are excluded from 10 ms before onset to 100 ms after offset. These set the onsets and epochs behind every whisking measure; the attempt did not run other readings of them.",
+     "answer": "The paper gives neither. The rule names no windows (\"the average whisking amplitude increased by least 2\u00b0\"), and the epoch rule says only \"excluding ... \u221210 to 100 ms surrounding touches\". The Behavior paragraph says \"Touches by the principal and surround whiskers were treated independently\", which does not say which touches bound whisking epochs. The only whisking-onset windows the paper gives are those of the Supplementary Fig. 4 legend (0 to 200 ms before, 100 to 300 ms after). Header O10 and O11 name the readings, now cited in exc-vm-touch-whisking: windows (a) the Supplementary Fig. 4 windows (this attempt's) and (b) 0 to 250 ms after against the whole nonwhisking period; touches of (a) every tracked whisker or (b) the principal whisker, spanning (i) 10 ms before onset to 100 ms after offset or (ii) 10 ms before to 100 ms after onset.",
+     "answered": "2026-10-20"
+    },
+    {
+     "claim": "fs-vm-touch-whisking",
+     "asked": "2026-10-20",
+     "question": "Should the dVm/dt crossing that sets the Vm latency be smoothed, or count only when it is sustained, since a 3 s.d. threshold on an unsmoothed dVm/dt at 10 to 20 kHz is crossed by noise? The same applies to exc-vm-touch-whisking and the laser latencies of exc-thalamus-photoinhibition.",
+     "passage": "Touch latency was identified as the latency from touch onset to the time when dVm/dt crossed baseline (3x s.d. of the dVm/dt between 0 and 25 ms before touch). (Online Methods, Data analysis)",
+     "why": "Raised by the round-2 verifier. Single samples of dVm/dt cross the threshold at 0.0 and 0.3 ms in two of the five FS cells (mean 1.88 ms against 4.0 +- 0.4), and 1 and 3 of the 250 baseline samples of the laser averages already cross it, giving 0.1 ms for both laser latencies. A rule that ignores one-sample crossings could move fs-vm-touch-whisking and the latency part of exc-thalamus-photoinhibition."
+    },
+    {
+     "claim": "behavior-false-alarms",
+     "asked": "2026-10-20",
+     "question": "The criterion says reproduced when 6 of 8 mice show a significant decrease under a reading, but the header says the outcome is the one all readings give, or the claim is methods_underspecified. Which rule applies?",
+     "why": "Raised by the round-2 verifier. Only reading (b)(i) gives 6 mice; the others give 5, 4 and 5. Under the header rule the claim would be partially reproduced or blocked. Reading (b) also counts anm266945 on one of its 11 sessions (p = 0.003), although its pooled test gives p = 0.305."
+    },
+    {
+     "claim": "vpm-whisking-phase",
+     "asked": "2026-10-20",
+     "question": "Should the share of cells with r2 > 0.25 be compared with a null, since the rule is close to chance here? The same applies to fs-whisking-phase.",
+     "passage": "Distribution of the goodness-of-fit (r2) of the spike-phase relationship. Dashed line, r2=0.25 (Supplementary Figure legends)",
+     "why": "Raised by the verifier in both rounds. Spikes moved to the next trial still pass for 16 of 29 VPM units and 9 of 17 FS cells, so the more than half rule passes on a null. A null comparison could change both outcomes."
+    }
+   ],
+   "dandi:000006": [
+    {
+     "claim": "pt-tagged-units",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "The criterion says the reading of the unit selection that reproduces the 61 and 69 units is the one the other electrophysiology claims use. On the dandiset neither does (the code's rule keeps 44 PTupper and 56 PTlower units, the Methods' session rule 42 and 63), because 11 of the paper's sessions are not in it. Which selection should the other claims use when neither reading matches?",
+     "passage": "Methods, Electrophysiology data analysis (\"Units recorded during behavioural sessions in which performance was not greater than 65% ... 13 units were rejected; 130 were kept\"); the claims file's opening comment, Unit inclusion.",
+     "why": "pt-spike-rates-similar, pt-variance-explained and pt-single-neuron-early-selectivity give different outcomes under the two selections, and are blocked until it is fixed. On the paper's processed data the code's rule gives 61 and 69.",
+     "answered": "2026-10-20",
+     "answer": "Use the code's per-unit rule. The Methods report the selection's outcome (\"13 units were rejected; 130 were kept\"), and on the paper's processed data the code's rule (loadAndProcessData.m) is the one that gives it, with 61 and 69, as the attempt reports. The Methods' session rule is a variant. Missing sessions on the dandiset do not change which rule is the paper's. Recorded in the opening comment (Unit inclusion) and the pt-tagged-units criterion."
+    },
+    {
+     "claim": "pt-single-neuron-early-selectivity",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "The go-cue aligned rates come precomputed in the paper's data files, so the claims file leaves their trial range open (the unit's range, or all trials). Can the code settle it? In the processed file data_structure_anm372906_WR40_psth.mat, every unit of a session has rates for the same trials, the eleventh to the tenth before the session's last correct trial.",
+     "passage": "The claims file's opening comment, Trial range per unit; loadAndProcessData.m (getData reads the precomputed psth; ObjToLickPSTH builds the lick-aligned rates over the unit's range).",
+     "why": "With the code's selection, reading (a) of the measure is reproduced with the unit's range and not reproduced with all trials (Mann-Whitney p 0.0041 against 0.026), so the claim is blocked.",
+     "answered": "2026-10-20",
+     "answer": "Yes. The premise holds for that session but not for the files as a whole. In the processed files (Ephys.zip, Code/ProcessedData, variable psth, which getData reads), the go-cue rates of units in one session often start and end on different trials (WR29.5 session 2 starts at trial 12 for one unit and 41 for another; WR33 session 2 ends at 110, 159 and 188 for different units). Every range starts at trial 11 or later and ends 10 or more trials before the session's last correct trial. That fits the unit's range of ObjToLickPSTH, reading (a); all trials is a variant. The claim's criterion and the opening comment (Trial range per unit) now say so."
+    },
+    {
+     "claim": "pt-upper-early-preparatory",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "The criterion gives two rules for \"larger\" ((i) medians; (ii) the PTupper 5th percentile above the PTlower median) and outcomes for each, and \"more consistent\" as a smaller s.d. over median of the bootstrap. Under (i) the claim is partially reproduced in 31 of 32 combinations of the other readings and under (ii) not reproduced in 27. Which rule decides?",
+     "passage": "Results, Preparatory activity, paragraph 2 (\"selectivity was larger and more consistent across trials in the PTupper population\"); Fig. 5b.",
+     "why": "The two rules give different outcomes, so the claim is blocked, and with it pt-upper-persistent, pt-cohort-control and pt-types-differ-in-timing, which depend on it.",
+     "answered": "2026-10-20",
+     "answer": "The paper does not give it. The Results say \"selectivity was larger and more consistent across trials in the PTupper population\" with no number or test. Fig. 5b and its legend give only the bootstrap median and 5-95% band, and Projections.m makes no comparison between the populations. Both rules stay, and the claim is methods_underspecified while they differ. Noted in the criterion."
+    },
+    {
+     "claim": "pt-cd-change-at-go-cue",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "The levels 0.5 and 0.75 give different outcomes. At 0.5 PTupper's correlation falls below the level 0.37 to 0.40 s after the go cue (reproduced); at 0.75 it falls at 0.17 to 0.19 s, under the 0.2 s bound (partially reproduced). Can the paper or its code fix the level, or the measure of how fast the coding direction changes?",
+     "passage": "Results, Movement commands, paragraph 2; Extended Data Fig. 7c, e legends; CDCorrelation.m.",
+     "why": "The claim is blocked until one reading decides.",
+     "answered": "2026-10-20",
+     "answer": "The paper does not give it. The Extended Data Fig. 7c legend says the change is abrupt \"immediately after the go cue onset\" in PTlower and, in PTupper, \"more slowly (over several hundred milliseconds), largely after initiation of movement\". The 7e legend gives no level, and CDCorrelation.m only plots the normalised correlation, with a dotted line at 0.05 s, and computes no crossing time. Both levels stay, and the claim is methods_underspecified while they differ. Noted in the criterion."
+    },
+    {
+     "claim": "pt-lower-movement-termination",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "The two window readings give different outcomes for CDgo (window (a) holds with the code's selection and the 4 and 8 mice; window (b) does not under any reading). Can the paper fix the windows? Also, the files do not assign licks to trials; the attempt rebuilds each trial's last lick from the stored order (98.1% agreement with the processed data). Is that acceptable for this claim?",
+     "passage": "Results, Movement commands, paragraph 3; Extended Data Fig. 10a, b legends.",
+     "why": "The claim is blocked until one reading decides.",
+     "answered": "2026-10-20",
+     "answer": "The paper gives no windows. The Extended Data Fig. 10a, b legends give only the 5-95% band, and Projections.m plots the lick-aligned selectivity with no window or test, so both readings stay. The last lick is the code's (getLickInfo), the latest left or right lick after the go cue in the trial. The paper says nothing about rebuilding it when licks are not assigned to trials. A rebuilt last lick is a deviation, acceptable if the outcome is the same when the trials where it disagrees with the processed data are left out; show that. Noted in the criterion."
+    },
+    {
+     "claim": "pt-depth",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "The criterion runs both the unit depth field and the session's manipulator depth. The files hold only the unit depth. May the claim be judged on the unit depth alone? (On the processed data both readings agree.)",
+     "passage": "Fig. 4e legend; Methods, Electrophysiology data analysis; simplePlots.m, plotDepth.",
+     "why": "The attempt judged it on the unit depth (reproduced) and showed the manipulator depth from the processed data as a variant.",
+     "answered": "2026-10-20",
+     "answer": "Yes. Fig. 4e is the plot of the unit depth field (simplePlots.m, plotDepth, meta.depth), and the Methods say \"Unit depths (Fig. 4e) were inferred from manipulator readings only\". The unit depth decides, and the session manipulator depth is a variant. The criterion now says so."
+    },
+    {
+     "claim": "pt-lower-heterogeneous-rates",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "The claim depends on pt-spike-rates-similar for its rates only, and its own test gives the same result under every reading. Because pt-spike-rates-similar is blocked, the protocol blocks this claim too. Should the dependency be on pt-tagged-units instead?",
+     "passage": "The claims file, depends_on of pt-lower-heterogeneous-rates.",
+     "why": "With the dependency it is blocked; without it, it would be reproduced under every reading.",
+     "answered": "2026-10-20",
+     "answer": "Yes. The claim uses only the rate definitions of pt-spike-rates-similar, not its outcome, so depends_on is now pt-tagged-units. The criterion notes the change. This changes no statement or expected value."
+    },
+    {
+     "claim": "pt-types-transcriptomic",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "The claim is tested on the single-cell annotation in Seq.zip (SingleCellAnnotation.txt). The claims file gives no rule for counting the ALM glutamatergic clusters. The attempt counts 27 with the clusters not named for VISp (the Cajal-Retzius cluster included), 26 without it, 25 with most of their cells in ALM and 45 with any ALM cell. Which rule does the paper's 27 follow?",
+     "passage": "Results, Two types of PT neuron in layer 5, paragraph 1; Fig. 1 legend (\"The transcriptomic cluster corresponding to Cajal-Retzius cells was excluded here\"); Methods, scRNA-seq analysis.",
+     "why": "The attempt took the count as a reading of a reported number (reproduced under the matching reading); a rule from a reader would decide it.",
+     "answered": "2026-10-20",
+     "answer": "The paper settles it. Fig. 1a names 26 glutamatergic clusters, and its legend says \"The transcriptomic cluster corresponding to Cajal\u2013Retzius cells was excluded here\". The Methods give \"27 glutamatergic\" ALM types. So the 27 are the clusters of Fig. 1a plus the Cajal-Retzius cluster, which is the attempt's count of clusters not named for VISp with Cajal-Retzius included. The other counts are variants. Recorded in the criterion."
+    },
+    {
+     "claim": "pt-projection-cluster-mapping",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "The annotation has two injection-site fields, inj_primary_label and inj_roi_label, and a cell must be grouped into medulla, thalamus, superior colliculus or pons. With inj_primary_label and the Allen ontology (medulla IRN, GRN, PARN; thalamus VAL, PF, MD; pons PG, PRNc) the medulla, thalamus and pons counts match the paper; with inj_roi_label the medulla count is 58 and the superior colliculus count matches. Which grouping did the paper use?",
+     "passage": "Results, Two types of PT neuron in layer 5, paragraph 4; Methods, scRNA-seq (n = 62 medulla injection; n = 94 thalamus; n = 100 pons; n = 97 superior colliculus).",
+     "why": "Under both fields all medulla-labelled cells are Slco2a1 and 91 of 94 thalamus-labelled cells are Npsr1 or Hpgd; the medulla count of 62 holds under one.",
+     "answered": "2026-10-20",
+     "answer": "The paper does not say which field defines the Fig. 2f groups. Its notebook for the same cells (Seq/SC_correlations_across_clusters.ipynb, Extended Data Fig. 4a-c) groups by inj_roi_label, matching \"IRN\" (medulla), \"VAL\" (thalamus), \"PG\" (pons) and \"SC|SCm\" (superior colliculus). The criterion now names that grouping and inj_primary_label with the Allen ontology as readings. The counts are reported numbers, so the claim holds when both match under one reading."
+    },
+    {
+     "claim": "pt-bulk-sc-fold-change-correlation",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "The claim has no criterion or method. The attempt follows the code (Seq/bulkVsSC.m on Seq.zip), which takes the bulk values as stored, and also the legend's log2(CPM + 1). Is the code's method the one to use?",
+     "passage": "Extended Data Fig. 4i legend; Seq/bulkVsSC.m.",
+     "why": "Both give r within tolerance (0.867 and 0.874), so the outcome does not depend on it.",
+     "answered": "2026-10-20",
+     "answer": "Partly. The legend fixes the measure, fold change \"measured as log2(CPM + 1)\". The code (bulkVsSC.m) applies log2(x + 1) to bulk_data.txt as stored, which holds counts, not CPM (columns sum to about 1e7). Where they differ the legend is followed. The genes, cells and replicates are taken from the code, and the code's bulk values are a variant. Recorded in the criterion."
+    },
+    {
+     "claim": "pt-upper-thalamus-projection",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "What counts as innervating the thalamus in the reconstructions? With any axon terminus, 11 of the code's 12 neurons do; with axon length, 11; with more termini in the thalamus than in the medulla, 8, the code's thalamus group. The same question holds for pt-lower-medulla-projection (\"bypassed the thalamus\"). The paper's code groups the neurons by hand (AxonReconstructions.m) and reports termini and lengths per structure.",
+     "passage": "Results, Two types of PT neuron in layer 5, paragraph 2; Extended Data Fig. 2a-d legends; Axons/AxonReconstructions.m.",
+     "why": "The readings give different counts, so both claims are blocked.",
+     "answered": "2026-10-20",
+     "answer": "The paper gives no rule. Supplementary data table 1 (read in the publisher's Supplementary Information PDF) assigns the 12 complete neurons to the two types, the same as the hand grouping in AxonReconstructions.m. Extended Data Fig. 2a, c plot thalamic lengths and termini for both groups. The criteria of both claims now name three readings (any terminus, any length, more termini in the thalamus than in the medulla, and the converse for \"bypassed\"). The 8 and the 4 are reported counts, so each holds if it matches under one reading."
+    },
+    {
+     "claim": "pt-types-account-for-all-pt",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "Which 18 neurons are meant? Axons.zip holds 22; the attempt reads the 18 with somata in motor cortex (MOp or MOs), which gives the paper's count. Supplementary Table 1, which lists them, is not in the text read.",
+     "passage": "Results, Two types of PT neuron in layer 5, paragraph 5.",
+     "why": "Under both readings one neuron (AA0134) does not reach the superior colliculus, so the outcome is partially reproduced either way.",
+     "answered": "2026-10-20",
+     "answer": "The 18 are listed in Supplementary data table 1 (Supplementary Information PDF from the publisher). They are the 12 complete neurons and 6 partial ones, thalamus-projecting AA0132, AA0135 and AA0250 and medulla-projecting AA0131, AA0134 and AA0169. AA0134 is one of the 18. Recorded in the source and criterion."
+    },
+    {
+     "claim": "pt-marker-genes",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "The claim is marked data elsewhere, but no smFISH images or counts are in any file of the Figshare record (Anatomy.zip holds image stacks of six brains for retrograde and anterograde labelling only), and the paper names no other archive for them. Should it be data dataset, blocked as data missing?",
+     "passage": "Methods, In situ hybridization; Data availability.",
+     "why": "The checker forbids data_missing for an elsewhere claim, so the attempt blocked it as other.",
+     "answered": "2026-10-20",
+     "answer": "Yes, data dataset. The Data availability statement names archives for the bulk RNA-seq (GEO) and the electrophysiology (CRCNS.org, Figshare) only, and Anatomy.zip holds no smFISH images. The where entry naming Anatomy.zip was wrong about the paper. data is now dataset and where is removed, so the claim can be blocked as data missing."
+    },
+    {
+     "claim": "pt-retrograde-sublaminae",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "Anatomy.zip holds the image stacks (for example BL648_Thal_Med_H2b, two channels) but no cell counts. Does the paper or its code say how labelled and co-labelled cells were counted?",
+     "passage": "Results, Two types of PT neuron in layer 5, paragraph 3; Methods, Histology and imaging.",
+     "why": "Without a counting method the claim is blocked as methods underspecified.",
+     "answered": "2026-10-20",
+     "answer": "No. The Methods (Histology and imaging) describe sectioning, immunolabelling and imaging only, and the Figshare record holds no anatomy code. The counting method is open, and the claim stays methods_underspecified. Also, the folder names in Anatomy.zip name no superior colliculus labelling, which the 77.1% needs. Recorded in the criterion."
+    },
+    {
+     "claim": "pt-types-shared-targets",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "The second part of the statement (both types send collaterals to the subthalamic nucleus, zona incerta and midbrain reticular nucleus) is quoted from the bulk labelling of Extended Data Fig. 2e. The attempt tested it on the reconstructions. Is that the intended test?",
+     "passage": "Extended Data Fig. 2e legend.",
+     "why": "The reconstructions support it (both groups reach all three structures); the images were not analysed.",
+     "answered": "2026-10-20",
+     "answer": "No. The second part is stated in the Extended Data Fig. 2e legend, from the bulk labelling (\"Bulk projections of PTupper and PTlower populations\"), with no measure or count. Its intended test is those images, for which the paper gives no method of analysis. The test on the reconstructions is a variant. The first part, on the superior colliculus, is stated of the reconstructions and is tested on them. Recorded in the criterion."
+    },
+    {
+     "claim": "pt-selective-any-epoch",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "The verifier of round 1 reported that several criteria judge counts out of the paper's 61 PTupper and 69 PTlower units, which the dandiset cannot reach as it holds 44 and 56 of them under the code's rule (11 sessions are missing). They are pt-selective-any-epoch (122 of 130), pt-preparatory-activity part (a) (40 and 44), the 70% counts and the top 10 and top 21 of pt-upper-decoding and pt-upper-decoding-rectified, and the PTupper share of pt-lower-bursting (3.3%, where one of 44 units is 2.3%). Should these be judged as counts, as now, or as fractions of the units the dandiset holds?",
+     "passage": "Results, Cell-type-specific recordings and Preparatory activity; Extended Data Fig. 9c, d legend. The paper reports the counts with their fractions (122 of 130, 94%; 15 of 61, 24.6%).",
+     "why": "As fractions some would hold. 29 of 44 and 38 of 56 late delay selective units are 65.9% and 67.9%, against the paper's 65.6% and 63.8%; 99 of 100 selective units is 99%, against 94%. On the processed data for the same 100 units the counts are the dandiset's, so the shortfall comes from the missing units."
+    },
+    {
+     "claim": "pt-cohort-control",
+     "attempt": "000006-economo-2018-02",
+     "asked": "2026-10-20",
+     "question": "The verifier of round 1 reported that the criterion's CDearly test asks whether the PTlower-cohort median lies inside the PTupper cohort's 5-95% interval, in either direction. Here it lies above it (9.82 against 4.0 to 8.9), that is the PTlower cohort is the more selective, the opposite of the PT difference (PTupper 3.97 against PTlower 2.09). Is a difference in the opposite direction a failure of \"not explained by the animal cohorts\", or should the test ask only whether the cohorts reproduce the PT difference?",
+     "passage": "Results, Preparatory activity, paragraph 2 (\"Differences in coding between PTupper and PTlower neurons could not be explained by variation across animal cohorts\"); Extended Data Fig. 8 legend.",
+     "why": "Read as the claim's words, the CDearly part would hold (the cohorts do not reproduce the PT difference), and the claim's own test would give reproduced, not partially reproduced. The claim is blocked through pt-upper-early-preparatory either way."
+    }
+   ],
+   "dandi:000008": [
+    {
+     "claim": "fig5d-sst-pvalb-calb2-firing",
+     "question": "Reading (b) compares the mean pairwise embedding distance of the high-firing Sst Pvalb Calb2 cells with random halves of the t-type over 1,000 permutations, with one-sided p < 0.05. On this data the p-value is 0.0505 when estimated with 100,000 random subsets, and 1,000 permutations give 0.045 to 0.057 depending on the random seed, so the seed decides the outcome. Should reading (b) be judged with a fixed larger number of permutations (or exactly, over all subsets of that size), and with which threshold?",
+     "passage": "None found. The paper shows Fig. 5d as a colour overlay only (Results, Variability in individual t-types, paragraph 3, \"high-firing cells were mostly grouped in one part of the transcriptomic landscape\"); the permutation test is the claims file's reading.",
+     "why": "Reading (a) holds (Spearman rho = 0.363, one-sided p = 0.034). If reading (b) holds the claim is reproduced; if not, the readings disagree and the claim stays blocked as methods_underspecified. With the seed used here (1,000 permutations) p = 0.052.",
+     "answer": "The paper does not give it. Fig. 5d is a colour overlay with no measure or test, and the code draws only the overlay (phenotype-tsne.ipynb, the cell with ttype = 'Sst Pvalb Calb2', \"plt.scatter(pos[:,0], pos[:,1], c=col, ...)\" with col the 'Max number of APs'). The 1,000 permutations were the claims file's choice, not the paper's, so the criterion now fixes them so that no seed decides. Exact over all subsets of that size when there are at most 1,000,000, otherwise 100,000 random subsets with p = (k + 1) / (N + 1). The threshold stays one-sided p < 0.05, and (b) holds only when the upper bound of the 95% Clopper-Pearson interval of the estimate is also below 0.05. The claim's statement and readings are unchanged.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "fig5d-sst-pvalb-calb2-firing",
+     "question": "Under the answered criterion, reading (b) uses 100,000 random subsets with a Clopper-Pearson bound because there are 10,400,600 subsets, more than 1,000,000. With the section's seed (55) p = 0.0485 with interval 0.0472 to 0.0499, and (b) holds; with seeds 56 to 60 the estimate is 0.0496 to 0.0514 and each interval reaches 0.05 or above, so (b) does not hold. The exact p-value over all 10,400,600 subsets can be computed here and is 0.0497. Should (b) be judged on the exact p-value when it can be computed in reasonable time, whatever the number of subsets?",
+     "passage": "None found. Fig. 5d is a colour overlay with no test (Results, Variability in individual t-types, paragraph 3); the permutation test is the claims file's reading.",
+     "why": "The exact p-value (0.0497) gives the same outcome as the section's seed (reproduced), but five of six seeds of the 100,000-subset estimate would leave the readings in disagreement, and the claim would be blocked as methods_underspecified, so the seed still decides under the current criterion."
+    },
+    {
+     "claim": "fig1a-ttype-coverage",
+     "question": "The criterion accepts one fewer cell in one class under reading (b) of cohort-cells-mice when the dandiset lacks a cell with a t-type. The cell the dandiset lacks (20190211_sample_10) is the only L6 CT Gpr139 cell, so the dandiset covers 76 t-types where the paper gives 77. Does the allowance also accept one fewer t-type when the missing cell is the only cell of its t-type?",
+     "passage": "None found. The paper gives 77 of the 90 t-types (Results, Patch-seq of mouse primary motor cortex, paragraph 3) for its 1,227 cells, which include the missing cell.",
+     "why": "The three cell counts match under the allowance (1,226, 817, 409) and the t-type count is 76. If the allowance covers the t-type, the claim is reproduced; if not, it stays partially reproduced."
+    }
+   ],
+   "dandi:000009": [
+    {
+     "claim": "alm-unit-classes",
+     "also": [
+      "fig2e-alm-selectivity",
+      "fig2e-alm-contra-ipsi-balance",
+      "thalamus-unit-classes",
+      "fig2f-vmval-selectivity",
+      "fig3-alm-collapse",
+      "fig3d-all-layers",
+      "fig3b-selectivity-types-equally-inhibited",
+      "fig3f-thalamus-silenced",
+      "fig3-onset-latencies",
+      "fig6c-vmval-reduced",
+      "fig6b-selectivity-types-equally-inhibited",
+      "fig6c-unmodulated-less-selective",
+      "fig6d-localized",
+      "fig6e-onset-latencies",
+      "snr-photoinhibition",
+      "snr-unit-properties",
+      "selectivity-time-course"
+     ],
+     "asked": "2026-10-20",
+     "question": "The deposited mean waveforms are 29 to 38 samples at 25 kHz with the trough at sample 15 to 19, so trough-to-peak widths above about 0.5 ms cannot be measured (the peak is the last sample in 78% of ALM units labelled wide). The files carry a `cell_type` label ('Wide width spiking', 'Narrow width spiking', 'Cannot be determined') whose rule is not stated. Should the unit classes (ALM pyramidal > 0.6 ms, thalamic > 0.5 ms, SNr GABAergic < 0.45 ms) be taken from widths computed on the deposited waveforms (P1), or from the files' labels (P2)?",
+     "passage": "Methods, Electrophysiology data analysis, \"Spike widths were computed as the trough-to-peak interval in the mean spike waveform.\"",
+     "why": "P1 gives 577 ALM pyramidal and 148 thalamic units, P2 gives 810 and 682 (paper 1006 of 1214 and 672 of 790). Selections downstream change size, for example 20 against 222 VM/VAL units, and the ALM populations of Fig. 6e are empty under P1. The attempt runs both.",
+     "answered": "2026-10-20",
+     "answer": "The paper gives the rule, not the label. Widths are \"computed as the trough-to-peak interval in the mean spike waveform\" and the classes \"separated based on the histogram of spike widths\" (Extended Data Fig. 4b); the paper never mentions a deposited cell_type label or how long the stored waveforms are. P1 is the Methods' rule; P2 is a reading only because the paper does not say how the label was made. For thalamus the Methods add \"our conclusions ( Fig. 2 , 6 ) are valid if all the units were pooled\", a further reading (P3) for the thalamic claims of Fig. 2 and 6. Written as convention C in the opening comment and into alm-unit-classes, thalamus-unit-classes and snr-photoinhibition."
+    },
+    {
+     "claim": "fig3-alm-collapse",
+     "also": [
+      "fig3d-all-layers",
+      "fig3b-selectivity-types-equally-inhibited",
+      "fig3-onset-latencies"
+     ],
+     "asked": "2026-10-20",
+     "question": "Besides the 18 VGAT-ChR2-EYFP ALM sessions (thalamus photostimulation at 10 mW), the dandiset holds 21 ALM sessions of four PV-Cre x Ai32 mice with thalamic photostimulation at 10, 22.5 and 45 mW. Do these belong to the ALM recordings during thalamus photoinhibition of Fig. 3 (n = 314), and at which power?",
+     "passage": "Results, Thalamus drives ALM preparatory activity, paragraph 1, \"using VGAT-ChR2-EYFP mice\"; Methods, Photoinhibition, \"photoinihibition in the PV-IRES-Cre x Ai32 mice was indistinguishable from the VGAT-ChR2-EYFP mice\" (said of cortical photoinhibition).",
+     "why": "VGAT units alone number 234 to 261 (below 314 +/- 31) and fall to 2.1 to 2.5% of control; adding the PV-Cre x Ai32 units at 10 mW gives 360 to 522 units at 5.5 to 11.1% (Q1) with up to 7 significantly activated. The attempt follows the claims file (VGAT) and shows the others as a variant.",
+     "answered": "2026-10-20",
+     "answer": "No, by the text. The Results say \"using VGAT-ChR2-EYFP mice\" for Fig. 3, and the Methods list PV-IRES-Cre x Ai32 mice only for ALM photoinhibition (\"Fig. 1 and 6 , Extended Data Fig. 8 , 10\"); the \"indistinguishable\" sentence is about cortical photoinhibition. The power is 10 mW (\"Laser power at the tip of optical fiber 10mW, n = 314 cells\", Extended Data Fig. 2e). Supplementary Table 1, which lists animals and powers per experiment, is not in the text read. The PV-IRES-Cre x Ai32 sessions stay a variant, not a reading. Written into the criterion of fig3-alm-collapse."
+    },
+    {
+     "claim": "fig6c-vmval-reduced",
+     "also": [
+      "fig1c-alm-photoinhibition-bias",
+      "fig6b-selectivity-types-equally-inhibited",
+      "fig6c-unmodulated-less-selective",
+      "fig6d-localized",
+      "fig6e-onset-latencies",
+      "snr-photoinhibition",
+      "vm1-photoinhibition-no-effect"
+     ],
+     "asked": "2026-10-20",
+     "question": "ALM photoinhibition trials are at 1.5 mW in most sessions, but some sessions interleave 0.75 or 0.79 mW. Do the lower-power trials enter the photoinhibition condition?",
+     "passage": "Methods, Photoinhibition, \"We used 40 Hz photostimulation with a sinusoidal temporal profile (1.5mW average power)\".",
+     "why": "VM/VAL activity falls to 47.5% of control at 1.5 mW and to 57.7% with all powers pooled (P2, T1). The attempt uses 1.5 mW and shows all powers as a variant.",
+     "answered": "2026-10-20",
+     "answer": "No. The Methods give one power for ALM photoinhibition, \"1.5mW average power\", for Fig. 1, 6 and Extended Data Figs 8 and 10, and name no other; trials at 0.75 or 0.79 mW are outside the condition, and pooling all powers is a variant. Supplementary Table 1 gives powers per experiment and is not in the text read. Written into convention P in the opening comment, which these claims use."
+    },
+    {
+     "claim": "wc-thalamus-hyperpolarization",
+     "also": [
+      "wc-m1-small-effect",
+      "wc-contra-alm-small-effect",
+      "thalamus-stronger-than-cortex"
+     ],
+     "asked": "2026-10-20",
+     "question": "The whole-cell files record no photostimulus time (their photostimulus columns are empty; `stim_present` marks the trials). Convention E puts the onset 1.3 s after `pole_in_time`, but there the 20 to 120 ms window precedes the effect; thalamus photoinhibition hyperpolarizes ALM neurons from about 1.49 s after `pole_in_time` (15 of 16 cells between 1.47 and 1.51 s), just before 0.1 s after `pole_out_time` (1.5 s), the sample-epoch end of the Methods. Where should the photostimulus onset be placed in these files?",
+     "passage": "Methods, Behavior, \"The sample epoch (1.3 s total) was the time from onset of pole movement to 0.1 s after the pole started to retract\"; Methods, Photoinhibition, the photostimulus starts \"at the beginning of the delay epoch\".",
+     "why": "With onset E thalamus photoinhibition changes Vm by +0.31 mV in the window; with onset M by -16.83 mV (paper -18.7 +/- 1.1). Onsets in milliseconds need the true laser time, which no reading of the paper gives. The attempt blocks these claims (metadata insufficient) and shows both readings.",
+     "answered": "2026-10-20",
+     "answer": "The paper gives the onset relative to the task, not to the files' fields. The photostimulus starts \"at the beginning of the delay epoch\", 1.3 s after the onset of pole movement and 0.1 s after the pole started to retract; the pole travels 0.2 s, stays 1 s and retracts 0.2 s (Methods, Behavior), so the delay begins 0.1 s before retraction is complete. The paper does not say which events pole_in_time and pole_out_time mark and gives no laser time for these recordings. Both E (pole_in_time as the onset of pole movement) and M (pole_out_time as the start of retraction) are readings it allows; placing the onset from the Vm change is not. The onset in milliseconds cannot be fixed from the paper. Written into the criterion of wc-thalamus-hyperpolarization."
+    },
+    {
+     "claim": "vm1-photoinhibition-no-effect",
+     "asked": "2026-10-20",
+     "question": "The files do not name a vM1 site. In mouse anm00264943, photostimulation at galvo position (0.5, 0.5) mm at 0.79 mW is interleaved with ALM photoinhibition at 0.79 and 1.5 mW. Is this the vM1 condition of Extended Data Fig. 8f, g, and is vM1 compared with ALM photoinhibition at the same power or at 1.5 mW?",
+     "passage": "Extended Data Fig. 8f, g legends, \"Photoinhibition conditions were interleaved\"; the vM1 coordinates are in Supplementary Table 1, not in the text read.",
+     "why": "Against ALM at 1.5 mW the vM1 reduction is smaller (p < 0.0001) and the claim would hold; against ALM at 0.79 mW it is not (p = 0.73). The attempt blocks the claim (metadata insufficient).",
+     "answered": "2026-10-20",
+     "answer": "The paper does not say which condition is vM1. It gives no vM1 photoinhibition coordinate or power in the text (Supplementary Table 1 is not in the text read); the only vM1 coordinate, \"AP1, ML 0.75\", is an Allen tracer injection (Extended Data Fig. 8e), and the frame of the galvo positions is not given. On power, the Methods give only 1.5 mW for cortical photoinhibition in Extended Data Fig. 8, so vM1 is compared with ALM at 1.5 mW; ALM at matched power is a variant. The site stays open. Written into the criterion of vm1-photoinhibition-no-effect."
+    },
+    {
+     "claim": "selectivity-time-course",
+     "asked": "2026-10-20",
+     "question": "The criterion says correct trials. In sessions with photoinhibition, do the photoinhibition trials enter the population selectivity time course, or only control trials?",
+     "passage": "Extended Data Fig. 4c legend gives the method without naming the trials.",
+     "why": "In ALM the delay increase holds in 4 of 4 unit and neuron readings with all correct trials and in 2 of 4 with control trials only; the VM/VAL result does not change. The attempt runs both.",
+     "answered": "2026-10-20",
+     "answer": "The paper does not say. The Extended Data Fig. 4c legend names no trials, and the Methods say only \"Only trials in which mice correctly reported pole locations were included to compute selectivity\". Readings (t1) correct control trials only and (t2) all correct trials both stand, as for fig2e-alm-selectivity. Written into the criterion of selectivity-time-course."
+    },
+    {
+     "claim": "wc-thalamus-hyperpolarization",
+     "also": [
+      "wc-m1-small-effect",
+      "wc-contra-alm-small-effect",
+      "thalamus-stronger-than-cortex",
+      "indirect-pathway-too-slow"
+     ],
+     "asked": "2026-10-21",
+     "question": "The answer of 2026-10-20 took the whole-cell files to hold no laser time. They do. Each holds an OptogeneticSeries (stimulus/presentation/photostim_on_*, 20 kHz, unit 'watts' with conversion 0.001) that is a 10 mW step in the thalamus photoinhibition cells and a 3 mW peak sinusoid in the cortical ones, present in every stim_present trial. It starts 1.4725 s after pole_in_time in the thalamus cells (between reading E, 1.3 s, and reading M, 1.5 s). Should the photostimulus onset be taken from this trace (first sample above a small fraction of its maximum, here 5%), as a reading beside E and M or in their place? If so, may the onset latency of 7.9 ms be judged under it?",
+     "passage": "Results, \"measured for 100 ms, starting 20 ms after photostimulus onset\"; the criterion says \"The onset latency of 7.9 ms needs the true laser time, which no reading gives\".",
+     "why": "Under the laser onset (L) thalamus photoinhibition changes Vm by -13.68 +/- 1.14 mV (M -16.83, E +0.31; paper -18.7 +/- 1.1), with onset 9.60 +/- 1.98 ms by V2 (within 7.9 +/- 1.7) and 0.40 ms by V1. M1 gives -3.26 mV and -0.01 spikes/s, contralateral ALM -1.38 mV, and thalamus is more negative than both (p < 1e-5). No outcome changes between M and L; the attempt shows L as a further reading."
+    }
+   ],
+   "dandi:000010": [
+    {
+     "claim": "reaction-time",
+     "asked": "2026-10-21",
+     "question": "Every extracellular file holds `lick_trace`, a 10 kHz signal described as the tongue movement when licking (arbitrary units), in 5 s segments that start at each trial start. It rises some tens of ms after the go cue in correct trials, so it looks like the photodiode and laser diode signal of the Methods. The claims file does not say how a reaction time is read from it. Which rule gives the reaction time of a trial (a threshold on the raw signal, a number of standard deviations above a pre-cue baseline, and over which baseline window)?",
+     "passage": "Methods, Behaviour, \"Mouth movements were monitored using a photodiode and an infrared laser diode to obtain reaction time measurements(Thorlabs).\" No other passage gives the rule.",
+     "why": "The latency of the first crossing moves with the threshold by tens of ms, the size of the tolerance (61.1 +/- 10.5 ms). The claim is blocked as methods_underspecified until answered.",
+     "answered": "2026-10-21",
+     "answer": "The paper does not give the rule. The only passage is the one quoted, \"Mouth movements were monitored using a photodiode and an infrared laser diode to obtain reaction time measurements\"; no threshold, baseline or onset rule appears in the Methods, legends or Extended Data, and the paper links no code. Written into the criterion of reaction-time as readings (k) a fixed threshold on the raw signal and (z) the baseline mean plus a number of s.d. before the go cue, with the threshold, the number and the baseline window open."
+    },
+    {
+     "claim": "behaviour-performance",
+     "asked": "2026-10-21",
+     "question": "The trial tables mark trials without a lick in the response window as outcome \"ignore\" (416 of 24,580 non-early ephys trials). Are these left out of the per cent correct, or counted as errors?",
+     "passage": "Methods, Behavioural data analyses, \"Performance was computed as the fraction of correct reports, excluding the 'lick early' trials.\" Methods, Behaviour, \"Trials in which mice did not lick within a 1.5 s window after the go cue were rare and typically occurred at the end of a session.\"",
+     "why": "Counting them as errors lowers performance by about 1.3 points (76.6% to 75.3% pooled). Both are within the tolerance here, so the outcome does not depend on it; the attempt runs both.",
+     "answered": "2026-10-21",
+     "answer": "The paper does not say. The Methods exclude only one kind of trial, \"Performance was computed as the fraction of correct reports, excluding the 'lick early' trials\", so the literal reading keeps no-lick trials in the denominator as not correct; \"fraction of correct reports\" can also be read as among trials with a report. Written into the criterion of behaviour-performance as readings (x) counted as not correct and (y) left out, both run."
+    },
+    {
+     "claim": "fig2c-population-dynamics",
+     "asked": "2026-10-21",
+     "question": "Three details are not in the criterion. (1) \"Normalized to its variance\" read literally divides by the variance; dividing by the standard deviation is the usual z-score. Which is meant? (2) Are the 10 trials that set the preferred trial type 10 trials in all, or 10 of each trial type? (3) Which 200 ms bin is the population vector \"at go cue onset\", the bin that starts at the go cue or the one that ends at it?",
+     "passage": "Methods, Electrophysiology data analyses, \"each neuron's response was mean-subtracted and normalized to the variance of its response across the entire trial epoch (computed in time bins of 200ms)\" and \"we first determined each neuron's preferred trial type using spike counts from a subset of the trials (10 trials)\".",
+     "why": "The correlation values move with each choice (the delay-epoch mean runs from 0.04 to 0.78 across them). The attempt runs every combination. One fails when the trials with tagging light are left out (division by the variance, difference vector, all neurons, bin starting at the go cue), so the claim is blocked as methods_underspecified until this and the question on light trials are answered.",
+     "answered": "2026-10-21",
+     "answer": "None of the three is given. (1) The Methods say \"normalized to the variance of its response across the entire trial epoch\"; the text as written divides by the variance, and the z-score (standard deviation) is a reading the paper does not exclude. (2) \"a subset of the trials (10 trials)\" in the Methods and \"using spike counts from 10 trials\" in Extended Data Fig. 1b do not say whether per trial type. (3) The Fig. 2c legend gives \"t 5 0\" and \"Averaging window, 200ms\" but not how the bin sits on the go cue. Written into the criterion of fig2c-population-dynamics as readings (v)/(s), (n10)/(n20) and bin starting at, centred on or ending at the go cue, all combinations run."
+    },
+    {
+     "claim": "imaging-selectivity-counts",
+     "also": [
+      "fig4f-spatially-intermingled",
+      "fig4h-pt-contra-imaging"
+     ],
+     "asked": "2026-10-21",
+     "question": "Reading (a) of the Kruskal-Wallis span runs from sample onset to the end of the response epoch, and the rank sum test compares responses over the trial epochs, but the criterion does not say how long the response epoch is for imaging. Is it 1.3 s after the go cue, like the other epochs, or the 1.5 s lick window?",
+     "passage": "Methods, Behaviour, \"Trials in which mice did not lick within a 1.5 s window after the go cue\"; Methods, Calcium imaging data analyses, \"across multiple 0.33 s time bins (five image samples) during the task\".",
+     "why": "The task-related count is 2,551 with 1.3 s and 2,730 with 1.5 s (correct trials, reading a), against 2,740 +/- 274. The attempt runs both lengths as readings.",
+     "answered": "2026-10-21",
+     "answer": "The paper does not give the length of the response epoch, for imaging or for electrophysiology. It says only that the go cue \"signalled the beginning of the response epoch\", Fig. 1b marks the 1.3 s sample and delay epochs only, and the 1.5 s figure is the window for a lick (\"did not lick within a 1.5 s window after the go cue\"). Written into the criterion of imaging-selectivity-counts as readings (r1) 1.3 s and (r2) 1.5 s, both run."
+    },
+    {
+     "claim": "fig4h-pt-contra-imaging",
+     "asked": "2026-10-21",
+     "question": "The imaging files give no depth for any plane, so the layer 5 selection (450 to 700 um) cannot be made. The files label 530 included cells PT and 843 IT. Does the paper say anything that identifies the layer 5 planes otherwise, or should the claim be tested on all labelled cells?",
+     "passage": "Results, A movement command emerges in the pyramidal tract neurons, paragraph 4 (534 PT and 542 IT neurons in layer 5); Methods, Two-photon calcium imaging (no depth per plane).",
+     "why": "The IT count (843 against 542) and the IT selective count differ from the paper's while the PT counts match, which suggests that IT cells outside layer 5 are included; the IT side of the tests depends on which cells are counted. The attempt tests all labelled cells.",
+     "answered": "2026-10-21",
+     "answer": "The paper gives nothing else that marks the layer 5 planes; it selects them only by \"imaging depth 450-700 mm\" (Results; the extraction prints um as mm), and the Methods give no depth per plane. It also says \"intratelencephalic neurons were also found in superficial layers\", which fits the excess of IT cells seen here, so all labelled cells is not the paper's population. Written into the criterion of fig4h-pt-contra-imaging. Testing all labelled cells is a substitute recorded as a deviation; the IT counts are not expected to match on it, while the PT side, which the paper places in layer 5B, is less affected."
+    },
+    {
+     "claim": "fig2-selective-fraction",
+     "also": [
+      "fig2d-preparatory-perimovement",
+      "fig2c-selectivity-time-course",
+      "fig2c-population-dynamics",
+      "ed2c-error-trials-predict-choice",
+      "fig2e-no-contra-bias-spikes",
+      "ed1-fast-spiking-properties",
+      "fig3e-pt-it-both-activity-types",
+      "fig3f-pt-contra-preferring",
+      "fig3f-pt-contra-selectivity"
+     ],
+     "asked": "2026-10-21",
+     "question": "In 75 of the 99 extracellular sessions the antidromic tagging light (1 ms pulse pairs every 0.5 s, at the pons or the other ALM) was delivered during behavioural trials, in 4,332 of 18,385 correct trials. The trial tables do not flag these trials; the laser traces show them. Should the task analyses of Figures 2 and 3 use all correct trials, or only those without the tagging light?",
+     "passage": "Methods, Electrophysiology data analyses, \"Only trials in which mice correctly reported pole locations were included.\" Methods, Electrophysiology, \"Pairs of laser pulses (1 ms duration, 47-82 mW peak power, separated by 10 ms) were deployed every 500ms to elicit antidromic responses\". No passage says whether tagging was done during the task or whether those trials were analysed.",
+     "why": "The PT neurons are driven antidromically by the light, and their contra-preference changes with the choice (30 of 45 contra-preferring, bootstrap P = 0.010, with the light trials; 26 of 45, P = 0.14, without), so fig3f-pt-contra-preferring is blocked until the answer. The attempt runs every electrophysiology claim both ways.",
+     "answered": "2026-10-21",
+     "answer": "The paper does not say. The Results say only that tagged neurons were recorded \"during behaviour\" (\"We next recorded selectively from ChR2-expressing intratelencephalic or pyramidal tract neurons during behaviour\"), and the only trial filter of the Methods is \"Only trials in which mice correctly reported pole locations were included\". Nothing says whether tagging overlapped task trials or whether such trials were dropped. Written into the criterion of fig2-selective-fraction, for every electrophysiology claim of Figs 2 and 3, as readings (t1) all correct trials, the literal reading of the Methods, and (t2) correct trials without the tagging light."
+    },
+    {
+     "claim": "antidromic-latencies",
+     "asked": "2026-10-21",
+     "question": "The dandiset holds the tagging light as laser power traces, so latencies can be measured from pulse onset. The criterion does not say how the antidromic spike is told apart from spontaneous spikes. Which spikes count (a window after the pulse, only the first pulse of each pair, only neurons or pulses with a reliable response), and is the jitter the s.d. over all pulses with a spike in that window?",
+     "passage": "Methods, Electrophysiology data analyses, \"mean antidromic spike latencies\" and \"temporal jitter (mean s.d. of the antidromic spike latency\"; Extended Data Fig. 5 legend. No passage gives the rule.",
+     "why": "With the first spike within 10 ms of the first pulse of a pair, PT units give a mean latency of 2.68 ms and IT units 5.11 ms, but the s.d. (0.64 and 0.96 ms) includes spontaneous spikes and is far from 0.1 and 0.2 ms; a narrower rule would change both. The claim is blocked as methods_underspecified until answered.",
+     "answered": "2026-10-21",
+     "answer": "The paper gives no rule for telling antidromic from spontaneous spikes. What bears on it is the pulse pairs 10 ms apart, the smaller IT jitter to the second pulse \"following a conditioning stimulus\" (Extended Data Fig. 5g), which suggests the reported jitter is to the first pulse, and the Results' \"sub-millisecond temporal jitter (mean, 0.15 ms)\". Written into the criterion of antidromic-latencies as readings (w) the first spike in a window after the first pulse of each pair, window open (about 10 ms for the activated neurons' 8.3 and 9.8 ms latencies); (c) as (w) without pulses preceded shortly by a spontaneous spike; (r) as (w) with only spikes in the evoked peak of the latency histogram. Jitter is the s.d. over the pulses kept, per neuron, averaged over neurons."
+    }
+   ],
+   "dandi:000011": [
+    {
+     "claim": "selective-fraction, ed4-return-to-trajectory, fig1f-spike-rate-recovery, fig1g-selectivity-recovery, ed2b-silencing-strength, ed2e-no-rebound, fig2-recordings-recovery, fig2e-selectivity-recovery-times, ed7-larger-photoinhibition, ed7e-roc-larger-photoinhibition and the claims on convention A",
+     "asked": "2026-10-21",
+     "question": "Do lick-early trials enter the neural analyses (selectivity tests, rate-change tests, selectivity time courses, activity space)? In the files they are 18% of behaving trials; in them the delay restarts after the early lick, so the go cue comes later than in other trials, and the photostimulus event is logged at the restarted delay, up to 1.6 s after the light in the laser trace.",
+     "passage": "Methods, Behavioral data analysis, \"Performance was computed as the fraction of correct reports, excluding 'lick early' trials\" (for behaviour only); Methods, Electrophysiology data analysis, \"We therefore used all trials (correct and incorrect) to compute selectivity when quantifying selectivity changes caused by photoinhibition\". No passage says whether lick-early trials enter the neural analyses.",
+     "why": "Counts and times move with it; for example the early-delay recovery time of fig1g is 250 to 550 ms with lick-early trials dropped and 650 to 1400 ms with them kept, and with the units of the unlabelled sessions added the selective-fraction counts are all within tolerance only when they are dropped. Both readings are run.",
+     "answer": "The paper does not give it, and links no code. The Methods exclude lick early trials from performance only (\"Performance was computed as the fraction of correct reports, excluding \u201click early\u201d trials\"); the electrophysiology Methods and the legends say nothing on them. The claims file now names readings K1 (dropped) and K2 (kept) as convention K, and the criteria of the claims named require their outcome under both, else methods_underspecified.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "fig1g-selectivity-recovery, fig2e-selectivity-recovery-times, fig2-recordings-recovery, ed7-larger-photoinhibition",
+     "asked": "2026-10-21",
+     "question": "Convention D determines each neuron's preferred trial type from 10 trials. From the spike counts of which window, the whole trial (sample onset to the end of the response epoch), the delay epoch, or each time bin separately?",
+     "passage": "Methods, Electrophysiology data analysis, \"we first determined each neuron's preferred trial type using spike counts from a subset of the trials (10 trials), selectivity is calculated as the spike rate difference between the trial types on the remaining data.\"",
+     "why": "The sign of a weakly selective neuron's selectivity, and so the population selectivity and the recovery times, depend on the window. The whole trial and the delay epoch are run; with lick-early trials kept, fig1g holds with one and not with the other.",
+     "answer": "The paper does not give it. The Methods say only \"we first determined each neuron's preferred trial type using spike counts from a subset of the trials (10 trials)\", with no window, and no legend adds one. Convention D now names readings D1 (whole trial), D2 (delay epoch) and D3 (each bin); the outcome is the one all give.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "fig1g-selectivity-recovery, fig2e-selectivity-recovery-times, ed7-larger-photoinhibition",
+     "asked": "2026-10-21",
+     "question": "\"Selective neurons tested for >3 trials in all conditions\": more than 3 trials in each condition, or in each condition and trial type (lick left, lick right)? Either way, 138 to 173 neurons pass in experiment 1 (paper 55), 221 to 293 in experiment 2 (paper 143) and 58 to 62 in experiment 3 (paper 40). Is there a further selection behind the legend counts?",
+     "passage": "Figure 1g legend, \"selective neurons tested for >3 trials in all conditions, n=55\"; Figure 2e legend, \"n=143\"; Extended Data Fig. 7d, \"n=40\".",
+     "why": "The included population sets the recovery times. The claims file's words (per condition) decide the outcomes here; per condition and trial type is shown as a variant.",
+     "answer": "The paper does not give it. The legends say \"selective neurons tested for >3 trials in all conditions\" (Fig. 1g, Extended Data Figs 5f, 7d) and Fig. 2e says only \"Same as Fig. 1g\"; no further selection behind 55, 143 or 40 is stated. Per condition, the legend's words, decides (N1); per condition and trial type is a variant (N2), as convention D now says.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "fig1g-selectivity-recovery, fig2e-selectivity-recovery-times, fig2-recordings-recovery, ed7-larger-photoinhibition",
+     "asked": "2026-10-21",
+     "question": "Which time is a selectivity bin given when the recovery time is read, its centre or its end? And how far after the offset does the search for the first bin above 80% of control run (to the go cue, or into the response epoch)?",
+     "passage": "Methods, \"we looked for the first time bin when selectivity on photoinhibition trials reached 80 % of the control selectivity\"; the late-delay recovery of Fig. 1g (327 ms after an offset 0.3 s before the go cue) falls after the go cue, so the search here runs to the end of the windows (1.6 s after the go cue).",
+     "why": "The two labels differ by half the bin (100 or 200 ms). For ed7 the ipsilateral four-spot time is within tolerance with centre labels and outside it with end labels.",
+     "answer": "The paper does not give either. The Methods say \"we looked for the first time bin when selectivity on photoinhibition trials reached 80 % of the control selectivity\", with no bin label and no end of the search; Extended Data Fig. 7d says \"no recovery at end of delay period\" for the bilateral case. Convention D now names L1 (centre) and L2 (end), E1 (to the end of the delay) and E2 (into the response epoch); the outcome is the one all give.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "cd-stable-over-epochs, cd-captures-selectivity, fig3c-cd-recovery-roc, ed8-roc-during-photoinhibition, fig3c-cd-predicts-movement, fig3d-persistent-mode, fig3e-ramping-mode, fig4-bilateral-cd-predicts-movement, ed6b-session-bias-predicted, ed9c-cd-window-robust",
+     "asked": "2026-10-21",
+     "question": "Convention A's rule (more than 5 neurons recorded simultaneously for more than 5 trials per condition) selects 24 of the 26 experiment-2 sessions here, with 6 to 37 putative pyramidal neurons (19 to 23 sessions when trials are counted per trial type), against the paper's 16 sessions with 6 to 20 neurons (mean 11). Which neurons and sessions did the paper use (only selective neurons, only neurons recorded over the whole session, a cap on the number of neurons)?",
+     "passage": "Results, \"6-20 neurons recorded simultaneously; average, 11 neurons; 16 sessions\"; Methods, \"with > 5 neurons recorded simultaneously for > 5 trials per condition (16/38 sessions)\".",
+     "why": "The ROC values depend on the neurons projected; the control ROC here is 0.65 to 0.68 against the paper's 0.76. The claims file's rule is followed.",
+     "answer": "The paper gives no selection beyond the Methods' rule, \"with > 5 neurons recorded simultaneously for > 5 trials per condition (16/38 sessions)\", and its outcome in the Results, \"6-20 neurons recorded simultaneously; average, 11 neurons; 16 sessions\" (the Extended Data Fig. 6b sessions have 20, 16, 18, 10, 12 neurons). No restriction to selective neurons, to neurons held over the session, or cap is stated. Convention A now says the rule is followed as written (T1, per condition), T2 is a variant, and the counts are reported against the paper's.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "ed4-return-to-trajectory",
+     "asked": "2026-10-21",
+     "question": "Is the selection test (end against beginning of the delay, 400 ms windows) paired over trials or unpaired? What bin is the normalised rate time course, whose RMS is taken, computed in?",
+     "passage": "Extended Data Fig. 4b, \"significant spike rate decrease at the end of the delay epoch compared to the beginning of the delay epoch (p < 0.05, two-tailed t-test; 400 ms windows; pooled across trial types)\"; Fig. 1e, \"PSTH, averaged over 200 ms\".",
+     "why": "The selection gives 47 to 67 neurons here (paper 27). Both tests and 200 ms and 400 ms bins are run; none of them makes the time-matched RMS smaller.",
+     "answer": "The paper does not give either. Extended Data Fig. 4b says \"p < 0.05, two-tailed t-test; 400 ms windows; pooled across trial types\" without saying paired, and gives no bin for the normalised rate (\"The spike rate for each neuron was normalized to the mean spike rate\"). The criterion now names s1 (paired) and s2 (unpaired), t1 (200 ms) and t2 (400 ms), and requires the outcome under all.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "ed6a-bilateral-inconsistent-bias",
+     "asked": "2026-10-21",
+     "question": "The criterion counts sessions whose bias is significant by Fisher's exact test, without saying which 2 x 2 table. Is it, on bilateral trials, trial type by correct, or licked side by condition (control against bilateral)?",
+     "passage": "Extended Data Fig. 6a, \"Behavioral performance on control and bilateral photoinhibition trials\"; no test is given.",
+     "why": "The number of significant sessions differs (12 or 13). Both are run and both reproduce.",
+     "answer": "The paper does not give it. Extended Data Fig. 6a shows \"Behavioral performance on control and bilateral photoinhibition trials\" with no test; the Fisher's exact test is itself a reading of the claims file. The criterion now names f1 (trial type by correct, bilateral trials) and f2 (licked side by condition) and requires the outcome under both.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "cd-captures-selectivity, fig3d-persistent-mode, fig3e-ramping-mode",
+     "asked": "2026-10-21",
+     "question": "(1) Are the ipsilateral trials that build modes 2 and 3 split like the control trials, so that projections use other ipsilateral trials? (2) Which trials give the trial-averaged activity whose captured selectivity and variance are reported (the training trials, or all correct control trials)? (3) The sign of the ramping mode (an SVD eigenvector) is arbitrary; how is it oriented before judging that it rises over the delay?",
+     "passage": "Methods, \"The modes were computed using a subset of control trials (correct trials only) and ipsilateral perturbation trials. The projections in the figures are for independent control trials and perturbation trials.\"",
+     "why": "Without a rule for the sign, \"rises\" cannot be judged; here the mode is oriented to a positive weight sum, and the change over the delay is small with either sign.",
+     "answer": "(1) Yes, as far as the text goes. The Methods say \"The modes were computed using a subset of control trials (correct trials only) and ipsilateral perturbation trials. The projections in the figures are for independent control trials and perturbation trials\", so projected ipsilateral trials are ones not used to build the modes; fig3d and fig3e now say so. (2) Not given; cd-captures-selectivity now names v1 (training trials) and v2 (all correct control trials). (3) Not given; the paper has no rule for the sign of the SVD eigenvector. fig3e now names g1 (positive weight sum) and g2 (oriented so the control projection rises, ramping judged by the size of the delay change against 2 bootstrap s.e.m.), outcome under both.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "ed9f-reaction-time",
+     "asked": "2026-10-21",
+     "question": "The files hold no lick times, only `lick_trace` (an analogue signal in 5 s chunks per trial, described as the tongue movement when licking). What rule gives the first lick after the go cue from it (a threshold on the raw signal, or a number of standard deviations above a baseline, and over which window)?",
+     "passage": "No passage of the paper gives it.",
+     "why": "The reaction time moves with the threshold. The claim is blocked as methods_underspecified until answered.",
+     "answer": "The paper does not give it. The Methods say only \"A two-spout lickport (4.5 mm between spouts) was used to record answer licks\" and define no detection from an analogue signal; no code is linked. The criterion now says the outcome stands only if it is the same over the thresholds tried (fixed thresholds on the raw signal and k standard deviations above a pre-go-cue baseline, over a range), else methods_underspecified.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "fig6-modular-models-recover",
+     "asked": "2026-10-21",
+     "question": "The modular attractor's noise has variance 0.01. Is it white noise of that intensity (Euler-Maruyama increments of sd sqrt(0.01 dt)/tau), or a sample of variance 0.01 drawn every integration step and integrated like an input? And what is the integration step?",
+     "passage": "Methods, Modular attractor, \"All neurons received a non-selective tonic input T i (t) with amplitude 0.5 and noise \u03be i ( t ) with variance 0.01.\"",
+     "why": "With 1 ms steps, Euler-Maruyama noise overwhelms the 50 ms input, and the network ends at the instructed fixed point in about half of unperturbed trials; with per-step samples it ends there in all of them and the claim's attractor part holds.",
+     "answer": "The paper does not give either. The Methods say \"\u03be i ( t ) is Gaussian random noise\" and \"noise \u03be i ( t ) with variance 0.01\", with no integration step and no scaling with step. The criterion now names n1 (Euler-Maruyama white noise) and n2 (a variance 0.01 sample each step, integrated as an input), with steps h1 (1 ms) and h2 (0.1 ms), and requires the outcome under all, else methods_underspecified.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "cd-stable-over-epochs",
+     "asked": "2026-10-21",
+     "question": "Convention A says that w_t is the lick right minus lick left mean response vector of correct control trials, and that cd (the average of w_t) uses a subset of control trials. Which trials give the w_t whose correlation between late sample and late delay is reported, all correct control trials or the training subset that builds cd (H1, a half, or H2, a third)?",
+     "passage": "Methods, Analysis of population dynamics in the activity space, \"was stable (correlation of w t 's between late sample epoch vs. late delay epoch, 0.61 \u00b1 0.05; Extended Data Fig. 9b)\"; the same paragraph defines w_t on correct trials and builds cd from a subset of the trials.",
+     "why": "Raised by the verifier of round 1. With all correct control trials the mean correlation is 0.563 and 0.588 (lick-early trials dropped or kept), inside 0.56 to 0.66; with the training subset it is 0.534 to 0.554, outside. Both are run, and the claim is blocked as methods_underspecified until the answer."
+    },
+    {
+     "claim": "selective-fraction, ed4-return-to-trajectory, fig1f-spike-rate-recovery, fig1g-selectivity-recovery, ed2b-silencing-strength, ed2e-no-rebound, fig2-recordings-recovery, fig2e-selectivity-recovery-times, ed7-larger-photoinhibition, ed7e-roc-larger-photoinhibition and the claims on convention A",
+     "asked": "2026-10-21",
+     "question": "Convention K defines K2 as lick-early trials kept \"with events at their logged times\". In some lick-early trials the light in the laser trace came before one or more restarts of the delay, so the logged photostimulus event and go cue lie up to 10 s after the light (3% to 16% of the trials of each photoinhibition condition of experiment 1, 6.5% to 7.5% in experiment 2, 1% to 4% in experiment 3). Is K2 meant with the logged events, or with those trials aligned to the light in the trace (or left out)?",
+     "passage": "None in the paper; the reading K2 is the claims file's (convention K, answered 2026-10-21).",
+     "why": "Raised by the verifier of round 1. Under K2 these trials enter the photoinhibition averages without light in the analysis windows, which raises the silenced rate (ed2b-silencing-strength, PV x ReaChR ipsilateral 0.035 to 0.052 with lick-early trials dropped and 0.139 to 0.140 kept) and may change the outcome of the claims whose readings must agree over K1 and K2."
+    },
+    {
+     "claim": "fig1g-selectivity-recovery",
+     "asked": "2026-10-21",
+     "question": "Convention D names the search end E1, to the end of the delay epoch (the go cue). For the late-delay condition of experiment 1, whose light ends 0.3 s before the go cue, the paper's recovery time of 327 ms falls after the go cue. Is E1 meant for this condition, or should the search for it run past the go cue?",
+     "passage": "Figure 1g legend, \"late delay, 327\u00b1112 ms\"; Methods, \"we looked for the first time bin when selectivity on photoinhibition trials reached 80 % of the control selectivity\".",
+     "why": "Raised by the verifier of round 1. Under E1 a recovery time can be at most 300 ms for this condition (inside the tolerance of 215 to 439 ms); with bins labelled by their end no bin up to the go cue reaches 80% of control in any of 96 readings, which makes some combinations with E1 fail. The claim is blocked as methods_underspecified under either answer as the readings stand."
+    },
+    {
+     "claim": "unit-classification, fig2-recordings-recovery, ed7e-roc-larger-photoinhibition, ed8-roc-during-photoinhibition, fig6-modular-models-recover",
+     "asked": "2026-10-21",
+     "question": "The criteria of these claims test several parts and define no partial outcome. The attempt calls a claim partially reproduced when at least half of the parts of its criterion hold under every reading that must agree, and not reproduced otherwise. Does the claims file adopt this rule, give another, or mean that any failed part makes the claim not reproduced?",
+     "passage": "None in the paper; the outcome scale is the protocol's, and these criteria name only the condition for reproduced.",
+     "why": "Raised by the verifier of round 2, who accepts the partial outcomes for consistency but notes that the rule was written after round 1 and is not in the claims file. Read strictly, the five claims would be not reproduced (four of five parts hold for unit-classification, three of five for fig2-recordings-recovery, three of four under K1 and two under K2 for ed7e and ed8, two or three of four for fig6)."
+    }
+   ],
+   "dandi:000013": [
+    {
+     "claim": "fig3c-touch-spikes-l4c2",
+     "asked": "2026-10-21",
+     "question": "Where does the search for the touch response cutoff t_on start? Read literally, t_on is the first t_i, counted from t = 1 ms, at which the increment of the smoothed curve falls below the 95th percentile of the surrogates. The degree-11 polynomial dips at the start of a steep curve, so this stops at 1 ms in many cells before the response has risen. The Results describe a transition where the curve levels off, which reads as the first t_i at which the increment, having been above chance, falls below it. Which is meant? The same rule decides t_w for the phase windows (fig3d-touch-phase-l4c2), and the touch window feeds spikes per touch (Table 1, fig5c-modulation-index, l4-outside-weaker-touch).",
+     "passage": "Results, paragraph on Figure 3, \"At some window size, the curve levels off as the proportion of touch spikes increases no faster than expected for a random spike train at the neuron's mean spike rate. This transition point defines the proportion of touch-coupled spikes.\" Methods, Spikes accounted by active sensation, \"the first time point t_i = t_on in which the rate of increase ... is below chance level of the overall firing rate\".",
+     "why": "Over the 31 L4 C2 cells the touch-coupled fraction is 66.9 to 75.8% in 14.6 to 17.6% of exploration time under the transition reading and 38.6 to 64.5% in 8.5 to 13.4% under the literal one (paper 70.6 +- 20.9% in 14.9%). The two readings give different outcomes for fig3c-touch-spikes-l4c2, fig3c-touch-spikes-l5, the fig3d claims and Table 1.",
+     "answered": "2026-10-21",
+     "answer": "The paper means the transition. The Results describe \"an initially steep curve\" that \"levels off\" and call \"This transition point\" the cutoff, the Methods say the curves \"rise steeply and then plateau\", and the example cell's window is 8 to 40 ms. The literal search from 1 ms, which stops in a dip of the polynomial before the rise, does not fit that description. Written into the criteria of fig3c-touch-spikes-l4c2 and fig3d-touch-phase-l4c2 (for t_w) as the first t_i at which the increment, having been above chance, falls below it; the literal reading is a variant only. The statement and expected values are unchanged."
+    },
+    {
+     "claim": "fig3c-touch-spikes-l4c2",
+     "asked": "2026-10-21",
+     "question": "Over what range of window sizes t_i is the curve y_ton(t_i) built and fitted with the degree-11 polynomial (the longest window searched)? The fit, and so the cutoff, depend on it. The attempt runs 0 to 100 ms (the limit for prolonged touches) and 0 to 200 ms.",
+     "passage": "Methods, Spikes accounted by active sensation, \"The derivative was calculated from these curves smoothed with a polynomial fit (degree 11).\" No passage gives the range.",
+     "why": "For L4 C2 under the transition reading, the fraction of exploration time in touch windows is 14.6 to 16.3% with 100 ms and 16.0 to 17.6% with 200 ms; the tolerance is 13.4 to 16.4%.",
+     "answered": "2026-10-21",
+     "answer": "The paper does not give it. The Methods say only \"The derivative was calculated from these curves smoothed with a polynomial fit (degree 11)\", and Figure 3C, whose axis might show it, was not supplied as an image. Written into the criterion of fig3c-touch-spikes-l4c2 as open detail (4), readings (r100) 0 to 100 ms and (r200) 0 to 200 ms, both run."
+    },
+    {
+     "claim": "fig4a-touch-detection-c2",
+     "asked": "2026-10-21",
+     "question": "Under reading (1a), non-touch epochs taken from the 30 ms before touch in the same responses, which 10 ms integration window is the non-touch sample, the one ending at onset (-10 to 0 ms), the earliest (-30 to -20 ms), or all pre-touch windows? And is the fraction of touches detected (reading 2a) taken with the threshold that maximises percent correct?",
+     "passage": "Methods, Population decoding, \"At each time point t_j we built a different decoder that was trained to discriminate between the pooled population response at t_j and the population response at epochs without touch\".",
+     "why": "The population size that first detects 95% of touches is 1 or 2 neurons under (2a) with either pre-touch window, 18 or 30 under (2b), and 11 with exploration windows; the paper gives 15.",
+     "answered": "2026-10-21",
+     "answer": "Neither is given. The Methods say only \"the population response at epochs without touch\" and \"We used half of the data to find the optimal threshold\", without defining \"optimal\". Written into the criterion of fig4a-touch-detection-c2 as readings (a1) the window ending at onset, (a2) -30 to -20 ms and (a3) all pre-touch windows under (1a); the threshold stays the one maximising percent correct, the only reading of \"optimal\" the paper supports."
+    },
+    {
+     "claim": "fig4b-touch-time-precision",
+     "asked": "2026-10-21",
+     "question": "Which times does the naive Bayes decoder choose among, every 1 ms over the whole -30 to +50 ms response, or only after touch onset? And what smoothing of zero counts was used?",
+     "passage": "Methods, Population decoding, \"We trained a multinomial naive Bayes classifier ... to report for every time point what was the most likely time elapsed from touch onset\".",
+     "why": "The minimum RMS error near 10 ms is 1.31 to 1.40 ms with classes from -21 ms and 1.09 to 1.12 ms with classes from 0 ms; the paper gives 0.55 ms. No reading tried reaches it, but the class set moves the value by 0.3 ms.",
+     "answered": "2026-10-21",
+     "answer": "Neither is given. The Methods say \"for every time point what was the most likely time elapsed from touch onset\" and the Results \"integrating in 10 ms windows after touch\"; no smoothing is named. Written into the criterion of fig4b-touch-time-precision as readings (c-all) every 1 ms over the sampled response and (c-post) from onset on, both run, with add-one smoothing and a smaller pseudocount as a variant."
+    },
+    {
+     "claim": "fig4c-phase-decoding",
+     "asked": "2026-10-21",
+     "question": "For the phase decoder, which whisk cycles are used (all complete cycles with peak amplitude above 2.5 deg, or only those of exploration without touch, as for the phase tuning), what is the response to a phase (the count in one 3 deg bin of one cycle, or a rate), and how are bins with no spikes handled in the naive Bayes likelihood?",
+     "passage": "Methods, Population decoding, \"For each neuron we aligned the spikes to the whisking phase of each whisking cycle (minimum peak whisking amplitude >2.5 deg) and binned the response in 120 bins between pi and -pi.\"",
+     "why": "With counts of single cycles the decoder does not reach 76% correct in most runs; with Poisson rates it reaches it at 58.6 to 60.0 deg in C2; the paper gives 24 deg.",
+     "answered": "2026-10-21",
+     "answer": "The cycles are given, the rest is not. The Methods' Whisker analysis defines whisking cycles for the whole paper outside touch epochs, with \"Whisking cycles during licking or within 70 ms after touch were excluded\" and \"Whisking epochs used for phase analysis had monotonic phase for a complete whisking cycle\", so the decoder uses the same cycles as phase tuning. Whether the response is a single-cycle count or a rate, and how empty bins are handled, is not said. Written into the criterion of fig4c-phase-decoding, with readings (1a) and (1b) kept and add-one smoothing or a floor rate for empty bins."
+    },
+    {
+     "claim": "fig6d-not-refractory",
+     "asked": "2026-10-21",
+     "question": "Was the rate of the refractory Poisson model raised to make up for the spikes the refractory period removes, so that the model's mean count matches the data, or was the cell's PSTH used as the rate directly?",
+     "passage": "Methods, Analysis of spike count variance, \"We also computed FFs using a Poisson process with absolute refractory period, with average touch response matched to the data\".",
+     "why": "Without compensation the model's mean count is lower than the data's, which raises its FF towards 1 less than the data; the comparison of data and model FF is within the sum of their s.e.m. under reading (2a) and significant under (2b), so a matched mean could move it.",
+     "answered": "2026-10-21",
+     "answer": "The rate was compensated. The Methods say \"a Poisson process with absolute refractory period, with average touch response matched to the data (Berry II and Meister, 1998)\", so the model's output PSTH, not its input rate, matches the cell's. The criterion of fig6d-not-refractory said the rate equals the PSTH, which misreads the Methods; it now raises the rate (the free rate of Berry and Meister, or adjusted until the simulated PSTH matches), with the uncompensated model a variant only. The statement is unchanged."
+    },
+    {
+     "claim": "whisking-rate-l5-increase",
+     "asked": "2026-10-21",
+     "question": "Does \"with the median whisking rate higher\" in the criterion mean the median of the per-cell differences (whisking minus non-whisking) is positive, or that the median of the whisking rates is above the median of the non-whisking rates?",
+     "passage": "Results, paragraph 6, \"whereas L5 showed a modest, but significant increase with whisking (p = 0.019, Wilcoxon signed rank)\".",
+     "why": "The signed-rank test gives p = 0.024 and 0.014, 9 and 10 of 11 cells fire more when whisking and the median difference is +1.8 spikes/s, but the median whisking rate (11.0 spikes/s) is below the median non-whisking rate (12.9).",
+     "answered": "2026-10-21",
+     "answer": "The median of the per-cell differences. The paper's test is paired, \"a modest, but significant increase with whisking (p = 0.019, Wilcoxon signed rank)\", so the increase is the sign of the paired differences. Table 1 also gives group medians for L5 of 12.8 (non-whisking) and 13.5 spikes/s (whisking), but they are not the measure. Written into the criterion of whisking-rate-l5-increase."
+    }
+   ],
+   "dandi:000015": [
+    {
+     "claim": "ephys-pt-it-onset-not-detected",
+     "asked": "2026-10-21",
+     "question": "The tagged units of Li et al. (2015) are on DANDI (dandiset 000010, 45 PT and 27 IT, see li2015-tagged-units-link). How is the onset test of fig8d-pt-earlier-than-it to be applied to them? (1) The spike counts for the 3-way ANOVA, the paper's own 400 ms windows in 100 ms steps or another bin. (2) Which trials, given that the sessions of dandiset 000010 contain photostimulation trials and that its early-lick column is separate from its outcome column; and which event is trial start, as the task timing of Li et al. (2015) differs from this paper's. (3) The window and the baseline of convention O for those trials. (4) Whether the units of all sessions are pooled, and whether the bootstrap is over units only, as the criterion says, or hierarchical.",
+     "passage": "Spiking data were subjected to the same analyses as imaging data to obtain a(t), b(t), and g(t) using spike counts within 400 ms windows (in 100 ms steps). (STAR Methods, Electrophysiology data analysis). The Discussion gives the cell counts (PT/IT cells; electrophysiology, 45/27) but no method for the Li et al. data.",
+     "why": "The onset is the first bin over 6 baseline SD of mean |beta|; with 45 and 27 units it depends on the bin width, on the baseline period and on which trials enter the ANOVA, and including photostimulation trials would change the selectivity itself. The claim is blocked as methods_underspecified until this is answered.",
+     "answer": "The paper does not say. It gives no method for the Li et al. (2015) units; the Discussion gives only the counts \"(PT/IT cells; electrophysiology, 45/27; imaging, 719/2,631)\", and for its own probe units the Methods say \"Spiking data were subjected to the same analyses as imaging data to obtain a(t), b(t), and g(t) using spike counts within 400 ms windows (in 100 ms steps)\". Trial start is \"the pole movement onset\" (\"At the beginning of each trial, the vertical pole moved into the plane\"). The criterion of ephys-pt-it-onset-not-detected now names the readings: (1) 400 ms windows in 100 ms steps; (2) the four trial types without photostimulation, early-lick trials excluded by the early-lick record, time from pole movement onset; (3) onset from trial start to the go cue with baselines O1 (windows wholly before trial start) and O2 (windows within 0.5 s before it), rules S1 and S2; (4) units of all sessions pooled, bootstrap over units (H2) and hierarchical (H1). The outcome rule is now reproduced when no combination finds PT earlier at p < 0.01, partially reproduced when some do. Statement unchanged.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "fraction-selective-alm-mm",
+     "asked": "2026-10-21",
+     "question": "After neuropil subtraction (F = F_roi - 0.7 F_neuropil) the baseline F0 of a trial is zero or negative for 0.26% of ROI-trials, in 1,262 of 15,431 ROIs, and dF/F = (F - F0)/F0 then reaches thousands. Does the paper say how such trials or ROIs are handled (left out, F0 floored, ROIs excluded), or is dF/F used as computed? The same applies to every claim built on dF/F, notably figs4-peak-shift and the mean coefficients of fig8d-pt-contra-bias, fig8d-mm-posterior-preferring and fig8d-error-outnumber-correct.",
+     "passage": "DF/F was computed for each trial as (F-F0)/F0, where F0 is the baseline fluorescence averaged over a 0.5 s period immediately before the start of each trial. (STAR Methods, Image analysis)",
+     "why": "dF/F is used as computed here. Without the ROIs that have F0 <= 0 on any trial, MM under rule R2, window W1, bins T1 goes from 1,755 (26.6%) to 1,675 of 5,854 (28.6%) selective, and the MM mean dF/F of figs4-peak-shift changes shape (its peak moves from 6.09 to 4.80 s); neither change alters an outcome here, but the means of the bootstrap claims are near their 2 SD bounds.",
+     "answer": "The paper does not say. The Methods give only \"DF/F was computed for each trial as (F-F0)/F0, where F0 is the baseline fluorescence averaged over a 0.5 s period immediately before the start of each trial\", with no exception for F0 <= 0 and no exclusion of ROIs or trials on that ground. Convention T now names (V1) dF/F as computed, the Methods' formula, which decides, and (V2) ROIs with F0 <= 0 on any trial left out, reported as a check; fraction-selective-alm-mm, figs4-peak-shift, fig8d-pt-contra-bias, fig8d-mm-posterior-preferring and fig8d-error-outnumber-correct cite it. Claims and expected values unchanged.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "fig8d-pt-earlier-than-it",
+     "asked": "2026-10-21",
+     "question": "Is the onset the first single bin in which mean |beta| exceeds the baseline by more than 6 SD, or must it stay above that level (for how long)? And is \"above baseline\" measured from the baseline mean?",
+     "passage": "delta onset time; time when selectivity rose to >6 SD above baseline = 1.4 \u00b1 0.6 s; p < 0.01, bootstrap (Results, Projection-Specific Coding)",
+     "why": "With the first single bin the IT minus PT difference is 0.2 s (baseline O1) and in one combination negative, with bootstrap SDs of 1.3 to 1.9 s, so single crossings driven by noise may decide the onset; a sustained rule could give a different difference.",
+     "answer": "The paper does not say. It gives only \"time when selectivity rose to >6 SD above baseline\" (Results, Projection-Specific Coding), and the Methods and the Figure 8D legend add nothing on the onset. \"Above baseline\" is read as above the baseline mean, the plain reading, as the paper defines no other. Convention O now names (S1) the first bin above the baseline mean plus 6 SD and (S2) the first bin from which the measure stays above it up to the go cue, with the onset found again in each bootstrap resample; fig8d-pt-earlier-than-it cites both. Expected values unchanged.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "figs4-peak-shift",
+     "asked": "2026-10-21",
+     "question": "The criterion requires the ALM mean \"above its sample-epoch level at the end of the delay\". Is the sample-epoch level the mean over the sample epoch or its maximum, and is the end of the delay the last bin before the go cue or a window before it?",
+     "passage": "the peak of activity shifted from MM to ALM over the course of the delay epoch (Figure S4) (Results, Mapping Activity Using Two-Photon Calcium Imaging, paragraph 3)",
+     "why": "Both readings (mean and maximum, last bin) are run here and agree; the outcome is decided by the peak times, so the answer cannot change it in this attempt but fixes the measure for later ones.",
+     "answer": "The paper does not say. The main text has only \"the peak of activity shifted from MM to ALM over the course of the delay epoch (Figure S4)\", and Figure S4 is not in the text read. The criterion now names (L1) the mean and (L2) the maximum over the sample-epoch bins, and (E1) the last bin before the go cue and (E2) the mean over the last 0.5 s before it; reproduced under one combination, all reported.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "fig6-lick-direction-spread",
+     "asked": "2026-10-21",
+     "question": "In part (c), is the MM fraction's \"value in the delay epoch\" its mean over the delay bins or its maximum there?",
+     "passage": "Lickdirection selectivity, including number of neurons and the strength of coding, continued to increase and spread across ALM layers and to a minor extent into MM (Figure S7), reaching a maximum after the go cue (Results, Spatial Map of Behavior-Related Activity, paragraph 1)",
+     "why": "Both readings are run here and agree; the answer fixes the measure for later attempts.",
+     "answer": "The paper does not say. The text has only \"continued to increase and spread across ALM layers and to a minor extent into MM (Figure S7), reaching a maximum after the go cue\", and Figure S7 is not in the text read. Part (c) now reads both the mean over the delay bins and the maximum there, and holds when it holds under one.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "figs4-peak-shift",
+     "asked": "2026-10-21",
+     "question": "The criterion takes the \"peak time\" of the mean dF/F of ALM and of MM per bin. Over what window is the peak taken, the whole extracted window of convention T (5 s before to 5 s after the go cue), the bins before the go cue, or the delay epoch only?",
+     "passage": "the peak of activity shifted from MM to ALM over the course of the delay epoch (Figure S4) (Results, Mapping Activity Using Two-Photon Calcium Imaging, paragraph 3)",
+     "why": "Over the whole window the MM mean peaks in the response epoch, after ALM (6.09 against 4.52 s, T1, V1), and the claim is not reproduced. Before the go cue MM peaks first under every bin and dF/F reading (V1 2.08 against 4.16 s with T1 bins, 0.80 against 4.14 s with T2), and the claim would be reproduced. The first verifier noted that the criterion does not set the window. The whole window is used until the answer."
+    }
+   ],
+   "dandi:000019": [
+    {
+     "claim": "pca-nine-components",
+     "also": [
+      "fig4a-consonant-clusters",
+      "suppfig11-co-clustering",
+      "fig4c-d-hierarchy",
+      "fig4ef-feature-correlations",
+      "fig5c-separability-timing",
+      "fig5d-separability-coupling",
+      "suppfig13-consonant-vowel-distance",
+      "suppfig9-pc-articulator-weights"
+     ],
+     "asked": "2026-10-21",
+     "question": "Before the PCA, is each electrode's high gamma z-scored over its whole concatenated (CV x time) series (`row`), or across syllables separately at each time point (`time`)? The second removes the mean time course shared by all syllables. Is the same z-scored input projected onto the PCs to give the state K(s, t)?",
+     "passage": "Methods, PCA and Cortical-State Space, \"Each electrode's time series was z-scored across syllables to normalize response variability across electrodes.\"",
+     "why": "With `row` the nine PCs explain 0.60 to 0.64 of the variance (within 0.6 +- 0.06), with `time` 0.49 to 0.55 (mostly outside). Consonant-vowel distances exceed consonant-consonant distances under `row` and not under `time` (suppfig13), and the hierarchy and late feature-correlation results also change. The attempt runs both, and these claims are blocked as methods_underspecified where they differ.",
+     "answer": "The paper does not say. The Methods have only \"Each electrode's time series was z-scored across syllables to normalize response variability across electrodes\"; \"time series\" in the singular fits the row reading and \"across syllables\" fits the time reading, and no other passage or code settles it (the paper links no code). Nor does it say that the z-scored input is projected; Eq. 5 writes \"K ( s k , t ) = M \u00b7 H \u03b3 k ( t )\", with H\u03b3 the baseline z-scored measure. The header's state-space definition now names (row) and (time) for the z-scoring and (i) the PCA input or (ii) H\u03b3 as Eq. 5 writes it for the projection; all are run. Claims and expected values unchanged.",
+     "answered": "2026-10-22"
+    },
+    {
+     "claim": "data-composition",
+     "also": [
+      "active-electrodes",
+      "fig1f-h-phonetic-contrasts",
+      "suppfig6-mixed-tuning",
+      "fig3d-timing-sequence",
+      "pca-nine-components",
+      "fig4a-consonant-clusters",
+      "suppfig11-co-clustering",
+      "fig4c-d-hierarchy",
+      "fig4ef-feature-correlations",
+      "fig5c-separability-timing",
+      "fig5d-separability-coupling",
+      "suppfig13-consonant-vowel-distance",
+      "suppfig9-pc-articulator-weights"
+     ],
+     "asked": "2026-10-21",
+     "question": "The dandiset has CVs with fewer than 15 renditions (EC2 /thi/ 10, GP31 /thi/ 2) and GP31 lacks /tha/ and /thu/. Should CVs with fewer than 15 renditions be left out of the per-syllable averages, as the paper's range of 15 to 100 renditions suggests, or kept?",
+     "passage": "Methods, Subjects and Experimental Task, \"Each CV was produced between 15 and 100 times.\" The paper's 168 CVs (57 + 57 + 54, Fig. 3c legend) match neither choice (169 kept, 167 left out).",
+     "why": "GP31's /thi/ mean over two renditions is an outlier in the state space; with it the k = 2 silhouette of GP31 is 0.76 to 0.80, without it 0.24 to 0.37. The active-electrode count of GP31 falls from 49 to 9 (pre baseline). Co-clustering, the hierarchy and the late feature correlations change outcome with the choice. The attempt runs both.",
+     "answer": "The paper does not say. It describes its own data, \"Each CV was produced between 15 and 100 times\", and gives no rule for leaving out a CV; the supplement says only \"not all subjects had all syllables\" (Supplementary Figure 11b). The header's per-syllable definition now names (a) every CV the dataset holds and (b) only CVs with 15 or more renditions, the set the paper describes; both are run. The 168 CVs fix neither, and data-composition is unchanged.",
+     "answered": "2026-10-22"
+    },
+    {
+     "claim": "fig3d-timing-sequence",
+     "asked": "2026-10-21",
+     "question": "The dandiset has no audio, so the acoustic onset cannot be taken from the cochlear spectrogram of the prototype rendition. Is the hand-marked syllable start of the trial table (`start_time`, \"the start ... of each syllable\" in the dandiset description) an acceptable acoustic onset for the condition \"lip and tongue correlations began well before sound onset\"?",
+     "passage": "Methods, Acoustic Analysis, \"The onset, peak, and offset of acoustic power were extracted for each syllable prototype using a thresholding procedure.\"",
+     "why": "The annotated onset is -110 ms on average (CV range -257 to -11 ms). It does not decide the outcome here, since the tongue correlations begin after the C-V transition in every reading, but it would for a dataset where the lips and tongue onsets fall near it.",
+     "answer": "The paper does not give one. Its onset is \"extracted for each syllable prototype using a thresholding procedure\" on acoustic power from the audio, and it names no other source. The criterion of fig3d-timing-sequence now allows the hand-marked syllable start, averaged per CV, as a substitute recorded as a deviation when the dataset has no audio, with the result against t = 0 shown beside it. Claim and expected values unchanged.",
+     "answered": "2026-10-22"
+    },
+    {
+     "claim": "active-electrodes",
+     "also": [
+      "fig1f-h-phonetic-contrasts",
+      "fig3d-timing-sequence",
+      "pca-nine-components"
+     ],
+     "asked": "2026-10-21",
+     "question": "The dandiset marks a rest period per block, \"when the subject was silent, which can be used as a baseline\". Does the paper's \"baseline data\" allow this reading, besides the two the claims file names (a window before each utterance, and the whole recording)?",
+     "passage": "Methods, Data acquisition and Signal Processing, \"High-\u03b3 power was z-scored relative to the mean and standard deviation of baseline data for each channel.\"",
+     "why": "The rest period has lower high gamma than the rest of the block in most blocks, so z-scores are larger. The mean active-electrode count is 34.0 per subject with every CV and 27.0 with CVs of 15 or more renditions (paper about 30, tolerance 27 to 33), against 7.0 to 24.3 under the claims file's readings. The attempt shows it as a variant, not a reading.",
+     "answer": "Yes. The Methods say only \"High-\u03b3 power was z-scored relative to the mean and standard deviation of baseline data for each channel\" and never define baseline data; a silent rest period is as plausible a reading as the two the file named. The header now lists it as baseline reading (c), run with (a) and (b), so active-electrodes and the claims that use H\u03b3 judge it as a reading and not as a variant. Claims and expected values unchanged.",
+     "answered": "2026-10-22"
+    },
+    {
+     "claim": "fig2a-lips-dorsal",
+     "also": [
+      "fig2b-somatotopic-sequence",
+      "suppfig3b-spatial-clustering",
+      "suppfig3d-cross-subject",
+      "suppfig3f-dv-sequence",
+      "suppfig5-intermediate-organization",
+      "suppfig7-no-latency-difference",
+      "fig1c-e-articulator-electrodes"
+     ],
+     "asked": "2026-10-21",
+     "question": "The dandiset gives no electrode positions relative to the central sulcus or the Sylvian fissure. EC2 and GP31 have x, y, z coordinates with no unit or frame (spacing about 4 mm), GP33 has none, and the labels are atlas gyri (precentral, postcentral and others; none marks the guenon). Does the paper give any way to obtain the anterior-posterior and dorsal-ventral distances from such data, for example from the grid geometry?",
+     "passage": "Methods, Spatial Organization Derived from a General Linear Model, \"We used a Cartesian plane defined by the Anterior-Posterior distance from the Central Sulcus (ordinate) and the Dorsal-Ventral distance from the Sylvian Fissure (azimuth).\"",
+     "why": "Without them the seven spatial claims are blocked as metadata_insufficient. For information only, the median z coordinate of the top lips weights lies above that of the tongue weights in EC2 and GP31 (36.6 against 15.6 in EC2 under the first reading).",
+     "answer": "No. The paper measures position on each subject's MRI reconstruction, as \"the Anterior-Posterior distance from the Central Sulcus ... and the Dorsal-Ventral distance from the Sylvian Fissure\" (Methods), and gives no way to derive these distances from grid geometry, unlabelled coordinates or atlas labels. The header's vSMC definition now says so; the spatial claims stay blocked as metadata_insufficient when the dataset lacks these positions. Claims unchanged.",
+     "answered": "2026-10-22"
+    },
+    {
+     "claim": "suppfig13-consonant-vowel-distance",
+     "asked": "2026-10-22",
+     "question": "The criterion makes a pair count of 4623 a condition of reproduction. Is the count meant as part of the result, or as a description of the paper's data, so that a dataset with other syllables (4677 or 4567 pairs here) is judged on the three orderings and their p-values alone?",
+     "passage": "Results, Dynamics of Phonetic Representations, \"(P < 10 \u221210 for all comparisons, WSRT, n = 4623 for all, Supplementary Figure 11 )\"; Supplementary Figure 13 legend, \"n = 4623 for all\".",
+     "why": "Raised by the round-2 verifier as a place where the claims file may misread the paper. The count is fixed by which syllables the dataset holds (data-composition), not by the effect. Read strictly, no reading can reproduce; on the orderings alone 36 of 48 readings would reproduce and 12 would not, so the claim would stay blocked as methods_underspecified with reproduced and not reproduced readings."
+    },
+    {
+     "claim": "suppfig6-mixed-tuning",
+     "asked": "2026-10-22",
+     "question": "The criterion groups electrodes by their largest weight and asks that each group's preferred articulator have the largest mean share. Does the paper's \"clear preferred tuning\" mean more than this grouping gives, for example a share well above what weights shuffled across electrodes give?",
+     "passage": "Results, Spatial Representation of Articulators, \"This analysis revealed clear preferred tuning for individual articulators at single electrodes (Fig. 2c, electrodes categorized according to the strongest articulator representation)\"",
+     "why": "Raised by the round-2 verifier as a place where the claims file may misread the paper. Grouping by the largest weight puts the preferred articulator first almost by construction; the test holds on weights permuted across each subject's electrodes in 94 of 96 readings. Under a criterion that compares with such a null the outcome could differ."
+    },
+    {
+     "claim": "suppfig9-pc-articulator-weights",
+     "asked": "2026-10-22",
+     "question": "The criterion judges jaw against larynx as not differing at p > 0.05, while the legend reports P > 0.2. Which threshold should the absence be judged at?",
+     "passage": "Supplementary Figure 9a legend, \"while the difference between jaw and larynx was not significant (P > 0.2)\"",
+     "why": "Raised by the round-2 verifier as a place where the claims file may misread the paper. It does not change the outcome here (corrected p = 5e-11), but it would for a dataset with p between 0.05 and 0.2."
+    }
+   ],
+   "dandi:000036": [
+    {
+     "claim": "discussion-session-effect-sizes",
+     "asked": "2026-10-22",
+     "question": "The criterion takes per-session Cohen's d \"as in fig4-locomotion-effect-size\", with the pooled SD of the opening comment (analysis.py, cohens_d). The Methods give the standard pooled SD, but the code's analysis.pooled_std_dev weights each group's SD by the other group's n - 1 (its groupby sorts \"artificial\" before \"natural\" while n1 counts \"natural\"), and the paper's numbers come from that version. Which does the criterion mean, the Methods' formula or the formula as the code computes it? The same question applies to fig4-locomotion-effect-size, fig4-pupil-effect-size and the Cohen's d of fig3a, fig3b, ext3-1, fig5 and fig7.",
+     "passage": "Cohen's d was calculated with the pooled SD: ((n1 - 1) s1^2 + (n2 - 1) s2^2) / (n1 + n2 - 2) (Materials and Methods, Statistical analysis). Code: analysis.pooled_std_dev at commit 2d959bd, n1, n2 = counts[a], counts[b]; s1, s2 = values.groupby(labels).std().",
+     "why": "With the Methods' formula the largest per-session d here is 1.111, outside 1.25 +/- 0.125, and the claim is partially reproduced; with the code's formula it is 1.194 and all three values are within tolerance (reproduced). The code's formula reproduces results/effect_size.parquet to 4e-15 in all 44 sessions; the Methods' formula does not (up to 0.10 apart). For fig4-locomotion-effect-size r is 0.842 or 0.892, reproduced either way."
+    },
+    {
+     "claim": "ext3-2-sensitivity",
+     "asked": "2026-10-22",
+     "question": "The agreement rule requires, for each parameter set, that L2/3 be the only significant layer and AL and AM the only significant areas. Applied to the paper's own sensitivity statistics (results/stats.parquet) the rule gives 28 of 108 sets, so the paper's outputs do not meet \"nearly all\" under it. Does the paper's sentence, and the Extended Data Figures 3-2 to 3-4, support a different rule, for example one judged on the layer result alone, or on L2/3 and on at least one of AL and AM?",
+     "passage": "For nearly all other combinations of parameters, we likewise find that unscrambled stimuli elicit increased ND specifically in L2/3 of AL and AM (Results, Increased differentiation for unscrambled stimuli is specific to areas AL and AM, paragraph 2).",
+     "why": "Here 36 of 108 sets agree under the rule (not reproduced). L2/3 is the only significant layer in all 108 sets on this dataset and in the paper's outputs, and the area result is what varies (AL and AM both significant in 36 sets, AL alone in 41, AM alone in 24, neither in 7), so a rule on the layer alone or on L2/3 and one of AL and AM would give a different outcome."
+    },
+    {
+     "claim": "fig3b-area-specific",
+     "asked": "2026-10-22",
+     "question": "The expected Cohen's d for AM is 0.268, from the paper's text, which prints \"Cohen's d = 0.268, 95% CI [0.128, inf)\". The code's printed Figure 3 output gives d = 0.128 for AM and a lower bound of 0.0048 for the contrast, and the paper's per-trial values (main.parquet) give 0.127 to 0.128. Is 0.268 a misprint that the expected value should record?",
+     "passage": "specific to AL and AM [one-sided z -test; ... AL, z = 2.873, p = 0.0101, Cohen's d = 0.200, 95% CI [0.022, inf) f ; PM, z = -1.843, p > 0.999, Cohen's d = -0.122, 95% CI [-0.157, inf) g ; AM, z = 2.446, p = 0.0356, Cohen's d = 0.268, 95% CI [0.128, inf) h ; adjusted for multiple comparisons] (Results, Increased differentiation for unscrambled stimuli is specific to areas AL and AM). For the other areas the printed CI bound is the contrast's lower bound (PM -0.157, AL 0.022), which for AM is 0.0048 in the code's output.",
+     "why": "The outcome rests on the significance pattern, which holds, so it does not change; but the measured AM d (0.132) is recorded as outside the tolerance of 0.268 although it agrees with the paper's computation."
+    }
+   ],
+   "dandi:000037": [
+    {
+     "claim": "fig5-example-responses",
+     "asked": "2026-10-22",
+     "question": "The decision rule asks, per plane, that \"the mean over selected ROIs of their mean trace is higher after the reference onset (0 to 0.6 s for Gabor, 0 to 2 s for flow) than before it\", and that the selection yield ROIs \"for the Gabor sequences and for each flow direction\". The selection is described for two Gabor panels, consistent sequences around D (panel a) and inconsistent sequences around U (panel b). Which Gabor panel does the per-plane rule use, panel a, panel b, or both (all four panels of Figure 5)?",
+     "passage": "Both the somatic and dendritic ROIs showed clear responses to both the Gabor and visual flow stimuli, with many showing increased fluorescence responses to the onset of the stimuli (Fig. 5). (Overview of data, paragraph 1; the Figure 5 legend describes panels a and b as consistent and inconsistent Gabor sequences.)",
+     "why": "With robust-scaled traces the flow panels are higher after onset in all four planes. Panel a is higher in 2 of 4 planes (L2/3 and L5 somata are lower) and panel b in 3 of 4 (L5 dendrites at -0.001). With panel a the rule holds in 2 planes (partially reproduced), with panel b in 3 (partially reproduced), with both panels in 1 (not reproduced). The claim is blocked until this is answered, and fig5-consistent-vs-inconsistent, which depends on it, with it.",
+     "answer": "Not given by the paper. The sentence cites Figure 5 as a whole (\"Both the somatic and dendritic ROIs showed clear responses to both the Gabor and visual flow stimuli ... (Fig. 5)\"), and the legend describes panel b only as \"Same as a., but for inconsistent sequences\". The code (analysis/seq_analys.py get_sess_ex_traces, unexp 0 or 1) selects the panel a and panel b ROIs separately, as the criterion says. The criterion now names three readings, (a) panel a, (b) panel b, (c) both, and the outcome is the one all give, else methods_underspecified. Statement unchanged.",
+     "answered": "2026-10-22"
+    },
+    {
+     "claim": "fig7c-high-correlation-fraction",
+     "asked": "2026-10-22",
+     "question": "Reading (c), \"each session separately\", can mean the three local sessions pooled over mice, or each mouse's session. Does the reading hold when every session is within tolerance, or when one is? Reading (a) also says \"three sessions and three mice\", but the 33 analysed sessions hold two L2/3 dendritic mice (413663 and 433414; 412933 is left out, its sessions 1 to 3 having failed QC). Is the denominator the two analysed mice, or should 412933's tracked sessions 4 to 6 be included?",
+     "passage": "To be more conservative, ROIs with correlations above 0.8 (e.g., approximately 0.01% of possible pairs of L2/3 dendrites) or those with similar trial-averaged visual stimulus-triggered responses could be merged. (Technical Validation, paragraph 3)",
+     "why": "Pooled over the two mice the fraction is 0.0178%, and per local session 0.0211, 0.0276 and 0.0043%, all outside 0.005 to 0.015%. Per mouse session, two of six values are inside (0.0054 and 0.0067%). If one session within tolerance were enough under reading (c), the claim would be reproduced; it is blocked now only through its dependency on fig7c-correlations-similar.",
+     "answer": "The denominator is the two analysed mice. The code's Fig. 7c source data (paper_figures/dataset_paper/Fig7/data_files/panel_C.json, sesspar pass_fail P, sess_n 1 to 3) list only mice 413663 and 433414 for L2/3 dendrites, so 412933's sessions 4 to 6 are not included; reading (a) wrongly said three mice and now says two. For reading (c) the paper gives one value, \"approximately 0.01% of possible pairs of L2/3 dendrites\", and names no session, so every session must be within tolerance; the sessions are the three local sessions pooled over mice, as Fig. 7c plots them. Per-mouse sessions are not a reading the paper allows. Statement and expected value unchanged.",
+     "answered": "2026-10-22"
+    },
+    {
+     "claim": "imaging-depths",
+     "asked": "2026-10-22",
+     "question": "The criterion allows the L2/3 dendritic depth to be \"any of 50, 75\", where the Methods give a range, 50 to 75 um. Is a recorded 60 um meant to fail the criterion?",
+     "passage": "or in cortical layer 1 for distal apical dendritic recordings (50-75 um depth for layer 2/3 and 20 um for layer 5) (Methods, Experimental animals and calcium imaging, paragraph 1)",
+     "why": "The three sessions of mouse 433414 are recorded at 60 um in the dataset (Table 2 gives 75). Read as the two values, 47 of 50 sessions pass and the claim is not reproduced (three exceptions, two allowed for partial). Read as the range, all 50 pass and it is reproduced. The difference from Table 2 is recorded under table2-sessions either way.",
+     "answer": "No. The Methods give a range (\"50\u201375 \u03bc m depth for layer 2/3\"), so any depth from 50 to 75 um passes, and 60 um is within it. The values 50 and 75 come from Table 2, and the difference of mouse 433414 from Table 2 belongs to table2-sessions. The criterion now reads 50 to 75 um inclusive. Statement unchanged.",
+     "answered": "2026-10-22"
+    }
+   ],
+   "dandi:000045": [
+    {
+     "claim": "fig2h-proportion-learned-40-days",
+     "also": [
+      "cohort-counts",
+      "fig2g-days-to-proficiency",
+      "fig2g-days-differ-across-labs",
+      "fig2s1-trials-to-proficiency",
+      "fig2bc-threshold-bias-iqr",
+      "fig2-abs-bias-threshold-during-training",
+      "fig2s2-variability-decreases",
+      "early-sessions-predict-slow-learners",
+      "fig3c-easy-errors-basic",
+      "fig3de-threshold-bias-basic",
+      "fig3cde-no-lab-difference-medians",
+      "fig3cde-no-lab-difference-variances",
+      "fig3s2a-trial-duration",
+      "fig3s2b-trials-per-session"
+     ],
+     "asked": "2026-10-22",
+     "question": "The dataset carries no training status, so P1 is recomputed from the trials with the 'Trained 1a/1b' criteria of Appendix 1, table 1d. One of them is \"all contrasts introduced\". Is it met when each of the three sessions presents every contrast of the final set (100, 25, 12.5, 6.25 and 0%), or when the three sessions together do (a session can present fewer, for example when a mouse is moved back a stage)?",
+     "passage": "Appendix 1, table 1d, \"For each of the last three sessions ... >80%/90% correct on 100% contrast and all contrasts introduced\". The Methods and the claims file do not say more.",
+     "why": "P1 is reached by 75 mice when each session must present all contrasts and by 84 when the three together must (1a criteria; 52 and 58 with 1a/1b). The Kaplan-Meier proportion at day 40 is 0.67 under the first reading and 0.76 under the second, so fig2h-proportion-learned-40-days is blocked until this is answered; the other claims listed have the same outcome under both.",
+     "answer": "Each of the three sessions, as the main reading. Appendix 1, table 1d, puts the criterion under \"For each of the last three sessions: >200/400 trials completed, and >80%/90% correct on 100% contrast and all contrasts introduced\". The code that set the paper's status (SessionTrainingStatus in IBL-pipeline, which the paper's code imports) checks only the current session, for 0% and a contrast between 0.1 and 6.5% (\"training in progress if the current session does not have low contrasts\"); that is a variant. Pooling the three sessions is given by neither. Header P1 and the criterion of fig2h-proportion-learned-40-days now say so; claims and expected values unchanged.",
+     "answered": "2026-10-22"
+    },
+    {
+     "claim": "cohort-counts",
+     "also": [
+      "fig2g-days-to-proficiency",
+      "fig3cde-no-lab-difference-medians"
+     ],
+     "asked": "2026-10-22",
+     "question": "The claims file's second P1 reading applies \"the 1b criteria from their introduction (Methods, September 2019, no day given)\". From which day are the 1b criteria applied, and do they replace the 1a criteria for a mouse still in training on that day (as run here), or is a mouse proficient when it meets either?",
+     "passage": "Methods, \"The second set, called '1b', was introduced shortly afterwards (September 2019) and was applied to 60 of the 140 mice.\"",
+     "why": "With 1b from 2019-09-01, 52 and 58 mice reach P1 under the two contrast readings; with 2019-09-30, 60 and 66. Under the 1a/1b readings with pooled contrasts, easy-trial performance differs across labs (corrected p = 0.047), so the outcome of fig3cde-no-lab-difference-medians depends on this reading.",
+     "answer": "The code settles it: a mouse is proficient at the first session that meets either set, at any date. The paper's P1 is the first status trained_1a or trained_1b, and SessionTrainingStatus tests the 1b criteria and then the 1a criteria at every session, with no date. The 1b criteria were implemented on 2019-09-12 (text_trained1a_to_1b_sessions.py, \"Date at which trained_1b was implemented in DJ pipeline\"); the Methods say only \"September 2019\" and do not say 1b replaced 1a, so replacement from 2019-09-12 is a variant. Header P1 and the criterion of cohort-counts now say so; claims unchanged.",
+     "answered": "2026-10-22"
+    },
+    {
+     "claim": "cohort-counts",
+     "asked": "2026-10-22",
+     "question": "The 1a/1b criteria require more than 200/400 \"trials completed\" in each session. Are these all trials, or only trials with a response (no-response trials, choice 0, left out)? The attempt counts all trials.",
+     "passage": "Appendix 1, table 1d, \">200/400 trials completed\"; Methods, \"200/400 completed trials\".",
+     "why": "Counting only trials with a response changes P1 for 1 to 3 mice under the four readings; no outcome is expected to change, but the counts move.",
+     "answer": "All trials, no-response trials included. The paper does not define \"completed\"; the status code compares the session's n_trials with 200/400, and the pipeline sets n_trials = len(trials['choice']), every trial of the session. Header P1 and the criterion of cohort-counts now say so.",
+     "answered": "2026-10-22"
+    },
+    {
+     "claim": "fig3s5-first-full-sessions",
+     "also": [
+      "fig3s5a-prior-used-from-first-sessions",
+      "fig5cf-glm-weights",
+      "fig5dg-history-weights-higher-full",
+      "fig5s2-glm-accuracy",
+      "fig5s2-weights-similar-across-labs",
+      "fig5s1b-win-stay-lose-switch",
+      "fig5s1c-updating-by-contrast"
+     ],
+     "asked": "2026-10-22",
+     "question": "The claims file defines P1b as \"the code's 'biased' criterion, the first biased-protocol session with status trained_1b\". The dataset has no status. Is P1b, without it, the first full-task (biased protocol) session on or after P1 (as run here), or the first full-task session at which the recomputed status is 1b, which under the 1a reading may never come?",
+     "passage": "Figure 3, figure supplement 5 legend, \"the first three sessions of the full task\"; Methods, \"Once an animal was proficient in the basic task, it proceeded to the full task.\"",
+     "why": "The window of every claim listed is counted from P1b. Under the reading run here, 51 to 71 mice have a P1b; under the 1b-status reading, fewer would, and the first-session windows would move.",
+     "answer": "The legend's reading, the first full-task session on or after P1, is the main one; the legend says \"the first three sessions of the full task\" and the Methods \"Once an animal was proficient in the basic task, it proceeded to the full task\". The code's \"biased\" criterion ('task_protocol LIKE \"%biased%\" AND training_status=\"trained_1b\"') is a variant; in the pipeline a 1a-only mouse keeps trained_1a on biased sessions until its last three sessions meet the 1b criteria, and has no P1b if they never do. Header P1b and the criterion of fig3s5-first-full-sessions now say so; claims unchanged.",
+     "answered": "2026-10-22"
+    },
+    {
+     "claim": "fig2bc-threshold-bias-iqr",
+     "also": [
+      "fig2s2-variability-decreases"
+     ],
+     "asked": "2026-10-22",
+     "question": "The criteria use \"50:50 sessions\". In this dataset, every basic-task session has trials whose probabilityLeft is not 0.5 (0 to 1 in steps of 0.1, 24% of basic-task trials, with the stimulus side following it), apparently from the bias-correcting repeat trials. Are 50:50 sessions the basic-task sessions (as run here), or only sessions in which every trial has probabilityLeft 0.5 (none here)?",
+     "passage": "Results, Training progression, \"a basic task ... where the probability of a stimulus appearing on the left or the right was equal (50:50)\"; Methods, \"If the response was incorrect and the contrast was 'easy' (>=50%), a 'repeat' trial followed\".",
+     "why": "Under the second reading no session qualifies and the claims cannot be tested.",
+     "answer": "The basic-task sessions, with all their trials, as run. The Results define the basic task as the one where left and right were \"equal (50:50)\"; the pipeline's per-day summary gives prob_left 0.5 to all trials of a training-protocol day (\"0.5 for trainingChoiceWorld\") and never reads the trial's probability, and the code's prob_left == 0.5 selects those days. Header and the criterion of fig2bc-threshold-bias-iqr now say so.",
+     "answered": "2026-10-22"
+    },
+    {
+     "claim": "fig3f-classifier-chance-basic",
+     "also": [
+      "fig3f-positive-control",
+      "fig3s3-other-classifiers",
+      "fig4j-classifier-chance-full",
+      "fig3s4-looser-criterion",
+      "fig3s5-first-full-sessions"
+     ],
+     "asked": "2026-10-22",
+     "question": "The classifier draws 8 mice from each laboratory. In this dataset some laboratories hold fewer than 8 proficient mice under every reading (Lab 7 has only 7 mice with their whole training in the dataset). The Methods say 8 was \"the lowest number of mice over all different datasets\". May the subsample be the smallest laboratory's count here (6 or 7), or is the claim blocked?",
+     "passage": "Methods, Classification of laboratory membership, \"The size of the subsample was chosen because eight mice was the lowest number of mice over all different datasets for which classification was performed.\"",
+     "why": "The four classifier claims are blocked (other); with 6 mice per lab the Naive Bayes classifier on the basic task is not above chance (2.5th percentile 0.071 against a null mean of 0.113), shown as a variant that decides nothing. fig3s4 and fig3s5 are decided by their lab tests without the classifier.",
+     "answer": "The subsample may be the smallest count. The Methods give the size as a rule, \"eight mice was the lowest number of mice over all different datasets for which classification was performed\", and the code hard-codes N_MICE = 8, the rule's value on the paper's data. Here the rule gives the lowest lab count over all the datasets classified, one size for every classifier claim; that is the main reading, and 8 (blocked) the code's. Header, Lab classifier, and the criterion of fig3f-classifier-chance-basic now say so.",
+     "answered": "2026-10-22"
+    },
+    {
+     "claim": "fig5cf-glm-weights",
+     "also": [
+      "fig5dg-history-weights-higher-full",
+      "fig5s2-glm-accuracy"
+     ],
+     "asked": "2026-10-22",
+     "question": "Under the Methods' reading with 50% contrast in the model, most mice were not shown 50% contrast in the sessions used (it is dropped late in basic training and absent from the full task), so their 50% indicator is all zero and the model cannot be fitted. Is that weight left out for those mice (as run here), or is the Methods' reading the code's (50% trials dropped)?",
+     "passage": "Methods, Probabilistic choice model, \"W c is the coefficient associated with the contrast c in {6.25, 12.5, 25, 50, 100}\".",
+     "why": "Leaving the weight out changes the other weights by at most 0.002 in the means shown, and the outcomes are the same with and without 50% trials.",
+     "answer": "The paper does not say. Equation 3 has W c for \"c in {6.25, 12.5, 25, 50, 100}\" and does not say what is done for a mouse shown no 50% trials. The code drops 50% trials for every mouse (\"drop trials with contrast-level 50, only rarely present (should not be its own regressor)\", figure5_GLM_modelfit.py). Readings named in the criterion of fig5cf-glm-weights, (a) W50 left out for those mice, as run, and (b) the code's; claims unchanged.",
+     "answered": "2026-10-22"
+    }
+   ],
+   "dandi:000061": [
+    {
+     "claim": "habituation-over-days",
+     "also": [
+      "airpuff-trajectory-ripple-reactivation",
+      "safe-trajectory-no-ripple-reactivation",
+      "aversive-direction-stronger",
+      "direction-all-cell-pairs",
+      "bla-rate-same-across-directions"
+     ],
+     "asked": "2026-10-20",
+     "question": "O1 lists three lap readings, and the criteria say the notebook runs every one. The dandiset holds no lap intervals (its `trials` table, in the Rat08 and Rat09 files only, holds intervals of 3 to 5 s, partly outside the run) and no position, so readings a and b cannot be run and only reading c (laps between consecutive rewards at opposite ends) can. Is a claim judged on reading c alone, or is it blocked when the other readings cannot be run?",
+     "passage": "Online Methods, \"a habituation index was calculated for each training session and animal as the total number of back-and-forth laps divided by the total time spent on the maze x 100\"; ClassifyLaps.m defines laps from position in a hand-picked 150-cm window.",
+     "why": "Under reading c the habituation index rises with training day under every lap count and both readings of \"gradually diminished\" (pooled p = 0.011 to 0.046), so the attempt records habituation-over-days as reproduced on reading c alone. If readings a and b are required, the claim is blocked as data_missing. The other claims listed are blocked for missing cell types and are not affected.",
+     "answered": "2026-10-20",
+     "answer": "Judged on reading c alone. The paper counts \"back-and-forth laps\" on a track where rats \"run back and forth on a linear track for water rewards\" (Online Methods, habituation index; Recordings and behavior), so a lap is a run between the two reward ends, which reading c counts from the reward times. Reading a exists only where the dataset holds lap intervals and reading b only where it holds position; neither is a separate measure the paper reports. The hand-picked 150-cm window of ClassifyLaps.m is not given anywhere, so no reading reproduces it exactly. O1 and the habituation-over-days criterion now say that a claim is judged on the O1 readings the dataset allows, reading c alone when a and b cannot be formed, recorded as a deviation."
+    },
+    {
+     "claim": "bla-pyr-sleep-firing-increase",
+     "also": [
+      "bla-int-sleep-firing"
+     ],
+     "asked": "2026-10-20",
+     "question": "O4 gives reading a (the monosynaptically identified cells where the dataset marks them) and reading b (all putative cells of each type). Five of the 33 files with units have a `cell_type` column (excitatory, inhibitory, unclassified), read as the identified cells, and no file has the putative types. Is the claim judged on reading a alone, with 152 excitatory and 36 inhibitory BLA units of one rat, or blocked because reading b cannot be run?",
+     "passage": "Fig. 2c legend, \"monosynaptically identified pyramidal cells; n = 675\" and \"monosynaptically identified interneurons, n = 175\".",
+     "why": "The legend's cells are the identified ones, which favours reading a. On it bla-pyr-sleep-firing-increase is reproduced and bla-int-sleep-firing is not reproduced (REM/wake p = 0.020); if reading b is required both are blocked as metadata_insufficient.",
+     "answered": "2026-10-20",
+     "answer": "Judged on reading a alone. The Fig. 2c legend gives the cells as \"monosynaptically identified pyramidal cells; n = 675\" and \"monosynaptically identified interneurons, n = 175\", and the Online Methods separate these from \"the remaining, unidentified cells\" typed by k-means, which matches a marking of excitatory, inhibitory and unclassified. Reading b is not the legend's set, so it is shown as a variant where it can be formed and is not needed. O4 now says so. The paper's cells come from all rats; one rat's 152 and 36 cells is a smaller sample, which the notes should state, but the claims carry no expected cell counts."
+    },
+    {
+     "claim": "reactivation-peaks-at-ripples",
+     "also": [
+      "direction-all-cell-pairs",
+      "ripple-modulated-cells-larger-reactivation"
+     ],
+     "asked": "2026-10-20",
+     "question": "Each of these claims has a test with all cells as well as one with pyramidal cells, and each lists in depends_on a claim that needs putative pyramidal cells (hpc-bla-reactivation-post-sleep, aversive-direction-stronger, bla-ripple-up-subgroup), which the dandiset cannot give. Under the protocol a claim that depends on a blocked claim is blocked. Do these claims need the dependency for their all-cell tests (for example, for the sessions or the ripple-modulated cells), or could their all-cell parts be judged on their own, at most as a partial outcome?",
+     "passage": "M7, \"A session enters with at least 6 hippocampal and 6 BLA cells of the type used\"; M6 is defined for every BLA unit.",
+     "why": "The attempt blocks all three and shows the all-cell tests as descriptions. With all cells, reactivation-peaks-at-ripples gives post above pre in 11 of 15 sessions (one-tailed p = 0.0042), direction-all-cell-pairs matches its statement (air puff p = 0.01, safe p = 0.0043, between p = 0.48), and ripple-modulated-cells-larger-reactivation does not hold (rank sum p = 0.27). If the dependencies are only on method, the first two could be partially reproduced or reproduced.",
+     "answered": "2026-10-20",
+     "answer": "The dependencies are on method only, and the all-cell tests can be judged on their own. The paper selects sessions by cell count per type (\"a minimum of 1 shank and 6 cells in each structure\", Online Methods; M7), which needs no other claim's result, and ripple modulation (\"a Poisson test with P < 0.001\" on spikes in and outside SPW-Rs, M6) is a per-unit test that uses no cell type. The all-cell n of Supplementary Fig. 11 (27 sessions) and Supplementary Fig. 5b (19 sessions) come from these rules with all cells. The depends_on entries are removed from the three claims. direction-all-cell-pairs has only all-cell tests and is judged in full (laps per O1, as answered above). For reactivation-peaks-at-ripples and ripple-modulated-cells-larger-reactivation the criterion now says that, when the pyramidal test cannot be run, the all-cell test is judged alone; partially reproduced when it holds, not reproduced when it does not."
+    }
+   ],
+   "dandi:000128": [
+    {
+     "claim": "fig6-peri-movement-space-best",
+     "also": [
+      "fig3-maze-most-not-maintained",
+      "fig6-each-dimensionality",
+      "fig6-performance-vs-dimensionality",
+      "fig7a-shuffled-space-poor"
+     ],
+     "attempt": "000128-churchland-2010-01",
+     "asked": "2026-10-22",
+     "question": "Header M1 gives two readings of the proto-trial selection, T1 (each velocity component must correlate with the condition mean at r > 0.9) and T2 (the two components concatenated). On the dataset T1 keeps 1452 of 1967 trials with delay > 400 ms (73.8%), leaves two conditions (the straight leftward reaches, whose vertical velocity is flat) with no trial and several with one or two, while T2 keeps 1786 (90.8%) and at least 10 per condition. The paper says the selection kept typically about 90% of trials. Does that sentence allow T1 to be set aside, or are both readings to stand?",
+     "passage": "Supplemental Experimental Procedures, Task design and behavioral control (\"Subsequent analysis was thus restricted to the subset of trials (typically ~90% of all trials) where the horizontal and vertical velocity profiles correlated with those of a reference 'proto-trial' with r > 0.9.\").",
+     "why": "Five claims change outcome between the readings and are blocked as methods_underspecified. Under T2 the peri-movement space is best (0.518 against 0.424 kinematic), the shuffled control holds, and one maze neuron keeps its tuning; under T1 the peri-movement space falls below the kinematic and kitchen-sink spaces and below zero at k of 10 or more, the shuffled control fails and no neuron reaches r = 0.72. Performance against dimensionality goes the other way (holds under T1, not under T2).",
+     "answer": "T1 can be set aside; T2 alone stands. The paper does not say how the two components combine (\"the horizontal and vertical velocity profiles correlated with those of a reference 'proto-trial' with r > 0.9\"), but it fixes two properties of its selection. It kept \"typically ~90% of all trials\", and every one of the 108 maze conditions stayed in the analyses. A third of the maze conditions are straight reaches without barriers, and for a straight horizontal reach the vertical velocity is flat, so a per-component threshold cannot keep those conditions. A reading that empties conditions is not the paper's selection. Header M1, and the criteria of fig4d-mean-correlation-jarray and fig6-peri-movement-space-best, now run T2 only. Claims and expected values unchanged.",
+     "answered": "2026-10-22"
+    },
+    {
+     "claim": "fig4d-mean-correlation-jarray",
+     "also": [
+      "fig3-maze-most-not-maintained",
+      "fig4-no-separate-populations",
+      "fig4e-correlation-time-course",
+      "suppfig1-population-averages",
+      "fig6-each-dimensionality"
+     ],
+     "attempt": "000128-churchland-2010-01",
+     "asked": "2026-10-22",
+     "question": "Header M6 reads \"tuning\" as the range over conditions (S1) or the SD over conditions (S2). With the J-array threshold of more than 5 spikes/s, S2 selects 6 of 182 units, and none that also has peri-movement tuning at least 1.5 times as strong, so the correlation claims have no neuron under S2. Does the paper allow S2 with these thresholds, or is it to be dropped?",
+     "passage": "Methods, Neural recordings and datasets (\"restricted to neurons with at least 10 spikes/s of preparatory tuning\" and \">5 spikes/s of preparatory tuning\" for the arrays); Methods, Correlations (\"at least 1.5 times as strong as preparatory tuning\").",
+     "why": "S2 gives no result for fig3, fig4d, fig4-no-separate-populations, fig4e and suppfig1, which are decided on S1 alone; in fig6-each-dimensionality, S2 under T2 makes L1 fail where S1 makes it hold.",
+     "answer": "S2 is to be dropped. The paper never defines the measure of tuning; it gives only the thresholds (\"at least 10 spikes/s of preparatory tuning\", \">5 spikes/s of preparatory tuning\" for the arrays, and peri-movement tuning \"at least 1.5 times as strong as preparatory tuning\"). With those thresholds the paper had J-array neurons tuned in both epochs, since Figure 4D gives their distribution with mean r = 0.13 and p = 0.03. A measure that leaves no such neuron is not the paper's. The Methods use one measure for both thresholds, so S2 is set aside throughout. Header M6 and the criteria of fig3-maze-most-not-maintained, fig4d-mean-correlation-jarray, fig6-peri-movement-space-best and prep-dimensionality now use S1 only. Claims and expected values unchanged.",
+     "answered": "2026-10-22"
+    },
+    {
+     "claim": "suppfig1-population-averages",
+     "attempt": "000128-churchland-2010-01",
+     "asked": "2026-10-22",
+     "question": "The criterion divides each neuron's rates by \"its maximum rate\" without saying over what. Is it the maximum over all conditions and times (the attempt's reading a) or over the four plotted conditions (reading b)?",
+     "passage": "Supplemental Figure 1 legend, as cited in the criterion.",
+     "why": "R2 (below a quarter) holds under (a) and not under (b); R1 holds under both, so the outcome does not change at present, but would if R1 were dropped.",
+     "answer": "The paper does not say. The Supplemental Figure 1 legend has only \"normalizing each neuron's activity by its maximum rate (results were similar without normalization)\". The criterion of suppfig1-population-averages now names both readings, (a) the maximum over all conditions and plotted times and (b) over the four plotted conditions, and both are run. The claim and its rule are unchanged.",
+     "answered": "2026-10-22"
+    },
+    {
+     "claim": "prep-dimensionality",
+     "attempt": "000128-churchland-2010-01",
+     "asked": "2026-10-22",
+     "question": "The claim's statement and its range of 7 to 11 read the paper's 7-10 as a two-sided range. The supplement says \"7-10 dimensions were required\", but the main text says \"at least 7-10 dimensions\". Is the claim a range or a lower bound?",
+     "passage": "Results, PD performance in a variety of spaces, paragraph 2 (\"because the dimensionality of preparatory activity itself is moderately high (at least 7-10 dimensions, methods)\"); Supplemental Experimental Procedures, Estimating the upper limit of PD performance (\"This T-matrix also allows us to estimate the dimensionality of preparatory activity\" and \"7-10 dimensions were required to capture 90% of the data variance\").",
+     "why": "Raised by the round-1 verifier. On the c x n matrix of preparatory epoch means, which the supplement defines (\"T was c\u00d7n with each row containing the mean preparatory activity for every neuron\"), the attempt finds 15 (N1) and 18 (N2) components, outside 7 to 11 but at least 7, so the outcome is not reproduced as a range and would be reproduced as a lower bound. The round-2 verifier judges the two-sided reading defensible. An earlier version of this question also asked which matrix \"This T-matrix\" means; the supplement's preceding sentence settles that, and that part is withdrawn."
+    }
+   ],
+   "dandi:000582": [
+    {
+     "claim": "layer2-grid",
+     "also": [
+      "grid-all-layers",
+      "gridness-range-similar",
+      "grid-stable",
+      "grid-phase-orientation",
+      "deep-hd-conjunctive",
+      "gridness-hd-continuous",
+      "conj-tuning-similar",
+      "speed",
+      "speed-slope-steeper",
+      "speed-intercept"
+     ],
+     "asked": "2026-10-20",
+     "question": "Reading O3 sets the gridness circle by \"the distance from the centre to the outermost peak's centre plus that peak's radius\", and removes the central peak \"as a disc of the radius of that peak\". Is a peak's centre the pixel of its maximum correlation or the centroid of its pixels, and is its radius that of a disc of the same area, or the largest distance from its centre to one of its pixels? The same choice sets the spacing (median distance to the six inner peaks) and the orientation.",
+     "passage": "SOM, Autocorrelation of rate maps, \"peaks defined as 100 or more contiguous pixels of 1.5 x 1.5 cm2 above a fixed threshold\"; \"the circle was fitted around the outermost peak\". The SOM gives no rule for a peak's position or size.",
+     "why": "The attempt runs both centres (maximum and centroid) and takes the radius as that of a disc of the same area. Between the two centres the fraction of grid cells changes by up to 0.06 in a layer (layer II 0.620 to 0.718 over all readings), and the readings decide whether layer II is within tolerance (13 of 32 readings) and whether layers V and VI hold the orientation part of grid-phase-orientation.",
+     "answer": "The paper does not give it. The SOM defines spacing as \"the distance from the central peak to the vertices of the inner hexagon\" and the circle as fitted \"around the outermost peak\", with peaks \"100 or more contiguous pixels\", and says nothing of a peak's centre or radius. Both centres (the pixel of highest correlation, the centroid) and both radii (the disc of the same area, the largest distance to a pixel of the peak) are now named as readings under O3 in the claims file, and the same centre serves spacing and orientation.",
+     "answered": "2026-10-20"
+    },
+    {
+     "claim": "hd-tuning-breadth-layers",
+     "asked": "2026-10-20",
+     "question": "The claims file says breadth is \"the angular standard deviation of the mean vector\". Batschelet (1981, the SOM's reference S8) defines two such quantities from the mean vector length r, the angular deviation s = sqrt(2(1 - r)) and the circular standard deviation s0 = sqrt(-2 ln r). Which one do the paper's means (55.9, 52.2 and 58.2 degrees) use?",
+     "passage": "SOM, Analysis of head-direction cells, \"The breadth of directional tuning was expressed by the angular standard deviation of the mean vector\"; fig. S2 and S4 legends, \"Angular deviation refers to the circular standard deviation as defined in the Supplementary Materials and Methods\".",
+     "why": "The circular standard deviation is larger than the angular deviation for the same cells (layer III means 62.5 to 76.2 against 49.1 to 56.5), so only the angular deviation can come near the paper's means, and the two give different numbers of significant layer differences (ANOVA 28 against 45 of 68 rows). The attempt runs both.",
+     "answer": "The paper does not settle it. The SOM says \"the angular standard deviation of the mean vector\" and cites Batschelet (S8); the fig. S2 and S4 legends say \"Angular deviation refers to the circular standard deviation\", which names one of Batschelet's quantities in the label and the other in the gloss, and the histogram axes (0 to 100 degrees) fit both. The criterion now names both, sqrt(2(1 - r)) and sqrt(-2 ln r), as readings; the claim's rule for readings applies.",
+     "answered": "2026-10-20"
+    },
+    {
+     "claim": "speed",
+     "also": [
+      "speed-slope-steeper",
+      "speed-intercept"
+     ],
+     "asked": "2026-10-20",
+     "question": "The criterion says the claim is reproduced \"when, under a combination of readings, all three fractions are within tolerance\", and methods_underspecified \"when readings disagree between these outcomes\". Under counting reading (b), positive slope, all three fractions are within tolerance under 54 combinations of the other readings (speed measure, positions, trials, cell classes) and only the order holds under 200. Is the claim then reproduced (some combination matches) or methods_underspecified (the combinations disagree)? Which of the readings are readings of the reported number (where any one matching suffices) and which are method details (where all must agree)?",
+     "passage": "Main text, paragraph 6, \"141/150 cells, P < 0.001\"; Fig. 4B legend, \"Nearly all grid cells, head-direction cells, and grid x head-direction cells had positive slope values\".",
+     "why": "The attempt follows the last sentence and blocks speed as methods_underspecified, which by the protocol also blocks speed-slope-steeper and speed-intercept, whose analyses ran (partially reproduced and not reproduced under every reading). Under the first sentence speed would be reproduced.",
+     "answer": "This is a question of the criterion, which was unclear, and it is now rewritten. The counting readings (a) and (b) and the three significance measures are readings of the reported number (what \"141/150 cells, P < 0.001\" counts), so for given method details the best of them is taken. The speed measure, the positions, the trials and the cell classes are method details, and the outcome must agree across all their combinations, or the claim is methods_underspecified. The statement and expected values are unchanged.",
+     "answered": "2026-10-20"
+    },
+    {
+     "claim": "hd-with-grid-colocalized",
+     "asked": "2026-10-20",
+     "question": "Are the \"head-direction cells\" whose units are counted the pure head-direction cells of table S1B, or every cell passing the head-direction criteria including conjunctive cells; and must the grid or conjunctive cell in the same unit be another cell?",
+     "passage": "Main text, paragraph 4, \"Head-direction cells were usually encountered together with grid cells (fig. S6)\"; fig. S6 counts grid cells, head-direction cells and grid x head-direction cells as three classes.",
+     "why": "With conjunctive cells counted as head-direction cells and allowed to stand for the grid cell themselves, every unit holding a conjunctive cell passes, which raises the tetrode fraction (0.39 to 0.48 for pure head-direction cells, below the criterion's one half). The attempt uses pure head-direction cells and another cell.",
+     "answer": "The paper gives the first part. Fig. S6 counts \"grid cells, head-direction cells and grid x head-direction cells\" as three classes, and table S1B and the speed paragraph (\"headdirection cells (153/220 cells\") use head-direction cells for the 220 pure ones, so the cells are the pure head-direction cells, and the cell with them is another cell. Whether that cell must be a pure grid cell (fig. S6's class) or may be a conjunctive cell (which meets the grid criterion) is not given; the criterion now names both readings.",
+     "answered": "2026-10-20"
+    },
+    {
+     "claim": "grid-phase-orientation",
+     "asked": "2026-10-20",
+     "question": "Orientation within files is compared with \"the differences between sessions of different rats\". Are those pairs taken within the same layer as the simultaneous pairs, or from all layers? And does \"Reproduced when both parts hold under every reading\" cover readings O1 to O3 as well as the two phase readings?",
+     "passage": "Fig. S2 legend, \"The broad range of orientations could be due to differences in preferred grid-cell orientation between rats\".",
+     "why": "Orientation holds in layer VI under 59% of the O1 to O3 readings with the layer's own rats and 44% with all layers; both parts hold in every layer under 14 or 12 of 32 readings. The attempt runs both pools and blocks the claim as methods_underspecified.",
+     "answer": "The paper does not name the pool. The fig. S2 legend (\"The broad range of orientations could be due to differences in preferred grid-cell orientation between rats\") explains the per-layer histograms of fig. S2 but fixes no comparison, and the test is a standard choice; the criterion now names both pools, the same layer and all layers, as readings. \"Every reading\" covers O1 to O3 as well as the phase readings, and the criterion now says so.",
+     "answered": "2026-10-20"
+    }
+   ],
+   "dandi:001754": [
+    {
+     "claim": "si-comparable-to-preflight",
+     "also": [
+      "si-rat1-fd9-vs-preflight",
+      "si-rat3-fd4-vs-preflight",
+      "fd4-abnormal-selectivity",
+      "fig3-stability-across-sessions"
+     ],
+     "asked": "2026-10-20",
+     "question": "Reading M-b recomputes rate maps from spikes and position. The dandiset gives position only at the spike times of each file's units, so no occupancy time can be computed from it, and the preflight files hold no position at all. Should M-b divide spike counts by the deposited occupancy map of the epoch (the attempt does this for the flight epochs), and when M-b cannot be computed for the preflight cells, is a comparison with preflight judged on M-a alone?",
+     "passage": "The Fig. 1 legend says all statistical analyses kept off-track positions; the paper gives no bin size, smoothing or occupancy rule.",
+     "why": "Unsmoothed 64 x 64 maps give a spatial information about twice that of the deposited maps (2.9 to 4.0 bits per spike in flight against 0.7 to 1.6 for M-a), so a test of M-b flight values against M-a preflight values finds a difference in every rat, and judging on M-a alone does not. The attempt judges these claims on M-a and shows the M-b flight values and the mixed test as variants.",
+     "answered": "2026-10-20",
+     "answer": "The paper does not say. It is a two-page brief communication with no Methods, no supplement and no code; it gives the measure only by citation to Skaggs et al. (ref. 13), whose formula needs occupancy, and says only that \"all statistical analyses included these off-track data\" (Fig. 1 legend). Dividing spike counts by the epoch's deposited occupancy map is a reading it allows for M-b. It compares one index computed alike for both groups (\"An index of spatial tuning specificity ... did not significantly differ between cells recorded preflight and those recorded on FD9\"), so a comparison uses the same map reading on both sides; where M-b cannot be computed for preflight, the comparison is judged on M-a and the mixed test is a variant. Written into the criteria of si-comparable-to-preflight (which the rat 1 and rat 3 claims follow) and fd4-abnormal-selectivity, and into the opening comment."
+    },
+    {
+     "claim": "si-comparable-to-preflight",
+     "also": [
+      "si-rat1-fd9-vs-preflight",
+      "si-rat3-fd4-vs-preflight",
+      "fd4-abnormal-selectivity"
+     ],
+     "asked": "2026-10-20",
+     "question": "Each preflight file holds one recording day with one epoch labelled ES and one labelled MC. Is each epoch a candidate session under S-a (as the attempt reads it), and under S-b, is the session closest before launch the later epoch of that day (MC in every rat) or the whole day?",
+     "passage": "The paper says rat 2 ran a flat rectangular track 4 days before launch (Fig. 2b) and names no track for rats 1 and 3.",
+     "why": "For rat 1 the flight day 9 cells do not differ from the preflight ES epoch (p = 0.50) and do differ from the preflight MC epoch (p = 0.0055), so the claim is blocked until the session is fixed.",
+     "answered": "2026-10-20",
+     "answer": "The paper does not say. It never mentions ES or MC epochs; for rat 2 it says only that the preflight cells were \"recorded 4 days before launch as the rat ran clockwise on a flat, rectangular track\", and for rats 1 and 3 it says \"that rat's preflight data\" and \"this rat's place cells before the flight\". Each epoch is a candidate under S-a. Under S-b each epoch of the day closest before launch is run on its own, as the paper describes one track for rat 2 and prefers neither epoch; the later epoch is not given. When the epochs disagree the claim stays blocked as the criterion says. Written into the criterion of si-comparable-to-preflight."
+    },
+    {
+     "claim": "fig3-stability-across-sessions",
+     "asked": "2026-10-20",
+     "question": "The criterion reads \"most\" as at least 4 of the 7 active cells of session 2. On the dandiset session 2 has 11 active cells under M-a and 16 under M-b, not 7. Is \"most\" then a count of at least 4, or a fraction of at least 4/7 (or a majority) of the active cells?",
+     "passage": "Fig. 3 legend, \"Most place cells maintained the same firing locations, although the fourth cell lost its field\".",
+     "why": "Under M-b, 6 of 16 cells keep their field by reading (a) and 1 of 16 by reading (b); as a count reading (a) passes and (b) fails, as a fraction both fail.",
+     "answered": "2026-10-20",
+     "answer": "The paper gives it as a fraction of the cells shown. \"Most\" refers to \"the same seven cells\" of Fig. 3, the active cells of session 2, and the legend says \"Most place cells maintained the same firing locations, although the fourth cell lost its field\", so 6 of 7. \"Most\" is more than half of the active cells of session 2; the count of 4 in the criterion was that majority for the paper's 7 cells, not a fixed count. Cells that gained a field in session 3 are \"not shown\" and are not in the denominator. The criterion now reads more than half; the statement and the expected count of 7 are unchanged."
+    },
+    {
+     "claim": "fig3-stability-across-sessions",
+     "asked": "2026-10-20",
+     "question": "In the pinned version every Rat3 flight day 4 ES rate map has cell_number -1, and the table's link from cell_number to cluster_id fails elsewhere, so the deposited maps of session 2 and session 3 cannot be paired by cell from the dandiset's identifiers. May reading M-a pair them through the unit whose spike-count map each deposited map matches best (shown as a variant), or is M-a not run?",
+     "why": "Paired this way, 6 and 5 of 11 cells keep their field under readings (a) and (b), which passes a count reading of \"most\" and fails a fraction reading.",
+     "answered": "2026-10-20",
+     "answer": "The paper does not address it. It only requires that the maps of both sessions are of the same unit (\"the same seven cells\", Fig. 3 legend); how the dandiset's maps are tied to units is a question about the data. The criterion now allows M-a with the best-match pairing when each deposited map is tied to one unit and no unit to two maps, reported with the match; otherwise M-a is not run for this claim."
+    },
+    {
+     "claim": "direction-selectivity",
+     "asked": "2026-10-20",
+     "question": "The criterion computes, per bin, a counterclockwise rate and a clockwise expected count, which need the time spent in each bin in each direction. The dandiset has position only at spike times and one occupancy map per epoch, not split by direction, and nothing gives the track's layout in the image from which the circuit's direction could be read. Is there a reading the paper allows with these data, or does the claim stay blocked?",
+     "why": "Without a time base per direction no rate can be formed, so the attempt blocks the claim.",
+     "answered": "2026-10-20",
+     "answer": "The paper gives no method, only \"Some cells demonstrated place fields when the rat was moving only counterclockwise through a single location\", and no track layout or time base by direction. It allows no reading that does without time spent per bin in each direction, so the claim stays blocked as methods_underspecified; the criterion now says so."
+    }
+   ],
+   "dandi:001828": [
+    {
+     "claim": "fig3d-anxa1-ramp-to-touch",
+     "asked": "2026-10-21",
+     "question": "The photometry sessions of the water drop task are stored as reaching sessions whose annotated events (all made with the mouth) are labelled correct (drop retrieved), drop, semidrop, miss and empty (reach to an empty spout). Which of these is the \"water drop touch\" the signals are aligned to, (a) correct only, or (b) every contact with a drop (correct, drop and semidrop)? The same question applies to fig3e-dlight-dcp-ccp-reward and fig3fg-auc-change-from-baseline.",
+     "passage": "Results, Anxa1+ DANs do not encode motivational value, paragraph 1, \"The recorded signals were synchronized with licking behavior, tracked via a high-speed camera\"; legend of Figure 3D, \"Z-scores of FP signals aligned to the water drop touch\". No passage names the event types.",
+     "why": "Drop and semidrop events are few in most sessions but make up most events in some (for example 29 drops against 6 correct in one Anxa1 session), so the mean AUC per recording can change. The attempt runs both readings.",
+     "answer": "The paper does not say. The legend has \"aligned to the water drop touch\" and the Results \"peaked upon contact with the water droplet\"; no passage names event types, Supplementary Video 1 and the figures are not in the text, and the code record (doi:10.5281/zenodo.14138011) still answers 404. Both readings fit the text. The criterion of fig3d-anxa1-ramp-to-touch now names (i) correct only and (ii) every contact with a drop (correct, drop, semidrop), empty-spout events excluded in both, and fig3e and fig3fg take the same readings. Claims unchanged.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "fig3d-anxa1-ramp-to-touch",
+     "asked": "2026-10-21",
+     "question": "The dataset holds more recordings of this task than the legend of Figure 3D and 3E counts (Anxa1 GCaMP-dCP 15 sessions of 6 mice against 10 of 7; DAT GCaMP-dCP 8 of 5 against 4 of 3; dLight-dCP 21 of 7 against 13 of 6; dLight-cCP 15 of 6 against 11 of 6). Does the paper say which sessions were kept (for example one session per day, the first sessions, or a minimum number of events), and does \"Artifacts and instances of signal intensity loss were excluded\" remove whole recordings or only stretches of signal?",
+     "passage": "Methods, Fiber photometry recordings, \"Artifacts and instances of signal intensity loss were excluded from the final data set.\"",
+     "why": "The RM ANOVA and the Sidak tests depend on which recordings enter. The attempt uses every session of the right group and site with at least one event, and reports the result per mouse.",
+     "answer": "The paper does not say. It gives only the legend counts (\"mice = 7, n = 10 recordings\" and so on) and the Methods sentence \"Artifacts and instances of signal intensity loss were excluded from the final data set\", which allows both whole recordings and stretches of signal. No rule by day, order or event count is given. The criterion of fig3d-anxa1-ramp-to-touch now uses every recording of the group and site with at least one event, reports the n used against the legend's, and reports a per-mouse summary without judging it. Claims unchanged.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "figs2-evoked-da-dcp-ccp",
+     "asked": "2026-10-21",
+     "question": "The dataset holds 20 sessions of evoked dLight release, two Anxa1-Flp mice with the fiber in dCP and two in cCP, each at five laser powers (0.1, 0.2, 0.5, 1 and 2 mW), with 144 to 175 trains per session. Which powers enter the dCP against cCP comparison (all, pooled per session, or one power), is the unit the session or the mouse, and over which window before the train is the pre-stimulus baseline taken?",
+     "passage": "Results, Specialized organization of Anxa1+ DANs, paragraph 2, \"Optogenetic activation of Anxa1+ DANs at varying intensities elicited DA release in the dCP (Figure S2).\" Figure S2 is not in the text read.",
+     "why": "With two mice per site, a test over mice has no power and a test over sessions pools powers; the outcome can differ between them. The attempt runs sessions pooled over powers (10 against 10), each power alone, and a per-mouse summary, with a 1 s baseline before each train.",
+     "answer": "The paper does not say. The main text has only \"Optogenetic activation of Anxa1+ DANs at varying intensities elicited DA release in the dCP (Figure S2)\"; Figure S2 is not in the text and the code record does not resolve. The criterion of figs2-evoked-da-dcp-ccp now names (a) all powers pooled per session and (b) each power alone, the session as unit in both, a per-mouse summary reported and not judged, and baselines of 1 s and 2 s before train onset. Claim unchanged.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "fig6j-reaching-accuracy",
+     "asked": "2026-10-21",
+     "question": "The reaching sessions carry manually annotated events labelled correct, drop, semidrop, miss, empty (a reach to an empty spout) and unknown, each with the paw used and its distance from the spout in cm. Which of these are the \"grasp attempts\" of the target accuracy fraction (all labelled reaches, or all but empty and unknown), and is the preferred forelimb chosen per mouse over all its sessions or per session?",
+     "passage": "Methods, Forelimb reaching task, \"Behavioral events and distances from the waterspout were manually analyzed and measured using Kinovea\"; legend of Figure 6J. No passage defines a grasp attempt or the preferred forelimb.",
+     "why": "Empty-spout reaches are a large share in some sessions (up to 191 of 400), and their distances may differ from reaches to a drop. The attempt runs both event sets with the preferred limb per mouse, and per session as a variant.",
+     "answer": "The paper does not say. Accuracy is \"the percentage of grasping attempts made within the target (< 0.2 cm) with the preferred forelimb\" (Results), and an attempt is described as start, \"grasping upon contact with the water droplet\", and retraction; Figure 6F shows on- and off-target efforts. No passage lists event types or how the preferred forelimb is chosen. The criterion of fig6j-reaching-accuracy now names (a) every labelled reach with a distance and (b) all but empty and unknown, each with the preferred limb (i) per mouse and (ii) per session. Claim unchanged.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "fig6j-reaching-accuracy",
+     "asked": "2026-10-21",
+     "question": "The sessions are labelled by test phase (test1, test2, test4, test8), and the dataset holds more mice than the legend (TeTx cohort 10 TeTx and 10 controls; Arch cohort 10 Arch and 7 controls, recorded from 2023 to 2025). In the Arch cohort the session metadata say the laser was switched on after the first reach in test1, on in test2 and test4, and off in test8, while the Methods say it was off on the first day and on for the last three. Which test phases are the first and the fourth session of Figure 6J, and are the controls of Figure 6J the TeTx littermates, the Arch littermates, or both?",
+     "passage": "Methods, Forelimb reaching task, \"For Arch experiments, the laser remained off during the initial 4 days (habituation and the first day of reaching) and was activated during the final 3 days of the experiment.\"",
+     "why": "The group sizes and the day-1 and day-4 values depend on it. With test1 and test4, mice with annotated reaches on both days, and the controls of both cohorts pooled, the mice recorded before the preprint was posted number 8 controls and 4 TeTx, as in the legend, and 5 Arch against 6. The attempt runs all mice with both days and, as a variant, those recorded before the preprint.",
+     "answer": "In part. Day 1 and day 4 are the first and fourth of the training sessions, which ran \"for 4 consecutive days in 15-minute sessions\" after habituation, with \"the laser remained off during the initial 4 days (habituation and the first day of reaching) and was activated during the final 3 days\" (Methods); the paper does not use the labels test1 to test8, so the first and fourth training sessions of each mouse are used and laser labels that differ are reported. The legend has one control group, \"Ctrl mice (n = 8)\", in one RM two-way ANOVA with both silenced groups, so the controls are one pooled group; the cohort they come from is not given. Data recorded after the preprint cannot be in the figure, so the criterion now takes the mice recorded before it as the main run and all mice as a variant. Of note, 8 + 4 + 5 = 17 mice fits the printed F(2,14), where 8 + 4 + 6 does not. Claim and expected values unchanged.",
+     "answered": "2026-10-21"
+    },
+    {
+     "claim": "fig1b-anxa1-downregulated-rnaseq",
+     "asked": "2026-10-21",
+     "question": "GEO GSE282753 is public (since 2026-10-20) but holds only MitoPark and control counts (7 control and 6 MitoPark mice at 10 weeks, each with 3 to 12 technical libraries), not the cMfn2KO-early data the claim also needs. Does the paper name where the cMfn2KO counts are deposited, and how are the technical libraries of a mouse combined before the differential expression test?",
+     "passage": "Code and data availability, \"The RNA-seq dataset generated and analyzed during the current study will be available upon publication (NCBI Gene Expression Omnibus, accession number GSE282753)\"; legend of Figure 1A, \"MP-early (n = 5) and cMfn2KO-early (n = 5)\".",
+     "why": "The claim holds only if Anxa1 is down in both models. Without the cMfn2KO counts it cannot be tested, and the MitoPark result can depend on whether libraries are summed per mouse or treated as samples. The claim is blocked until answered.",
+     "answer": "The paper does not name a place for the cMfn2KO counts. Its only deposit is \"NCBI Gene Expression Omnibus, accession number GSE282753\" (Code and data availability); reference 41 is cited for the cMfn2KO model, not as a data source, and the code record (doi:10.5281/zenodo.14138011) still answers 404 on 2026-10-21. How technical libraries are combined is not given either. The legend counts mice (\"MP-early (n = 5)\"), so the criterion now sums libraries per mouse, with libraries as samples only as a variant, and says the cMfn2KO half stays blocked while the MitoPark half is run and reported. Claim unchanged.",
+     "answered": "2026-10-21"
+    }
+   ],
+   "crcns:ret-1": [
+    {
+     "claim": "fig9d-rf-size-similar",
+     "question": "Which flickering-bar recording of a retina gives a cell's spike-triggered average, its firing rate and its LN fit? The data set holds, per retina, one or two recordings of vertical bars (full height) at 8.3 or 16.6 um, and for six retinas also one of horizontal bars (full width) at the same width; retina 20080624_R2 has two vertical-bar recordings at 16.6 um and 20080624_R3 one more at 41.5 um. The claims file names bars of 8.3 or 16.6 um but not their orientation, nor what is done when a retina has more than one such recording. The same question applies to fig9e-slower-time-course, fig9f-lower-firing-rate, fig9g-threshold-unaltered, fig9h-gain-reduced and s3-receptive-field-surrounds. Tested here under three readings, (A) the first vertical-bar recording at 8.3 or 16.6 um, (B) all vertical-bar recordings at 8.3 or 16.6 um pooled (spikes and frames together), (C) the horizontal-bar recording where the retina has one, otherwise as A.",
+     "passage": "Methods, Electrophysiology, \"To map spatio-temporal receptive fields, we projected gratings of adjacent thin bars (8.3 or 16.6 \u03bcm width). Each bar flickered black or white according to a pseudo-random binary sequence (16.6 ms frame duration).\" Figure 9F legend, \"Average firing rate observed during stimulation with flickering gratings.\"",
+     "why": "The measures differ between recordings of the same cells (the receptive field profile along a different axis, a different number of spikes and so a different noise level, a different firing rate), and the readings change the six mutant and one control retina with horizontal bars and the mutant retina with two vertical recordings, so a band comparison near its limit could change.",
+     "answer": "The paper does not give it. The Methods (Electrophysiology) say only \"we projected gratings of adjacent thin bars (8.3 or 16.6 \u03bcm width)\", with no orientation and nothing on retinas with more than one such recording; the Results (\"randomly flickering bars\") and the Figure 9 legends add nothing, the supplement is not in the text, and the paper links no code. The claims file now names readings A, B and C in the fig9d-rf-size-similar criterion, and fig9e, fig9f, fig9g, fig9h and s3 require their outcome under all three.",
+     "answered": "2026-10-20"
+    }
+   ]
   }
  },
  "claim_files": {
@@ -50769,7 +52020,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-23T13:30:31+00:00",
+ "generated": "2026-10-23T13:32:05+00:00",
  "queue_generated": "2026-10-23T11:39:25+00:00",
  "queue_counts": {
   "public_dandisets": 661,
