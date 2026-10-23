@@ -1,4 +1,4 @@
-# Encore
+# Encore CLI
 
 Encore checks a dataset against the paper it came from. AI agents read the paper, write down each of its claims and how to test it, and then test the claims on the data, without being able to change them. You get back what came of each claim and, often more useful, what the run found wrong with the data along the way: units that do not match, metadata that is missing, data the paper describes but the files do not hold.
 
