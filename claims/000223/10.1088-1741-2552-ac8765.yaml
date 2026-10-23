@@ -1,0 +1,388 @@
+# Claims for Xue, Buccino, Saseendran Kumar, Hierlemann & Bartram (2022) on dandiset 000223.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
+# protocol pilot-10 as stated in docs/protocol.md (Reader).
+#
+# Text read: the accepted author manuscript in PubMed Central (PMC7613561, UKPMC funders author
+# manuscript), as served by ncbi_pmc, full text with Methods, figure legends and Table 1, and its
+# one supplement (EMS152915-supplement, three figure supplements of Figure 1: indicator expression,
+# demixing example, burst detection example). The version of record was not read. No PDF of the
+# main text was available; none was needed, as Table 1 is legible in the text.
+#
+# Code read: https://github.com/starquakes/mea_spineca_mapping at commit
+# 99c2a478393341a24c58d6ef6ab5db5b0b528d03 (2022-09-27). It holds imaging_tools.py (dF/F, demixing,
+# NWB loading, peak detection, surrogate generation, R distributions) and four notebooks:
+# 0_export-to-nwb, 1_match-spine-trace-with-spike-trains (convolution, dF/F, burst detection and
+# exclusion, demixing, Pearson R ranking), 2_simulate_surrogate_data_for_validation (noise and signal
+# estimate, GT-R and test-R distributions, acceptance test), 3_method_validation_and_explore_optimal
+# _thresholds (surrogates for all units, TP/FN/TN/FP, F-score grid), and log_release_Pr.npy (one draw
+# of the release probabilities). The notebooks carry no saved numeric outputs for any recording.
+#
+# Data the paper used: primary cortical neurons of E18 Wistar rat embryos cultured on a CMOS
+# HD-MEA (26'400 electrodes at 17.5 um pitch, 1'024 channels recorded at 20 kHz), sparse
+# jGCaMP7b expression, recorded at DIV 18 to 21. 19 paired recordings from 10 cultures, each a
+# confocal time series of a target postsynaptic cell (7 to 15 Hz, typically 2 to 3 min) with a
+# simultaneous HD-MEA recording, aligned by camera TTL pulses. One target spine per recording, two
+# in one recording (20 spines in all; Table 1 rows 9 and 10, culture 3). Per recording the paper
+# uses the curated SpyKING Circus 0.8.4 units (Table 1 "total #units", 50 to 185), and per spine the
+# fluorescence trace of a spine ROI and of its adjacent dendritic shaft ROI. Per the Data
+# availability section and the code's README, each NWB file holds the raw extracellular recording,
+# the curated sorted units, the imaging series, and the spine and shaft ROIs with their traces.
+# The paper gives no map from Table 1 rows to files; culture ID and unit count per row (Table 1)
+# are the only keys it offers.
+#
+# Pipeline as the claims use it (Methods 2.4 to 2.8, Results 3.1 to 3.3, and the code, cited in
+# each criterion). Spine and shaft traces are taken from the file's ROI traces (notebook 1, LOAD_DATA)
+# and turned into dF/F with a moving 25th percentile baseline over 100 frames
+# (scipy.ndimage.percentile_filter, imaging_tools.dff method winperc2). Demixing subtracts the
+# shaft trace fitted to the spine trace by robust linear regression (Methods 2.4; the code uses
+# sklearn HuberRegressor with defaults, slope and intercept). Each unit's spike train is convolved
+# with an exponential kernel of decay 0.5 s (elephant ExponentialKernel sigma 0.5 s,
+# instantaneous_rate at the 20 kHz sampling period, center_kernel False), sampled at the imaging
+# frame times (searchsorted of frame times into MEA sample times), 1 is added and the same dF/F is
+# applied, NaN and inf set to 0 (code only). Network bursts are found as in Methods 2.6 and
+# extended by 0.1 s before and 0.5 s after; imaging frames inside the extended bursts are dropped
+# (notebook 1 uses frame times np.linspace(0, MEA duration, number of frames) for this). Pearson R
+# of the demixed spine trace with every convolved trace over the kept frames; the unit with the
+# largest R is the best-matching unit and its R the best-R.
+#
+# Burst detection details (Methods 2.6, notebook 1). Hyperactive units are left out first, by
+# one of the two strategies the Methods give, (i) rate above the 99.75th percentile of unit rates
+# (the code's default, PC = True) or (ii) rate above 15 Hz. Population spike count of the other
+# units in 10 ms bins; f_baseline is the 85th percentile and f_thresh the p_thresh percentile of
+# the bin counts; peaks of height at least f_thresh, prominence at least f_thresh
+# (scipy.signal.peak_prominences), at least 50 ms apart; burst edges where a smoothed trace first
+# falls to f_baseline on each side of the peak, smoothing by locally weighted linear regression
+# over 5 data points (Methods; the code uses statsmodels lowess with frac 0.0002 of the bins, shown
+# as a variant); bursts touching the start or end and bursts with no spikes dropped; bursts closer
+# than 75 ms merged. p_thresh "was visually chosen for each data set" and is not reported per
+# recording; the Methods give it as typically between the 96th and 99th percentile, and the code's
+# default is 97.
+#
+# Surrogates (Methods 2.7, Results 3.2, notebook 2, imaging_tools.generate_surrogates). Release
+# probabilities are numpy.random.lognormal(2.5, 0.6) scaled by 0.01, values above 1 replaced by
+# uniform values in 0 to 1, 1'000 of them (the code loads the stored draw log_release_Pr.npy; a
+# fresh draw is the Methods' reading, the stored one a variant). For each surrogate, ceil(Pr N) of
+# the unit's N spikes are kept at random (code; a Bernoulli draw per spike with probability Pr is
+# the other reading of the Methods' wording, shown as a variant), convolved and sampled as above,
+# divided by its standard deviation, scaled by the median over pixels of (signal pixel SD minus
+# noise pixel SD), the median of the spine pixels' medians added as baseline, white noise of SD the
+# median noise pixel SD added, and the 25th percentile, 100 frame dF/F applied. The signal region
+# is the spine ROI; the noise region is "a background ROI close to the spine", subsampled at random
+# to the signal region's pixel count. GT-Rs are the R of 1'000 surrogates of the best-matching unit
+# with that unit's convolved trace; test-Rs the R of 1'000 surrogates of the second-best unit with
+# the best unit's convolved trace; all R over the frames outside extended bursts. A connection is
+# accepted when best-R exceeds both the Q_test quantile of the test-Rs and the Q_GT quantile of the
+# GT-Rs (numpy nanquantile).
+#
+# Open details that recur. (1) p_thresh per recording, readings the integer percentiles 96, 97, 98
+# and 99. (2) The hyperactive-unit strategy, readings (i) and (ii) above. (3) The background ROI
+# for the noise estimate, unless the dataset holds it. (4) Random draws (release probabilities,
+# spike retention, noise, pixel subsampling), a standard choice of seed; their effect is shown
+# where a claim names it. Within a recording, the same p_thresh and strategy are used for every
+# claim, and the one carried forward is the pair whose best-R is nearest to Table 1 (the paper
+# fixed one value per data set and reports only its outcome); results at p_thresh 97 with strategy
+# (i), the code's defaults, are shown for every recording as well.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000223"
+paper: doi:10.1088/1741-2552/ac8765
+claims:
+- id: data-scale
+  statement: The paper made 19 paired spine Ca2+ imaging and HD-MEA recordings in 10 cultures,
+    tested 20 spines (one per recording, two in one recording), and the recordings have a mean of
+    102 ± 43 sorted units each.
+  source: Results, 3.4 Performance evaluation on experimental data, paragraphs 1 and 2; Table 1
+  quote: we conducted 19 paired spine Ca 2+ imaging and HD-MEA recording experiments in 10 different
+    cell cultures ... based on 19 recordings with a mean of 102 ± 43 units per recording ... (in one
+    of recordings two spines were chosen)
+  expected:
+  - quantity: paired recordings
+    value: 19
+    tolerance: 0
+  - quantity: cultures
+    value: 10
+    tolerance: 0
+  - quantity: tested spines
+    value: 20
+    tolerance: 0
+  - quantity: mean sorted units per recording
+    value: 102
+    tolerance: 10.2
+  - quantity: SD of sorted units per recording
+    value: 43
+    tolerance: 4.3
+  criterion: Counts of recordings, cultures and spines are exact, as they describe the data
+    collected. Units are the curated sorted units of each recording. The paper does not say over
+    which set the mean and spread are taken or which SD is meant; Table 1 settles it, as 19
+    recordings (rows 9 and 10 counted once) with the population SD (ddof 0) give 101.6 ± 42.6,
+    while 20 rows give 105.5 ± 44.8 and the sample SD gives 43.8. That reading is used, and the
+    other is shown. The per-row unit counts of Table 1 are compared with the files as well, each
+    within 10%.
+- id: table1-best-r
+  statement: For each of the 20 tested spines, the best-R (the Pearson R of the demixed spine
+    trace with the convolved trace of its best-matching unit, outside network bursts) has the
+    value given in Table 1, from 0.148 to 0.765.
+  source: Table 1, column best_R; Figure 5(a)
+  inferred: The per-spine values are given only in Table 1 (column best_R); Figure 5(a) plots them.
+    No sentence of the text states them.
+  criterion: The pipeline of the opening comment, from the Methods 2.4 to 2.6 and notebook 1 of the
+    code, with each detail cited there. Each spine is matched to its Table 1 row by culture and unit
+    count; a spine's best-R matches when it is within 10% of the Table 1 value under at least one of
+    the readings of the open details (p_thresh 96 to 99, hyperactive strategy (i) or (ii)), as the
+    paper chose p_thresh per data set without reporting it. Every reading's value is shown.
+    Reproduced when all 20 spines match; partially reproduced when 15 to 19 match; not reproduced
+    otherwise. The lowess variant (frac 0.0002) and the code's default pair (97, (i)) are shown.
+- id: fig1e-best-r-gap
+  statement: In the example recording of Figure 1(e), the best-R shows the largest increase over
+    the next ordered R value among all units.
+  source: Results, 3.1 Identifying the presynaptic unit of a dendritic target spine, last paragraph;
+    Figure 1(e)
+  quote: Moreover, the R value for the best-matching unit ( best-R ) shows the largest increase with
+    respect to the next (ordered) R value among all units
+  depends_on:
+  - table1-best-r
+  criterion: The paper does not say which recording is the example. For each spine, the R values
+    of all units are sorted and the gap between best-R and the second R is compared with every
+    other gap between consecutive sorted values. Reproduced when the first gap is the largest for at
+    least one spine (the example is one of them); the number of spines for which it holds is
+    reported. A claim about one unnamed example, so a weak test.
+- id: table1-optimal-thresholds
+  statement: For each recording, simulated ground-truth connections of every unit give an F-score
+    surface over the quantile pair (Q_test, Q_GT), whose maximum and optimal quantiles are those of
+    Table 1 (max_F 0.485 to 0.870).
+  source: Table 1, columns GT_Q, test_Q and max_F; Figure 4; Results, 3.3 Method validation and
+    threshold optimization
+  inferred: The per-recording values are given only in Table 1; the procedure is in Results 3.3,
+    Methods 2.8 and Figure 4.
+  depends_on:
+  - table1-best-r
+  criterion: As in Results 3.3, Methods 2.8 and notebook 3 of the code. For every unit, 1'000
+    surrogates with the recording's noise and signal estimate (opening comment); for each surrogate
+    the R with every unit's convolved trace over the kept frames; the test-Rs of unit i are the R of
+    the surrogates of each surrogate's second-best unit with unit i's convolved trace (pooled over
+    all 1'000 surrogates, imaging_tools.compute_test_r); the GT-Rs of unit i are the R of its own
+    surrogates with its own trace. For each grid pair (100 values from 0 to 1, np.linspace rounded
+    to 3 decimals, which gives the Table 1 quantiles), the threshold is the larger of the two
+    quantiles; with unit i present, a surrogate whose best unit is i and whose best R passes is TP,
+    else FN; with unit i removed, the best R of the other units passing is FP, else TN. F with beta
+    0.5, summed over all units. The Methods and the code disagree on a surrogate whose best unit is
+    not i in the test with i present; the Methods count it FP if it passes and TN if not (main
+    reading), the code counts it FN (variant). The noise estimate uses the background ROI of claim
+    acceptance-9-of-20; for recording 3 (two spines) both spines' estimates are run. Each recording's
+    max F matches when within 10% of Table 1; ties of the maximum are all reported, and Q_GT and
+    Q_test match when one maximum lies within 10% of the Table 1 values. Reproduced when max F
+    matches for at least 17 of the 19 recordings; partially for 10 to 16; not reproduced below. The
+    quantiles are reported for each recording.
+- id: mean-max-fscore
+  statement: The simulated ground-truth test gives large F-scores across experiments, a mean maximum
+    F-score of 0.692 ± 0.136 over 19 recordings with 1'000 surrogates per unit.
+  source: Results, 3.4 Performance evaluation on experimental data, paragraph 1
+  quote: We obtained typically large F -scores across experiments (mean = 0.692 ± 0.136 based on 19
+    recordings with a mean of 102 ± 43 units per recording and 1’000 generated surrogate spine Ca 2+
+    response traces per unit)
+  depends_on:
+  - table1-optimal-thresholds
+  expected:
+  - quantity: mean of per-recording maximum F-score
+    value: 0.692
+    tolerance: 0.0692
+  - quantity: SD of per-recording maximum F-score
+    value: 0.136
+    tolerance: 0.0136
+  criterion: Mean and population SD (ddof 0) over 19 recordings, recording 3 counted once; this is
+    the reading that gives 0.692 ± 0.136 from Table 1 (20 rows give 0.697 ± 0.135). The ± is the
+    sample spread, not an uncertainty of the mean, so the tolerance is 10% of each value. Under
+    both readings of the classification of a misidentified surrogate (claim
+    table1-optimal-thresholds).
+- id: acceptance-9-of-20
+  statement: The best-matching unit passed the acceptance test, and a monosynaptic connection was
+    accepted, for 9 of the 20 spines (Table 1 rows 1, 2, 3, 4, 6, 9, 10, 12 and 16).
+  source: Results, 3.4 Performance evaluation on experimental data, paragraph 1; Table 1, columns
+    GT_thr, test_thr and accept?; Figure 5(a)
+  quote: For 9 out of 20 spines, the best-matching unit passed the acceptance test, and a
+    monosynaptic connection was confirmed
+  depends_on:
+  - table1-best-r
+  - table1-optimal-thresholds
+  expected:
+  - quantity: accepted spines
+    value: 9
+    tolerance: 0
+  criterion: The acceptance test of Results 3.2, Methods 2.7 and notebook 2, with 1'000 GT and
+    1'000 test surrogates (opening comment); accepted when best-R exceeds both thresholds. The
+    quantiles are read two ways, (a) Table 1's GT_Q and test_Q for each spine, (b) the optimal
+    quantiles found in claim table1-optimal-thresholds. The noise region is the background ROI held
+    in the dataset, if it holds one; the paper says only that it was "close to the spine", so
+    otherwise at least three background regions of at least the spine ROI's pixel count, without
+    visible cell structure, are placed near the spine before any R is computed, and each is run.
+    Each spine's GT_thr and test_thr are compared with Table 1 (10%). Reproduced when, under a
+    reading, each spine's decision matches Table 1 (so 9 are accepted) for every noise region;
+    partially reproduced when 17 to 19 decisions match; not reproduced otherwise. When noise
+    regions or readings give different outcomes, the claim is methods_underspecified with every
+    result shown. Rows 3, 6, 16 and 18 lie within 0.03 of a threshold in Table 1, so their decisions
+    are also reported over five seeds.
+- id: best-r-accepted-vs-rejected
+  statement: Accepted connections have larger best-R values than rejected ones (0.584 ± 0.149
+    against 0.331 ± 0.124; Mann-Whitney U = 12.0, n1 = 9, n2 = 11, P < 0.05).
+  source: Results, 3.4 Performance evaluation on experimental data, paragraph 2; Figure 5(b)
+  quote: the accepted connections had significantly larger best-R values (0.584 ± 0.149) compared to
+    the rejected ones (0.331 ± 0.124) (Mann-Whitney U =12.0, n 1 =9, n 2 =11, P <0.05)
+  statistics:
+  - test: Mann-Whitney U
+    statistic: U = 12.0
+    p: 0.05
+    p_relation: "<"
+    n: 9 accepted and 11 rejected spines
+  depends_on:
+  - table1-best-r
+  - acceptance-9-of-20
+  expected:
+  - quantity: mean best-R, accepted
+    value: 0.584
+    tolerance: 0.0584
+  - quantity: mean best-R, rejected
+    value: 0.331
+    tolerance: 0.0331
+  - quantity: Mann-Whitney U
+    value: 12
+    tolerance: 1.2
+  criterion: Over the spines as classified in claim acceptance-9-of-20 and their best-R from claim
+    table1-best-r. Means and population SD (ddof 0), which give the reported ± from Table 1. The
+    paper does not say whether the test is one- or two-sided; from Table 1, U = 12 is the smaller of
+    the two U values and the two-sided p is 0.005, so both readings give P < 0.05 and both are shown.
+    Reproduced when the means and U are within tolerance and the test gives P < 0.05 with the
+    accepted group higher.
+- id: best-r-not-predictive
+  statement: The best-R alone does not predict the outcome of the acceptance test; connections with
+    R as high as about 0.6 were rejected, while an R of about 0.2 was enough for acceptance in
+    another case.
+  source: Results, 3.4 Performance evaluation on experimental data, paragraph 2; Figure 5(b)
+  quote: it is important to note that the value of the best-R alone was not a predictor for the
+    outcome of the test. In fact, as one can see from figure 5(b) , the acceptance test rejected
+    connections with R values as high as ~0.6, while in another case an R value of ~0.2 was enough
+    for acceptance
+  depends_on:
+  - table1-best-r
+  - acceptance-9-of-20
+  expected:
+  - quantity: largest best-R of a rejected spine
+    value: 0.6
+    tolerance: 0.06
+  - quantity: smallest best-R of an accepted spine
+    value: 0.2
+    tolerance: 0.02
+  criterion: Settled by the expected values (Table 1 gives 0.602, row 17, and 0.217, row 3), with
+    the further condition that the largest rejected best-R exceeds the smallest accepted one, so no
+    best-R cut separates the two groups.
+- id: fig5a-rejection-scenarios
+  statement: Connections were rejected in three scenarios, best-R below the test threshold only,
+    below the GT threshold only, or below both, which shows the advantage of having two thresholds.
+  source: Results, 3.4 Performance evaluation on experimental data, paragraph 2; Figure 5(a)
+  quote: we found that putative connections were rejected in three different scenarios ... The
+    best-R was smaller than either one of the two thresholds or both thresholds
+  depends_on:
+  - acceptance-9-of-20
+  expected:
+  - quantity: rejected below the test threshold only
+    value: 4
+    tolerance: 0
+  - quantity: rejected below the GT threshold only
+    value: 1
+    tolerance: 0
+  - quantity: rejected below both thresholds
+    value: 6
+    tolerance: 0
+  criterion: The counts are not in the text; they are read from Table 1 (best_R against GT_thr and
+    test_thr; rows 5, 8, 17, 18 below test only, row 13 below GT only, rows 7, 11, 14, 15, 19, 20
+    below both). Reproduced when each of the three scenarios occurs among the rejected spines of
+    claim acceptance-9-of-20; the counts are reported against Table 1's, and a difference in count
+    alone does not decide the outcome.
+- id: fig5a-threshold-order
+  statement: For some recordings the test threshold is larger than the GT threshold, and for others
+    the reverse.
+  source: Results, 3.4 Performance evaluation on experimental data, paragraph 2; Figure 5(a)
+  quote: Note that for some recordings the test threshold was larger than the GT threshold and vice
+    versa for other recordings
+  depends_on:
+  - acceptance-9-of-20
+  criterion: Over the 20 spines' thresholds from claim acceptance-9-of-20. Reproduced when at least
+    one spine has test_thr above GT_thr and at least one the reverse. Table 1 has 15 and 5; the
+    counts are reported.
+- id: table1-network-measures
+  statement: Each recording's spike contrast (0.17 to 0.69) and ratio of spikes outside to inside
+    network bursts (0.060 to 2.003) have the values given in Table 1.
+  source: Table 1, columns OUT/IN ratio and spike contrast; Results, 3.4 Performance evaluation on
+    experimental data, paragraph 3
+  inferred: The per-recording values are given only in Table 1; the measures are defined in Results
+    3.4, paragraph 3.
+  depends_on:
+  - table1-best-r
+  criterion: Spike contrast from elephant 0.10.0 (Results 3.4), spike_contrast with its default
+    parameters, over the recording's sorted spike trains. OUT/IN is the number of spikes outside
+    network burst periods divided by the number inside, with the bursts of claim table1-best-r. The
+    paper leaves open (a) which units enter, all sorted units or those kept after the hyperactive
+    exclusion, (b) for OUT/IN, burst periods with or without the 0.1 s and 0.5 s extensions, and (c)
+    the time span, the whole MEA recording or the span of simultaneous imaging. Every combination is
+    run. A recording's value matches when within 10% of Table 1 under one combination; reproduced
+    when both measures match for at least 17 of 19 recordings under one combination used for all;
+    partially reproduced for 10 to 16; not reproduced below.
+- id: fig5c-spike-contrast-vs-fscore
+  statement: The network's spike contrast is negatively correlated with the maximum F-score of the
+    recording (Spearman R = -0.737, P = 0.0002), so more synchronous networks give poorer
+    classification.
+  source: Results, 3.4 Performance evaluation on experimental data, paragraph 3; Figure 5(c)
+  quote: We found that both the spike contrast ( R =-0.737, P =0.0002, Spearman’s rank correlation,
+    figure 5(c) ) ... of a network correlated with the classification performance as measured by the
+    maximum F -score of the respective network
+  statistics:
+  - test: Spearman's rank correlation
+    statistic: R = -0.737
+    p: 0.0002
+    n: the rows of Table 1 (its 20 spine rows reproduce the reported R and P)
+  depends_on:
+  - table1-optimal-thresholds
+  - table1-network-measures
+  expected:
+  - quantity: Spearman R, spike contrast against maximum F-score
+    value: -0.737
+    tolerance: 0.0737
+  criterion: Spearman rank correlation of spike contrast (claim table1-network-measures) with
+    maximum F-score (claim table1-optimal-thresholds). The paper says it is per network, but Table 1
+    gives -0.737 (P = 0.00021) over its 20 rows, recording 3 counted twice, and -0.742 (P = 0.00027)
+    over 19 recordings; both readings are run. Reproduced when R is within tolerance and P < 0.05
+    under one reading.
+- id: fig5d-out-in-vs-fscore
+  statement: The ratio of spikes outside to inside network bursts is positively correlated with the
+    maximum F-score of the recording (Spearman R = 0.672, P = 0.0012).
+  source: Results, 3.4 Performance evaluation on experimental data, paragraph 3; Figure 5(d) (the
+    text cites figure 5(c) for both; the legend places this one in 5(d))
+  quote: and the OUT/IN ratio ( R =0.672, P =0.0012, Spearman’s rank correlation, figure 5(c) ) of a
+    network correlated with the classification performance as measured by the maximum F -score of
+    the respective network
+  statistics:
+  - test: Spearman's rank correlation
+    statistic: R = 0.672
+    p: 0.0012
+    n: the rows of Table 1 (its 20 spine rows reproduce the reported R and P)
+  depends_on:
+  - table1-optimal-thresholds
+  - table1-network-measures
+  expected:
+  - quantity: Spearman R, OUT/IN ratio against maximum F-score
+    value: 0.672
+    tolerance: 0.0672
+  criterion: As for claim fig5c-spike-contrast-vs-fscore, with the OUT/IN ratio. Table 1 gives 0.672
+    (P = 0.0012) over its 20 rows and 0.680 (P = 0.0014) over 19 recordings; both readings are run.
+    Reproduced when R is within tolerance and P < 0.05 under one reading.
+checks:
+- date: "2026-10-23"
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig5a-rejection-scenarios. The criterion's row lists did not match Table 1. From best_R against GT_thr and test_thr, rows 5, 8, 17 and 18 fall below the test threshold only, row 13 below the GT threshold only, and rows 7, 11, 14, 15, 19 and 20 below both; corrected (the counts 4, 1 and 6 were right). Added that the counts are reported and do not decide the outcome, which rests on the three scenarios occurring, as the paper states.
+  - acceptance-9-of-20. The criterion named rows 3 and 18 as lying within 0.03 of a threshold; Table 1 gives margins of 0.027 (row 3), 0.028 (row 6), 0.010 (row 16) and -0.013 (row 18). Corrected to rows 3, 6, 16 and 18.
+  - Checked against Table 1 and found right. Unit counts 101.6 ± 42.6 and max F 0.692 ± 0.136 over 19 recordings (ddof 0); accepted and rejected best-R 0.584 ± 0.149 and 0.331 ± 0.124 (ddof 0); Mann-Whitney U 12 (two-sided p 0.005); Spearman -0.737 (P 0.00021) and 0.672 (P 0.0012) over 20 rows, -0.742 and 0.680 over 19; test_thr above GT_thr for 15 spines and below for 5; Table 1 decisions agree with best_R exceeding both thresholds for all 20 rows; the quantiles are values of np.linspace(0, 1, 100).
+  - Open, not settled. Rows 9 and 10 (two spines of culture 3) have identical GT_thr and test_thr in Table 1, which means either that the two spines share best and second-best units and noise estimate or that thresholds were computed once per recording. The paper does not say which; the author should report per-spine thresholds and note the match or mismatch.
+  - Open, not settled. The code details in the opening comment and criteria (repository starquakes/mea_spineca_mapping at the cited commit) were not reread in this check; only the paper was.
