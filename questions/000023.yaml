@@ -1,0 +1,94 @@
+# Questions from attempt 000023-berg-2020-01 (author, 2026-10-23) about the claims file
+# claims/000023/10.1101-2020.03.31.018820.yaml. Each is asked under docs/protocol.md, Author, step 1.6;
+# the attempt runs every reading it can see, or blocks the claim as methods_underspecified until the
+# question is answered.
+dandiset: "000023"
+paper: doi:10.1101/2020.03.31.018820
+questions:
+- claim: features-and-labels-link
+  also: [cohort-cells, cohort-donors, cohort-type-counts, fig3d-depth-by-type, fig4e-human-ephys-anova,
+    fig4-glp2r-sag, edtable1-species-ephys, edfig6-classifier-human-ephys, fig5c-frem3-ephys-depth,
+    fig6-deep-ephys-anova, fig6c-carm1p1-upstroke-rin, fig6c-col22a1-rin-fi-sag, fig2ef-pathology-ephys]
+  asked: 2026-10-23
+  question: The criterion matches cells "by the specimen ID (SpecimenID in the code's cell table)", but
+    no file carries a SpecimenID. Each file carries the donor (in its cell name, such as
+    H17.06.003.11.07.04, and as subject_id) and an ephys session id (session_id, in the file name)
+    that is 13 to 685 below one SpecimenID of the same donor in the code's table. Should cells be
+    matched (M1) only through a SpecimenID stored in the files, which matches none, or (M2) through
+    the SpecimenID recovered from the file, the next id of the same donor in the code's table, with
+    the code's per-cell features as the check?
+  passage: None in the paper; the Methods name no identifiers. The code joins its tables on SpecimenID
+    (hivscc_data.load_data).
+  why: Under M1 no cell can be linked, and every claim that needs a t-type, a depth or a pathology
+    score is blocked. Under M2 all 318 files match distinct cells; where the code's table has
+    features, the median relative difference from those computed here is 0 for all 18 features and
+    275 of 282 cells agree on at least 80% of them, and a match on the features alone, within donor,
+    picks the same cell for all 282 files whose cell has features in the table. The attempt runs M2 and records the missing identifier as a finding.
+- claim: fig1c-soma-variation
+  asked: 2026-10-23
+  question: The criterion says the bins that make up deep L3 are not stated. The code that the claim's
+    `where` names states them; Code7_cortical_depth_code_mouse.r takes the bins of scaled depth
+    between -0.95 and -0.7 (the 20-bin profile, bin centres) and divides the mean per-bin SD of soma
+    area in human by that in mouse. Should deep L3 be (D1) those bins, or (D2) the bins deeper than
+    the paper's density minimum, normalized depth 0.575, the definition of deep L3 the claims file
+    uses for FREM3?
+  passage: Code7_cortical_depth_code_mouse.r, "l3dex <- data_summary(dens[(dpt >= -0.95)&(dpt < -0.7),],
+    "het",c("species"))", printed as "SD human / mouse cross-sectional area (deep L3) 4.0".
+  why: The ratio is a mean over the bins chosen, and deep bins differ most between species. The attempt
+    runs both.
+- claim: fig1c-soma-area
+  asked: 2026-10-23
+  question: The criterion gives no method. Are the interquartile ranges of soma area (Q1) over all
+    somata of a species pooled across sections, or (Q2) per section, as Code7 prints them (one
+    quantile line per human section), and if per section, how are the sections combined?
+  passage: Results, Human supragranular cortex is more diverse than in mouse, paragraph 1, "The
+    interquartile range of mouse and human somata were 44 - 96μm 2 and 107 - 253μm 2"; Code7,
+    "print(quantile(roiInfoH[[i]][,"area"]))".
+  why: Section quartiles differ (human first quartiles 89 to 132 um2). The attempt runs Q1 and shows
+    each section and the mean of the section quartiles as Q2.
+- claim: fig1a-thickness
+  asked: 2026-10-23
+  question: The `where` of the claim names the NeuN section measurements and Code6 and Code7. The
+    human sections carry four boundary lines (eight, in two segments, in one section), from which
+    Code6 computes the L2 plus L3 thickness. The mouse sections carry only the L2, L4, L5 and L6
+    boundary lines, so the thickness of the whole mouse cortex (1.06 mm) cannot be computed from
+    them, and Code7 computes only the mouse L2/3 thickness. Where does the mouse value come from, and
+    should the claim be judged on the human value alone?
+  passage: Results, Human supragranular cortex is more diverse than in mouse, paragraph 1, "the
+    thickness of the entire mouse cortex (1.06 ± 0.01 mm; Fig. 1a )".
+  why: Without the mouse value the ratio of 1.16 cannot be tested. The attempt tests the human value
+    and reports the mouse L2/3 thickness that the code computes.
+- claim: fig5b-frem3-morph-depth
+  also: [fig6-deep-morph-anova, fig4f-morph-anova]
+  asked: 2026-10-23
+  question: The criteria of fig5b-frem3-morph-depth and fig6-deep-morph-anova say only "Not tested on
+    the dandiset". Should they use the claims file's "depth regression" and "t-type ANOVA" on the
+    code's morphological feature table, and which features? The code's table and
+    data/morpho_feature_names.csv list 60 features; the paper counts 58 for depth and 60 for type.
+  passage: Results, Human FREM3 t-type exhibits depth-dependent morpho-electro-transcriptomic
+    variation, paragraph 2, "37 out of 58 morphological features were correlated with depth".
+  why: Two features more or less can move a count by up to two, against tolerances of 3.7 and 2.4.
+    Two of the 60 are the soma's location (soma_relative_depth_none, depth_from_pia), which a depth
+    regression finds trivially; leaving them out gives 58. The attempt runs the common methods on
+    all 60 and, for depth, on the 58 without the two location features.
+- claim: fig6a-deep-dendrites
+  asked: 2026-10-23
+  question: The claim has no criterion. Which morphological features stand for total dendritic length
+    and for sparse branching, which cells (all L2 and L3 t-types with reconstructions, and FREM3 all
+    or deep), and what decides "largest" (a median, a test)?
+  passage: Results, Deep L3 human glutamatergic t-types are morpho-electrically distinct, paragraph 2,
+    "CARM1P1 neurons had the largest total dendritic length of all the L2 and L3 t-types".
+  why: The code's table has apical and basal total lengths and branch counts but no total; which of
+    them is used and how decides the outcome. The claim is blocked as methods_underspecified until
+    answered.
+- claim: edfig6-classifier-morphoelectric
+  asked: 2026-10-23
+  question: The criterion says only that the claim needs the morphological features. Is the method that
+    of edfig6-classifier-human-ephys, on the cells with both a reconstruction and all 18
+    electrophysiological features, with the 60 morphological features added, and how are missing
+    morphological values handled (the code imputes with KNNImputer(5), the criterion of the
+    electrophysiology classifier drops cells)?
+  passage: Methods, Analysis of features by t-type and species, paragraph 3; the code's
+    classifier_and_species_analysis.ipynb.
+  why: The cells kept and the imputation change the accuracy, against tolerances of 0.069 and 0.06. The
+    claim is blocked as methods_underspecified until answered.
