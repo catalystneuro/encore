@@ -1339,7 +1339,7 @@ LISTS = {
                    ("converted", "Converted by"), ("technique", "Technique"), ("species", "Species")],
         "sorts": [("-date", "Most recently attempted"), ("id", "Identifier"),
                   ("-id", "Identifier, newest first"), ("-failures", "Most claims not reproduced"),
-                  ("size_gb", "Smallest"), ("-size_gb", "Largest"), ("paper_title", "Paper title")],
+                  ("size_gb", "Smallest"), ("-size_gb", "Largest"), ("name", "Title"), ("paper_title", "Paper title")],
         "csv": None,
     },
 }
