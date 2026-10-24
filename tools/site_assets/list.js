@@ -116,10 +116,10 @@
         : `<span class="tag">${esc(label('status', r.status))}</span>`;
       return `<div class="row drow">
         <div class="id"><a href="${href}">${esc(r.label)}</a></div>
-        <div><p class="title"><a href="${href}">${esc(r.paper_title || r.name)}</a></p>
+        <div><p class="title"><a href="${href}">${esc(r.name || r.paper_title)}</a></p>
           <div class="meta">${tags(r.technique)} ${tags(r.species)}
             ${size(r.size_gb)} ${files(r.files)}
-            <a href="https://doi.org/${esc(r.paper)}">Paper</a>
+            <a href="https://doi.org/${esc(r.paper)}" title="${esc(r.paper_title || r.paper)}">Paper</a>
             ${r.page ? `<a href="${root + r.page}#findings">Findings (${r.findings})</a>` : ''}</div>
           ${r.status === 'attempted' ? `<div class="meta" style="margin-top:6px">${miniBar(r.counts)}</div>` : ''}</div>
         <div class="right">${right}</div></div>`;
