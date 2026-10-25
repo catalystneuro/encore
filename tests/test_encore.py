@@ -114,6 +114,22 @@ def test_the_report_counts_outcomes_and_lists_findings(tmp_path):
     assert "The trials table is missing." in text and "quick run" in text
 
 
+def test_macos_metadata_files_beside_the_claims_and_attempts_are_skipped(tmp_path):
+    reg = tmp_path / "registry"
+    (reg / "attempts").mkdir(parents=True)
+    (reg / "claims" / "local-x").mkdir(parents=True)
+    (reg / "claims" / "local-x" / "c.yaml").write_text("checks:\n- ready: true\nclaims:\n- id: rate\n")
+    (reg / "attempts" / "local-x-smith-2024-01.yaml").write_text("id: local-x-smith-2024-01\n")
+    # what macOS writes beside each file on an exFAT drive: binary, and not valid UTF-8
+    for path in (reg / "claims" / "local-x" / "._c.yaml", reg / "attempts" / "._local-x-smith-2024-01.yaml"):
+        path.write_bytes(b"\x00\x05\x16\x07\x00\x02\x00\x00Mac OS X        \x00\x02\x00\x00\x00\x09\xb0\xff")
+    assert list(report.claims_of(reg, "local-x")) == ["rate"]
+    assert report.latest_attempt(reg, "local-x")["id"] == "local-x-smith-2024-01"
+    r = run.Run(tmp_path / "out", run.Dataset("local", "x", "/d", "files-1"), None, None, None, False, "m", "main")
+    r.registry = reg
+    assert r.claims_ready()
+
+
 def test_a_run_keeps_only_the_example_attempt(tmp_path):
     reg = tmp_path / "out" / "registry"
     for path in ("claims/001453/a.yaml", "claims/001754/b.yaml", "entries/001453-fouke-2025/x.ipynb",

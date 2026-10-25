@@ -335,7 +335,8 @@ class Run:
 
     def claims_ready(self) -> bool:
         import yaml
-        files = sorted((self.registry / "claims" / self.dataset.folder).glob("*.yaml"))
+        from .report import files_in
+        files = files_in(self.registry / "claims" / self.dataset.folder, "*.yaml")
         if not files:
             return False
         checks = (yaml.safe_load(files[0].read_text()) or {}).get("checks") or [{}]
