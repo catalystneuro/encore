@@ -36,6 +36,7 @@ FULL = QUICK + ("answer", "author-answers", "verifier-1", "author-revise-1", "ve
                 "verifier-3", "author-revise-3")
 # The hosts an agent's commands may reach: the archives, Python packages, and the paper's DOI.
 NETWORK = ["dandiarchive.org", "*.dandiarchive.org", "*.amazonaws.com", "crcns.org", "*.ebrains.eu",
+           "datadryad.org", "zenodo.org", "*.zenodo.org",
            "pypi.org", "files.pythonhosted.org", "github.com", "*.githubusercontent.com", "doi.org", "*.doi.org"]
 DOI = re.compile(r"\b(10\.[0-9]{4,9}/[^\s\"<>]+)")
 # The one finished attempt the prompts point to for file formats. Every other dataset's work is taken out of a
@@ -49,7 +50,7 @@ class Stop(Exception):
 
 @dataclass
 class Dataset:
-    archive: str        # local, remote, or an archive the registry knows (dandi, crcns, ebrains)
+    archive: str        # local, remote, or an archive the registry knows (dandi, crcns, ebrains, dryad)
     id: str
     location: str       # the directory or URL; for an archive, its key
     fingerprint: str    # stands in for a version; "" for an archive

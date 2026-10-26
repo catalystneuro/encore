@@ -1,6 +1,6 @@
 # Archives
 
-The registry tests papers against data in public archives. So far it reads one,
+The registry tests papers against data in public archives. It began with one,
 the DANDI Archive. The protocol is written for any archive. What is particular
 to an archive (how its datasets are named, versioned and read) is here, and an
 agent is pointed to its archive's section.
@@ -77,6 +77,45 @@ take a dataset in any of these forms.
   download whole files to disk. The dataset's data descriptor (a PDF among its
   files) describes them.
 - **In an entry.** The entry names the dataset as `ebrains:<doi suffix>/<version>`
+  under `related`.
+
+## Dryad
+
+- **Datasets.** A Dryad dataset, named by its DOI's suffix without the
+  `dryad.` prefix: `10.5061/dryad.bvq83bkk9` is `DRYAD:bvq83bkk9`, in folders
+  `dryad-bvq83bkk9` (Dryad DOIs ignore case). The registry's list,
+  `targets/dryad.json`, is built from chosen DOIs by
+  `tools/build_dryad_targets.py`, which reads each dataset's metadata, latest
+  version and file list from the public API v2; for now it holds three datasets
+  outside neuroscience, to test the pipeline on a general-purpose repository.
+  The papers are the dataset's related works marked `primary_article` (and
+  `preprint`); related works marked `software` are the paper's code, usually on
+  Zenodo.
+- **Versions.** The DOI always resolves to the latest version, and versions
+  have no DOIs of their own. Each version has an id in the API
+  (`/api/v2/versions/<id>`), which is `published_version` in the target list
+  and pins it; a version's number (`versionNumber`) counts metadata edits as
+  well as file changes, so it is not a pin. Record the version id under
+  `dataset: version` and the DOI under `dataset: doi`, and give in the notebook
+  header the SHA-256 digest of each file read, which the file list gives.
+  List the versions with `/api/v2/datasets/<url-encoded doi:...>/versions`.
+- **Reading.** Metadata, versions and file lists are public:
+  `https://datadryad.org/api/v2/datasets/doi%3A10.5061%2Fdryad.<id>` and
+  `/api/v2/versions/<version id>/files`. Downloading a file is not:
+  `/api/v2/files/<file id>/download` answers 401 without a bearer token, and
+  the website's download links (`/downloads/file_stream/<file id>`) answer 403
+  to scripts. A token comes from an API account, which a person makes from
+  their Dryad account (an ORCID login), "My account", "API account"; exchange
+  its client id and secret for a token, which lasts 10 hours, with
+  `POST https://datadryad.org/oauth/token` (`grant_type=client_credentials`).
+  The token is given to agents as `DRYAD_TOKEN`. Send it as
+  `Authorization: Bearer $DRYAD_TOKEN`, follow the redirect, and read the file
+  into memory: `pandas.read_csv(io.BytesIO(...))`, `pandas.read_excel` for the
+  Excel workbooks most datasets hold (list every sheet), and `zipfile` on a
+  `BytesIO` for zips. Check each file's SHA-256 against the file list. Do not
+  write whole files to disk. The dataset's README (`README.md`, shown also on
+  its page) describes the files and columns; there may be none.
+- **In an entry.** The entry names the dataset as `dryad:<id>/<version id>`
   under `related`.
 
 ## Local and remote (`encore check`)

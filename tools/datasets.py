@@ -12,7 +12,8 @@ under its folder name: the identifier alone for DANDI, which the registry began 
 docs/archives.md.
 
 Targets come from each archive's list in targets/: targets/dandisets.json is DANDI's, built by
-tools/build_targets.py; targets/crcns.json and targets/ebrains.json are written by hand.
+tools/build_targets.py; targets/crcns.json and targets/ebrains.json are written by hand; targets/dryad.json is built from chosen DOIs by
+tools/build_dryad_targets.py.
 """
 
 from __future__ import annotations
@@ -50,6 +51,16 @@ ARCHIVES = {
                    "(https://data-proxy.ebrains.eu/api/v1/public/datasets/{kg_id}/<file>), as docs/archives.md says "
                    "under \"EBRAINS\": stream each file into memory with fsspec; do not download them to disk."),
         "list": "ebrains.json",
+    },
+    "dryad": {
+        # A dataset is named by its DOI's suffix without "dryad." (10.5061/dryad.bvq83bkk9 is bvq83bkk9); Dryad DOIs
+        # ignore case. published_version is the id of the dataset's version in Dryad's API, which pins it.
+        "label": "DRYAD", "name": "Dryad", "url": "https://doi.org/10.5061/dryad.{id}", "case": "lower",
+        "access": ("Read the files through Dryad's API v2 (https://datadryad.org/api/v2/versions/{published_version}/"
+                   "files), as docs/archives.md says under \"Dryad\": downloads need the bearer token in the "
+                   "environment variable DRYAD_TOKEN; read each file into memory (pandas, openpyxl, zipfile on a "
+                   "BytesIO) and check its SHA-256 against the listing; do not write the files to disk."),
+        "list": "dryad.json",
     },
     # The two kinds of dataset `encore check` runs on (encore_science/, docs/encore.md), which never enter the
     # registry's record: a directory on the machine running it, and files at a URL. Their list is written for

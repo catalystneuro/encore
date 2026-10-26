@@ -59,3 +59,12 @@ def test_an_ebrains_dataset_is_named_by_its_doi_and_read_by_its_kg_id():
 def test_a_key_ignores_the_case_of_an_identifier_that_ignores_case():
     assert datasets.key_of("ebrains", "Q0FG-1X8") == datasets.key_of("ebrains", "q0fg-1x8") == "ebrains:q0fg-1x8"
     assert datasets.key_of("crcns", "ret-1") == "crcns:ret-1"
+
+
+def test_a_dryad_dataset_is_named_by_its_doi_and_pinned_by_its_version_id():
+    key = datasets.parse("DRYAD:BVQ83BKK9")
+    found = next(t for t in datasets.targets() if t["key"] == key)
+    assert key == "dryad:bvq83bkk9" and found["folder"] == "dryad-bvq83bkk9"
+    assert datasets.label(key) == "DRYAD:bvq83bkk9" and datasets.parse("dryad-bvq83bkk9") == key
+    assert found["doi"] == "10.5061/dryad.bvq83bkk9"
+    assert f'/versions/{found["published_version"]}/files' in datasets.access(key)
