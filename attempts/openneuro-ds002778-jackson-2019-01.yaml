@@ -64,7 +64,10 @@ outcomes:
     PAC 0.73 and 0.86. The statistic is outside 15 +/- 1.5 under both filter readings. The
     criterion's last sentence names only the test and d; taken alone it would make the claim
     reproduced, but the statistic is an expected value of the claim and is out of tolerance, so
-    the outcome is partially reproduced.
+    the outcome is partially reproduced; which sentence governs is asked of a reader
+    (questions/openneuro-ds002778.yaml). Dropping the filtered edges, as pacpy's firf does,
+    changes PAC by at most 5% in any recording and leaves W at 13 and 12. Without sub-pd6 and
+    sub-pd16, W = 13 and 12, p = 0.023 and 0.019, d = 0.73 and 0.75.
   deviations:
   - No artifact rejection or electrode exclusion (as for fig2-sharpness-off-on).
   - The criterion combines "As for fig2-sharpness-off-on" (statistic and d within tolerance) with
@@ -125,7 +128,7 @@ outcomes:
   deviations:
   - No artifact rejection or electrode exclusion.
 - claim: offctrl-steepness
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_jackson_2019.ipynb
   output: claim:offctrl-steepness
   measured:
@@ -136,15 +139,15 @@ outcomes:
     FDR corrected over the six tests of Table 2 p = 0.0531 under every filter reading, just
     above 0.05 (the alpha steepness test has p = 0.0143, so the two smallest of six give 0.0531).
     With the bipolar pairs z = 2.37, p = 0.0177 as a single test (significant), 0.0531 FDR
-    corrected over the three bipolar measures. The criterion names reproduced (average reference
-    corrected test holds, z and d match, bipolar holds) and partially reproduced (only the
-    average reference result holds); here the bipolar result holds under one reading and the
-    average reference test misses the corrected threshold with z and d matching, which is
-    recorded as partially reproduced.
+    corrected over the three bipolar measures. Both outcomes the criterion names other than not
+    reproduced need the corrected average reference test to hold, and it does not, so the claim
+    is not reproduced (changed from partially reproduced after verification round 1). The miss
+    rests on the uncorrected p (0.0177 against the paper's 0.011; BH over six needs p < 0.0167
+    here). Holm 0.0885, Bonferroni 0.106 and Benjamini-Yekutieli 0.130 over six are further from
+    0.05; BH over the three beta tests gives 0.0531. Without sub-pd6 and sub-pd16 z = 2.15, p =
+    0.032 uncorrected.
   deviations:
   - No artifact rejection or electrode exclusion.
-  - The case found is not one the criterion names; the outcome was judged as an effect present
-    with the paper's size that misses the corrected threshold.
 - claim: offctrl-pac-null
   outcome: reproduced
   notebook: reproduce_jackson_2019.ipynb
@@ -160,6 +163,11 @@ outcomes:
   notes: With the CSD transform, beta PAC at C3 and C4 is higher off (0.032) than in controls
     (0.025), z = 1.78, p = 0.075 under both filter readings, d = 0.35, against the paper's p =
     0.022. The CSD montage increases the off against on difference (d = 1.20, p = 0.0106).
+    The result depends on the spline parameters and no variant reaches 0.05 off against
+    controls; m = 4 gives p = 0.30 and 0.29, lambda 1e-4 gives 0.18 and 0.21, lambda 1e-6 gives
+    0.11 and 0.12 (Methods' and code's filters). The CSD raises 50 to 150 Hz power relative to
+    beta at C3 and C4 (median ratio 0.22 in controls and 0.34 off, against 0.12 and 0.18 with the
+    average reference). Whether MNE's output equals the CSD toolbox's was not checked.
   deviations:
   - CSD computed with MNE's spherical spline (stiffness m = 3, lambda 1e-5, 50 Legendre terms, the
     CSD toolbox's defaults) on the BioSemi 32 template positions, as the dataset holds no
@@ -177,7 +185,8 @@ outcomes:
     criterion give this field. Items 18 to 26 alone give W = 6.5, p = 0.011.
   deviations:
   - The UPDRS fields have no description in the dataset; "Total UPDRS" is taken as the motor
-    total from its values.
+    total from its values (it exceeds "UPDRS 18-26" by 1 to 14), which is consistent with the
+    values, not shown.
 - claim: fig1c-beta-alpha-peaks
   outcome: not_reproduced
   notebook: reproduce_jackson_2019.ipynb
@@ -211,26 +220,26 @@ outcomes:
   deviations:
   - No artifact rejection or electrode exclusion.
 - claim: table1-alpha-pac-null
-  outcome: reproduced
-  assumed: true
+  outcome: not_reproduced
   notebook: reproduce_jackson_2019.ipynb
   output: claim:table1-alpha-pac-null
   measured: 0.70
   notes: FDR corrected over Table 1, alpha PAC off against on gives p = 0.0609 with a 192-tap
     phase filter (reading a, W = 27), 0.0783 with the code's 231 and 240 taps (reading b, W =
     29), and 0.0356 with 118 samples (reading c, W = 23). Readings a and b find no difference,
-    reading c does. Reading a is adopted (see deviations). d on raw PAC is 0.70, 0.72 and 0.66,
-    above 0.51 +/- 0.051 under every reading; on log10 PAC 0.84, 0.82, 0.70. The question of the
-    alpha phase filter length is for the paper's authors, since the Methods give 231 ms for the beta
-    filter only, and the code holds no alpha analysis.
+    reading c does. The criterion takes the outcome all readings give; the null holds under two
+    of three, so the claim is not reproduced (changed after verification round 1 from reproduced
+    under the assumption of a 192-tap filter). d on raw PAC is 0.70, 0.72 and 0.66, above 0.51 +/-
+    0.051 under every reading; on log10 PAC 0.84, 0.82, 0.70. Without sub-pd6 and sub-pd16 the
+    uncorrected p is 0.064 to 0.087. The question of the alpha phase filter length is for the
+    paper's authors, since the Methods give 231 ms for the beta filter only, and the code holds
+    no alpha analysis.
   deviations:
-  - Assumed the alpha phase filter is 192 taps, three cycles of 8 Hz, the default filter length
-    of pacpy, the package the Methods name for PAC ("with the open-source package, pacpy"), and
-    the rule of the paper's code for its shape filters (shape.findpt, w = 3). The readings give
-    different outcomes; all three are printed.
+  - The alpha phase filter length is not given; the three readings of the claims file (192, 231
+    and 118 taps) are run and disagree.
   - No artifact rejection or electrode exclusion.
 - claim: table2-alpha-offctrl
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_jackson_2019.ipynb
   output: claim:table2-alpha-offctrl
   measured:
@@ -239,12 +248,13 @@ outcomes:
   notes: Alpha steepness ratio, off against controls, z = 2.45 (192 taps) or 2.53 (118 samples),
     within 2.53 +/- 0.253, d = 0.89, within 0.87 +/- 0.087, p = 0.0143 or 0.0114 uncorrected, FDR
     corrected 0.0531 under every reading, just above 0.05. Sharpness ratio (corrected 0.57 or
-    0.72) and PAC (0.12 to 0.41) do not differ after correction, as the claim says. The criterion
-    does not name this case (steepness values match but miss the corrected threshold; the other
-    two hold); it is recorded as partially reproduced.
+    0.72) and PAC (0.12 to 0.41) do not differ after correction, as the claim says. Both outcomes
+    the criterion names other than not reproduced need the steepness result to hold, so the
+    claim is not reproduced (changed from partially reproduced after verification round 1).
+    Holm, Bonferroni and Benjamini-Yekutieli over six give 0.086 to 0.130; BH over the three
+    alpha tests, not the family the criterion names, gives 0.043.
   deviations:
   - No artifact rejection or electrode exclusion.
-  - The case found is not one the criterion names.
 - claim: pac-beta-larger-than-alpha
   outcome: partially_reproduced
   notebook: reproduce_jackson_2019.ipynb
@@ -266,7 +276,8 @@ outcomes:
   notes: Spearman r between composite beta sharpness ratio and PAC, Methods' filters, off 0.59
     (p = 0.022, below 0.63 to 0.77) and on 0.79 (p = 0.0005, within); code's filters off 0.63
     (p = 0.012, within) and on 0.84 (p = 0.0001, above 0.666 to 0.814). Both positive and
-    significant under both readings, with one r out of tolerance in each.
+    significant under both readings, with one r out of tolerance in each. Without sub-pd6 and
+    sub-pd16, off r = 0.51 (p = 0.074) and 0.57 (p = 0.041), on r = 0.87 and 0.88.
   deviations:
   - No artifact rejection or electrode exclusion.
 - claim: fig3-steepness-pac-correlation
@@ -279,7 +290,9 @@ outcomes:
   notes: Methods' filters, off r = 0.80 (p = 0.0003, within 0.666 to 0.814), on r = 0.45 (p =
     0.095, not significant); code's filters, off r = 0.80 (p = 0.0004), on r = 0.53 (p = 0.041,
     below 0.612 to 0.748). Under the code's filters both are positive and significant with one r
-    out of tolerance.
+    out of tolerance. Without sub-pd6 and sub-pd16 (a variant) both r are within tolerance under
+    both filter readings (off 0.75, on 0.64 and 0.65, p 0.0033 to 0.019), so the on medication
+    miss rests on these two patients.
   deviations:
   - No artifact rejection or electrode exclusion.
 - claim: fig4a-sensorimotor-q4
@@ -304,7 +317,9 @@ outcomes:
   notes: Patients with both off and on in Q4 are 10 at C3, 10 at C4, 7 at both and 13 at one or
     more, against 9, 8, 8 and 9 (+/- 1). The C3 and both counts are within tolerance, the C4
     count and the at-least-one count are not, in either electrode order (swapped, C3 10 against
-    8).
+    8). Without sub-pd6 and sub-pd16 the counts are 9, 9, 6 and 12. Of the 60 points, 16 lie
+    within 0.01 of an axis (log10 ratios), several of which decide a patient's membership; the
+    per-patient values are printed.
   deviations:
   - No artifact rejection or electrode exclusion; the selection depends on the shape measures,
     which the paper computed after rejection.
@@ -342,7 +357,9 @@ outcomes:
     0.83 +/- 0.083; code's 0.86 to 0.96, log10 0.73 to 1.06 and 0.86 to 1.07). The all-patient
     PAC d of Table 3 (0.75) is matched by log10 PAC with the Methods' filters (0.73), not by raw
     PAC (0.85, given as measured, first reading). The Q4 group has 13 patients where the paper
-    has 9 (q4-patient-counts, not reproduced), which bears on these values.
+    has 9 (q4-patient-counts, not reproduced), so the Q4 values come from a different and larger
+    subset than Table 3's. Without sub-pd6 and sub-pd16 (12 Q4 patients) d rises for sharpness
+    (0.81 to 1.09) and raw PAC (0.73 to 0.87) and falls slightly for steepness (0.75 to 0.72).
   deviations:
   - No artifact rejection or electrode exclusion.
 findings:
@@ -380,3 +397,184 @@ findings:
     gives smaller values (about 0.36 for the printed p-values); Table 1's corrected values do
     match Benjamini-Hochberg. Table 3 gives d = 0.75 for PAC in all patients where Table 1 gives
     0.83.
+verifications:
+- date: 2026-10-27
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The executed notebook of the first run with the conclusion cells and the summary
+    removed, the helper module and the claims file, with the paper's full text. The verifier
+    recomputed W, p, d and Spearman r from the printed per-patient values, tested the helpers on
+    synthetic signals (shape ratios, PAC, the FFT high-pass against filtfilt, fdr_bh against
+    statsmodels) and queried the archive's file list. Report in
+    transcripts/openneuro-ds002778/verifier-1-report.md.
+  results:
+  - claim: fig2-sharpness-off-on
+    agrees: true
+    outcome: partially_reproduced
+    reason: FDR p 0.0228; off higher in 13/15; W 13 is within 10.8 to 13.2. d 0.731 is outside
+      0.774 to 0.946.
+    response: No change of outcome.
+  - claim: fig2-steepness-off-on
+    agrees: true
+    outcome: partially_reproduced
+    reason: FDR p 0.0249; d 0.701 is within tolerance. W 16 is outside 8.1 to 9.9.
+    response: No change of outcome.
+  - claim: fig2-pac-off-on
+    agrees: true
+    outcome: partially_reproduced
+    reason: FDR p 0.0228 and raw d 0.851/0.863 are within tolerance. W is 13 (Methods filters) or
+      12 (code filters), both outside 13.5 to 16.5. Reproduced if the criterion's last sentence,
+      which drops W, applies; the criterion contradicts itself ("As for fig2-sharpness-off-on"
+      against "holds when the test holds under one reading and d is within tolerance"), and the
+      stricter reading was applied. It also noted that pac_ozkurt keeps the filter-edge samples,
+      whereas pacpy's firf (rmvedge) drops them.
+    response: Kept partially reproduced under the stricter reading and added the contradiction as a
+      question for a reader in questions/openneuro-ds002778.yaml. Added a PAC variant that drops
+      the filtered edges (W unchanged, PAC changes by at most 5% per recording) and a variant
+      without sub-pd6 and sub-pd16.
+  - claim: bipolar-off-on
+    agrees: true
+    outcome: reproduced
+    reason: All three FDR p < 0.05 with off higher, 0.0106, 0.0044, 0.0096 (code filters 0.0081).
+      Only steepness approaches the paper's p < 0.004 bound.
+    response: No change.
+  - claim: temporalis-f7f8-null
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.69, 0.17, and 0.10 (Methods) or 0.078 (code); none below 0.05.
+    response: No change.
+  - claim: temporalis-t7t8-null
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.36, 0.95, 0.11.
+    response: No change.
+  - claim: fig2c-topography-sensorimotor
+    agrees: true
+    outcome: partially_reproduced
+    reason: Smallest p for sharpness is at P8, outside the sensorimotor set. Steepness (C4) passes.
+      PAC (Methods filters) has its minimum at CP6, but F7 is significant uncorrected (0.041). That
+      gives 2/3 measures under the FDR reading and 1/3 uncorrected.
+    response: No change.
+  - claim: offctrl-sharpness-null
+    agrees: true
+    outcome: reproduced
+    reason: z 0.47, p 0.635 (paper 0.91, 0.363).
+    response: No change.
+  - claim: offctrl-steepness
+    agrees: false
+    outcome: not_reproduced
+    reason: z 2.37 and d 0.855 are within tolerance, but FDR p over Table 2 is 0.0531 under every
+      filter reading. The bipolar single test (p 0.0177) would hold, but the criterion needs the
+      average-reference result first. Whether the paper used BH for Table 2 is uncertain, so a
+      sensitivity output under other correction procedures would show how fragile the outcome is.
+    response: Changed to not reproduced; both of the criterion's other outcomes need the corrected
+      average reference test to hold. Added the result under Benjamini-Hochberg, Benjamini-Yekutieli,
+      Holm and Bonferroni over six and BH over the three beta tests (0.053 to 0.130, none below
+      0.05), and a variant without sub-pd6 and sub-pd16.
+  - claim: offctrl-pac-null
+    agrees: true
+    outcome: reproduced
+    reason: p 0.323 (Methods) and 0.286 (code).
+    response: No change.
+  - claim: offctrl-pac-csd
+    agrees: true
+    outcome: not_reproduced
+    reason: Rank sum p 0.075 under both filter readings. csd uses MNE's spherical spline on
+      template biosemi32 positions instead of the CSD toolbox's; a stated, reasonable assumption
+      but untested, and a sensitivity check, or C3/C4 spectra before and after CSD, would be
+      informative.
+    response: Added CSD variants (m = 4; lambda 1e-4 and 1e-6), none of which gives p < 0.05 off
+      against controls (0.11 to 0.30), and band power ratios of the C3/C4 spectra before and after
+      CSD. A comparison with the CSD toolbox itself was not run, as it needs MATLAB.
+  - claim: updrs-improvement
+    agrees: true
+    outcome: reproduced
+    reason: '"Total UPDRS": W 3.5, p 0.0033, matching the paper exactly. Cell 12 says it exceeds
+      "UPDRS 18-26" by "0 to 14" where cell 11 prints 1 to 14; the identification as Part III is
+      asserted as consistent with the values, not shown, and the dataset holds no other part.'
+    response: Corrected the markdown to 1 to 14 and said that the dataset's fields hold no other
+      part of the UPDRS.
+  - claim: fig1c-beta-alpha-peaks
+    agrees: true
+    outcome: not_reproduced
+    reason: The C3/C4 mean spectrum has no local maximum in 8 to 12 or 13 to 30 Hz for off or on;
+      only controls have both. The all-electrode variant gives off a beta maximum only. The off
+      group's maximum sits at 7.96 Hz, just below the window.
+    response: No change.
+  - claim: table1-alpha-shape-off-on
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both FDR p < 0.05 (0.026/0.032). Sharpness W and d are within tolerance. Steepness W 21
+      is outside 10.8 to 13.2 under both alpha filter readings.
+    response: No change.
+  - claim: table1-alpha-pac-null
+    agrees: false
+    outcome: not_reproduced
+    reason: Readings disagree, FDR p 0.061 (a192) and 0.078 (b231) are null, but 0.036 (c118) is
+      significant. The criterion asks for the outcome all readings give. d is 0.66 to 0.72 against
+      0.51 +/- 0.05 in every reading. The notebook reports every reading but does not flag the
+      disagreement.
+    response: Changed to not reproduced and removed the assumption of a 192-tap filter, following
+      the criterion's rule that the outcome is the one all readings give. The notebook now prints
+      whether the readings agree. The filter length remains a question for the paper's authors.
+  - claim: table2-alpha-offctrl
+    agrees: false
+    outcome: not_reproduced
+    reason: Steepness z 2.45 and d 0.89 are within tolerance, but FDR p is 0.0531 under all
+      readings. Sharpness and PAC are null as expected. The outcome hinges on BH giving 0.0531,
+      and a sensitivity output under other correction procedures would show how fragile it is.
+    response: Changed to not reproduced; the criterion's partial outcome needs the steepness result
+      to hold. Added the correction-procedure sensitivity (0.053 to 0.130 over six; 0.043 only for
+      BH over the three alpha tests, not the criterion's family).
+  - claim: pac-beta-larger-than-alpha
+    agrees: true
+    outcome: partially_reproduced
+    reason: Raw PAC p 0.015, beta difference larger in 12/15, but W is 17 to 18 against 9.9 to 12.1.
+      The log-PAC variant is not significant. The criterion has no partial clause.
+    response: No change of outcome.
+  - claim: fig3-sharpness-pac-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both r are positive and significant. Methods filters, off r 0.586 is out of tolerance.
+      Code filters, on r 0.843 is out. No reading puts both within tolerance.
+    response: Added the correlations without sub-pd6 and sub-pd16.
+  - claim: fig3-steepness-pac-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Code filters, off r 0.796 is within tolerance; on r 0.532 (p 0.041) is significant but
+      out of tolerance. Methods filters, on r 0.446 is not significant (p 0.095).
+    response: Added the correlations without sub-pd6 and sub-pd16; then both r are within
+      tolerance, which the notes report as a variant. Outcome unchanged.
+  - claim: fig4a-sensorimotor-q4
+    agrees: true
+    outcome: reproduced
+    reason: 48/60 points in Q4.
+    response: No change.
+  - claim: q4-patient-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: C3 10, C4 10, both 7, at least one 13, against 9/8/8/9 +/- 1. C4 and at-least-one are
+      out in either electrode order. Which patients are the paper's 9 Q4 cases is unknown;
+      per-patient PTR/RDR values at C3 and C4 would help localise the gap.
+    response: Added the per-patient PTR and RDR at C3 and C4, the points within 0.01 of an axis
+      (16 of 60), and the counts without sub-pd6 and sub-pd16 (9, 9, 6, 12).
+  - claim: fig4b-temporalis-variable-shape
+    agrees: true
+    outcome: reproduced
+    reason: Both readings agree, most-common-quadrant share is 0.68 at F7/F8 against 0.80 at C3/C4,
+      and RMS distance to the centroid is 0.093 against 0.076.
+    response: No change.
+  - claim: controls-q4
+    agrees: true
+    outcome: reproduced
+    reason: 25/32 points in Q4.
+    response: No change.
+  - claim: table3-q4-effect-size
+    agrees: true
+    outcome: partially_reproduced
+    reason: d rises for all three measures under every reading. Q4 sharpness d 0.994 is within
+      tolerance; steepness 0.817 and PAC 0.95 to 1.06 are out. The Q4 subset has 13 patients, not
+      the paper's 9, so the Q4 d values come from a different subset than Table 3's, and the
+      notebook compares them to Table 3 without noting this.
+    response: The conclusion and notes now say that the Q4 subset is 13 patients against 9 and
+      list them, and give d without sub-pd6 and sub-pd16. Outcome unchanged.

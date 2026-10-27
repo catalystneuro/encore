@@ -38,12 +38,14 @@ opening comment cites the paper's Methods and its code (SwannLab/Jackson_2019 at
   amplitude of 50 to 150 Hz, |sum(a exp(i phi))| / (sqrt(N) sqrt(sum a^2)) (claims; code
   pac.ozkurt). Filter lengths: 118 and 123 samples (Methods, 231 ms and 240 ms at 512 Hz) and
   231 and 240 taps (code utils.measure_pac), the two readings of the claims file. For 8 to 12 Hz
-  phase: 192, 231 and 118 taps (claims, readings a to c).
+  phase: 192, 231 and 118 taps (claims, readings a to c). The filtered edges are kept; a variant
+  at C3 and C4 drops them, as pacpy's firf does with rmvedge.
 - Bipolar signals C3 - CP1 and C4 - CP2 (claims, bipolar-off-on).
 - Current source density (`csd`): spherical spline surface Laplacian with m = 3 (Methods: "CSDtoolbox
   in MATLAB, spline flexibility = 3"), lambda 1e-5 and 50 Legendre terms (the CSD toolbox's
   defaults, a standard choice per the claims file), computed with MNE on the BioSemi 32
-  template positions (a standard choice: the dataset holds no digitized positions).
+  template positions (a standard choice: the dataset holds no digitized positions). Variants
+  with m = 4 and lambda 1e-4 and 1e-6 show how far the CSD result rests on these choices.
 - Welch spectra (`welch_psd`): Hamming window of 256 samples, overlap 128, nFFT 450 (Methods,
   Data analysis, pwelch), no detrending, as pwelch.
 - Statistics: Wilcoxon signed rank with the normal approximation and no continuity correction
@@ -84,6 +86,8 @@ PAC_BETA = {"methods": (118, 123), "code": (231, 240)}
 PAC_ALPHA = {"a192": (192, 123), "b231": (231, 240), "c118": (118, 123)}
 PAC_ALPHA_GAMMA = {"a192": "methods", "b231": "code", "c118": "methods"}
 SIX = ['C3', 'C4', 'F7', 'F8', 'T7', 'T8']
+# CSD readings: name -> (spline flexibility m, lambda); "m3" is the main one, the others variants
+CSD_VARIANTS = {"m3": (3, 1e-5), "m4": (4, 1e-5), "m3 lambda 1e-4": (3, 1e-4), "m3 lambda 1e-6": (3, 1e-6)}
 
 
 # ----------------------------------------------------------------------------- archive
@@ -193,13 +197,16 @@ def preprocess(data_uv: np.ndarray) -> np.ndarray:
     return _filtfilt_fft(x, eegfilt_highpass_taps())
 
 
-def csd(x: np.ndarray) -> np.ndarray:
-    """Spherical spline CSD (m = 3, lambda 1e-5, 50 Legendre terms) on the 32 scalp rows."""
+def csd(x: np.ndarray, stiffness: float = 3, lambda2: float = 1e-5) -> np.ndarray:
+    """Spherical spline CSD (m = 3, lambda 1e-5, 50 Legendre terms) on the 32 scalp rows.
+
+    stiffness and lambda2 are varied in CSD_VARIANTS to show how much the CSD result rests on them.
+    """
     info = mne.create_info(SCALP, FS, "eeg")
     raw = mne.io.RawArray(x * 1e-6, info, verbose="error")
     raw.set_montage(mne.channels.make_standard_montage("biosemi32"), verbose="error")
     out = mne.preprocessing.compute_current_source_density(
-        raw, stiffness=3, lambda2=1e-5, n_legendre_terms=50, verbose="error")
+        raw, stiffness=stiffness, lambda2=lambda2, n_legendre_terms=50, verbose="error")
     return out.get_data()
 
 
@@ -256,10 +263,19 @@ def shape_measures(x: np.ndarray, f_range: tuple, ntaps: int) -> dict:
             "n_peaks": len(P), "n_troughs": len(T)}
 
 
-def pac_ozkurt(x: np.ndarray, f_lo: tuple, n_lo: int, f_hi: tuple = GAMMA, n_hi: int = 123) -> float:
-    """Normalized modulation index (Ozkurt and Schnitzler 2011), as code pac.ozkurt."""
-    pha = np.angle(signal.hilbert(bandpass(x, f_lo, n_lo)))
-    amp = np.abs(signal.hilbert(bandpass(x, f_hi, n_hi)))
+def pac_ozkurt(x: np.ndarray, f_lo: tuple, n_lo: int, f_hi: tuple = GAMMA, n_hi: int = 123,
+               trim: bool = False) -> float:
+    """Normalized modulation index (Ozkurt and Schnitzler 2011), as code pac.ozkurt.
+
+    trim drops max(n_lo, n_hi) filtered samples at each end before the Hilbert transform, as
+    pacpy's firf does with rmvedge (a variant; the main analysis keeps them).
+    """
+    lo, hi = bandpass(x, f_lo, n_lo), bandpass(x, f_hi, n_hi)
+    if trim:
+        k = max(int(n_lo), int(n_hi))
+        lo, hi = lo[k:-k], hi[k:-k]
+    pha = np.angle(signal.hilbert(lo))
+    amp = np.abs(signal.hilbert(hi))
     return float(np.abs(np.sum(amp * np.exp(1j * pha))) / (np.sqrt(len(pha)) * np.sqrt(np.sum(amp ** 2))))
 
 
@@ -324,17 +340,30 @@ def analyse(sub: str, ses: str) -> dict:
                          "PAC": pac_ozkurt(y, BETA, nlo, GAMMA, nhi)})
     shape = pd.concat([shape, pd.DataFrame(brow)], ignore_index=True)
 
-    # current source density
-    xc = csd(x)
+    # beta PAC at C3 and C4 with the filter edges dropped (variant)
     for ch in ("C3", "C4"):
         for rname, (nlo, nhi) in PAC_BETA.items():
-            prow.append({"sub": sub, "ses": ses, "signal": "CSD " + ch, "band": "beta", "reading": rname,
-                         "PAC": pac_ozkurt(xc[SCALP.index(ch)], BETA, nlo, GAMMA, nhi)})
+            prow.append({"sub": sub, "ses": ses, "signal": ch, "band": "beta", "reading": rname + " trimmed",
+                         "PAC": pac_ozkurt(x[SCALP.index(ch)], BETA, nlo, GAMMA, nhi, trim=True)})
+
+    # current source density: main ("m3", signal "CSD C3") and variants ("CSD m4 C3", ...)
+    csd_psd = {}
+    for vname, (m, lam) in CSD_VARIANTS.items():
+        xc = csd(x, m, lam)
+        tag = "CSD " if vname == "m3" else f"CSD {vname} "
+        for ch in ("C3", "C4"):
+            for rname, (nlo, nhi) in PAC_BETA.items():
+                prow.append({"sub": sub, "ses": ses, "signal": tag + ch, "band": "beta", "reading": rname,
+                             "PAC": pac_ozkurt(xc[SCALP.index(ch)], BETA, nlo, GAMMA, nhi)})
+        if vname == "m3":
+            _, p_ = welch_psd(xc[[SCALP.index("C3"), SCALP.index("C4")]])
+            csd_psd = dict(zip(["C3", "C4"], p_))
     pac = pd.DataFrame(prow)
 
     freqs, psd = welch_psd(x)
     return {"info": info, "shape": shape, "pac": pac, "freqs": freqs,
-            "psd": pd.DataFrame(psd, index=SCALP, columns=np.round(freqs, 4))}
+            "psd": pd.DataFrame(psd, index=SCALP, columns=np.round(freqs, 4)),
+            "csd_psd": pd.DataFrame(csd_psd, index=np.round(freqs, 4)).T}
 
 
 # ----------------------------------------------------------------------------- statistics
@@ -374,3 +403,25 @@ def fdr_bh(p) -> np.ndarray:
     out = np.empty(n)
     out[order] = np.minimum(adj, 1)
     return out
+
+
+def p_adjust(p, method: str = "bh") -> np.ndarray:
+    """Adjusted p-values: "bh" (Benjamini-Hochberg), "by" (Benjamini-Yekutieli), "holm", "bonferroni".
+
+    Only "bh" is the paper's (Methods: FDR); the others show how far a result rests on the procedure.
+    """
+    p = np.asarray(p, float)
+    n = len(p)
+    if method == "bh":
+        return fdr_bh(p)
+    if method == "by":
+        return np.minimum(fdr_bh(p) * np.sum(1.0 / np.arange(1, n + 1)), 1)
+    if method == "bonferroni":
+        return np.minimum(p * n, 1)
+    if method == "holm":
+        order = np.argsort(p)
+        adj = np.maximum.accumulate(p[order] * (n - np.arange(n)))
+        out = np.empty(n)
+        out[order] = np.minimum(adj, 1)
+        return out
+    raise ValueError(method)
