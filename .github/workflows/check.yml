@@ -89,6 +89,13 @@ jobs:
       - name: Install dependencies
         run: pip install --no-cache-dir uv pyyaml jsonschema nbformat
 
+      - name: Put the files of archives that need credentials in place
+        env:
+          # As in attempt.yml: the secrets of each archive adapter with a stage() (tools/archives/).
+          DRYAD_CLIENT_ID: ${{ secrets.DRYAD_CLIENT_ID }}
+          DRYAD_CLIENT_SECRET: ${{ secrets.DRYAD_CLIENT_SECRET }}
+        run: python tools/stage_files.py --all
+
       - name: Execute the entry's notebooks
         run: python tools/entry.py run "entries/${{ matrix.entry }}" --output-dir "$RUNNER_TEMP/executed"
 

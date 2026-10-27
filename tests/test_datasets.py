@@ -59,3 +59,35 @@ def test_an_ebrains_dataset_is_named_by_its_doi_and_read_by_its_kg_id():
 def test_a_key_ignores_the_case_of_an_identifier_that_ignores_case():
     assert datasets.key_of("ebrains", "Q0FG-1X8") == datasets.key_of("ebrains", "q0fg-1x8") == "ebrains:q0fg-1x8"
     assert datasets.key_of("crcns", "ret-1") == "crcns:ret-1"
+
+
+def test_a_dryad_dataset_is_named_by_its_doi_and_pinned_by_its_version_id():
+    key = datasets.parse("DRYAD:BVQ83BKK9")
+    found = next(t for t in datasets.targets() if t["key"] == key)
+    assert key == "dryad:bvq83bkk9" and found["folder"] == "dryad-bvq83bkk9"
+    assert datasets.label(key) == "DRYAD:bvq83bkk9" and datasets.parse("dryad-bvq83bkk9") == key
+    assert found["doi"] == "10.5061/dryad.bvq83bkk9"
+    assert f'/versions/{found["published_version"]}/files' in datasets.access(key)
+
+
+def test_every_archive_is_an_adapter_with_a_section_in_the_docs():
+    from archives import ALL
+    docs = (REPO / "docs" / "archives.md").read_text()
+    assert set(ALL) == set(datasets.ARCHIVES) and list(ALL)[0] == "dandi"
+    for key, archive in ALL.items():
+        assert archive.key == key and archive.list.endswith(".json")
+        if key in ("local", "remote"):
+            continue
+        assert f"## {archive.name.removeprefix('the ')}" in docs or f"## {archive.label}" in docs, key
+        assert archive.hosts, f"{key}: no hosts for an agent to reach"
+        assert bool(archive.stage) == bool(archive.secrets), f"{key}: stage() and secrets go together"
+
+
+def test_staging_skips_archives_agents_read_directly_and_needs_its_secrets(monkeypatch, capsys):
+    import stage_files
+    monkeypatch.delenv("DRYAD_CLIENT_ID", raising=False)
+    monkeypatch.delenv("DRYAD_CLIENT_SECRET", raising=False)
+    monkeypatch.setattr(sys, "argv", ["stage_files.py", "000003", "crcns-ret-1", "dryad-bvq83bkk9"])
+    assert stage_files.main() == 0
+    out = capsys.readouterr().out
+    assert "DRYAD:bvq83bkk9: no DRYAD_CLIENT_ID" in out and "000003" not in out and "ret-1" not in out

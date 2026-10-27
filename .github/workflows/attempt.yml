@@ -154,6 +154,17 @@ jobs:
           # The workflow's own tools, copied before the agent can change the checkout.
           cp tools/transcript.py tools/progress.py tools/flagged.py tools/get_papers.sh "$RUNNER_TEMP/"
 
+      - name: Put the dataset's files in place, for an archive that needs credentials
+        if: inputs.role != 'recorder'
+        env:
+          # Each archive adapter with a stage() (tools/archives/) names the secrets it needs; add them here.
+          DRYAD_CLIENT_ID: ${{ secrets.DRYAD_CLIENT_ID }}
+          DRYAD_CLIENT_SECRET: ${{ secrets.DRYAD_CLIENT_SECRET }}
+        run: |
+          # Before the agent starts, and before the verifier's notebooks run: the files go to
+          # /tmp/<archive>/<id>/<version>/, and the credentials go no further than this step.
+          python tools/stage_files.py "$FOLDER"
+
       - name: Prepare the verifier's materials, and remove the repository
         if: startsWith(inputs.role, 'verifier')
         run: |

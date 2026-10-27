@@ -6,7 +6,7 @@ Paper: doi:{paper}, "{title}". Its full text is under `paper/`: a `.txt` file pe
 
 Write the claims file as steps 1 to 4 of the Reader section say. Every part of every criterion's method comes from the paper or its code, cited; a detail none of them fixes is named as open, with the readings the paper allows. Check every quote with `python tools/claims_check.py claims/{folder}/<file>.yaml paper/<text>.txt` and fix the quote, never the checker. Do not commit or push: the workflow commits your changes. Only files under `claims/{folder}/` are kept.
 
-Provenance for the opening comment: written by an agent (model "{model}", Claude Code in GitHub Actions), {date}, protocol as stated in docs/protocol.md.
+Provenance for the opening comment: written by an agent (model "{model}", Claude Code, runner "{runner}"), {date}, protocol as stated in docs/protocol.md.
 
 Write prose plainly: no em dashes, never the word "rather". YAML plain scalars must not contain ": " (colon space).
 
