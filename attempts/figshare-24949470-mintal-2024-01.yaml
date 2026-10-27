@@ -2,8 +2,8 @@ schema_version: 2
 id: figshare-24949470-mintal-2024-01
 dataset:
   archive: figshare
-  id: "24949470"
-  version: "1"
+  id: '24949470'
+  version: '1'
   doi: 10.6084/m9.figshare.24949470.v1
 paper: doi:10.1038/s41597-024-03777-0
 date: 2026-10-27
@@ -20,10 +20,11 @@ provenance:
     platform: GitHub Actions
     url: https://github.com/catalystneuro/encore/actions/runs/40572313729
 inputs:
-- what: The party placements of Figures 2 (five uni-dimensions) and 3 (the two-dimensional landscape) and the
-    dendrogram of Figure 7 of the published paper, read by eye from the version of record and typed into the
-    notebook as the expected placements, as the claims file asks. No measurement comes from them; the
-    analysis runs on the dataset.
+- what: The party placements of Figures 2 (five uni-dimensions) and 3 (the two-dimensional landscape) and the dendrogram
+    of Figure 7 of the published paper, read from the publisher's images of the version of record by pixel position
+    against each figure's axes, by a separate agent that had not seen the computed values, and typed into the notebook
+    as the expected placements, as the claims file asks. No measurement comes from them; the analysis runs on the
+    dataset.
   source: doi:10.1038/s41597-024-03777-0
 outcomes:
 - claim: user-responses-count
@@ -31,20 +32,20 @@ outcomes:
   notebook: reproduce_mintal_2024.ipynb
   output: claim:user-responses-count
   measured: 134699
-  notes: The raw file has 134,699 rows and every column of Table 1 and the data dictionary (69 columns). 81.0%
-    of rows give demographics, 67.6% at least one salient statement, 73.2% a party considered and 76.9% a
-    party never considered. 133,473 rows remain after removing those with -1, 133,143 after the R code's
-    cleaning.
+  notes: The raw file has 134,699 rows and every column of Table 1 and the data dictionary (69 columns). 81.0% of
+    rows give demographics, 67.6% at least one salient statement, 73.2% a party considered and 76.9% a party never
+    considered. 133,473 rows remain after removing those with -1, 133,143 after the R code's cleaning.
 - claim: collection-window
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_mintal_2024.ipynb
   output: claim:collection-window
-  notes: The first response is 2023-09-05 11:26:31 and responses cover all 26 days to 30 September, but 432
-    of 134,699 rows (0.32%) are dated 1 to 9 October 2023 as given, and 494 (0.37%) when TIME.STAMP is read
-    as UTC and converted to Slovak time. The criterion requires every timestamp inside the window under one
-    reading, so the claim is not reproduced; 99.7% of rows are inside it. The sample entry of Table 1
-    (2023-10-09 08:57:38) is the first row of the file and the latest timestamp. The R code has an optional
-    filter ending at 2023-09-30 22:42:30, which drops 461 rows, so the authors knew of the late rows.
+  notes: The first response is 2023-09-05 11:26:31 and responses cover all 26 days to 30 September, but 432 of 134,699
+    rows (0.32%) are dated 1 to 9 October 2023 as given, and 494 (0.37%) when TIME.STAMP is read as UTC and converted
+    to Slovak time. The criterion requires every timestamp inside the window under one reading, and it fails under
+    both; 99.7% of rows are inside it, so the claim holds in part. The sample entry of Table 1 (2023-10-09 08:57:38)
+    is the first row of the file and the latest timestamp. The R code has an optional filter ending at 2023-09-30
+    22:42:30, which drops 461 rows; its comment puts the end of the moratorium at 22:45 on 30 September, so the
+    code reads TIME.STAMP as local time (reading a) and reading (b) is unlikely.
 - claim: party-positions-structure
   outcome: reproduced
   notebook: reproduce_mintal_2024.ipynb
@@ -52,75 +53,77 @@ outcomes:
   measured:
   - 39
   - 429
-  notes: 429 coded rows on 39 statements, each with one Slovak, one Hungarian and one English wording. Every
-    row has expert positions of both coders and a final position; 131 rows have a self-placement. Snippet
-    and link columns are present for self-placements, each coder and the final position. The
-    "Self-placement source" column is empty in all rows.
+  notes: 429 coded rows on 39 statements, each with one Slovak, one Hungarian and one English wording. Every row
+    has expert positions of both coders and a final position; 131 rows have a self-placement. Snippet and link columns
+    are present for self-placements, each coder and the final position. The "Self-placement source" column is empty
+    in all rows.
   deviations:
-  - Statements are numbered by their English wording, matched to Supplementary Table 1, since the
-    workbook's "Statement no." is wrong for 99 rows (see findings). Both numberings give 39 statements.
+  - Statements are numbered by their English wording, matched to Supplementary Table 1, since the workbook's "Statement
+    no." is wrong for 99 rows (see findings). Both numberings give 39 statements.
 - claim: eleven-parties
   outcome: reproduced
   notebook: reproduce_mintal_2024.ipynb
   output: claim:eleven-parties
   measured: 11
-  notes: The workbook names 11 parties (ALIANCIA, DEMOKRATI, HLAS-SD, KDH, OLANO, PS, Republika, SME
-    Rodina, SMER-SD, SNS, SaS), each with a position on all 39 statements; the recoded CSV holds the same 11.
+  notes: The workbook names 11 parties (ALIANCIA, DEMOKRATI, HLAS-SD, KDH, OLANO, PS, Republika, SME Rodina, SMER-SD,
+    SNS, SaS), each with a position on all 39 statements; the recoded CSV holds the same 11.
 - claim: party-self-placements
   outcome: reproduced
   notebook: reproduce_mintal_2024.ipynb
   output: claim:party-self-placements
   measured: 4
-  notes: Four parties have self-placements, SaS on 39 statements, DEMOKRATI on 38, PS on 32 and KDH on 22.
-    PS used only "agree" and "disagree" (19 and 13), as a note in the workbook says.
+  notes: Four parties have self-placements, SaS on 39 statements, DEMOKRATI on 38, PS on 32 and KDH on 22. PS used
+    only "agree" and "disagree" (19 and 13), as a note in the workbook says.
 - claim: coder-agreement-kappa
   outcome: reproduced
   assumed: true
   notebook: reproduce_mintal_2024.ipynb
   output: claim:coder-agreement-kappa
   measured: 0.842
-  notes: The workbook holds each coder's positions. With quadratic weights and pairs where either coder
-    chose "No opinion" left out (266 of 429), kappa is 0.842. Linear weights give 0.734 (No opinion left
-    out) and 0.620 (No opinion as Neutral); quadratic weights with No opinion as Neutral give 0.745. Only
-    the first reading is within 0.84 +- 0.084. The paper names neither the weights nor the handling of No
-    opinion; this is asked of the authors (findings).
+  notes: The workbook holds each coder's positions. With quadratic weights and pairs where either coder chose "No
+    opinion" left out (266 of 429), kappa is 0.842. Linear weights give 0.734 (No opinion left out) and 0.620 (No
+    opinion as Neutral); quadratic weights with No opinion as Neutral give 0.745. Only the first reading is within
+    0.84 +- 0.084. The paper names neither the weights nor the handling of No opinion; this is asked of the authors
+    (findings).
   deviations:
-  - Assumed quadratic weights with "No opinion" pairs left out, the one reading of the four the criterion
-    names that gives the reported value; the paper says only "Weighted Cohen's Kappa" (Methods, Party
-    selection and coding, paragraph 3). Quadratic weights are the common choice for ordinal scales, and No
-    opinion has no place on the ordered scale, so this reading is the best supported; all four are shown.
+  - Assumed quadratic weights with "No opinion" pairs left out, the one reading of the four the criterion names
+    that gives the reported value; the paper says only "Weighted Cohen's Kappa" (Methods, Party selection and coding,
+    paragraph 3). Quadratic weights are the common choice for ordinal scales, and No opinion has no place on the
+    ordered scale, so this reading is the best supported; all four are shown.
 - claim: uni-and-landscape-placements
   outcome: partially_reproduced
   notebook: reproduce_mintal_2024.ipynb
   output: claim:uni-and-landscape-placements
-  notes: Supplementary Table 1, which is in the dataset, assigns 18 statements to the five uni-dimensions
-    and 16 to the landscape (11 economic, 6 cultural, statement 10 on both). With No opinion as 50 (reading
-    ii), every party's score on each of the five uni-dimensions equals its column in Fig. 2 (largest
-    difference 0.0) and its cultural score matches Fig. 3 (largest difference 0.5). On the economic axis 10
-    of 11 parties are within 0.5 of Fig. 3, but PS scores 47.7 where Fig. 3 places it at about 54, right of
-    the centre line; PS is then ordered differently from DEMOKRATI (52.3) and SME Rodina (47.7). No reading
-    of the economic statements tried while preparing (leaving out statement 10 or 21) explains it, and those
-    variants are not in the notebook. With No opinion left out (reading i) four of the five uni-dimensions
-    differ from Fig. 2. The order matches on six of the seven axes, so the claim holds in part. The paper's
-    statement that the placements conform to anticipated placements is a judgement the data cannot test;
-    the criterion tests agreement with the figures. The dimension assignments come from the dataset's own
-    Supplementary Table 1, so no outside labels and no link claim are needed.
+  notes: Supplementary Table 1, which is in the dataset, assigns 18 statements to the five uni-dimensions and 16
+    to the landscape (11 economic, 6 cultural, statement 10 on both). With No opinion as 50 (reading ii), every
+    party's score on each of the five uni-dimensions is within 0.8 of Fig. 2, which places parties at whole percentages,
+    and its cultural score is within 0.3 of Fig. 3. On the economic axis 10 of 11 parties are within 0.2 of Fig.
+    3, but PS scores 47.7 where Fig. 3 places it at 54.5, 38 pixels right of the centre line, so PS and DEMOKRATI
+    (52.3, figure 52.2) are ordered differently. No reading of the economic statements tried while preparing (leaving
+    out statement 10 or 21) explains it, and those variants are not in the notebook. With No opinion left out (reading
+    i) four of the five uni-dimensions differ from Fig. 2. The order matches on six of the seven axes, so the claim
+    holds in part. The figure values were read blind to the computed scores, by pixel position (round 1 of verification
+    asked for this). The paper's statement that the placements conform to anticipated placements is a judgement
+    the data cannot test; the criterion tests agreement with the figures. The dimension assignments come from the
+    dataset's own Supplementary Table 1, so no outside labels and no link claim are needed.
   deviations:
-  - The expected placements were read by eye from the published Figures 2 and 3; Fig. 2 places parties on
-    evenly spaced columns, read exactly, and Fig. 3 was read to about 2 points.
-  - Readings (a) and (b) of the criterion give the same number for a mean of polarity-adjusted positions, so
-    only one is computed.
-  - Statements are numbered by their wording, not by the workbook's "Statement no.", which is wrong for
-    statements 16 to 24.
+  - The expected placements were read from the published Figures 2 and 3 by a separate agent that had not seen the
+    computed scores, from each logo's centre in pixels interpolated between the axis ends (Fig. 2 to about 0.3,
+    Fig. 3 to about 0.3 to 1). A party matches within 1 point, and a pair is ordered differently only when the figure
+    and the scores order it opposite ways by more than 1 point each.
+  - Readings (a) and (b) of the criterion give the same number for a mean of polarity-adjusted positions, so only
+    one is computed.
+  - Statements are numbered by their wording, not by the workbook's "Statement no.", which is wrong for statements
+    16 to 24.
 - claim: party-clustering
   outcome: reproduced
   notebook: reproduce_mintal_2024.ipynb
   output: claim:party-clustering
-  notes: With the recoded positions (No opinion as 50, reading a), Manhattan distances and average linkage,
-    all 9 non-trivial clusters of Fig. 7 are found and no other, at heights equal to those read from the
-    figure to within 2.5 (root 1774.0, figure about 1775). Reading (b), No opinion left out of each distance,
-    finds 7 of 9 clusters; the variants on coder I's and coder II's positions find 2 and 7 of 9. The deposited
-    R code clusters the recoded CSV, as reading (a) does.
+  notes: With the recoded positions (No opinion as 50, reading a), Manhattan distances and average linkage, all
+    9 non-trivial clusters of Fig. 7 are found and no other, at heights within 1 of those read from the figure (root
+    1774.0, figure 1774). The figure was read blind to the computed tree, by pixel position against its axis ticks.
+    Reading (b), No opinion left out of each distance, finds 7 of 9 clusters; the variants on coder I's and coder
+    II's positions find 2 and 7 of 9. The deposited R code clusters the recoded CSV, as reading (a) does.
 - claim: table2-gender
   outcome: reproduced
   notebook: reproduce_mintal_2024.ipynb
@@ -132,11 +135,10 @@ outcomes:
   - 41.59
   - 57.07
   - 1.35
-  notes: Every reading is within tolerance. Reading (a), the paper's cleaning with gender given, gives
-    44,938, 61,670 and 1,455 of 108,063 (largest difference 2.5%). Gender, age and education are empty in
-    the same 25,639 rows, so readings (c) and (d) equal (a) and (b). The R code's cleaning, which also drops
-    330 rows that give one answer to all 39 statements, gives Table 2 exactly (44,919, 61,626, 1,420 of
-    107,965).
+  notes: Every reading is within tolerance. Reading (a), the paper's cleaning with gender given, gives 44,938, 61,670
+    and 1,455 of 108,063 (largest difference 2.5%). Gender, age and education are empty in the same 25,639 rows,
+    so readings (c) and (d) equal (a) and (b). The R code's cleaning, which also drops 330 rows that give one answer
+    to all 39 statements, gives Table 2 exactly (44,919, 61,626, 1,420 of 107,965).
 - claim: table2-age
   outcome: reproduced
   notebook: reproduce_mintal_2024.ipynb
@@ -153,8 +155,8 @@ outcomes:
   - 699
   - 32.31
   - 25.79
-  notes: Reading (a) gives every count within 2.4% of Table 2 and the two percentages within 0.01 point;
-    every reading is within tolerance. The R code's cleaning gives every age count of Table 2 exactly.
+  notes: Reading (a) gives every count within 2.4% of Table 2 and the two percentages within 0.01 point; every reading
+    is within tolerance. The R code's cleaning gives every age count of Table 2 exactly.
 - claim: table2-education
   outcome: reproduced
   notebook: reproduce_mintal_2024.ipynb
@@ -167,21 +169,22 @@ outcomes:
   - 2559
   - 69575
   - 64.38
-  notes: Reading (a) gives every count within 2.6% of Table 2 (no education 1,015 against 990); every
-    reading is within tolerance. The R code's cleaning gives every education count exactly.
+  notes: Reading (a) gives every count within 2.6% of Table 2 (no education 1,015 against 990); every reading is
+    within tolerance. The R code's cleaning gives every education count exactly.
 - claim: age-education-inconsistencies
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_mintal_2024.ipynb
   output: claim:age-education-inconsistencies
   measured:
   - 27
   - 378
-  notes: With the university category only, 27 respondents under 18 and 378 aged 18-20 on the cleaned rows,
-    and 27 and 382 on the raw rows; with applied higher education added, 34 and 505, and 34 and 509; the R
-    code's cleaning gives 25 and 375, or 32 and 500. The 18-20 count is within tolerance under reading (i),
-    but no reading brings the under-18 count within 4 of 40. The deposited R code does not contain this
-    check. The paper says the discrepancies led to "refinement of the data collection tool", so the counts
-    may have come from an earlier state of the data; this is asked of the authors (findings).
+  notes: With the university category only, 27 respondents under 18 and 378 aged 18-20 on the cleaned rows, and
+    27 and 382 on the raw rows; with applied higher education added, 34 and 505, and 34 and 509; the R code's cleaning
+    gives 25 and 375, or 32 and 500. The 18-20 count is within tolerance under reading (i), but no reading brings
+    the under-18 count within 4 of 40, so one of the two counts holds. The deposited R code's validation rules check
+    only that AGE and EDUCATION take valid categories; no rule relates them. The paper says the discrepancies were
+    found "upon initial review" and led to "refinement of the data collection tool", so the counts may have come
+    from an earlier state of the data; this is asked of the authors (findings) and of a reader (questions/figshare-24949470.yaml).
 - claim: s2-s3-wide-range
   outcome: reproduced
   notebook: reproduce_mintal_2024.ipynb
@@ -193,9 +196,9 @@ outcomes:
   - 42.09
   - 33.69
   - 25
-  notes: On the cleaned rows, with No opinion left out, S2 has mean 43.77, s.d. 33.82, median 25 (130,235
-    answers) and S3 mean 42.09, s.d. 33.69, median 25. On the raw rows the S2 median is 50, outside the
-    tolerance, and the other five values are within it.
+  notes: On the cleaned rows, with No opinion left out, S2 has mean 43.77, s.d. 33.82, median 25 (130,235 answers)
+    and S3 mean 42.09, s.d. 33.69, median 25. On the raw rows the S2 median is 50, outside the tolerance, and the
+    other five values are within it.
 - claim: s4-s5-consensus
   outcome: reproduced
   notebook: reproduce_mintal_2024.ipynb
@@ -209,10 +212,10 @@ outcomes:
   - 75
   - 17460
   - 23369
-  notes: On the cleaned rows S4 has mean 70.36, s.d. 26.58, median 75 and 17,460 answers of 0 or 25, and S5
-    mean 69.38, s.d. 29.53, median 75 and 23,369, so the counts are within tolerance (reading i) and above
-    the paper's (reading ii). The raw rows also hold. The R code's cleaning gives exactly 17,435 and 23,344,
-    the paper's numbers, so "more than" in the paper reads as "as many as" for that selection.
+  notes: On the cleaned rows S4 has mean 70.36, s.d. 26.58, median 75 and 17,460 answers of 0 or 25, and S5 mean
+    69.38, s.d. 29.53, median 75 and 23,369, so the counts are within tolerance (reading i) and above the paper's
+    (reading ii). The raw rows also hold. The R code's cleaning gives exactly 17,435 and 23,344, the paper's numbers,
+    so "more than" in the paper reads as "as many as" for that selection.
 - claim: efa-eleven-factors
   outcome: reproduced
   notebook: reproduce_mintal_2024.ipynb
@@ -220,95 +223,271 @@ outcomes:
   measured:
   - 11
   - 11
-  notes: On the cleaned rows with No opinion as 50 (reading a), parallel analysis with psych's defaults
-    (minres, 20 iterations) gives 11 factors for both the polychoric and the Pearson matrix. The 11th
-    Pearson factor value is 0.030 against a reference of 0.013 and the 12th 0.004 against 0.012; the 95th
-    percentile of the reference gives the same counts. Reading (b), No opinion missing, gives 12 (Pearson)
-    and 11 (polychoric) with the defaults. With the R code's settings (ML extraction, 1000 iterations for
-    Pearson and 100 for polychoric) every row reading gives 11 and 11, including the code's unique-email
-    rows (29,493). 18 of 2,074 uniqueness fits did not report convergence. While preparing, a looser
-    optimiser tolerance gave 12 for reading (a) Pearson with the defaults (not run here), so the 12th value
-    is close to its reference under minres; the notebook uses the tighter tolerance.
+  notes: On the cleaned rows with No opinion as 50 (reading a), parallel analysis with psych's defaults (minres,
+    20 iterations) gives 11 factors for both the polychoric and the Pearson matrix. The 11th Pearson factor value
+    is 0.030 against a reference of 0.013 and the 12th 0.004 against 0.012. The 12th polychoric value, 0.0103, is
+    close to the normal-data reference (0.0117), but psych's own reference for cor poly, polychoric correlations
+    of resampled data, gives 0.0143 (s.d. 0.0009 over 20 iterations) and again 11. The 95th percentile of each reference
+    gives the same counts. Reading (b), No opinion missing, gives 12 (Pearson) and 11 (polychoric, against either
+    reference) with the defaults, so with the defaults the claim holds under reading (a) only. With the R code's
+    settings (ML extraction, 1000 iterations for Pearson and 100 for polychoric, on a correlation matrix, for which
+    psych simulates normal data) every row reading gives 11 and 11, including the code's unique-email rows (29,493).
+    18 of 2,040 uniqueness fits on simulated reference matrices did not report convergence; every fit on an observed
+    matrix (12) and on resampled data (40) converged. While preparing, a looser optimiser tolerance gave 12 for
+    reading (a) Pearson with the defaults (not run here), so the 12th value is close to its reference under minres;
+    the notebook uses the tighter tolerance.
   deviations:
-  - The parallel analysis is a reimplementation of psych's fa.parallel in Python (factor values of the
-    correlation matrix with one-factor communalities on the diagonal, compared with the mean over simulated
-    normal data), not psych itself, which cannot be installed in the entry's Python environment.
-  - The R code's settings (fm "ml", n.iter 1000 and 100, unique-email rows) are shown as variants, taken
-    from Volebny_Kompas_code.R (section "CORRELATION AND FACTOR ANALYSIS"); the criterion names psych's
-    defaults.
-  - Polychoric correlations use thresholds from each statement's margins without psych's correction for
-    empty cells.
+  - The parallel analysis is a reimplementation of psych's fa.parallel in Python (factor values of the correlation
+    matrix with one-factor communalities on the diagonal, compared with the mean over simulated normal data, and
+    for the polychoric matrix under the defaults also over resampled data with polychoric correlations, as psych
+    does for cor poly on raw data), not psych itself, which cannot be installed in the entry's Python environment.
+  - The R code's settings (fm "ml", n.iter 1000 and 100, unique-email rows) are shown as variants, taken from Volebny_Kompas_code.R
+    (section "CORRELATION AND FACTOR ANALYSIS"); the criterion names psych's defaults.
+  - Polychoric correlations use thresholds from each statement's margins without psych's correction for empty cells.
 - claim: efa-loadings-consistent
-  outcome: reproduced
+  outcome: partially_reproduced
   assumed: true
   notebook: reproduce_mintal_2024.ipynb
   output: claim:efa-loadings-consistent
-  notes: On the Pearson matrix of the cleaned rows (reading a), S1 has a largest loading of 0.523 (ML) and
-    0.502 (PA) and S3 0.598 and 0.603, and 35 of 39 statements load most on matched factors (lowest Tucker
-    congruence 0.892), so the claim holds at both thresholds; reading (b) gives S1 0.553 and 0.539, S3 0.598
-    and 0.603, 35 of 39. On the polychoric matrices S1 and S3 load above 0.5 but only 32 of 39 statements
-    match (lowest congruence 0.355 and 0.358). On the R code's unique-email rows the Pearson PA loading of S1
-    is 0.379 and 33 of 39 match. The R code runs ML and PA with promax on the Pearson matrix, as reading (a)
-    here does.
+  notes: On the Pearson matrix of the cleaned rows (reading a), S1 has a largest loading of 0.523 (ML) and 0.502
+    (PA) and S3 0.598 and 0.603, and 35 of 39 statements load most on matched factors (lowest Tucker congruence
+    0.892), so the claim holds there at both thresholds; reading (b) gives S1 0.553 and 0.539, S3 0.598 and 0.603,
+    35 of 39. On the polychoric matrices S1 and S3 load above 0.5 but only 32 of 39 statements match (lowest congruence
+    0.355 and 0.358), so the solutions are not consistent there. The criterion takes the matrices of efa-eleven-factors,
+    Pearson and polychoric, so the claim holds on one of the two, in part. The R code runs ML and PA with promax
+    only on the Pearson matrix; on its unique-email rows the Pearson PA loading of S1 is 0.379 and 33 of 39 match.
   deviations:
-  - The thresholds for "strong" (0.4 or 0.5) and "consistent" (35 of 39) are the claims file's own; the
-    paper gives none, so the outcome rests on them.
+  - The thresholds for "strong" (0.4 or 0.5) and "consistent" (35 of 39) are the claims file's own; the paper gives
+    none, so the outcome rests on them.
   - ML, principal axis and promax are reimplemented in Python after psych and stats::promax.
 - claim: selected-parties-top-vote
   outcome: blocked
   blocked_by: other
-  notes: The official results of the 30 September 2023 election are public on the Statistical Office's
-    election site (volby.statistics.sk), which has no DOI or versioned release, so they cannot be pinned as
-    the protocol requires. The ParlGov 2024 release (doi:10.7910/DVN/2VZ5ZC), the pinned source looked at,
-    ends its Slovak elections with 2020 in both its stable and experimental databases; searches of Zenodo and
-    Harvard Dataverse found no pinned copy. These lookups were made while preparing and are not in the
-    notebook.
+  notes: The official results of the 30 September 2023 election are public on the Statistical Office's election
+    site (volby.statistics.sk), which has no DOI or versioned release, so they cannot be pinned as the protocol
+    requires. The ParlGov 2024 release (doi:10.7910/DVN/2VZ5ZC), the pinned source looked at, ends its Slovak elections
+    with 2020 in both its stable and experimental databases; searches of Zenodo and Harvard Dataverse found no pinned
+    copy. These lookups were made while preparing and are not in the notebook.
 - claim: website-views
   outcome: blocked
   blocked_by: other
-  notes: The view counts are the platform's usage records (euandi2019, run by the European University
-    Institute). The paper does not deposit them, the Figshare item does not hold them, and no public copy
-    is named anywhere; the responses cannot stand in for views. The claims file marks the data as
-    elsewhere, so `data_missing` is not used.
+  notes: The view counts are the platform's usage records (euandi2019, run by the European University Institute).
+    The paper does not deposit them, the Figshare item does not hold them, and no public copy is named anywhere;
+    the responses cannot stand in for views. The claims file marks the data as elsewhere, so `data_missing` is not
+    used.
 findings:
 - kind: metadata_error
-  statement: In "VAA_party_positions coded.xlsx" the "Statement no." column disagrees with the statement's
-    wording in 99 of 429 rows. For every party, the rows worded as statements 16 to 24 (Supplementary Table 1
-    and the data dictionary) are numbered 22, 23, 24, 16, 17, 18, 19, 20, 21, so the environment,
-    multilevel governance and form of government statements are mislabelled. The recoded CSV and the
-    paper's Figures 2 and 3 follow the wording. A user who joins positions to the user responses by
-    "Statement no." gets the wrong statements.
+  statement: In "VAA_party_positions coded.xlsx" the "Statement no." column disagrees with the statement's wording
+    in 99 of 429 rows. For every party, the rows worded as statements 16 to 24 (Supplementary Table 1 and the data
+    dictionary) are numbered 22, 23, 24, 16, 17, 18, 19, 20, 21, so the environment, multilevel governance and form
+    of government statements are mislabelled. The recoded CSV and the paper's Figures 2 and 3 follow the wording.
+    A user who joins positions to the user responses by "Statement no." gets the wrong statements.
 - kind: selection_undocumented
-  statement: The deposited R code removes 330 responses that give the same answer to all 39 statements (204
-    of them all "no opinion") before removing incomplete ones; the paper's Data cleaning does not mention
-    this step. With it, Table 2 and the S4 and S5 counts are reproduced exactly; without it they differ by up
-    to 2.5%.
+  statement: The deposited R code removes 330 responses that give the same answer to all 39 statements (204 of them
+    all "no opinion") before removing incomplete ones; the paper's Data cleaning does not mention this step. With
+    it, Table 2 and the S4 and S5 counts are reproduced exactly; without it they differ by up to 2.5%.
 - kind: metadata_error
-  statement: The paper says the responses were gathered during the 26 days up to and including election day,
-    but 432 rows (0.32%) are timestamped 1 to 9 October 2023, after the election. Table 1's sample entry
-    (2023-10-09 08:57:38) is one of them. The R code has an optional filter that drops rows after 2023-09-30
-    22:42:30, but the deposited file includes them and the paper does not say so.
+  statement: The paper says the responses were gathered during the 26 days up to and including election day, but
+    432 rows (0.32%) are timestamped 1 to 9 October 2023, after the election. Table 1's sample entry (2023-10-09
+    08:57:38) is one of them. The R code has an optional filter that drops rows after 2023-09-30 22:42:30, but the
+    deposited file includes them and the paper does not say so.
 - kind: metadata_error
-  statement: The paper's Data cleaning says "no opinion" answers are empty strings; in data_without_email.csv
-    they are the string "NA" (183,459 values in S1 to S39). The README calls each row "a unique respondent",
-    while EMAIL_ID repeats (30,775 distinct ids over 32,009 rows with an id), as the paper says it may.
+  statement: The paper's Data cleaning says "no opinion" answers are empty strings; in data_without_email.csv they
+    are the string "NA" (183,459 values in S1 to S39). The README calls each row "a unique respondent", while EMAIL_ID
+    repeats (30,775 distinct ids over 32,009 rows with an id), as the paper says it may.
 - kind: metadata_insufficient
-  statement: The data dictionary lists no categories for GENDER, AGE and EDUCATION (they appear only in the R
-    code's validation rules), does not give the time zone of TIME.STAMP, and lists a "Self-placement source"
-    column that is empty in all 429 rows.
+  statement: The data dictionary lists no categories for GENDER, AGE and EDUCATION (they appear only in the R code's
+    validation rules), does not give the time zone of TIME.STAMP, and lists a "Self-placement source" column that
+    is empty in all 429 rows.
 - kind: other
-  statement: Figure 3 places PS at about 54 on the economic axis, right of centre, while the deposited final
-    positions give 47.7 by the same calculation that reproduces every other party's placement in Figures 2
-    and 3. The figure and the deposited positions disagree for this one party.
+  statement: Figure 3 places PS at 54.5 on the economic axis, right of centre, while the deposited final positions
+    give 47.7 by the same calculation that reproduces every other party's placement in Figures 2 and 3 to within
+    0.8. The figure and the deposited positions disagree for this one party.
 - kind: methods_unavailable
-  statement: Question for the paper's authors. The weighted Cohen's kappa of 0.84 (Methods, Party selection
-    and coding, paragraph 3) does not state the weights or how "No opinion" codes enter. Quadratic weights with
-    pairs involving "No opinion" left out give 0.842; linear weights give 0.734, and scoring "No opinion" as
-    neutral gives 0.620 (linear) or 0.745 (quadratic). This attempt assumed quadratic weights with "No
-    opinion" left out; please confirm or correct.
+  statement: Question for the paper's authors. The weighted Cohen's kappa of 0.84 (Methods, Party selection and
+    coding, paragraph 3) does not state the weights or how "No opinion" codes enter. Quadratic weights with pairs
+    involving "No opinion" left out give 0.842; linear weights give 0.734, and scoring "No opinion" as neutral gives
+    0.620 (linear) or 0.745 (quadratic). This attempt assumed quadratic weights with "No opinion" left out; please
+    confirm or correct.
 - kind: methods_unavailable
-  statement: Question for the paper's authors. The structural validation reports 40 respondents under 18 and
-    400 aged 18-20 with university-level education (Technical Validation, Structural validation, paragraph 3).
-    The deposited data give 27 and 378 (cleaned rows, university only), 27 and 382 (raw), or 34 and 505 with
-    applied higher education. Which rows and categories were counted, and were the counts made on an earlier
-    state of the data? The R code does not contain this check.
+  statement: Question for the paper's authors. The structural validation reports 40 respondents under 18 and 400
+    aged 18-20 with university-level education (Technical Validation, Structural validation, paragraph 3). The deposited
+    data give 27 and 378 (cleaned rows, university only), 27 and 382 (raw), or 34 and 505 with applied higher education.
+    Which rows and categories were counted, and were the counts made on an earlier state of the data? The R code
+    does not contain this check.
+verifications:
+- date: '2026-10-27'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The executed notebook of commit bcc64466 (author-answers) with the conclusion cells and the summary
+    removed, the helper module and the claims file, with the paper. The verifier also listed the item's files through
+    the Figshare API. agrees compares its outcome with the outcome of the record it reviewed.
+  results:
+  - claim: user-responses-count
+    agrees: true
+    outcome: reproduced
+    reason: Cell 9, the raw file has 134,699 rows and every Table 1 column. After removing incomplete rows, 133,473
+      remain. Problem 7, the MD5 values are printed from the API but never checked against the bytes that were streamed.
+    response: No change of outcome. The data check now computes the MD5 of every streamed file and compares it with
+      the archive's; all 8 match.
+  - claim: collection-window
+    agrees: false
+    outcome: partially_reproduced
+    reason: Cell 11, responses start 2023-09-05 and cover all 26 days of the window. But 432 rows under reading
+      (a) and 494 under (b) fall between 1 and 9 October, so the criterion (every timestamp inside the window) fails
+      under both readings. Problem 9, the R code's moratorium cutoff (2023-09-30 22:42:30, as given) suggests TIME.STAMP
+      is local time, which makes reading (b) unlikely; under either reading, rows still fall after election day.
+    response: Outcome changed from not_reproduced to partially_reproduced; the start and the 26 days hold and 99.7%
+      of rows are inside the window, but the criterion's every timestamp fails, so the claim holds in part. The
+      conclusion and notes now say that the R code's comment puts the moratorium's end at 22:45 on 30 September,
+      so the code reads TIME.STAMP as local time and reading (b) is unlikely.
+  - claim: party-positions-structure
+    agrees: true
+    outcome: reproduced
+    reason: Cell 13, 429 rows, 39 statements, all three wordings for every statement; the expert, self-placement,
+      final, snippet and link columns are present. Problem 6, the workbook's Statement no. column is wrong for 99
+      rows, with statements 16 to 24 rotated; renumbering by English wording is justified, since the recoded CSV
+      matches it 1.000 against 0.823. This is a defect in the dataset and should be reported as one.
+    response: No change needed. The mislabelling is already a metadata_error finding in the record, and the data
+      check shows it row by row.
+  - claim: eleven-parties
+    agrees: true
+    outcome: reproduced
+    reason: Cell 15, 11 parties, each placed on 39 distinct statements.
+    response: No change needed.
+  - claim: party-self-placements
+    agrees: true
+    outcome: reproduced
+    reason: Cell 17, exactly 4 parties self-placed (SaS 39 statements, DEMOKRATI 38, PS 32 agree/disagree only,
+      KDH 22).
+    response: No change needed.
+  - claim: coder-agreement-kappa
+    agrees: true
+    outcome: reproduced
+    reason: Cell 19, quadratic weights with No opinion left out give kappa 0.842 on 266 pairs, inside 0.84 +- 0.084.
+      The other three readings fail (0.620 to 0.745). It recomputed 0.842 (and 0.734 for linear) from the printed
+      crosstab.
+    response: No change needed.
+  - claim: uni-and-landscape-placements
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 21, 18 and 16 statements are assigned, as claimed. Under reading (ii) all five uni-dimensions and
+      the cultural axis match the figure order. On the economic axis PS scores 47.7 against 54 read from Fig. 3,
+      which reverses its order against DEMOKRATI (52.3 vs 52). Problem 1, the expected placements were typed in
+      from Figs. 2, 3 and 7 read by eye and agree with the computed values far more tightly than the stated reading
+      precision, which suggests the figures were not read blind to the computed values; the outcome rests on readings
+      it cannot verify. Problem 5, the discordant function counts a pair when one side is within the tie tolerance
+      and the other is not, which flags SMER-SD/HLAS-SD although both orders agree.
+    response: Outcome kept. Figs. 2 and 3 were read again by a separate agent that saw only the figure images and
+      not the computed scores, by pixel position of each logo's centre against the axis ends; those readings, and
+      the pixel positions of the axes, replace the earlier ones in the notebook. It found that Fig. 2 places parties
+      at whole percentages (k times 100/12 cut to an integer), which explains the earlier exact matches, and it
+      read PS at 54.5 on Fig. 3's economic axis, 38 pixels right of the centre line, so the PS disagreement stands
+      (computed 47.7). The registry's check refuses code that reads an image file, so the published figures cannot
+      be shown in the notebook with the values drawn on them. The discordant function now counts a pair only when
+      the figure and the scores order it opposite ways by more than the tolerance of 1 point each; reading (ii)
+      has one such pair, DEMOKRATI/PS.
+  - claim: party-clustering
+    agrees: true
+    outcome: reproduced
+    reason: Cell 24, reading (a), the recoded CSV, finds all 9 of the 9 Fig. 7 clusters and no extra ones. Problem
+      1, Fig. 7 heights are said to be read to +-20 but match within 2.5; the outcome rests on readings it cannot
+      verify, and the precision suggests the figure was not read blind to the computed values.
+    response: Outcome kept. Fig. 7 was read again by the same separate agent, blind to the computed tree, with merge
+      heights measured from the bars' pixel positions against the axis ticks (to about +-3); the topology and the
+      heights (within 1 of the computed ones) are unchanged, and the notebook now states this method.
+  - claim: table2-gender
+    agrees: true
+    outcome: reproduced
+    reason: Cells 26-27, readings (a) to (d) all fall within tolerance (largest count difference 2.96%). The R code's
+      cleaning, a variant, matches exactly with a total of 107,965.
+    response: No change needed.
+  - claim: table2-age
+    agrees: true
+    outcome: reproduced
+    reason: Same cells, 9 of 9 counts and both percentages fall within tolerance under every reading.
+    response: No change needed.
+  - claim: table2-education
+    agrees: true
+    outcome: reproduced
+    reason: Same cells, 6 of 6 counts and the 64.41% fall within tolerance under every reading (largest difference
+      4.44%).
+    response: No change needed.
+  - claim: age-education-inconsistencies
+    agrees: false
+    outcome: partially_reproduced
+    reason: Cell 29, the 18-20 count is 378 (cleaned) or 382 (raw) with university only, inside 400 +- 40. The under-18
+      count is 25 to 34 under every reading, never inside 40 +- 4. Problem 2, the R code's validate rule for age
+      and education, which this claim depends on, is never examined. Problem 8, the paper says these inconsistencies
+      were found upon initial review and then acknowledged during further data curation, so the 40 and 400 may describe
+      an earlier state of the data, and the criterion does not mention this possibility.
+    response: Outcome changed from not_reproduced to partially_reproduced; one of the two counts (18-20) is within
+      tolerance and the other is not. The notebook now prints, in a new section "The deposited R code", the lines
+      it relies on, namely the straight-line rows, the removal of incomplete rows, No opinion as 50, the validator
+      rules, the unique-email filter, both fa.parallel calls and the fa calls, the clustering of the recoded positions
+      and the moratorium filter, and the README line that describes the recoded positions. The validator rules check
+      only that AGE and EDUCATION take valid categories, and no line of the code names both in a rule, so the code
+      holds no such check. Problem 8 is added to questions/figshare-24949470.yaml as a question for a reader; the
+      claim is not changed.
+  - claim: s2-s3-wide-range
+    agrees: true
+    outcome: reproduced
+    reason: Cell 31, reading (a), S2 mean 43.77, sd 33.82, median 25; S3 mean 42.09, sd 33.69, median 25. All six
+      are within tolerance.
+    response: No change needed.
+  - claim: s4-s5-consensus
+    agrees: true
+    outcome: reproduced
+    reason: Cell 31, reading (a), all six statistics are within tolerance. The 0-or-25 counts are 17,460 and 23,369,
+      which satisfy both reading (i) and reading (ii).
+    response: No change needed.
+  - claim: efa-eleven-factors
+    agrees: true
+    outcome: reproduced
+    reason: Cell 35, reading (a), 11 factors for Pearson and polychoric, under the default settings and the R-code
+      settings, against both the mean and the 95th-percentile reference. Problem 3, the polychoric parallel analysis
+      compares against eigenvalues from normal data with Pearson correlations, while psych's fa.parallel(cor="poly")
+      builds its reference from resampled data with polychoric correlations; under reading (a) with default settings
+      the 12th polychoric value (0.0106) sits only 0.0011 below its reference (0.0117), so the count could move
+      to 12. Reading (b) Pearson with default settings already gives 12, so the claim holds under reading (a) only.
+      Problem 4, 18 of 2,074 uniqueness fits did not converge, and the notebook does not say whether any were fits
+      on the observed matrices. Problem 2, the R code's lines for fa.parallel, fm ml and n.iter are not shown.
+    response: Outcome kept. vk.parallel_reference_resampled adds psych's reference for cor poly on raw data (each
+      column resampled with replacement, polychoric correlations, minres, 20 iterations). It gives 11 for readings
+      (a) and (b), with the 12th observed value 0.0103 against 0.0143 (s.d. 0.0009) for reading (a). The notebook
+      now reports convergence by kind of fit; the 18 that did not converge are all on simulated reference matrices
+      (18 of 2,040), and every fit on an observed matrix (12) or on resampled data (40) converged. The conclusion
+      and notes now say that with the defaults the claim holds under reading (a) only. The notebook now prints,
+      in a new section "The deposited R code", the lines it relies on, namely the straight-line rows, the removal
+      of incomplete rows, No opinion as 50, the validator rules, the unique-email filter, both fa.parallel calls
+      and the fa calls, the clustering of the recoded positions and the moratorium filter, and the README line that
+      describes the recoded positions.
+  - claim: efa-loadings-consistent
+    agrees: false
+    outcome: partially_reproduced
+    reason: Cell 37, on Pearson, readings (a) and (b), S1 and S3 load at 0.50 or more in both solutions and 35 of
+      39 statements match, so the claim holds under the 0.4 and 0.5 thresholds. On polychoric only 32 of 39 match
+      (lowest congruence 0.36), so consistency fails. The criterion says matrices, plural, and the thresholds are
+      the claims file's own.
+    response: Outcome changed from reproduced to partially_reproduced, as the verifier gives it; the criterion takes
+      the matrices of efa-eleven-factors, and the solutions are consistent on the Pearson matrix (35 of 39) but
+      not on the polychoric one (32 of 39). It stays marked as resting on the claims file's thresholds.
+  - claim: selected-parties-top-vote
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). The archive's 8 files hold no election results (it checked the Figshare API
+      file list). The dataset side, the 11 party names, is available, so the claim is testable against the Statistical
+      Office's official results.
+    response: Outcome kept, with blocked_by other. The claim is data elsewhere, and the protocol and tools/entry.py
+      check do not allow data_missing for such a claim. Outside data must be pinned (a DOI or a repository at a
+      commit); the Statistical Office's results site is not. This revision searched again; the ParlGov 2024 release
+      (doi:10.7910/DVN/2VZ5ZC) is still the latest on Harvard Dataverse and ends its Slovak elections with 2020,
+      and a Zenodo search found no copy of the 2023 results. These searches are not in the notebook.
+  - claim: website-views
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). The archive holds no platform usage logs (8 files, namely code, dictionary,
+      README, Supplementary Table 1, responses, party workbook, recoded CSV, census). Responses per day cannot stand
+      in for views.
+    response: Outcome kept, with blocked_by other, since the claim is data elsewhere and data_missing is not allowed
+      for such a claim; the notes say the usage records are public nowhere.

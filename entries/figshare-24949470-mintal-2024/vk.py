@@ -17,13 +17,16 @@ nothing is written to disk. Where each parameter comes from:
   polarity. A statement of polarity -1 enters as 100 minus the position (Methods: "a negative
   polarity (-1) increases the dimension score when users do not support a statement"); the
   score is the mean over the dimension's statements (claims file, reading (a)).
-- Parallel analysis (`parallel_analysis`) follows psych::fa.parallel with fa = "fa" given a
+- Parallel analysis (`reduced_eigenvalues`, `parallel_reference`) follows psych::fa.parallel with fa = "fa" given a
   correlation matrix: the observed values are the eigenvalues of the correlation matrix with the
   communalities of a one-factor solution on its diagonal; the reference values are the same for
   the correlation matrices of normal random data of the same size, averaged over iterations; the
   count is the number of leading observed values above the reference. Defaults (minres, 20
   iterations) are the claims file's reading; ML with 1000 (Pearson) or 100 (polychoric)
-  iterations are the deposited R code's settings.
+  iterations are the deposited R code's settings. The R code passes a correlation matrix and
+  n.obs, so psych can only simulate normal data, as `parallel_reference` does. Given raw data
+  with cor = "poly" (the claims file's default reading), psych instead resamples each column and
+  takes polychoric correlations of the resampled data (`parallel_reference_resampled`).
 - Polychoric correlations (`polychoric`): two-step estimate as in psych::polychoric, with each
   statement's thresholds from its own margins and the correlation by maximum likelihood on the
   5 by 5 table. Empty cells are not corrected; with tens of thousands of rows per table this is a
@@ -35,6 +38,7 @@ nothing is written to disk. Where each parameter comes from:
 
 from __future__ import annotations
 
+import hashlib
 import io
 import json
 import urllib.request
@@ -66,10 +70,15 @@ def file_list() -> pd.DataFrame:
     return files
 
 
+STREAMED_MD5: dict[int, str] = {}   # MD5 of the bytes of each streamed file, to check against the API's
+
+
 def read_bytes(file_id: int) -> bytes:
     """Stream one file into memory from Figshare's downloader, which redirects to S3."""
     with fsspec.open(f"https://ndownloader.figshare.com/files/{file_id}", block_size=2**20) as f:
-        return f.read()
+        b = f.read()
+    STREAMED_MD5[file_id] = hashlib.md5(b).hexdigest()
+    return b
 
 
 def file_id(files: pd.DataFrame, name: str) -> int:
@@ -278,6 +287,19 @@ def parallel_reference(n: int, p: int, fm: str, n_iter: int, rng: np.random.Gene
         Z = rng.standard_normal((n, p), dtype=np.float32).astype(np.float64)
         vals.append(reduced_eigenvalues(np.corrcoef(Z, rowvar=False), fm))
     return np.mean(vals, axis=0)
+
+
+def parallel_reference_resampled(X: pd.DataFrame, fm: str, n_iter: int, rng: np.random.Generator) -> np.ndarray:
+    """Factor values of n_iter polychoric matrices of resampled data, one row per iteration: each
+    column is drawn with replacement from its own values (missing values included), which keeps the
+    margins and removes the correlations. This is psych::fa.parallel's resampling reference, which
+    it uses with cor = "poly" on raw data (the claims file's default reading)."""
+    A = X.to_numpy()
+    vals = []
+    for _ in range(n_iter):
+        S = np.column_stack([rng.choice(A[:, j], len(A)) for j in range(A.shape[1])])
+        vals.append(reduced_eigenvalues(polychoric(pd.DataFrame(S)), fm))
+    return np.array(vals)
 
 
 def parallel_count(observed: np.ndarray, reference: np.ndarray) -> int:
