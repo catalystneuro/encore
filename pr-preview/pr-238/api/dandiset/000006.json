@@ -1,0 +1,862 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000006",
+  "label": "DANDI:000006"
+ },
+ "page": "datasets/dandi/000006/",
+ "generated": "2026-10-27T15:55:01+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 7,
+  "partially_reproduced": 5,
+  "not_reproduced": 3,
+  "blocked": 8
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 5,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 2
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000006-economo-2018-02",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000006",
+    "version": "0.220126.1855",
+    "doi": "10.48324/dandi.000006/0.220126.1855"
+   },
+   "key": "dandi:000006",
+   "label": "DANDI:000006",
+   "dataset_version": "0.220126.1855",
+   "paper": "10.1038/s41586-018-0642-9",
+   "paper_title": "Distinct descending motor cortex pathways and their roles in movement",
+   "date": "2026-10-20",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-10"
+   },
+   "runner": null,
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000006-economo-2018",
+   "entry_title": "Two types of pyramidal tract neuron in mouse motor cortex (Economo et al. 2018)",
+   "description": "Tests the findings of Economo et al. (2018) that the claims file, written from the full text, lists. The dandiset holds silicon probe recordings from the anterior lateral motor cortex of 12 mice in a delayed response task, with tagged PTupper and PTlower units. The notebook rebuilds the paper's smoothed rates from the files, applies the paper's unit selection, single-unit measures and coding directions with the hierarchical bootstrap under every reading the claims file names, and compares the two types. The claims on sequencing and axon reconstructions are tested on the paper's Figshare record.",
+   "notebooks": [
+    {
+     "path": "reproduce_economo_2018.ipynb",
+     "title": "Reproducing Economo et al. (2018) from dandiset 000006",
+     "executed": "notebooks/000006-economo-2018/reproduce_economo_2018.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "pt-types-transcriptomic",
+     "statement": "In ALM scRNA-seq, glutamatergic neurons form 27 clusters and PT neurons map to three of them (Slco2a1, and the closely related Npsr1 and Hpgd), and with axonal reconstructions this suggests that PT neurons can be divided into two cell types.",
+     "source": "Results, Two types of PT neuron in layer 5, paragraphs 1 and 5; Fig. 1",
+     "quote": "ALM PT neurons mapped to three transcriptomic clusters ... Axonal reconstructions and scRNA-seq data suggest that PT neurons can be divided into two distinct cell types.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "Tested on the Seq.zip annotation of the Tasic et al. taxonomy. Under the criterion's counting rule, the ALM glutamatergic clusters not named for VISp with the Cajal-Retzius cluster included, there are 27, the paper's number. The variants give 26 without the Cajal-Retzius cluster (the clusters of Fig. 1a), 25 counting clusters with most of their cells in ALM and 45 counting every glutamatergic cluster with an ALM cell. The 368 ALM cells of the L5 PT subclass map to three clusters, Slco2a1 203, Hpgd 122 and Npsr1 43. The suggestion of two types is an interpretation and is not tested. What the answer changed - it fixed the counting rule (Fig. 1a names 26 clusters without the Cajal-Retzius cluster, the Methods give 27), which the run before the answers had taken as a reading of a reported number. The outcome is unchanged. The earlier attempt blocked this claim as data missing.",
+     "deviations": [
+      "The cluster table in Seq.zip (cluster_metadata.csv) is from an earlier version of the taxonomy, with other cluster names; the annotation file, which carries the paper's names, is used."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "scRNA-seq data of Tasic et al. 2018, doi:10.1038/s41586-018-0654-5 (Allen Institute); Figshare doi:10.25378/janelia.7007846 version 1, Seq.zip",
+     "proposed": null
+    },
+    {
+     "claim": "pt-upper-thalamus-projection",
+     "statement": "Of 12 reconstructed PT neurons, 8 innervate the thalamus.",
+     "source": "Results, Two types of PT neuron in layer 5, paragraph 2; Fig. 2a, b; Extended Data Fig. 2",
+     "quote": "Patterns of axonal collaterals revealed two neuron types: one group innervated the thalamus (n = 8; Fig. 2a, b; green hues and Extended Data Fig. 2)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "The 12 neurons of Supplementary data table 1, as the criterion lists them, are in Axons.zip with the same groups as AxonReconstructions.m. Under reading (c), more termini in the thalamus than in the medulla, 8 of 12 innervate the thalamus, the paper's 8, and they are exactly the table's thalamus group. Readings (a), any terminus, and (b), any axon length, give 11 of 12, as three of the four medulla-group neurons have thalamic termini (1, 7 and 1) and thalamic axon. The 8 is a reported count, so it holds under the reading that matches. What the answer changed - it named the neurons and the three readings and said the count holds if it matches under one; the run before the answers had the same counts and was blocked as methods underspecified, as the claims file then gave no rule. The earlier attempt blocked it as data missing.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Figshare doi:10.25378/janelia.7007846 version 1, Axons.zip (MouseLight reconstructions)",
+     "proposed": null
+    },
+    {
+     "claim": "pt-lower-medulla-projection",
+     "statement": "The other 4 of 12 reconstructed PT neurons bypass the thalamus and branch in the medulla, including the reticular nuclei with premotor neurons for orofacial movements.",
+     "source": "Results, Two types of PT neuron in layer 5, paragraph 2; Fig. 2a, b",
+     "quote": "the other group bypassed the thalamus and branched in the medulla, including the reticular nuclei containing premotor neurons for orofacial movements23 (n = 4; magenta hues)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "Under reading (c), more termini in the medulla than in the thalamus, 4 of the 12 neurons bypass the thalamus, the paper's 4, all of them the medulla group of Supplementary data table 1; all 4 have termini and axon in the medulla and in the intermediate reticular nucleus, so the branching part holds. Under readings (a) and (b) only 1 of the 4 lacks thalamic termini and axon. Six of the eight thalamus-group neurons have medullary termini (1 to 10). What the answer changed - it named the readings and said the count holds if it matches under one; the run before the answers was blocked as methods underspecified. The earlier attempt blocked it as data missing.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Figshare doi:10.25378/janelia.7007846 version 1, Axons.zip (MouseLight reconstructions)",
+     "proposed": null
+    },
+    {
+     "claim": "pt-types-shared-targets",
+     "statement": "Both PT types project to several shared targets; all reconstructed cells innervate the superior colliculus, and both types send collaterals to the subthalamic nucleus, zona incerta and midbrain reticular nucleus.",
+     "source": "Results, Two types of PT neuron in layer 5, paragraph 2; Extended Data Fig. 2e legend",
+     "quote": "All cells innervated the superior colliculus and subsets of both groups branched in other areas ... Both cell types extended axon collaterals locally within the same sublamina as their somata, the subthalamic nucleus, zona incerta, and the midbrain reticular nucleus.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "The first part holds - all 12 neurons of Supplementary data table 1 have axon and termini in the superior colliculus (its motor-related part). The second part, collaterals of both types to the subthalamic nucleus, zona incerta and midbrain reticular nucleus, is stated of the bulk labelling of Extended Data Fig. 2e; the criterion makes those images its intended test, and the paper gives no method to analyse them, so it is not tested. On the reconstructions, a variant, neurons of both groups reach the subthalamic nucleus (6 thalamus-group and 3 medulla-group neurons by termini, 6 and 4 by axon length), the zona incerta (5 and 3, 7 and 3) and the midbrain reticular nucleus (8 and 4 under both). What the answer changed - it made the test on the reconstructions a variant, so the claim moved from reproduced (run before the answers) to blocked. The earlier attempt blocked it as data missing.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Figshare doi:10.25378/janelia.7007846 version 1, Axons.zip and Anatomy.zip",
+     "proposed": null
+    },
+    {
+     "claim": "pt-retrograde-sublaminae",
+     "statement": "Thalamus-projecting PT neurons lie in upper L5b and medulla-projecting PT neurons in lower L5b; few neurons are co-labelled from thalamus and medulla (2.2%, 22 of 984) while many are co-labelled from thalamus and superior colliculus (77.1%, 687 of 890).",
+     "source": "Results, Two types of PT neuron in layer 5, paragraph 3; Fig. 2c, d; Extended Data Fig. 3",
+     "quote": "Few neurons were co-labelled by injections into the thalamus and medulla (2.2%; 22 out of 984 cells labelled from either location), whereas many neurons were co-labelled by injections into the thalamus and superior colliculus (77.1%; 687 out of 890 thalamus-labelled cells)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "Anatomy.zip holds only image stacks of six brains (657 jpg files; thalamus and medulla H2B labelling, anterograde labelling, ChR2 expression), without cell counts or co-labelling annotations, and no folder is named for superior colliculus labelling, which the 77.1% needs. The two H2B folders of brain BL648, its thalamus and medulla retrograde labelling, hold 108 images each (0.78 to 2.07 MB), with no scale, cell positions or counts beside them, so a co-labelling count would need a cell detection method the paper does not give. One image of each folder, opened outside the notebook while preparing, is 8600 by 6200 pixels, greyscale; this decides nothing. What the answer changed - it confirmed that neither the paper nor its code says how labelled and co-labelled cells were counted, so the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Figshare doi:10.25378/janelia.7007846 version 1, Anatomy.zip",
+     "proposed": null
+    },
+    {
+     "claim": "pt-projection-cluster-mapping",
+     "statement": "All 62 medulla-projecting PT neurons map to the Slco2a1 cluster, and 91 of 94 thalamus-projecting PT neurons map to the Npsr1 and Hpgd clusters.",
+     "source": "Results, Two types of PT neuron in layer 5, paragraph 4; Fig. 2e, f",
+     "quote": "projecting PT neurons mapped to the Slco2a1 taxonomic cluster. ... Similarly, thalamus-projecting PT neurons mapped to the Npsr1 and Hpgd clusters (91 out of 94",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "Under reading (b), inj_primary_label grouped with the Allen ontology, all 62 medulla-labelled ALM PT neurons are in Slco2a1 and 91 of 94 thalamus-labelled ones in Npsr1 (19) or Hpgd (72), the paper's numbers; the pons group matches the Methods too (100, of them 86, 5 and 9) and the superior colliculus group has 92 cells against 97. Under reading (a), the code's grouping (inj_roi_label matched to IRN, VAL, PG and SC|SCm), the medulla group has 58 cells, all Slco2a1, and 89 of 92 thalamus-labelled cells are in Npsr1 (18) or Hpgd (71), so the medulla count does not match; its superior colliculus group matches (97, of them 43, 15 and 39) and its pons group has 99. What the answer changed - it named the code's grouping as reading (a) beside reading (b), and said the claim holds when both counts match under one. The outcome is unchanged and rests on reading (b).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "scRNA-seq data of Tasic et al. 2018, doi:10.1038/s41586-018-0654-5; Figshare doi:10.25378/janelia.7007846 version 1, Seq.zip",
+     "proposed": null
+    },
+    {
+     "claim": "pt-types-account-for-all-pt",
+     "statement": "All 18 partially and fully reconstructed PT neurons project to the superior colliculus and none lacks projections to both thalamus and medulla, suggesting that most if not all PT neurons belong to the two types.",
+     "source": "Results, Two types of PT neuron in layer 5, paragraph 5; Supplementary Table 1 (read 2026-10-20 in the Supplementary Information PDF)",
+     "quote": "All (18 out of 18) partially and fully reconstructed PT neurons projected to the superior colliculus and no (0 out of 18) PT neurons lacked projections to both the thalamus and medulla",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "The 18 neurons of Supplementary data table 1 (the 12 complete ones and AA0132, AA0135, AA0250, AA0131, AA0134, AA0169) are all in Axons.zip and are the 18 with somata in motor cortex. None lacks both thalamus and medulla (0 of 18), but 17 of 18 reach the superior colliculus; AA0134, a partial medulla-projecting neuron of the table, has neither termini nor axon there (13 medullary termini). The readings of projecting (termini, axon length) agree. Over all 22 neurons of the file, a variant, 19 reach it. No node of AA0134's axon (2368 nodes, 36 termini) lies in a structure named for the superior colliculus; it runs through the midbrain reticular nucleus (141 nodes) and the tectospinal pathway (55) to the intermediate reticular nucleus (235 nodes, 6 termini) and other reticular nuclei of the pons and medulla. What the answer changed - it fixed which 18 neurons are meant, which the run before the answers had read as those with motor cortex somata; the neurons are the same and the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Figshare doi:10.25378/janelia.7007846 version 1, Axons.zip",
+     "proposed": null
+    },
+    {
+     "claim": "pt-marker-genes",
+     "statement": "smFISH confirms Slco2a1 as a PTlower marker and Npnt as a PTupper marker (Slco2a1 puncta IQR 1-2.5 in PTupper against 6-22 in PTlower; Npnt IQR 16-40 in PTupper against 1-9 in PTlower).",
+     "source": "Results, Two types of PT neuron in layer 5, paragraph 6; Fig. 3c legend",
+     "quote": "Slco2a1, PTupper: interquartile range (IQR) = 1\u20132.5 puncta, n = 60; Slco2a1, PTlower: IQR = 6\u201322, n = 95; Npnt, PTupper: IQR = 16\u201340, n = 145; Npnt, PTlower: IQR = 1\u20139, n = 69",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "The smFISH images and puncta counts are not in the dandiset and not public anywhere. No file of the Figshare record holds them (Anatomy.zip holds image stacks of retrograde and anterograde labelling only, nothing is named for smFISH, RNAscope, Npnt or Slco2a1, and it holds no tables), and the paper's Data availability statement names archives for the bulk RNA-seq and the electrophysiology only. What the answer changed - the claim is now data dataset, so it is blocked as data missing, where the run before the answers used other.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-bulk-sc-fold-change-correlation",
+     "statement": "Fold changes between PTupper and PTlower of the 200 most discriminative genes correlate between scRNA-seq and bulk RNA-seq (Pearson's r = 0.87).",
+     "source": "Extended Data Fig. 4i legend",
+     "quote": "The correlation coefficient (Pearson\u2019s r) in fold change expression was 0.87 for this set of 200 differentially expressed genes.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "With fold change as mean log2(CPM + 1), as the criterion takes from the legend (the bulk samples scaled to counts per million; the single-cell values are stored as CPM), r = 0.874 over the 200 genes bulkVsSC.m keeps, within 0.87 +/- 0.087. The code's variant, with the bulk counts as stored, gives 0.867. Over all 31,002 genes in both data sets r is 0.516 (0.458 in the variant). Single cells are 165 Npsr1 or Hpgd and 203 Slco2a1 cells; bulk samples are the six thalamus and six medulla samples of the code. What the answer changed - it made the legend's scale the measure and the code's bulk values a variant; the run before the answers recorded the code's 0.867. The outcome is unchanged.",
+     "deviations": [
+      "Gene names that repeat in the tables keep their first row, as MATLAB's ismember does; counts per million are taken over all of a sample's rows before that."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GEO GSE119182 (bulk RNA-seq); scRNA-seq of Tasic et al. 2018, doi:10.1038/s41586-018-0654-5",
+     "proposed": null
+    },
+    {
+     "claim": "pt-tagged-units",
+     "statement": "The recordings yield 61 identified PTupper cells from 8 mice and 69 identified PTlower neurons from 4 mice after exclusions (130 of 143 tagged units kept).",
+     "source": "Results, Cell-type-specific recordings, paragraph 2; Methods, Electrophysiology data analysis",
+     "quote": "(61 PTupper cells, 8 mice; 69 PTlower neurons, 4 mice; Fig. 4d and Extended Data Fig. 5)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "The dandiset holds 117 tagged units (the paper sorted 143). The code's rule keeps 44 PTupper and 56 PTlower units and the session rule 42 and 63, from 8 and 4 mice under both; only the session rule's 63 is within tolerance, and no reading gives both counts. The code's rule gives 61 and 69 from 8 and 4 mice on the processed data; the dandiset lacks 11 of the paper's sessions, which hold 17 included PTupper and 13 included PTlower units. The processed data hold 150 tagged units, the paper's 143 of good quality (Excellent or Good) and 7 PTlower units of Fair quality that the code's quality filter leaves out; of the 143 the code's rule keeps 130. What the answer changed - when neither reading matches, the other claims use the code's per-unit rule, so they now run on the 44 and 56 units, with the session rule as a variant. This claim's outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-depth",
+     "statement": "Identified PTupper cells are at more superficial recording depths than PTlower neurons.",
+     "source": "Results, Cell-type-specific recordings, paragraph 2; Fig. 4e",
+     "quote": "Identified PTupper cells were at more superficial recording depths than PTlower neurons, consistent with retrograde labelling experiments",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "Mean unit depth of included units, PTupper 636 +/- 132 um against PTlower 1004 +/- 217 um with the code's selection, and 892 um without the right-hemisphere recordings. The session rule, a variant, gives 627 against 994 (901) um. The session manipulator depth, a variant, is not in the files; on the processed data it orders the types the same way (1117 against 1374 um, 1189 um without the right hemisphere). What the answer changed - the unit depth field decides (Fig. 4e plots it), so the missing manipulator depth is no longer a deviation. The outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-spike-rates-similar",
+     "statement": "Baseline and trial-averaged peak spike rates do not differ between PTupper (baseline 4.3 +/- 3.5 Hz, peak 17.7 +/- 13.8 Hz, median +/- s.d.) and PTlower cells (5.2 +/- 4.8 Hz, 17.2 +/- 22 Hz).",
+     "source": "Results, Cell-type-specific recordings, paragraph 3",
+     "quote": "Baseline and trial-averaged peak spike rates were not significantly different (P > 0.1, two-sided t-test) in PTupper cells (baseline: 4.3 \u00b1 3.5 Hz; peak: 17.7 \u00b1 13.8 Hz; median \u00b1 s.d.) compared to PTlower cells (baseline: 5.2 \u00b1 4.8 Hz; peak: 17.2 \u00b1 22 Hz)",
+     "statistics": [
+      {
+       "test": "two-sided t-test (Student's, Methods)",
+       "p": 0.1,
+       "p_relation": ">",
+       "n": "61 PTupper and 69 PTlower neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "With the code's selection and the unit's range, peak rates differ between the types (two-sided Student's t-test p = 0.030), so the claim of absence is not reproduced; baseline rates do not differ (p = 0.074). Neither p exceeds the paper's bound of 0.1. Medians 4.93 and 18.37 Hz (PTupper) and 6.69 and 20.96 Hz (PTlower), only the PTupper peak within tolerance; s.d. 3.67, 11.18, 5.85 and 22.92 Hz. All trials, a variant, gives p = 0.069 and 0.028; the session rule, a variant, p = 0.34 to 0.44 with medians out of tolerance. On the paper's units all four medians are within tolerance (4.27, 17.65, 5.18, 17.17 Hz) and neither test differs (p = 0.18 and 0.14). On the processed data for the same 44 and 56 units the dandiset holds, peak rates also differ (p = 0.03) and baseline rates do not (p = 0.085), so the difference comes from the 11 missing sessions, not from the files. The files raise every unit's baseline rate (median 0.99 Hz for PTupper and 0.97 Hz for PTlower), as spikes of neighbouring trials fall in the baseline epoch. What the answer changed - it fixed the selection as the code's rule; the run before the answers was blocked because the two selections gave different outcomes.",
+     "deviations": [
+      "The dandiset lacks 11 of the paper's sessions; the test runs on 44 PTupper and 56 PTlower units, not 61 and 69."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-lower-heterogeneous-rates",
+     "statement": "Spike rates are more heterogeneous across the PTlower population than the PTupper population, for baseline (P = 0.02) and peak rates (P = 3 x 10^-4).",
+     "source": "Results, Cell-type-specific recordings, paragraph 3",
+     "quote": "Spike rates in PTlower cells were more heterogeneous across the population (baseline: P = 0.02; peak: P = 3 \u00d7 10\u22124; \u03c72 test)",
+     "statistics": [
+      {
+       "about": "baseline rate variance, PTlower against PTupper",
+       "test": "\u03c72 test",
+       "p": 0.02
+      },
+      {
+       "about": "peak rate variance, PTlower against PTupper",
+       "test": "\u03c72 test",
+       "p": 0.0003
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "With the code's selection and the unit's range, PTlower rates are more variable for baseline (variance 34.2 against 13.5 Hz^2, Bartlett p = 0.0019, F test p = 0.0020) and for peak (525 against 125 Hz^2, both p below 0.0001), under both tests. The variants give the same (baseline p 0.0014 to 0.0021, peak p below 0.0001). The processed data give p = 0.014 and 0.0003, against the paper's 0.02 and 3e-4. What the answer changed - the dependency moved from pt-spike-rates-similar, which blocked the claim in the run before the answers, to pt-tagged-units. pt-tagged-units is not reproduced on the dandiset, as 11 sessions are missing, so this test runs on 44 and 56 units; the result is the same on the paper's 130.",
+     "deviations": [
+      "The dandiset lacks 11 of the paper's sessions; the test runs on 44 PTupper and 56 PTlower units."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-lower-bursting",
+     "statement": "A substantial proportion of PTlower neurons fire bursts (18.8%), which are rare among PTupper cells (3.3%).",
+     "source": "Results, Cell-type-specific recordings, paragraph 3; Extended Data Fig. 5c",
+     "quote": "A substantial proportion of PTlower neurons displayed spike bursts (18.8%), which were rare among PTupper cells (3.3%; P = 0.006, Fisher\u2019s exact test; Extended Data Fig. 5c).",
+     "statistics": [
+      {
+       "test": "Fisher's exact test",
+       "p": 0.006,
+       "n": "61 PTupper and 69 PTlower neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "With the code's selection 11 of 56 PTlower (19.6%) and 2 of 44 PTupper units (4.5%) burst (two-sided Fisher p = 0.035). The PTlower share and the test hold; the PTupper share is out of 3.3 +/- 0.33%. The session rule, a variant, gives 12 of 63 (19.0%) and 2 of 42 (4.8%), p = 0.042. On the paper's units 13 of 69 (18.8%) and 2 of 61 (3.3%), p = 0.0058. The processed data for the same units give the dandiset's 2 of 44 and 11 of 56, so the PTupper share is out of tolerance because units are missing; with 44 units one unit is 2.3%, and 3.3 +/- 0.33% cannot be reached. What the answer changed - it fixed the selection; the outcome is unchanged.",
+     "deviations": [
+      "The files do not mark trial boundaries; intervals are taken in the stored order, a boundary where the time steps backwards. Sorted spike times give the same counts."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-selective-any-epoch",
+     "statement": "Most recorded PT neurons (122 of 130, 94%) have significant trial-type selectivity in at least one task epoch.",
+     "source": "Results, Cell-type-specific recordings, paragraph 4",
+     "quote": "Most recorded PT neurons had significant selectivity, defined as the difference in spike rate between trial types (\u2018lick left\u2019 versus \u2018lick right\u2019), during at least one task epoch (P < 0.01, two-sided Mann\u2013Whitney U-test; 122 out of 130; 94%).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "With the code's selection and the unit's range, 99 of 100 units are selective in at least one epoch, under both readings of the sample epoch; the dandiset holds 100 included units, so the count cannot reach 122 +/- 12.2. The fraction is 0.99 (the paper 94%). The variants give 95 to 100 of 100 or 105 units. Of the paper's 130 units from the processed data, 121 or 125 are selective, within tolerance; of the 100 the dandiset holds, 97. Whether such counts should be judged as fractions when units are missing is asked in questions/000006.yaml. What the answer changed - it fixed the selection; the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-variance-explained",
+     "statement": "Trial-averaged activity patterns are nearly as diverse within each PT population as across all neurons recorded in ALM; cell type explains relatively little of the variance.",
+     "source": "Results, Cell-type-specific recordings, paragraph 4; Extended Data Fig. 6; Discussion, paragraph 3",
+     "quote": "Trial-averaged activity patterns were nearly as diverse within each PT population as across all neurons recorded within ALM (Extended Data Fig. 6).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "With the code's selection and the unit's range, the median ratio of PT to unidentified variance explained is at most 1.08 (PTupper) and 1.23 (PTlower) for 1 to 6 components, at or below 1.3 throughout. All trials, a variant, gives at most 1.07 and 1.24; the session rule, a variant, gives a PTlower ratio of 1.36 and 1.35 for one component. The ratio is above 1 at every number of components, and the code's own procedure gives ratios of 1.09 to 1.22 with z above 1.645 at every number of components, as the figure's asterisks. What the answer changed - it fixed the selection as the code's rule; the run before the answers was blocked because the session rule exceeded the bound.",
+     "deviations": [
+      "The unidentified pools are smaller than the paper's (226 PTupper-cohort and 403 PTlower-cohort units after the code's rule, against 495 and 511), as the missing sessions hold the others."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-preparatory-activity",
+     "statement": "Along the late delay coding direction (CDlate) selectivity is substantial in both PT types, with 40 of 61 PTupper and 44 of 69 PTlower neurons selective.",
+     "source": "Results, Preparatory activity, paragraph 2; Extended Data Fig. 7a, b",
+     "quote": "along a different direction in activity space, which maximized selectivity at the end of the delay epoch, CDlate, selectivity was substantial in both cell types18 (Extended Data Fig. 7a, b; PTupper: 40 out of 61 neurons selective; PTlower: 44 out of 69)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "(a) With the code's selection and the unit's range, 29 of 44 PTupper and 38 of 56 PTlower units are selective in the late delay, below 40 +/- 4 and 44 +/- 4.4; the variants give 27 or 28 and 37 to 41. (b) CDlate selectivity is significant at every late delay bin and for the window mean (no iteration at or below zero) in both populations under the four open readings and under the variants. On the paper's units (a) gives 40 of 61 and 44 of 69 and (b) holds; on the processed data for the same 100 units, 29 of 44 and 38 of 56, the dandiset's counts. As fractions (65.9% and 67.9%) they are close to those of the paper's units (65.6% and 63.8%). What the answer changed - it fixed the selection; the outcome is unchanged. The earlier attempt had it reproduced, with a criterion written from the abstract.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-upper-early-preparatory",
+     "statement": "Along the early coding direction (CDearly, first 400 ms of the sample epoch), selectivity is larger and more consistent across trials in the PTupper population than in the PTlower population.",
+     "source": "Results, Preparatory activity, paragraph 2; Fig. 5a, b",
+     "quote": "In this projection, selectivity was larger and more consistent across trials in the PTupper population compared to the PTlower population (Fig. 5b).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "With the code's selection and the unit's range, PTupper CDearly selectivity is larger by rule (i) in all 8 combinations of the open readings and windows (bootstrap medians 3.71 to 4.12 against 2.08 to 2.46) and by rule (ii) in none (PTupper 5th percentile 1.75 to 2.05). It is more consistent in none (s.d. over median 0.31 to 0.35 against 0.21 to 0.30). Rule (i) gives partially reproduced and rule (ii) not reproduced, in all 8. On the paper's units larger holds under both rules and more consistent in 6 of 8. What the answer changed - the paper does not say which rule decides, so both stay and the claim stays blocked. The settled selection and trial range leave out the one combination where rule (i) gave reproduced before the answers (all trials, now a variant). The earlier attempt had it reproduced, with a criterion written from the abstract.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-upper-persistent",
+     "statement": "In the PTupper population, selectivity along CDearly remains constant through the sample and delay epochs until the go cue.",
+     "source": "Results, Preparatory activity, paragraph 2; Fig. 5b",
+     "quote": "Furthermore, selectivity in the PTupper population remained constant throughout the sample and delay epochs until the go cue, implying retention of decision-related information.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "Blocked because it depends on pt-upper-early-preparatory, which is blocked. Its own test does not hold with the code's selection and the unit's range - the PTupper 5th percentile is at or below zero in 68 and 160 of the 420 bins from -2.1 s to the go cue (projections a and b), and the mean over -0.4 to 0 s is at or below zero in 5.3% and 5.8% of iterations. The selectivity in the last 400 ms is 0.78 and 0.74 of that in the CDearly window. On the paper's 61 PTupper units both readings hold (p = 0.007 and 0.011); on the processed data for the 44 the dandiset holds neither does (85 and 153 bins not significant, p = 0.060 and 0.066), so its own test fails because units are missing, not because of the files. What the answers changed - its dependency stays blocked, so the outcome is unchanged. The earlier attempt had it reproduced, with a criterion written from the abstract.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-lower-cdearly-decay",
+     "statement": "In the PTlower population, selectivity along CDearly decays rapidly, with no significant selectivity in the 400 ms before the go cue (P = 0.34, bootstrap).",
+     "source": "Results, Preparatory activity, paragraph 2; Fig. 5b",
+     "quote": "By contrast, selectivity in the PTlower population decayed rapidly along CDearly (no significant selectivity in 400 ms preceding go cue; P = 0.34, bootstrap).",
+     "statistics": [
+      {
+       "test": "bootstrap",
+       "p": 0.34,
+       "n": "69 PTlower neurons, 4 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "With the code's selection and the unit's range, the PTlower CDearly selectivity in the 400 ms before the go cue is at or below zero in 35% to 40% of iterations (p = 0.348 to 0.395) under the four open readings, against the paper's 0.34; median 0.56 to 0.82, against 2.08 to 2.46 in the CDearly window. The variants give p = 0.30 to 0.39, and the paper's units 0.46 to 0.48. What the answer changed - it fixed the selection; the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-cd-stability",
+     "statement": "The coding direction stays more similar across the sample and delay epochs in the PTupper population than in the PTlower population, whose delay-epoch coding directions are largely orthogonal to those of the sample epoch.",
+     "source": "Results, Preparatory activity, paragraph 2; Extended Data Fig. 7c, d",
+     "quote": "For the PTupper population, the CD remained more similar across the sample and delay epochs compared to the PTlower population (Extended Data Fig. 7c, d).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "With the code's selection and the unit's range, (a) Pearson's r between CDearly and CDlate weights is 0.49 for PTupper (p = 0.0007) and 0.18 for PTlower (p = 0.18); (b) the sample to late delay inner product is 0.46 and 0.41 against 0.22 and 0.19 (the two readings of what a mouse is), with intervals that do not overlap. Both hold under every variant and on the paper's units. What the answer changed - it fixed the selection; the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-single-neuron-early-selectivity",
+     "statement": "Individual PTupper neurons have higher early selectivity than PTlower neurons (0.41 +/- 0.04 against 0.25 +/- 0.02, mean +/- s.e.m., P < 0.01).",
+     "source": "Results, Preparatory activity, paragraph 2",
+     "quote": "exhibited higher early selectivity (PTupper: 0.41 \u00b1 0.04; mean \u00b1 s.e.m.; PTlower: 0.25 \u00b1 0.02; P < 0.01)",
+     "statistics": [
+      {
+       "test": "not named",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "61 PTupper and 69 PTlower neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "With the code's selection and the unit's range, measure (a) gives 0.410 +/- 0.051 against 0.237 +/- 0.024, both within tolerance, with PTupper higher at t-test p = 0.0012 and Mann-Whitney p = 0.0041. Measure (b) gives 0.82 against 0.62 (t-test p = 0.034, Mann-Whitney p = 0.057, 10 infinite values dropped); a match under one measure counts. Variants - all trials gives 0.362 and 0.223 with Mann-Whitney p = 0.026; the session rule gives 0.416 and 0.229 with p = 0.0004 and 0.0019. On the paper's units measure (a) gives 0.414 and 0.248 (p = 0.0004 and 0.0019). What the answers changed - they fixed the selection as the code's rule and the trial range as the unit's range; the run before the answers was blocked because these readings gave three outcomes.",
+     "deviations": [
+      "Infinite d' values of measure (b), where the best threshold gives a hit or false alarm rate of 0 or 1, are dropped; the claims file does not say how to treat them. The outcome rests on measure (a), which has none."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-upper-decoding",
+     "statement": "Single PTupper neurons decode trial type better than PTlower neurons in the first 400 ms of the sample epoch; 24.6% (15 of 61) of PTupper and 4.4% (3 of 69) of PTlower neurons reach 70% accuracy, mean accuracy is 64.4 +/- 1.0% against 58.9 +/- 0.6%, and the ten most discriminative neurons are all PTupper.",
+     "source": "Extended Data Fig. 9a, b legend; Results, Preparatory activity, paragraph 2",
+     "quote": "24.6% (15 out of 61) of PTupper neurons predicted trial type with at least 70% accuracy, whereas only 4.4% (3 out of 69) of PTlower neurons did so. Mean accuracy was also significantly higher in PTupper neurons (PTupper: 64.4 \u00b1 1.0%; PTlower: 58.9 \u00b1 0.6%, mean \u00b1 s.e.m.; P = 1 \u00d7 10\u22124, two-sided Mann\u2013Whitney test). The ten most discriminative neurons all belonged to the PTupper population.",
+     "statistics": [
+      {
+       "test": "two-sided Mann\u2013Whitney test",
+       "p": 0.0001,
+       "n": "61 PTupper and 69 PTlower neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "With the code's selection and the unit's range, mean accuracy is higher in PTupper units (Mann-Whitney p = 0.0001 to four decimals), 64.3% against 58.7%, both within tolerance, and 3 PTlower units reach 70%. But 9 PTupper units reach 70% and 9 pass the code's cut, against 15 +/- 1.5, and 8 of the 10 most accurate units are PTupper. The variants give 7 to 9 PTupper units and 8 of 10. On the paper's units 15 of 61 and 3 of 69, 64.4% and 58.8%, and all ten best units are PTupper. The processed data for the same 100 units give the dandiset's 9 and 3 at 70% and 8 of the top 10, so the shortfall comes from the missing units. What the answer changed - it fixed the selection; the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-upper-decoding-rectified",
+     "statement": "Decoding from spike rates rectified at baseline, no PTlower neuron reaches 70% accuracy while the same 24.6% of PTupper neurons do, PTupper neurons make up 20 of the 21 most predictive, and mean accuracy is 62.7 +/- 1.1% against 56.7 +/- 0.4%.",
+     "source": "Extended Data Fig. 9c, d legend",
+     "quote": "Disregarding spike rate changes below baseline, no PTlower neurons predicted trial type with at least 70% accuracy, whereas the same 24.6% of PTupper neurons continued to do so and accounted for 20 out of 21 of the most predictive neurons (PTupper: 62.7 \u00b1 1.1%; PTlower: 56.7 \u00b1 0.4%, mean \u00b1 s.e.m.; P = 9 \u00d7 10\u22127, two-sided Mann\u2013Whitney test).",
+     "statistics": [
+      {
+       "test": "two-sided Mann\u2013Whitney test",
+       "p": 9e-07,
+       "n": "61 PTupper and 69 PTlower neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "With the code's selection and the unit's range, no PTlower unit reaches 70% and the Mann-Whitney test holds (p below 0.0001), and the PTupper mean (61.8%) is within tolerance. But 8 PTupper units reach 70% (11 pass the recomputed cut, as does 1 PTlower unit), 16 of the 21 most predictive are PTupper, and the PTlower mean (56.2%) is below 56.7 +/- 0.4%. On the paper's units 15 and 0 at 70%, 20 of 21, 62.7% and 56.6%. On the processed data for the same 100 units, 9 and 0 at 70%, 15 of 21, 62.33% and 56.84%; the counts fall short because units are missing, and the PTlower mean is out of tolerance on the files and within it on the same units processed. The files' higher baseline rates, the rectification threshold, may explain this, but the notebook does not isolate the baseline as the cause. What the answer changed - it fixed the selection; the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-cdgo-onset",
+     "statement": "Along CDgo, significant selectivity emerges 24 ms after the go cue in PTlower neurons, faster than in PTupper neurons (48 ms), consistent with a role in movement initiation.",
+     "source": "Results, Movement commands, paragraph 2; Fig. 6c legend",
+     "quote": "In the PTlower population, significant selectivity emerged 24 ms after the go cue, faster than in the PTupper population (48 ms) (Fig. 6c).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "With the code's selection and the unit's range, PTlower selectivity along CDgo becomes significant before PTupper's under all 24 combinations of the open readings, 30 to 40 ms after the go cue against 75 to 85 ms; neither onset is within one bin of 24 and 48 ms under any reading. On the paper's units the onsets are 30 to 40 ms and 55 to 80 ms, also out of tolerance. In the first 100 ms after the go cue the PTlower 5th percentile first rises above zero in the 37.5 ms bin in the files, in the processed data for the same units and in all the paper's units alike, so its distance from 24 ms comes from the method shared by all three, not from the data (what in the method is not tested); the PTupper 5th percentile first rises above zero at 77.5, 82.5 and 57.5 ms, so most of its delay comes from the missing units. What the answer changed - it fixed the selection; the outcome is unchanged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-lower-late-and-motor",
+     "statement": "PTlower neurons carry late preparatory activity (selectivity along CDlate) and a movement command; along the go cue coding direction (CDgo) selectivity is larger, emerges faster and persists longer in PTlower than in PTupper.",
+     "source": "Results, Movement commands, paragraph 2; Fig. 6b, c; Extended Data Fig. 7b; Discussion, paragraphs 1 and 3",
+     "quote": "Along CDgo, selectivity was larger, emerged faster, and persisted longer in the PTlower than in the PTupper population (Fig. 6b, c).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "With the code's selection and the unit's range, under the four open readings, PTlower CDlate selectivity holds, and along CDgo PTlower selectivity is larger (median over 0 to 0.4 s 13.3 to 13.8 against 3.9 to 4.0; peak 16.9 to 17.4 against 6.2), emerges faster (pt-cdgo-onset) and persists longer (first significant run ends 1.44 to 1.61 s after the go cue, against 1.23 to 1.31 s). The paper's units give the same. What the answer changed - it fixed the selection; the outcome is unchanged. The earlier attempt had it partially reproduced, with a criterion written from the abstract.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "reaction-time",
+     "statement": "The first detectable movement occurs about 50 ms after the go cue (99% confidence interval 38 to 56 ms).",
+     "source": "Results, Movement commands, paragraph 2; Fig. 6c legend; Methods, Videography",
+     "quote": "The onset of the first detectable movement occurred approximately 50 ms after the go cue onset (99% confidence interval: 38\u201356 ms).",
+     "statistics": [
+      {
+       "test": "bootstrap of session means across mice and sessions",
+       "ci": {
+        "level": 0.99,
+        "low": 38,
+        "high": 56,
+        "unit": "ms"
+       },
+       "n": "3 mice, 14 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "The test needs the 400 Hz side-view video. The files hold lick times only (acquisition lick_times), and the paper deposits no video elsewhere (the Figshare record holds no video either). No question bore on it.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-cd-change-at-go-cue",
+     "statement": "The coding direction changes rapidly at the go cue in the PTlower population, and more slowly, over several hundred milliseconds, in the PTupper population.",
+     "source": "Results, Movement commands, paragraph 2; Extended Data Fig. 7c, e",
+     "quote": "The coding direction changed rapidly at the go cue in the PTlower population, and more slowly, over several hundred milliseconds, in the PTupper population (Extended Data Fig. 7c, e).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "With the code's selection and the unit's range, the correlation with CDlate falls sooner in PTlower under both levels and both readings of what a mouse is. At level 0.5 PTlower falls below it at 0.37 or 0.27 s and PTupper at 0.37 s (reproduced); at level 0.75 at 0.06 s against 0.19 s, under the 0.2 s bound (partially reproduced). At level 0.5 with the 4 and 8 mice the two differ by one 5 ms bin (0.3675 against 0.3725 s), on a bootstrap median with no interval. The code's variant and the paper's units give the same order. What the answer changed - neither the paper nor its code fixes the level, so both stay and the claim stays blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-lower-movement-termination",
+     "statement": "In PTlower neurons, selectivity along both CDlate and CDgo ceases with the offset of movement (the last lick), together with an abrupt change in the coding direction; this transition is not seen in the PTupper population.",
+     "source": "Results, Movement commands, paragraph 3; Extended Data Fig. 10a-c",
+     "quote": "Selectivity along both CDlate and CDgo ceased with the offset of movement (Extended Data Fig. 10a, b), simultaneous with an abrupt change in the coding direction (Extended Data Fig. 10c). This transition was not observed in the dynamics of the PTupper population.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "With the code's selection and the unit's range, PTlower CDlate selectivity stays significant after the last lick (8 or 9 bins from 0.2 to 0.4 s, 23 to 29 from 0.1 to 0.5 s), so it does not cease under either window. Along CDgo it ceases under window (a) with the 4 and 8 mice (partially reproduced); with the code's animals 11 or 16 bins stay significant under window (a), and under window (b) 13 to 37 (not reproduced). With the trials whose rebuilt last lick disagrees with the processed data left out (1.7% of PTupper and 2.0% of PTlower trials), the outcome is the same in every combination but one - with the 4 and 8 mice and projection (a), 1 bin of PTlower CDgo stays significant from 0.2 to 0.4 s after the last lick, so window (a) no longer holds there. PTupper CDlate selectivity is not significant before the last lick. The PTlower coding direction changes more after the last lick (inner product with the direction before it 0.52 at +0.3 s, against 0.79 for PTupper). Lick-aligned bins later than 3.0 s after the go cue count no spikes, but the last lick is more than 2.5 s after the go cue in only 0.16% of PTupper and 0.17% of PTlower unit-trials, so this cut does not bear on the result. The windows also fail for CDlate on the paper's own units and licks. Those units give the dandiset's pattern for PTlower only. For PTupper, CDgo selectivity on the dandiset is significant in 82.5% to 100% of the bins before the last lick and in 4 to 13 bins after it, and on the paper's units in no bin. What the answer changed - the paper gives no windows, so both stay and the claim stays blocked; the last lick is the code's, and a rebuilt one is acceptable only where the check above leaves the outcome the same, which it does not in that one combination.",
+     "deviations": [
+      "The files do not assign licks to trials. Each trial's last lick is rebuilt from the stored order of the lick times (first lick within 2 s of the go cue, bout gaps under 1 s; standard choices), which matches the processed data's in 11,955 of 12,190 correct trials. A trial's spikes for the lick-aligned rates are those within 3.4 s before and 3.0 s after its go cue."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-cohort-control",
+     "statement": "Differences in coding between PTupper and PTlower neurons are not explained by the animal cohorts; unidentified neurons recorded in the two cohorts give similar coding direction projections, nearly indistinguishable once depth-matched.",
+     "source": "Results, Preparatory activity, paragraph 2; Extended Data Fig. 8 legend; Methods, Electrophysiology",
+     "quote": "Differences in coding between PTupper and PTlower neurons could not be explained by variation across animal cohorts (Extended Data Fig. 8).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "Blocked because it depends on pt-upper-early-preparatory. Its own test, with the code's selection and the unit's range, gives partially reproduced under both projections - the CDgo onsets of the depth-matched unidentified populations (42.5 and 37.5 ms) differ by less than those of the PT types (40 and 45 ms), but the PTlower cohort's left ALM median CDearly selectivity (9.8 and 10.1) is outside the PTupper cohort's 5-95% interval (4.0 to 8.9, 4.2 to 9.3). The dandiset holds 232, 430 and 226 unidentified units (226, 403 and 212 after the code's rule) against the paper's 495, 511 and 276, out of tolerance. The z-scored PT populations keep the PT difference. The CDearly part fails because the PTlower cohort is the more selective, the opposite of the PT difference (PTupper 3.97 against PTlower 2.09); whether that should count as a failure is asked in questions/000006.yaml. What the answer changed - it fixed the selection, which leaves out the one combination where the CDearly part held before the answers (session rule, all trials, projection b); the claim stays blocked through its dependency.",
+     "deviations": [
+      "The z-scored variant divides each unit's rates by the s.d. over trials of its baseline epoch rate, a standard choice, as the legend does not say which s.d."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pt-types-differ-in-timing",
+     "statement": "The two PT types have different roles in time; PTupper populations carry early preparatory activity that persists until movement, while PTlower populations mainly carry late preparatory activity and movement commands.",
+     "source": "Abstract; Discussion, paragraphs 1 and 3",
+     "quote": "Preparatory activity appeared early and remained persistent in PTupper neurons, whereas movement commands were observed in PTlower neurons.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_economo_2018.ipynb",
+     "notes": "Two of the six claims it summarises are blocked (pt-upper-early-preparatory, and pt-upper-persistent through its dependency), so it is blocked for the same reason. Of the others pt-single-neuron-early-selectivity, pt-lower-cdearly-decay and pt-lower-late-and-motor are reproduced and pt-cdgo-onset is partially reproduced. Without the dependency rule the criterion would give partially reproduced (pt-single-neuron-early-selectivity on the PTupper side, pt-lower-late-and-motor on the PTlower side). What the answers changed - pt-single-neuron-early-selectivity moved from blocked to reproduced; this claim's outcome is unchanged. The earlier attempt had it not reproduced, with a criterion written from the abstract.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "Still present (finding of 000006-economo-2018-01). 11 sessions of the paper's processed data (Figshare doi:10.25378/janelia.7007846) that hold tagged units are not in the dandiset. They hold 17 of the 61 PTupper and 13 of the 69 PTlower units the paper analysed, so the dandiset holds 44 and 56 under the code's rule. Every tagged unit the dandiset holds is in the processed data with the same label, inclusion decision and depth. The dandiset's description says some files were found to be broken and were left out, without naming them.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "New. The missing sessions also hold unidentified units. The processed data have 517 good-quality unidentified units in the PTupper cohort and 547 in the PTlower cohort; the dandiset holds 232 (in 6 sessions) and 430 (in 12), against the 495 and 511 the paper analysed.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "Still present (finding of 000006-economo-2018-01). The dandiset holds the electrophysiology only; the single-cell and bulk sequencing, the axon reconstructions and the anatomy are on the Figshare record and at GEO (GSE119182). The smFISH data behind Fig. 3c are not in any public file.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "New. No file holds video, so the reaction time the paper measured from 400 Hz videography cannot be tested, and the files hold no session manipulator depth, which the paper's code stores beside each unit's depth.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "format_error",
+     "statement": "Still present (finding of 000006-economo-2018-01). Spike times are not sorted in 1120 of 1149 units. They were written trial by trial as trial start + go cue time + the spike time from the go cue, and consecutive trials overlap on the file's clock, so some spikes of one trial lie in the next trial's early epochs (11.7% of the spikes counted in the baseline epoch, under 2% in later epochs, are detectably out of order). Trial membership of a spike cannot be recovered in full from the files. On the same 100 tagged units, every unit's baseline rate is higher in the files than in the paper's processed data (median by 0.99 Hz for PTupper and 0.97 Hz for PTlower units).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "format_error",
+     "statement": "New. The lick times are stored the same way, trial by trial, and are out of order in 105 of 106 lick series (14,360 backward steps in 180,679 licks). The files do not assign licks to trials; rebuilt from the stored order, each trial's last lick matches the processed data's in 98.1% of correct trials.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "format_error",
+     "statement": "Still present (finding of 000006-economo-2018-01). The trial table's stop_time is NaN in every file, and pole_in_time, pole_out_time and cue_start_time are relative to the trial start without saying so. On the file's clock the go cue of a trial falls after the next trial's start_time in 13,306 of 15,096 trials.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Still present (finding of 000006-economo-2018-01). The tagged unit labels PTupper and PTlower are not described (the cell_type column's description is the generic \"cell type (e.g. wide width, narrow width spiking)\"), and the projection targets (thalamus and medulla) that the paper uses to name the types are stated only in the paper's code.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Still present (finding of 000006-economo-2018-01). Unit quality mixes two vocabularies (single, and Excellent, Good, Fair, Poor) and has undescribed empty values ([], 0, blank). Sex is U and genotype empty for every mouse, the electrode positions are all zero, and every electrode group gives layer 5 whatever the depth.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "Still present (finding of 000006-economo-2018-01). In the paper's processed data, in every one of the 53 sessions the dandiset holds, the spike windows of the first ten trials start later relative to the pole than those of the other trials (session medians 1.73 to 5.84 s after the pole comes in, against -0.97 to -0.16 s); the paper's code leaves out the first ten trials of each unit, which hides this. The files carry the same shift, as their spike times equal the processed ones in every unit.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-20",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier checked the archive and the Anatomy.zip listing for the blocked claims and tested the helper functions on synthetic inputs. It did not download the Figshare sequencing and axon files itself and relied on the notebook's outputs for them. 28 of its 31 outcomes agree with the record; for pt-upper-persistent, pt-cohort-control and pt-types-differ-in-timing it gives the outcome of the claim's own test, where the record blocks them through a blocked dependency.",
+     "agreed": 28,
+     "of": 31,
+     "disagreements": [
+      {
+       "claim": "pt-upper-persistent",
+       "outcome": "not_reproduced",
+       "reason": "Reading (a) fails (68 to 165 of 420 bins not significant); reading (b) gives p = 0.053 and 0.058. Close to the threshold; the processed-data variant passes."
+      },
+      {
+       "claim": "pt-cohort-control",
+       "outcome": "partially_reproduced",
+       "reason": "Main reading, the CDgo onsets agree within the PT difference, but the PTlower-cohort CDearly median (9.82) lies above the PTupper-cohort 95th percentile (8.86). The CDearly test fails because the PTlower cohort is more selective than the PTupper cohort, the opposite direction to the PT-type difference; the criterion does not test whether the cohorts explain that difference (problem 7). The dandiset lacks the unidentified units of 11 sessions (problem 1)."
+      },
+      {
+       "claim": "pt-types-differ-in-timing",
+       "outcome": "partially_reproduced",
+       "reason": "Of the six claims it depends on, single-neuron early selectivity (PTupper side) and late-and-motor (PTlower side) are reproduced; persistent, early-preparatory and onset are not."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-20",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook with the conclusions and the summary, the README, the attempt record, the helper module and the claims file, with the paper and its round-1 report. It agrees with all 31 outcomes, including the three blocked through a dependency, which in round 1 it gave the outcome of their own test. It also found the README's run time of about twelve minutes high, as the run took 591 s; the README now says about ten minutes.",
+     "agreed": 31,
+     "of": 31,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000006-economo-2018",
+   "type": "reproduction",
+   "title": "Two types of pyramidal tract neuron in mouse motor cortex (Economo et al. 2018)",
+   "description": "Tests the findings of Economo et al. (2018) that the claims file, written from the full text, lists. The dandiset holds silicon probe recordings from the anterior lateral motor cortex of 12 mice in a delayed response task, with tagged PTupper and PTlower units. The notebook rebuilds the paper's smoothed rates from the files, applies the paper's unit selection, single-unit measures and coding directions with the hierarchical bootstrap under every reading the claims file names, and compares the two types. The claims on sequencing and axon reconstructions are tested on the paper's Figshare record.",
+   "datasets": [
+    "dandi:000006"
+   ],
+   "papers": [
+    "10.1038/s41586-018-0642-9"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_economo_2018.ipynb",
+     "title": "Reproducing Economo et al. (2018) from dandiset 000006",
+     "executed": "notebooks/000006-economo-2018/reproduce_economo_2018.html"
+    }
+   ]
+  }
+ ]
+}
