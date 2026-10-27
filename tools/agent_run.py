@@ -4,14 +4,16 @@
     python tools/agent_run.py package ROLE DATASET DEST
     python tools/agent_run.py entry   ROLE DATASET        # the entry directory's name, if any
     python tools/agent_run.py proposals ROLE DATASET      # "true" if the attempt has proposed changes
+    python tools/agent_run.py repeat ROLE DATASET         # "true" if the attempt in progress has one before it
 
 DATASET is written any way tools/datasets.py accepts (000003, DANDI:000003, ebrains:<id>); the
 functions below take its folder name.
 
 ROLE is one of author, verifier-1, author-revise-1, verifier-2, author-revise-2,
 the order in which an attempt goes through docs/protocol.md, and verifier-3 and
-author-revise-3, the third round that settles changes proposed after the second. A last role,
-recorder, writes the finished attempt's notes in docs/pilot-notes/<attempt>.md. The prompts are
+author-revise-3, the third round that settles changes proposed after the second. A repeat attempt
+then has reconcile, which compares it with the attempt before it: until then its runs are blind to
+earlier attempts (tools/blind.sh). A last role, recorder, writes the finished attempt's notes in docs/pilot-notes/<attempt>.md. The prompts are
 docs/agents/<role>.md with the target's details filled in. A run's transcript
 and final report are kept as transcripts/<folder>/<role>.md and
 <role>-report.md (tools/transcript.py writes them).
@@ -43,7 +45,7 @@ TEMPLATES = {"claims": "claims", "claims-check": "claims-check", "answer": "answ
              "verifier-1": "verifier-1", "author-revise-1": "author-revise",
              "verifier-2": "verifier-2", "author-revise-2": "author-revise",
              "verifier-3": "verifier-3", "author-revise-3": "author-revise-3",
-             "recorder": "recorder"}   # role -> docs/agents/<name>.md
+             "reconcile": "reconcile", "recorder": "recorder"}   # role -> docs/agents/<name>.md
 ROLES = tuple(TEMPLATES)
 READER_ROLES = ("claims", "claims-check", "answer")   # the runs that write the claims file (papers.yml)
 
@@ -79,11 +81,16 @@ def record_key(record: dict) -> str | None:
     return datasets.key_of(ds["archive"], ds["id"]) if ds.get("archive") and ds.get("id") else None
 
 
+def records_of(dandiset: str) -> list[Path]:
+    """The attempt records on the dataset in a folder, oldest first."""
+    key = datasets.key_of_folder(dandiset)
+    return sorted(p for p in (ROOT / "attempts").glob("*.yaml")
+                  if record_key(yaml.safe_load(p.read_text()) or {}) == key)
+
+
 def attempt_of(dandiset: str) -> tuple[dict, Path] | None:
     """The latest attempt record on the dataset in a folder, and its entry directory."""
-    key = datasets.key_of_folder(dandiset)
-    found = sorted(p for p in (ROOT / "attempts").glob("*.yaml")
-                   if record_key(yaml.safe_load(p.read_text()) or {}) == key)
+    found = records_of(dandiset)
     if not found:
         return None
     record = yaml.safe_load(found[-1].read_text())
@@ -110,7 +117,7 @@ def fill(role: str, dandiset: str, model: str, version: str | None = None) -> st
     (300, the workflow's limit), and the author is told to finish by AGENT_TIME_BUDGET_MIN (255), leaving time to
     write the record and run the entry's checks (docs/protocol.md, "Author", "Time")."""
     prompt = _fill(role, dandiset, model, version)
-    if role.startswith("author"):
+    if role.startswith("author") or role == "reconcile":
         limit = int(os.environ.get("AGENT_TIME_LIMIT_MIN", "300"))
         budget = int(os.environ.get("AGENT_TIME_BUDGET_MIN", "255"))
         start = datetime.datetime.now(datetime.timezone.utc)
@@ -144,25 +151,34 @@ def _fill(role: str, dandiset: str, model: str, version: str | None = None) -> s
                                    f"`{fingerprint}`, the fingerprint of its files, wherever the protocol asks for "
                                    f"the version.")
     if role == "author" and attempt_of(dandiset):
-        # A repeat attempt: the dandiset changed since the last one.
+        # A repeat attempt. Its author is blind to the earlier attempts (tools/blind.sh hides them), so the prompt
+        # names none of them and says only why the dataset is tested again.
         record, entry_dir = attempt_of(dandiset)
         n = int(record["id"].rsplit("-", 1)[1]) + 1
         earlier_protocol = record["provenance"]["agent"]["protocol"]
         if record.get("deprecated"):
-            why = (f"That attempt is deprecated: {' '.join(record['deprecated']['reason'].split())} This attempt "
-                   f"replaces it. A reader has since written the claims file again from the full text; test it "
-                   f"as it now is. Where a claim keeps its id, compare its outcome with the earlier one.")
+            why = ("An earlier attempt was withdrawn, and a reader has since written the claims file again from "
+                   "the full text.")
         elif version in (None, record["dataset"].get("version")) and earlier_protocol != protocol_version():
-            why = (f"The dataset is unchanged; the protocol has changed since, and this attempt applies "
-                   f"{protocol_version()} to it. Read what changed in docs/pilot-notes.md, under the headings "
-                   f"for the protocol versions after {earlier_protocol} (read only those sections), and say in "
-                   f"the new record what the changes did.")
+            why = f"The dataset is unchanged; the protocol has changed since, and this attempt applies {protocol_version()}."
         else:
-            why = "Since then the dataset has changed, and this attempt tests what it holds now."
-        details.update(earlier=record["id"], earlier_version=record["dataset"].get("version"), entry=entry_dir.name,
-                       earlier_protocol=earlier_protocol, why=why,
-                       next_attempt=f'{record["id"].rsplit("-", 1)[0]}-{n:02d}')
+            why = "The dataset has changed since, and this attempt tests what it holds now."
+        details.update(entry=entry_dir.name, why=why, next_attempt=f'{record["id"].rsplit("-", 1)[0]}-{n:02d}')
         return (ROOT / "docs" / "agents" / "author-again.md").read_text().format(**details)
+    if role == "reconcile":
+        found = records_of(dandiset)
+        if len(found) < 2:
+            raise SystemExit(f"error: {datasets.label(key)} has no earlier attempt to reconcile with")
+        record, earlier = (yaml.safe_load(p.read_text()) for p in found[-2:][::-1])
+        protocols = (earlier["provenance"]["agent"]["protocol"], record["provenance"]["agent"]["protocol"])
+        details.update(attempt=record["id"], earlier=earlier["id"], entry=record["entry"],
+                       earlier_entry=earlier["entry"],
+                       version=record["dataset"].get("version"), earlier_version=earlier["dataset"].get("version"),
+                       protocol_note=(f"The protocol changed from {protocols[0]} to {protocols[1]}: read what changed "
+                                      f"in docs/pilot-notes.md, under the headings for the versions after "
+                                      f"{protocols[0]}, and say under `protocol` what the changes did."
+                                      if protocols[0] != protocols[1] else "Both ran under the same protocol."))
+        return (ROOT / "docs" / "agents" / "reconcile.md").read_text().format(**details)
     if role in READER_ROLES:
         existing = sorted((ROOT / "claims" / dandiset).glob("*.yaml"))
         found = attempt_of(dandiset)
@@ -226,6 +242,11 @@ def package(role: str, dandiset: str, dest: Path) -> None:
         shutil.copy(ROOT / "transcripts" / dandiset / "verifier-2-report.md", dest / "round-2-report.md")
 
 
+def repeat(dandiset: str) -> bool:
+    """Whether the attempt in progress on a dataset (its newest record) has an earlier one to reconcile with."""
+    return len(records_of(dandiset)) > 1
+
+
 def proposals(dandiset: str) -> list[str]:
     """The claims of the latest attempt on a dandiset that carry a proposed change of outcome."""
     found = attempt_of(dandiset)
@@ -234,7 +255,7 @@ def proposals(dandiset: str) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("command", choices=["prompt", "package", "entry", "proposals"])
+    parser.add_argument("command", choices=["prompt", "package", "entry", "proposals", "repeat"])
     parser.add_argument("role", choices=ROLES)
     parser.add_argument("dataset")
     parser.add_argument("dest", nargs="?", type=Path)
@@ -249,6 +270,8 @@ def main() -> int:
         sys.stdout.write(fill(args.role, args.dandiset, args.model, args.version))
     elif args.command == "proposals":
         print("true" if proposals(args.dandiset) else "false")
+    elif args.command == "repeat":
+        print("true" if repeat(args.dandiset) else "false")
     elif args.command == "entry":
         found = attempt_of(args.dandiset)
         print(found[1].name if found else "")

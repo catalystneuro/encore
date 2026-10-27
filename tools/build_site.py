@@ -241,8 +241,9 @@ def collect(executed: Path | None = None) -> dict:
                 "where": known.get(o["claim"], {}).get("where"),
                 "proposed": o.get("proposed"),
             } for o in a["outcomes"]],
-            "findings": [{"kind": f["kind"], "statement": squash(f["statement"])}
-                         for f in a.get("findings") or []],
+            "findings": [{"kind": f["kind"], "statement": squash(f["statement"]), "found": f.get("found"),
+                          "status": None} for f in a.get("findings") or []],
+            "reconciliation": a.get("reconciliation"),
             "verifications": [{
                 "date": str(v["date"]), "kind": v["kind"], "by": squash(v.get("by")),
                 "reviewed": squash(v.get("reviewed")),
@@ -254,6 +255,7 @@ def collect(executed: Path | None = None) -> dict:
             } for v in verifications],
         })
 
+    reconcile(attempts)
     attempted = {a["key"] for a in attempts}
     targets = []
     for t in all_targets():
@@ -394,6 +396,33 @@ def demo(data: dict, n: int, seed: int = 1) -> dict:
 # --- flat rows for the list pages ----------------------------------------------
 
 TIER_ORDER = list(TIERS)
+
+
+FINDING_STATUS = {"new": "New", "still_present": "Still present", "partly_fixed": "Partly fixed"}
+
+
+def reconcile(attempts: list[dict]) -> None:
+    """Give a repeat attempt's findings their status against the attempt before it, from its reconciliation
+    (docs/protocol.md, "Repeat attempts"), and list the earlier findings it found fixed or could not check."""
+    by_id = {a["id"]: a for a in attempts}
+    for a in attempts:
+        rec = a.get("reconciliation")
+        if not rec:
+            continue
+        earlier = by_id.get(rec["earlier"], {"findings": []})
+        now = {f["now"]: f["status"] for f in rec["findings"] if f.get("now")}
+        for i, f in enumerate(a["findings"], 1):
+            f["status"] = now.get(i, "new")
+        then = earlier["findings"]
+        a["reconciliation"] = {
+            "earlier": rec["earlier"], "blind": rec["blind"], "blind_note": squash(rec.get("blind_note")),
+            "gone": [{"status": f["status"], "note": squash(f["note"]),
+                      "statement": then[f["finding"] - 1]["statement"] if f["finding"] <= len(then) else "",
+                      "kind": then[f["finding"] - 1]["kind"] if f["finding"] <= len(then) else "other"}
+                     for f in rec["findings"] if f["status"] in ("fixed", "not_checked")],
+            "outcomes": [{"claim": o["claim"], "earlier": o["earlier"], "note": squash(o["note"])}
+                         for o in rec.get("outcomes") or []],
+        }
 
 
 def current_attempts(data: dict) -> dict[str, list[dict]]:
@@ -710,6 +739,13 @@ def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | No
     if o.get("proposed"):
         body += (f'<p class="notes"><strong>Proposed after the last verification, not yet verified:</strong> '
                  f'{e(OUTCOMES[o["proposed"]["outcome"]][0].lower())}. {e(squash(o["proposed"]["reason"]))}</p>')
+    changed = next((c for c in ((attempt or {}).get("reconciliation") or {}).get("outcomes", [])
+                    if c["claim"] == o["claim"]), None)
+    if changed:
+        then = attempt["reconciliation"]["earlier"].rsplit("-", 1)[1]
+        tags += f'<span class="tag">was {e(OUTCOMES[changed["earlier"]][0].lower())} in attempt {e(then)}</span>'
+        body += (f'<p class="notes"><strong>Attempt {e(then)}:</strong> '
+                 f'{e(OUTCOMES[changed["earlier"]][0].lower())}. {e(changed["note"])}</p>')
     if o["deviations"]:
         items = "".join(f"<li>{e(d)}</li>" for d in o["deviations"])
         body += (f'<p class="deviations-title">How the test differed from the paper’s method</p>'
@@ -1598,10 +1634,34 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
                             f'{by_outcome(blocked, root, a, asked)}</details>')
 
     all_findings = [f for a in atts for f in a["findings"]]
+
+    def finding_tags(f):
+        tags = (f'<span class="tag status-{e(f["status"])}">{FINDING_STATUS[f["status"]]}</span>'
+                if f.get("status") else "")
+        if f.get("found") == "on_prompt":
+            tags += ('<span class="tag" title="Not found by the blind attempt; found when the reconcile step '
+                     'checked the earlier finding">found on prompt</span>')
+        return tags
     findings_html = "".join(
         f'<li><span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
-        f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{e(f["statement"])}</span></li>'
+        f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f)}{e(f["statement"])}</span></li>'
         for f in all_findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
+    for a in atts:
+        rec = a.get("reconciliation")
+        if not rec:
+            continue
+        n_then = rec["earlier"].rsplit("-", 1)[1]
+        findings_html += (f'</ul><h3 style="margin-top:22px">Compared with attempt {e(n_then)}</h3>'
+                          f'<p class="sub small" style="margin-top:6px">This attempt was made without seeing attempt '
+                          f'{e(n_then)}' + ("" if rec["blind"] else f' (except: {e(rec["blind_note"])})') +
+                          f'. A separate step then compared the two: each finding above is marked new or still '
+                          f'present, and these earlier findings are gone or could not be checked.</p>'
+                          f'<ul class="findings">')
+        findings_html += "".join(
+            f'<li><span><span class="tag status-{e(g["status"])}">'
+            f'{"Fixed" if g["status"] == "fixed" else "Not checked"}</span></span>'
+            f'<span>{e(g["statement"])}<br><span class="muted small">{e(g["note"])}</span></span></li>'
+            for g in rec["gone"]) or '<li><span></span><span class="muted">None: every earlier finding is still present.</span></li>'
 
     notebooks_html, n_notebooks = notebooks_panel(data, dandiset, root)
 

@@ -1,6 +1,6 @@
 # Protocol for an attempt
 
-Version: `pilot-10`. Record this version in the attempt's provenance.
+Version: `pilot-11`. Record this version in the attempt's provenance.
 
 This is what agents, or people, do to attempt a target and deposit the
 result. A target is a dataset in a public archive and a paper it names. How
@@ -448,15 +448,44 @@ new attempt.
 ## Repeat attempts
 
 When a dataset changes after an attempt, for example after its owners fix
-what an attempt found, a new attempt tests the new version. It keeps the
-claims file, updates the entry in place to the new version, re-runs every
-check and claim, and says for each finding of the earlier attempt whether it
-is fixed. Its record is the next number (`-02`), with its own outcomes and
-verification rounds; the earlier record stays as it was. A draft can be
-used when the fixes are not yet published, with its modification time
-recorded under `dataset: modified`, since a draft can change. The author is started with
-`-f version=draft` (or a version number), and `docs/agents/author-again.md`
-is its prompt.
+what an attempt found, or when the protocol changes, a new attempt tests the
+dataset again. It is made blind: it is an attempt in its own right, not a
+check of the one before it.
+
+- **Blind.** The author's runs (author, author-answers and each
+  author-revise) see no earlier attempt on the dataset: not its record, entry,
+  questions, transcripts or notes, and not the repository's history.
+  `tools/blind.sh` takes them out of the checkout before each run and puts
+  them back after it, and the run may not fetch the registry's website. The
+  author keeps the claims file, unless the earlier attempt is deprecated and
+  a reader wrote it again, and writes a new entry under the same name, a new
+  notebook from scratch, and the record under the next number (`-02`). The
+  verifiers see only this attempt, as always. Each finding is recorded as the
+  attempt found it, with nothing about earlier attempts in its statement.
+- **Reconcile.** Once the attempt is verified, a separate run, `reconcile`
+  (`docs/agents/reconcile.md`), compares it with the attempt before it and
+  writes a `reconciliation` block in the new record. It first checks, with
+  `tools/blind.sh audit` and the transcripts, that the author was blind. For
+  each earlier finding it says whether the new attempt reports the same
+  problem (still present or partly fixed, pointing at the new finding). For an
+  earlier finding the new attempt did not report, it checks the finding
+  directly, in its own notebook `earlier_findings.ipynb` in the entry: fixed,
+  still present (added to the record's findings with `found: on_prompt`, so it
+  is never counted as found blind), or not checked. A finding no earlier one
+  points at is new. For each claim whose outcome differs from the earlier one,
+  it gives the likeliest reason. It changes no outcome or statement of the
+  blind attempt.
+
+This keeps two things apart that a repeat attempt used to mix: the dataset's
+owners still get the list of what is fixed and what is not, and the attempt's
+own outcomes and findings are a second independent reading, so two attempts
+on the same version measure how far the registry's results repeat. The
+earlier record stays as it was.
+
+A draft can be used when the fixes are not yet published, with its
+modification time recorded under `dataset: modified`, since a draft can
+change. The author is started with `-f version=draft` (or a version number),
+and `docs/agents/author-again.md` is its prompt.
 
 ## Local and remote datasets
 

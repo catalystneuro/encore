@@ -36,7 +36,7 @@ on:
         description: "Which run"
         required: true
         type: choice
-        options: [author, author-answers, verifier-1, author-revise-1, verifier-2, author-revise-2, verifier-3, author-revise-3, recorder]
+        options: [author, author-answers, verifier-1, author-revise-1, verifier-2, author-revise-2, verifier-3, author-revise-3, reconcile, recorder]
       model:
         description: "Model"
         default: claude-opus-5-5
@@ -152,7 +152,7 @@ jobs:
         run: |
           python tools/agent_run.py prompt "$ROLE" "$FOLDER" --model "$MODEL" ${VERSION:+--version "$VERSION"} > "$RUNNER_TEMP/prompt.md"
           # The workflow's own tools, copied before the agent can change the checkout.
-          cp tools/transcript.py tools/progress.py tools/flagged.py tools/get_papers.sh "$RUNNER_TEMP/"
+          cp tools/transcript.py tools/progress.py tools/flagged.py tools/get_papers.sh tools/blind.sh "$RUNNER_TEMP/"
 
       - name: Put the dataset's files in place, for an archive that needs credentials
         if: inputs.role != 'recorder'
@@ -183,6 +183,13 @@ jobs:
         run: |
           if [[ "$ROLE" == verifier* ]]; then dest="$RUNNER_TEMP/work/paper"; else dest=paper; fi
           "$RUNNER_TEMP/get_papers.sh" "$FOLDER" "$dest"
+
+      - name: Hide the earlier attempts from a repeat attempt's author
+        if: startsWith(inputs.role, 'author')
+        run: |
+          # A repeat attempt is made blind, up to its reconcile step (docs/protocol.md, "Repeat attempts"): its
+          # author's runs see no earlier attempt, nor the history. Put back before the changes are collected.
+          bash "$RUNNER_TEMP/blind.sh" hide "$FOLDER" "$ROLE" "$RUNNER_TEMP/hidden"
 
       - name: Check that the unverified account has a token
         if: ${{ inputs.account == 'unverified' }}
@@ -236,10 +243,13 @@ jobs:
           set +e -uo pipefail     # keep going when claude fails, to report how
           echo "started=true" >> "$GITHUB_OUTPUT"
           if [[ "$ROLE" == verifier* ]]; then cd "$RUNNER_TEMP/work"; fi
+          # The registry's published record of earlier attempts, kept from a blind author (tools/blind.sh).
+          not_tools=$NOT_TOOLS
+          [[ "$ROLE" != author* ]] || not_tools+=",WebFetch(domain:encorescience.org),WebFetch(domain:catalystneuro.github.io)"
           claude -p "$(cat "$RUNNER_TEMP/prompt.md")" \
             --model "$MODEL" \
             --output-format stream-json --verbose --forward-subagent-text \
-            --permission-prompts none --allowedTools "$TOOLS" --disallowedTools "$NOT_TOOLS" \
+            --permission-prompts none --allowedTools "$TOOLS" --disallowedTools "$not_tools" \
             2> "$RUNNER_TEMP/stderr.txt" | tee "$RUNNER_TEMP/run.jsonl" | python "$RUNNER_TEMP/progress.py"
           status=$?
           echo "claude exited with $status"
@@ -268,8 +278,10 @@ jobs:
           out="$RUNNER_TEMP/out"; mkdir -p "$out/transcripts/$FOLDER"
           tool="$RUNNER_TEMP/transcript.py"
           name="$FOLDER · $ROLE · run ${{ github.run_id }}"
+          # The earlier attempts a blind author did not see go back first, so that only its own changes are collected.
+          if [[ "$ROLE" == author* ]]; then bash "$RUNNER_TEMP/blind.sh" restore "$FOLDER" "$ROLE" "$RUNNER_TEMP/hidden"; fi
           # The author's changes first, so that nothing in the transcript can lose them.
-          if [[ "$ROLE" == author* ]]; then
+          if [[ "$ROLE" == author* || "$ROLE" == reconcile ]]; then
             # Only the registry's own files: the sandbox leaves placeholder files for the paths it
             # protects (.bashrc, .gitconfig, ...) in the working directory.
             paths=(attempts claims entries README.md); [ ! -d questions ] || paths+=(questions)

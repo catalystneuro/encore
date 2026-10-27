@@ -21,7 +21,7 @@ dataset per step, and the dashboard's Pipeline page shows them.
 | 8 | Confirmation | no | CI | executed notebooks, passing checks |
 | 9 | Record | no | agent (recorder) | pilot notes; merged |
 | 10 | Report | no | script, sent by a person | issues to the dataset's owners |
-| 11 | Upkeep | depends | runner | deprecation; repeat attempts |
+| 11 | Upkeep | depends | runner | deprecation; repeat attempts, made blind and then reconciled with the attempt before (agent `reconcile`, after verification; [protocol](protocol.md), "Repeat attempts") |
 
 New targets come from the [Track DANDI](../.github/workflows/targets.yml)
 workflow. Every day it rebuilds `targets/dandisets.json` from the archive. When

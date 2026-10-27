@@ -106,3 +106,31 @@ jobs:
     uses: ./.github/workflows/attempt.yml
     with: {dataset: "${{ inputs.dataset }}", role: author-revise-3, model: "${{ inputs.model }}"}
     secrets: inherit
+  repeat:
+    # Whether the attempt has one before it, which the reconcile step compares it with. After the last round
+    # that ran: the third round is skipped when no changes were proposed.
+    needs: [author-revise-2, author-revise-3]
+    if: always() && needs.author-revise-2.result == 'success' && needs.author-revise-3.result != 'failure' && needs.author-revise-3.result != 'cancelled'
+    runs-on: ubuntu-latest
+    outputs:
+      found: ${{ steps.look.outputs.found }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: attempt/${{ inputs.dataset }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - id: look
+        env:
+          DATASET: ${{ inputs.dataset }}
+        run: |
+          pip install --no-cache-dir pyyaml
+          echo "found=$(python tools/agent_run.py repeat reconcile "$DATASET")" >> "$GITHUB_OUTPUT"
+  reconcile:
+    needs: repeat
+    if: always() && needs.repeat.outputs.found == 'true'
+    uses: ./.github/workflows/attempt.yml
+    with: {dataset: "${{ inputs.dataset }}", role: reconcile, model: "${{ inputs.model }}"}
+    secrets: inherit
