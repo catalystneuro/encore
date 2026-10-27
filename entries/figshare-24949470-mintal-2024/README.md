@@ -12,7 +12,7 @@ responses to the Volebny Kompas voting advice application before the 2023 Slovak
 | 39 statements in three languages, 429 party positions | Reproduced |
 | 11 parties | Reproduced |
 | 4 parties placed themselves | Reproduced |
-| Coders agree with weighted kappa 0.84 | Reproduced (assumed quadratic weights) |
+| Coders agree with weighted kappa 0.84 | Reproduced (assumed quadratic weights, "No opinion" left out) |
 | Placements on the uni-dimensions and the landscape match Figs. 2 and 3 | Partially reproduced |
 | Party clustering matches Fig. 7 | Reproduced |
 | Table 2: gender, age and education | Reproduced (three claims) |
