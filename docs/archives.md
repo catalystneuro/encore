@@ -108,15 +108,22 @@ take a dataset in any of these forms.
   their Dryad account (an ORCID login), "My account", "API account"; exchange
   its client id and secret for a token, which lasts 10 hours, with
   `POST https://datadryad.org/oauth/token` (`grant_type=client_credentials`).
-  The token is given to agents as `DRYAD_TOKEN`. Send it as
-  `Authorization: Bearer $DRYAD_TOKEN`, follow the redirect, and read the file
+  The token is given to agents as `DRYAD_TOKEN`; never print it, or write it
+  into a notebook, its outputs or the record. Send it as
+  `Authorization: Bearer $DRYAD_TOKEN`. The API answers 302 to a presigned
+  URL in Dryad's S3 bucket, which answers 400 if the bearer header comes with
+  it: use `requests.get(url, headers=...)`, which drops the header on a
+  redirect to another host, not `urllib`, which forwards it. Read the file
   into memory: `pandas.read_csv(io.BytesIO(...))`, `pandas.read_excel` for the
   Excel workbooks most datasets hold (list every sheet), and `zipfile` on a
   `BytesIO` for zips. Check each file's SHA-256 against the file list. Do not
   write whole files to disk. The dataset's README (`README.md`, shown also on
-  its page) describes the files and columns; there may be none.
+  its page) describes the files and columns; there may be none, and a data
+  dictionary may be a data file of its own (`Metadata.csv`).
 - **In an entry.** The entry names the dataset as `dryad:<id>/<version id>`
-  under `related`.
+  under `related`. Its notebooks need `DRYAD_TOKEN` when they run, so the
+  workflows that run agents and confirm entries need it as a secret, refreshed
+  within 10 hours of use; they do not have it yet.
 
 ## Local and remote (`encore check`)
 

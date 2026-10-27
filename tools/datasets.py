@@ -58,7 +58,8 @@ ARCHIVES = {
         "label": "DRYAD", "name": "Dryad", "url": "https://doi.org/10.5061/dryad.{id}", "case": "lower",
         "access": ("Read the files through Dryad's API v2 (https://datadryad.org/api/v2/versions/{published_version}/"
                    "files), as docs/archives.md says under \"Dryad\": downloads need the bearer token in the "
-                   "environment variable DRYAD_TOKEN; read each file into memory (pandas, openpyxl, zipfile on a "
+                   "environment variable DRYAD_TOKEN (never print it or write it into a notebook or its outputs), "
+                   "sent with requests, which drops it on the redirect to S3; read each file into memory (pandas, openpyxl, zipfile on a "
                    "BytesIO) and check its SHA-256 against the listing; do not write the files to disk."),
         "list": "dryad.json",
     },
