@@ -12,7 +12,7 @@ scraped table as `jecfa.rds` and `JECFA.csv`.
 | Availability of each Table 1 field | Reproduced |
 | Evaluations by year (Table 2) | Reproduced |
 | Substances by functional class (Table 2) | Reproduced |
-| The unknowns have only a JECFA name | Partially reproduced |
+| The unknowns have only a JECFA name | Not reproduced |
 | FAS 40 to 52 (even codes) account for 50% of the records | Partially reproduced |
 | Discrepancies found by the manual check of 700 pages | Blocked: data missing |
 | The portal count of 6547 is in line with the pages with a JECFA name | Partially reproduced |
@@ -26,5 +26,6 @@ The attempt record, with the reasons and the differences from the paper's method
 - `reproduce_ocagli_2024.ipynb`: the analysis. It takes under a minute, most of it streaming the
   two files.
 - `jecfa.py`: loading both files into memory, the measures of the criteria, and the FAS derivations
-  of the paper's code (`R/process_df.R`, `R/add_metadata.R`). Other notebooks on this item can
+  of the paper's code (`R/process_df.R`, `R/add_metadata.R`), whose R source the notebook fetches
+  at the pinned commit and prints beside the ports. Other notebooks on this item can
   import it.

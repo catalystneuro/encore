@@ -22,7 +22,8 @@ provenance:
 inputs:
 - what: The FAS derivations of the paper's code (R/process_df.R, R/add_metadata.R and
     R/extract_jecfa_tox_abbr.R), re-implemented in jecfa.py to check the deposited fas column and to
-    run the second FAS reading that the criteria of table1-availability and fas-codes name. No data
+    run the second FAS reading that the criteria of table1-availability and fas-codes name. The
+    notebook fetches these R functions at the commit and prints them beside the Python ports. No data
     are taken from it.
   source: https://github.com/UBESP-DCTV/jecfa at commit 2d8a5340d5322cbae28eb3095d948313932f6c7e
 outcomes:
@@ -64,7 +65,8 @@ outcomes:
     numbers 12 of 17 equal Table 1 (Chemical names 83, Synonyms 78, Report and its link 98 differ
     by one point, FAS by 12 under A). Counting the 752 empty fas strings as present gives 92.86%,
     which suggests Table 1 counted every non-NA value; the claims file's reading E counts them as
-    absent.
+    absent. The outcome rests on 16 of 17 under A, or 17 under B, and does not depend on how the
+    empty strings are counted.
   deviations:
   - The criterion names the FAS column of both process_df.R and add_metadata.R; the deposit holds
     the first. Both are run (A and B), and both give reproduced.
@@ -74,7 +76,8 @@ outcomes:
   output: claim:table2-evaluation-year
   measured: [2357, 3099, 778, 200, 118, 36.63, 48.17, 12.09, 3.11]
   notes: The four bins and the unknowns equal Table 2 exactly; shares are over the 6434 rows with a
-    year. All years lie between 1958 and 2023. The text's 2,356 for the first bin differs by one from
+    year. Counts are compared with the claims file's tolerances (236, 310, 78, 20 and 12). All years
+    lie between 1958 and 2023. The text's 2,356 for the first bin differs by one from
     Table 2 and from the data.
 - claim: table2-functional-class
   outcome: reproduced
@@ -85,17 +88,21 @@ outcomes:
     functional_class string starts with one of the four class names (the data spell "Flavouring
     Agent"), so none is left unmatched. Flavouring agents are the largest class.
 - claim: unknowns-name-only
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_ocagli_2024.ipynb
   output: claim:unknowns-name-only
   measured: [86.4, 80.5]
   notes: 95 rows carry only a URL and a JECFA name, and each of them has both class and year
     unknown. They are 95 of 110 rows with an unknown class (86.4%) and 95 of 118 with an unknown
-    year (80.5%), both below the criterion's 90%. The other 15 rows with an unknown class carry a
-    year, a report and identifiers; the other 23 with an unknown year all carry a functional class,
-    15 of them chemical names and 14 synonyms. The criterion states only when the claim is
-    reproduced; partially reproduced is recorded because the statement holds for most of the
-    unknowns (the protocol's "holds only in part").
+    year (80.5%), both below the criterion's 90%. The criterion states only when the claim is
+    reproduced, so the outcome is not reproduced (changed from partially reproduced after
+    verification round 1). The other 15 rows with an unknown class carry a year, a report and
+    identifiers; 13 of them lie between pages 6385 and 6450 and 13 were evaluated in 2008. The
+    other 23 with an unknown year all carry a functional class (13 food additives, 9 food
+    contaminants, 1 flavouring agent), 15 of them chemical names and 14 synonyms; 11 of them are
+    pages 6476 to 6533. The statement holds exactly for the 95 rows unknown on both class and year.
+    Whether "the unknowns" means those rows is asked of a reader in
+    questions/figshare-26877211.yaml; the claim is tested as the claims file has it.
 - claim: fas-codes
   outcome: partially_reproduced
   notebook: reproduce_ocagli_2024.ipynb
@@ -106,8 +113,13 @@ outcomes:
     outside tolerance) and 53.42% after add_metadata.R (B, within). They are not the seven most
     frequent; FAS 59 (351 rows) is more frequent than FAS 52 (286) under both readings, and FAS 60
     (353) too under B; the named codes rank 1 to 6 and 9 (A) or 10 (B). The deposited column has 81
-    distinct non-empty values, some malformed ("77 JECFA 86", "67.29", "617"), which meets the 77
-    taken for "almost all 85"; after add_metadata.R there are 73 codes, which does not.
+    distinct non-empty values, which meets the 77 the criterion takes for "almost all 85", and 73
+    after add_metadata.R, which does not. The 81 include malformed values (eight such as "77 JECFA
+    86", five decimals such as "67.29", and "617") and "86", above 85. Counting only whole numbers
+    from 1 to 85 gives 66 codes (A) and 71 (B), both below 77, so "almost all 85" does not hold
+    under a cleaned reading; codes 2, 3, 4, 7, 9, 11, 61, 63, 66, 76, 79, 81, 84 and 85 are absent
+    under both. The criterion sets the outcome by the share and the ranking, so this does not
+    change it.
   deviations:
   - The criterion names the FAS column of both process_df.R and add_metadata.R; the deposit holds
     the first. Both are run (A and B), and both give partially reproduced.
@@ -128,8 +140,12 @@ outcomes:
     more. After the cleaning of unique-pages, D2 and D3 give 6550, 3 more than 6547 and outside the
     margin of 2 the criterion takes for "aligns"; D1 gives 6552. The paper's own numbers (6551 less
     2 is 6549) are within 2 of 6547; the one extra row in the deposit is what puts the count outside.
-    The criterion states only when the dataset's part is reproduced; partially reproduced is
-    recorded because one of its two conditions holds. No measured value is given, as the first
+    The data do not explain the gap between 6552 and 6551; leaving out the test page, named
+    "TEST", gives 6551, but the paper then removes the test page again. Removing both rows of page
+    6316's chemical with the test page gives 6549, within 2 of 6547, but that is none of the
+    readings D1 to D3 and is not used. The criterion states only when the dataset's part is
+    reproduced; partially reproduced is recorded because one of its two conditions holds and the
+    portal part cannot be tested. No measured value is given, as the first
     expected value (the portal count) cannot be measured.
 findings:
 - kind: data_missing
@@ -163,3 +179,94 @@ findings:
     specification values start with '">' (the Usage Notes mention this for Report); 33 FEMA numbers
     have trailing spaces; 31 JECFA numbers are not plain integers ("506a,b", "632.1"); 46 of 2127
     plain CAS numbers fail the CAS check digit, and 190 CAS values hold several numbers or notes.
+verifications:
+- date: '2026-10-27'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1: the executed notebook of the author run (commit 1823efd9c, unchanged by the author-answers
+    run) with the conclusion cells and the summary removed, the helper module and the claims file, with the paper.
+    The verifier queried the Figshare API for the item''s versions and tested the helper functions on synthetic
+    inputs. Report transcripts/figshare-26877211/verifier-1-report.md.'
+  results:
+  - claim: data-records-rows
+    agrees: true
+    outcome: reproduced
+    reason: jecfa.rds has 6552 rows and all 17 Table 1 fields. JECFA.csv is the same table, with 0 differing cells.
+    response: Unchanged.
+  - claim: unique-pages
+    agrees: true
+    outcome: reproduced
+    reason: Readings D2 and D3 both give 6550, within 2 of 6549. Page 6316's chemical appears twice, at pages 6316
+      and 6319. Page 5883 is the TEST row.
+    response: Unchanged.
+  - claim: table1-availability
+    agrees: true
+    outcome: reproduced
+    reason: 16 of 17 fields are within tolerance using the deposited fas, and 17 of 17 after the add_metadata.R
+      step; the criterion needs 15. Only 12 of 17 match Table 1 when rounded to whole numbers. Under reading E FAS
+      is 81.38%, outside tolerance; the paper's 93% equals the share of non-NA fas values (92.86%), the same as Tox
+      monograph presence, so the paper probably counted the 752 empty strings as present. The notebook prints this
+      as a variant but draws no conclusion from it; the outcome is unchanged because 16 of 17 fields are still
+      within tolerance.
+    response: The conclusion and the notes now say that FAS is the one field outside tolerance under reading E, that
+      the non-NA share of fas equals that of the Tox monograph, so the paper's 93% is likely the share with any Tox
+      monograph value, and that the outcome does not depend on how the empty strings are counted. Outcome unchanged.
+  - claim: table2-evaluation-year
+    agrees: true
+    outcome: reproduced
+    reason: The bin counts are 2357, 3099, 778 and 200, with 118 unknown, all exact, and the shares are within
+      tolerance. The cell compares counts against round(expected*0.1) instead of the claims file's tolerances; these
+      happen to be the same values.
+    response: The cell now compares the counts with the claims file's tolerances (236, 310, 78, 20) and also tests
+      the 118 unknown against its tolerance of 12; the functional-class cell does the same (464, 145, 7.7, 28 and
+      11). Results unchanged.
+  - claim: table2-functional-class
+    agrees: true
+    outcome: reproduced
+    reason: The counts are 4635, 1453, 77 and 277, with 110 unknown, all exact. All shares are within tolerance, and
+      flavouring agents are the largest class.
+    response: Counts now compared with the claims file's tolerances, as for table2-evaluation-year. Outcome unchanged.
+  - claim: unknowns-name-only
+    agrees: false
+    outcome: not_reproduced
+    reason: Only 86.4% (95 of 110) of unknown-class rows and 80.5% (95 of 118) of unknown-year rows are name-only,
+      both below the criterion's 90%, and the criterion has no partial level. The statement holds exactly only for
+      the 95 rows that are unknown on both class and year. The paper's sentence fits those 95 rows; the 90%
+      threshold applied to each set separately was chosen by the claims file, and the claim fails because of that
+      choice. The notebook does not print the page ids of the 15 unknown-class and 23 unknown-year rows that are
+      not name-only, so it could not be checked whether they are clustered or are scraping artefacts.
+    response: Outcome changed to not_reproduced, as the criterion states only when the claim is reproduced. The
+      notebook now prints the pages, years and classes of the rows that are not name-only; 13 of the 15
+      unknown-class rows lie between pages 6385 and 6450 and 13 were evaluated in 2008, and 11 of the 23
+      unknown-year rows are pages 6476 to 6533. The reading of "the unknowns" as the rows unknown on both is asked
+      of a reader in questions/figshare-26877211.yaml; the claim is not changed.
+  - claim: fas-codes
+    agrees: true
+    outcome: partially_reproduced
+    reason: The named seven codes cover 46.34% of all rows (F1) under both FAS readings, and 53.42% of rows with a
+      code (F2) after the add_metadata.R step, both within 5 points of 50%, but they are not the seven most
+      frequent (59, or 60 after add_metadata.R, ranks above 52). The 81 distinct codes under the deposited column
+      include junk strings ('617', five decimals such as '24.65', eight of the form '77 JECFA 86') and '86', above
+      85. Counting only integer codes from 1 to 85 gives 66 with the deposited fas and 71 after add_metadata.R,
+      both below the 77 threshold, so the "almost all 85" part fails under any cleaned reading; the notebook's "at
+      least 77, True" should not be read as support for that part.
+    response: The notebook now counts the whole-number codes from 1 to 85 under both readings (66 and 71), lists the
+      missing codes and the other values, and the conclusion and notes say that "almost all 85" does not hold under
+      a cleaned reading. Outcome unchanged, as the criterion sets it by the share and the ranking.
+  - claim: validation-failures
+    agrees: true
+    outcome: blocked
+    reason: The claim needs the manual REDCap extraction of 700 pages. Version 1 is the item's only version and holds
+      only jecfa.rds and JECFA.csv. No part can be tested from the deposit.
+    response: Unchanged.
+  - claim: portal-search-count
+    agrees: true
+    outcome: partially_reproduced
+    reason: 6552 rows have a JECFA name, within 655 of 6551. After cleaning (D2/D3) the count is 6550, 3 from 6547
+      and outside the margin of 2; the portal's 6547 is outside data and cannot be tested. The variant that drops
+      both rows of page 6316's chemical gives 6549, within 2 of 6547, but it is not D1 to D3, so it was not used.
+      The notebook does not explain the one-row gap between the 6552 rows with a name and the paper's 6551 (the
+      TEST page carries the name "TEST").
+    response: The notebook and notes now say that the data do not explain the gap. Leaving out the TEST page gives
+      6551, but the paper removes the test page again from 6551, so that reading counts it twice; the 6549 variant
+      is named and not used. Outcome unchanged.

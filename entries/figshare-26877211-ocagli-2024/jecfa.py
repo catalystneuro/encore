@@ -49,6 +49,9 @@ DOI = "10.6084/m9.figshare.26877211.v1"
 API_URL = f"https://api.figshare.com/v2/articles/{ARTICLE_ID}/versions/{VERSION}"
 FILE_URL = "https://ndownloader.figshare.com/files/{}"
 URL_PREFIX = "https://apps.who.int/food-additives-contaminants-jecfa-database/Home/Chemical/"
+# The paper's code, at the commit the claims file read; its R sources are shown beside the ports.
+CODE_COMMIT = "2d8a5340d5322cbae28eb3095d948313932f6c7e"
+CODE_RAW_URL = "https://raw.githubusercontent.com/UBESP-DCTV/jecfa/{}/{}"
 
 # Table 1 of the paper, in its order, with the deposited column that holds each field.
 TABLE1_FIELDS = {
@@ -92,6 +95,12 @@ def metadata() -> dict:
 def read_bytes(file_id: int) -> bytes:
     """Stream one file of the item into memory."""
     with fsspec.open(FILE_URL.format(file_id), "rb", block_size=2**20) as f:
+        return f.read()
+
+
+def r_source(path: str) -> str:
+    """One file of the paper's code at CODE_COMMIT, as text."""
+    with fsspec.open(CODE_RAW_URL.format(CODE_COMMIT, path), "rt") as f:
         return f.read()
 
 
