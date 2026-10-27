@@ -15,7 +15,7 @@ Where the parameters come from:
 - The treatment test, the interaction test, the phenology regression and the biodiversity effects
   follow the opening comment of the claims file (claims/dryad-4j0zpc8hz/10.1093-plphys-kiad565.yaml),
   which cites the paper's Methods, the footnotes of Supplemental Tables S1 to S3 and S6, and the
-  figure legends. Readings it names (T1/T2, S1/S2, L1/L2, I1/I2, B1/B2, P1/P2) are arguments here.
+  figure legends. Readings it names (T1/T2, S1/S2/S3, L1/L2, I1/I2, Y1/Y2, B1/B2, P1/P2) are arguments here.
 - `anova_sequential` gives the sequential F tests of nlme's anova.lme (the claims file reads Table S1's
   F tests so): F of a term from the fixed effects rotated by the Cholesky factor of their inverse
   covariance, with nlme's denominator degrees of freedom (chamber-level terms: chambers minus the
@@ -125,8 +125,10 @@ def tree_year_table(d: pd.DataFrame) -> pd.DataFrame:
 
 def transform(y: pd.Series, sqrt: bool, reading: str) -> tuple[pd.Series, str]:
     """The response of a model. Without the square root, unchanged. With it: when no value is negative,
-    the square root; when some are, reading S1 leaves the trait untransformed and S2 takes the square root
-    after adding the constant that brings the minimum to zero (claims file, opening comment)."""
+    the square root; when some are, reading S1 leaves the trait untransformed, S2 takes the square root
+    after adding the constant that brings the minimum to zero, and S3 drops the negative values (NaN, as
+    R's sqrt gives them; the model then drops those rows) and takes the square root of the others (claims
+    file, opening comment, as answered in questions/dryad-4j0zpc8hz.yaml)."""
     if not sqrt:
         return y, "none"
     low = y.min()
@@ -134,6 +136,8 @@ def transform(y: pd.Series, sqrt: bool, reading: str) -> tuple[pd.Series, str]:
         return np.sqrt(y), "sqrt"
     if reading == "S1":
         return y, "none (negatives, S1)"
+    if reading == "S3":
+        return np.sqrt(y.where(y >= 0)), f"sqrt, {int((y < 0).sum())} negative dropped (S3)"
     return np.sqrt(y - low), f"sqrt(x + {-low:.3g}) (S2)"
 
 
@@ -268,6 +272,7 @@ def treatment_test(data: pd.DataFrame, species: str, trait: str, years: list[int
     sub = data[(data.Species == species) & (data.Mixture == "Monoculture") & data.Year.isin(years)].copy()
     sub = sub.dropna(subset=[trait])
     sub["y"], how = transform(sub[trait], sqrt, s_reading)
+    sub = sub.dropna(subset=["y"])
     sub["Yr"] = sub["Year"].astype(str)
     m = LME(sub, "y", "(C(W) + C(M) + C(Yr))**3")
     order = [("C", 0, 0), ("MR", 0, 1), ("W", 1, 0), ("WMR", 1, 1)]
@@ -293,6 +298,7 @@ def interaction_test(data: pd.DataFrame, species: str, trait: str, years: list[i
     treatment and year (I1) and within each treatment over 2020 and 2021 (I2)."""
     sub = data[(data.Species == species) & data.Year.isin(years)].copy().dropna(subset=[trait])
     sub["y"], how = transform(sub[trait], True, s_reading)
+    sub = sub.dropna(subset=["y"])
     sub["Yr"] = sub["Year"].astype(str)
     m = LME(sub, "y", "(C(W) + C(M) + C(Yr) + C(I))**3")
     order = [("C", 0, 0), ("MR", 0, 1), ("W", 1, 0), ("WMR", 1, 1)]

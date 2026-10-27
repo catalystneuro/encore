@@ -9,9 +9,9 @@ moisture reduction, in monocultures and mixtures, measured from 2019 to 2021.
 |---|---|
 | Phenology against air temperature (Figure 1, six claims), GDD against chilling days, maximum chilling days | Reproduced |
 | Leaf water potential under the treatments (Figure 3, four claims) | 1 reproduced, 1 partially, 2 not reproduced |
-| Carbon relations and growth under the treatments (Figure 4, ten claims) | 3 reproduced, 3 partially, 4 blocked (methods underspecified) |
-| No seasonal variation of the leaf-level traits (Table S6) | Not reproduced |
-| Species mixture and biodiversity effects (Tables S2 and S3, Figure 5, eleven claims) | 2 reproduced, 6 not reproduced, 3 blocked (methods underspecified) |
+| Carbon relations and growth under the treatments (Figure 4, ten claims) | 3 reproduced, 2 partially, 5 blocked (methods underspecified) |
+| No seasonal variation of the leaf-level traits (Table S6) | Blocked (methods underspecified) |
+| Species mixture and biodiversity effects (Tables S2 and S3, Figure 5, eleven claims) | 3 reproduced, 5 not reproduced, 3 blocked (methods underspecified) |
 | Soil moisture, chamber climate and initial sizes (five claims) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -21,7 +21,9 @@ The dataset's treatment codes differ from its metadata, it has duplicated rows a
 concentrations, its growing season length does not follow the Methods' definition, and it lacks the
 soil moisture and chamber climate records. Refitting the paper's treatment model on it reproduces
 Supplemental Table S1 for some traits exactly. Where the claims file leaves a method detail open,
-every reading is run, and claims whose readings disagree are blocked. The attempt record, with the
+every reading is run, and claims whose readings disagree are blocked. The
+analysis follows the answers to the three questions the first run asked
+([`questions/dryad-4j0zpc8hz.yaml`](../../questions/dryad-4j0zpc8hz.yaml)). The attempt record, with the
 reasons and the differences from the paper's method, is
 [`attempts/dryad-4j0zpc8hz-didion-gency-2024-01.yaml`](../../attempts/dryad-4j0zpc8hz-didion-gency-2024-01.yaml).
 
