@@ -236,6 +236,7 @@ def collect(executed: Path | None = None) -> dict:
                 "notebook": o.get("notebook"),
                 "notes": squash(o.get("notes")),
                 "deviations": [squash(d) for d in o.get("deviations") or []],
+                "assumed": bool(o.get("assumed")),
                 "disagreed": o["claim"] in disagreed,
                 "data": known.get(o["claim"], {}).get("data", "dataset"),
                 "where": known.get(o["claim"], {}).get("where"),
@@ -693,6 +694,8 @@ def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | No
         if o["blocked_by"] else ""
     source = f'<span class="source">{e(o["source"])}</span>' if o["source"] else ""
     tags = '<span class="tag">verifier disagreed at first</span>' if o["disagreed"] else ""
+    if o.get("assumed"):
+        tags += '<span class="tag">rests on an assumption</span>'
     if asked and o["claim"] in asked:
         tags += f'<a class="tag" href="#question-{asked[o["claim"]]}">question to the reader</a>'
     if o.get("kind") == "link":
@@ -1492,18 +1495,70 @@ def earlier_attempts(data: dict, dandiset: str) -> list[dict]:
                   key=lambda a: (a["date"], a["id"]))
 
 
+def version_text(a: dict) -> str:
+    """The dataset version an attempt ran on, linked to its DOI when it has one; a draft says so."""
+    v = a["dataset_version"]
+    if not v:
+        return "version not recorded"
+    if v == "draft":
+        modified = a["dataset"].get("modified")
+        return "unpublished draft" + (f" (modified {e(str(modified)[:10])})" if modified else "")
+    doi = a["dataset"].get("doi")
+    return (f'version <a href="https://doi.org/{e(doi)}">{e(v)}</a>' if doi else f"version {e(v)}")
+
+
+def attempts_timeline(data: dict, dandiset: str, root: str, shown: list[dict]) -> str:
+    """A panel with every attempt on the dataset, oldest first, when there is more than one."""
+    all_atts = sorted((a for a in data["attempts"] if a["key"] == dandiset), key=lambda a: (a["date"], a["id"]))
+    if len(all_atts) < 2:
+        return ""
+    current = current_attempts(data).get(dandiset, [])
+    papers = {a["paper"] for a in all_atts}
+    items = ""
+    for a in all_atts:
+        # Counted here even when deprecated, which the dataset's totals leave out.
+        counts = {k: sum(1 for o in a["outcomes"] if o["outcome"] == k) for k in OUTCOMES}
+        n = sum(counts.values())
+        href = f'{root}{page_of(dandiset)}' + ("" if a in current else f'{e(a["id"])}/')
+        here = a in shown
+        notes = [f'{n} claims', f'{len(a["findings"])} findings']
+        protocol = (a.get("agent") or {}).get("protocol")
+        if protocol:
+            notes.append(f'protocol {e(protocol)}')
+        paper = (f'<span class="muted small">{e(a.get("paper_title") or a["paper"])}</span>'
+                 if len(papers) > 1 else "")
+        name = f'Attempt {e(a["id"].rsplit("-", 1)[1])}'
+        viewing = '<span class="t-viewing">Viewing</span>' if here else ""
+        name = f'<strong>{name}</strong>' if here else f'<a href="{href}"><strong>{name}</strong></a>'
+        card = (f'<div class="t-head">{name}{viewing}<span class="muted small">{e(a["date"])}</span>'
+                + f'<span class="tag">{"current" if a in current else "replaced"}</span>'
+                + ('<span class="tag">deprecated</span>' if a.get("deprecated") else "")
+                + f'</div>{paper}<span class="t-version">Dataset {version_text(a)}</span>'
+                f'<div class="t-bar">{bar(counts, f"Outcomes of {n} claims", "bar mini")}</div>'
+                f'<span class="muted small">{" · ".join(notes)}</span>')
+        card = f'<div class="t-card">{card}</div>'
+        classes = " ".join(c for c, on in (("current", a in current), ("here", here),
+                                           ("deprecated", bool(a.get("deprecated")))) if on)
+        current_attr = ' aria-current="page"' if here else ""
+        items += (f'<li class="{classes}"{current_attr}>'
+                  f'<span class="dot" aria-hidden="true"></span>{card}</li>')
+    return (f'<div class="panel timeline-panel"><h2>Attempts over time <span class="count">{len(all_atts)}</span></h2>'
+            f'<p class="sub small" style="margin-top:6px">Each attempt tests the paper again, usually on a newer version '
+            f'of the dataset or a newer protocol, and reports which earlier findings are fixed. The latest attempt on '
+            f'each paper is the current one.</p><ol class="timeline">{items}</ol></div>')
+
+
 def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str:
     """The dandiset's page, from its current attempts; or, given an earlier attempt, that attempt's page."""
     root = "../../../../" if attempt else "../../../"
     current_atts = current_attempts(data)[dandiset]
     atts = [attempt] if attempt else current_atts
-    earlier = [a for a in earlier_attempts(data, dandiset) if a is not attempt]
     target = next((t for t in data["targets"] if t["key"] == dandiset), None)
     counts = outcome_counts(atts)
     n = sum(counts.values())
     order = {"reproduced": 0, "partially_reproduced": 1, "not_reproduced": 2}
 
-    # Questions the author asked a reader about the claims file (docs/protocol.md, Author, step 6), with answers.
+    # Questions the author asked a reader about the claims file (docs/protocol.md, Author, step 1.6), with answers.
     questions = (data.get("pipeline") or {}).get("question_items", {}).get(dandiset, [])
     asked: dict = {}
     for i, q in enumerate(questions, 1):
@@ -1622,11 +1677,6 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
                             '<p class="sub small">Each run’s prompt, messages and tool calls, with long output cut '
                             'and the text of the paper left out, and its final report.</p>'
                             f'<ul style="margin:6px 0 0;padding-left:20px">{items}</ul>')
-    if earlier:
-        provenance_html += ('<p class="sub small" style="margin-top:14px">'
-                            + ("Other earlier attempts: " if attempt else "Earlier attempts: ") + ", ".join(
-            f'<a href="{root}{page_of(dandiset)}{e(x["id"])}/">{e(x["id"])}</a> ({e(x["date"])})'
-            for x in earlier) + "</p>")
 
     actions = [f'<a href="{e(archive_url(dandiset))}" target="_blank" rel="noopener">View on '
                f'{e(ARCHIVES.get(split_key(dandiset)[0], {}).get("label", split_key(dandiset)[0]))}</a>']
@@ -1692,9 +1742,11 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
                else '<div class="answer open">No reader has answered it yet.</div>')
             + "</li>")
     questions_panel = (f'<section class="tabpanel" id="questions"><h2>Questions</h2>'
-                       f'<p class="sub small" style="margin-top:12px">Where the claims file did not say how to test a '
-                       f'claim, the author asked, citing the paper, and a reader who had not seen the data answered '
-                       f'from the paper alone. The author then ran the claim as answered.</p>'
+                       f'<p class="sub small" style="margin-top:12px">Where the author or a verifier believed the '
+                       f'claims file misread the paper, they asked, citing the paper, and a reader who had not seen '
+                       f'the data answered from the paper alone, amending the claims file where it was wrong. The '
+                       f'author then ran the claim as answered. Attempts before protocol pilot-11 also asked here '
+                       f'for method details the claims file did not give.</p>'
                        f'<ul class="questions">{question_items}</ul></section>') if questions else ""
 
     tab_defs = [("claims", "Claims", n), ("findings", "Findings about the data", len(all_findings)),
@@ -1706,6 +1758,8 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
         count = f' <span class="count">{c}</span>' if c is not None else ""
         tab_buttons += f'<button type="button" role="tab" data-panel="{key}" aria-selected="false">{label}{count}</button>'
 
+    tested_on = "; ".join((e(a.get("paper_title") or a["paper"]) + ": " if len(atts) > 1 else "")
+                          + "dataset " + version_text(a) for a in atts)
     name = (target or {}).get("name") or atts[-1]["entry_title"] or dandiset
     tier = weakest_tier(atts)
     tier_link = f'{root}datasets/?status=attempted&tier={tier}'
@@ -1718,10 +1772,12 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
   {outside_note(atts)}
+  <p class="sub small" style="margin-top:8px">Tested on {tested_on}</p>
   {superseded}
   <p class="actions">{" ".join(actions)}</p>
 </header>
 <main>
+  {attempts_timeline(data, dandiset, root, atts)}
   <div class="tabs" role="tablist">{tab_buttons}</div>
   <section class="tabpanel" id="claims"><h2>Claims</h2>
     <div class="subtabs" id="claim-filter" role="group" aria-label="Show claims by outcome"></div>

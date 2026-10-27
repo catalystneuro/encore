@@ -32,6 +32,7 @@ REPO_URL = "https://github.com/catalystneuro/encore.git"
 TOOLS = "Bash,Read,Write,Edit,Glob,Grep,WebFetch,WebSearch,Agent,TodoWrite"
 NOT_TOOLS = "ScheduleWakeup,CronCreate,CronDelete,CronList,Monitor,RemoteTrigger,Workflow"
 QUICK = ("claims", "claims-check", "author")
+# answer and author-answers run only when the author asked a reader about a suspected misreading of the claims file.
 FULL = QUICK + ("answer", "author-answers", "verifier-1", "author-revise-1", "verifier-2", "author-revise-2",
                 "verifier-3", "author-revise-3")
 # The hosts an agent's commands may reach: Python packages and the paper's DOI, and each archive's own hosts, which

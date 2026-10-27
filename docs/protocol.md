@@ -1,6 +1,6 @@
 # Protocol for an attempt
 
-Version: `pilot-10`. Record this version in the attempt's provenance.
+Version: `pilot-11`. Record this version in the attempt's provenance.
 
 This is what agents, or people, do to attempt a target and deposit the
 result. A target is a dataset in a public archive and a paper it names. How
@@ -15,19 +15,23 @@ An attempt has three roles, each a separate run with a separate context:
   it against the paper. Readers never see the dataset's data.
 - The **author** tests the claims on the dataset. It reads the paper to
   understand the claims, but the claims file binds it: it cannot change a
-  claim, and it asks a reader for any method detail the file lacks.
+  claim's statement, expected values or criterion. A method detail the file
+  lacks it takes from the paper, citing the passage, and it asks a reader
+  only when it believes the file misreads the paper.
 - The **verifier** checks the author's work and must not be the author.
 
-So every claim and its method are fixed from the paper before anyone analyses
-the data, and no method is chosen by the agent that runs the analysis.
+So every claim, the values it must match and how it is judged are fixed from
+the paper before anyone analyses the data, and every method the analysis uses
+comes from the paper. Where the paper leaves a method open, the choice made is
+stated as an assumption, and the outcome is marked as resting on it.
 
 Reader runs are made with the [Paper run](../.github/workflows/papers.yml)
 workflow (roles `claims`, `claims-check` and `answer`), the only runs that
 write the claims file. The other runs are made with the
 [Agent run](../.github/workflows/attempt.yml) workflow, one role at a time:
-`author`, `author-answers` when questions were answered, `verifier-1`,
-`author-revise-1`, `verifier-2`, `author-revise-2`, and, when the last of these
-proposes changes of outcome, `verifier-3` and `author-revise-3`. Each run's
+`author`, `author-answers` when a reader answered a question on the claims
+file, `verifier-1`, `author-revise-1`, `verifier-2`, `author-revise-2`, and,
+when the last of these proposes changes of outcome, `verifier-3` and `author-revise-3`. Each run's
 transcript and final report are kept in
 [`transcripts/<folder>/`](../transcripts). A dataset's folder is its identifier
 on DANDI and `<archive>-<id>` otherwise ([archives.md](archives.md)). The
@@ -119,9 +123,11 @@ author can find them in the dataset.
      (how folds are formed, what a measure is compared with, how a penalty
      is chosen), the criterion names the readings the paper's text allows,
      before the analysis, and the notebook runs each of them. The outcome is
-     the one they all give; when they give different outcomes, the claim is
-     blocked as `methods_underspecified`, with every result shown. A choice
-     made by an agent is never the basis of an outcome.
+     the one they all give; when they give different outcomes, the author
+     adopts the reading the paper best supports, as an assumption, or blocks
+     the claim as `methods_underspecified` when no choice is defensible
+     (author, step 1.6), with every result shown. An outcome that rests on a
+     choice the paper does not make is marked as resting on an assumption.
    - For a claim of absence ("no difference", "did not change"), the
      criterion names the test and threshold the paper used. The claim is
      reproduced when that test does not find the effect and not reproduced
@@ -162,19 +168,24 @@ says so.
 
 ### 6. Answer questions
 
-When an attempt needs something the claims file does not give, the author asks
-(author, step 6). A reader answers each question from the paper, in the claims
-file, and marks it answered in `questions/<folder>.yaml`. An answer
-the paper does not give is said to be that: the claim stays as it is, and the
-author treats the detail as open (step 3, on details none of the sources fix).
+A reader is asked only when the author or a verifier believes the claims file
+misreads the paper: a wrong expected value, the wrong panel, a claim that does
+not say what the paper says (author, step 1.6, and "Hand over for
+verification"). A method detail the claims file lacks is not asked: the author
+takes it from the paper. The reader, who has not seen the data, checks each
+question against the paper and decides whether the claims file is to change.
+Where it is, the reader amends the claim, and the question's `answer` says
+what changed and why, citing the passage; where it is not, the answer says why
+the claim stands. The reader marks each question answered in
+`questions/<folder>.yaml`.
 
 ## Author
 
 The workflow puts the paper under `paper/`, as for the reader. Read it to
 understand the claims, their data and their figures. The claims file still
-decides what is tested and how: do not change a claim's statement, expected
-values or criterion, and do not apply a method detail the claims file lacks,
-even one the paper gives. Ask for it (step 6).
+decides what is tested: do not change a claim's statement, expected values or
+criterion. A method detail the claims file lacks is taken from the paper
+(step 6).
 
 **Time.** An author run is stopped five hours after it starts, and whatever
 is not recorded by then is lost. The prompt says when the run started and the
@@ -260,8 +271,8 @@ Do this before any analysis.
    - `metadata_insufficient`: the data are there but cannot be interpreted or
      linked, for lack of a description, label, identifier or mapping.
    - `methods_underspecified`: neither the paper nor its code fixes the
-     procedure well enough to repeat it (see also chance levels, under
-     "Record the attempt").
+     procedure well enough to repeat it, and no choice has a defensible basis
+     (step 6; see also chance levels, under "Record the attempt").
    - `data_unreadable` and `too_large`.
    - `not_runnable`: the paper's method cannot be run here, because its
      software cannot be installed in a locked environment or it cannot run
@@ -272,15 +283,44 @@ Do this before any analysis.
 
    A claim that depends on a blocked claim is blocked for the same reason.
 
-6. Ask when the claims file does not say. When a claim needs something the
-   claims file does not give (which trials, which subset, a window, a
-   threshold, what a measure is compared with), do not choose it, even when
-   you find it in the paper. Add a question to `questions/<folder>.yaml`
-   (`claim`, `question`, the passage of the paper that bears on it if you
-   found one, and why the answer could change the outcome), and test the claim
-   under each reading you can see, the passage's among them, or block it as
-   `methods_underspecified` until the question is answered. A reader answers from the paper (reader, step 6), and
-   a later run, `author-answers`, takes up the answers.
+6. Take from the paper what the claims file does not say. When a claim needs
+   a method detail the claims file does not give (which trials, which subset,
+   a window, a threshold, what a measure is compared with), take it from the
+   paper: the main text, the Methods, the legends, the supplement or the code
+   it links. Search all of them, and where they disagree, follow the order of
+   reader, step 2. Record each detail taken as a deviation that quotes or
+   cites the passage, and cite it too in the notebook or the helper, so that
+   the verifier can check it. A detail taken this way never changes the
+   claim's statement, expected values or criterion.
+   - When the paper allows more than one reading of a detail that could
+     change the outcome, run every reading, as for the readings a criterion
+     names (reader, step 3). The outcome is the one they all give.
+   - When the readings give different outcomes, or the paper does not settle
+     the detail, you may adopt the choice best supported by the paper, the
+     methods it cites, the code it links and the field's standard practice.
+     Record it as an assumption: a deviation that says what was assumed and
+     why, and `assumed: true` on the outcome. The notebook still shows the
+     result under every plausible reading, so that the outcome's dependence
+     on the choice can be seen. The outcome stands, marked as resting on the
+     assumption.
+   - Only when there is no defensible basis for a choice, so that any choice
+     would be arbitrary, is the claim blocked as `methods_underspecified`,
+     with the result of every reading that was run.
+   - In either case the question is for the paper's authors, not a reader,
+     so that they can confirm or correct the choice: state it in the claim's
+     notes (what is open, the passages that bear on it, how the readings
+     differ, and what was assumed), and add a `methods_unavailable` finding
+     to the attempt that asks it. A detail that cannot change the outcome (a
+     plotting bin, a random seed) takes a standard choice, said to be one.
+   - When you believe the claims file misreads the paper (a wrong expected
+     value, the wrong panel, a claim that does not say what the paper says),
+     do not change the claim. Add a question to `questions/<folder>.yaml`
+     (`claim`, `question`, the passage of the paper, and why the misreading
+     could change the outcome), test the claim as the file has it, show the
+     paper's reading as a variant where it can be run, and say in the
+     claim's notes that it is asked. A reader decides whether to amend the
+     claims file (reader, step 6), and a later run, `author-answers`,
+     re-runs the claims it changed.
 
 ### 2. Check the data against its description
 
@@ -312,8 +352,10 @@ module.
   so that adding a cell earlier does not change its numbers.
 - **Put loading and reusable measures in a helper module**, so later notebooks
   on the dataset can import it. Say in its docstring where a parameter comes
-  from: the claim's criterion (which cites the paper or its code), or a
-  standard choice for a detail that cannot change a result (say so).
+  from: the claim's criterion (which cites the paper or its code), the
+  passage of the paper it was taken from (author, step 1.6), an assumption
+  (say what and why), or a standard choice for a detail that cannot change a
+  result (say so).
 - **Keep it fast.** Reduce the data to what the analysis needs as it loads.
   Aim for under ten minutes; CI fails a notebook over thirty. If the analysis
   runs many small model fits, limit linear-algebra threads to one.
@@ -385,7 +427,11 @@ Write `attempts/<entry name>-<nn>.yaml`.
   whether that part holds.
 - **`deviations`**: every way the test differed from the paper's method or
   data. One session of four, a substituted model, a threshold the paper does
-  not state.
+  not state. A method detail taken from the paper cites its passage (step
+  1.6).
+- **`assumed`**: `true` on an outcome that rests on an assumption about a
+  method the paper leaves open (step 1.6); a deviation says what was assumed
+  and why.
 - **`notes`**: the numbers behind the outcome, stated factually.
 - **`measured`**: the value obtained, or one per expected value in the same
   order. When several readings match, record the first reading the criterion
@@ -421,9 +467,13 @@ Do not verify your own attempt. Give the verifier:
 
 `python tools/entry.py handover entries/<name>` builds these in
 `executed/<name>/handover/` from the executed copy. The verifier also gets the
-paper, under `paper/`, but checks the analysis against the claims file. A place
-where the claims file misreads the paper is reported, as a question for a
-reader; the author does not change the claim.
+paper, under `paper/`, but checks the analysis against the claims file, and a
+method detail the author took from the paper against the passage the author
+cites. A place where the claims file misreads the paper is reported; the
+revision adds it to `questions/<folder>.yaml` as a question for a reader, as in
+step 1.6, and does not change the claim. A reader answers it after the
+attempt, in an `answer` run started by hand; the claim's outcome stays as
+tested on the claims file, and a later attempt takes up any change.
 
 After the first round, fix what it found, re-run, and hand over the full
 executed notebook for the second round. Record each round under
@@ -491,10 +541,17 @@ Be skeptical. Do not assume the analysis is right.
    under `paper/`; the claims file decides what is tested and how, and a place
    where it misreads the paper is reported, not corrected.
 2. Check the code: that every number derives from the loaded data; that
-   every method choice is the one the claim's criterion gives, and none is
-   the author's own; that selection, conditions and analysis windows follow
-   the claims file; units; leakage
-   between training and test data; the statistics; anything assumed and never
+   every method choice is the one the claim's criterion gives or, for a
+   detail the criterion lacks, the one the passage cited in the notebook or
+   the helper gives, and none is the author's own unless stated as an
+   assumption; that
+   a detail the paper leaves open, where it could change the outcome, was
+   run under every reading the paper allows; that each assumption is
+   stated and reasonable, given the paper, the
+   methods it cites, the code it links and the field's practice (an
+   unreasonable one is a problem that affects a conclusion, and the author
+   revises it); that selection, conditions and analysis windows follow the
+   claims file; units; leakage between training and test data; the statistics; anything assumed and never
    checked. Test helper functions on synthetic inputs where that is cheap.
 3. For each tested claim, decide your own outcome from the notebook's outputs.
 4. For each blocked claim, check the archive itself (its file list and
@@ -505,7 +562,8 @@ Be skeptical. Do not assume the analysis is right.
 
 ### Round 2: with the author's conclusions
 
-1. Say whether you agree with each stated outcome.
+1. Say whether you agree with each stated outcome, and whether each
+   assumption an outcome rests on (`assumed`) is stated and reasonable.
 2. Check every sentence of the conclusions and the summary against the
    outputs. Quote any that the numbers do not support.
 3. Say which of your earlier points are resolved, and list what remains that
