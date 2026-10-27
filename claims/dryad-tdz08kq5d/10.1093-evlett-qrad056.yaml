@@ -143,8 +143,9 @@ claims:
     area is taken. Readings are (a) trapezoidal area over all six time points, (b) trapezoidal area
     over the five time points after inoculation, (c) the sum of OD600 over all six time points.
     The reported df (1, 19) imply 21 values where 20 populations give (1, 18); the F values are
-    not targets. Reproduced when, under one reading, both reductions are within tolerance, the
-    25 degrees C reduction is the larger, and both ANOVAs give p < 0.05.
+    not targets. Reproduced when, under every reading, both reductions are within tolerance, the
+    25 degrees C reduction is the larger, and both ANOVAs give p < 0.05; when the readings give
+    different outcomes, the claim is blocked as methods_underspecified.
 - id: fig1c-phage-density-temperature
   statement: Phage densities were higher at 25 than at 35 degrees C, and at both temperatures rose
     rapidly at first and then declined over time.
@@ -172,17 +173,19 @@ claims:
     interaction. If the data hold more than three phage time points, the readings are (a) the
     three sampled after inoculation, (b) the first three. Reproduced when the temperature and time
     effects both have p < 0.05, the mean log10 density is higher at 25 degrees C, and at each
-    temperature the mean density is highest at the first sampled time point and lower at the last.
+    temperature the mean density rises from the inoculation density (10^4 PFU/ml, Methods) to its
+    highest value before the last sampled time point and is lower at the last sampled time point
+    than at that highest value.
 - id: fig1d-mucoid-lost-with-phage
   statement: At day 12, ancestral mucoid colonies were lost in the presence of phage at both
     temperatures and replaced by small colony variants (SCVs), except in one phage replicate at 25
     degrees C.
   source: Results, Ralstonia solanacearum and phage population density dynamics, paragraph 2;
     Figure 1D
-  quote: We found that ancestral mucoid (M) colony types were lost in the presence of phage at both
+  quote: 'We found that ancestral mucoid (M) colony types were lost in the presence of phage at both
     temperature treatments and replaced by small non-mucoid colony variants (SCV), except for one
     phage treatment replicates at 25 °C (Figure 1D; hardly visible in the mean plot due to low frequency
-    of SCVs
+    of SCVs: 0.24% of all colonies within this treatment)'
   expected:
   - quantity: frequency named in the text for the exception at 25 degrees C with phage
     value: 0.24
@@ -350,7 +353,9 @@ claims:
   criterion: Maximum growth rate is the mu of a logistic model fitted with grofit gcFitModel to
     OD600 over time (Methods). The code's default fit, the best of four models by AIC with failed
     fits set to 0, is shown as a variant. The Methods speak of 13 time points but list nine; all
-    time points the data hold are used. The ANOVA terms, unit readings and sums of squares
+    time points the data hold are used. The code fits one curve per combination of the growth
+    file's replicate and strain columns, on the mean OD600 at each time point within it; when the
+    replicate column is the technical replicate, a clone's mu and A are the mean of its three fits. The ANOVA terms, unit readings and sums of squares
     readings are those of fig2a-phage-exposed-more-resistant. Reproduced when the colony type
     effect has p < 0.05 with SCVs higher and both interactions have p >= 0.05 under all readings.
 - id: fig2c-scv-lower-carrying-capacity
@@ -443,12 +448,13 @@ claims:
     p_relation: "<"
     n: 28 evolved clones
   criterion: Biofilm OD570, each clone the mean of three technical replicates; the ANOVA of Table
-    S3e as in fig2d-scv-twitching-no-exposure-effect. The paper gives no test against the ancestor.
-    Readings for the comparison with the ancestor are (a) as plotted in Figure 2E, the ancestor
-    lies below the interquartile range of the mucoid clones and within that of the SCVs, (b)
-    one-sample t-tests of clone values against the ancestor's value at p < .05, significant and
-    higher for mucoid clones and not significant for SCVs. Reproduced when the colony type effect
-    has p < 0.05 with mucoid higher and the comparison holds under both readings.
+    S3e as in fig2d-scv-twitching-no-exposure-effect. The paper gives no test against the ancestor;
+    the comparison is read from Figure 2E, which draws the ancestor as a dashed line beside
+    boxplots of the clones. Readings are (a) the ancestor's value lies below the interquartile
+    range of the mucoid clones and within that of the SCVs, (b) it lies below the median of the
+    mucoid clones and within the range of the SCVs. Reproduced when the colony type effect has
+    p < 0.05 with mucoid higher and the comparison holds under both readings; when the readings
+    differ, the claim is blocked as methods_underspecified.
 - id: fig2e-biofilm-no-exposure-effect
   statement: Prior temperature or phage exposure had no significant effect on biofilm formation.
   source: Results, Phage resistance and loss of mucoidy leads to reduced R. solanacearum virulence,
@@ -535,7 +541,9 @@ claims:
   - fig2f-phage-exposure-reduces-virulence
   criterion: The ANOVA of fig2f-phage-exposure-reduces-virulence. Reproduced when the colony type by
     phage interaction has p < 0.05 and the mean disease incidence of the four 25 degrees C +P mucoid
-    clones is below that of every -P mucoid group and of the ancestor.
+    clones is below that of every -P mucoid group and of the ancestor. The Discussion says all
+    mutants showed complete loss of virulence; whether each of the four clones has a disease
+    incidence of 0 is reported alongside.
 - id: sequencing-mutation-count
   statement: Sequenced clones carried on average 8.5 nonsynonymous mutations, and the number did not
     depend on colony morphology.
@@ -550,7 +558,9 @@ claims:
     value: 8.5
     tolerance: 0.85
   criterion: Variants called with Snippy 4.6.0 against the RS-N reference (GenBank CP099579 to
-    CP099581) after FastQC and cutadapt, annotated with PROKKA 1.14.5 (Methods). The paper names no
+    CP099581) after FastQC and cutadapt, annotated with PROKKA 1.14.5 (Methods). Counted per clone
+    are variants that change a protein, which the Results say include small deletions, small
+    insertions and SNPs. The paper names no
     test for the morphology comparison; the Methods' one-way ANOVA is used, mucoid against SCV
     counts at p < .05. Reproduced when the mean is within tolerance and the ANOVA gives p >= 0.05.
 - id: table1-phcs-in-scvs
@@ -683,9 +693,9 @@ claims:
     Benjamini-Hochberg adjusted p as the FDR, no fold-change shrinkage) are the standard choice.
     Reproduced when all three counts are within tolerance.
 - id: rnaseq-kegg-enrichment
-  statement: Five KEGG pathways were enriched among the phage-responsive genes, including propanoate
-    metabolism, RNA degradation, ketone body metabolism, bacterial secretion system and valine,
-    leucine and isoleucine degradation.
+  statement: Five KEGG pathways were enriched in the phage compared to the control treatment, namely
+    propanoate metabolism, RNA degradation, synthesis and degradation of ketone bodies, bacterial
+    secretion system and valine, leucine and isoleucine degradation.
   source: Results, Activation of restriction modification and abortive infection phage defense
     systems..., paragraph 1; Supplementary Figure S5
   quote: Based on KEGG pathway enrichment analysis, a total of five metabolic pathways were significantly
@@ -697,7 +707,8 @@ claims:
   criterion: KOBAS KEGG enrichment of the differentially expressed genes of
     rnaseq-differential-expression-count at p < .05 (Methods; Figure S5). The KOBAS version, the
     background set and whether p is corrected are not given; readings are uncorrected and
-    corrected p. Reproduced when the five named pathways are enriched at p < 0.05 under one reading.
+    corrected p. Reproduced when the five named pathways are enriched at p < 0.05 under both
+    readings; when the readings differ, the claim is blocked as methods_underspecified.
 - id: rnaseq-mutated-genes-expression
   statement: Under phage exposure phcR and phcS were upregulated and pilD and other pilus and fimbrial
     genes downregulated; seven of the 13 genes mutated under phage selection were differentially
@@ -717,7 +728,9 @@ claims:
     value: 7
     tolerance: 0.7
   criterion: The analysis of rnaseq-differential-expression-count, with the thresholds of the Figure
-    4B legend (FDR < 0.05, |log2FC| > 1). The 13 genes are those of Figure 4B. Reproduced when phcR
+    4B legend (FDR < 0.05, |log2FC| > 1). The 13 genes are those of Figure 4B; Table 1 lists 14
+    named genes mutated in +P clones (RSc1174 among them), so the set is read from the figure and
+    not from the table. Reproduced when phcR
     and phcS are up, pilD is down, and seven of the 13 meet the thresholds.
 - id: rnaseq-defense-systems
   statement: Phage exposure upregulated type I restriction-modification genes (MTases, REases) and
@@ -751,3 +764,20 @@ claims:
     (padj < .05, |log2FC| > 2). Reproduced when gspG, rcpA and tadC and at least two hrp or hrc
     genes meet the thresholds downward and none of these is upregulated. "Several" is read as at
     least two.
+checks:
+- date: 2026-10-27
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1d-mucoid-lost-with-phage. Extended the quote to the sentence's end so that it holds the 0.24% the expected value rests on.
+  - auc-phage-reduction-by-temperature. The way the area is taken is a method detail the paper leaves open, so the outcome now needs every reading to agree (protocol, Reader step 3) and is blocked when they differ; it was reproduced under any one reading.
+  - fig1c-phage-density-temperature. The criterion required the density to be highest at the first sampled time point, which the paper does not say. It now asks for a rise from the inoculation density (10^4 PFU/ml, Methods) to a peak before the last time point and a decline after it, as the Results describe.
+  - fig2b-scv-higher-growth-rate. Added what the paper's code settles about the fits (re-read, all_r_scripts.R, md5 as in the header), one fit per replicate and strain combination on mean OD600; fig2c-scv-lower-carrying-capacity uses the same fits.
+  - fig2e-mucoid-biofilm-increased. Removed reading (b), one-sample t-tests against the ancestor, a test the paper does not use. Both readings now come from Figure 2E as plotted, and the claim is blocked when they differ.
+  - fig2f-mucoid-25p-avirulent. Added that the Discussion says all mutants lost virulence completely, and that zero incidence of the four clones is reported alongside.
+  - sequencing-mutation-count. Said which variants are counted, from the Results' description of the 8.5 nonsynonymous mutations.
+  - rnaseq-kegg-enrichment. Statement now uses the paper's pathway names and says the five are all the enriched pathways. Whether p is corrected is a method detail, so both readings must agree; it was any one reading.
+  - rnaseq-mutated-genes-expression. Noted that Table 1 lists 14 named genes mutated in +P clones, so the 13 genes come from Figure 4B.
+  - Open. The unit of the Table S3a to S3c ANOVAs is unresolved; neither reading gives the residual df of 15. Which comparisons give F1,18 = 174.5 and F1,6 = 27.22, and what the 0.24% refers to, also stay open with the readings the file names.
+  - Open. The SRA accession that holds the genomes and the one that holds the RNA-seq are not named in the paper.
