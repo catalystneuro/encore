@@ -23,7 +23,7 @@ variant calls of Table 1, the adsorption assay of Figure S3 and the transcriptom
 | SCVs have lower carrying capacity (Figure 2C) | Reproduced |
 | No exposure effect on SCV twitching (Figure 2D) | Reproduced |
 | 25 degrees C phage mucoid clones twitch less | Reproduced |
-| Mucoid clones form more biofilm than the ancestor, SCVs as much (Figure 2E) | Not reproduced |
+| Mucoid clones form more biofilm than the ancestor, SCVs as much (Figure 2E) | Partially reproduced |
 | No exposure effect on biofilm | Reproduced |
 | Phage exposure reduced virulence (Figure 2F) | Reproduced |
 | All SCVs avirulent | Reproduced |
@@ -36,7 +36,7 @@ variant calls of Table 1, the adsorption assay of Figure S3 and the transcriptom
 | pilD mutants adsorb less phage, phcS and T2SS mutants do not (Figure S3) | Reproduced |
 | 1477 genes differentially expressed, 707 up and 770 down (Figure 4A) | Reproduced |
 | Five KEGG pathways enriched (Figure S5) | Blocked: methods underspecified |
-| phcR and phcS up, pilD down, 7 of 13 mutated genes differentially expressed | Not reproduced |
+| phcR and phcS up, pilD down, 7 of 13 mutated genes differentially expressed | Partially reproduced |
 | Defense system genes up, JetC down (Figure 4C) | Reproduced |
 | Type II and III secretion genes down | Partially reproduced |
 

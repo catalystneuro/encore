@@ -107,6 +107,8 @@ def clone_table(wb, sheet: str, value: str) -> tuple[pd.DataFrame, float]:
         ["treatment", "morphotype", "strain", value]
     anc_col = [i for i, c in enumerate(cols) if re.match(r"^(strian|strain)(\.\d+)?$", str(c).strip()) and i > 2][0]
     anc = raw.iloc[:, anc_col + 1][raw.iloc[:, anc_col].astype(str).str.strip() == "anc"]
+    if len(anc) != 1:
+        raise ValueError(f"{sheet}: {len(anc)} ancestor rows, expected one")
     d = _annotate(d)
     return d, float(anc.iloc[0])
 
@@ -135,7 +137,10 @@ def twitching(wb) -> tuple[pd.DataFrame, float]:
     raw = wb["twitching_FIG2D"]
     d = raw.iloc[:, :4].dropna(how="all").copy()
     d.columns = ["treatment", "strain", "hours", "diameter_mm"]
-    anc = float(raw.iloc[:, 6][raw.iloc[:, 5].astype(str).str.strip() == "anc"].iloc[0])
+    anc = raw.iloc[:, 6][raw.iloc[:, 5].astype(str).str.strip() == "anc"]
+    if len(anc) != 1:
+        raise ValueError(f"twitching_FIG2D: {len(anc)} ancestor rows, expected one")
+    anc = float(anc.iloc[0])
     d = d.reset_index(drop=True)
     d["temp"] = d.treatment.str.split("_").str[0].astype(int)
     d["phage"] = d.treatment.str.split("_").str[1].astype(int)
