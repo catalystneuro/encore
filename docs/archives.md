@@ -128,6 +128,49 @@ The workflows take a dataset in any of these forms.
   under `related`, and gives in the notebook header the SHA-256 of each file
   read.
 
+## Figshare
+
+- **Datasets.** A Figshare item of type dataset, named by its article id:
+  `https://figshare.com/articles/dataset/<title>/24949470` is
+  `FIGSHARE:24949470`, in folders `figshare-24949470`. Institutional and
+  publisher portals (`springernature.figshare.com`, `<university>.figshare.com`)
+  are views of the same repository, with the same ids and API. Most Figshare
+  items are figures and journals' supplementary tables (PLOS's `S1 Data`, one
+  table per item), so the registry's list, `targets/figshare.json`, is built
+  from chosen ids by `tools/build_figshare_targets.py`, which reads each
+  item's metadata, version and file list from the public API v2; for now it
+  holds three Scientific Data deposits outside neuroscience and ecology, to
+  test the pipeline on a general-purpose repository. An item names its paper
+  only sometimes (a related material marked `IsSupplementTo`, or its
+  `resource_doi`); otherwise the paper's DOI is given to the builder
+  (`<id>=<paper DOI>`), from the paper's data statement.
+- **Versions.** Each version has its own DOI,
+  `10.6084/m9.figshare.<id>.v<n>`; the DOI without `.v<n>` resolves to the
+  latest. The version number is `published_version` in the target list and
+  pins it, with its DOI under `doi`. Record the number under
+  `dataset: version` and the versioned DOI under `dataset: doi`, and give in
+  the notebook header the MD5 of each file read, which the file list gives
+  (`computed_md5`). A paper may cite an earlier version than the latest, or
+  the item with no version at all; pin the one it cites, or the latest. A new
+  version gives changed files new ids and keeps the old ones downloadable.
+  List the versions with `/v2/articles/<id>/versions`.
+- **Reading.** Everything is public, with no account: the version's metadata
+  and files at `https://api.figshare.com/v2/articles/<id>/versions/<n>` (under
+  `files`: `id`, `name`, `size`, `computed_md5`), and each file at
+  `https://ndownloader.figshare.com/files/<file id>`, which answers 302 to a
+  presigned URL in Figshare's S3 buckets (`s3-eu-west-1.amazonaws.com`) that
+  expires in ten seconds. Open that address with
+  `fsspec.open(url, block_size=2**20)`, which asks `ndownloader` again for each
+  range it reads, so the expiry does not matter, and read into memory
+  (`pandas`, `openpyxl` listing every sheet, `zipfile`). Do not download whole
+  files to disk, and do not use `figshare.com/ndownloader/...`, which answers
+  scripts with a bot check. A README, if any, is a file of its own
+  (`README.txt`, or a PDF); otherwise the item's description, in its metadata,
+  is the only documentation, with the data descriptor paper. CSV files may use
+  `;` as the separator.
+- **In an entry.** The entry names the dataset as `figshare:<id>/<version>`
+  under `related`, and gives in the notebook header the MD5 of each file read.
+
 ## Local and remote (`encore check`)
 
 Two kinds of dataset exist only inside a run of `encore check`

@@ -91,3 +91,32 @@ def test_staging_skips_archives_agents_read_directly_and_needs_its_secrets(monke
     assert stage_files.main() == 0
     out = capsys.readouterr().out
     assert "DRYAD:bvq83bkk9: no DRYAD_CLIENT_ID" in out and "000003" not in out and "ret-1" not in out
+
+
+def test_a_figshare_dataset_is_named_by_its_article_id_and_pinned_by_its_version():
+    key = datasets.parse("FIGSHARE:24949470")
+    found = next(t for t in datasets.targets() if t["key"] == key)
+    assert key == "figshare:24949470" and found["folder"] == "figshare-24949470"
+    assert datasets.label(key) == "FIGSHARE:24949470" and datasets.parse("figshare-24949470") == key
+    assert found["doi"] == f'10.6084/m9.figshare.24949470.v{found["published_version"]}'
+    assert f'/articles/24949470/versions/{found["published_version"]}' in datasets.access(key)
+
+
+def test_figshare_targets_are_small_datasets_with_a_paper_and_checksums():
+    from archives import ALL
+    found = [t for t in datasets.targets() if t["archive"] == "figshare"]
+    assert len(found) == 3 and ALL["figshare"].stage is None and not ALL["figshare"].secrets
+    for t in found:
+        assert t["item_type"] == "dataset" and t["papers"] and t["size_gb"] < 0.2, t["id"]
+        assert all(len(f["md5"] or "") == 32 and isinstance(f["file_id"], int) for f in t["files"]), t["id"]
+
+
+@pytest.mark.parametrize("text, expected", [
+    ("24949470", ("24949470", None, "")),
+    ("10.6084/m9.figshare.23974902.v2=10.1038/s41597-024-03206-2", ("23974902", 2, "10.1038/s41597-024-03206-2")),
+    ("https://springernature.figshare.com/articles/dataset/Unveiling_Insights/26877211", ("26877211", None, "")),
+    ("https://figshare.com/articles/dataset/BAAM/26311921/1/", ("26311921", 1, "")),
+])
+def test_the_figshare_builder_takes_an_id_a_doi_or_a_page(text, expected):
+    import build_figshare_targets
+    assert build_figshare_targets.parse(text) == expected
