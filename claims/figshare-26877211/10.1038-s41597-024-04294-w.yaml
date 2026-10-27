@@ -64,11 +64,13 @@ claims:
   - quantity: rows of the deposited dataframe
     value: 6552
     tolerance: 3
-  criterion: The tolerance of 3 rows is the paper's own spread for this count (6549, 6551 and
-    6552 in Methods and Technical Validation). Reproduced when jecfa.rds has 6552 rows within
+  criterion: The tolerance of 3 rows is chosen here in place of 10% (655 rows), which would not
+    test an exact count. The paper says both that the final dataframe has 6552 rows (Data
+    Records) and that the dataframe is cleaned of duplicates to 6549 unique pages (Methods), so
+    the deposit may hold either; 3 rows covers both. Reproduced when jecfa.rds has 6552 rows within
     tolerance and holds a column for each of the 17 fields of Table 1 (by the code's names in
     process_df.R, or an evident equivalent); partially reproduced when the row count holds and
-    at most three fields are missing. JECFA.csv is compared with jecfa.rds and any difference
+    at most three fields are missing (a threshold chosen here). JECFA.csv is compared with jecfa.rds and any difference
     in rows or columns is reported.
 - id: unique-pages
   statement: The 6552 scraped entries, cleaned of the duplicates of page 6316 and of test pages,
@@ -76,13 +78,14 @@ claims:
   source: Methods, Web-scraping, paragraph 2
   quote: We validated the effectiveness of this method by identifying 6552 entries, which were
     then cleaned to remove duplicates of (E)-N-[2-(1,3-BENZODIOXOL-5-YL)ETHYL]-3-
-    (3,4-DIMETHOXYPHENYL)PROP-2-ENAMIDE
+    (3,4-DIMETHOXYPHENYL)PROP-2-ENAMIDE ... and test pages, resulting in 6549
   expected:
   - quantity: unique pages after cleaning
     value: 6549
     tolerance: 2
-  criterion: The tolerance of 2 is the paper's own spread (6549 here, "6,551 minus a duplicate
-    and a test page" in Technical Validation). The paper names page 5883 as the test page and
+  criterion: The tolerance of 2 rows is chosen here in place of 10% (655 rows), which would not
+    test an exact count; the Technical Validation gives the same number as "6,551 minus a
+    duplicate and a test page". The paper names page 5883 as the test page and
     the chemical of page 6316 as the duplicate, without saying how a duplicate is detected.
     Readings, (D1) rows with distinct URL; (D2) rows with distinct JECFA name, then removing
     the row of URL 5883; (D3) the 6552 rows less the rows of URL 5883 and less all but one row
@@ -94,8 +97,8 @@ claims:
     number, 98% functional class, 98% evaluation year, 97% report and its link, 93% Tox
     monograph and its link, 92% specification and its link, and 93% FAS.
   source: Methods, Web-scraping, paragraph 3; Table 1, column Availability (%)
-  quote: we have identified in Table 1 a minimum set of information deemed relevant considering
-    that it is common to most pages
+  inferred: Numbers from Table 1, column Availability (%), titled "Common content of most JECFA
+    pages"; no sentence of the text states them.
   expected:
   - quantity: URL present
     value: 100
@@ -168,7 +171,9 @@ claims:
   criterion: For each field the percentage of rows where it is present (E, opening comment),
     under U1 or U2. FAS is the FAS column the code derives (process_df.R, add_metadata.R), empty
     when the Tox monograph is not a FAS. Reproduced when, under one reading, at least 15 of the
-    17 values are within tolerance; partially reproduced for 10 to 14. As the tolerance is wide
+    17 values are within tolerance; partially reproduced for 10 to 14 (thresholds chosen here, as
+    the paper gives none). The paper does not say whether the denominator is 6552 rows or the
+    6549 cleaned pages, which differ by under 0.1%. As the tolerance is wide
     for values near 100%, the percentages are also reported rounded to whole numbers, and the
     number of fields that match Table 1 exactly is given.
 - id: table2-evaluation-year
@@ -291,9 +296,11 @@ claims:
   criterion: FAS codes from the FAS column the code derives (process_df.R, add_metadata.R). The
     denominator of "50% of the records" is open, (F1) all rows, (F2) rows with a FAS code.
     "Almost all 85" is judged as at least 77 distinct codes (90% of 85, a threshold chosen
-    here) and no more than 85 among the codes 1 to 85. Reproduced when, under F1 or F2, the
-    share is within tolerance and the seven named codes are the seven most frequent; partially
-    reproduced when the share holds and they are not the seven most frequent. The number of
+    here), counting distinct non-empty FAS values. The paper does not say that the seven named
+    codes are the seven most frequent; that is the reading taken here of "the ones collectively
+    accounting for 50%". Reproduced when, under F1 or F2, the share is within tolerance and the
+    seven named codes are the seven most frequent; partially reproduced when the share holds
+    and they are not the seven most frequent. The number of
     distinct codes and the cumulative share by rank are reported.
 - id: validation-failures
   statement: In a manual check of 700 random pages, scraped and manually read values disagreed
@@ -303,7 +310,6 @@ claims:
   quote: we observed minimal discrepancies, notably in only four contents across web pages that
     display the following percentages. Report (0.6%), Report sourcelink (0.9%), Tox Monograph
     sourcelink (5.3%), Specification sourcelink (0.2%)
-  data: with_inputs
   expected:
   - quantity: Report discrepancy
     value: 0.6
@@ -327,7 +333,8 @@ claims:
     (V2) the sampled ids that resolve to a page, (V3) the pages where the field is present;
     0.2% is not a whole number of pages out of 700 (1 is 0.14%, 2 is 0.29%), so V1 fits less
     well. Reproduced when, under one reading, all four values are within tolerance and no other
-    field has a discrepancy. Not testable from the dataset alone.
+    field has a discrepancy. The extraction is not public anywhere, so the claim keeps the
+    default data and is blocked as data_missing (protocol, Author, step 4).
 - id: portal-search-count
   statement: A search of the JECFA portal by first character returned 6547 items, in line with
     the pages carrying a JECFA name (6551 less a duplicate and a test page).
@@ -335,7 +342,6 @@ claims:
   quote: The search functionality of the portal for chemicals by the first character yielded
     6,547 items. This number aligns with the number of websites containing at least a JECFA name
     (n = 6,551 minus a duplicate and a test page)
-  data: with_inputs
   depends_on:
   - unique-pages
   expected:
@@ -349,4 +355,21 @@ claims:
     since and is not deposited. From the dataset, the rows (U1, U2) with a JECFA name present
     (E) are counted. Reproduced for the dataset's part when that count is 6551 within tolerance
     and, after the cleaning of unique-pages, within 2 of 6547 (the paper's statement that they
-    align; 6549 against 6547).
+    align; 6549 against 6547), a margin chosen here for the paper's word "aligns". The portal
+    count itself is not public in its May 2024 state, so that part is untestable.
+checks:
+- date: 2026-10-27
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - data-records-rows, the tolerance reason called 6549, 6551 and 6552 the paper's spread for one count, but they are different counts. Restated as a choice in place of 10%, covering 6552 (Data Records) and 6549 after cleaning (Methods).
+  - data-records-rows, marked the threshold of three missing fields as chosen here.
+  - unique-pages, extended the quote to the words "resulting in 6549", the number the claim rests on.
+  - unique-pages, the tolerance reason called 6549 and "6,551 minus a duplicate and a test page" a spread, but both give 6549. Restated as a choice in place of 10%.
+  - table1-availability, replaced the quote, which does not state the percentages, with an inferred note naming Table 1; marked the 15 and 10 field thresholds as chosen here; named the open denominator.
+  - fas-codes, removed the clause "no more than 85 among the codes 1 to 85", which tests nothing, and named "the seven most frequent" as a reading the text does not state.
+  - validation-failures, removed data with_inputs. The REDCap extraction is not public anywhere, and the protocol (Author, step 4) keeps such claims at the default data, blocked as data_missing.
+  - portal-search-count, removed data with_inputs for the same reason (the May 2024 portal state is not public or pinned); marked the margin of 2 for "aligns" as chosen here.
+  - Open, whether the deposit holds the 6552 rows of Data Records or the 6549 cleaned pages of the Methods; the claims allow both.
+  - Open, references 12, 17 and 18 are not in the supplied text and could not be read.
