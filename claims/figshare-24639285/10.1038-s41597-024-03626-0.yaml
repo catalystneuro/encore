@@ -71,11 +71,11 @@
 # AF pre-treatment, and ss19 and ss43, which Figure 1 shows with AF steps, carry the second mark.
 # The legend is missing, so this reading is not stated by the paper.
 #
-# Text errors noted. The Results cite Figure 3 for "12041g1"; the Figure 3 legend and Table 1 have
+# Text errors noted. The Single crystal measurements section cites Figure 3 for "12041g1"; the Figure 3 legend and Table 1 have
 # 12040g1. The Technical Validation example for 14053g1 uses a TRM of 8e-12 A m2 and gives 0.2 uT,
 # while Table 1 gives 14053g1 3.203E-09 emu (3.2e-12 A m2) and 0.51 uT; the example's numbers
-# are those of 12040g1 in Table 1 (8.002E-09 emu, 0.20 uT). Table 1 values are 1 to 3% above
-# 8e-11 / M590 x 20 uT computed from its own M590 column.
+# are those of 12040g1 in Table 1 (8.002E-09 emu, 0.20 uT). Table 1 max intensities are 0 to 3%
+# above 8e-11 / M590 x 20 uT computed from its own M590 column (12053g2 0.2% below).
 schema_version: 2
 dataset:
   archive: figshare
@@ -129,7 +129,7 @@ claims:
 - id: table2-fit-statistics
   statement: For the nine failed glass specimens with a line fit (ss19, ss43, ss22, ss41, ss6,
     ss9, ss10, ss30, ss34), the number of points, temperature range, MAD, R2 and pTRM check
-    differences are as in Table 2, and the failure criteria listed follow from them.
+    differences are as in Table 2, which lists the criteria each failed.
   source: Methods, Paleointensity Selection criteria, paragraph 2; Table 2
   quote: Reasons for de-selection are provided in Table 2
   expected:
@@ -226,7 +226,8 @@ claims:
     of the selection criteria). Reproduced when, under one reading, at least 9 of the 11
     specimens marked "no regular TRM acquisition" show irregular acquisition, and ss36 and ss39
     have field-off vectors whose distance from the origin grows over the last steps of the range.
-    The counts under each reading are reported.
+    The counts under each reading are reported. The pTRM check comparison is reported and does
+    not decide the outcome.
 - id: fig1-linear-components
   statement: Glass subsamples ss43 and ss19, which failed the reliability criteria, show hints of
     linear directional components on orthogonal vector plots, from which nominal paleointensities
@@ -288,7 +289,7 @@ claims:
   statement: For each of the twelve single crystals, the maximum field that cannot be excluded,
     given the magnetometer threshold of 8e-11 emu and the moment acquired at 590 C in a 20 uT
     field, is as in Table 1, between 0.20 and 0.51 uT.
-  source: Results, Single crystal measurements, paragraph 4; Table 1; Technical Validation,
+  source: Background & Summary, Single crystal measurements, paragraph 4; Table 1; Technical Validation,
     Example of threshhold detection limit
   quote: Considering a magnetometer threshold value (see Methods) the maximum field that cannot be
     excluded by the data can be calculated from the data for each crystal. These values are
@@ -326,7 +327,7 @@ claims:
 - id: baseline-range
   statement: The maximum fields that the single crystal data cannot exclude define a baseline of
     about 0.2 to 0.5 uT below which fields cannot be evaluated with these data.
-  source: Background & Summary, paragraph 6
+  source: Background & Summary, paragraph 7
   quote: they nevertheless define a baseline of ~0.2 to ~0.5 μT below which fields cannot be
     evaluated with the present data
   expected:
@@ -369,7 +370,7 @@ claims:
 - id: fig3-nrm-consistent
   statement: For most crystals the replicate NRM measurements have a consistent direction, as
     shown on stereonets for 12040g1 and 14053g2.
-  source: Results, Single crystal measurements, paragraph 2; Figure 3a and 3d
+  source: Background & Summary, Single crystal measurements, paragraph 2; Figure 3a and 3d
   quote: These show that for most of the crystals there is consistency of the NRM direction (Fig.
     3a,d)
   criterion: Per crystal, the replicate NRM (step 0.0) directions, with Fisher mean, k and
@@ -382,7 +383,7 @@ claims:
 - id: fig3-590-inconsistent
   statement: After demagnetization at 590 C in zero field, the replicate directions of the
     crystals are inconsistent, consistent with a null magnetization state.
-  source: Results, Single crystal measurements, paragraph 2; Figure 3b and 3e; Methods, Thermal
+  source: Background & Summary, Single crystal measurements, paragraph 2; Figure 3b and 3e; Methods, Thermal
     measurements, paragraph 5
   quote: but this consistency is not seen after demagnetization at 590 °C (Fig. 3b,e)
   criterion: Per crystal, the replicate 590.0 directions, with Fisher mean, k and alpha95. Readings
@@ -395,7 +396,7 @@ claims:
 - id: fig3-alteration-check-inconsistent
   statement: The replicate directions after the zero-field alteration check at 590 C are also
     inconsistent.
-  source: Results, Single crystal measurements, paragraph 2; Figure 3c and 3f
+  source: Background & Summary, Single crystal measurements, paragraph 2; Figure 3c and 3f
   quote: The directions are also inconsistent after the alteration check at 590 °C (Fig. 3c,f)
   criterion: As fig3-590-inconsistent, for the replicate 590.3 directions.
   depends_on:
@@ -403,13 +404,15 @@ claims:
 - id: crystal-14053g1-400c-stable
   statement: Crystal 14053g1, measured after heating to 400 C during initial tests, held a stable
     remanence, which was removed by treatment at 590 C.
-  source: Results, Single crystal measurements, paragraph 3
+  source: Background & Summary, Single crystal measurements, paragraph 3
   quote: One crystal (14053g1) was measured after heating to an intermediate temperature (400 °C)
     during initial tests, and found to be stable
   criterion: Applies only if the deposit holds 400 C measurements for 14053g1. The paper names no
     measure of stability; stable is read, as for the NRM, as replicate 400 C directions
     consistent under fig3-nrm-consistent's readings, with the 590.0 replicates of the same
-    crystal inconsistent. Reproduced when both hold under one reading.
+    crystal inconsistent; or (b), where 400 C was measured once, the 400 C direction lies within the
+    alpha95 of the Fisher mean of the NRM replicates. Reproduced when the 590.0 replicates are
+    inconsistent and (a) or (b) holds.
   depends_on:
   - fig3-nrm-consistent
 - id: no-alteration-recording-efficiency
@@ -424,7 +427,9 @@ claims:
     check for the crystals. Readings (a) the 590.3 moment does not exceed the 590.0 moment by
     more than the 8e-11 emu threshold, and the 590.3 directions are inconsistent as in
     fig3-alteration-check-inconsistent; (b) the 590.4 TRM (40 uT, vector difference from 590.3)
-    is no more than about twice the 590.1 TRM (20 uT), as linear recording predicts. Reproduced
+    is no more than about twice the 590.1 TRM (20 uT), as linear recording predicts; the paper
+    gives no bound for "far above 100%", so the ratios are reported and a ratio of the 590.4 TRM
+    to twice the 590.1 TRM above 2 is taken as failing, a choice not from the paper. Reproduced
     when every crystal passes under one reading; the ratios are reported. Recording efficiency
     against a theoretical TRM needs grain properties the paper does not give, so it is not
     computed.
@@ -434,7 +439,7 @@ claims:
   statement: Together with ref. 1, the data are consistent with impact plasma magnetization of the
     64455 glass and with the absence of a long-lived lunar core dynamo recorded in the 3.9 to
     3.2 Ga crystals.
-  source: Background & Summary, paragraphs 2 and 6
+  source: Abstract; Background & Summary, paragraphs 2 and 7
   quote: These 64455 field strengths1 match those predicted by the charge separation mechanism
   criterion: An interpretation that rests on ref. 1 and on models of impact plasmas, not on a
     measurement this deposit can repeat. Not tested; it is judged as following from the
@@ -445,3 +450,20 @@ claims:
   - glass-directions-not-random
   - fig3-590-inconsistent
   - table1-max-intensity
+checks:
+- date: 2026-10-27
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - table1-max-intensity, fig3-nrm-consistent, fig3-590-inconsistent, fig3-alteration-check-inconsistent, crystal-14053g1-400c-stable; source said "Results, Single crystal measurements", but the paper has no Results section and that subsection sits under Background & Summary. Opening comment changed to match.
+  - baseline-range; source paragraph 6 changed to 7, the paragraph that holds the quoted sentence.
+  - interpretation-impact-no-dynamo; source changed to the Abstract and Background & Summary paragraphs 2 and 7, where the paper states the impact and null-field reading. Paragraph 6 is about replicate measurement.
+  - table2-fit-statistics; statement no longer says the failure criteria follow from the values, since the criterion only reports this and the paper does not claim it.
+  - table2-no-fit; criterion now says the pTRM check comparison does not decide the outcome, since no expected values or rule were given for it.
+  - crystal-14053g1-400c-stable; added reading (b), the 400 C direction compared with the NRM mean, because replicate 400 C measurements may not exist and the paper does not define "stable".
+  - no-alteration-recording-efficiency; reading (b) named a bound ("about twice") without a cutoff. A cutoff is now stated and marked as not from the paper.
+  - Opening comment; Table 1 max intensities are 0 to 3% above the formula value from its own M590 column (12053g2 is 0.2% below), not 1 to 3%.
+  - Open, glass-directions-not-random and glass-af-no-change; the paper names no test or threshold. The readings and counting rules in the criteria are not from the paper and are labelled as such.
+  - Open, M590 in Table 1 and the MAD and pTRM check definitions remain open, with readings named in the opening comment. Table 1 gives the same M590 (6.292E-09) for 12021g3 and 12040g3, which may be a copying error in the paper.
+  - Open, Figure 1 and 2 nominal paleointensities and arrow ranges could not be read because no PDF was supplied.
