@@ -20,7 +20,7 @@ reasoning and the differences from the paper's method.
 The dataset's treatment codes differ from its metadata, it has duplicated rows and negative
 concentrations, its growing season length does not follow the Methods' definition, and it lacks the
 soil moisture and chamber climate records. Refitting the paper's treatment model on it reproduces
-Supplemental Table S1 for some traits exactly. Where the claims file leaves a method detail open,
+Supplemental Table S1 exactly for oak AGWB increment, and within 0.25 for three other traits. Where the claims file leaves a method detail open,
 every reading is run, and claims whose readings disagree are blocked. The
 analysis follows the answers to the three questions the first run asked
 ([`questions/dryad-4j0zpc8hz.yaml`](../../questions/dryad-4j0zpc8hz.yaml)); after the first
