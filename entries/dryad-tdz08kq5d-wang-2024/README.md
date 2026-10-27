@@ -15,12 +15,12 @@ variant calls of Table 1, the adsorption assay of Figure S3 and the transcriptom
 | Mucoid colonies lost with phage except in one replicate (Figure 1D) | Reproduced |
 | About 20% and 55% mucoid without phage; phage raised SCV frequency | Partially reproduced |
 | Phage-exposed clones more resistant (Figure 2A) | Reproduced |
-| Clones from 35 degrees C more resistant | Blocked: methods underspecified |
+| Clones from 35 degrees C more resistant | Reproduced |
 | No temperature by phage interaction for resistance | Reproduced |
 | SCVs more resistant than mucoid clones | Reproduced |
 | Mucoid clones of one 25 degrees C phage replicate resistant | Reproduced |
 | SCVs grow faster (Figure 2B) | Reproduced |
-| SCVs have lower carrying capacity (Figure 2C) | Blocked: methods underspecified |
+| SCVs have lower carrying capacity (Figure 2C) | Reproduced |
 | No exposure effect on SCV twitching (Figure 2D) | Reproduced |
 | 25 degrees C phage mucoid clones twitch less | Reproduced |
 | Mucoid clones form more biofilm than the ancestor, SCVs as much (Figure 2E) | Not reproduced |
@@ -43,8 +43,9 @@ variant calls of Table 1, the adsorption assay of Figure S3 and the transcriptom
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The deposited data reproduce nearly every statistical table of the paper exactly, which also settles
-choices the paper leaves open (the OD time points of Table S1a, the unit of the Table S3 ANOVAs). The
+The deposited data reproduce nearly every statistical table of the paper exactly, under the OD time points
+and the ANOVA unit that the claims file names after a reader answered this attempt's questions (days 2 to 12
+for Table S1a, replicate means by colony type for Tables S3a to S3c). The
 exceptions are the twitching sheet, whose strain names do not identify the clones and whose values do not
 reproduce Table S3d, and several statements of the text that the deposited tables contradict (SCV biofilm
 above the ancestor, gspG up, phcS below the fold-change threshold). The growth curves, per-clone variant
