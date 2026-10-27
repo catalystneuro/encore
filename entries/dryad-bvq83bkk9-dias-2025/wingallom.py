@@ -357,6 +357,19 @@ def fit_stan(model, data: dict, seed: int, workdir: Path) -> dict:
                                       ["Mean", "MCSE", "R_hat", "ESS_bulk", "ESS_tail"]]}
 
 
+def stuck_chains(fit: dict) -> list[int]:
+    """Chains (0-based) whose every kept draw is divergent."""
+    return [c for c, d in enumerate(fit["divergent_per_chain"]) if d == len(fit["mu_i"]) // fit["chains"]]
+
+
+def drop_chains(fit: dict, drop: list[int]) -> dict:
+    """The fit's mu_i and mu_s with the chains `drop` (0-based) removed, for effect_table."""
+    keep = [c for c in range(fit["chains"]) if c not in drop]
+    def part(x):
+        return x.reshape(fit["chains"], -1, x.shape[1])[keep].reshape(-1, x.shape[1])
+    return {"mu_i": part(fit["mu_i"]), "mu_s": part(fit["mu_s"]), "chains": len(keep)}
+
+
 def pd_direction(draws: np.ndarray) -> float:
     """Share of draws with the sign of the median (bayestestR p_direction)."""
     med = np.median(draws)

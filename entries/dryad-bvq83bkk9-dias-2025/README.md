@@ -9,9 +9,9 @@ species and year, and the phylogeny. The paper's code is on Zenodo
 | Claims | Outcome |
 |---|---|
 | Sample sizes of the main and preliminary models | Reproduced |
-| Preliminary models (Tables S4 to S8): seven claims of absence, interactions, variable selection, phylogenetic signal, collinearity, climate trends | Reproduced (8), blocked (2, methods underspecified: one interval bound lies within Monte Carlo error of 0, and the recorded seed and the majority of ten seed sets give different outcomes) |
+| Preliminary models (Tables S4 to S8): 11 claims on absence of effects, interactions, variable selection, phylogenetic signal, collinearity and climate trends | Reproduced (9), blocked (2, methods underspecified: one interval bound lies within Monte Carlo error of 0, and the recorded seed and the majority of ten seed sets give different outcomes) |
 | Autumn AHY main model (Table 3): four claims | Reproduced (2), partially reproduced (2) |
-| HY and spring AHY main models (Tables 1, 2, S1), expanded ranges (Tables S9 to S11) and the claims built on them: 16 claims | Blocked: too large (estimated at 90 and 74 minutes per fit, about 58 and 47 when scaled by the autumn AHY fits, against a 30-minute notebook limit; three filtering readings each) |
+| HY and spring AHY main models (Tables 1, 2, S1), expanded ranges (Tables S9 to S11) and the claims built on them: 16 claims | Blocked: too large (estimated at 87 and 72 minutes per fit, about 51 to 58 and 42 to 48 when scaled by the autumn AHY fits, against a 30-minute notebook limit; three filtering readings each) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
