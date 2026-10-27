@@ -45,15 +45,17 @@ outcomes:
   blocked_by: too_large
   notebook: stan_models.ipynb
   output: timing
-  notes: Needs the HY Stan model, which stan_models.ipynb estimates at 55 minutes for one filtering
-    reading (4 chains of 4000 iterations, timed on 200), over the 30-minute notebook limit; three
-    readings are needed. Not run.
+  notes: Needs the HY Stan model, which stan_models.ipynb estimates at 90 minutes for one filtering
+    reading (4 chains of 4000 iterations, timed on 200 iterations of early warm-up). The autumn AHY
+    full fits took 12.4 to 14.1 minutes against an estimate of 22, about 0.6 of it; scaled by that, HY
+    takes about 58 minutes, over the 30-minute notebook limit, and three readings are needed. Not
+    run.
 - claim: table1-hy-prebreeding-temperature
   outcome: blocked
   blocked_by: too_large
   notebook: stan_models.ipynb
   output: timing
-  notes: Needs the HY Stan model, estimated at 55 minutes per filtering reading. Not run.
+  notes: Needs the HY Stan model, estimated at 90 minutes per filtering reading (about 58 scaled by the autumn AHY fits). Not run.
 - claim: s4-s6-spring-migration-temperature-none
   outcome: blocked
   blocked_by: methods_underspecified
@@ -73,7 +75,8 @@ outcomes:
     the call rested on the Monte Carlo draw. The answer added the two seed readings and the rule that
     a claim is blocked as methods_underspecified when they differ, since the seed is the attempt's
     choice; the seed sets were extended from this one term to every term of the claim in the three
-    models and filtering readings.
+    models and filtering readings. The block follows the criterion; the evidence beyond the recorded
+    run points towards the absence the claim states.
   deviations:
   - The MCMCglmm models are sampled with a Gibbs sampler of the same model and priors written in
     Python (wingallom.gibbs_glmm), since MCMCglmm, an R package, cannot be installed in the entry's
@@ -95,7 +98,7 @@ outcomes:
   blocked_by: too_large
   notebook: stan_models.ipynb
   output: timing
-  notes: Needs the HY Stan model, estimated at 55 minutes per filtering reading. Not run. The HY
+  notes: Needs the HY Stan model, estimated at 90 minutes per filtering reading (about 58 scaled by the autumn AHY fits). Not run. The HY
     preliminary model, which is run, gives TempBreedMoBase -0.065 (-0.083 to -0.048), but that is not
     the claim's test.
 - claim: table2-spring-ahy-breeding-temperature
@@ -103,20 +106,19 @@ outcomes:
   blocked_by: too_large
   notebook: stan_models.ipynb
   output: timing
-  notes: Needs the spring AHY Stan model, estimated at 71 minutes per filtering reading. Not run.
+  notes: Needs the spring AHY Stan model, estimated at 74 minutes per filtering reading (about 47 scaled by the autumn AHY fits). Not run.
 - claim: table3-autumn-ahy-prior-breeding-temperature
   outcome: reproduced
   notebook: autumn_ahy_main_a.ipynb
   output: claim:table3-autumn-ahy-prior-breeding-temperature
-  measured: [-0.093, -0.013]
-  notes: PrevTempBreedBase in the autumn AHY Stan model has an intercept effect of -0.093 (pd 98.12%) and a
-    slope effect of -0.013 (pd 73.91%) under reading (a); -0.094 (99.72%) and -0.013 (73.42%) under (c)
-    (autumn_ahy_main_c.ipynb); -0.094 (99.42%) and -0.008 (65.67%) under (d) (autumn_ahy_main_d.ipynb).
-    All within tolerance. The fits do not converge well (711, 877 and 912 of 8000 draws divergent;
-    largest R-hat 1.101, 1.075 and 1.162), so the estimates carry more uncertainty than their s.d.
-    shows. Earlier draws. The model is compiled with -march=native, as Script01 does, so the draws
-    depend on the CPU; the first run of this attempt, on another runner, gave other values with the same
-    seed (the outcome was the same), and the values here are those of the executed notebooks.
+  measured: [-0.094, -0.012]
+  notes: PrevTempBreedBase in the autumn AHY Stan model has an intercept effect of -0.094 (pd 99.59%) and a
+    slope effect of -0.012 (pd 71.30%) under reading (a); -0.091 (99.39%) and -0.026 (76.51%) under (c)
+    (autumn_ahy_main_c.ipynb); -0.099 (99.59%) and -0.009 (75.80%) under (d) (autumn_ahy_main_d.ipynb).
+    All within tolerance, and each pd is at least 2.3 Monte Carlo errors from 90%. The fits do not
+    converge well (1107, 1530 and 2683 of 8000 draws divergent; largest R-hat 1.083, 1.188 and 1.596).
+    Under (d) chain 4 is stuck, every kept draw divergent; chains 1 to 3 give intercept pd 99.15% to
+    99.65% and slope pd 67.40% to 68.30%, the same call. The draws depend on the CPU, since the model is compiled with -march=native as Script01 does; the run reviewed in round 1 gave other values with the same seed, and the values here are those of the executed notebooks of this revision.
   deviations:
   - lm_mod.stan is run with CmdStan 2.40 through cmdstanpy, in place of rstan, after a port to the
     current array syntax that leaves the model unchanged; PyStan does not load on Python 3.13. With
@@ -144,18 +146,16 @@ outcomes:
   blocked_by: too_large
   notebook: stan_models.ipynb
   output: timing
-  notes: Needs the spring AHY Stan model, estimated at 71 minutes per filtering reading. Not run.
+  notes: Needs the spring AHY Stan model, estimated at 74 minutes per filtering reading (about 47 scaled by the autumn AHY fits). Not run.
 - claim: table3-autumn-ahy-prior-autumn-temperature
   outcome: reproduced
   notebook: autumn_ahy_main_a.ipynb
   output: claim:table3-autumn-ahy-prior-autumn-temperature
-  measured: [-0.021, 0.013]
-  notes: PrevMinTempFallMig has intercept and slope effects -0.021 (pd 76.61%) and 0.013 (pd 69.71%) under
-    reading (a), -0.018 (73.69%) and 0.011 (66.05%) under (c), -0.024 (78.38%) and 0.014 (72.08%) under
-    (d); both pd stay below 90% under every reading. Earlier draws. The model is compiled with
-    -march=native, as Script01 does, so the draws depend on the CPU; the first run of this attempt, on
-    another runner, gave other values with the same seed (the outcome was the same), and the values here
-    are those of the executed notebooks.
+  measured: [-0.020, 0.013]
+  notes: PrevMinTempFallMig has intercept and slope effects -0.020 (pd 76.19%) and 0.013 (pd 69.85%) under
+    reading (a), -0.019 (74.17%) and 0.008 (63.35%) under (c), -0.018 (59.17%) and 0.007 (53.33%) under
+    (d); both pd stay below 90% under every reading, and under (d) in each of chains 1 to 3 (78.10% to
+    79.95% and 68.50% to 74.55%; chain 4 is stuck). All means within tolerance. The draws depend on the CPU, since the model is compiled with -march=native as Script01 does; the run reviewed in round 1 gave other values with the same seed, and the values here are those of the executed notebooks of this revision.
   deviations:
   - lm_mod.stan run with CmdStan in place of rstan, as for table3-autumn-ahy-prior-breeding-temperature.
 - claim: table3-autumn-ahy-recent-autumn-temperature
@@ -163,14 +163,14 @@ outcomes:
   notebook: autumn_ahy_main_a.ipynb
   output: claim:table3-autumn-ahy-recent-autumn-temperature
   measured: [0.028, -0.032]
-  notes: MinTempFallMig has an intercept effect of 0.028 (pd 87.89%) and a slope effect of -0.032 (pd 89.98%)
-    under reading (a), so the slope pd is 0.02 points below 90%. Under (c) the claim holds, 0.027
-    (87.88%) and -0.032 (90.01%). Under (d) the slope pd is 85.10% (intercept 0.027, pd 87.85%; slope
-    -0.026). Signs and means hold under every reading. The paper's pd values (88.6% and 90.3%) are
-    themselves within 1.5 points of the line. Earlier draws. The model is compiled with -march=native,
-    as Script01 does, so the draws depend on the CPU; the first run of this attempt, on another runner,
-    gave other values with the same seed (the outcome was the same), and the values here are those of
-    the executed notebooks.
+  notes: MinTempFallMig has an intercept effect of 0.028 (pd 87.64%) and a slope effect of -0.032 (pd 90.48%)
+    under reading (a), and 0.027 (88.92%) and -0.032 (91.24%) under (c), so the claim holds under both.
+    Under (d) the slope pd is 87.49% (intercept 0.022, pd 89.38%; slope -0.034), below 90%, so the
+    outcome is partially reproduced. Signs and means hold under every reading. The Monte Carlo error of
+    the slope pd is 0.46% under (a), so that pd is 1.0 error above 90% and another draw could put it
+    below; under (c) it is 2.3 errors above. The (d) call does not rest on Monte Carlo error alone, since chain
+    4 of that fit is stuck, and chains 1 to 3 each give a slope pd of 82.20% to 84.65%. The paper's pd
+    values (88.6% and 90.3%) are themselves within 1.5 points of the line. The draws depend on the CPU, since the model is compiled with -march=native as Script01 does; the run reviewed in round 1 gave other values with the same seed, and the values here are those of the executed notebooks of this revision.
   deviations:
   - lm_mod.stan run with CmdStan in place of rstan, as for table3-autumn-ahy-prior-breeding-temperature.
 - claim: table1-hy-wintering-prebreeding-precipitation
@@ -178,28 +178,28 @@ outcomes:
   blocked_by: too_large
   notebook: stan_models.ipynb
   output: timing
-  notes: Needs the HY Stan model, estimated at 55 minutes per filtering reading. Not run.
+  notes: Needs the HY Stan model, estimated at 90 minutes per filtering reading (about 58 scaled by the autumn AHY fits). Not run.
 - claim: table2-spring-ahy-wintering-prebreeding-precipitation
   outcome: blocked
   blocked_by: too_large
   notebook: stan_models.ipynb
   output: timing
-  notes: Needs the spring AHY Stan model, estimated at 71 minutes per filtering reading. Not run.
+  notes: Needs the spring AHY Stan model, estimated at 74 minutes per filtering reading (about 47 scaled by the autumn AHY fits). Not run.
 - claim: table3-autumn-ahy-prior-wintering-precipitation
   outcome: partially_reproduced
   notebook: autumn_ahy_main_a.ipynb
   output: claim:table3-autumn-ahy-prior-wintering-precipitation
   measured: [0.031, 0.027]
   notes: Under reading (a) the claim holds. PrevPrevPrecipWinMo has intercept and slope effects of 0.031 (pd
-    90.26%) and 0.027 (pd 88.66%), and in the preliminary model PrevPrecipPreBreedBase (0.027, -0.002 to
-    0.055) and its tarsus interaction include 0 under both interval readings and all filtering readings.
-    Under (c) the intercept pd is 88.74% (slope 88.02%). Under (d) the intercept pd is 89.39% and the
-    slope pd 93.60%, so both effects fall on the other side of their lines; the criterion's partial case
-    names one effect, and partially reproduced is kept since signs and means hold under all three
-    readings and each pd is within 3.6 points of its line. The paper's intercept pd is 90.0%, on the
-    line. Earlier draws. The model is compiled with -march=native, as Script01 does, so the draws depend
-    on the CPU; the first run of this attempt, on another runner, gave other values with the same seed
-    (the outcome was the same), and the values here are those of the executed notebooks.
+    90.38%, 0.6 Monte Carlo errors above 90%) and 0.027 (pd 88.60%), and in the preliminary model
+    PrevPrecipPreBreedBase (0.027, -0.002 to 0.055) and its tarsus interaction include 0 under both
+    interval readings and all filtering readings. Under (c) the intercept pd is 89.15%, 1.3 errors below
+    90% (slope 0.020, pd 81.46%). Under (d) the intercept is 0.028 (pd 93.51%) and the slope 0.035 (pd
+    93.79%), so the slope effect falls on the other side of its line; chains 1 to 3 of that fit, whose
+    chain 4 is stuck, each give a slope pd above 90% (90.80% to 93.15%). Signs and means hold under all
+    three readings, and under each reading at most one effect is on the wrong side, so it is partially
+    reproduced. The (a) and (c) calls on the intercept are within Monte Carlo error of the line; the
+    (d) call on the slope is not. The paper's intercept pd is 90.0%, on the line. The draws depend on the CPU, since the model is compiled with -march=native as Script01 does; the run reviewed in round 1 gave other values with the same seed, and the values here are those of the executed notebooks of this revision.
   deviations:
   - lm_mod.stan run with CmdStan in place of rstan, and MCMCglmm replaced by a Gibbs sampler of the
     same model, as for the claims above.
@@ -208,7 +208,7 @@ outcomes:
   blocked_by: too_large
   notebook: stan_models.ipynb
   output: timing
-  notes: Needs the spring AHY Stan model, estimated at 71 minutes per filtering reading. Not run.
+  notes: Needs the spring AHY Stan model, estimated at 74 minutes per filtering reading (about 47 scaled by the autumn AHY fits). Not run.
 - claim: s6-autumn-ahy-recent-wintering-prebreeding-precipitation-none
   outcome: blocked
   blocked_by: methods_underspecified
@@ -236,10 +236,11 @@ outcomes:
   blocked_by: too_large
   notebook: stan_models.ipynb
   output: timing
-  notes: Needs the HY and spring AHY Stan models, estimated at 55 and 71 minutes per filtering
-    reading. Not run. The autumn AHY part was run (autumn_ahy_main_a.ipynb, _c and _d) and holds;
-    PrevPrecipBreedBase has intercept effects of -0.048, -0.049 and -0.046 (pd 94.2%, 94.5% and 92.6%)
-    and slope pd of 66.6%, 62.0% and 67.9% under readings (a), (c) and (d).
+  notes: Needs the HY and spring AHY Stan models, estimated at 90 and 74 minutes per filtering
+    reading (about 58 and 47 scaled by the autumn AHY fits). Not run. The autumn AHY part was run
+    (autumn_ahy_main_a.ipynb, _c and _d) and holds; PrevPrecipBreedBase has intercept effects of
+    -0.046, -0.056 and -0.044 (pd 93.0%, 93.8% and 95.7%) and slope pd of 65.4%, 56.2% and 76.5% under
+    readings (a), (c) and (d).
 - claim: s6-autumn-ahy-recent-breeding-precipitation-none
   outcome: reproduced
   notebook: reproduce_dias_2025.ipynb
@@ -254,29 +255,29 @@ outcomes:
   blocked_by: too_large
   notebook: stan_models.ipynb
   output: timing
-  notes: Needs the HY and spring AHY Stan models, estimated at 55 and 71 minutes per filtering
-    reading. Not run. The autumn AHY part holds; the year effect on the intercept is 0.192, 0.193 and
-    0.191 per decade (pd 99.6%, 99.8% and 99.7%) under readings (a), (c) and (d), against 0.19.
+  notes: Needs the HY and spring AHY Stan models, estimated at 90 and 74 minutes per filtering
+    reading (about 58 and 47 scaled by the autumn AHY fits). Not run. The autumn AHY part holds; the year effect on the
+    intercept is 0.192, 0.197 and 0.193 per decade (pd 99.5%, 99.5% and 99.7%) under readings (a), (c)
+    and (d), against 0.19.
 - claim: table1-hy-year-slope
   outcome: blocked
   blocked_by: too_large
   notebook: stan_models.ipynb
   output: timing
-  notes: Needs the HY Stan model, estimated at 55 minutes per filtering reading. Not run.
+  notes: Needs the HY Stan model, estimated at 90 minutes per filtering reading (about 58 scaled by the autumn AHY fits). Not run.
 - claim: tables2-3-ahy-year-slope-none
   outcome: blocked
   blocked_by: too_large
   notebook: stan_models.ipynb
   output: timing
-  notes: Needs the spring AHY Stan model, estimated at 71 minutes per filtering reading. Not run. The
-    autumn AHY part holds; the year effect on the slope is 0.015, 0.013 and 0.018 (pd 75.6%, 71.7% and
-    78.6%) under readings (a), (c) and (d), all below 90%.
+  notes: Needs the spring AHY Stan model, estimated at 74 minutes per filtering reading (about 47 scaled by the autumn AHY fits). Not run. The autumn AHY part holds; the year effect on the slope is 0.014, 0.014 and 0.018 (pd
+    73.2%, 73.1% and 83.8%) under readings (a), (c) and (d), all below 90%.
 - claim: table-s1-species-consistency-hy
   outcome: blocked
   blocked_by: too_large
   notebook: stan_models.ipynb
   output: timing
-  notes: Needs the HY Stan model, estimated at 55 minutes per filtering reading. Not run.
+  notes: Needs the HY Stan model, estimated at 90 minutes per filtering reading (about 58 scaled by the autumn AHY fits). Not run.
 - claim: s7-low-phylogenetic-signal
   outcome: reproduced
   notebook: reproduce_dias_2025.ipynb
@@ -287,6 +288,10 @@ outcomes:
     inside the paper's HPD interval (0.01 to 0.21, 0.01 to 0.16, 0.01 to 0.21). They are larger than
     the paper's 0.02, 0.02 and 0.04, and the HPD intervals found here are wider (0.013 to 0.385, 0.013
     to 0.303 and 0.012 to 0.481 under reading a). The modes of single chains range from 0.041 to 0.096.
+    The four chains pooled give modes of 0.040 to 0.096 and HPD upper bounds of 0.335 to 0.484 over the
+    readings, so the wider intervals are not the noise of chain 4; the Gibbs sampler here gives a wider
+    posterior of the species variance than the paper's MCMCglmm runs. The criterion, the mode inside
+    the paper's interval, is met all the same.
   deviations:
   - MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none.
 - claim: s4-s6-no-multicollinearity
@@ -308,7 +313,12 @@ outcomes:
     under filtering readings (a) and (c), one difference; its HPD bound is the one discussed under
     s4-s6-spring-migration-temperature-none. The bounds the claim names are, unrounded under reading
     (a), 0.0014 (HY MinTempSpringMig, upper), -0.0048 (spring AHY PrecipWinMo, upper), 0.0028 (autumn
-    AHY PrevPrevPrecipWinMo, lower) and 0.0043 (autumn AHY MinTempFallMig, lower).
+    AHY PrevPrevPrecipWinMo, lower) and 0.0043 (autumn AHY MinTempFallMig, lower). The criterion has no
+    seed rule, so the recorded run decides. Over ten other seed sets the selection is the same. The
+    three bounds of main-model predictors exclude 0 in 10 of 10 sets, except autumn AHY
+    PrevPrevPrecipWinMo under filtering reading (c), 9 of 10 (i) and 7 of 10 (ii); HY MinTempSpringMig
+    excludes 0 in none, and MinTempNextSpringMig in at most 2 of 10, so under a majority of seeds
+    reading (ii) also matches.
   deviations:
   - MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none.
 - claim: s4-s5-climate-size-interactions
@@ -319,9 +329,15 @@ outcomes:
     0.0030 to 0.0277 under reading a) and the spring AHY tarsus by PrevPrecipWinMo (0.0151, 0.0003 to
     0.0295) interactions are positive and exclude 0, and no other tarsus by climate interaction does in
     any model. Under reading (ii) the same holds except under filtering reading (d), where the autumn
-    AHY tarsus by PrevPrecipWinMo HPD also excludes 0. The HY tarsus by pre-breeding temperature
-    interaction is at the line. Its pooled interval ends at 0.0008 (0.0002 to 0.0010 over ten other
-    seed sets, never excluding 0), while its chain-4 HPD excludes 0 in 4 of 10 seed sets.
+    AHY tarsus by PrevPrecipWinMo HPD also excludes 0. The criterion has no seed rule, so the
+    recorded run decides, and a question asks whether the seed readings of the answer of 2026-10-27
+    apply. Over ten other seed sets the two named interactions exclude 0 in 10 of 10 under both
+    interval readings and every filtering reading. The HY tarsus by pre-breeding temperature
+    interaction is at the line. Under filtering reading (a) its pooled interval ends at 0.0008 here
+    (0.0002 to 0.0010 over the ten sets, never excluding 0) and its chain-4 HPD excludes 0 in 4 of 10;
+    under reading (c) it excludes 0 in 6 of 10 sets under interval reading (i) and 8 of 10 under (ii).
+    By a majority of seeds the claim would therefore be partially reproduced under filtering reading
+    (c), with one other interaction excluding 0.
   deviations:
   - MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none.
 - claim: s8-climate-trends
@@ -352,15 +368,20 @@ outcomes:
   outcome: blocked
   blocked_by: too_large
   notes: Depends on tables1-3-year-intercept, blocked as too large; both of its readings need the
-    three main models.
+    three main models. The autumn AHY part of reading (a) holds (autumn_ahy_main_a.ipynb, _c and _d,
+    last cell); every climate effect on the intercept is smaller in absolute value than the year
+    effect, the largest being PrevTempBreedBase (0.094, 0.091 and 0.099 against 0.192, 0.197 and 0.193
+    under filtering readings a, c and d). Reading (b) was not computed.
 - claim: s9-s11-expanded-ranges
   outcome: blocked
   blocked_by: too_large
   notebook: stan_models.ipynb
   output: timing
-  notes: Needs six more Stan fits per filtering reading (two per class), about 274 minutes for one
+  notes: Needs six more Stan fits per filtering reading (two per class), about 372 minutes for one
     reading by the estimates of stan_models.ipynb, and depends on tables1-3-year-intercept, which is
-    blocked. Not run.
+    blocked. Not run. The two autumn AHY sensitivity models (about 13 minutes each, as the main autumn
+    AHY fit) would fit a notebook, but the claim needs all six models and the HY and spring AHY main
+    models for the signs it compares, so the autumn part alone cannot decide it; it was not run.
 findings:
 - kind: metadata_error
   statement: The README says some specimens in morphdata.csv were filtered out before analysis and that
@@ -385,7 +406,247 @@ findings:
     hand-coded row numbers; the notebook shows these match the deposited files. The Table S8 code reads an
     object (envdata3) that no script defines.
 - kind: other
-  statement: The hierarchical Stan model as published converges poorly on the autumn AHY data (8.9% to 11.4%
-    of draws divergent, largest R-hat 1.075 to 1.162 with the code's seed and settings); the code and the
-    paper report no diagnostics. Script01 compiles the model with -march=native, so with the same seed
-    the draws differ between machines.
+  statement: The hierarchical Stan model as published converges poorly on the autumn AHY data with the
+    code's seed and settings (13.8% to 33.5% of draws divergent, largest R-hat 1.083 to 1.596; under one
+    filtering reading a chain is stuck with every draw divergent). The Methods say convergence was
+    confirmed with R-hat and trace plots, but no diagnostic values are reported. Script01 compiles the
+    model with -march=native, so with the same seed the draws differ between machines, and pd values
+    near 90% can fall on either side.
+verifications:
+- date: 2026-10-27
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The executed notebooks of commit 6e7d7831b (author-answers) with the conclusion cells and the
+    summaries removed, the helper module and the claims file, with the paper. agrees compares its outcome
+    with the outcome of the record it reviewed. Its table lists 31 of the 32 claims;
+    table1-hy-breeding-temperature is not in it and has no result here.
+  results:
+  - claim: sample-sizes
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a) matches the paper's model counts exactly, 177/11798, 174/12318, 171/3250 and
+      11731/11481/3122 for the preliminary models. The file holds 27486 specimens, within the 10%
+      tolerance of 27366, and 27366 is exactly the number of specimens across the three main models.
+    response: No change needed.
+  - claim: table1-hy-wintering-temperature
+    agrees: true
+    outcome: blocked
+    reason: The HY Stan fit was not run; the timing run in stan_models.ipynb estimates about 57 min. The
+      16 too_large blocks are about compute time, not data size, and the estimates come from a
+      200-iteration run that includes early warm-up (problem 6).
+    response: Kept. The timing notebook now compares its estimate with the full autumn AHY fits, which
+      took about 0.6 of their estimate; scaled by that, the HY fit takes about 58 minutes and the spring
+      AHY fit about 47, both over the 30-minute notebook limit, and a single fit runs its four chains on
+      four cores already, so it cannot be split across notebooks.
+  - claim: table1-hy-prebreeding-temperature
+    agrees: true
+    outcome: blocked
+    reason: Same as table1-hy-wintering-temperature, the HY Stan fit was not run.
+    response: Kept, as for table1-hy-wintering-temperature.
+  - claim: s4-s6-spring-migration-temperature-none
+    agrees: true
+    outcome: blocked
+    reason: Seed reading (1), the HPD of spring AHY MinTempNextSpringMig excludes 0 under readings (a) and
+      (c), with upper bounds -0.0002 and -0.0005. Seed reading (2), no term excludes 0 in most of the 10
+      seed sets. The criterion blocks the claim when the two seed readings disagree, and they do. The
+      block follows the criterion, but the evidence points towards the absence claim (problem 7).
+    response: No change to the outcome. The notes now say that the evidence beyond the recorded run
+      points towards the absence the claim states.
+  - claim: s5-s6-ahy-prebreeding-wintering-temperature-none
+    agrees: true
+    outcome: reproduced
+    reason: Every listed term and its interaction includes 0 under both interval readings and all
+      filtering readings.
+    response: No change needed.
+  - claim: table3-autumn-ahy-prior-breeding-temperature
+    agrees: true
+    outcome: reproduced
+    reason: Intercept -0.093/-0.094/-0.094 with pd 98.1/99.7/99.4%; slope pd 74/73/66%; all means within
+      tolerance. The autumn AHY fits do not converge well (711 to 912 divergent draws of 8000, largest
+      R-hat 1.075 to 1.162, smallest bulk ESS 18 to 41), and the notebook said the paper reports no
+      diagnostics, while the Methods say convergence was confirmed with R-hat and trace plots. An earlier
+      run on another machine that gave other draws is mentioned but not shown, which amounts to
+      selective reporting.
+    response: Outcome kept. The fit now prints R-hat, bulk and tail ESS and MCSE of every effect, the
+      Monte Carlo error of every pd (from the effective sample size of its sign indicator) and the pd of
+      each chain. The convergence text now says what the Methods say. The mention of the unshown run is
+      removed; the record now says only that the round-1 run, which the verifier saw, gave other values.
+      The re-run on this machine gave other draws again (intercept -0.094, -0.091, -0.099, pd above 99%;
+      slope pd 71% to 77%) and the same outcome. Under filtering reading (d) chain 4 of this run is stuck,
+      and chains 1 to 3 give the same call.
+  - claim: s6-autumn-ahy-recent-breeding-temperature-none
+    agrees: true
+    outcome: reproduced
+    reason: Both intervals include 0 under every reading.
+    response: No change needed.
+  - claim: s4-hy-autumn-migration-temperature-none
+    agrees: true
+    outcome: reproduced
+    reason: Both intervals include 0 under every reading.
+    response: No change needed.
+  - claim: table2-spring-ahy-breeding-temperature
+    agrees: true
+    outcome: blocked
+    reason: The spring AHY fit was not run (estimate about 75 min).
+    response: Kept, as for table1-hy-wintering-temperature (about 47 minutes once scaled by the autumn AHY
+      fits, over the 30-minute limit).
+  - claim: table2-spring-ahy-autumn-migration-temperature
+    agrees: true
+    outcome: blocked
+    reason: Same as table2-spring-ahy-breeding-temperature.
+    response: Kept, as for table2-spring-ahy-breeding-temperature.
+  - claim: table3-autumn-ahy-prior-autumn-temperature
+    agrees: true
+    outcome: reproduced
+    reason: Both pd are below 90% (66 to 78%) and the means are within tolerance under (a), (c) and (d).
+    response: No change to the outcome; the re-run gives pd of 53% to 76%, means within tolerance, and
+      chains 1 to 3 of the (d) fit agree.
+  - claim: table3-autumn-ahy-recent-autumn-temperature
+    agrees: true
+    outcome: partially_reproduced
+    reason: Slope pd is 89.98% (a), 90.01% (c) and 85.1% (d), so it falls below 90% under (a) and (d).
+      Signs and means hold. With a bulk ESS as low as 18 to 41 a pd has a Monte Carlo error of several
+      points, and the partial outcome rests on pd values within about 1.3 points of 90%, so it cannot be
+      told apart from reproduced.
+    response: Outcome kept. The Monte Carlo error of each pd is now printed; for the effects of this claim
+      it is 0.5% to 3.0%, smaller than the ESS of the worst parameter suggested, since the effects mix
+      better than the standard deviations. In the re-run the slope pd is 90.48% under (a) (1.0 error
+      above 90%) and 91.24% under (c), so the claim holds under both; under (d) it is 87.49%, and each
+      of chains 1 to 3 gives 82.20% to 84.65%, so the partial call under (d) does not rest on Monte Carlo
+      error alone. The (d) fit has a stuck chain, which the notebook reports.
+  - claim: table1-hy-wintering-prebreeding-precipitation
+    agrees: true
+    outcome: blocked
+    reason: HY fit not run.
+    response: Kept, as for table1-hy-wintering-temperature.
+  - claim: table2-spring-ahy-wintering-prebreeding-precipitation
+    agrees: true
+    outcome: blocked
+    reason: Spring AHY fit not run.
+    response: Kept, as for table2-spring-ahy-breeding-temperature.
+  - claim: table3-autumn-ahy-prior-wintering-precipitation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Intercept pd is 90.3% (a), 88.7% (c) and 89.4% (d); slope pd is 88.7%, 88.0% and 93.6%. Means
+      are within tolerance and the preliminary intervals include 0. Under (d) two effects are on the
+      wrong side, which the criterion does not cover (a gap in the claims file). The pd values are within
+      about 1.3 points of 90%, within Monte Carlo error.
+    response: Outcome kept. In the re-run each reading has at most one effect on the wrong side, so the
+      criterion's partial case applies as written. The intercept calls under (a) (90.38%, 0.6 errors
+      above 90%) and (c) (89.15%, 1.3 errors below) are within Monte Carlo error of the line, but the
+      slope pd under (d) is 93.79%, 6.4 errors above 90% and above 90% in each of chains 1 to 3, so the
+      partial outcome stands on (d). A question asks the reader for the outcome when both effects fall
+      on the wrong side under one reading.
+  - claim: table2-spring-ahy-recent-wintering-precipitation
+    agrees: true
+    outcome: blocked
+    reason: Spring AHY fit not run.
+    response: Kept, as for table2-spring-ahy-breeding-temperature.
+  - claim: s6-autumn-ahy-recent-wintering-prebreeding-precipitation-none
+    agrees: true
+    outcome: blocked
+    reason: The seed readings disagree only under filtering reading (d). The chain-4 HPD of the tarsus by
+      PrevPrecipWinMo interaction has upper bound -0.0003 with the recorded seed, but excludes 0 in only 1
+      of 10 seed sets. The criterion requires blocking in that case.
+    response: No change needed.
+  - claim: tables1-3-breeding-precipitation
+    agrees: true
+    outcome: blocked
+    reason: Blocked, too large. The autumn AHY part is consistent with the paper, intercept -0.046 to
+      -0.049, pd 92.6 to 94.5%, slope pd below 70%.
+    response: Kept. The autumn AHY numbers are updated to the re-run (intercept -0.044 to -0.056, pd 93.0%
+      to 95.7%; slope pd 56% to 77%).
+  - claim: s6-autumn-ahy-recent-breeding-precipitation-none
+    agrees: true
+    outcome: reproduced
+    reason: All intervals include 0.
+    response: No change needed.
+  - claim: tables1-3-year-intercept
+    agrees: true
+    outcome: blocked
+    reason: Blocked, too large. The autumn AHY part is consistent, 0.191 to 0.193 with pd at least 99.6%.
+    response: Kept. The autumn AHY numbers are updated to the re-run (0.192 to 0.197, pd at least 99.5%).
+  - claim: table1-hy-year-slope
+    agrees: true
+    outcome: blocked
+    reason: HY fit not run.
+    response: Kept, as for table1-hy-wintering-temperature.
+  - claim: tables2-3-ahy-year-slope-none
+    agrees: true
+    outcome: blocked
+    reason: Blocked, too large. The autumn AHY part is consistent, slope pd 72 to 79%.
+    response: Kept. The autumn AHY numbers are updated to the re-run (slope pd 73% to 84%).
+  - claim: table-s1-species-consistency-hy
+    agrees: true
+    outcome: blocked
+    reason: HY fit not run.
+    response: Kept, as for table1-hy-wintering-temperature.
+  - claim: s7-low-phylogenetic-signal
+    agrees: true
+    outcome: reproduced
+    reason: The lambda modes (0.04 to 0.09) lie inside the paper's HPDs under every reading, which is what
+      the criterion asks. The fitted HPDs reach 0.30 to 0.48 against 0.16 to 0.21 in Table S7, and the
+      modes are 2 to 3 times the paper's, so gibbs_glmm does not reproduce MCMCglmm's variance-component
+      posterior, or chain 4 alone is noisy; pooled-chain HPDs and modes would separate the two.
+    response: Added the pooled-chain modes and HPD intervals. They give modes of 0.040 to 0.096 and upper
+      bounds of 0.335 to 0.484, as chain 4 does, so the difference is the sampler's posterior of the
+      species variance, not chain-4 noise; the notebook and notes say so. Outcome kept, as the criterion
+      is met.
+  - claim: s4-s6-no-multicollinearity
+    agrees: true
+    outcome: reproduced
+    reason: Largest VIFs are 3.339, 2.427 and 6.084 against the paper's 3.34, 2.43 and 6.08, and all are
+      below 10.
+    response: No change needed.
+  - claim: s4-s6-climate-variable-selection
+    agrees: true
+    outcome: reproduced
+    reason: Under interval reading (i) the selected variables match the main-model predictors exactly in
+      every class and every filtering reading. Several bounds that decide the outcome are within 0.003 of
+      0 (autumn AHY PrevPrevPrecipWinMo, lower bound 0.0028); the ten seed sets were already computed but
+      not consulted, and the criterion has no seed rule.
+    response: Added the ten seed sets for the bounds the claim names and for MinTempNextSpringMig. The
+      selection holds in most of them under every filtering reading (PrevPrevPrecipWinMo under reading c
+      in 9 of 10 sets under interval reading i, 7 of 10 under ii), so the outcome is the same under a
+      majority of seeds. A question asks whether the seed readings apply to this claim.
+  - claim: s4-s5-climate-size-interactions
+    agrees: true
+    outcome: reproduced
+    reason: Under reading (i) the two named interactions are positive and exclude 0, and no other tarsus
+      by climate interaction does, under all filtering readings. This is fragile; spring AHY tarsus by
+      PrevPrecipWinMo has lower bound 0.0003 under (a), and a seed_majority call on the near-zero terms
+      would settle it.
+    response: Added the ten seed sets for the named interactions and those near the line. The named ones
+      exclude 0 in 10 of 10 sets under every reading. The HY tarsus by AvgTempPreBreedBase interaction,
+      inside the line in the recorded run, excludes 0 in most sets under filtering reading (c), 6 of 10
+      under interval reading (i) and 8 of 10 under (ii), which would make the claim partially reproduced
+      under a majority of seeds. The criterion has no seed rule and the recorded run decides, so the
+      outcome is kept; the notes say so, and a question asks whether the answer's seed rule applies here.
+  - claim: s8-climate-trends
+    agrees: true
+    outcome: reproduced
+    reason: All 8 trend calls match the paper and the 6 means are within tolerance, under both data
+      readings and both interval readings.
+    response: No change needed.
+  - claim: climate-trends-cannot-explain-wing-increase
+    agrees: true
+    outcome: blocked
+    reason: Needs the HY and spring AHY effects. The autumn AHY part has a positive trend with a negative
+      effect for both breeding temperature and breeding precipitation.
+    response: Kept.
+  - claim: climate-explains-little
+    agrees: true
+    outcome: blocked
+    reason: Needs all three models. Reading (a) for autumn AHY follows from the printed Table 3, every
+      climate effect is below 0.03 in absolute value except PrevTempBreedBase (-0.093) and
+      PrevPrecipBreedBase (-0.048), and all are below the year effect of 0.19.
+    response: Kept. The autumn AHY notebooks now print reading (a) for that class, which holds under every
+      filtering reading, and the notes give it.
+  - claim: s9-s11-expanded-ranges
+    agrees: true
+    outcome: blocked
+    reason: No sensitivity model was fitted. The autumn AHY B1 and B2 sensitivity models (about 11 min
+      each) fit within the limit but were not run.
+    response: Kept, and the autumn AHY sensitivity models were not run. The claim compares the signs of
+      all six models with the main models of the same class, and depends on tables1-3-year-intercept,
+      so the autumn part alone cannot decide it. The notes say so.

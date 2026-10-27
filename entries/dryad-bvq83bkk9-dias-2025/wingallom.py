@@ -340,17 +340,21 @@ def compile_stan(model_code: str, workdir: Path):
 def fit_stan(model, data: dict, seed: int, workdir: Path) -> dict:
     """NUTS as Script01 runs it: adapt_delta 0.85, 4 chains, 2000 warm-up and 2000 kept draws.
 
-    Returns the draws of mu_i and mu_s (draws by column of G), the species-level I and S, and the
-    sampler diagnostics."""
+    Returns the draws of mu_i and mu_s (draws by column of G, the four chains one after another),
+    the species-level I and S, the sampler diagnostics, and CmdStan's summary of mu_i and mu_s."""
     fit = model.sample(data=data, chains=4, parallel_chains=4, iter_warmup=2000, iter_sampling=2000,
                        adapt_delta=0.85, seed=seed, output_dir=str(workdir), show_progress=False)
     summary = fit.summary()
     keep = summary.index.str.match(r"^(mu_i|mu_s|sd_y|sd_b|sd_i|sd_s|mu_stl)\[?")
+    divergent = fit.method_variables()["divergent__"]
     return {"mu_i": fit.stan_variable("mu_i"), "mu_s": fit.stan_variable("mu_s"),
-            "I": fit.stan_variable("I"), "S": fit.stan_variable("S"),
-            "divergent": int(fit.method_variables()["divergent__"].sum()),
+            "I": fit.stan_variable("I"), "S": fit.stan_variable("S"), "chains": 4,
+            "divergent": int(divergent.sum()),
+            "divergent_per_chain": [int(d) for d in divergent.sum(axis=0)],
             "max_rhat": float(summary.loc[keep, "R_hat"].max()),
-            "min_ess_bulk": float(summary.loc[keep, "ESS_bulk"].min())}
+            "min_ess_bulk": float(summary.loc[keep, "ESS_bulk"].min()),
+            "mu_summary": summary.loc[summary.index.str.match(r"^mu_[is]\["),
+                                      ["Mean", "MCSE", "R_hat", "ESS_bulk", "ESS_tail"]]}
 
 
 def pd_direction(draws: np.ndarray) -> float:
@@ -359,16 +363,60 @@ def pd_direction(draws: np.ndarray) -> float:
     return float(np.mean(draws > 0) if med >= 0 else np.mean(draws < 0))
 
 
+def ess(x: np.ndarray) -> float:
+    """Effective sample size of draws `x` (chains by draws), as Stan computes it (split R-hat
+    variance and Geyer's initial monotone sequence; no rank normalisation)."""
+    x = np.asarray(x, float)
+    half = x.shape[1] // 2
+    x = np.vstack([x[:, :half], x[:, half:2 * half]])          # split chains
+    m, n = x.shape
+    centred = x - x.mean(axis=1, keepdims=True)
+    f = np.fft.rfft(centred, n=2 * n, axis=1)
+    acov = np.fft.irfft(f * np.conj(f), axis=1)[:, :n] / n
+    chain_var = acov[:, 0] * n / (n - 1)
+    w_ = chain_var.mean()
+    var_plus = w_ * (n - 1) / n + x.mean(axis=1).var(ddof=1)
+    if var_plus == 0:
+        return float("nan")
+    rho = 1 - (w_ - acov.mean(axis=0)) / var_plus
+    rho[0] = 1.0
+    pairs = []
+    for t in range(0, n - 1, 2):
+        s = rho[t] + rho[t + 1]
+        if s < 0:
+            break
+        pairs.append(min(s, pairs[-1]) if pairs else s)
+    tau = -1 + 2 * sum(pairs)
+    return float(m * n / max(tau, 1 / np.log10(m * n)))
+
+
+def pd_mcse(draws: np.ndarray, chains: int) -> tuple[float, float]:
+    """Monte Carlo standard error of pd_direction, from the effective sample size of the indicator
+    of the median's sign, and that effective sample size (a standard choice, the MCSE of a
+    probability)."""
+    med = np.median(draws)
+    ind = (draws > 0 if med >= 0 else draws < 0).astype(float).reshape(chains, -1)
+    n_eff = ess(ind)
+    p = ind.mean()
+    return float(np.sqrt(p * (1 - p) / n_eff)), n_eff
+
+
 def effect_table(fit: dict, predictors: list[str]) -> pd.DataFrame:
-    """Posterior mean, s.d. and pd of mu_i and mu_s, one row per column of G (as Tables 1 to 3)."""
+    """Posterior mean, s.d. and pd of mu_i and mu_s, one row per column of G (as Tables 1 to 3),
+    with the Monte Carlo error of each pd and the pd of each chain."""
     rows = []
-    mu_i, mu_s = fit["mu_i"], fit["mu_s"]
+    mu_i, mu_s, chains = fit["mu_i"], fit["mu_s"], fit["chains"]
     for k, name in enumerate(["Intercept", *predictors]):
-        rows.append({"term": name,
-                     "int_mean": mu_i[:, k].mean(), "int_sd": mu_i[:, k].std(ddof=1),
-                     "int_pd": pd_direction(mu_i[:, k]),
-                     "slope_mean": mu_s[:, k].mean(), "slope_sd": mu_s[:, k].std(ddof=1),
-                     "slope_pd": pd_direction(mu_s[:, k])})
+        row = {"term": name}
+        for part, mu in (("int", mu_i), ("slope", mu_s)):
+            x = mu[:, k]
+            mcse, n_eff = pd_mcse(x, chains)
+            positive = np.median(x) >= 0   # each chain's share of draws with the pooled median's sign
+            row.update({f"{part}_mean": x.mean(), f"{part}_sd": x.std(ddof=1), f"{part}_pd": pd_direction(x),
+                        f"{part}_pd_mcse": mcse, f"{part}_pd_ess": n_eff,
+                        f"{part}_pd_chains": [float(np.mean(c > 0) if positive else np.mean(c < 0))
+                                              for c in x.reshape(chains, -1)]})
+        rows.append(row)
     return pd.DataFrame(rows).set_index("term")
 
 
