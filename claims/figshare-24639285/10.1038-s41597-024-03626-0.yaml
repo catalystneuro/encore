@@ -1,0 +1,447 @@
+# Claims for Tarduno, Cottrell & Zhou (2024), Scientific Data, doi:10.1038/s41597-024-03626-0,
+# on Figshare dataset 24639285 (doi:10.6084/m9.figshare.24639285.v1).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-10-27,
+# protocol pilot-12 as stated in docs/protocol.md (Reader).
+#
+# Text read: the version of record from Europe PMC (PMC11271266, full-text XML converted to text)
+# as supplied under paper/, with Background & Summary, Methods, Data Records, Technical
+# Validation, the legends of Figures 1 to 3 and Tables 1 and 2. The paper is a Data Descriptor
+# and has no supplement; its additional plots are in the Figshare deposit itself. No PDF was
+# supplied, so the figures were not seen: the nominal paleointensities printed in Figure 1 and
+# the step ranges marked by arrows in Figures 1 and 2 are not recorded. The footnote legends of
+# both tables (the marks after "M590 20 uT" and "Max intensity" in Table 1, and the marks after
+# the specimen names, after n and after T Range in Table 2) are missing from the text.
+# Code: the paper states that no custom code was used. It names PmagPy for looking at the
+# directional and paleointensity data during collection and for checking quality factors
+# (Technical Validation), with no version; no repository was read.
+#
+# Data the paper used. Two sets of measurements, all made with the WSGI three-component DC SQUID
+# magnetometer (6.3 mm bore) in the shielded room at the University of Rochester, moments in emu.
+# Per the Data Records, each sample's data are a sheet of an Excel file with columns sample name,
+# demagnetization step, moment (emu), declination and inclination; AF steps carry an "mT" label,
+# all other steps are degrees Celsius.
+# (1) Glass of Apollo 64455,24: mm and smaller subsamples (ss numbers, one "g2", one printed
+# "s11"), Thellier-Coe paired heating with a CO2 laser (90 s for specimens under 1 mm, 120 s for
+# 1 to 2 mm), laboratory field 18 uT (Figure 1 legend). Step labels are the step temperature
+# followed by .0 (field-off), .1 (field-on) and .2 (pTRM check, field-on). 25 subsamples in all,
+# 13 measured in 2014 and 2015 without AF pre-treatment and 12 later with AF demagnetization along
+# six directions at 5 and 10 mT (some also at 2.5, 7.5 and 20 mT); three passed the selection
+# criteria of Tarduno et al. (ref. 1) and the 22 that failed are the ones presented (Table 2).
+# (2) Single silicate crystals (feldspar or pyroxene) from Apollo 14053,262, 12021,30, 12053,283,
+# 12040,209 and 71055,2, twelve crystals named as in Table 1 (12021g2, 12021g3, 12040g1 to g3,
+# 12053g1, 12053g2, 14053g1 to g3, 71055g1, 71055g3). Each: NRM, then 590 C in zero field (label
+# 590.0), 590 C in a 20 uT field (590.1), 590 C in zero field as alteration check (590.3), 590 C
+# in a 40 uT field (590.4). The NRM, 590.0 and 590.3 steps were measured several times
+# (replicates). One crystal, 14053g1, was also measured after 400 C during initial tests.
+# The magnetometer sensitivity threshold is 8e-11 emu (8e-14 A m2).
+#
+# Procedures used by the criteria below, each from the paper as cited.
+# - TRM (pTRM) gained at a step is the vector subtraction of the field-on and field-off
+#   measurements (Methods, Thermal measurements, paragraph 3). NRM lost is read from the
+#   field-off measurements; whether it is NRM minus the remaining moment or plotted as remaining
+#   does not change R2, MAD or the slope magnitude.
+# - Paleointensity is the absolute slope of the NRM lost against TRM gained line times the
+#   laboratory field, 18 uT for the glass (Figure 1 legend).
+# - Selection criteria (Methods, Paleointensity Selection criteria): linear NRM-TRM relationship
+#   with R2 about 0.9, four or more points, evenly distributed, pTRM checks within 15%, MAD
+#   threshold relaxed (no value given), a three-point sliding window on orthogonal vector plots.
+# - Threshold field detection limit (Technical Validation) = 8e-14 A m2 / TRM at 590 C x 20 uT.
+#
+# Open details, named here and in the criteria that use them.
+# - MAD: the paper says neither whether the line is anchored to the origin nor whether it is fit
+#   to the three-point smoothed directions. Readings (a) free line on the measured field-off
+#   directions, (b) anchored line, (c) free line on the three-point running mean of the
+#   field-off vectors.
+# - pTRM check percentage: the paper gives no formula. It cites "standard paleointensity
+#   definitions" (ref. 31) without detail here. Readings (a) difference between the check's pTRM
+#   and the original pTRM at the same temperature, over the original pTRM; (b) the same
+#   difference over the length of the fitted TRM segment (a DRAT-like measure). The check's pTRM
+#   is the .2 vector minus (i) the field-off vector measured just before it, or (ii) the
+#   field-off vector at the check's temperature.
+# - M590 in Table 1: (a) the TRM vector difference 590.1 minus 590.0, (b) the magnitude of the
+#   590.1 measurement. Which replicate of 590.0 is used: (i) the first, which the paper says was
+#   used for the nominal paleointensities of ref. 1, (ii) the mean of the replicates.
+# - Consistency of replicate directions: the paper names no measure, only stereonets. Readings
+#   (a) Fisher precision parameter k of the replicate directions compared between steps, (b)
+#   Watson's test of randomness on the replicates at p < 0.05 (a standard test, not named by the
+#   paper).
+#
+# Table 2 marks. Twelve specimens carry one mark and ten another; with the three successful
+# specimens these split 13 and 12, the counts the Methods give for experiments without and with
+# AF pre-treatment, and ss19 and ss43, which Figure 1 shows with AF steps, carry the second mark.
+# The legend is missing, so this reading is not stated by the paper.
+#
+# Text errors noted. The Results cite Figure 3 for "12041g1"; the Figure 3 legend and Table 1 have
+# 12040g1. The Technical Validation example for 14053g1 uses a TRM of 8e-12 A m2 and gives 0.2 uT,
+# while Table 1 gives 14053g1 3.203E-09 emu (3.2e-12 A m2) and 0.51 uT; the example's numbers
+# are those of 12040g1 in Table 1 (8.002E-09 emu, 0.20 uT). Table 1 values are 1 to 3% above
+# 8e-11 / M590 x 20 uT computed from its own M590 column.
+schema_version: 2
+dataset:
+  archive: figshare
+  id: "24639285"
+  doi: 10.6084/m9.figshare.24639285.v1
+paper: doi:10.1038/s41597-024-03626-0
+claims:
+- id: glass-specimen-set
+  kind: link
+  statement: The deposit holds the measurements of the 22 Apollo 64455 glass subsamples that
+    failed the paleointensity selection criteria, named as in Table 2, and replicate measurements
+    for the twelve single crystals of Table 1.
+  source: Background & Summary, Glass, paragraph 2; Methods, paragraph 2; Table 2; Data Records
+  quote: Plots for all the data not meeting paleointensity criteria1 (n=22) are provided26 with
+    photomicrographs of specimens that were measured
+  expected:
+  - quantity: glass subsamples failing the selection criteria
+    value: 22
+    tolerance: 0
+  - quantity: single crystals with replicate measurements
+    value: 12
+    tolerance: 0
+  criterion: Specimens are matched by the names in Table 2 and Table 1 (s11 in Table 2 may be
+    ss11; both are accepted). Holds when each named specimen has measurements with steps,
+    moments, declinations and inclinations as the Data Records describe. Reported either way,
+    which glass specimens have AF steps, compared with the reading of the Table 2 marks given
+    in the opening comment (12 without, 10 with).
+- id: glass-success-rate
+  statement: Of the Apollo 64455 glass subsamples given thermal paleointensity experiments, 12%
+    passed the selection criteria (3 of 25, 13 run without and 12 with AF pre-treatment).
+  source: Background & Summary, paragraph 3; Methods, paragraph 2
+  quote: In the thermal studies1 of Apollo 64455 (Methods), the success rate was 12%
+  expected:
+  - quantity: success rate
+    value: 12
+    tolerance: 1.2
+    unit: percent
+  - quantity: glass subsamples without AF pre-treatment
+    value: 13
+    tolerance: 0
+  - quantity: glass subsamples with AF pre-treatment
+    value: 12
+    tolerance: 0
+  criterion: The three successful specimens are in ref. 1 and its dataset, not in this deposit,
+    so the rate is 3 over (3 plus the failed specimens found here). The split by AF
+    pre-treatment is counted from AF steps in the deposit's failed specimens plus the Methods'
+    count of successful ones (one without, two with AF). Holds when 22 failed specimens are
+    found and 10 of them have AF steps.
+  depends_on:
+  - glass-specimen-set
+- id: table2-fit-statistics
+  statement: For the nine failed glass specimens with a line fit (ss19, ss43, ss22, ss41, ss6,
+    ss9, ss10, ss30, ss34), the number of points, temperature range, MAD, R2 and pTRM check
+    differences are as in Table 2, and the failure criteria listed follow from them.
+  source: Methods, Paleointensity Selection criteria, paragraph 2; Table 2
+  quote: Reasons for de-selection are provided in Table 2
+  expected:
+  - quantity: ss19 MAD (175-450 C, n 4)
+    value: 30.1
+    tolerance: 3.0
+    unit: degrees
+  - quantity: ss19 R2
+    value: 0.94
+    tolerance: 0.094
+  - quantity: ss43 MAD (250-400 C, n 3)
+    value: 10.0
+    tolerance: 1.0
+    unit: degrees
+  - quantity: ss43 R2
+    value: 0.90
+    tolerance: 0.09
+  - quantity: ss22 MAD (250-500 C, n 4)
+    value: 35.4
+    tolerance: 3.5
+    unit: degrees
+  - quantity: ss22 R2
+    value: 0.38
+    tolerance: 0.038
+  - quantity: ss41 MAD (500-580 C, n 3)
+    value: 24.0
+    tolerance: 2.4
+    unit: degrees
+  - quantity: ss41 R2
+    value: 0.38
+    tolerance: 0.038
+  - quantity: ss6 MAD (175-360 C, n 3)
+    value: 21.0
+    tolerance: 2.1
+    unit: degrees
+  - quantity: ss6 R2
+    value: 0.91
+    tolerance: 0.091
+  - quantity: ss9 MAD (250-550 C, n 4)
+    value: 37.6
+    tolerance: 3.8
+    unit: degrees
+  - quantity: ss9 R2
+    value: 0.74
+    tolerance: 0.074
+  - quantity: ss10 MAD (360-550 C, n 3)
+    value: 42.9
+    tolerance: 4.3
+    unit: degrees
+  - quantity: ss10 R2
+    value: 0.15
+    tolerance: 0.015
+  - quantity: ss30 MAD (175-500 C, n 4)
+    value: 12.5
+    tolerance: 1.25
+    unit: degrees
+  - quantity: ss30 R2
+    value: 0.59
+    tolerance: 0.059
+  - quantity: ss34 MAD (100-450 C, n 5)
+    value: 12.1
+    tolerance: 1.2
+    unit: degrees
+  - quantity: ss34 R2
+    value: 0.06
+    tolerance: 0.006
+  - quantity: pTRM check differences, as listed per temperature in Table 2 for these nine
+      specimens (for example ss19 30% at 250 C and 9% at 450 C)
+    value: 1
+    tolerance: 0.1
+    unit: ratio of computed to printed percentage
+  criterion: Per specimen, the field-off and field-on steps within the Table 2 temperature range
+    (the range and n fix the points), NRM lost against TRM gained as in the opening comment, R2
+    of the least-squares line, MAD of a principal component fit to the field-off directions,
+    and the pTRM check percentage at each listed temperature. MAD and pTRM check percentages
+    are computed under each reading named in the opening comment; a value matches when one
+    reading puts it within tolerance. Reproduced when n matches for all nine and at least 80%
+    of the MAD, R2 and pTRM values match; partially reproduced for 50 to 80%. Whether each listed failure follows is reported
+    against the stated thresholds (n of 4 or more, pTRM within 15%, R2 about 0.9), not judged,
+    as ss6 is listed as failing R2 at 0.91 while ss43 at 0.90 is not, and no MAD threshold is
+    given.
+- id: table2-no-fit
+  statement: The other thirteen failed glass specimens (g2, ss8, s11, ss18, ss24, ss27, ss29,
+    ss36, ss38, ss39, ss45, ss46, ss48) gave no fit, most because they did not acquire TRM in a
+    regular fashion and some because their directions trend out of the origin.
+  source: Methods, Paleointensity Selection criteria, paragraph 2; Table 2
+  quote: We note that some specimens did not acquire TRM in a regular fashion, or showed directions
+    that trended out of ... the origin of their respective orthogonal vector plots
+  criterion: The paper gives no measure of regular TRM acquisition. Over each specimen's Table 2
+    range, TRM gained per step is computed as in the opening comment and the pTRM check
+    percentages listed for these specimens are compared with Table 2 as in table2-fit-statistics.
+    Regularity is read as (a) TRM gained increasing with each temperature step, or (b) a TRM
+    gained against temperature curve with no step falling by more than 15% (the pTRM tolerance
+    of the selection criteria). Reproduced when, under one reading, at least 9 of the 11
+    specimens marked "no regular TRM acquisition" show irregular acquisition, and ss36 and ss39
+    have field-off vectors whose distance from the origin grows over the last steps of the range.
+    The counts under each reading are reported.
+- id: fig1-linear-components
+  statement: Glass subsamples ss43 and ss19, which failed the reliability criteria, show hints of
+    linear directional components on orthogonal vector plots, from which nominal paleointensities
+    can be calculated with the 18 uT laboratory field.
+  source: Background & Summary, Glass, paragraph 2; Figure 1
+  quote: some of these data reveal linear directional components, and nominal paleointensities can
+    be calculated (Fig. 1)
+  criterion: Over the Table 2 ranges (ss43 250 to 400 C, ss19 175 to 450 C), MAD and R2 as in
+    table2-fit-statistics, and the nominal paleointensity as the absolute slope times 18 uT
+    (Figure 1 legend). The figure's values were not seen (no PDF), so none is expected. Holds
+    when both MADs and R2 values match Table 2 under one reading; the nominal paleointensities
+    are reported under each reading.
+  depends_on:
+  - table2-fit-statistics
+- id: fig2-changing-field
+  statement: Glass subsamples ss41 and ss22 show field-off directions that change over a
+    temperature interval, consistent with a changing ambient field during magnetization, and
+    curved NRM lost against TRM gained plots.
+  source: Background & Summary, Glass, paragraph 2; Figure 2; Table 2
+  quote: Other specimens show a changing vector, consistent with a changing ambient field (Fig. 2)
+  criterion: The arrows marking the interval in Figure 2 were not seen, so the Table 2 ranges
+    are used (ss41 500 to 580 C, ss22 250 to 500 C), with the earlier steps shown. The paper
+    names no measure of a changing direction. Readings (a) the angle between the first and the
+    last field-off direction of the range exceeds the MAD of a line fit over the range, (b) a
+    great-circle fit over the range has a smaller MAD than a line fit. Reproduced when both
+    specimens show a changing direction under one reading and R2 is within tolerance of Table 2
+    (0.38 each); the angles and MADs are reported.
+  depends_on:
+  - table2-fit-statistics
+- id: glass-directions-not-random
+  statement: The field-off directions of the failed glass specimens, as seen on orthogonal vector
+    plots, are not random, implying the presence of an ambient field.
+  source: Background & Summary, Glass, paragraph 2
+  quote: The directions, as viewed on orthogonal vector plots, are not random and imply the presence
+    of an ambient field
+  criterion: The paper names no test. Per specimen, the field-off directions of its thermal steps
+    are tested for randomness with Watson's test (n directions, resultant length R, p < 0.05),
+    a standard choice. Reproduced when more than half of the 22 specimens reject randomness,
+    partially reproduced for a quarter to a half. Because successive demagnetization steps of
+    one remanence are not independent, the count is also given for the steps within each
+    specimen's Table 2 range where one is printed.
+  depends_on:
+  - glass-specimen-set
+- id: glass-af-no-change
+  statement: For nearly all glass samples given AF pre-treatment, AF cleaning did not
+    significantly change the NRM direction or magnitude.
+  source: Methods, paragraph 2
+  quote: For nearly all samples, AF cleaning did not significantly change the NRM direction or
+    magnitude
+  criterion: Per specimen with AF steps, the angle between the NRM direction and the direction
+    after the last AF step, and the ratio of the moments. The paper gives no threshold for
+    "significantly". Readings (a) angle under 15 degrees and moment change under 15% (the pTRM
+    check tolerance of the selection criteria), (b) angle under the specimen's Table 2 MAD where
+    one is printed and moment change under 15%. Reproduced when, under one reading, all but at
+    most two of the AF-treated specimens show no significant change.
+  depends_on:
+  - glass-specimen-set
+- id: table1-max-intensity
+  statement: For each of the twelve single crystals, the maximum field that cannot be excluded,
+    given the magnetometer threshold of 8e-11 emu and the moment acquired at 590 C in a 20 uT
+    field, is as in Table 1, between 0.20 and 0.51 uT.
+  source: Results, Single crystal measurements, paragraph 4; Table 1; Technical Validation,
+    Example of threshhold detection limit
+  quote: Considering a magnetometer threshold value (see Methods) the maximum field that cannot be
+    excluded by the data can be calculated from the data for each crystal. These values are
+    presented in Table 1
+  expected:
+  - {quantity: 12021g2 M590 20 uT, value: 7.011e-9, tolerance: 7.0e-10, unit: emu}
+  - {quantity: 12021g2 max intensity, value: 0.23, tolerance: 0.023, unit: uT}
+  - {quantity: 12021g3 M590 20 uT, value: 6.292e-9, tolerance: 6.3e-10, unit: emu}
+  - {quantity: 12021g3 max intensity, value: 0.26, tolerance: 0.026, unit: uT}
+  - {quantity: 12040g1 M590 20 uT, value: 8.002e-9, tolerance: 8.0e-10, unit: emu}
+  - {quantity: 12040g1 max intensity, value: 0.20, tolerance: 0.020, unit: uT}
+  - {quantity: 12040g2 M590 20 uT, value: 6.021e-9, tolerance: 6.0e-10, unit: emu}
+  - {quantity: 12040g2 max intensity, value: 0.27, tolerance: 0.027, unit: uT}
+  - {quantity: 12040g3 M590 20 uT, value: 6.292e-9, tolerance: 6.3e-10, unit: emu}
+  - {quantity: 12040g3 max intensity, value: 0.26, tolerance: 0.026, unit: uT}
+  - {quantity: 12053g1 M590 20 uT, value: 5.283e-9, tolerance: 5.3e-10, unit: emu}
+  - {quantity: 12053g1 max intensity, value: 0.31, tolerance: 0.031, unit: uT}
+  - {quantity: 12053g2 M590 20 uT, value: 7.982e-9, tolerance: 8.0e-10, unit: emu}
+  - {quantity: 12053g2 max intensity, value: 0.20, tolerance: 0.020, unit: uT}
+  - {quantity: 14053g1 M590 20 uT, value: 3.203e-9, tolerance: 3.2e-10, unit: emu}
+  - {quantity: 14053g1 max intensity, value: 0.51, tolerance: 0.051, unit: uT}
+  - {quantity: 14053g2 M590 20 uT, value: 5.294e-9, tolerance: 5.3e-10, unit: emu}
+  - {quantity: 14053g2 max intensity, value: 0.31, tolerance: 0.031, unit: uT}
+  - {quantity: 14053g3 M590 20 uT, value: 4.523e-9, tolerance: 4.5e-10, unit: emu}
+  - {quantity: 14053g3 max intensity, value: 0.36, tolerance: 0.036, unit: uT}
+  - {quantity: 71055g1 M590 20 uT, value: 3.883e-9, tolerance: 3.9e-10, unit: emu}
+  - {quantity: 71055g1 max intensity, value: 0.42, tolerance: 0.042, unit: uT}
+  - {quantity: 71055g3 M590 20 uT, value: 4.202e-9, tolerance: 4.2e-10, unit: emu}
+  - {quantity: 71055g3 max intensity, value: 0.39, tolerance: 0.039, unit: uT}
+  criterion: Max intensity = 8e-11 emu / M590 x 20 uT (Technical Validation). M590 is computed
+    under the readings named in the opening comment, (a) or (b) crossed with (i) or (ii).
+    Reproduced when, under one reading, all 24 values are within tolerance; partially
+    reproduced when at least 18 are. The reading that matches is reported, and whether Table 1
+    max intensities equal the formula applied to its own M590 column to two places.
+- id: baseline-range
+  statement: The maximum fields that the single crystal data cannot exclude define a baseline of
+    about 0.2 to 0.5 uT below which fields cannot be evaluated with these data.
+  source: Background & Summary, paragraph 6
+  quote: they nevertheless define a baseline of ~0.2 to ~0.5 μT below which fields cannot be
+    evaluated with the present data
+  expected:
+  - quantity: lowest max intensity over the twelve crystals
+    value: 0.2
+    tolerance: 0.02
+    unit: uT
+  - quantity: highest max intensity over the twelve crystals
+    value: 0.5
+    tolerance: 0.05
+    unit: uT
+  criterion: Holds when the lowest and highest of the twelve values computed in
+    table1-max-intensity, under the reading that matches there, lie in 0.18 to 0.22 and 0.45 to
+    0.55 uT.
+  depends_on:
+  - table1-max-intensity
+- id: example-14053g1-threshold
+  statement: For crystal 14053g1, the threshold field detection limit computed from the
+    magnetometer sensitivity (8e-14 A m2) and a TRM at 590 C of 8e-12 A m2 in a 20 uT field is
+    0.2 uT.
+  source: Technical Validation, Example of threshhold detection limit
+  quote: Threshold field detection = Magnetometer sensitivity (8 × 10−14 A m2) / TRM590o (8 × 10−12
+    A m2) × Lab Field (20 μT) = 0.2 μT
+  expected:
+  - quantity: 14053g1 TRM at 590 C in 20 uT
+    value: 8.0e-12
+    tolerance: 8.0e-13
+    unit: A m2
+  - quantity: 14053g1 threshold field
+    value: 0.2
+    tolerance: 0.02
+    unit: uT
+  criterion: The example conflicts with Table 1, which gives 14053g1 3.203E-09 emu and 0.51 uT.
+    Readings (a) the example as written, for 14053g1; (b) a misprint of the crystal name, the
+    numbers belonging to 12040g1 (8.002E-09 emu, 0.20 uT in Table 1). TRM computed as in
+    table1-max-intensity. Reproduced as written when reading (a) matches; when only (b) matches,
+    the claim is reported as matching the misprint reading, with the 14053g1 values shown.
+  depends_on:
+  - table1-max-intensity
+- id: fig3-nrm-consistent
+  statement: For most crystals the replicate NRM measurements have a consistent direction, as
+    shown on stereonets for 12040g1 and 14053g2.
+  source: Results, Single crystal measurements, paragraph 2; Figure 3a and 3d
+  quote: These show that for most of the crystals there is consistency of the NRM direction (Fig.
+    3a,d)
+  criterion: Per crystal, the replicate NRM (step 0.0) directions, with Fisher mean, k and
+    alpha95. Readings for "consistent", named in the opening comment, (a) k of the NRM replicates
+    higher than k of the 590.0 replicates, (b) Watson's test rejects randomness of the NRM
+    replicates at p < 0.05. Reproduced when, under one reading, more than half of the twelve
+    crystals are consistent, including 12040g1 and 14053g2.
+  depends_on:
+  - glass-specimen-set
+- id: fig3-590-inconsistent
+  statement: After demagnetization at 590 C in zero field, the replicate directions of the
+    crystals are inconsistent, consistent with a null magnetization state.
+  source: Results, Single crystal measurements, paragraph 2; Figure 3b and 3e; Methods, Thermal
+    measurements, paragraph 5
+  quote: but this consistency is not seen after demagnetization at 590 °C (Fig. 3b,e)
+  criterion: Per crystal, the replicate 590.0 directions, with Fisher mean, k and alpha95. Readings
+    (a) k of the 590.0 replicates lower than k of the NRM replicates, (b) Watson's test does not
+    reject randomness of the 590.0 replicates at p < 0.05. Reproduced when, under one reading,
+    more than half of the twelve crystals are inconsistent, including 12040g1 and 14053g2. The
+    590.0 moments are reported against the 8e-11 emu threshold.
+  depends_on:
+  - fig3-nrm-consistent
+- id: fig3-alteration-check-inconsistent
+  statement: The replicate directions after the zero-field alteration check at 590 C are also
+    inconsistent.
+  source: Results, Single crystal measurements, paragraph 2; Figure 3c and 3f
+  quote: The directions are also inconsistent after the alteration check at 590 °C (Fig. 3c,f)
+  criterion: As fig3-590-inconsistent, for the replicate 590.3 directions.
+  depends_on:
+  - fig3-590-inconsistent
+- id: crystal-14053g1-400c-stable
+  statement: Crystal 14053g1, measured after heating to 400 C during initial tests, held a stable
+    remanence, which was removed by treatment at 590 C.
+  source: Results, Single crystal measurements, paragraph 3
+  quote: One crystal (14053g1) was measured after heating to an intermediate temperature (400 °C)
+    during initial tests, and found to be stable
+  criterion: Applies only if the deposit holds 400 C measurements for 14053g1. The paper names no
+    measure of stability; stable is read, as for the NRM, as replicate 400 C directions
+    consistent under fig3-nrm-consistent's readings, with the 590.0 replicates of the same
+    crystal inconsistent. Reproduced when both hold under one reading.
+  depends_on:
+  - fig3-nrm-consistent
+- id: no-alteration-recording-efficiency
+  statement: Alteration during the laser heating of the single crystals was not significant;
+    apparent recording efficiencies far above 100% were not observed and the alteration checks
+    did not fail.
+  source: Background & Summary, paragraph 5
+  quote: If alteration had resulted in the formation of new magnetic minerals, apparent recording
+    efficiencies ≫ 100% should have be observed (but these were not), and alteration checks
+    should fail
+  criterion: The paper does not define recording efficiency or the failure of the alteration
+    check for the crystals. Readings (a) the 590.3 moment does not exceed the 590.0 moment by
+    more than the 8e-11 emu threshold, and the 590.3 directions are inconsistent as in
+    fig3-alteration-check-inconsistent; (b) the 590.4 TRM (40 uT, vector difference from 590.3)
+    is no more than about twice the 590.1 TRM (20 uT), as linear recording predicts. Reproduced
+    when every crystal passes under one reading; the ratios are reported. Recording efficiency
+    against a theoretical TRM needs grain properties the paper does not give, so it is not
+    computed.
+  depends_on:
+  - fig3-alteration-check-inconsistent
+- id: interpretation-impact-no-dynamo
+  statement: Together with ref. 1, the data are consistent with impact plasma magnetization of the
+    64455 glass and with the absence of a long-lived lunar core dynamo recorded in the 3.9 to
+    3.2 Ga crystals.
+  source: Background & Summary, paragraphs 2 and 6
+  quote: These 64455 field strengths1 match those predicted by the charge separation mechanism
+  criterion: An interpretation that rests on ref. 1 and on models of impact plasmas, not on a
+    measurement this deposit can repeat. Not tested; it is judged as following from the
+    outcomes of fig2-changing-field, glass-directions-not-random, fig3-590-inconsistent and
+    table1-max-intensity, which are reported together.
+  depends_on:
+  - fig2-changing-field
+  - glass-directions-not-random
+  - fig3-590-inconsistent
+  - table1-max-intensity
