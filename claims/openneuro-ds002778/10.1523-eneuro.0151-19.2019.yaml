@@ -80,7 +80,8 @@
 # - Filters for the mu/alpha band (8 to 12 Hz), which the code does not cover. Shape filter by the
 #   code's rule, 3 cycles of the low cutoff (floor(3 * 512 / 8) = 192 taps). PAC phase filter readings:
 #   (a) 3 cycles of 8 Hz, 192 taps (pacpy's default rule); (b) 231 taps as in the code for beta; (c)
-#   118 samples as the Methods give for beta. Gamma 50 to 150 Hz as for beta.
+#   118 samples as the Methods give for beta. Gamma 50 to 150 Hz as for beta. For the shape filter the
+#   Methods' 231 ms (118 samples) for beta is a second reading.
 # - Which half of the code's 30 patient recordings is C3 is not stated; the Q4 counts per electrode
 #   (9 at C3, 8 at C4) are judged without regard to which electrode has which count where noted.
 # - Cohen's d for PAC. The Methods say PAC was log-scaled for effect sizes; the code's d on raw PAC is
@@ -128,6 +129,7 @@ claims:
   - test: Wilcoxon signed rank
     statistic: signed rank = 9
     p: 0.004
+    corrected: none (FDR corrected p = 0.0121)
     n: 15 patients, on and off
   - test: Wilcoxon signed rank
     statistic: signed rank = 9
@@ -238,7 +240,8 @@ claims:
     corrected over electrodes. Reproduced when, for each measure, the electrode with the smallest p
     is C3, Cz, C4 or one of their neighbours in the 32-channel montage (FC1, FC2, FC5, FC6, CP1, CP2,
     CP5, CP6), and none of F7, F8, T7 and T8 is significant; partially reproduced for one or two of
-    the three measures. The neighbour set is this file's reading of "sensorimotor".
+    the three measures. The neighbour set and the condition on F7, F8, T7 and T8 are this file's
+    reading of "sensorimotor"; the paper states neither.
 - id: offctrl-sharpness-null
   statement: Beta sharpness ratio over sensorimotor electrodes does not differ between patients off
     medication and controls.
@@ -349,8 +352,10 @@ claims:
   source: Figure 1C legend; Results, Waveform metrics differentiate PD medication state, paragraph 4
   quote: Plots confirm that there is a β oscillation as well as a prominent α/μ oscillation
   criterion: Welch power spectra as in the Methods (window 256 samples, overlap 128, nFFT 450, at 512 Hz;
-    pwelch's default Hamming window), at C3 and C4, averaged over electrodes and participants of each
-    group (off, on, controls). The paper does not define a peak. Reproduced when, in every group's
+    pwelch's default Hamming window), averaged over electrodes and participants of each group (off,
+    on, controls). The paper does not say which electrodes the spectra use; the main reading is C3 and
+    C4, from "as would be expected in sensorimotor EEG" (Results, paragraph 4), and the average over all
+    scalp electrodes is a variant. The paper does not define a peak. Reproduced when, in every group's
     average spectrum, there is a local maximum between 8 and 12 Hz and one between 13 and 30 Hz.
     Partially reproduced when the alpha peak is present in all groups and the beta peak in some.
 - id: table1-alpha-shape-off-on
@@ -384,8 +389,9 @@ claims:
   - quantity: Cohen's d, alpha steepness ratio
     value: 0.60
     tolerance: 0.06
-  criterion: As for fig2-sharpness-off-on with the band 8 to 12 Hz for zero crossings (192 taps by the
-    code's 3-cycle rule), FDR over the six tests of Table 1. Reproduced when both tests have corrected
+  criterion: As for fig2-sharpness-off-on with the band 8 to 12 Hz for zero crossings, FDR over the six
+    tests of Table 1. The alpha filter length is open; readings are 192 taps (the code's findpt rule,
+    3 cycles of the low cutoff) and 118 samples (the Methods' 231 ms for beta). Reproduced when both tests have corrected
     p < 0.05 with off higher and all four values are within tolerance; partially reproduced when both
     tests hold and a value is out of tolerance, or one test holds.
 - id: table1-alpha-pac-null
@@ -543,6 +549,9 @@ claims:
   - quantity: patients with off and on in Q4 at C4
     value: 8
     tolerance: 1
+  - quantity: patients with off and on in Q4 at both C3 and C4
+    value: 8
+    tolerance: 1
   - quantity: patients with at least one electrode in Q4 both off and on
     value: 9
     tolerance: 1
@@ -600,5 +609,32 @@ claims:
     beta sharpness ratio, steepness ratio and PAC. Table 3's all-patient PAC d (0.75) differs from
     Table 1's (0.83); readings for PAC are raw (code) and log10 (Methods), the same scaling used for
     all and Q4. Reproduced when, under one reading, d in Q4 patients exceeds d in all patients for all
-    three measures; the Q4 values are compared to Table 3 within tolerance and reported. Partially
-    reproduced when d increases for two of three.
+    three measures and the Q4 values are within tolerance of Table 3. Partially reproduced when d
+    increases for all three with a value out of tolerance, or increases for two of three.
+checks:
+- date: 2026-10-27
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment and table1-alpha-shape-off-on, the alpha shape filter length was given as the
+    code's 3-cycle rule only, but the code holds no alpha analysis; added the Methods' 231 ms (118
+    samples) as a second reading.
+  - fig2-steepness-off-on, recorded the uncorrected p as uncorrected (corrected none, FDR 0.0121), as
+    for the sharpness claim (Table 1).
+  - fig2c-topography-sensorimotor, the condition that F7, F8, T7 and T8 are not significant is not in
+    the paper; marked as this file's reading with the neighbour set.
+  - fig1c-beta-alpha-peaks, the criterion fixed C3 and C4 without saying the paper does not name the
+    electrodes of the spectra; named it as open, C3 and C4 the main reading (Results, paragraph 4) and
+    all scalp electrodes a variant.
+  - q4-patient-counts, the statement gives eight patients with both electrodes in Q4 but expected
+    lacked it; added (Results, Waveform shape, paragraph 2).
+  - table3-q4-effect-size, the Table 3 values were only reported and did not count towards the
+    outcome; full reproduction now needs them within tolerance.
+  - Checked the code claims of the opening comment against SwannLab/Jackson_2019 at a7c89f5
+    (findpt, ex_sharp, rd_steep, measure_shape, measure_pac, ozkurt, the notebook outputs for Tables
+    1 and 2, Figure 3 and Cohen's d); they hold.
+  - Open, Table 2 prints FDR p = 1 for the three non-significant tests where Benjamini-Hochberg over
+    the six gives about 0.36 (Table 1 matches BH); no outcome depends on it.
+  - Open, Table 3 gives d = 0.75 for PAC in all patients and Table 1 gives 0.83 (raw PAC in the code);
+    the log10 reading of the Methods likely explains 0.75 but the paper does not say so.
