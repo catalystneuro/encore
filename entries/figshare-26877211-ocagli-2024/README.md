@@ -15,7 +15,7 @@ scraped table as `jecfa.rds` and `JECFA.csv`.
 | The unknowns have only a JECFA name | Not reproduced |
 | FAS 40 to 52 (even codes) account for 50% of the records | Partially reproduced |
 | Discrepancies found by the manual check of 700 pages | Blocked: data missing |
-| The portal count of 6547 is in line with the pages with a JECFA name | Partially reproduced |
+| The portal count of 6547 is in line with the pages with a JECFA name | Partially reproduced (change to not reproduced proposed) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.

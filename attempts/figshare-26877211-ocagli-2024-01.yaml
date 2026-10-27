@@ -33,7 +33,7 @@ outcomes:
   output: claim:data-records-rows
   measured: 6552
   notes: jecfa.rds has 6552 rows and 17 columns, one for each field of Table 1, named as in
-    R/process_df.R in lower case with "." replaced by "_", in the order that function selects them.
+    R/process_df.R in lower case with "." replaced by "_".
     JECFA.csv holds the same 6552 rows and 17 columns, with no differing cell. The MD5 of both files
     read matches the archive's computed_md5. The columns R/add_metadata.R adds are absent, so the
     deposit is the output of process_df.R. The "May 2024" date cannot be checked from the files,
@@ -47,8 +47,8 @@ outcomes:
     repeated. D2 (distinct JECFA names less page 5883) and D3 (rows less page 5883 and less the
     second row of page 6316's chemical) give 6550, within tolerance. Page 6316's chemical appears
     twice, at pages 6316 (name only) and 6319 (full record); page 5883 is named TEST and carries
-    nothing else. The paper's 6549 is reached only by removing both rows of that chemical with the
-    test page (shown as a variant).
+    nothing else. The paper's 6549 is reached, for example, by removing both rows of that chemical
+    with the test page (the one variant tested).
   deviations:
   - The criterion's readings D1 to D3 are all run; measured is the first that matches (D2). D1 does
     not match.
@@ -111,8 +111,8 @@ outcomes:
   notes: The seven named codes hold 3036 rows, 46.34% of all 6552 rows (F1, within 5 points of 50%)
     under both FAS readings; over the rows with a FAS code (F2) 56.94% with the deposited column (A,
     outside tolerance) and 53.42% after add_metadata.R (B, within). They are not the seven most
-    frequent; FAS 59 (351 rows) is more frequent than FAS 52 (286) under both readings, and FAS 60
-    (353) too under B; the named codes rank 1 to 6 and 9 (A) or 10 (B). The deposited column has 81
+    frequent; FAS 59 (351 rows) and FAS 54 (287) are more frequent than FAS 52 (286) under both
+    readings, and FAS 60 (353) too under B; the named codes rank 1 to 6 and 9 (A) or 10 (B). The deposited column has 81
     distinct non-empty values, which meets the 77 the criterion takes for "almost all 85", and 73
     after add_metadata.R, which does not. The 81 include malformed values (eight such as "77 JECFA
     86", five decimals such as "67.29", and "617") and "86", above 85. Counting only whole numbers
@@ -147,6 +147,14 @@ outcomes:
     reproduced; partially reproduced is recorded because one of its two conditions holds and the
     portal part cannot be tested. No measured value is given, as the first
     expected value (the portal count) cannot be measured.
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion states only when the dataset's part is reproduced, and of its two
+      conditions the one that carries the claim, within 2 of 6547 after cleaning, fails (6550 under
+      D2 and D3, a difference of 3; 6552 under D1). The criterion gives no partial level, and for
+      unknowns-name-only, whose criterion is written the same way, the outcome is not reproduced
+      when the condition fails. The portal part stays untested. Verification round 2 found the
+      partial level an unstated assumption. Notebook cells 42 and 43.
 findings:
 - kind: data_missing
   statement: The manual extraction of 700 portal pages used for the Technical Validation (REDCap,
@@ -177,7 +185,7 @@ findings:
 - kind: other
   statement: Scraped values carry formatting residue. 602 report, 349 Tox monograph and 398
     specification values start with '">' (the Usage Notes mention this for Report); 33 FEMA numbers
-    have trailing spaces; 31 JECFA numbers are not plain integers ("506a,b", "632.1"); 46 of 2127
+    are plain integers padded with spaces; 31 JECFA numbers are not plain integers ("506a,b", "632.1"); 46 of 2127
     plain CAS numbers fail the CAS check digit, and 190 CAS values hold several numbers or notes.
 verifications:
 - date: '2026-10-27'
@@ -203,7 +211,8 @@ verifications:
     agrees: true
     outcome: reproduced
     reason: 16 of 17 fields are within tolerance using the deposited fas, and 17 of 17 after the add_metadata.R
-      step; the criterion needs 15. Only 12 of 17 match Table 1 when rounded to whole numbers. Under reading E FAS
+      step; the criterion needs 15. Only 12 of 17 match Table 1 when rounded to whole numbers; the five that differ are
+      chemical names, synonyms, report, report sourcelink and FAS. Under reading E FAS
       is 81.38%, outside tolerance; the paper's 93% equals the share of non-NA fas values (92.86%), the same as Tox
       monograph presence, so the paper probably counted the 752 empty strings as present. The notebook prints this
       as a variant but draws no conclusion from it; the outcome is unchanged because 16 of 17 fields are still
@@ -249,10 +258,12 @@ verifications:
       include junk strings ('617', five decimals such as '24.65', eight of the form '77 JECFA 86') and '86', above
       85. Counting only integer codes from 1 to 85 gives 66 with the deposited fas and 71 after add_metadata.R,
       both below the 77 threshold, so the "almost all 85" part fails under any cleaned reading; the notebook's "at
-      least 77, True" should not be read as support for that part.
+      least 77, True" should not be read as support for that part. The R code at commit 2d8a5340 was not available to the verifier, so it could not
+      confirm that fas_add_metadata and tox_abbr port it faithfully.
     response: The notebook now counts the whole-number codes from 1 to 85 under both readings (66 and 71), lists the
       missing codes and the other values, and the conclusion and notes say that "almost all 85" does not hold under
-      a cleaned reading. Outcome unchanged, as the criterion sets it by the share and the ranking.
+      a cleaned reading. Outcome unchanged, as the criterion sets it by the share and the ranking. The notebook now
+      fetches the R functions at the commit and prints them beside the Python ports (cell 13).
   - claim: validation-failures
     agrees: true
     outcome: blocked
@@ -270,3 +281,74 @@ verifications:
     response: The notebook and notes now say that the data do not explain the gap. Leaving out the TEST page gives
       6551, but the paper removes the test page again from 6551, so that reading counts it twice; the 6549 variant
       is named and not used. Outcome unchanged.
+- date: '2026-10-27'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook of the author-revise-1 run (commit f052d987a), with the conclusion
+    cells, the summary, the README and this record, the helper module, the claims file and the paper. Report
+    transcripts/figshare-26877211/verifier-2-report.md.'
+  results:
+  - claim: data-records-rows
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 20: 6552 rows, 17 of 17 fields, 0 differing cells. The notes say the columns are "in the order that
+      function selects them", but cell 13 cuts process_df before its rename and select, so the outputs do not show
+      this order; not counted as a numerical problem.'
+    response: The phrase about the order is removed from the notes. Outcome unchanged.
+  - claim: unique-pages
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 23: D2 and D3 give 6550. Page 6316''s chemical has 2 rows, at pages 6316 and 6319. "The paper''s
+      6549 is reached only by removing both rows of that chemical with the test page": cell 23 tests only that one
+      variant, so "only" is not shown; "for example" is.'
+    response: Cell 24 and the notes now say "for example" and that it is the one variant tested. Outcome unchanged.
+  - claim: table1-availability
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 26: 16 of 17 fields within tolerance under A, 17 of 17 under B. Cell 27 says "under it FAS is the
+      one field outside tolerance"; under reading E this holds for reading A only, under B no field is outside. The
+      round-1 reason in the record does not name the five fields that differ when rounded.'
+    response: Cell 27 now says FAS is the one field outside tolerance under reading A and that under B no field is
+      outside. The round-1 reason now names the five fields, as the round-1 report does. Outcome unchanged.
+  - claim: table2-evaluation-year
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 29: all counts exact and all shares within tolerance. Counts are now tested against the claims
+      file''s tolerances.'
+    response: Unchanged.
+  - claim: table2-functional-class
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 32: all counts exact, shares within tolerance, flavouring agents the largest class.'
+    response: Unchanged.
+  - claim: unknowns-name-only
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 35: 86.4% and 80.5%, both below 90%. The criterion has no partial level.'
+    response: Unchanged.
+  - claim: fas-codes
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 38: F1 is 46.34% under both readings. The named seven are not the seven most frequent. "FAS 59 (351
+      rows) is more frequent than FAS 52 (286)" is true but leaves out FAS 54, which also ranks above 52 under both
+      readings (287 rows, rank 8 in cell 38). The round-1 point about the R source (C1) is not attached to any
+      claim''s reason; cell 13 answers it.'
+    response: Cell 39 and the notes now name FAS 54 (287 rows) as more frequent than FAS 52 under both readings. The
+      round-1 point on the R source is added to the round-1 reason of this claim, with cell 13 as the response.
+      Outcome unchanged.
+  - claim: validation-failures
+    agrees: true
+    outcome: blocked
+    reason: Blocked, data_missing.
+    response: Unchanged.
+  - claim: portal-search-count
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The criterion says only when the dataset''s part is reproduced. For unknowns-name-only the record reads
+      that kind of criterion as "not reproduced when not met"; here it records "partially reproduced" for the same
+      situation. The condition that holds (6552 within 655 of 6551) is the loose one; the condition that fails
+      ("aligns", within 2) is what the claim says. Applied consistently, the dataset''s part is not reproduced, with
+      the portal part blocked. The verifier accepted "partially reproduced" in round 1 and now thinks that was
+      wrong; the choice of a partial level is an assumption the record does not state.'
+    response: Agreed. As round 2 may not change an outcome, the verified outcome (partially reproduced) is kept and a
+      change to not reproduced is proposed under proposed, for round 3. Cell 43, the Summary and the README say so.
