@@ -1492,12 +1492,49 @@ def earlier_attempts(data: dict, dandiset: str) -> list[dict]:
                   key=lambda a: (a["date"], a["id"]))
 
 
+def attempts_timeline(data: dict, dandiset: str, root: str, shown: list[dict]) -> str:
+    """A panel with every attempt on the dataset, oldest first, when there is more than one."""
+    all_atts = sorted((a for a in data["attempts"] if a["key"] == dandiset), key=lambda a: (a["date"], a["id"]))
+    if len(all_atts) < 2:
+        return ""
+    current = current_attempts(data).get(dandiset, [])
+    papers = {a["paper"] for a in all_atts}
+    items = ""
+    for a in all_atts:
+        # Counted here even when deprecated, which the dataset's totals leave out.
+        counts = {k: sum(1 for o in a["outcomes"] if o["outcome"] == k) for k in OUTCOMES}
+        n = sum(counts.values())
+        href = f'{root}{page_of(dandiset)}' + ("" if a in current else f'{e(a["id"])}/')
+        here = a in shown
+        notes = [f'{n} claims', f'{len(a["findings"])} findings']
+        if a["dataset_version"]:
+            notes.append(f'version {e(a["dataset_version"])}')
+        protocol = (a.get("agent") or {}).get("protocol")
+        if protocol:
+            notes.append(f'protocol {e(protocol)}')
+        paper = (f'<span class="muted small">{e(a.get("paper_title") or a["paper"])}</span>'
+                 if len(papers) > 1 else "")
+        name = f'Attempt {e(a["id"].rsplit("-", 1)[1])}'
+        name = f'<strong>{name}</strong>' if here else f'<a href="{href}"><strong>{name}</strong></a>'
+        items += (f'<li class="{"current" if a in current else "replaced"}{" here" if here else ""}{" deprecated" if a.get("deprecated") else ""}"{" aria-current=\"page\"" if here else ""}>'
+                  f'<span class="dot" aria-hidden="true"></span>'
+                  f'<div class="t-head">{name}<span class="muted small">{e(a["date"])}</span>'
+                  + f'<span class="tag">{"current" if a in current else "replaced"}</span>'
+                  + ('<span class="tag">deprecated</span>' if a.get("deprecated") else "")
+                  + f'</div>{paper}'
+                  f'<div class="t-bar">{bar(counts, f"Outcomes of {n} claims", "bar mini")}</div>'
+                  f'<span class="muted small">{" · ".join(notes)}</span></li>')
+    return (f'<div class="panel timeline-panel"><h2>Attempts over time <span class="count">{len(all_atts)}</span></h2>'
+            f'<p class="sub small" style="margin-top:6px">Each attempt tests the paper again, usually on a newer version '
+            f'of the dataset or a newer protocol, and reports which earlier findings are fixed. The latest attempt on '
+            f'each paper is the current one.</p><ol class="timeline">{items}</ol></div>')
+
+
 def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str:
     """The dandiset's page, from its current attempts; or, given an earlier attempt, that attempt's page."""
     root = "../../../../" if attempt else "../../../"
     current_atts = current_attempts(data)[dandiset]
     atts = [attempt] if attempt else current_atts
-    earlier = [a for a in earlier_attempts(data, dandiset) if a is not attempt]
     target = next((t for t in data["targets"] if t["key"] == dandiset), None)
     counts = outcome_counts(atts)
     n = sum(counts.values())
@@ -1622,11 +1659,6 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
                             '<p class="sub small">Each run’s prompt, messages and tool calls, with long output cut '
                             'and the text of the paper left out, and its final report.</p>'
                             f'<ul style="margin:6px 0 0;padding-left:20px">{items}</ul>')
-    if earlier:
-        provenance_html += ('<p class="sub small" style="margin-top:14px">'
-                            + ("Other earlier attempts: " if attempt else "Earlier attempts: ") + ", ".join(
-            f'<a href="{root}{page_of(dandiset)}{e(x["id"])}/">{e(x["id"])}</a> ({e(x["date"])})'
-            for x in earlier) + "</p>")
 
     actions = [f'<a href="{e(archive_url(dandiset))}" target="_blank" rel="noopener">View on '
                f'{e(ARCHIVES.get(split_key(dandiset)[0], {}).get("label", split_key(dandiset)[0]))}</a>']
@@ -1722,6 +1754,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
   <p class="actions">{" ".join(actions)}</p>
 </header>
 <main>
+  {attempts_timeline(data, dandiset, root, atts)}
   <div class="tabs" role="tablist">{tab_buttons}</div>
   <section class="tabpanel" id="claims"><h2>Claims</h2>
     <div class="subtabs" id="claim-filter" role="group" aria-label="Show claims by outcome"></div>
