@@ -5,7 +5,7 @@
   "label": "DANDI:000036"
  },
  "page": "datasets/dandi/000036/",
- "generated": "2026-10-27T14:25:14+00:00",
+ "generated": "2026-10-27T14:34:44+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 14,
@@ -96,6 +96,7 @@
      "deviations": [
       "The 7 hour offset was found while preparing the attempt; the criterion was written after it."
      ],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -116,6 +117,7 @@
      "deviations": [
       "The criterion does not anticipate a dataset that holds more sessions than the paper. The outcome is judged on the paper's 45 sessions, which are all present, found through the link claim; the round-1 version of this record gave partially_reproduced on the deposited counts."
      ],
+     "assumed": false,
      "disagreed": true,
      "data": "with_labels",
      "where": null,
@@ -134,6 +136,7 @@
      "notebook": "reproduce_mayner_2022.ipynb",
      "notes": "Over the 44 linked sessions there are 4032 ROIs, 14 of them NaN at every frame; the 4018 others are 1683, 1781 and 554 per layer, and all 15 layer and area totals equal table-s1.csv (15 of 15 within 10%). With the NaN ROIs counted, the totals (4032; 1687, 1790, 555) are also within tolerance. The files carry no validity flag.",
      "deviations": [],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -171,6 +174,7 @@
      "notebook": null,
      "notes": "The dandiset holds no L0 events. The criterion's detector, l0_analysis.py of github.com/AllenInstitute/visual_coding_2p_analysis (commit 3ceca10), is Python 2 code (cPickle) that imports allensdk and FastLZeroSpikeInference. That package is not on PyPI; its repository (github.com/jewellsean/FastLZeroSpikeInference, commit cdfaade) fails to build with pip from git because its setup.py expects the C++ sources copied into the python directory, and its current Python API has no arfpop, which l0_analysis.py calls. The latest commit that defines arfpop (7b80ccd) has a Python 2 fast.py (a SyntaxError under Python 3) and a FitSegmentModel.cpp that uses std::numeric_limits without including <limits>; the notebook's section on the L0 detector prints each of these from the published sources. Running the detector would mean patching the package and porting l0_analysis.py to Python 3. While preparing the round-1 revision, outside the notebook and not run there, the 7b80ccd sources were patched that way (<limits> added, without which g++ stopped at std::numeric_limits, and the print statements of fast.py rewritten for Python 3); the package then built and arfpop ran on a synthetic trace. l0_analysis.py was not ported and no events were computed from this dataset, so the build decides nothing; the published software still cannot be installed as released, which is the reason given. The NWB files hold no path naming events (listing of all 57 files in the notebook). The paper's own events are in its Zenodo deposit (events/, 4125 members, 4.1 GB), which the criterion does not name.",
      "deviations": [],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -222,6 +226,7 @@
       "ROIs with all-NaN dF/F are left out (none in the paper's counts).",
       "LME, likelihood ratio and glht tests are run with statsmodels and scipy, not R; on the paper's own per-trial values they give its printed chi2, z, p and interval bounds."
      ],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -286,6 +291,7 @@
      "deviations": [
       "As fig3a-layer-specific (trial windows from the NWB times, NaN ROIs left out, statistics in Python)."
      ],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -348,6 +354,7 @@
      "deviations": [
       "As fig3a-layer-specific."
      ],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -368,6 +375,7 @@
      "deviations": [
       "As fig3a-layer-specific."
      ],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -386,6 +394,7 @@
      "notebook": null,
      "notes": "The criterion crosses the readings of pupil diameter, and the Methods reading (twice the semi-major axis of the fitted ellipse) is in no public file. The dandiset has no eye tracking at all; the Zenodo deposit holds pupil area per session (eye/*_area.npy), from which only the code's reading can be computed. For fig4-pupil-effect-size the two computable artifact readings already disagree in sign. Locomotion per trial is available under both readings.",
      "deviations": [],
+     "assumed": false,
      "disagreed": false,
      "data": "with_inputs",
      "where": null,
@@ -438,6 +447,7 @@
      "notebook": null,
      "notes": "Needs L0 events; see ext1-3-kinetics-no-difference.",
      "deviations": [],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -490,6 +500,7 @@
      "notebook": null,
      "notes": "Needs L0 events to mark the 200 ms to remove; see ext1-3-kinetics-no-difference.",
      "deviations": [],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -541,6 +552,7 @@
      "notebook": null,
      "notes": "The mediator is the mean L0 event magnitude, which cannot be computed (see ext1-3-kinetics-no-difference). The pupil covariate also needs the Methods' diameter, which is in no public file (data_missing).",
      "deviations": [],
+     "assumed": false,
      "disagreed": false,
      "data": "with_inputs",
      "where": null,
@@ -561,6 +573,7 @@
      "deviations": [
       "As fig3a-layer-specific; random permutations are not the paper's."
      ],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -594,6 +607,7 @@
       "Reading (b) uses the deposit's parameters and vsync alignment on the dandiset's running velocity, whose first sample is dropped (the rest equal the deposit's run_speed).",
       "Effect sizes use trial windows from the NWB times, as fig3a-layer-specific."
      ],
+     "assumed": false,
      "disagreed": false,
      "data": "with_inputs",
      "where": null,
@@ -624,6 +638,7 @@
      "notebook": "arousal_mayner_2022.ipynb",
      "notes": "The dandiset has no pupil data. With the deposit's pupil area and the code's diameter (2*sqrt(area/pi)), reading (b) of artifact removal reproduces the code's printed per-session pupil values exactly and gives r = 0.651, p = 0.16 (positive, within tolerance of 0.716); reading (a), without artifact removal, gives r = -0.647, p = 0.17, because unremoved artifacts set the maximum the diameter is normalised by. The criterion requires every reading of pupil diameter, and the Methods' semi-major axis reading cannot be computed from any public file. The deposit's data/eye/ holds 45 pupil area files and a parameter file, and no ellipse fit (listed in the arousal notebook). That is the main reason (data_missing); the two computable readings also disagree, which the criterion would block as methods_underspecified.",
      "deviations": [],
+     "assumed": false,
      "disagreed": false,
      "data": "with_inputs",
      "where": null,
@@ -645,6 +660,7 @@
       "As fig3a-layer-specific.",
       "The criterion gives no partial rule; partial is used because two of three values and the range hold and one extreme is 0.014 outside its tolerance."
      ],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -693,6 +709,7 @@
      "deviations": [
       "UMAP version differs from the paper's run; trial windows from the NWB times."
      ],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -755,6 +772,7 @@
      "deviations": [
       "As fig5-multivariate-layer."
      ],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -814,6 +832,7 @@
      "notebook": null,
      "notes": "Needs L0 events; see ext1-3-kinetics-no-difference.",
      "deviations": [],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -834,6 +853,7 @@
      "deviations": [
       "Trial windows from the NWB times; fold order follows the code's stacking (trial, then stimulus name)."
      ],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -854,6 +874,7 @@
      "deviations": [
       "As fig6-category-decoding."
      ],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -881,6 +902,7 @@
      "deviations": [
       "As fig3a-layer-specific."
      ],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -950,6 +972,7 @@
      "deviations": [
       "As fig3a-layer-specific."
      ],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -968,6 +991,7 @@
      "notebook": null,
      "notes": "One of the two mediators is pupil diameter, and the other analysis uses it as covariate; the Methods' diameter is in no public file, and the code's diameter from the deposit's area gives readings that disagree (see fig4-pupil-effect-size). The dandiset has no eye tracking.",
      "deviations": [],
+     "assumed": false,
      "disagreed": false,
      "data": "with_inputs",
      "where": null,
@@ -1000,6 +1024,7 @@
      "deviations": [
       "Mean ND per stimulus uses trial windows from the NWB times."
      ],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -1043,6 +1068,7 @@
      "deviations": [
       "As fig8-nd-sd-correlation."
      ],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
@@ -1061,6 +1087,7 @@
      "notebook": "reproduce_mayner_2022.ipynb",
      "notes": "Two-sided, no property has p < 0.05 (luminance r = -0.26, p = 0.42; contrast r = 0.26, p = 0.42; spectral energy r = 0.51, p = 0.087 with per-pixel DC removal and r = 0.55, p = 0.066 with the code's global mean). One-sided, spectral energy has p = 0.044 and 0.033 under the two DC readings. The readings differ, which the criterion blocks. The code's spectral energy values are reproduced to 2e-15.",
      "deviations": [],
+     "assumed": false,
      "disagreed": false,
      "data": "with_labels",
      "where": null,
