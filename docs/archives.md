@@ -9,9 +9,9 @@ A dataset is keyed as `<archive>:<id>` and shown as `<LABEL>:<id>`, for example
 `DANDI:000003`. Its files in this repository (`claims/`, `questions/`,
 `transcripts/`, the `attempt/` branch, the paper store) are under its folder
 name: the identifier alone for DANDI, which the registry began with, and
-`<archive>-<id>` for any other archive. `tools/datasets.py` holds the table of
-archives and turns one form of a dataset's name into another. The workflows
-take a dataset in any of these forms.
+`<archive>-<id>` for any other archive. Each archive is an adapter, a module in `tools/archives/` ("Adding an archive",
+below), and `tools/datasets.py` turns one form of a dataset's name into another.
+The workflows take a dataset in any of these forms.
 
 ## DANDI
 
@@ -105,25 +105,28 @@ take a dataset in any of these forms.
   `/api/v2/files/<file id>/download` answers 401 without a bearer token, and
   the website's download links (`/downloads/file_stream/<file id>`) answer 403
   to scripts. A token comes from an API account, which a person makes from
-  their Dryad account (an ORCID login), "My account", "API account"; exchange
-  its client id and secret for a token, which lasts 10 hours, with
+  their Dryad account (an ORCID login), "My account", "API account"; its client
+  id and secret are exchanged for a token, which lasts 10 hours, at
   `POST https://datadryad.org/oauth/token` (`grant_type=client_credentials`).
-  The token is given to agents as `DRYAD_TOKEN`; never print it, or write it
-  into a notebook, its outputs or the record. Send it as
-  `Authorization: Bearer $DRYAD_TOKEN`. The API answers 302 to a presigned
-  URL in Dryad's S3 bucket, which answers 400 if the bearer header comes with
-  it: use `requests.get(url, headers=...)`, which drops the header on a
-  redirect to another host, not `urllib`, which forwards it. Read the file
-  into memory: `pandas.read_csv(io.BytesIO(...))`, `pandas.read_excel` for the
-  Excel workbooks most datasets hold (list every sheet), and `zipfile` on a
-  `BytesIO` for zips. Check each file's SHA-256 against the file list. Do not
-  write whole files to disk. The dataset's README (`README.md`, shown also on
-  its page) describes the files and columns; there may be none, and a data
-  dictionary may be a data file of its own (`Metadata.csv`).
+  The download answers 302 to a presigned URL in Dryad's S3 bucket, which
+  answers 400 if the bearer header comes with it.
+- **Staged, not streamed.** An agent's commands never see credentials (the
+  workflows and `encore check` strip them), so an agent cannot download from
+  Dryad. Before an agent starts, `tools/stage_files.py` (the adapter's
+  `stage()`) downloads every file of the pinned version to
+  `/tmp/dryad/<id>/<version id>/` and checks each against the SHA-256 the file
+  list gives; the agent reads them there, in place, into memory
+  (`pandas.read_excel` for the Excel workbooks most datasets hold, listing every
+  sheet; `zipfile` for zips). The notebooks read the same paths. The
+  credentials are the secrets `DRYAD_CLIENT_ID` and `DRYAD_CLIENT_SECRET` in
+  the workflows that run agents and entries (`attempt.yml`, `check.yml`), and
+  the same environment variables for `encore check`. The dataset's README
+  (`README.md`, shown also on its page) describes the files and columns; there
+  may be none, and a data dictionary may be a data file of its own
+  (`Metadata.csv`).
 - **In an entry.** The entry names the dataset as `dryad:<id>/<version id>`
-  under `related`. Its notebooks need `DRYAD_TOKEN` when they run, so the
-  workflows that run agents and confirm entries need it as a secret, refreshed
-  within 10 hours of use; they do not have it yet.
+  under `related`, and gives in the notebook header the SHA-256 of each file
+  read.
 
 ## Local and remote (`encore check`)
 
@@ -136,17 +139,30 @@ read them is in [protocol.md](protocol.md), "Local and remote datasets".
 
 ## Adding an archive
 
-1. Add the archive to `ARCHIVES` in `tools/datasets.py`: its label, its name,
-   the address of a dataset's page, the target list's file name, and the
-   sentence agents get about reading it.
-2. Write a builder for its target list in `targets/`. Each target needs an
-   `id`, a `name` and its `papers` (DOI, title, whether a preprint), as in
-   `targets/dandisets.json`.
-3. Add a section here, as for DANDI: what a dataset and a version are, how to
+Each archive is an adapter: one module in `tools/archives/`, which defines
+`ARCHIVE = Archive(...)` (see `tools/archives/__init__.py`, and
+`tools/archives/crcns.py` for the simplest). Nothing else lists the archives:
+the site, the Pipeline page, the paper store, the runner and `encore check`
+take them from there.
+
+1. Write the module. Give the archive's key (the first part of a dataset's key
+   and folder name), its label and name, the address of a dataset's page, the
+   target list's file name, the sentence agents get about reading a dataset
+   (with a target's fields as `{field}`), the hosts an agent's commands must
+   reach, and whether its identifiers ignore case.
+2. If agents cannot read its files directly (the archive needs credentials, as
+   Dryad does), give the module a `stage(target, root)` that downloads the
+   pinned version's files to `root/<archive>/<id>/<version>/` and checks them,
+   and list the environment variables it needs in `secrets`. Add those secrets
+   to the staging steps of `attempt.yml` and `check.yml`, and to the
+   repository's secrets. The access sentence then points agents to the staged
+   directory.
+3. Write its target list in `targets/`, by hand or with a builder named in the
+   module (`builder`). Each target needs an `id`, a `name` and its `papers`
+   (DOI, title, whether a preprint), as in `targets/dandisets.json`, and
+   whatever field pins a version (`published_version`).
+4. Add a section here, as for DANDI: what a dataset and a version are, how to
    pin one, and how to read files without downloading them.
-4. Give attempts on it the archive's name in their `dataset` block (`archive`,
+5. Give attempts on it the archive's name in their `dataset` block (`archive`,
    `id`, `version`, and `doi` or `modified`), and give entries a relation
    `<archive>:<id>/<version>`.
-
-The site, the Pipeline page, the paper store and the runner then handle the
-archive's datasets without further changes.
