@@ -73,12 +73,12 @@ claims:
     paragraph 5
   quote: gathered during the 26 days leading up to and including the day of the 2023 snap
     Slovak Parliamentary Elections
-  criterion: From TIME.STAMP of the raw rows. Reproduced when every timestamp falls between
-    2023-09-05 and 2023-09-30 inclusive. The time zone of TIME.STAMP is not stated; dates are
-    read as given. Table 1's sample entry (2023-10-09 08:57:38) falls outside this window, so
-    the number and share of rows outside it are reported, and the claim is partially
-    reproduced when 99% or more of rows fall inside (the 99% is this file's choice; the paper
-    sets no share).
+  criterion: From TIME.STAMP of the raw rows. The time zone of TIME.STAMP is not stated, so it
+    is open, readings (a) dates as given and (b) the timestamp read as UTC and converted to
+    Slovak time (CEST, UTC+2). Reproduced when, under one reading, every timestamp falls between
+    2023-09-05 and 2023-09-30 inclusive. Table 1's sample entry (2023-10-09 08:57:38) falls
+    outside this window, so the number of rows outside it and their dates are reported under
+    each reading. The paper sets no share of rows that may fall outside.
 - id: party-positions-structure
   statement: The Party Positions Dataset lists the 39 statements in Slovak, Hungarian and
     English and holds 429 party positions, both party self-placements and expert-coded
@@ -114,7 +114,7 @@ claims:
     parties, each with positions on the 39 statements.
 - id: party-self-placements
   statement: Four of the eleven parties returned the self-placement questionnaire.
-  source: Methods, Party selection and coding, paragraph 3
+  source: Methods, Party selection and coding, paragraph 4
   quote: Responses were garnered from four political entities out of eleven
   depends_on:
   - eleven-parties
@@ -130,7 +130,7 @@ claims:
 - id: coder-agreement-kappa
   statement: Agreement between the two expert coders of party positions was high, with a
     weighted Cohen's kappa of 0.84.
-  source: Methods, Party selection and coding, paragraph 2
+  source: Methods, Party selection and coding, paragraph 3
   quote: we employed Weighted Cohen’s Kappa37, which provided a value of κ = 0.84, indicating a
     high level of consistency among coders
   expected:
@@ -161,7 +161,8 @@ claims:
     Readings for a dimension score (a) the mean over its statements of the position for
     polarity +1 and 100 minus the position for polarity -1; (b) for the landscape, a start at
     50 moved by each statement's polarity-adjusted deviation from 50, averaged over the axis's
-    statements. "No Opinion" party positions are left out under both. Reproduced when the
+    statements. How "No Opinion" party positions enter is not stated, readings (i) left out and
+    (ii) scored as 50, as the cleaning does for users. Reproduced when the
     counts of assigned statements are 18 and 16 and, under one reading, the order of the
     parties on each uni-dimension and each landscape axis matches Figs. 2 and 3 of the
     published paper. The figures were not readable here, so the expected placements are read
@@ -170,7 +171,7 @@ claims:
 - id: party-clustering
   statement: Hierarchical clustering of the parties' recoded positions, by Manhattan distance
     and average linkage, groups the parties largely as anticipated (Fig. 7).
-  source: Technical Validation, Content validation, paragraph 6; Fig. 7
+  source: Technical Validation, Content validation, paragraph 7; Fig. 7
   quote: We used the ‘recoded_party_positions’ dataset and computed pairwise Manhattan
     distances to emphasize the absolute differences in policy positions, applying average
     linkage clustering
@@ -180,12 +181,15 @@ claims:
     in the Methods; pairwise Manhattan distances between the 11 parties over the 39 statements;
     average linkage. The recoding behind 'recoded_party_positions' is made by the deposited R
     code and is not described; for "No Opinion" the readings are (a) recoded to 50, as the
-    cleaning does for users, and (b) left out of each pairwise distance. Reproduced when, under
+    cleaning does for users, and (b) left out of each pairwise distance. Which positions are
+    clustered is not stated either; the final positions adopted by the team (Methods, Party
+    selection and coding, paragraph 4) are the natural reading, and the expert-coded positions
+    are a variant if the dataset holds them separately. Reproduced when, under
     one reading, the dendrogram's merge order (its topology) matches Fig. 7 of the published
     paper. The text names no expected grouping and the figure was not readable here, so the
     author reads it from the published figure.
 - id: table2-gender
-  statement: Of the responses with gender given, 41.61% are female (44,919), 57.08% male
+  statement: Of the responses counted in Table 2, 41.61% are female (44,919), 57.08% male
     (61,626) and 1.32% other or prefer not to say (1,420).
   source: Table 2, Gender rows
   inferred: The numbers are only in Table 2; no sentence of the text states them.
@@ -213,10 +217,12 @@ claims:
     unit: percent
   criterion: The paper does not say which rows Table 2 counts. Each of its three blocks sums to
     107,965 (computed here from the table), fewer than the 134,699 raw rows, and each
-    percentage is over that sum. Readings (a) rows left after the cleaning (no -1 in S1 to
-    S39), with gender not NA; (b) all raw rows with gender not empty. Reproduced when, under one
-    reading, every count and percentage is within tolerance. The total under each reading is
-    reported.
+    percentage is over that sum. That the gender, age and education blocks share one total
+    suggests the table counts rows with all three given. Readings (a) rows left after the
+    cleaning (no -1 in S1 to S39), with gender not NA; (b) all raw rows with gender not empty;
+    (c) cleaned rows with gender, age and education all given; (d) raw rows with all three
+    given. Reproduced when, under one reading, every count and percentage is within tolerance.
+    The total under each reading is reported.
 - id: table2-age
   statement: Respondents are skewed toward younger ages; 32.32% are 25 to 34 (34,894) and
     25.79% are 35 to 44 (27,847), with 2,716 aged 65 to 74 and 683 aged 75 or older (Table 2).
@@ -260,7 +266,8 @@ claims:
     tolerance: 2.58
     unit: percent
   criterion: The rows counted are open, with the readings of table2-gender (a) cleaned rows with
-    age not NA, (b) raw rows with age not empty. Reproduced when, under one reading, every count
+    age not NA, (b) raw rows with age not empty, (c) cleaned rows with gender, age and
+    education all given, (d) raw rows with all three given. Reproduced when, under one reading, every count
     and the two percentages are within tolerance. The other percentages of Table 2 (1.17, 6.50,
     11.38, 14.06, 5.63, 2.52, 0.63) are reported against the result.
 - id: table2-education
@@ -294,7 +301,8 @@ claims:
     tolerance: 6.44
     unit: percent
   criterion: The rows counted are open, with the readings of table2-gender (a) cleaned rows with
-    education not NA, (b) raw rows with education not empty. Reproduced when, under one
+    education not NA, (b) raw rows with education not empty, (c) cleaned rows with gender, age
+    and education all given, (d) raw rows with all three given. Reproduced when, under one
     reading, every count and the percentage are within tolerance.
 - id: age-education-inconsistencies
   statement: The multivariate check found 40 respondents under 18 and 400 aged 18 to 20
@@ -463,3 +471,18 @@ claims:
     tolerance: 27084
   criterion: Reproduced when the platform's view count for 5 to 30 September 2023 is within
     tolerance. The user responses alone cannot test it, since views are not responses.
+checks:
+- date: 2026-10-27
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - collection-window. Removed the 99% share for a partial outcome, a threshold the paper does not give. Named the time zone of TIME.STAMP as open, with readings as given and as UTC converted to Slovak time, since it decides which day a response near midnight falls on.
+  - party-self-placements. Source corrected to paragraph 4 of Party selection and coding; the sentence is in the fourth paragraph ("In tandem with expert coding").
+  - coder-agreement-kappa. Source corrected to paragraph 3 of Party selection and coding; the kappa sentence is in the third paragraph ("Our coding process").
+  - uni-and-landscape-placements. The criterion left "No Opinion" party positions out as a fact; the paper does not say how they enter. Named it open, with readings left out and scored as 50.
+  - party-clustering. Source corrected to paragraph 7 of Content validation; paragraph 6 is the factor analysis. Named as open which party positions are clustered (final or expert-coded), which the text does not say.
+  - table2-gender, table2-age, table2-education. Added readings (c) and (d), rows with gender, age and education all given, since the three blocks of Table 2 share one total (107,965). Reworded the table2-gender statement to "Of the responses counted in Table 2", since the rows counted are open.
+  - Open. The deposited R code was not read (it is in the dataset's Figshare item); it may settle the rows behind Table 2, the parallel analysis settings, the recoding behind recoded_party_positions and the dimension scoring. The author should read it and record what it fixes.
+  - Open. efa-loadings-consistent rests on thresholds the paper does not give ("strong" loadings at 0.4 or 0.5, consistency on 35 of 39 statements); the file says they are its own choices, and an outcome there rests on an assumption.
+  - Open. Supplementary Table 1 and Figs. 2, 3 and 7 were not in the text read; uni-and-landscape-placements and party-clustering take their expected placements from the published figures.
