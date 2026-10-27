@@ -1,0 +1,361 @@
+schema_version: 2
+id: dryad-bvq83bkk9-dias-2025-01
+dataset:
+  archive: dryad
+  id: bvq83bkk9
+  version: "333377"
+  doi: 10.5061/dryad.bvq83bkk9
+paper: doi:10.1098/rspb.2024.2556
+date: 2026-10-27
+entry: dryad-bvq83bkk9-dias-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-10
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/40506524181
+inputs:
+- what: The paper's code (Code.zip, SHA-256 cc9f58b9855aec4e3aca09be4138707d07fc34739ec5762e54e1f5bca48ddbc8),
+    read in memory for lm_mod.stan, which the Stan fits run, and for the column numbers and row numbers the
+    scripts select and drop, which the notebook checks against the data. It holds no data.
+  source: https://doi.org/10.5281/zenodo.14226724
+outcomes:
+- claim: sample-sizes
+  outcome: reproduced
+  notebook: reproduce_dias_2025.ipynb
+  output: claim:sample-sizes
+  measured: [27486, 177, 11798, 174, 12318, 171, 3250, 11731, 11481, 3122]
+  notes: Under filtering reading (a), the data as deposited, every count equals the paper's exactly
+    (177, 174 and 171 species-years and 11798, 12318 and 3250 birds in the main models; 11731, 11481
+    and 3122 in the preliminary models). The three main models together hold 27366 birds, the paper's
+    total; the file has 27486 specimens, the 120 others being in species-years dropped for a missing
+    climate value, within the 10% tolerance. Readings (c) and (d) remove 17 and 70 specimens and keep
+    every count within tolerance; reading (b) removes none. The rows the scripts drop by number are
+    the rows with a missing value in the columns they select, in all six tables.
+  deviations:
+  - The specimen count compared with 27366 is the file's 27486; the paper's 27366 is the number in
+    the main models, which is also printed.
+- claim: table1-hy-wintering-temperature
+  outcome: blocked
+  blocked_by: too_large
+  notebook: stan_models.ipynb
+  output: timing
+  notes: Needs the HY Stan model, which stan_models.ipynb estimates at 93 minutes for one filtering
+    reading (4 chains of 4000 iterations, timed on 200), over the 30-minute notebook limit; three
+    readings are needed. Not run.
+- claim: table1-hy-prebreeding-temperature
+  outcome: blocked
+  blocked_by: too_large
+  notebook: stan_models.ipynb
+  output: timing
+  notes: Needs the HY Stan model, estimated at 93 minutes per filtering reading. Not run.
+- claim: s4-s6-spring-migration-temperature-none
+  outcome: not_reproduced
+  notebook: reproduce_dias_2025.ipynb
+  output: claim:s4-s6-spring-migration-temperature-none
+  notes: All 10 intervals per filtering reading (MinTempSpringMig in the three models,
+    MinTempNextSpringMig and PrevMinTempSpringMig, and their tarsus interactions) include 0 under
+    interval reading (i), the pooled quantiles. Under reading (ii), the chain-4 HPD interval of
+    MinTempNextSpringMig in the spring AHY model is -0.0275 to -0.0002 (reading a) and -0.0292 to
+    -0.0005 (reading c), excluding 0; its pooled interval is -0.0275 to 0.0007, estimate -0.013,
+    pMCMC 0.056. The criterion counts any exclusion as not reproduced. With ten other seed sets the
+    HPD upper bound lies between -0.0000 and 0.0022 and excludes 0 in 1 of 10, so the outcome rests on
+    the Monte Carlo draw; the paper prints the bound as 0.00. A question is open on how such a bound is
+    judged.
+  deviations:
+  - The MCMCglmm models are sampled with a Gibbs sampler of the same model and priors written in
+    Python (wingallom.gibbs_glmm), since MCMCglmm, an R package, cannot be installed in the entry's
+    locked Python environment. Seeds are chosen here; the paper's code sets none.
+- claim: s5-s6-ahy-prebreeding-wintering-temperature-none
+  outcome: reproduced
+  notebook: reproduce_dias_2025.ipynb
+  output: claim:s5-s6-ahy-prebreeding-wintering-temperature-none
+  notes: In the spring and autumn AHY preliminary models, every interval of TempWinMo, PrevTempWinMo,
+    PrevPrevTempWinMo, AvgTempPreBreedBase and PrevAvgTempPreBreedBase and of their tarsus
+    interactions includes 0, under both interval readings and all three filtering readings. The
+    closest is spring AHY PrevTempWinMo, -0.015 (-0.031 to 0.002) under reading (a).
+  deviations:
+  - MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none.
+- claim: table1-hy-breeding-temperature
+  outcome: blocked
+  blocked_by: too_large
+  notebook: stan_models.ipynb
+  output: timing
+  notes: Needs the HY Stan model, estimated at 93 minutes per filtering reading. Not run. The HY
+    preliminary model, which is run, gives TempBreedMoBase -0.065 (-0.083 to -0.048), but that is not
+    the claim's test.
+- claim: table2-spring-ahy-breeding-temperature
+  outcome: blocked
+  blocked_by: too_large
+  notebook: stan_models.ipynb
+  output: timing
+  notes: Needs the spring AHY Stan model, estimated at 77 minutes per filtering reading. Not run.
+- claim: table3-autumn-ahy-prior-breeding-temperature
+  outcome: reproduced
+  notebook: autumn_ahy_main_a.ipynb
+  output: claim:table3-autumn-ahy-prior-breeding-temperature
+  measured: [-0.094, -0.012]
+  notes: PrevTempBreedBase in the autumn AHY Stan model has an intercept effect of -0.094 (pd 99.6%)
+    and a slope effect of -0.012 (pd 71.3%) under reading (a); -0.091 (99.4%) and -0.026 (76.5%)
+    under (c) (autumn_ahy_main_c.ipynb); -0.099 (99.6%) and -0.009 (75.8%) under (d)
+    (autumn_ahy_main_d.ipynb). All within tolerance. The fits do not converge well (largest R-hat
+    1.08, 1.19 and 1.60; 14%, 19% and 34% of draws divergent), so the estimates carry more
+    uncertainty than their s.d. shows.
+  deviations:
+  - lm_mod.stan is run with CmdStan 2.40 through cmdstanpy, in place of rstan, after a port to the
+    current array syntax that leaves the model unchanged; PyStan does not load on Python 3.13. With
+    the code's seed the draws still differ from the paper's.
+- claim: s6-autumn-ahy-recent-breeding-temperature-none
+  outcome: reproduced
+  notebook: reproduce_dias_2025.ipynb
+  output: claim:s6-autumn-ahy-recent-breeding-temperature-none
+  notes: TempBreedMoBase in the autumn AHY preliminary model is 0.022 (-0.017 to 0.061, chain-4 HPD
+    -0.015 to 0.062) under reading (a), and its tarsus interaction 0.020 (-0.017 to 0.058); both
+    include 0 under both interval readings and all filtering readings.
+  deviations:
+  - MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none.
+- claim: s4-hy-autumn-migration-temperature-none
+  outcome: reproduced
+  notebook: reproduce_dias_2025.ipynb
+  output: claim:s4-hy-autumn-migration-temperature-none
+  notes: MinTempFallMig in the HY preliminary model is -0.007 (-0.020 to 0.006) under reading (a) and
+    its tarsus interaction -0.000 (-0.013 to 0.013); both include 0 under both interval readings and
+    all filtering readings.
+  deviations:
+  - MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none.
+- claim: table2-spring-ahy-autumn-migration-temperature
+  outcome: blocked
+  blocked_by: too_large
+  notebook: stan_models.ipynb
+  output: timing
+  notes: Needs the spring AHY Stan model, estimated at 77 minutes per filtering reading. Not run.
+- claim: table3-autumn-ahy-prior-autumn-temperature
+  outcome: reproduced
+  notebook: autumn_ahy_main_a.ipynb
+  output: claim:table3-autumn-ahy-prior-autumn-temperature
+  measured: [-0.02, 0.013]
+  notes: PrevMinTempFallMig has intercept and slope effects -0.020 (pd 76.2%) and 0.013 (pd 69.8%)
+    under reading (a), -0.019 (74.2%) and 0.008 (63.3%) under (c), -0.018 (59.2%) and 0.007 (53.3%)
+    under (d); both pd stay below 90% under every reading.
+  deviations:
+  - lm_mod.stan run with CmdStan in place of rstan, as for table3-autumn-ahy-prior-breeding-temperature.
+- claim: table3-autumn-ahy-recent-autumn-temperature
+  outcome: partially_reproduced
+  notebook: autumn_ahy_main_a.ipynb
+  output: claim:table3-autumn-ahy-recent-autumn-temperature
+  measured: [0.028, -0.032]
+  notes: MinTempFallMig has an intercept effect of 0.028 (pd 87.6%) and a slope effect of -0.032 (pd
+    90.5%) under reading (a), and 0.027 (88.9%) and -0.032 (91.2%) under (c), as the claim states.
+    Under (d) the slope pd is 87.5%, below 90% (intercept 0.022, pd 89.4%); signs and means hold
+    under every reading. The paper's pd values (88.6% and 90.3%) are themselves within 1.5 points of
+    the line, and the reading (d) fit is the least converged (R-hat 1.60, every draw of one chain
+    divergent).
+  deviations:
+  - lm_mod.stan run with CmdStan in place of rstan, as for table3-autumn-ahy-prior-breeding-temperature.
+- claim: table1-hy-wintering-prebreeding-precipitation
+  outcome: blocked
+  blocked_by: too_large
+  notebook: stan_models.ipynb
+  output: timing
+  notes: Needs the HY Stan model, estimated at 93 minutes per filtering reading. Not run.
+- claim: table2-spring-ahy-wintering-prebreeding-precipitation
+  outcome: blocked
+  blocked_by: too_large
+  notebook: stan_models.ipynb
+  output: timing
+  notes: Needs the spring AHY Stan model, estimated at 77 minutes per filtering reading. Not run.
+- claim: table3-autumn-ahy-prior-wintering-precipitation
+  outcome: partially_reproduced
+  notebook: autumn_ahy_main_a.ipynb
+  output: claim:table3-autumn-ahy-prior-wintering-precipitation
+  measured: [0.031, 0.027]
+  notes: Under reading (a) the claim holds. PrevPrevPrecipWinMo has intercept and slope effects of
+    0.031 (pd 90.4%) and 0.027 (pd 88.6%), and in the preliminary model PrevPrecipPreBreedBase (0.027,
+    -0.002 to 0.055) and its tarsus interaction include 0 under both interval readings and all
+    filtering readings. Under (c) the intercept pd is 89.1% and under (d) the slope pd is 93.8%
+    (intercept 93.5%), so one effect crosses the 90% line under each of those readings; signs and
+    means hold under all three. The paper's intercept pd is 90.0%, on the line.
+  deviations:
+  - lm_mod.stan run with CmdStan in place of rstan, and MCMCglmm replaced by a Gibbs sampler of the
+    same model, as for the claims above.
+- claim: table2-spring-ahy-recent-wintering-precipitation
+  outcome: blocked
+  blocked_by: too_large
+  notebook: stan_models.ipynb
+  output: timing
+  notes: Needs the spring AHY Stan model, estimated at 77 minutes per filtering reading. Not run.
+- claim: s6-autumn-ahy-recent-wintering-prebreeding-precipitation-none
+  outcome: not_reproduced
+  notebook: reproduce_dias_2025.ipynb
+  output: claim:s6-autumn-ahy-recent-wintering-prebreeding-precipitation-none
+  notes: PrevPrecipWinMo (-0.020, -0.047 to 0.007 under reading a), PrecipPreBreedBase (0.004, -0.029
+    to 0.034) and their tarsus interactions include 0 under both interval readings in filtering
+    readings (a) and (c). Under reading (d) the chain-4 HPD of the tarsus by PrevPrecipWinMo
+    interaction is -0.0532 to -0.0003 and excludes 0 (pooled interval -0.0532 to 0.0009, pMCMC
+    0.054), which the criterion counts as not reproduced. With ten other seed sets that bound lies
+    between -0.0013 and 0.0040 and excludes 0 in 1 of 10, so the outcome rests on the Monte Carlo
+    draw under one filtering reading. A question is open on how such a bound is judged.
+  deviations:
+  - MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none.
+- claim: tables1-3-breeding-precipitation
+  outcome: blocked
+  blocked_by: too_large
+  notebook: stan_models.ipynb
+  output: timing
+  notes: Needs the HY and spring AHY Stan models, estimated at 93 and 77 minutes per filtering
+    reading. Not run. The autumn AHY part was run (autumn_ahy_main_a.ipynb, _c and _d) and holds;
+    PrevPrecipBreedBase has intercept effects of -0.046, -0.056 and -0.044 (pd 93.0%, 93.8% and 95.7%)
+    and slope pd of 65.4%, 56.2% and 76.5% under readings (a), (c) and (d).
+- claim: s6-autumn-ahy-recent-breeding-precipitation-none
+  outcome: reproduced
+  notebook: reproduce_dias_2025.ipynb
+  output: claim:s6-autumn-ahy-recent-breeding-precipitation-none
+  notes: PrecipBreedMoBase in the autumn AHY preliminary model is 0.020 (-0.018 to 0.059) under reading
+    (a), and its tarsus interaction 0.010 (-0.030 to 0.048); both include 0 under both interval
+    readings and all filtering readings.
+  deviations:
+  - MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none.
+- claim: tables1-3-year-intercept
+  outcome: blocked
+  blocked_by: too_large
+  notebook: stan_models.ipynb
+  output: timing
+  notes: Needs the HY and spring AHY Stan models, estimated at 93 and 77 minutes per filtering
+    reading. Not run. The autumn AHY part holds; the year effect on the intercept is 0.192, 0.197 and
+    0.193 per decade (pd 99.5%, 99.5% and 99.7%) under readings (a), (c) and (d), against 0.19.
+- claim: table1-hy-year-slope
+  outcome: blocked
+  blocked_by: too_large
+  notebook: stan_models.ipynb
+  output: timing
+  notes: Needs the HY Stan model, estimated at 93 minutes per filtering reading. Not run.
+- claim: tables2-3-ahy-year-slope-none
+  outcome: blocked
+  blocked_by: too_large
+  notebook: stan_models.ipynb
+  output: timing
+  notes: Needs the spring AHY Stan model, estimated at 77 minutes per filtering reading. Not run. The
+    autumn AHY part holds; the year effect on the slope is 0.014, 0.014 and 0.018 (pd 73.2%, 73.1% and
+    83.8%) under readings (a), (c) and (d), all below 90%.
+- claim: table-s1-species-consistency-hy
+  outcome: blocked
+  blocked_by: too_large
+  notebook: stan_models.ipynb
+  output: timing
+  notes: Needs the HY Stan model, estimated at 93 minutes per filtering reading. Not run.
+- claim: s7-low-phylogenetic-signal
+  outcome: reproduced
+  notebook: reproduce_dias_2025.ipynb
+  output: claim:s7-low-phylogenetic-signal
+  measured: [0.056, 0.062, 0.087]
+  notes: The posterior modes of lambda (chain 4) are 0.056, 0.062 and 0.087 for the HY, spring AHY and
+    autumn AHY models under reading (a), and 0.038 to 0.089 over the three filtering readings, each
+    inside the paper's HPD interval (0.01 to 0.21, 0.01 to 0.16, 0.01 to 0.21). They are larger than
+    the paper's 0.02, 0.02 and 0.04, and the HPD intervals found here are wider (0.013 to 0.385, 0.013
+    to 0.303 and 0.012 to 0.481 under reading a). The modes of single chains range from 0.041 to 0.096.
+  deviations:
+  - MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none.
+- claim: s4-s6-no-multicollinearity
+  outcome: reproduced
+  notebook: reproduce_dias_2025.ipynb
+  output: claim:s4-s6-no-multicollinearity
+  measured: [3.339, 2.427, 6.084]
+  notes: Every VIF is below 10. The largest are 3.339 (HY, tarsus by year), 2.427 (spring AHY, tarsus)
+    and 6.084 (autumn AHY, tarsus by year) under reading (a), against 3.34, 2.43 and 6.08; under
+    readings (c) and (d) they range from 3.312 to 3.379, 2.400 to 2.426 and 6.088 to 6.472, all within
+    tolerance.
+- claim: s4-s6-climate-variable-selection
+  outcome: reproduced
+  notebook: reproduce_dias_2025.ipynb
+  output: claim:s4-s6-climate-variable-selection
+  notes: Under interval reading (i), the climate main effects whose interval excludes 0 are exactly
+    the main models' climate predictors in all three classes, under every filtering reading (no
+    difference). Under reading (ii), MinTempNextSpringMig is also selected in the spring AHY model
+    under filtering readings (a) and (c), one difference; its HPD bound is the one discussed under
+    s4-s6-spring-migration-temperature-none. The bounds the claim names are, unrounded under reading
+    (a), 0.0014 (HY MinTempSpringMig, upper), -0.0048 (spring AHY PrecipWinMo, upper), 0.0028 (autumn
+    AHY PrevPrevPrecipWinMo, lower) and 0.0043 (autumn AHY MinTempFallMig, lower).
+  deviations:
+  - MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none.
+- claim: s4-s5-climate-size-interactions
+  outcome: reproduced
+  notebook: reproduce_dias_2025.ipynb
+  output: claim:s4-s5-climate-size-interactions
+  notes: Under interval reading (i) and every filtering reading, the HY tarsus by PrevTempWinMo (0.0155,
+    0.0030 to 0.0277 under reading a) and the spring AHY tarsus by PrevPrecipWinMo (0.0151, 0.0003 to
+    0.0295) interactions are positive and exclude 0, and no other tarsus by climate interaction does in
+    any model. Under reading (ii) the same holds except under filtering reading (d), where the autumn
+    AHY tarsus by PrevPrecipWinMo HPD also excludes 0. The HY tarsus by pre-breeding temperature
+    interaction is at the line. Its pooled interval ends at 0.0008 (0.0002 to 0.0010 over ten other
+    seed sets, never excluding 0), while its chain-4 HPD excludes 0 in 4 of 10 seed sets.
+  deviations:
+  - MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none.
+- claim: s8-climate-trends
+  outcome: reproduced
+  notebook: reproduce_dias_2025.ipynb
+  output: claim:s8-climate-trends
+  measured: [0.0209, 0.0339, 0.0546, 0.0155, 0.024, -0.0199]
+  notes: Under both data readings and both interval readings, the eight trend calls match Table S8.
+    Under data reading (a) the trends per year are 0.0209 (pre-breeding precipitation), 0.0339
+    (breeding temperature), 0.0546 (breeding precipitation), 0.0155 (autumn migration temperature),
+    0.0240 (wintering temperature) and -0.0199 (wintering precipitation), all within tolerance, with
+    intervals excluding 0; pre-breeding temperature (-0.0025, -0.0160 to 0.0112) and spring migration
+    temperature (-0.0045, -0.0184 to 0.0090) include 0. Data reading (b) gives the same calls.
+  deviations:
+  - The code's input table (envdata3) is defined nowhere; it is built from the deposited climate files
+    under the claims file's two readings. Reading (a) has 185 species-years, 1980 to 2016; the files
+    hold no same-year value for 2017.
+  - MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none.
+- claim: climate-trends-cannot-explain-wing-increase
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on table1-hy-breeding-temperature, tables1-3-breeding-precipitation and
+    table2-spring-ahy-autumn-migration-temperature, which are blocked as too large. Of its inputs,
+    s8-climate-trends (positive breeding temperature, breeding precipitation and autumn migration
+    temperature trends) and table3-autumn-ahy-prior-breeding-temperature (negative intercept effect)
+    were tested and agree with it.
+- claim: climate-explains-little
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on tables1-3-year-intercept, blocked as too large; both of its readings need the
+    three main models.
+- claim: s9-s11-expanded-ranges
+  outcome: blocked
+  blocked_by: too_large
+  notebook: stan_models.ipynb
+  output: timing
+  notes: Needs six more Stan fits per filtering reading (two per class), about 384 minutes for one
+    reading by the estimates of stan_models.ipynb, and depends on tables1-3-year-intercept, which is
+    blocked. Not run.
+findings:
+- kind: metadata_error
+  statement: The README says some specimens in morphdata.csv were filtered out before analysis and that
+    the filtering steps are in the code. The code applies no filter, and the deposited file gives every
+    sample size of the paper exactly without one; the Methods' 5-MAD filter, applied to the file, would
+    remove 0 to 70 more specimens depending on how it is read. The file appears to be the filtered data.
+- kind: other
+  statement: The paper's 27 366 specimens are the birds in the three main models; morphdata.csv holds
+    27 486, the other 120 being in species-years without climate data. Neither the README nor the paper
+    says so.
+- kind: identifier_missing
+  statement: morphdata.csv has no catalogue number or other specimen identifier, so its measurements
+    cannot be linked to catnodata.csv. catnodata.csv has 26 436 rows, 1050 fewer than morphdata.csv,
+    5061 rows without a catalogue number and 945 repeated catalogue numbers; for 44 catalogue numbers the
+    repeated rows differ in species, sex, age, year or season.
+- kind: other
+  statement: ed_FHY.csv and ed_AHYfall.csv are identical files, and ed_AHYspring.csv is the same table
+    shifted by one year; this fits the README's description of their use, but the README does not say
+    so.
+- kind: methods_unavailable
+  statement: The code selects climate columns by number from R's merged table and drops species-years by
+    hand-coded row numbers; the notebook shows these match the deposited files. The Table S8 code reads an
+    object (envdata3) that no script defines.
+- kind: other
+  statement: The hierarchical Stan model as published converges poorly on the autumn AHY data (14% to 34%
+    of draws divergent, largest R-hat 1.08 to 1.60 with the code's seed and settings); the code and the
+    paper report no diagnostics.
