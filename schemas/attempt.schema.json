@@ -245,6 +245,10 @@
               "minLength": 1
             }
           },
+          "assumed": {
+            "description": "True when the outcome rests on an assumption about a method the paper leaves open: a choice the paper best supports, stated in a deviation that says what was assumed and why (docs/protocol.md, Author, step 1.6).",
+            "type": "boolean"
+          },
           "proposed": {
             "description": "A change of outcome found after the last verification round, held until a further round agrees with it.",
             "type": "object",
@@ -295,6 +299,33 @@
                 "blocked_by",
                 "notes"
               ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "assumed": {
+                  "const": true
+                }
+              },
+              "required": [
+                "assumed"
+              ]
+            },
+            "then": {
+              "required": [
+                "deviations"
+              ],
+              "properties": {
+                "deviations": {
+                  "minItems": 1
+                },
+                "outcome": {
+                  "not": {
+                    "const": "blocked"
+                  }
+                }
+              }
             }
           }
         ]
