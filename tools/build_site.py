@@ -1516,13 +1516,14 @@ def attempts_timeline(data: dict, dandiset: str, root: str, shown: list[dict]) -
                  if len(papers) > 1 else "")
         name = f'Attempt {e(a["id"].rsplit("-", 1)[1])}'
         # The whole card links to the attempt's page, except the card of the page being viewed.
-        card = (f'<div class="t-head"><strong>{name}</strong><span class="muted small">{e(a["date"])}</span>'
+        viewing = '<span class="t-viewing">Viewing</span>' if here else ""
+        card = (f'<div class="t-head"><strong>{name}</strong>{viewing}<span class="muted small">{e(a["date"])}</span>'
                 + f'<span class="tag">{"current" if a in current else "replaced"}</span>'
                 + ('<span class="tag">deprecated</span>' if a.get("deprecated") else "")
                 + f'</div>{paper}'
                 f'<div class="t-bar">{bar(counts, f"Outcomes of {n} claims", "bar mini")}</div>'
                 f'<span class="muted small">{" · ".join(notes)}</span>')
-        card = (f'<div class="t-card"><span class="t-viewing">Viewing</span>{card}</div>' if here
+        card = (f'<div class="t-card">{card}</div>' if here
                 else f'<a class="t-card" href="{href}">{card}</a>')
         classes = " ".join(c for c, on in (("current", a in current), ("here", here),
                                            ("deprecated", bool(a.get("deprecated")))) if on)
