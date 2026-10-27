@@ -552,3 +552,19 @@ def test_the_pipeline_shows_each_queued_dataset_and_when_it_should_be_done():
     assert page.count(">running now</td>") == 2 and ">about 2 hours</td>" in page and ">within the hour</td>" in page
     assert "2 chains are running now" in page
     assert "1 dataset waits for an attempt on 3 lanes, at about 4.0 hours each" in page
+
+
+def test_a_reconciled_attempt_marks_its_findings_and_the_fixed_ones():
+    earlier = {"id": "000001-demo-01", "findings": [{"kind": "data_missing", "statement": "No position."},
+                                                    {"kind": "metadata_error", "statement": "Wrong age."}]}
+    later = {"id": "000001-demo-02", "findings": [{"kind": "data_missing", "statement": "Position missing.", "found": None},
+                                                  {"kind": "other", "statement": "Duplicates.", "found": None}],
+             "reconciliation": {"earlier": "000001-demo-01", "blind": True, "findings": [
+                 {"finding": 1, "status": "still_present", "now": 1, "note": "Same files."},
+                 {"finding": 2, "status": "fixed", "note": "Age is set."}],
+                 "outcomes": [{"claim": "c", "earlier": "reproduced", "note": "New version."}]}}
+    site.reconcile([earlier, later])
+    assert [f["status"] for f in later["findings"]] == ["still_present", "new"]
+    assert later["reconciliation"]["gone"] == [{"status": "fixed", "note": "Age is set.", "statement": "Wrong age.",
+                                                "kind": "metadata_error"}]
+    assert later["reconciliation"]["outcomes"][0]["earlier"] == "reproduced"

@@ -7,8 +7,9 @@
 # check (papers.yml, the only runs that write the claims file), the author, the reader's answers to the
 # author's questions and the author's run on them when there are questions (only a suspected misreading
 # of the claims file is a question; the author takes method details from the paper), two verification rounds
-# and their revisions, and a third round when the last revision proposed changes. Then it records
-# and merges the attempt. A claims file whose check says it is not ready stops the chain, for a
+# and their revisions, a third round when the last revision proposed changes, and for a repeat attempt the
+# reconcile step, which compares it with the attempt before it. Then it records and merges the attempt. A
+# claims file whose check says it is not ready stops the chain, for a
 # person to look at. A repeat attempt on a new version of the dataset (VERSION given) keeps the
 # claims file, unless the earlier attempt is deprecated. Picks up where an earlier chain stopped: roles
 # committed since the attempt began ($RUNNER_STATE/attempt-<dataset>), on its branch or already on main,
@@ -197,6 +198,10 @@ latest=$(git ls-tree -r --name-only origin/attempt/"$d" attempts | grep "^attemp
 if git show "origin/attempt/$d:$latest" | python -c "import yaml,sys; sys.exit(0 if any(o.get('proposed') for o in yaml.safe_load(sys.stdin)['outcomes']) else 1)"; then
   log "has proposed changes: third round"
   for role in verifier-3 author-revise-3; do step "$role"; done
+fi
+# A repeat attempt, made blind, is compared with the one before it once it is verified.
+if [ "$(git ls-tree -r --name-only origin/attempt/"$d" attempts | grep -c "^attempts/$d-")" -gt 1 ]; then
+  step reconcile
 fi
 
 # Finish, one dataset at a time.

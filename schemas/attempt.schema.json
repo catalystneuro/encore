@@ -428,8 +428,54 @@
           "statement": {
             "type": "string",
             "minLength": 1
+          },
+          "found": {
+            "description": "How the finding was found. Unset: by the attempt itself. `on_prompt`: by the reconcile step of a repeat attempt, which checked a finding of the earlier attempt that this one, made blind, did not report (docs/protocol.md, \"Repeat attempts\").",
+            "enum": ["on_prompt"]
           }
         }
+      }
+    },
+    "reconciliation": {
+      "description": "A repeat attempt's comparison with the attempt before it, written by the reconcile step once this attempt, made blind, has been verified (docs/protocol.md, \"Repeat attempts\"). A finding of this attempt that no item of `findings` points at is new.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["earlier", "date", "blind", "findings"],
+      "properties": {
+        "earlier": {"description": "The id of the attempt compared with.", "type": "string"},
+        "date": {"type": "string", "format": "date"},
+        "blind": {"description": "Whether this attempt's author saw nothing of earlier attempts, from `tools/blind.sh audit` and its transcripts.", "type": "boolean"},
+        "blind_note": {"description": "What the author saw of an earlier attempt, when `blind` is false.", "type": "string"},
+        "findings": {
+          "description": "One item per finding of the earlier attempt, in its order.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["finding", "status", "note"],
+            "properties": {
+              "finding": {"description": "The earlier finding's number in its record, from 1.", "type": "integer", "minimum": 1},
+              "status": {"enum": ["fixed", "partly_fixed", "still_present", "not_checked"]},
+              "now": {"description": "The number, from 1, of this attempt's finding that reports it, when it is still present or partly fixed.", "type": "integer", "minimum": 1},
+              "note": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        "outcomes": {
+          "description": "The claims tested by both attempts whose outcome differs.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["claim", "earlier", "note"],
+            "properties": {
+              "claim": {"type": "string"},
+              "earlier": {"enum": ["reproduced", "partially_reproduced", "not_reproduced", "blocked"]},
+              "note": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        "protocol": {"description": "When the protocol changed between the two attempts, what the changes did.", "type": "string"}
       }
     },
     "inputs": {

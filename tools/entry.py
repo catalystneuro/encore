@@ -213,6 +213,25 @@ def check(entry_dir: Path) -> Report:
         # The entry streams the version of its latest attempt; earlier attempts keep the version they used.
         if pinned and path == mine[-1] and version != pinned:
             report.error(where, f"dataset version {version!r} differs from {pinned!r} in entry.yaml")
+        # A repeat attempt's reconciliation points into the earlier record's findings and its own by number.
+        rec = attempt.get("reconciliation")
+        if isinstance(rec, dict):
+            earlier = load(Report(), ROOT / "attempts" / f"{rec.get('earlier')}.yaml")
+            if not isinstance(earlier, dict):
+                report.error(where, f"reconciliation: no attempt record {rec.get('earlier')!r}")
+            else:
+                n_then, n_now = len(earlier.get("findings") or []), len(attempt.get("findings") or [])
+                numbers = [f.get("finding") for f in rec.get("findings") or []]
+                if sorted(numbers) != list(range(1, n_then + 1)):
+                    report.error(where, f"reconciliation: give each of the {n_then} findings of "
+                                        f"{rec['earlier']} one item, numbered from 1")
+                for f in rec.get("findings") or []:
+                    now = f.get("now")
+                    if (f.get("status") in ("still_present", "partly_fixed")) != (now is not None):
+                        report.error(where, f"reconciliation: earlier finding {f.get('finding')} needs `now` "
+                                            "exactly when it is still present or partly fixed")
+                    if now is not None and not 1 <= now <= n_now:
+                        report.error(where, f"reconciliation: finding {now} is not in this record")
         # A deprecated attempt no longer stands: its claims are being read again, and the claims file it was
         # tested on may already have been replaced (docs/pipeline.md), so it is not held to the current one.
         if attempt.get("deprecated"):
