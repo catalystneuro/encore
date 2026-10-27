@@ -16,6 +16,8 @@ Where the parameters come from:
   follow the opening comment of the claims file (claims/dryad-4j0zpc8hz/10.1093-plphys-kiad565.yaml),
   which cites the paper's Methods, the footnotes of Supplemental Tables S1 to S3 and S6, and the
   figure legends. Readings it names (T1/T2, S1/S2/S3, L1/L2, I1/I2, Y1/Y2, B1/B2, P1/P2) are arguments here.
+  The adjustment of the interaction test's contrasts (A1, A2) is not named in the claims file; both
+  readings are returned and a question is asked (questions/dryad-4j0zpc8hz.yaml).
 - `anova_sequential` gives the sequential F tests of nlme's anova.lme (the claims file reads Table S1's
   F tests so): F of a term from the fixed effects rotated by the Cholesky factor of their inverse
   covariance, with nlme's denominator degrees of freedom (chamber-level terms: chambers minus the
@@ -23,8 +25,9 @@ Where the parameters come from:
   coefficients).
 - `contrasts` gives multcomp-style Tukey contrasts: differences of model cell means, Wald z, and
   single-step adjusted p over the family (multcomp's default for lme models, which uses the
-  multivariate normal). The family is the six treatment pairs within one year, as the claims file
-  says contrasts are "among the four treatments within each year".
+  multivariate normal). In the treatment test the family is the six treatment pairs within one year,
+  as the claims file says contrasts are "among the four treatments within each year". In the
+  interaction test the family is not stated; both readings are given (see `interaction_test`).
 - Rows that are exact duplicates are counted once. Where a tree has two different rows for one
   campaign (one case), the two are averaged; a standard choice that changes one tree-campaign.
 - The multivariate normal integration of the single-step p uses a fixed seed (a standard choice; it
@@ -295,31 +298,54 @@ def interaction_test(data: pd.DataFrame, species: str, trait: str, years: list[i
                      seed: int = 0) -> dict:
     """Claims file, interaction test: monoculture and mixture trees of one species, square root,
     lme(trait ~ (W + M + year + I)^3, random = ~1|Chamber); mixture minus monoculture within each
-    treatment and year (I1) and within each treatment over 2020 and 2021 (I2)."""
+    treatment and year (I1) and within each treatment over 2020 and 2021 (I2).
+
+    The claims file does not say over which family the Tukey-type contrasts of mixtures against
+    monocultures are adjusted (questions/dryad-4j0zpc8hz.yaml), so both are given: `p` (A1) takes
+    each contrast alone (Wald z, unadjusted), `p_family` (A2) is the single-step p over the eight
+    treatment and year contrasts (I1) or over the four treatment contrasts (I2) of the model.
+    `raw_mix_minus_mono` is the difference of raw means over the rows the model uses (under S3,
+    without the dropped negative values); `raw_all` is over all rows of the trait."""
     sub = data[(data.Species == species) & data.Year.isin(years)].copy().dropna(subset=[trait])
+    full = sub.copy()
     sub["y"], how = transform(sub[trait], True, s_reading)
     sub = sub.dropna(subset=["y"])
     sub["Yr"] = sub["Year"].astype(str)
     m = LME(sub, "y", "(C(W) + C(M) + C(Yr) + C(I))**3")
     order = [("C", 0, 0), ("MR", 0, 1), ("W", 1, 0), ("WMR", 1, 1)]
-    rows = []
-    k = 0
-    for name, w, mm in order:
-        cells = pd.DataFrame([{"W": w, "M": mm, "Yr": str(yr), "I": i, "y": 0.0}
-                              for yr in (2020, 2021) for i in (1, 0)])
+    # Cell rows: per treatment, 2020 mixture, 2020 monoculture, 2021 mixture, 2021 monoculture.
+    cells = pd.DataFrame([{"W": w, "M": mm, "Yr": str(yr), "I": i, "y": 0.0}
+                          for _, w, mm in order for yr in (2020, 2021) for i in (1, 0)])
+    w_i1, w_i2, lab_i1, lab_i2 = [], [], [], []
+    for t, (name, _, _) in enumerate(order):
         for j, yr in enumerate((2020, 2021)):
-            c = contrasts(m, cells, [(2 * j, 2 * j + 1)], ["mix-mono"], seed=seed + k)
-            k += 1
-            r = sub[(sub.treat == name) & (sub.Year == yr)].groupby("Mixture")[trait].mean()
-            rows.append({"treat": name, "year": str(yr), "estimate": c.estimate[0], "z": c.z[0], "p": c.p_adj[0],
-                         "raw_mix_minus_mono": r.get("Mixture", np.nan) - r.get("Monoculture", np.nan)})
-        wv = np.array([0.5, -0.5, 0.5, -0.5])
-        c = contrasts(m, cells, [], ["mix-mono"], seed=seed + k, weights=[wv])
-        k += 1
-        r = sub[(sub.treat == name) & sub.Year.isin([2020, 2021])].groupby("Mixture")[trait].mean()
-        rows.append({"treat": name, "year": "2020-21", "estimate": c.estimate[0], "z": c.z[0], "p": c.p_adj[0],
-                     "raw_mix_minus_mono": r.get("Mixture", np.nan) - r.get("Monoculture", np.nan)})
-    return {"contrasts": pd.DataFrame(rows), "anova": m.anova_sequential(),
+            w = np.zeros(len(cells))
+            w[4 * t + 2 * j], w[4 * t + 2 * j + 1] = 1, -1
+            w_i1.append(w)
+            lab_i1.append((name, str(yr)))
+        w = np.zeros(len(cells))
+        w[4 * t:4 * t + 4] = [0.5, -0.5, 0.5, -0.5]
+        w_i2.append(w)
+        lab_i2.append((name, "2020-21"))
+    c1 = contrasts(m, cells, [], [f"{a} {b}" for a, b in lab_i1], seed=seed, weights=w_i1)
+    c2 = contrasts(m, cells, [], [f"{a} {b}" for a, b in lab_i2], seed=seed + 1, weights=w_i2)
+
+    def raw(frame, name, yrs):
+        r = frame[(frame.treat == name) & frame.Year.isin(yrs)].groupby("Mixture")[trait].mean()
+        return r.get("Mixture", np.nan) - r.get("Monoculture", np.nan)
+
+    rows = []
+    for c, labs in ((c1, lab_i1), (c2, lab_i2)):
+        for k, (name, yr) in enumerate(labs):
+            yrs = [2020, 2021] if yr == "2020-21" else [int(yr)]
+            rows.append({"treat": name, "year": yr, "estimate": c.estimate[k], "z": c.z[k],
+                         "p": 2 * stats.norm.sf(abs(c.z[k])), "p_family": c.p_adj[k],
+                         "raw_mix_minus_mono": raw(sub, name, yrs), "raw_all": raw(full, name, yrs)})
+    out = pd.DataFrame(rows)
+    out["_o"] = out.treat.map({n: i for i, (n, _, _) in enumerate(order)})
+    out["_y"] = out.year.map({"2020": 0, "2021": 1, "2020-21": 2})
+    out = out.sort_values(["_o", "_y"]).drop(columns=["_o", "_y"]).reset_index(drop=True)
+    return {"contrasts": out, "anova": m.anova_sequential(),
             "anova_marginal": m.anova_marginal(), "transform": how, "n": len(sub),
             "converged": m.converged}
 

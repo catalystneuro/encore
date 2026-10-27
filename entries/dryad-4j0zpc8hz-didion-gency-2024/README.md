@@ -11,7 +11,7 @@ moisture reduction, in monocultures and mixtures, measured from 2019 to 2021.
 | Leaf water potential under the treatments (Figure 3, four claims) | 1 reproduced, 1 partially, 2 not reproduced |
 | Carbon relations and growth under the treatments (Figure 4, ten claims) | 3 reproduced, 2 partially, 5 blocked (methods underspecified) |
 | No seasonal variation of the leaf-level traits (Table S6) | Blocked (methods underspecified) |
-| Species mixture and biodiversity effects (Tables S2 and S3, Figure 5, eleven claims) | 3 reproduced, 5 not reproduced, 3 blocked (methods underspecified) |
+| Species mixture and biodiversity effects (Tables S2 and S3, Figure 5, eleven claims) | 2 reproduced, 5 not reproduced, 4 blocked (methods underspecified) |
 | Soil moisture, chamber climate and initial sizes (five claims) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -23,11 +23,14 @@ soil moisture and chamber climate records. Refitting the paper's treatment model
 Supplemental Table S1 for some traits exactly. Where the claims file leaves a method detail open,
 every reading is run, and claims whose readings disagree are blocked. The
 analysis follows the answers to the three questions the first run asked
-([`questions/dryad-4j0zpc8hz.yaml`](../../questions/dryad-4j0zpc8hz.yaml)). The attempt record, with the
+([`questions/dryad-4j0zpc8hz.yaml`](../../questions/dryad-4j0zpc8hz.yaml)); after the first
+verification round it runs the mixture against monoculture contrasts both alone and adjusted over the
+model's contrasts, and asks three more questions (the family of those contrasts, the reading of the
+complementarity and selection effects, and the definition of growing season length). The attempt record, with the
 reasons and the differences from the paper's method, is
 [`attempts/dryad-4j0zpc8hz-didion-gency-2024-01.yaml`](../../attempts/dryad-4j0zpc8hz-didion-gency-2024-01.yaml).
 
-- `reproduce_didion_gency_2024.ipynb`: the analysis. It takes about two minutes.
+- `reproduce_didion_gency_2024.ipynb`: the analysis. It takes about four minutes.
 - `oaktrees.py`: loading the workbook, the tree-year and campaign tables, the mixed model with nlme's
   F tests and multcomp-style contrasts, the biodiversity effects and the negative exponential fits.
   Other notebooks on this dataset can import it.
