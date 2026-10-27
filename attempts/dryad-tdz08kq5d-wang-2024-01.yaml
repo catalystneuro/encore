@@ -1,0 +1,908 @@
+schema_version: 2
+id: dryad-tdz08kq5d-wang-2024-01
+dataset:
+  archive: dryad
+  id: tdz08kq5d
+  version: '263142'
+  doi: 10.5061/dryad.tdz08kq5d
+paper: doi:10.1093/evlett/qrad056
+date: '2026-10-27'
+entry: dryad-tdz08kq5d-wang-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-10
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/40514288746
+inputs:
+- what: Run list and file sizes of NCBI BioProject PRJNA1032726 (ENA read-run report), read in the data check to
+    show that the RNA-seq reads are public (ten runs, 9.1 GB); no data from it enter a result. Metadata as served
+    on the run date; the archive gives no version.
+  source: https://www.ebi.ac.uk/ena/browser/view/PRJNA1032726
+- what: Records linked to NCBI BioProject PRJNA1028400 (Entrez elink to sra, assembly and biosample), read in the
+    data check to show that the genome reads are not public (28 BioSamples, 14 assemblies, no runs); no data from
+    it enter a result. Metadata as served on the run date.
+  source: https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1028400
+outcomes:
+- claim: fig1b-temperature-density
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig1b-temperature-density
+  notes: Days 2 to 12, as the criterion now names them, temperature F(1, 36) = 73.989, p = 2.96e-10, as in Table S1a;
+    mean OD600 0.5627 at 35 C against 0.2550 at 25 C. Variants, days 0 to 10 F = 70.911 and all seven days F = 74.019,
+    both p < 1e-9, with 35 C higher. The first run asked which six of the data's seven time points enter the ANOVA;
+    the reader's answer put days 2 to 12 in the criterion, the reading this claim had been decided on, so the
+    outcome is unchanged and days 0 to 10 and all seven days are now variants only.
+  deviations:
+  - ANOVA computed in Python (statsmodels, strata as R's aov with Error(ID)) where the paper used R 3.6.3.
+- claim: fig1b-phage-reduces-density
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig1b-phage-reduces-density
+  notes: Days 2 to 12, phage F(1, 36) = 48.800, p = 3.43e-08; mean OD600 lower with phage by 68.4% at 25 C (0.1225
+    against 0.3876) and by 34.5% at 35 C (0.4454 against 0.6801). Variants, days 0 to 10 F = 57.811 and all seven
+    days F = 48.881, with the same direction. The first run asked which six of the data's seven time points enter
+    the ANOVA; the reader's answer put days 2 to 12 in the criterion, the reading this claim had been decided on, so
+    the outcome is unchanged and days 0 to 10 and all seven days are now variants only.
+- claim: fig1b-phage-effect-diminishes
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig1b-phage-effect-diminishes
+  notes: Days 2 to 12, as the criterion now names them, temperature x phage x time F(5, 180) = 3.870, p = 0.0024, as
+    in Table S1a; the -P minus +P
+    difference at day 12 (0.3219 at 25 C, -0.0080 at 35 C) is below its largest earlier value (0.4362, 0.5046, day
+    2). With days 0 to 10 the interaction is F = 1.464, p = 0.2039 (not significant), while the differences still
+    decline; with all seven days p = 0.0025. The first run asked which six time points enter the ANOVA and decided
+    this claim on days 2 to 12, noting that days 0 to 10 would make it partially reproduced. The reader's answer
+    put days 2 to 12 in the criterion and ruled out days 0 to 10, so the outcome stands on the criterion's own time
+    points and the other two sets are variants that decide nothing. The criterion compares only the last day with
+    the largest earlier value; at 25 C the difference is not a steady decline, falling to 0.049 on day 8 and rising
+    to 0.322 on day 12.
+- claim: auc-phage-reduction-by-temperature
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:auc-phage-reduction-by-temperature
+  measured:
+  - 64.55
+  - 33.73
+  notes: Reading (a), trapezoid over days 2 to 12, 64.55% and 33.73% (F = 63.16 and 11.26 at df (1, 18)). Reading
+    (b), trapezoid over days 0 to 12, 66.80% and 37.18%, with the paper's F of 88.77 and 15.66 at df (1, 18) (the
+    paper prints (1, 19)). Reading (c), sum over days 2 to 12, 68.40% and 34.50%. All within tolerance, 25 C larger,
+    every p < 0.004. The first run had to map the criterion's 'all time points' and 'after inoculation' onto the
+    data's seven days and asked; the answer names the readings by day, which drops the earlier reading (c), sum over
+    days 0 to 12 (66.58% and 34.00%, now a variant) and adds the sum over days 2 to 12, which was a variant before.
+    Under the new readings the outcome is unchanged. The variants over days 0 to 10 give 70.03% and 43.02%
+    (trapezoid, 35 C outside tolerance) and 64.90% and 40.29% (sum, within); they decide nothing.
+- claim: fig1c-phage-density-temperature
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig1c-phage-density-temperature
+  notes: 'Repeated-measures ANOVA as Table S1b: temperature F(1, 18) = 32.746, time F(2, 36) = 86.963. Mean log10
+    PFU/ml 8.756 at 25 C, 7.375 at 35 C. Highest on day 4 (10.511 and 8.947, from 4.0 at inoculation), lower on
+    day 12 (8.037, 6.859); the lowest is day 8 at both temperatures. The paper''s text prints the time effect as
+    F1,18 = 84.88, which is its sum of squares.'
+- claim: fig1d-mucoid-lost-with-phage
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig1d-mucoid-lost-with-phage
+  measured: 0.244
+  notes: 35 C +P, 0 of 4 replicates with mucoid colonies; 25 C +P, 1 of 4 (replicate 2, 700 of 71700 CFU/ml), the
+    other three 100% SCV. Mucoid share of the 25 C +P treatment, mean of replicate frequencies, 0.244%, within 0.24
+    +- 0.024 (reading a1). From pooled counts (reading a2) it is 0.561%; reading (b), SCV share of the exceptional
+    replicate, 99.02%. The paper calls the 0.24% the frequency of SCVs; in the data it is that of mucoid colonies.
+    The first run asked whether reading (a) is a mean of replicate frequencies or a pooled share; the answer says
+    the paper does not fix it and names both as readings (a1) and (a2) under the criterion's rule that one matching
+    reading is enough. The outcome is unchanged, and the open choice is now a reading of the criterion, not a
+    deviation.
+- claim: fig1d-phage-raises-scv-frequency
+  outcome: partially_reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig1d-phage-raises-scv-frequency
+  measured:
+  - 15.34
+  - 55.0
+  notes: Two-way ANOVA as Table S2, phage F(1, 12) = 7.016, p = 0.0212; mean SCV share 99.88% with phage against
+    64.83% without. Mucoid share without phage, mean of replicates, 15.34% at 25 C (outside 20 +- 2) and 55.00%
+    at 35 C (within); pooled, 15.64% and 23.78%, both outside. The phage effect and the 55% hold; the 20% does not.
+- claim: fig2a-phage-exposed-more-resistant
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig2a-phage-exposed-more-resistant
+  notes: On unit means, phage F(1, 15) = 280.75 with sequential sums of squares (the paper's value; unit means with
+    sequential sums of squares reproduce Tables S3a to S3c term by term) and 30.50 with type II, both p < 1e-4; the
+    clone variant gives 973.58 and 51.76. Mean R +P against -P, 0.9481 against 0.5980 at 25 C and 1.0381 against
+    0.5566 at 35 C. The first run treated unit means and clones as readings; the answer fixes the unit as the mean
+    of the clones of each colony type within each replicate population and makes clones a variant. All readings
+    agreed before, so the outcome is unchanged.
+- claim: fig2a-temperature-resistance
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig2a-temperature-resistance
+  notes: On unit means, temperature p = 0.0226 (sequential, F(1, 15) = 6.459 as Table S3a) and 0.0092 (type II), mean
+    R 0.7902 at 35 C against 0.7314 at 25 C. Clone variant, p = 0.0708 (sequential, F(1, 121) = 3.32) and 6e-6 (type
+    II), mean R 0.7973 against 0.7730. The first run treated unit means and clones as readings; the answer fixes the
+    unit as the mean of the clones of each colony type within each replicate population and makes clones a variant.
+    The first run blocked the claim as methods_underspecified
+    because the clone reading with sequential sums of squares gave p = 0.0708; with clones a variant, both readings
+    of the criterion give p < 0.05, and the outcome moves from blocked to reproduced. Within colony type mucoid
+    clones have higher R at 25 C (0.378 against 0.295); the effect over all clones comes in part from the colony
+    types each treatment yielded.
+- claim: fig2a-no-temperature-phage-interaction
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig2a-no-temperature-phage-interaction
+  notes: On unit means, phage x temperature p = 0.168 (sequential, F = 2.099 as Table S3a) and 0.489 (type II); clone
+    variant 0.609 and 0.237. Increase in mean R with phage 0.3502 at 25 C and 0.4815 at 35 C. The first run treated
+    unit means and clones as readings; the answer fixes the unit as the mean of the clones of each colony type
+    within each replicate population and makes clones a variant. All
+    readings agreed before, so the outcome is unchanged.
+- claim: fig2a-scv-more-resistant
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig2a-scv-more-resistant
+  notes: On unit means, colony type F(1, 15) = 445.21 and colony type x phage F = 86.06 (sequential, as Table S3a),
+    p < 1e-6 under both sums of squares and in the clone variant. Mean R of SCVs against mucoid, 0.9683 against
+    0.2731 among -P clones and 0.9989 against 0.9055 among +P clones. The first run treated unit means and clones as
+    readings; the answer fixes the unit as the mean of the clones of each colony type within each replicate
+    population and makes clones a variant. All readings agreed before, so
+    the outcome is unchanged.
+- claim: fig2a-mucoid-25p-replicate-resistant
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig2a-mucoid-25p-replicate-resistant
+  notes: The four 25 C +P mucoid clones (all from tube 2) have mean R 0.9055. Reading (a), against the 16 mucoid
+    clones of 25 C -P (0.2459), F(1, 18) = 174.50, p = 1.1e-10, the paper's F and df. Reading (b), against the 36
+    mucoid clones of both -P treatments (0.2731), F(1, 38) = 88.09, p = 1.9e-11.
+- claim: fig2b-scv-higher-growth-rate
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig2b-scv-higher-growth-rate
+  notes: On unit means, colony type p = 7e-5 (sequential, F(1, 15) = 29.39, as Table S3b) and 4e-5 (type II), SCVs
+    higher (0.05235 against 0.04585 per clone); phage x colony type p = 0.109 under both and temperature x colony
+    type p = 0.967 (sequential) and 0.559 (type II). Clone variant, phage x colony type p = 0.065, temperature x
+    colony type 0.931 and 0.428. The first run treated unit means and clones as readings; the answer fixes the unit
+    as the mean of the clones of each colony type within each replicate population and makes clones a variant. All
+    readings agreed before, so the outcome is unchanged.
+  deviations:
+  - The dataset holds one fitted value per clone and no growth curves, so the grofit fits (logistic, or the code's
+    best of four) were not repeated and the deposited values are tested; which fit produced them is not stated.
+    Their ANOVA reproduces Tables S3b and S3c.
+- claim: fig2c-scv-lower-carrying-capacity
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig2c-scv-lower-carrying-capacity
+  notes: On unit means, colony type p < 1e-6 under both sums of squares (F(1, 15) = 87.97 sequential, as Table S3c),
+    SCVs lower (1.1335 against 1.3568 per clone); temperature x colony type p = 0.093 (sequential) and 0.273 (type
+    II), phage x colony type p = 0.109 under both. Clone variant, phage x colony type p = 0.0199 under both sums of
+    squares and temperature x colony type p = 0.0027 (sequential) and 0.057 (type II). The first run treated unit
+    means and clones as readings; the answer fixes the unit as the mean of the clones of each colony type within
+    each replicate population and makes clones a variant. The first
+    run blocked the claim as methods_underspecified because the clone reading made the interactions significant;
+    with clones a variant, both readings of the criterion give non-significant interactions, and the outcome moves
+    from blocked to reproduced.
+  deviations:
+  - The dataset holds one fitted value per clone and no growth curves, so the grofit fits (logistic, or the code's
+    best of four) were not repeated and the deposited values are tested; which fit produced them is not stated.
+    Their ANOVA reproduces Tables S3b and S3c.
+- claim: fig2d-scv-twitching-no-exposure-effect
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig2d-scv-twitching-no-exposure-effect
+  notes: 'Temperature, phage and temperature x phage p = 0.190, 0.438, 0.844 (sequential) and 0.673, 0.201, 0.058
+    (type II) under the design reading; 0.196, 0.445, 0.345 by strain name (a rank-deficient fit); 0.766, 0.281,
+    0.092 on SCVs alone. The deposited values do not reproduce Table S3d: residual sum of squares 28.32 against
+    35.78, temperature 2.48 against 3.857; only colony type x phage (27.04) and temperature x colony type (0.081)
+    agree. The total sum of squares is 72.28 against 82.08 summed from Table S3d, and a total does not depend on
+    the colony types, so no assignment of colony types reproduces Table S3d if its sums of squares are sequential
+    and add up to the total. The table does not say so; it is likely, since Tables S3a to S3c, S3e and S3f match
+    with sequential sums of squares and the F ratios of S3d are its sums of squares over its residual mean square.'
+  deviations:
+  - The twitching sheet has no morphotype column and its strain names do not identify the clones; colony types are
+    read from the design (the second block of 25_0 rows as the SCVs, the 35_1 rows as the 35_1 SCVs), and the reading
+    by strain name is shown as a variant.
+- claim: fig2d-mucoid-25p-reduced-twitching
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig2d-mucoid-25p-reduced-twitching
+  notes: 25 C +P mucoid mean 6.242 mm. Reading (a), against 25 C -P mucoid (9.558 mm), F(1, 6) = 27.22, p = 0.0020,
+    the paper's F; reading (b), against 35 C -P mucoid (8.562 mm), F(1, 6) = 14.66, p = 0.0087. Ancestor 9.383 mm.
+    With all eight 25_0 rows as mucoid (strain-name reading) F(1, 10) = 20.62, p = 0.0011.
+  deviations:
+  - The twitching sheet has no morphotype column and its strain names do not identify the clones; colony types are
+    read from the design (the second block of 25_0 rows as the SCVs, the 35_1 rows as the 35_1 SCVs), and the reading
+    by strain name is shown as a variant. The four 25 C +P mucoid rows are named and placed consistently with the
+    other sheets.
+  - The claims file gives the ancestor's diameter as 9.38 cm; the data's unit is mm.
+- claim: fig2e-mucoid-biofilm-increased
+  outcome: partially_reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig2e-mucoid-biofilm-increased
+  notes: Colony type F(1, 21) = 42.37, p < 1e-4, mucoid higher, as Table S3e. The ancestor (0.4887 OD570) lies below
+    the mucoid interquartile range (from 1.4914) and median (1.8157), but below every SCV clone too (16 of 16; SCV
+    range 0.5763 to 0.9507, mean 0.7204, 47% above the ancestor), so it is within neither the SCV interquartile
+    range (reading a) nor the SCV range (reading b). The mucoid part holds; SCVs do not keep ancestral-level biofilm.
+    The criterion defines no partial outcome. The first record gave not reproduced; after verification round 1 it
+    is partially reproduced, as the colony type effect and the mucoid half hold and the SCV half fails, which is a
+    claim that holds in part. The ancestor value is the sheet's one ancestor row (printed in the data check).
+- claim: fig2e-biofilm-no-exposure-effect
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig2e-biofilm-no-exposure-effect
+  notes: Temperature, phage and temperature x phage p = 0.193, 0.993, 0.613 (sequential, the F values of Table S3e)
+    and 0.748, 0.186, 0.657 (type II). Table S3e prints the temperature sum of squares as 0.346 where its F of 1.806
+    and the data give 0.3646.
+- claim: fig2f-phage-exposure-reduces-virulence
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig2f-phage-exposure-reduces-virulence
+  notes: As Table S3f, phage F(1, 21) = 20.310, p = 0.0002 (type II p = 0.0174); mean incidence 0 in +P clones against
+    0.1806 in -P clones; temperature p = 0.173 (type II 0.508).
+  deviations:
+  - The dataset holds one incidence per clone, the share of wilted plants over its three blocks (each value times
+    18 is a whole number), not the three block values; the mean over blocks equals that share.
+- claim: fig2f-scv-avirulent
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig2f-scv-avirulent
+  notes: All 16 SCV clones have incidence 0, so no plant wilted in any block; colony type F(1, 21) = 33.41, p =
+    9.7e-06, SCVs lower (0 against 0.2408).
+- claim: fig2f-mucoid-25p-avirulent
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:fig2f-mucoid-25p-avirulent
+  notes: Colony type x phage F(1, 21) = 9.992, p = 0.0047. The four 25 C +P mucoid clones each have incidence 0,
+    below 25 C -P mucoid (0.3194), 35 C -P mucoid (0.4028) and the ancestor (0.7222).
+- claim: sequencing-mutation-count
+  outcome: not_reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:sequencing-mutation-count
+  measured: 10.07
+  notes: The variant table gives 282 protein-changing variants (frameshifts, in-frame insertions and deletions,
+    missense) summed over the clones carrying them, 10.07 per clone over 28 clones, outside 8.5 +- 0.85. Mucoid
+    clones carry 10.17 and SCVs 10.00 on average. The ANOVA on per-clone counts cannot be run, as the table does
+    not say which clone carries which variant; the mean alone decides the outcome. Counting every variant gives
+    16.96 per clone. The claims file marked this claim data elsewhere (NCBI SRA) and the first run tested it on the
+    dataset's processed table anyway; the answer makes it data dataset, as the Data availability statement puts the
+    study's generated data in Dryad, so the claim now counts with the dataset. The outcome is unchanged.
+  deviations:
+  - Tested on the dataset's processed table, the authors' output of the pipeline the criterion names, which was
+    not re-run (the tools are not installable in a locked Python environment, and the genome reads are not public).
+  - The mean assumes four clones per group, as the Methods and Table 1 give; the largest carrier count in each group
+    is 4.
+- claim: table1-phcs-in-scvs
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:table1-phcs-in-scvs
+  measured:
+  - 13
+  - 0
+  notes: 'phcS (RS-N_03191, PROKKA name sasA_8) variants in SCV groups only: 25 C +P 4, 25 C -P 3, 35 C +P 2, and
+    in 35 C -P two variants carried by 1 and 3 clones. That is 13 SCV clones if those two are in different clones
+    and 12 if not, both within 13 +- 1.3; 0 mucoid clones. The claims file marked this claim data elsewhere (NCBI
+    SRA) and the first run tested it on the dataset''s processed table anyway; the answer makes it data dataset, as
+    the Data availability statement puts the study''s generated data in Dryad, so the claim now counts with the
+    dataset. The outcome is unchanged.'
+  deviations:
+  - Tested on the dataset's processed table, the authors' output of the pipeline the criterion names, which was
+    not re-run (the tools are not installable in a locked Python environment, and the genome reads are not public).
+- claim: table1-pild-in-25p-mucoid
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:table1-pild-in-25p-mucoid
+  measured: 2
+  notes: One pilD (RS-N_03289, PROKKA name outO) in-frame insertion, carried by 2 of the 4 mucoid clones of 25 C
+    +P and by no clone of another group. The claims file marked this claim data elsewhere (NCBI SRA) and the first
+    run tested it on the dataset's processed table anyway; the answer makes it data dataset, as the Data
+    availability statement puts the study's generated data in Dryad, so the claim now counts with the dataset. The
+    outcome is unchanged.
+  deviations:
+  - Tested on the dataset's processed table, the authors' output of the pipeline the criterion names, which was
+    not re-run (the tools are not installable in a locked Python environment, and the genome reads are not public).
+- claim: table1-t2ss-in-35p-scv
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:table1-t2ss-in-35p-scv
+  notes: In the 35 C +P SCV group, 2 clones carry a gspE missense variant and 1 a gspF frameshift, as Table 1; no
+    other group carries either. The table does not say whether the gspF clone is one of the gspE clones, so the
+    count is 3 or 2, and with a tolerance of 0 the claim cannot be decided. The claims file marked this claim data
+    elsewhere (NCBI SRA) and the first run tested it on the dataset's processed table anyway; the answer makes it
+    data dataset, as the Data availability statement puts the study's generated data in Dryad, so the claim now
+    counts with the dataset. The outcome is unchanged.
+  deviations:
+  - Tested on the dataset's processed table, the authors' output of the pipeline the criterion names, which was
+    not re-run (the tools are not installable in a locked Python environment, and the genome reads are not public).
+- claim: tables6-pil-mutants-resistant
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:tables6-pil-mutants-resistant
+  notes: No sheet of the workbook names the pilB or pilM mutants or their wild types OE1-1 and QL-Rs1115 (checked
+    in the notebook), and the README lists no such data; the paper gives only the means of Table S6 and names no
+    other deposit.
+- claim: figs3-adsorption
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:figs3-adsorption
+  notes: 'One-way ANOVA across 13 strains, F(12, 26) = 19.75, p = 4.6e-10. Tukey against the ancestor (0.773): both
+    pilD mutants lower (0.283 and 0.412, adjusted p < 0.001); none of the eight phcS mutants, the gspE or the gspF
+    mutant lower (smallest adjusted p 0.736, gspF, 0.663).'
+  deviations:
+  - The sheet holds proportions where Figure S3 speaks of percentages; the scale does not change the test.
+- claim: rnaseq-differential-expression-count
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:rnaseq-differential-expression-count
+  measured:
+  - 1477
+  - 707
+  - 770
+  notes: In the dataset's DESeq2 table, 1477 genes have padj < 0.05 and |log2FC| > 1, 707 up and 770 down. 32 genes
+    have no padj and are left out by the thresholds. The claims file marked this claim data elsewhere (NCBI SRA) and
+    the first run tested it on the dataset's processed table anyway; the answer makes it data dataset, as the Data
+    availability statement puts the study's generated data in Dryad, so the claim now counts with the dataset. The
+    outcome is unchanged.
+  deviations:
+  - Tested on the dataset's processed table, the authors' output of the pipeline the criterion names, which was
+    not re-run (the tools are not installable in a locked Python environment). The RNA-seq reads are public
+    (PRJNA1032726, ten runs, 9.1 GB).
+- claim: rnaseq-kegg-enrichment
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:rnaseq-kegg-enrichment
+  notes: In the dataset's KEGG (KOBAS) table exactly the five named pathways have uncorrected p < 0.05 (0.0024 to
+    0.0464); none has FDR < 0.05 (smallest 0.1958). The criterion's two readings give different outcomes. The match
+    of the five with uncorrected p suggests the paper used uncorrected p; a question asks the reader to settle it. The claims
+    file marked this claim data elsewhere (NCBI SRA) and the first run tested it on the dataset's processed table
+    anyway; the answer makes it data dataset, as the Data availability statement puts the study's generated data in
+    Dryad, so the claim now counts with the dataset. The outcome is unchanged.
+  deviations:
+  - Tested on the dataset's processed table, the authors' output of the pipeline the criterion names, which was
+    not re-run (the tools are not installable in a locked Python environment).
+- claim: rnaseq-mutated-genes-expression
+  outcome: partially_reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:rnaseq-mutated-genes-expression
+  measured: 3
+  notes: phcR up (log2FC 1.835, padj 8e-28), pilD down (-1.349, padj 7e-36), and the pilus and fimbrial genes of
+    the Figure 4C list down (-2.10 to -5.94). phcS has padj 0.003 but log2FC 0.411, below the threshold of 1. Of
+    the 11 genes of the dataset's Figure 4B list (numbered 0 to 12 without 8 and 9), 3 meet both thresholds and
+    6 meet padj < 0.05 alone; at most 5 of 13 could meet both. Among the 18 genes with a variant in a +P group of
+    the variant table, 5 meet both. phcR up and pilD and the other pilus and fimbrial genes down hold; phcS up
+    and seven of 13 fail. The criterion defines no partial outcome. The first record gave not reproduced; after
+    verification round 1 it is partially reproduced, as the claim holds in part. The claims file marked this claim data elsewhere (NCBI SRA) and the first run
+    tested it on the dataset's processed table anyway; the answer makes it data dataset, as the Data availability
+    statement puts the study's generated data in Dryad, so the claim now counts with the dataset. The outcome is
+    unchanged.
+  deviations:
+  - Tested on the dataset's processed table, the authors' output of the pipeline the criterion names, which was
+    not re-run (the tools are not installable in a locked Python environment).
+  - The dataset's Figure 4B list holds 11 of the 13 genes; the two missing ones cannot change the outcome.
+- claim: rnaseq-defense-systems
+  outcome: reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:rnaseq-defense-systems
+  notes: JetC (RS-N004717) log2FC -4.21; type I MTase (RS-N000213) 2.30, REase (RS-N000215) 2.60, SMODS cyclase
+    (RS-N000217) 2.64 and the CBASS effector (RS-N000216) 2.32, all padj < 1e-25. The dataset labels the effector
+    Effector_1TM_DUF1043, not Gros; it is the locus beside the SMODS cyclase. The claims file marked this claim data
+    elsewhere (NCBI SRA) and the first run tested it on the dataset's processed table anyway; the answer makes it
+    data dataset, as the Data availability statement puts the study's generated data in Dryad, so the claim now
+    counts with the dataset. The outcome is unchanged.
+  deviations:
+  - Tested on the dataset's processed table, the authors' output of the pipeline the criterion names, which was
+    not re-run (the tools are not installable in a locked Python environment).
+  - The loci are those the dataset's Figure 4C list names for each system; the RS-N annotation was not read.
+- claim: rnaseq-virulence-genes-down
+  outcome: partially_reproduced
+  notebook: reproduce_wang_2024.ipynb
+  output: claim:rnaseq-virulence-genes-down
+  notes: rcpA (RS-N003916, log2FC -4.41) and tadC (-4.27) down; six hrp or hrc genes (hrpB2, hrpB1, hrcS, hrcV,
+    hrcR, hrcQ) down at log2FC -2.00 to -2.49, all padj < 1e-4. gspG (RS-N004330) is up, log2FC 2.04, padj 0.0015,
+    and labelled UP in the dataset's Figure 4C list, against the text's downregulation. The criterion's condition
+    that none is up fails for gspG; the rest holds. The claims file marked this claim data elsewhere (NCBI SRA) and
+    the first run tested it on the dataset's processed table anyway; the answer makes it data dataset, as the Data
+    availability statement puts the study's generated data in Dryad, so the claim now counts with the dataset. The
+    outcome is unchanged.
+  deviations:
+  - Tested on the dataset's processed table, the authors' output of the pipeline the criterion names, which was
+    not re-run (the tools are not installable in a locked Python environment).
+findings:
+- kind: metadata_error
+  statement: The twitching sheet (Figure 2D) does not identify its clones. It has no morphotype column; its four
+    35_1 rows carry the names of four 35_0 SCV clones (6b6s1, 6b6s2, 6b8s1, 6b8s2) with different values, where
+    the biofilm and disease sheets name the 35_1 clones 6b1s1, 6b1s2, 6b2s3 and 6b2s4; and in 25_0 the four mucoid
+    names 6d5a2 to 6d8a2 appear twice with different values, where the other sheets have four SCVs.
+- kind: other
+  statement: 'The deposited twitching values do not reproduce Table S3d: with the colony types of the design, the
+    residual sum of squares is 28.32 against 35.78 and the temperature sum of squares 2.48 against 3.857; only colony
+    type x phage (27.04) and temperature x colony type (0.081) agree. The total sum of squares of the data is 72.28
+    against 82.08 summed from Table S3d, so no assignment of colony types reproduces it if its sums of squares are
+    sequential, which the table does not state. Every other ANOVA the paper prints (Tables
+    S1a, S1b, S2, S3a to S3c, S3e, S3f) is reproduced from the deposited data.'
+- kind: metadata_insufficient
+  statement: The variant table (snp_indel) gives, per variant and group of four sequenced clones, the number of
+    clones that carry it, not which clones. Per-clone mutation counts and co-occurrence (for example whether the
+    gspE and gspF mutations of 35 C +P SCVs are in different clones) cannot be read, and the genome reads are not
+    public.
+- kind: data_missing
+  statement: BioProject PRJNA1028400, named in the paper for the genomes of the evolved clones, has 28 BioSamples
+    and 14 assemblies and no sequencing runs, so the reads the variant calls come from are not public. The RNA-seq
+    reads are public in PRJNA1032726 (ten runs), though the Methods say they are shared on request.
+- kind: data_missing
+  statement: The growth curves the maximum growth rates and carrying capacities were fitted to are not deposited,
+    only one fitted value per clone, so the fits cannot be repeated and the model behind them (logistic, as the
+    Methods say, or the code's best of four by AIC) cannot be checked. The pilB and pilM data of Table S6 are not
+    deposited either.
+- kind: paper_inconsistency
+  statement: 'The data disagree with statements of the text: SCVs form more biofilm than the ancestor in every clone
+    (0.58 to 0.95 against 0.49 OD570), where the text says they retained ancestral-level biofilm; gspG is upregulated
+    (log2FC 2.04) in the deposited DESeq2 table and Figure 4C list, where the text lists it as downregulated; phcS
+    has log2FC 0.41, below the threshold under which the text calls it significantly upregulated; mucoid colonies
+    are 15.3% at 25 C without phage, where the text says around 20%; and the 0.24% the text gives as an SCV frequency
+    is the mucoid frequency of the 25 C +P treatment.'
+- kind: paper_inconsistency
+  statement: 'Small misprints in the paper''s statistics, against the data: the area-under-curve ANOVAs are printed
+    with df (1, 19) for 20 populations (the data give the printed F at df (1, 18)); the phage density time effect
+    is printed in the text as F1,18 = 84.88, which is its sum of squares (F(2, 36) = 86.963 in Table S1b); Table
+    S3e prints the temperature sum of squares as 0.346 for 0.3646; Table 1 places the RSc3091 deletion at C-432461,
+    the variant table at 431461.'
+- kind: metadata_insufficient
+  statement: The OD600 values of Figure 1B include day 0 and negative values (eight, down to -0.029, at 25 C with
+    phage), so they are blank-corrected and include the inoculation, neither of which the README or Methods says;
+    the paper's ANOVA uses days 2 to 12. The README does not give units for the growth rate (headed
+    maxgrowthrate(OD600))
+    or say that adsorption is a proportion.
+- kind: metadata_error
+  statement: In the carrying capacity sheet the ancestor's value (1.4355) is headed maxgrowthrate(OD600). The variant
+    table's GENE column holds PROKKA names that differ from the paper's (phcS is sasA_8, pilD outO, gspE hxcR, gspF
+    epsF_1); the gene_blast sheet gives the paper's names by locus tag. The Figure 4B list holds 11 genes where
+    the paper speaks of 13.
+verifications:
+- date: '2026-10-27'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1: the executed notebook of the author-answers run (commit 87e0a97) with the conclusion cells and
+    the summary removed, the helper module and the claims file, with the paper. The verifier listed the version''s files
+    through the Dryad API, ran synthetic checks of rm_anova, and checked parse_strain, unit_means and clone_table. Report
+    transcripts/dryad-tdz08kq5d/verifier-1-report.md.'
+  results:
+  - claim: fig1b-temperature-density
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 19, days 2-12: temperature F(1,36)=73.989, p=3e-10, matching Table S1a in every printed SS and F. Mean
+      OD600 is 0.563 at 35 C and 0.255 at 25 C (cell 20).'
+    response: Unchanged.
+  - claim: fig1b-phage-reduces-density
+    agrees: true
+    outcome: reproduced
+    reason: 'Phage F=48.800, p=3e-8. With phage, mean OD600 is lower at both temperatures: 0.388 to 0.123 at 25 C and
+      0.680 to 0.445 at 35 C (cell 22).'
+    response: Unchanged.
+  - claim: fig1b-phage-effect-diminishes
+    agrees: true
+    outcome: reproduced
+    reason: 'Three-way interaction F(5,180)=3.870, p=0.0024. The -P minus +P difference on the last day is below its
+      earlier maximum at both temperatures: 0.322 vs 0.436 at 25 C, -0.008 vs 0.505 at 35 C (cell 24). The criterion
+      is weak at 25 C (B6): the gap falls to 0.049 on day 8 and then rises to 0.322 on day 12, which is not a gradual
+      decline; the claims file''s operationalisation is looser than the paper''s statement.'
+    response: The conclusion and the notes now say that at 25 C the difference falls to 0.049 on day 8 and rises to 0.322
+      on day 12, and that the criterion compares only the last day with the earlier maximum. Outcome unchanged, as the
+      criterion decides it.
+  - claim: auc-phage-reduction-by-temperature
+    agrees: true
+    outcome: reproduced
+    reason: 'All three readings fall within tolerance with the 25 C reduction larger and p<0.05 (cell 26). Reading (b)
+      gives the paper''s numbers exactly: 66.8% and 37.18%, F 88.77 and 15.66. The df is (1,18), not the paper''s (1,19),
+      which the claims file allows.'
+    response: Unchanged.
+  - claim: fig1c-phage-density-temperature
+    agrees: true
+    outcome: reproduced
+    reason: Temperature F(1,18)=32.75, time F(2,36)=86.96, both matching Table S1b. Density is higher at 25 C (8.76 vs
+      7.38). At each temperature it peaks on day 4, well above the 10^4 PFU/ml inoculum, and then declines (cell 28).
+    response: Unchanged.
+  - claim: fig1d-mucoid-lost-with-phage
+    agrees: true
+    outcome: reproduced
+    reason: No 35 C +P replicate has mucoid colonies, and exactly one 25 C +P replicate does (replicate 2). The other
+      three are 100% SCV. Reading (a1) gives 0.244%, within 0.24 +- 0.024 (cell 30).
+    response: Unchanged.
+  - claim: fig1d-phage-raises-scv-frequency
+    agrees: true
+    outcome: partially_reproduced
+    reason: The phage effect matches Table S2 (F(1,12)=7.016, p=0.021) and SCV share rises from 64.8% to 99.9%. 35 C
+      -P mucoid is 55.0% (mean reading). But 25 C -P mucoid is 15.3% (mean) or 15.6% (pooled), outside 20 +- 2 under
+      both readings (cell 32), so the criterion is not met.
+    response: Unchanged.
+  - claim: fig2a-phage-exposed-more-resistant
+    agrees: true
+    outcome: reproduced
+    reason: 'Unit means: phage F(1,15)=280.75 sequential (exactly Table S3a) and 30.50 type II, both p<1e-4. Mean R with
+      phage exceeds R without at both temperatures (cell 36).'
+    response: Unchanged.
+  - claim: fig2a-temperature-resistance
+    agrees: true
+    outcome: reproduced
+    reason: 'Unit means: p=0.023 (i) and 0.009 (ii). Mean R is higher at 35 C on units (0.790 vs 0.731) and on clones
+      (cell 38). The main effect comes from colony-type composition, since 35 C +P is all SCV. Within mucoid clones R
+      is higher at 25 C (0.378 vs 0.295), and the sequential clone variant gives p=0.071 (B9).'
+    response: The conclusion and the notes now give the within-mucoid means (0.378 at 25 C against 0.295 at 35 C) and
+      say the effect over all clones comes in part from the colony types each treatment yielded. Outcome unchanged.
+  - claim: fig2a-no-temperature-phage-interaction
+    agrees: true
+    outcome: reproduced
+    reason: p=0.168 (i) and 0.489 (ii). The clone variants are also not significant (cell 40).
+    response: Unchanged.
+  - claim: fig2a-scv-more-resistant
+    agrees: true
+    outcome: reproduced
+    reason: Colony type F about 443-445 and colony type x phage F=86.06, all p<1e-6 under both readings. SCVs have higher
+      R than mucoid clones without phage (0.968 vs 0.273) and with phage (0.999 vs 0.906) (cell 42).
+    response: Unchanged.
+  - claim: fig2a-mucoid-25p-replicate-resistant
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (a): F(1,18)=174.50, p=1e-10, the paper''s statistic exactly. Reading (b): F(1,38)=88.1, p=2e-11.
+      These clones have higher R (0.906 vs 0.246/0.273) (cell 44).'
+    response: Unchanged.
+  - claim: fig2b-scv-higher-growth-rate
+    agrees: true
+    outcome: reproduced
+    reason: Colony type p<1e-4 with SCVs higher; phage x type p=0.109; temperature x type p=0.967 (i) and 0.559 (ii)
+      (cell 46). This is tested on the deposited fitted mu, whose sequential F matches Table S3b exactly. The logistic-vs-AIC
+      fit readings cannot be done, because the growth curves are not deposited; the fit step itself is untested (B2).
+    response: 'No change possible: the growth curves are not in the dataset. The conclusion, the deviation and a data_missing
+      finding already say the fits were not repeated.'
+  - claim: fig2c-scv-lower-carrying-capacity
+    agrees: true
+    outcome: reproduced
+    reason: Colony type F=87.97 (i) and 79.96 (ii), with SCVs lower (1.13 vs 1.36). Temperature x type p=0.093 / 0.273
+      and phage x type p=0.109 (cell 48). Same caveat as fig2b (B2).
+    response: 'As for fig2b-scv-higher-growth-rate: the growth curves are not deposited, which the record already states.'
+  - claim: fig2d-scv-twitching-no-exposure-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'Temperature, phage and T x P have p>=0.05 under both sums of squares (smallest 0.058, type II T x P), under
+      the by-name variant and on SCVs alone (cell 50). The deposited values do not reproduce Table S3d (B1): total SS
+      is 72.28 against 82.08 summed from S3d, and no relabelling changes a total SS; the four 35_1 rows carrying 35_0
+      strain names are the likely mismatch. type_design is the author''s own inference and is not in the claims file.
+      The notebook prints the S3d comparison but never says it fails.'
+    response: The notebook now prints the total sum of squares (72.277 against 82.082) and states that no assignment
+      of colony types reproduces Table S3d; the conclusion and the notes say so, and the conclusion says the design reading
+      is this attempt's inference, with the outcome the same under the reading by strain name and on SCVs alone. The
+      README was printed; it says nothing about the twitching rows. Outcome unchanged.
+  - claim: fig2d-mucoid-25p-reduced-twitching
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (a): F(1,6)=27.22, p=0.002, the paper''s statistic exactly. Reading (b): F=14.66, p=0.009. Mean
+      diameter is 6.24 mm against 9.56 and 8.56 (cell 52). The claims-file header gives the ancestor''s diameter as 9.38
+      cm where the data column is twitching(mm), which looks like a unit misreading in the claims file (B4).'
+    response: The unit difference is already a deviation of this claim (the data's unit is mm); the claims file is not
+      changed by the author. Outcome unchanged.
+  - claim: fig2e-mucoid-biofilm-increased
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Colony type F=42.37 with mucoid higher, and the ancestor (0.489) is below the mucoid IQR. But the ancestor
+      lies below the SCV minimum (0.576): all 16 SCVs are above it and their mean is 47% higher. Both readings agree
+      that SCVs within ancestral level fails (cell 54). The ancestor value is taken without checking how many anc rows
+      exist; the outcome turns on it (B3).'
+    response: 'Outcome changed from not_reproduced to partially_reproduced: the colony type effect and the mucoid half
+      hold and the SCV half fails, so the claim holds in part. The data check now prints the README and the ancestor
+      block of each Figure 2 sheet, which shows one ancestor row per sheet (biofilm 0.488667), and the helper raises
+      an error unless there is exactly one.'
+  - claim: fig2e-biofilm-no-exposure-effect
+    agrees: true
+    outcome: reproduced
+    reason: Temperature, phage and T x P have p>=0.19 under (i) and p>=0.19 under (ii). Sequential F values match Table
+      S3e (cell 56).
+    response: Unchanged.
+  - claim: fig2f-phage-exposure-reduces-virulence
+    agrees: true
+    outcome: reproduced
+    reason: Phage p=0.0002 (i) and 0.017 (ii), with +P incidence 0 vs 0.18. Temperature p=0.173 (i) and 0.508 (ii) (cell
+      58).
+    response: Unchanged.
+  - claim: fig2f-scv-avirulent
+    agrees: true
+    outcome: reproduced
+    reason: All 16 SCV clones have pooled incidence 0. Colony type F=33.4 (i) and 34.1 (ii), p<1e-5 (cell 60).
+    response: Unchanged.
+  - claim: fig2f-mucoid-25p-avirulent
+    agrees: true
+    outcome: reproduced
+    reason: Interaction F=9.992, p=0.0047. The 25 C +P mucoid mean is 0, below 0.319, 0.403 and the ancestor's 0.722,
+      and all four clones are 0 (cell 62).
+    response: Unchanged. The ancestor value 0.722 is now shown to be the sheet's one ancestor row.
+  - claim: sequencing-mutation-count
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Protein-changing variants per clone: 282/28 = 10.07, outside 8.5 +- 0.85. Variant counts give 2.36 and 16.96,
+      and no reading gives 8.5. The morphology ANOVA cannot be formed from the group-aggregated table; group means are
+      mucoid 10.17 and SCV 10.0 (cell 64). The per-clone mean is exact from the aggregated table, and every non-missing
+      EFFECT row is protein-changing, so nonsynonymous is not ambiguous here (B7).'
+    response: Unchanged.
+  - claim: table1-phcs-in-scvs
+    agrees: true
+    outcome: reproduced
+    reason: 'SCV clones with phcS: 13 if variants sit in different clones, 12 if they overlap; both within 13 +- 1.3.
+      Mucoid clones: 0 (cell 66).'
+    response: Unchanged.
+  - claim: table1-pild-in-25p-mucoid
+    agrees: true
+    outcome: reproduced
+    reason: One pilD variant, carried by 2 clones of 25 C +P mucoid and by no other group (cell 68).
+    response: Unchanged.
+  - claim: table1-t2ss-in-35p-scv
+    agrees: true
+    outcome: blocked
+    reason: gspE (2 clones) and gspF (1) occur only in 35 C +P SCV, matching Table 1 per gene. Whether that makes 3 clones
+      or 2 cannot be read from the group-aggregated table, and the tolerance is 0 (cell 70).
+    response: Unchanged.
+  - claim: tables6-pil-mutants-resistant
+    agrees: true
+    outcome: blocked
+    reason: Dryad lists only the README and the workbook, and no sheet, column or cell names pilB, pilM, OE1-1 or QL-Rs1115
+      (cell 72). Nothing is testable.
+    response: Unchanged.
+  - claim: figs3-adsorption
+    agrees: true
+    outcome: reproduced
+    reason: ANOVA F(12,26)=19.75. In Tukey tests both pilD mutants are below the ancestor (p<0.001), and no phcS, gspE
+      or gspF mutant differs (all p_adj>=0.74) (cell 74).
+    response: Unchanged.
+  - claim: rnaseq-differential-expression-count
+    agrees: true
+    outcome: reproduced
+    reason: The deposited DESeq2 table gives 1477, 707 up and 770 down, exactly (cell 76). The pipeline from reads was
+      not re-run.
+    response: Unchanged.
+  - claim: rnaseq-kegg-enrichment
+    agrees: true
+    outcome: blocked
+    reason: Exactly the five named pathways have uncorrected p<0.05, but none has FDR<0.05 (minimum 0.196). The readings
+      differ, so the criterion makes this blocked (cell 78). The deposited KOBAS table points to the paper using uncorrected
+      p, but the criterion as written forces blocked (B5).
+    response: Outcome kept, as the criterion decides it. The conclusion and the notes now say the match points to uncorrected
+      p, and a question in questions/dryad-tdz08kq5d.yaml asks the reader which p the paper used.
+  - claim: rnaseq-mutated-genes-expression
+    agrees: false
+    outcome: partially_reproduced
+    reason: phcR is up (log2FC 1.83) and pilD down (-1.35), and the other pilus and fimbrial genes are down. phcS is
+      up but only by log2FC 0.41, below the threshold. Only 3 of the 11 listed Figure 4B genes meet both thresholds (at
+      most 5 of 13) against the claimed 7 (cell 80).
+    response: 'Outcome changed from not_reproduced to partially_reproduced: phcR up and pilD and the pilus and fimbrial
+      genes down hold, phcS and the count of seven fail, so the claim holds in part. The two genes missing from the Figure
+      4B list cannot be recovered from the workbook, as the record already says.'
+  - claim: rnaseq-defense-systems
+    agrees: true
+    outcome: reproduced
+    reason: JetC is down (-4.21) and the MTase, REase, SMODS and effector genes are up (+2.30 to +2.64), all with padj<1e-25
+      (cell 82). The loci come from the authors' own Figure 4C labels, and Effector_1TM_DUF1043 stands in for the Gros
+      effector; the criterion asks for loci identified from the RS-N annotation, which was not done independently (B8).
+    response: 'No change: the RS-N annotation is not in the dataset, and the record''s deviation already says the loci
+      are those of the dataset''s Figure 4C list.'
+  - claim: rnaseq-virulence-genes-down
+    agrees: true
+    outcome: partially_reproduced
+    reason: rcpA, tadC and 6 hrp/hrc genes are down with |log2FC|>2. gspG, which the text names as downregulated, is
+      up (+2.04, padj 0.0015), so none upregulated fails (cell 84).
+    response: Unchanged.
+- date: '2026-10-27'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook of the author-revise-1 run (commit 63faa18), the helper module, the
+    claims file, the attempt record and the entry README, with the paper. Report
+    transcripts/dryad-tdz08kq5d/verifier-2-report.md. The verifier agreed with all 32 outcomes and listed six
+    statements the printed numbers did not support; each is recorded under the claim it bears on most closely (the
+    R range under fig2a-phage-exposed-more-resistant, the RSc3091 position under table1-pild-in-25p-mucoid, the
+    25_0 strain names under fig2d-mucoid-25p-reduced-twitching, the Table S4 clause under sequencing-mutation-count).'
+  results:
+  - claim: fig1b-temperature-density
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
+  - claim: fig1b-phage-reduces-density
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
+  - claim: fig1b-phage-effect-diminishes
+    agrees: true
+    outcome: reproduced
+    reason: 'B6 resolved: the conclusion now gives the 0.049 to 0.322 rise at 25 C (cell 29).'
+    response: 'No further change.'
+  - claim: auc-phage-reduction-by-temperature
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
+  - claim: fig1c-phage-density-temperature
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
+  - claim: fig1d-mucoid-lost-with-phage
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
+  - claim: fig1d-phage-raises-scv-frequency
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
+  - claim: fig2a-phage-exposed-more-resistant
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion. Cell 11 says R
+      runs from 0.21 to 1.12, where cell 10 prints a range of 0.1833 to 1.1187 (the 25_0 mucoid minimum of 0.1833 in
+      cell 45); no conclusion depends on it.'
+    response: 'Cell 11 now says R runs from 0.18 to 1.12.'
+  - claim: fig2a-temperature-resistance
+    agrees: true
+    outcome: reproduced
+    reason: 'Moved between run 1 and round 1; with the claims file''s answer that unit means are the unit and clones
+      a variant, both readings give the criterion''s result, p = 0.0226 and 0.0092 (cell 48). B9 resolved: the
+      within-mucoid means (0.378 against 0.295) and the composition caveat are now in cell 49.'
+    response: 'No further change.'
+  - claim: fig2a-no-temperature-phage-interaction
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
+  - claim: fig2a-scv-more-resistant
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
+  - claim: fig2a-mucoid-25p-replicate-resistant
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
+  - claim: fig2b-scv-higher-growth-rate
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion. B2
+      acknowledged: the growth curves are not deposited, which cannot be fixed from the dataset and has no bearing
+      on a conclusion.'
+    response: 'No change possible.'
+  - claim: fig2c-scv-lower-carrying-capacity
+    agrees: true
+    outcome: reproduced
+    reason: 'Moved between run 1 and round 1; with unit means as the unit and clones a variant, both readings give
+      the criterion''s result, interaction p = 0.093/0.273 and 0.109 (cell 63). B2: the growth curves are not
+      deposited.'
+    response: 'No change possible for B2.'
+  - claim: fig2d-scv-twitching-no-exposure-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'B1 resolved: cell 66 prints the total SS (72.277 against 82.082), and cells 67 and 13 state that S3d is
+      not reproduced and that the design reading is the attempt''s own inference. But ''no assignment of colony
+      types reproduces Table S3d'' holds only if Table S3d''s sums of squares are sequential, so that they add up to
+      the total. That is likely, since S3a-c, S3e and S3f match sequentially and the S3d F ratios fit its residual
+      MS, but neither text says so. No outcome depends on it.'
+    response: 'Cell 66 now recomputes the S3d F ratios from its sums of squares over its residual mean square
+      (2.264, 8.516, 15.87, as printed) and states the comparison of totals under the condition that S3d''s sums of
+      squares are sequential. Cell 67, the notes of this claim, the S3d finding, the Summary and the README now give
+      that condition and say it is an inference. Outcome unchanged.'
+  - claim: fig2d-mucoid-25p-reduced-twitching
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion. B4
+      acknowledged: the claims file gives the ancestor''s twitching diameter as 9.38 cm and the data are in mm, a
+      misreading in the claims file now recorded as a deviation. Cell 13 says the other sheets have four 25_0 SCVs
+      (6d5s2 to 6d8s2), but cell 12 prints the biofilm and disease strain names for 35_1 only, so the 25_0 SCV names
+      are not shown in any output.'
+    response: 'Cell 12 now prints the 25_0 strains and colony types of the biofilm and disease sheets: 6d5a2 to
+      6d8a2 mucoid and 6d5s2 to 6d8s2 SCV in both, as cell 13 says.'
+  - claim: fig2e-mucoid-biofilm-increased
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Moved from not_reproduced to partially_reproduced, which is what I gave in round 1: the colony-type
+      effect and the mucoid half hold, the SCV half fails (cell 73). B3 resolved: cell 5 prints one ancestor row per
+      Figure 2 sheet (biofilm 0.488667), and the helper now checks there is exactly one, so the outcome stands on a
+      confirmed value.'
+    response: 'No further change.'
+  - claim: fig2e-biofilm-no-exposure-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
+  - claim: fig2f-phage-exposure-reduces-virulence
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
+  - claim: fig2f-scv-avirulent
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
+  - claim: fig2f-mucoid-25p-avirulent
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion. B3 resolved:
+      cell 5 prints the disease sheet''s one ancestor row (0.722222).'
+    response: 'No further change.'
+  - claim: sequencing-mutation-count
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion. B7: no change
+      was needed. The Summary (cell 118) says Table S4 identifies the paper''s choices (days 2 to 12; replicate
+      means by colony type with sequential sums of squares), but Table S4 is the mutation-count table (cell 15) and
+      cannot identify the OD time points or the ANOVA unit; those come from the matches to Tables S1a and S3a-c. The
+      clause is misattached.'
+    response: 'The Summary now says the matches to Tables S1a and S3a to S3c identify those choices, and lists Table
+      S4 for its counts only.'
+  - claim: table1-phcs-in-scvs
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
+  - claim: table1-pild-in-25p-mucoid
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion. The record''s
+      paper_inconsistency finding says the variant table places the RSc3091 deletion at 431461, but no notebook
+      output prints a POS for RS-N_00383/RSc3091 (cell 14 shows only locus and name), so the 431461 is not backed by
+      the notebook; it needs an output that prints the position before the record states it.'
+    response: 'Cell 14 now prints chromosome, position, type, alleles and clone count of the variants in phcS, phcR,
+      pilD, gspE, gspF and RSc3091. The RSc3091 deletion is at 431461 against Table 1''s C-432461; the other
+      positions match Table 1, which cell 15 now says. The finding stands as written.'
+  - claim: table1-t2ss-in-35p-scv
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked because the variant table does not say which clones carry the variants (2 or 3 clones,
+      tolerance 0). It cannot be settled from the dataset, and the genome reads are not public.'
+    response: 'No change possible.'
+  - claim: tables6-pil-mutants-resistant
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
+  - claim: figs3-adsorption
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
+  - claim: rnaseq-differential-expression-count
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
+  - claim: rnaseq-kegg-enrichment
+    agrees: true
+    outcome: blocked
+    reason: 'Stays blocked only because the criterion treats corrected and uncorrected p as equal readings. Exactly
+      the five named pathways have uncorrected p < 0.05, and none passes FDR (cell 107). If the reader answers the
+      pending question with ''uncorrected'', the outcome becomes reproduced. The cell 0 status table lists it as
+      ''tested on the dataset''s KEGG table'' and, unlike the other two blocked claims, does not say ''blocked''.'
+    response: 'The cell 0 row now says it is blocked because the criterion''s readings differ on the dataset''s KEGG
+      table. The question to the reader in questions/dryad-tdz08kq5d.yaml is still open; the outcome stays blocked
+      until it is answered.'
+  - claim: rnaseq-mutated-genes-expression
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Moved from not_reproduced to partially_reproduced, which is what I gave in round 1: phcR and pilD hold,
+      and phcS and the count of seven fail (cell 111). The two genes missing from the Figure 4B list (11 of 13)
+      cannot change the outcome.'
+    response: 'No further change.'
+  - claim: rnaseq-defense-systems
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion. B8
+      acknowledged: the loci come from the authors'' own Figure 4C labels, which the record states as a deviation.'
+    response: 'No change possible.'
+  - claim: rnaseq-virulence-genes-down
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with the stated outcome; it follows from the printed outputs and its criterion.'
+    response: 'Unchanged.'
