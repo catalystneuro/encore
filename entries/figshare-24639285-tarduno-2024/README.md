@@ -18,7 +18,7 @@ single silicate crystals (one workbook each).
 | AF cleaning did not change the NRM | Reproduced |
 | Table 1 magnetization thresholds | Reproduced |
 | Baseline of 0.2 to 0.5 uT | Reproduced |
-| Technical Validation example for 14053g1 | Reproduced under the misprint reading (the numbers are 12040g1's) |
+| Technical Validation example for 14053g1 | Partially reproduced (the numbers are 12040g1's) |
 | Crystal NRM replicates consistent, 590 C replicates and alteration checks not | Reproduced (three claims) |
 | 14053g1 stable at 400 C | Reproduced |
 | No alteration of the crystals | Reproduced |
