@@ -5,9 +5,11 @@
 #
 # Runs the roles of the attempt in GitHub Actions, one after another: the reader's claims and their
 # check (papers.yml, the only runs that write the claims file), the author, the reader's answers to the
-# author's questions and the author's run on them when there are questions, two verification rounds
-# and their revisions, a third round when the last revision proposed changes, and for a repeat attempt
-# the reconcile step, which compares it with the attempt before it. Then it records and merges the attempt. A claims file whose check says it is not ready stops the chain, for a
+# author's questions and the author's run on them when there are questions (only a suspected misreading
+# of the claims file is a question; the author takes method details from the paper), two verification rounds
+# and their revisions, a third round when the last revision proposed changes, and for a repeat attempt the
+# reconcile step, which compares it with the attempt before it. Then it records and merges the attempt. A
+# claims file whose check says it is not ready stops the chain, for a
 # person to look at. A repeat attempt on a new version of the dataset (VERSION given) keeps the
 # claims file, unless the earlier attempt is deprecated. Picks up where an earlier chain stopped: roles
 # committed since the attempt began ($RUNNER_STATE/attempt-<dataset>), on its branch or already on main,

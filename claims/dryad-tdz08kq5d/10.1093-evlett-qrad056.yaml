@@ -21,8 +21,8 @@
 # Data the paper used, as it reports them.
 # - Selection experiment: ancestral R. solanacearum RS-N grown with (+P) or without (-P) phage
 #   NNP42 at 25 or 35 degrees C, 10 replicate populations per treatment (40 populations), five
-#   2-day serial transfers (12 days). Bacterial OD600 at every transfer (six time points in the
-#   ANOVA of Table S1a); phage density (PFU/ml, log10-transformed for analysis) at every second
+#   2-day serial transfers (12 days). Bacterial OD600 at the end of each 48 h growth period, days 2
+#   to 12 (six time points in the ANOVA of Table S1a; day 0 is the inoculation); phage density (PFU/ml, log10-transformed for analysis) at every second
 #   transfer in the 20 +P populations (three time points in Table S1b).
 # - Day 12: four randomly chosen replicates per treatment plated on TTC agar; counts of mucoid (M)
 #   and small colony variant (SCV) colonies; eight clones per replicate, 128 clones in all.
@@ -43,10 +43,12 @@
 # Data held elsewhere: the paper deposits the sequencing reads of the evolved clones and the
 # transcriptomics raw data in NCBI SRA under PRJNA1028400 and PRJNA1032726, without saying which
 # accession holds which. The Methods also say the transcriptomics raw data can be shared on request.
+# The Data availability statement puts "The datasets and code generated during the current study"
+# in Dryad, so the sequencing and RNA-seq claims are tested on the dataset; the SRA reads are the
+# raw input those results were made from.
 #
 # Details the paper and code leave open, used below with the readings named in each criterion:
-# the unit of the Figure 2A to 2C ANOVAs (Table S3a to S3c have residual df 15, so 22 units, which
-# fits neither the 16 replicates nor the 128 clones); the type of sums of squares; how the area
+# the type of sums of squares of the Figure 2A to 2C ANOVAs; how the area
 # under the density curve is taken; which comparison gives F1,18 = 174.5 and F1,6 = 27.22; and
 # what "0.24%" refers to.
 schema_version: 2
@@ -71,7 +73,10 @@ claims:
     n: 40 populations (10 per treatment), six time points
   criterion: From the Methods and Table S1a, a repeated-measures ANOVA of OD600 with population as
     subject (Error term on population), temperature, phage and time (a factor, df 5) and all their
-    interactions; OD600 untransformed, as the Methods name a transformation for phage density only.
+    interactions. The six time points are days 2, 4, 6, 8, 10 and 12, the densities measured at the
+    end of each 48 h growth period, as OD600 was measured "Before every serial transfer" (Methods),
+    and the last point is day 12, "48-h growth after the fifth transfer"; day 0 is the inoculation,
+    not a measurement before a transfer; OD600 untransformed, as the Methods name a transformation for phage density only.
     Reproduced when the temperature effect has p < 0.05 and the mean OD600 over populations and
     time points is higher at 35 than at 25 degrees C.
 - id: fig1b-phage-reduces-density
@@ -140,8 +145,11 @@ claims:
   criterion: Area under each population's OD600 curve over the transfers, compared between +P and -P
     by one-way ANOVA at each temperature (Methods, one-way ANOVA for data without time structure).
     The reduction is 1 minus the mean +P area over the mean -P area. The paper does not say how the
-    area is taken. Readings are (a) trapezoidal area over all six time points, (b) trapezoidal area
-    over the five time points after inoculation, (c) the sum of OD600 over all six time points.
+    area is taken. The time points are those of fig1b-temperature-density, days 2 to 12; the text
+    takes the area "for the whole duration of the experiment", which ends at day 12, so day 12 is
+    in every reading. Readings are (a) trapezoidal area over days 2 to 12, (b) trapezoidal area
+    over days 0 to 12, with the day 0 inoculation OD600 where the data hold it, (c) the sum of
+    OD600 over days 2 to 12.
     The reported df (1, 19) imply 21 values where 20 populations give (1, 18); the F values are
     not targets. Reproduced when, under every reading, both reductions are within tolerance, the
     25 degrees C reduction is the larger, and both ANOVAs give p < 0.05; when the readings give
@@ -195,7 +203,10 @@ claims:
     0.24% frequency as that of SCVs while saying mucoid colonies persisted in the exception, and the
     Discussion says mucoid types persisted there. Readings are (a) mucoid colonies are 0.24% of all
     colonies of the 25 degrees C +P treatment, (b) SCVs are 0.24% of the colonies of the exceptional
-    replicate. Reproduced when no mucoid colonies are found in any 35 degrees C +P replicate,
+    replicate. Under (a) the treatment frequency is open. The text says "of all colonies within
+    this treatment", which reads as pooled colony counts, and "hardly visible in the mean plot",
+    which reads as the mean of the four replicate frequencies; both are readings, (a1) the mean of
+    replicate frequencies, (a2) pooled counts. Reproduced when no mucoid colonies are found in any 35 degrees C +P replicate,
     mucoid colonies are found in exactly one 25 degrees C +P replicate, SCVs are the majority in
     the other three, and the 0.24% matches under one reading.
 - id: fig1d-phage-raises-scv-frequency
@@ -244,11 +255,13 @@ claims:
   criterion: From the Methods and Table S3a, an ANOVA of phage resistance R = OD600(+)/OD600(-) at 24
     h, each clone the mean of its three technical replicates, with temperature, phage, colony type
     and the three two-way interactions (no three-way term, as no mucoid clone exists at 35 degrees
-    C with phage). Expressing values relative to the ancestor does not change F. The unit is open;
-    the residual df of 15 implies 22 units. Readings are (a) the mean of the clones of each colony
-    type within each replicate population, (b) each clone. Sums of squares are read (i) sequential
-    in the order of Table S3a, (ii) type II. Reproduced when the phage effect has p < 0.05 under all
-    readings and the mean R of +P clones exceeds that of -P clones at each temperature.
+    C with phage). Expressing values relative to the ancestor does not change F. The unit is the
+    mean of the clones of each colony type within each replicate population. Table S3a's residual
+    df of 15 with seven model df means 22 values, where 128 clones would leave 121, and the Figure 2
+    legend shows "replicate means as dots (based on eight clones isolated per replicate for A–C".
+    Each clone as the unit is shown as a variant. Sums of squares are read (i) sequential in the
+    order of Table S3a, (ii) type II. Reproduced when the phage effect has p < 0.05 under both sums
+    of squares readings and the mean R of +P clones exceeds that of -P clones at each temperature.
 - id: fig2a-temperature-resistance
   statement: Clones from the 35 degrees C treatments had higher phage resistance than clones from 25
     degrees C.
@@ -281,8 +294,8 @@ claims:
   - fig2a-phage-exposed-more-resistant
   criterion: A claim of absence, judged on the paper's test, the phage by temperature term of the
     ANOVA of fig2a-phage-exposed-more-resistant at p < .05 (Methods). Reproduced when p >= 0.05,
-    not reproduced when p < 0.05; the effect size is reported either way. The unit and sums of
-    squares readings are shown as variants.
+    not reproduced when p < 0.05; the effect size is reported either way. The clone unit and the
+    sums of squares readings are shown as variants.
 - id: fig2a-scv-more-resistant
   statement: SCVs were much more phage-resistant than mucoid clones, whether or not they had been
     exposed to phage during selection, with a significant colony type by phage interaction.
@@ -355,8 +368,8 @@ claims:
     fits set to 0, is shown as a variant. The Methods speak of 13 time points but list nine; all
     time points the data hold are used. The code fits one curve per combination of the growth
     file's replicate and strain columns, on the mean OD600 at each time point within it; when the
-    replicate column is the technical replicate, a clone's mu and A are the mean of its three fits. The ANOVA terms, unit readings and sums of squares
-    readings are those of fig2a-phage-exposed-more-resistant. Reproduced when the colony type
+    replicate column is the technical replicate, a clone's mu and A are the mean of its three fits. The ANOVA terms, unit, clone variant and sums of
+    squares readings are those of fig2a-phage-exposed-more-resistant. Reproduced when the colony type
     effect has p < 0.05 with SCVs higher and both interactions have p >= 0.05 under all readings.
 - id: fig2c-scv-lower-carrying-capacity
   statement: SCVs had a lower carrying capacity than mucoid clones, not affected by prior
@@ -551,8 +564,6 @@ claims:
     Supplementary Table S4
   quote: Sequenced clones had an average of 8.5 nonsynonymous mutations each... The average number
     of detected mutations was not affected by the colony morphology.
-  data: elsewhere
-  where: NCBI SRA PRJNA1028400 or PRJNA1032726 (the paper does not say which holds the genomes)
   expected:
   - quantity: mean nonsynonymous mutations per clone
     value: 8.5
@@ -569,8 +580,6 @@ claims:
   source: Results, Genetic changes associated with SCVs and phage resistance, paragraph 2; Table 1
   quote: Interestingly, SCVs were also associated with mutations in phcS quorum sensor histidine kinase
     gene (Table 1 and Figure 3)
-  data: elsewhere
-  where: NCBI SRA PRJNA1028400 or PRJNA1032726
   depends_on:
   - sequencing-mutation-count
   expected:
@@ -588,8 +597,6 @@ claims:
   source: Results, Genetic changes associated with SCVs and phage resistance, paragraph 2; Table 1
   quote: Interestingly, two of four mucoid phage-resistant clones that had evolved at 25 °C temperature
     treatment in the presence of phage had mutations in pilD gene (Table 1 and Figure 3)
-  data: elsewhere
-  where: NCBI SRA PRJNA1028400 or PRJNA1032726
   depends_on:
   - sequencing-mutation-count
   expected:
@@ -604,8 +611,6 @@ claims:
   source: Results, Genetic changes associated with SCVs and phage resistance, paragraph 3; Table 1
   quote: Finally, three of four sequenced small colony types that had evolved at 35 °C in the presence
     of phage had mutations in T2SS genes gspF and gspE (Table 1 and Figure 3)
-  data: elsewhere
-  where: NCBI SRA PRJNA1028400 or PRJNA1032726
   depends_on:
   - sequencing-mutation-count
   expected:
@@ -674,8 +679,6 @@ claims:
   quote: We found that a total 1477 of R. solanacearum genes were differentially expressed after phage
     exposure (|log2foldchange| > 1, FDR < 0.05, Figure 4A). Of these, around half (707) were upregulated,
     and another half (770) downregulated in the presence of phage.
-  data: elsewhere
-  where: NCBI SRA PRJNA1028400 or PRJNA1032726 (the paper does not say which holds the RNA-seq)
   expected:
   - quantity: differentially expressed genes
     value: 1477
@@ -700,8 +703,6 @@ claims:
     systems..., paragraph 1; Supplementary Figure S5
   quote: Based on KEGG pathway enrichment analysis, a total of five metabolic pathways were significantly
     enriched in phage compared to control treatment (p < .05, Supplementary Figure S5).
-  data: elsewhere
-  where: NCBI SRA PRJNA1028400 or PRJNA1032726
   depends_on:
   - rnaseq-differential-expression-count
   criterion: KOBAS KEGG enrichment of the differentially expressed genes of
@@ -719,8 +720,6 @@ claims:
     while pilD and other pilus biogenesis and adherence (fimbriae) associated genes were significantly
     downregulated in the presence of phage (Figure 4B and C). Of 13 mutated genes that were selected
     for in the presence of phage, seven showed differential gene expression
-  data: elsewhere
-  where: NCBI SRA PRJNA1028400 or PRJNA1032726
   depends_on:
   - rnaseq-differential-expression-count
   expected:
@@ -740,8 +739,6 @@ claims:
   quote: Specifically, JetC gene belonging to Wadjet system, was downregulated, while genes linked to
     MTases and Reases belonging to Restriction-Modification type I system, and SMODS (cyclase) and Gros
     (effector) genes belonging to CBASS abortive infection system, were upregulated (Figure 4C).
-  data: elsewhere
-  where: NCBI SRA PRJNA1028400 or PRJNA1032726
   depends_on:
   - rnaseq-differential-expression-count
   criterion: The analysis of rnaseq-differential-expression-count, with the Figure 4C thresholds
@@ -756,8 +753,6 @@ claims:
     systems..., paragraph 1; Figure 4C
   quote: We also found that phage exposure led to downregulation of several virulence genes associated
     with motility and type II and III secretions systems (Figure 4C).
-  data: elsewhere
-  where: NCBI SRA PRJNA1028400 or PRJNA1032726
   depends_on:
   - rnaseq-differential-expression-count
   criterion: The analysis of rnaseq-differential-expression-count, with the Figure 4C thresholds

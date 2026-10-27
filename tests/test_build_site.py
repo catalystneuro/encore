@@ -448,6 +448,14 @@ def test_a_claim_not_stated_in_the_paper_says_it_is_inferred():
     assert "checks the link to the paper’s data" in link
 
 
+
+def test_an_outcome_that_rests_on_an_assumption_says_so():
+    claim = {"claim": "t", "statement": "Few respond.", "source": "Figure 2", "outcome": "reproduced",
+             "blocked_by": None, "notes": "N.", "deviations": ["Assumed a 1 s window, the paper's Figure 3."],
+             "disagreed": False}
+    assert "rests on an assumption" in site.claim_item({**claim, "assumed": True}, "../")
+    assert "rests on an assumption" not in site.claim_item(claim, "../")
+
 def test_the_schema_keeps_quotes_inferences_and_links_apart():
     from jsonschema import Draft202012Validator
     schema = Draft202012Validator(json.loads((REPO / "schemas" / "claims.schema.json").read_text()))

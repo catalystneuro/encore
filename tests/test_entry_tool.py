@@ -133,6 +133,22 @@ def test_a_blocked_outcome_needs_a_reason(repo):
     assert any("blocked_by" in e for e in errors(repo))
 
 
+
+def test_an_outcome_on_an_assumption_states_it_and_is_not_blocked(repo):
+    """An outcome that rests on an assumption about an open method says what was assumed in a deviation
+    (docs/protocol.md, Author, step 1.6); a claim with no defensible choice is blocked instead."""
+    def with_outcome(**o):
+        attempt = {**ATTEMPT, "outcomes": [{**ATTEMPT["outcomes"][0], **o}]}
+        (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
+        return errors(repo)
+    assumed = "Assumed a 1 s window, the one Figure 3 uses, since the Methods give none."
+    assert with_outcome(assumed=True, deviations=[assumed]) == []
+    assert with_outcome(assumed=True) != []
+    assert with_outcome(assumed=True, deviations=[]) != []
+    assert with_outcome(assumed=True, deviations=[assumed], outcome="blocked", blocked_by="methods_underspecified",
+                        notes="N.") != []
+    assert with_outcome(assumed="yes", deviations=[assumed]) != []
+
 def test_the_entry_name_must_match_its_directory(repo):
     (repo / "entries" / "demo" / "entry.yaml").write_text(yaml.safe_dump({**ENTRY, "name": "other"}))
     assert any("must match the directory name" in e for e in errors(repo))

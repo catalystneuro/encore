@@ -378,7 +378,7 @@ the claims file, and report where it misreads the paper.
 - [000128, Churchland et al. 2010](pilot-notes/000128-churchland-2010-01.md)
 - [000036, Mayner et al. 2022](pilot-notes/000036-mayner-2022-01.md)
 
-## Protocol pilot-11 (2026-10-27): blind repeat attempts
+## Protocol pilot-12 (2026-10-27): blind repeat attempts
 
 A repeat attempt used to start from the attempt before it: its author read the
 earlier record, edited the earlier entry in place, and said for each earlier
