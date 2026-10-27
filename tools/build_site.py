@@ -236,6 +236,7 @@ def collect(executed: Path | None = None) -> dict:
                 "notebook": o.get("notebook"),
                 "notes": squash(o.get("notes")),
                 "deviations": [squash(d) for d in o.get("deviations") or []],
+                "assumed": bool(o.get("assumed")),
                 "disagreed": o["claim"] in disagreed,
                 "data": known.get(o["claim"], {}).get("data", "dataset"),
                 "where": known.get(o["claim"], {}).get("where"),
@@ -693,6 +694,8 @@ def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | No
         if o["blocked_by"] else ""
     source = f'<span class="source">{e(o["source"])}</span>' if o["source"] else ""
     tags = '<span class="tag">verifier disagreed at first</span>' if o["disagreed"] else ""
+    if o.get("assumed"):
+        tags += '<span class="tag">rests on an assumption</span>'
     if asked and o["claim"] in asked:
         tags += f'<a class="tag" href="#question-{asked[o["claim"]]}">question to the reader</a>'
     if o.get("kind") == "link":
@@ -1555,7 +1558,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
     n = sum(counts.values())
     order = {"reproduced": 0, "partially_reproduced": 1, "not_reproduced": 2}
 
-    # Questions the author asked a reader about the claims file (docs/protocol.md, Author, step 6), with answers.
+    # Questions the author asked a reader about the claims file (docs/protocol.md, Author, step 1.6), with answers.
     questions = (data.get("pipeline") or {}).get("question_items", {}).get(dandiset, [])
     asked: dict = {}
     for i, q in enumerate(questions, 1):
@@ -1739,9 +1742,11 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
                else '<div class="answer open">No reader has answered it yet.</div>')
             + "</li>")
     questions_panel = (f'<section class="tabpanel" id="questions"><h2>Questions</h2>'
-                       f'<p class="sub small" style="margin-top:12px">Where the claims file did not say how to test a '
-                       f'claim, the author asked, citing the paper, and a reader who had not seen the data answered '
-                       f'from the paper alone. The author then ran the claim as answered.</p>'
+                       f'<p class="sub small" style="margin-top:12px">Where the author or a verifier believed the '
+                       f'claims file misread the paper, they asked, citing the paper, and a reader who had not seen '
+                       f'the data answered from the paper alone, amending the claims file where it was wrong. The '
+                       f'author then ran the claim as answered. Attempts before protocol pilot-11 also asked here '
+                       f'for method details the claims file did not give.</p>'
                        f'<ul class="questions">{question_items}</ul></section>') if questions else ""
 
     tab_defs = [("claims", "Claims", n), ("findings", "Findings about the data", len(all_findings)),
