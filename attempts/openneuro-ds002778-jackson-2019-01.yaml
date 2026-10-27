@@ -1,0 +1,382 @@
+schema_version: 2
+id: openneuro-ds002778-jackson-2019-01
+dataset:
+  archive: openneuro
+  id: ds002778
+  version: 1.0.5
+  doi: 10.18112/openneuro.ds002778.v1.0.5
+paper: doi:10.1523/eneuro.0151-19.2019
+date: 2026-10-27
+entry: openneuro-ds002778-jackson-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/40594416398
+outcomes:
+- claim: fig2-sharpness-off-on
+  outcome: partially_reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:fig2-sharpness-off-on
+  measured:
+  - 13
+  - 0.73
+  notes: Composite C3 and C4 beta sharpness ratio is higher off than on in 13 of 15 patients,
+    signed rank W = 13 (expected 12 +/- 1.2), p = 0.0076 (exact 0.0054), FDR corrected over the
+    six tests of Table 1 p = 0.0228 under all 12 combinations of filter readings. Cohen's d =
+    0.73, below 0.86 +/- 0.086. Without sub-pd6 and sub-pd16, whose on sessions come from
+    preprocessed files, W = 11, p = 0.016, d = 0.81.
+  deviations:
+  - No samples rejected and no electrode excluded, as the dataset holds neither the paper's
+    manual artifact marks nor its excluded electrodes (claims file readings (b); reading (a), the
+    dataset's own marks, has nothing to apply since every channels.tsv says good and the events
+    files hold only a start trigger).
+  - The paper computed its measures on preprocessed MATLAB files that are not public; here the
+    preprocessing of the Methods is applied to the BDF files.
+- claim: fig2-steepness-off-on
+  outcome: partially_reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:fig2-steepness-off-on
+  measured:
+  - 16
+  - 0.70
+  notes: Beta steepness ratio is higher off than on in 12 of 15 patients, p = 0.0125 (exact
+    0.0103), FDR corrected 0.0249; d = 0.70 is within 0.68 +/- 0.068 but W = 16 is outside 9 +/-
+    0.9. Without sub-pd6 and sub-pd16, W = 5, p = 0.0046, d = 0.75.
+  deviations:
+  - No artifact rejection or electrode exclusion (as for fig2-sharpness-off-on).
+- claim: fig2-pac-off-on
+  outcome: partially_reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:fig2-pac-off-on
+  measured:
+  - 13
+  - 0.85
+  notes: Beta PAC is higher off than on in 13 of 15 patients; W = 13, p = 0.0076 with the
+    Methods' filters (118 and 123 samples) and W = 12, p = 0.0064 with the code's (231 and 240
+    taps); FDR corrected 0.0228. d on raw PAC is 0.85 and 0.86, within 0.83 +/- 0.083; on log10
+    PAC 0.73 and 0.86. The statistic is outside 15 +/- 1.5 under both filter readings. The
+    criterion's last sentence names only the test and d; taken alone it would make the claim
+    reproduced, but the statistic is an expected value of the claim and is out of tolerance, so
+    the outcome is partially reproduced.
+  deviations:
+  - No artifact rejection or electrode exclusion (as for fig2-sharpness-off-on).
+  - The criterion combines "As for fig2-sharpness-off-on" (statistic and d within tolerance) with
+    a last sentence naming the test and d only; the expected statistic was kept as part of the
+    judgement.
+- claim: bipolar-off-on
+  outcome: reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:bipolar-off-on
+  notes: With C3-CP1 and C4-CP2, off is higher than on for sharpness ratio (W = 15, p = 0.0106,
+    13 of 15), steepness ratio (W = 4, p = 0.0015, 13 of 15) and PAC (W = 12, p = 0.0064 Methods'
+    filters; W = 11, p = 0.0054 code's). FDR corrected over the three, 0.0106, 0.0044 and 0.0096
+    (0.0081), all below 0.05. None is below the paper's bound of 0.004 after correction
+    (steepness 0.0044 is closest); uncorrected, only steepness is (0.0015).
+  deviations:
+  - No artifact rejection or electrode exclusion (as for fig2-sharpness-off-on).
+- claim: temporalis-f7f8-null
+  outcome: reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:temporalis-f7f8-null
+  notes: At the F7 and F8 composite, sharpness ratio p = 0.69 (d 0.31), steepness ratio p = 0.17
+    (d 0.57), PAC p = 0.0995 (Methods' filters) and 0.078 (code's), d 0.67; none below 0.05
+    uncorrected. Paper p = 0.73, 0.394 and 0.191.
+  deviations:
+  - No artifact rejection or electrode exclusion. The paper's argument is that these electrodes
+    carry muscle artifact; here artifacts were not removed at any electrode.
+- claim: temporalis-t7t8-null
+  outcome: reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:temporalis-t7t8-null
+  notes: At the T7 and T8 composite, sharpness ratio p = 0.36 (d 0.42), steepness ratio p = 0.95
+    (d -0.04), PAC p = 0.11 under both filter readings (d 0.56 and 0.59).
+  deviations:
+  - No artifact rejection or electrode exclusion.
+- claim: fig2c-topography-sensorimotor
+  outcome: partially_reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:fig2c-topography-sensorimotor
+  notes: Signed rank tests at each of the 32 electrodes. Steepness ratio meets the criterion
+    (smallest p at C4, 0.023; F7, F8, T7, T8 p 0.21 to 0.57). PAC with the Methods' filters has
+    its smallest p at CP6 (0.027), and F7 has p = 0.041, so it meets the criterion under the FDR
+    reading only; with the code's filters the smallest p is at Fz (0.020). Sharpness ratio has
+    its smallest p at P8 (0.0064), then CP6 (0.017) and AF3 (0.031); C3 is fourth (0.0995). No
+    electrode survives FDR over 32 for any measure. Two of three measures meet the criterion
+    under one reading, one does not under any.
+  deviations:
+  - No artifact rejection or electrode exclusion.
+  - The paper's topographies were drawn with EEGLAB topoplot from test statistics; here the test
+    at each electrode is listed and plotted as -log10 p, as the criterion uses only the tests.
+- claim: offctrl-sharpness-null
+  outcome: reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:offctrl-sharpness-null
+  measured:
+  - 0.09
+  notes: Rank sum z = 0.47, p = 0.64 (paper z = 0.91, p = 0.363); no difference. d = 0.09 is
+    outside the expected 0.19 +/- 0.019; the claim of absence is judged on the test.
+  deviations:
+  - No artifact rejection or electrode exclusion.
+- claim: offctrl-steepness
+  outcome: partially_reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:offctrl-steepness
+  measured:
+  - 2.37
+  - 0.85
+  notes: With the average reference, beta steepness ratio is higher off than in controls, z =
+    2.37 (within 2.53 +/- 0.253), d = 0.85 (within 0.88 +/- 0.088), p = 0.0177 uncorrected, but
+    FDR corrected over the six tests of Table 2 p = 0.0531 under every filter reading, just
+    above 0.05 (the alpha steepness test has p = 0.0143, so the two smallest of six give 0.0531).
+    With the bipolar pairs z = 2.37, p = 0.0177 as a single test (significant), 0.0531 FDR
+    corrected over the three bipolar measures. The criterion names reproduced (average reference
+    corrected test holds, z and d match, bipolar holds) and partially reproduced (only the
+    average reference result holds); here the bipolar result holds under one reading and the
+    average reference test misses the corrected threshold with z and d matching, which is
+    recorded as partially reproduced.
+  deviations:
+  - No artifact rejection or electrode exclusion.
+  - The case found is not one the criterion names; the outcome was judged as an effect present
+    with the paper's size that misses the corrected threshold.
+- claim: offctrl-pac-null
+  outcome: reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:offctrl-pac-null
+  notes: Rank sum z = 0.99, p = 0.32 with the Methods' filters; z = 1.07, p = 0.29 with the code's
+    (paper z = 1.19, p = 0.236). d = 0.20.
+  deviations:
+  - No artifact rejection or electrode exclusion.
+- claim: offctrl-pac-csd
+  outcome: not_reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:offctrl-pac-csd
+  notes: With the CSD transform, beta PAC at C3 and C4 is higher off (0.032) than in controls
+    (0.025), z = 1.78, p = 0.075 under both filter readings, d = 0.35, against the paper's p =
+    0.022. The CSD montage increases the off against on difference (d = 1.20, p = 0.0106).
+  deviations:
+  - CSD computed with MNE's spherical spline (stiffness m = 3, lambda 1e-5, 50 Legendre terms, the
+    CSD toolbox's defaults) on the BioSemi 32 template positions, as the dataset holds no
+    digitized positions; the paper used the MATLAB CSD toolbox (Methods, Data preprocessing).
+  - No artifact rejection or electrode exclusion.
+- claim: updrs-improvement
+  outcome: reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:updrs-improvement
+  measured: 3.5
+  notes: The dataset's "Total UPDRS" (16 to 58; it exceeds "UPDRS 18-26" by 1 to 14, which fits
+    the motor examination, items 18 to 31) is lower on medication in 12 patients, equal in 2,
+    higher in 1. Signed rank W = 3.5, p = 0.0033 (scipy's default drops the two ties), the
+    paper's values. The dataset holds no other part of the UPDRS, so both readings of the
+    criterion give this field. Items 18 to 26 alone give W = 6.5, p = 0.011.
+  deviations:
+  - The UPDRS fields have no description in the dataset; "Total UPDRS" is taken as the motor
+    total from its values.
+- claim: fig1c-beta-alpha-peaks
+  outcome: not_reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:fig1c-beta-alpha-peaks
+  notes: Welch spectra (Hamming 256, overlap 128, nFFT 450) averaged over C3 and C4 and over the
+    participants of each group. Controls have local maxima at 10.24 Hz and 18.2 Hz. The off
+    group's mean spectrum has its only maximum from 6 to 13 Hz at 7.96 Hz, below the 8 to 12 Hz
+    band, and none from 13 to 30 Hz; the on group's has none. Over all electrodes off has beta
+    maxima at 17.1 and 21.6 Hz and no alpha maximum. The on mean is dominated by sub-pd16 on
+    (about 100 times the power of others), but without it there is still no maximum. With the
+    mean of log power, off has an alpha maximum at 9.1 Hz and no beta maximum. Single recordings
+    have an alpha maximum in 8 of 15 off, 8 of 15 on and 11 of 16 controls, and a beta maximum
+    in 9, 10 and 14.
+  deviations:
+  - Spectra computed without artifact rejection; artifacts weigh on a mean of raw power more
+    than on the ratio measures.
+- claim: table1-alpha-shape-off-on
+  outcome: partially_reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:table1-alpha-shape-off-on
+  measured:
+  - 18
+  - 0.71
+  - 21
+  - 0.58
+  notes: With the 192-tap filter, alpha sharpness ratio W = 18, p = 0.0171, d = 0.71 (11 of 15
+    higher off) and alpha steepness ratio W = 21, p = 0.0268, d = 0.58 (12 of 15); with 118
+    samples, W = 19, d = 0.66 and W = 21, d = 0.59. FDR corrected p 0.0256 to 0.0321. Both
+    tests hold and three of four values are within tolerance under both readings; the steepness
+    statistic (21) is outside 12 +/- 1.2.
+  deviations:
+  - No artifact rejection or electrode exclusion.
+- claim: table1-alpha-pac-null
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:table1-alpha-pac-null
+  measured: 0.70
+  notes: FDR corrected over Table 1, alpha PAC off against on gives p = 0.0609 with a 192-tap
+    phase filter (reading a, W = 27), 0.0783 with the code's 231 and 240 taps (reading b, W =
+    29), and 0.0356 with 118 samples (reading c, W = 23). Readings a and b find no difference,
+    reading c does. Reading a is adopted (see deviations). d on raw PAC is 0.70, 0.72 and 0.66,
+    above 0.51 +/- 0.051 under every reading; on log10 PAC 0.84, 0.82, 0.70. The question of the
+    alpha phase filter length is for the paper's authors, since the Methods give 231 ms for the beta
+    filter only, and the code holds no alpha analysis.
+  deviations:
+  - Assumed the alpha phase filter is 192 taps, three cycles of 8 Hz, the default filter length
+    of pacpy, the package the Methods name for PAC ("with the open-source package, pacpy"), and
+    the rule of the paper's code for its shape filters (shape.findpt, w = 3). The readings give
+    different outcomes; all three are printed.
+  - No artifact rejection or electrode exclusion.
+- claim: table2-alpha-offctrl
+  outcome: partially_reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:table2-alpha-offctrl
+  measured:
+  - 2.45
+  - 0.89
+  notes: Alpha steepness ratio, off against controls, z = 2.45 (192 taps) or 2.53 (118 samples),
+    within 2.53 +/- 0.253, d = 0.89, within 0.87 +/- 0.087, p = 0.0143 or 0.0114 uncorrected, FDR
+    corrected 0.0531 under every reading, just above 0.05. Sharpness ratio (corrected 0.57 or
+    0.72) and PAC (0.12 to 0.41) do not differ after correction, as the claim says. The criterion
+    does not name this case (steepness values match but miss the corrected threshold; the other
+    two hold); it is recorded as partially reproduced.
+  deviations:
+  - No artifact rejection or electrode exclusion.
+  - The case found is not one the criterion names.
+- claim: pac-beta-larger-than-alpha
+  outcome: partially_reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:pac-beta-larger-than-alpha
+  measured: 17
+  notes: On raw PAC the beta off minus on difference exceeds the alpha one in 12 or 13 of 15
+    patients, W = 17 (18 for the code's beta filters with reading c), p = 0.015 to 0.017, under
+    all six combinations of filter readings. W is outside 11 +/- 1.1. On log10 PAC (variant) W =
+    40 to 54, p = 0.26 to 0.73.
+  deviations:
+  - No artifact rejection or electrode exclusion.
+- claim: fig3-sharpness-pac-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:fig3-sharpness-pac-correlation
+  measured:
+  - 0.59
+  - 0.79
+  notes: Spearman r between composite beta sharpness ratio and PAC, Methods' filters, off 0.59
+    (p = 0.022, below 0.63 to 0.77) and on 0.79 (p = 0.0005, within); code's filters off 0.63
+    (p = 0.012, within) and on 0.84 (p = 0.0001, above 0.666 to 0.814). Both positive and
+    significant under both readings, with one r out of tolerance in each.
+  deviations:
+  - No artifact rejection or electrode exclusion.
+- claim: fig3-steepness-pac-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:fig3-steepness-pac-correlation
+  measured:
+  - 0.80
+  - 0.45
+  notes: Methods' filters, off r = 0.80 (p = 0.0003, within 0.666 to 0.814), on r = 0.45 (p =
+    0.095, not significant); code's filters, off r = 0.80 (p = 0.0004), on r = 0.53 (p = 0.041,
+    below 0.612 to 0.748). Under the code's filters both are positive and significant with one r
+    out of tolerance.
+  deviations:
+  - No artifact rejection or electrode exclusion.
+- claim: fig4a-sensorimotor-q4
+  outcome: reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:fig4a-sensorimotor-q4
+  measured: 48
+  notes: Of the 60 patient points (C3 and C4, off and on), 48 (80%) have positive log10
+    peak-to-trough and negative log10 rise-to-fall ratio (Q4); Q1 6, Q2 4, Q3 2. Q4 holds 13, 10,
+    13 and 12 of the 15 points at C3 off, C3 on, C4 off and C4 on.
+  deviations:
+  - No artifact rejection or electrode exclusion.
+- claim: q4-patient-counts
+  outcome: not_reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:q4-patient-counts
+  measured:
+  - 10
+  - 10
+  - 7
+  - 13
+  notes: Patients with both off and on in Q4 are 10 at C3, 10 at C4, 7 at both and 13 at one or
+    more, against 9, 8, 8 and 9 (+/- 1). The C3 and both counts are within tolerance, the C4
+    count and the at-least-one count are not, in either electrode order (swapped, C3 10 against
+    8).
+  deviations:
+  - No artifact rejection or electrode exclusion; the selection depends on the shape measures,
+    which the paper computed after rejection.
+- claim: fig4b-temporalis-variable-shape
+  outcome: reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:fig4b-temporalis-variable-shape
+  notes: Reading (a), the most common quadrant holds 68% of the 60 F7 and F8 points (41, Q2)
+    against 80% (48, Q4) at C3 and C4; reading (b), RMS distance to the centroid 0.093 against
+    0.076. Both readings agree. The F7 and F8 points concentrate in Q2 (sharper troughs, steeper
+    rises).
+  deviations:
+  - No artifact rejection or electrode exclusion.
+- claim: controls-q4
+  outcome: reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:controls-q4
+  measured: 25
+  notes: 25 of the 32 control points (78%) are in Q4 (13 of 16 at C3, 12 of 16 at C4); Q1 2, Q2 2,
+    Q3 3.
+  deviations:
+  - No artifact rejection or electrode exclusion.
+- claim: table3-q4-effect-size
+  outcome: partially_reproduced
+  notebook: reproduce_jackson_2019.ipynb
+  output: claim:table3-q4-effect-size
+  measured:
+  - 0.99
+  - 0.82
+  - 0.95
+  - 0.85
+  notes: With the 13 patients who have at least one electrode in Q4 off and on, d rises for all
+    three measures under every reading; sharpness 0.73 to 0.99 (within 0.95 +/- 0.095), steepness
+    0.70 to 0.82 (above 0.70 +/- 0.07), raw PAC with the Methods' filters 0.85 to 0.95 (above
+    0.83 +/- 0.083; code's 0.86 to 0.96, log10 0.73 to 1.06 and 0.86 to 1.07). The all-patient
+    PAC d of Table 3 (0.75) is matched by log10 PAC with the Methods' filters (0.73), not by raw
+    PAC (0.85, given as measured, first reading). The Q4 group has 13 patients where the paper
+    has 9 (q4-patient-counts, not reproduced), which bears on these values.
+  deviations:
+  - No artifact rejection or electrode exclusion.
+findings:
+- kind: data_missing
+  statement: The manual artifact marks (rejected samples) and the list of excluded noisy
+    electrodes that the paper's preprocessing used are not in the dataset; every channels.tsv
+    marks all channels good and the events files hold only a start trigger. The paper's code
+    loads them from rejectscombined.mat, which is not public. Analyses here run without
+    rejection.
+- kind: metadata_insufficient
+  statement: The questionnaire fields of the beh JSON files (Total UPDRS, UPDRS 18-26, Brady kinesia
+    UPDRS, Rigidity UPDRS, Left and Right UPDRS, H&Y, Beck) have no description; the only beh
+    sidecar describes a dummy trial column. Which part of the UPDRS "Total UPDRS" covers has to
+    be inferred from the values.
+- kind: other
+  statement: The sub-pd16 ses-on recording, which participants.tsv says was exported from a
+    preprocessed EEGLAB file, has electrode standard deviations about six times those of every
+    other recording after the same preprocessing (median 62.6 uV), about 100 times their power,
+    and no alpha peak; its means are near zero but its channels are not average referenced. The
+    dataset does not say how it was processed or scaled. The sub-pd6 ses-on file, also exported
+    from EEGLAB, is average referenced and lasts 289 s.
+- kind: metadata_insufficient
+  statement: The events files hold one trigger (value 1) a few seconds into most recordings, and
+    other values in sub-pd16 ses-on (130817) and sub-pd17 ses-off (a second 65536); what the
+    trigger marks is not described.
+- kind: methods_unavailable
+  statement: For the paper's authors. The filter length of the mu/alpha (8 to 12 Hz) phase filter
+    for PAC is not given (the Methods give 231 ms for beta; the code has no alpha analysis). With
+    192 taps (three cycles of 8 Hz, pacpy's default) or the code's 231 taps, alpha PAC off
+    against on is not significant after FDR correction (0.061, 0.078), as Table 1 reports; with
+    118 samples it is (0.036). Which length was used?
+- kind: paper_inconsistency
+  statement: Table 2 gives FDR corrected p = 1 for beta sharpness ratio, beta PAC and alpha
+    sharpness ratio, where Benjamini-Hochberg over the six tests of the table, as stated,
+    gives smaller values (about 0.36 for the printed p-values); Table 1's corrected values do
+    match Benjamini-Hochberg. Table 3 gives d = 0.75 for PAC in all patients where Table 1 gives
+    0.83.
