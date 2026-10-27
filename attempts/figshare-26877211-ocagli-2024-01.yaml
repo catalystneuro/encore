@@ -132,7 +132,7 @@ outcomes:
     it. The portal has changed since May 2024, so the check cannot be repeated on the pages as
     scraped.
 - claim: portal-search-count
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_ocagli_2024.ipynb
   output: claim:portal-search-count
   notes: The portal's 6547 is outside data, not public in its May 2024 state, and is not tested. In
@@ -144,17 +144,12 @@ outcomes:
     "TEST", gives 6551, but the paper then removes the test page again. Removing both rows of page
     6316's chemical with the test page gives 6549, within 2 of 6547, but that is none of the
     readings D1 to D3 and is not used. The criterion states only when the dataset's part is
-    reproduced; partially reproduced is recorded because one of its two conditions holds and the
-    portal part cannot be tested. No measured value is given, as the first
-    expected value (the portal count) cannot be measured.
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion states only when the dataset's part is reproduced, and of its two
-      conditions the one that carries the claim, within 2 of 6547 after cleaning, fails (6550 under
-      D2 and D3, a difference of 3; 6552 under D1). The criterion gives no partial level, and for
-      unknowns-name-only, whose criterion is written the same way, the outcome is not reproduced
-      when the condition fails. The portal part stays untested. Verification round 2 found the
-      partial level an unstated assumption. Notebook cells 42 and 43.
+    reproduced and gives no partial level; one of its two conditions fails, so the dataset's part is
+    not reproduced, read as for unknowns-name-only. The portal part stays untested. The outcome was
+    partially reproduced until verification round 3, which agreed with the change. The margin of 2
+    is the claims file's choice and puts the paper's own 6549 against 6547 at its edge, so this
+    outcome rests on one row. No measured value is given, as the first expected value (the portal
+    count) cannot be measured.
 findings:
 - kind: data_missing
   statement: The manual extraction of 700 portal pages used for the Technical Validation (REDCap,
@@ -352,3 +347,23 @@ verifications:
       wrong; the choice of a partial level is an assumption the record does not state.'
     response: Agreed. As round 2 may not change an outcome, the verified outcome (partially reproduced) is kept and a
       change to not reproduced is proposed under proposed, for round 3. Cell 43, the Summary and the README say so.
+- date: '2026-10-27'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 3: the proposed change of outcome for portal-search-count in the record of the
+    author-revise-2 run (commit 3deb21bc0), with the executed notebook (cells 23, 42 and 43), the helper module,
+    the claims file and the paper. Report transcripts/figshare-26877211/verifier-3-report.md.'
+  results:
+  - claim: portal-search-count
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 42: 6552 rows have a JECFA name, within 655 of 6551, so the first condition holds. After cleaning,
+      the count is 6550 under D2 and D3, 3 from 6547 (the margin is 2), and 6552 under D1, 5 from 6547, so the second
+      condition fails under every reading. The criterion says only when the dataset''s part is reproduced and gives
+      no partial level, so the dataset''s part is not reproduced, consistent with unknowns-name-only. The portal''s
+      6547 stays untested. The margin of 2 is the claims file''s choice and puts the paper''s own 6549 against 6547
+      at its edge, so the one extra row in the deposit is enough to fail the claim; a strict reading, not a
+      misreading.'
+    response: Outcome changed to not_reproduced and the proposal removed. Cell 43, the Summary, the README and the
+      notes now give the new outcome and say that it rests on the claims file's margin of 2, which the paper's own
+      figures meet only at its edge.
