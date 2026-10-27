@@ -4185,6 +4185,10 @@
    "ebrains:q0fg-1x8": {
     "ready": true,
     "date": "2026-10-20"
+   },
+   "figshare:26877211": {
+    "ready": true,
+    "date": "2026-10-27"
    }
   },
   "questions": {
@@ -55126,6 +55130,81 @@
      }
     ]
    }
+  ],
+  "figshare:26877211": [
+   {
+    "path": "claims/figshare-26877211/10.1038-s41597-024-04294-w.yaml",
+    "paper": "10.1038/s41597-024-04294-w",
+    "check": {
+     "ready": true,
+     "date": "2026-10-27"
+    },
+    "claims": [
+     {
+      "id": "data-records-rows",
+      "statement": "The deposited dataframe is the JECFA index of May 2024, with 6552 rows and the fields of Table 1.",
+      "source": "Data Records, paragraphs 1 and 2",
+      "quote": "As of May 2024, the final dataframe consists of 6552 rows. The RDS file contains a structured data frame to reflect the fields described in Table 1 of the manuscript",
+      "criterion": "The tolerance of 3 rows is chosen here in place of 10% (655 rows), which would not test an exact count. The paper says both that the final dataframe has 6552 rows (Data Records) and that the dataframe is cleaned of duplicates to 6549 unique pages (Methods), so the deposit may hold either; 3 rows covers both. Reproduced when jecfa.rds has 6552 rows within tolerance and holds a column for each of the 17 fields of Table 1 (by the code's names in process_df.R, or an evident equivalent); partially reproduced when the row count holds and at most three fields are missing (a threshold chosen here). JECFA.csv is compared with jecfa.rds and any difference in rows or columns is reported."
+     },
+     {
+      "id": "unique-pages",
+      "statement": "The 6552 scraped entries, cleaned of the duplicates of page 6316 and of test pages, give 6549 unique pages.",
+      "source": "Methods, Web-scraping, paragraph 2",
+      "quote": "We validated the effectiveness of this method by identifying 6552 entries, which were then cleaned to remove duplicates of (E)-N-[2-(1,3-BENZODIOXOL-5-YL)ETHYL]-3- (3,4-DIMETHOXYPHENYL)PROP-2-ENAMIDE ... and test pages, resulting in 6549",
+      "criterion": "The tolerance of 2 rows is chosen here in place of 10% (655 rows), which would not test an exact count; the Technical Validation gives the same number as \"6,551 minus a duplicate and a test page\". The paper names page 5883 as the test page and the chemical of page 6316 as the duplicate, without saying how a duplicate is detected. Readings, (D1) rows with distinct URL; (D2) rows with distinct JECFA name, then removing the row of URL 5883; (D3) the 6552 rows less the rows of URL 5883 and less all but one row whose JECFA name is that of page 6316. Reproduced when one reading gives 6549 within tolerance and page 6316's chemical appears more than once in the 6552 rows."
+     },
+     {
+      "id": "table1-availability",
+      "statement": "The share of pages carrying each Table 1 field is 100% for URL and JECFA name, 82% chemical names, 79% synonyms, 35% CAS number, 71% JECFA number, 65% FEMA number, 46% COE number, 98% functional class, 98% evaluation year, 97% report and its link, 93% Tox monograph and its link, 92% specification and its link, and 93% FAS.",
+      "source": "Methods, Web-scraping, paragraph 3; Table 1, column Availability (%)",
+      "quote": "",
+      "criterion": "For each field the percentage of rows where it is present (E, opening comment), under U1 or U2. FAS is the FAS column the code derives (process_df.R, add_metadata.R), empty when the Tox monograph is not a FAS. Reproduced when, under one reading, at least 15 of the 17 values are within tolerance; partially reproduced for 10 to 14 (thresholds chosen here, as the paper gives none). The paper does not say whether the denominator is 6552 rows or the 6549 cleaned pages, which differ by under 0.1%. As the tolerance is wide for values near 100%, the percentages are also reported rounded to whole numbers, and the number of fields that match Table 1 exactly is given."
+     },
+     {
+      "id": "table2-evaluation-year",
+      "statement": "By evaluation year, 2357 evaluations fall in 1958 to 2000 (37%), 3099 in 2000 to 2010 (48%), 778 in 2010 to 2020 (12%) and 200 in 2020 to 2023 (3.1%), with 118 unknown.",
+      "source": "Data Records, paragraph 3; Table 2, Evaluation year",
+      "quote": "For the evaluation year, from 1958 to 2000 there were 2,356 evaluations, representing 37% of the total. Between 2000 and 2010, the number of evaluations increased significantly to 3,099 (48% of the total)",
+      "criterion": "The year is the Evaluation.year column, which the code takes from the first evaluation listed on each page (process_df.R, \"Evaluation year1\"); the paper does not say which of several evaluations counts. Bins as Table 2 prints them, closed on the left and open on the right, the last closed. Percentages over rows with a known year, which is what the paper's numbers give (2357 of 6434 is 36.6%, the four counts and 118 sum to 6552). The text gives 2,356 for the first bin, the table 2,357; both lie within tolerance. Unit U1 or U2. Reproduced when, under one reading, all nine values are within tolerance; partially reproduced when the four counts are and some percentage is not."
+     },
+     {
+      "id": "table2-functional-class",
+      "statement": "Most substances are flavouring agents, 4635 (72%), followed by food additives 1453 (23%), veterinary drugs 277 (4.3%) and food contaminants 77 (1.2%), with 110 unknown.",
+      "source": "Data Records, paragraph 3; Table 2, Functional Class",
+      "quote": "In terms of functional class, the majority of the evaluated substances were flavoring agents, with 4,635 substances comprising 72% of the total",
+      "criterion": "Classes from the Functional.Class column. Neither paper nor code says how its strings, which run the class into the sub-class (R/dataset.R), map to the four levels; the reading is the leading class name (Flavoring Agent, Food Additives, Food Contaminant, Veterinary Drug), case-insensitive, with empty values unknown. Percentages over rows with a known class, as the paper's numbers give (4635 of 6442 is 71.9%). Unit U1 or U2. Reproduced when, under one reading, all nine values are within tolerance and flavouring agents are the largest class; partially reproduced when flavouring agents are the largest class and some value is out of tolerance. Strings matching none of the four names are counted and listed."
+     },
+     {
+      "id": "unknowns-name-only",
+      "statement": "The records with unknown class or year have only the JECFA name, without chemical names or other information.",
+      "source": "Data Records, paragraph 3",
+      "quote": "The unknowns have only the JECFA name without associated compound names or additional information.",
+      "criterion": "Among the rows with unknown functional class and those with unknown evaluation year (as in the two Table 2 claims), the share that have no Table 1 field present (E) besides URL and JECFA name. Reproduced when this holds for at least 90% of each set of unknowns, a threshold chosen here as the paper gives none; the share is reported either way."
+     },
+     {
+      "id": "fas-codes",
+      "statement": "Almost all 85 FAS codes are referenced, and FAS 40, 42, 44, 46, 48, 50 and 52 together account for 50% of the records.",
+      "source": "Data Records, paragraph 4",
+      "quote": "Although almost all 85 FAS codes are referenced, the ones collectively accounting for 50% of the records are 40, 42, 44, 46, 48, 50, and 52",
+      "criterion": "FAS codes from the FAS column the code derives (process_df.R, add_metadata.R). The denominator of \"50% of the records\" is open, (F1) all rows, (F2) rows with a FAS code. \"Almost all 85\" is judged as at least 77 distinct codes (90% of 85, a threshold chosen here), counting distinct non-empty FAS values. The paper does not say that the seven named codes are the seven most frequent; that is the reading taken here of \"the ones collectively accounting for 50%\". Reproduced when, under F1 or F2, the share is within tolerance and the seven named codes are the seven most frequent; partially reproduced when the share holds and they are not the seven most frequent. The number of distinct codes and the cumulative share by rank are reported."
+     },
+     {
+      "id": "validation-failures",
+      "statement": "In a manual check of 700 random pages, scraped and manually read values disagreed only for Report (0.6%), Report sourcelink (0.9%), Tox monograph sourcelink (5.3%) and Specification sourcelink (0.2%).",
+      "source": "Technical Validation, paragraph 1",
+      "quote": "we observed minimal discrepancies, notably in only four contents across web pages that display the following percentages. Report (0.6%), Report sourcelink (0.9%), Tox Monograph sourcelink (5.3%), Specification sourcelink (0.2%)",
+      "criterion": "Needs the manual REDCap extraction of the 700 pages (University of Padova), which the paper does not deposit; reference 18, cited for it, could not be identified as the reference list is missing from the text. The denominator is open, (V1) the 700 sampled ids, (V2) the sampled ids that resolve to a page, (V3) the pages where the field is present; 0.2% is not a whole number of pages out of 700 (1 is 0.14%, 2 is 0.29%), so V1 fits less well. Reproduced when, under one reading, all four values are within tolerance and no other field has a discrepancy. The extraction is not public anywhere, so the claim keeps the default data and is blocked as data_missing (protocol, Author, step 4)."
+     },
+     {
+      "id": "portal-search-count",
+      "statement": "A search of the JECFA portal by first character returned 6547 items, in line with the pages carrying a JECFA name (6551 less a duplicate and a test page).",
+      "source": "Technical Validation, paragraphs 2 and 3",
+      "quote": "The search functionality of the portal for chemicals by the first character yielded 6,547 items. This number aligns with the number of websites containing at least a JECFA name (n = 6,551 minus a duplicate and a test page)",
+      "criterion": "The portal count is outside data (the live portal in May 2024), which has changed since and is not deposited. From the dataset, the rows (U1, U2) with a JECFA name present (E) are counted. Reproduced for the dataset's part when that count is 6551 within tolerance and, after the cleaning of unique-pages, within 2 of 6547 (the paper's statement that they align; 6549 against 6547), a margin chosen here for the paper's word \"aligns\". The portal count itself is not public in its May 2024 state, so that part is untestable."
+     }
+    ]
+   }
   ]
  },
  "transcripts": {
@@ -57346,7 +57425,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-27T19:33:25+00:00",
+ "generated": "2026-10-27T19:46:53+00:00",
  "queue_generated": "2026-10-27T12:12:13+00:00",
  "queue_counts": {
   "public_dandisets": 665,
@@ -130794,9 +130873,6 @@
    "001950",
    "001968",
    "002035",
-   "figshare-24639285",
-   "figshare-24949470",
-   "figshare-26877211",
    "000252",
    "000491",
    "000620",
@@ -130855,7 +130931,10 @@
    "001871",
    "001955",
    "002010",
-   "dryad-bvq83bkk9"
+   "dryad-bvq83bkk9",
+   "figshare-24639285",
+   "figshare-24949470",
+   "figshare-26877211"
   ],
   "lanes": {
    "full": 1,
@@ -130863,12 +130942,24 @@
   },
   "hours": {
    "full": 3.7744444444444443,
-   "claims": 0.29944444444444446
+   "claims": 0.2991666666666667
   },
   "running": {
    "dryad-bvq83bkk9": {
     "kind": "full",
-    "hours": 0.8033769430555555
+    "hours": 0.5788912436111111
+   },
+   "figshare-24949470": {
+    "kind": "claims",
+    "hours": 0.0008356880555555612
+   },
+   "figshare-24639285": {
+    "kind": "claims",
+    "hours": 0.031669021388888885
+   },
+   "figshare-26877211": {
+    "kind": "full",
+    "hours": 3.6002801325
    }
   }
  },
