@@ -1515,15 +1515,20 @@ def attempts_timeline(data: dict, dandiset: str, root: str, shown: list[dict]) -
         paper = (f'<span class="muted small">{e(a.get("paper_title") or a["paper"])}</span>'
                  if len(papers) > 1 else "")
         name = f'Attempt {e(a["id"].rsplit("-", 1)[1])}'
-        name = f'<strong>{name}</strong>' if here else f'<a href="{href}"><strong>{name}</strong></a>'
-        items += (f'<li class="{"current" if a in current else "replaced"}{" here" if here else ""}{" deprecated" if a.get("deprecated") else ""}"{" aria-current=\"page\"" if here else ""}>'
-                  f'<span class="dot" aria-hidden="true"></span>'
-                  f'<div class="t-head">{name}<span class="muted small">{e(a["date"])}</span>'
-                  + f'<span class="tag">{"current" if a in current else "replaced"}</span>'
-                  + ('<span class="tag">deprecated</span>' if a.get("deprecated") else "")
-                  + f'</div>{paper}'
-                  f'<div class="t-bar">{bar(counts, f"Outcomes of {n} claims", "bar mini")}</div>'
-                  f'<span class="muted small">{" · ".join(notes)}</span></li>')
+        # The whole card links to the attempt's page, except the card of the page being viewed.
+        card = (f'<div class="t-head"><strong>{name}</strong><span class="muted small">{e(a["date"])}</span>'
+                + f'<span class="tag">{"current" if a in current else "replaced"}</span>'
+                + ('<span class="tag">deprecated</span>' if a.get("deprecated") else "")
+                + f'</div>{paper}'
+                f'<div class="t-bar">{bar(counts, f"Outcomes of {n} claims", "bar mini")}</div>'
+                f'<span class="muted small">{" · ".join(notes)}</span>')
+        card = (f'<div class="t-card"><span class="t-viewing">Viewing</span>{card}</div>' if here
+                else f'<a class="t-card" href="{href}">{card}</a>')
+        classes = " ".join(c for c, on in (("current", a in current), ("here", here),
+                                           ("deprecated", bool(a.get("deprecated")))) if on)
+        current_attr = ' aria-current="page"' if here else ""
+        items += (f'<li class="{classes}"{current_attr}>'
+                  f'<span class="dot" aria-hidden="true"></span>{card}</li>')
     return (f'<div class="panel timeline-panel"><h2>Attempts over time <span class="count">{len(all_atts)}</span></h2>'
             f'<p class="sub small" style="margin-top:6px">Each attempt tests the paper again, usually on a newer version '
             f'of the dataset or a newer protocol, and reports which earlier findings are fixed. The latest attempt on '
