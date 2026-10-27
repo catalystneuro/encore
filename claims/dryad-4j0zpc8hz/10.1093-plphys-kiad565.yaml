@@ -52,9 +52,13 @@
 # ~1|Chamber), warming and moisture reduction yes or no, year a factor; square root for starch,
 # sugar, Asat and the increments (Table S1), none for leaf water potentials; Tukey-type contrasts
 # among the four treatments within each year (multcomp), alpha 0.05. Open, (T1) the model on 2019
-# to 2021 as the Methods and Table S1 state, or (T2) on 2020 and 2021, the years reported. Open,
-# when an increment is negative, how the square root was taken; (S1) untransformed, (S2) square
-# root after adding the constant that brings the minimum to zero. The F tests of Table S1 are
+# to 2021 as the Methods and Table S1 state, or (T2) on 2020 and 2021, the years reported. The F
+# and p pairs of Table S1 for terms with year (beech Asat W x Y, F = 5.22, p = 0.006) fit 2
+# numerator df, three years, which supports T1. Open, when a value to be square-rooted is negative
+# (an increment, or a starch, sugar or Asat value; the paper mentions no negative values and no
+# constant), how the square root was taken; (S1) untransformed, (S2) square root after adding the
+# constant that brings the minimum to zero, (S3) negative values dropped, as R's sqrt gives NaN
+# for them. The F tests of Table S1 are
 # read as nlme's anova (sequential); marginal tests are a variant. Open, for starch, sugar and
 # Asat, (L1) yearly tree means, as the Methods state, or (L2) per campaign, as the Figure 4
 # legend's n = 6 trees x 3 campaigns = 18 suggests; criteria below that name readings T1 and T2
@@ -62,9 +66,17 @@
 #
 # Interaction test (Methods, Statistical analysis, paragraph 3; Tables S2 and S3 footnotes). Per
 # species, monoculture and mixture trees, lme(trait ~ (warming + moisture reduction + year +
-# interaction)^3, random = ~1|Chamber), square root for all traits of Tables S2 and S3, and
-# Tukey-type contrasts of mixtures against monocultures. Open, (I1) within each climatic treatment
-# and year, or (I2) within each climatic treatment over 2020 and 2021.
+# interaction)^3, random = ~1|Chamber), square root for all traits of Tables S2 and S3 (negative
+# values read as S1, S2 or S3 above), and Tukey-type contrasts of mixtures against monocultures.
+# Open, (I1) within each climatic treatment and year, or (I2) within each climatic treatment over
+# 2020 and 2021. The years are not stated in the text. The F and p pairs of Tables S2 and S3 give
+# terms with year 1 numerator df for bud swelling and development duration (oak Y x I, F = 9.37,
+# p = 0.003) and 2 df for onset of senescence, senescence duration, growing season length and all
+# Table S3 traits (beech diameter increment Y x I, F = 3.08, p = 0.047). Readings (Y1) as these
+# imply, bud swelling and development duration on 2020 and 2021 (treatments began after the 2019
+# leaf flushing) and the other traits on 2019 to 2021; (Y2) 2020 and 2021 for all traits, the years
+# the study reports. The criteria use Y1, the reading the tables support; Y2 is reported as a
+# variant.
 #
 # Biodiversity effects (Methods, Biodiversity, complementarity, and selection effects;
 # Supplemental Methods S4; Methods, Statistical analysis, paragraph 3). Net biodiversity effect
@@ -348,7 +360,9 @@ claims:
     warming terms are reported. Table S1 also gives a significant warming by year term for beech
     Asat (F = 5.22, p = 0.006), which the
     statistics above leave out; the claim rests on the W against C contrasts. Readings T1, T2,
-    S1 and S2; the outcome is the one they all give.
+    S1, S2 and S3, the square-root readings applying to negative starch, sugar and Asat values as
+    to negative increments (the paper does not say how they were handled); the outcome is the one
+    they all give.
 - id: fig4-oak-warming-growth-2021
   statement: In oak, warming alone reduced height, diameter and AGWB increments, in 2021 only.
   source: Results, Leaf-level carbon relations and tree growth, paragraph 1; Figure 4G to 4L;
@@ -372,7 +386,7 @@ claims:
     test: Tukey's HSD post-hoc test
     p: 0.05
     p_relation: "<"
-  criterion: Treatment test (opening comment), readings T1, T2, S1 and S2. Reproduced when, in oak,
+  criterion: Treatment test (opening comment), readings T1, T2, S1, S2 and S3. Reproduced when, in oak,
     W is significantly below C in 2021 for all three increments and for none in 2020; partially
     reproduced when one or two of the 2021 contrasts are significant and none in 2020. The
     outcome is the one all readings give.
@@ -383,7 +397,7 @@ claims:
     of warming on Asat and NSC but a substantial decrease in growth (Fig. 4)
   criterion: A claim of absence, on the paper's test, the treatment test (opening comment).
     Reproduced when no W against C contrast is significant for starch, sugar or Asat in oak in
-    2020 or 2021. Readings T1 and T2; the outcome is the one both give.
+    2020 or 2021. Readings T1, T2, S1, S2 and S3; the outcome is the one all give.
 - id: fig4-beech-mr
   statement: In beech, lower soil moisture alone reduced Asat in 2021, height increment in 2021,
     diameter increment in 2020 and 2021, and AGWB increment in 2021.
@@ -410,7 +424,7 @@ claims:
     test: Tukey's HSD post-hoc test
     p: 0.05
     p_relation: "<"
-  criterion: Treatment test (opening comment), readings T1, T2, S1 and S2. Reproduced when MR is
+  criterion: Treatment test (opening comment), readings T1, T2, S1, S2 and S3. Reproduced when MR is
     significantly below C in all five named trait-years; partially reproduced in three or four;
     not reproduced otherwise. The other MR against C contrasts are reported. The outcome is the
     one all readings give.
@@ -443,7 +457,7 @@ claims:
     test: Tukey's HSD post-hoc test
     p: 0.05
     p_relation: "<"
-  criterion: Treatment test (opening comment), readings T1, T2, S1 and S2. Reproduced when MR is
+  criterion: Treatment test (opening comment), readings T1, T2, S1, S2 and S3. Reproduced when MR is
     significantly below C in all eight trait-years; partially reproduced in four to seven; not
     reproduced otherwise. The outcome is the one all readings give.
 - id: fig4-beech-wmr
@@ -452,7 +466,7 @@ claims:
   source: Results, Leaf-level carbon relations and tree growth, paragraph 1; Figure 4
   quote: Under combined warming and low moisture, we observed a reduction of Asat, and diameter
     increment in 2020 and 2021 in beech
-  criterion: Treatment test (opening comment), readings T1, T2, S1 and S2. Reproduced when WMR is
+  criterion: Treatment test (opening comment), readings T1, T2, S1, S2 and S3. Reproduced when WMR is
     significantly below C in all four trait-years; partially reproduced in two or three. The
     outcome is the one all readings give.
 - id: fig4-oak-wmr
@@ -461,7 +475,7 @@ claims:
   source: Results, Leaf-level carbon relations and tree growth, paragraph 1; Figure 4
   quote: In oak, a reduction of Asat, height increment, diameter increment, and AGWB increment in
     2020 and 2021 was observed
-  criterion: Treatment test (opening comment), readings T1, T2, S1 and S2. Reproduced when WMR is
+  criterion: Treatment test (opening comment), readings T1, T2, S1, S2 and S3. Reproduced when WMR is
     significantly below C in all eight trait-years; partially reproduced in four to seven. The
     outcome is the one all readings give.
 - id: fig4-wmr-same-as-mr
@@ -473,7 +487,7 @@ claims:
   criterion: A claim of absence, on the paper's test, the treatment test (opening comment).
     Reproduced when no MR against WMR contrast is significant for the six traits of Figure 4 in
     either species in 2020 or 2021; not reproduced when any is, with the number and sizes of
-    such contrasts reported. Readings T1, T2, S1 and S2; the outcome is the one all give.
+    such contrasts reported. Readings T1, T2, S1, S2 and S3; the outcome is the one all give.
 - id: disc-nsc-unchanged-drier-soil
   statement: Drier soils did not change starch and sugar concentrations in either species.
   source: Discussion, paragraph 5; Figure 4A to 4D
@@ -481,8 +495,8 @@ claims:
     both species, except for NSC where we found no changes (Fig. 4)
   criterion: A claim of absence, on the paper's test, the treatment test (opening comment).
     Reproduced when no MR against C contrast is significant for starch or sugar in either species
-    in 2020 or 2021. WMR against C is shown as a variant. Readings T1 and T2; the outcome is the
-    one both give.
+    in 2020 or 2021. WMR against C is shown as a variant. Readings T1, T2, S1, S2 and S3; the
+    outcome is the one all give.
 - id: disc-beech-asat-more-impaired
   statement: Low soil moisture impaired Asat more strongly in beech than in oak.
   source: Discussion, paragraph 5; Figure 4E and 4F
@@ -516,9 +530,13 @@ claims:
   criterion: A claim of absence, on the paper's test (Table S6 footnote), lme(trait ~ (warming +
     moisture reduction + season)^3, random = ~1|Chamber) on square-root values, season the
     campaign (early, middle, late). Reproduced when the season term has p > 0.05 for all three
-    traits. Table S6 has no species or year column, so open, (a) both species and all years
-    pooled, (b) per species; and the trees (monocultures, or monocultures and mixtures). The
-    outcome is the one all readings give.
+    traits. Table S6 has no species or year column, so open, (a) both species pooled, (b) per
+    species; the years, (y1) 2019 to 2021, the years of the treatment test whose averaging Table
+    S6 justifies (Methods, Statistical analysis, paragraph 2), or (y2) 2020 and 2021, the years
+    reported; and the trees (monocultures, as that paragraph concerns, or monocultures and
+    mixtures). The paper does not say whether its F tests are sequential (the default of nlme's
+    anova) or marginal, and links no code; both are readings, (F1) sequential and (F2) marginal.
+    Negative values as S1, S2 or S3 (opening comment). The outcome is the one all readings give.
 - id: tables2-phenology-no-interaction
   statement: Species mixture did not change phenology in either species, except a development
     duration about 2 days shorter in oak mixtures than monocultures under lower moisture, whose
@@ -543,7 +561,9 @@ claims:
     tolerance: 0.2
     unit: days
   criterion: Interaction test (opening comment) on the five phenological traits, readings I1 and
-    I2. Reproduced when the only significant mixture against monoculture contrast is oak
+    I2, with the years of reading Y1 (bud swelling and development duration on 2020 and 2021, the
+    three fall and season traits on 2019 to 2021, as the F and p pairs of Table S2 imply); Y2
+    (2020 and 2021 for all five) is reported as a variant. Reproduced when the only significant mixture against monoculture contrast is oak
     development duration under MR, shorter in mixtures by a difference within tolerance (in one
     year under I1, or pooled under I2); partially reproduced when that contrast holds and one other
     is also significant. The NBE of oak development duration under MR, in the year or years of
