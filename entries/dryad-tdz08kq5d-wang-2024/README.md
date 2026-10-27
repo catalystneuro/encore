@@ -47,7 +47,7 @@ The deposited data reproduce nearly every statistical table of the paper exactly
 and the ANOVA unit that the claims file names after a reader answered this attempt's questions (days 2 to 12
 for Table S1a, replicate means by colony type for Tables S3a to S3c). The
 exceptions are the twitching sheet, whose strain names do not identify the clones and whose values do not
-reproduce Table S3d, and several statements of the text that the deposited tables contradict (SCV biofilm
+reproduce Table S3d (read as sequential sums of squares), and several statements of the text that the deposited tables contradict (SCV biofilm
 above the ancestor, gspG up, phcS below the fold-change threshold). The growth curves, per-clone variant
 calls, genome reads and the Table S6 data are not deposited. The attempt record, with the reasons and the
 differences from the paper's method, is
