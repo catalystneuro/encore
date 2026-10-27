@@ -21,7 +21,8 @@ Where the parameters come from:
 - Repeated measurements of one step are combined as the mean vector (`how="mean"`) or the first
   measurement is used (`how="first"`). The paper does not say which Table 2 used; for the crystals
   it says the first measurements were used in ref. 1 (Background & Summary, paragraph 7). Both are
-  run wherever they could matter (author, step 1.6).
+  run wherever they could matter (author, step 1.6). NRM can also be taken as the mean of the
+  field-off rows' moments (`nrm="moments"`), as the deposit's Supplementary Figure 1 plots it.
 - MAD is Kirschvink's (1980) principal component measure: free line (centred), line anchored to
   the origin (uncentred), or free line on the three-point running mean of the field-off vectors
   (claims file, opening comment, readings a to c). The running mean is centred, with the two end
@@ -192,15 +193,18 @@ def synthetic_steps(df: pd.DataFrame) -> list[str]:
 
 # --- Arai and directions -------------------------------------------------------
 
-def arai(df: pd.DataFrame, how: str = "mean") -> pd.DataFrame:
-    """Paired thermal steps: NRM (moment of the field-off vector) and TRM gained (|on - off|)."""
+def arai(df: pd.DataFrame, how: str = "mean", nrm: str = "vector") -> pd.DataFrame:
+    """Paired thermal steps: NRM and TRM gained (|on - off|). NRM is the moment of the field-off
+    vector (`nrm="vector"`) or the mean of the moments of the field-off rows (`nrm="moments"`)."""
     st = step_table(df, how)
     offs = st[st.kind == "off"].set_index("t")
     ons = st[st.kind == "on"].set_index("t")
     rows = []
     for t in sorted(set(offs.index) & set(ons.index)):
         off, on = vec(offs.loc[t]), vec(ons.loc[t])
-        rows.append({"t": t, "nrm": float(np.linalg.norm(off)), "trm": float(np.linalg.norm(on - off)),
+        m = (float(np.linalg.norm(off)) if nrm == "vector"
+             else float(df[[step_kind(s) == ("off", t) for s in df.step]].moment.mean()))
+        rows.append({"t": t, "nrm": m, "trm": float(np.linalg.norm(on - off)),
                      "x": off[0], "y": off[1], "z": off[2]})
     return pd.DataFrame(rows)
 
@@ -260,12 +264,13 @@ def mads(df: pd.DataFrame, t0: float, t1: float, how: str = "mean") -> dict:
             "c_smoothed": mad_line(running_mean3(X)[sel])}
 
 
-def ptrm_checks(df: pd.DataFrame, how: str = "mean", seg: tuple[float, float] | None = None) -> pd.DataFrame:
+def ptrm_checks(df: pd.DataFrame, how: str = "mean", seg: tuple[float, float] | None = None,
+                nrm: str = "vector") -> pd.DataFrame:
     """Each pTRM check, as a percentage under readings (a)/(b) x (i)/(ii)."""
     st = step_table(df, how)
     offs = st[st.kind == "off"].set_index("t")
     ons = st[st.kind == "on"].set_index("t")
-    a = arai(df, how)
+    a = arai(df, how, nrm)
     length = np.nan
     if seg is not None:
         s = in_range(a, *seg)
@@ -317,3 +322,64 @@ def watson_p(n: int, R: float, seed: int, nsim: int = 200_000) -> float:
 def max_intensity(m590_emu: float, lab_field_uT: float = 20.0) -> float:
     """Technical Validation: threshold / TRM at 590 C x lab field."""
     return THRESHOLD_EMU / m590_emu * lab_field_uT
+
+
+# --- the deposit's Supplementary Figure 1 ------------------------------------------
+
+SUPPFIG1_FILE = "SupplFig1 - other Thelliers March 2024.pdf"
+
+
+def _number(text: str) -> float | None:
+    try:
+        return float(text.replace("−", "-"))
+    except ValueError:
+        return None
+
+
+def suppfig1_points(pdf: bytes) -> dict:
+    """The points of the NRM against TRM gained plot (panel c) on each page of Supplementary Figure 1,
+    read from the PDF's vector drawing: {sheet: {"points": [(T, x, y)], "checks": [(T, x, y)]}} in
+    emu. The axes are calibrated by a straight line through the tick labels; a grey point takes the
+    temperature of the black label nearest above and to its right, a red triangle (pTRM check) that
+    of the red label nearest to it (None where the label is rotated text the PDF splits into
+    single characters)."""
+    import pymupdf
+
+    out = {}
+    for page in pymupdf.open(stream=pdf, filetype="pdf"):
+        spans = [s for b in page.get_text("dict")["blocks"] for line in b.get("lines", []) for s in line["spans"]]
+        name = next(s["text"] for s in spans if s["text"].startswith("64455-")).split("-")[1]
+        ylab = next(s["bbox"] for s in spans if s["text"].startswith("Magnetization lost"))
+        xlab = next(s["bbox"] for s in spans if s["text"].startswith("Laboratory Magnetization"))
+        ticks = [(_number(s["text"]), s["bbox"]) for s in spans if "e" in s["text"] and _number(s["text"]) is not None]
+        left = [(v, b) for v, b in ticks if b[0] > ylab[0] and b[2] <= ylab[2] + 40 and b[3] < xlab[1] - 5]
+        right_edge = np.median([b[2] for v, b in left])
+        yt = [(v, (b[1] + b[3]) / 2) for v, b in left if abs(b[2] - right_edge) < 3]
+        below = [(v, b) for v, b in ticks if abs((b[1] + b[3]) / 2 - (xlab[1] - 5)) < 15]
+        top = np.median([b[1] for v, b in below])
+        xt = [(v, (b[0] + b[2]) / 2) for v, b in below if abs(b[1] - top) < 3]
+        fx = np.polyfit([c for v, c in xt], [v for v, c in xt], 1)
+        fy = np.polyfit([c for v, c in yt], [v for v, c in yt], 1)
+
+        def red(s):
+            return ((s["color"] >> 16) & 255) - ((s["color"] >> 8) & 255) > 100
+
+        labels = [(_number(s["text"]), (s["bbox"][0] + s["bbox"][2]) / 2, (s["bbox"][1] + s["bbox"][3]) / 2, red(s))
+                  for s in spans if s["bbox"][0] > ylab[2] and s["bbox"][3] < xlab[1] - 8
+                  and _number(s["text"]) is not None and _number(s["text"]) >= 100]
+        points, checks = [], []
+        for d in page.get_drawings():
+            r = d["rect"]
+            cx, cy = (r.x0 + r.x1) / 2, (r.y0 + r.y1) / 2
+            if r.x0 <= ylab[2] or r.width > 8 or r.height > 8:
+                continue
+            fill, stroke = d.get("fill"), d.get("color")
+            if fill and 0.7 < fill[0] < 0.8 and abs(fill[0] - fill[2]) < 0.05:
+                t = min((l for l in labels if not l[3]), key=lambda l: np.hypot(l[1] - cx - 10, l[2] - cy + 8))[0]
+                points.append((t, float(np.polyval(fx, cx)), float(np.polyval(fy, cy))))
+            elif stroke and stroke[0] > 0.6 and stroke[1] < 0.3 and len(d["items"]) == 3:
+                reds = [l for l in labels if l[3]]
+                t = min(reds, key=lambda l: np.hypot(l[1] - cx, l[2] - cy))[0] if reds else None
+                checks.append((t, float(np.polyval(fx, cx)), float(np.polyval(fy, cy))))
+        out[name] = {"points": sorted(points), "checks": checks}
+    return out

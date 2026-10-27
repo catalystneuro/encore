@@ -32,7 +32,8 @@ factors near 1, not repeated measurements. The attempt record, with the reasons 
 differences from the paper's method, is
 [`attempts/figshare-24639285-tarduno-2024-01.yaml`](../../attempts/figshare-24639285-tarduno-2024-01.yaml).
 
-- `reproduce_tarduno_2024.ipynb`: the analysis. It runs in under a minute.
+- `reproduce_tarduno_2024.ipynb`: the analysis.
 - `apollo.py`: loading the workbooks from Figshare, the Arai and directional measures (MAD, R2,
-  pTRM checks, Fisher statistics, Watson's test) and the check for scaled copies. Other notebooks
-  on this dataset can import it.
+  pTRM checks, Fisher statistics, Watson's test), the check for scaled copies and the reading of
+  the plotted points of the deposit's Supplementary Figure 1. Other notebooks on this dataset can
+  import it.
