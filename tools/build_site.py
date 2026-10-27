@@ -1492,6 +1492,18 @@ def earlier_attempts(data: dict, dandiset: str) -> list[dict]:
                   key=lambda a: (a["date"], a["id"]))
 
 
+def version_text(a: dict) -> str:
+    """The dataset version an attempt ran on, linked to its DOI when it has one; a draft says so."""
+    v = a["dataset_version"]
+    if not v:
+        return "version not recorded"
+    if v == "draft":
+        modified = a["dataset"].get("modified")
+        return "unpublished draft" + (f" (modified {e(str(modified)[:10])})" if modified else "")
+    doi = a["dataset"].get("doi")
+    return (f'version <a href="https://doi.org/{e(doi)}">{e(v)}</a>' if doi else f"version {e(v)}")
+
+
 def attempts_timeline(data: dict, dandiset: str, root: str, shown: list[dict]) -> str:
     """A panel with every attempt on the dataset, oldest first, when there is more than one."""
     all_atts = sorted((a for a in data["attempts"] if a["key"] == dandiset), key=lambda a: (a["date"], a["id"]))
@@ -1507,24 +1519,21 @@ def attempts_timeline(data: dict, dandiset: str, root: str, shown: list[dict]) -
         href = f'{root}{page_of(dandiset)}' + ("" if a in current else f'{e(a["id"])}/')
         here = a in shown
         notes = [f'{n} claims', f'{len(a["findings"])} findings']
-        if a["dataset_version"]:
-            notes.append(f'version {e(a["dataset_version"])}')
         protocol = (a.get("agent") or {}).get("protocol")
         if protocol:
             notes.append(f'protocol {e(protocol)}')
         paper = (f'<span class="muted small">{e(a.get("paper_title") or a["paper"])}</span>'
                  if len(papers) > 1 else "")
         name = f'Attempt {e(a["id"].rsplit("-", 1)[1])}'
-        # The whole card links to the attempt's page, except the card of the page being viewed.
         viewing = '<span class="t-viewing">Viewing</span>' if here else ""
-        card = (f'<div class="t-head"><strong>{name}</strong>{viewing}<span class="muted small">{e(a["date"])}</span>'
+        name = f'<strong>{name}</strong>' if here else f'<a href="{href}"><strong>{name}</strong></a>'
+        card = (f'<div class="t-head">{name}{viewing}<span class="muted small">{e(a["date"])}</span>'
                 + f'<span class="tag">{"current" if a in current else "replaced"}</span>'
                 + ('<span class="tag">deprecated</span>' if a.get("deprecated") else "")
-                + f'</div>{paper}'
+                + f'</div>{paper}<span class="t-version">Dataset {version_text(a)}</span>'
                 f'<div class="t-bar">{bar(counts, f"Outcomes of {n} claims", "bar mini")}</div>'
                 f'<span class="muted small">{" · ".join(notes)}</span>')
-        card = (f'<div class="t-card">{card}</div>' if here
-                else f'<a class="t-card" href="{href}">{card}</a>')
+        card = f'<div class="t-card">{card}</div>'
         classes = " ".join(c for c, on in (("current", a in current), ("here", here),
                                            ("deprecated", bool(a.get("deprecated")))) if on)
         current_attr = ' aria-current="page"' if here else ""
@@ -1744,6 +1753,8 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
         count = f' <span class="count">{c}</span>' if c is not None else ""
         tab_buttons += f'<button type="button" role="tab" data-panel="{key}" aria-selected="false">{label}{count}</button>'
 
+    tested_on = "; ".join((e(a.get("paper_title") or a["paper"]) + ": " if len(atts) > 1 else "")
+                          + "dataset " + version_text(a) for a in atts)
     name = (target or {}).get("name") or atts[-1]["entry_title"] or dandiset
     tier = weakest_tier(atts)
     tier_link = f'{root}datasets/?status=attempted&tier={tier}'
@@ -1756,6 +1767,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
   {outside_note(atts)}
+  <p class="sub small" style="margin-top:8px">Tested on {tested_on}</p>
   {superseded}
   <p class="actions">{" ".join(actions)}</p>
 </header>
