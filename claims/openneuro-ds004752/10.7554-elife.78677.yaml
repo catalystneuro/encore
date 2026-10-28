@@ -221,14 +221,18 @@ claims:
     time-frequency analysis with 3 tapers, windows of 10 cycles, smoothing 0.2 x frequency,
     4 to 100 Hz, 0.1 s steps, all trials averaged, baseline (PSD - PSD fixation) / PSD fixation
     with fixation [-6 -5] s. Gamma is [60 80] Hz and encoding [-3.5 -3] s for the grid map
-    (Figure 2a legend); for C2 the last second of encoding [-4 -3] s (Figure 2c legend). The
-    trials are those of the GC method; whether the PSD used correct trials only is open, and
-    readings (a) correct trials and (b) all trials of set sizes 6 and 8 are both run. The z-score
-    test is a permutation of trials between fixation and encoding (Methods, Statistics,
-    paragraph 2 describes this null for the spatial test; the PSD test is not described
-    further). Reproduced when the relative gamma increase exceeds 100% in H3 and C2 and the
-    contacts with z > 1.96 lie in the temporal and occipital-parietal parts of the grid only.
-    Needs the ECoG grid of Participant 1.
+    (Figure 2a legend); for C2 the last second of encoding [-4 -3] s (Figure 2c legend); for H3
+    gamma above 40 Hz over encoding [-5 -3] s (Figure 2b legend). The trials are those of the
+    GC method; whether the PSD used correct trials only is open, and readings (a) correct
+    trials and (b) all trials of set sizes 6 and 8 are both run. The z-score test of the grid
+    map is the one in the code (Statistics/PSD_fix_vs_enc_Permutation_test.m), correct trials of
+    set sizes 6 and 8 - per contact, mtmfft power (dpss, 2 Hz smoothing, 1 to 100 Hz) of
+    encoding [-3.5 -3] s and fixation [-5.5 -5] s, 200 permutations of trials between the two
+    periods, the encoding minus fixation difference less the null 95th percentile, z-scored over
+    60 to 100 Hz, the maximum taken; a contact is significant when it exceeds 1.96. Reproduced
+    when the relative gamma increase exceeds 100% in H3 and C2 and the contacts with z > 1.96
+    lie in the temporal and occipital-parietal parts of the grid only. Needs the ECoG grid of
+    Participant 1.
 - id: fig2d-cortical-beta-maintenance-p1
   statement: In Participant 1, high alpha to low beta activity ([11 14] Hz) appeared toward the
     end of maintenance in temporal and occipital contacts.
@@ -254,7 +258,10 @@ claims:
     ([12 24] Hz) toward the end of the maintenance period (increase >100%, Figure 2e, Figure 3c, h
     and m)
   criterion: Relative PSD of the hippocampal channel as in fig2bc-gamma-encoding-p1, over the
-    beta band [12 24] Hz (Methods, Phase-locking value, paragraph 3). The hippocampal channel
+    beta band [12 24] Hz (Methods, Phase-locking value, paragraph 3), with the bands the legends
+    give per participant as a second reading (Participant 2 9 to 18 Hz, Figure 3c; Participants
+    3 and 4 [13 21] Hz, Figure 3h and 3m), since the Methods say "the exact frequencies may
+    differ in individual participants". The hippocampal channel
     follows readings h1 to h3 of the GC method. "Toward the end" is not timed; readings (w1)
     [-1 0] s and (w2) [-2 0] s. The paper does not say whether ">100%" is the band average or
     its peak; readings (m1) the mean over the band and window and (m2) the maximum over its
@@ -286,13 +293,16 @@ claims:
   criterion: PLV as in the Methods (Phase-locking value) - multitaper Fourier transform with two
     tapers, 4 to 100 Hz at 1 Hz resolution, on 2 s epochs, across trials; theta [4 8] Hz,
     maintenance [-2 0] s (Figure 2g legend). Trials of the GC method; hippocampal channel by
-    readings h1 to h3. The comparison period is open; the Results compare with encoding and the
-    Figure 2f legend with fixation ("against a null distribution with scrambled trials during
-    fixation and maintenance"); readings (r1) fixation [-6 -5] s and (r2) encoding. Reproduced
-    when theta PLV at C3 in maintenance is within tolerance and exceeds the reference period by
-    the permutation test (200 trial permutations, Methods, Statistics) at p < 0.05 under one
-    reading, and the contacts with the highest maintenance theta PLV lie over auditory cortex.
-    Needs the ECoG grid of Participant 1.
+    readings h1 to h3. The comparison period follows the Figure 2f legend ("against a null
+    distribution with scrambled trials during fixation and maintenance") and the code
+    (Statistics/PLV_significance_calculation.m, which permutes trials between fixation [-6 -5] s
+    and maintenance [-2 0] s, 200 permutations, and keeps the largest cluster above the null
+    percentile); the Results' "Compared to encoding" is run as a variant. Fixation lasts 1 s
+    and maintenance 2 s, so the epochs differ in length, as in the code. Reproduced when theta
+    PLV at C3 in maintenance is within tolerance and exceeds fixation by this test at p < 0.05,
+    and theta PLV in maintenance is significantly increased by the same test at several
+    contacts over auditory cortex, which hold the highest values. Needs the ECoG grid of
+    Participant 1.
 - id: fig2h-gc-reversal-p1
   statement: In Participant 1, information flowed from auditory cortex to hippocampus during
     encoding (net flow significant in [6 8] Hz) and reversed, from hippocampus to auditory cortex,
@@ -315,9 +325,15 @@ claims:
   criterion: The GC method, between the hippocampal channel (readings h1 to h3) and grid contact
     C2. Significance as the Methods give it (Statistics, paragraph 1) - GC recomputed 200 times
     with the direction switched at random across trials, the true ΔGranger compared with the 5th
-    and 95th percentiles of the null distribution at each frequency. Reproduced when, under one
-    reading, ΔGranger is significantly negative in encoding and significantly positive in
-    maintenance at frequencies within [4 10] Hz; the significant bands are reported against
+    and 95th percentiles of the null distribution at each frequency. The Figure 2h legend calls
+    the test cluster-based; readings (c1) per frequency, as the Methods describe it, and (c2)
+    the significant frequencies grouped into contiguous clusters. The code's significance script
+    (Statistics/Granger_significance_calculation.m) pairs the bipolar hippocampal channel
+    AHL2-AHL3 (reading h2) with GL C2, builds the null from 200 shufflings of trial order between
+    the two channels, and marks bands above the 99th percentile; this is run as a variant.
+    Reproduced when, under one reading, ΔGranger is significantly negative in encoding and
+    significantly positive in maintenance at frequencies overlapping the theta band [4 8] Hz
+    (Methods, Phase-locking value, paragraph 3); the significant bands are reported against
     [6 8] and [5 8] Hz. Needs the ECoG grid of Participant 1.
 - id: fig2ijk-spatial-spread-p1
   statement: In Participant 1, the strongest net flow in theta during encoding was from auditory
@@ -371,7 +387,8 @@ claims:
     the most posterior strip contact in Participant 3 (Figure 3a and 3f legends); in
     Participant 3 the hippocampal LFP is from the right hippocampus (Results, same paragraph).
     Reproduced when both participants show significant negative ΔGranger in encoding and
-    significant positive ΔGranger in maintenance within [4 10] Hz; partially reproduced for one.
+    significant positive ΔGranger in maintenance at frequencies overlapping [4 8] Hz; partially
+    reproduced for one.
 - id: fig3no-p4-right-no-gc
   statement: In Participant 4, recordings from right parietal cortex showed no significant GC
     with the hippocampus during the task.
@@ -381,19 +398,17 @@ claims:
     did not show significant GC between LFP and ECoG during task performance (Figure 3n and o)
   criterion: A claim of absence, judged on the paper's test, the direction permutation test of
     fig2h-gc-reversal-p1 (200 permutations, p < 0.05) on the right parietal contacts of
-    Participant 4, in encoding and maintenance over [4 20] Hz. Reproduced when no contact shows
-    significant ΔGranger in theta [4 8] Hz in either period; the largest ΔGranger and the
-    contacts tested are reported.
+    Participant 4, in encoding and maintenance over [4 20] Hz. The paper states no band for the
+    absence, so it is judged over the whole GC range [4 20] Hz (Methods, Spectral Granger
+    causality). Reproduced when no contact shows significant ΔGranger in either period; the
+    largest ΔGranger, the contacts tested and the result restricted to theta [4 8] Hz are
+    reported.
 - id: table1-left-hemisphere-sources
   statement: In each participant, more than 80% of the EEG sources that differed significantly
     from fixation lay in the left hemisphere, in encoding and in maintenance.
   source: Results, Source reconstruction of the scalp EEG, paragraph 1; Table 1
   quote: In each participant, the proportion of significant sources in the left hemisphere
     exceeded 80% of all significant sources
-  statistics:
-  - test: non-parametric cluster-based permutation test
-    p: 0.05
-    p_relation: <
   data: with_inputs
   criterion: LCMV beamforming of the scalp EEG on a grid at the AAL parcels (Methods, Source
     reconstruction), sources of encoding and maintenance tested against fixation with
@@ -448,10 +463,11 @@ claims:
     not name the electrodes or the Laplacian; readings (e1) T3, (e2) T5, (e3) the mean of their
     spectra; the Laplacian by FieldTrip ft_scalpcurrentdensity (spline method), the standard
     choice, with the nearest-neighbour Hjorth derivation as a variant. Per participant
-    ΔGranger in [4 8] Hz (d1 and d2). Reproduced when, under one electrode reading, encoding
-    ΔGranger is below maintenance ΔGranger by the paired permutation test of fig4d-reversal-all
-    at p < 0.05 with the mastoid reference, and the same test is not significant after the
-    Laplacian.
+    ΔGranger in [4 8] Hz (d1 and d2). The paper reports no test or number for this finding;
+    readings (s1) the paired permutation test of fig4d-reversal-all and (s2) the group
+    cluster-based test of fig4a-group-gc-reversal. Reproduced when, under one electrode and
+    test reading, encoding ΔGranger is below maintenance ΔGranger at p < 0.05 with the mastoid
+    reference, and the same test is not significant after the Laplacian.
 - id: fig4bc-auditory-strongest
   statement: Theta net flow was strongest between hippocampus and auditory cortex, toward the
     hippocampus during encoding (ΔGranger -0.049, p = 0.0009) and toward the cortex during
@@ -465,14 +481,12 @@ claims:
     test)
   statistics:
   - about: encoding, across cortical areas
-    test: Kruskal-Wallis test, Dunn's test
+    test: Kruskal-Wallis test
     p: 0.0009
-    corrected: Bonferroni
     n: 15 participants
   - about: maintenance, across cortical areas
-    test: Kruskal-Wallis test, Dunn's test
+    test: Kruskal-Wallis test
     p: 0.001
-    corrected: Bonferroni
     n: 15 participants
   expected:
   - quantity: auditory cortex ΔGranger [4 8] Hz, encoding
@@ -482,7 +496,7 @@ claims:
     value: 0.034
     tolerance: 0.0034
   criterion: Per participant and area, ΔGranger in [4 8] Hz by the GC method with the readings
-    h, d and t of the opening comment. The group value is called a mean in the Results and a
+    h, a, d and t of the opening comment (Figure 4b names the area temporal superior gyrus). The group value is called a mean in the Results and a
     median in the Figure 4b legend; readings (g1) mean and (g2) median over the 15 participants.
     Areas are the left-hemisphere sources the dataset holds as virtual sensors (AC, DLPFC, OFC,
     PPC, V1); the code's set is AC, LPFC, PPC, V1 and Broca. A Kruskal-Wallis test across areas
@@ -633,3 +647,21 @@ claims:
     negative and maintenance ΔGranger positive in at least 13 of 15 participants. The paper's
     p < 0.0005 is below what 200 permutations resolve, so the smallest attainable p and the
     exact sign-flip p are reported.
+checks:
+- date: 2026-10-28
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - table1-left-hemisphere-sources. Removed the statistics entry; the cluster-based permutation test at p < 0.05 selects the significant sources that are counted, so it is a threshold and not a result.
+  - fig4bc-auditory-strongest. The p-values 0.0009 and 0.001 are those of the Kruskal-Wallis test (Results, averaged EEG sources, paragraph 2); Dunn's test and the Bonferroni correction belong to the comparisons of the other areas, so they were removed from the statistics entries and stay in the criterion. Added reading a (auditory cortex source) to the criterion, which named only h, d and t although Figure 4b names the temporal superior gyrus.
+  - fig2bc-gamma-encoding-p1. The criterion said the PSD z-score test is not described; the paper's code holds it (Statistics/PSD_fix_vs_enc_Permutation_test.m, fixation [-5.5 -5] s against encoding [-3.5 -3] s, 200 trial permutations, 60 to 100 Hz). Wrote that test into the criterion, and added the H3 band and window from the Figure 2b legend, which the criterion lacked.
+  - fig2fg-plv-theta-p1. The comparison period was left open between fixation and encoding; the Figure 2f legend and the code (Statistics/PLV_significance_calculation.m, trials permuted between fixation and maintenance) settle it as fixation, so encoding is now a variant. Added the per-contact significance of Figure 2g ("increased significantly with several contacts over auditory cortex"), which the criterion did not test.
+  - fig2h-gc-reversal-p1. The [4 10] Hz window was not from the paper; replaced by overlap with the theta band [4 8] Hz of the Methods. Named as open whether the test is per frequency (Methods) or cluster-based (Figure 2h legend), and added the code's significance script (bipolar AHL2-AHL3 with GL C2, trial-shuffle null, 99th percentile) as a variant.
+  - fig3-gc-reversal-p2-p3. Same change of the [4 10] Hz window to overlap with [4 8] Hz.
+  - fig3no-p4-right-no-gc. The criterion judged the absence in theta only; the paper states no band ("did not show significant GC"), so the absence is judged over the GC range [4 20] Hz of the Methods, with theta reported.
+  - hipp-beta-maintenance. Added the per-participant beta bands of the Figure 3c, 3h and 3m legends as a second reading, since the Methods say the bands may differ between participants.
+  - scalp-temporal-laplacian. The criterion used the paired test of Figure 4d as if given; the paper reports no test for this finding, so it is now named as open with two readings (paired test of Figure 4d, group test of Figure 4a).
+  - Open, not settled. fig4d-reversal-all and balanced-correct-subset. The Figure 4d legend says its values and significance come from 10% of the correct trials, while the Results present the 10% subset as a separate check; the readings t1 and t2 cover both, but the two claims may describe the same computation.
+  - Open, not settled. fig4d-reversal-all and balanced-correct-subset. The reported p-values (4.1e-10, below 0.0005) cannot come from 200 permutations of 15 pairs; the claims judge them at 0.05, which is the only defensible reading.
+  - Open, not settled. Table 1 maximal LCMV sources and t-values, and the PSD of Participants 3 and 4 (Figure 3g and 3l), have no claim; they are secondary to the main findings, which all have claims.
