@@ -119,6 +119,49 @@ def paper_code_functions(names=("calculate_snr", "rolling_mean")):
     return {n: ns[n] for n in names}
 
 
+def _source_function(url, name, ns):
+    """One function of a published source file, defined in the namespace `ns`."""
+    import ast
+    import warnings
+    r = requests.get(url)
+    r.raise_for_status()
+    with warnings.catch_warnings():   # gen_util.py has an invalid escape in a string elsewhere in the file
+        warnings.simplefilter("ignore", SyntaxWarning)
+        tree = ast.parse(r.text)
+    fn = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == name]
+    exec(compile(ast.Module(body=fn, type_ignores=[]), url, "exec"), ns)
+    return ns[name]
+
+
+def paper_get_correlation(dff):
+    """The pairwise ROI correlations of the paper's own correlation step, get_correlation of
+    analysis/misc_analys.py (OpenScope_CA_Analysis at CODE_COMMIT), run on the dF/F traces of one
+    session (ROIs x frames, ROIs with NaN or Inf already removed, as rem_bad does). Its helpers come
+    from the paper code's util at UTIL_COMMIT (gen_util.reshape_df_data, math_util.rolling_mean). The
+    session object is replaced by a stub whose get_roi_traces builds the DataFrame as the code's
+    Session.get_roi_traces does (analysis/session.py: rows ROIs x frames, four dummy column levels);
+    the analysis parameters are those of Fig. 7c (all ROIs, unscaled dF/F)."""
+    import types
+    util = f"https://raw.githubusercontent.com/colleenjg/util/{UTIL_COMMIT}/util/"
+    code = f"https://raw.githubusercontent.com/colleenjg/OpenScope_CA_Analysis/{CODE_COMMIT}/analysis/"
+    gen_util = types.SimpleNamespace(reshape_df_data=_source_function(util + "gen_util.py", "reshape_df_data", {"np": np}))
+    math_util = types.SimpleNamespace(**paper_code_functions(("rolling_mean",)))
+    get_correlation = _source_function(code + "misc_analys.py", "get_correlation",
+                                       {"np": np, "gen_util": gen_util, "math_util": math_util})
+
+    class Session:
+        only_tracked_rois = False
+
+        def get_roi_traces(self, fluor="dff", rem_bad=True):
+            cols = pd.MultiIndex.from_product([["roi_traces"], ["yes" if rem_bad else "no"], ["no"], [fluor]],
+                                              names=["datatype", "bad_rois_removed", "scaled", "fluorescence"])
+            rows = pd.MultiIndex.from_product([range(dff.shape[0]), range(dff.shape[1])], names=["ROIs", "frames"])
+            return pd.DataFrame(dff.reshape(-1), index=rows, columns=cols)
+
+    analyspar = types.SimpleNamespace(tracked=False, scale=False, fluor="dff", rem_bad=True)
+    return get_correlation(Session(), analyspar, rolling_win=4)
+
+
 def _str(x):
     return x.decode() if isinstance(x, bytes) else str(x)
 

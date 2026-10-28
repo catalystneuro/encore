@@ -19,7 +19,7 @@ and distal apical dendrites of L2/3 and L5 pyramidal cells.
 | Example matches of Fig. 8 (136 and 47) | Reproduced |
 | Matching varies with session order far more for dendrites than somata | Reproduced (resting on an assumption) |
 | Stimulus durations (34 and 17 min, 30 s grey) | Reproduced |
-| Inconsistent stimuli about 7% and 5%, about 30 blocks | Reproduced |
+| Inconsistent stimuli about 7% and 5%, about 30 blocks | Reproduced (resting on assumptions) |
 | Responses differ between consistent and inconsistent stimuli (Fig. 5) | Reproduced |
 | Running and pupil recorded in every analysed session (Fig. 6) | Reproduced |
 | SNR above 1 and stable over days (Fig. 7a) | Reproduced |
@@ -34,10 +34,10 @@ the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000336-gillon-2023-01.yaml`](../../attempts/000336-gillon-2023-01.yaml).
 
-- `reproduce_gillon_2023.ipynb`: all claims but one. It takes about ten minutes, most of it streaming the
+- `reproduce_gillon_2023.ipynb`: all claims but one. It takes about ten to twelve minutes, most of it streaming the
   ROI traces of the 33 analysed sessions.
 - `roi_matching_orderings.ipynb`: reruns ROI matching with the Allen Institute's public n-way matching
-  package over the six session orderings of each mouse. It takes about fifteen to twenty minutes.
+  package over the six session orderings of each tracked mouse. It takes about twenty minutes.
 - `credassign.py`: listing and streaming the files, the session table of the paper's code, and the
   measures of the paper's code (SNR, correlations, onset and offset responses), with the matching
-  driver. Other notebooks on DANDI:000037 can import it.
+  driver and a runner for the paper code's own correlation step, used as a check. Other notebooks on DANDI:000037 can import it.
