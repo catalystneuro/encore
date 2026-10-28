@@ -41,6 +41,7 @@ claims file cites.
 from __future__ import annotations
 
 import re
+import warnings
 from concurrent.futures import ThreadPoolExecutor
 
 import h5py
@@ -50,6 +51,7 @@ import remfile
 from dandi.dandiapi import DandiAPIClient
 from scipy import stats
 from scipy.stats import studentized_range
+from sklearn.exceptions import ConvergenceWarning
 
 DANDISET_ID = "000248"
 DANDISET_VERSION = "0.240502.2344"
@@ -237,6 +239,12 @@ def load_session(asset: dict, ccg: bool = True) -> dict:
     return s
 
 
+def _nanmax_rows(x: np.ndarray) -> np.ndarray:
+    """Row maximum ignoring NaN; NaN for a row that is all NaN (a trial without pupil fits)."""
+    m = np.nanmax(np.where(np.isnan(x), -np.inf, x), axis=1)
+    return np.where(np.isfinite(m), m, np.nan)
+
+
 def _eye(f, s) -> dict:
     e = f["acquisition/EyeTracking"]
     ts = e["eye_tracking/timestamps"][:]
@@ -270,7 +278,7 @@ def _eye(f, s) -> dict:
         out[name] = {"maxdist": np.nanmax(np.where(np.isnan(d), -np.inf, d), axis=1),
                      "blink": blink[ind].any(axis=1), "nan_frames": np.isnan(d).sum(axis=1),
                      "area_mean": np.nanmean(za[ind], axis=1), "area_end": za[ind[:, -1]],
-                     "area_max": np.nanmax(np.where(np.isnan(za[ind]), -np.inf, za[ind]), axis=1),
+                     "area_max": _nanmax_rows(za[ind]),
                      "x_mean": np.nanmean(p[ind, 0], axis=1), "y_mean": np.nanmean(p[ind, 1], axis=1),
                      "lag_first_frame": ts[np.clip(first, 0, len(ts) - 1)] - starts}
     return out
@@ -439,7 +447,9 @@ def rf_positions(R: np.ndarray, pos: np.ndarray, inverse: np.ndarray, spont_rate
     reading (a) (code: signed-rank of trial rates against the spontaneous rate, center best and
     the only position surviving the code's Holm step) and reading (b) (Methods: rank-sum against
     1-s windows of the longest spontaneous block, Holm over 9 positions, center the only
-    significant position), and the Kruskal-Wallis p across positions.
+    significant position), the Kruskal-Wallis p across positions, and the intermediate steps
+    (number of positions passing each reading's Holm step; for (b), whether the center passes
+    and is above the spontaneous mean). A position with no trial (fixed-gaze subsets) gets p = 1.
     """
     use = ~inverse if trials is None else (~inverse & trials)
     Rc, pc = R[use], pos[use]
@@ -457,6 +467,7 @@ def rf_positions(R: np.ndarray, pos: np.ndarray, inverse: np.ndarray, spont_rate
             pa[j, k] = 1.0 if np.all(d == 0) else stats.wilcoxon(d).pvalue
         pb[:, k] = ranksum_p(spont_windows, x)
     excl_a = holm_exclusive(pa, best) & (best == 0)
+    n_holm_a = np.sum(np.sort(pa, axis=1) * np.arange(9, 0, -1) < 0.05, axis=1)
     rej_b = holm_reject(pb)
     above = means > spont_windows.mean(axis=0)[:, None]
     excl_b = rej_b[:, 0] & (rej_b.sum(axis=1) == 1) & above[:, 0]
@@ -465,7 +476,8 @@ def rf_positions(R: np.ndarray, pos: np.ndarray, inverse: np.ndarray, spont_rate
         if np.ptp(Rc[:, j]) > 0:
             pkw[j] = stats.kruskal(*[Rc[pc == k, j] for k in range(9) if np.any(pc == k)]).pvalue
     return pd.DataFrame({"best": best, "excl_a": excl_a, "excl_b": excl_b, "p_kw_rf": pkw,
-                         "p_center_a": pa[:, 0], "p_center_b": pb[:, 0]})
+                         "p_center_a": pa[:, 0], "p_center_b": pb[:, 0], "n_holm_a": n_holm_a,
+                         "n_holm_b": rej_b.sum(axis=1), "center_holm_b": rej_b[:, 0], "center_above_b": above[:, 0]})
 
 
 # ---------------------------------------------------------------- decoding
@@ -478,10 +490,18 @@ def decode(R: np.ndarray, codes: np.ndarray, train_types, probe_types, seed: int
     stratified tenfold partition; each fold z-scores every unit by the training trials' mean and
     s.d. (NaN set to 0); one-vs-one SVM (libsvm, as MATLAB fitcecoc's default coding). reading
     'a': C = 1; reading 'b': C chosen by a threefold inner cross-validation on the training fold
-    over 10^-3 to 1 (larger C did not finish in the time of this run; the Python counterpart of the code's OptimizeHyperparameters, criterion).
+    over 10^-3 to 1 (the Python counterpart of the code's OptimizeHyperparameters, criterion).
+    For a linear kernel, MATLAB's KernelScale s divides the inputs, which is the same model as
+    C / s^2, so a search over C covers it. C above 1 is not searched: a fit there takes 5 to 50
+    times longer and does not converge; `c_path` shows the inner-CV accuracy up to C = 1000.
+    kernel 'poly' and 'rbf' (supp3-decoder-types; assumption, the paper gives no kernel
+    parameters): a quadratic kernel (gamma <x, y> + 1)^2 and an RBF kernel, both with
+    scikit-learn's gamma 'scale', 1 / (units x variance), a data-scaled width like MATLAB's
+    KernelScale 'auto'.
     Returns cross-validation accuracy (mean over classes of the fraction correct, mean over
-    folds), the confusion matrix of test trials, and P(probe type -> train type) averaged over the
-    ten fold models.
+    folds), the confusion matrix of test trials, P(probe type -> train type) averaged over the
+    ten fold models, the C chosen per fold (reading b) and the number of SVM fits that stopped at
+    max_iter without converging.
     """
     from sklearn.model_selection import GridSearchCV, StratifiedKFold
     from sklearn.svm import SVC
@@ -495,6 +515,8 @@ def decode(R: np.ndarray, codes: np.ndarray, train_types, probe_types, seed: int
     conf = np.zeros((len(train_types), len(train_types)))
     pconf = np.zeros((len(probe_types), len(train_types)))
     accs = []
+    n_unconverged = 0
+    chosen = []
     for tr, te in skf.split(idx, y):
         mu = R[idx[tr]].mean(axis=0)
         sd = R[idx[tr]].std(axis=0, ddof=1)
@@ -502,23 +524,60 @@ def decode(R: np.ndarray, codes: np.ndarray, train_types, probe_types, seed: int
             Z = (R - mu) / sd
         Z[~np.isfinite(Z)] = 0
         if kernel == "poly":
-            base = SVC(kernel="poly", degree=2, C=1.0)
+            base = SVC(kernel="poly", degree=2, coef0=1.0, gamma="scale", C=1.0)
         else:
-            base = SVC(kernel=kernel, C=1.0)
+            base = SVC(kernel=kernel, C=1.0, gamma="scale")
         if reading == "b":
-            base.set_params(max_iter=200000)
+            base.set_params(max_iter=1000000)
             clf = GridSearchCV(base, {"C": 10.0 ** np.arange(-3, 1)},
                                cv=StratifiedKFold(3, shuffle=True, random_state=seed))
         else:
             clf = base
-        clf.fit(Z[idx[tr]], y[tr])
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always", ConvergenceWarning)
+            clf.fit(Z[idx[tr]], y[tr])
+        n_unconverged += sum(issubclass(x.category, ConvergenceWarning) for x in w)
+        if reading == "b":
+            chosen.append(clf.best_params_["C"])
         pred = clf.predict(Z[idx[te]])
         cm = np.array([[np.mean(pred[y[te] == a] == b) for b in train_types] for a in train_types])
         conf += cm / n_splits
         accs.append(np.mean(np.diag(cm)))
         pp = clf.predict(Z[probe])
         pconf += np.array([[np.mean(pp[codes[probe] == a] == b) for b in train_types] for a in probe_types]) / n_splits
-    return {"acc": float(np.mean(accs)), "conf": conf, "probe": pconf, "n_per_class": int(n_min)}
+    return {"acc": float(np.mean(accs)), "conf": conf, "probe": pconf, "n_per_class": int(n_min),
+            "C_chosen": chosen, "n_unconverged": n_unconverged}
+
+
+def c_path(R: np.ndarray, codes: np.ndarray, train_types, seed: int, Cs=10.0 ** np.arange(-3, 4)):
+    """Inner threefold CV accuracy of the linear SVM against C, on the training trials of the
+    first outer fold (one-vs-one; and one-vs-all for C <= 1, the other coding MATLAB's search
+    can choose). A check of the bound of the C grid of decode(reading='b'), not a result."""
+    from sklearn.model_selection import StratifiedKFold, cross_val_score
+    from sklearn.multiclass import OneVsRestClassifier
+    from sklearn.svm import SVC
+
+    train_types = list(train_types)
+    n_min = min(np.sum(codes == t) for t in train_types)
+    idx = np.concatenate([np.flatnonzero(codes == t)[:n_min] for t in train_types])
+    y = codes[idx]
+    tr, _ = next(StratifiedKFold(n_splits=10, shuffle=True, random_state=seed).split(idx, y))
+    X = R[idx[tr]]
+    with np.errstate(invalid="ignore", divide="ignore"):
+        Z = (X - X.mean(axis=0)) / X.std(axis=0, ddof=1)
+    Z[~np.isfinite(Z)] = 0
+    inner = StratifiedKFold(3, shuffle=True, random_state=seed)
+    out = []
+    for C in Cs:
+        for coding in (["ovo", "ovr"] if C <= 1 else ["ovo"]):
+            svc = SVC(kernel="linear", C=C, max_iter=1000000)
+            clf = svc if coding == "ovo" else OneVsRestClassifier(svc)
+            with warnings.catch_warnings(record=True) as w:
+                warnings.simplefilter("always", ConvergenceWarning)
+                acc = cross_val_score(clf, Z, y[tr], cv=inner).mean()
+            out.append({"C": C, "coding": coding, "inner_cv_acc": acc,
+                        "unconverged": sum(issubclass(x.category, ConvergenceWarning) for x in w)})
+    return pd.DataFrame(out)
 
 
 def inference_score(probe: np.ndarray) -> tuple[float, float, float]:
