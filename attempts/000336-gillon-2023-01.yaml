@@ -1,0 +1,668 @@
+schema_version: 2
+id: 000336-gillon-2023-01
+dataset:
+  archive: dandi
+  id: "000336"
+  version: 0.260325.1802
+  doi: 10.48324/dandi.000336/0.260325.1802
+paper: doi:10.1038/s41597-023-02214-y
+date: 2026-10-28
+entry: 000336-gillon-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/40620195686
+inputs:
+- what: The paper's recordings, DANDI:000037 (OpenScope Credit Assignment), version 0.230426.0054, the
+    dandiset the paper's Data Records cite and the version the claims file names; only the basic
+    files (_behavior+ophys.nwb) are streamed. The later version 0.240209.1623 adds only a CHANGES
+    file.
+  source: doi:10.48324/DANDI.000037/0.230426.0054
+- what: The session table of the paper's code (mouse_df.csv), for the session numbers 1 to 6 and the
+    QC status of each session, which the files do not carry; and the code's correlation step
+    (get_correlation, analysis/misc_analys.py), run only to check the helper's correlations against it.
+  source: https://github.com/colleenjg/OpenScope_CA_Analysis at commit 046e7fef5f452cdc0775fe54040b0f13aeae1e57
+- what: The Allen Institute's n-way ROI matching package (version 0.6.0), run for
+    fig8-ordering-variation as the claims file asks.
+  source: https://github.com/AllenInstitute/ophys_nway_matching at commit 9d02ff5abca4580caad0e13bab60355ff91d4b62
+- what: The functions calculate_snr and rolling_mean of the paper code's dependency (util/math_util.py),
+    and reshape_df_data (util/gen_util.py), which get_correlation calls, read from the source and run
+    only to check the helper's versions against them (fig7a-snr-high-stable).
+  source: https://github.com/colleenjg/util at commit 2b05f954a4aa871dbfdd83d1546ebe8e7f3069c6
+outcomes:
+- claim: dataset-holds-paper-sessions
+  outcome: not_reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:dataset-holds-paper-sessions
+  notes: DANDI:000336 holds 2356 files of 16 subjects and 104 session IDs, none of which is among the
+    13 subjects and 50 sessions of Table 2; the subject metadata of all 16 subjects (a processed file
+    for 14, a raw file for the 2 without processed files) agree, and their sessions start between
+    2022-07-25 and 2023-11-15, against 2018-09-26 to 2019-03-18 for Table 2. The archive names 000336 the
+    OpenScope Dendritic Coupling project. All 50 sessions of Table 2 are in DANDI:000037, on which every other claim is
+    tested.
+- claim: table1-subjects
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:table1-subjects
+  measured: [13, 3, 3, 4, 3, 7, 6]
+  notes: Tested on DANDI:000037. 13 mice, 3 L2/3-D, 3 L2/3-S, 4 L5-D and 3 L5-S, 7 male and 6 female,
+    3 to 6 sessions each. Sex, line (from genotype) and plane (from depth) agree with Table 1 for every
+    subject, and the date of birth implied by each file's age agrees with Table 1.
+- claim: table2-sessions
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:table2-sessions
+  measured: [50, 2, 33]
+  notes: Tested on DANDI:000037. 50 sessions, the set of Table 2. Under reading (a) 2 mice (411400 and
+    412933) have a failed session among sessions 1 to 3; under reading (b) 3 mice, adding 440889,
+    whose sessions 5 and 6 failed. 33 sessions 1 to 3 passed QC, from 11 mice.
+  deviations:
+  - The files carry no QC status or session number. Both come from the paper's code table
+    (mouse_df.csv), which agrees with Table 2 for all 50 sessions on QC, date, depth, ROI count and
+    tracked ROI count (-1 in the table for 0), and whose session numbers run 1, 2, ... in date order
+    within each mouse.
+- claim: session-schedule
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:session-schedule
+  measured: 70.23
+  notes: Tested on DANDI:000037. Under readings (a) (sessions 1 to 3) and (ii) (calendar days
+    inclusive), all 13 mice have their three sessions on distinct local dates within 3 to 6 days.
+    Under (i) only 6 of 13 do, as 7 mice were imaged on three consecutive days (2 days from first to
+    third). Under (b) (tracked sessions) 411400 spans 7 calendar days. Durations under (a), reading (x)
+    70.23 to 70.53 min (median 70.23, given as measured), reading (y) 70.06 to 70.37. The stored start
+    times are UTC with a Pacific offset (see findings); converted to Pacific time, the dates equal
+    Table 2 for all 50 sessions, and the UTC dates for 46.
+  deviations:
+  - The claim holds under span reading (ii), calendar days inclusive, and not under (i).
+- claim: imaging-planes
+  outcome: partially_reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:imaging-planes
+  measured: [30.0, 512]
+  notes: Tested on DANDI:000037. The imaging rate is 30 Hz in the metadata (30.075 to 30.148 Hz from
+    the timestamps) and every plane image is 512 x 512 pixels. The depth equals Table 2 in 47 of 50
+    sessions; the three sessions of 433414 (L2/3-D) give 60 um, where Table 2 and the paper's code
+    table give 75 um. The raw imaging plane location string of each of the three files gives depth '60'
+    (area VISp), so 60 um is the deposited value; the code table's depth equals Table 2 in all 50
+    sessions. The 400 um field of view is not stated in the files. The criterion asks every
+    session's depth to match Table 2, so the claim holds only in part.
+- claim: roi-counts-per-session
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:roi-counts-per-session
+  measured: [15, 224, 159, 1636]
+  notes: Tested on DANDI:000037. Every session's ROI count equals Table 2. Under readings (a) and (b)
+    the somatic counts run from 15 to 224 and the dendritic from 159 to 1636; under (c) the largest
+    somatic count is 227, within the widened range. No ROI of the 33 analysed sessions has NaN or Inf
+    values.
+- claim: tracked-rois-per-plane
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:tracked-rois-per-plane
+  measured: [254, 261, 516, 129, 32.9, 75.0]
+  notes: Tested on DANDI:000037. Tracked ROIs (non-NaN tracking_id) summed over the 11 analysed mice
+    are 254, 261, 516 and 129; each mouse has the same tracking indices in its three tracked sessions,
+    and every session's tracked count equals Table 2. Fractions of the theoretical maximum run from
+    32.9 to 75.0% under reading (a), inside 28.8 to 82.5%; from 25.4 to 65.7% under (b) and from 25.2
+    to 80.5% under (c), outside it.
+  deviations:
+  - The theoretical maximum is not defined in the paper; the claim holds under reading (a), the sum
+    of the smallest session ROI count of each mouse, and not under (b) or (c).
+- claim: fig8-example-matches
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig8-example-matches
+  measured: [136, 47]
+  notes: Tested on DANDI:000037. 413663 has 136 and 411771 47 tracked ROIs in each of their three
+    sessions. The conflicts removed (4 and 2) are not in the files and are not judged.
+- claim: fig8-ordering-variation
+  outcome: reproduced
+  assumed: true
+  notebook: roi_matching_orderings.ipynb
+  output: claim:fig8-ordering-variation
+  notes: Tested on DANDI:000037, six orderings each of the three tracked sessions of the 13 tracked
+    mice (sessions 1 to 3 of the 11 analysed mice, sessions 4 to 6 of 411400 and 412933), with results
+    for the 11 analysed mice and for all 13. Somatic mice vary by at most one matched ROI over orderings
+    (range over mean 0 to 0.017, mean 0.004; SD over mean, mean 0.002; 4 of 6 mice do not vary). For the
+    11 analysed mice, the dendritic mice with the 10% threshold range over mean 0.036 to 0.259 (mean
+    0.136), SD over mean, mean 0.055; with 20%, 0.053 to 0.405 (mean 0.161) and 0.079. Every dendritic
+    mouse varies more than every somatic one under both thresholds and both measures, and also when the
+    threshold applies only to pairs with a direct pairwise match (range over mean 0.029 to 0.400; means
+    0.113 at 10% and 0.172 at 20%). Without a threshold the dendritic mean is still larger (0.040 against
+    0.004), though 433451 (0.015) then varies less than 408021 (0.017). With all 13 tracked mice the
+    dendritic means stay larger under every reading (range over mean 0.104 at 10% and 0.134 at 20%, SD
+    over mean 0.042 and 0.064, against 0.004 and 0.002; 0.034 without a threshold); 412933 matches 60
+    ROIs in every ordering at 10%, so with it not every dendritic mouse varies more than every somatic
+    one. The somatic match counts (12 to 151) are within 4 of the tracked counts in the files; the
+    dendritic counts under the IoU thresholds (10 to 143 for the analysed mice) are well below them (51
+    to 353). Per dendritic mouse 19 to 307 three-session matches (on average over orderings) hold a pair
+    of ROIs without a direct pairwise match, against 1 to 4 per somatic mouse; applying the threshold
+    only to linked pairs keeps 3 to 28 more matches per dendritic mouse at 10%, still below the tracked
+    counts (for example 34.3 against 118 for 433414 and 44.2 against 112 for 433448), so the IoU
+    threshold removes most matches. Without a threshold the dendritic counts are 1.3 to 2.6 times the
+    tracked counts. The package's own NwayMatching.run gives the same count as the reconstruction in all
+    12 orderings of 418779 and 420011. The dendritic values printed in this run differ from those of the
+    run the verifier read in round 2 (for example 433448 range over mean at 10%, 0.259 here and 0.309
+    there), with the same conclusion; repeating the matching of 420011 and 433414 twice on one machine
+    while preparing (not in the notebook) gave identical counts, so the difference is between runs on
+    different machines. Open for the paper's authors - what overlap measure and threshold the modified
+    matching used for dendrites, and whether the modified code can be published; the Methods say only
+    "overlapped by at least 10-20%", and a measure relative to the smaller ROI would keep more matches.
+  deviations:
+  - The public package (version 0.6.0, default parameters) in place of the paper's custom-modified
+    version, which is not public, as the claims file directs.
+  - Assumed that the dendritic overlap is the intersection over union of the registered masks that
+    the package reports, applied to every pairwise match within a three-session match. The paper
+    does not define the overlap; IoU is the overlap measure the package itself computes. The result
+    holds at both thresholds the criterion names.
+  - The package expects an average intensity projection for registration; the files hold only a max
+    projection, which is used in its place.
+  - The six directed pairwise matchings of each mouse are computed once and combined per ordering, as
+    NwayMatching.run combines them (itertools.combinations in the given order); the notebook checks
+    this against NwayMatching.run on all six orderings of 418779 and 420011 (12 of 12 equal). The
+    package's summary plots are not made; they fail with the locked pandas (a read-only array in
+    numpy.fill_diagonal) and do not change the matches.
+  - A pair of ROIs within a three-session match that has no direct pairwise match counts as IoU 0, so
+    the match fails any threshold; the variant that applies the threshold only to linked pairs is
+    shown and gives the same outcome.
+- claim: stimulus-durations
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:stimulus-durations
+  measured: [34.028, 17.014, 29.983]
+  notes: Tested on DANDI:000037, the 33 analysed sessions. Gabor period 34.03 to 34.13 min, each flow
+    direction 17.01 to 17.04 min, the four grey periods 29.98 to 30.04 s (medians given as
+    measured), in all 33 sessions. The order of the stimulus periods varies between sessions.
+- claim: inconsistent-event-fraction
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:inconsistent-event-fraction
+  measured: [6.93, 4.65, 31.5]
+  notes: Tested on DANDI:000037, the 33 analysed sessions. Gabor 6.93% and flow 4.65% under both
+    readings (a) and (b); per session 6.03 to 7.94% and 3.92 to 5.49%. Blocks per session under
+    reading (i), Gabor 31.5 and flow 32.2 on average; reading (ii) gives 63.7 and does not match.
+    From row times, 49 of 2101 consistent runs exceed 90 s by up to 0.22 s and 377 of 1039 Gabor and
+    347 of 1062 flow inconsistent runs are outside 3 to 6 s and 2 to 4 s by at most 0.06 s; rounded
+    to the sampling grid of the Methods (1.5 s and 1 s), every run is in range. The block count is
+    judged on the mean over sessions; per session it runs from 29 to 34 (Gabor) and 29 to 35 (flow), so
+    2 (Gabor) and 11 (flow) of 33 sessions fall outside 27 to 33. The run furthest from its grid value,
+    a consistent Gabor run of 88.887 s in session 832883243 (440889), is 0.387 s longer than 88.5 s.
+    Consistent runs exceed their grid values by a median of 0.81 per mille, and all 22 runs more than
+    0.25 s off lie in the three sessions with the largest median excess (1.24, 1.23 and 0.82 per mille,
+    up to 5.5), which is consistent with the display running slightly slow in those sessions. The
+    outcome rests on two assumptions (see deviations); on row times, or with the block count required
+    in every session, the claim would not hold. Open for the paper's authors - whether the stated
+    ranges refer to the sampled design durations and whether "approximately 30 blocks" describes
+    sessions on average.
+  deviations:
+  - Assumed that durations are judged on the sampling grid the Methods state ("sampled randomly and
+    uniformly ... across multiples of 1.5 seconds for the Gabor sequence stimulus and of 1 second for
+    the visual flow stimulus", Methods, Visual stimulation, paragraph 4), as the stated ranges describe
+    the design; measured row times run past the grid values by display timing, up to 0.39 s, and on
+    row times 49 consistent, 377 Gabor and 347 flow inconsistent runs fall outside the ranges.
+  - Assumed that the block count is judged on its mean over sessions, as "approximately 30 blocks"
+    describes sessions in general; per session 2 Gabor and 11 flow counts of 33 fall outside 27 to 33.
+  - Block counts hold under reading (i), per stimulus, and not under (ii), per session.
+- claim: fig5-stimulus-responses
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig5-stimulus-responses
+  notes: Tested on DANDI:000037, session 1 of the 11 analysed mice. Under all four reading pairs each
+    plane has at least one stimulus with a consistent against inconsistent difference. With all ROIs
+    and the Wilcoxon test, L2/3-D differs for Gabor (U minus D -0.0025 dF/F, p = 3.1e-14) and both
+    flow directions; L2/3-S for both flow directions only (Gabor p = 0.72); L5-D for nasal flow only
+    (p = 2.7e-08); L5-S for Gabor (0.017, p = 3.9e-04) and nasal flow. The same holds with the code's
+    scaled traces. Selection (b) picks 0 to 72 ROIs per session and stimulus (none for Gabor in
+    418779). Selecting Gabor ROIs on single inconsistent sequence responses, as the Fig. 5b legend
+    ("Same as a., but for inconsistent sequences") can be read, gives no Gabor difference in L2/3-D,
+    L2/3-S or L5-D under either test (L5-S, 13 ROIs, Wilcoxon p = 0.011, mean within 2 SEM), but
+    every plane keeps a flow difference, so the outcome is unchanged. The first part of the statement
+    (onset responses) is tested by fig9-onset-offset-transients.
+  deviations:
+  - Reading (b) for Gabor computes the legend's criteria on single consistent sequence responses
+    from 0.9 s before to 0.6 s after D onset (the Fig. 5a legend's selection); for flow on single
+    inconsistent flow responses from 2 s before to 2 s after onset, with the mean response after
+    minus before onset as the inconsistent minus consistent difference. Under (b) the flow selection
+    uses the tested difference itself, so its test is not independent of the selection.
+  - The paper's code scales traces for this figure ((trace - median) / (95th - 5th percentile),
+    analysis/session.py); the claims file uses unscaled dF/F, and the scaled result is a variant
+    with the same outcome.
+- claim: fig6-behaviour
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig6-behaviour
+  measured: 11
+  notes: Tested on DANDI:000037. All 33 analysed sessions, from 11 mice, have a running velocity trace
+    (cm/s, 60 Hz) and a pupil diameter trace (mm, on the 2p timestamps) spanning the stimulus period;
+    0.06 to 2.3% of pupil frames are NaN and at most 12 running frames per session are dropped by the
+    50 cm/s rule.
+- claim: fig7a-snr-high-stable
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig7a-snr-high-stable
+  notes: Tested on DANDI:000037. Group medians 2.37 to 3.43 and 25th percentiles 2.32 to 2.79; no ROI of
+    10736 has SNR at or below 1. In every plane each session's median lies inside the other sessions'
+    boxes and within 4.8% of the mean of the three medians, so all four reading pairs hold. The
+    threshold of 1 does not separate signal from noise for this measure. Pure Gaussian noise gives an
+    SNR of 2.06 (1.56 and 2.56 with the median 0.5 SD below or above), as the analytic m / sd + 2.063
+    gives. Every group's median SNR is above its ROIs' own Gaussian floor (median 2.062), by 0.31 to
+    0.33 in L2/3-D, 0.46 to 0.49 in L5-D and 0.77 to 1.37 in the somatic planes; 3 to 9% of dendritic
+    and 40 to 62% of somatic ROIs exceed it by more than 1. The helper's calculate_snr and rolling mean
+    equal those of the paper's code (util at commit 2b05f954), and its pairwise correlations equal those
+    of the code's own correlation step (get_correlation at commit 046e7fe), on every ROI and pair of
+    418779 and 420011 session 1 (largest differences 0, under 2e-15 and under 3e-8).
+- claim: fig7b-signal-stable
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig7b-signal-stable
+  notes: Tested on DANDI:000037. Both readings hold in all four planes; the largest deviation of a
+    session median from the mean of the three is 9.4% (L5-D), the others 4.0 to 6.7%.
+- claim: fig7c-correlations-similar
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig7c-correlations-similar
+  notes: Tested on DANDI:000037. Reading (ii) holds in all six comparisons (dendritic 99th percentiles
+    0.081 to 0.119 against somatic 0.175 to 0.207). Reading (i) holds in 5 of 6; in L5 session 3 the
+    dendritic median, 0.0186, lies just below the somatic 25th percentile, 0.0190. The criterion
+    reproduces the claim only when both readings hold in all six comparisons and blocks it when they
+    disagree, so it is blocked with every result shown. Reading (ii) follows the paper's own
+    argument, that over-segmentation would give many highly correlated pairs; on it the claim would
+    be reproduced. The helper's correlations equal those of the paper code's get_correlation on every
+    pair of two sessions (fig7a-snr-high-stable). Open for the paper's authors - what measure of similarity between the dendritic
+    and somatic correlation distributions the statement rests on.
+- claim: high-correlation-pairs
+  outcome: not_reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:high-correlation-pairs
+  measured: 0.0178
+  notes: Tested on DANDI:000037. Pairs of L2/3-D ROIs with correlation above 0.8 are 0.0178% pooled over
+    the six sessions (reading a), 0.0175% as a mean of sessions (b) and 0.0211% in session 1 (c), all
+    above the 0.015% the tolerance allows. Per session the fraction runs from 0.0018 to 0.046%; 116 of
+    the 134 pairs come from sessions 1 and 2 of 413663. By mouse, 413663 gives 0.032% and 433414
+    0.0030%; leaving out either mouse gives 0.0030% or 0.032%, both outside the tolerance. The value is of the order the paper gives
+    ("approximately 0.01%") but outside the claims file's tolerance of half its last digit. The
+    helper's correlations equal those of the paper code's get_correlation on every pair of two sessions
+    (fig7a-snr-high-stable).
+- claim: fig9-onset-offset-transients
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig9-onset-offset-transients
+  notes: Tested on DANDI:000037. Both readings find a transient at onset and at offset in all 12 groups.
+    Onset differences 0.049 to 0.103 dF/F (Wilcoxon p at most 8.1e-29); offset differences -0.013 to
+    -0.035 (p at most 3.2e-25). Each of the 33 mouse sessions has p < 0.05 at both. With Gabor events
+    only, onsets hold in 12 of 12 groups and offsets in 7 (i) and 9 (ii) of 12; with the code's scaled
+    traces, 12 of 12 for both. The Fig. 9 legends name Gabor onsets and offsets only, while the text
+    and the code use both stimuli, as the claims file does; whether the claim should be judged on Gabor
+    events alone is asked of a reader in questions/000336.yaml. On that variant both readings agree
+    that some groups lack an offset transient, which the criterion calls partially reproduced.
+  deviations:
+  - The paper's code scales traces for this figure; the claims file uses unscaled dF/F, and the
+    scaled result is a variant with the same outcome.
+findings:
+- kind: metadata_error
+  statement: DANDI:000336 (OpenScope Dendritic Coupling) lists Gillon, Lecoq et al. (2023,
+    doi:10.1038/s41597-023-02214-y) as a related resource that it describes, but holds none of the
+    paper's 13 subjects or 50 sessions; its sessions are mesoscope recordings of 16 other mice from
+    2022 and 2023. The paper's data are in DANDI:000037.
+- kind: metadata_error
+  statement: In DANDI:000037 the session_start_time of every file is the UTC start time labelled with a
+    Pacific offset (-07:00 or -08:00), so it is 7 or 8 hours late; the clock times equal the UTC
+    timestamps of the paper's code table. Read as stored, the dates of 4 of 50 sessions differ from
+    Table 2.
+- kind: metadata_error
+  statement: In DANDI:000037 the imaging plane of the three sessions of subject 433414 gives a depth of
+    60 um, where the paper's Table 2 and its code table give 75 um. The data do not say which is
+    right.
+- kind: metadata_insufficient
+  statement: DANDI:000037 files carry no QC status or session number (1 to 6 per mouse), which the
+    paper's analysis selects on (sessions 1 to 3 that passed QC); both come only from Table 2 and the
+    paper's code table. The imaging plane states no field of view or pixel size.
+- kind: other
+  statement: In DANDI:000037, session 759872185 (subject 411400, failed QC) has 61134 pupil samples for
+    127588 imaging frames, where every other file has one pupil sample per frame.
+- kind: methods_unavailable
+  statement: Question for the paper's authors - Fig. 7c says the correlation distributions of dendritic
+    and somatic ROIs are very similar; what measure of similarity was meant (for example the medians,
+    or the upper tail of highly correlated pairs)? The two readings of the claims file disagree in
+    one of six comparisons (L5, session 3), which blocks the claim.
+- kind: methods_unavailable
+  statement: Question for the paper's authors - the Methods give consistent runs of 30 to 90 s and
+    inconsistent runs of 3 to 6 s (Gabor) or 2 to 4 s (flow), sampled on 1.5 s and 1 s grids, in
+    approximately 30 blocks; do the ranges refer to the sampled design durations, and the block count
+    to sessions on average? Measured row times run up to 0.39 s past the grid values, and per session
+    2 Gabor and 11 flow block counts of 33 fall outside 27 to 33.
+- kind: methods_unavailable
+  statement: Question for the paper's authors - the dendritic ROI matching kept matches that
+    "overlapped by at least 10-20%"; what overlap measure and threshold were used, and can the
+    custom-modified matching code be published? With intersection over union, the public package
+    finds 10 to 143 matches per dendritic mouse against 51 to 353 tracked ROIs in the files.
+verifications:
+- date: 2026-10-28
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebooks of the first run with the conclusion cells and the summary
+    removed, the helper module and the claims file, with the paper. The verifier checked all 2356 paths
+    of 000336 against the archive API, ran calculate_snr on pure Gaussian noise, tested stimulus_events,
+    window_means, rolling_mean and _median_pairwise_corr on synthetic inputs and checked the helper's
+    Tables 1 and 2 against the paper. Its outcome agrees with the record for all 18 claims. Report in
+    transcripts/000336/verifier-1-report.md.
+  results:
+  - claim: dataset-holds-paper-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 17 finds none of Table 2's subject or session IDs in 000336, which holds 16 subjects
+      recorded 2022 to 2023; the verifier checked all 2356 paths against the archive API and found no
+      ID match. Cell 17 reads subject metadata for only 14 of the 16 subjects; the other two (690226,
+      698808) have no _ophys files, were recorded Oct to Nov 2023, and do not change the result.
+    response: The cell now opens one file of every subject, the smallest raw (image+ophys) file for
+      690226 and 698808, and prints 16 of 16; the date range is now 2022-07-25 to 2023-11-15. Outcome
+      unchanged.
+  - claim: table1-subjects
+    agrees: true
+    outcome: reproduced
+    reason: Cell 19 gives 13 mice, split 3/3/4/3, 7 male and 6 female, at least 3 sessions each; sex,
+      line, plane and date of birth agree with Table 1 for every mouse. The helper's Tables 1 and 2
+      match the paper text exactly.
+    response: No change needed.
+  - claim: table2-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Cell 21 gives 50 sessions; reading (a) gives 2 mice (411400, 412933), (b) gives 3 and is
+      reported; sessions 1 to 3 that passed QC are 33 files. The content of mouse_df.csv is not shown,
+      only its agreement with Table 2 on QC status, not its session numbering.
+    response: Added a data-check cell that prints the code table's rows for the 50 sessions beside
+      Table 2. It agrees on QC, date, depth, ROI count and tracked ROI count in 50 of 50 sessions, and
+      its session numbers run 1, 2, ... in date order within each mouse.
+  - claim: session-schedule
+    agrees: true
+    outcome: reproduced
+    reason: Cell 23, under readings (a) and (ii), all 13 mice have 3 distinct local dates spanning 3 to
+      6 days; durations are 70.23 to 70.53 min by reading (x) and 70.06 to 70.37 min by (y); local
+      dates equal Table 2's in 50 of 50 sessions.
+    response: No change needed.
+  - claim: imaging-planes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Rate is 30 Hz and images are 512 x 512, but the depth matches Table 2 in only 47 of 50
+      sessions; the three 433414 files say 60 um where Table 2 says 75, and the criterion requires every
+      session to match. The raw location strings of the three files and the code table's depth for all
+      sessions are not printed, so it could not tell whether 60 um is the deposited value or a parsing
+      artefact.
+    response: The cell now prints the raw location strings of the three 433414 files (depth '60') and
+      the code table's depth against the file and Table 2 for all sessions (47 and 50 of 50). 60 um is
+      the deposited value. Outcome unchanged.
+  - claim: roi-counts-per-session
+    agrees: true
+    outcome: reproduced
+    reason: Cell 27, reading (a) gives exactly 15 to 224 (somatic) and 159 to 1636 (dendritic), and every
+      session's count equals Table 2 (50 of 50).
+    response: No change needed.
+  - claim: tracked-rois-per-plane
+    agrees: true
+    outcome: reproduced
+    reason: Cell 29, counts are 254/261/516/129, exact; reading (a) gives 32.9 to 75.0%, inside 28.8 to
+      82.5%.
+    response: No change needed.
+  - claim: fig8-example-matches
+    agrees: true
+    outcome: reproduced
+    reason: Cell 31, 413663 has 136 tracked ROIs and 411771 has 47. The conflict counts cannot be
+      tested, as the criterion says.
+    response: No change needed.
+  - claim: fig8-ordering-variation
+    agrees: true
+    outcome: reproduced
+    reason: The mean somatic variation is below the dendritic one at 10%, at 20% and with no threshold.
+      The notebook reads the overlap as IoU and requires all three pairwise IoUs of a 3-way match to come
+      from direct pairwise matches, so a 3-way match built from two links is dropped; dendritic counts
+      fall well below the deposited tracked counts, and the rerun does not approximate the paper's
+      dendritic matching. ordering_counts and _pair_job rebuild the package's run(), and the notebook
+      never checks this against a direct NwayMatching.run on one ordering; it also uses the max
+      projection in place of the average projection. A per-mouse table of how many 3-way matches are
+      dropped only for lacking a direct pairwise link would show how much of the dendritic reduction
+      comes from the IoU rule.
+    response: Added a check of the reconstruction against the package's NwayMatching.run on all six
+      orderings of 418779 and 420011 (12 of 12 counts equal; the package's summary plots are skipped as
+      they fail with the locked pandas). Added a per-mouse table of three-session matches with a pair
+      lacking a direct link (19 to 307 per dendritic mouse) and a variant that applies the threshold
+      only to linked pairs, which keeps 5 to 28 more dendritic matches at 10% and gives the same
+      outcome; the dendritic counts stay well below the tracked counts, so the IoU threshold accounts
+      for most of the reduction. Recorded this as a deviation. Outcome unchanged.
+  - claim: stimulus-durations
+    agrees: true
+    outcome: reproduced
+    reason: Cell 34, all 33 sessions are within tolerance; Gabor 34.03 to 34.13 min, flow 17.01 to 17.04
+      min, grey 29.98 to 30.04 s.
+    response: No change needed.
+  - claim: inconsistent-event-fraction
+    agrees: true
+    outcome: reproduced
+    reason: Gabor 6.93% and flow 4.65% under both (a) and (b); under reading (i) the mean is 31.5 Gabor
+      and 32.2 flow blocks; on the 1.5 s / 1 s grids every duration is in range. The block count is
+      judged on the session mean; per-session counts range from 29 to 34 (Gabor) and 29 to 35 (flow),
+      so some sessions fall outside 27 to 33. One run sits 0.387 s from its grid value (about 12
+      frames), which is never explained.
+    response: The cell now prints per-session block counts (2 of 33 sessions outside 27 to 33 for Gabor,
+      11 for flow), the runs furthest from their grid values and the per-session excess of consistent
+      runs over their grid values. The 0.387 s run is an 88.887 s consistent Gabor run in 832883243;
+      all 22 runs more than 0.25 s off lie in the three sessions with the largest excess, consistent with
+      slow display timing there. The outcome stays, as the criterion judges the block count per session
+      on average; the notes say so.
+  - claim: fig5-stimulus-responses
+    agrees: true
+    outcome: reproduced
+    reason: Under all four reading pairs every plane shows at least one stimulus with a difference,
+      carried by flow in every plane. In selection (b), Gabor ROIs are selected on their D (consistent)
+      responses for both conditions, while the Fig. 5b legend selects on inconsistent sequences; for flow
+      the selection on after-minus-before is circular, but it is the claims file's own definition.
+      Reading (a) passes in every plane independently. Per-session selected ROI counts and percentile
+      thresholds are not printed.
+    response: Added a variant selecting Gabor ROIs on inconsistent sequence responses (b_u) and a table
+      of selected ROI counts and thresholds per session and stimulus. Under b_u, Gabor differs only in
+      L5-S (Wilcoxon), but every plane keeps a flow difference, so the outcome is unchanged.
+  - claim: fig6-behaviour
+    agrees: true
+    outcome: reproduced
+    reason: Cell 41, in all 33 sessions and 11 mice, running (cm/s) and pupil (mm) traces span the
+      session.
+    response: No change needed.
+  - claim: fig7a-snr-high-stable
+    agrees: true
+    outcome: reproduced
+    reason: The smallest group 25th percentile is 2.32, so (a) and (b) hold, and (i) and (ii) hold in all
+      four planes. The helper returns an SNR of about 2.06 on pure Gaussian noise at median 0, 2.56 at
+      +0.5 SD and 1.56 at -0.5 SD, so SNR > 1 holds by construction for almost any trace and the claim is
+      uninformative; the notebook does not report the noise floor. It could not confirm that
+      calculate_snr, rolling_mean and the correlation step match the paper's code.
+    response: Added a pure-noise control (2.06, 2.56 and 1.56, matching the analytic floor) and each
+      ROI's own Gaussian floor; every group's median SNR lies 0.31 to 1.37 above it. Added a comparison
+      of the helper's SNR, rolling mean and correlations with calculate_snr and rolling_mean of the
+      paper's code (util at commit 2b05f954) on every ROI of two sessions; they agree to rounding. The
+      outcome follows the criterion and is unchanged; the notes say that SNR above 1 alone would hold
+      for noise.
+  - claim: fig7b-signal-stable
+    agrees: true
+    outcome: reproduced
+    reason: Cell 46, (i) and (ii) hold in all four planes; L5-D is close to the limit at 9.4% deviation
+      against 10%.
+    response: No change needed.
+  - claim: fig7c-correlations-similar
+    agrees: true
+    outcome: blocked
+    reason: Reading (i) holds in 5 of 6 comparisons and (ii) in 6 of 6; in L5 session 3 the dendritic
+      median is 0.0186 against a somatic 25th percentile of 0.0190. By the criterion, readings that
+      disagree mean blocked.
+    response: No change needed.
+  - claim: high-correlation-pairs
+    agrees: true
+    outcome: not_reproduced
+    reason: (a) 0.0178%, (b) 0.0175%, (c) 0.0211%, all outside the 0.005 to 0.015% tolerance. The fraction
+      rests on 134 pairs, 116 of them from mouse 413663's sessions 1 and 2; per-session values span
+      0.0018% to 0.046%, and mouse 433414 alone gives about 0.003%. The result does not reproduce under
+      any of the readings regardless.
+    response: Added the fraction by mouse (413663 0.032%, 433414 0.0030%) and with each mouse left out;
+      both are outside the tolerance. Outcome unchanged.
+  - claim: fig9-onset-offset-transients
+    agrees: true
+    outcome: reproduced
+    reason: Both readings find transients at onset and offset in 12 of 12 groups. The Fig. 9a/b legends
+      name Gabor onset and offset only; on that variant offsets show a transient in only 7 of 12 groups
+      (2 SEM reading) and 9 of 12 (Wilcoxon), so under the legend's reading the outcome would be blocked,
+      not reproduced. The claims file chose both stimuli from the text and the code; a possible
+      claims-file misreading.
+    response: Asked a reader in questions/000336.yaml whether the claim should be judged on Gabor events
+      alone; the claim is tested as the claims file has it, the Gabor-only variant stays in the notebook,
+      and the notes say it is asked. Outcome unchanged.
+- date: 2026-10-28
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebooks of the revised run, with the conclusions and summary,
+    the helper module, the claims file, the attempt record and the README, with the paper. It checked
+    every Result sentence, the summary, the README and the notes against the printed outputs, and the
+    responses to its round-1 points. Its outcome agrees with the record for all 18 claims. Report in
+    transcripts/000336/verifier-2-report.md.
+  results:
+  - claim: dataset-holds-paper-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 18 now opens a file from all 16 subjects, and none of their IDs is in Table 2. The
+      Summary and the notes say "mesoscope imaging" and "V1, LM, PM and AM", which no output shows; cell
+      4 shows one file with planes in VISl at about 10 Hz, and the claims file says this description came
+      from the archive and was not checked against the data.
+    response: Removed the unshown description from the Summary and the notes; the notes now say only that
+      the archive names 000336 the OpenScope Dendritic Coupling project, which cell 3 prints. Outcome
+      unchanged.
+  - claim: table1-subjects
+    agrees: true
+    outcome: reproduced
+    reason: The printed counts match exactly.
+    response: No change needed.
+  - claim: table2-sessions
+    agrees: true
+    outcome: reproduced
+    reason: The printed counts match exactly.
+    response: No change needed.
+  - claim: session-schedule
+    agrees: true
+    outcome: reproduced
+    reason: It holds under readings the claims file names, (a)/(ii) for the schedule.
+    response: No change needed.
+  - claim: imaging-planes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Rate and image size hold. Depth matches in 47 of 50 sessions, and the raw strings show 60 um
+      is the deposited value (cell 30). The criterion has no partial rule, so "partial" is a judgement,
+      but a reasonable one.
+    response: No change needed.
+  - claim: roi-counts-per-session
+    agrees: true
+    outcome: reproduced
+    reason: The printed counts match exactly.
+    response: No change needed.
+  - claim: tracked-rois-per-plane
+    agrees: true
+    outcome: reproduced
+    reason: It holds under reading (a) for the theoretical maximum, which the claims file names.
+    response: No change needed.
+  - claim: fig8-example-matches
+    agrees: true
+    outcome: reproduced
+    reason: The printed counts match exactly.
+    response: No change needed.
+  - claim: fig8-ordering-variation
+    agrees: true
+    outcome: reproduced
+    reason: The IoU assumption is stated and reasonable, and somatic variation is below dendritic in every
+      row of the summary, including the linked-pairs and no-threshold variants. The claims file asks for
+      each tracked mouse, which is 13 mice (411400 and 412933 are tracked in sessions 4 to 6); the
+      notebook uses the 11 analysed mice, an unrecorded deviation. The Result cell and the notes misstate
+      several summary numbers (0.26, 0.41, 0.161, 0.113, 0.172, 0.040, 34 and 44, 0.136, 0.055, 0.079
+      against the printed values), contain a corrupted fragment ("Xfiles'"), and claim a run-to-run
+      difference in the dendritic counts that the outputs do not show. The effect of the IoU rule is now
+      quantified, but the dendritic counts still do not approximate the paper's matching, so the outcome
+      rests on the stated assumption. None of these errors changes the outcome.
+    response: The notebook now runs the matching on all 13 tracked mice (sessions 4 to 6 of 411400 and
+      412933) and prints the summary for the 11 analysed mice and for all 13; the dendritic means stay
+      larger under every reading with 13 mice, though 412933 does not vary at 10%. Rewrote the Result
+      cell and the notes from the printed values of this run, removed the corrupted fragment, and stated
+      that this run's dendritic values differ from those the verifier read (a preparatory repeat on one
+      machine gave identical counts, so the difference is between machines; not run in the notebook).
+      Outcome unchanged.
+  - claim: stimulus-durations
+    agrees: true
+    outcome: reproduced
+    reason: The printed counts match exactly.
+    response: No change needed.
+  - claim: inconsistent-event-fraction
+    agrees: true
+    outcome: reproduced
+    reason: On raw row times 49 consistent, 377 Gabor and 347 flow runs fail the duration ranges, and all
+      pass only after rounding to the Methods' 1.5 s / 1 s grid. The block count is judged on the session
+      mean; per session 2 Gabor and 11 flow sessions of 33 fall outside 27 to 33. Both choices are stated
+      and defensible, but because the outcome depends on them it should carry assumed true.
+    response: Marked the outcome assumed true, rewrote both choices as assumptions in the deviations and
+      the Result cell, said that without them the claim would not hold, and added a methods_unavailable
+      finding asking the paper's authors. The README and Summary mark the outcome as resting on
+      assumptions. Outcome unchanged.
+  - claim: fig5-stimulus-responses
+    agrees: true
+    outcome: reproduced
+    reason: All reading pairs hold (cell 49), and the outcome survives the b_u variant.
+    response: No change needed.
+  - claim: fig6-behaviour
+    agrees: true
+    outcome: reproduced
+    reason: The printed counts match exactly.
+    response: No change needed.
+  - claim: fig7a-snr-high-stable
+    agrees: true
+    outcome: reproduced
+    reason: It follows the criterion, and the notes now say that noise alone gives SNR of about 2.06. The
+      statement that the correlations equal those of the paper's code goes further than cell 60 shows,
+      which applies np.corrcoef to the paper's rolling_mean and does not run the paper's own correlation
+      step (get_correlation).
+    response: Cell 60 now runs the paper code's get_correlation (analysis/misc_analys.py at commit
+      046e7fe, with reshape_df_data and rolling_mean of util at commit 2b05f954, on a session stub that
+      builds the trace table as Session.get_roi_traces does) on every ROI of 418779 and 420011 session 1;
+      it equals the helper's correlations on all 105 and 20910 pairs (largest difference under 3e-8, from
+      float32 storage). Outcome unchanged.
+  - claim: fig7b-signal-stable
+    agrees: true
+    outcome: reproduced
+    reason: The printed counts match exactly.
+    response: No change needed.
+  - claim: fig7c-correlations-similar
+    agrees: true
+    outcome: blocked
+    reason: Reading (i) holds in 5 of 6 comparisons and (ii) in 6 of 6. The correlation step is not
+      checked against the paper's own correlation function, and the outcome rests on these correlations.
+    response: The correlations are now checked against the paper code's get_correlation (see
+      fig7a-snr-high-stable) and equal it. Outcome unchanged.
+  - claim: high-correlation-pairs
+    agrees: true
+    outcome: not_reproduced
+    reason: Readings (a), (b) and (c) are all above 0.015%. The correlation step is not checked against
+      the paper's own correlation function, and the outcome rests on these correlations.
+    response: The correlations are now checked against the paper code's get_correlation (see
+      fig7a-snr-high-stable) and equal it. Outcome unchanged.
+  - claim: fig9-onset-offset-transients
+    agrees: true
+    outcome: reproduced
+    reason: It holds in 12 of 12 groups under both readings (cell 73). The notes say that on the
+      Gabor-only variant the claim would not be reproduced, which is wrong; both readings agree that some
+      groups lack a transient (7 and 9 of 12), which the criterion calls partially reproduced, and its own
+      round-1 point, which said blocked, was also wrong. Cell 76's "brief peak after the offset in the
+      mean traces" is backed only by the figure.
+    response: Corrected the notes, the Result cell and the reasoning of the reader question in
+      questions/000336.yaml to partially reproduced on the Gabor-only variant, and removed the sentence
+      about the peak after the offset. Outcome unchanged.
