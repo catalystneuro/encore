@@ -18,7 +18,7 @@ from 15 epilepsy patients performing a modified Sternberg task.
 | Participant 1, GC reversal between hippocampus and C2 | Not reproduced (rests on an assumption) |
 | Participant 1, spatial pattern of GC on the grid | Not reproduced |
 | Participants 2 and 3, GC reversal | Not reproduced (rests on an assumption) |
-| Participant 4, no GC on right parietal cortex | Blocked: methods underspecified (a change to not reproduced is proposed) |
+| Participant 4, no GC on right parietal cortex | Not reproduced |
 | Over 80% of significant EEG sources in the left hemisphere | Blocked: not runnable |
 | Group GC reversal with the auditory source | Not reproduced |
 | Temporal scalp electrodes, eliminated by a Laplacian | Reproduced (rests on an assumption) |
