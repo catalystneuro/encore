@@ -14,8 +14,8 @@ operant session recounted from its raw log.
 | Claims | Outcome |
 |---|---|
 | Delayed/large choices at baseline, under PPX and A77636, and over repeated dosing (9 claims) | 9 reproduced |
-| Washout, omissions and choice latencies (4 claims) | 1 reproduced, 3 partially reproduced |
-| Hyperbolic fit parameters A, K and AUC (PPX, A77636, DREADD) | 1 reproduced, 2 partially reproduced |
+| Washout, omissions and choice latencies (4 claims) | 1 reproduced, 3 partially reproduced (PPX washout rests on how the Bonferroni comparisons are made) |
+| Hyperbolic fit parameters A, K and AUC (PPX, A77636, DREADD) | 1 reproduced, 1 partially reproduced, 1 not reproduced |
 | DREADD delay discounting (mCherry, hM4Di, hM3Dq) | 1 reproduced, 1 partially reproduced |
 | Rotarod, SNc cell counts, slice validation | 3 reproduced |
 | Striatal TH loss | Partially reproduced |

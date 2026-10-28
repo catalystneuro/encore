@@ -483,7 +483,9 @@ def main_effect_pairs(data: pd.DataFrame, value: str, treat: str, levels: list) 
 
 def rm_oneway(table: pd.DataFrame, reference: str) -> dict:
     """Repeated measures one-way ANOVA over the columns of `table` (complete rows), with
-    Bonferroni-corrected paired t tests between every pair of columns (Table 1's reading)."""
+    Bonferroni-corrected paired t tests between every pair of columns (Table 1's reading), and as
+    a variant Bonferroni comparisons on the ANOVA's pooled residual error, as GraphPad Prism makes
+    them by default (`pairs_pooled`)."""
     t = table.dropna()
     y = t.to_numpy(float)
     n, k = y.shape
@@ -496,7 +498,11 @@ def rm_oneway(table: pd.DataFrame, reference: str) -> dict:
     cols = list(t.columns)
     pairs = [(a, b) for i, a in enumerate(cols) for b in cols[i + 1:]]
     comps = {f"{a} vs {b}": min(1.0, stats.ttest_rel(t[a], t[b]).pvalue * len(pairs)) for a, b in pairs}
-    return {"n": n, "F": F, "df": (df_c, df_e), "p": stats.f.sf(F, df_c, df_e), "pairs": comps}
+    se = np.sqrt(2 * (ss_e / df_e) / n)
+    pooled = {f"{a} vs {b}": min(1.0, 2 * stats.t.sf(abs(t[b].mean() - t[a].mean()) / se, df_e) * len(pairs))
+              for a, b in pairs}
+    return {"n": n, "F": F, "df": (df_c, df_e), "p": stats.f.sf(F, df_c, df_e), "pairs": comps,
+            "pairs_pooled": pooled}
 
 
 # ---------------------------------------------------------------- histology

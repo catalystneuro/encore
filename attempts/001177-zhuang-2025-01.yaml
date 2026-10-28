@@ -38,7 +38,10 @@ outcomes:
     (medians 66.3, 58.4, 39.7%), so DLS and DMS are outside 50 +/- 5%. Kruskal-Wallis p = 3.4e-08; Dunn
     DLS against DMS p = 0.38, DLS against VS p < 0.0001, DMS against VS p = 0.0001, so the pattern holds.
     Normalized to all controls, DLS 60.5% and DMS 52.4% (DMS inside the tolerance), and DMS against VS
-    p = 0.052. The measured value is the mean of the DLS and DMS losses.
+    p = 0.052. The measured value is the mean of the DLS and DMS losses. Cohorts 3 and 4 have one control
+    mouse each; without them (40 mice) the losses are 65.7% and 58.1% and the pattern holds (DMS against
+    VS p = 0.0002). No mouse has sections in two cohorts, so which of the 45 mice the paper's 44 leaves
+    out cannot be told.
   deviations:
   - Normalization reference not given beyond 'normalized TH fluorescence levels' (Supplementary methods,
     Histology); the control mice of the same staining cohort are used, as the deposit README says each
@@ -67,19 +70,22 @@ outcomes:
     cohort before saline 51.0 s and on saline 62.3 s (n = 27). Kruskal-Wallis over the five columns p
     = 6.7e-15; Dunn control against parkinsonian p = 1.1e-15, before against PPX p = 1.8e-05, before against
     saline p = 0.83. Variant (Supplementary methods) Mann-Whitney p = 5e-13, Wilcoxon p = 3e-08 (PPX)
-    and 0.074 (saline).
+    and 0.074 (saline). With Dunn's correction over all ten pairs of the five columns, p = 3.8e-15, 6.0e-05
+    and 1.
   deviations:
   - The deposited columns are labelled Park_cohort1_baseline and Park_cohort1_PPX, Park_cohort2_baseline
     and Park_cohort2_Saline; the pre-drug sessions are the baseline columns, as the claim's criterion
     asks the author to read from the file.
-  - Dunn's comparisons are corrected for the three comparisons the criterion names; the workbook has 40
-    controls where Table 1 gives 31.
+  - Dunn's comparisons are corrected for the three comparisons the criterion names, with all ten pairs
+    as a variant; the workbook has 40 controls where Table 1 gives 31 and does not say which 31 were used,
+    so all 40 enter.
 - claim: figs1ef-ppx-locomotion
   outcome: blocked
   blocked_by: other
   notes: The Zenodo deposit holds open field velocity for the A77636 and CNO experiments only; no file
     holds the PPX open field sessions of Figure S1E-F, and the DANDI files hold no behaviour. Recorded
-    as a finding.
+    as a finding. The block reason is `other` and not `data_missing`, because the claims file marks the
+    claim `data elsewhere` and the protocol keeps `data_missing` for claims on the dataset.
 - claim: figs1-instrumental-learning
   outcome: partially_reproduced
   notebook: reproduce_zhuang_2025.ipynb
@@ -101,7 +107,10 @@ outcomes:
   notes: Reading (a), every deposited baseline session (16 control, 31 parkinsonian mice); group F(1,
     178) = 0.007, p = 0.93 (paper F(1, 180) = 0.003, p = 0.96); every per-delay Bonferroni p = 1. Reading
     (b), the stable-run rule, keeps 12 mice; group p = 0.11, per-delay p >= 0.45. Both readings find no
-    difference.
+    difference. Reading (b) is not a sample of the paper's cohort; mice have 1 to 5 baselines before the
+    first drug session (median 3), only 3 of 16 control and 9 of 31 parkinsonian mice pass, and these
+    discount little (control 95.4% at 0 s to 82.4% at 9 s, against 91.7% to 32.1% for every mouse), so
+    the outcome rests on reading (a).
   deviations:
   - Choices, omissions and latencies are recounted from the raw operant logs, as the paper's per-mouse
     spreadsheets are not deposited, with the event and block names of the paper's code (UCSF-Nelson-Lab/ICD-Cognitive-Analysis
@@ -121,7 +130,8 @@ outcomes:
   notes: Reading (a); delay F(3, 178) = 38.15, p = 4.3e-19 (paper F(3, 180) = 38.53); delayed/large choices
     fall from 91.7 to 32.1% (control) and 85.7 to 32.9% (parkinsonian) between 0 and 9 s. Reading (b),
     12 mice; the means fall (95.4 to 82.4%, 95.7 to 58.8%) but delay p = 0.11. The criterion is met under
-    reading (a).
+    reading (a). Reading (b) keeps the mice that discount least (see fig1fg-baseline-similar) and does not
+    bear on the claim.
   deviations: &id001
   - Choices, omissions and latencies are recounted from the raw operant logs, as the paper's per-mouse
     spreadsheets are not deposited, with the event and block names of the paper's code (UCSF-Nelson-Lab/ICD-Cognitive-Analysis
@@ -174,6 +184,10 @@ outcomes:
     PPX session, A and AUC fall (p = 0.012, 5.3e-05) and K does not change (p = 1). The same procedure
     reproduces the paper's A77636 values exactly (Dunn K p = 0.0053, AUC p = 0.0008), so the method matches
     the paper's; the paper's K result for PPX may come from the Friedman test (asked of the authors).
+    The Dunn p for K depends on which OFF sessions enter the ranks; over the four pairs of ON (four, first)
+    and OFF (every, first) readings it is 0.19, 0.23, 0.49 and 1, never significant. The repeated measures
+    ANOVA of Table 1 gives K an omnibus p = 0.028 and baseline against PPX p = 0.15 (paired) or 0.19 (pooled
+    error), so the printed p = 0.03 also matches that omnibus test.
   deviations:
   - Choices, omissions and latencies are recounted from the raw operant logs, as the paper's per-mouse
     spreadsheets are not deposited, with the event and block names of the paper's code (UCSF-Nelson-Lab/ICD-Cognitive-Analysis
@@ -188,13 +202,16 @@ outcomes:
   - Dunn's comparisons are those against baseline, corrected for two comparisons ('between baseline and
     PPX ON or OFF conditions', Supplementary methods, Behavior).
   - PPX OFF is every washout session of the mouse (the claims file gives no reading; Summary_Cognitive.m
-    averages a mouse's sessions within a condition), with the first OFF session as a variant.
+    averages a mouse's sessions within a condition), with the first OFF session as a variant; all four
+    ON and OFF pairs are run.
 - claim: figs2abc-sex-similar
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: No file of the deposit gives each mouse's sex. The README lists mice by experiment and group
     only, and the Key Resource Table names strains. The DANDI subjects have a sex, but they are the electrophysiology
-    mice, not the 31 delay discounting mice.
+    mice, not the 31 delay discounting mice. The notebook's data check searches the four READMEs and every
+    cell of KeyResourceTable_ICD.xlsx (one sheet, ICD_KRT, 49 rows by 6 columns) for sex, male or female
+    and finds none.
 - claim: figs2de-omissions-low
   outcome: reproduced
   notebook: reproduce_zhuang_2025.ipynb
@@ -244,11 +261,16 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_zhuang_2025.ipynb
   output: claim:figs2ijk-ppx-washout
+  assumed: true
   notes: Four PPX sessions and every washout session, 30 mice. Reading (a), Friedman with Dunn's; A after
     washout 0.879 against 0.891 at baseline (p = 0.73), K 0.419 against 0.258 (p = 0.020), AUC 3.38 against
-    3.95 (p = 0.078). Reading (b), repeated measures ANOVA with Bonferroni; A p = 1, K p = 0.063, AUC
-    p = 0.039; ON against OFF A p = 3e-05, K p = 1, AUC p = 0.0011 (Table 1 gives < 0.0001, > 0.99, 0.0019).
-    A recovers and both K and AUC stay on the PPX side of baseline, but neither reading makes both significant.
+    3.95 (p = 0.078). Reading (b), repeated measures ANOVA with Bonferroni comparisons by paired t tests;
+    A p = 1, K p = 0.063, AUC p = 0.039; ON against OFF A p = 3e-05, K p = 1, AUC p = 0.0011 (Table 1 gives
+    < 0.0001, > 0.99, 0.0019). With the Bonferroni comparisons on the ANOVA's pooled error, all three parts
+    hold (A p = 1, K p = 0.028, AUC p = 0.0072; ON against OFF A p = 5e-06, K p = 1, AUC p = 0.0051). The
+    paired comparisons are adopted, so A recovers and both K and AUC stay on the PPX side of baseline but
+    no test makes both significant; the outcome rests on that choice. With the first OFF or the first ON
+    session, no test gives both K and AUC.
   deviations:
   - Choices, omissions and latencies are recounted from the raw operant logs, as the paper's per-mouse
     spreadsheets are not deposited, with the event and block names of the paper's code (UCSF-Nelson-Lab/ICD-Cognitive-Analysis
@@ -261,7 +283,13 @@ outcomes:
     measured reward delays agree), and 30 of their sessions have no fourth block; their blocks are counted
     as the other mice's, as the paper's code does.
   - PPX OFF is every washout session of the mouse; with the first ON and first OFF session none of the
-    three differs from baseline (A p = 1, K p = 0.59, AUC p = 0.38).
+    three differs from baseline (A p = 1, K p = 0.59, AUC p = 0.38). All four ON and OFF pairs are run.
+  - Reading (b) does not say how the Bonferroni comparisons are made. GraphPad Prism 10, which the paper
+    used ('Statistical tests were performed using GraphPad Prism 10', Methods, Statistical analysis),
+    makes them on the pooled error when sphericity is assumed and by paired comparisons when
+    it is not, and its guide recommends not assuming sphericity for repeated measurements over time. The
+    paired comparisons are adopted (an assumption); the pooled-error comparisons are shown and would make
+    the claim reproduced. Asked of the authors.
 - claim: fig2bc-a77636-locomotion
   outcome: reproduced
   notebook: reproduce_zhuang_2025.ipynb
@@ -270,7 +298,8 @@ outcomes:
   notes: 26 files. The 10 control mice are not faster 30 to 100 min after A77636 (median 3.19 to 2.90
     cm/s, Wilcoxon p = 0.065; paper p = 0.16); the other 16 are (3.14 to 3.69 cm/s, 13 of 16 faster, p
     = 0.016; paper p = 0.02). Six of these 16 (O6, R0, R1, R3.2, R5.3, R6) are in neither A77636 list
-    of the README.
+    of the README; the 10 mice on the README's parkinsonian list alone are also faster (3.25 to 3.69 cm/s,
+    9 of 10, p = 0.014).
   deviations:
   - The files hold time and velocity without an injection mark. Injection is assumed at 20 min after the
     start, where 25 of 26 files have a short run of untracked frames (20.0 to 20.3 min), consistent with
@@ -325,7 +354,8 @@ outcomes:
     p = 0.043 each). No per-delay center or side omission comparison is significant (smallest p = 0.65).
     The reward size effect on latency is present at baseline (F(1, 52) = 14.70, p = 0.0003; paper F(1,
     52) = 11.70, p = 0.0012) and also on A77636 (F(1, 56) = 4.84, p = 0.032; paper p = 0.07), where the
-    criterion requires p >= 0.05.
+    criterion requires p >= 0.05. The K and AUC results hold under all four ON and OFF pairs (ON against
+    OFF Dunn p >= 0.65).
   deviations: *id001
 - claim: fig3a-a-correlates-dms
   outcome: not_reproduced
@@ -334,7 +364,11 @@ outcomes:
   measured: 0.32
   notes: A on PPX (four sessions) against normalized DMS TH in the 24 parkinsonian mice with both measures
     (paper 28); r = 0.32, p = 0.13, outside 0.51 +/- 0.051. DLS r = 0.23 (p = 0.29) and VS r = 0.28 (p
-    = 0.18). Normalized to all controls, DMS r = 0.14 (p = 0.52).
+    = 0.18). Normalized to all controls, DMS r = 0.14 (p = 0.52). With the first PPX session, r = 0.08
+    (p = 0.71) per cohort and 0.07 (p = 0.75) with all controls, so no reading reproduces. Of the 30 PPX
+    mice, six have no histology (C3.1, E3.3, E4, H4.1, N1, N5.1); E6 has histology but no PPX session;
+    two histology mice (E3, E3.2) are in no README list. E3.3 and E3 or E3.2 may be one mouse under two
+    names, but nothing in the deposit links them, so the join uses exact identifiers.
   deviations:
   - Choices, omissions and latencies are recounted from the raw operant logs, as the paper's per-mouse
     spreadsheets are not deposited, with the event and block names of the paper's code (UCSF-Nelson-Lab/ICD-Cognitive-Analysis
@@ -353,14 +387,16 @@ outcomes:
   notebook: reproduce_zhuang_2025.ipynb
   output: claim:fig3b-k-no-correlation
   notes: K on PPX against TH, n = 24; DMS r = 0.03 (p = 0.89), DLS r = 0.40 (p = 0.056), VS r = 0.32 (p
-    = 0.13). With all controls as reference, p = 0.70, 0.060, 0.068. None is significant.
+    = 0.13). With all controls as reference, p = 0.70, 0.060, 0.068. With the first PPX session, every
+    p >= 0.32. None is significant.
   deviations: *id001
 - claim: figs4-a77636-no-correlation
   outcome: reproduced
   notebook: reproduce_zhuang_2025.ipynb
   output: claim:figs4-a77636-no-correlation
   notes: A and K on A77636 against TH in 16 mice; all six p >= 0.24, the smallest K against VS (r = -0.31,
-    p = 0.24; paper r = -0.31, p = 0.23).
+    p = 0.24; paper r = -0.31, p = 0.23). With the first A77636 session the smallest is p = 0.071 (K against
+    VS, r = -0.46). All 16 mice are in one staining cohort, so the two normalizations give the same r.
   deviations: *id001
 - claim: figs6-dreadd-validation
   outcome: reproduced
@@ -380,12 +416,21 @@ outcomes:
   assumed: true
   notes: hM3Dq mice move faster 20 to 30 min after CNO (median 2.20 to 4.35 cm/s, 11 of 11, Wilcoxon p
     = 0.001) and hM4Di mice too (3.83 to 6.13 cm/s, 9 of 10, p = 0.004); mCherry mice move slower (2.96
-    to 2.23 cm/s, 1 of 12 faster, p = 0.016), where the criterion needs p >= 0.05. Four files (R0, F0,
-    F3, R1.2) are of mice in no DREADD list and are left out.
+    to 2.23 cm/s, 1 of 12 faster, p = 0.016), where the criterion needs p >= 0.05. H0 and H0.4 have identical
+    velocity traces (one recording deposited twice); without H0.4, hM4Di gives p = 0.008 (8 of 9). Twelve
+    files (the 2023 H and J mice, 7 hM4Di and 5 mCherry) have no tracking gap near 20 min, and their per-minute
+    velocity from 15 to 25 min does not mark an injection. In the 21 files of listed mice with a gap at 19.5 to 21 min,
+    mCherry mice are slower in 6 of 7 but not significantly (p = 0.16 with injection at 20 min, 0.22 with
+    injection at the gap), and only 3 hM4Di files remain (p = 0.5; a signed-rank test on 3 cannot go below
+    0.25), so that subset cannot test the claim. The outcome is the one under injection at 20 min in every
+    file. Four files (R0, F0, F3, R1.2) are of mice in no DREADD list and are left out.
   deviations:
-  - Injection is assumed at 20 min after the start of each file, as in fig2bc-a77636-locomotion; most
-    2023 files (H mice) have no tracking gap near 20 min, so for them the time rests on the assumption
-    alone.
+  - Injection is assumed at 20 min after the start of each file, as in fig2bc-a77636-locomotion, which
+    the Supplementary methods' '-20 to 0 min' baseline before CNO supports; twelve files (H and J mice) have
+    no tracking gap near 20 min, so for them the time rests on the assumption alone. The files with a gap,
+    with injection at 20 min or at the gap, are shown as variants.
+  - H0.4's file duplicates H0's; both are kept in the main test, as the README lists both mice, and the
+    result without H0.4 is shown.
 - claim: fig5g-mcherry-no-change
   outcome: reproduced
   notebook: reproduce_zhuang_2025.ipynb
@@ -416,16 +461,17 @@ outcomes:
     only (p = 0.022; 6 s p = 0.38, 9 s p = 0.62). The criterion's partial case holds (one group).
   deviations: *id001
 - claim: fig5jl-dreadd-params
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_zhuang_2025.ipynb
   output: claim:fig5jl-dreadd-params
   notes: Reading (a), Wilcoxon (Table 1). hM3Dq; A 0.923 to 0.880 (p = 0.012), K 0.133 to 0.198 (p = 0.0015),
     AUC 5.10 to 4.31 (p = 0.0005). hM4Di; A unchanged (p = 0.20), AUC 6.08 to 5.78 (p = 0.043), K 0.123
-    to 0.136 (7 of 12 higher, p = 0.20). mCherry; no change (p >= 0.36). Reading (b), Friedman, reduces
-    to a sign test with two conditions and finds fewer effects (hM4Di AUC p = 0.15). Eight of the nine
-    parts hold under reading (a); the K rise in hM4Di does not. The criterion names a partial outcome
-    for K and AUC holding with the A pattern failing; it does not name this case, and the outcome is recorded
-    as partial because the effects hold in part.
+    to 0.136 (7 of 12 higher, p = 0.20; paper p = 0.02). mCherry; no change (p >= 0.36). Reading (b), Friedman,
+    reduces to a sign test with two conditions and finds fewer effects (hM4Di AUC p = 0.15). Eight of the
+    nine parts hold under reading (a); the K rise in hM4Di does not. The criterion is reproduced when all
+    hold and partially reproduced when the K and AUC results hold but the A pattern does not; here the
+    A pattern holds and a K result fails, so by its wording the claim is not reproduced, narrowly. Changed
+    from partially reproduced after verification round 1.
   deviations: *id001
 - claim: fig6b-ctrl-ppx-stable
   outcome: reproduced
@@ -644,13 +690,27 @@ findings:
     block, the Methods 20. The paper's code counts them with the others.
 - kind: other
   statement: 233 operant logs are byte-identical between the PPX and DREADD folders of the cognitive assay
-    zip, and 75 between the A77636 and DREADD folders; they are the baseline sessions of mice used in
-    two experiments, deposited twice.
+    zip, and 75 between the A77636 and DREADD folders; they are the training logs and baseline sessions
+    of mice used in two experiments, deposited twice. No drug or washout session is shared.
 - kind: metadata_error
   statement: In the Zenodo workbook Data_ICD_FigS1_SNcTH_CellCounting_RawImages.xlsx, the Figure S1K&L
     sheet labels two blocks 'Session1_Park' (rows 35 and 118), the second presumably session 2 control,
     and two rows of the Figure S1D sheet (D3 and N4 at -3.51 mm) have their count and area columns shifted.
     The rotarod workbook has 40 control mice where Table 1 gives 31.
+- kind: paper_inconsistency
+  statement: The Figure S6C legend and Table 1 give p < 0.01 for the CNO reduction of oIPSC amplitude by Wilcoxon
+    signed-rank test in 6 cells, but a two-sided exact signed-rank test on 6 pairs cannot give less than
+    p = 0.031, which is what the deposited values give.
+- kind: other
+  statement: In the CNO open field zip of the Zenodo deposit, the files of mice H0 and H0.4 (H0_openField_CNO_061523.xlsx
+    and H0.4_openField_CNO_061523.xlsx) hold identical velocity traces, one recording deposited under two
+    mice. Twelve of the CNO files (2023 H and J mice) have no tracking gap near 20 min, so nothing in them
+    marks the injection.
+- kind: identifier_missing
+  statement: Six of the 30 PPX parkinsonian mice with delay discounting sessions (C3.1, E3.3, E4, H4.1,
+    N1, N5.1) have no entry in the striatal histology workbook, and two parkinsonian histology mice (E3,
+    E3.2) are in no README list, so 24 mice can be matched for Figure 3 where the paper has 28. Whether
+    E3.3 is E3 or E3.2 under another name cannot be told from the deposit.
 - kind: methods_unavailable
   statement: Questions for the authors. (1) When was the drug injected in each open field file (A77636
     and CNO)? This attempt assumed 20 min after the start, where most files lose tracking briefly. (2)
@@ -658,3 +718,379 @@ findings:
     loss is 56.8% one way and 52.4% the other. (3) Which test gives p = 0.03 for the PPX effect on K in
     Figure 1J? Dunn's comparison of baseline against PPX ON gives p = 0.19 here, the Friedman test over
     three conditions p = 0.032, while the same procedure reproduces the A77636 Dunn's p-values exactly.
+    (4) Were the Bonferroni comparisons after the repeated measures one-way ANOVA of Figure S2I-K made
+    on the pooled error (sphericity assumed) or by paired comparisons? With the pooled error, K and AUC
+    differ from baseline after washout (p = 0.028 and 0.0072); with paired comparisons K does not (p =
+    0.063).
+verifications:
+- date: '2026-10-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusions and summary removed,
+    the helper module and the claims file, with the paper under paper/. The verifier also queried the DANDI
+    API for the assets' metadata.
+  results:
+  - claim: fig1b-th-loss
+    agrees: true
+    outcome: partially_reproduced
+    reason: Per-cohort normalisation, DLS and DMS do not differ (Dunn p = 0.38) and VS is less depleted than
+      both (p < 0.001), but the losses are 64.3% and 56.8%, outside 50 +/- 5. With all-controls normalisation
+      DMS is 52.4% but DLS is 60.5% and DMS vs VS gives p = 0.052. Cell 43 has 45 parkinsonian mice where the
+      paper has 44, and cohorts 3 and 4 have a single control each for the per-cohort normalisation (does not
+      affect a conclusion).
+    response: No change of outcome. The notebook now prints the cohorts with one control and the result without
+      them (losses 65.7% and 58.1%, pattern holds), and says no mouse has sections in two cohorts, so the extra
+      mouse cannot be identified.
+  - claim: figs1d-snc-cells
+    agrees: true
+    outcome: reproduced
+    reason: Control median 316, parkinsonian 187 cells/mm2, Mann-Whitney p = 0.00026 (n = 9 and 20). It stays
+      below 0.002 whichever group the 3 unlinked mice are put in.
+    response: No change of outcome.
+  - claim: fig1c-rotarod
+    agrees: true
+    outcome: reproduced
+    reason: Dunn control vs parkinsonian baseline p = 1e-15, baseline vs PPX p = 1.8e-5, baseline vs saline
+      p = 0.83. Cell 47 uses 40 controls where the paper has 31 and applies Dunn's correction over 3 chosen
+      pairs; neither is commented on, and the conclusions survive correction over all 10 pairs (does not affect
+      a conclusion).
+    response: No change of outcome. Dunn's correction over all ten pairs is printed (p = 3.8e-15, 6.0e-05 and
+      1), and the notes and conclusion say the workbook does not name the paper's 31 controls, so all 40 enter.
+  - claim: figs1ef-ppx-locomotion
+    agrees: true
+    outcome: blocked
+    reason: The Zenodo file list has no PPX open-field file. The DANDI files have no position or velocity data
+      (processing holds only ecephys/LFP). I agree.
+    response: No change. The verifier gives the reason as data_missing; it stays `other`, as the claim is data
+      elsewhere and the protocol keeps data_missing for claims on the dataset. The notes say so.
+  - claim: figs1-instrumental-learning
+    agrees: true
+    outcome: partially_reproduced
+    reason: Blocked phase, success is lower in parkinsonian mice in sessions 1, 3 and 4 and latency is slower
+      in sessions 3 to 6, as required. Random phase, session 1 success differs, p_bonf = 0.003, where the criterion
+      requires no difference. The instrumental-learning columns used (13/14 and 5/8) could not be checked without
+      their header cells.
+    response: No change of outcome. The cell now prints the header cells of the columns read ('% of TOTAL successful
+      trials', 'TOTAL Latency to Trigger (s)', '% of succesful trials', 'CenterTriggerLatency (s)').
+  - claim: fig1fg-baseline-similar
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a), group F(1,178) = 0.0071, p = 0.93 (paper F = 0.0031, p = 0.955), and every per-delay
+      p = 1. Reading (b) also gives p >= 0.05. In reading (b) 35 of 47 mice have no stable run; the rest are
+      3 controls and 9 parkinsonian mice whose curves barely fall, so the reading selects mice that discount
+      little, not the paper's cohort (does not affect a conclusion).
+    response: No change of outcome. A new cell prints, per mouse, the baseline sessions before the first drug
+      session and the per-block CVs of its best 3- and 2-session windows; the conclusion and notes now say
+      reading (b) selects mice that discount little and the outcome rests on reading (a).
+  - claim: fig1fg-delay-discounting
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a), delay F(3,178) = 38.15 (paper 38.53), p = 4e-19. Control goes from 91.7% to 32.1%
+      and parkinsonian from 85.7% to 32.9%. Reading (b) gives p = 0.11, but it is not a usable sample.
+    response: No change of outcome. The conclusion and notes say reading (b) does not bear on the claim.
+  - claim: fig1f-ctrl-ppx-no-change
+    agrees: true
+    outcome: reproduced
+    reason: The PPX effect p >= 0.10 and every per-delay p >= 0.21 under all four readings.
+    response: No change of outcome.
+  - claim: fig1g-park-ppx-fewer-large
+    agrees: true
+    outcome: reproduced
+    reason: Baseline all with PPX four, F(1,116) = 91.5 (paper 95.5). Pooled Bonferroni p is < 0.0001 at 0,
+      3 and 6 s and 0.022 at 9 s. The first reading is partial (6 s and 9 s not significant).
+    response: No change of outcome.
+  - claim: fig1ijk-ppx-a-k-auc
+    agrees: true
+    outcome: partially_reproduced
+    reason: ON four, A is lower (Dunn p = 2e-6) and AUC is lower (p = 3e-8). K is higher but not significant
+      (Dunn p = 0.19; ON first gives p = 1). The Friedman omnibus for K (p = 0.032) matches the paper's 0.03,
+      so the paper may have reported the omnibus p. friedman_block runs only the pairs (ON four, OFF all) and
+      (ON first, OFF first); Friedman ranks, and so the Dunn baseline-vs-ON p, depend on which OFF sessions
+      enter, and K could change.
+    response: No change of outcome. All four ON and OFF pairs are now run; the Dunn p for K is 0.19, 0.23,
+      0.49 and 1, never significant. The repeated measures ANOVA also gives K an omnibus p = 0.028, noted.
+  - claim: figs2abc-sex-similar
+    agrees: true
+    outcome: blocked
+    reason: Accepted, but not verified; the notebook does not show that KeyResourceTable_ICD.xlsx or the README
+      were searched for sex.
+    response: No change of outcome. A data check cell now lists the sheet and columns of KeyResourceTable_ICD.xlsx
+      and searches it and the four READMEs for sex, male or female; none is found.
+  - claim: figs2de-omissions-low
+    agrees: true
+    outcome: reproduced
+    reason: In parkinsonian mice only the 6 s centre-omission comparison is significant (p < 0.0001). No side-omission
+      or control comparison is. Mean rates are 1.6% to 9.4%.
+    response: No change of outcome.
+  - claim: figs2gh-ppx-latency
+    agrees: true
+    outcome: partially_reproduced
+    reason: Reward size modulates latency at baseline (p = 0.023) and not on PPX (p = 0.71 for four sessions,
+      0.19 for the first). The PPX effect on small-reward latency fails, p = 0.093 (four) and 0.15 (first).
+      Log parsing ('cen tri' taken as the side-cue onset) could not be checked without an annotated event sequence
+      for one session.
+    response: No change of outcome. A data check cell now prints one block of one session's events with what
+      the parser makes of each, and the derived counts and latencies.
+  - claim: figs2ijk-ppx-washout
+    agrees: true
+    outcome: partially_reproduced
+    reason: A returns to baseline under both tests. No single test gives both K and AUC persisting; Dunn's
+      gives K p = 0.020 but AUC p = 0.078, the repeated-measures ANOVA gives AUC p = 0.039 but K p = 0.063.
+      icd.rm_oneway makes its Bonferroni comparisons with separate paired t tests; the pooled-error comparison
+      Prism offers was not run, and K p = 0.063 is close enough that the choice could change the result. Only
+      two ON/OFF pairs were run.
+    response: No change of outcome; marked as resting on an assumption. rm_oneway now also gives the pooled-error
+      comparisons, and all four ON/OFF pairs are run. With the pooled error all three parts hold (A p = 1,
+      K p = 0.028, AUC p = 0.0072), so the outcome depends on the choice. Prism uses the pooled error only
+      when sphericity is assumed and its guide recommends not assuming it for repeated measurements over time,
+      so the paired comparisons are kept as the assumption; recorded as a deviation and asked of the authors.
+  - claim: fig2bc-a77636-locomotion
+    agrees: true
+    outcome: reproduced
+    reason: Only the -20 to 0 min baseline exists in the files; controls p = 0.065, parkinsonian mice faster,
+      p = 0.016. Using only the 10 parkinsonian mice on the README list gives p = 0.020 (the verifier's recomputation
+      from the printed table). Cell 57 counts all 16 non-control open-field mice as parkinsonian, including
+      6 in neither README list (does not affect a conclusion).
+    response: No change of outcome. The notebook now tests the 10 listed mice alone (9 of 10 faster, p = 0.014).
+  - claim: fig2d-ctrl-a77636-no-change
+    agrees: true
+    outcome: reproduced
+    reason: The A77636 effect p >= 0.31 and every per-delay p >= 0.71 under all readings.
+    response: No change of outcome.
+  - claim: fig2e-park-a77636-fewer-large
+    agrees: true
+    outcome: reproduced
+    reason: Baseline all with ON four, F(1,60) = 45.06 (paper 45.68). Per delay, 0 s p = 0.56, 3 s p = 0.0049,
+      6 s p = 0.0003, 9 s p = 0.0003, close to the paper's printed values.
+    response: No change of outcome.
+  - claim: fig2fgh-a77636-k-auc
+    agrees: true
+    outcome: reproduced
+    reason: ON four, A Friedman p = 0.31, K Dunn p = 0.0053 (higher), AUC Dunn p = 0.0008 (lower). All three
+      match the paper.
+    response: No change of outcome. All four ON/OFF pairs are now shown; the ON four reading is unchanged.
+  - claim: figs3-a77636-washout-latency
+    agrees: true
+    outcome: partially_reproduced
+    reason: K and AUC do not differ between OFF and ON and stay on the ON side of baseline. No omission comparison
+      is significant. Baseline reward-size effect p = 0.0003. But the reward-size effect on A77636 is p = 0.032,
+      where the criterion requires p >= 0.05 (paper p = 0.07).
+    response: No change of outcome. The K and AUC results now shown for all four ON/OFF pairs hold in each.
+  - claim: fig3a-a-correlates-dms
+    agrees: true
+    outcome: not_reproduced
+    reason: A vs DMS TH gives r = 0.32, p = 0.13 with n = 24 (paper r = 0.51 with n = 28; tolerance 0.46 to
+      0.56). Only the ON-four reading was run; the claims file lists both ON readings for the fig1ijk dependency.
+      The join keeps 24 of the paper's 28 mice, and the dropped IDs are never listed, so an ID mismatch cannot
+      be ruled out.
+    response: No change of outcome. corr_block now runs both ON readings (first gives r = 0.08, p = 0.71) and
+      lists the PPX mice without histology (C3.1, E3.3, E4, H4.1, N1, N5.1), the listed mouse without a PPX
+      session (E6) and the histology mice in no list (E3, E3.2). A possible E3.3 and E3 or E3.2 mismatch cannot
+      be resolved from the deposit; recorded as an identifier_missing finding.
+  - claim: fig3b-k-no-correlation
+    agrees: true
+    outcome: reproduced
+    reason: All six p >= 0.055.
+    response: No change of outcome. With the first PPX session every p >= 0.32.
+  - claim: figs4-a77636-no-correlation
+    agrees: true
+    outcome: reproduced
+    reason: All six p >= 0.235; the smallest is K vs VS, r = -0.31, which matches the paper.
+    response: No change of outcome. With the first A77636 session the smallest p is 0.071.
+  - claim: figs6-dreadd-validation
+    agrees: true
+    outcome: reproduced
+    reason: oIPSC Wilcoxon p = 0.031 (lower after CNO); firing at 300 pA p = 0.016 (higher); input-output F(1,32)
+      = 17.64, p = 0.0002, the same F as the paper. One paper inconsistency; the oIPSC p < 0.01 cannot come
+      from a two-sided exact signed-rank test on 6 cells, whose minimum p is 0.031.
+    response: No change of outcome. Recorded as a paper_inconsistency finding.
+  - claim: fig5cf-cno-locomotion
+    agrees: true
+    outcome: partially_reproduced
+    reason: hM3Dq mice are faster (p = 0.001) and hM4Di mice are faster (p = 0.004). mCherry mice did not speed
+      up, but they were significantly slower (p = 0.016, 11 of 12 slower), so the criterion's p >= 0.05 fails.
+      This rests on an unchecked injection time; 12 files have no tracking gap near 20 min (H and J cohorts,
+      including 5 of 12 mCherry mice), and 2 more have gaps at 17.7 and 18.5 min. H0 and H0.4 have identical
+      rows, so one recording is probably counted twice; without it hM4Di still gives p = 0.008.
+    response: No change of outcome. The notebook now prints per-minute velocity from 15 to 25 min for the 12
+      files without a gap, finds H0 and H0.4 identical by hash (p = 0.008 without H0.4), and tests the files
+      with a gap at 19.5 to 21 min, with injection at 20 min or at the gap; there mCherry is slower in 6 of
+      7 but not significant (p = 0.16, 0.22), and only 3 hM4Di files remain, too few to test. The outcome stays
+      the one under the 20 min assumption, which the Methods' -20 to 0 min CNO baseline supports; the duplicate
+      is recorded as a finding.
+  - claim: fig5g-mcherry-no-change
+    agrees: true
+    outcome: reproduced
+    reason: CNO effect p = 0.34 and every per-delay p = 1, under both baseline readings (n = 14).
+    response: No change of outcome.
+  - claim: fig5hi-dreadd-fewer-large
+    agrees: true
+    outcome: partially_reproduced
+    reason: Baseline all, hM3Dq fully holds (main effect p = 9e-8; 3, 6 and 9 s all p < 0.05). hM4Di main effect
+      p = 0.0009 but only 3 s is significant (6 s p = 0.38, 9 s p = 0.62). The criterion's partial clause applies.
+    response: No change of outcome.
+  - claim: fig5jl-dreadd-params
+    agrees: false
+    outcome: not_reproduced
+    reason: hM4Di K is not higher (Wilcoxon p = 0.20; sign test 0.77). Every other component holds. The criterion's
+      partial clause needs the K and AUC results to hold, so by its wording this is not reproduced, though
+      narrowly.
+    response: Outcome changed from partially reproduced to not reproduced, as the criterion decides the outcome
+      and its partial case does not apply. Conclusion, notes and summary updated.
+  - claim: fig6b-ctrl-ppx-stable
+    agrees: true
+    outcome: reproduced
+    reason: Baseline vs first p = 0.46, baseline vs fourth p = 0.75, first vs fourth p = 1.
+    response: No change of outcome.
+  - claim: fig6c-park-ppx-progressive
+    agrees: true
+    outcome: reproduced
+    reason: First vs fourth p = 0.024 (fewer delayed/large choices in the fourth); baseline vs first and vs
+      fourth p < 0.001. This uses comparisons pooled over delays; no single delay is significant.
+    response: No change of outcome.
+  - claim: fig6de-a77636-persistent
+    agrees: true
+    outcome: reproduced
+    reason: In parkinsonian mice baseline vs first p = 0.0004, vs fourth p < 0.0001, first vs fourth p = 1.
+      In controls every p >= 0.31.
+    response: No change of outcome.
+  - claim: fig4bc-baseline-rates-similar
+    agrees: true
+    outcome: blocked
+    reason: 54 of 56 assets hold only SpikeEventSeries (unsorted threshold crossings) plus raw data and LFP.
+      Two have Units, holding only spike_times and unit_name; E0 day 4 (parkinsonian, 4th session) and P4 day
+      1 (control). No asset has stimulus or optogenetics data, and none has an injection mark. Two sessions
+      from different groups, with no MSN class, no optical label and no injection time, cannot form any claim's
+      unit pool.
+    response: No change of outcome. A data check cell now prints the unit_name values of the two files; they
+      are the integers 0 to n-1.
+  - claim: fig4de-ctrl-immediate-suppression
+    agrees: true
+    outcome: blocked
+    reason: 54 of 56 assets hold only SpikeEventSeries (unsorted threshold crossings) plus raw data and LFP.
+      Two have Units, holding only spike_times and unit_name; E0 day 4 (parkinsonian, 4th session) and P4 day
+      1 (control). No asset has stimulus or optogenetics data, and none has an injection mark. Two sessions
+      from different groups, with no MSN class, no optical label and no injection time, cannot form any claim's
+      unit pool.
+    response: No change of outcome. A data check cell now prints the unit_name values of the two files; they
+      are the integers 0 to n-1.
+  - claim: fig4de-ctrl-no-change-4-5h
+    agrees: true
+    outcome: blocked
+    reason: 54 of 56 assets hold only SpikeEventSeries (unsorted threshold crossings) plus raw data and LFP.
+      Two have Units, holding only spike_times and unit_name; E0 day 4 (parkinsonian, 4th session) and P4 day
+      1 (control). No asset has stimulus or optogenetics data, and none has an injection mark. Two sessions
+      from different groups, with no MSN class, no optical label and no injection time, cannot form any claim's
+      unit pool.
+    response: No change of outcome. A data check cell now prints the unit_name values of the two files; they
+      are the integers 0 to n-1.
+  - claim: fig4f-park-dmsn-increase
+    agrees: true
+    outcome: blocked
+    reason: 54 of 56 assets hold only SpikeEventSeries (unsorted threshold crossings) plus raw data and LFP.
+      Two have Units, holding only spike_times and unit_name; E0 day 4 (parkinsonian, 4th session) and P4 day
+      1 (control). No asset has stimulus or optogenetics data, and none has an injection mark. Two sessions
+      from different groups, with no MSN class, no optical label and no injection time, cannot form any claim's
+      unit pool.
+    response: No change of outcome. A data check cell now prints the unit_name values of the two files; they
+      are the integers 0 to n-1.
+  - claim: fig4g-park-imsn-decrease
+    agrees: true
+    outcome: blocked
+    reason: 54 of 56 assets hold only SpikeEventSeries (unsorted threshold crossings) plus raw data and LFP.
+      Two have Units, holding only spike_times and unit_name; E0 day 4 (parkinsonian, 4th session) and P4 day
+      1 (control). No asset has stimulus or optogenetics data, and none has an injection mark. Two sessions
+      from different groups, with no MSN class, no optical label and no injection time, cannot form any claim's
+      unit pool.
+    response: No change of outcome. A data check cell now prints the unit_name values of the two files; they
+      are the integers 0 to n-1.
+  - claim: fig4-insets-response-types
+    agrees: true
+    outcome: blocked
+    reason: 54 of 56 assets hold only SpikeEventSeries (unsorted threshold crossings) plus raw data and LFP.
+      Two have Units, holding only spike_times and unit_name; E0 day 4 (parkinsonian, 4th session) and P4 day
+      1 (control). No asset has stimulus or optogenetics data, and none has an injection mark. Two sessions
+      from different groups, with no MSN class, no optical label and no injection time, cannot form any claim's
+      unit pool.
+    response: No change of outcome. A data check cell now prints the unit_name values of the two files; they
+      are the integers 0 to n-1.
+  - claim: fig4hk-modulation-more-marked
+    agrees: true
+    outcome: blocked
+    reason: 54 of 56 assets hold only SpikeEventSeries (unsorted threshold crossings) plus raw data and LFP.
+      Two have Units, holding only spike_times and unit_name; E0 day 4 (parkinsonian, 4th session) and P4 day
+      1 (control). No asset has stimulus or optogenetics data, and none has an injection mark. Two sessions
+      from different groups, with no MSN class, no optical label and no injection time, cannot form any claim's
+      unit pool.
+    response: No change of outcome. A data check cell now prints the unit_name values of the two files; they
+      are the integers 0 to n-1.
+  - claim: figs5abcd-putative-msns
+    agrees: true
+    outcome: blocked
+    reason: 54 of 56 assets hold only SpikeEventSeries (unsorted threshold crossings) plus raw data and LFP.
+      Two have Units, holding only spike_times and unit_name; E0 day 4 (parkinsonian, 4th session) and P4 day
+      1 (control). No asset has stimulus or optogenetics data, and none has an injection mark. Two sessions
+      from different groups, with no MSN class, no optical label and no injection time, cannot form any claim's
+      unit pool.
+    response: No change of outcome. A data check cell now prints the unit_name values of the two files; they
+      are the integers 0 to n-1.
+  - claim: figs5ef-saline-no-change
+    agrees: true
+    outcome: blocked
+    reason: 54 of 56 assets hold only SpikeEventSeries (unsorted threshold crossings) plus raw data and LFP.
+      Two have Units, holding only spike_times and unit_name; E0 day 4 (parkinsonian, 4th session) and P4 day
+      1 (control). No asset has stimulus or optogenetics data, and none has an injection mark. Two sessions
+      from different groups, with no MSN class, no optical label and no injection time, cannot form any claim's
+      unit pool.
+    response: No change of outcome. A data check cell now prints the unit_name values of the two files; they
+      are the integers 0 to n-1.
+  - claim: fig6f-ctrl-types-stable
+    agrees: true
+    outcome: blocked
+    reason: 54 of 56 assets hold only SpikeEventSeries (unsorted threshold crossings) plus raw data and LFP.
+      Two have Units, holding only spike_times and unit_name; E0 day 4 (parkinsonian, 4th session) and P4 day
+      1 (control). No asset has stimulus or optogenetics data, and none has an injection mark. Two sessions
+      from different groups, with no MSN class, no optical label and no injection time, cannot form any claim's
+      unit pool.
+    response: No change of outcome. A data check cell now prints the unit_name values of the two files; they
+      are the integers 0 to n-1.
+  - claim: fig6g-park-types-shift
+    agrees: true
+    outcome: blocked
+    reason: 54 of 56 assets hold only SpikeEventSeries (unsorted threshold crossings) plus raw data and LFP.
+      Two have Units, holding only spike_times and unit_name; E0 day 4 (parkinsonian, 4th session) and P4 day
+      1 (control). No asset has stimulus or optogenetics data, and none has an injection mark. Two sessions
+      from different groups, with no MSN class, no optical label and no injection time, cannot form any claim's
+      unit pool.
+    response: No change of outcome. A data check cell now prints the unit_name values of the two files; they
+      are the integers 0 to n-1.
+  - claim: figs8-session-trend
+    agrees: true
+    outcome: blocked
+    reason: 54 of 56 assets hold only SpikeEventSeries (unsorted threshold crossings) plus raw data and LFP.
+      Two have Units, holding only spike_times and unit_name; E0 day 4 (parkinsonian, 4th session) and P4 day
+      1 (control). No asset has stimulus or optogenetics data, and none has an injection mark. Two sessions
+      from different groups, with no MSN class, no optical label and no injection time, cannot form any claim's
+      unit pool.
+    response: No change of outcome. A data check cell now prints the unit_name values of the two files; they
+      are the integers 0 to n-1.
+  - claim: fig6h-increase-type-larger
+    agrees: true
+    outcome: blocked
+    reason: 54 of 56 assets hold only SpikeEventSeries (unsorted threshold crossings) plus raw data and LFP.
+      Two have Units, holding only spike_times and unit_name; E0 day 4 (parkinsonian, 4th session) and P4 day
+      1 (control). No asset has stimulus or optogenetics data, and none has an injection mark. Two sessions
+      from different groups, with no MSN class, no optical label and no injection time, cannot form any claim's
+      unit pool.
+    response: No change of outcome. A data check cell now prints the unit_name values of the two files; they
+      are the integers 0 to n-1.
+  - claim: fig6i-decrease-type-similar
+    agrees: true
+    outcome: blocked
+    reason: 54 of 56 assets hold only SpikeEventSeries (unsorted threshold crossings) plus raw data and LFP.
+      Two have Units, holding only spike_times and unit_name; E0 day 4 (parkinsonian, 4th session) and P4 day
+      1 (control). No asset has stimulus or optogenetics data, and none has an injection mark. Two sessions
+      from different groups, with no MSN class, no optical label and no injection time, cannot form any claim's
+      unit pool.
+    response: No change of outcome. A data check cell now prints the unit_name values of the two files; they
+      are the integers 0 to n-1.
