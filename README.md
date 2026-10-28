@@ -134,4 +134,6 @@ Notebooks stream their data from the archive and must compute every result
 from it: `check` rejects embedded data, embedded images and figures read from
 files. CI runs `check` on every entry and `run` on the entries a change touches.
 
-Code and notebooks are under the [Apache-2.0 license](LICENSE).
+Code and notebooks are under the [Apache-2.0 license](LICENSE). The registry's records
+(claims, attempts, findings, reports and other data) are dedicated to the public domain under
+[CC0](LICENSE-data); passages quoted from papers keep their original terms.
