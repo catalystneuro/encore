@@ -168,11 +168,12 @@ claims:
     with the rates at each single time point of the trace smoothed with a 20 ms Gaussian (Figure
     4 legend), the trace spliced from the target-, go- and movement-locked averages
     (Supplemental Experimental Procedures, Computing the mean firing rate versus time); the
-    correlation averaged over neurons. The paper fixes no number for "near zero", so it is fixed
-    here, from the dataset means of Figure 4 (0.06 to 0.21). Reproduced when the mean
-    correlation at movement onset is below 0.1 in absolute value and below half of its value
-    250 ms before movement onset, and the curve has not fallen by more than a quarter of its
-    early value before 300 ms before movement onset.
+    correlation averaged over neurons. The paper gives no numbers for "began to decline" or
+    "near zero", so these thresholds are fixed here, not taken from the paper. Near zero is set
+    from the dataset means of Figure 4 (0.06 to 0.21). Reproduced when the mean correlation at
+    movement onset is below 0.1 in absolute value and below half of its value 250 ms before
+    movement onset, and the mean correlation 300 ms before movement onset is at least three
+    quarters of its value 400 ms before movement onset (no marked decline before about 200 ms).
   depends_on:
   - fig4d-tuning-correlation-j-array
 - id: results-ap-location-no-effect
@@ -201,7 +202,8 @@ claims:
     p: 0.27
   criterion: A claim of absence. Per dataset, the per-neuron Pearson correlations of Figure 4
     regressed on each neuron's AP location by least squares, with the p-value of the slope (that
-    of r). Reproduced for a dataset when p is 0.05 or above, not reproduced when it is below; r
+    of r). The paper names no significance threshold; 0.05 is the conventional level and is an
+    assumption. Reproduced for a dataset when p is 0.05 or above, not reproduced when it is below; r
     is reported either way. How AP location is assigned to array units is not stated; readings
     are (a) the AP coordinate of the unit's electrode on its array, (b) array membership (PMd
     array anterior to M1 array).
@@ -231,7 +233,9 @@ claims:
     expressed in the peri-movement space
   criterion: Per dataset, mean performance across included neurons (shared methods above) for the
     peri-movement space at each k, the kinematic space at each k, the EMG space where EMG was
-    recorded (not J-array), and each task space defined for the task. Reproduced when the
+    recorded (not J-array), and each task space defined for the task. The upper-limit space built
+    from preparatory activity (gray line of Figure 6A-D, Supplemental Experimental Procedures) and
+    the shuffled control space of Figure 7A are not competitors. Reproduced when the
     peri-movement space's best mean performance over k is higher than that of every other space,
     under one combination of the named readings; the result of every reading is shown.
 - id: fig6-each-dimensionality
@@ -272,16 +276,17 @@ claims:
     expressed.
   criterion: From the results of fig6-peri-movement-space-best. Figure 6 legend and Results define
     zero as the level of predicting every condition by the mean rate, with points above zero
-    "considerably better than chance". Reproduced when the mean performance is above zero for
-    the peri-movement and kinematic spaces at their best k and for more than half of the task
-    spaces.
+    "considerably better than chance". "Generally" is not quantified; the share is fixed here.
+    Reproduced when the mean performance is above zero for the peri-movement and kinematic spaces
+    at their best k and for more than half of the task spaces.
   depends_on:
   - fig6-peri-movement-space-best
 - id: fig6e-summary-rank
   statement: Combined across monkeys A, B and J, mean performance is highest for the peri-movement
     space at every maximum dimensionality (3, 6, 12), the advantage grows with dimensionality,
     and task spaces are outcompeted by the kinematic and EMG spaces, which are outperformed by
-    the peri-movement space; other spaces are significantly worse than the best (p < 0.001).
+    the peri-movement space; spaces marked with asterisks are significantly worse than the best
+    (p < 0.001).
   source: Results, PD performance in a variety of spaces, paragraph 3; Figure 6E and legend
   quote: Performance (averaged across neurons) was highest when the PD employed the space based on
     peri-movement neural activity. This performance differential increased at higher
@@ -298,7 +303,9 @@ claims:
     and 12 (for PCA spaces the best k up to the limit), averaged across neurons with SEs.
     Reproduced when the peri-movement space has the highest mean in all three sub-panels, its
     lead over the next space grows from 3 to 12, and the kinematic and EMG spaces at the 12
-    limit exceed every task space. The test behind the asterisks is not named; readings are (a)
+    limit each exceed more than half of the task spaces (the paper says "largely outcompeted";
+    the share is fixed here). Which spaces carry asterisks could not be read, since the main-text
+    figure was not available. The test behind the asterisks is not named; readings are (a)
     a paired t-test across neurons, (b) a Wilcoxon signed-rank test, each against the best
     space; spaces below the best at p < 0.001 are reported.
   depends_on:
@@ -311,7 +318,8 @@ claims:
   criterion: As in the Figure 7A legend, for each neuron and condition, with probability 0.5 the
     peri-movement response is kept, otherwise activity up to 150 ms before movement onset is
     kept and all later activity is reflected vertically about the rate at that time; the PCA
-    space is then built as for the peri-movement space. The draw is repeated (a standard choice,
+    space is then built as for the peri-movement space. Figure 7A averages over all datasets;
+    here each dataset is judged on its own. The draw is repeated (a standard choice,
     20 draws) and averaged. "Poorly" is not quantified; fixed here as the shuffled space's mean
     performance below the peri-movement space's at every k and its best over k below the best of
     the kinematic space.
@@ -331,9 +339,9 @@ claims:
   - quantity: performance with window start at movement onset over original, monkeys A and B
     value: 0.94
     tolerance: 0.094
-  criterion: Per dataset, mean performance of the peri-movement space at its best k (Figure 7B
-    legend) with the window starting at movement onset, divided by that with the window starting
-    150 ms before. The window end is not said to move; it stays at 800 ms (maze) or 400 ms
+  criterion: Per dataset, mean performance of the peri-movement space with the window starting
+    at movement onset, divided by that with the window starting 150 ms before, each at the best k
+    for that start time (Figure 7B legend). The window end is not said to move; it stays at 800 ms (maze) or 400 ms
     (speed) after onset. Whether "monkey J" includes the J-array dataset is open; readings are
     (a) J-array judged against 0.97, (b) the mean of J and J-array against 0.97.
   depends_on:
@@ -351,8 +359,9 @@ claims:
     space is built from that subset's neurons only and performance computed in six dimensions,
     normalized by the estimated upper limit (the PCA space of preparatory activity, Supplemental
     Experimental Procedures) for that subset. Open whether that upper limit is taken at k = 6 or
-    at its best k; both are run. Reproduced when the normalized performances of the anterior and
-    posterior subsets are each above zero and within 10% of that of the random halves; whether
+    at its best k; both are run. "Only slightly different" is not quantified; the 10% bound is
+    fixed here. Reproduced when the normalized performances of the anterior and posterior subsets
+    are each above zero and within 10% of that of the random halves; whether
     anterior exceeds posterior is reported. AP location for array units as in
     results-ap-location-no-effect.
   depends_on:
@@ -399,3 +408,20 @@ claims:
     over 1000 draws under one reading, with the median r reported. The PD part holds when the
     leave-one-out performance of a PD in the 2-D PCA space of the released activity is at least
     0.99.
+checks:
+- date: 2026-10-28
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig4e-correlation-time-course. The criterion compared the curve with an undefined "early value"; it now uses the value 400 ms before movement onset as reference, and says that all its thresholds are fixed here since the paper gives none.
+  - results-ap-location-no-effect. Said that the 0.05 threshold is an assumption; the paper reports r and p but names no threshold.
+  - fig6-peri-movement-space-best. Excluded the upper-limit space (gray line, built from preparatory activity) and the shuffled control space from the competing spaces, since the paper treats them as a bound and a control.
+  - fig6-pd-adequate-all-spaces. Said that the "more than half of the task spaces" share is fixed here; the paper says only "generally".
+  - fig6e-summary-rank. The statement said all other spaces are significantly worse than the best; the Figure 6E legend says only that spaces marked with asterisks are. Corrected.
+  - fig6e-summary-rank. The criterion required the kinematic and EMG spaces to beat every task space; the paper says the task spaces were "largely outcompeted". Changed to more than half, marked as fixed here.
+  - fig7a-shuffled-space-poor. Noted that Figure 7A averages over all datasets while the criterion judges each dataset.
+  - fig7b-window-start-onset. The Figure 7B legend uses the best dimensionality for each dataset and start time; the criterion now takes the best k separately for each window start.
+  - fig7c-anterior-posterior. Said that the 10% bound for "only slightly different" is fixed here.
+  - Open. The main-text PDF is not available, so the Figure 6 and 7 per-dataset values, the k range plotted, and the spaces marked in Figure 6E could not be read.
+  - Open. fig8-oscillator-model is a simulation that uses no recorded data; it is marked with_inputs, which keeps it apart from the dataset's count, though no outside input is involved.
