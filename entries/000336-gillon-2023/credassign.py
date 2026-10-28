@@ -54,6 +54,7 @@ API = "https://api.dandiarchive.org/api"
 TARGET_DANDISET, TARGET_VERSION = "000336", "0.260325.1802"   # the target, the only published version
 DANDISET, VERSION = "000037", "0.230426.0054"                 # the paper's data, the version the claims file names
 CODE_COMMIT = "046e7fef5f452cdc0775fe54040b0f13aeae1e57"      # github.com/colleenjg/OpenScope_CA_Analysis
+UTIL_COMMIT = "2b05f954a4aa871dbfdd83d1546ebe8e7f3069c6"    # github.com/colleenjg/util, the paper code's dependency
 MOUSE_DF_URL = ("https://raw.githubusercontent.com/colleenjg/OpenScope_CA_Analysis/"
                 f"{CODE_COMMIT}/mouse_df.csv")
 FPS = 30            # imaging rate of the Methods; windows below are in frames at this rate
@@ -101,6 +102,21 @@ def read_mouse_df():
     r = requests.get(MOUSE_DF_URL)
     r.raise_for_status()
     return pd.read_csv(io.StringIO(r.text))
+
+
+def paper_code_functions(names=("calculate_snr", "rolling_mean")):
+    """The named functions of util/math_util.py of the paper's code (github.com/colleenjg/util at
+    UTIL_COMMIT), taken from the source as published and defined here without the rest of the
+    module (whose package imports are not installed), to check this module's versions against."""
+    import ast
+    url = f"https://raw.githubusercontent.com/colleenjg/util/{UTIL_COMMIT}/util/math_util.py"
+    r = requests.get(url)
+    r.raise_for_status()
+    tree = ast.parse(r.text)
+    funcs = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in names]
+    ns = {"np": np, "scipy": scipy}
+    exec(compile(ast.Module(body=funcs, type_ignores=[]), url, "exec"), ns)
+    return {n: ns[n] for n in names}
 
 
 def _str(x):
@@ -243,7 +259,8 @@ def fig5_measures(dff, trials, snr, corrs=None):
     direction: mean over 0 to 2 s after against 2 s before inconsistent flow onsets. Also the
     selection of reading (b): SNR above the session median and, for Gabor, the median pairwise
     correlation of single consistent sequence responses (-0.9 to 0.6 s), and the SD and skew of
-    the mean response, each above the session's 75th percentile; for flow, the median pairwise
+    the mean response, each above the session's 75th percentile (and, as a variant, the same on
+    single inconsistent sequence responses, `selected_u`); for flow, the median pairwise
     correlation of single inconsistent flow responses (-2 to 2 s) and the mean response after
     minus before onset, each above the 75th percentile. The correlations do not change with
     scaling, so `corrs` from a first call can be passed to a second, on scaled traces."""
@@ -258,15 +275,25 @@ def fig5_measures(dff, trials, snr, corrs=None):
     u_resp = event_traces(dff, u_fr, pre_g, post_g)
     d_mean = d_resp[:, :, pre_g:].mean(axis=(1, 2))
     u_mean = u_resp[:, :, pre_g:].mean(axis=(1, 2))
-    mean_trace = d_resp.mean(axis=1)
     snr_ok = snr > np.median(snr)
     if "gabors" not in corrs:
         corrs["gabors"] = _median_pairwise_corr(d_resp)
-    corr = corrs["gabors"]
-    sd = mean_trace.std(axis=1)
-    sk = scipy.stats.skew(mean_trace, axis=1)
-    sel = snr_ok & (corr > np.percentile(corr, 75)) & (sd > np.percentile(sd, 75)) & (sk > np.percentile(sk, 75))
-    out["gabors"] = {"consistent": d_mean, "inconsistent": u_mean, "selected": sel,
+        corrs["gabors_u"] = _median_pairwise_corr(u_resp)
+
+    def gabor_selection(resp, corr):
+        mean_trace = resp.mean(axis=1)
+        sd = mean_trace.std(axis=1)
+        sk = scipy.stats.skew(mean_trace, axis=1)
+        thr = {"snr": np.median(snr), "corr": np.percentile(corr, 75), "sd": np.percentile(sd, 75),
+               "skew": np.percentile(sk, 75)}
+        return snr_ok & (corr > thr["corr"]) & (sd > thr["sd"]) & (sk > thr["skew"]), thr
+
+    sel, thr = gabor_selection(d_resp, corrs["gabors"])
+    # variant: the same criteria on single inconsistent (U) sequence responses (Fig. 5b legend,
+    # "Same as a., but for inconsistent sequences")
+    sel_u, thr_u = gabor_selection(u_resp, corrs["gabors_u"])
+    out["gabors"] = {"consistent": d_mean, "inconsistent": u_mean, "selected": sel, "selected_u": sel_u,
+                     "thresholds": thr, "thresholds_u": thr_u,
                      "n_consistent": len(d_fr), "n_inconsistent": len(u_fr)}
     vf = t[t.stimulus_type == "visflow"]
     for direction in sorted(vf.main_flow_direction.unique()):
@@ -282,9 +309,10 @@ def fig5_measures(dff, trials, snr, corrs=None):
             corrs[direction] = _median_pairwise_corr(resp)
         corr = corrs[direction]
         diff = after - before
-        sel = snr_ok & (corr > np.percentile(corr, 75)) & (diff > np.percentile(diff, 75))
+        thr = {"snr": np.median(snr), "corr": np.percentile(corr, 75), "diff": np.percentile(diff, 75)}
+        sel = snr_ok & (corr > thr["corr"]) & (diff > thr["diff"])
         out[f"visflow {direction}"] = {"consistent": before, "inconsistent": after, "selected": sel,
-                                       "n_inconsistent": len(fr)}
+                                       "thresholds": thr, "n_inconsistent": len(fr)}
     return out, corrs
 
 
@@ -299,6 +327,7 @@ def roi_measures(f, trials, fig5=False):
     dff = dff[~bad]
     snr_sig = np.array([calculate_snr(x) for x in dff])
     out["snr"], out["signal"] = snr_sig[:, 0], snr_sig[:, 1]
+    out["median"] = np.median(dff, axis=1)
     sm = rolling_mean(dff, 4)
     c = np.corrcoef(sm)
     corr = c[np.triu_indices(len(c), k=1)]
@@ -492,7 +521,10 @@ def ordering_counts(sessions_by_mouse, thresholds=(0.1, 0.2), workers=4):
     once, in parallel processes, and each ordering combines the three it uses. A match across
     all sessions counts; with a threshold, only when every pairwise match in it has an
     intersection over union at least that large (the dendritic overlap constraint of the
-    Methods, read as IoU: an assumption, the paper does not define its overlap measure)."""
+    Methods, read as IoU: an assumption, the paper does not define its overlap measure). A pair
+    of ROIs in such a match that has no pairwise match of its own counts as IoU 0; the variant
+    "linked" applies the threshold only to the pairs that have one, and `no_direct_link` counts
+    the matches with such a pair."""
     import itertools
     import multiprocessing
     import tempfile
@@ -528,8 +560,34 @@ def ordering_counts(sessions_by_mouse, thresholds=(0.1, 0.2), workers=4):
                     for x in p["matches"]:
                         iou[frozenset((x["fixed"], x["moving"]))] = x["iou"]
                 row = {"mouse": m, "order": "-".join(str(k + 1) for k in order), "all": len(full)}
+                # matches across all sessions with a pair of ROIs that has no pairwise match of its own
+                row["no_direct_link"] = sum(any(frozenset((a, b)) not in iou for a in x for b in x if a < b)
+                                            for x in full)
                 for thr in thresholds:
                     row[f"iou>={thr:g}"] = sum(all(iou.get(frozenset((a, b)), 0) >= thr for a in x for b in x if a < b)
                                                for x in full)
+                    # variant: the threshold applies only to the pairs that have a pairwise match
+                    row[f"linked iou>={thr:g}"] = sum(all(iou[frozenset((a, b))] >= thr for a in x for b in x
+                                                          if a < b and frozenset((a, b)) in iou) for x in full)
                 rows.append(row)
     return pd.DataFrame(rows)
+
+
+def direct_run_count(sessions, order):
+    """Matches across all sessions from one NwayMatching.run of the package on the sessions in the
+    given order, to check ordering_counts against. The package's summary plots (NwaySummary) fail
+    with the locked pandas (numpy.fill_diagonal on a read-only array), so they are skipped; they do
+    not change the matches."""
+    import tempfile
+    from unittest import mock
+    from nway.nway_matching import NwayMatching
+    with tempfile.TemporaryDirectory() as workdir:
+        exps = nway_input([sessions[k] for k in order], workdir)
+        nm = NwayMatching(input_data=_nway_args(exps, workdir), args=[])
+        plots = {k: os.path.join(workdir, f"{k}.png") for k in
+                 ("nway_match_fraction_plot", "nway_warp_overlay_plot", "nway_warp_summary_plot")}
+        with mock.patch("nway.nway_matching.NwaySummary.run", return_value=plots):
+            nm.run()
+        with open(nm.args["output_json"]) as fh:
+            out = __import__("json").load(fh)
+    return sum(len(x) == len(sessions) for x in out["nway_matches"])

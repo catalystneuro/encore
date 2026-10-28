@@ -37,7 +37,7 @@ The attempt record, with the reasons and the differences from the paper's method
 - `reproduce_gillon_2023.ipynb`: all claims but one. It takes about ten minutes, most of it streaming the
   ROI traces of the 33 analysed sessions.
 - `roi_matching_orderings.ipynb`: reruns ROI matching with the Allen Institute's public n-way matching
-  package over the six session orderings of each mouse. It takes about nineteen minutes.
+  package over the six session orderings of each mouse. It takes about fifteen to twenty minutes.
 - `credassign.py`: listing and streaming the files, the session table of the paper's code, and the
   measures of the paper's code (SNR, correlations, onset and offset responses), with the matching
   driver. Other notebooks on DANDI:000037 can import it.
