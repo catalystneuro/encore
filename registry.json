@@ -3446,6 +3446,10 @@
     "ready": true,
     "date": "2026-10-22"
    },
+   "dandi:000129": {
+    "ready": true,
+    "date": "2026-10-28"
+   },
    "dandi:000130": {
     "ready": null,
     "date": null
@@ -13048,6 +13052,235 @@
       "source": "Results, Tuning from a dynamical systems perspective, paragraph 3; Figure 8D and legend; Supplemental Text",
       "quote": "The PD points towards the pattern recruited by the activity of unit one (panel A ), and perfectly captures preparatory \u2018tuning\u2019.",
       "criterion": "A simulation, not a test on recorded data. As fig8-model-weak-correlation; PCA of the 25 x 2t matrix of peri-movement activity, k = 2, PD fit of unit 1's initial rates by M7 without cross-validation and with it. Reproduced when the fit is exact to numerical precision (R squared and leave-one-out performance above 0.999) under every reading."
+     }
+    ]
+   }
+  ],
+  "dandi:000129": [
+   {
+    "path": "claims/000129/10.1088-1741-2552-aa9e95.yaml",
+    "paper": "10.1088/1741-2552/aa9e95",
+    "check": {
+     "ready": true,
+     "date": "2026-10-28"
+    },
+    "claims": [
+     {
+      "id": "units-monkey-i",
+      "statement": "After units firing below 0.5 Hz were discarded, monkey I's sessions had between 171 and 413 units, the range reflecting that only 7 of 37 sessions included the S1 array.",
+      "source": "Methods, Data acquisition, paragraph 4",
+      "quote": "Finally, units with spike rates below 0.5 Hz were discarded. This left between 171 and 413 units for monkey I",
+      "criterion": "The number of units left after dropping those with mean rate at or below 0.5 Hz over the session (getLatentsBMI.m). Reproduced when it lies between 153.9 and 454.3 (the reported range widened by 10% of each bound). The paper's counts include one unsorted hash unit per channel (Methods); the count with and without hash units is reported if the dataset distinguishes them."
+     },
+     {
+      "id": "fig2-refh-kf-best",
+      "statement": "Averaged over the 49 sessions, no decoder outperforms the rEFH (+KF) for any kinematic variable, and for velocity and acceleration it is clearly superior to all other decoders.",
+      "source": "Results, Reconstruction quality of all decoders, bullet 1; Figure 2",
+      "quote": "On average, no decoder outperforms the rEFH (+KF) for any kinematic variable. For velocity and acceleration, the rEFH (+KF) is clearly superior to any of the other decoders.",
+      "criterion": "Session-weighted mean SNR, averaged over x and y, for position, velocity and acceleration, for all eight decoders at 64 ms. Reproduced when no decoder has a higher mean than the rEFH (+KF) for any of the three variables and, for velocity and acceleration, the rEFH (+KF) exceeds each of the other seven with bootstrap p < 0.01 (the level the paper uses in Results, The rEFH against its nearest rivals). Partially reproduced when the velocity and acceleration part holds but another decoder is higher for position."
+     },
+     {
+      "id": "intro-gain-over-nearest",
+      "statement": "The rEFH (+KF) improves SNR over its nearest competitor on average by 0.14 dB for position, 1.60 dB for velocity and 1.2 dB for acceleration; the position gain is not significant at p = 0.01.",
+      "source": "Introduction, paragraph 4",
+      "quote": "average improvements over its nearest competitor in signal-to-noise ratio of 0.14 dB (position), 1.60 dB (velocity) and 1.2 dB (acceleration) ... the improvement in position is not significant at the level of p = 0.01",
+      "criterion": "Session-weighted mean difference in SNR, averaged over x and y, at 64 ms. The paper does not say which decoder is the nearest competitor. Readings are (a) for each variable, the decoder other than the two rEFH decoders with the highest mean SNR (the static rEFH is excluded; figure 2 puts it within about 0.2 dB of the rEFH (+KF) for acceleration, far from 1.2 dB); (b) the UKF for all three, the decoder the Results and figure 8 call the rEFH's nearest rival. Figure 8's canonical dynamic bars (rEFH (+KF) minus UKF) read about 0.14, 1.6 and 1.2 dB, which supports reading (b). Reproduced when, under one reading, all three gains are within tolerance and the position gain has bootstrap p >= 0.01."
+     },
+     {
+      "id": "fig2-velocity-boost",
+      "statement": "Relative to the static linear map, the rEFH (+KF) raises velocity SNR by more than twice as much as KFobs and nearly twice as much as the UKF.",
+      "source": "Results, Reconstruction quality of all decoders, bullet 1; Figure 2, second row",
+      "quote": "the average SNR boost provided by the rEFH (+KF) for velocity is more than twice that supplied by KFobs ... nearly twice that of its nearest rival, which is the unscented Kalman filter (UKF)",
+      "criterion": "Session-weighted mean velocity SNR gain over the static linear map, averaged over x and y, at 64 ms, as in figure 2 (SLMD.m, allDecodersBarPlots). Reproduced when the rEFH (+KF) gain exceeds twice the KFobs gain and lies between 1.5 and 2.2 times the UKF gain (\"nearly twice\", read here as within 25% below to 10% above; a bound fixed here, the paper gives none). Partially reproduced when only the KFobs part holds."
+     },
+     {
+      "id": "fig2-kflatent-dynamic-little-effect",
+      "statement": "Adding the dynamic mapping (a second Kalman filter) to KFlatent changes its reconstruction little.",
+      "source": "Results, Reconstruction quality of all decoders, bullet 2; Figure 2",
+      "quote": "Dynamic mapping (i.e. a KF) of KFlatent has little effect on reconstruction.",
+      "criterion": "Session-weighted mean SNR, averaged over x and y, of KFlatent (+KF) minus KFlatent static at 64 ms, for each variable. Reproduced when the absolute difference is below 0.5 dB for all three variables (a bound fixed here; the paper gives none, and the rEFH's dynamic gain for position, about 3 dB, is the contrast it draws in the Discussion)."
+     },
+     {
+      "id": "fig2-refh-static-vel-acc",
+      "statement": "Under the static mapping alone, velocity and acceleration are reconstructed better from the rEFH than from any other filter.",
+      "source": "Results, Reconstruction quality of all decoders, bullet 3; Figure 2",
+      "quote": "Under the static mapping alone, velocity and acceleration can be reconstructed better with the rEFH than with any other filter.",
+      "criterion": "Session-weighted mean SNR, averaged over x and y, at 64 ms. \"Any other filter\" is read as every decoder other than the two rEFH decoders (linear regression, KFobs, KFlatent, KFlatent (+KF), WF, UKF). Reproduced when the static rEFH mean exceeds each of them for both velocity and acceleration."
+     },
+     {
+      "id": "fig2-position-dynamic-gain",
+      "statement": "Position is reconstructed much more accurately from the rEFH with the dynamic than with the static mapping, by about 3 dB of SNR.",
+      "source": "Results, Reconstruction quality of all decoders, bullet 4; Discussion, Relative reconstruction quality of position, velocity, and acceleration, paragraph 1; Figure 2",
+      "quote": "That position, on the other hand, can be reconstructed much more accurately from the rEFH with dynamic, as opposed to static, mappings ... the dynamic mapping (+KF) improves signal-to-noise by some 3 dB",
+      "criterion": "Session-weighted mean position SNR, averaged over x and y, at 64 ms. The tolerance is 0.5 dB, not 10%, because \"some 3 dB\" is a round number given to the nearest dB, and the position bars of figure 2 (SNR row) give a difference of about 2.5 dB (about 2.3 for x and 2.8 for y), outside a 10% window."
+     },
+     {
+      "id": "fig2-sagittal-better",
+      "statement": "For each decoder and each derivative order, the sagittal (y) component is decoded better than the lateral (x) component.",
+      "source": "Results, Reconstruction quality of all decoders, bullet 5; Figure 2",
+      "quote": "For each decoder and derivative order (position, velocity, acceleration), variables are decoded better in the sagittal ... than lateral (x) direction",
+      "criterion": "Session-weighted mean SNR at 64 ms for each of the eight decoders and three orders (24 pairs). Reproduced when y exceeds x in all 24; partially reproduced in 18 to 23 (a grading fixed here; the paper gives none). The same comparison is reported per session."
+     },
+     {
+      "id": "fig2-linear-worst",
+      "statement": "Static linear regression reconstructs much worse than the other decoders.",
+      "source": "Results, Reconstruction quality of all decoders, paragraph 1; Figure 2",
+      "quote": "improvement in reconstruction over linear regression, which is much worse than the other six decoders",
+      "criterion": "Session-weighted mean SNR at 64 ms, for each of the six kinematic variables (x and y separately, as in figure 2). Reproduced when every other decoder exceeds linear regression for every variable, as every bar of figure 2 is above zero, including those of the static KFlatent and static rEFH for position (the Discussion also notes the static rEFH's modest superiority over linear regression for position)."
+     },
+     {
+      "id": "fig2-gross-failures",
+      "statement": "Gross failures (negative coefficients of determination) occur only for the UKF and KFlatent (+KF), in a few sessions.",
+      "source": "Results, paragraph after the decoder list",
+      "quote": "in our experiments, such gross failures occurred only for the UKF and KFlatent (+KF)",
+      "criterion": "Per session, decoder and variable at 64 ms. Reproduced when every negative R2 belongs to the UKF or KFlatent (+KF)."
+     },
+     {
+      "id": "fig4-vel-acc-every-session",
+      "statement": "For velocity and acceleration, the rEFH (+KF) is better than KFobs and the UKF in every one of the 196 session, variable and axis combinations, and significantly so across sessions.",
+      "source": "Results, The rEFH against its nearest rivals, all session and monkeys, paragraph 2; Figure 4, columns 2 and 3",
+      "quote": "For velocity and acceleration, the rEFH is superior to KFobs and the UKF for all 196 data ... For both kinematic variables, the results are significant under a bootstrap (p < 0.01",
+      "criterion": "Per session at 64 ms, SNR of the rEFH (+KF) against KFobs and against the UKF for velocity x, velocity y, acceleration x and acceleration y (eight comparisons per session). Reproduced in a session when all eight favour the rEFH (+KF). Across sessions, the bootstrap of the weighted mean difference has p < 0.01 for each rival and variable."
+     },
+     {
+      "id": "fig4-advantage-grows",
+      "statement": "The better decoded the session, the more the rEFH (+KF) outperforms the standard Kalman filter, shown by regression slopes above 1 for velocity and acceleration.",
+      "source": "Results, The rEFH against its nearest rivals, all session and monkeys, paragraph 2; Figure 4, columns 2 and 3",
+      "quote": "the better (more decodable) the session, the more the rEFH outperforms the standard Kalman filter ... confirmed with an F-test against a model with slope set to unity, intercept fit to data",
+      "criterion": "As in SLMD.m (scatterWithEqualityLine), least-squares regression of rEFH (+KF) SNR on KFobs SNR over all sessions and both axes at 64 ms, for velocity and for acceleration; F-test of the fitted line against slope 1 with intercept fitted (df 1 and n - 2). Reproduced when the slope exceeds 1 with p < 0.01 for both variables. The same test against the UKF is reported as a variant."
+     },
+     {
+      "id": "fig4-position",
+      "statement": "The rEFH (+KF) decodes position better than KFobs, but not distinguishably from the UKF.",
+      "source": "Results, The rEFH against its nearest rivals, all session and monkeys, paragraph 3; Figure 4, column 1",
+      "quote": "The rEFH\u2019s position reconstruction is likewise superior to KFobs (p < 0.01, bootstrap). It is not, however, distinguishable from either the UKF (bootstrap not significant even at p = 0.05).",
+      "criterion": "Bootstrap of the session-weighted mean position SNR difference at 64 ms. Reproduced when the difference from KFobs is positive with p < 0.01 and the difference from the UKF has p >= 0.05 (the absence part is judged on this test alone). The size of each difference is reported."
+     },
+     {
+      "id": "fig4-best-variable",
+      "statement": "The best-decoded kinematic variable is velocity for the rEFH (+KF), but position for KFobs and the UKF.",
+      "source": "Results, The rEFH against its nearest rivals, all session and monkeys, paragraph 3; Figure 4",
+      "quote": "the best-decoded kinematic variable is velocity for the rEFH, but position for KFobs and the UKF",
+      "criterion": "Session-weighted mean SNR, averaged over x and y, at 64 ms. Reproduced when velocity has the highest SNR of the three variables for the rEFH (+KF) and position the highest for KFobs and for the UKF. The ordering in each session is reported."
+     },
+     {
+      "id": "fig4-task-similar",
+      "statement": "The relative advantage of the rEFH (+KF) does not differ visibly between the center-out task (monkey C) and the point-to-point task (monkeys I and L); monkey L's sessions differ most.",
+      "source": "Results, Reaching task, paragraph 1; Figure 4",
+      "quote": "But across tasks, the relative advantage of the rEFH (+KF) does not differ visibly (there are too few sessions from monkey C for a statistical test)",
+      "criterion": "The paper runs no test. Per session at 64 ms, the SNR difference rEFH (+KF) minus KFobs and minus UKF for velocity and acceleration. Reproduced when monkey C's two sessions lie within the range of monkey I's sessions for every such difference."
+     },
+     {
+      "id": "fig5-vel-acc-all-bins",
+      "statement": "For velocity and acceleration, the rEFH (+KF) is the best decoder at every bin width (16, 32, 64 and 128 ms).",
+      "source": "Results, Bin width, bullet 1; Figure 5",
+      "quote": "For velocity and acceleration, the rEFH (+KF) is the best for all bin widths",
+      "criterion": "At each bin width, bootstrap of the session-weighted mean SNR difference, averaged over x and y, between the rEFH (+KF) and each other decoder of figure 5. Reproduced when every difference for velocity and acceleration is positive with p < 0.01 at all four widths; partially reproduced when this holds at three."
+     },
+     {
+      "id": "fig5-position-bins",
+      "statement": "For position the leading decoders cannot be told apart at any bin width except 16 ms, where the UKF is better.",
+      "source": "Results, Bin width, bullet 1; Figure 5",
+      "quote": "For position, the leading decoders are not statistically differentiable at any bin width ... except at 16 ms, where the UKF is superior (bootstrap, p < 0.01)",
+      "criterion": "The paper does not list the leading decoders; they are read as the rEFH (+KF), the UKF and KFobs, the decoders figure 4 compares (the readings with and without KFobs are both shown). At each width, bootstrap of the session-weighted mean position SNR difference between each pair. Reproduced when at 16 ms the UKF exceeds the rEFH (+KF) with p < 0.01, and at 32, 64 and 128 ms no pair differs at p < 0.01 (the absence part judged on this test)."
+     },
+     {
+      "id": "fig5-advantage-with-binwidth",
+      "statement": "Reconstruction improves with bin width, and so does the relative advantage of the rEFH (+KF).",
+      "source": "Results, Bin width, bullet 2; Figure 5",
+      "quote": "With increasing bin width, reconstruction improves, as expected; but so does the relative advantage of the rEFH (+KF).",
+      "criterion": "Session-weighted mean SNR, averaged over x and y, for each variable and bin width. The paper does not define the relative advantage. Readings are (a) the rEFH (+KF) SNR minus the SNR of the best decoder other than the two rEFH decoders, in dB; (b) that difference as a percent of the best other decoder's SNR (the \"percent increase in SNR\" of Results, Number of neurons). Reproduced when, under one reading, for velocity and acceleration, the rEFH (+KF) SNR and its advantage both rise from 16 to 128 ms (the 128 ms value above the 16 ms value, and no fall of more than 0.2 dB, or 2 percentage points, between neighbouring widths; bounds fixed here, the paper gives none)."
+     },
+     {
+      "id": "fig5-derivative-order",
+      "statement": "With increasing derivative order reconstruction quality declines (except that the rEFH is best at velocity), while the relative advantage of the rEFH (+KF) increases.",
+      "source": "Results, Bin width, bullet 3; Figure 5",
+      "quote": "With increasing derivative order (position, velocity, acceleration), the overall reconstruction quality declines (except for the rEFH, which is best at velocity), but the relative advantage of the rEFH (+KF) increases.",
+      "criterion": "Session-weighted mean SNR, averaged over x and y, at each bin width. \"Overall reconstruction quality\" is read as the mean SNR over the six decoders other than the two rEFH decoders; figure 5 shows linear regression and the WF with higher velocity than position SNR at several widths, so a per-decoder ordering would contradict the paper's own figure. The relative advantage is the rEFH (+KF) SNR minus that of the best decoder other than the two rEFH decoders, as a percent of the latter (the \"percent increase in SNR\" of Results, Number of neurons); the difference in dB cannot be meant, since at 64 ms it is 1.60 dB for velocity and 1.2 dB for acceleration (Introduction) while the paper says the advantage increases with derivatives. Reproduced when, at each width, the mean SNR has position > velocity > acceleration and the percent advantage rises from position to velocity to acceleration. Partially reproduced when this holds at two or three widths."
+     },
+     {
+      "id": "fig6-training-time",
+      "statement": "The rEFH (+KF) is the best decoder of velocity and acceleration for 80, 160 and 320 s of training data; for position it never differs significantly from the UKF, and beats KFobs at 320 s but loses to it at 80 s.",
+      "source": "Results, Seconds of data used for training; Figure 6",
+      "quote": "For velocity and acceleration, the rEFH (+KF) is again the best decoder for all amounts of training data. For position, the differences between the rEFH (+KF) and the UKF are nowhere significant, but compared to KFobs, the rEFH is superior at 320 s and inferior at 80 s (bootstrap, p = 0.01)",
+      "criterion": "At 64 ms with 80, 160 and 320 s of training, bootstrap of the session-weighted mean SNR difference, averaged over x and y. Reproduced when (i) for velocity and acceleration the rEFH (+KF) has the highest mean at all three amounts; (ii) its position difference from the UKF has two-sided p >= 0.02 (one-sided 0.01 either way) at all three; (iii) against KFobs, position, it is higher at 320 s and lower at 80 s, each with one-sided p <= 0.01. Partially reproduced when (i) holds and one of (ii) and (iii) fails."
+     },
+     {
+      "id": "fig7-vel-acc-neurons",
+      "statement": "For velocity and acceleration, using a fraction 1/4, 1/2 or all of the neurons, the rEFH (+KF) outperforms all its rivals, and its percent gain in SNR grows with the number of neurons and with derivative order.",
+      "source": "Results, Number of neurons, paragraph 2; Figure 7",
+      "quote": "For velocity and acceleration, for all but the smallest fraction of neurons, the rEFH (+KF) outperforms all its rivals (bootstrap; the result holds for all comparisons at p < 0.01 except against the WF in acceleration at f = 1/4, where it holds for p < 0.05). The percent increase in SNR provided by the rEFH increases with neurons as well as derivative order.",
+      "criterion": "At 64 ms, for f in 1/4, 1/2 and 1, bootstrap of the session-weighted mean SNR difference, averaged over x and y, between the rEFH (+KF) and each other decoder. The paper does not say what the percent increase is taken over; readings are (a) the best decoder other than the two rEFH decoders, (b) each such decoder. Reproduced when every velocity and acceleration difference is positive with p < 0.01, except against the WF for acceleration at f = 1/4, where p < 0.05 suffices (the levels the paper reports), and, under one reading, the percent gain rises over f = 1/4, 1/2, 1 and from velocity to acceleration at each of these f. Partially reproduced when only the first part holds."
+     },
+     {
+      "id": "fig7-position-neurons",
+      "statement": "For position the rEFH's advantage is significant at p < 0.05 at f = 1/4 and 1/2, but not at f = 1, where the UKF comes close, nor at f = 1/8, where all decoders collapse.",
+      "source": "Results, Number of neurons, paragraph 2; Figure 7, left panel",
+      "quote": "Even for position, the rEFH\u2019s advantage is significant at p < 0.05, except for f = 1, where UKF performance gets close, and at the smallest fraction of neurons (f = 1/8)",
+      "criterion": "At 64 ms, bootstrap of the session-weighted mean position SNR difference, averaged over x and y, between the rEFH (+KF) and each other decoder. Reproduced when at f = 1/4 and 1/2 every difference is positive with p < 0.05, and at f = 1 and 1/8 at least one has p >= 0.05."
+     },
+     {
+      "id": "fig7-affine-position",
+      "statement": "Position SNR of the decoders without a learned kinematic model (linear regression, static KFlatent, WF, static rEFH) is close to an affine function of the fraction of neurons, with correlations 0.999, 0.95, 0.98 and 1.000; static KFlatent is the most curved.",
+      "source": "Results, Number of neurons, paragraph 3; Figure 7, left panel",
+      "quote": "SNRs for the decoders that do not learn the kinematics explicitly ... are quite close to affine functions (i.e. linear with offset) of the fraction of neurons used (\u03c1 = 0.999, 0.95, 0.98, 1.000, respectively). SNR for KFlatent is clearly the most curved of these functions.",
+      "criterion": "The paper does not say how rho is computed, and the code does not compute it. The readings are (a) the Pearson correlation between f and the session-weighted mean position SNR, averaged over x and y, over f = 1/8, 1/4, 1/2, 1; (b) the same with log2 f. Reproduced when, under one reading, all four values are within tolerance and static KFlatent has the lowest of the four. The 10% tolerance reaches past 1 here; the ordering condition carries most of the test."
+     },
+     {
+      "id": "fig7-kinematic-model-saturates",
+      "statement": "Position SNR of the four decoders that learn a kinematic state-transition model (KFobs, KFlatent (+KF), UKF, rEFH (+KF)) rises much faster at first with added neurons, then saturates.",
+      "source": "Results, Number of neurons, paragraph 3; Figure 7, left panel",
+      "quote": "In contrast, reconstruction quality for the four decoders (KFobs, KFlatent [+KF], UKF, rEFH [+KF]) that did learn a model of kinematic evolution ... initially grows much more quickly with the addition of neurons, before saturating.",
+      "criterion": "Session-weighted mean position SNR, averaged over x and y, at f = 1/8, 1/4, 1/2, 1. For each decoder, the slope per unit f (rise divided by the change in f) over an initial interval and over 1/2 to 1. The paper does not say which interval is initial; readings are (a) 1/8 to 1/4 and (b) 1/8 to 1/2. Slopes per unit f are used because the intervals differ in length (1/8 and 1/2); figure 7 shows the UKF rising about 1.3 dB from 1/8 to 1/4 (its 1/8 value clipped at 0) and about 1.8 dB from 1/2 to 1, yet the paper counts it among the decoders that saturate. Reproduced when, under one reading, for each of the four the initial slope exceeds the slope from 1/2 to 1, and exceeds the initial slope of each of the four decoders of fig7-affine-position."
+     },
+     {
+      "id": "fig8-velocity-variants",
+      "statement": "Under the static mapping, about 0.7 dB of the rEFH's velocity advantage over the UKF is lost when the updated visible units are left out of decoding, and 0.4 dB when standard-normal visible units replace Poisson ones; Kalman filtering does not remove these differences.",
+      "source": "Results, Variant decoders for the rEFH, paragraph 3; Figure 8",
+      "quote": "Under a static mapping, some (about 0.7 dB) of that velocity-decoding advantage is lost when the updated visible units are neglected, and a little less (0.4 dB) lost when standard-normal units are used ... The differential between velocity decoders cannot be eliminated by Kalman filtering",
+      "criterion": "Session-weighted mean velocity SNR, averaged over x and y, at 64 ms. The standard-normal rEFH is trained on standardized counts (Results, Variant decoders); the code instead applies 2 sqrt(R + 3/8) (getLatentsBMI.m), shown as a variant. Reproduced when both losses are within tolerance and, under the dynamic mapping, the canonical rEFH (+KF) still exceeds both variants. Open, figure 8 does not match the text. Its static velocity bars read about 0.65 (no visible units), 0.52 (standard normal) and 0.94 dB (canonical) above the UKF, losses of about 0.3 and 0.4 dB, with the standard-normal variant losing more, not less. The expected values are the text's; the notebook reports both losses against the text's and the figure's values."
+     },
+     {
+      "id": "fig8-position-variants",
+      "statement": "For position the rEFH variants change the static but not the dynamic mapping; with the Kalman filter all three variants decode position about equally.",
+      "source": "Results, Variant decoders for the rEFH, paragraph 2; Figure 8, first panel",
+      "quote": "For position, the variants affect the static, but not the dynamic, mappings.",
+      "criterion": "Session-weighted mean position SNR, averaged over x and y, at 64 ms, for the three variants. The paper reports no test for this finding; the bootstrap of the session-weighted mean difference between the canonical rEFH and each variant at p < 0.01 (the level of that paragraph of the Results) is used for the dynamic part. Reproduced when, under the static mapping, the canonical rEFH has a higher mean than both variants, and under the dynamic mapping neither variant is below the canonical rEFH (+KF) with p < 0.01 (the absence part judged on this test). Figure 8 shows the static variants about 0.16 and 0.18 dB below the canonical and the dynamic standard-normal variant about 0.2 dB above it, so bounds on the spread of the values would not fit the paper's own figure."
+     },
+     {
+      "id": "fig8-gaussian-still-beats-ukf",
+      "statement": "The rEFH keeps an advantage over the UKF when its visible units are standard normal instead of Poisson, so the noise model accounts for only part of its advantage.",
+      "source": "Discussion, The importance of nonlinear tuning, Poisson emissions, and a latent state, paragraph 1; Figure 8, medium-gray bars",
+      "quote": "the rEFH\u2019s advantage over the UKF is not abolished by abandoning the final \u2018correction\u2019, sc., Poisson rather than normally distributed spike counts (figure 8, medium-gray bars)",
+      "criterion": "Session-weighted mean SNR, averaged over x and y, at 64 ms. Reproduced when the standard-normal rEFH (+KF) exceeds the UKF for velocity and acceleration."
+     },
+     {
+      "id": "fig9-taps",
+      "statement": "Adding taps improves both the rEFH (+KF) and the UKF; at 32, 64 and 128 ms the best rEFH decoder beats the best UKF at velocity and acceleration and is indistinguishable at position, while at 16 ms the UKF is better at position and velocity.",
+      "source": "Results, Augmenting the decoders with taps, paragraph 2; Figure 9",
+      "quote": "this introduction of taps improves the performance of the rEFH (figure 9), as it does the UKF. As before, at all but the smallest bin width, the best rEFH decoder is superior to the best UKF at velocity and acceleration reconstruction, and indistinguishable at position reconstruction (bootstrap; p < 0.01). At that smallest bin width (16 ms), however, the UKF is superior in both position and velocity decoding.",
+      "criterion": "At each bin width, the four decoders of figure 9; the best rEFH and the best UKF are those with the higher session-weighted mean SNR for each variable. Bootstrap of the weighted mean difference. Reproduced when (i) each tapped decoder has higher mean velocity SNR than its untapped version at 16 and 32 ms (at 64 ms figure 9 shows the tapped and untapped rEFH about equal, and at 128 ms the rEFH has no taps, Results, Augmenting the decoders); (ii) at 32, 64 and 128 ms the best rEFH beats the best UKF for velocity and acceleration with p < 0.01 and their position difference has p >= 0.01; (iii) at 16 ms the best UKF has the higher position and velocity SNR. Partially reproduced when (ii) holds and (i) or (iii) fails."
+     },
+     {
+      "id": "kflatent-modest",
+      "statement": "KFlatent is only modestly better than the standard Kalman filter; nonlinear tuning (the UKF) improves on the standard filter more.",
+      "source": "Discussion, The importance of nonlinear tuning, Poisson emissions, and a latent state, paragraph 1; Figures 2 and 5 to 7",
+      "quote": "yet its performance is only modestly superior to that of the standard Kalman filter, KFobs ... What does improve the standard KF is the addition of tuning to nonlinear and tapped functions of the kinematic state",
+      "criterion": "Session-weighted mean SNR, averaged over x and y, at 64 ms. The paper does not say over which variables. Readings are (a) velocity, the variable the paper treats as most important; (b) the mean over velocity and acceleration; (c) the mean over all three variables. Under (c) figure 2 puts both KFlatent decoders slightly below KFobs, since they decode position worse (Results, Reconstruction quality, bullet 2). Reproduced when, under one reading, the better of KFlatent and KFlatent (+KF) exceeds KFobs and the UKF exceeds KFobs by more. Per variable values are reported."
+     },
+     {
+      "id": "advantage-grows-with-derivative",
+      "statement": "At 64 ms and with each amount of training data, the relative advantage of the rEFH (+KF) over the other decoders increases from position to velocity to acceleration.",
+      "source": "Results, The rEFH against its nearest rivals, all session and monkeys, paragraph 3; Results, Seconds of data used for training; Figures 2, 4 and 6",
+      "quote": "Overall, the relative advantage provided by the rEFH increases with derivatives.",
+      "criterion": "Session-weighted mean SNR, averaged over x and y, at 64 ms with 320 s of training (figure 2), and with 80, 160 and 320 s (figure 6, \"as with bin widths, the relative advantage of the rEFH (+KF) increases with derivatives\"). The relative advantage is the rEFH (+KF) SNR minus that of the best decoder other than the two rEFH decoders, as a percent of the latter, as in fig5-derivative-order; the difference in dB falls from velocity (1.60 dB) to acceleration (1.2 dB) in the Introduction, so it cannot be meant. Reproduced when the percent advantage rises from position to velocity to acceleration at each amount of training data. Partially reproduced when it holds at 320 s only."
+     },
+     {
+      "id": "static-refh-position-worse",
+      "statement": "Under the static mapping alone the rEFH reconstructs position significantly worse than the UKF, while the rEFH (+KF) is not distinguishable from it.",
+      "source": "Discussion, Relative reconstruction quality of position, velocity, and acceleration, paragraph 1; Figure 8, first panel",
+      "quote": "Despite superior velocity and acceleration decoding, the rEFH (+KF) reconstructs position little better than the UKF (the differences are not significant); and under a static mapping, significantly worse.",
+      "criterion": "Bootstrap of the session-weighted mean position SNR difference, averaged over x and y, between the static rEFH and the UKF at 64 ms. The paper does not give the level of \"significantly\"; the levels it uses elsewhere are 0.01 and 0.05, and both are reported. Reproduced when the static rEFH is below the UKF with p < 0.05. The rEFH (+KF) part is fig4-position."
      }
     ]
    }
@@ -59298,7 +59531,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-28T18:38:01+00:00",
+ "generated": "2026-10-28T18:59:45+00:00",
  "queue_generated": "2026-10-27T12:12:13+00:00",
  "queue_counts": {
   "public_dandisets": 665,
@@ -141675,21 +141908,17 @@
    "claims": 1
   },
   "hours": {
-   "full": 3.8680555555555554,
-   "claims": 0.2997222222222222
+   "full": 3.82125,
+   "claims": 0.30041666666666667
   },
   "running": {
    "000233": {
     "kind": "full",
-    "hours": 2.7112429480555558
-   },
-   "openneuro-ds000228": {
-    "kind": "full",
-    "hours": 0.0
+    "hours": 2.3178063447222224
    },
    "000129": {
-    "kind": "claims",
-    "hours": 0.2709651702777778
+    "kind": "full",
+    "hours": 3.626973011388889
    }
   }
  },
