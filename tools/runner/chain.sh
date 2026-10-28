@@ -245,7 +245,8 @@ until mkdir "$STATE/finalize.lock" 2>/dev/null; do sleep 60; done
 trap 'rmdir "$STATE/finalize.lock" 2>/dev/null; notify' EXIT
 log "finishing"
 fetch
-git checkout -q -B "attempt/$d" origin/attempt/"$d"
+# A branch checked out in another worktree cannot be checked out here; carrying on would act on the wrong branch.
+git checkout -q -B "attempt/$d" origin/attempt/"$d" || { end "$d STOPPED: could not check out attempt/$d (is it checked out in another worktree?)"; exit 1; }
 # Merge main in, not rebase: main already has the checked claims (the checkpoint), so a rebase replays
 # the branch's claims, claims-check and answer commits onto them and stops on an add/add conflict. The
 # branch's claims file is the same or later (the reader's answers), so it is kept; any other conflict
@@ -257,9 +258,9 @@ if ! git merge -q --no-edit -m "Merge main into attempt/$d" origin/main >/dev/nu
   fi
   git commit -q --no-edit
 fi
-git push -q origin "attempt/$d"
+git push -q origin "attempt/$d" || { end "$d STOPPED: could not push attempt/$d after merging main"; exit 1; }
 is_done recorder || run_role recorder || { end "$d STOPPED at recorder"; exit 1; }
-fetch; git checkout -q -B "attempt/$d" origin/attempt/"$d"
+fetch; git checkout -q -B "attempt/$d" origin/attempt/"$d" || { end "$d STOPPED: could not check out attempt/$d after the recorder"; exit 1; }
 title=$(python "$here/describe.py" title "$d")
 pr=$(gh pr list --head "attempt/$d" --state open --json url --jq '.[0].url // empty')
 if [ -z "$pr" ]; then
