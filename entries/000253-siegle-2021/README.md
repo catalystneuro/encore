@@ -16,7 +16,7 @@ the paper's GitHub repository.
 | Latency, RF size, modulation index and decay timescale follow the hierarchy (Fig. 3c, f, i, l) | Reproduced |
 | Pairwise area differences: latency, RF size | Partially reproduced |
 | Pairwise area differences: modulation index, decay timescale | Not reproduced |
-| Figure 3 unit counts | Not reproduced (the scripts' windows give the paper's counts, as a variant) |
+| Figure 3 unit counts | Not reproduced (the scripts' windows give counts within tolerance, 17,163 against 15,713, as a variant) |
 | Intrinsic timescale, firing rate and spontaneous latency do not follow the hierarchy | Reproduced |
 | Superficial and deep layers differ in the four metrics | Not reproduced (1 of 4; the scripts' windows give 3 of 4) |
 | Anatomical hierarchy order | Reproduced |
@@ -25,9 +25,9 @@ the paper's GitHub repository.
 | Gaze stability | Reproduced |
 | Sharp CCG peaks (16,119 of 2,089,890 pairs) | Not reproduced (21,962 of 2,116,259) |
 | V1 leads LM, total hierarchy score, superficial leads deep | Reproduced |
-| DS correlates with hierarchy (r = 0.74) | Partially reproduced (r = 0.827, above the tolerance) |
+| DS correlates with hierarchy (r = 0.74) | Partially reproduced (r = 0.827, above the tolerance; 3 of 26 single-mouse exclusions give r within it) |
 | Neighbouring areas differ from within-area offsets; V1 leads, AM follows | Partially reproduced |
-| Hierarchy absent in spontaneous activity | Not reproduced with all units; absent with the Extended Data Fig. 1j filters |
+| Hierarchy absent in spontaneous activity | Not reproduced with all units, a borderline result (p = 0.022); absent with the Extended Data Fig. 1j filters |
 | Distance does not explain the DS correlation | Blocked: metadata insufficient |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the

@@ -115,13 +115,12 @@ outcomes:
   deviations:
   - Unit metrics (p_value_rf, area_rf, firing_rate_dg) recomputed from spike times; the paper read them from the
     AllenSDK.
-  - The claims file names the flashes as open; Figure3/get_flash_PSTH.py, which wrote the paper's latency table,
-    uses every flash presentation (fl.stim_table.index.values), so all flashes is the main reading.
+  - The claims file names the flashes as open; Figure3/get_flash_PSTH.py uses every flash presentation (fl.stim_table.index.values), so all flashes is the main reading.
 - claim: ed9a-latency-pairs
   outcome: partially_reproduced
   notebook: reproduce_siegle_2021.ipynb
   output: claim:ed9a-latency-pairs
-  notes: LGN-V1, RL-LP, LP-AL and PM-AM are not significant (corrected p 0.45 to 0.93), and RL-AL is not significant
+  notes: LGN-V1, RL-LP, LP-AL and PM-AM are not significant (corrected p 0.44 to 0.90), and RL-AL is not significant
     either (0.52); 27 of 28 pairs agree. Dark flashes also give one disagreement (LGN-LM); light flashes four.
 - claim: fig3f-rf-size-hierarchy
   outcome: reproduced
@@ -154,8 +153,8 @@ outcomes:
   notebook: reproduce_siegle_2021.ipynb
   output: claim:ed9e-modulation-index-pairs
   assumed: true
-  notes: PM-AM is not significant (corrected p = 0.13) as stated, but RL-AL is significant (0.0006), and LM-RL (0.63),
-    LM-LP (0.87) and RL-LP (0.53) are not. 4 of 28 pairs disagree.
+  notes: PM-AM is not significant (corrected p = 0.12) as stated, but RL-AL is significant (0.0006), and LM-RL (0.63),
+    LM-LP (0.88) and RL-LP (0.54) are not. 4 of 28 pairs disagree.
   deviations:
   - The same assumed preferred condition as fig3i-modulation-index-hierarchy.
 - claim: ed9fg-intrinsic-timescale-not-correlated
@@ -193,14 +192,16 @@ outcomes:
     for the decay timescale against 7,837 +/- 784. Variants, not judged; the scripts' windows (200 ms; 40 to 290
     ms) give 17,163 and 8,381, the paper's tables 15,849 and 7,798, all within tolerance. The round-1 record adopted
     the scripts' windows on the reading that get_flash_PSTH.py wrote the paper's latency table; it reads that table,
-    so the claims file's reading is kept. Which windows the paper used is asked of its authors (see findings).
+    so the claims file's reading is kept. Which windows the paper used is asked of its authors (see findings). Without
+    the firing_rate_dg > 0.1 Hz cut, whose definition is assumed, 13,476 and 25,019; the cut removes 560 units and
+    does not change the outcome.
 - claim: ed9bc-spontaneous-latency
   outcome: reproduced
   notebook: reproduce_siegle_2021.ipynb
   output: claim:ed9bc-spontaneous-latency
   measured: -0.9906
   notes: Spontaneous latency against hierarchy r = 0.290, p = 0.49 (no correlation, as stated); against the pre-flash
-    rate (reading a) r = -0.991, p = 2e-06; against the overall rate (b) r = -0.987. 157 of 13,347 units have no
+    rate (reading a) r = -0.991, p = 2e-06; against the overall rate (b) r = -0.987. 156 of 13,344 units have no
     spontaneous latency.
 - claim: ed9ij-firing-rate-not-correlated
   outcome: reproduced
@@ -341,8 +342,10 @@ outcomes:
   measured: 0.8269
   assumed: true
   notes: 2 s, all units, DS from offsets pooled over mice; r = 0.827, p < 1e-5 over 21 entries, above the tolerance
-    (0.666 to 0.814); the correlation is present and significant but stronger than the paper's, so the claim holds
-    in part. With any one mouse left out r = 0.802 to 0.839. Pooled DS under the other readings r = 0.800 to 0.842;
+    (0.666 to 0.814). The criterion names no partial outcome; the correlation is present and significant but stronger
+    than the paper's, so the claim holds in part. With any one mouse left out r = 0.802 to 0.839, and 3 of the 26
+    exclusions (mice 820866111, 800250054, 763884096) give r within the tolerance (0.802 to 0.811); the paper used
+    25 mice and the one left out is not identified, so the outcome also rests on which 25 mice are used. Pooled DS under the other readings r = 0.800 to 0.842;
     the two Extended Data Fig. 1j readings (0.810, 0.800) are within the tolerance and 3 s with all units (0.842)
     is not. DS averaged across mice 0.777 to 0.817; zero lags counted positive 0.621 to 0.786. The paper's precomputed
     matrix gives r = 0.735 with the same anatomy differences.
@@ -352,6 +355,8 @@ outcomes:
     is nearest it. The paper does not state either.
   - Within-area pairs enter both ways (offset and its negative), so the diagonal DS is 0; the paper's precomputed
     diagonal is near 0 (0.008 for V1).
+  - All 26 Functional Connectivity mice are used, where the paper uses 25; 3 of the 26 single-mouse exclusions
+    put r within the tolerance.
 - claim: ed7e-distance-does-not-explain
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -368,7 +373,10 @@ outcomes:
     gratings). With all non-noise units the DS matrix averaged across mice correlates with the hierarchy differences;
     2 s segments r = 0.497, p = 0.022; 3 s r = 0.484, p = 0.026; pooled DS r = 0.435 and 0.445 (p = 0.049, 0.043).
     With the Extended Data Fig. 1j filters it does not (r = 0.142, p = 0.54; r = 0.170, p = 0.46). The outcome rests
-    on the unit set; the one whose pair count matches the paper's is adopted. The round-1 correlations (r = 0.50
+    on the unit set; the one whose pair count matches the paper's is adopted. With any one mouse left out the 2 s
+    correlation stays significant in 26 of 26 (p 0.009 to 0.043) and the 3 s one in 24 of 26 (p up to 0.059). The
+    result is borderline, and it is measured under a reading with 36% more sharp peaks during gratings than the
+    paper's (21,962 against 16,119). The round-1 correlations (r = 0.50
     to 0.60 under every reading) were partly an effect of the jitter error.
   deviations:
   - The spontaneous block is cut into consecutive 2 s or 3 s segments and the units are those selected during gratings;
@@ -406,7 +414,9 @@ findings:
 - kind: other
   statement: The units tables of 000021 and 000022 carry no stimulus metrics (p_value_rf, area_rf, mod_idx_dg, firing_rate_dg),
     which the paper's figure code reads from the AllenSDK. They were recomputed from the spike times as the Methods
-    describe; the receptive field, latency and modulation results match the paper's.
+    describe. The correlations with the hierarchy of Figure 3 are reproduced, but the hippocampal receptive field
+    fraction is outside the paper's tolerance, per-unit latencies match the paper's table for at most 16% of units,
+    and the pairwise modulation index tests (Extended Data Fig. 9e) are not reproduced.
 - kind: data_missing
   statement: The 21 behaviour sessions of Figure 4 (12 mice) are not deposited as recordings in any of the three
     dandisets, and the paper names no deposit; only metric tables are in its GitHub repository, so the behavioural
@@ -415,8 +425,8 @@ findings:
   statement: The Methods compute the time to first spike within 250 ms, the response decay timescale over 0 to 250
     ms and the intrinsic timescale over the 1 s before each flash; the paper's scripts use 200 ms (get_flash_PSTH.py),
     40 to 290 ms and 1.0 to 2.0 s after onset (timescale_calculation.py). The paper's timescale table matches the
-    scripts' windows (99.3% and 99.6% of units within 1%). The windows change the unit counts of Figure 3 (13,347
-    against 17,167 after the latency cut) and the pairwise tests of Extended Data Fig. 9h.
+    scripts' windows (99.3% and 99.6% of units within 1%). The windows change the unit counts of Figure 3 (13,344
+    against 17,163 after the latency cut) and the pairwise tests of Extended Data Fig. 9h.
 - kind: code_mismatch
   statement: No script of the paper's repository writes data/time_to_first_spike.csv; Figure3/get_flash_PSTH.py
     reads it and writes time_to_first_spike_20200312.csv. The table does not match latencies recomputed from the
@@ -427,8 +437,9 @@ findings:
     in ExtDataFigure10.py, while codes 1, 2 and 3 are also given to CA1, CA2 and CA3 units.
 - kind: selection_undocumented
   statement: The CCG analyses use 25 mice of the Functional Connectivity set; 000022 holds 26, and the one left
-    out is not identified (the code lists internal mouse ids that are not in the files); no single mouse left out
-    changes the peak count or the DS correlation outcome. The quality filter of the CCG units is not stated; the
+    out is not identified (the code lists internal mouse ids that are not in the files). No single mouse left out
+    changes the peak count outcome, but leaving out any of 3 of the 26 mice puts the DS correlation of Figure 2f
+    within the paper's tolerance. The quality filter of the CCG units is not stated; the
     paper's pair count is matched with all non-noise units, not with the Extended Data Fig. 1j filters.
 - kind: methods_unavailable
   statement: Question for the paper's authors - were Figure 3 and Extended Data Figs. 9 and 10 made with the Methods'
@@ -454,7 +465,7 @@ verifications:
   reviewed: Round 1. The executed notebooks with the conclusion cells and the summaries removed, the helper module
     and the claims file, with the paper. The verifier tested ccg_group against a brute-force jitter expectation
     on synthetic trains and checked the archive for the blocked claims. Its report had no attempt record and gave
-    its own outcome for each claim; 34 of 36 agree with the round-1 record, with the nine CCG outcomes marked provisional
+    its own outcome for each claim; 34 of 36 agree with the round-1 record, with the eight tested CCG outcomes marked provisional
     because of the jitter error.
   results:
   - claim: methods-sessions-passing-qc
@@ -724,3 +735,255 @@ verifications:
       the within-area reference now counts each pair once; the claims that use the sharp peaks are judged under
       one reading, held to fig2-sharp-peak-pairs, and the notebook rerun. DS 0.321 and 0.318 under the judged reading,
       0.220 to 0.321 under every reading; outcome kept.
+- date: '2026-10-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2. The full executed notebooks of the round-1 revision, the helper module, the claims file, the attempt
+    record and the README, with the paper. The verifier agrees with all 36 outcomes, accepting fig2f and ed7fg as conditional.
+    It reported stale numbers in the record, overstated sentences (the 'other' and selection_undocumented findings, CCG
+    cell 36), a vacuous count in main cell 9, the README wording on the Figure 3 counts, and that the round-1 record
+    said nine provisional CCG outcomes where it had marked eight. All are corrected, and the outputs it asked for are
+    added.
+  results:
+  - claim: methods-sessions-passing-qc
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: methods-probes-ccf
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: ed1jk-units-per-experiment
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: fig1g-receptive-fields
+    agrees: true
+    outcome: partially_reproduced
+    reason: Supported by the printed values and the criterion. The record's 'other' finding, that the receptive field
+      results match the paper's, overstates, since the hippocampal receptive-field fraction is outside tolerance (main
+      cell 21). Main cell 9 prints 'fewer than 10 spikes ... 0 of 65945', computed only over units that already have
+      a p-value, so it is vacuous; the correct count, 4,267 visual and 3,352 hippocampal units, is in cell 21.
+    response: The 'other' finding now says the hippocampal fraction is outside tolerance. Main cell 9 now counts over
+      all non-noise units of the eight areas and the hippocampus.
+  - claim: link-unit-tables
+    agrees: true
+    outcome: partially_reproduced
+    reason: Supported by the printed values and the criterion. The 'other' finding overstates the latency results; per-unit
+      latencies match the paper's table for only 16% of units (cell 24).
+    response: The 'other' finding now says per-unit latencies match the paper's table for at most 16% of units.
+  - claim: fig3c-latency-hierarchy
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: ed9a-latency-pairs
+    agrees: true
+    outcome: partially_reproduced
+    reason: Supported by the printed values and the criterion. The notes say 'corrected p 0.45 to 0.93'; the p_bh values
+      in cell 34 are 0.444 to 0.902.
+    response: Notes corrected to 0.44 to 0.90.
+  - claim: fig3f-rf-size-hierarchy
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: ed9d-rf-size-pairs
+    agrees: true
+    outcome: partially_reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: fig3i-modulation-index-hierarchy
+    agrees: true
+    outcome: reproduced
+    reason: The preferred-condition assumption is stated and reasonable.
+    response: No change needed.
+  - claim: ed9e-modulation-index-pairs
+    agrees: true
+    outcome: not_reproduced
+    reason: The preferred-condition assumption is stated and reasonable. The notes give PM-AM 0.13, LM-LP 0.87 and RL-LP
+      0.53; cell 46 prints p_bh 0.120, 0.879 and 0.537. The 'other' finding overstates, since ed9e is not reproduced
+      (cell 46).
+    response: Notes corrected to 0.12, 0.88 and 0.54; the 'other' finding now says the pairwise modulation index tests
+      are not reproduced.
+  - claim: ed9fg-intrinsic-timescale-not-correlated
+    agrees: true
+    outcome: reproduced
+    reason: Resolved (B6). 8,834 of the 15,958 kept units sit at the 1 ms bound; without them p = 0.85. The text now
+      calls the test weak.
+    response: No change needed.
+  - claim: fig3l-response-decay-timescale-hierarchy
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: ed9h-response-decay-pairs
+    agrees: true
+    outcome: not_reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: fig3-unit-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Now not_reproduced (main cell 58), which I agree with. The latency table is still unexplained (B4); the outcome
+      reaches tolerance under the scripts' windows or the paper's tables, so it may reflect a difference in procedure
+      more than in the data; that is stated, and the question is put to the authors. The code_mismatch finding says '13,347
+      against 17,167', cell 58 prints 13,344 and 17,163; the README's 'the scripts' windows give the paper's counts'
+      should say counts within tolerance, 17,163 against 15,713. The main Summary calls firing_rate_dg an assumption
+      but no outcome flags it; it enters every Figure 3 selection only as a > 0.1 Hz cut, so I expect little effect.
+    response: Numbers in the finding corrected and the README reworded. Added a variant without the firing_rate_dg cut
+      (cells 28 and 58); the cut removes 560 of 25,019 units, and without it the count is 13,476, so the outcome does
+      not change; noted in the outcome and the Summary. The latency table remains unexplained.
+  - claim: ed9bc-spontaneous-latency
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion. The notes say '157 of 13,347 units'; cell 61 prints 156
+      of 13,344.
+    response: Notes corrected.
+  - claim: ed9ij-firing-rate-not-correlated
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: ed10b-layers
+    agrees: true
+    outcome: not_reproduced
+    reason: Now not_reproduced (main cell 67), which I agree with. Under the scripts' windows or the paper's own tables
+      3 of 4 parts reach tolerance, so the outcome may reflect a difference in procedure more than in the data (B4);
+      that is stated, and the question is put to the authors.
+    response: No change; the question stays in the findings.
+  - claim: anatomical-hierarchy-order
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: fig4b-behaviour-performance
+    agrees: true
+    outcome: blocked
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: fig4e-behaviour-latency-hierarchy
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: fig4f-change-modulation-hierarchy
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: ed9k-cmi-hit-not-miss
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: ed9lmn-other-responses-not-correlated
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: fig4h-decoder-behaviour-hierarchy
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: ed9p-decoders-above-chance
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: methods-gaze-stability
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion.
+    response: No change needed.
+  - claim: fig2-sharp-peak-pairs
+    agrees: true
+    outcome: not_reproduced
+    reason: Now not_reproduced (CCG cell 9), which I agree with. B1 and B2 are resolved. No reading reproduces the parent
+      peak count, the code's random-resample jitter variant was not run, and the mouse the paper left out is still not
+      identified (B5).
+    response: No change of outcome. The resample variant was not run, because the jitter function that get_ccgjitter
+      imports is in neither repository the paper links, so its procedure would be this attempt's guess, and the Methods
+      describe the expected value under jitter, which is what is computed. The question is in the findings for the paper's
+      authors. The mouse left out is still not identified; nothing in the files names it.
+  - claim: fig2d-v1-leads-lm-example
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion. No reading reproduces the parent peak count, and the code's
+      random-resample jitter variant was not run; the dependent outcomes rest on a reading with 36% excess peaks.
+    response: No change of outcome. The resample variant was not run, because the jitter function that get_ccgjitter
+      imports is in neither repository the paper links, so its procedure would be this attempt's guess, and the Methods
+      describe the expected value under jitter, which is what is computed. The question is in the findings for the paper's
+      authors.
+  - claim: fig2-neighbour-offsets-across-mice
+    agrees: true
+    outcome: partially_reproduced
+    reason: Supported by the printed values and the criterion. B2 resolved; file-order and doubled variants give the
+      same 4 of 5 (cell 15). No reading reproduces the parent peak count, and the code's random-resample jitter variant
+      was not run; the dependent outcomes rest on a reading with 36% excess peaks.
+    response: No change of outcome. The resample variant was not run, because the jitter function that get_ccgjitter
+      imports is in neither repository the paper links, so its procedure would be this attempt's guess, and the Methods
+      describe the expected value under jitter, which is what is computed. The question is in the findings for the paper's
+      authors.
+  - claim: ed7c-v1-leads-am-follows
+    agrees: true
+    outcome: partially_reproduced
+    reason: Supported by the printed values and the criterion. No reading reproduces the parent peak count, and the code's
+      random-resample jitter variant was not run; the dependent outcomes rest on a reading with 36% excess peaks.
+    response: No change of outcome. The resample variant was not run, because the jitter function that get_ccgjitter
+      imports is in neither repository the paper links, so its procedure would be this attempt's guess, and the Methods
+      describe the expected value under jitter, which is what is computed. The question is in the findings for the paper's
+      authors.
+  - claim: fig2f-directionality-vs-anatomy
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under the judged reading r = 0.827 with p < 1e-5, above the tolerance of 0.666 to 0.814 (CCG cell 21). The
+      criterion defines no partial outcome; read literally it would give not_reproduced. Partial fits how fig1g was handled,
+      but the record should say the criterion names no partial outcome. The assumption (2 s window, all units) is stated
+      and reasonable, but the outcome also depends on which mouse is left out. CCG cell 36 and the selection_undocumented
+      finding say no single mouse left out changes the outcome; cell 21 prints a leave-one-out range of r = 0.8024 to
+      0.8394, whose low end is inside the tolerance, so leaving out at least one mouse would make fig2f reproduced. The
+      record should report how many do, and mark the outcome as also resting on which 25 mice are used.
+    response: Outcome kept, as agreed. Cell 21 now prints each single-mouse exclusion; 3 of 26 (r 0.802 to 0.811) are
+      within the tolerance. The notes, a deviation, cell 22, the Summary, the README and the selection_undocumented finding
+      now say this, that the outcome also rests on which 25 mice are used, and that the criterion names no partial outcome.
+  - claim: ed7e-distance-does-not-explain
+    agrees: true
+    outcome: blocked
+    reason: Resolved (D). All 325 probe files have y equal to z, so the claim stays blocked.
+    response: No change needed.
+  - claim: ed7fg-absent-in-spontaneous
+    agrees: true
+    outcome: not_reproduced
+    reason: The assumption is stated and its consequence shown; with the Extended Data Fig. 1j filters the outcome flips
+      (p = 0.54 and 0.46). The result is borderline; p = 0.022 and 0.026 with DS averaged across mice, 0.049 and 0.043
+      pooled, measured under a reading that gives 36% more sharp peaks than the paper (21,962 against 16,119). I accept
+      the outcome as conditional, not firm. This matters most for ed7fg, which changes with the unit set.
+    response: Outcome kept, as agreed. Added a leave-one-mouse-out check (cell 24); the 2 s correlation stays significant
+      in 26 of 26 exclusions (p 0.009 to 0.043), the 3 s one in 24 of 26 (p up to 0.059). The notes, cell 25, the Summary
+      and the README now call the result borderline and give the 36% excess of peaks. No change of outcome. The resample
+      variant was not run, because the jitter function that get_ccgjitter imports is in neither repository the paper
+      links, so its procedure would be this attempt's guess, and the Methods describe the expected value under jitter,
+      which is what is computed. The question is in the findings for the paper's authors.
+  - claim: ed8-total-hierarchy-score
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion. No reading reproduces the parent peak count, and the code's
+      random-resample jitter variant was not run; the dependent outcomes rest on a reading with 36% excess peaks.
+    response: No change of outcome. The resample variant was not run, because the jitter function that get_ccgjitter
+      imports is in neither repository the paper links, so its procedure would be this attempt's guess, and the Methods
+      describe the expected value under jitter, which is what is computed. The question is in the findings for the paper's
+      authors.
+  - claim: ed10ce-superficial-lead-deep
+    agrees: true
+    outcome: reproduced
+    reason: Supported by the printed values and the criterion. No reading reproduces the parent peak count, and the code's
+      random-resample jitter variant was not run; the dependent outcomes rest on a reading with 36% excess peaks.
+    response: No change of outcome. The resample variant was not run, because the jitter function that get_ccgjitter
+      imports is in neither repository the paper links, so its procedure would be this attempt's guess, and the Methods
+      describe the expected value under jitter, which is what is computed. The question is in the findings for the paper's
+      authors.
