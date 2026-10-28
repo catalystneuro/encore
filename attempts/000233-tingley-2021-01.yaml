@@ -74,12 +74,16 @@ outcomes:
   notes: At +10 min the per-rat Spearman correlations have a median of -0.106 (16 of 18 negative)
     against 0.005 for 1799 circular shuffles (100 per rat), two-sample KS D = 0.575, p = 4.0e-06.
     With Pearson, -0.076 against 0.002, p = 1.5e-04. Seven rats (Spearman) lie below all 100 of
-    their own shuffles.
+    their own shuffles. The result holds under the two alignments one reading apart, each against
+    its own shuffles. Counting SPW-Rs over the 5 min after each reading, Spearman median -0.108 (KS
+    p = 2.5e-07); taking the change to the next reading, -0.047 (KS p = 2.5e-03). So the outcome does
+    not rest on the alignment assumption.
   deviations:
   - 18 rats where the paper has 30; alignment and 5 s.d. threshold as in
     fig2-ripple-rate-predicts-glucose.
 - claim: fig2g-clustered-ripples
   outcome: reproduced
+  assumed: true
   notebook: reproduce_tingley_2021.ipynb
   output: claim:fig2g-clustered-ripples
   notes: Under reading (a), epochs with more than 150 SPW-Rs are followed 10 min later by a mean
@@ -88,10 +92,18 @@ outcomes:
     gives p = 0.059, which the criterion does not require. Under reading (b), more than 30 per
     epoch, the mean is -0.032 nA, which does not match. The curve is not monotonic (120 to 150 per
     epoch, +0.125 nA), and in 3 of the 13 rats with clustered epochs their mean is not negative.
+    Under the alignments one reading apart, counting SPW-Rs over the 5 min after each reading gives
+    -0.102 nA after clustered epochs against -0.011 nA after isolated ones under (a), which still
+    matches; taking the change to the next reading gives +0.018 against -0.027 nA under (a) and
+    -0.022 against -0.027 nA under (b), which does not.
   deviations:
   - Epochs pooled over 18 rats; the paper does not say whether it pools.
+  - Assumed, as in fig2-ripple-rate-predicts-glucose, that the SPW-R count of an epoch is paired with
+    the glucose change over the same interval; the outcome changes under one of the two alignments
+    one reading apart (shown).
 - claim: edfig4-ripple-features
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_tingley_2021.ipynb
   output: claim:edfig4-ripple-features
   notes: With deciles the ranges of the +10-min effect across bins are interval 0.070 nA, duration
@@ -103,8 +115,14 @@ outcomes:
     64.7% of resamples and the full order interval > amplitude > duration > frequency occurs in 1.5%.
     The most clustered decile (shortest intervals) has the least negative effect, +0.004 nA against
     -0.027 nA in the decile with the longest intervals, the opposite direction to
-    fig2g-clustered-ripples.
+    fig2g-clustered-ripples. Under the alignments one reading apart, taking the change to the next
+    reading keeps the interval first with deciles (0.056 nA), so the outcome is the same; counting
+    SPW-Rs over the 5 min after each reading puts the interval last under both bin widths (deciles
+    frequency 0.060, duration 0.047, amplitude 0.047, interval 0.031), which matches neither case.
   deviations:
+  - Assumed, as in fig2-ripple-rate-predicts-glucose, that the 5-min interval holding a SPW-R is
+    paired with the glucose change over the same interval; the outcome changes under one of the two
+    alignments one reading apart (shown).
   - The inter-SPW-R interval is the time from the previous SPW-R in the same file, a standard
     choice (previous or next is not said).
 - claim: fig2h-phase-reset
@@ -131,7 +149,8 @@ outcomes:
     resultant length 0.033, above all 200 circular shifts of SPW-R rate, whose 95th percentile is
     0.013; p < 0.05 in 10 of 16 rats singly). The comodulogram peak (R 0.216) is on the diagonal at
     79.0 min for both signals, so the third condition, a peak at a longer glucose period, fails; the
-    mean correlation above the diagonal is 0.072 against 0.047 below. With 6-h stretches the same
+    mean correlation where the glucose period is longer than the SPW-R period is 0.072 against 0.047
+    where it is shorter. With 6-h stretches the same
     holds (p = 0.025 and 1.1e-08, peak at 79.0 min for both). With 24-h stretches only 3 rats remain
     and neither test reaches p < 0.05 (p = 0.24 and 0.82). The paper's p bounds (1e-24, 1e-18) are
     not reached.
@@ -153,8 +172,9 @@ outcomes:
     (0.013), also outside the tolerance. Neither condition holds under any of 12 variants of the
     fit's axes (log-log, semi-log, linear), its range (all frequencies or 10 to 300 min) and the
     segment length (24 or 12 h); the residual peak lies at 43.6 to 51.4 min (log-log), 10.1 min
-    (semi-log) or 68.6 to 72.0 min (linear). An oscillation of about 50 min is present; the expected
-    period and the 15 to 90 min range are not matched.
+    (semi-log) or 68.6 to 72.0 min (linear). The spectrum has a broad hump of excess power from about
+    22 to 131 min, but the autocorrelogram shows no rhythm at its peak (-0.06 at a 50-min lag, first
+    side peak 0.013 at 70 min); the expected period and the 15 to 90 min range are not matched.
   deviations:
   - All 25 subjects with a 24-h run of readings, where the legend has 8 rats; Welch spectra with
     24-h segments, a standard choice (12-h segments shown).
@@ -203,10 +223,15 @@ outcomes:
   notes: In all 15 rats with at least 3 days of 6 h or more, the daily median amplitude (peak
     normed power) and duration show no Spearman trend with day at p < 0.05; the daily rate is
     consistent in 13 of 15 (no trend in 11). Amplitude stays within 20% of the median in only 5
-    rats and the rate in 4, so the result rests on the absence of trends, which a Spearman test over
-    3 to 5 days rarely shows; the criterion's "or" passes most rats with few days. Amplitude in
-    microvolts trends with day in 5 rats; in CGM30 its overall median is 0, which makes its
-    deviation infinite (not used by the criterion).
+    rats and the rate in 4, so the result rests on the absence of trends. The p values are scipy's
+    asymptotic ones, which are too small with few days. A perfectly monotone series of 3 or 4 days
+    gets p = 0.000, where the exact two-sided p is 0.33 (3 days) or 0.083 (4 days), so with 3 or 4
+    days no series can reach p < 0.05. With exact p no rat with up to 8 days has a trend in any
+    measure; the two rate failures (CGM2, 5 days, exact p 0.083; CGM52, 4 days, exact p 0.083) are
+    artefacts of the asymptotic p, and the rate is consistent in all 15 rats. Amplitude in
+    microvolts trends with day in 5 rats by the asymptotic p and in 2 (CGM1, CGM31, 12 and 18 days)
+    by the exact one; in CGM30 its overall median is 0, which makes its deviation infinite (not used
+    by the criterion).
   deviations:
   - Days with at least 6 h of CA1 recording, a standard choice.
 - claim: edfig3-ripple-rate-rhythms
@@ -248,18 +273,26 @@ outcomes:
     intervals.
 - claim: edfig4-nrem-wake
   outcome: reproduced
+  assumed: true
   notebook: reproduce_tingley_2021.ipynb
   output: claim:edfig4-nrem-wake
   notes: Three rats (CGM1, CGM2, CGM3) have sleep states with SPW-Rs and glucose. In 4-h blocks the
     Spearman R at +10 min is -0.017 in NREM (120 blocks) and -0.083 awake (112), unpaired t p = 0.057;
     per-rat means paired p = 0.27. Across awake-to-NREM transitions (13, two rats) the most negative
     R from +5 to +20 min is -0.261 before and -0.151 after (p = 0.15); across NREM-to-awake (23, one
-    rat) -0.234 and -0.165 (p = 0.23). No test reaches p < 0.05, with little power at 3 rats.
+    rat) -0.234 and -0.165 (p = 0.23). No test reaches p < 0.05, with little power at 3 rats. Under
+    the alignments one reading apart, counting SPW-Rs over the 5 min after each reading makes the
+    awake blocks differ from the NREM blocks (-0.109 against -0.043, unpaired p = 0.038), so the claim
+    fails there; taking the change to the next reading, no test reaches p < 0.05 (blocks p = 0.21,
+    transitions p = 0.27 and 0.66).
   deviations:
   - 3 rats where the paper has 8; sleep states are stored for six subjects only.
   - Transitions between NREM and awake episodes of at least 10 min each, a choice.
   - Spearman correlation, under which the main claim's per-rat reading matched without the
     alignment variants; the claims file does not fix the type for this claim.
+  - Assumed, as in fig2-ripple-rate-predicts-glucose, that the SPW-R count of a 5-min interval is
+    paired with the glucose change over the same interval; the outcome changes under one of the two
+    alignments one reading apart (shown).
 - claim: edfig4-no-hour-differs
   outcome: not_reproduced
   notebook: reproduce_tingley_2021.ipynb
@@ -270,7 +303,8 @@ outcomes:
     correlation is most negative from 17:00 to 21:00 (-0.37 to -0.51) and near zero from 02:00 to
     05:00. Ten is fewer than the 13.8 pairs expected by chance among 276 uncorrected tests, so the
     difference from the paper is in the smallest p, not in a clear effect of hour; with this many
-    uncorrected tests the criterion's bound is hard to meet whatever the data.
+    uncorrected tests the criterion's bound is hard to meet whatever the data. The two alignments one
+    reading apart give the same outcome (smallest p 0.032 and 0.015, with 2 and 13 pairs at p < 0.05).
   deviations:
   - Rats with at least 24 h of both signals, a standard choice; Spearman correlation as in
     edfig4-nrem-wake. A rat-hour where any of the four correlations cannot be computed is left
@@ -282,11 +316,12 @@ outcomes:
   output: claim:edfig9-dorsal-ventral
   notes: The dorsal and ventral rats are CGM37, CGM48 and Vanessa (tables Dorsalripples and
     Ventralripples). Their 5-min dorsal and ventral rates correlate with r = 0.44, 0.83 and 0.13.
-    Only Vanessa has glucose recorded with the electrophysiology, on two days, too few for the
-    criterion's t-tests; per day the ventral correlations at +10 min (-0.088, 0.096) are more
+    Only Vanessa has days with at least 4 h of glucose recorded with the electrophysiology (three,
+    two of which give a correlation), too few for the criterion's t-tests; per day the ventral correlations at +10 min (-0.088, 0.096) are more
     negative than the dorsal (0.115, 0.239), paired p = 0.11, and Vanessa's sensor reads a median
-    of 0.25 nA. In CGM37 and CGM48 the glucose readings cover other days than the electrophysiology,
-    so the glucose the comparison needs is missing for two of the three rats. The rate-correlation
+    of 0.25 nA. CGM37 has no glucose recorded with the electrophysiology and CGM48 has 2.2 h, less
+    than one day of at least 4 h, so the glucose the comparison needs is missing for two of the
+    three rats. The rate-correlation
     part can be tested on its own (above); the claim's glucose part cannot.
 - claim: edfig3e-ca1-firing-decrease
   outcome: blocked
@@ -304,12 +339,15 @@ outcomes:
   notebook: reproduce_tingley_2021.ipynb
   notes: Six of the seven predictors must be computed from the LFP (stored in chunks of 707 samples
     by 32 channels, so one channel means reading all) and the 5-kHz accelerometer over the 1717 h with
-    both signals. The notebook times 30 min of each from one file (5.7 h of LFP and 2.1 h of
-    accelerometer for 1717 h, one file at a time) and 8 such pieces at once in 4 processes, the
-    cores of the machine running it (7.1 s of wall time per hour of recording). Reading alone
-    would take about 203 min for all 18 rats, 172 min for the 8 rats with the most hours (the
-    legend's n is 8) and 66 min for the 3 rats whose brain state is stored, each over the 30-min
-    notebook limit. Sleep states, the binarized brain state, are stored for 3 of the 18 rats; in the
+    both signals. The notebook times 30 min of each from 16 files, read in 4 processes (the cores
+    of the machine running it) and in 16. The reading speed varies with the network; a single
+    30-min piece of LFP took from about 1 to 22 s in the last runs, and 106 s in an earlier one. In
+    the final run, reading alone in 4 processes (4.4 s per hour of recording) would take about 127
+    min for all 18 rats, 108 min for the 8 rats with the most hours (the legend's n is 8) and 41 min
+    for the 3 rats whose brain state is stored; in 16 processes (3.0 s per hour) about 85, 72 and 28
+    min, against the 30-min notebook limit. For the 3 rats the seven predictors and 100 splits of
+    each model at 41 offsets come on top of the reading, and they are 3 of the paper's 8 rats; that
+    test is an analysis not run in this attempt. Sleep states, the binarized brain state, are stored for 3 of the 18 rats; in the
     others the brain state would first have to be scored.
 - claim: edfig6d-pairwise-predictors
   outcome: blocked
@@ -855,5 +893,372 @@ verifications:
     reason: >-
       blocked (metadata_insufficient; scores data_missing). As for the DREADD claims; the histology
       scores exist only in the figure.
+    response: >-
+      No change needed.
+- date: '2026-10-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 2. The full executed notebook after the round-1 revision, with its conclusions and
+    summary, the attempt record, the README, the helper module and the claims file, with the
+    paper. The verifier read the text outputs, not the figures, and agreed with all 35 outcomes.
+    It also noted that the README says the notebook takes about seven minutes where cell 70
+    printed 8.4 min; the README now gives the times of the runs made for this attempt (6.5 to 8.4
+    min).
+  results:
+  - claim: fig2-ripple-rate-predicts-glucose
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      I agree. The assumption is stated in the deviations and is reasonable: the SPW-R count of a
+      5-min interval is paired with the glucose change over that same interval. The two alignments
+      one reading either side are shown, and the outcome depends on which is used. The match
+      remains fragile (B1): it holds in 3 of 16 combinations, and in 1 of 16 once rats with less
+      than 6 h of both signals are dropped; per-rat lags spread from -100 to +80 min; the outcome
+      flips with the alignment. The reproduced outcome rests on a minority of readings.
+    response: >-
+      Outcome kept, with assumed true; the conclusion and notes state the fragility in these
+      terms. No further change.
+  - claim: fig2ef-correlation-beyond-shuffle
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees. fig2ef, fig2g, edfig4-ripple-features, edfig4-nrem-wake and edfig4-no-hour-differs
+      all use the same +10-min pairing as fig2, but none is marked assumed and none has an
+      alignment variant.
+    response: >-
+      Added the two alignments one reading apart, each against its own 100 shuffles per rat: the
+      observed correlations stay below the shuffles (Spearman KS p = 2.5e-07 and 2.5e-03, Pearson
+      7.6e-04 and 6.0e-03). The outcome does not depend on the alignment, so it is not marked
+      assumed; the notes say so.
+  - claim: fig2g-clustered-ripples
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees. fig2ef, fig2g, edfig4-ripple-features, edfig4-nrem-wake and edfig4-no-hour-differs
+      all use the same +10-min pairing as fig2, but none is marked assumed and none has an
+      alignment variant. fig2g is the most exposed to a one-reading shift: Welch p = 0.059; the
+      curve is not monotonic; 3 of 13 rats are not negative.
+    response: >-
+      Added both alignments. Counting SPW-Rs over the 5 min after each reading still matches
+      (-0.102 against -0.011 nA); taking the change to the next reading does not (+0.018 against
+      -0.027 nA under (a)). The outcome is now marked assumed, with a deviation, and the
+      conclusion and notes give the variants.
+  - claim: edfig4-ripple-features
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agrees. fig2ef, fig2g, edfig4-ripple-features, edfig4-nrem-wake and edfig4-no-hour-differs
+      all use the same +10-min pairing as fig2, but none is marked assumed and none has an
+      alignment variant.
+    response: >-
+      Added both alignments. Taking the change to the next reading keeps the interval first with
+      deciles, so the outcome is the same; counting SPW-Rs after each reading puts the interval
+      last, which matches neither case. The outcome is now marked assumed, with a deviation.
+  - claim: fig2h-phase-reset
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: edfig5-cross-frequency-coupling
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agrees. Cell 36 (minor wording): above the diagonal is used for glucose period longer than
+      SPW-R period. In the printed matrix, with glucose periods in the rows, those cells are below
+      the diagonal.
+    response: >-
+      Wording corrected in cell 36 and the notes: where the glucose period is longer than the
+      SPW-R period (below the diagonal of the printed matrix).
+  - claim: edfig1-glucose-rhythm
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      I agree. It is now changed from partially reproduced, and none of the 12 variants (cell 38)
+      meets either condition of the criterion. Cell 39 and the notes say an oscillation of about
+      50 min is present; the printed numbers do not show one: the residual is positive over a
+      broad hump from 22 to 131 min; the mean autocorrelogram at a 50-min lag is -0.06; its first
+      side peak is at 70 min, with a value of 0.013.
+    response: >-
+      Sentence replaced in cell 39 and the notes: a broad hump of excess power from about 22 to
+      131 min, with no rhythm in the autocorrelogram at its peak (-0.06 at 50 min, first side peak
+      0.013 at 70 min).
+  - claim: edfig1-glucose-circadian-meals
+    agrees: true
+    outcome: blocked
+    reason: >-
+      In round 1 I said not reproduced. I now agree with blocked: both expected values concern
+      meals, which cannot be tested; the criterion's pooled ANOVA fails (cell 41, p = 0.986), but
+      a within-subject version of the same data finds an hour-of-day effect (ANOVA p = 0.024,
+      Friedman p = 5.2e-05). Claims-file note: the pooled test is the reader's own choice, a
+      choice made here, not something the paper misread. With subject offsets left in, it can
+      hardly detect a circadian effect.
+    response: >-
+      No change. The pooled test is a choice of the claims file, not a misreading of the paper, so
+      no question was added for a reader; the within-subject variant stays in the notebook and the
+      notes.
+  - claim: edfig1-sensor-decay
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: supp-ripple-rate
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees. The outcome depends on keeping only events of at least 5 s.d.: with that threshold
+      10.19 per minute, inside the tolerance; with all stored events 11.07 per minute, outside it.
+      The threshold comes from the Methods and the record states the dependence, but it has the
+      same status as an assumption and could be flagged assumed true.
+    response: >-
+      Not flagged. The protocol keeps assumed for a method the paper leaves open; the 5 s.d.
+      threshold is the paper's stated method (Methods, SPW-R detection, The peak power threshold
+      was set to five s.d.), cited in the deviations, and the notes and deviations state that the
+      outcome depends on it.
+  - claim: supp-ripples-stable-across-days
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees; the outcome does not change. Cell 51 and the notes say that with 3 to 5 days a
+      Spearman test rarely reaches p < 0.05. Cell 50 shows the opposite: every perfectly monotone
+      3- or 4-day series gets p = 0.000 (CGM46 and CGM51 for amplitude in microvolts, CGM49, CGM51
+      and CGM52 for rate); this comes from scipy's asymptotic p; with exact p, n = 4 with rho = -1
+      gives 0.083; so with 3 days p < 0.05 occurs one time in three by chance. Both rate failures
+      are artefacts of this: CGM52 (n = 4, p = 0.000) and CGM2 (n = 5, rho 0.9, p = 0.037, exact p
+      about 0.08). The reasoning given for B14 is wrong.
+    response: >-
+      Added the exact two-sided p over all orderings of the days (up to 8 days) next to the
+      asymptotic one. With exact p no rat with up to 8 days has a trend in any measure, the two
+      rate failures go, and the rate is consistent in all 15 rats; amplitude is consistent in 15
+      of 15 either way. Cell 51 and the notes now give this in place of the wrong sentence.
+  - claim: edfig3-ripple-rate-rhythms
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: edfig2-refractory-period
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: edfig3e-ca1-firing-decrease
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: edfig4-fasting-fed
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: edfig4-nrem-wake
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees. fig2ef, fig2g, edfig4-ripple-features, edfig4-nrem-wake and edfig4-no-hour-differs
+      all use the same +10-min pairing as fig2, but none is marked assumed and none has an
+      alignment variant.
+    response: >-
+      Added both alignments. Counting SPW-Rs over the 5 min after each reading makes the awake and
+      NREM blocks differ (p = 0.038), so the claim fails there; with the change to the next
+      reading no test reaches p < 0.05. The outcome is now marked assumed, with a deviation.
+  - claim: edfig4-no-hour-differs
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Agrees. fig2ef, fig2g, edfig4-ripple-features, edfig4-nrem-wake and edfig4-no-hour-differs
+      all use the same +10-min pairing as fig2, but none is marked assumed and none has an
+      alignment variant.
+    response: >-
+      Added both alignments; they give the same outcome (smallest p 0.032 and 0.015), so it is not
+      marked assumed; the notes say so.
+  - claim: edfig6-ripple-rate-best-predictor
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees (blocked, too_large); B3 partly resolved. Cell 69 says the timing puts the reading
+      alone at about 6 h of LFP and 2 h of accelerometer one file at a time, and the notes say 5.7
+      h and 2.1 h, while cell 68 printed LFP 77.9 h, accelerometer 23.2 h of reading; the round-1
+      response, the markdown now matches the printed timing, is therefore not true of this run.
+      Cell 68 also shows that the single 30-min read took 106 s, while the 8 parallel pieces took
+      72.5 s in total, about 9 s each; the two timings disagree by about a factor of ten, and this
+      is not discussed. The scaling assumes 4 processes, although the reading is network-bound and
+      read_all already runs 16. At 7.1 s per hour, the 3-rat subset with stored brain states (557
+      h, about 66 min) could come in under 30 min with about 3 times more parallelism, which would
+      allow a partial test of three claims that are now blocked.
+    response: >-
+      Outcome kept. Cell 68 now reads 30 min of LFP and accelerometer from each of 16 files in 4
+      and in 16 processes and prints the per-piece times; cell 69 and the notes no longer quote
+      one run's numbers as another's, and say that a single piece took from about 1 to 22 s in the
+      last runs and 106 s once, which is the factor of ten. In the final run the reading alone for
+      the 3 rats with stored brain states takes 41 min in 4 processes and 28 min in 16. The seven
+      predictors and 100 splits of each model at 41 offsets would come on top, on 3 of the paper's
+      8 rats. That partial test is an analysis not run in this attempt; the protocol leaves a
+      change that needs one to a new attempt, so no outcome is proposed.
+  - claim: edfig6d-pairwise-predictors
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees (blocked, too_large); B3 partly resolved. Cell 69 says the timing puts the reading
+      alone at about 6 h of LFP and 2 h of accelerometer one file at a time, and the notes say 5.7
+      h and 2.1 h, while cell 68 printed LFP 77.9 h, accelerometer 23.2 h of reading; the round-1
+      response, the markdown now matches the printed timing, is therefore not true of this run.
+      Cell 68 also shows that the single 30-min read took 106 s, while the 8 parallel pieces took
+      72.5 s in total, about 9 s each; the two timings disagree by about a factor of ten, and this
+      is not discussed. The scaling assumes 4 processes, although the reading is network-bound and
+      read_all already runs 16. At 7.1 s per hour, the 3-rat subset with stored brain states (557
+      h, about 66 min) could come in under 30 min with about 3 times more parallelism, which would
+      allow a partial test of three claims that are now blocked.
+    response: >-
+      Outcome kept. Cell 68 now reads 30 min of LFP and accelerometer from each of 16 files in 4
+      and in 16 processes and prints the per-piece times; cell 69 and the notes no longer quote
+      one run's numbers as another's, and say that a single piece took from about 1 to 22 s in the
+      last runs and 106 s once, which is the factor of ten. In the final run the reading alone for
+      the 3 rats with stored brain states takes 41 min in 4 processes and 28 min in 16. The seven
+      predictors and 100 splits of each model at 41 offsets would come on top, on 3 of the paper's
+      8 rats. That partial test is an analysis not run in this attempt; the protocol leaves a
+      change that needs one to a new attempt, so no outcome is proposed.
+  - claim: edfig6ef-latent-variables
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees (blocked, too_large); B3 partly resolved. Cell 69 says the timing puts the reading
+      alone at about 6 h of LFP and 2 h of accelerometer one file at a time, and the notes say 5.7
+      h and 2.1 h, while cell 68 printed LFP 77.9 h, accelerometer 23.2 h of reading; the round-1
+      response, the markdown now matches the printed timing, is therefore not true of this run.
+      Cell 68 also shows that the single 30-min read took 106 s, while the 8 parallel pieces took
+      72.5 s in total, about 9 s each; the two timings disagree by about a factor of ten, and this
+      is not discussed. The scaling assumes 4 processes, although the reading is network-bound and
+      read_all already runs 16. At 7.1 s per hour, the 3-rat subset with stored brain states (557
+      h, about 66 min) could come in under 30 min with about 3 times more parallelism, which would
+      allow a partial test of three claims that are now blocked.
+    response: >-
+      Outcome kept. Cell 68 now reads 30 min of LFP and accelerometer from each of 16 files in 4
+      and in 16 processes and prints the per-piece times; cell 69 and the notes no longer quote
+      one run's numbers as another's, and say that a single piece took from about 1 to 22 s in the
+      last runs and 106 s once, which is the factor of ten. In the final run the reading alone for
+      the 3 rats with stored brain states takes 41 min in 4 processes and 28 min in 16. The seven
+      predictors and 100 splits of each model at 41 offsets would come on top, on 3 of the paper's
+      8 rats. That partial test is an analysis not run in this attempt; the protocol leaves a
+      change that needs one to a new attempt, so no outcome is proposed.
+  - claim: fig3d-induced-ripples-lower-glucose
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: fig3-induced-effect-size
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: fig3ef-stimulation-dose-response
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: fig3f-stimulation-vs-shuffle
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: edfig7ab-stimulation-protocol
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: edfig7jm-induced-ripples-decoupled
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: edfig7-ppc-stimulation-no-effect
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: edfig8-lateral-septum-rectified
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: edfig9-dorsal-ventral
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; the outcome does not change. The notes say: In CGM37 and CGM48 the glucose readings
+      cover other days than the electrophysiology. Cell 14 gives CGM48 2.2 h with both signals,
+      and CGM48 is one of the 18 rats.
+    response: >-
+      Notes and cells 64 and 66 corrected: CGM37 has no glucose with the electrophysiology and
+      CGM48 has 2.2 h, less than one day of at least 4 h; cell 65 now prints these hours for the
+      three rats.
+  - claim: fig4-cno-controls-no-change
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: fig4-ls-dreadd-decouples
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: fig4-ls-dreadd-chance-level
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: fig4e-dreadd-time-course
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: fig4c-medial-septum-no-effect
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; matches the round-1 outcome.
+    response: >-
+      No change needed.
+  - claim: edfig10-expression-correlates-effect
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Agrees; matches the round-1 outcome.
     response: >-
       No change needed.

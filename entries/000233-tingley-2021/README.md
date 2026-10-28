@@ -10,8 +10,8 @@ or cohort labels, so the optogenetic, DREADD, fasting and unit findings cannot b
 |---|---|
 | SPW-R rate predicts later glucose decreases (R -0.21 at 10.7 min) | Reproduced, under 3 of 16 readings, resting on an assumption |
 | The correlation at 10 min exceeds circular shuffles | Reproduced |
-| Clustered SPW-Rs are followed by a larger glucose decrease | Reproduced |
-| Interval, amplitude, duration, frequency rank in that order | Partially reproduced |
+| Clustered SPW-Rs are followed by a larger glucose decrease | Reproduced, resting on an assumption |
+| Interval, amplitude, duration, frequency rank in that order | Partially reproduced, resting on an assumption |
 | Phase dispersion of glucose drops more after higher SPW-R rates | Not reproduced |
 | Power-power and phase-power coupling, SPW-R rhythm faster | Partially reproduced |
 | Glucose oscillates at about 60 min | Not reproduced |
@@ -21,9 +21,9 @@ or cohort labels, so the optogenetic, DREADD, fasting and unit findings cannot b
 | SPW-Rs are consistent across days | Reproduced |
 | SPW-R rate has 24-h and 4-h rhythms (1,568.5 h, 8 rats) | Partially reproduced |
 | A 20-ms refractory period between ripples | Not reproduced |
-| The correlation does not differ between NREM and waking | Reproduced |
+| The correlation does not differ between NREM and waking | Reproduced, resting on an assumption |
 | No hour of the day differs (smallest P = 0.53) | Not reproduced |
-| Ventral SPW-Rs correlate less with glucose than dorsal | Blocked: data missing (glucose in one of three rats) |
+| Ventral SPW-Rs correlate less with glucose than dorsal | Blocked: data missing (enough glucose in one of three rats) |
 | Predictor models (Extended Data Fig. 6, three claims) | Blocked: too large |
 | Optogenetic stimulation (Figure 3, Extended Data Fig. 7, seven claims) | Blocked: data missing |
 | DREADD inhibition of the septum (Figure 4, Extended Data Fig. 10, six claims) | Blocked: metadata insufficient |
@@ -37,7 +37,7 @@ repairs them, which adds about 580 h of glucose overlapping the electrophysiolog
 are deposited twice. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/000233-tingley-2021-01.yaml`](../../attempts/000233-tingley-2021-01.yaml).
 
-- `reproduce_tingley_2021.ipynb`: the analysis. It takes about seven minutes, most of it reading the
+- `reproduce_tingley_2021.ipynb`: the analysis. It took 6.5 to 8.4 minutes in the runs made for this attempt, most of it reading the
   metadata, SPW-R tables and glucose series of the 345 files and the shuffles of the coupling
   analysis.
 - `sprglu.py`: loading the files, the repair of the glucose dates, the 5-min binning of SPW-R rate
