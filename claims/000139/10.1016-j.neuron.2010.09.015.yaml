@@ -62,9 +62,12 @@
 # - PD model: x_n = b_o + S b by least squares, PD = b / |b| (Methods, Using a PD). Performance:
 #   leave-one-condition-out cross validation, one minus the mean squared error of the left-out
 #   predictions divided by the variance of x_n across conditions, averaged over neurons (Methods,
-#   PD performance). S is fixed for all folds (Methods, "The matrix S is the same for every
-#   neuron"); only the regression leaves the condition out. Whether the variance uses c or c - 1
-#   is a standard choice that cannot change any comparison between spaces.
+#   PD performance). Open: whether a PCA-based S is recomputed without the left-out condition.
+#   The Methods say only that the PD is found from the remaining conditions ("The matrix S is the
+#   same for every neuron" concerns neurons, not folds). Readings (a) S computed once from all
+#   conditions and only the regression leaves the condition out, (b) the PCA redone on the
+#   remaining conditions and the left-out condition projected onto its components. Whether the
+#   variance uses c or c - 1 is a standard choice that cannot change any comparison between spaces.
 # - Peri-movement space: a c by n*t matrix T of condition-mean rates from 150 ms before movement
 #   onset to 800 ms after (maze), every neuron except the one being fitted, not normalized; PCA
 #   over conditions, the first k scores are S (Methods, PCA-based spaces). k from 1 to 14 (Results,
@@ -166,6 +169,15 @@ claims:
   - quantity: mean r, monkey J
     value: 0.06
     tolerance: 0.006
+  - quantity: mean Spearman r, monkey A
+    value: 0.20
+    tolerance: 0.02
+  - quantity: mean Spearman r, monkey B
+    value: 0.20
+    tolerance: 0.02
+  - quantity: mean Spearman r, monkey J
+    value: 0.06
+    tolerance: 0.006
   criterion: As fig4d-mean-correlation-j-array, on the speed-task datasets (single-electrode
     threshold of 10 spikes/s of preparatory tuning) and the single-electrode monkey J dataset
     (per 27-condition set, then averaged). The archive describes array recordings only, so these
@@ -173,7 +185,7 @@ claims:
 - id: fig4-broad-unimodal
   statement: Individual neurons span a broad range of preparatory to peri-movement correlations
     centred near zero, with little sign of separate populations of concordant (r near 1) and
-    opposing (r near -1) tuning.
+    opposing (r near -1) tuning, except perhaps weakly for monkey B (Figure 4B).
   source: Results, Correlations between preparatory and peri-movement tuning, paragraph 2; Figure
     4A to 4D
   quote: different neurons show markedly different relationships between preparatory and
@@ -198,16 +210,22 @@ claims:
   depends_on:
   - fig4d-mean-correlation-j-array
   criterion: Per neuron, the preparatory rate vector correlated with the vector of
-    condition-mean rates at each single time point of the movement-locked trace (20 ms Gaussian,
-    Figure 4E legend) from 400 ms before to 100 ms after movement onset, averaged over neurons.
-    Open, the neurons; readings (a) those of Figure 4A to 4D (both thresholds), (b) all neurons
+    condition-mean rates at each single time point (20 ms Gaussian, Figure 4E legend), averaged
+    over neurons. The trace is the one spliced from the go-cue-locked and movement-locked means
+    (Supplemental Experimental Procedures, Computing the mean firing rate, which names Figure 4E);
+    where the splice falls is not given. Open, the time range, which the paper does not give
+    beyond starting where preparatory tuning is correlated with itself (Figure 4E legend);
+    readings (a) the spliced trace from the preparatory window through 100 ms after movement
+    onset, (b) the movement-locked trace alone from 400 ms before to 100 ms after onset. Open, the
+    neurons; readings (a) those of Figure 4A to 4D (both thresholds), (b) all neurons
     passing the preparatory threshold. Open, "near zero"; readings (a) the mean at onset is not
     greater than zero at p < 0.05 by the tests named in fig4d-mean-correlation-j-array, (b) its
     absolute value is below 0.1 (a value the paper does not give). Reproduced when the mean at
     200 ms before onset is above the mean at onset, the onset value is near zero under a reading,
     and the decline begins (the last time before onset at which the mean is within 10% of its
     value at 400 ms before onset) between 300 and 100 ms before onset, a window read from the
-    paper's "∼200 ms". The curve is shown.
+    paper's "∼200 ms". The 10% rule and the 300 to 100 ms window are readings; the paper gives
+    neither. The curve is shown.
 - id: suppfig1-population-psth-weak-movement-tuning
   statement: In population averages sorted by each neuron's preparatory preference, the
     preparatory differences carry weakly into the peri-movement epoch and show little
@@ -232,7 +250,8 @@ claims:
   criterion: PD method, peri-movement, kinematic and task spaces as in the opening comment. For
     each space and each k from 1 to 14, performance averaged over neurons. Reproduced when the
     largest value of the peri-movement space exceeds the largest value of every kinematic and
-    task space, under every reading of the kinematic window and replication; not reproduced
+    task space, under every reading of the kinematic window and replication and of whether S is
+    recomputed in each fold (opening comment); not reproduced
     when another space is higher under every reading; otherwise the result rests on the reading.
     All curves are shown, with the upper limit of fig6-preparatory-dimensionality as a reference.
 - id: fig6-perimovement-best-each-dimensionality
@@ -258,21 +277,27 @@ claims:
   depends_on:
   - fig6d-perimovement-best-j-array
   criterion: On the peri-movement and kinematic curves of fig6d-perimovement-best-j-array.
+    "Middle range" is read as a best k between 2 and 10 (a reading; the paper gives no range).
     Reproduced when, for the peri-movement space, performance at the best k is above that at k =
     1, the best k is between 2 and 10, and performance at k = 14 is below that at the best k; the
     same is reported for the kinematic space.
 - id: fig6-maze-task-spaces
-  statement: For the maze task, the segment directions and initial velocity task spaces perform
-    reasonably well, while the endpoints + maximum speed space does not perform well.
-  source: Results, PD performance in a variety of spaces, paragraphs 1 and 2; Figure 6C and 6D
+  statement: Segment directions and initial velocity are among the task spaces that perform
+    reasonably well, segment directions doing so for the maze task, while for the maze task the
+    endpoints + maximum speed space does not perform well.
+  source: Results, PD performance in a variety of spaces, paragraphs 1 and 2; Figure 6C and 6D;
+    Figure 7D legend
   quote: A number of task spaces performed reasonably well, including ... ' segment dirs. ' ... and
     ' initial vel. ' ... The former is undefined for the maze task, but the latter did not perform
     well
   depends_on:
   - fig6d-perimovement-best-j-array
-  criterion: Task-space performances from fig6d-perimovement-best-j-array. "Reasonably well" is
-    read from the Figure 6 legend sense, performance above zero ("Points above zero indicate
-    performance considerably better than chance"). Open, the reference for "did not perform
+  criterion: Task-space performances from fig6d-perimovement-best-j-array. The Results list the
+    spaces that performed reasonably well without saying for which datasets; the Figure 7D legend
+    says segment directions performed well for the maze task. That initial velocity does so for
+    the maze task is a reading. "Reasonably well" is read as performance above zero (Results, PD
+    performance in a variety of spaces, paragraph 1, "Points above zero indicate performance
+    considerably better than chance"). Open, the reference for "did not perform
     well"; readings (a) endpoints + maximum speed below the 3-D peri-movement space, (b) below
     both segment directions and initial velocity. Reproduced when segment directions and initial
     velocity are above zero and endpoints + maximum speed falls short under a reading.
@@ -311,8 +336,13 @@ claims:
     quantity: principal components for 90% of variance of the c by n preparatory matrix
     value: 8.65
     tolerance: 2.35
-  criterion: PCA of the c by n matrix of condition-mean preparatory rates of all neurons kept for
-    the PD analyses. The reported range 7 to 10 widened by 10% of each bound is 6.3 to 11, which
+  criterion: PCA of the c by n matrix of condition-mean preparatory rates (Supplemental
+    Experimental Procedures, Estimating the upper limit of PD performance, "each row containing
+    the mean preparatory activity for every neuron"). Open, the neurons; readings (a) those kept
+    for the PD analyses (preparatory tuning threshold), (b) every recorded unit. Open, whether
+    rates are normalized before the PCA; the paper does not say. Readings (a) not normalized, as
+    for the peri-movement T-matrix (Methods, PCA-based spaces), (b) each neuron scaled to unit
+    range. The reported range 7 to 10 widened by 10% of each bound is 6.3 to 11, which
     the value and tolerance encode. Reproduced when the count lies in it. The paper had 108
     conditions for J-array; with fewer conditions the count is bounded by c - 1, which is
     reported.
@@ -405,9 +435,11 @@ claims:
     neurons and PD performance, divided by the upper limit of fig6-preparatory-dimensionality
     computed on the same half; the same for random halves (20 random splits, a standard choice).
     Open, the dimensionality of the upper limit; readings (a) 6, (b) its best k. AP location as
-    in ap-location-no-effect-j-array. The paper averages over datasets. Reproduced when both
-    halves have normalized performance above zero and within 10% of the random halves' value;
-    which half is higher is reported.
+    in ap-location-no-effect-j-array. The paper averages over datasets. "Only slightly different"
+    is read as within 10% of the random halves' value (a reading; the paper gives no value).
+    Reproduced when both halves have normalized performance above zero and within 10% of the
+    random halves' value, and the anterior half is higher than the posterior; partially
+    reproduced when the first two hold and the posterior half is higher.
 - id: prep-activity-more-anterior
   statement: Preparatory activity is more prevalent at anterior sites.
   source: Results, Comparison of anterior versus posterior sites, paragraph 1
@@ -445,6 +477,20 @@ claims:
     (averaged over neurons) and task spaces at their own dimensionality. Reproduced when at least
     one neuron has higher performance in another space than in the peri-movement space; the
     fraction is reported.
+- id: high-dimensional-task-spaces-underperform
+  statement: The high-dimensional task spaces, including the kitchen-sink space, always perform
+    below the peri-movement space, so high dimensionality alone does not explain its performance.
+  source: Results, Controls, paragraph 2; Methods, Task spaces
+  quote: the high-dimensional task spaces (including the gratuitously high-dimensional
+    'kitchen-sink' space) always underperformed the peri-movement space
+  depends_on:
+  - fig6d-perimovement-best-j-array
+  criterion: Task-space and peri-movement performances of fig6d-perimovement-best-j-array. For the
+    maze task the kitchen-sink space is 11-D (Methods, Task spaces). Open, which spaces count as
+    high-dimensional and what they are compared with; readings (a) the kitchen-sink (11-D) and
+    segment directions (6-D) spaces against the peri-movement space at the same k, (b) the same
+    spaces against the best peri-movement performance over k. Reproduced when every such space is
+    below the peri-movement space under a reading.
 - id: fig8-linear-dynamics-simulation
   statement: In a simulated two-unit linear dynamical system with 25 random initial states,
     preparatory activity correlates weakly with peri-movement activity at the single-unit level (r
@@ -466,3 +512,21 @@ claims:
     draws under a reading, and the 2-D PCA peri-movement space with the PD model of the opening
     comment fits unit 1's initial rates with performance 1 to numerical precision, without
     cross validation.
+checks:
+- date: 2026-10-28
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment, PD model. The file said S is fixed across cross-validation folds and cited "The matrix S is the same for every neuron", which concerns neurons, not folds; the Methods do not say whether a PCA-based S is recomputed without the left-out condition, so this is now named as open with two readings, and fig6d-perimovement-best-j-array requires its outcome under both.
+  - fig4abc-mean-correlation-other-datasets. Added the three Spearman means the statement gives (0.20, 0.20, 0.06) as expected values with 10% tolerance, from Results, Correlations, paragraph 1.
+  - fig4-broad-unimodal. The statement now keeps the paper's exception ("except perhaps weakly in panel B"), which it had dropped.
+  - fig4e-correlation-time-course. The time range of 400 ms before to 100 ms after movement onset was given as if from the legend; the paper does not give it. The criterion now cites the spliced trace of the Supplemental Experimental Procedures (which names Figure 4E), names the range as open with two readings, and marks the 10% decline rule and the 300 to 100 ms window as readings.
+  - fig6-dimensionality-peak. Marked "middle range" read as best k from 2 to 10 as a reading; the paper gives no range.
+  - fig6-maze-task-spaces. The paper lists the spaces that performed reasonably well without tying them to the maze task; the statement now says so, cites the Figure 7D legend for segment directions on the maze task, and the criterion names initial velocity on the maze task as a reading. The above-zero sentence was attributed to the Figure 6 legend; it is in the Results, and the citation is corrected.
+  - fig6-preparatory-dimensionality. The Supplemental Experimental Procedures say "every neuron" and do not say whether rates are normalized; both are now named as open with readings.
+  - fig7c-anterior-posterior-performance. The statement says anterior sites perform slightly better but the criterion did not test it; it now requires it for reproduced (partially reproduced otherwise), and marks the 10% band for "only slightly different" as a reading.
+  - Added high-dimensional-task-spaces-underperform, a control finding in Results, Controls, paragraph 2 that had no claim.
+  - Open, not settled. The paper links no code, so the tuning-strength measure, the movement-onset rule, the proto-trial, the kinematic window end, the Figure 4E time range and the test of the mean correlation remain readings; the attempt must run each as the criteria say.
+  - Open, not settled. The paper gives 2166 (Results) and 2155 (Methods) mean trials per neuron for J-array; the file accepts either and reports the count only.
+  - Checked that no claim draws on paper/10.1038-nature11129.txt, another paper in the folder.
