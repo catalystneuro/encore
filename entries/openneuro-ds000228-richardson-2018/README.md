@@ -18,15 +18,16 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 Every behavioural number of the paper is recovered from participants.tsv. With the deposited
-preprocessed data and the pipeline of the Methods, the inter-region correlations are higher within
-networks and less negative across them than the paper reports, and several event-level and
+preprocessed data and the pipeline of the Methods, the adult inter-region correlations are higher within
+networks and less negative across them than the paper reports (in the 3-year-olds within-ToM is
+higher but within-Pain lower), and several event-level and
 false-belief results do not come out as reported. Five outcomes rest on readings of a method the
 paper leaves open. The attempt record, with the reasons and the differences from the paper's
 method, is
 [`attempts/openneuro-ds000228-richardson-2018-01.yaml`](../../attempts/openneuro-ds000228-richardson-2018-01.yaml).
 
-- `reproduce_richardson_2018.ipynb`: the analysis. It takes about three minutes, most of it
-  streaming the 155 preprocessed images (14 GB).
+- `reproduce_richardson_2018.ipynb`: the analysis. `tools/entry.py all` reported 146 and 183 s
+  for it in two runs on 2026-10-28; loading the 155 preprocessed images (14 GB) takes most of that.
 - `social_brain.py`: loading from the pinned snapshot, ROI extraction, the timecourse cleaning
   of the Methods, inter-region correlation, reverse correlation and the statistics. Other
   notebooks on this dataset can import it.

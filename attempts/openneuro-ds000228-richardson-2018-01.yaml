@@ -121,9 +121,11 @@ outcomes:
     across), are mean r in place of z .519, .354, -.049; the high-pass basis in the nuisance
     regression .593, .393, -.086; left and right M1 as two regressors .599, .390, -.037; and the
     mean ToM and Pain signal as an added regressor .286, .258, -.382. Only the last, which is not
-    the paper's method, moves the across value past the paper's, so the offset is in the direction
-    of a shared signal removed in the paper's processing and not here, which no step of the
-    Methods accounts for. The ROI masks are in MNI mm (9 mm sphere centroids within 3.7 mm of the
+    the paper's method, moves the across value past the paper's, and it also takes both
+    within-network values well below the paper's (.286 and .258 against .48 and .35). A shared
+    signal removed in the paper's processing would shift the across value in this direction, but
+    this variant does not match the paper's pattern, and no step of the Methods accounts for the
+    offset. The ROI masks are in MNI mm (9 mm sphere centroids within 3.7 mm of the
     stated centers, every voxel within 8.9 mm), and the images are int16 with no scaling. Fig. 2
     shows the mean matrices only as colours, so the offset cannot be traced pair by pair; the
     adult and 3yo mean matrices are printed in the notebook.
@@ -158,8 +160,10 @@ outcomes:
   measured: [-6.54, -6.72, 4.49]
   notes: Regression on group (child = 1) and artifact count. Child effect on within-ToM t =
     -6.54, p = 8.7e-10; within-Pain t = -6.72, p = 3.5e-10; across t = 4.49, p = 1.4e-05; all
-    with the paper's signs and below its p values, but all three t values are out of tolerance
-    under every reading (-6.23 to -7.05, -6.48 to -6.72, 3.92 to 4.49). z-scaled b (O4a) -1.16,
+    with the paper's signs and below its p values, but the t values are out of tolerance,
+    within-Pain (-6.48 to -6.72) and across (3.92 to 4.49) under every reading, within-ToM under
+    three of the four O2 and O3 readings (-6.54 to -7.05; -6.23 under O2a with O3b is within
+    -5.7 +/- .57). z-scaled b (O4a) -1.16,
     -1.20, .83; raw b -.173, -.135, .087. Motion effects differ from the paper's, within-ToM t =
     -1.64, p = .10 (paper -4.3), across t = 2.87, p = .005 (paper not significant).
 - claim: irc-control-networks
@@ -309,7 +313,11 @@ outcomes:
     permuted overlap 11.9 TRs under both). Under O5b and O5c the overlap is also 0, p = .019 to
     .049. With the paper's own events (Supplementary
     Table 3, variant) the overlap is 1 TR, p = .002 and .008. Less overlap than chance holds; the
-    overlap count does not match.
+    overlap count does not match. The criterion states only when the claim is reproduced. The
+    outcome is partial because the claim's test (p <= .01) holds and only its expected count is
+    out of tolerance, the case the claims file's Rule S and the protocol call partial;
+    irc-williams is not reproduced because two of the paper's tests fail there. The verifier
+    would give not_reproduced in round 2; the disagreement is recorded under verifications.
   deviations:
   - Seed fixed (a standard choice); the random gaps split the remaining zeros by a multinomial
     draw after one zero between events, a reading of Methods paragraph 10, which says only "a
@@ -387,6 +395,8 @@ outcomes:
   - The rc-events reading ties between O6a and O6b. Assumed O6b, z-normalization over all 168 TRs,
     because Methods paragraph 9 z-normalizes each ROI timecourse first and leaves out the first 10
     timepoints only from the t-tests. Under O6a the claim would not be reproduced.
+  - The criterion asks for the reading that reproduced rc-events, and no reading did. The reading
+    that matched rc-events best (O5a) is used, an extension of the criterion.
 - claim: maturity-across
   outcome: not_reproduced
   notebook: reproduce_richardson_2018.ipynb
@@ -394,7 +404,8 @@ outcomes:
   measured: [-4.52, -3.55]
   notes: Maturity on across, within, age and motion (n = 122). Across effect ToM t = -4.52, p =
     1.5e-05; Pain t = -3.55, p = .00055; both negative and significant but out of tolerance under
-    every reading. Within-ToM t = 1.53, p = .13, not significant, as in the paper; within-Pain t =
+    every reading. Within-ToM t = 1.53, p = .13, not significant, as in the paper (under O2b with
+    O3b it is significant, t = 1.99, p = .049); within-Pain t =
     2.40, p = .018 (.0054 to .018 under every reading), significant, where the paper has p = .06.
     The criterion requires the within-network effects to be not significant, so the claim is not
     reproduced. z-scaled b across -.34 and -.28.
@@ -468,7 +479,9 @@ findings:
   statement: With the paper's own deposited preprocessed images, artifact and CompCor regressors
     and ROI masks, and the pipeline of the Methods, the inter-region correlations differ from the
     paper's, higher within networks and less negative across them (adults .604, .398 and -.051
-    against .48, .35 and -.17; 3yo within-ToM .326 against .21). Several downstream results
+    against .48, .35 and -.17). In the 3-year-olds within-ToM is higher (.326 against .21) but
+    within-Pain is lower (.179 against .23; non-bilateral Pain .146 against .17), so the offset
+    is not the same in every group. Several downstream results
     (within-ToM difference between false-belief passers and failers, age effects at event peaks,
     the T04 effect of ToM score) do not come out as reported. Either the deposited data or the
     described pipeline differs from what produced the paper's numbers.
@@ -776,7 +789,7 @@ verifications:
     agrees: true
     outcome: blocked
     reason: The archive has no data for the 20 independent adults (API file list, only sub-pixar*,
-      ROIs, mriqc). The deposited README lists the 7 ToM and 9 pain events that replicated, which
+      ROIs, mriqc), so blocked with data_missing. The deposited README lists the 7 ToM and 9 pain events that replicated, which
       map onto all Supplementary Table 3 events except P08, P09 and P11; this restates the
       authors' result, not data, and the notebook could have reported the check.
     response: Added the check to the notebook (the README events overlap all table events except
@@ -790,3 +803,264 @@ verifications:
       "data_missing". The claim becomes partly testable if an unpinned outside input is accepted.
     response: No change needed; the record already gives blocked_by other for this reason. The
       protocol allows only pinned outside inputs, so the script is not used.
+- date: '2026-10-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-2, same harness, separate context, did not write
+    the notebook)
+  reviewed: Round 2. The full executed notebook after the round-1 revision, the helper module, the claims
+    file and the attempt record, with the paper. Of 42 claims it agreed with 41 outcomes and disagreed
+    on rc-overlap. It found no misreading in the claims file, so no question was added. It also questioned
+    the README's run time, which now gives the times `tools/entry.py all` reported.
+  results:
+  - claim: participants
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: supp-table1-behavior-by-age
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The summary's "recovered exactly" is wrong for some numbers, the mean ToM scores .517
+      and .610 against .54 and .63 are within tolerance but not exact.
+    response: The summary now says the counts match exactly and the other values are within tolerance,
+      with these examples.
+  - claim: beh-tom-age
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The summary's "recovered exactly" does not hold for DCCS p .048 against .049.
+    response: Summary corrected as for supp-table1-behavior-by-age.
+  - claim: beh-tom-dccs
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: beh-fb-groups
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: beh-fb-tom
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. beh-fb-tom holds only under reading (a), which the summary's "recovered exactly" leaves
+      out.
+    response: The summary now says beh-fb-tom holds under reading (a) only.
+  - claim: beh-fb-age
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The summary's "recovered exactly" does not hold for Inc-Fail p .015 against .01.
+    response: Summary corrected as for supp-table1-behavior-by-age.
+  - claim: beh-fb-dccs
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: motion-child-adult
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Per-participant artifact counts against the ART thresholds were not recomputed, as
+      the record says; this does not bear on a conclusion.
+    response: No change. Recomputing ART from the raw images is outside this attempt.
+  - claim: motion-not-age-tom
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: motion-not-fb
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The summary's "recovered exactly" does not hold for DCCS b .148 against .16.
+    response: Summary corrected as for supp-table1-behavior-by-age.
+  - claim: irc-adult
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The IRC offset is still unexplained and probably drives most of the inter-region,
+      3-year-old and maturity failures. The note "so the offset is in the direction of a shared signal
+      removed in the paper's processing" is weakly supported, since the shared-signal regressor also pushes
+      both within-network values below the paper's (.286 and .258 against .48 and .35), so it shows only
+      the direction of the across-network shift. Cell 49's hedged wording is acceptable.
+    response: The note now says the shared-signal variant shifts the across value in the paper's direction
+      but takes both within-network values below the paper's, so it does not match the paper's pattern.
+      The README's statement of the offset is limited to adults.
+  - claim: irc-age-within
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: irc-age-across
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: irc-adult-vs-child
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, the outcome stays partial. Cell 55 and the record say all three t values are out of
+      tolerance under every reading, but within-ToM t = -6.23 under O2a+O3b is inside the tolerance of
+      -5.7 +/- .57.
+    response: Cell 55 and the notes now say within-Pain and across are out of tolerance under every reading
+      and within-ToM under three of the four readings, with -6.23 under O2a with O3b inside.
+  - claim: irc-control-networks
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: irc-williams
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome changed since round 1. The record reasons that a criterion with no
+      partial clause can only give reproduced or not reproduced.
+    response: No change needed.
+  - claim: irc-3yo-distinct
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The README's "higher within networks and less negative across them" holds for adults,
+      but 3-year-old within-Pain is lower, .179 against .23 (cell 62); the record's first finding cites
+      3-year-old within-ToM (.326 against .21) and leaves out the lower Pain value.
+    response: The README, the summary and the first finding now limit the statement to adults and give
+      the lower 3-year-old Pain values.
+  - claim: irc-3yo-not-anticorrelated
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: irc-3yo-homologous
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: irc-3yo-nonbilateral
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. 3-year-old non-bilateral Pain is .146 against .17 (cell 68), lower than the paper's,
+      against the README's statement.
+    response: As for irc-3yo-distinct.
+  - claim: irc-tom-behavior
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: irc-tom-behavior-age
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Assumed outcome, stated in the deviations with the outcome under the other reading;
+      O2a is reasonable, as the deposited regressors are one indicator per artifact timepoint (cell 8),
+      and O3a, since the Methods restrict to TRs 11 to 168 only in paragraphs 9 and 13. As an absence
+      claim it still flips between readings; the rule is now stated, so it is decided, but the outcome
+      rests on the assumed readings.
+    response: No change needed.
+  - claim: irc-fb-within
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: irc-fb-within-dccs
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: irc-fb-across
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Assumed outcome, reasonable under O2a and O3a, as for irc-tom-behavior-age. As an
+      absence claim it still flips between readings and its outcome rests on the assumed readings.
+    response: No change needed.
+  - claim: rc-events
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: rc-overlap
+    agrees: false
+    outcome: not_reproduced
+    reason: Disagrees. The criterion defines only a reproduced outcome ("one overlapping timepoint is
+      found and p <= .01 under a reading"), does not invoke Rule S and has no partial clause. The overlap
+      is 0 against 1 with tolerance 0 (cell 86). By the record's reasoning for irc-williams it is not_reproduced.
+      Partial could only be defended by applying Rule S's partial clause, which this criterion does not
+      name; the record should state that reasoning, or change the outcome. In round 1 the verifier agreed
+      and missed this.
+    response: Outcome kept and the disagreement recorded. The reasoning is now stated in cell 87 and the
+      notes, the claim's test (less overlap than chance, p <= .01) holds and only its expected count is
+      out of tolerance, which Rule S and the protocol's definition (holds only in part) call partial.
+      irc-williams differs, since there two of the paper's tests fail, which Rule S counts as not reproduced.
+  - claim: rc-child-adult-timecourse
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome changed since round 1. Problem 4 is resolved, each bin is checked
+      against its own bound (cell 90).
+    response: No change needed.
+  - claim: supp-table4-other-networks
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: rc-age-events
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: rc-t04-tom
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: rc-fb-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Assumed outcome, reasonable under O7a, since the events and their peaks are defined
+      on the z-normalized timecourse. As an absence claim it still flips between readings and rests on
+      the assumed reading.
+    response: No change needed.
+  - claim: rc-3yo-events
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Assumed O6b (Methods paragraph 9 order), only a tie-break, but the claim is still
+      partial under O6b and not reproduced under O6a. The criterion asks for "the reading that reproduced
+      rc-events", and no reading did; using the best-matching reading is a sensible extension, and the
+      record should say it is one.
+    response: Cell 103 and a deviation now say that the best-matching reading (O5a) is an extension of
+      the criterion.
+  - claim: maturity-across
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome changed since round 1. Within-ToM is also significant under O2b+O3b
+      (p = .049, cell 106); the record does not say so, but it does not change the outcome.
+    response: Added to cell 107 and the notes.
+  - claim: maturity-within
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Assumed outcome, reasonable under O2a and O3a. As an absence claim it still flips
+      between readings and rests on the assumed readings.
+    response: No change needed.
+  - claim: maturity-tom-behavior
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: maturity-fb
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: face-rc
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: face-overlap
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
+  - claim: replication-sample
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The record's response explains why other is used (the checker does not allow data_missing
+      on an elsewhere claim), which the verifier accepts. The record did not mention that the verifier
+      gave blocked_by data_missing in round 1.
+    response: The round-1 reason now says the verifier gave data_missing.
+  - claim: hand-coded-events
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Every other Result sentence and record note checked matches the printed numbers.
+    response: No change needed.
