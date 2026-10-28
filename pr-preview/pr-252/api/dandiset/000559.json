@@ -1,0 +1,757 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000559",
+  "label": "DANDI:000559"
+ },
+ "page": "datasets/dandi/000559/",
+ "generated": "2026-10-28T14:07:38+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 7,
+  "partially_reproduced": 3,
+  "not_reproduced": 2,
+  "blocked": 12
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000559-markowitz-2023-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000559",
+    "version": "0.260528.0858",
+    "doi": "10.48324/dandi.000559/0.260528.0858"
+   },
+   "key": "dandi:000559",
+   "label": "DANDI:000559",
+   "dataset_version": "0.260528.0858",
+   "paper": "10.1038/s41586-022-05611-2",
+   "paper_title": "Spontaneous behaviour is structured by reinforcement without explicit reward",
+   "date": "2026-10-17",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-7"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/39062685408"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000559-markowitz-2023",
+   "entry_title": "Dopamine and spontaneous behaviour in mice (Markowitz, Gillis, Jay et al. 2023)",
+   "description": "Tests the findings of Markowitz, Gillis, Jay et al. (2023) on dandiset 000559, which holds the dLight photometry, MoSeq syllables and closed-loop optogenetic sessions of the paper. It relates DLS dopamine to velocity, syllable identity, syllable use and sequence entropy, compares DMS with DLS, and tests the reinforcement of target syllables by closed-loop dopamine release. The modelling of Figures 4 and 5 is not attempted.",
+   "notebooks": [
+    {
+     "path": "reproduce_markowitz_2023.ipynb",
+     "title": "Reproducing Markowitz, Gillis, Jay et al. (2023) from dandiset 000559",
+     "executed": "notebooks/000559-markowitz-2023/reproduce_markowitz_2023.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig1e-velocity-timescales",
+     "statement": "DLS dopamine fluctuations are significantly negatively correlated with translational velocity at short timescales (under 10 s), and the correlation reverses and becomes positive at longer timescales, for both dLight transient rates and binned amplitudes.",
+     "source": "Results, Relating DLS dopamine to spontaneous behavior, paragraph 2; Figure 1e",
+     "quote": "These dopamine fluctuations (measured as both dLight transient rates and average binned amplitudes) were only weakly correlated with many aspects of movement kinematics ... but were significantly negatively correlated with translational velocity at short timescales (<10 s); this correlation reversed and became positive at longer timescales",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_markowitz_2023.ipynb",
+     "notes": "Over 121 DLS sessions from 14 mice, binned dLight amplitude and transient rate are both significantly negatively correlated with 2D speed at all 20 timescales below 10 s (amplitude mean r -0.201 to -0.109, rate -0.123 to -0.062; shuffle ranges within about 0.02 of zero), and all 14 mice are negative at 0.25 s for both. The transient rate turns positive from 18.75 s and is significantly positive at 47 of 100 timescales of 10 s or more (largest 0.113 at 58.75 s). The binned amplitude is still significantly negative at 49.75 s and is significantly positive at none of the 100 longer timescales (largest 0.005). The claim holds for one of the two measures under both readings of \"short timescales\".",
+     "deviations": [
+      "dLight is re-referenced and z-scored from the stored dF/F series; the paper used a pre-computed z-scored trace that is not in the files.",
+      "100 shuffles where the paper used 1,000.",
+      "121 sessions where the paper's code reports 216 for this panel; the dandiset holds fewer sessions, and habituation sessions are left out here."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1h-syllable-dlight-differs",
+     "statement": "Average syllable-associated dLight amplitudes differ across syllables (Kruskal-Wallis H = 209.29, P < 1e-25, n = 518 mouse-syllable pairs).",
+     "source": "Figure 1h legend",
+     "quote": "Right, z-scored average syllable-associated waveforms, sorted by peak fluorescence ... Kruskal\u2013Wallis H test on average syllable-associated fluorescence amplitudes",
+     "statistics": [
+      {
+       "test": "Kruskal\u2013Wallis H test",
+       "statistic": "H = 209.29",
+       "p": 1e-25,
+       "p_relation": "<",
+       "n": "518 mouse\u2013syllable pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_markowitz_2023.ipynb",
+     "notes": "The 518 mouse-syllable pairs (14 mice x 37 syllables) match the paper's n. Kruskal-Wallis P = 5.98e-37, below the paper's 1e-25, but H = 266.40 is 27 % above 209.29 and outside the 10 % tolerance. Variants give H 266.99 (target instances kept), 268.58 (pairs with at least 50 instances) and 265.62 (the 9 DLS sessions failing the quality criteria added), so neither the quality filter nor the post-session rule explains the difference. Per-mouse tests are significant in 14 of 14 mice.",
+     "deviations": [
+      "Instances from 177 DLS sessions without stimulation (habituation sessions left out); the paper used more sessions per mouse."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1l-identity-not-decodable",
+     "statement": "Random forest classifiers cannot predict which syllable is being expressed from the coincident dLight peak amplitude or waveform.",
+     "source": "Results, DLS dopamine does not predict syllable identity, paragraph 2; Figure 1l",
+     "quote": "Indeed, random forest classifiers were unable to predict which syllable was being expressed by the mouse at any moment based on the coincident dLight waveform amplitudes or shapes",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_markowitz_2023.ipynb",
+     "notes": "Held-out accuracy for 37 syllables is 0.0271 from peak amplitude and 0.0323 from the waveform and its derivative, 1.00 and 1.20 times chance (0.0270), below the criterion of 0.0541. Shuffled labels give 0.0278 and 0.0279.",
+     "deviations": [
+      "A 100-tree sklearn random forest with at least 5 instances per leaf on 1,000 instances per syllable, where the paper used cuML with 1,000 trees; the paper gives no accuracy, so \"unable to predict\" was set as below twice chance.",
+      "One label shuffle per feature set as the null, where the paper used 100."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-dlight-usage-across-syllables",
+     "statement": "Syllables associated on average with more DLS dopamine in an experiment tend to be used more.",
+     "source": "Results, Dopamine predicts future syllable use and sequencing, paragraph 2; Figure 2b",
+     "quote": "those syllables that were on average associated with more DLS dopamine during a given experiment tended to be used more during that experiment",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_markowitz_2023.ipynb",
+     "notes": "Over 507 mouse-syllable pairs in 14 mice, held-out r = 0.165 between syllable-associated dLight and syllable count; no shuffle of 200 reached it (P < 0.005, 95th percentile 0.051). Per-mouse rank correlations are positive in 14 of 14 mice. The paper's r is shown only in its figure.",
+     "deviations": [
+      "Fivefold cross-validation repeated 20 times and 200 shuffles, where the paper used 100 repeats and 1,000 shuffles."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2i-dlight-entropy-across-syllables",
+     "statement": "Mice string together less predictable sequences after syllables associated with more dopamine; average syllable-associated dLight correlates positively with the entropy of the syllable's outgoing transitions.",
+     "source": "Results, Dopamine predicts future syllable use and sequencing, paragraph 3; Figure 2i",
+     "quote": "Examining the transition patterns between syllables revealed that mice tended to string together more deterministic behavioural sequences when average syllable-associated dopamine was relatively low rather than high",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_markowitz_2023.ipynb",
+     "notes": "Held-out r = 0.271 between syllable-associated dLight and the entropy of outgoing transitions over 507 mouse-syllable pairs; no shuffle of 200 reached it (P < 0.005, 95th percentile 0.042). Positive in 14 of 14 mice.",
+     "deviations": [
+      "Plain Shannon entropy of the outgoing transition probabilities per experiment, as the Methods state; the code uses a Dirichlet entropy estimate."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2e-dlight-predicts-future-usage",
+     "statement": "When an instance of a syllable coincides with a higher-amplitude dopamine transient, that syllable is used more over the following minutes.",
+     "source": "Results, Dopamine predicts future syllable use and sequencing, paragraph 2; Figure 2c-g",
+     "quote": "if a given instance of a syllable coincided with a relatively high amplitude dopamine transient, that syllable was then used more over the next several minutes",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_markowitz_2023.ipynb",
+     "notes": "The mean correlation between an instance's dLight and the count of the same syllable in the next n syllables is positive at every n (0.0043 to 0.0251) and significant from n = 10 to 90 (P < 0.01), 11 of 14 mice positive at n = 10. It is not significant at n = 110, 130, 150 and 170 (P = 0.09, 0.15, 0.18 and 0.05), so it holds at 6 of 10 values up to 190 and fails the criterion's \"throughout\"; it is significant again from 190 to 330. The shuffles permute only instances with a dLight peak, so the same groups enter the observed value and every shuffle (15,480 at n = 10).",
+     "deviations": [
+      "Five equal time segments in place of the paper's five behavioural segments (Extended Data Fig. 2e).",
+      "Correlations are compared with shuffles directly, not z-scored to them; 100 shuffles."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed7-dms-fewer-transients",
+     "statement": "dLight recordings in dorsomedial striatum (DMS) show less frequent dopamine transients than in DLS.",
+     "source": "Results, Dopamine predicts future syllable use and sequencing, paragraph 4; Extended Data Figure 7a,b",
+     "quote": "dLight recordings in dorsomedial striatum (DMS) revealed less frequent dopamine transients",
+     "statistics": [
+      {
+       "test": "two-sided Mann-Whitney U test",
+       "statistic": "U = 97, f = .87",
+       "p": 0.017,
+       "n": "8 DMS and 14 DLS mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_markowitz_2023.ipynb",
+     "notes": "DMS mice have a median 56.48 transients per minute against 62.12 in DLS (8 against 14 mice, U = 13, two-sided P = 0.0022); with a 1.96 threshold 22.10 against 25.21 (P = 0.0006).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed7-dms-no-usage-prediction",
+     "statement": "DMS dopamine transients do not predict future syllable usage.",
+     "source": "Results, Dopamine predicts future syllable use and sequencing, paragraph 4; Extended Data Figure 7",
+     "quote": "dLight recordings in dorsomedial striatum (DMS) revealed less frequent dopamine transients that do not predict future syllable usage",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_markowitz_2023.ipynb",
+     "notes": "By the test used for fig2e-dlight-predicts-future-usage, DMS dLight predicts the later use of the same syllable. Mean r is 0.0110 to 0.0331 for n from 10 to 190, significant at 9 of those 10 values (n = 10 to 90 at P below 0.01), positive in 8 of 8 mice at n = 10, and larger than in DLS (0.0044 to 0.0251). The test is this attempt's version of the paper's (see the deviations of fig2e-dlight-predicts-future-usage). The paper's Extended Data Fig. 7 has no lagged future-usage test; it supports the claim with the encoding model (panel e) and the title \"DMS dopamine does not correlate with syllable usage or entropy\". The across-syllable count test of fig2b-dlight-usage-across-syllables run on DMS agrees with the paper (held-out r = 0.026, shuffle P = 0.170). That the lagged test finds DMS stronger than DLS suggests it differs from the paper's (equal time segments, no z-scoring to the shuffles); the outcome follows the pre-set criterion.",
+     "deviations": [
+      "Same deviations as fig2e-dlight-predicts-future-usage."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-optoda-learning",
+     "statement": "Pairing a target syllable with optogenetic dopamine release (Opto-DA) increases its use relative to baseline more than in no-opsin controls (log2 fold change in target counts, one-sided Mann-Whitney U = 197, P = 0.002, f = 0.82).",
+     "source": "Figure 3e legend",
+     "quote": "log2 fold change in target counts compared with baseline, per mouse, averaged across targets",
+     "statistics": [
+      {
+       "test": "one-sided Mann\u2013Whitney U test",
+       "statistic": "U = 197, f = 0.82",
+       "p": 0.002
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_markowitz_2023.ipynb",
+     "notes": "20 Opto-DA and 12 control mice, 191 targets. Log2 fold change in target counts, Opto-DA median 0.330, control 0.081; U = 198, one-sided P = 0.0013, f = 0.82 (paper 197, 0.002, 0.82).",
+     "deviations": [
+      "Stimulation, baseline and post sessions are identified from stimulation pulses, session dates and descriptions, as the files give no session number or type."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3f-cumulative-counts",
+     "statement": "The cumulative increase in target counts relative to baseline is larger in Opto-DA mice than in controls (one-sided Mann-Whitney U = 184, P = 0.007, f = 0.77).",
+     "source": "Figure 3f legend",
+     "quote": "Cumulative increase in target counts relative to baseline in Opto-DA and control mice",
+     "statistics": [
+      {
+       "test": "one-sided Mann\u2013Whitney U test",
+       "statistic": "U = 184, f = 0.77",
+       "p": 0.007
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_markowitz_2023.ipynb",
+     "notes": "Change in target counts, Opto-DA median 27.6, control -2.3; U = 182, one-sided P = 0.0083, f = 0.76 (paper 184, 0.007, 0.77).",
+     "deviations": [
+      "As for fig3e-optoda-learning."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-learner-count",
+     "statement": "Only a fraction of Opto-DA mice learn; nine mice exceed the largest change in target counts of any control (\"learners\").",
+     "source": "Methods, \"Quantifying changes in target syllable counts\", paragraph 2; Figure 3e; Extended Data Figure 10",
+     "quote": "\u2018Learner\u2019 mice were defined as mice whose average change in target counts above baseline across all syllables exceed the maximum average change in target counts exhibited by no-opsin control animals. These n = 9 animals",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_markowitz_2023.ipynb",
+     "notes": "Seven of 20 Opto-DA mice exceed the largest control change (54.5, vta-nacc-ctrl-6), not nine. All seven are among the nine the paper's code printed; the other two (3442 at 47.3 and dls-ai32jr-1 at 41.7) fall below that control; their per-target changes range from -49 to 148 and -26 to 93, against -50 to 152 for vta-nacc-ctrl-6. Counting mice above the control maximum of the log2 fold change gives 10. The criterion is the count, which is outside the tolerance. The statement's first part, that only a fraction of mice learn, holds (7 of 20).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3h-stim-post-correlation",
+     "statement": "In learners, the change in target usage during stimulation predicts the change in the post-stimulation sessions (Pearson r = 0.89, P = 0.005).",
+     "source": "Figure 3h legend",
+     "quote": "The relationship between target syllable usage changes from baseline during stimulation experiments versus post-stimulation experiments per mouse",
+     "statistics": [
+      {
+       "test": "one-sided shuffle test",
+       "statistic": "Pearson r = 0.89",
+       "p": 0.005
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_markowitz_2023.ipynb",
+     "notes": "Among the seven learners found here, r = 0.891 between the change during stimulation and in the post sessions (one-sided shuffle P = 0.017); with the code's nine learners r = 0.888 (P = 0.001). The learner set differs from the paper's (see fig3e-learner-count), and the result holds with either. Controls also correlate (r = 0.591, one-sided P = 0.017, two-sided 0.039), where the paper reports P = 0.082.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3l-no-kinematic-effect",
+     "statement": "Brief (250 ms) Opto-DA does not change movement at the moment of stimulation; no comparison between stimulation and catch trials in any mouse is significant.",
+     "source": "Figure 3l legend; Results, Syllable-associated Opto-DA influences behaviour, paragraph 5",
+     "quote": "No comparisons between stimulation and catch trials in any of the mice were significant",
+     "statistics": [
+      {
+       "test": "one-sided Mann\u2013Whitney U test",
+       "p": 0.05,
+       "p_relation": ">"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_markowitz_2023.ipynb",
+     "notes": "The test needs catch trials (target detections on which stimulation was withheld), which the files do not mark; the conversion kept only the stimulated detections. The criterion's substitute (online target onsets with no pulse in the next 0.5 s) is not the paper's catch set. The Methods give stimulation on 75 % of detections; with the substitute, stimulations are a median 0.593 of detections per mouse (0.521 to 0.687; 0.111 to 0.776 over sessions). It does not isolate the light's effect. In no-opsin controls, stimulation trials differ from these catch trials at P < 0.05 in 9 of 12 mice, and the controls' median difference (3.96 mm/s) exceeds the Opto-DA one (-0.07 mm/s; Opto-DA against control U = 68, P = 0.045). With catch trials at least 2 s from any pulse, controls are still significant in 9 of 12. Taken literally, the criterion gives 9 of 20 Opto-DA mice significant, which would be not reproduced (8 of 20 with the 2-s catch trials); because the controls fail, the claim is recorded as blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3m-long-stim-velocity",
+     "statement": "Extending stimulation to 3 s (pulsed, 25 Hz) makes mice increase their velocity.",
+     "source": "Figure 3m; Extended Data Figure 10l; Results, Syllable-associated Opto-DA influences behaviour, paragraph 5",
+     "quote": "extending the duration of optogenetic stimulation to several seconds (which caused dLight signals that are of substantially higher amplitude than typically observed during spontaneous behaviour) caused mice to increase their velocity",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_markowitz_2023.ipynb",
+     "notes": "As for fig3l-no-kinematic-effect. With the criterion's substitute catch trials, stimulations are 0.302 to 0.348 of detections per mouse, and onsets during an ongoing 3-s train count as catch trials. 1 of the 3 Opto-DA mice with 3-s pulsed sessions is significant (P = 0.024; the others 0.091 and 0.053), which taken literally would be partially reproduced, and both controls are (P = 0.0002 and 0.0083), with larger differences (median 6.75 mm/s against 4.58). With catch trials at least 2 s from any pulse, 0 of 3 Opto-DA mice are significant (P = 0.10, 0.064, 0.082) and both controls still are (P = 0.0007 and 0.010). The 2-s continuous sessions give significant differences in 2 of 3 Opto-DA mice and 2 of 3 controls.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2a-food-reward-transients",
+     "statement": "Spontaneous syllable-associated dopamine transients roughly match those during consumption of an unexpected chocolate chip (mean spontaneous peak 2.12 +- 0.80 z, n = 5,247; reward 2.36 +- 0.92 z, n = 10).",
+     "source": "Figure 2a; Methods, \"Food reward experiments\"",
+     "quote": "Mean spontaneous transient peak had observed magnitudes of 2.12 \u00b1 0.80 \u0394F/F0 (z) (n = 5,247 transients). By comparison, mean reward consumption-associated transients had an approximate magnitude of 2.36 \u00b1 0.92 \u0394F/F0 (z) (n = 10 transients)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No session in the dandiset is described as a food-reward session, and the human-annotated consumption times are not in any file (session descriptions, NWB contents of the photometry files). The paper's code reads them from its Zenodo deposit (doi:10.5281/zenodo.7274803, one 60.8 GB zip), which was not opened here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-syllable-vs-movement-onset",
+     "statement": "The average syllable-associated dLight transient exceeds that associated with movement initiation (P = 0.0006, n = 14 mice).",
+     "source": "Figure 1f",
+     "quote": "The average syllable-associated dLight transient exceeds that associated with movement initiation",
+     "statistics": [
+      {
+       "test": "two-sided Wilcoxon signed-rank test",
+       "statistic": "z = 3, effect size r = 0.8",
+       "p": 0.0006,
+       "n": "14 averages"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Not attempted in this attempt, for time. The data it needs (dLight, syllable labels, 2D speed for movement initiations) are in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2k-dlight-predicts-sequence-variability",
+     "statement": "A higher-amplitude dopamine transient at a syllable instance is followed by less predictable syllable choices over the next several seconds.",
+     "source": "Results, Dopamine predicts future syllable use and sequencing, paragraph 3; Figure 2j-l",
+     "quote": "if a given instance of a syllable was associated with a relatively high amplitude dopamine transient, the mouse tended to make less predictable syllable choices over the next several seconds",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Not attempted in this attempt, for time. The data it needs are in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3i-optoda-entropy",
+     "statement": "Behavioural sequences right after Opto-DA stimulation are less predictable than after catch trials.",
+     "source": "Results, Syllable-associated Opto-DA influences behaviour, paragraph 3; Figure 3i",
+     "quote": "behavioural sequences observed immediately after Opto-DA stimulation were more unpredictable than the those observed on catch trials",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "Not attempted; it compares stimulation with catch trials, which the files do not mark (see fig3l-no-kinematic-effect).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed10d-optoda-vigour",
+     "statement": "Opto-DA delivered on the fastest (slowest) quartile of target instances makes later instances faster (slower).",
+     "source": "Results, Syllable-associated Opto-DA influences behaviour, paragraph 4; Extended Data Figure 10d",
+     "quote": "this manipulation systematically increased the velocity with which the target syllable was later expressed ... Opto-DA during the slowest quartile of the syllable velocity distribution caused future instances of the targeted syllable to slow down",
+     "statistics": [
+      {
+       "test": "two-sided Mann-Whitney U test",
+       "statistic": "u = 167, f = 0.77",
+       "p": 0.013,
+       "n": "18 up experiments and 12 down experiments"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Not attempted in this attempt, for time. The 94 velocity-conditioned files of 9 mice are in the dandiset, with \"Stim Up\" and \"Stim Down\" notes.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-endo-da-influence-consistent",
+     "statement": "Per mouse, the influence of endogenous dopamine on syllable counts and on sequence entropy are correlated (r = 0.69, P = 0.001).",
+     "source": "Figure 4b",
+     "quote": "scatter plot (including linear regression model fit) of per mouse average Endo-DA count influence and Endo-DA entropy influence",
+     "statistics": [
+      {
+       "test": "one-sided shuffle test",
+       "statistic": "Pearson r = 0.69",
+       "p": 0.001
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Not attempted in this attempt, for time; it builds on the per-mouse lagged analyses of Fig. 2e and 2k.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-endo-da-predicts-learning",
+     "statement": "Mice whose syllable use is more influenced by endogenous dopamine learn more from Opto-DA (r = 0.51, P = 0.001).",
+     "source": "Figure 4c",
+     "quote": "Scatter plot (including regression line) of per mouse average Opto-DA learning versus Endo-DA count influence",
+     "statistics": [
+      {
+       "test": "one-sided shuffle test",
+       "statistic": "Pearson r = 0.51",
+       "p": 0.001
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Not attempted in this attempt, for time. The mice it needs have photometry and closed-loop sessions in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4f-catch-dlight-predicts-learning",
+     "statement": "Syllables with higher endogenous dLight on catch trials are more reinforced by Opto-DA (r = 0.32, P < 0.001).",
+     "source": "Figure 4f",
+     "quote": "scatter plot (including regression line) of catch trial syllable-associated dLight and Opto-DA learning for each mouse\u2013syllable pair",
+     "statistics": [
+      {
+       "test": "one-sided shuffle test",
+       "statistic": "r = 0.32",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "Not attempted; it uses dLight on catch trials, which the files do not mark.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4h-decoding-model",
+     "statement": "A model in which endogenous and exogenous dopamine add predicts held-out syllable choices better than shuffled and noise controls (median r 0.20 against 0.04).",
+     "source": "Figure 4h; Methods, \"Decoding model predicting behaviour from dLight\"",
+     "quote": "Model-based likelihood of predicting held-out syllable choices on Opto-DA stim experiments (blue) relative to control models",
+     "statistics": [
+      {
+       "test": "two-sided Mann\u2013Whitney U test",
+       "statistic": "U = 2,500, f = 1",
+       "p": 7e-18,
+       "n": "50 model restarts"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Not attempted in this attempt, for time.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-rl-model",
+     "statement": "A Q-learning agent rewarded by syllable-associated dLight learns a transition matrix similar to the observed one, best when dopamine also transiently raises choice variability.",
+     "source": "Results, An RL model reproduces spontaneous behaviour, paragraph 3; Figure 5b-d",
+     "quote": "after training the model converged on a syllable transition matrix similar to that emitted by actual mice exploring an open field; comparing alternative formulations of this model revealed that maximal model performance depended on dopamine both reinforcing specific syllable transitions and briefly increasing the variability of syllable choices",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Not attempted in this attempt, for time; the paper fitted it on a 128-CPU machine, and its code is in the repository named under inputs.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The closed-loop files mark stimulation onsets but not catch trials (target detections on which stimulation was withheld); the conversion kept only the stimulated detections. Comparisons of stimulation with catch trials (Fig. 3i, 3l, 3m, 4f) cannot be made, and a substitute selection shows stimulation-catch differences in 9 of 12 no-opsin controls.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "No file states the genotype or opsin of a mouse. Opto-DA (Ai32) and no-opsin control mice are told apart only by the stimulation site (\"snc (axon)\" or \"ctrl\"), and the dLight+ChrimsonR mice only by their subject names.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Session type (baseline, stimulation, post) and session number are not stored; they must be inferred from free-text descriptions, dates and stimulation pulses. Five files with stimulation are described as recording sessions.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Every closed-loop file states a 635-nm stimulator (Opto Engine MRL-III-635), including the Ai32 (ChR2) mice, which the Methods say were stimulated with 470-nm light.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The dLight-only mice (C57BL/6J in the Methods) carry the subject description \"wild-type DAT-IRES-Cre and Ai32 mice\", the same as the optogenetic mice.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "format_error",
+     "statement": "In 28 photometry and 547 closed-loop files the syllable timestamps are not ascending. In 573 of these 575 the rows are rotated, with one backward step, which is at least 0.95 of the session length in 558 files and 0.635 of it at the least. Sorting by timestamp restores a regular 30-Hz clock (median interval 0.03337 s in every file).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "format_error",
+     "statement": "Two closed-loop files of mouse 3155 store every syllable frame twice (53,822 and 53,862 repeated timestamps), and have two and three non-ascending steps.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "14 files of dLight+ChrimsonR mice hold empty syllable series; all list two target syllables.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "For the dLight+ChrimsonR mice only the 250-ms closed-loop sessions are present; the 2-s and pulsed sessions the Methods describe are not. The dandiset holds 224 DLS photometry files without stimulation (210 with syllables, 193 of them not habituation sessions, 177 of those passing the quality criteria), where the Methods give 379 experiments.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The food-reward sessions and the consumption times of Fig. 2a are not in the dandiset.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The dandiset includes behaviour-only files for photometry sessions without a dLight series (111 files, among them all files of dls-dlight-6, dls-dlight-8, dms-dlight-7 and dms-dlight-9) and sessions that fail the paper's quality criteria (16 DLS and 11 DMS), with no flag saying which were excluded from the paper.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The re-referenced, z-scored dLight trace used by every photometry analysis is not stored; it must be recomputed from the stored dF/F and smoothed reference, whose regression fit is not stored either.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-17",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The executed notebook of the first run with the conclusion cells and the summary removed, the helper module and the claims file. The header still listed which claims were tested and blocked.",
+     "agreed": 23,
+     "of": 24,
+     "disagreements": [
+      {
+       "claim": "fig3e-learner-count",
+       "outcome": "not_reproduced",
+       "reason": "7 learners against the paper's 9. All 7 are in the code's list; 3442 (change 47.3) and dls-ai32jr-1 (41.7) fall below the control maximum of 54.5 (vta-nacc-ctrl-6). It asked for the per-target stimulation and baseline counts and the chosen baseline day for these two mice and for vta-nacc-ctrl-6."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-18",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the second run (after author-revise-1, commit 17be4c1), with the conclusion cells and the summary, the helper module, the claims file, the README and this attempt record, and the paper text.",
+     "agreed": 24,
+     "of": 24,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000559-markowitz-2023",
+   "type": "reproduction",
+   "title": "Dopamine and spontaneous behaviour in mice (Markowitz, Gillis, Jay et al. 2023)",
+   "description": "Tests the findings of Markowitz, Gillis, Jay et al. (2023) on dandiset 000559, which holds the dLight photometry, MoSeq syllables and closed-loop optogenetic sessions of the paper. It relates DLS dopamine to velocity, syllable identity, syllable use and sequence entropy, compares DMS with DLS, and tests the reinforcement of target syllables by closed-loop dopamine release. The modelling of Figures 4 and 5 is not attempted.",
+   "datasets": [
+    "dandi:000559"
+   ],
+   "papers": [
+    "10.1038/s41586-022-05611-2"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_markowitz_2023.ipynb",
+     "title": "Reproducing Markowitz, Gillis, Jay et al. (2023) from dandiset 000559",
+     "executed": "notebooks/000559-markowitz-2023/reproduce_markowitz_2023.html"
+    }
+   ]
+  }
+ ]
+}
