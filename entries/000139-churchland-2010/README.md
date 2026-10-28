@@ -17,13 +17,13 @@ The speed-task and single-electrode datasets and the EMG are not in the dandiset
 | Peri-movement space gives the best PD performance | Reproduced |
 | Peri-movement space best at almost every dimensionality | Reproduced |
 | Performance peaks at middle dimensionality | Reproduced |
-| Segment directions and initial velocity perform reasonably well | Blocked: methods underspecified |
+| Segment directions and initial velocity perform reasonably well | Reproduced (segments equal in time) |
 | 7 to 10 dimensions for 90% of preparatory variance | Not reproduced |
 | Shuffled space performs poorly | Reproduced |
 | Window start can slide to onset (97%) | Reproduced |
 | No effect of AP location on the tuning correlation | Reproduced |
 | Anterior and posterior halves perform like random halves | Not reproduced |
-| Preparatory activity more prevalent anteriorly | Not reproduced |
+| Preparatory activity more prevalent anteriorly | Blocked: metadata insufficient (which array is PMd) |
 | PD most stable in peri-movement space | Reproduced |
 | Some neurons better in other spaces | Reproduced |
 | High-dimensional task spaces underperform | Reproduced |
@@ -38,8 +38,8 @@ measure, whether the PCA space is recomputed in each cross-validation fold); the
 reading, and the attempt record,
 [`attempts/000139-churchland-2010-01.yaml`](../../attempts/000139-churchland-2010-01.yaml), says which
 was adopted and why. The units' electrode references all point at the PMd array; the array is read
-from the unit ids.
+from the unit ids, and the files do not say which id prefix is PMd.
 
-- `reproduce_churchland_2010.ipynb`: the analysis, about seven minutes.
+- `reproduce_churchland_2010.ipynb`: the analysis, about ten minutes.
 - `maze.py`: loading the files, trial selection, condition means, the PD model with
   leave-one-condition-out performance, and the peri-movement, kinematic and task spaces.
