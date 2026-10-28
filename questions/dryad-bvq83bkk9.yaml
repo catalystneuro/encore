@@ -1,0 +1,70 @@
+# Questions from attempt dryad-bvq83bkk9-dias-2025-01 (author, 2026-10-27) about the claims file
+# claims/dryad-bvq83bkk9/10.1098-rspb.2024.2556.yaml. Each is asked under docs/protocol.md, Author,
+# step 1.6. The attempt applied the criteria as written and showed ten further seed sets.
+dataset: DRYAD:bvq83bkk9
+paper: doi:10.1098/rspb.2024.2556
+questions:
+- claim: s4-s6-spring-migration-temperature-none
+  also: [s6-autumn-ahy-recent-wintering-prebreeding-precipitation-none]
+  asked: 2026-10-27
+  question: How is a 95% bound that lies within Monte Carlo error of 0 to be judged? The criteria
+    count any interval that excludes 0, under interval reading (i) or (ii), as not reproduced. The
+    code sets no seed for the MCMCglmm runs, so the seed is a choice of the attempt. In the spring
+    AHY model the chain-4 HPD interval of MinTempNextSpringMig ends at -0.0002 (and -0.0005 under
+    filtering reading c), and excludes 0 in 1 of 10 other seed sets; in the autumn AHY model under
+    filtering reading (d) the chain-4 HPD of the tarsus by PrevPrecipWinMo interaction ends at
+    -0.0003, and excludes 0 in 1 of 10 other seed sets. The pooled quantile intervals include 0 in
+    every run.
+  passage: Supplement, Table S5 prints the spring migration temperature interval of the spring AHY
+    model as -0.03 to 0.00, so the paper's own bound is on the line; Script02 prints both the pooled
+    summary and the chain-4 summary and notes that "results will vary each run".
+  why: Both claims are recorded as not reproduced on these single bounds. If the paper's test is
+    read as the pooled quantile interval (reading i) only, or as the share of seeds, both are
+    reproduced.
+  answered: 2026-10-27
+  answer: The paper does not give it. It fixes no seed and has no rule for a bound within Monte
+    Carlo error of 0. The supplement reports one run ("All phylogenetic mixed models were run with
+    four chains, for 15,000 iterations with the first 5,000 iterations discarded as burn-in") and
+    its tables judge each bound by its unrounded sign. Table S5 prints the spring migration
+    temperature interval as "-0.03 – 0.00" and counts it as not significant, while it prints
+    wintering precipitation as "-0.04 – -0.00" and counts it as significant. So a bound of -0.0002
+    would count as excluding 0 in the paper's own convention, and the paper's run fell on the other
+    side. Both criteria now name two readings, one run with a recorded seed and the majority over
+    a set of seeds. Because the seed is an agent's choice, a claim whose readings give different
+    outcomes is blocked as methods_underspecified. The statements and intervals are unchanged.
+- claim: s4-s5-climate-size-interactions
+  also: [s4-s6-climate-variable-selection]
+  asked: 2026-10-27
+  question: Do the two seed readings of the answer above, and its rule that a claim is blocked as
+    methods_underspecified when they differ, also apply to these two claims, whose criteria judge
+    near-zero bounds of the same preliminary models and have no seed rule? For
+    s4-s5-climate-size-interactions the recorded run gives reproduced, but under filtering reading
+    (c) the HY tarsus by AvgTempPreBreedBase interval excludes 0 in 6 of 10 other seed sets under
+    interval reading (i) and 8 of 10 under (ii), which would make it partially reproduced under the
+    majority of seeds. For s4-s6-climate-variable-selection both seed readings give reproduced.
+  passage: Supplement, Table S4 caption names only the HY tarsus by previous wintering temperature
+    interaction for HY birds; Script02 sets no seed ("results will vary each run").
+  why: Under the answer's rule s4-s5-climate-size-interactions would be blocked as
+    methods_underspecified in place of reproduced.
+- claim: table3-autumn-ahy-prior-wintering-precipitation
+  asked: 2026-10-27
+  question: What is the outcome when both effects fall on the other side of their lines under one
+    filtering reading? The criterion gives partially reproduced for one effect on the wrong side and
+    no not_reproduced case. The round-1 run had both effects on the wrong side under reading (d)
+    (intercept pd 89.4%, slope pd 93.6%); in the run now recorded each reading has at most one.
+  passage: Results and Table 3 give the intercept pd as 90.0%, on the line, and the slope pd as
+    88.7%.
+  why: The fits move between machines (the Stan model is compiled with -march=native), so a later
+    run may again have both effects on the wrong side, and the criterion does not say whether that
+    is partially or not reproduced.
+- claim: s7-low-phylogenetic-signal
+  asked: 2026-10-27
+  question: Should s7-low-phylogenetic-signal depend on s4-s6-spring-migration-temperature-none? The
+    claims file lists that dependency, but lambda is computed from the variance components of the
+    preliminary models and does not depend on whether spring migration temperature has an effect. The
+    verifier of round 2 reported this as a possible misreading. The dependency target is blocked as
+    methods_underspecified, while s7 is recorded as reproduced. The link may only mean that s7 uses
+    the preliminary models that claim's criterion defines.
+  passage: Supplement, Table S7 gives lambda for each preliminary model; neither the Results nor the
+    supplement link it to the spring migration temperature result.
+  why: If the dependency stands, a reader may take the s7 outcome to rest on a blocked claim.
