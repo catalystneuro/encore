@@ -1,0 +1,112 @@
+# openneuro-ds004752, Dimakopoulos et al. 2022
+
+Seven claims reproduced, three partially, ten not reproduced and none blocked
+on the dataset alone; `table1-left-hemisphere-sources`, which needs a head
+model and atlas from outside the dataset, is blocked as `not_runnable`. It pins
+version 1.0.1, its latest published version. The paper, Dimakopoulos,
+Mégevand, Stieglitz, Imbach and Sarnthein in eLife, records hippocampal depth
+LFP and scalp EEG in 15 participants with drug-resistant focal epilepsy
+performing a modified Sternberg verbal working memory task, with subdural ECoG
+in Participants 1 to 4, and reports by spectral Granger causality (GC) that
+theta net flow runs from auditory cortex to the hippocampus during encoding and
+reverses during maintenance, in each participant and across the group. The
+claims were written from the version of record in Europe PMC (PMC9374435),
+without the supplement's content, and from the paper's code
+(vdimakopoulos/verbal_working_memory at commit 395ae13). The behaviour, the
+gamma, beta and phase locking results of Participant 1, hippocampal beta, the
+GC of the four ECoG participants, the group GC between the hippocampus and the
+dataset's beamformer virtual sensors (Figure 4 and Table 1) and the scalp
+Laplacian control were tested. The left-hemisphere share of the EEG sources
+could not be, as FieldTrip needs MATLAB, which cannot be installed in the
+locked environment, and the dataset holds five averaged virtual sensors and no
+source grid. `cohort-sessions` is partially reproduced (68 sessions where the
+paper has 71), `fig2bc-gamma-encoding-p1` partially (H3 rises 179%, C2 only
+17%), and `table1-heschl-dgranger-correct` partially, as its signs match under
+the d2 reading while at most 5 of 30 values are within tolerance. The author's
+first run gave 7 reproduced, 4 partially, 8 not reproduced and 2 blocked. The
+author asked a reader no questions, so the answer run and the following author
+run changed nothing. Round 1 agreed with 20 of 21 outcomes, disagreeing on
+`fig2bc-gamma-encoding-p1`, which it judged not reproduced; its points led to a
+calibration of the GC tests on shifted trial pairs, on which the per-frequency
+test flagged a theta reversal far above the nominal 5%, so the cluster test was
+adopted and `fig2h-gc-reversal-p1` went from reproduced to not reproduced and
+`fig3-gc-reversal-p2-p3` from partially to not reproduced. It also led to the
+white-matter reference being taken in the hemisphere of the hippocampal
+contact, which moved `fig4e-lpfc-no-reversal` from reproduced to not reproduced
+and `scalp-temporal-laplacian` from not reproduced to reproduced, and to the
+recovery of the beamformer filters (R² = 1.000000 in all 150 fits), which moved
+`fig4f-incorrect-no-reversal` from blocked to reproduced. Round 2 agreed with
+19 of 21, disagreeing again on fig2bc, which the author kept, and on
+`fig3no-p4-right-no-gc`, then blocked as `methods_underspecified`; it found
+statements the outputs did not support, among them "four of eight" matching
+readings for Cowan's K where the output prints 5 of 8, a fig4f sign count
+called about chance where it is below chance, and stale run times, which were
+corrected. In reply the scrambled-trial cluster test the figure legends name
+was added, and a third round, on the one proposed change, agreed that
+`fig3no-p4-right-no-gc` is not reproduced, as that test finds GC at all 12
+contacts of Participant 4. Four questions were put to a reader during the
+revisions, after the answer step, and are unanswered. Some outcomes rest on
+weak ground: `scalp-temporal-laplacian` passes in 1 of 36 cells at an
+uncorrected p = 0.02, and only after the reference change; `table1-heschl-dgranger-correct`
+and `balanced-correct-subset` rest on the d2 reading, which makes the sign
+pattern without a directed effect; `fig4f-incorrect-no-reversal` rests on
+applying the correct-trial filters to the incorrect trials, and under the same
+d1 reading the correct trials show no reversal either, so the paper's contrast
+is not reproduced; `fig4e-lpfc-no-reversal` rests on reading h1, which gave p =
+0.065 before the reference change and is reproduced under h2;
+`fig1c-response-time` passes on the median of pool p2, while pool p1, the
+paper's 3045 trials, gives a slope of 47.69 ms per item, just outside; and in
+`fig2d-cortical-beta-maintenance-p1` no contact survives a Benjamini-Hochberg
+correction. The author's run took about 2 h 10 min and no step failed; the
+notebook ran in 18 minutes at first, 26 minutes after round 2 and 1093 s in
+the last run, under the 30-minute limit; for time, the per-contact and spatial
+tests of fig2ijk ran with h1 only, and the spatial test on maintenance only.
+
+The derivative files hold beamformer sources for correct trials only, and the
+beamformer filters, electrode alignment and head model are not deposited, so
+the paper's source statistics (Table 1) cannot be repeated from the dataset;
+the incorrect-trial sources of Figure 4f can be approximated, as each virtual
+sensor is an exact linear combination of the file's own scalp channels. The
+paper's code stores the same row of FieldTrip's grangerspctrm as cortex to
+hippocampus for encoding and as hippocampus to cortex for maintenance, and with
+the minimum (encoding) and maximum (maintenance) over 4 to 8 Hz this yields
+negative encoding and positive maintenance values without a directed effect;
+the Results say ΔGranger was averaged over [4 8] Hz while the Figure 4d legend
+reports the maximal value, and on this dataset the average shows no effect
+while the extreme value shows the reported pattern for every area and for
+spectra with no direction. The dataset holds 68 sessions with 3353 trials (15
+sessions with fewer than 50 trials) where the paper reports 71 sessions of 50
+trials, while its 3045 correct trials equal the paper's count; the README gives
+no session count. In every channels.tsv low_cutoff is 1000 and high_cutoff 0.5,
+the reverse of the sidecars' and the paper's 0.5 to 1000 Hz passband. The EDF
+headers leave the physical dimension of every signal blank, and the derivative
+virtual sensors carry no unit and a sampling rate from 200 to 4096 Hz across
+subjects. In sub-11 the contacts named PHL lie at positive MNI x and those
+named PHR at negative x, 3 contacts of sub-12 have the same mismatch, and in
+sub-01 the atlas label names the hemisphere opposite to the x coordinate for 12
+contacts. participants.tsv gives a pathology different from Table 1 for eLife
+participants 5, 6 and 15, with 5 and 6 looking swapped. The README lists a
+Broca virtual sensor and other areas where the files hold DLPFC, OFC, PPC, AC
+and V1, plus scalp channels it does not mention. The derivative files carry no
+trial numbers; their trials are the correct trials of set sizes 6 and 8 in
+session order, without the artifact-flagged trials in 13 subjects and with them
+in sub-13 and sub-14. 17 trials have SetSize 0 and the artifact flag, apparently
+placeholders, and ProbeLetter is n/a for every trial of sub-10 to sub-15,
+neither described in the events sidecar. Four questions are put to the paper's
+authors: which hippocampal contact and white-matter reference entered each
+participant's analyses, and which contact referenced the ECoG; whether the
+per-participant ΔGranger is the band mean or the extreme value, and how the 10%
+subsampled spectra were aggregated and over how many draws; how the
+direction-swap null of the per-frequency GC test was built and whether it was
+corrected over frequencies; and whether the LCMV filter for the incorrect
+trials was computed from those trials or taken from the correct ones.
+
+The author's points on the protocol: the claims file's criteria count any
+matching reading while Author step 1.6 asks for one to be adopted as an
+assumption, and the protocol does not say what to do when the matching reading
+is shown to make the effect by construction; it has no rule for a test that
+flags nearly every contact, as the direction-swap null does here even for
+Participant 4; it does not say whether readings left out for the time limit
+belong under `too_large`; the paper's code, read for method details, was cited
+but not listed under `inputs`, as no data came from it; and the repository
+root has untracked files from the sandbox.
