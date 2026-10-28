@@ -5,6 +5,10 @@
     python tools/runner/describe.py next [SKIP ...]    # the next dataset in the queue, by folder name
     python tools/runner/describe.py next-claims [SKIP ...]
                                                        # the next dataset to read claims for
+    python tools/runner/describe.py next-match [SKIP ...]
+                                                       # the next dataset with no paper match on main
+    python tools/runner/describe.py match FOLDER       # its paper match on main: matched, unchecked, held
+                                                       # or no_match (tools/paper_match.py)
     python tools/runner/describe.py published FOLDER   # "true" when the dataset has a published version
     python tools/runner/describe.py claims-ready FOLDER
                                                        # "true" when main has a claims file whose check passed
@@ -25,6 +29,9 @@ own and not in SKIP, from every archive's list, taking datasets converted by Cat
 lists' own order. `next-claims` chooses among the targets whose papers are all in the paper store
 (papers/manifest.yaml on main) and which have no claims file on main, from the end of that order, so
 that a claims-only runner and a full one running at the same time do not reach for the same dataset.
+Neither takes a dataset whose paper match on main leaves it no usable paper (held or no_match). `next-match`
+chooses among the published targets, attempted or not, that have no paper match on main and no branch of their
+own, for a runner that only matches papers (MATCH_ONLY, run_queue.sh).
 """
 
 from __future__ import annotations
@@ -101,8 +108,8 @@ def published(target: dict) -> bool:
     return target.get("archive", "dandi") != "dandi" or bool(target.get("published_version"))
 
 
-def queue(skip: set[str] = frozenset(), claims: bool = False) -> list[str]:
-    """The datasets a runner will take, by folder name, in the order it will take them."""
+def main_targets() -> list[dict]:
+    """Every archive's targets as main has them, each with its archive, key, id and folder."""
     import datasets
     targets = []
     for archive, spec in datasets.ARCHIVES.items():
@@ -110,16 +117,43 @@ def queue(skip: set[str] = frozenset(), claims: bool = False) -> list[str]:
             listed = json.loads(git("show", f"origin/main:targets/{spec['list']}"))["targets"]
         except subprocess.CalledProcessError:
             continue
-        targets += [{**t, "archive": archive,
-                     "folder": datasets.folder(datasets.key_of(archive, t.get("id") or t["dandiset"]))}
-                    for t in listed]
-    targets = [t for t in targets if published(t)]
+        key = lambda t: datasets.key_of(archive, t.get("id") or t["dandiset"])
+        targets += [{**t, "archive": archive, "id": t.get("id") or t["dandiset"], "key": key(t),
+                     "folder": datasets.folder(key(t))} for t in listed]
+    return targets
+
+
+def matched_on_main() -> set[str]:
+    """The datasets with a paper match on main, by folder name."""
+    return {Path(p).stem for p in git("ls-tree", "--name-only", "origin/main", "papers/match/").split()}
+
+
+def match_status(target: dict, fix: dict | None = None) -> str:
+    """A target's paper match as main has it: matched, unchecked, held or no_match (tools/paper_match.py)."""
+    import paper_match
+    if fix is None:
+        fix = (main_yaml("papers/triage.yaml") or {}).get("targets", {}).get(target["folder"], {})
+    return paper_match.choose(target, fix, main_yaml(f'papers/match/{target["folder"]}.yaml'))[0]
+
+
+def queue(skip: set[str] = frozenset(), claims: bool = False, match: bool = False) -> list[str]:
+    """The datasets a runner will take, by folder name, in the order it will take them."""
+    targets = [t for t in main_targets() if published(t)]
+    if match:
+        done = matched_on_main() | branches() | set(skip)
+        return [t["folder"] for t in sorted(targets, key=lambda t: not t.get("catalystneuro"))
+                if t["folder"] not in done]
     records = [Path(p).name for p in git("ls-tree", "--name-only", "origin/main", "attempts/").split()]
     # An attempt record is named <folder>-<first author>-<year>-<nn>.yaml. A dataset whose latest attempt
     # is deprecated is to be done again (its claims too, see chain.sh), so it is open.
     attempted = {t["folder"] for t in targets if any(r.startswith(t["folder"] + "-") for r in records)}
     attempted -= {f for f in attempted if latest_deprecated(f, records)}
     taken = attempted | branches() | set(skip)
+    fix = (main_yaml("papers/triage.yaml") or {}).get("targets", {})
+    # A dataset whose paper match leaves it no usable paper waits for a person (held) or is not to be done (no_match).
+    has_match = matched_on_main()
+    taken |= {t["folder"] for t in targets if t["folder"] in has_match
+              and match_status(t, fix.get(t["folder"], {})) in ("held", "no_match")}
     open_ = [t for t in targets if t["folder"] not in taken]
     if claims:
         papers = (main_yaml("papers/manifest.yaml") or {}).get("targets", {})
@@ -128,7 +162,6 @@ def queue(skip: set[str] = frozenset(), claims: bool = False) -> list[str]:
                  and all(p["status"] == "stored" for p in papers[t["folder"]])]
     # Datasets whose paper is published come first, so that fewer attempts rest on a preprint that is
     # published later; then ours. Python's sort is stable, so the list's order holds within each group.
-    fix = (main_yaml("papers/triage.yaml") or {}).get("targets", {})
     published_paper = [t for t in open_ if has_publication(t, fix.get(t["folder"], {}))]
     preprint_only = [t for t in open_ if not has_publication(t, fix.get(t["folder"], {}))]
     groups = [sorted(g, key=lambda t: not t.get("catalystneuro")) for g in (published_paper, preprint_only)]
@@ -137,8 +170,8 @@ def queue(skip: set[str] = frozenset(), claims: bool = False) -> list[str]:
     return [t["folder"] for g in groups for t in g]
 
 
-def next_target(skip: set[str], claims: bool = False) -> str | None:
-    return next(iter(queue(skip, claims)), None)
+def next_target(skip: set[str], claims: bool = False, match: bool = False) -> str | None:
+    return next(iter(queue(skip, claims, match)), None)
 
 
 def branches() -> set[str]:
@@ -291,8 +324,13 @@ def main() -> int:
         print("true" if found and published(found) else "false")
     elif command == "claims-ready":
         print("true" if claims_ready(rest[0]) else "false")
-    elif command in ("next", "next-claims"):
-        found = next_target(set(rest), claims=command == "next-claims")
+    elif command == "match":
+        found = next((t for t in main_targets() if t["folder"] == rest[0]), None)
+        if found is None:
+            raise SystemExit(f"error: {rest[0]} is not a target on main")
+        print(match_status(found))
+    elif command in ("next", "next-claims", "next-match"):
+        found = next_target(set(rest), claims=command == "next-claims", match=command == "next-match")
         if found is None:
             return 1
         print(found)

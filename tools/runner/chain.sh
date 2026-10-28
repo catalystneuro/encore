@@ -3,7 +3,8 @@
 #
 #   tools/runner/chain.sh DATASET [VERSION]      (000147, DANDI:000147 or <archive>:<id>)
 #
-# Runs the roles of the attempt in GitHub Actions, one after another: the reader's claims and their
+# Runs the roles of the attempt in GitHub Actions, one after another: the paper match, when main has none
+# for the dataset (papers.yml; docs/pipeline.md step 1), the reader's claims and their
 # check (papers.yml, the only runs that write the claims file), the author, the reader's answers to the
 # author's questions and the author's run on them when there are questions (only a suspected misreading
 # of the claims file is a question; the author takes method details from the paper), two verification rounds
@@ -29,6 +30,12 @@
 # Finishing takes a lock ($RUNNER_STATE/finalize.lock), so that one attempt at a time has main
 # merged in, recorded (the recorder role adds the pilot notes) and merged once its
 # checks pass; each lands on a main that has the ones before it.
+#
+# The paper match goes straight to main (merge_match.sh). When it leaves the dataset no usable paper the chain
+# stops: for a person to confirm or correct the verdicts (held), or for good (no_match, confirmed). A claims
+# file whose claims, links aside, are mostly on data elsewhere stops the chain too, before its checkpoint: the
+# paper is likely not the dataset's. With MATCH_ONLY=1 the chain stops after the paper match, deletes the
+# branch, and prints "<dataset> MATCH <status>".
 #
 # A new attempt skips the claims and their check when main already has a claims file whose check
 # passed (put there by a claims-only chain, say). With CLAIMS_ONLY=1 the chain stops after the
@@ -71,7 +78,7 @@ done_roles(){ { git log --since="$(cat "$mark" 2>/dev/null || echo 2000-01-01)" 
                 git log --since="$(cat "$mark" 2>/dev/null || echo 2000-01-01)" --format='%ct %s' origin/attempt/"$d" 2>/dev/null; } \
   | sort -n -u | sed -nE "s/^[0-9]+ Agent run on $d: ([a-z0-9-]+) \(success\)$/\1/p"; }
 is_done(){ done_roles | grep -qx "$1"; }
-workflow_of(){ case "$1" in claims|claims-check|answer) echo papers.yml;; *) echo attempt.yml;; esac; }
+workflow_of(){ case "$1" in paper-match|claims|claims-check|answer) echo papers.yml;; *) echo attempt.yml;; esac; }
 run_of(){ gh run list --workflow "$(workflow_of "$1")" --limit 100 --json databaseId,displayTitle,status \
   | python "$here/describe.py" run "$d" "$1"; }
 wait_run(){ local st; while true; do
@@ -158,6 +165,29 @@ step(){ is_done "$1" || run_role "$1" || { end "$d STOPPED at $1"; exit 1; }; }
 on_branch(){ git show "origin/attempt/$d:$1" 2>/dev/null; }
 claims_file(){ git ls-tree -r --name-only origin/attempt/"$d" "claims/$d" | grep '\.yaml$' | head -n 1; }
 
+# The paper match: the claims are read only from a paper whose data the dataset holds.
+match=$(python "$here/describe.py" match "$d")
+if [ "$match" = unchecked ]; then
+  step paper-match
+  out=$("$here/merge_match.sh" "$d" 2>&1); st=$?
+  echo "$out" | while read -r line; do log "$line"; done
+  [ $st = 0 ] || { end "$d STOPPED: the paper match did not go into main"; exit 1; }
+  fetch
+  match=$(python "$here/describe.py" match "$d")
+fi
+if [ "${MATCH_ONLY:-}" = 1 ]; then
+  # Only the paper match was asked for; it and its transcript are on main.
+  git push -q origin --delete "attempt/$d" 2>/dev/null || true
+  rm -f "$mark"; end "$d MATCH $match"; exit 0
+fi
+case "$match" in
+  matched) ;;
+  held) last_why="the paper match leaves no usable paper; confirm the verdicts in papers/match/$d.yaml (confirmed: true) or correct them"
+        end "$d STOPPED: no paper matches the dataset; see papers/match/$d.yaml"; exit 1;;
+  no_match) rm -f "$mark"; end "$d SKIPPED: no paper matches the dataset (papers/match/$d.yaml)"; exit 1;;
+  *) end "$d STOPPED: the paper match left a paper without a verdict; see papers/match/$d.yaml"; exit 1;;
+esac
+
 deprecated=$(python "$here/describe.py" deprecated "$d")
 on_main=$(python "$here/describe.py" claims-ready "$d")
 if [ "$on_main" = true ] && [ "$deprecated" != true ] && ! is_done claims; then
@@ -173,6 +203,12 @@ elif [ -z "$VERSION" ] || [ "$deprecated" = true ]; then
   fetch
   ready=$(on_branch "$(claims_file)" | python -c "import yaml,sys; c=(yaml.safe_load(sys.stdin) or {}).get('checks') or [{}]; print(str(c[-1].get('ready', False)).lower())")
   [ "$ready" = true ] || { end "$d STOPPED: the claims check says the claims file is not ready"; exit 1; }
+  # Claims mostly on data elsewhere mean the paper is likely not this dataset's: stop before the checkpoint.
+  elsewhere=$(on_branch "$(claims_file)" | python -c "import yaml,sys; c=[x for x in (yaml.safe_load(sys.stdin) or {}).get('claims') or [] if x.get('kind') != 'link']; print(str(bool(c) and 2 * sum(x.get('data') == 'elsewhere' for x in c) > len(c)).lower())")
+  if [ "$elsewhere" = true ]; then
+    last_why="most of the claims are on data elsewhere, so the paper is likely not the dataset's; check papers/match/$d.yaml"
+    end "$d STOPPED: most claims are on data elsewhere"; exit 1
+  fi
   # The checkpoint: the checked claims go into main now, ahead of the attempt. A failure here does not stop it.
   if [ "${CLAIMS_ONLY:-}" = 1 ]; then
     out=$("$here/merge_claims.sh" "$d" --with-transcripts 2>&1); st=$?

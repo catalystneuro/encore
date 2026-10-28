@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Paper match",
+  "description": "Whether each paper a dataset names is the paper behind its data: papers/match/<folder>.yaml (tools/paper_match.py, docs/pipeline.md step 1).",
+  "type": "object",
+  "required": ["schema_version", "dataset", "date", "papers"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": 1},
+    "dataset": {
+      "type": "object",
+      "required": ["archive", "id"],
+      "additionalProperties": false,
+      "properties": {"archive": {"type": "string"}, "id": {"type": "string"}}
+    },
+    "date": {"type": "string", "format": "date"},
+    "papers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["doi"],
+        "additionalProperties": false,
+        "properties": {
+          "doi": {"type": "string", "pattern": "^10\\."},
+          "relation": {"type": ["string", "null"], "description": "How the archive relates the dataset to the paper."},
+          "verdict": {"enum": ["primary", "partial", "other_data", "background", "not_a_paper", "wrong_doi"]},
+          "by": {"type": "string", "description": "checks, agent, or the name of the person who set the verdict."},
+          "reason": {"type": "string"},
+          "data_in": {"type": "array", "items": {"type": "string"}, "description": "For other_data and partial: the datasets that hold the paper's data, as DANDI:<id> or the archive's own identifier."},
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["source"],
+              "additionalProperties": false,
+              "properties": {
+                "source": {"type": "string", "description": "Where: a section of the paper, or the dataset's archive metadata."},
+                "quote": {"type": "string"}
+              }
+            }
+          },
+          "confirmed": {"type": "boolean", "description": "Set by a person: the verdict holds. Needed before a verdict that leaves the dataset no usable paper takes effect."},
+          "checks": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {"type": "boolean"},
+              "title_in_text": {"type": ["boolean", "null"]},
+              "names_this": {"type": "boolean"},
+              "names_others": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        },
+        "if": {"properties": {"verdict": {"enum": ["other_data", "background", "not_a_paper", "wrong_doi", "partial"]}}, "required": ["verdict"]},
+        "then": {"required": ["by", "reason", "evidence"]}
+      }
+    }
+  }
+}

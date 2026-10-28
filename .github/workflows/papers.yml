@@ -3,10 +3,12 @@ run-name: "Paper run: ${{ inputs.dataset || inputs.dandiset }} ${{ inputs.role }
 
 # One reader run on a target (docs/protocol.md, "Reader"): writing the claims file from the
 # paper (`claims`), checking it against the paper (`claims-check`), or answering an attempt's
-# questions (`answer`). Started by hand from the Actions tab or with
+# questions (`answer`); or, before them, judging whether each paper the archive names is the paper
+# behind the data (`paper-match`, docs/pipeline.md step 1), which runs an agent only for the papers
+# the cheap checks of tools/paper_match.py leave open. Started by hand from the Actions tab or with
 #   gh workflow run papers.yml -f dataset=000147 -f role=claims
 #
-# These are the only runs that write the claims file. The job runs in the `papers` environment,
+# These are the only runs that write the claims file, and the paper match papers/match/<folder>.yaml. The job runs in the `papers` environment,
 # whose deploy key reads the private paper store (catalystneuro/registry-papers); the environment
 # can be used only from main. Before the agent starts, tools/get_papers.sh copies the dataset's
 # papers to paper/ and deletes the key and the store's checkout. A run commits only
@@ -29,7 +31,7 @@ on:
         description: "Which run"
         required: true
         type: choice
-        options: [claims, claims-check, answer]
+        options: [paper-match, claims, claims-check, answer]
       papers_only:
         description: "Only check that the papers reach the job; run no agent"
         type: boolean
@@ -93,7 +95,7 @@ jobs:
     environment: papers
     timeout-minutes: 180
     outputs:
-      started: ${{ steps.agent.outputs.started }}
+      started: ${{ steps.agent.outputs.started || steps.checks.outputs.started }}
       folder: ${{ steps.start.outputs.folder }}
       flagged: ${{ steps.flag.outputs.flagged }}
     steps:
@@ -115,7 +117,7 @@ jobs:
             # The registry's tools as the workflow has them, not as the branch had them when its attempt began: a
             # branch made before a fix would otherwise run without it. Working files only, so they are never committed.
             git restore --worktree --source "$GITHUB_SHA" -- tools
-          elif [ "$ROLE" != claims ]; then
+          elif [ "$ROLE" != claims ] && [ "$ROLE" != paper-match ]; then
             echo "::error::No branch $BRANCH; run claims first"; exit 1
           fi
           git log --oneline -1
@@ -149,8 +151,18 @@ jobs:
           PAPERS_DEPLOY_KEY: ${{ secrets.PAPERS_DEPLOY_KEY }}
         run: tools/get_papers.sh "$FOLDER" paper
 
+      - name: Run the paper match's cheap checks
+        id: checks
+        if: ${{ inputs.role == 'paper-match' && !inputs.papers_only }}
+        run: |
+          # Writes papers/match/<folder>.yaml. When the checks settle every paper there is nothing for the agent.
+          need=$(python tools/paper_match.py checks "$FOLDER" paper)
+          cat "papers/match/$FOLDER.yaml"
+          echo "need=$need" >> "$GITHUB_OUTPUT"
+          if [ "$need" = done ]; then echo "started=true" >> "$GITHUB_OUTPUT"; fi
+
       - name: Check that the unverified account has a token
-        if: ${{ inputs.account == 'unverified' }}
+        if: ${{ inputs.account == 'unverified' && steps.checks.outputs.need != 'done' }}
         env:
           HAS_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_UNVERIFIED != '' }}
         run: |
@@ -158,7 +170,7 @@ jobs:
           [ "$HAS_TOKEN" = true ] || { echo "::error::UNVERIFIED-UNAVAILABLE: no CLAUDE_CODE_OAUTH_TOKEN_UNVERIFIED secret"; exit 1; }
 
       - name: Check the token, the permission mode and the agent's shell
-        if: ${{ !inputs.papers_only }}
+        if: ${{ !inputs.papers_only && steps.checks.outputs.need != 'done' }}
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ inputs.account == 'unverified' && secrets.CLAUDE_CODE_OAUTH_TOKEN_UNVERIFIED || secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: '1'
@@ -185,7 +197,7 @@ jobs:
           [ "$mode" = default ] || { echo "::error::Claude Code started in permission mode $mode, not default"; exit 1; }
 
       - name: Run the agent
-        if: ${{ !inputs.papers_only }}
+        if: ${{ !inputs.papers_only && steps.checks.outputs.need != 'done' }}
         id: agent
         # Shorter than the job's limit, so that the transcript is still exported when it is reached.
         timeout-minutes: 300
@@ -228,7 +240,7 @@ jobs:
           fi
 
       - name: Export the transcript and collect the changes
-        if: always() && steps.agent.outputs.started == 'true' && steps.flag.outputs.flagged != 'true'
+        if: always() && (steps.agent.outputs.started == 'true' || steps.checks.outputs.started == 'true') && steps.flag.outputs.flagged != 'true'
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/out"; mkdir -p "$out/transcripts/$FOLDER"
@@ -236,9 +248,12 @@ jobs:
           name="$FOLDER · $ROLE · run ${{ github.run_id }}"
           # The reader's changes first, so that nothing in the transcript can lose them. Only the
           # dataset's claims: never paper/.
-          paths=("claims/$FOLDER"); [ ! -e "questions/$FOLDER.yaml" ] || paths+=("questions/$FOLDER.yaml")
+          if [ "$ROLE" = paper-match ]; then paths=("papers/match/$FOLDER.yaml")
+          else paths=("claims/$FOLDER"); [ ! -e "questions/$FOLDER.yaml" ] || paths+=("questions/$FOLDER.yaml"); fi
           git add -A -- "${paths[@]}" && git diff --cached --binary > "$out/changes.patch"
           git diff --cached --stat
+          # No transcript when the paper match's checks settled every paper and no agent ran.
+          [ -e "$RUNNER_TEMP/run.jsonl" ] || exit 0
           python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$FOLDER/$ROLE.md" --omit paper/ \
             --report "$out/transcripts/$FOLDER/$ROLE-report.md" --title "$name"
           rm -f "$RUNNER_TEMP/run.jsonl"
@@ -295,13 +310,13 @@ jobs:
           # The claims run starts an attempt: it moves an earlier attempt's transcripts aside first.
           if [ "$ROLE" = claims ]; then "$RUNNER_TEMP/archive_transcripts.sh" "$FOLDER"; fi
           if [ -s out/changes.patch ]; then
-            allowed="^(claims/$FOLDER/|questions/$FOLDER\.yaml$)"
+            allowed="^(claims/$FOLDER/|questions/$FOLDER\.yaml$|papers/match/$FOLDER\.yaml$)"
             stray=$(git apply --numstat out/changes.patch | cut -f3 | grep -vE "$allowed" || true)
             [ -z "$stray" ] || { echo "::error::Changes outside dataset $FOLDER: $stray"; exit 1; }
             git apply --index out/changes.patch
           fi
           # A transcript with nothing but its title means the agent never started; keep it out.
-          for f in out/transcripts/*/*.md; do [ "$(wc -l < "$f")" -gt 2 ] || rm "$f"; done
+          for f in out/transcripts/*/*.md; do [ -e "$f" ] || continue; [ "$(wc -l < "$f")" -gt 2 ] || rm "$f"; done
           cp -r out/transcripts . && git add transcripts
           if git diff --cached --quiet; then echo "Nothing to commit"; exit 0; fi
           git -c user.name='github-actions[bot]' -c user.email='github-actions[bot]@users.noreply.github.com' \

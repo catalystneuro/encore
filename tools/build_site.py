@@ -60,6 +60,7 @@ SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of papers from 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from datasets import ARCHIVES, archive_name, key_of, split_key, targets as all_targets  # noqa: E402
 from datasets import folder as dir_of, key_of_folder as key_of_dir, label as dataset_label, url as archive_url  # noqa: E402,F401
+import paper_match  # noqa: E402
 
 
 def page_of(key: str) -> str:
@@ -118,7 +119,8 @@ FINDING_KINDS = {
     "paper_inconsistency": "Paper inconsistent",
     "other": "Other",
 }
-STATUS = {"attempted": "Attempted", "pilot": "In the pilot", "open": "Not yet attempted"}
+STATUS = {"attempted": "Attempted", "pilot": "In the pilot", "open": "Not yet attempted",
+          "no_match": "No matching paper"}
 VERIFICATION_TIER = {"agent": "agent_verified", "person": "human_verified",
                      "paper_author": "author_endorsed"}
 CAUTION = "A failure to reproduce is not a finding that the paper is wrong."
@@ -259,14 +261,20 @@ def collect(executed: Path | None = None) -> dict:
     reconcile(attempts)
     attempted = {a["key"] for a in attempts}
     targets = []
+    fixes = paper_match.triage()
     for t in all_targets():
-        papers = [p for p in t["papers"] if not p["preprint"]] or t["papers"]
         key = t["key"]
-        status = "attempted" if key in attempted else "pilot" if key in pilot else "open"
+        # The paper an attempt uses (papers/triage.yaml, papers/match/), else the archive's first publication.
+        match, chosen = paper_match.choose(t, fixes.get(t["folder"], {}), paper_match.load(t["folder"]))
+        titles = {paper_match.clean_doi(p["doi"]): p["title"] for p in t["papers"]}
+        first = ([{"doi": p["doi"], "title": p.get("title") or titles.get(p["doi"])} for p in chosen]
+                 or [p for p in t["papers"] if not p["preprint"]] or t["papers"])[0]
+        status = ("attempted" if key in attempted else "pilot" if key in pilot
+                  else "no_match" if match == "no_match" else "open")
         targets.append({
             "key": key, "label": dataset_label(key), "name": t["name"], "size_gb": t["size_gb"],
             "files": t["asset_count"], "status": status,
-            "paper": papers[0]["doi"], "paper_title": papers[0]["title"] or t["name"],
+            "paper": first["doi"], "paper_title": first["title"] or t["name"],
             "papers": [p["doi"] for p in t["papers"]],
             "n_papers": len(t["papers"]),
             "technique": sorted({part.replace(" approach", "").strip()

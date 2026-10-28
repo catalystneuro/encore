@@ -9,6 +9,8 @@
 #
 # With CLAIMS_ONLY=1 each chain stops once the dataset's checked claims are on main (chain.sh), and
 # an empty queue is filled from the targets whose papers are all stored and that have no claims yet.
+# With MATCH_ONLY=1 each chain only matches the dataset's papers (docs/pipeline.md, step 1), and the queue
+# is the published targets with no paper match on main, attempted or not: for filling in the matches.
 # Give such a runner its own RUNNER_STATE.
 #
 # Each lane takes the next item from $RUNNER_STATE/queue.txt (lines "DATASET [VERSION]", consumed
@@ -21,7 +23,8 @@ set -uo pipefail
 STATE=${RUNNER_STATE:?set RUNNER_STATE}; LANES=${1:-1}; STOP_AT=${2:-}
 export RUNNER_STATE=$STATE REGISTRY_ROOT=$PWD
 mkdir -p "$STATE/logs" "$STATE/bin"; touch "$STATE/queue.txt" "$STATE/started.txt"
-cp tools/runner/chain.sh tools/runner/describe.py tools/runner/merge_claims.sh tools/runner/run_requests.py "$STATE/bin/"
+cp tools/runner/chain.sh tools/runner/describe.py tools/runner/merge_claims.sh tools/runner/merge_match.sh \
+  tools/runner/run_requests.py "$STATE/bin/"
 rmdir "$STATE/finalize.lock" "$STATE/pick.lock" 2>/dev/null
 log(){ echo "$(date -u +%Y-%m-%dT%H:%MZ) $*" >> "$STATE/runner.log"; }
 
@@ -37,12 +40,13 @@ pick(){ local item
   else
     git fetch -q origin 2>/dev/null || true
     # Then the run requests (docs/queue.md), unless this runner reads claims only.
-    [ "${CLAIMS_ONLY:-}" = 1 ] || item=$(python "$STATE/bin/run_requests.py" next 2>>"$STATE/runner.log") || item=""
+    [ "${CLAIMS_ONLY:-}" = 1 ] || [ "${MATCH_ONLY:-}" = 1 ] \
+      || item=$(python "$STATE/bin/run_requests.py" next 2>>"$STATE/runner.log") || item=""
     [ -z "$item" ] || gh workflow run run-requests.yml >/dev/null 2>&1 || true
   fi
   if [ -z "$item" ]; then
     # shellcheck disable=SC2046
-    item=$(python "$STATE/bin/describe.py" "$([ "${CLAIMS_ONLY:-}" = 1 ] && echo next-claims || echo next)" \
+    item=$(python "$STATE/bin/describe.py" "$([ "${MATCH_ONLY:-}" = 1 ] && echo next-match || { [ "${CLAIMS_ONLY:-}" = 1 ] && echo next-claims || echo next; })" \
       $(cut -d' ' -f1 "$STATE/started.txt")) || item=""
   fi
   [ -z "$item" ] || echo "$item" >> "$STATE/started.txt"
@@ -65,7 +69,7 @@ lane(){ local item d
   log "lane $1: stopping"
 }
 
-log "runner started: $LANES lanes${CLAIMS_ONLY:+, claims only}${STOP_AT:+, no new attempts after $STOP_AT UTC}"
+log "runner started: $LANES lanes${CLAIMS_ONLY:+, claims only}${MATCH_ONLY:+, paper match only}${STOP_AT:+, no new attempts after $STOP_AT UTC}"
 for i in $(seq 1 "$LANES"); do lane "$i" & sleep 120; done
 wait
 log "runner done"
