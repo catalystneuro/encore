@@ -75,7 +75,9 @@ outcomes:
     between +150 and +200 ms (0.110, 0.064). The decline starts about 250 ms before onset and
     the value at onset is below half of that at -250 ms, as the criterion asks, but it is not
     below 0.1 at onset. All eight readings give 0.129 to 0.218 at onset and meet the other two
-    parts. The measured value is the correlation at movement onset under the main reading.
+    parts. The measured value is the correlation at movement onset under the main reading. Every
+    time point the criterion uses (-400 ms to onset) lies inside the movement-locked trace, so the
+    splice points of the paper's trace do not enter.
   deviations:
   - The rate at each time point comes from the movement-locked average, the part of the paper's
     spliced trace locked to movement onset (Supplemental Experimental Procedures, Computing the
@@ -100,8 +102,9 @@ outcomes:
     electrode is the channel minus one for both prefixes. The prefix is taken as the array, and
     prefix 1 as PMd, the group the references name. Prefix 1 units also have more preparatory
     tuning (median range 6.71 against 4.79 spikes/s), consistent with the paper's remark that
-    preparatory activity is more prevalent at anterior sites. Swapping the arrays would only flip
-    the sign of r.
+    preparatory activity is more prevalent at anterior sites; this is the only support for the
+    mapping. Swapping the arrays would only flip the sign of r, and the p-value does not depend
+    on it.
   - Monkeys A, B and J (single-electrode) are not tested.
 - claim: supp-preparatory-dimensionality
   outcome: reproduced
@@ -113,8 +116,9 @@ outcomes:
     matrix of preparatory condition means, inside the widened range 6.3 to 11, and 10 with the
     92 included units. Under the per-axis trial selection the counts are 12 (outside) and 11;
     with the 6 or 7 units of the SD tuning reading the count is 4. On each half of the trials the
-    count is 14 and 13, so trial noise adds dimensions at these trial counts. Only J-array is
-    tested, with 27 conditions where the paper had 108.
+    count is 14 and 13, so trial noise adds dimensions at these trial counts. The count of 11
+    sits at the upper end of the range, so the outcome is fragile. Only J-array is tested, with 27
+    conditions where the paper had 108.
   deviations:
   - Assumed main reading for trial selection, as in fig4d-tuning-correlation-j-array; the
     claims file's readings of which units enter (all, or included) both fall in range under it.
@@ -151,7 +155,10 @@ outcomes:
     met in 69% of combinations with the concatenated trial selection and 36% with the per-axis
     one, 75% and 30% for tuning as range or SD, 67% and 38% for all or included units in the
     T-matrix, and 37% and 68% with the space computed once or refit. The kinematic space at
-    k = 1 and k = 14 is the one it loses to under the main reading (by 0.005 and 0.004).
+    k = 1 and k = 14 is the one it loses to under the main reading (by 0.005 and 0.004). With the
+    space refit and the main reading otherwise, it wins 21 of 22 comparisons (losing only to the
+    kinematic space at k = 1) and beats endpoints + max speed at k = 3 (0.132 against 0.0003), so
+    the criterion is met under that reading too.
   deviations:
   - Assumed main reading, as the readings give different outcomes. Besides the readings of
     fig4d-tuning-correlation-j-array, the PCA space is computed once from all conditions, and
@@ -172,8 +179,10 @@ outcomes:
     k = 10 and falls to -0.456 at k = 14; the kinematic space does the same (0.061, best 0.103 at
     k = 4, -0.451 at k = 14). The criterion is met in 992 of 2048 combinations, 91% of those with
     the space computed once and 6% of those with the space refit without the left-out condition;
-    refit, performance keeps rising (0.461 at k = 14 under the main reading otherwise) and the
-    best k is 10 to 14.
+    refit, performance rises at every k (0.054 at k = 1 to 0.461 at k = 14 under the main reading
+    otherwise) and the best k is 10 to 14. With the space computed once, 14 components are fit
+    from 27 conditions, so the fall may reflect the small number of conditions here (the paper
+    had 108).
   deviations:
   - Assumed main reading, with the space computed once from all conditions, as argued under
     fig6-each-dimensionality. The outcome rests mainly on this choice.
@@ -202,16 +211,15 @@ outcomes:
   output: claim:fig7a-shuffled-space-poor
   notes: Under the main reading, over 20 draws, the shuffled space's best mean performance is
     0.014 (k = 3), below the peri-movement space at every k and below the kinematic space's best
-    (0.103). The criterion also holds with proto-trial (b), onset (b), included units in the
-    T-matrix, pooled performance and the kinematic window ending with the reach. It fails with
-    the per-axis trial selection (the shuffled space is not below the peri-movement space at
-    every k, where the latter collapses at high k) and with the space refit per fold (shuffled
-    best 0.178 over 5 draws, above the kinematic best of 0.160, below the peri-movement best of
-    0.461).
+    (0.103). With 20 draws in every variant, the criterion also holds with proto-trial (b), onset
+    (b), included units in the T-matrix, pooled performance, the kinematic window ending with the
+    reach, and the space refit per fold, the last by a narrow margin (shuffled best 0.159 against
+    a kinematic best of 0.160, peri-movement best 0.461). It fails only with the per-axis trial
+    selection, where the shuffled space is not below the peri-movement space at every k, as the
+    latter collapses at high k.
   deviations:
   - Assumed main reading, as for fig6-each-dimensionality.
-  - Judged on J-array alone, where Figure 7A averages all datasets. The refit variant uses 5
-    draws in place of 20 to keep the run short.
+  - Judged on J-array alone, where Figure 7A averages all datasets.
 - claim: fig7b-window-start-onset
   outcome: reproduced
   assumed: true
@@ -233,22 +241,30 @@ outcomes:
   assumed: true
   notebook: reproduce_churchland_2010.ipynb
   output: claim:fig7c-anterior-posterior
-  notes: Under the main reading, with the upper limit from the preparatory PCA space of all units
-    in each subset at k = 6, normalized performance is 0.597 for the anterior array (55 included
-    units) and 0.382 for the posterior array (37), against 0.617 for random halves; anterior is
-    within 10% (ratio 0.968), posterior is not (0.618). Anterior exceeds posterior, as the paper
-    reports. Of 16 combinations of readings (upper limit at k = 6 or best k, with or without the
-    unit being fit, space once or refit, trial selection, T-matrix units), 2 meet the criterion,
-    both with the space refit and the unit included in the upper-limit space.
+  notes: Under the main reading, with the upper limit from the preparatory PCA space of the other
+    units in each subset at k = 6, normalized performance is 0.785 for the anterior array (55
+    included units) and 0.814 for the posterior array (37), against 0.961 for random halves, ratios
+    of 0.817 and 0.847, both outside the 10% bound. None of the 8 counted combinations of readings
+    (upper limit at k = 6 or best k, space once or refit, trial selection, T-matrix units) meets
+    the criterion. The 2 rows that do both put the unit's own rate in its upper-limit space, which
+    is shown but not counted. Under the main reading anterior is below posterior (0.785 against
+    0.814), where the paper reports anterior slightly better. The 40 random halves spread widely
+    (SD 0.190, 5th to 95th percentile 0.746 to 1.252, under the main reading), and both arrays lie
+    inside that spread, so the 10% bound is narrower than the sampling noise of a random half at
+    these unit counts. Under the per-axis selection at k = 6 the random-half mean is -0.826 with
+    SD 10.8, as an upper limit near zero in some half makes the ratio unstable.
   deviations:
   - Assumed array of each unit from the id prefix, as for results-ap-location-no-effect; with a
     binary location, the median split gives the two arrays.
-  - The upper-limit space is "derived from the preparatory activity of all neurons"
-    (Supplemental Experimental Procedures, Estimating the upper limit); the main reading
-    includes the unit being fit, as "all neurons" says, and the other reading is run. Whether it
-    is taken at k = 6 or its best k is open in the claims file; both are run.
-  - Random halves are 20 random splits of all units (4 in the refit variants); the paper does
-    not say how many.
+  - The upper-limit space is "derived from the preparatory activity of all neurons" on "the
+    assumption that this must approximate the right space (whatever one neuron is tuned for, it
+    ought to be shared with at least some of the other neurons)" (Supplemental Experimental
+    Procedures, Estimating the upper limit). The justification compares a neuron with the others,
+    so the unit being fit is left out of the space, as for the peri-movement space. With the
+    unit's own rate in the space the PD is fit to a space that contains the rate itself; those rows
+    are shown and not counted. Whether the space is taken at k = 6 or its best k is open in the
+    claims file; both are run.
+  - Random halves are 20 random splits of all units, 40 halves; the paper does not say how many.
   - Judged on J-array alone, where Figure 7C averages the datasets.
 - claim: fig7d-pd-consistency
   outcome: reproduced
@@ -264,6 +280,9 @@ outcomes:
   - Only J-array; the claim covers four datasets.
   - The spaces are computed once from all 27 conditions; whether axes are scaled before the PD is
     fitted is not stated, and both are run.
+  - With 27 conditions, a draw of 25 with replacement holds a mean 16.5 distinct conditions and
+    two draws share a mean 10.1, so the two PDs are fitted to overlapping data more than with the
+    paper's 108 conditions, which raises consistency in both kinds of space.
 - claim: fig8-oscillator-model
   outcome: reproduced
   notebook: reproduce_churchland_2010.ipynb
@@ -331,5 +350,139 @@ findings:
 - kind: methods_unavailable
   statement: Question for the paper's authors. For Figure 7C, did the upper-limit space of a
     subset include the neuron being fit, and at which dimensionality was it taken? The
-    normalized posterior performance relative to random halves is 0.62 with the neuron included
-    at k = 6 and 0.79 without it; this attempt assumed it included, as "all neurons" says.
+    normalized posterior performance relative to random halves is 0.85 without the neuron at
+    k = 6 and 0.62 with it; this attempt assumed it left out, as the stated justification compares
+    a neuron with the others.
+verifications:
+- date: '2026-10-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier checked the helper functions against
+    brute-force PCA and regression on synthetic data. Its report gave its own outcome for each claim;
+    all 15 agree with the record. It also noted that the dandiset is probably not the paper's J-array
+    session (27 conditions and about 14 trials per condition against 108 conditions), which the record
+    states, and asked for per-condition trial counts under each reading, now printed in the data check.
+  results:
+  - claim: fig4abc-tuning-correlation-single-electrode
+    agrees: true
+    outcome: blocked
+    reason: The archive lists 2 assets, both from one subject (sub-Jenkins, array data). The single-electrode
+      recordings of monkeys A, B and J are not there, so no part can be tested.
+    response: No change needed.
+  - claim: fig4d-tuning-correlation-j-array
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Main reading (cell 23): mean r 0.195 and Spearman 0.212, both outside 0.13±0.013 and 0.11±0.011.
+      Mean r is above zero at p = 0.023 (t-test). No reading puts both means within tolerance. Spearman
+      is never within tolerance (0.146 to 0.212). The mean r depends on the 1.5× peri-movement criterion
+      (0.106 to 0.202 for ratios 1.0 to 2.0) and rests on 20 units (B8).'
+    response: No change needed; the notes already give the dependence on the ratio and the unit count.
+  - claim: fig4e-correlation-time-course
+    agrees: true
+    outcome: not_reproduced
+    reason: The mean correlation at movement onset is 0.13 to 0.22 under all 8 readings, above the 0.1
+      bound. The other two conditions hold. Only the movement-locked trace is used, not the spliced trace,
+      but all time points in the criterion (−400 to 0 ms) lie inside it, so the result is unaffected (B6).
+    response: Added to the conclusion and the notes that every time point the criterion uses lies inside
+      the movement-locked trace. Outcome kept.
+  - claim: results-ap-location-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.43 to 0.84 under all 8 readings, using array membership as AP location. A, B and J are
+      data_missing. A claim of absence tested on 20 units, so power is low. Mapping id prefix 1 to PMd
+      is an assumption, supported only by stronger preparatory tuning in that prefix; the p-value is symmetric
+      in the labelling (B5).
+    response: Added to the deviation that the tuning difference is the only support for the mapping and
+      that the p-value does not depend on it. Outcome kept.
+  - claim: supp-preparatory-dimensionality
+    agrees: true
+    outcome: reproduced
+    reason: k90 = 11 with all units and 10 to 11 with included units, inside 6.3 to 11. The value sits
+      at the upper edge (all units under each give 12), and split-half k90 is 13 to 14, so trial noise
+      inflates the count; the claim is fragile (B7).
+    response: Added to the conclusion and the notes that the count sits at the upper end of the range
+      and the outcome is fragile. Outcome kept.
+  - claim: fig6-peri-movement-space-best
+    agrees: true
+    outcome: reproduced
+    reason: 'Main reading: peri-movement 0.351 at k = 10, against kitchen sink 0.250 and kinematic 0.103.
+      The peri-movement space is best in 1468 of 2048 combinations.'
+    response: No change needed.
+  - claim: fig6-each-dimensionality
+    agrees: true
+    outcome: reproduced
+    reason: Main reading wins 20 of 22 comparisons (0.909) and beats endpoints + max speed at k = 3. Only
+      1074 of 2048 combinations meet the criterion, mostly failing under fold=once with combine=each.
+      Whether it fails under fold=refit for a real or a degenerate reason could not be checked without
+      the refit curves and the comparisons won under the main reading with refit (C).
+    response: 'Printed the main-reading curves with the space refit and the comparisons won under that
+      reading: 21 of 22, losing only to the kinematic space at k = 1, so the criterion is met with refit
+      too. Added to the conclusion and the notes. Outcome kept.'
+  - claim: fig6-dimensionality-trend
+    agrees: true
+    outcome: reproduced
+    reason: fold=once gives best k = 10 and a fall to −0.456 at k = 14; fold=refit rises steadily to 0.461
+      at k = 14, and only 6% of combinations meet the criterion. The fold implementations are correct;
+      under once the fall at k ≥ 12 comes from leverage, k = 14 PCs from a 27-row matrix, where the paper
+      had 108 conditions. Once is the more natural reading of the Methods, so reproduced, but the result
+      rests on that reading (B1).
+    response: Printed the refit curves for the main reading, and added to the conclusion and the notes
+      that the fall may reflect fitting 14 components from 27 conditions and that the outcome rests on
+      the fold reading. Outcome kept, marked as an assumption.
+  - claim: fig6-pd-adequate-all-spaces
+    agrees: true
+    outcome: reproduced
+    reason: Peri-movement 0.351 and kinematic 0.103 are above zero, and 7 of 8 task spaces are above zero.
+      Holds in 1936 of 2048 combinations.
+    response: No change needed.
+  - claim: fig6e-summary-rank
+    agrees: true
+    outcome: blocked
+    reason: Needs A, B and J single-electrode data plus EMG. The archive has neither.
+    response: No change needed.
+  - claim: fig7a-shuffled-space-poor
+    agrees: true
+    outcome: reproduced
+    reason: 'Main reading: shuffled best 0.014, below peri-movement at every k and below kinematic best
+      0.103. Fails under fold=refit (0.178 > 0.160) and under combine=each. Refit variants use 5 shuffle
+      draws, not the 20 the claims file sets (B3).'
+    response: The refit variant now uses 20 draws, as the claims file sets. With 20 draws the shuffled
+      best under refit is 0.159, below the kinematic best of 0.160, so the criterion holds there by a
+      narrow margin; it fails only under combine=each. Conclusion and notes updated. Outcome kept.
+  - claim: fig7b-window-start-onset
+    agrees: true
+    outcome: reproduced
+    reason: Main-reading ratio 0.908, within 0.873 to 1.067. Median ratio over all combinations 0.917.
+      Only reading (a) of the claims file, J-array against 0.97, is possible here.
+    response: No change needed.
+  - claim: fig7c-anterior-posterior
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Main reading: posterior/random 0.62 to 0.94 and anterior/random 0.67 to 0.97, outside the
+      10% bound. Only 2 of 16 rows pass, both using fold=refit with the neuron''s own rate in the upper-limit
+      space. The Supplemental Procedures justify the upper limit with "whatever one neuron is tuned for,
+      it ought to be shared with at least some of the other neurons", which implies leaving out the neuron
+      being fit; putting its own rate into the space is not a reading the paper allows. With it excluded,
+      fig7c fails under every variant (B2). The refit variants use 4 random-half draws, not 20 (B3), and the
+      spread of normalised performance across random-half draws is not printed, so the 10% bound cannot
+      be judged against sampling noise (C).'
+    response: 'Revised the assumption: the main reading now leaves the unit being fit out of the upper-limit
+      space, citing the passage; the rows with it included are shown and not counted. Every variant uses
+      20 random splits. Printed the SD and 5th to 95th percentile of the random halves. Under the new
+      main reading anterior is 0.817 and posterior 0.847 of random halves, and none of the 8 counted rows
+      meets the criterion; anterior is now below posterior; both arrays lie inside the random-half spread
+      (SD 0.190), which the conclusion now says. Outcome kept.'
+  - claim: fig7d-pd-consistency
+    agrees: true
+    outcome: reproduced
+    reason: Peri-movement consistency is higher in every comparison, for all 8 variants and both axis
+      scalings. Drawing 25 of 27 conditions with replacement gives heavily overlapping draws (B4).
+    response: Printed the overlap (a mean 16.5 distinct conditions per draw, 10.1 shared by two draws)
+      and added it to the conclusion and a deviation. Outcome kept.
+  - claim: fig8-oscillator-model
+    agrees: true
+    outcome: reproduced
+    reason: 0.08 lies inside the central 95% of r (about −0.40 to 0.39) under all 4 readings; median r
+      is about 0. PD leave-one-out performance is 1.0.
+    response: No change needed.
