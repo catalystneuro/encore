@@ -262,6 +262,7 @@ class Split:
         n_te0 = int(np.floor(test_start_s / (bin_ms / 1000.0)))
         self.bin_ms = bin_ms
         self.n_te0 = n_te0
+        self.Rpre = R[:n_te0]  # bins before the test part, the history of the first test bins
         self.Rtr, self.Xtr = R[:n_tr], X[:n_tr]
         self.Rte, self.Xte = R[n_te0:], X[n_te0:]
         self.oktr = ~np.isnan(self.Xtr).any(1)
@@ -315,7 +316,7 @@ def dec_wf(sp, return_choice=False):
     the last 20% of the training data by the mean R2 of x and y velocity, fitted on the
     first 80%. As in the code, the filter fitted on the 80% is the one applied to the test
     data. The penalty is added to F'F of the uncentred design with a column of ones, as
-    in [code, linregress.m]."""
+    in [code, linregress.m]. The history of the first test bins is the bins before them."""
     n = len(sp.Rtr)
     n80 = int(np.floor(0.8 * n))
     pmax = int(round(0.4 / (sp.bin_ms / 1000.0)))
@@ -337,7 +338,7 @@ def dec_wf(sp, return_choice=False):
             if v > best[0]:
                 best = (v, p, lam, B)
     _, p, lam, B = best
-    F = wf_design(sp.Rte, p)
+    F = wf_design(np.vstack([sp.Rpre[len(sp.Rpre) - (p - 1):], sp.Rte]), p)[p - 1:]
     out = np.hstack([F, np.ones((len(F), 1))]) @ B
     return (out, p, lam) if return_choice else out
 
@@ -425,8 +426,11 @@ def factor_analysis(Y, k, n_iter=200, seed=0):
 
 def lgds_em(Y, k, max_epochs=100, tol=1e-4, seed=0):
     """LGDS learned by EM with diagonal state and observation noise [paper, KFlatent],
-    initialized by factor analysis; stopped when the log-likelihood gain falls below 1/100
-    of a percent of the total gain so far, or at 100 epochs [paper]. Y is one sequence."""
+    initialized by factor analysis; stopped when the log-likelihood gain of an epoch falls
+    below 1/100 of a percent (tol = 1e-4) of the total gain so far, or at 100 epochs
+    [paper, KFlatent: "a cross entropy decrease less than 1/100 of a percent of the total
+    decrease"]. Y is one sequence. Returns the parameters, the number of E steps run and
+    the log-likelihood after each."""
     T, N = Y.shape
     C, c, psi, Ez = factor_analysis(Y, k, seed=seed)
     Ba = ridge(Ez[:-1], Ez[1:])
@@ -451,7 +455,7 @@ def lgds_em(Y, k, max_epochs=100, tol=1e-4, seed=0):
             ms[t] = mf[t] + J @ (ms[t + 1] - mp[t + 1])
             Ss[t] = Sft + J @ (Ss[t + 1] - Spt) @ J.T
             Scross[t] = Ss[t + 1] @ J.T  # Cov(z_{t+1}, z_t)
-        if len(lls) > 2 and (lls[-1] - lls[-2]) < tol * 1e-2 * (lls[-1] - lls[0]):
+        if len(lls) > 2 and (lls[-1] - lls[-2]) < tol * (lls[-1] - lls[0]):
             break
         # M step
         Ezz = Ss + np.einsum("ti,tj->tij", ms, ms)
@@ -488,7 +492,9 @@ def dec_kflatent(sp, seed=0, return_info=False):
     st_tr, st_te = apply(D, Ztr), apply(D, Zte)
     dyn = dynamic_map(sp, st_tr, st_te)
     if return_info:
-        return st_te, dyn, dict(epochs=n_ep, k=k, ll_first=lls[0], ll_last=lls[-1])
+        gain = (lls[-1] - lls[-2]) / (lls[-1] - lls[0])
+        return st_te, dyn, dict(epochs=n_ep, k=k, ll_first=lls[0], ll_last=lls[-1], last_rel_gain=gain,
+                                converged=n_ep < 100 or gain < 1e-4)
     return st_te, dyn
 
 
@@ -635,7 +641,8 @@ def refh_decode(sp, model, Rtr, Rte, hidden_only=False):
     """[paper, eq. 9-10; code, filterDecoder.m] static ridge map from [updated visible
     means, hidden means] with penalty (Nunits/Nsamples)^(10/3) [claims: exponent reading
     of eq. 10; code], then a KF on the six static outputs. hidden_only drops the updated
-    visible units (the figure 8 variant)."""
+    visible units (the figure 8 variant). Also returns the R2 of the static map on the
+    training bins it was fitted on."""
     out = []
     for R in (Rtr, Rte):
         Vs, Vr, Z = model.features(R)
@@ -645,7 +652,8 @@ def refh_decode(sp, model, Rtr, Rte, hidden_only=False):
     lam = (nv / sp.oktr.sum()) ** (10 / 3)
     B = ridge(Ftr[sp.oktr], sp.Xtr[sp.oktr], lam=lam)
     st_tr, st_te = apply(B, Ftr), apply(B, Fte)
-    return st_te, dynamic_map(sp, st_tr, st_te)
+    r2_tr = rsq(st_tr[sp.oktr], sp.Xtr[sp.oktr])
+    return st_te, dynamic_map(sp, st_tr, st_te), r2_tr
 
 
 def dec_refh(sp, seed=0, units="poisson", variants=False):
@@ -656,9 +664,9 @@ def dec_refh(sp, seed=0, units="poisson", variants=False):
         Rtr, Rte = transform_counts(Rtr, Rte, units_reading=variants or "standardize")
     model = REFH(Rtr.shape[1], units=units, seed=seed).fit(Rtr)
     res = {"refh": None, "refh_kf": None}
-    res["refh"], res["refh_kf"] = refh_decode(sp, model, Rtr, Rte)
+    res["refh"], res["refh_kf"], res["train_r2"] = refh_decode(sp, model, Rtr, Rte)
     if units == "poisson" and variants:
-        res["refh_hid"], res["refh_hid_kf"] = refh_decode(sp, model, Rtr, Rte, hidden_only=True)
+        res["refh_hid"], res["refh_hid_kf"], _ = refh_decode(sp, model, Rtr, Rte, hidden_only=True)
     res["epochs"] = model.epochs
     return res
 
@@ -674,16 +682,19 @@ def transform_counts(Rtr, Rte, units_reading="standardize"):
     return (Rtr - mu) / sd, (Rte - mu) / sd
 
 
-def run_all(sp, seed, decoders=DECODERS):
+def run_all(sp, seed, decoders=DECODERS, info=None):
     """Fit the decoders on one split; returns test-set predictions per decoder. The
-    stochastic fits (EM initialization, rEFH) take seeds derived from `seed`."""
+    stochastic fits (EM initialization, rEFH) take seeds derived from `seed`. A dict
+    passed as `info` receives the EM run of KFlatent and the training R2 of the static
+    rEFH map."""
     out = {}
+    info = {} if info is None else info
     if "linear" in decoders:
         out["linear"] = dec_linear(sp)
     if "kfobs" in decoders:
         out["kfobs"] = dec_kfobs(sp)
     if "kflatent" in decoders or "kflatent_kf" in decoders:
-        out["kflatent"], out["kflatent_kf"] = dec_kflatent(sp, seed=seed)
+        out["kflatent"], out["kflatent_kf"], info["kflatent"] = dec_kflatent(sp, seed=seed, return_info=True)
     if "wf" in decoders:
         out["wf"] = dec_wf(sp)
     if "ukf" in decoders:
@@ -691,6 +702,7 @@ def run_all(sp, seed, decoders=DECODERS):
     if "refh" in decoders or "refh_kf" in decoders:
         r = dec_refh(sp, seed=seed + 1)
         out["refh"], out["refh_kf"] = r["refh"], r["refh_kf"]
+        info["refh_train_r2"] = r["train_r2"]
     return out
 
 
