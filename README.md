@@ -73,7 +73,7 @@ gh workflow run papers.yml -f dataset=000147 -f role=claims
 
 The roles, in order, are `claims` and `claims-check` (Paper run), then
 `author`, `answer` (Paper run) and `author-answers` when the author asked
-questions, `verifier-1`, `author-revise-1`, `verifier-2` and
+a reader about a suspected misreading in the claims file, `verifier-1`, `author-revise-1`, `verifier-2` and
 `author-revise-2`, then `verifier-3` and `author-revise-3` when the final
 revision proposed a change of outcome. The papers are kept in a private
 repository that only these workflows can read, from `main` ([docs/pipeline.md](docs/pipeline.md)).

@@ -17,11 +17,11 @@ dataset per step, and the dashboard's Pipeline page shows them.
 | 4 | Claims check | yes | a second agent, `papers` environment | `checks` at the end of the claims file |
 | 5 | Attempt | yes | agent (author), `papers` environment | the entry, the attempt record |
 | 6 | Verification | yes | agents (verifier rounds, revisions), `papers` environment | the record's verifications |
-| 7 | Questions | yes | a reader, `papers` environment | answers in `questions/<folder>.yaml`, and in the claims |
+| 7 | Questions | yes | a reader, `papers` environment | answers in `questions/<folder>.yaml`, and amendments to the claims |
 | 8 | Confirmation | no | CI | executed notebooks, passing checks |
 | 9 | Record | no | agent (recorder) | pilot notes; merged |
 | 10 | Report | no | script, sent by a person | issues to the dataset's owners |
-| 11 | Upkeep | depends | runner | deprecation; repeat attempts |
+| 11 | Upkeep | depends | runner | deprecation; repeat attempts, made blind and then reconciled with the attempt before (agent `reconcile`, after verification; [protocol](protocol.md), "Repeat attempts") |
 
 New targets come from the [Track DANDI](../.github/workflows/targets.yml)
 workflow. Every day it rebuilds `targets/dandisets.json` from the archive. When
@@ -37,12 +37,17 @@ targets the runner chooses itself.
 Steps 3 and 4 fix every claim and its method from the paper before anyone
 analyses the data: the claims agent never sees the dataset's contents. The
 author reads the paper to understand the claims, but cannot change a claim's
-statement or method. When the claims file does not say something the attempt
-needs, the author does not choose it, even when the paper gives it: it writes
-the question, citing the passage, in
-`questions/<folder>.yaml` and leaves the claim blocked as `methods_underspecified` or runs
-the readings the claim names. The question goes to step 7; once it is answered,
-the attempt resumes from the claims file.
+statement, expected values or criterion. When the claims file does not say a
+method detail the attempt needs, the author takes it from the paper and cites
+the passage. Where the paper leaves the detail open, the author runs every
+reading, adopts the best-supported one as a stated assumption (or blocks the
+claim as `methods_underspecified` when no choice is defensible), and records
+the question for the paper's authors in the claim's notes and the attempt's
+findings. Only when the author or a verifier believes the claims file misreads
+the paper is a question written, citing the passage, in
+`questions/<folder>.yaml`. It goes to step 7, where a reader decides whether to
+amend the claims file; once it is answered, the attempt resumes from the claims
+file.
 
 When the claims check says the file is ready, the runner commits the claims
 file straight to `main`, with no pull request, once it validates against its

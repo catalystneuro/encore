@@ -448,6 +448,14 @@ def test_a_claim_not_stated_in_the_paper_says_it_is_inferred():
     assert "checks the link to the paper’s data" in link
 
 
+
+def test_an_outcome_that_rests_on_an_assumption_says_so():
+    claim = {"claim": "t", "statement": "Few respond.", "source": "Figure 2", "outcome": "reproduced",
+             "blocked_by": None, "notes": "N.", "deviations": ["Assumed a 1 s window, the paper's Figure 3."],
+             "disagreed": False}
+    assert "rests on an assumption" in site.claim_item({**claim, "assumed": True}, "../")
+    assert "rests on an assumption" not in site.claim_item(claim, "../")
+
 def test_the_schema_keeps_quotes_inferences_and_links_apart():
     from jsonschema import Draft202012Validator
     schema = Draft202012Validator(json.loads((REPO / "schemas" / "claims.schema.json").read_text()))
@@ -544,3 +552,19 @@ def test_the_pipeline_shows_each_queued_dataset_and_when_it_should_be_done():
     assert page.count(">running now</td>") == 2 and ">about 2 hours</td>" in page and ">within the hour</td>" in page
     assert "2 chains are running now" in page
     assert "1 dataset waits for an attempt on 3 lanes, at about 4.0 hours each" in page
+
+
+def test_a_reconciled_attempt_marks_its_findings_and_the_fixed_ones():
+    earlier = {"id": "000001-demo-01", "findings": [{"kind": "data_missing", "statement": "No position."},
+                                                    {"kind": "metadata_error", "statement": "Wrong age."}]}
+    later = {"id": "000001-demo-02", "findings": [{"kind": "data_missing", "statement": "Position missing.", "found": None},
+                                                  {"kind": "other", "statement": "Duplicates.", "found": None}],
+             "reconciliation": {"earlier": "000001-demo-01", "blind": True, "findings": [
+                 {"finding": 1, "status": "still_present", "now": 1, "note": "Same files."},
+                 {"finding": 2, "status": "fixed", "note": "Age is set."}],
+                 "outcomes": [{"claim": "c", "earlier": "reproduced", "note": "New version."}]}}
+    site.reconcile([earlier, later])
+    assert [f["status"] for f in later["findings"]] == ["still_present", "new"]
+    assert later["reconciliation"]["gone"] == [{"status": "fixed", "note": "Age is set.", "statement": "Wrong age.",
+                                                "kind": "metadata_error"}]
+    assert later["reconciliation"]["outcomes"][0]["earlier"] == "reproduced"

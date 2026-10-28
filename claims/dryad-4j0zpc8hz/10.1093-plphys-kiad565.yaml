@@ -1,0 +1,935 @@
+# Claims for Didion-Gency, Vitasse, Buchmann, Gessler, Gisler, Schaub & Grossiord (2024), Plant
+# Physiology 194, doi:10.1093/plphys/kiad565, on Dryad dataset 4j0zpc8hz (doi:10.5061/dryad.4j0zpc8hz).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-10-27,
+# protocol pilot-10 as stated in docs/protocol.md (Reader).
+#
+# Text read: the version of record from Europe PMC (PMC10828195, full-text XML) as supplied under
+# paper/, with Results, Discussion, Materials and methods, the legends of Figures 1 to 7, and the
+# supplement (kiad565_supplementary_data.pdf as extracted text) with the legends of Supplemental
+# Figures S1 to S7, Supplemental Tables S1 to S6 and Supplemental Methods S1 to S4. No PDF was
+# supplied, so the figures were not seen. The R2 and P values printed inside Figures 1, 2 and S1
+# are therefore not recorded. Equations 3 and 4 of Supplemental Methods S4 (complementarity and
+# selection effects) are garbled in the extracted text (an averaging bar is lost). The paper links
+# no analysis code (analyses in R 4.2.0, nlme lme and multcomp), so none was read.
+#
+# Data the paper used. Open-top chambers (OTCs) at WSL Birmensdorf, 16 chambers, each with eight
+# soil compartments. Seedlings of European beech (Fagus sylvatica) and downy oak (Quercus
+# pubescens), 3 yr old, planted October 2018 as single trees, monocultures (four trees of one
+# species) and mixtures (two of each); only monocultures and mixtures are analysed, one tree per
+# species measured per compartment. Four climatic treatments from June 2019, each in four
+# chambers, control (C), warming of about +5 C (W), soil moisture reduction of about 50% (MR) and
+# both (WMR). Six trees per climatic treatment, species and interaction treatment, 96 trees.
+# Measured 2019 to 2021; the paper reports 2020 and 2021 (2019 in Supplemental Figs. S5 and S6).
+# Variables per tree, phenology once a year (bud swelling date, leaf development duration from
+# stage 1 to 4, onset of senescence at 10% coloured or fallen leaves, senescence duration from
+# 10% to 90%, growing season length from bud swelling to onset of senescence, all in days of
+# year or days); leaf-level traits three campaigns a year (light-saturated assimilation Asat,
+# predawn and midday leaf water potential, starch and sugar concentration of the midday leaf);
+# growth once a year in September (height, basal diameter at 15 cm, and aboveground woody
+# biomass AGWB estimated from height, Supplemental Methods S3, with increments as the difference
+# from the previous year). Climate per chamber at 10 min (air temperature and relative humidity
+# at 50 cm and 2 m, soil temperature and moisture at 25 cm), from which GDD, chilling days,
+# Tspring, Tfall, Tannual, Mspring, Mfall and Mannual are computed.
+#
+# Outside data. AGWB uses the species-specific coefficients beta1 and beta2 of Annighofer et al.
+# (2016), Eur J For Res 135:313-329, doi:10.1007/s10342-016-0937-z, which the paper does not
+# print. If the dataset holds AGWB itself, they are not needed.
+#
+# Procedures used by the criteria below, each from the paper as cited; details it leaves open
+# are named with their readings.
+#
+# Phenology regression (Methods, Statistical analysis, paragraph 1; Figure 1 legend). Per species,
+# monoculture trees, 2020 and 2021 pooled, all four treatments, a linear regression (lm) of the
+# phenological trait on the daily mean air temperature of the season (Tspring February to April,
+# Tfall September to December, Tannual the year, as in Table S5), significant at P <= 0.05.
+# Open, the unit of the regression (P1) each tree and year against its chamber's mean, or (P2)
+# the eight treatment and year means against the treatment's mean, as Figure 1 plots them (Table
+# S5 gives the treatment means). Open, the sensor (H1) 50 cm or (H2) 2 m; the Methods name both.
+#
+# Treatment test (Methods, Statistical analysis, paragraph 2; Table S1 footnotes; Figures 3 and 4
+# legends). Per species, monoculture trees; leaf-level traits averaged per tree and year over the
+# three campaigns (Methods); lme(trait ~ (warming + moisture reduction + year)^3, random =
+# ~1|Chamber), warming and moisture reduction yes or no, year a factor; square root for starch,
+# sugar, Asat and the increments (Table S1), none for leaf water potentials; Tukey-type contrasts
+# among the four treatments within each year (multcomp), alpha 0.05. Open, (T1) the model on 2019
+# to 2021 as the Methods and Table S1 state, or (T2) on 2020 and 2021, the years reported. The F
+# and p pairs of Table S1 for terms with year (beech Asat W x Y, F = 5.22, p = 0.006) fit 2
+# numerator df, three years, which supports T1. Open, when a value to be square-rooted is negative
+# (an increment, or a starch, sugar or Asat value; the paper mentions no negative values and no
+# constant), how the square root was taken; (S1) untransformed, (S2) square root after adding the
+# constant that brings the minimum to zero, (S3) negative values dropped, as R's sqrt gives NaN
+# for them. The F tests of Table S1 are
+# read as nlme's anova (sequential); marginal tests are a variant. Open, for starch, sugar and
+# Asat, (L1) yearly tree means, as the Methods state, or (L2) per campaign, as the Figure 4
+# legend's n = 6 trees x 3 campaigns = 18 suggests; criteria below that name readings T1 and T2
+# include L1 and L2 for these three traits.
+#
+# Interaction test (Methods, Statistical analysis, paragraph 3; Tables S2 and S3 footnotes). Per
+# species, monoculture and mixture trees, lme(trait ~ (warming + moisture reduction + year +
+# interaction)^3, random = ~1|Chamber), square root for all traits of Tables S2 and S3 (negative
+# values read as S1, S2 or S3 above), and Tukey-type contrasts of mixtures against monocultures.
+# Open, (I1) within each climatic treatment and year, or (I2) within each climatic treatment over
+# 2020 and 2021. The years are not stated in the text. The F and p pairs of Tables S2 and S3 give
+# terms with year 1 numerator df for bud swelling and development duration (oak Y x I, F = 9.37,
+# p = 0.003) and 2 df for onset of senescence, senescence duration, growing season length and all
+# Table S3 traits (beech diameter increment Y x I, F = 3.08, p = 0.047). Readings (Y1) as these
+# imply, bud swelling and development duration on 2020 and 2021 (treatments began after the 2019
+# leaf flushing) and the other traits on 2019 to 2021; (Y2) 2020 and 2021 for all traits, the years
+# the study reports. The criteria use Y1, the reading the tables support; Y2 is reported as a
+# variant.
+#
+# Biodiversity effects (Methods, Biodiversity, complementarity, and selection effects;
+# Supplemental Methods S4; Methods, Statistical analysis, paragraph 3). Net biodiversity effect
+# (NBE) by Eq. 2 as printed, [(FO x WO) - (FE x WO)] x 100, with FO the trait of the species in
+# mixture, FE in monoculture, WO = 0.5; complementarity effect by Eq. 3 as printed, [N x (FO x
+# WO / FE - WO) x FE] x 100, N = 2; selection effect by Eq. 4, whose averaging term is lost in the
+# text, read as in Loreau and Hector (2001), the term (FO x WO / FE - WO) minus its mean over the
+# trees of the species in that treatment and year, times FE, times 100. Tested against zero by
+# t-test per climatic treatment, year and species (Methods); the legends of Figure 5 and
+# Supplemental Figures S2 and S3 name Tukey's HSD, shown as a variant. The Methods run these
+# tests only where the interaction test found an effect; that is reported for each. Open, (B1)
+# each mixture tree against the mean of the monoculture trees of its species, treatment and year,
+# or (B2) against the monoculture tree of its own chamber; (L1) leaf-level values as yearly tree
+# means (Methods) or (L2) per campaign (the legends give n = 6 trees x 3 campaigns = 18).
+schema_version: 2
+dataset:
+  archive: dryad
+  id: 4j0zpc8hz
+  doi: 10.5061/dryad.4j0zpc8hz
+paper: doi:10.1093/plphys/kiad565
+claims:
+- id: fig1ab-bud-swelling-advance
+  statement: Warmer spring air advanced bud swelling in both species, by 1.1 days per degree in
+    beech and 2.3 days per degree in oak, across 2020 and 2021 and the four treatments.
+  source: Results, Phenology, paragraph 1; Figure 1A and 1B
+  quote: Higher daily air temperatures in spring were linked to an earlier bud swelling in both
+    species, where beech was advanced by −1.1 d °C−1 and oak by −2.3 d °C−1 across the 2 yr and
+    treatments
+  statistics:
+  - test: linear regression
+    p: 0.05
+    p_relation: "<"
+    n: monoculture trees, 6 per treatment, species and year, 2020 and 2021
+  expected:
+  - quantity: slope of bud swelling date on Tspring, beech
+    value: -1.1
+    tolerance: 0.11
+    unit: days per degree C
+  - quantity: slope of bud swelling date on Tspring, oak
+    value: -2.3
+    tolerance: 0.23
+    unit: days per degree C
+  criterion: Phenology regression (opening comment) of bud swelling day of year on Tspring.
+    Reproduced when, under one of the readings P1 or P2 with H1 or H2, both slopes are within
+    tolerance and each regression has P <= 0.05.
+- id: fig1cd-development-duration
+  statement: Warmer spring air shortened leaf development duration by 0.7 days per degree in both
+    species.
+  source: Results, Phenology, paragraph 1; Figure 1C and 1D
+  quote: A shorter leaf development duration was also found, with a reduction of −0.7 d °C−1 in
+    both species
+  statistics:
+  - test: linear regression
+    p: 0.05
+    p_relation: "<"
+  expected:
+  - quantity: slope of development duration on Tspring, beech
+    value: -0.7
+    tolerance: 0.07
+    unit: days per degree C
+  - quantity: slope of development duration on Tspring, oak
+    value: -0.7
+    tolerance: 0.07
+    unit: days per degree C
+  criterion: Phenology regression (opening comment) of development duration (stage 1 to stage 4)
+    on Tspring. Reproduced when, under one of the readings P1 or P2 with H1 or H2, both slopes
+    are within tolerance and each regression has P <= 0.05.
+- id: fig1gh-senescence-duration
+  statement: Warmer fall air extended leaf senescence duration by 3.4 days per degree in beech
+    and 3.1 days per degree in oak.
+  source: Results, Phenology, paragraph 1; Figure 1G and 1H
+  quote: Similarly, senescence duration was extended by +3.4 d °C−1 in beech and +3.1 d °C−1 in
+    oak
+  statistics:
+  - test: linear regression
+    p: 0.05
+    p_relation: "<"
+  expected:
+  - quantity: slope of senescence duration on Tfall, beech
+    value: 3.4
+    tolerance: 0.34
+    unit: days per degree C
+  - quantity: slope of senescence duration on Tfall, oak
+    value: 3.1
+    tolerance: 0.31
+    unit: days per degree C
+  criterion: Phenology regression (opening comment) of senescence duration (10% to 90% of leaves
+    coloured or fallen, linearly interpolated between observation dates as the Methods say) on
+    Tfall. Reproduced when, under one of the readings P1 or P2 with H1 or H2, both slopes are
+    within tolerance and each regression has P <= 0.05.
+- id: fig1ij-growing-season
+  statement: Warmer annual air lengthened the growing season by 4.5 days per degree in beech and
+    5.7 days per degree in oak.
+  source: Results, Phenology, paragraph 1; Figure 1I and 1J
+  quote: The growing seasons were extended by +4.5 d °C−1 and +5.7 d °C−1 for beech and oak,
+    respectively, with an increase in daily mean annual air temperature
+  statistics:
+  - test: linear regression
+    p: 0.05
+    p_relation: "<"
+  expected:
+  - quantity: slope of growing season length on Tannual, beech
+    value: 4.5
+    tolerance: 0.45
+    unit: days per degree C
+  - quantity: slope of growing season length on Tannual, oak
+    value: 5.7
+    tolerance: 0.57
+    unit: days per degree C
+  criterion: Phenology regression (opening comment) of growing season length (bud swelling to
+    onset of senescence) on Tannual. Reproduced when, under one of the readings P1 or P2 with H1
+    or H2, both slopes are within tolerance and each regression has P <= 0.05.
+- id: fig1-oak-steeper-advance
+  statement: The temperature-driven advance was larger in oak than in beech (P = 0.004, least
+    squares analysis).
+  source: Results, Phenology, paragraph 1
+  quote: However chronic warming was more advantageous to oak than to beech as the advancement of
+    bud swelling extension was higher in oak (P = 0.004 using Least-squares analysis)
+  statistics:
+  - test: least-squares analysis
+    p: 0.004
+  criterion: The paper names the analysis only as least squares, and "advancement of bud swelling
+    extension" is ambiguous. Readings (a) the species by Tspring interaction in a linear model of
+    bud swelling date on Tspring, species and their interaction; (b) the same for growing season
+    length on Tannual. Each fit on the units of the phenology regression (P1 and P2, H1 and H2).
+    Reproduced when, under one reading, the interaction has p < 0.05 with the oak slope the
+    larger in magnitude; p is reported against 0.004.
+- id: fig1ef-onset-senescence-no-temperature
+  statement: The onset of senescence was not related to fall air temperature in either species.
+  source: Results, Phenology, paragraph 1; Figure 1E and 1F
+  quote: No relationship between the onset of senescence and fall daily air temperatures was
+    found, suggesting that the onset of senescence is not driven by temperature changes in the
+    fall for both species
+  criterion: A claim of absence, on the paper's test, the phenology regression (opening comment)
+    of onset of senescence on Tfall at P <= 0.05. Reproduced when neither species' regression has
+    P <= 0.05. The unit and sensor are open (P1, P2, H1, H2); the outcome is the one they all
+    give, and the slopes are reported.
+- id: figs1-phenology-no-moisture
+  statement: No phenological trait was related to soil moisture in either species.
+  source: Results, Phenology, paragraph 1; Supplemental Figure S1
+  quote: We observed no significant relationship between phenology and soil moisture for both
+    species (Supplemental Fig. S1)
+  criterion: A claim of absence, on the paper's test, linear regressions as in the phenology
+    regression (opening comment), with soil moisture at 25 cm in place of air temperature, bud
+    swelling and development duration on Mspring, onset and duration of senescence on Mfall,
+    growing season length on Mannual (Supplemental Figure S1 legend, Methods, Statistical
+    analysis). Reproduced when none of the ten regressions has P <= 0.05. The unit (P1 or P2) is
+    open; the outcome is the one both give.
+- id: fig2-gdd-chilling
+  statement: The more chilling days trees received, the fewer growing degree days they needed to
+    reach bud swelling, in both species, following a negative exponential.
+  source: Results, Phenology, paragraph 2; Figure 2A and 2B
+  quote: With an increase in the number of chilling days, both species had lower GDD requirements
+    to budburst (Fig. 2)
+  statistics:
+  - test: negative exponential regression (nls)
+    p: 0.05
+    p_relation: "<"
+    n: monoculture trees, one point per tree and year, 2020 and 2021
+  criterion: Per species, monoculture trees in 2020 and 2021, one value per tree and year (Figure 2
+    legend). GDD is accumulated from January 1 to the bud swelling date over daily mean air
+    temperatures above 5 C, and chilling days are days with daily mean below 5 C from November 1
+    (Methods, Phenology, paragraph 2), from the chamber's record. Open, (a) GDD as the sum of the
+    excess over 5 C or (b) as the sum of the daily means above 5 C; the end of the chilling count
+    at (c) bud swelling (Methods) or (d) leaf flushing, stage 4 (Figure 2 legend); the sensor (H1
+    or H2); and the negative exponential as (e) GDD = a exp(b CD) or (f) GDD = a + b exp(c CD),
+    the paper giving only nls. Reproduced when, under every reading, the fitted curve decreases
+    with chilling days and its rate parameter has p <= 0.05 in both species; blocked as
+    methods_underspecified when readings differ.
+- id: disc-max-chilling-days
+  statement: Even without warming, trees received at most 97 chilling days.
+  source: Discussion, paragraph 1; Figure 2
+  quote: In our experiment, trees were exposed to a maximum of 97 d even in the absence of warming
+    (Fig. 2)
+  expected:
+    quantity: maximum chilling days, unwarmed (C and MR) monoculture trees, 2020 and 2021
+    value: 97
+    tolerance: 9.7
+    unit: days
+  criterion: Chilling days as in fig2-gdd-chilling, readings (c) and (d) and H1 and H2. Reproduced
+    when the maximum over C and MR trees is within tolerance under one reading.
+- id: fig3-psi-warming-2020
+  statement: Warming made predawn leaf water potential more negative in 2020 in both species, and
+    midday leaf water potential more negative in 2020 in beech only.
+  source: Results, Leaf water potential, paragraph 1; Figure 3
+  quote: Warming resulted in more negative ΨPD in 2020 in both species and more negative ΨMD in
+    2020 but only in beech (Fig. 3)
+  statistics:
+  - about: predawn water potential, warming by moisture reduction by year, beech
+    test: linear mixed-effects model ANOVA
+    statistic: F = 3.54
+    p: 0.031
+  - about: predawn water potential, warming by moisture reduction by year, oak
+    test: linear mixed-effects model ANOVA
+    statistic: F = 3.59
+    p: 0.030
+  - about: treatment contrasts within year
+    test: Tukey's HSD post-hoc test
+    p: 0.05
+    p_relation: "<"
+    n: 6 monoculture trees per treatment, species and year
+  criterion: Treatment test (opening comment), untransformed, readings T1 and T2. Reproduced when,
+    in 2020, W is significantly more negative than C for predawn potential in both species and
+    for midday potential in beech, and not in oak; partially reproduced when two or three of
+    these four hold. The outcome is the one T1 and T2 both give.
+- id: fig3-psi-mr-oak-2020
+  statement: Lower soil moisture alone made predawn leaf water potential more negative in 2020 in
+    oak only.
+  source: Results, Leaf water potential, paragraph 1; Figure 3
+  quote: lower soil moisture reduced ΨPD in 2020 but only in oak (Fig. 3)
+  criterion: Treatment test (opening comment), untransformed, readings T1 and T2. Reproduced when,
+    in 2020, MR predawn potential is significantly below C in oak and not in beech; the outcome is
+    the one T1 and T2 both give.
+- id: fig3-psi-wmr-2021
+  statement: Combined warming and drier soil made predawn leaf water potential more negative in
+    2021 in both species.
+  source: Results, Leaf water potential, paragraph 1; Figure 3; Supplemental Table S1
+  quote: However, combined warming and drier soils resulted in more negative ΨPD in 2021 in both
+    species (Fig. 3, Supplemental Table S1)
+  criterion: Treatment test (opening comment), untransformed, readings T1 and T2. Reproduced when,
+    in 2021, WMR predawn potential is significantly below C in both species; partially reproduced
+    in one. The outcome is the one T1 and T2 both give.
+- id: disc-psi-minimum
+  statement: Under the low moisture treatment trees reached predawn water potentials of about
+    -1.9 MPa in beech and -1.2 MPa in oak.
+  source: Discussion, paragraph 3; Figure 3
+  quote: As the predawn (ΨPD) and midday leaf water potential (ΨMD) of our trees were slightly
+    affected by our low moisture treatment (Fig. 3), we considered the water availability level
+    as moderate. Indeed, trees reached ΨPD of about −1.9 and −1.2 MPa in beech and downy oak,
+    respectively
+  expected:
+  - quantity: predawn water potential reached, beech
+    value: -1.9
+    tolerance: 0.19
+    unit: MPa
+  - quantity: predawn water potential reached, oak
+    value: -1.2
+    tolerance: 0.12
+    unit: MPa
+  criterion: The paper does not say which value "reached" is. Readings (a) the lowest yearly
+    treatment mean of MR in 2020 or 2021 (Figure 3); (b) the lowest yearly treatment mean of MR
+    or WMR; (c) the lowest campaign treatment mean of MR or WMR; (d) the most negative single
+    measurement of a monoculture tree under MR or WMR, as "trees reached" allows. Yearly means
+    are of the tree-year means of monoculture trees, in 2020 and 2021. Reproduced when both
+    values are within tolerance under one reading.
+- id: fig4-beech-warming-none
+  statement: In beech, warming alone had no effect on starch, sugar, Asat, or height, diameter and
+    AGWB increments.
+  source: Results, Leaf-level carbon relations and tree growth, paragraph 1; Figure 4; Supplemental
+    Table S1
+  quote: In beech, warming had no impact on leaf-level carbon relations and growth (Fig. 4,
+    Supplemental Table S1)
+  statistics:
+  - about: warming main effect, starch
+    test: linear mixed-effects model ANOVA
+    statistic: F = 1.55
+    p: 0.236
+  - about: warming main effect, sugar
+    test: linear mixed-effects model ANOVA
+    statistic: F = 2.59
+    p: 0.133
+  - about: warming main effect, Asat
+    test: linear mixed-effects model ANOVA
+    statistic: F = 2.44
+    p: 0.144
+  - about: warming main effect, height increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 0.78
+    p: 0.395
+  - about: warming main effect, diameter increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 1.45
+    p: 0.252
+  - about: warming main effect, AGWB increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 0.17
+    p: 0.690
+  criterion: A claim of absence, on the paper's test, the treatment test (opening comment).
+    Reproduced when no W against C contrast is significant (alpha 0.05) for any of the six traits
+    in 2020 or 2021 in beech; not reproduced when any is. The contrasts' sizes and the Table S1
+    warming terms are reported. Table S1 also gives a significant warming by year term for beech
+    Asat (F = 5.22, p = 0.006), which the
+    statistics above leave out; the claim rests on the W against C contrasts. Readings T1, T2,
+    S1, S2 and S3, the square-root readings applying to negative starch, sugar and Asat values as
+    to negative increments (the paper does not say how they were handled); the outcome is the one
+    they all give.
+- id: fig4-oak-warming-growth-2021
+  statement: In oak, warming alone reduced height, diameter and AGWB increments, in 2021 only.
+  source: Results, Leaf-level carbon relations and tree growth, paragraph 1; Figure 4G to 4L;
+    Supplemental Table S1
+  quote: In oak, warming reduced height increment, diameter increment, and AGWB increment but only
+    in 2021 (Fig. 4, Supplemental Table S1)
+  statistics:
+  - about: warming main effect, oak diameter increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 15.04
+    p: 0.002
+  - about: warming by year, oak height increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 5.00
+    p: 0.008
+  - about: warming by year, oak diameter increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 3.66
+    p: 0.026
+  - about: treatment contrasts within year
+    test: Tukey's HSD post-hoc test
+    p: 0.05
+    p_relation: "<"
+  criterion: Treatment test (opening comment), readings T1, T2, S1, S2 and S3. Reproduced when, in oak,
+    W is significantly below C in 2021 for all three increments and for none in 2020; partially
+    reproduced when one or two of the 2021 contrasts are significant and none in 2020. The
+    outcome is the one all readings give.
+- id: disc-oak-warming-no-carbon-change
+  statement: In oak, warming had no effect on Asat or on starch and sugar concentrations.
+  source: Discussion, paragraph 4; Figure 4A to 4F
+  quote: downy oak, which occurs in environments of 19 °C MAT (Pasta et al. 2016), showed no effect
+    of warming on Asat and NSC but a substantial decrease in growth (Fig. 4)
+  criterion: A claim of absence, on the paper's test, the treatment test (opening comment).
+    Reproduced when no W against C contrast is significant for starch, sugar or Asat in oak in
+    2020 or 2021. Readings T1, T2, S1, S2 and S3; the outcome is the one all give.
+- id: fig4-beech-mr
+  statement: In beech, lower soil moisture alone reduced Asat in 2021, height increment in 2021,
+    diameter increment in 2020 and 2021, and AGWB increment in 2021.
+  source: Results, Leaf-level carbon relations and tree growth, paragraph 1; Figure 4
+  quote: In beech, lower soil moisture led to a significant reduction of Asat in 2021, height
+    increment in 2021, diameter increment in 2020 and 2021, and AGWB increment in 2021
+  statistics:
+  - about: moisture reduction by year, beech Asat
+    test: linear mixed-effects model ANOVA
+    statistic: F = 19.00
+    p: 0.001
+    p_relation: "<"
+  - about: moisture reduction by year, beech height increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 13.82
+    p: 0.001
+    p_relation: "<"
+  - about: moisture reduction by year, beech diameter increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 10.26
+    p: 0.001
+    p_relation: "<"
+  - about: treatment contrasts within year
+    test: Tukey's HSD post-hoc test
+    p: 0.05
+    p_relation: "<"
+  criterion: Treatment test (opening comment), readings T1, T2, S1, S2 and S3. Reproduced when MR is
+    significantly below C in all five named trait-years; partially reproduced in three or four;
+    not reproduced otherwise. The other MR against C contrasts are reported. The outcome is the
+    one all readings give.
+- id: fig4-oak-mr
+  statement: In oak, lower soil moisture alone reduced Asat and height, diameter and AGWB
+    increments in both 2020 and 2021.
+  source: Results, Leaf-level carbon relations and tree growth, paragraph 1; Figure 4
+  quote: Similarly, we observed a substantial reduction in Asat, height increment, diameter
+    increment, and AGWB increments in oak in 2020 and 2021 (Fig. 4, Supplemental Table S1)
+  statistics:
+  - about: moisture reduction by year, oak height increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 35.13
+    p: 0.001
+    p_relation: "<"
+  - about: moisture reduction main effect, oak diameter increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 5.01
+    p: 0.045
+  - about: moisture reduction by year, oak diameter increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 15.93
+    p: 0.001
+    p_relation: "<"
+  - about: moisture reduction by year, oak AGWB increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 7.27
+    p: 0.002
+  - about: treatment contrasts within year
+    test: Tukey's HSD post-hoc test
+    p: 0.05
+    p_relation: "<"
+  criterion: Treatment test (opening comment), readings T1, T2, S1, S2 and S3. Reproduced when MR is
+    significantly below C in all eight trait-years; partially reproduced in four to seven; not
+    reproduced otherwise. The outcome is the one all readings give.
+- id: fig4-beech-wmr
+  statement: In beech, combined warming and low moisture reduced Asat and diameter increment in
+    2020 and 2021.
+  source: Results, Leaf-level carbon relations and tree growth, paragraph 1; Figure 4
+  quote: Under combined warming and low moisture, we observed a reduction of Asat, and diameter
+    increment in 2020 and 2021 in beech
+  criterion: Treatment test (opening comment), readings T1, T2, S1, S2 and S3. Reproduced when WMR is
+    significantly below C in all four trait-years; partially reproduced in two or three. The
+    outcome is the one all readings give.
+- id: fig4-oak-wmr
+  statement: In oak, combined warming and low moisture reduced Asat and height, diameter and AGWB
+    increments in 2020 and 2021.
+  source: Results, Leaf-level carbon relations and tree growth, paragraph 1; Figure 4
+  quote: In oak, a reduction of Asat, height increment, diameter increment, and AGWB increment in
+    2020 and 2021 was observed
+  criterion: Treatment test (opening comment), readings T1, T2, S1, S2 and S3. Reproduced when WMR is
+    significantly below C in all eight trait-years; partially reproduced in four to seven. The
+    outcome is the one all readings give.
+- id: fig4-wmr-same-as-mr
+  statement: Responses to combined warming and low moisture did not differ from responses to low
+    moisture alone.
+  source: Results, Leaf-level carbon relations and tree growth, paragraph 1; Figure 4
+  quote: No significant differences were found between responses to lower moisture alone and
+    combined warming and soil moisture reduction (Fig. 4, Supplemental Table S1)
+  criterion: A claim of absence, on the paper's test, the treatment test (opening comment).
+    Reproduced when no MR against WMR contrast is significant for the six traits of Figure 4 in
+    either species in 2020 or 2021; not reproduced when any is, with the number and sizes of
+    such contrasts reported. Readings T1, T2, S1, S2 and S3; the outcome is the one all give.
+- id: disc-nsc-unchanged-drier-soil
+  statement: Drier soils did not change starch and sugar concentrations in either species.
+  source: Discussion, paragraph 5; Figure 4A to 4D
+  quote: Chronically drier soils strongly reduced the leaf-level carbon relations and growth of
+    both species, except for NSC where we found no changes (Fig. 4)
+  criterion: A claim of absence, on the paper's test, the treatment test (opening comment).
+    Reproduced when no MR against C contrast is significant for starch or sugar in either species
+    in 2020 or 2021. WMR against C is shown as a variant. Readings T1, T2, S1, S2 and S3; the
+    outcome is the one all give.
+- id: disc-beech-asat-more-impaired
+  statement: Low soil moisture impaired Asat more strongly in beech than in oak.
+  source: Discussion, paragraph 5; Figure 4E and 4F
+  quote: However, while both species were negatively impacted by low soil moisture, beech Asat was
+    more strongly impaired (Fig. 4)
+  criterion: No test is reported. The measure, from Figure 4, is the reduction of mean Asat over
+    monoculture tree-year means, which the paper does not define. Open, the measure, (r1) the
+    relative reduction (C - X) / C or (r2) the absolute reduction C - X; which treatment X (MR
+    alone, or MR and WMR); and which year (2020, 2021, or both pooled). Reproduced when the reduction is larger
+    in beech than in oak under every reading; blocked as methods_underspecified when readings
+    differ.
+- id: tables6-no-seasonal-variation
+  statement: Asat, starch and sugar did not vary among the three campaigns of the growing season.
+  source: Methods, Statistical analysis, paragraph 2; Supplemental Table S6
+  quote: As leaf-level responses (assimilation and starch and sugar concentrations) did not vary
+    during the growing season, we averaged them per year before the analyses (Supplemental Table
+    S6)
+  statistics:
+  - about: season effect, starch
+    test: linear mixed-effects model ANOVA
+    statistic: F = 2.64
+    p: 0.074
+  - about: season effect, sugar
+    test: linear mixed-effects model ANOVA
+    statistic: F = 1.56
+    p: 0.213
+  - about: season effect, Asat
+    test: linear mixed-effects model ANOVA
+    statistic: F = 2.03
+    p: 0.134
+  criterion: A claim of absence, on the paper's test (Table S6 footnote), lme(trait ~ (warming +
+    moisture reduction + season)^3, random = ~1|Chamber) on square-root values, season the
+    campaign (early, middle, late). Reproduced when the season term has p > 0.05 for all three
+    traits. Table S6 has no species or year column, so open, (a) both species pooled, (b) per
+    species; the years, (y1) 2019 to 2021, the years of the treatment test whose averaging Table
+    S6 justifies (Methods, Statistical analysis, paragraph 2), or (y2) 2020 and 2021, the years
+    reported; and the trees (monocultures, as that paragraph concerns, or monocultures and
+    mixtures). The paper does not say whether its F tests are sequential (the default of nlme's
+    anova) or marginal, and links no code; both are readings, (F1) sequential and (F2) marginal.
+    Negative values as S1, S2 or S3 (opening comment). The outcome is the one all readings give.
+- id: tables2-phenology-no-interaction
+  statement: Species mixture did not change phenology in either species, except a development
+    duration about 2 days shorter in oak mixtures than monocultures under lower moisture, whose
+    net biodiversity effect was not significant.
+  source: Results, Impact of species interactions, paragraph 1; Supplemental Table S2
+  quote: In both species, no impact of species interactions on phenology was found in any
+    treatment, except in oak where we observed a slightly shorter development duration of 2 d in
+    mixtures compared to the monocultures under lower moisture (Supplemental Table S2), but the
+    net biodiversity effect was not significant
+  statistics:
+  - about: year by interaction, oak development duration
+    test: linear mixed-effects model ANOVA
+    statistic: F = 9.37
+    p: 0.003
+  - about: moisture reduction by year by interaction, oak development duration
+    test: linear mixed-effects model ANOVA
+    statistic: F = 11.21
+    p: 0.001
+  expected:
+    quantity: oak development duration, monoculture minus mixture, MR
+    value: 2
+    tolerance: 0.2
+    unit: days
+  criterion: Interaction test (opening comment) on the five phenological traits, readings I1 and
+    I2, with the years of reading Y1 (bud swelling and development duration on 2020 and 2021, the
+    three fall and season traits on 2019 to 2021, as the F and p pairs of Table S2 imply); Y2
+    (2020 and 2021 for all five) is reported as a variant. Reproduced when the only significant mixture against monoculture contrast is oak
+    development duration under MR, shorter in mixtures by a difference within tolerance (in one
+    year under I1, or pooled under I2); partially reproduced when that contrast holds and one other
+    is also significant. The NBE of oak development duration under MR, in the year or years of
+    the contrast, must not differ from zero by the t-test of the biodiversity effects procedure
+    (readings B1 and B2, which must agree, or blocked as methods_underspecified); when it does,
+    the claim is at most partially reproduced.
+- id: tables3-beech-warming-no-interaction
+  statement: Under warming, species mixture did not change beech leaf-level carbon relations or
+    growth in 2020 and 2021, and beech showed no net biodiversity effect on these traits in 2021.
+  source: Results, Impact of species interactions, paragraph 2; Supplemental Table S3; Figure 5
+  quote: In beech, no impact of species interactions on leaf-level carbon relations or growth was
+    found under the warming treatment in 2020 and 2021 (Supplemental Table S3). Consequently,
+    beech did not show any impact of net biodiversity in response to warming in terms of
+    leaf-level carbon relations or growth in 2021 (Fig. 5)
+  criterion: A claim of absence, on the paper's tests. Reproduced when, in beech under W, no
+    mixture against monoculture contrast of the interaction test (opening comment) is significant
+    for the six traits of Figure 5 in 2020 or 2021, and no 2021 NBE differs from zero by the
+    t-test of the biodiversity effects procedure. The 2020 NBEs are reported, not judged, as the
+    paper states the absence for 2021 only. Readings I1, I2, B1, B2, L1 and L2; the outcome is the one
+    all give.
+- id: figs2-beech-asat-selection-warming
+  statement: Under warming, beech Asat showed a positive selection effect, too weak to change the
+    net biodiversity effect.
+  source: Results, Impact of species interactions, paragraph 2; Supplemental Figure S2E
+  quote: However, we observed a positive selection effect on beech Asat under warming
+    (Supplemental Fig. S2), suggesting positive interactions in the mixtures; although, this
+    effect was not strong enough to influence the overall net biodiversity effect
+  criterion: Biodiversity effects procedure (opening comment). The year is not stated; it may be
+    2020 or 2021. Reproduced when, in one of these years, the beech Asat selection effect under W
+    is positive and differs from zero by the t-test, and the NBE does not. The method readings
+    (B1, B2, L1, L2, and the reading of Eq. 4) must all agree; when they do not, blocked as
+    methods_underspecified.
+- id: tables3-oak-warming-diameter
+  statement: Under warming, oak in mixtures had a diameter increment about 0.3 cm per year lower
+    than in monocultures, and no other difference between mixtures and monocultures.
+  source: Results, Impact of species interactions, paragraph 2; Supplemental Table S3
+  quote: For oak, no differences between mixtures and monocultures were found under warming, except
+    for lower diameter increment of approximately 0.3 cm per year in mixtures compared to
+    monocultures (Supplemental Table S3)
+  statistics:
+  - about: warming by year by interaction, oak diameter increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 4.15
+    p: 0.016
+  expected:
+    quantity: oak diameter increment under W, monoculture minus mixture
+    value: 0.3
+    tolerance: 0.03
+    unit: cm per year
+  criterion: Interaction test (opening comment), readings I1 and I2. The unit is open, as the paper
+    prints cm here but Table S4 gives diameters in mm; readings (u1) 0.3 cm and (u2) 0.3 mm.
+    Reproduced when, under W, the oak diameter increment contrast is significant and lower in
+    mixtures with a difference within tolerance under one unit reading, and no other oak trait
+    contrast under W is significant.
+- id: fig5-oak-agwb-nbe-warming-2020
+  statement: Under warming in 2020, oak showed a negative net biodiversity effect on AGWB increment,
+    explained by a negative complementarity effect.
+  source: Results, Impact of species interactions, paragraph 2; Figure 5L; Supplemental Figure S3L
+  quote: Moreover, oak trees showed a negative net biodiversity effect for the AGWB increment in
+    response to warming in 2020 (Fig. 5), explained by a negative complementarity effect
+    (Supplemental Fig. S3)
+  criterion: Biodiversity effects procedure (opening comment). Reproduced when, for oak AGWB
+    increment under W in 2020, the NBE and the complementarity effect are both negative and differ
+    from zero by the t-test. The Discussion (paragraph 8) calls this complementarity effect
+    positive; the sign found is reported. Readings B1 and B2 must agree; when they do not, blocked
+    as methods_underspecified.
+- id: tables3-beech-mr-diameter
+  statement: Under lower soil moisture, beech in mixtures had a smaller diameter increment than in
+    monocultures.
+  source: Results, Impact of species interactions, paragraph 3; Supplemental Table S3
+  quote: Under lower soil moisture, we found a reduced diameter increment in mixtures compared to
+    the monocultures in beech (Supplemental Table S3)
+  statistics:
+  - about: moisture reduction by year by interaction, beech diameter increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 15.06
+    p: 0.001
+    p_relation: "<"
+  criterion: Interaction test (opening comment). The year is not stated. Reproduced when, under MR,
+    the beech diameter increment is significantly lower in mixtures than in monocultures in 2020
+    or 2021 (I1) or over both years (I2).
+- id: fig5-beech-sugar-nbe-mr
+  statement: Under low soil moisture, beech showed a negative net biodiversity effect on sugar
+    concentration, driven by a negative complementarity effect.
+  source: Results, Impact of species interactions, paragraph 3; Figure 5C; Supplemental Figure S3C
+  quote: Similarly, a negative net biodiversity effect on sugar concentration in response to low
+    soil moisture was found in beech (Fig. 5), driven by a negative complementarity effect
+    (Supplemental Fig. S3)
+  criterion: Biodiversity effects procedure (opening comment). The Results give no year; the
+    Discussion (paragraph 8) places it in 2020 and calls the complementarity effect positive.
+    Reproduced when, for beech sugar under MR in 2020 or 2021, the NBE is negative and differs
+    from zero by the t-test, and the complementarity effect is negative and differs from zero;
+    the year and sign found are reported. The method readings (B1, B2, L1, L2) must agree; when
+    they do not, blocked as methods_underspecified.
+- id: oak-mr-no-interaction
+  statement: Under low soil moisture alone, oak showed no effect of species interactions and no
+    net biodiversity effect.
+  source: Results, Impact of species interactions, paragraph 3; Supplemental Table S3; Figure 5
+  quote: In contrast, we observed no impact of species interactions and net biodiversity effect in
+    oak (Supplemental Table S3, Fig. 5)
+  criterion: A claim of absence, on the paper's tests. Reproduced when, in oak under MR, no mixture
+    against monoculture contrast of the interaction test is significant for the six traits of
+    Figure 5 in 2020 or 2021, and no NBE differs from zero by the t-test (opening comment).
+    Readings I1, I2, B1, B2, L1 and L2; the outcome is the one all give.
+- id: tables3-beech-wmr-height
+  statement: Under combined warming and lower moisture, beech height increment was about 2 cm per
+    year larger in monocultures than in mixtures.
+  source: Results, Impact of species interactions, paragraph 4; Supplemental Table S3
+  quote: Under combined warming and lower moisture, a larger height increment by approximately 2 cm
+    per year was found in monocultures compared to the mixtures in beech (Supplemental Table S3)
+  statistics:
+  - about: warming by interaction, beech height increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 6.80
+    p: 0.009
+  - about: warming by moisture reduction by interaction, beech height increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 11.91
+    p: 0.001
+  expected:
+    quantity: beech height increment under WMR, monoculture minus mixture
+    value: 2
+    tolerance: 0.2
+    unit: cm per year
+  criterion: Interaction test (opening comment). Reproduced when, under WMR, beech height increment
+    is significantly larger in monocultures, with a difference within tolerance, in 2020 or 2021
+    (I1) or over both years (I2).
+- id: tables3-oak-wmr-diameter
+  statement: Under combined warming and lower moisture, oak diameter increment was 1.4 cm larger in
+    mixtures than in monocultures.
+  source: Results, Impact of species interactions, paragraph 4; Supplemental Table S3
+  quote: In oak, diameter increment was larger by 1.4 cm in mixtures compared to the monocultures
+    (Supplemental Table S3)
+  statistics:
+  - about: warming by year by interaction, oak diameter increment
+    test: linear mixed-effects model ANOVA
+    statistic: F = 4.15
+    p: 0.016
+  expected:
+    quantity: oak diameter increment under WMR, mixture minus monoculture
+    value: 1.4
+    tolerance: 0.14
+    unit: cm
+  criterion: Interaction test (opening comment), readings I1 and I2. The unit is open, as in
+    tables3-oak-warming-diameter, (u1) cm or (u2) mm. Reproduced when, under WMR, oak diameter
+    increment is significantly larger in mixtures with a difference within tolerance under one
+    reading.
+- id: fig5-oak-asat-nbe-wmr-2021
+  statement: Under combined warming and drier soils in 2021, oak showed a positive net biodiversity
+    effect on Asat, explained by complementarity.
+  source: Results, Impact of species interactions, paragraph 4; Figure 5F; Supplemental Figure S3F
+  quote: We also observed a positive net biodiversity effect for Asat in 2021 in oak (Fig. 5). This
+    effect was explained by complementarity effects, indicating a resource complementarity under
+    warmer air and drier soils (Supplemental Fig. S3)
+  criterion: Biodiversity effects procedure (opening comment). Reproduced when, for oak Asat under
+    WMR in 2021, the NBE and the complementarity effect are positive and differ from zero by the
+    t-test; partially reproduced when the NBE holds and the complementarity effect is positive
+    but not significant. Readings B1, B2, L1 and L2 must agree; when they do not, blocked as
+    methods_underspecified.
+- id: methods-treatment-magnitudes
+  statement: The treatments raised air temperature by 5.19 C (W) and 5.02 C (WMR) and reduced soil
+    moisture by 52.77% (MR) and 51.96% (WMR) relative to the control.
+  source: Materials and methods, Experimental set-up, paragraph 2; Figure 6
+  quote: an air warming treatment with an increase of around 5 °C (i.e. +5.19 ± 0.2 °C) relative
+    to the (ambient) air temperature in the control (W) ... a soil moisture reduction treatment
+    with a reduction of soil moisture of around 50% (i.e. −52.77 ± 9.7%) relative to the control
+    ... (WMR, i.e. +5.02 ± 0.2 °C and −51.96 ± 10.3%, Fig. 6, Supplemental Table S5)
+  expected:
+  - quantity: W air temperature minus C
+    value: 5.19
+    tolerance: 0.2
+    unit: degree C
+  - quantity: WMR air temperature minus C
+    value: 5.02
+    tolerance: 0.2
+    unit: degree C
+  - quantity: MR soil moisture change relative to C
+    value: -52.77
+    tolerance: 9.7
+    unit: percent
+  - quantity: WMR soil moisture change relative to C
+    value: -51.96
+    tolerance: 10.3
+    unit: percent
+  criterion: Tolerances are the paper's stated spreads. From the chamber records, treatment means
+    of daily means (n = 4 chambers per treatment, Figure 6). Open, the period (from June 2019 to
+    the end of 2021, or 2020 and 2021) and the air sensor (H1, H2). Reproduced when all four
+    values are within tolerance under one reading.
+- id: fig6-soil-moisture-mr-equals-wmr
+  statement: Soil moisture at 25 cm did not differ between the single and the combined treatments.
+  source: Discussion, paragraph 6; Figure 6E and 6F
+  quote: We found no differences in soil moisture conditions at 25 cm depth between single and
+    combined treatments (Fig. 6)
+  criterion: A claim of absence, on the paper's test, Tukey's HSD at alpha 0.05 on the averages
+    over the entire time per treatment (Figure 6 legend). Reproduced when MR and WMR do not differ;
+    W against C is shown as a variant. Open, the unit of the test, (a) chamber means over the
+    period (n = 4 per treatment) or (b) daily treatment means; the outcome is the one both give.
+- id: tables5-annual-climate
+  statement: Annual mean air temperature was about 12 C without warming and 16 to 17 C with
+    warming, and annual soil moisture about 10% without and 5% with moisture reduction, in 2020
+    and 2021.
+  source: Supplemental Table S5
+  inferred: Numbers from Supplemental Table S5 (annual rows, 2020 and 2021); no sentence states them
+    except the Discussion's maximum of 17 C in the warmed treatments in 2020.
+  expected:
+  - quantity: annual air temperature 2020, C
+    value: 11.8
+    tolerance: 0.4
+    unit: degree C
+  - quantity: annual air temperature 2020, MR
+    value: 12.1
+    tolerance: 0.4
+    unit: degree C
+  - quantity: annual air temperature 2020, W
+    value: 17.0
+    tolerance: 0.4
+    unit: degree C
+  - quantity: annual air temperature 2020, WMR
+    value: 16.8
+    tolerance: 0.4
+    unit: degree C
+  - quantity: annual air temperature 2021, C
+    value: 10.5
+    tolerance: 0.4
+    unit: degree C
+  - quantity: annual air temperature 2021, MR
+    value: 10.8
+    tolerance: 0.4
+    unit: degree C
+  - quantity: annual air temperature 2021, W
+    value: 15.7
+    tolerance: 0.4
+    unit: degree C
+  - quantity: annual air temperature 2021, WMR
+    value: 15.6
+    tolerance: 0.4
+    unit: degree C
+  - quantity: annual soil moisture 2020, C
+    value: 10.3
+    tolerance: 1.03
+    unit: percent
+  - quantity: annual soil moisture 2020, MR
+    value: 5.3
+    tolerance: 0.53
+    unit: percent
+  - quantity: annual soil moisture 2020, W
+    value: 10.3
+    tolerance: 1.03
+    unit: percent
+  - quantity: annual soil moisture 2020, WMR
+    value: 4.8
+    tolerance: 0.48
+    unit: percent
+  - quantity: annual soil moisture 2021, C
+    value: 10.0
+    tolerance: 1.0
+    unit: percent
+  - quantity: annual soil moisture 2021, MR
+    value: 4.6
+    tolerance: 0.46
+    unit: percent
+  - quantity: annual soil moisture 2021, W
+    value: 10.3
+    tolerance: 1.03
+    unit: percent
+  - quantity: annual soil moisture 2021, WMR
+    value: 4.8
+    tolerance: 0.48
+    unit: percent
+  criterion: Treatment means of the chamber records, January to December (Table S5). Air
+    temperature tolerances are the table's stated spread (0.4); the soil moisture spread is printed
+    as 0.0, below the table's precision, so 10% is used. The air sensor is open (H1, H2).
+    Reproduced when all 16 values are within tolerance under one reading; partially reproduced
+    for 10 to 15.
+- id: tables4-initial-sizes-similar
+  statement: Before the treatments began, tree height and diameter did not differ among the four
+    climatic treatments in either species.
+  source: Materials and methods, Experimental set-up, paragraph 2; Supplemental Table S4
+  quote: Tree sizes were statistically similar when delivered and planted (Supplemental Table S4)
+  expected:
+  - quantity: beech height, C
+    value: 66.7
+    tolerance: 13.2
+    unit: cm
+  - quantity: beech height, MR
+    value: 66.3
+    tolerance: 10.8
+    unit: cm
+  - quantity: beech height, W
+    value: 64.9
+    tolerance: 7.4
+    unit: cm
+  - quantity: beech height, WMR
+    value: 61.1
+    tolerance: 11.6
+    unit: cm
+  - quantity: oak height, C
+    value: 66.6
+    tolerance: 11.4
+    unit: cm
+  - quantity: oak height, MR
+    value: 65.3
+    tolerance: 14.7
+    unit: cm
+  - quantity: oak height, W
+    value: 64.3
+    tolerance: 13.2
+    unit: cm
+  - quantity: oak height, WMR
+    value: 68.9
+    tolerance: 12.9
+    unit: cm
+  - quantity: beech diameter, C
+    value: 6.0
+    tolerance: 1.6
+    unit: mm
+  - quantity: beech diameter, MR
+    value: 6.1
+    tolerance: 1.3
+    unit: mm
+  - quantity: beech diameter, W
+    value: 5.2
+    tolerance: 1.3
+    unit: mm
+  - quantity: beech diameter, WMR
+    value: 5.5
+    tolerance: 1.4
+    unit: mm
+  - quantity: oak diameter, C
+    value: 5.7
+    tolerance: 1.5
+    unit: mm
+  - quantity: oak diameter, MR
+    value: 5.5
+    tolerance: 1.5
+    unit: mm
+  - quantity: oak diameter, W
+    value: 5.4
+    tolerance: 1.5
+    unit: mm
+  - quantity: oak diameter, WMR
+    value: 5.8
+    tolerance: 1.3
+    unit: mm
+  criterion: Tolerances are the standard deviations Table S4 gives. Table S4 gives spring 2019
+    values. A claim of absence; the paper names no test. Readings (a) a one-way ANOVA of treatment
+    per species and trait, (b) the treatment test's model without year (opening comment), on
+    (c) the measured trees of monocultures and mixtures or (d) monocultures only, at p <= 0.05.
+    Reproduced when no reading finds a treatment difference in any species and trait, and the 16
+    means are within tolerance; blocked as methods_underspecified when readings differ.
+checks:
+- date: 2026-10-27
+  kind: agent
+  model: "claude-opus-5-5"
+  ready: true
+  changes:
+  - Opening comment, treatment test. Named as open whether starch, sugar and Asat enter as yearly tree means (L1, the Methods) or per campaign (L2, the Figure 4 legend's n = 18), as the biodiversity procedure already did; the file had stated L1 alone although the legend allows L2.
+  - disc-psi-minimum, added reading (d), the most negative single tree measurement under MR or WMR, since "trees reached" allows it, and said the years are 2020 and 2021.
+  - fig4-beech-warming-none, the statistics list only the nonsignificant warming main effects; the criterion now says Table S1 also gives a significant warming by year term for beech Asat (F = 5.22, p = 0.006).
+  - fig4-oak-mr, the paper reports reductions in all eight trait-years; the file counted seven of eight as reproduced, a threshold the paper does not give. Reproduced now needs all eight, partially four to seven.
+  - fig4-oak-wmr, the same change as fig4-oak-mr, for the same reason.
+  - disc-beech-asat-more-impaired, the file fixed the measure as the relative reduction; the paper gives none, so the relative (r1) and absolute (r2) reductions are named as readings.
+  - tables2-phenology-no-interaction, the paper's sentence ends "but the net biodiversity effect was not significant"; added it to the statement and quote, and the criterion now judges it by the t-test (B1, B2) where it had only reported it.
+  - tables3-beech-warming-no-interaction, the paper states the absence of a net biodiversity effect in 2021 only; the statement, quote and criterion said or tested both years. Now 2021 is judged and 2020 reported.
+  - tables5-annual-climate, the file counted 14 of 16 values as reproduced, a threshold the paper does not give; reproduced now needs all 16, partially 10 to 15.
+  - Open, not settled. The p-values recorded as p < 0.05 for the regressions of Figures 1 and 2 are the legends' P <= 0.05, which the schema cannot express exactly; the R2 and P values printed in Figures 1, 2 and S1 were not read, as no PDF was supplied.
+  - Open, not settled. The Results (paragraphs 2 and 3 of Impact of species interactions) call the complementarity effects for oak AGWB under W in 2020 and for beech sugar under MR negative, and the Discussion (paragraph 8) calls them positive; the claims follow the Results and report the sign found.
+  - Open, not settled. The diameter increment differences of 0.3 cm and 1.4 cm (tables3-oak-warming-diameter, tables3-oak-wmr-diameter) may be in mm, as Table S4 gives diameters in mm; both readings stay.
+  - Open, not settled. Equation 4 (selection effect) is garbled in the extracted text; the file reads it as in Loreau and Hector (2001).

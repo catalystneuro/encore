@@ -85,8 +85,9 @@ def write_report(out: Path, registry: Path, state: dict) -> Path:
     questions = open_questions(registry, folder)
     if questions:
         lines += [f"## Open questions: {len(questions)}", "",
-                  "The author needed a method detail the claims file does not give, and left these claims blocked "
-                  "on it." + ("" if state["mode"] == "full" else " A --full run has a reader answer them."), ""]
+                  "The author or a verifier believes the claims file misreads the paper on these claims, and "
+                  "asked a reader. The claims were tested as the file has them." + ("" if state["mode"] == "full" else
+                                                                     " A --full run has a reader answer them."), ""]
         lines += [f"- {one_line(q.get('question') or q.get('text') or q, 400)}" for q in questions]
         lines.append("")
     entry = record.get("entry") if record else None
