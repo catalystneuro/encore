@@ -595,10 +595,12 @@ def rows(data: dict) -> dict[str, list]:
         outcomes = [o for a in atts or [] if not a.get("deprecated") for o in a["outcomes"]]
         dandisets.append({
             "id": t["key"], "label": t["label"], "name": t["name"], "paper": t["paper"], "paper_title": t["paper_title"],
-            "technique": t["technique"], "species": t["species"], "size_gb": t["size_gb"], "files": t["files"],
+            "archive": split_key(t["key"])[0], "technique": t["technique"], "species": t["species"], "size_gb": t["size_gb"], "files": t["files"],
             "status": t["status"], "tier": weakest_tier(atts) if atts else None,
             "date": max(a["date"] for a in atts) if atts else None,
             "counts": outcome_counts(atts) if atts else None,
+            # The paper's claims on data outside the dataset, counted apart (outcome_counts), links aside.
+            "elsewhere": sum(sum(outcome_counts(atts, g).values()) for g in ("with_inputs", "elsewhere")) if atts else None,
             "claims": len(outcomes) if atts else None,
             "failures": sum(1 for o in outcomes if o["outcome"] == "not_reproduced") if atts else None,
             "has": sorted({o["outcome"] for o in outcomes}),
@@ -1379,10 +1381,10 @@ def page_about(data: dict) -> str:
 LISTS = {
     "datasets": {
         "title": "Datasets", "noun": "datasets", "data": "data/datasets.json",
-        "intro": "Every public dataset whose metadata names a paper, so far all on the DANDI Archive. Attempted ones open a page with the "
+        "intro": "Every public dataset whose metadata names a paper, on the DANDI Archive and other archives. Attempted ones open a page with the "
                  "claims tested, what was found about the data, and the executed notebook.",
-        "facets": [("status", "Status"), ("has", "Has a claim that is"), ("blocked_by", "Has a claim blocked by"),
-                   ("tier", "Verification"), ("found", "Findings about the data"),
+        "facets": [("status", "Status"), ("archive", "Archive"), ("has", "Has a claim that is"),
+                   ("blocked_by", "Has a claim blocked by"), ("tier", "Verification"), ("found", "Findings about the data"),
                    ("converted", "Converted by"), ("technique", "Technique"), ("species", "Species")],
         "sorts": [("-date", "Most recently attempted"), ("id", "Identifier"),
                   ("-id", "Identifier, newest first"), ("-failures", "Most claims not reproduced"),
@@ -1409,6 +1411,7 @@ def page_list(data: dict, kind: str) -> str:
             "converted": {"catalystneuro": "CatalystNeuro", "other": "Others or not stated"},
             "verifier": {"disagreed": "Disagreed at first", "(none)": "No disagreement"},
             "technique": {"(none)": "Not stated"}, "species": {"(none)": "Not stated"},
+            "archive": {k: a["name"].removeprefix("the ") for k, a in ARCHIVES.items()},
         },
     }
     export = '<button class="ghost" id="export" type="button">Download CSV</button>' if spec["csv"] else ""
