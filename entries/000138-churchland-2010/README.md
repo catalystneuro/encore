@@ -37,8 +37,8 @@ prefix, which the files do not document. The attempt record, with the reasons an
 from the paper's method, is
 [`attempts/000138-churchland-2010-01.yaml`](../../attempts/000138-churchland-2010-01.yaml).
 
-- `reproduce_churchland_2010.ipynb`: the analysis. It takes about ten minutes, most of it the
-  grid of readings for Figure 6 and the refit variants of Figure 7.
+- `reproduce_churchland_2010.ipynb`: the analysis. It takes about eight minutes (7.3 to 8.7 in
+  three runs), most of it the grid of readings for Figure 6 and the refit variants of Figure 7.
 - `prepspace.py`: loading, trial selection, firing rates, the task, kinematic and peri-movement
   spaces, and leave-one-condition-out PD performance. Other notebooks on this dandiset can import
   it.

@@ -214,9 +214,10 @@ outcomes:
     (0.103). With 20 draws in every variant, the criterion also holds with proto-trial (b), onset
     (b), included units in the T-matrix, pooled performance, the kinematic window ending with the
     reach, and the space refit per fold, the last by a narrow margin (shuffled best 0.159 against
-    a kinematic best of 0.160, peri-movement best 0.461). It fails only with the per-axis trial
-    selection, where the shuffled space is not below the peri-movement space at every k, as the
-    latter collapses at high k.
+    a kinematic best of 0.160, peri-movement best 0.461). That margin of 0.001 is within the noise
+    of the draws (standard error of the shuffled best 0.009 over 20 draws). It fails only with the
+    per-axis trial selection, where the peri-movement space peaks at 0.150 (k = 6) and falls to
+    -1.666 at k = 10 and -3.102 at k = 14, and the shuffled space is above it at k = 9 to 14.
   deviations:
   - Assumed main reading, as for fig6-each-dimensionality.
   - Judged on J-array alone, where Figure 7A averages all datasets.
@@ -241,29 +242,30 @@ outcomes:
   assumed: true
   notebook: reproduce_churchland_2010.ipynb
   output: claim:fig7c-anterior-posterior
-  notes: Under the main reading, with the upper limit from the preparatory PCA space of the other
-    units in each subset at k = 6, normalized performance is 0.785 for the anterior array (55
-    included units) and 0.814 for the posterior array (37), against 0.961 for random halves, ratios
-    of 0.817 and 0.847, both outside the 10% bound. None of the 8 counted combinations of readings
-    (upper limit at k = 6 or best k, space once or refit, trial selection, T-matrix units) meets
-    the criterion. The 2 rows that do both put the unit's own rate in its upper-limit space, which
-    is shown but not counted. Under the main reading anterior is below posterior (0.785 against
-    0.814), where the paper reports anterior slightly better. The 40 random halves spread widely
-    (SD 0.190, 5th to 95th percentile 0.746 to 1.252, under the main reading), and both arrays lie
-    inside that spread, so the 10% bound is narrower than the sampling noise of a random half at
-    these unit counts. Under the per-axis selection at k = 6 the random-half mean is -0.826 with
-    SD 10.8, as an upper limit near zero in some half makes the ratio unstable.
+  notes: Under the main reading, with the upper limit from the preparatory PCA space of all units
+    in each subset at k = 6, normalized performance is 0.597 for the anterior array (55 included
+    units) and 0.382 for the posterior array (37), against 0.620 for random halves, ratios of 0.963
+    and 0.615. Anterior is within the 10% bound and posterior is not; posterior is below the 5th
+    percentile of the 40 random halves (0.512 to 0.751, SD 0.079). Anterior is better than
+    posterior, as the paper reports. The criterion is met in 2 of 16 combinations of readings
+    (upper limit with or without the unit being fit, at k = 6 or best k, space once or refit, trial
+    selection, T-matrix units), both with the space refit and the unit kept in its upper-limit
+    space; with the space computed once it fails under both upper-limit readings. With the unit
+    left out, the ratios are 0.817 and 0.847 under the main reading otherwise, but the random
+    halves exceed the upper limit in 11 of 40 halves (95th percentile 1.252, SD 0.190), and under
+    the per-axis selection at k = 6 the random-half mean is -0.826 with SD 10.8. The outcome rests
+    on the space being computed once, as for fig6-dimensionality-trend.
   deviations:
   - Assumed array of each unit from the id prefix, as for results-ap-location-no-effect; with a
     binary location, the median split gives the two arrays.
-  - The upper-limit space is "derived from the preparatory activity of all neurons" on "the
-    assumption that this must approximate the right space (whatever one neuron is tuned for, it
-    ought to be shared with at least some of the other neurons)" (Supplemental Experimental
-    Procedures, Estimating the upper limit). The justification compares a neuron with the others,
-    so the unit being fit is left out of the space, as for the peri-movement space. With the
-    unit's own rate in the space the PD is fit to a space that contains the rate itself; those rows
-    are shown and not counted. Whether the space is taken at k = 6 or its best k is open in the
-    claims file; both are run.
+  - The upper-limit space is "derived from the preparatory activity of all neurons (T was c×n
+    with each row containing the mean preparatory activity for every neuron)" and "provides a
+    rough upper limit on performance" (Supplemental Experimental Procedures, Estimating the upper
+    limit). No exclusion of the unit being fit is stated, where the Methods state one for the
+    peri-movement space ("all neurons except the neuron whose preparatory activity we were trying
+    to capture"), so the main reading keeps the unit in its upper-limit space. Left out, the
+    random halves exceed the upper limit. Both readings are run and every row counts. Whether the
+    space is taken at k = 6 or its best k is open in the claims file; both are run.
   - Random halves are 20 random splits of all units, 40 halves; the paper does not say how many.
   - Judged on J-array alone, where Figure 7C averages the datasets.
 - claim: fig7d-pd-consistency
@@ -281,8 +283,8 @@ outcomes:
   - The spaces are computed once from all 27 conditions; whether axes are scaled before the PD is
     fitted is not stated, and both are run.
   - With 27 conditions, a draw of 25 with replacement holds a mean 16.5 distinct conditions and
-    two draws share a mean 10.1, so the two PDs are fitted to overlapping data more than with the
-    paper's 108 conditions, which raises consistency in both kinds of space.
+    two draws share a mean 10.1, so the two PDs are fitted to more overlapping data than with the
+    paper's 108 conditions. How much this changes consistency was not measured.
 - claim: fig8-oscillator-model
   outcome: reproduced
   notebook: reproduce_churchland_2010.ipynb
@@ -350,15 +352,16 @@ findings:
 - kind: methods_unavailable
   statement: Question for the paper's authors. For Figure 7C, did the upper-limit space of a
     subset include the neuron being fit, and at which dimensionality was it taken? The
-    normalized posterior performance relative to random halves is 0.85 without the neuron at
-    k = 6 and 0.62 with it; this attempt assumed it left out, as the stated justification compares
-    a neuron with the others.
+    normalized posterior performance relative to random halves is 0.62 with the neuron at k = 6
+    and 0.85 without it, and without it random halves exceed the upper limit in 11 of 40 halves;
+    this attempt assumed the neuron included, as the Supplemental Experimental Procedures derive
+    the space from all neurons and state no exclusion.
 verifications:
 - date: '2026-10-28'
   kind: agent
   by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
-    helper module and the claims file, with the paper. The verifier checked the helper functions against
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed
+    (the outcome table in its first cell was left in, and the verifier did not use it), the helper module and the claims file, with the paper. The verifier checked the helper functions against
     brute-force PCA and regression on synthetic data. Its report gave its own outcome for each claim;
     all 15 agree with the record. It also noted that the dandiset is probably not the paper's J-array
     session (27 conditions and about 14 trials per condition against 108 conditions), which the record
@@ -485,4 +488,116 @@ verifications:
     outcome: reproduced
     reason: 0.08 lies inside the central 95% of r (about −0.40 to 0.39) under all 4 readings; median r
       is about 0. PD leave-one-out performance is 1.0.
+    response: No change needed.
+- date: '2026-10-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the first revision, with its conclusions and summary,
+    the helper module, the claims file, the README and this record, with the paper. The verifier agreed
+    with all 15 outcomes and found no misreading of the paper in the claims file. It listed sentences the
+    printed numbers do not support (cell 25 Spearman range, the README run time, the summary's test-file
+    sentence, the fig7a reason for the per-axis failure, the fig7d effect of overlapping draws) and noted
+    that the round-1 reviewed text omitted that cell 0 still held the outcome table.
+  results:
+  - claim: fig4abc-tuning-correlation-single-electrode
+    agrees: true
+    outcome: blocked
+    reason: n/a (data missing).
+    response: No change needed.
+  - claim: fig4d-tuning-correlation-j-array
+    agrees: true
+    outcome: partially_reproduced
+    reason: The readings are defensible and stated. The result is fragile; onset (b), a median 14 ms later,
+      gives p = 0.166, and a ratio of 1.25 gives p = 0.069. The notes give the range of readings. Cell 25
+      says mean Spearman r 0.147 to 0.212 where cell 23 prints 0.146.
+    response: Corrected cell 25 to 0.146. Outcome kept.
+  - claim: fig4e-correlation-time-course
+    agrees: true
+    outcome: not_reproduced
+    reason: None needed; all 8 readings give 0.129 to 0.218 at onset.
+    response: No change needed.
+  - claim: results-ap-location-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: The array of each unit comes from the id prefix. Reasonable, and p does not depend on which
+      prefix is which array.
+    response: No change needed.
+  - claim: supp-preparatory-dimensionality
+    agrees: true
+    outcome: reproduced
+    reason: Stated (concatenated selection). The value sits at the bound, and the record calls the outcome
+      fragile.
+    response: No change needed.
+  - claim: fig6-peri-movement-space-best
+    agrees: true
+    outcome: reproduced
+    reason: The criterion asks for one combination of readings, so no assumption is needed.
+    response: No change needed.
+  - claim: fig6-each-dimensionality
+    agrees: true
+    outcome: reproduced
+    reason: Stated. It now holds under fold=refit too (21 of 22, cell 43).
+    response: No change needed.
+  - claim: fig6-dimensionality-trend
+    agrees: true
+    outcome: reproduced
+    reason: Holds in 91% of combinations with fold=once and 6% with refit. Once is a reasonable reading, but
+      the outcome rests on it; it is stated and put to the authors as a question.
+    response: No change needed; the record already marks the outcome as resting on the fold reading.
+  - claim: fig6-pd-adequate-all-spaces
+    agrees: true
+    outcome: reproduced
+    reason: Stated.
+    response: No change needed.
+  - claim: fig6e-summary-rank
+    agrees: true
+    outcome: blocked
+    reason: n/a (data missing).
+    response: No change needed.
+  - claim: fig7a-shuffled-space-poor
+    agrees: true
+    outcome: reproduced
+    reason: Stated. The notes say the per-axis failure happens as the peri-movement space collapses at high
+      k, but that curve is never printed; cell 52 shows only below_peri_every_k False and a best of 0.150.
+      Under fold=refit it passes by 0.001 (0.159 against 0.160), within the noise of 20 draws; this does
+      not affect the main-reading outcome.
+    response: Cell 52 now prints the peri-movement curve where the shuffled space is not below it (per-axis
+      selection, 0.150 at k = 6 falling to -1.666 at k = 10 and -3.102 at k = 14, with the shuffled space
+      above it at k = 9 to 14) and the standard error of the shuffled best over the draws (0.009 under
+      refit). Conclusion and notes now give these numbers and say the refit margin is within the noise.
+      Outcome kept.
+  - claim: fig7b-window-start-onset
+    agrees: true
+    outcome: reproduced
+    reason: Stated.
+    response: No change needed.
+  - claim: fig7c-anterior-posterior
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The paper describes the upper-limit space as "derived from the preparatory activity of all
+      neurons", and states the exclusion of the neuron being fit only for the peri-movement space. With the
+      unit left out the upper limit is exceeded (random-half 95th percentile 1.252; ratio 1.273 under
+      refit; random-half mean -0.826 with SD 10.8 under each). With it included every value stays below 1
+      and anterior comes out better than posterior, as the paper reports. Leaving the unit in is at least
+      as well supported, so the record should not call the included rows not counted on the paper''s
+      authority. Under fold=once fig7c fails either way (0.963 and 0.615 included), so the outcome stands;
+      the 2 passing rows need both refit and the unit included.'
+    response: Revised the assumption. The main reading now keeps the unit being fit in its upper-limit
+      space, citing the passage and its description as an upper limit, and every row counts. Cell 58
+      prints the share of random halves above 1 (11 of 40 with the unit left out, none with it in).
+      Under the new main reading the ratios are 0.963 and 0.615, posterior lies below the random-half
+      5th percentile, anterior is better than posterior, and 2 of 16 rows meet the criterion, both with
+      refit. Conclusion, summary, notes, deviation and the question to the authors updated. Outcome kept.
+  - claim: fig7d-pd-consistency
+    agrees: true
+    outcome: reproduced
+    reason: Holds in all 16 variant and scaling combinations. Cell 62 and the deviation say the overlap
+      of draws raises consistency in both kinds of space; this is reasoning, not a measurement, as only
+      the overlap is printed.
+    response: Cell 62 and the deviation now give the overlap and say its effect on consistency was not
+      measured. Outcome kept.
+  - claim: fig8-oscillator-model
+    agrees: true
+    outcome: reproduced
+    reason: Holds under all 4 readings.
     response: No change needed.
