@@ -4201,6 +4201,10 @@
    "openneuro:ds002778": {
     "ready": true,
     "date": "2026-10-27"
+   },
+   "openneuro:ds004752": {
+    "ready": true,
+    "date": "2026-10-28"
    }
   },
   "questions": {
@@ -55761,6 +55765,165 @@
      }
     ]
    }
+  ],
+  "openneuro:ds004752": [
+   {
+    "path": "claims/openneuro-ds004752/10.7554-elife.78677.yaml",
+    "paper": "10.7554/elife.78677",
+    "check": {
+     "ready": true,
+     "date": "2026-10-28"
+    },
+    "claims": [
+     {
+      "id": "cohort-sessions",
+      "statement": "Fifteen participants (median age 29 years, range 18 to 56, 7 male) performed the modified Sternberg task in 71 sessions of 50 trials each.",
+      "source": "Results, Task and behavior, paragraph 1; Table 1",
+      "quote": "Fifteen participants (median age 29 years, range [18\u201356], 7 male, Table 1) performed a modified Sternberg WM task (71 sessions in total, 50 trials each)",
+      "criterion": "Counts of participants, sessions, trials and sexes are exact (tolerance 0, as a count either matches or not); the differences are reported. The age range 18 to 56 is checked as well."
+     },
+     {
+      "id": "fig1b-accuracy",
+      "statement": "The mean correct response rate was 91% (for both IN and OUT trials) and decreased with set size, from 97% at set size 4 to 89% at 6 and 83% at 8.",
+      "source": "Results, Task and behavior, paragraph 2; Figure 1b",
+      "quote": "The mean correct response rate was 91% (both for IN and OUT trials). The rate of correct responses decreased with set size from a set size of 4 (97% correct responses) to set sizes of 6 (89%) and 8 (83%) (Figure 1b)",
+      "criterion": "The paper does not say over what the mean is taken. Readings (a) pooled over all trials; (b) the mean of the 71 session rates (Figure 1b is drawn over 71 sessions); (c) the mean of the 15 participant rates. All trials, before artifact rejection. Reproduced when, under one reading, all four values are within tolerance and the rate falls from set size 4 to 6 to 8; the IN and OUT rates are reported."
+     },
+     {
+      "id": "capacity-cowan-k",
+      "statement": "Across participants the memory capacity (Cowan's K) averaged 6.1.",
+      "source": "Results, Task and behavior, paragraph 2",
+      "quote": "Across the participants, the memory capacity averaged 6.1 (Cowan\u2019s K, [correct IN rate +correct OUT rate \u20131]\u00d7set size), which indicates that the participants were able to maintain at least six letters in memory",
+      "criterion": "K = (correct IN rate + correct OUT rate - 1) x set size, as the Results define it. The set size and the averaging are open. Readings (a) per participant, rates over all trials and set size 8, as BehaviourAnalysis.m computes it (Cowan_K(3)), then the mean over participants; (b) as (a) with the median over participants (the Discussion says \"The median Cowan's K=6.1\"); (c) per participant, K at set size 8 from the set size 8 rates, mean or median over participants; (d) as (a) to (c) over sessions. Reproduced when one reading is within tolerance."
+     },
+     {
+      "id": "fig1c-response-time",
+      "statement": "The response time of correct trials (3045 trials) was 1.1 +- 0.5 s and grew with set size (1.1, 1.2 and 1.3 s for 4, 6 and 8 letters, 53 ms per item); correct decisions were faster than incorrect ones (1.1 against 1.3 s).",
+      "source": "Results, Task and behavior, paragraph 2; Figure 1c",
+      "quote": "The mean response time (RT) for correct trials (3045 trials) was 1.1\u00b10.5 s and increased with workload from set size 4 (1.1\u00b10.5 s) to 6 (1.2\u00b10.5 s) and 8 (1.3\u00b10.6 s), 53 ms/item (Figure 1c). Correct IN/OUT decisions were made more rapidly than incorrect decisions (1.1\u00b10.5 s vs 1.3\u00b10.6 s)",
+      "criterion": "Trials pooled across participants. The slope is the linear regression of response time on set size over correct trials (BehaviourAnalysis.m, fitlm). The central value is called a mean in the Results, and the code prints a median under that sentence; readings (a) mean and (b) median, with the standard deviation. The 3045 trials are fewer than the correct trials of 71 x 50 at 91%; readings for the pool are (p1) all correct trials and (p2) correct trials kept after artifact rejection. Reproduced when, under one reading, the response times and the slope are within tolerance and correct trials are faster than incorrect ones; the trial count is reported."
+     },
+     {
+      "id": "fig2bc-gamma-encoding-p1",
+      "statement": "In Participant 1, gamma power (above 40 Hz) rose by more than 100% over fixation during encoding in an occipital contact (H3) and a temporal contact over auditory cortex (C2), and gamma increased significantly only in temporal and occipital-parietal contacts.",
+      "source": "Results, Power spectral density in cortical and hippocampal recordings, paragraph 1; Figure 2a to 2c",
+      "quote": "In an occipital recording of Participant 1 (grid contact H3), strong gamma activity (>40 Hz) in the relative PSD occurred while the participant viewed the letters during encoding (increase >100% with respect to fixation, Figure 2b). Similarly, encoding elicited gamma activity in a temporal recording over auditory cortex (increase >100%, grid contact C2, Figure 2c)",
+      "criterion": "Relative PSD as the Methods give it (Power spectral density) - multitaper time-frequency analysis with 3 tapers, windows of 10 cycles, smoothing 0.2 x frequency, 4 to 100 Hz, 0.1 s steps, all trials averaged, baseline (PSD - PSD fixation) / PSD fixation with fixation [-6 -5] s. Gamma is [60 80] Hz and encoding [-3.5 -3] s for the grid map (Figure 2a legend); for C2 the last second of encoding [-4 -3] s (Figure 2c legend); for H3 gamma above 40 Hz over encoding [-5 -3] s (Figure 2b legend). The trials are those of the GC method; whether the PSD used correct trials only is open, and readings (a) correct trials and (b) all trials of set sizes 6 and 8 are both run. The z-score test of the grid map is the one in the code (Statistics/PSD_fix_vs_enc_Permutation_test.m), correct trials of set sizes 6 and 8 - per contact, mtmfft power (dpss, 2 Hz smoothing, 1 to 100 Hz) of encoding [-3.5 -3] s and fixation [-5.5 -5] s, 200 permutations of trials between the two periods, the encoding minus fixation difference less the null 95th percentile, z-scored over 60 to 100 Hz, the maximum taken; a contact is significant when it exceeds 1.96. Reproduced when the relative gamma increase exceeds 100% in H3 and C2 and the contacts with z > 1.96 lie in the temporal and occipital-parietal parts of the grid only. Needs the ECoG grid of Participant 1."
+     },
+     {
+      "id": "fig2d-cortical-beta-maintenance-p1",
+      "statement": "In Participant 1, high alpha to low beta activity ([11 14] Hz) appeared toward the end of maintenance in temporal and occipital contacts.",
+      "source": "Results, Power spectral density in cortical and hippocampal recordings, paragraph 2; Figure 2b and 2d",
+      "quote": "After the letters disappeared from the screen, activity occurred in the [11 14] Hz range (high alpha/low beta, Figure 2b) toward the end of the maintenance period in temporal and occipital contacts (permutation test p<0.05, Figure 2d)",
+      "criterion": "Relative PSD as in fig2bc-gamma-encoding-p1, averaged over [11 14] Hz and the maintenance window [-2 0] s (Figure 2d legend). Reproduced when the contacts with a significant increase over fixation (permutation of trials, p < 0.05) include temporal and occipital contacts and the largest values lie there. Needs the ECoG grid of Participant 1."
+     },
+     {
+      "id": "hipp-beta-maintenance",
+      "statement": "In the hippocampus of all four participants with ECoG, beta activity ([12 24] Hz) rose by more than 100% toward the end of maintenance.",
+      "source": "Results, Power spectral density in cortical and hippocampal recordings, paragraph 4; Figure 2e, Figure 3c, 3h and 3m",
+      "quote": "In the hippocampus of all four participants, we found elevated activity in the beta range ([12 24] Hz) toward the end of the maintenance period (increase >100%, Figure 2e, Figure 3c, h and m)",
+      "criterion": "Relative PSD of the hippocampal channel as in fig2bc-gamma-encoding-p1, over the beta band [12 24] Hz (Methods, Phase-locking value, paragraph 3), with the bands the legends give per participant as a second reading (Participant 2 9 to 18 Hz, Figure 3c; Participants 3 and 4 [13 21] Hz, Figure 3h and 3m), since the Methods say \"the exact frequencies may differ in individual participants\". The hippocampal channel follows readings h1 to h3 of the GC method. \"Toward the end\" is not timed; readings (w1) [-1 0] s and (w2) [-2 0] s. The paper does not say whether \">100%\" is the band average or its peak; readings (m1) the mean over the band and window and (m2) the maximum over its time-frequency points. Reproduced when, under one reading, the increase exceeds 100% in all four of Participants 1 to 4; partially reproduced for three."
+     },
+     {
+      "id": "fig2fg-plv-theta-p1",
+      "statement": "In Participant 1, phase locking between hippocampus and auditory cortex was enhanced in the theta range during maintenance (PLV 0.4 at contact C3), and theta PLV in maintenance was highest to contacts over auditory cortex.",
+      "source": "Results, Functional coupling between hippocampus and cortex, paragraph 1; Figure 2f and 2g",
+      "quote": "Compared to encoding, maintenance showed enhanced PLV in the theta range between hippocampal LFP and cortical ECoG (PLV=0.4 in contact C3, permutation test p<0.05, Figure 2f). PLV in the [4 8] Hz theta range increased significantly with several contacts over auditory cortex (permutation test p<0.05, Figure 2g)",
+      "criterion": "PLV as in the Methods (Phase-locking value) - multitaper Fourier transform with two tapers, 4 to 100 Hz at 1 Hz resolution, on 2 s epochs, across trials; theta [4 8] Hz, maintenance [-2 0] s (Figure 2g legend). Trials of the GC method; hippocampal channel by readings h1 to h3. The comparison period follows the Figure 2f legend (\"against a null distribution with scrambled trials during fixation and maintenance\") and the code (Statistics/PLV_significance_calculation.m, which permutes trials between fixation [-6 -5] s and maintenance [-2 0] s, 200 permutations, and keeps the largest cluster above the null percentile); the Results' \"Compared to encoding\" is run as a variant. Fixation lasts 1 s and maintenance 2 s, so the epochs differ in length, as in the code. Reproduced when theta PLV at C3 in maintenance is within tolerance and exceeds fixation by this test at p < 0.05, and theta PLV in maintenance is significantly increased by the same test at several contacts over auditory cortex, which hold the highest values. Needs the ECoG grid of Participant 1."
+     },
+     {
+      "id": "fig2h-gc-reversal-p1",
+      "statement": "In Participant 1, information flowed from auditory cortex to hippocampus during encoding (net flow significant in [6 8] Hz) and reversed, from hippocampus to auditory cortex, during maintenance (significant in [5 8] Hz).",
+      "source": "Results, Directed functional coupling between hippocampus and ECoG, paragraph 1; Figure 2h and 2l",
+      "quote": "The net information flow \u0394Granger (GC hipp\u2192cortex \u2013 GC cortex\u2192hipp) during encoding was significant in the [6 8] Hz range (blue bar in Figure 2h, p<0.05 permutation test against a null distribution). During maintenance, the information flow in the theta frequency range was reversed",
+      "criterion": "The GC method, between the hippocampal channel (readings h1 to h3) and grid contact C2. Significance as the Methods give it (Statistics, paragraph 1) - GC recomputed 200 times with the direction switched at random across trials, the true \u0394Granger compared with the 5th and 95th percentiles of the null distribution at each frequency. The Figure 2h legend calls the test cluster-based; readings (c1) per frequency, as the Methods describe it, and (c2) the significant frequencies grouped into contiguous clusters. The code's significance script (Statistics/Granger_significance_calculation.m) pairs the bipolar hippocampal channel AHL2-AHL3 (reading h2) with GL C2, builds the null from 200 shufflings of trial order between the two channels, and marks bands above the 99th percentile; this is run as a variant. Reproduced when, under one reading, \u0394Granger is significantly negative in encoding and significantly positive in maintenance at frequencies overlapping the theta band [4 8] Hz (Methods, Phase-locking value, paragraph 3); the significant bands are reported against [6 8] and [5 8] Hz. Needs the ECoG grid of Participant 1."
+     },
+     {
+      "id": "fig2ijk-spatial-spread-p1",
+      "statement": "In Participant 1, the strongest net flow in theta during encoding was from auditory cortex contacts to hippocampus; during maintenance theta flow from hippocampus was significant to auditory and occipital cortex, and this spatial pattern was significant against a null distribution.",
+      "source": "Results, Directed functional coupling between hippocampus and ECoG, paragraphs 1 and 2; Figure 2i to 2k",
+      "quote": "the maximal net information flow \u0394Granger (GC hipp\u2192cortex \u2013 GC cortex\u2192hipp) during encoding occurred from auditory cortex to hippocampus (p<0.05, permutation test, Figure 2i). During maintenance, the theta \u0394Granger was significant from hippocampus to both auditory cortex and occipital cortex (permutation test p<0.05, Figure 2j)",
+      "criterion": "\u0394Granger by the GC method, averaged over [4 8] Hz (reading d1, with d2 shown), for each grid contact, encoding [-5 -3] s and maintenance [-2 0] s. Per contact, the direction permutation test of fig2h-gc-reversal-p1. The spatial test as in the Methods (Statistics, paragraph 2) - 200 iterations, each splitting the trials into two halves and taking the scalar product of the two grid vectors; the null mixes trials of fixation and the task period; significant when the true distribution exceeds the 95th percentile of the null. How \"exceeds\" is judged between two distributions is open; readings (s1) the median of the true distribution above the null 95th percentile and (s2) at least 95% of true values above it. Auditory cortex contacts are C2, C3 and the contacts around C2, as the paper names them (Figure 2c, 2f and 2j legends); occipital is H3 (Figure 2b legend). Reproduced when the most negative encoding contact is an auditory cortex contact, the significant maintenance contacts include auditory and occipital contacts, and the spatial test is significant. Needs the ECoG grid of Participant 1."
+     },
+     {
+      "id": "fig3-gc-reversal-p2-p3",
+      "statement": "The same reversal appeared in Participant 2 between auditory cortex and hippocampus (encoding [6 8] Hz, maintenance [6 10] Hz) and in Participant 3 between visual cortex and the right hippocampus (encoding 6 to 9 Hz, maintenance [6 8] Hz).",
+      "source": "Results, Directed functional coupling between hippocampus and ECoG, paragraph 4; Figure 3d, 3e, 3i and 3j",
+      "quote": "Similarly in Participant 2, the time course of GC followed the same pattern between auditory cortex (anterior strip electrode contact in Figure 3a) and hippocampus (Figure 3d and e). ... The time course of information flow between visual cortex and hippocampus (Figure 3i and j) followed the same pattern as described for the auditory cortex above",
+      "criterion": "As fig2h-gc-reversal-p1, with the most anterior strip contact in Participant 2 and the most posterior strip contact in Participant 3 (Figure 3a and 3f legends); in Participant 3 the hippocampal LFP is from the right hippocampus (Results, same paragraph). Reproduced when both participants show significant negative \u0394Granger in encoding and significant positive \u0394Granger in maintenance at frequencies overlapping [4 8] Hz; partially reproduced for one."
+     },
+     {
+      "id": "fig3no-p4-right-no-gc",
+      "statement": "In Participant 4, recordings from right parietal cortex showed no significant GC with the hippocampus during the task.",
+      "source": "Results, Directed functional coupling between hippocampus and ECoG, paragraph 4; Figure 3n and 3o",
+      "quote": "However, in Participant 4, the recordings from the right cortical hemisphere (Figure 3k) did not show significant GC between LFP and ECoG during task performance (Figure 3n and o)",
+      "criterion": "A claim of absence, judged on the paper's test, the direction permutation test of fig2h-gc-reversal-p1 (200 permutations, p < 0.05) on the right parietal contacts of Participant 4, in encoding and maintenance over [4 20] Hz. The paper states no band for the absence, so it is judged over the whole GC range [4 20] Hz (Methods, Spectral Granger causality). Reproduced when no contact shows significant \u0394Granger in either period; the largest \u0394Granger, the contacts tested and the result restricted to theta [4 8] Hz are reported."
+     },
+     {
+      "id": "table1-left-hemisphere-sources",
+      "statement": "In each participant, more than 80% of the EEG sources that differed significantly from fixation lay in the left hemisphere, in encoding and in maintenance.",
+      "source": "Results, Source reconstruction of the scalp EEG, paragraph 1; Table 1",
+      "quote": "In each participant, the proportion of significant sources in the left hemisphere exceeded 80% of all significant sources",
+      "criterion": "LCMV beamforming of the scalp EEG on a grid at the AAL parcels (Methods, Source reconstruction), sources of encoding and maintenance tested against fixation with FieldTrip's ft_sourcestatistics, cluster-based permutation (Methods, Statistics, paragraph 3), p < 0.05. Needs a head model template and the AAL atlas, which the paper names only as \"a precomputed head model template\" (the code's README says a 3-compartment BEM); FieldTrip's standard BEM is the standard choice. Reproduced when the left share exceeds 80% in all 15 participants in both periods; partially reproduced when it does in at least 12. The Table 1 shares (81% to 100%) are compared per participant."
+     },
+     {
+      "id": "fig4a-group-gc-reversal",
+      "statement": "Across the 15 participants, GC between hippocampal LFP and auditory cortex EEG sources showed net flow from auditory cortex to hippocampus during encoding ([6 10] Hz) and from hippocampus to auditory cortex during maintenance ([6 9] Hz and [13 15] Hz).",
+      "source": "Results, Directed functional coupling between hippocampus and averaged EEG sources, paragraph 1; Figure 4a",
+      "quote": "During encoding, the net information flow was from auditory cortex to hippocampus (light blue curve \u2013 dark blue curve, blue bar, p<0.05, group cluster-based permutation test). During maintenance, the net information flow was reversed (dark red curve \u2013 light red curve, red bar, p<0.05, group cluster-based permutation test), i.e., from hippocampus to auditory cortex",
+      "criterion": "The GC method between the hippocampal channel (h1 to h3) and the auditory cortex source (a1 to a3), per participant, all correct trials. Group test as the Methods give it (Statistics, paragraph 6) and the code runs it (statistics_fr.m) - FieldTrip ft_freqstatistics, Monte Carlo, t-statistic, FDR correction, two-sided, alpha 0.05, comparing the two directions' spectra across the 15 participants. The code uses independent samples t with 2500 randomisations; a dependent samples t is run as a variant. Reproduced when, under one reading, encoding shows significant frequencies where cortex to hippocampus exceeds the reverse that overlap [6 10] Hz, and maintenance shows significant frequencies where hippocampus to cortex exceeds the reverse that overlap [6 9] Hz; the bands found are reported against [6 10], [6 9] and [13 15] Hz."
+     },
+     {
+      "id": "scalp-temporal-laplacian",
+      "statement": "A similar GC pattern appeared with the signals of left temporal scalp electrodes, and it disappeared with a Laplacian derivation.",
+      "source": "Results, Directed functional coupling between hippocampus and averaged EEG sources, paragraph 1",
+      "quote": "A similar GC pattern emerged when using the signals from left temporal scalp electrodes but was eliminated when using a Laplacian derivation",
+      "criterion": "The GC method between the hippocampal channel (h1 to h3) and left temporal scalp electrodes, re-referenced to the averaged mastoids (Methods, Recording setup). The paper does not name the electrodes or the Laplacian; readings (e1) T3, (e2) T5, (e3) the mean of their spectra; the Laplacian by FieldTrip ft_scalpcurrentdensity (spline method), the standard choice, with the nearest-neighbour Hjorth derivation as a variant. Per participant \u0394Granger in [4 8] Hz (d1 and d2). The paper reports no test or number for this finding; readings (s1) the paired permutation test of fig4d-reversal-all and (s2) the group cluster-based test of fig4a-group-gc-reversal. Reproduced when, under one electrode and test reading, encoding \u0394Granger is below maintenance \u0394Granger at p < 0.05 with the mastoid reference, and the same test is not significant after the Laplacian."
+     },
+     {
+      "id": "fig4bc-auditory-strongest",
+      "statement": "Theta net flow was strongest between hippocampus and auditory cortex, toward the hippocampus during encoding (\u0394Granger -0.049, p = 0.0009) and toward the cortex during maintenance (\u0394Granger 0.034, p = 0.001); other areas showed weaker flow in the same directions.",
+      "source": "Results, Directed functional coupling between hippocampus and averaged EEG sources, paragraph 2; Figure 4b and 4c",
+      "quote": "During encoding, the mean information flow was strongest from auditory cortex to hippocampus (\u0394Granger=\u22120.049, p=0.0009, Kruskal-Wallis test, Figure 4b). ... the strongest flow appeared from hippocampus to auditory cortex (\u0394Granger=0.034, p=0.001, Kruskal-Wallis test)",
+      "criterion": "Per participant and area, \u0394Granger in [4 8] Hz by the GC method with the readings h, a, d and t of the opening comment (Figure 4b names the area temporal superior gyrus). The group value is called a mean in the Results and a median in the Figure 4b legend; readings (g1) mean and (g2) median over the 15 participants. Areas are the left-hemisphere sources the dataset holds as virtual sensors (AC, DLPFC, OFC, PPC, V1); the code's set is AC, LPFC, PPC, V1 and Broca. A Kruskal-Wallis test across areas of the participant values, followed by Dunn's test with Bonferroni correction. Reproduced when, under one reading, both values are within tolerance, the Kruskal-Wallis test has p < 0.05 in each period, and auditory cortex has the most negative value in encoding and the most positive in maintenance; the values of other areas are reported against [-0.03 0] in encoding and below 0.02 in maintenance."
+     },
+     {
+      "id": "fig4d-reversal-all",
+      "statement": "The reversal of theta net flow between hippocampus and auditory cortex appeared in each of the 15 participants, negative in encoding (median -0.049) and positive in maintenance (median 0.034), p = 4.1e-10 by a paired permutation test, correct trials only.",
+      "source": "Results, Directed functional coupling and the participants' performance, paragraph 1; Figure 4d",
+      "quote": "The reversal of \u0394Granger appeared in all 15 participants individually (Figure 4d). We averaged \u0394Granger for each participant in the [4 8] Hz theta frequency range. The \u0394Granger between hippocampus and auditory cortex, was negative during encoding and was positive during maintenance in the theta frequency range (p=4.1e-10, paired permutation test)",
+      "criterion": "Per participant \u0394Granger between the hippocampal channel and the auditory cortex source by the GC method, readings h, a, d and t of the opening comment. The median is over the 15 participants; the figure code also pools the three ECoG values (DeltaGranger_EEG.m), shown as a variant. Paired permutation test of encoding against maintenance values (Methods, Statistics, paragraph 5, N = 200 permutations). A p of 4.1e-10 cannot come from 200 permutations, nor from the 32768 sign flips of 15 pairs, so the p is judged at 0.05 and the smallest p the test can give is reported with the exact sign-flip p. Reproduced when, under one reading, encoding \u0394Granger is negative and maintenance \u0394Granger positive in all 15 participants, both medians are within tolerance, and the paired test has p < 0.05; partially reproduced when the test and the medians hold and the sign pattern holds in 12 to 14 participants."
+     },
+     {
+      "id": "table1-heschl-dgranger-correct",
+      "statement": "Table 1 reports, for each participant, a negative \u0394Granger to Heschl gyrus in encoding and a positive one in maintenance on correct trials.",
+      "source": "Table 1, columns Heschl \u0394Granger correct trials",
+      "quote": "",
+      "criterion": "Values computed as in fig4d-reversal-all, with the same readings. Tolerance 10% of each value, and at least 0.001, the precision at which Table 1 prints them. The paper's participant numbers must be matched to the dataset's subjects by Table 1's pathology and the ECoG participants; where the match is not unique, the match is reported as an assumption. Reproduced when, under one reading, the sign matches the table in all 30 cells and at least half of the values are within tolerance; partially reproduced when the signs match in at least 26 cells. The number within tolerance is reported."
+     },
+     {
+      "id": "fig4e-lpfc-no-reversal",
+      "statement": "The directionality and its reversal were absent for other areas such as lateral prefrontal cortex, whose net flow had a lower median and higher variability (p = 0.16, paired permutation test, correct trials).",
+      "source": "Results, Directed functional coupling and the participants' performance, paragraph 1; Figure 4e",
+      "quote": "The directionality and its reversal was missing for all other areas, e.g., lateral prefrontal cortex (p=0.16, paired permutation test, Figure 4e)",
+      "criterion": "A claim of absence, judged on the paper's test. Per participant \u0394Granger in [4 8] Hz between the hippocampal channel and the lateral prefrontal source (the dataset's DLPFC virtual sensor; the code's LPFC parcel uses the mean over 4 to 8 Hz, reading d1), correct trials, then the paired permutation test of encoding against maintenance values (200 permutations). Reproduced when p >= 0.05; not reproduced when p < 0.05 with maintenance above encoding. The median difference is reported. The same test on the other areas (OFC, PPC, V1) is shown as a variant, since the Results say \"all other areas\"."
+     },
+     {
+      "id": "fig4f-incorrect-no-reversal",
+      "statement": "On incorrect trials, the net flow between auditory cortex and hippocampus did not have the same direction in all participants and did not reverse (p = 0.37, paired permutation test).",
+      "source": "Results, Directed functional coupling and the participants' performance, paragraph 2; Figure 4f; Table 1, columns Heschl \u0394Granger incorrect trials",
+      "quote": "For incorrect trials, the net information flow \u0394Granger from auditory cortex to hippocampus did not show the same directionality in all participants and did not reverse in direction (p=0.37, paired permutation test, Figure 4f)",
+      "criterion": "A claim of absence, judged on the paper's test. Per participant \u0394Granger in [4 8] Hz between the hippocampal channel and the auditory cortex source on incorrect trials of set sizes 6 and 8, by the GC method (the code uses the mean over 4 to 8 Hz for incorrect trials, reading d1, with d2 shown); the paired permutation test of encoding against maintenance values (200 permutations). Reproduced when p >= 0.05; not reproduced when p < 0.05 with maintenance above encoding. The signs per participant are compared with Table 1 (encoding 0.087, 0.016, -0.013, 0.003, -0.002, 0.025, 0.042, 0.013, 0.012, -0.016, -0.011, 0.000, 0.019, 0.022, -0.005; maintenance -0.037, 0.002, 0.005, -0.002, 0.048, -0.024, -0.036, -0.031, -0.015, -0.081, -0.062, 0.003, -0.022, -0.089, -0.004, for Participants 1 to 15) and the effect size is reported."
+     },
+     {
+      "id": "balanced-correct-subset",
+      "statement": "With correct trials subsampled to the number of incorrect trials (10%), the reversal was equally present (p < 0.0005).",
+      "source": "Results, Directed functional coupling and the participants' performance, paragraph 2; Figure 4d legend",
+      "quote": "We calculated the GC in a subset of correct trials (median of 200 permutations of a number of correct trials that equals the mean percentage of incorrect trials=10%); the effect was equally present for the subset of correct trials (p<0.0005)",
+      "criterion": "As fig4d-reversal-all with reading t2 - per participant, 10% of the correct trials drawn at random, GC recomputed, 200 draws (Methods, Statistics, paragraph 4), the median over draws (Results) with the mean (Methods) as a variant. Reproduced when the paired permutation test of encoding against maintenance has p < 0.05 and encoding \u0394Granger is negative and maintenance \u0394Granger positive in at least 13 of 15 participants. The paper's p < 0.0005 is below what 200 permutations resolve, so the smallest attainable p and the exact sign-flip p are reported."
+     }
+    ]
+   }
   ]
  },
  "transcripts": {
@@ -58111,7 +58274,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-28T08:35:54+00:00",
+ "generated": "2026-10-28T08:57:28+00:00",
  "queue_generated": "2026-10-27T12:12:13+00:00",
  "queue_counts": {
   "public_dandisets": 665,
@@ -135949,7 +136112,7 @@
   },
   "hours": {
    "full": 3.7463888888888888,
-   "claims": 0.29944444444444446
+   "claims": 0.2997222222222222
   },
   "running": {
    "000336": {
@@ -135958,7 +136121,11 @@
    },
    "000248": {
     "kind": "full",
-    "hours": 0.43283953361111105
+    "hours": 0.07320887583333335
+   },
+   "openneuro-ds004752": {
+    "kind": "full",
+    "hours": 3.472931098055555
    }
   }
  },
