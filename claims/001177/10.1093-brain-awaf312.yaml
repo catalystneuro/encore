@@ -1,7 +1,8 @@
 # Claims for Zhuang, Lemak, Sridhar & Nelson (2025), Brain 149:238-251, on dandiset 001177.
 # Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-10-28,
 # protocol pilot-12 as stated in docs/protocol.md. The writer did not look at the dandiset's data or
-# files; only its title and description on the archive were read.
+# files; only its title and description on the archive were read. Claim fig1fg-delay-discounting
+# was added by the check of 2026-10-28.
 #
 # Text read: the version of record (open access, CC BY), full text as served by Europe PMC
 # (PMC12597312), with its one supplement, awaf312_supplementary_data.pdf (Figures S1 to S8 and
@@ -52,9 +53,8 @@
 # electrophysiology"): firing rates in 1 min bins; baseline -30 to 0 min; the post-drug epoch
 # 240 to 300 min, split into 241-270 and 271-300 min; a unit is 'increase' type when a Wilcoxon
 # signed-rank test (p < 0.01) finds a significant increase against baseline in both 30 min post
-# epochs, 'decrease' when a significant decrease in both, 'no change' when neither (a unit
-# significant in one epoch only is not defined by the paper; it is counted as no change, and the
-# count of such units reported); optical identification by a PSTH around laser onset, the rate
+# epochs, 'decrease' when a significant decrease in both, 'no change' when neither; optical
+# identification by a PSTH around laser onset, the rate
 # exceeding the 99% confidence interval of baseline within 15 ms of onset and staying above it for
 # at least 15 ms, with light-evoked waveforms not distinguishable from spontaneous ones.
 # Details these sources leave open, with the readings allowed, used by several claims:
@@ -67,8 +67,15 @@
 # - The pairing in the signed-rank test for response type: readings are (a) the 30 baseline 1 min
 #   bins paired in time order with the 30 bins of each post epoch, (b) the same two sets of 30
 #   bins compared by an unpaired rank-sum test.
+# - A unit significant in one 30 min epoch only, or in opposite directions, is not defined by the
+#   paper; readings are (a) counted as no change, (b) left out of the denominator. The count of
+#   such units is reported.
 # - Which PPX session Figure 4 and Figure S5 use: readings are (a) the first PPX session of each
-#   mouse, (b) every PPX session pooled, each unit-session counted once.
+#   mouse, (b) every PPX session pooled, each unit-session counted once. Neither is known to give
+#   the Figure S5 pool: by the Figures 6 and S8 legends the first parkinsonian session has 105 units
+#   (19 increase, 34 decrease) and the four sessions together 113 increase and 116 decrease units,
+#   against 214 units (54, 78) in Figure S5; control 117 units against 80 in the first session.
+#   The author reports which selection, if any, gives these totals.
 schema_version: 2
 dataset:
   archive: dandi
@@ -86,16 +93,16 @@ claims:
   - about: DMS against DLS
     test: Kruskal-Wallis, Dunn's
     p: 0.09
-    n: 44 sections or mice (the legend gives n = 44 without unit)
+    n: 44 animals (Table 1, N (animals); the legend gives n = 44 without unit)
   - about: VS against DMS
     test: Kruskal-Wallis, Dunn's
     p: 0.0003
-    n: 44 sections or mice (the legend gives n = 44 without unit)
+    n: 44 animals (Table 1, N (animals); the legend gives n = 44 without unit)
   - about: VS against DLS
     test: Kruskal-Wallis, Dunn's
     p: 0.0001
     p_relation: "<"
-    n: 44 sections or mice (the legend gives n = 44 without unit)
+    n: 44 animals (Table 1, N (animals); the legend gives n = 44 without unit)
   expected:
   - quantity: loss of TH signal in DLS and DMS, relative to control
     value: 50
@@ -121,6 +128,9 @@ claims:
     p: 0.001
     p_relation: "<"
     n: 9 control and 21 parkinsonian mice
+  criterion: TH-positive SNc cell density (cells counted over 4 sections per mouse, normalized to the
+    measured area), control against parkinsonian by Mann-Whitney U (Supplementary methods, Histology;
+    Table 1). Reproduced when parkinsonian density is lower at p < 0.05.
   data: elsewhere
   where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_FigS1_SNcTH_CellCounting_RawImages.xlsx)
 - id: fig1c-rotarod
@@ -142,6 +152,13 @@ claims:
     test: Kruskal-Wallis, Dunn's
     p: 0.95
     n: Ctrl 31, Park/PPX 45, Park/Saline 27 mice
+  criterion: Latency to fall, the mean of three trials per session (Supplementary methods, Motor
+    assessment), compared by Kruskal-Wallis with Dunn's comparisons as in Table 1. The Supplementary
+    methods name Mann-Whitney U for control against parkinsonian and Wilcoxon signed-rank for the
+    PPX effect; these are run as a variant. Reproduced when parkinsonian mice before PPX fall sooner
+    than controls and PPX raises their latency, each at p < 0.05, and saline does not (p >= 0.05).
+    Which labelled group ("Park/PPX", "Park") holds the pre-drug sessions is not stated; the author
+    reads it from the deposited file.
   data: elsewhere
   where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1_Rotarod_PPX.xlsx)
 - id: figs1ef-ppx-locomotion
@@ -161,8 +178,10 @@ claims:
     p: 0.02
     n: 15 mice
   criterion: The later effect is judged as in the Supplementary methods, average open field velocity
-    at 240-300 min after PPX against baseline, Wilcoxon signed-rank. Reproduced when this is
-    significant (p < 0.05) and higher in parkinsonian mice and not significant in controls. The
+    at 240-300 min after PPX against baseline, Wilcoxon signed-rank. The baseline window is not
+    given for PPX; readings are (a) -20 to 0 min, as stated for CNO, (b) -30 to 0 min, as in the
+    electrophysiology. Reproduced when, under one reading, this is significant (p < 0.05) and higher
+    in parkinsonian mice and not significant in controls. The
     acute reduction has no test or window in the paper; it is reported as the mean velocity in the
     first 30 min and the first 60 min after injection against baseline.
   data: elsewhere
@@ -182,13 +201,22 @@ claims:
     p: 0.01
     p_relation: "<"
     n: 34 control and 81 parkinsonian mice
+  - about: latency to nosepoke, blocked learning, sessions 1 to 6
+    test: Mann-Whitney U, Bonferroni
+    statistic: session 1 p > 0.99, 2 p > 0.05, 3 p < 0.001, 4 p < 0.01, 5 p < 0.01, 6 p = 0.10
+    p: 0.001
+    p_relation: "<"
+    n: 34 control and 81 parkinsonian mice
   - about: success rate, random learning, sessions 1 to 6
     test: Mann-Whitney U, Bonferroni
     p: 0.56
     n: 34 control and 81 parkinsonian mice
   criterion: Per session, control against parkinsonian by Mann-Whitney U with Bonferroni correction
     over six sessions (Table 1). Reproduced when at least one of sessions 1 to 4 of blocked learning
-    differs at p < 0.05 with parkinsonian mice lower, and no session of random learning differs.
+    differs in success rate at p < 0.05 with parkinsonian mice lower (the paper has sessions 1, 3
+    and 4), at least one blocked session differs in latency with parkinsonian mice slower (the paper
+    has sessions 3 to 5), and no session of random learning differs in success rate or in
+    initiation latency (Figure S1K and L).
   data: elsewhere
   where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip)
 - id: fig1fg-baseline-similar
@@ -205,9 +233,29 @@ claims:
   criterion: A claim of absence, judged on the paper's test (Table 1), a two-way ANOVA of the
     percentage of delayed/large choices on group and delay, with Bonferroni comparisons per delay.
     Reproduced when the group effect and every per-delay comparison have p >= 0.05. The baseline is
-    each mouse's mean over its stable baseline sessions; how many sessions is not fixed (at least
-    three consecutive stable sessions, Supplementary methods), so the last three are used and all
-    baseline sessions shown as a variant.
+    each mouse's mean over its baseline sessions; which sessions is not fixed. Readings are (a) every
+    baseline session in the deposited data, as Summary_Cognitive.m averages a mouse's sessions
+    within a condition, (b) the last stable sessions by the Supplementary methods' rule (CV < 20% in
+    at least 3 blocks over three consecutive sessions, or in every block over two).
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip)
+- id: fig1fg-delay-discounting
+  statement: At baseline both control and parkinsonian mice chose the delayed/large reward less often
+    as its delay increased.
+  source: Results, Dopamine D2/3R agonist pramipexole causes impulsive decision-making in parkinsonian
+    mice, paragraph 2; Figure 1F and G
+  quote: both control and parkinsonian mice showed classic discounting behaviour, choosing the large
+    reward less often as the associated delay increased
+  statistics:
+  - about: delay main effect, baseline, control against parkinsonian
+    test: two-way ANOVA, Bonferroni
+    statistic: F(3, 180) = 38.53
+    p: 0.0001
+    p_relation: "<"
+    n: 16 control and 31 parkinsonian mice
+  criterion: The two-way ANOVA of fig1fg-baseline-similar (Table 1), on the same baseline readings.
+    Reproduced when the delay effect has p < 0.05 and in each group the mean percentage of
+    delayed/large choices is lower at 9 s than at 0 s.
   data: elsewhere
   where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip)
 - id: fig1f-ctrl-ppx-no-change
@@ -318,8 +366,9 @@ claims:
   data: elsewhere
   where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip)
 - id: figs2de-omissions-low
-  statement: Omission rates were low at baseline and under PPX; PPX did not change center or side
-    omissions, except center omissions at the 6 s delay in parkinsonian mice.
+  statement: Omission rates were low at baseline and under PPX; per-delay comparisons found no PPX
+    effect on center or side omissions in either group, except center omissions at the 6 s delay in
+    parkinsonian mice.
   source: Results, Dopamine D2/3R agonist pramipexole causes impulsive decision-making in parkinsonian
     mice, paragraph 3; Figure S2D and E
   quote: Mice showed low omission rates during baseline and PPX sessions
@@ -327,6 +376,12 @@ claims:
   - about: center omissions, parkinsonian, 6 s
     test: two-way ANOVA, Bonferroni
     p: 0.0006
+    n: 31 mice
+  - about: center omissions, parkinsonian, PPX main effect
+    test: two-way ANOVA
+    statistic: F(1, 120) = 16.54
+    p: 0.0001
+    p_relation: "<"
     n: 31 mice
   - about: side omissions, parkinsonian, PPX main effect
     test: two-way ANOVA
@@ -336,8 +391,9 @@ claims:
   criterion: Omissions as a percentage of free choice trials, center and side apart, two-way ANOVA
     on treatment and delay with Bonferroni comparisons per delay (Table 1). Reproduced when no
     per-delay comparison of side omissions is significant in either group, and center omissions
-    differ only at 6 s in parkinsonian mice. "Low" has no threshold in the paper; the mean rates
-    are reported.
+    differ only at 6 s in parkinsonian mice. The main effects are reported and do not enter the
+    outcome (Table 1 has a significant PPX main effect on center omissions in parkinsonian mice).
+    "Low" has no threshold in the paper; the mean rates are reported.
   data: elsewhere
   where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip)
 - id: figs2gh-ppx-latency
@@ -377,25 +433,40 @@ claims:
   quote: in sessions following a 48 h PPX washout period, the A value recovered to baseline values,
     while differences in K and AUC persisted
   statistics:
-  - about: A, baseline against PPX OFF
-    test: Friedman, Dunn's (legend); one-way ANOVA, Bonferroni (Table 1)
+  - about: A, baseline against PPX OFF (Figure S2I legend)
+    test: Friedman, Dunn's (Supplementary methods); one-way ANOVA, Bonferroni (Table 1)
     p: 0.99
     p_relation: ">"
     n: 31 mice
-  - about: K, baseline against PPX OFF
-    test: Friedman, Dunn's (legend); one-way ANOVA, Bonferroni (Table 1)
+  - about: K, baseline against PPX OFF (Figure S2J legend)
+    test: Friedman, Dunn's (Supplementary methods); one-way ANOVA, Bonferroni (Table 1)
     p: 0.01
     n: 31 mice
-  - about: AUC, baseline against PPX OFF
-    test: Friedman, Dunn's (legend); one-way ANOVA, Bonferroni (Table 1)
+  - about: AUC, baseline against PPX OFF (Figure S2K legend)
+    test: Friedman, Dunn's (Supplementary methods); one-way ANOVA, Bonferroni (Table 1)
     p: 0.01
     p_relation: "<"
     n: 31 mice
+  - about: A, PPX ON against PPX OFF (Table 1)
+    test: one-way ANOVA, Bonferroni
+    p: 0.0001
+    p_relation: "<"
+    n: 31 mice
+  - about: K, PPX ON against PPX OFF (Table 1)
+    test: one-way ANOVA, Bonferroni
+    p: 0.99
+    p_relation: ">"
+    n: 31 mice
+  - about: AUC, PPX ON against PPX OFF (Table 1)
+    test: one-way ANOVA, Bonferroni
+    p: 0.0019
+    n: 31 mice
   criterion: A, K and AUC as in fig1ijk-ppx-a-k-auc, for baseline, PPX ON and PPX OFF (48 h after
     each PPX injection). The test is named two ways; readings are (a) Friedman with Dunn's
-    comparisons (Supplementary methods and Figure 1 legend), (b) repeated measures one-way ANOVA
-    with Bonferroni comparisons (Table 1). Reproduced when baseline against PPX OFF has p >= 0.05
-    for A and p < 0.05 for K and AUC, in the same direction as under PPX.
+    comparisons (Supplementary methods, Statistical analysis and Behavior), (b) repeated measures
+    one-way ANOVA with Bonferroni comparisons (Table 1). Reproduced when baseline against PPX OFF
+    has p >= 0.05 for A and p < 0.05 for K and AUC, in the same direction as under PPX. The PPX ON
+    against PPX OFF comparisons of Table 1 are reported and do not enter the outcome.
   depends_on:
   - fig1ijk-ppx-a-k-auc
   data: elsewhere
@@ -416,8 +487,8 @@ claims:
     n: 16 mice
   criterion: Open field velocity 30-100 min after A77636 against baseline, Wilcoxon signed-rank
     (Supplementary methods). Reproduced when parkinsonian mice are faster at p < 0.05 and controls
-    show p >= 0.05. The baseline window is not given; the 20 min before injection, as for CNO, is
-    used.
+    show p >= 0.05, under one reading of the baseline window, which is not given. Readings are (a)
+    -20 to 0 min, as stated for CNO, (b) -30 to 0 min, as in the electrophysiology.
   data: elsewhere
   where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_A77636OpenField_Raw.zip)
 - id: fig2d-ctrl-a77636-no-change
@@ -507,13 +578,24 @@ claims:
     test: Friedman, Dunn's
     p: 0.43
     n: 16 mice
+  - about: reward size effect on latency, parkinsonian at baseline
+    test: two-way ANOVA
+    statistic: F (1, 52) = 11.70
+    p: 0.0012
+    n: 16 mice
   - about: reward size effect on latency, parkinsonian on A77636
     test: two-way ANOVA
     statistic: F (1, 55) = 3.463
     p: 0.07
-  criterion: Reproduced when K and AUC under A77636 OFF do not differ from A77636 ON (p >= 0.05, as
-    the paper tests it) and differ from baseline in the same direction, and the reward size effect
-    on latency is significant at baseline but not on A77636.
+    n: 16 mice (legend); Table 1 gives N = 10
+  criterion: K and AUC as in fig1ijk-ppx-a-k-auc for baseline, A77636 ON and A77636 OFF, Friedman
+    with Dunn's comparisons (Table 1). Omissions and latencies as in figs2de-omissions-low and
+    figs2gh-ppx-latency, two-way repeated measures ANOVA with Bonferroni comparisons. Reproduced
+    when K and AUC under A77636 OFF do not differ from A77636 ON (p >= 0.05, as the paper tests it)
+    and lie on the same side of baseline as under A77636 (the paper reports no test of baseline
+    against A77636 OFF; its Dunn's p is reported), no per-delay comparison of center or side
+    omissions in parkinsonian mice has p < 0.05 (Figure S3A and B), and the reward size effect on
+    latency has p < 0.05 at baseline and p >= 0.05 on A77636.
   depends_on:
   - fig2fgh-a77636-k-auc
   data: elsewhere
@@ -848,6 +930,11 @@ claims:
     statistic: F(1, 32) = 17.64
     p: 0.0002
     n: 3 mice, 9 cells
+  criterion: As the Supplementary methods (Ex vivo electrophysiology; Chemogenetic manipulation)
+    state, oIPSC amplitude and firing rate before against 10-15 min after 1 uM CNO, Wilcoxon
+    signed-rank per cell, and the input-output curve (100 to 400 pA) by two-way ANOVA (Table 1).
+    Reproduced when oIPSC amplitude is lower and firing at 300 pA higher after CNO, each at
+    p < 0.05, and the CNO effect on the input-output curve has p < 0.05.
   data: elsewhere
   where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_FigS6_SliceValidation.xlsx)
 - id: fig5cf-cno-locomotion
@@ -857,7 +944,8 @@ claims:
     pramipexole in parkinsonian mice, paragraph 2
   quote: injection of CNO increased locomotion in both hM4D i and hM3D q animals, but not in mCherry
     control animals
-  criterion: As the Supplementary methods state, mean velocity -20 to 0 min before CNO against 20-30
+  criterion: As the Supplementary methods state for chemogenetic inhibition (and here applied to all
+    groups, as they give no other windows), mean velocity -20 to 0 min before CNO against 20-30
     min after, Wilcoxon signed-rank, per group. The paper prints no p-values; reproduced when the
     hM4Di and hM3Dq groups are faster after CNO at p < 0.05 and the mCherry groups show p >= 0.05.
   data: elsewhere
@@ -1110,8 +1198,9 @@ claims:
     the test and directions hold and the counts do not.
   data: dataset
 - id: figs8-session-trend
-  statement: Across the four PPX sessions in parkinsonian mice, the number of 'increase'-type MSNs
-    rose (19, 21, 41, 32) and the number of 'decrease'-type MSNs fell (34, 45, 22, 15).
+  statement: Across the four PPX sessions in parkinsonian mice, 'increase'-type MSNs were more numerous
+    in sessions 3 and 4 (41, 32) than in sessions 1 and 2 (19, 21), and 'decrease'-type MSNs fewer
+    (22, 15 against 34, 45).
   source: Figure S8C-F legend
   inferred: Counts from the Figure S8 legend for sessions 1 to 4; the Results state only the
     direction of the change (Figure 6J and K, Figure S8E and F).
@@ -1148,9 +1237,11 @@ claims:
     value: 15
     tolerance: 1.5
     unit: units
-  criterion: Counts per session as in fig6g-park-types-shift. Reproduced when at least six of the
-    eight counts are within tolerance and the share of 'increase' units in sessions 3 and 4 exceeds
-    that in sessions 1 and 2 while the 'decrease' share falls.
+  criterion: Counts per session as in fig6g-park-types-shift. The paper gives no test across the four
+    sessions and no unit totals for sessions 2 and 3. Reproduced when all eight counts are within
+    tolerance and the share of 'increase' units in sessions 3 and 4 exceeds that in sessions 1 and 2
+    while the 'decrease' share falls; partially reproduced when the shares move this way but some
+    counts miss tolerance.
   depends_on:
   - fig6g-park-types-shift
   data: dataset
@@ -1188,3 +1279,25 @@ claims:
   depends_on:
   - fig6g-park-types-shift
   data: dataset
+checks:
+- date: 2026-10-28
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1b-th-loss. n now gives 44 animals, as Table 1 lists it under N (animals).
+  - figs1d-snc-cells, fig1c-rotarod, figs6-dreadd-validation. Had no expected values and no criterion. Added criteria from the Supplementary methods and Table 1; for the rotarod, the Methods' Mann-Whitney and Wilcoxon tests are named as a variant of Table 1's Kruskal-Wallis.
+  - figs1ef-ppx-locomotion. The PPX baseline window is not given; named it open with readings -20 to 0 min (as for CNO) and -30 to 0 min (as in the electrophysiology).
+  - fig2bc-a77636-locomotion. The criterion fixed the baseline at -20 to 0 min as if given; named it open with the same two readings.
+  - figs1-instrumental-learning. The statement includes slower latencies but the criterion did not test them. Added the Table 1 latency results (Figure S1I) and the latency and initiation-latency conditions (Figure S1I and L).
+  - fig1fg-baseline-similar. The criterion's choice of the last three baseline sessions is not in the paper. Replaced by two readings, every baseline session (as Summary_Cognitive.m averages) and the stable sessions by the Supplementary methods' CV rule.
+  - Added claim fig1fg-delay-discounting, a Results finding (discounting with delay in both groups, Table 1 delay effect F(3, 180) = 38.53) with no claim.
+  - figs2de-omissions-low. The statement said PPX did not change center omissions, but Table 1 gives a PPX main effect on center omissions in parkinsonian mice (F(1, 120) = 16.54, p < 0.0001). The statement now speaks of per-delay comparisons, as the legend does, and the main effect is recorded.
+  - figs2ijk-ppx-washout. The test was attributed to the legend, which names none; it is the Supplementary methods'. Added Table 1's PPX ON against PPX OFF results (A p < 0.0001, K p > 0.99, AUC p = 0.0019), reported without entering the outcome.
+  - figs3-a77636-washout-latency. The statement covers omissions but the criterion did not; added the Figure S3A-B per-delay condition. "Differ from baseline" had no test, and the paper reports none for baseline against OFF; it now asks for the same side of baseline with the Dunn's p reported. Added the baseline reward size effect (F(1, 52) = 11.70, p = 0.0012) and noted Table 1's N = 10 for Figure S3E against 16 in the legend.
+  - fig5cf-cno-locomotion. Noted that the -20 to 0 and 20 to 30 min windows are stated for chemogenetic inhibition and applied to all groups.
+  - figs8-session-trend. The statement said increase-type counts rose, but they fall from 41 to 32 between sessions 3 and 4; restated as sessions 3 and 4 against 1 and 2. Replaced the made-up "six of eight counts" rule by all counts within tolerance, with a partial outcome.
+  - Header. Units significant in one epoch only were assigned to no change without support; named it open with readings (no change, or left out). Added that neither session reading is known to yield the Figure S5 totals (214 and 117 units), from the Figure 6 and S8 legend counts.
+  - Open, not settled. The Figure S5 and Figure 4 unit pools. The paper does not say which sessions they come from, and the counts it gives for the first session and for all four sessions do not match them. figs5abcd-putative-msns, fig4-insets-response-types and fig4bc to fig4hk rest on this.
+  - Open, not settled. Pie-chart percentages of Figures S5D and S8A-B could not be checked against the figure (no PDF renderer in this run); they agree with the stated unit counts (23, 23, 71 of 117; 9, 21, 50 of 80; 3, 1, 23 of 27).
+  - Open, not settled. Table 1 gives N = 15 for hM4Di and hM3Dq A against n = 12 in the Figure 5 legend, and swaps the hM4Di and hM3Dq labels for AUC; both AUC p are < 0.001, so fig5jl-dreadd-params is unaffected.
