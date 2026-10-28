@@ -258,7 +258,7 @@ outcomes:
     by the reward delivered, per the Supplementary methods' definition; per mouse and condition, the mean
     over the block's trials and the condition's sessions.
 - claim: figs2ijk-ppx-washout
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_zhuang_2025.ipynb
   output: claim:figs2ijk-ppx-washout
   assumed: true
@@ -268,11 +268,11 @@ outcomes:
     A p = 1, K p = 0.063, AUC p = 0.039; ON against OFF A p = 3e-05, K p = 1, AUC p = 0.0011 (Table 1 gives
     < 0.0001, > 0.99, 0.0019). With the Bonferroni comparisons on the ANOVA's pooled error, all three parts
     hold (A p = 1, K p = 0.028, AUC p = 0.0072; ON against OFF A p = 5e-06, K p = 1, AUC p = 0.0051). The
-    verified outcome rests on the paired comparisons, under which A recovers and both K and AUC stay on the PPX side of baseline but
-    no test makes both significant. Against the paper's six printed p-values (Figure S2I-K legend, Table 1), the pooled comparisons
+    outcome rests on the pooled comparisons. Under the paired ones A recovers and both K and AUC stay on the PPX side of baseline but
+    no test makes both significant (partially reproduced in rounds 1 and 2). Against the paper's six printed p-values (Figure S2I-K legend, Table 1), the pooled comparisons
     match its significance at 0.05 in all six and the paired ones in five, missing K (paper 0.01, paired 0.063, pooled 0.028); for
     AUC the paper gives p < 0.01, which pooled meets (0.0072) and paired does not (0.039); paired is closer only for ON against OFF
-    AUC (paper 0.0019, paired 0.0011, pooled 0.0051). A change to reproduced is proposed. With the first OFF or the first ON
+    AUC (paper 0.0019, paired 0.0011, pooled 0.0051). Changed to reproduced in round 3. With the first OFF or the first ON
     session, no test gives both K and AUC.
   deviations:
   - Choices, omissions and latencies are recounted from the raw operant logs, as the paper's per-mouse
@@ -291,14 +291,8 @@ outcomes:
     used ('Statistical tests were performed using GraphPad Prism 10', Methods, Statistical analysis),
     makes them on the pooled error when sphericity is assumed and by paired comparisons when
     it is not, and its guide recommends not assuming sphericity for repeated measurements over time. The
-    verified outcome rests on the paired comparisons (an assumption); the pooled-error comparisons match the paper's printed
-    p-values better and make the claim reproduced, so the proposed outcome takes them as the assumption. Asked of the authors.
-  proposed:
-    outcome: reproduced
-    reason: With the Bonferroni comparisons on the ANOVA's pooled error, A after washout does not differ from baseline (p = 1)
-      and K and AUC do (p = 0.028 and 0.0072), on the PPX side of baseline. The pooled error is the better-supported reading
-      of Table 1, as the verifier of round 2 argued, since it matches the paper's significance in all six printed comparisons
-      against five for paired t tests, and meets the paper's p < 0.01 for AUC where paired does not (cells 35 and 36).
+    outcome takes the pooled-error comparisons as the assumption, since they match the paper's printed p-values better; with
+    paired comparisons the claim is partially reproduced. Asked of the authors.
 - claim: fig2bc-a77636-locomotion
   outcome: reproduced
   notebook: reproduce_zhuang_2025.ipynb
@@ -1441,3 +1435,28 @@ verifications:
       have units tables that do not say which units are sorted, and that no file has unit classes, optical labels,
       laser pulse times or an injection time. The round-1 reason now includes the verifier's notes on the K4 optoSession
       file and the draft version.
+- date: '2026-10-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. Only the proposed change of outcome for figs2ijk-ppx-washout and the analysis behind it in
+    the full executed notebook of the author-revise-2 run (commit 558a65705), cells 32 to 36, with the helper
+    module, the claims file and the attempt record. Nothing else was reviewed. Report in transcripts/001177/verifier-3-report.md.
+  results:
+  - claim: figs2ijk-ppx-washout
+    agrees: true
+    outcome: reproduced
+    reason: Cell 32 prints the p-values from the fits made by friedman_block, with the four PPX sessions and every
+      washout session, n = 30 and no failed fits; cell 35 builds its tables from the same objects. Baseline against
+      PPX OFF gives A p = 1, K p = 0.0278 and AUC p = 0.00717 on the pooled error, and icd.rm_oneway computes the
+      pooled comparison in the standard way (standard error sqrt(2 MSE/n), (k-1)(n-1) degrees of freedom, p times
+      3), as Prism does when sphericity is assumed. K (baseline 0.258, PPX 0.321, washout 0.419) and AUC (3.95, 2.90,
+      3.38) after washout sit on the PPX side of baseline; these are medians and the means compared by the ANOVA are
+      not printed, but Dunn's test on K is significant in the same direction (p = 0.020), so there is no sign the
+      direction reverses. The pooled error is chosen because it fits the paper's own printed p-values better (all
+      six comparisons against five for paired t tests, and AUC p < 0.01), not because it gives the outcome, and the
+      disclosure is complete (assumed, reading (a) misses AUC, the first ON or OFF readings do not give both, the
+      docstring fixed). The criterion lists readings (a) and (b) without requiring both, and all three parts hold
+      under reading (b) with the stated assumption. No place where the claim misreads the paper.
+    response: Outcome changed to reproduced and the proposal removed. The notes and the deviation now say the outcome
+      rests on the pooled-error comparisons and is partially reproduced with paired ones. Cell 36, the summary and
+      the README updated.
