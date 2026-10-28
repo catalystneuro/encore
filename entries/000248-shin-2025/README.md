@@ -7,8 +7,8 @@ contour images. The 2p imaging and holography data of the paper are not in it.
 
 | Claims | Outcome |
 |---|---|
-| 14 Neuropixels claims (unit counts, functional subsets, fixed gaze, eye, cross-correlograms, decoding, population responses) | Reproduced (ed6b, ed2b rest on an assumption) |
-| fig3d-npx-areas-inference | Partially reproduced (four areas significant under the adopted decoder reading, five under the other) |
+| 14 Neuropixels claims (unit counts, functional subsets, fixed gaze, eye, cross-correlograms, decoding, population responses) | Reproduced (ed6b, ed2b and fig2d rest on an assumption; for fig2d a change to blocked, methods_underspecified, is proposed, as one of eight combinations does not meet the criterion as written) |
+| fig3d-npx-areas-inference | Partially reproduced (four areas significant under the adopted decoder reading with the first seed, five under the other reading with every seed and under the adopted reading with two further seeds; a change to reproduced is proposed) |
 | fig1e, fig1f, fig1g (exclusively center-responsive V1 units) | Not reproduced (44 or 52 units against 18) |
 | supp3-decoder-types | Blocked: too_large (the network); the quadratic and RBF SVMs agree with the linear SVM |
 | 21 claims on 2p imaging, mesoscope and holography | Blocked: data_missing |
@@ -20,11 +20,14 @@ The attempt record, with the reasons and the findings about the dataset, is
 [`attempts/000248-shin-2025-01.yaml`](../../attempts/000248-shin-2025-01.yaml).
 
 - `reproduce_shin_2025.ipynb`: data check and the non-decoding claims, one section per claim. It
-  streams the 12 session files (about 3 minutes).
+  streams the 12 session files (about 4 to 5 minutes).
 - `decoding_shin_2025.ipynb`: the decoding claims (Figs. 3a, 3c, 3d, Extended Data Fig. 7) under
   both decoder readings.
-- `decoding_checks_shin_2025.ipynb`: the decoder over further cross-validation seeds, the bound of
-  its C search, and the quadratic and RBF SVMs of supp3-decoder-types.
+- `decoding_checks_shin_2025.ipynb`: decoder reading (a) over two further cross-validation seeds,
+  the bound of the C search and the coding of reading (b) in V1, PM and AM, and the quadratic and
+  RBF SVMs of supp3-decoder-types.
+- `decoding_seed1_shin_2025.ipynb`, `decoding_seed2_shin_2025.ipynb`: decoder reading (b) on every
+  area with each of the two further seeds, one seed per notebook to stay within the notebook limit.
 - `illusion.py`: loading the session files, trial responses, the functional subsets of the
   paper's code (IC-encoders, segment responders, exclusive center units), the decoder and the
   cross-correlograms. Other notebooks on this dandiset can import it.

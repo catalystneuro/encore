@@ -74,8 +74,9 @@ outcomes:
   notes: The V1 RS count is 1,804, as in the paper, but 44 units are exclusively center-responsive under
     reading (a) and 52 under reading (b), against 18 +/- 1.8. Before the exclusivity rule, 474 units have
     the center as best position; under (a), 383 of them have at least one position passing the code's
-    Holm step and 44 have exactly one; under (b), 602 units have the center passing Holm with a mean above
-    the spontaneous windows and 52 have no other position passing. Units in both readings 5; reading (a)
+    Holm step, 68 have exactly one position passing, and for 44 that position is the center; under (b),
+    602 units have the center passing Holm with a mean above the spontaneous windows and 52 of them have
+    no other position passing. Units in both readings 5; reading (a)
     without the units labelled noise 37. The analyzeRFCI.m code could not be compared line by line in
     this run, so a difference in the selection procedure is possible.
 - claim: fig1f-npx-ic-ire-responsive
@@ -114,7 +115,8 @@ outcomes:
     and fig1e reading (a), 10 exclusively center-responsive V1 RS units remain (within 11 +/- 1.1, in
     two sessions), and the orientation match (71.4% to 100% across tests and blocks, 7 to 9 IRE-responsive
     units) is above the shuffle 95th percentile (50.0% to 77.8%) in every combination. Under fig1e reading
-    (b), 41 units remain. The units under rule (s) are the same 10. The fixed-gaze selection rests on
+    (b), 41 units remain. The units under rule (s) are the same 10, so the unit count rests on the session
+    rule only through the session count. The fixed-gaze selection rests on
     the fig1e selection, which gives 44 units with all trials against the paper's 18, so the match of
     the fixed-gaze count may be partly coincidental.
   deviations:
@@ -165,17 +167,33 @@ outcomes:
   measured:
   - 79
   - 526
+  assumed: true
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: The criterion requires a higher median for IC-encoders and p < 0.05 under every combination,
+      and sends the claim to blocked (methods_underspecified) when the readings differ. A cell added after
+      the CCG table applies this rule as written; 7 of 8 combinations meet it, and boxcar smoothing with
+      the raw flank and the number of connections does not (medians 1 and 1). Equal medians are not a
+      higher median, so the criterion decides that combination and leaves no tie to break; the tie-break
+      of the recorded outcome departs from the criterion as written, as the verifier said in both rounds.
+      The effect itself is present in every combination (P(IC-encoder > segment responder) 0.62 to 0.64,
+      p from 1.0e-05 to 3.9e-04).
   notes: The groups hold 79 V1 IC-encoders and 526 V1 segment responders, the paper's numbers. In all
     8 combinations of smoothing (boxcar, Gaussian), flank (raw, corrected) and measure (fraction, number
     of connected HVA units), IC-encoders have the larger mean and P(IC-encoder > segment responder) from
     0.62 to 0.64, with a tie-corrected two-sided rank-sum p from 1.0e-05 to 3.9e-04 (paper 7.0e-06). The
     medians are higher for IC-encoders in 7 combinations; for the number of connections with boxcar smoothing
-    and the raw flank they are equal (1 and 1).
+    and the raw flank they are equal (1 and 1). Applying the criterion as written, 7 of 8 combinations
+    meet it, so the readings differ; a change to blocked (methods_underspecified) is proposed.
   deviations:
-  - The criterion asks for a higher median under every combination. For one combination the integer medians
-    tie at 1, so the criterion cannot decide its direction there; the tie is broken by the direction of
-    the rank-sum test, the paper's test (protocol, ties in a criterion), which favours IC-encoders (P
-    = 0.63, p = 9.8e-05). The verifier judged the claim blocked on the literal rule.
+  - Assumption. The criterion asks for a higher median under every combination. For one combination the
+    integer medians tie at 1; the recorded outcome treats this as a criterion unable to decide and breaks
+    the tie by the direction of the rank-sum test, the paper's test, which favours IC-encoders (P = 0.63,
+    p = 9.8e-05). The rule followed is docs/protocol.md, reader step 3, "If a criterion turns out unable
+    to decide (two candidates tied), break the tie as the paper's methods or code imply, record it as
+    a deviation, and show the other result." The verifier judged the claim blocked on the literal rule,
+    and the change is proposed.
   - The per-pair normalisation by the square root of the spike counts is left out; it does not change
     the comparison of a pair's peak with its own flank.
 - claim: fig3a-npx-v1-decoding
@@ -194,32 +212,51 @@ outcomes:
   - 0.21
   notes: Under reading (b), P(TRE -> IC) = 0.518 and P(TRE -> LC) = 0.210, both within tolerance, IC above
     LC in 10 of 12 sessions, signed-rank p = 0.0024. Under reading (a), 0.516 and 0.197, the LC value
-    0.0014 below the lower bound 0.198, same p. With two further cross-validation seeds (decoding_checks_shin_2025.ipynb),
-    both values are within tolerance under both readings (IC 0.511 to 0.519, LC 0.198 to 0.215) with p
-    from 0.0015 to 0.0068, so the outcome does not depend on the seed.
+    0.0014 below the lower bound 0.198, same p. With two further cross-validation seeds, both values are
+    within tolerance under both readings, reading (a) IC 0.513 and 0.511, LC 0.198 and 0.199, p = 0.0024
+    (decoding_checks_shin_2025.ipynb), reading (b) IC 0.519 and 0.514, LC 0.209 and 0.215, p = 0.0015
+    and 0.0068 (decoding_seed1_shin_2025.ipynb, decoding_seed2_shin_2025.ipynb), so the outcome does not
+    depend on the seed.
   deviations:
   - The decoder is scikit-learn's libsvm SVM, not MATLAB's fitcecoc; reading (b) searches C from 10^-3
-    to 1 with one-vs-one coding in place of the code's Bayesian search. In V1, C above 1 never gave a
-    higher inner accuracy, and the one-vs-all coding changed it by -0.012 to 0.024 (decoding_checks_shin_2025.ipynb).
+    to 1 with one-vs-one coding in place of the code's Bayesian search. On the first outer fold of the
+    V1 sessions, C above 1 gave a lower best inner accuracy in all 12 (by 0.005 to 0.064), from fits that
+    partly did not converge (12 to 17 of 36 per C value), and the one-vs-all coding changed the best inner
+    accuracy by -0.012 to 0.024 (decoding_checks_shin_2025.ipynb).
 - claim: fig3d-npx-areas-inference
   outcome: partially_reproduced
   notebook: decoding_shin_2025.ipynb
   output: claim:fig3d-npx-areas-inference
   assumed: true
+  proposed:
+    outcome: reproduced
+    reason: Under the adopted reading (b), the two further cross-validation seeds each give five significant
+      areas with LM, V1 and AL the three largest mean scores, which meets the criterion (seed +100000 V1,
+      LM, RL, AL and PM, PM p = 0.0425, AM p = 0.083; seed +200000 V1, LM, RL, AL and AM, AM p = 0.0186,
+      PM p = 0.052; decoding_seed1_shin_2025.ipynb, decoding_seed2_shin_2025.ipynb). Reading (a) meets
+      it with all three seeds. The criterion is met in five of the six runs, and the recorded partial outcome
+      rests on the first seed under reading (b), where PM (0.077) and AM (0.083) fall just above 0.05.
+      The partition seed is not a method choice, so the outcome most runs give is proposed. Which of PM
+      and AM is significant changes with the seed.
   notes: 'The decoder readings differ. Under reading (b), adopted, four areas decode TRE as IC significantly
     more than as LC (V1 p = 0.0024, LM 0.0156, RL 0.0049, AL 0.0020; PM 0.077, AM 0.083), and LM, V1 and
     AL have the three largest mean scores (0.346, 0.308, 0.285): three or four areas significant gives
     a partial reproduction. Under reading (a), five areas are significant (V1, LM, RL, AL and AM; PM p
     = 0.092) and V1, LM and AL are the three largest, which meets the criterion; two further seeds give
-    the same five areas. The statement names PM as significant and AM as not; under both readings PM is
-    not significant, and AM is under reading (a) only. Sessions per area 12, 8, 11, 10, 12, 11, as in
-    the paper.'
+    the same five areas. Reading (b) with the two further seeds gives five significant areas each, V1,
+    LM, RL, AL and PM (AM p = 0.083) and V1, LM, RL, AL and AM (PM p = 0.052), with LM, V1 and AL the three
+    largest, so a change to reproduced is proposed. The statement names PM as significant and AM as not;
+    that set appears only with reading (b) and seed +100000. Sessions per area 12, 8, 11, 10, 12, 11, as
+    in the paper.'
   deviations:
   - Assumption. The Methods do not say how the SVM hyperparameters were set; the paper's code chooses
     them with OptimizeHyperparameters. Reading (b), C chosen by an inner cross-validation, is adopted
-    as the reading closer to the code. It searches C from 10^-3 to 1 with one-vs-one coding; C above 1
-    never gave a higher inner accuracy in V1 and the one-vs-all coding changed it by at most 0.024 (decoding_checks_shin_2025.ipynb).
-    Asked of the authors under findings (methods_unavailable).
+    as the reading closer to the code. It searches C from 10^-3 to 1 with one-vs-one coding. On the first
+    outer fold of each session of V1, PM and AM, C above 1 gave a higher best inner accuracy in 1 of 35
+    sessions (PM, by 0.001), from fits that mostly did not converge (PM 28 to 30 and AM 30 of 33 or 36
+    per C value), and the one-vs-all coding changed the best inner accuracy by -0.026 to 0.027, which
+    could change the chosen coding in some sessions; its effect on the inference scores was not computed
+    (decoding_checks_shin_2025.ipynb). Asked of the authors under findings (methods_unavailable).
   - The decoder is scikit-learn's libsvm SVM, not MATLAB's fitcecoc.
 - claim: ed7b-npx-xre-inference
   outcome: reproduced
@@ -235,7 +272,9 @@ outcomes:
   output: claim:ed7a-npx-no-area-above-v1
   notes: 'No higher visual area has a significantly larger TRE or XRE inference score than V1 under either
     pairwise test (signed-rank, Tukey-Kramer) or either decoder reading; every significant difference
-    has the HVA below V1 (PM and AM). The Kruskal-Wallis tests across the six areas are significant, as
+    has the HVA below V1. These are PM and AM in several measures, RL in XRE accuracy (both readings)
+    and XRE score (reading b, signed-rank p = 0.0244 and Tukey-Kramer), and LM in XRE accuracy under reading
+    (b) (signed-rank p = 0.0234). The Kruskal-Wallis tests across the six areas are significant, as
     in the paper: reading (a) p = 0.0006, 0.0071, 0.0005 and 0.0077 for accuracy, inference score, XRE
     accuracy and XRE score (paper 0.0019, 0.0249, 0.0005, 0.0022); reading (b) 0.0017, 0.0156, 0.0002
     and 0.0015.'
@@ -258,9 +297,10 @@ outcomes:
   notes: 'The quadratic and RBF SVMs were run (reading a, C = 1, one further seed): the TRE inference
     score is positive and significant in V1, LM and AL for both, as for the linear SVM on the same seed
     (p from 0.0015 to 0.0156 for the three kernels; mean scores 0.257 to 0.335). The network of the Methods
-    (two hidden layers of 100 units, 50,000 full-batch epochs, tenfold) takes about 4.4 ms per epoch on
-    89 units, about 3.6 minutes per fit and about 18 hours on one core for the 300 fits of V1, LM and
-    AL, far beyond the notebook limit of 30 minutes. The criterion needs each decoder type, so the claim
+    (two hidden layers of 100 units, 50,000 full-batch epochs, tenfold) takes 4.38 ms per epoch on 89
+    units in this run, about 3.7 minutes per fit and about 18 hours on one core for the 300 fits of V1,
+    LM and AL (the timing varies between runs; the run the verifier reviewed printed 3.60 ms and 15 hours),
+    far beyond the notebook limit of 30 minutes. The criterion needs each decoder type, so the claim
     is not decided; the part that ran agrees with it.'
   deviations:
   - The quadratic kernel is (gamma <x, y> + 1)^2 and the RBF kernel uses scikit-learn's gamma "scale";
@@ -465,7 +505,9 @@ findings:
   statement: For the authors. The Methods do not say how the SVM hyperparameters were set; the code calls
     fitcecoc with OptimizeHyperparameters auto. Which coding, box constraint and kernel scale were chosen
     per session and area? The significance of PM and AM in Fig. 3d depends on it here (four areas significant
-    with C chosen by inner cross-validation, five with C = 1).
+    with C chosen by inner cross-validation, five with C = 1), and with C chosen by inner cross-validation
+    it also depends on the cross-validation partition (five areas with each of two further seeds, PM
+    significant with one and AM with the other).
 - kind: methods_unavailable
   statement: For the authors. Extended Data Fig. 2 counts sessions whose fixed-gaze RF trials left at
     least one trial in each position. Do inverse-patch trials count towards that coverage? Counting them
@@ -806,3 +848,266 @@ verifications:
       _ogen.nwb), and its metadata lists only ecephys and ogen techniques. DANDI searches for "illusory",
       "Adesnik", "pattern completion" and "Shin Hyeyoung" return only 000248.
     response: No change. The notebook text now says 21 claims, not 19 (problem 11).
+- date: '2026-10-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebooks with the conclusions and summaries, the helper module,
+    the claims file, the paper and this record, after the round-1 revision.
+  results:
+  - claim: results-npx-units-per-session
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: methods-npx-ic-encoder-count
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: ed6b-npx-v1-group-counts
+    agrees: true
+    outcome: reproduced
+    reason: The assumption is stated and reasonable. Reading b1 matches both counts exactly.
+    response: No change.
+  - claim: ed6cd-npx-ic-encoders-all-areas
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig1e-npx-exclusive-center
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Reproduce cell 31 and the record's notes say that under (a) 383 units have the center
+      as best position and at least one position passing the Holm step and 44 of them have exactly one,
+      but cell 30 prints that 68 of the 383 have exactly one passing position; the 44 are the units whose
+      single passing position is the center, with the smallest p. The cell 30 step label "exactly one
+      position passes (= exclusive, reading a)" is wrong in the same way, and the record's response to
+      fig1e says "383 and 602 passing the center step under a and b", where for reading a 383 counts units
+      with any position passing.
+    response: Cell 30 now prints the two steps apart (68 with exactly one position passing, 44 for which
+      it is the center) and labels the reading (a) distribution as units with the center best and at least
+      one position passing. Cell 31 and the notes are corrected. The round-1 response is left as written
+      and is corrected here.
+  - claim: fig1f-npx-ic-ire-responsive
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig1g-npx-orientation-match
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: ed2b-npx-fixed-gaze
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with a reservation. The assumption is stated and plausible, but it was chosen partly
+      because it gives the paper's 9 sessions, and the reproduction rests only on that session count, as
+      under either rule the units are the same 10. Rule r also lets a session count as valid with no standard
+      trial at a position, and standard trials are what the exclusivity test uses. The unit count may be
+      partly coincidental, as fig1e gives 44, not 18.
+    response: No change of outcome. The reservation is recorded in the notes and in cell 40, which now
+      say that the units are the same 10 under both rules, so the count rests on the session rule only
+      through the session count, and that the match with the paper's 11 may be partly coincidental. The
+      deviation already states that a valid session with no fixed-gaze standard trial at a position gets
+      p = 1 there.
+  - claim: ed2f-npx-rf-match
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: ed2g-npx-pupil-area
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: ed2a-npx-gaze-confined
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig2d-npx-ccg-hva-input
+    agrees: false
+    outcome: blocked
+    reason: The criterion requires a higher median "under every combination". With boxcar smoothing, raw
+      flank and number of connections, the medians are 1 and 1, so that combination fails the rule. The
+      direction of the rank-sum test is not a median comparison. The protocol rule cited for the tie-break
+      was not available to the verifier. The substance supports the claim (P = 0.63, p = 9.8e-05, 68% against
+      50% of units with any connection). The outcome rests on that tie-break, but the record does not mark
+      it assumed; it is only listed as a deviation. Still judged blocked (methods_underspecified).
+    response: The outcome is kept, as round 2 may not change it, and is now marked assumed, with the protocol
+      passage behind the tie-break quoted in the deviation. A cell after the CCG table applies the criterion
+      as written (7 of 8 combinations meet it; verdict readings differ). On that output the record agrees
+      that equal medians are not a tie the criterion cannot decide, and proposes blocked (methods_underspecified)
+      under `proposed` for a third round.
+  - claim: fig3a-npx-v1-decoding
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig3c-npx-v1-inference
+    agrees: true
+    outcome: reproduced
+    reason: Within tolerance under reading b. Under reading a, the two further seeds are within tolerance
+      (LC 0.198 and 0.199) and the first seed is not (0.197). The criterion accepts any one decoder reading.
+      Checks cell 9 says "The fig3c and fig3d outcomes do not depend on the seed", but reading b was repeated
+      over seeds on V1 only.
+    response: Reading (b) is now repeated with the two further seeds on every area (decoding_seed1_shin_2025.ipynb,
+      decoding_seed2_shin_2025.ipynb). In V1 both values stay within tolerance (IC 0.519 and 0.514, LC
+      0.209 and 0.215, p = 0.0015 and 0.0068). Checks cell 9 now speaks of reading (a) only, and the C-bound
+      deviation states that the check covers the first outer fold and that fits above C = 1 partly did
+      not converge.
+  - claim: fig3d-npx-areas-inference
+    agrees: true
+    outcome: partially_reproduced
+    reason: The assumption is stated, decoder reading b is adopted. Reading a would meet the criterion,
+      and the claims file does not say which decoder reading decides. Under neither reading does the set
+      of significant areas match the paper's. Reading b, which decides the outcome, was checked over seeds
+      only in V1; its PM and AM p-values were not repeated, and the C-bound check (V1 only, first fold,
+      partly unconverged above C = 1, so "the bound does not exclude a better C" says the opposite of the
+      numbers and rests on partly unconverged fits) and the one-vs-all check (changes of up to 0.024) were
+      not extended to PM and AM. AM is p = 0.0029 under reading a and 0.083 under reading b, so whether
+      fig3d is reproduced or partially reproduced depends on the hyperparameter choice.
+    response: Reading (b) was repeated with the two further seeds on every area. Each seed gives five significant
+      areas with LM, V1 and AL the three largest (PM p = 0.0425 and AM 0.083 with one seed, AM 0.0186 and
+      PM 0.052 with the other), which meets the criterion; with the first seed it gives four. The C-bound
+      and coding check now covers V1, PM and AM; C above 1 is better in 1 of 35 sessions, by 0.001, from
+      mostly unconverged fits, and the coding changes the best inner accuracy by -0.026 to 0.027. Checks
+      cell 12 is rewritten to say this with the caveats. The outcome is kept, as round 2 may not change
+      it; reproduced is proposed under `proposed`, as the criterion is met in five of six runs. The finding
+      asking the authors now mentions the seed dependence. The statement's set of areas (PM significant,
+      AM not) appears only with reading (b) and one seed.
+  - claim: ed7b-npx-xre-inference
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change. Cell 14 of the reproduce notebook now shows that XRE1 carries the real bar of IC1's
+      orientation (central pixels agree with IRE1 in 0.924, IRE2 in 0.656) and XRE2 that of IC2.
+  - claim: ed7a-npx-no-area-above-v1
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the direction is still HVA below V1. The notes say every significant difference has
+      the HVA below V1 "(PM and AM)", but decoding cell 20 also shows RL significantly below V1 (XRE accuracy
+      under reading a, signed-rank p = 0.0137 and Tukey-Kramer; XRE accuracy and XRE score under reading
+      b, Tukey-Kramer, XRE score signed-rank p = 0.0244), and LM below V1 in XRE accuracy under reading
+      b (p = 0.0234).
+    response: The notes and decoding cell 21 now list RL and LM with PM and AM.
+  - claim: ed6ef-npx-ic-not-greater
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: supp3-decoder-types
+    agrees: true
+    outcome: blocked
+    reason: The printed cost is 15 h on one core, against a 30-minute notebook limit. The two SVMs agree
+      with the linear SVM. Checks cell 16 says "about 18 hours on one core" while cell 15 prints 3.60 ms
+      per epoch, about 3.0 min per fit and about 15.0 h, and the record's notes and round-1 response carry
+      the same stale figures.
+    response: The timing varies between runs; this run prints 4.38 ms per epoch, 3.7 minutes per fit and
+      18.3 hours. Cell 16 and the notes now give the figures of this run and say that the timing varies.
+  - claim: fig1ik-2p-exclusive-center
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: fig2b-2p-ic-encoder-fraction
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: fig2c-2p-orientation-tuning
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: ed4c-2p-ic-encoder-rf-anywhere
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: ed5cd-2p-rf-size
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: fig3e-2p-l23-not-l4
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: fig3e-2p-mesoscope-areas
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: ed7b-2p-xre-inference
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: ed5e-2p-inverted
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: ed4hi-2p-scaled-images
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: ed3-2p-robust-gap-mapping-contrast
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: fig4a-2p-zeroing-ic-encoders
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: fig4b-2p-ic-encoders-only
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: fig5c-2p-holo-ic-responsive
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: fig5-2p-holo-suppression
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: fig5d-2p-ic-encoder-pattern-completion
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: fig5e-2p-segment-no-completion
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: ed9b-2p-holo-near-visual
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: ed10-2p-lc-encoders-weaker
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: fig6d-meso-ic-encoders-local
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
+  - claim: fig6e-meso-segment-feedforward
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
+    response: No change.
