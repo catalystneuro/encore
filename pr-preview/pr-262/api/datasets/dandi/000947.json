@@ -1,0 +1,797 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000947",
+  "label": "DANDI:000947"
+ },
+ "page": "datasets/dandi/000947/",
+ "generated": "2026-10-28T23:55:42+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 6,
+  "partially_reproduced": 4,
+  "not_reproduced": 7,
+  "blocked": 1
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 2
+ },
+ "outcome_counts_links": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000947-schwab-2020-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000947",
+    "version": "0.240510.2211",
+    "doi": "10.48324/dandi.000947/0.240510.2211"
+   },
+   "key": "dandi:000947",
+   "label": "DANDI:000947",
+   "dataset_version": "0.240510.2211",
+   "paper": "10.1371/journal.pbio.3000829",
+   "paper_title": "Neural activity during a simple reaching task in macaques is counter to gating and rebound in basal ganglia-thalamic communication",
+   "date": "2026-10-18",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-7"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/39099561342"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000947-schwab-2020",
+   "entry_title": "GPi and VLa activity during reaching in macaques (Schwab et al. 2020)",
+   "description": "Tests the findings of Schwab, Kase, Zimnik, Rosenbaum, Codianni, Rubin and Turner (2020) on the pre-MPTP recordings of dandiset 000947, single units from the internal globus pallidus and the ventrolateral anterior thalamus of two monkeys performing a reaching task. It compares rates, spike widths, peri-movement responses and their latencies, spike and rate correlations of simultaneously recorded pairs, and the effect of GPi bursts and pauses on VLa activity, and links the dandiset's units to the paper's own unit list.",
+   "notebooks": [
+    {
+     "path": "reproduce_schwab_2020.ipynb",
+     "title": "Reproducing Schwab et al. (2020) from dandiset 000947",
+     "executed": "notebooks/000947-schwab-2020/reproduce_schwab_2020.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "unit-link",
+     "statement": "The units the paper analysed can be found in the dandiset, and the dandiset's spike times and trials reproduce the per-unit peri-movement activity the paper's code stored.",
+     "source": "Data Availability; Dryad doi:10.5061/dryad.0cfxpnvxm, Gaia_Analy.mat and Isis_Analy.mat",
+     "quote": "Data and code can be found at https://doi.org/10.5061/dryad.0cfxpnvxm.",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "Records are matched by file, channel id and sort letter. 364 of the 394 records the paper's code keeps (92.4%) are found in every file they span (Isis GPi 104 of 104, Gaia GPi 95 of 105, Gaia VLa 60 of 66, Isis VLa 105 of 119). For 724 matched unit-directions the SDF from the dandiset correlates with the stored SDF at a median r of 0.9992, above 0.9 for 94.6%. Valid trial counts equal the paper's for 62.6%. Detection agrees on the presence of an increase for 90.9% and of a decrease for 80.7% of unit-directions. 25 matched units the paper calls VLa are labelled \"Thalamus\" in the dandiset, and 97 records span 2 to 5 files. On the side of the outside data, the paper's list gives 209 GPi and 185 VLa units, as Table 1 does.",
+     "deviations": [
+      "Trial exclusion follows the Methods (6 median absolute differences from the mean); the paper's stored trial counts differ for 37% of unit-directions, by a median of 0."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-unit-counts",
+     "statement": "209 single units met the criteria to be included as GPi neurons (105 in NHP G, 104 in NHP I) and 185 as VLa neurons (66 and 119).",
+     "source": "Results, Basic approach, database, and activity at rest, paragraph 5; Table 1",
+     "quote": "a total of 209 single units met the criteria to be included as GPi neurons and 218 as VLa neurons (Table 1).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "The dandiset rule gives 268 GPi units (Gaia 137, Isis 131) and 279 VLa units (78 and 201), against 209 and 185 (218 in the text). Counting the same channel and sort letter on one day once gives 132 and 186; the paper's records found in the dandiset are 199 and 165. That merge joins some units the paper kept apart (47 of the 117 merged units spanning several files hold more than one of the paper's records). 518 of the 547 units are in files the paper used. Taking the rate over the length of the raw recording instead of the span of the spike train would leave out 2 more GPi units. The dandiset holds more units than the paper analysed and does not say which were kept or which units in consecutive files are one neuron.",
+     "deviations": [
+      "Units are selected by the dandiset's location labels and the Methods' rate and trial criteria; the paper's anatomical criteria (within 0.5 mm of an M1-responsive site, the VLa border) cannot be applied from the files.",
+      "Each file's unit is counted once; the paper pools a neuron recorded over consecutive files."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-rest-rate",
+     "statement": "The resting firing rate of GPi neurons (mean 70.1 spikes/s) is significantly higher than that of VLa neurons (13.5 spikes/s), and the rates are consistent between the two animals.",
+     "source": "Results, Basic approach, database, and activity at rest, paragraph 5; Table 1",
+     "quote": "the resting firing rate of GPi neurons was significantly higher than that of VLa neurons ... and those rates and the differences between neural populations were highly consistent for the two animals",
+     "statistics": [
+      {
+       "about": "GPi against VLa resting rates",
+       "test": "rank sum",
+       "p": 1e-81
+      },
+      {
+       "about": "rates and differences between the two animals",
+       "test": "rank sum",
+       "p": 1
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "Mean rest rate over unit-directions 75.65 spikes/s in GPi (531) and 12.78 in VLa (552), GPi higher with rank sum p = 1.2e-171. The animals differ slightly in GPi (73.17 and 78.25, p = 0.041), where the paper reports no difference; not in VLa (p = 0.53). With one record per presumed neuron the animals do not differ in GPi (74.23 and 74.21, p = 0.69). With the paper's records 64.26 and 13.53, with one record per presumed neuron 74.22 and 12.77.",
+     "deviations": [
+      "Unit selection by the dandiset rule (see table1-unit-counts)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-ap-width",
+     "statement": "Action potentials of GPi neurons are shorter than those of VLa neurons (trough to peak 0.24 against 0.50 ms; rank sum p = 1e-33).",
+     "source": "Results, Basic approach, database, and activity at rest, paragraph 5; Table 1",
+     "quote": "Also, as expected, the action potentials of GPi neurons were short in duration as compared with those of VLa neurons",
+     "statistics": [
+      {
+       "test": "rank sum",
+       "p": 1e-33
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "Mean trough-to-peak width 0.247 ms in GPi and 0.509 ms in VLa, 532 of 547 units measured, rank sum p = 2.9e-37. One width is 0 and 9 reach the end of the 1.2 ms window; without them the means are 0.249 and 0.499 ms (p = 1.9e-35). No file gives one channel id to two electrodes, so each unit's channel names one electrode.",
+     "deviations": [
+      "Widths come from the dandiset's 200 Hz high-pass filtered traces (the paper filtered at 300 Hz) and from the spikes in one stored chunk (about 3.2 s, median 273 spikes) per file and series."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "hold-period-ramps",
+     "statement": "The firing rate of most units ramps during the start-position hold period (97% of GPi and 98% of VLa units with a significant linear trend); slopes are distributed symmetrically around zero, without a difference between GPi and VLa (rank sum p = 0.29).",
+     "source": "Results, Basic approach, database, and activity at rest, paragraph 6; Fig 2A",
+     "quote": "The mean firing rate of most single units showed small but significant ramps during the start-position hold period ... 97% and 98% of GPi and VLa cells, respectively). ... For both GPi and VLa unit populations, the observed slopes were distributed symmetrically around zero",
+     "statistics": [
+      {
+       "test": "rank sum",
+       "p": 0.29
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "98.5% of GPi and 98.6% of VLa units have a significant control-period slope (97.0% and 97.5% at alpha 0.01), and 49.9% of significant slopes are positive. GPi and VLa slopes differ (mean -0.598 against 0.233 spikes/s2, rank sum p = 0.042), where the paper finds no difference (p = 0.29); they also differ with one record per presumed neuron (p = 0.013) and with one mean slope per presumed neuron (p = 0.033). With the paper's records the fractions are 99.5% and 98.8% and the slopes do not differ (p = 0.187), which would meet the criterion, so the outcome depends on the selection of units. With every trial aligned to a random time, the same slope test finds a significant slope in 98.4% of GPi and 99.0% of VLa units, so the fractions do not show ramps beyond what noise in a smoothed function gives; the paper's code uses the same test.",
+     "deviations": [
+      "The criterion did not define a partial outcome; the outcome is partial because the first part (ramps are common) holds and the second (no difference between areas) does not."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "mvt-responsive-fraction",
+     "statement": "Nearly all units change their discharge around movement for at least one direction (GPi 99%, 206 of 209; VLa 88.1%, 163 of 185 in Table 1, 94% in the text).",
+     "source": "Results, Movement-related increases in firing are common in both GPi and VLa, paragraph 1; Table 1",
+     "quote": "Nearly all single units showed a significant peri-movement change in discharge for at least one direction of movement, with slightly fewer VLa units responding (99% of GPi neurons and 94% of VLa neurons; p = 0.02, chi-squared test).",
+     "statistics": [
+      {
+       "test": "chi-squared",
+       "p": 0.02
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "264 of 268 GPi (98.5%) and 272 of 279 VLa units (97.5%) respond in at least one direction. VLa matches the text's 94% but not Table 1's 88.1%; the criterion accepts either reading. With alpha 0.0001 the fractions with an increase alone are 81.0% and 77.4%. With every trial aligned to a random time 62.3% of GPi and 70.8% of VLa units are responsive, so the data are well above chance; with one record per presumed neuron the fractions are 100.0% and 98.4%.",
+     "deviations": [
+      "The paper gives 88.1% (Table 1) and 94% (text) for VLa; both readings were listed and only the text's matches."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "increases-most-common",
+     "statement": "Monophasic increases are the most common form of response in both GPi and VLa (48.7% and 65.3% of responses), and increases make up most detected changes (61.5% and 68.8%, biphasic responses counted twice), more than decreases (chi-squared p = 1.2e-17).",
+     "source": "Results, Movement-related increases in firing are common in both GPi and VLa, paragraph 3; Table 1; Fig 2B",
+     "quote": "Monophasic increases were the most common form of response both in GPi and in VLa (48.7% and 65.3% of responses detected, respectively; Table 1). ... increases in firing were also more common than decreases both in GPi and in VLa (61.5% and 68.8% of changes, respectively",
+     "statistics": [
+      {
+       "test": "chi-squared",
+       "p": 1.2e-17
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "Monophasic increase is the most common form in GPi (46.9%) and VLa (50.9%), and increases are 58.8% and 60.2% of changes (746 of 1254 overall, binomial p = 1.9e-11). The GPi values are within tolerance; the VLa values are below 65.3% and 68.8% by more than 10%, also with the paper's records (54.1% and 61.4%), with one record per presumed neuron (50.1% and 60.3%) and at alpha 0.0001 (51.9% and 60.1%). With random alignment the detector finds a decrease in 25.2% (GPi) and 33.7% (VLa) of unit-directions and an increase in 14.8% and 16.2%, so chance detections add mostly decreases.",
+     "deviations": [
+      "Detrending of the control period and the ISI function are implemented here from the Methods; the paper's own implementation of these steps is not in its deposit."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "monophasic-more-in-vla",
+     "statement": "Monophasic changes are more common in VLa than in GPi (88.9% against 66.7% of responses; chi-squared p = 2.8e-12), and polyphasic responses more common in GPi.",
+     "source": "Results, Movement-related increases in firing are common in both GPi and VLa, paragraph 2; Table 1",
+     "quote": "Monophasic changes in firing ... were the most common change detected in both GPi and VLa, amounting to 66.7% and 88.9% of all responses detected, respectively. Monophasic responses were more common in VLa than in GPi",
+     "statistics": [
+      {
+       "test": "chi-squared",
+       "p": 2.8e-12
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "Monophasic responses are 71.0% in GPi and 76.7% in VLa, chi-squared p = 0.051, and VLa is outside tolerance. With the paper's records 69.0% and 81.2% (p = 0.00036), both within tolerance, so the outcome depends on the selection of units. With one record per presumed neuron 62.6% and 74.5% (p = 0.0023), VLa outside tolerance.",
+     "deviations": [
+      "Unit selection by the dandiset rule (see table1-unit-counts)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "integrated-change-positive",
+     "statement": "The mean integrated change in firing over the peri-movement epoch is positive in both GPi and VLa (3.89 and 1.75 spikes), significantly different from zero.",
+     "source": "Results, Movement-related increases in firing are common in both GPi and VLa, paragraph 4; Table 1",
+     "quote": "This inclination toward increases was confirmed quantitatively by integrating changes in firing rate from baseline across the peri-movement epoch individually for each neuron. The mean of this integrated change was positive both for GPi and VLa",
+     "statistics": [
+      {
+       "about": "GPi",
+       "test": "rank sum",
+       "statistic": "z = 7.37",
+       "p": 1.7e-13
+      },
+      {
+       "about": "VLa",
+       "test": "rank sum",
+       "statistic": "z = 6.59",
+       "p": 4.7e-11
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "The mean integrated change is positive in GPi (3.07 spikes, signed rank p = 1.1e-10) and VLa (1.50 spikes, p = 3.7e-18), both more than 10% below 3.89 and 1.75. With the paper's records 3.42 and 1.97, with one record per presumed neuron 2.13 and 1.34.",
+     "deviations": [
+      "Table 1 gives the unit as spikes x 10^3; the code's computation gives spikes, the reading used."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3a-vla-leads-gpi",
+     "statement": "Peri-movement changes begin later in GPi than in VLa (median onsets -47 and -90 ms; rank sum p = 2.4e-5).",
+     "source": "Results, Response onset latencies in GPi and VLa are incompatible with gating and rebound, paragraph 1; Fig 3A",
+     "quote": "on average, GPi changes in discharge began later than those in VLa (median onset times: -47 and -90 ms for GPi and VLa populations, respectively",
+     "statistics": [
+      {
+       "test": "rank sum",
+       "statistic": "z = 3.31",
+       "p": 2.4e-05
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "Median onsets of all changes are -48 ms in GPi (641) and -67 ms in VLa (613); GPi is later by 19 ms without significance (rank sum p = 0.079, one-sided p = 0.04), and the VLa median is outside tolerance. In Gaia the medians are equal (-48.5 and -48 ms). With one record per presumed neuron -73 and -72 ms (p = 0.95), with one value per presumed neuron -47 and -53 ms (p = 0.44). With the paper's records -49 and -85 ms (p = 0.004), which meets the criterion, so the outcome depends on the selection of units. At alpha 0.0001 -42.5 and -63 ms (p = 0.052).",
+     "deviations": [
+      "Unit selection by the dandiset rule (see table1-unit-counts)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-gpi-decr-lag-vla-incr",
+     "statement": "GPi decreases lag behind VLa increases (median onsets -27 and -88 ms; rank sum p = 4.9e-4), against the gating prediction.",
+     "source": "Results, Response onset latencies in GPi and VLa are incompatible with gating and rebound, paragraph 1; Fig 3B",
+     "quote": "the distribution of GPi decreases lagged in time behind that of VLa increases (median onset times: -27 and -88 ms for GPi and VLa populations, respectively",
+     "statistics": [
+      {
+       "test": "rank sum",
+       "statistic": "z = 3.19",
+       "p": 0.00049
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "GPi decreases begin at a median of -29.5 ms (264) and VLa increases at -84 ms (369), rank sum p = 0.00021. The GPi median is 0.2 ms inside its tolerance (-29.7 to -24.3 ms). Gaia 0 against -95 ms (p = 0.0014), Isis -44 against -81 ms (p = 0.055). The lag also holds with the paper's records (-36 against -85 ms, p = 0.00069), with one record per presumed neuron (-46.5 against -92 ms, p = 0.011), with one value per presumed neuron (-1.5 against -71.2 ms, p = 0.00074) and at alpha 0.0001 (-30 against -81.5 ms, p = 0.00054), but in all four the GPi median is outside its tolerance. With the paper's records the outcome would be partially reproduced, so it depends on the selection of units, and the match of the medians is fragile.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-vla-decr-lead-gpi-incr",
+     "statement": "VLa decreases precede GPi increases (median onsets -108 and -62 ms; rank sum p = 0.01).",
+     "source": "Results, Response onset latencies in GPi and VLa are incompatible with gating and rebound, paragraph 1; Fig 3C",
+     "quote": "VLa decreases did not follow but rather preceded GPi increases (median onset times: -62 and -108 ms for GPi and VLa populations, respectively; z = 2.58, p = 0.01, rank sum test; Fig 3C).",
+     "statistics": [
+      {
+       "test": "rank sum",
+       "statistic": "z = 2.58",
+       "p": 0.01
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "VLa decreases begin at a median of -19 ms (244) and GPi increases at -69 ms (377); VLa does not lead (rank sum p = 0.17). In Gaia VLa decreases come later (12.5 against -75 ms, p = 0.0028). With the paper's records VLa leads by 13 ms without significance (-86 against -73 ms, p = 0.2). The paper itself gives -62 ms for GPi increases here and -76 ms in Table 1. With one record per presumed neuron VLa decreases come later (-8 against -92 ms, p = 0.0082), and with one value per presumed neuron too (20.5 against -45 ms, p = 0.021). With random alignment the detector finds a decrease in 33.7% of VLa unit-directions (44.2% in the data), with a median onset of -8 ms, so many VLa decreases here may be chance detections, which would pull their median late. At alpha 0.0001 the medians are -21.5 (VLa) and -57.5 ms (GPi), p = 0.3, and chance still gives a decrease in 30.8% of VLa unit-directions (42.0% in the data), so the stricter threshold does not remove the chance decreases.",
+     "deviations": [
+      "The ISI-based detection finds more decreases than the paper's on the same units (330 against 286 on the linked units), which weighs on this comparison."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "gating-conflict-fraction",
+     "statement": "Comparing every GPi response with every VLa response, 96% of comparisons conflict with gating (178,846 of 187,154); only 4% have a GPi onset 0 to 50 ms before the VLa onset with the opposite sign.",
+     "source": "Results, Response onset latencies in GPi and VLa are incompatible with gating and rebound, paragraph 2",
+     "quote": "A large preponderance of these comparisons (96%, n = 178,846 of 187,154 comparisons) directly conflicted with the gating hypothesis because of the relative timing or signs of the responses",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "95.4% of 392,933 comparisons conflict with gating (95.6% with the paper's records, 95.1% with one record per presumed neuron). With onsets shuffled across unit-directions the fraction is 95.1% (95.0 to 95.2), so the number does not distinguish the data from random onsets; it follows the gating window (98.0% for 0 to 20 ms, 86.6% for 0 to 200 ms).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "directional-units",
+     "statement": "A majority of GPi neurons (109 of 206) and some VLa neurons (56 of 179) respond significantly more strongly to one movement direction.",
+     "source": "Results, Movement-related increases in firing are common in both GPi and VLa, paragraph 5; Materials and methods, Spike sorting and detection of peri-movement discharge, paragraph 8",
+     "quote": "the majority of GPi neurons (109 out of 206) and some VLa neurons (56 out of 179) showed significantly stronger responses to one of the movement directions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "122 of 264 responsive GPi units (46.2%) and 66 of 272 VLa units (24.3%) are directional, chi-squared p = 1.7e-07; both fractions are more than 10% below 52.9% and 31.3%. With the paper's records 48.2% and 26.8%, with one record per presumed neuron 53.8% and 21.9% (p = 9.8e-09).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-ccf-rare",
+     "statement": "Short-time-scale spike-to-spike correlations between simultaneously recorded GPi and VLa units are rare (3.5% of 427 pairs over whole recordings, 2.2% of 183 at rest, 5.2% of 172 during movement) and their peaks are not larger than those of jittered controls (p = 0.975, 0.675 and 0.998).",
+     "source": "Results, Correlated activity in GPi-VLa cell pairs is rare and unbiased, paragraph 1; Fig 4A-F; Table 2",
+     "quote": "only 3.5% of the CCFs showed any statistically significant modulation (15 of 427 cell pairs; ... the overall distribution of the peak absolute correlation values was not greater than the distribution of control peak absolute correlations",
+     "statistics": [
+      {
+       "about": "peak absolute correlations against jittered controls, whole recordings",
+       "test": "one-sided permutation test",
+       "p": 0.975,
+       "n": "427 pairs"
+      },
+      {
+       "about": "peak absolute correlations against jittered controls, rest",
+       "test": "one-sided permutation test",
+       "p": 0.675,
+       "n": "183 pairs"
+      },
+      {
+       "about": "peak absolute correlations against jittered controls, movement",
+       "test": "one-sided permutation test",
+       "p": 0.998,
+       "n": "172 pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "By the KS permutation test the peak CCFs exceed those of jittered controls over whole recordings (338 pairs, p = 0.003) and during movement (306 pairs, p = 0.045), not at rest (298 pairs, p = 0.705). Significant pairs are 5.6%, 3.4% and 6.5%, none above 5% by a binomial test, and mostly positive (15 of 19 whole, 15 of 20 movement). The shift is small (median peak 0.042 against a control median of 0.038). The part of the statement that correlations are rare holds; the part that peaks are not larger than controls does not. Keeping only pairs with an approximate c0 of at most 0.3 leaves 332, 121 and 172 pairs (paper 427, 183 and 172) with KS p = 0.003, 0.333 and 0.025; one file per pair of presumed neurons gives 0.003, 0.627 and 0.037. The significant peaks fall at lags spread over 0 to 10 ms, and GPi and VLa spikes share a sample as often as independent trains would (11,376 against 11,435 expected), so shared artefacts do not explain the excess. Spike times are at the sample resolution (24414.0625 Hz) in every file. With the paper's records, paired when a GPi and a VLa record share a file (329, 298 and 301 pairs), the peaks exceed the controls over whole recordings (p = 0.005) and at rest (p = 0.033), not during movement (p = 0.203), so the outcome would be the same. Neither pair set matches the paper's 427 whole-recording pairs (338 on the dandiset rule, 329 on the paper's records); this attempt did not find out how the paper counted its pairs.",
+     "deviations": [
+      "The paper's exclusion of pairs with a minimum detectable correlation c0 above 0.3 is not applied in the main test, which the criterion fixed before the analysis; the paper's simulation is not in its deposit. It is shown as a variant, with c0 approximated by a simulation on the CCF counts (independent Poisson counts at the pair's expected count, plus an injected peak).",
+      "Only VLa spikes are jittered; the Methods do not say which train."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-noise-corr-rare",
+     "statement": "Trial-to-trial noise correlations between GPi and VLa are rare (5.4% of 332 pairs at rest, 7.2% of 372 during movement), not different from shuffled controls (p = 0.07 and 0.388), and equally often positive and negative.",
+     "source": "Results, Correlated activity in GPi-VLa cell pairs is rare and unbiased, paragraph 5; Fig 4G-H; Table 2",
+     "quote": "We found that the overall distribution of noise correlations was not significantly different from the control distribution (Fig 4G and 4H; p = 0.07 during rest, p = 0.388 during movement; permutation test).",
+     "statistics": [
+      {
+       "about": "distribution of noise correlations against controls, rest",
+       "test": "permutation test",
+       "p": 0.07,
+       "n": "332 pairs"
+      },
+      {
+       "about": "distribution of noise correlations against controls, movement",
+       "test": "permutation test",
+       "p": 0.388,
+       "n": "372 pairs"
+      },
+      {
+       "about": "positive against negative significant correlations, rest",
+       "test": "chi-squared",
+       "p": 0.64,
+       "n": "18 pairs"
+      },
+      {
+       "about": "positive against negative significant correlations, movement",
+       "test": "chi-squared",
+       "p": 0.34,
+       "n": "27 pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "Absolute noise correlations exceed trial-shuffled controls at rest and during movement (KS permutation p < 0.001 in both). 10.1% and 10.8% of pair-targets (17.5% and 18.6% of pairs) are significant against 5.4% and 7.2% in the paper. Signs are balanced (38 and 29 at rest, p = 0.33; 39 and 33 during movement, p = 0.56), as the paper reports. Spike counts drift with trial time in many units (VLa 36.1% and 38.3% of pair-targets, Spearman p < 0.05), but with counts linearly detrended the excess remains (9.3% and 9.7% significant, KS p < 0.001), and so it does against each pair-target's own shuffles (10.8% and 14.2%), with one file per pair of presumed neurons (KS p < 0.001) and with the paper's records (9.1% and 7.4% significant, KS p < 0.001 in both).",
+     "deviations": [
+      "The paper's test statistic for noise correlations is not printed in its code; the KS permutation test on absolute correlations was fixed in the criterion before the analysis.",
+      "Significance uses the 2.5 to 97.5 percentiles of the shuffles pooled over pairs, as the paper's code does per time point."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-vla-decrease-after-gpi-bursts",
+     "statement": "At rest, GPi burst onsets, burst offsets and pause onsets are each followed by a small, slow decrease of the population VLa firing rate.",
+     "source": "Results, VLa activity decreases with bursts and pauses in GPi activity, paragraphs 1 and 2; Fig 5A-C; Table 2",
+     "quote": "Small but significant transient decreases in VLa population spike rate were evident following both the onsets and offsets of bursts. ... a deceleration in VLa activity was also associated with pauses in GPi activity (Fig 5C).",
+     "statistics": [
+      {
+       "about": "decreases against increases among pairs with a significant change, burst onsets",
+       "test": "chi-squared",
+       "p": 0.04,
+       "n": "19 pairs"
+      },
+      {
+       "about": "decreases against increases among pairs with a significant change, burst offsets",
+       "test": "chi-squared",
+       "p": 0.05,
+       "n": "13 pairs"
+      },
+      {
+       "about": "decreases against increases among pairs with a significant change, pause onsets",
+       "test": "chi-squared",
+       "p": 0.16,
+       "n": "13 pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "The population VLa rate does not fall below the control band within 300 ms of GPi burst onsets (150 pairs, lowest point 2.5% below baseline), burst offsets (150, 1.9%) or pause onsets (110, 1.9%). Bursts here last 67.1 ms on average and pauses 145.3 ms, against 24 and 195 ms in the paper, and 50.7% of pairs show a change after burst onsets against 11.6% in the paper. The same per-pair test on the shifted controls gives 47.5%, 47.8% and 47.0%, so the test as the Methods describe it is at chance here, and the paper's per-pair test must differ. Computed as Fig5_S14.m does (each pair in percent of its baseline, band shifted over 0 to 800 ms), the population rate does not fall below the band either (lowest 98.1%, 98.4% and 96.9%). The Methods' rule on noisy baselines leaves out more than half of the pairs with at least 5 events (157 of 307 for burst onsets and offsets, 143 of 253 for pause onsets). With the paper's records (131, 132 and 86 pairs kept) the rate does not fall below the band either. Because the burst detector and the per-pair test differ from the paper's, this outcome says little about the paper's finding.",
+     "deviations": [
+      "Burst and pause detection is a reimplementation of the Legendy and Salcman surprise method; the paper's implementation is not in its deposit (Fig5_S14.m plots stored averages and builds the control band; it holds no burst detector and no per-pair test).",
+      "A first run used log10 in the surprise and gave bursts far longer than the paper's; the natural log, as in the Methods' formula in the paper's MATLAB, was then used. The notebook shows the durations with log10 (bursts 254.0 ms, pauses 237.0 ms) as a variant.",
+      "The control shifts all events of a pair by one random offset of 2 to 20 s and uses VLa rate in rest samples only; the paper does not describe its control for Fig 5."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "behavior-rt-mt",
+     "statement": "Reaction times do not differ between the animals or reach directions; movement durations are longer for reaches to the right target, and NHP G moves more slowly than NHP I.",
+     "source": "Results, Task performance, paragraph 1; S2 Fig",
+     "quote": "Reaction times did not differ significantly between the two animals ... or between the two reach directions ... Movement durations were longer for reaches to the more-distant, right target than to the left ... NHP G moved more slowly overall compared with NHP I",
+     "statistics": [
+      {
+       "about": "reaction time, animal",
+       "test": "ANOVA",
+       "statistic": "F[1,452] = 0",
+       "p": 0.97
+      },
+      {
+       "about": "reaction time, direction",
+       "test": "ANOVA",
+       "statistic": "F[1,452] = 0.2",
+       "p": 0.68
+      },
+      {
+       "about": "reaction time, animal \u00d7 direction interaction",
+       "test": "ANOVA",
+       "statistic": "F[1,452] = 9.6",
+       "p": 0.002
+      },
+      {
+       "about": "movement duration, direction",
+       "test": "ANOVA",
+       "statistic": "F[1,453] = 416",
+       "p": 4e-66
+      },
+      {
+       "about": "movement duration, animal",
+       "test": "ANOVA",
+       "statistic": "F[1,453] = 1,419",
+       "p": 1e-141
+      },
+      {
+       "about": "movement duration, animal \u00d7 direction interaction",
+       "test": "ANOVA",
+       "statistic": "F[1,452] = 36.3",
+       "p": 1e-09
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_schwab_2020.ipynb",
+     "notes": "In the 165 files that hold the units analysed, reaction times differ neither between the animals (F = 0.02, p = 0.89) nor between directions (F = 0.69, p = 0.41), and movement durations are longer to the right target (Gaia 0.273 against 0.216 s, Isis 0.195 against 0.174 s; p = 5.8e-38) and longer in Gaia (p = 7.3e-56). Over all 250 pre-MPTP files with trials reaction times differ between the animals (F = 15.19, p = 0.00011); over the files of the paper's records they do not (F = 3.79, p = 0.053). The paper also reports a significant animal by direction interaction for reaction times (p = 0.002), which is not part of the claim; here p = 0.12.",
+     "deviations": [
+      "The first version used all 250 pre-MPTP files with trials, including files with motor cortex, SMA or VLp units only, and gave a reaction-time difference between the animals. After round 1 the test was restricted to the 165 files with units of the dandiset rule, the files of the paper's data as the dandiset identifies them; the outcome changed from partially reproduced to reproduced. All files and the files of the paper's records are shown as variants.",
+      "Movement durations exist for 20 of the 91 Gaia files used.",
+      "The observations are file and direction medians (330 for RT); the paper's ANOVA has 452 error degrees of freedom and does not say what its observations are. No file set here gives 452 (326 on the files with units, 496 on all files, 320 on the files of the paper's records), and the reaction-time animal effect depends on the files used."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3-emg-onset",
+     "statement": "Agonist EMG activity begins well before movement onset, at similar times in both animals (-123 and -135 ms).",
+     "source": "Results, Task performance, paragraph 1; S3 Fig",
+     "quote": "reach-related changes in agonist muscle EMG began well before the overt onset of movement as detected mechanically and those onset latencies were similar for the two animals (-123 and -135 ms in NHP G and I, respectively; S3 Fig).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "The EMG is not in the dandiset; it is in the paper's Dryad deposit (S3_EMGdata files). The Methods do not say how the onset of the EMG change was determined, and FigS3.m only plots the trial-averaged EMG with reaction times, so the onsets cannot be recomputed by the paper's method.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Dryad doi:10.5061/dryad.0cfxpnvxm (S3_EMGdata_NHP_G.mat, S3_EMGdata_NHP_I.mat), mirrored on Zenodo record 4000719",
+     "proposed": null
+    },
+    {
+     "claim": "fig1-vla-localization",
+     "statement": "Thalamic neurons inhibited by GPi stimulation lie dorsal and anterior to neurons excited by SCP stimulation, with a narrow border between VLa and VLp.",
+     "source": "Results, Basic approach, database, and activity at rest, paragraph 2; Fig 1A-B; S1 Fig",
+     "quote": "thalamic neurons inhibited by GPi stimulation ... were always encountered at locations that were dorsal and anterior to neurons excited by SCP stimulation ... In most cases a narrow border (<0.5 mm) separated the deepest GPi-inhibited neuron and the dorsal-most SCP-excited cell",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The stimulation mapping (responses to GPi, SCP and motor cortex stimulation along electrode tracks) is not in the dandiset, which holds task recordings only, nor in the Dryad deposit. The files give electrode coordinates and location labels, which do not test the claim. As a proxy the notebook compares electrodes labelled VLa and VLp. VLa electrodes lie anterior of VLp ones in both animals (p = 6.4e-10 and 5.5e-58) and, by the coordinates as described (ventral positive), ventral of them (p = 1.8e-11 and 2e-27), where the claim places VLa dorsal. The files do not say how the labels were assigned.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-simulation",
+     "statement": "In a model thalamocortical cell with N converging GPi inputs, post-spike inhibition grows with GPi synchrony c and shrinks with convergence N, approximately as ((N - 1)/N)c + 1/N.",
+     "source": "Results, Simulations suggest GPi-VLa communication scales with GPi synchrony and convergence, paragraph 1; Fig 6B-C",
+     "quote": "Results showed a clear growth of the post-spike inhibition of VLa with increasing c ... the post-spike inhibition of VLa decreased in magnitude as the number of converging GPi neurons (N) increased. Average correlations ... were approximately proportional to [(N - 1)/N]c + 1/N",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "A simulation that uses no recorded data. The Dryad deposit holds its output (Data_Fig6.mat) and a plotting script, but not the model thalamocortical cell or the generator of correlated GPi spike trains; reimplementing the model of the paper's reference 103 in XPPAUT was not attempted.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Dryad doi:10.5061/dryad.0cfxpnvxm (Data_Fig6.mat, simulation output), mirrored on Zenodo record 4000719",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "selection_undocumented",
+     "statement": "The dandiset holds more GPi and VLa units than the paper analysed (268 GPi and 279 VLa units under its own labels and the Methods' rate criteria, against 209 and 185) and does not say which units the paper kept. The paper's unit list is only in its Dryad deposit.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "identifier_missing",
+     "statement": "No identifier links a neuron recorded over consecutive files. 97 of the paper's 394 units span 2 to 5 files, and the dandiset stores them as separate units.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Location labels are inconsistent. GPi and VLa are written GPI and VLA in some files, 54 Gaia thalamic units are labelled only \"Thalamus\" (25 of them are VLa units in the paper), and 33 Isis units have an empty location and no channel id.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "30 of the 394 units the paper analysed are not among the curated units. 21 of 254 pre-MPTP files have no curated units. 13 of them hold sorted clusters in processing/ecephys/units (124 in all, 16 in G-140813-2), whose only columns are spike times, unit name and location, so there is no channel or sort letter to match them; 8 have no such table.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "In all 254 pre-MPTP files the session_start_time is two days after the date in the session_id.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Sort labels are letters in some files and numbers in others, and the unit quality column is missing from some files and holds free text (for example \"B -> C\") in others, without a description of its values.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "Error trials are flagged only in files with an error_onset_time column (127 of 253 files with trials), and movement ends are missing from 87 files, all of them Gaia (32 of 119 Gaia files have them), so the Methods' trial exclusion can be applied only in part.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "format_error",
+     "statement": "One pre-MPTP file (I-160616-4) has no trials table, though it has 5 curated units and raw data, and one spike train is stored twice in I-170518-2, as two M1-S units on channels 40 and 43.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The pre-MPTP NWB files name the paper only by its bioRxiv preprint (doi:10.1101/546598); the dandiset metadata names the published paper.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The EMG of S3 Fig and the stimulation mapping of Fig 1 are not in the dandiset; the EMG is in the paper's Dryad deposit and the mapping is not public.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The electrode table's coordinates relative to the anterior commissure (acx_y, acx_z) put the electrodes labelled VLa ventral of those labelled VLp, if z is ventral positive as the column description says, where the paper places VLa dorsal of VLp. The files do not say how the VLa and VLp labels were assigned, so it cannot be told whether the description of the z axis or the labels differ from the paper.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The Results give 218 VLa units and 94% responsive VLa units where Table 1 gives 185 and 88.1%; the text gives median onsets of -62 ms for GPi increases and -108 ms for VLa decreases (Fig 3C) where Table 1 gives -76 and -95.5 ms.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-18",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier queried the archive metadata and the Zenodo deposit and tested helper functions on synthetic inputs. Its report had no attempt record and gave its own outcome for each claim; all 21 agree with the record as reviewed. Cell numbers in the reasons are those of the round-1 notebook.",
+     "agreed": 21,
+     "of": 21,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-18",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full re-executed notebook after the round-1 revision, with its conclusions and summary, the README, the helper module, the claims file and this record, with the paper and the paper's Fig5_S14.m. The verifier saved the paper's text under paper/. It agrees with all 21 outcomes. Cell numbers in the reasons are those of the notebook it reviewed.",
+     "agreed": 21,
+     "of": 21,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000947-schwab-2020",
+   "type": "reproduction",
+   "title": "GPi and VLa activity during reaching in macaques (Schwab et al. 2020)",
+   "description": "Tests the findings of Schwab, Kase, Zimnik, Rosenbaum, Codianni, Rubin and Turner (2020) on the pre-MPTP recordings of dandiset 000947, single units from the internal globus pallidus and the ventrolateral anterior thalamus of two monkeys performing a reaching task. It compares rates, spike widths, peri-movement responses and their latencies, spike and rate correlations of simultaneously recorded pairs, and the effect of GPi bursts and pauses on VLa activity, and links the dandiset's units to the paper's own unit list.",
+   "datasets": [
+    "dandi:000947"
+   ],
+   "papers": [
+    "10.1371/journal.pbio.3000829"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_schwab_2020.ipynb",
+     "title": "Reproducing Schwab et al. (2020) from dandiset 000947",
+     "executed": "notebooks/000947-schwab-2020/reproduce_schwab_2020.html"
+    }
+   ]
+  }
+ ]
+}

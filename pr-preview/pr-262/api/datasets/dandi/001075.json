@@ -1,0 +1,611 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001075",
+  "label": "DANDI:001075"
+ },
+ "page": "datasets/dandi/001075/",
+ "generated": "2026-10-28T23:55:42+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 4,
+  "partially_reproduced": 3,
+  "not_reproduced": 0,
+  "blocked": 7
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 1,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 1
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 2,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001075-randi-2023-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001075",
+    "version": "0.240930.1859",
+    "doi": "10.48324/dandi.001075/0.240930.1859"
+   },
+   "key": "dandi:001075",
+   "label": "DANDI:001075",
+   "dataset_version": "0.240930.1859",
+   "paper": "10.1038/s41586-023-06683-4",
+   "paper_title": "Neural signal propagation atlas of Caenorhabditis elegans",
+   "date": "2026-10-18",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-7"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/39122223949"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "001075-randi-2023",
+   "entry_title": "Neural signal propagation atlas of C. elegans (Randi et al. 2023)",
+   "description": "Tests the findings of Randi, Sharma, Dvali and Leifer (2023) on dandiset 001075, which holds the 113 wild-type-background recordings of whole-brain calcium imaging during single-neuron optogenetic stimulation, 110 of them with extracted traces. It checks the recordings, the number of measured neuron pairs, three example connections of Figure 1, the spatial specificity of the stimulation, the responses to RID stimulation in WT and, from the paper's OSF export, in unc-31 animals, and how the per-pair measurements and recordings link to the paper's Source Data and OSF export. The q values, the spontaneous recordings and the kernel analyses are not testable.",
+   "notebooks": [
+    {
+     "path": "reproduce_randi_2023.ipynb",
+     "title": "Reproducing Randi et al. (2023) from dandiset 001075",
+     "executed": "notebooks/001075-randi-2023/reproduce_randi_2023.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "recordings-protocol",
+     "statement": "Activity was recorded from 113 WT-background animals, each for up to 40 min, while a neuron was stimulated once every 30 s with a 0.5 s train of light pulses.",
+     "source": "Results, \"Population imaging and single-cell activation\", paragraph 1; Methods, \"Stimulus delivery and pulsed laser\", paragraph 3",
+     "quote": "We recorded activity from 113 wild-type (WT)-background animals, each for up to 40 min, while stimulating a mostly randomly selected sequence of neurons one by one every 30 s ... a 500-ms (300-ms for the unc-31-mutant strain) train of light pulses was used to optogenetically stimulate that neuron",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_randi_2023.ipynb",
+     "notes": "The dandiset has 113 subjects, one session each, but only 110 have the segmentation file with traces and the stimulation table; subjects 20, 23 and 33 have only the raw imaging file. The median interval between stimulations is 30.81 s, and 107 of 110 recordings last no more than 44 min (13 are longer than 40 min, the longest 48.7 min). Every stimulation is stored as 0.5 s and 1.2 mW; the conversion writes both as constants.",
+     "deviations": [
+      "The stimulus duration cannot be checked against the data, as it is a constant in the files."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pairs-measured",
+     "statement": "Responses to stimulation were imaged for 23,433 pairs of neurons (66% of all possible pairs in the head), from 186 of the 188 head neurons, and some pairs were observed as many as 59 times.",
+     "source": "Results, \"Signal propagation map\", paragraph 1; Extended Data Fig. 4a",
+     "quote": "We imaged activity in response to stimulation for 23,433 pairs of neurons (66% of all possible pairs in the head). Measured pairs were imaged at least once, and some as many as 59 times ... This includes activity from 186 of 188 neurons in the head",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_randi_2023.ipynb",
+     "notes": "Under reading (a), with i = j and the autoresponse required, 20,587 head pairs are observed (expected 23,433 with tolerance 2,343), from 184 head neurons (186, tolerance 18.6), with at most 50 observations of a pair (59, tolerance 5.9); only the neuron count is within tolerance. Reading (b) gives 20,422 pairs. Reading (c), without the autoresponse requirement, gives 23,813 pairs and 184 neurons, within tolerance, but at most 86 observations. 107 animals contribute; 172 head neurons are stimulated with an autoresponse (the Source Data list 168). With the stimulated ROI from the paper's export, reading (a) gives 20,351 pairs, 183 neurons and at most 55 observations.",
+     "deviations": [
+      "The stimulated ROI is found from the target position for stimulations without a manually located ROI; the paper maps the nearest neuron through tracking matches that are not in the dandiset. The two agree for 66% of such stimulations.",
+      "The paper's exclusion of some stimulations (950 marked -2 in its export) and its matchless traces for dim neurons are not in the dandiset, so all stimulations and only the regular traces are used.",
+      "The paper's text does not say whether the 23,433 pairs include i = j; the Source Data count does. Three readings are shown."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1e-avjr-avdr",
+     "statement": "Stimulation of the interneuron AVJR evoked activity in AVDR.",
+     "source": "Fig. 1e",
+     "quote": "Stimulation of the interneuron AVJR evoked activity in AVDR (Fig. 1e)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_randi_2023.ipynb",
+     "notes": "Over 27 AVJR stimulations with an autoresponse in 17 animals, the mean dF/F0 of AVDR is 0.236 (Source Data 0.246), Wilcoxon p = 5.5e-05 against 0, with 12 detected AVDR responses; 16 of 17 animals have a positive mean. The code's decaying correction gives 0.197.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-aver-avar",
+     "statement": "Activation of the premotor interneuron AVER evoked activity transients in AVAR.",
+     "source": "Fig. 1f",
+     "quote": "Activation of the premotor interneuron AVER evoked activity transients in AVAR (Fig. 1f)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_randi_2023.ipynb",
+     "notes": "Over 7 AVER stimulations with an autoresponse in 5 animals, the mean dF/F0 of AVAR is 0.159 (Source Data 0.204), with 4 detected AVAR responses. The trials do not differ from 0 by a Wilcoxon test (p = 0.22) and 3 of 5 animals have a positive mean, so the evidence is thin. The code's decaying correction gives 0.163.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1g-saadl-ollr",
+     "statement": "Activation of SAADL inhibited the activity of the sensory neuron OLLR.",
+     "source": "Fig. 1g",
+     "quote": "Activation of the turning-associated neuron SAADL ... inhibited the activity of the sensory neuron OLLR",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_randi_2023.ipynb",
+     "notes": "Over 5 SAADL stimulations with an autoresponse in 4 animals, the mean dF/F0 of OLLR is -0.059 (Source Data -0.040), with 2 detected OLLR responses. The trials do not differ from 0 (p = 0.44), 3 of 4 animals have a negative mean, and the code's decaying correction gives +0.014, so the sign is not robust.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "edfig2ij-spatial-specificity",
+     "statement": "Stimulation does not elicit responses in most close neighbours of the targeted neuron; at 75% of the cumulative distribution, neighbours' responses are below a dF/F0 of 0.1.",
+     "source": "Extended Data Fig. 2i,j and legend; Methods, \"Characterization of the size of the two-photon excitation spot\", paragraph 2",
+     "quote": "Cross-hairs in j, 75% cumulative distribution at \u0394F/F0 = 0.1 ... we show that stimulations do not elicit responses in most of the close neighbours of the targeted neurons",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_randi_2023.ipynb",
+     "notes": "Under reading (a), 74.1% of the neighbours 4 to 16 um from the target have dF/F0 below 0.1 (expected 0.75, tolerance 0.075; the Source Data give 0.749). The bands give 60.4% (4 to 10 um) and 81.7% (10 to 16 um), against 61.6% and 82.3% in the Source Data. The targeted ROI's median, 0.376, is 6.2 times the 4 to 10 um median (0.061). Per animal the pooled fraction ranges from 0.50 to 0.97. Leaving out rows with F0 <= 0 gives the same fractions (0.741 pooled).",
+     "deviations": [
+      "The legend does not say which neighbours its 75% refers to; readings (a) and (c) are within tolerance, (b) is not.",
+      "Distances use 0.42 um per pixel from the paper's code and the median plane step of the imaging file's depth per frame (1.22 um)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "sourcedata-link",
+     "statement": "The per-pair measurements computed from the dandiset agree with the paper's published per-pair values, the number of observations (Extended Data Fig. 4a) and the mean response <dF/F0>_t (Extended Data Fig. 3a).",
+     "source": "Source Data of Extended Data Figs. 3a and 4a",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_randi_2023.ipynb",
+     "notes": "Pairs are matched by neuron names. 81.7% of the paper's 23,433 observed pairs are observed here, the Spearman correlation of observation counts is 0.768 and the Pearson correlation of mean dF/F0 is 0.551 (criterion for reproduced 90%, 0.9 and 0.7; for partial 70%, 0.7 and 0.5). Counts are equal for 27.4% of pairs (median difference 0), and the sign of the mean agrees for 65.2%. With the code's decaying correction the correlation of means is 0.617. With the stimulated ROI from the paper's export the values are 83.3%, 0.820 and 0.676, and with its labels as well 84.5%, 0.834 and 0.684, so part of the difference comes from the identification and most of it does not. Keeping only rows with F0 > 0 (Pearson 0.552) or traces corrected for photobleaching (0.551), or leaving out the nine recordings with negative traces (0.534), the 950 stimulations the export excludes (0.601) or the nine recordings with agreement below 0.6 (0.544), keeps the result in the partial band; all these filters together give 76.8%, 0.765 and 0.569.",
+     "deviations": [
+      "Main reading follows the Methods' dF/F0; the code's decaying correction and the mean over detected responses only are shown as variants."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "osf-link",
+     "statement": "The dandiset's recordings can be linked to the recordings the paper exported to its OSF repository, and the stimulated neuron found here from the target position agrees with the one the paper's pipeline assigned.",
+     "source": "Data availability (OSF doi 10.17605/OSF.IO/E2SYT, raw_extracted_data)",
+     "quote": "Machine-readable datasets containing the measurements from this work are publicly accessible through on Open Science Foundation repository at 10.17605/OSF.IO/E2SYT",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_randi_2023.ipynb",
+     "notes": "All 110 recordings with traces match one exported recording by session date and time, with the same number of stimulations, and 109 with the same number of ROIs; the 3 unmatched exported recordings are the 3 subjects with only imaging files. Of 4,479 stimulations both assign to an ROI, 3,913 (87.4%) agree, which meets the criterion's 80% as worded. All 2,812 manual targets agree by construction, as the file's target_pumpprobe_id is the pipeline's own assignment; of the 1,667 found from the target position, which is what the claim states, 1,101 (66.0%) agree, inside the 60 to 80% band of a partial result, and the outcome is judged on this figure (changed from reproduced after the first verification round). Agreement is below 0.6 in nine recordings (position-found agreement 0.10 to 0.36). Three recordings have a fitted z slope of exactly 0 (median position-found agreement 0.579, against 0.739 for the other 107), and agreement rises with the absolute slope (Spearman 0.478). The export marks 950 stimulations as excluded. ROI labels agree with the export in every recording except six. In subject 11 the export has no labels (41 distinct names here, 161 ROIs here against 200 exported); in subjects 64 and 76 the dandiset has 4 and 0 distinct names against 70 and 102 exported, and in 77 it has 15; in 86 and 91 most names are shared (35 of 69 and 59 of 81) but sit on other ROIs.",
+     "deviations": [
+      "The criterion pools manual and position-found targets; the claim's statement concerns the position-found ones, and the outcome follows the statement."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-inhibitory-fraction",
+     "statement": "11% of the functional connections at q < 0.05 are inhibitory.",
+     "source": "Results, \"Signal propagation map\", paragraph 5; Fig. 2d",
+     "quote": "Our measurements indicate that 11% of q < 0.05 functional connections are inhibitory (Fig. 2d)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_randi_2023.ipynb",
+     "notes": "Of the 1,310 Source Data pairs with q < 0.05, 1,161 are observed here and 15.1% of them have a negative mean dF/F0 (reading a; 17.4% without i = j), outside 0.11 with tolerance 0.011. The Source Data's own means give 11.5% for the same pairs, and the signs here agree with them for 89.1% of observed pairs, so the difference comes from the response amplitudes computed from the dandiset, not from the outside selection. With the code's decaying correction the fraction is 9.6%; it is 7.3% at q < 0.01 and 21.2% at q < 0.1. Inhibitory pairs are a minority under every variant. The excess is not explained by a non-positive F0 or by failed photobleaching fits (15.1% with F0 > 0 only or with corrected traces only), nor by the nine recordings with negative traces (15.3% without them), the export's excluded stimulations (15.2%) or the nine poorly linked recordings (15.6%); all these filters together give 15.8%. With the stimulated ROI from the export, which applies its exclusions, it is 14.0%, and 13.4% with the export's labels as well.",
+     "deviations": [
+      "The q values come from the paper's Source Data, as the control recordings needed to compute them are not public.",
+      "The deviations of pairs-measured apply."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-1310-connected",
+     "statement": "1,310 of the 23,433 measured neuron pairs (6%) are functionally connected at q < 0.05.",
+     "source": "Results, \"Signal propagation map\", paragraph 3; Fig. 2c",
+     "quote": "A total of 1,310 of the 23,433 measured neuron pairs, or 6%, pass our stringent criteria to be deemed functionally connected at q < 0.05 (Fig. 2c)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The q values compare each pair's responses with a null distribution from unstimulated control recordings. These are not in the dandiset, not in the paper's OSF repository, and the code reads them from private paths (/projects/LEIFER/Sophie/Lists/No_stim_list.txt).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-bilateral",
+     "statement": "Bilaterally symmetric neurons are eight times more likely to be functionally connected than pairs chosen at random.",
+     "source": "Results, \"Signal propagation map\", paragraph 4; Fig. 2c",
+     "quote": "As expected, bilaterally symmetric neurons are (eight times) more likely to be functionally connected than are pairs of neurons chosen at random (Fig. 2c)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the q values, which need the unstimulated control recordings (see fig2c-1310-connected).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2efg-path-length",
+     "statement": "The probability of a functional connection decreases with the minimal anatomical path length, functionally connected pairs are on average 2.1 hops apart, and pairs with long paths are more often functionally non-connected.",
+     "source": "Results, \"Signal propagation map\", paragraph 6; Fig. 2e-g",
+     "quote": "the likelihood of functional connections decreased as the minimal path length through the anatomical network increased (Fig. 2e) ... neurons that had large minimal path lengths through the anatomical network were more likely to be functionally non-connected ... Functionally connected (q < 0.05) neurons were on average connected by a minimal anatomical path length of 2.1 hops",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the q and q_eq values, which need the unstimulated control recordings (see fig2c-1310-connected). The connectome files the paper uses are public in its code repository.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-anatomy-predictions",
+     "statement": "Signal propagation differs from predictions of a connectome-constrained model; pairs predicted to respond strongly respond more, but agreement over all pairs is poor (R2 < 0), improves when weights and signs are fitted, and is better in unc-31 animals.",
+     "source": "Results, \"Functional measurements differ from anatomy\", paragraphs 2 to 4; Fig. 3b-d",
+     "quote": "Neuron pairs that the model predicted to have large responses (\u0394V > 0.1) were significantly more likely to have larger measured responses ... poor agreement between anatomy-based prediction and measurement when considering the response amplitudes of all neuron pairs ... Fitting the weights and signs ... improved the agreement ... signal propagation in these animals showed better agreement with anatomy than it did in WT animals",
+     "statistics": [
+      {
+       "about": "measured responses of pairs predicted to respond strongly (\u0394V > 0.1 V) against those predicted to respond little",
+       "test": "one-sided Kolmogorov\u2013Smirnov test",
+       "p": 1e-88
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The anatomy-derived predictions per pair come from a biophysical model whose outputs the paper's scripts read from private paths (/projects/LEIFER/francesco/simulations/); the model code is not in the linked repositories, and the Source Data give the predictions without pair names. Panels c and d also need the q values and the unc-31 recordings.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "edfig6-kernel-stereotypy",
+     "statement": "Kernels of one neuron pair are more similar to each other than to kernels of other pairs, and kernel rise times characterize the speed of signal propagation.",
+     "source": "Results, \"Signal propagation map\", paragraph 7; Extended Data Fig. 6b-f",
+     "quote": "As expected, kernels from one neuron pair were more similar to each other than to kernels from other pairs (Extended Data Fig. 6f) ... Kernel rise time for each measured neuron pair in WT is a metric of signal propagation speed",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "Kernels are fitted with the paper's pumpprobe package (convolutions of exponentials in C++ extensions). A notebook cell now builds it and the packages it imports at fixed commits, with the kernel's Python 3.13 and numpy 2.5.4. As published, pumpprobe 1dbc5e0 does not build, as the compiler does not find the numpy headers. With the headers added by hand it builds but cannot be imported, since mistofrutta 11ac8c3 fails on its version string, wormbrain d94f7a1 needs the Eigen library and wormdatamodel 2ab9561 uses numpy C API names removed in numpy 2. The paper's setup.sh also points the compiler at libraries under /projects/LEIFER. The data needed are in the dandiset. The fits were not reimplemented without the package.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "edfig7b-unc31-fewer",
+     "statement": "unc-31 mutants have a smaller proportion of functionally connected pairs than WT animals.",
+     "source": "Results, \"Extrasynaptic signalling also drives neural dynamics\", paragraph 3; Extended Data Fig. 7b",
+     "quote": "Consistent with this, unc-31 animals had a smaller proportion of functional connections than did WT animals (Extended Data Fig. 7b)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The unc-31 recordings are not in the dandiset; exported traces of 18 unc-31 animals are on OSF, but the q values also need unc-31 control recordings, which are not public anywhere.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-rid-wt",
+     "statement": "URX, ADL and AWB, predicted from anatomy to have no response, respond strongly to RID stimulation in WT animals.",
+     "source": "Results, \"Extrasynaptic signalling also drives neural dynamics\", paragraph 4; Fig. 4a-d; Extended Data Fig. 7c",
+     "quote": "Many neurons responded to RID activation (Extended Data Fig. 7c), including URX, ADL and AWB, three neuron subtypes that were predicted from anatomy to have no response (Fig. 4a). These three neurons showed strong responses in WT animals",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_randi_2023.ipynb",
+     "notes": "Changed from blocked after the first verification round, which asked for a check of RID labels. The dandiset labels 11 ROIs RID in 11 recordings, and 8 stimulations in 5 animals target such an ROI (5 manually located, 3 nearest-centroid). The criterion was written after seeing these counts and before computing any response. Under both readings only AWB meets it. AWB, left and right pooled, has a mean dF/F0 of 0.076 over 12 trials in 5 animals with 3 detected responses (82nd percentile of the head-pair means); AWBR has 0.094 over 7 trials with 2 detected. URX is observed once (URXR, 0.032, not detected) and ADL is never observed with a side label (one trace labelled ADL without a side, 0.011). With the export's assignment (11 stimulations) AWB has a mean of 0.100 with 5 detected responses. \"Strongly\" holds for AWB only in the sense of the percentile given.",
+     "deviations": [
+      "Only RID stimulations whose target is an ROI labelled RID are found; the paper also includes manually targeted RID stimulations in which RID was not segmented.",
+      "The paper substitutes matchless traces for neurons such as ADL in the RID analysis; they are not in the dandiset, so only regular traces are used.",
+      "As in the Methods for Fig. 4, no autoresponse is required and values beyond 2 in absolute value are excluded (none of URX, ADL or AWB was)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-rid-unc31",
+     "statement": "The responses of URXL, ADLR and AWBR to RID stimulation are reduced or absent in unc-31 mutants.",
+     "source": "Results, \"Extrasynaptic signalling also drives neural dynamics\", paragraph 4; Fig. 4b-d",
+     "quote": "These three neurons showed strong responses in WT animals but their responses were reduced or absent in unc-31 mutants (Fig. 4b\u2013d)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_randi_2023.ipynb",
+     "notes": "Changed from blocked after the first verification round. The earlier notes were wrong; the unc-31 export labels RID, and 28 stimulations in 8 of its 18 recordings target an ROI labelled RID. In unc-31, URX (left and right) has a mean dF/F0 of 0.031 over 25 trials, ADL 0.061 over 14 and AWB 0.067 over 50 (URXL 0.018, ADLR 0.033, AWBR 0.048). The neurons observed in both strains are URX and AWB under reading (a) and AWBR under reading (b), and each is lower in unc-31 than in the WT dandiset (URX 0.031 against 0.032 from one WT trial, AWB 0.067 against 0.076, AWBR 0.048 against 0.094), so the criterion holds under both readings. The evidence is thin. The differences are small, one-sided Mann-Whitney tests do not find them (p = 0.54, 0.44 and 0.31), and AWB responses are still detected in 17 of 50 unc-31 trials, so the responses are reduced in mean, not absent. Against the WT export (7 recordings), URX and AWB are also lower in unc-31, while ADL, observed once in WT (-0.062), is higher.",
+     "deviations": [
+      "The unc-31 data are the paper's exported traces, processed with the dandiset pipeline (missing values interpolated linearly here, the exported stimulation volumes used); the WT side is the dandiset, whose traces differ from the export, and the WT export is shown as a variant.",
+      "The deviations of fig4-rid-wt apply."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "OSF doi 10.17605/OSF.IO/E2SYT (exported_data_full.tar.gz and exported_data_unc31.tar.gz)",
+     "proposed": null
+    },
+    {
+     "claim": "fig5-extrasynaptic-screen",
+     "statement": "Fifty-three pairs are functionally connected in WT (q < 0.05) and functionally non-connected in unc-31 (q_eq < 0.05), with timescales similar to all functional connections.",
+     "source": "Results, \"Extrasynaptic-dependent signal propagation screen\", paragraph 1; Fig. 5a; Extended Data Fig. 9",
+     "quote": "Fifty-three pairs of neurons met our criteria (Extended Data Fig. 9) ... The timescales of signal propagation for those neuron pairs that passed our screen were similar to that of all functional connections (Fig. 5a)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs q in WT and q_eq in unc-31, hence the control recordings of both strains, which are not public, and the unc-31 recordings, which are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-spontaneous",
+     "statement": "Correlations derived from the measured kernels predict spontaneous activity correlations better than anatomical weights or the connectome-constrained model.",
+     "source": "Results, \"Signal propagation predicts spontaneous activity\", paragraph 1; Fig. 6",
+     "quote": "We conclude that functionally derived predictions based on our measured signal propagation kernels better agree with spontaneous activity than do either a bare description of anatomical weights or an established model constrained by the connectome",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "The spontaneous recordings are on OSF (spont_data_fig6.zip), but the kernel-based prediction needs the kernel fits of edfig6-kernel-stereotypy, which is blocked as not runnable, so this claim is blocked for the same reason (the dependency is now in the claims file). It also needs q values (control recordings not public) and the anatomy-model predictions, which are not public.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "OSF doi 10.17605/OSF.IO/E2SYT (spont_data_fig6.zip)",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "Three of the 113 subjects (20, 23, 33) have only the raw imaging file, without the segmentation file that holds the traces and the stimulation table.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The unc-31 recordings, the spontaneous recordings of Fig. 6 and the unstimulated control recordings are not in the dandiset. The control recordings, which every q value in the paper needs, are not public on OSF either, so the paper's central statistics cannot be recomputed.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "identifier_missing",
+     "statement": "For about half of the stimulations the files do not say which ROI was stimulated; they give only a target position. The paper's assignment uses tracking matches that are not in the dandiset; from the position, 66% of these stimulations get the paper's ROI. RID stimulations can be recognised only where RID was segmented and labelled (8 stimulations in 5 animals).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The paper's export marks 950 stimulations as excluded (-2); the dandiset keeps all stimulations and does not say which were excluded or why.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "In five recordings the labels reached through `neuropal_ids` and the NeuroPAL table differ from the paper's export for every named ROI. In subjects 64, 76 and 77 the dandiset has almost no labels (4, 0 and 15 distinct names against 70, 102 and 87 exported). In subjects 86 and 91 most names are shared with the export but sit on other ROIs. In subject 11 the number of ROIs (161) differs from the export (200), and the export has no labels for it.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "format_error",
+     "statement": "The column `neuropal_ids`, documented as a NeuroPAL ROI id or blank, holds the text \"merge\" in 63 recordings and \"check\", \"I4\" or \"RIAR\" in others.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The target column `depth_in_um` holds values from -0.875 to 0.875, which cannot be micrometres in a volume imaged from 2.5 to 37.5 um; the unit is not stated. 122 stimulations have the target position (0, 0), meaning no stored position.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Every stimulation is stored as 0.5 s at 1.2 mW, constants from the paper written by the conversion; the 0.1 to 0.5 s pulses the Methods describe for AFD stimulations are not represented.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The red optical channel is described with the indicator GCaMP6s, but it images tagRFP-T. Two subjects (24, 25) have strain \"none\". The age is P1D for every animal, L4 or young adult. One label confidence is 11, outside the 0 to 1 range.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "Of the 14,039 traces, 897 cannot be corrected for photobleaching with the paper's fit, 729 of them because values are missing even in the interpolated copy. 3,173 of 433,216 observation rows have a baseline F0 at or below zero, so their dF/F0 has no meaning; the variants without them change no outcome.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The traces have unit \"n.a.\" and are described only as average baseline fluorescence, without saying what processing they have had; while preparing (not run in the notebook) they were seen to differ from the paper's exported traces. Nine recordings (subjects 2, 3, 4, 34, 35, 36, 38, 39, 40) hold values far below zero, down to -196,646.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "Some ROIs carry the NeuroPAL label \"target\" (49 ROIs in 21 recordings), and labels such as RIG or SAAD name no single neuron.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Thirteen recordings last longer than the \"up to 40 min\" of the paper (up to 48.7 min), and three have gaps in their timestamps of up to 8.4 s.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-18",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier opened one imaging file of the archive and sampled asset metadata, and tested helper functions on synthetic inputs; it did not stream any segmentation file. Its report had no attempt record and gave its own outcome for each of the 19 claims.",
+     "agreed": 15,
+     "of": 19,
+     "disagreements": [
+      {
+       "claim": "osf-link",
+       "outcome": "partially_reproduced",
+       "reason": "110 of 110 recordings match by key and stimulation count and 109 by ROI count, and overall same-ROI agreement is 0.874, which meets the criterion as worded. But all 2,812 manual targets agree by construction, as target_pumpprobe_id is the pipeline's own assignment. Targets found from position, which is what the claim states, agree 1,101 of 1,667 = 0.660, inside the 60 to 80% partial band. Nine recordings fall below 0.6 and stay in every main analysis (B3). Six recordings have 0% label agreement, which suggests an ROI-order mismatch (B5)."
+      },
+      {
+       "claim": "edfig6-kernel-stereotypy",
+       "outcome": "blocked",
+       "reason": "Blocked, other. \"Not runnable\" is not an allowed category; the WT traces needed for kernel fits are in the archive and the Methods and code describe the fit, so this is testable in principle. It was not attempted."
+      },
+      {
+       "claim": "fig4-rid-unc31",
+       "outcome": "blocked",
+       "reason": "Blocked, data_missing. unc-31 is absent from the archive (the claims file lists the data under OSF); \"metadata insufficient\" is the wrong category."
+      },
+      {
+       "claim": "fig6-spontaneous",
+       "outcome": "blocked",
+       "reason": "Blocked, data_missing. The spontaneous recordings are not in the archive (OSF only), and \"not runnable\" is not an allowed reason."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-18",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the first revision, with its conclusions and summary, the attempt record, the README, the helper module and the claims file, with the paper. The verifier checked every conclusion sentence against the printed outputs and said which of its round-1 points were resolved.",
+     "agreed": 19,
+     "of": 19,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001075-randi-2023",
+   "type": "reproduction",
+   "title": "Neural signal propagation atlas of C. elegans (Randi et al. 2023)",
+   "description": "Tests the findings of Randi, Sharma, Dvali and Leifer (2023) on dandiset 001075, which holds the 113 wild-type-background recordings of whole-brain calcium imaging during single-neuron optogenetic stimulation, 110 of them with extracted traces. It checks the recordings, the number of measured neuron pairs, three example connections of Figure 1, the spatial specificity of the stimulation, the responses to RID stimulation in WT and, from the paper's OSF export, in unc-31 animals, and how the per-pair measurements and recordings link to the paper's Source Data and OSF export. The q values, the spontaneous recordings and the kernel analyses are not testable.",
+   "datasets": [
+    "dandi:001075"
+   ],
+   "papers": [
+    "10.1038/s41586-023-06683-4"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_randi_2023.ipynb",
+     "title": "Reproducing Randi et al. (2023) from dandiset 001075",
+     "executed": "notebooks/001075-randi-2023/reproduce_randi_2023.html"
+    }
+   ]
+  }
+ ]
+}
