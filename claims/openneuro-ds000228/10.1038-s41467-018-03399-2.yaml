@@ -69,7 +69,8 @@
 #    T01 10, T02 16, T03 6, T04 14, T05 8, T06 10, T07 4; P01 10, P02 18, P03 12, P04 6, P05 6,
 #    P06 10, P07 4, P08 to P12 4 each.
 # P9 Motion covariate: number of artifact timepoints. Partial correlations with motion as covariate
-#    are Spearman (age) or Kendall (ToM score); regressions are ordinary linear regressions.
+#    are Spearman, except IRC against ToM score, which is Kendall; each claim names its test.
+#    Regressions are ordinary linear regressions.
 #
 # Details none of the paper's sources fixes, with the readings named. Each criterion that rests on
 # one refers to it by its label.
@@ -103,7 +104,8 @@
 # mean); other reported numbers use 10% of the value. Counts of participants use 0, as they are
 # counts of the same people. Rule S, used by many criteria: a claim is reproduced when every
 # expected value is within tolerance and every test listed under statistics gives the same sign
-# and meets the paper's p bound; partially reproduced when the tests hold but some value is out of
+# and meets the paper's p bound (for an exact p, the same side of .05, or of the corrected alpha
+# the claim gives, as the paper's); partially reproduced when the tests hold but some value is out of
 # tolerance; not reproduced when a test fails or its sign is reversed.
 #
 # Outside data the paper relies on: the independent adult sample (n = 20, scanned by Evelina
@@ -192,7 +194,8 @@ claims:
     for reproduced, and partially reproduced when the totals 30, 20 and 15 match but the split by
     age does not.
 - id: beh-tom-age
-  statement: Among children, ToM score (proportion correct) increases with age (Kendall tau = .66).
+  statement: Among children, ToM score (proportion correct) increases with age (Kendall tau = .66), and
+    among the 3- to 5-year-olds DCCS summary score also increases with age (Kendall tau = .20).
   source: Results, Behavioral results, paragraph 1; Figure 1a
   quote: Performance on the ToM task (proportion correct) and DCCS were both positively correlated with
     age
@@ -331,8 +334,9 @@ claims:
     unit: years
   criterion: Rule S, Tukey diffs reported under both scales of O9.
 - id: beh-fb-dccs
-  statement: False-belief failers have lower DCCS scores (worse response inhibition) than passers
-    (means 1.73, 2.26, 2.33 for fail, inconsistent, pass).
+  statement: False-belief failers have lower DCCS scores (worse response inhibition) than the other two
+    groups (means 1.73, 2.26, 2.33 for fail, inconsistent, pass), significantly against passers and
+    marginally against inconsistent performers.
   source: Results, Behavioral results, paragraph 2
   quote: failers demonstrated worse response inhibition than the other two groups
   statistics:
@@ -661,12 +665,13 @@ claims:
   depends_on:
   - irc-control-networks
   criterion: Williams' test (Steiger's form for dependent correlations sharing age) of the
-    difference between the two partial age correlations of irc-control-networks, with the
-    correlation between the two IRC measures as the third correlation; the paper names the test but
-    not whether it used the partial or raw correlations, and the partial ones are its reported age
-    correlations. Reproduced when the four significant differences (Face and V1 against ToM and Pain)
-    and the two across-network differences are significant at p < .05 in the same direction, and the
-    four Scene and M1 comparisons are not.
+    difference between two age correlations of irc-control-networks, with the correlation between
+    the two IRC measures as the third correlation. The paper names the test but not which
+    correlations it compared, so the readings are (a) the partial age correlations (motion as
+    covariate), which are the age correlations it reports; (b) the Spearman correlations with age
+    without the motion covariate. Reproduced, under a reading, when the four significant differences
+    (Face and V1 against ToM and Pain) and the two across-network differences are significant at
+    p < .05 in the same direction, and the four Scene and M1 comparisons are not.
 - id: irc-3yo-distinct
   statement: In 3-year-olds, within-ToM (mean z .21) and within-Pain (.23) correlations are positive and
     higher than the across-network correlation, so the two networks are already distinct.
@@ -756,9 +761,11 @@ claims:
     tolerance: 0.44
   depends_on:
   - irc-3yo-distinct
-  criterion: The paper does not list the bilateral pairs. Read as the left-right pairs of Supplementary
-    Table 2, RTPJ-LTPJ for ToM and RS2-LS2, RInsula-LInsula, RMFG-LMFG for Pain, dropped from the
-    within-network means; the midline regions (PC, DMPFC, MMPFC, VMPFC, AMCC) have no partner. Rule S.
+  criterion: The paper does not list the bilateral pairs. Readings, (a) all left-right pairs of
+    Supplementary Table 2, RTPJ-LTPJ for ToM and RS2-LS2, RInsula-LInsula, RMFG-LMFG for Pain, dropped
+    from the within-network means (the midline regions PC, DMPFC, MMPFC, VMPFC, AMCC have no
+    partner); (b) only the two pairs the paper names, RTPJ-LTPJ and RInsula-LInsula. Rule S under
+    either reading.
 - id: irc-tom-behavior
   statement: Among children, within-ToM correlation rises and across-network correlation falls with
     ToM score, controlling for motion.
@@ -926,7 +933,7 @@ claims:
     reading.
 - id: rc-child-adult-timecourse
   statement: The mean network timecourse of each child age group correlates with the adult mean
-    timecourse, more so with age (ToM r .28, .31, .60, .72, .82; Pain .60, .56, .73, .83, .89 for 3,
+    timecourse (ToM r .28, .31, .60, .72, .82; Pain .60, .56, .73, .83, .89 for 3,
     4, 5, 7 and 8-12 years).
   source: Results, Reverse correlation analysis, paragraphs 3 and 4; Supplementary Table 4
   quote: The average timecourse in ToM and pain regions in children was highly correlated with that of
@@ -984,8 +991,8 @@ claims:
     tolerance: 0.089
   criterion: Network timecourses as P6 before z-normalization (Supplementary Table 4 legend), TRs 11
     to 168, averaged over the children of each age group and over the adults, artifact timepoints
-    left out of the averages. Rule S; partially reproduced when every r is significant and rises
-    from the youngest to the oldest bin but some values are out of tolerance.
+    left out of the averages. Rule S; partially reproduced when every r is significant at the
+    paper's bounds but some values are out of tolerance.
 - id: supp-table4-other-networks
   statement: The age-group mean timecourses of the Face, Scene, V1 and bilateral FFA regions correlate
     with the adult timecourse in every age group, and M1 does in all but the 3- and 4-year-olds.
@@ -1005,26 +1012,86 @@ claims:
     statistic: r = 0.06
     p: 0.46
   expected:
-  - quantity: r Face 3yo, 4yo, 5yo, 7yo, 8-12yo (.75, .59, .71, .84, .86); listed value is 3yo
+  - quantity: r Face 3yo
     value: 0.75
     tolerance: 0.075
-  - quantity: r Scene 3yo (others .67, .77, .80, .85)
+  - quantity: r Face 4yo
+    value: 0.59
+    tolerance: 0.059
+  - quantity: r Face 5yo
+    value: 0.71
+    tolerance: 0.071
+  - quantity: r Face 7yo
+    value: 0.84
+    tolerance: 0.084
+  - quantity: r Face 8-12yo
+    value: 0.86
+    tolerance: 0.086
+  - quantity: r Scene 3yo
     value: 0.61
     tolerance: 0.061
-  - quantity: r M1 3yo (others .06, .35, .44, .53)
+  - quantity: r Scene 4yo
+    value: 0.67
+    tolerance: 0.067
+  - quantity: r Scene 5yo
+    value: 0.77
+    tolerance: 0.077
+  - quantity: r Scene 7yo
+    value: 0.8
+    tolerance: 0.08
+  - quantity: r Scene 8-12yo
+    value: 0.85
+    tolerance: 0.085
+  - quantity: r M1 3yo
     value: 0.11
     tolerance: 0.011
-  - quantity: r V1 3yo (others .61, .78, .74, .76)
+  - quantity: r M1 4yo
+    value: 0.06
+    tolerance: 0.006
+  - quantity: r M1 5yo
+    value: 0.35
+    tolerance: 0.035
+  - quantity: r M1 7yo
+    value: 0.44
+    tolerance: 0.044
+  - quantity: r M1 8-12yo
     value: 0.53
     tolerance: 0.053
-  - quantity: r Bi-FFA 3yo (others .60, .68, .82, .83)
+  - quantity: r V1 3yo
+    value: 0.53
+    tolerance: 0.053
+  - quantity: r V1 4yo
+    value: 0.61
+    tolerance: 0.061
+  - quantity: r V1 5yo
+    value: 0.78
+    tolerance: 0.078
+  - quantity: r V1 7yo
+    value: 0.74
+    tolerance: 0.074
+  - quantity: r V1 8-12yo
+    value: 0.76
+    tolerance: 0.076
+  - quantity: r Bi-FFA 3yo
     value: 0.72
     tolerance: 0.072
+  - quantity: r Bi-FFA 4yo
+    value: 0.6
+    tolerance: 0.06
+  - quantity: r Bi-FFA 5yo
+    value: 0.68
+    tolerance: 0.068
+  - quantity: r Bi-FFA 7yo
+    value: 0.82
+    tolerance: 0.082
+  - quantity: r Bi-FFA 8-12yo
+    value: 0.83
+    tolerance: 0.083
   data: with_inputs
   depends_on:
   - rc-child-adult-timecourse
   criterion: As rc-child-adult-timecourse, for the regions of irc-control-networks and the bilateral
-    fusiform ROIs. Every one of the 25 values listed (each to 10%) is compared; reproduced when all
+    fusiform ROIs. Every one of the 25 expected values (each to 10%) is compared; reproduced when all
     are within tolerance and only the two M1 values are not significant; partially reproduced when
     at least 20 are within tolerance and the significance pattern holds.
 - id: rc-age-events
@@ -1277,6 +1344,9 @@ claims:
     value: 18
     tolerance: 1.8
     unit: s
+  - quantity: 3yo face events
+    value: 4
+    tolerance: 0
   data: with_inputs
   criterion: Fusiform ROIs are the group-constrained face parcels of Julian et al. 2012 (outside input;
     RFFA 1019 and LFFA 531 voxels, Supplementary Table 2), timecourses as P4 and P6, reverse
@@ -1337,3 +1407,21 @@ claims:
     input. An event counts as included when any of its TRs falls in a coded event. For ToM, coded
     Mental or Social events; for pain, the paper says "included in the coding", read as (a) coded
     Pain events, (b) any coded event. Reproduced when both counts match under one reading.
+checks:
+- date: 2026-10-28
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - beh-tom-age, statement now includes the DCCS-age correlation, which the claim's statistics and expected values already tested (Results, Behavioral results, paragraph 1).
+  - beh-fb-dccs, statement now says failers did worse than both other groups, as the paper says, with the Inc against Fail test marginal (p = .052).
+  - irc-williams, criterion now names both readings of which age correlations the Williams' test compared (partial with motion, or without); the paper does not say.
+  - irc-3yo-nonbilateral, criterion adds reading (b), dropping only the two pairs the paper names (TPJ, insula), since the paper does not list the bilateral pairs.
+  - rc-child-adult-timecourse, removed "more so with age" from the statement and the rising-order condition from the criterion; the paper does not state a rise (Pain 4yo .56 is below 3yo .60).
+  - supp-table4-other-networks, the 20 values given only inside quantity text are now separate expected entries at 10%, checked against Supplementary Table 4 in the PDF.
+  - face-rc, added the 3yo face event count (4) to expected, as stated in the claim and in the Supplementary Figure 4 legend.
+  - Header, P9 corrected; maturity against ToM score is a Spearman partial correlation, not Kendall (Results, Relating functional maturity, paragraph 2).
+  - Header, Rule S now says how an exact p is judged (same side of .05 or of the claim's corrected alpha as the paper), which was ambiguous for p = .049 and similar.
+  - Checked against the PDF, Supplementary Tables 1 to 4 match the values in the header and claims.
+  - Open, the reverse-correlation alpha (O5), ROI extent (O1), and coefficient scale (O4) are not fixed by the paper; no code is public, so the criteria rely on the named readings.
+  - Open, the stimulus-time to TR mapping in rc-events is a reading of Supplementary Table 3, not stated by the paper.
