@@ -1,0 +1,381 @@
+schema_version: 2
+id: 000129-makin-2018-01
+dataset:
+  archive: dandi
+  id: "000129"
+  version: 0.241017.1444
+  doi: 10.48324/dandi.000129/0.241017.1444
+paper: doi:10.1088/1741-2552/aa9e95
+date: 2026-10-28
+entry: 000129-makin-2018
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/40749995806
+inputs:
+- what: The paper's list of monkey I sessions (NeuralAnalysis/Indy_HC_Sessions.csv), read only to
+    check whether the dandiset's session is one of the paper's. The decoders follow the same
+    repository's code where the Methods are silent (cited in makin.py), but no file of it is
+    loaded.
+  source: https://github.com/jgmakin/rbmish at commit 700062f5118b0910411cf9a8f73498e22203731d
+outcomes:
+- claim: units-monkey-i
+  outcome: not_reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:units-monkey-i
+  measured: [111, 111]
+  notes: 111 of the 130 units in the file fire above 0.5 Hz over the 649.1 s session, below the
+    criterion's range of 153.9 to 454.3. The file holds sorted units only (unit ids end in 1 to
+    4, none in 00), on 82 channels; the paper's counts include one unsorted hash unit per channel
+    (Methods, Data acquisition), up to 96 more on this array, so the shortfall is consistent with
+    the missing hash units. With thresholds of 0.25 and 1 Hz the count is 117 and 94. No unit is a
+    duplicate of another.
+  deviations:
+  - One session, the only one in the dataset (dated 2017-02-02, not in the paper's session list),
+    for a range over 37 sessions.
+  - The rate is taken over the training file (649.1 s); the test file holds 190.3 s more of 98 of
+    the units.
+- claim: fig2-refh-kf-best
+  outcome: blocked
+  blocked_by: too_large
+  notes: The criterion needs the bootstrap of the session-weighted mean SNR difference over the
+    paper's 49 sessions. The dandiset holds one session, which is not in the paper's list; the
+    paper's 47 Sabes-lab sessions are public on Zenodo (doi:10.5281/zenodo.583331, 10.5281/zenodo.3854034)
+    and monkey C's two sessions come from Dyer et al. without an archive identifier. Here the
+    eight decoders at 64 ms take 124 s on one session of 111 units. The rEFH's cost grows with the
+    square of the number of units and the EM of KFlatent with its cube, and the paper's sessions
+    have 171 to 523 units, so the 64 ms decoders on the 47 sessions are estimated at several
+    hours, beyond the 30 min notebook limit and the time of this run; they were not run. On the
+    one session the rEFH (+KF) has the highest mean SNR for position, velocity and acceleration
+    (5.91, 5.06 and 2.36 dB), which does not decide the outcome.
+- claim: intro-gain-over-nearest
+  outcome: blocked
+  blocked_by: too_large
+  notes: The criterion needs the bootstrap over the 49 sessions for the position gain (p >= 0.01);
+    see fig2-refh-kf-best for the data and the estimate. On the one session the gains of the rEFH
+    (+KF) over the UKF are 0.28, 1.24 and 1.25 dB for position, velocity and acceleration (reading
+    b), which does not decide the outcome.
+- claim: fig2-velocity-boost
+  outcome: not_reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig2-velocity-boost
+  assumed: true
+  notes: Velocity SNR gains over linear regression are 3.67 dB for the rEFH (+KF), 1.91 for KFobs
+    and 2.42 for the UKF. The rEFH's gain is 1.92 times KFobs's (the criterion needs more than 2)
+    and 1.51 times the UKF's (inside 1.5 to 2.2), so only the UKF part holds, which the criterion
+    does not grade as partial. With the code's kinematics (cursor, no filter, bin means) the
+    ratios are 2.05 and 1.70 and the claim is reproduced. With rEFH seeds 1 and 2 the KFobs ratio is
+    1.93 and 1.95. The outcome rests on the kinematics reading. Question for the paper's authors
+    (finding below) was the decoded kinematic state the fingertip position filtered at 10 Hz and
+    subsampled, as the Methods say, or the unfiltered cursor position averaged over each bin, as
+    getLatentsBMI.m and binSpikeCounts.m do?
+  deviations:
+  - One session in place of 49; the session-weighted means are this session's values.
+  - The kinematics follow the Methods (fingertip, 4th-order Butterworth at 10 Hz, last sample of
+    each bin), as the claims file makes its main reading; the code's reading changes the outcome,
+    and this reading is adopted as the one the paper's text states.
+  - Sorted units only (111), without the hash units the paper used.
+  - The UKF is a re-implementation of Li's UKF2; its fitting code is not in the paper's repository.
+- claim: fig2-kflatent-dynamic-little-effect
+  outcome: reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig2-kflatent-dynamic-little-effect
+  notes: KFlatent (+KF) minus static KFlatent is 0.18, 0.21 and 0.09 dB for position, velocity and
+    acceleration, all below 0.5 dB; with the code's kinematics 0.29, 0.45 and 0.22 dB. EM ran the
+    full 100 epochs without meeting the convergence criterion.
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111); EM convergence judged on the log-likelihood, which the Methods'
+    cross-entropy criterion is equivalent to up to a constant.
+- claim: fig2-refh-static-vel-acc
+  outcome: reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig2-refh-static-vel-acc
+  notes: The static rEFH has 3.87 dB velocity SNR against the best other decoder's 3.82 (UKF), and
+    1.90 dB acceleration SNR against 1.34 (WF). The velocity margin is small, 0.05 dB here, 0.08 and
+    0.17 dB with rEFH seeds 1 and 2, and 0.09 dB over KFlatent (+KF) with the code's kinematics;
+    the claim holds in all four runs.
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111); the UKF is a re-implementation of Li's UKF2.
+- claim: fig2-position-dynamic-gain
+  outcome: not_reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig2-position-dynamic-gain
+  measured: 4.45
+  notes: The dynamic mapping raises the rEFH's position SNR from 1.46 to 5.91 dB, a gain of 4.45
+    dB (4.32 for x, 4.58 for y), outside 3 +- 0.5 dB. The effect is present and larger than the
+    paper's; it is 4.22 to 4.52 dB with the other seeds and the code's kinematics.
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111).
+- claim: fig2-sagittal-better
+  outcome: partially_reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig2-sagittal-better
+  notes: y has the higher SNR in 23 of 24 decoder and variable pairs; the exception is the static
+    rEFH's velocity (y minus x -0.06 dB). Linear regression's velocity margin is 0.01 dB. With rEFH
+    seed 2 all 24 hold; with seed 1 and with the code's kinematics 23, with the same exception, so
+    the outcome depends on the training run.
+  deviations:
+  - One session in place of 49; the per-session comparison is this session's.
+  - Sorted units only (111).
+- claim: fig2-linear-worst
+  outcome: reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig2-linear-worst
+  notes: Every other decoder exceeds linear regression for each of the six variables; the smallest
+    margin is 0.45 dB (static rEFH, x position). It holds in every variant (smallest 0.20 dB, KFobs
+    x acceleration, code kinematics).
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111).
+- claim: fig2-gross-failures
+  outcome: reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig2-gross-failures
+  notes: No decoder has a negative R2 at 64 ms in this session (the lowest is 0.055, linear
+    regression), so the criterion holds trivially; the claim's "in a few sessions" cannot be tested
+    on one session. Outside the criterion's 64 ms, the second notebook prints negative R2 at 16 ms,
+    with 80 or 160 s of training and with fractions of the units; at f = 1/8 KFlatent (+KF) diverges
+    (position SNR -76.63 dB).
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111).
+- claim: fig4-vel-acc-every-session
+  outcome: reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig4-vel-acc-every-session
+  notes: In this session the rEFH (+KF) beats KFobs and the UKF in all 8 velocity and acceleration
+    comparisons, by 1.04 to 1.81 dB, and in every variant (smallest margin 1.05 dB). The criterion's
+    second part, the bootstrap across sessions at p < 0.01, cannot be run on one session; the
+    outcome rests on the per-session part, which the claims file names as testable on one
+    session.
+  deviations:
+  - One session in place of 49; the bootstrap part of the criterion is not tested.
+  - Sorted units only (111); the UKF is a re-implementation of Li's UKF2.
+- claim: fig4-advantage-grows
+  outcome: blocked
+  blocked_by: too_large
+  notes: The regression of rEFH (+KF) SNR on KFobs SNR runs over all sessions and both axes; one
+    session gives two points and no degrees of freedom for the F-test. See fig2-refh-kf-best for
+    the other sessions and the estimate.
+- claim: fig4-position
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the bootstrap over the 49 sessions; see fig2-refh-kf-best. On the one session the
+    rEFH (+KF) position SNR exceeds KFobs's by 0.91 dB and the UKF's by 0.28 dB, which does not
+    decide the outcome.
+- claim: fig4-best-variable
+  outcome: not_reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig4-best-variable
+  notes: Position is the best-decoded variable for all three decoders. The rEFH (+KF) has 5.91 dB
+    for position against 5.06 for velocity and 2.36 for acceleration; KFobs (5.00, 3.30, 1.02) and
+    the UKF (5.63, 3.82, 1.11) have position highest, as the paper says. The ordering is the same
+    with the other rEFH seeds and the code's kinematics, and at every bin width in the second
+    notebook.
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111).
+- claim: fig4-task-similar
+  outcome: blocked
+  blocked_by: too_large
+  notes: The comparison is of monkey C's two sessions with the range of monkey I's 37 sessions; the
+    dandiset holds one monkey I session, not among the 37. Monkey I's sessions are on Zenodo (see
+    fig2-refh-kf-best for the estimate); monkey C's data are named only by the preprint (Dyer et
+    al., biorxiv 080861), with no archive identifier to pin, so they could not be used either.
+- claim: fig5-vel-acc-all-bins
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the bootstrap over the 49 sessions at four bin widths; the decoders at 16 ms alone
+    took 513 s on this session's 111 units. See fig2-refh-kf-best. On the one session the WF
+    exceeds the rEFH (+KF) at 16 ms for velocity (by 0.29 dB) and acceleration (0.44 dB), which
+    does not decide the outcome.
+- claim: fig5-position-bins
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the pairwise bootstrap over the 49 sessions at four bin widths; see
+    fig2-refh-kf-best and fig5-vel-acc-all-bins.
+- claim: fig5-advantage-with-binwidth
+  outcome: reproduced
+  notebook: binwidth_training_neurons.ipynb
+  output: claim:fig5-advantage-with-binwidth
+  notes: The rEFH (+KF) SNR rises from 3.01 to 5.46 dB (velocity) and 0.96 to 2.39 dB
+    (acceleration) from 16 to 128 ms, with no fall between neighbouring widths. Its advantage over
+    the best decoder other than the two rEFH decoders rises from -0.29 to 1.60 dB (velocity) and
+    -0.44 to 1.14 dB (acceleration), and in percent from -8.9 to 41.6% and -31.3 to 92.0%, so the
+    claim holds under both readings. The WF's velocity SNR does not improve with width (3.30 to
+    3.18 dB); the criterion tests only the rEFH (+KF).
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111); the UKF is a re-implementation of Li's UKF2.
+- claim: fig5-derivative-order
+  outcome: partially_reproduced
+  notebook: binwidth_training_neurons.ipynb
+  output: claim:fig5-derivative-order
+  notes: The mean SNR of the six non-rEFH decoders falls from position to velocity to acceleration
+    at all four widths (64 ms, 3.79, 3.06 and 0.99 dB). The percent advantage of the rEFH (+KF)
+    rises from position to velocity to acceleration at 32, 64 and 128 ms (64 ms, 4.9, 32.6 and
+    76.5%) but not at 16 ms, where it is -6.2, -8.9 and -31.3%. Both parts hold at 3 of 4 widths,
+    which the criterion grades as partial. The statement's exception (the rEFH best at velocity)
+    does not hold; the rEFH (+KF) decodes position best at every width.
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111).
+- claim: fig6-training-time
+  outcome: blocked
+  blocked_by: too_large
+  notes: Parts (ii) and (iii) need the bootstrap over the 49 sessions; see fig2-refh-kf-best. On
+    the one session, with 80 s of training KFlatent (+KF) has a higher position SNR than the rEFH
+    (+KF) (3.43 against 2.54 dB), and the rEFH (+KF) has the highest velocity and acceleration SNR
+    at 80, 160 and 320 s, which does not decide the outcome.
+- claim: fig7-vel-acc-neurons
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the bootstrap over the 49 sessions at each fraction; see fig2-refh-kf-best.
+- claim: fig7-position-neurons
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the bootstrap over the 49 sessions at each fraction; see fig2-refh-kf-best.
+- claim: fig7-affine-position
+  outcome: not_reproduced
+  notebook: binwidth_training_neurons.ipynb
+  output: claim:fig7-affine-position
+  measured: [0.995, 0.995, 0.986, 0.991]
+  notes: Correlations of position SNR with f are 0.995 (linear regression), 0.995 (static KFlatent),
+    0.986 (WF) and 0.991 (static rEFH) under reading a, and 0.956, 0.948, 0.954 and 0.914 with log2
+    f (reading b); all are within tolerance. Static KFlatent does not have the lowest correlation
+    under either reading (the WF has under a, the static rEFH under b), so the ordering condition
+    fails under both. At f = 1/8 and 1/4 (13 and 27 units) the position SNR of these decoders is
+    within 0.33 dB of zero, so the correlations rest mostly on f = 1/2 and 1.
+  deviations:
+  - One session in place of 49; fractions of 111 sorted units (13, 27, 55 and 111).
+- claim: fig7-kinematic-model-saturates
+  outcome: reproduced
+  notebook: binwidth_training_neurons.ipynb
+  output: claim:fig7-kinematic-model-saturates
+  notes: Under reading b (1/8 to 1/2) the position SNR of KFobs, KFlatent (+KF), the UKF and the
+    rEFH (+KF) rises 6.67, 207.33, 6.93 and 6.22 dB per unit f, faster than from 1/2 to 1 (3.79,
+    6.27, 4.95, 5.79) and faster than the largest initial slope of the static decoders (5.00,
+    static KFlatent). Under reading a (1/8 to 1/4) it fails for KFobs, the UKF and the rEFH (+KF),
+    whose position SNR is slightly lower at 1/4 than at 1/8. KFlatent (+KF)'s large slope comes
+    from its filter diverging at f = 1/8 (-76.63 dB).
+  deviations:
+  - One session in place of 49; fractions of 111 sorted units.
+- claim: fig8-velocity-variants
+  outcome: not_reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig8-velocity-variants
+  measured: [0.11, -0.08]
+  notes: Static velocity SNR is 0.11 dB lower without the updated visible units (text 0.7, figure 8
+    about 0.3) and 0.08 dB higher, not lower, with standard-normal units on standardized counts
+    (text 0.4). With the code's transform 2 sqrt(R + 3/8) the standard-normal rEFH loses 2.11 dB.
+    Under the dynamic mapping the canonical rEFH (+KF) exceeds the variants by 0.15, 0.15 and 1.68
+    dB, so that part holds. The static rEFH's own velocity advantage over the UKF is 0.05 dB in
+    this session, against about 0.94 dB in figure 8. Neither standard-normal reading matches.
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111).
+  - The standard-normal rEFH uses the code's learning rate for such units (mw0 = 200, setParams.m).
+- claim: fig8-position-variants
+  outcome: blocked
+  blocked_by: too_large
+  notes: The dynamic part needs the bootstrap over the 49 sessions; see fig2-refh-kf-best. On the
+    one session the canonical static rEFH has a higher position SNR (1.46 dB) than both variants
+    (1.43 and 1.38), which does not decide the outcome.
+- claim: fig8-gaussian-still-beats-ukf
+  outcome: reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig8-gaussian-still-beats-ukf
+  assumed: true
+  notes: Trained on standardized counts, the standard-normal rEFH (+KF) exceeds the UKF by 1.09 dB
+    for velocity and 1.17 dB for acceleration. Trained on the code's transform it is 0.43 dB below
+    the UKF for velocity and 0.12 dB above for acceleration, so the claim fails under the code's
+    reading. Question for the paper's authors (finding below) were the standard-normal visible
+    units fed standardized counts, as the Results say, or 2 sqrt(R + 3/8), as getLatentsBMI.m
+    does?
+  deviations:
+  - One session in place of 49.
+  - The input of the standard-normal rEFH is the standardized counts the Results name (z-scored
+    with the training mean and SD), as the claims file makes its main reading; the code's
+    transform changes the outcome.
+  - The UKF is a re-implementation of Li's UKF2.
+- claim: fig9-taps
+  outcome: blocked
+  blocked_by: too_large
+  notes: Part (ii) needs the bootstrap over the 49 sessions at three bin widths; see
+    fig2-refh-kf-best. The tapped decoders were not implemented in this run.
+- claim: kflatent-modest
+  outcome: reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:kflatent-modest
+  notes: Reading a (velocity), the better KFlatent decoder exceeds KFobs by 0.10 dB and the UKF by
+    0.51 dB; reading b (velocity and acceleration) 0.08 and 0.30 dB; reading c (all three) KFlatent
+    is 0.20 dB below KFobs. With the code's kinematics readings a and b fail (0.49 and 0.39 dB for
+    KFlatent against 0.38 and 0.22 for the UKF) and reading c holds (0.07 against 0.32 dB), so the
+    claim holds under one reading with either kinematics.
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111); the UKF is a re-implementation of Li's UKF2.
+- claim: advantage-grows-with-derivative
+  outcome: reproduced
+  notebook: binwidth_training_neurons.ipynb
+  output: claim:advantage-grows-with-derivative
+  notes: The percent advantage of the rEFH (+KF) over the best non-rEFH decoder rises from position
+    to velocity to acceleration with 80 s (-26.1, 10.9, 76.4%), 160 s (2.4, 32.5, 71.3%) and 320 s
+    (4.9, 32.6, 76.5%) of training. It also rises at each amount when the shorter trainings are
+    scored only on the bins after 320 s.
+  deviations:
+  - One session in place of 49.
+  - For 80 and 160 s of training the paper does not say which bins are tested; the code tests on
+    every bin after the training bins (getLatentsBMI.m, getTestBins), and this is the main reading.
+    Scoring on the bins after 320 s gives the same outcome.
+- claim: static-refh-position-worse
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the bootstrap over the 49 sessions, and depends on fig4-position, which is blocked;
+    see fig2-refh-kf-best. On the one session the static rEFH's position SNR is 4.17 dB below the
+    UKF's (1.46 against 5.63), which does not decide the outcome.
+findings:
+- kind: data_missing
+  statement: The dandiset holds one session of one of the paper's three monkeys (monkey I, M1 array,
+    649.1 s with kinematics), released for the Neural Latents Benchmark. The paper used 49 sessions.
+    The file dates the session 2017-02-02, which is not in the paper's list of monkey I sessions
+    (NeuralAnalysis/Indy_HC_Sessions.csv, ending 2017-01-31), so it is probably not one of the
+    paper's sessions, though the dandiset names the paper as describing it. The paper's own
+    sessions are on Zenodo (doi:10.5281/zenodo.583331). The paper's tests across
+    sessions cannot be run on the dandiset.
+- kind: data_missing
+  statement: The units table holds sorted units only (ids are channel times 100 plus 1 to 4). The
+    paper kept an unsorted hash unit for every channel and counted them among its 171 to 413 units
+    per monkey I session; without them 111 units pass the 0.5 Hz cut.
+- kind: selection_undocumented
+  statement: The training file has three gaps of 0.1 s (162.2 to 162.3, 324.5 to 324.6 and 486.8 to
+    486.9 s) where every behavioural series is NaN and no unit has a spike, splitting it into four
+    segments; neither the file nor the dandiset says what was removed. The test file (190.3 s, 98
+    units) has no kinematics, so it cannot be used to score decoding.
+- kind: code_mismatch
+  statement: The Methods decode the fingertip position low-pass filtered at 10 Hz and subsampled
+    per bin; the paper's code (getLatentsBMI.m, binSpikeCounts.m) decodes the cursor position with
+    the filter commented out and averages each bin. The two readings change the outcome of
+    fig2-velocity-boost. Question for the paper's authors, which kinematics were decoded?
+- kind: code_mismatch
+  statement: The Results say the standard-normal rEFH variant was trained on standardized spike
+    counts; the code (getLatentsBMI.m) feeds it 2 sqrt(R + 3/8). The two readings change the outcome
+    of fig8-gaussian-still-beats-ukf. Question for the paper's authors, which input was used for
+    figure 8?
+- kind: methods_unavailable
+  statement: The UKF follows Li's UKF2 package (fit_ar_ukf_hist_rrcv.m, ar_ukf_hist.m), which the
+    paper's repository calls but does not hold; the attempt re-implemented it from the paper's
+    description (linear state transition, tuning to the six states, their magnitudes and the
+    position-velocity products, regression with full noise covariances, standard unscented
+    transform). Question for the paper's authors, can the UKF2 code and its ridge setting be
+    published with the paper's code?
