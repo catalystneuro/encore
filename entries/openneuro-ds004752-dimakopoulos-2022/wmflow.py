@@ -24,11 +24,17 @@ Where parameters come from:
 - White-matter reference: the first contact without an atlas label (``no_label_found``) on a
   hippocampal electrode, as ``MainSourceAnalysisConnectivity.m`` picks it
   (``nWM_contacts(hipp_chans_WM_contacts(1))``), except that contacts 1 and 2 are skipped
-  (assumption: the code's rule can pick the deepest contact itself).
+  (assumption: the code's rule can pick the deepest contact itself) and the contact is taken
+  in the hemisphere of the hippocampal contact (assumption: a reference across the midline
+  would mix in the other hemisphere's signal).
 - PSD: multitaper, windows of 10 cycles, smoothing 0.2 x frequency (3 tapers), 0.1 s steps,
   relative to fixation (Methods, Power spectral density).
 - PLV: multitaper Fourier transform with two tapers over 2 s epochs, 1 Hz resolution (Methods,
   Phase-locking value).
+- Incorrect-trial sources: the derivative files hold none, so each period's LCMV filter is
+  recovered by least squares from the file's own virtual sensors and scalp channels
+  (``lcmv_weights``) and applied to the raw EEG (``eeg_sources``). That the paper used the
+  correct-trial filters for the incorrect trials is an assumption; it does not say.
 """
 from __future__ import annotations
 
@@ -219,30 +225,49 @@ def electrodes(sub: str) -> pd.DataFrame:
     return e
 
 
-def hippocampal_channels(sub: str) -> dict:
+def hippocampal_channels(sub: str, side: str | None = None) -> dict:
     """Channels for the hippocampal readings (assumptions, stated in the notebook).
 
     - electrodes: depth electrodes named AH/PH/H followed by L or R (the code's
       ``contains(label,'AH')``, ``'PH'``); h1 uses the first present of AHL, PHL, HL, AHR,
       PHR, HR (left first: the paper's task is left-lateralised and Figure 1d shows the most
-      distal contact of one electrode).
+      distal contact of one electrode). ``side="R"`` (or ``"L"``) restricts h1 to h3 to the
+      hippocampal electrodes of that side (Participant 3's right hippocampus).
     - h1: contact 1 (most distal, Methods, Electrode localization) re-referenced to ``ref``.
     - h2: contact 1 minus the next contact of the same electrode (contact 2; contact 3 where
       the files have no contact 2), a bipolar derivation as in GetDataInBipolar.m.
-    - h3: contact 1 of every hippocampal electrode, each re-referenced to ``ref``.
-    - ref: the first ``no_label_found`` contact numbered 3 or more on a hippocampal electrode.
-    - ecog_ref: the next such contact on any other depth electrode (Methods: the ECoG was
-      re-referenced "against a different depth electrode contact").
+    - h3: contact 1 of every hippocampal electrode (of ``side``, if given), each re-referenced
+      to ``ref``.
+    - ref: a ``no_label_found`` contact numbered 3 or more in the hemisphere of h1, by the
+      hemisphere letter of the electrode names: on h1's electrode if it has one, else on
+      another hippocampal electrode of that hemisphere, else on any depth electrode of that
+      hemisphere.
+    - ecog_ref: the first such contact on a depth electrode that is not hippocampal, other than
+      ``ref`` (Methods: the ECoG was re-referenced "against a different depth electrode
+      contact"). In sub-10 and sub-12 no other depth electrode has one, and the next
+      white-matter contact of the left hippocampal electrodes after their reference is used
+      (sub-10 and sub-12 AHL4). It does not depend on ``side``.
     """
     e = electrodes(sub)
-    hel = [x for x in HIPP_ELECTRODES if x in set(e.electrode)]
+    allhel = [x for x in HIPP_ELECTRODES if x in set(e.electrode)]
+    hel = [x for x in allhel if side is None or x.endswith(side)]
     main = hel[0]
-    hipp = e[e.electrode.isin(hel)]
-    wm = hipp[(hipp.AnatomicalLocation == "no_label_found") & (hipp.contact >= 3)]
-    ref = wm.label.iloc[0]
-    other = e[(~e.ecog) & (~e.electrode.isin(hel)) & (e.AnatomicalLocation == "no_label_found")
-              & (e.contact >= 3)]
-    ecog_ref = other.label.iloc[0] if len(other) else wm.label.iloc[1]
+    hemi = main[-1]
+    wm = e[(~e.ecog) & (e.AnatomicalLocation == "no_label_found") & (e.contact >= 3)]
+
+    def first_ref(main_el, hipp):
+        for cand in (wm[wm.electrode == main_el],
+                     wm[wm.electrode.isin([x for x in hipp if x.endswith(main_el[-1])])],
+                     wm[wm.electrode.str.endswith(main_el[-1])]):
+            if len(cand):
+                return cand.label.iloc[0]
+        raise ValueError(f"{sub}: no white-matter contact in hemisphere {main_el[-1]}")
+
+    ref = first_ref(main, hel)
+    ref0 = first_ref(allhel[0], allhel)  # the default (left-first) reference, for ecog_ref
+    other = wm[(~wm.electrode.isin(allhel)) & (wm.label != ref0)]
+    hwm = wm[wm.electrode.isin([x for x in allhel if x.endswith(allhel[0][-1])]) & (wm.label != ref0)]
+    ecog_ref = other.label.iloc[0] if len(other) else hwm.label.iloc[0]
     con = sorted(e[e.electrode == main].contact)
     return dict(electrodes=hel, main=main, h1=f"{main}1", h2=(f"{main}1", f"{main}{con[1]}"),
                 h3=[f"{x}1" for x in hel], ref=ref, ecog_ref=ecog_ref)
@@ -261,11 +286,16 @@ def hipp_signals(X: np.ndarray, chans: list[str], hc: dict) -> dict:
 # ---------------------------------------------------------------- LCMV derivatives
 
 def load_lcmv(sub: str) -> dict:
-    """Virtual sensors and scalp channels of the derivative file, encoding and maintenance."""
+    """Virtual sensors and scalp channels of the derivative file, encoding and maintenance.
+
+    ``variables`` lists what the file holds (scipy.io.whosmat) with the fields of each struct.
+    """
     p = f"derivatives/{sub}/beamforming/{sub}-task-verbalWM-LCMVsources.mat"
     with fsspec.open(url(p), block_size=2**22) as fh:
-        m = sio.loadmat(io.BytesIO(fh.read()), squeeze_me=True, struct_as_record=False)
-    out = {}
+        b = fh.read()
+    m = sio.loadmat(io.BytesIO(b), squeeze_me=True, struct_as_record=False)
+    out = {"variables": [(name, shape, cls, list(getattr(m[name], "_fieldnames", [])))
+                         for name, shape, cls in sio.whosmat(io.BytesIO(b))]}
     for key, per in [("LCMV_encoding", "enc"), ("LCMV_maintenance", "maint")]:
         s = m[key]
         tr = np.atleast_1d(s.trial)
@@ -751,13 +781,16 @@ def trial_csds(hx: np.ndarray, cx: np.ndarray) -> np.ndarray:
     return trial_csd(F)
 
 
-def spatial_test(csd_task: dict, csd_fix: dict, n_iter: int, rng, band=(4, 8)) -> dict:
+def spatial_test(csd_task: dict, csd_fix: dict, n_iter: int, rng, band=(4, 8), fix_scale: float = 1.0) -> dict:
     """Scalar product of grid ΔGranger vectors from two random halves of the trials (Methods,
     Statistics, paragraph 2), and its null with each trial's window drawn at random from
     fixation or the task period.
 
     csd_task, csd_fix: contact -> per-trial CSDs (trials x freqs x 2 x 2). ΔGranger of a
-    contact is the mean over ``band`` (reading d1).
+    contact is the mean over ``band`` (reading d1). ``fix_scale`` multiplies the fixation CSDs
+    so that windows of different length enter the null on one scale: with the same 20 s
+    padding, the power of a window grows with its number of samples, so a 1 s fixation window
+    is scaled by 2 against a 2 s task window (a standard choice).
     """
     contacts = list(csd_task)
     ntr = csd_task[contacts[0]].shape[0]
@@ -773,7 +806,7 @@ def spatial_test(csd_task: dict, csd_fix: dict, n_iter: int, rng, band=(4, 8)) -
     vecs = {k: np.zeros((n_iter, len(contacts))) for k in ["A", "B", "A0", "B0"]}
     for j, c in enumerate(contacts):
         T = csd_task[c].reshape(ntr, -1)
-        Fx = csd_fix[c].reshape(ntr, -1)
+        Fx = fix_scale * csd_fix[c].reshape(ntr, -1)
         nf = csd_task[c].shape[1]
         batch = []
         for W in (WA, WB):
@@ -788,3 +821,43 @@ def spatial_test(csd_task: dict, csd_fix: dict, n_iter: int, rng, band=(4, 8)) -
     true = (vecs["A"] * vecs["B"]).sum(1)
     null = (vecs["A0"] * vecs["B0"]).sum(1)
     return dict(true=true, null=null)
+
+
+# ---------------------------------------------------------------- LCMV filters from the derivatives
+
+def lcmv_weights(S: dict) -> dict:
+    """Spatial filter of each virtual sensor, per period, recovered from the derivative file.
+
+    Each virtual sensor is fitted by least squares on the file's own scalp channels over all
+    trials and samples; R² = 1 means the sensor is a fixed linear combination of the scalp
+    channels (an LCMV filter is one). Returns {(period, area): (weights, R²)}.
+    """
+    out = {}
+    for per in ["enc", "maint"]:
+        L = S["lcmv"][per]
+        X = L["data"]
+        A = X[:, 5:].transpose(1, 0, 2).reshape(X.shape[1] - 5, -1).T
+        for k, area in enumerate(L["label"][:5]):
+            y = X[:, k].ravel()
+            w = np.linalg.lstsq(A, y, rcond=None)[0]
+            out[(per, area)] = (w, 1 - np.sum((y - A @ w) ** 2) / np.sum((y - y.mean()) ** 2))
+    return out
+
+
+def eeg_sources(sub: str, S: dict, rows: pd.DataFrame, W: dict, areas=("AC",)) -> dict:
+    """Virtual sensors computed from the raw scalp EEG of ``rows`` with the recovered filters.
+
+    The raw EEG ([-6 2) s at 500 Hz, as the iEEG) is re-referenced to the averaged mastoids, as the
+    derivative's scalp channels are (A1 = -A2, checked in the notebook), and each period's
+    filter is applied. Returns {(area, period): trials x samples at 40 Hz, cut to the period}.
+    """
+    scalp = S["lcmv"]["enc"]["label"][5:]
+    D = load_trials(sub, rows, scalp, modality="eeg", t0=-6.0, t1=2.0, fs_out=500)
+    x = D["data"].astype(float)
+    x = x - x[:, [scalp.index("A1"), scalp.index("A2")]].mean(1, keepdims=True)
+    out = {}
+    for area in areas:
+        for per in ["enc", "maint"]:
+            src = np.einsum("c,tcs->ts", W[(per, area)][0], x)
+            out[(area, per)] = window40(src, per)
+    return out
