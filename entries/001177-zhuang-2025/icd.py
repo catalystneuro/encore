@@ -483,9 +483,10 @@ def main_effect_pairs(data: pd.DataFrame, value: str, treat: str, levels: list) 
 
 def rm_oneway(table: pd.DataFrame, reference: str) -> dict:
     """Repeated measures one-way ANOVA over the columns of `table` (complete rows), with
-    Bonferroni-corrected paired t tests between every pair of columns (Table 1's reading), and as
-    a variant Bonferroni comparisons on the ANOVA's pooled residual error, as GraphPad Prism makes
-    them by default (`pairs_pooled`)."""
+    Bonferroni comparisons between every pair of columns made two ways: on the ANOVA's pooled
+    residual error (`pairs_pooled`), as GraphPad Prism makes them when sphericity is assumed, and
+    by paired t tests (`pairs`), as Prism makes them when it is not. The paper (Table 1) does not
+    say which."""
     t = table.dropna()
     y = t.to_numpy(float)
     n, k = y.shape

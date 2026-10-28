@@ -7,14 +7,15 @@ recordings of Figures 4, 6 and S5 and S8, and on the paper's
 rotarod and slice data.
 
 The dandiset holds raw voltage, LFP and per-electrode threshold crossings for the paper's 18 mice,
-but no sorted units, unit classes, optical labels, laser times or injection times, so the 14
-electrophysiology claims are blocked. Of the 30 claims on the Zenodo data, 28 are tested, each
+but no file says which units are sorted (54 files have no units table, two have unlabelled ones), and
+none has unit classes, optical labels, laser times or injection times, so the 14 electrophysiology
+claims are blocked. Of the 30 claims on the Zenodo data, 28 are tested, each
 operant session recounted from its raw log.
 
 | Claims | Outcome |
 |---|---|
 | Delayed/large choices at baseline, under PPX and A77636, and over repeated dosing (9 claims) | 9 reproduced |
-| Washout, omissions and choice latencies (4 claims) | 1 reproduced, 3 partially reproduced (PPX washout rests on how the Bonferroni comparisons are made) |
+| Washout, omissions and choice latencies (4 claims) | 1 reproduced, 3 partially reproduced (PPX washout rests on how the Bonferroni comparisons are made; reproduced proposed) |
 | Hyperbolic fit parameters A, K and AUC (PPX, A77636, DREADD) | 1 reproduced, 1 partially reproduced, 1 not reproduced |
 | DREADD delay discounting (mCherry, hM4Di, hM3Dq) | 1 reproduced, 1 partially reproduced |
 | Rotarod, SNc cell counts, slice validation | 3 reproduced |
