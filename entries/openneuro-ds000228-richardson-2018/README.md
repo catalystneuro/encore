@@ -8,9 +8,9 @@ preprocessed images, artifact and CompCor regressors, group ROIs and behavioural
 | Claims | Outcome |
 |---|---|
 | Sample, behaviour and motion (11 claims) | Reproduced |
-| Inter-region correlations (15 claims) | 7 partially reproduced, 8 not reproduced |
-| Reverse correlation (8 claims) | 1 reproduced, 4 partially reproduced, 3 not reproduced |
-| Functional maturity (4 claims) | 3 reproduced, 1 partially reproduced |
+| Inter-region correlations (15 claims) | 6 partially reproduced, 9 not reproduced |
+| Reverse correlation (8 claims) | 1 reproduced, 3 partially reproduced, 4 not reproduced |
+| Functional maturity (4 claims) | 3 reproduced, 1 not reproduced |
 | Face regions (2 claims) | 1 reproduced, 1 not reproduced |
 | Replication sample and hand-coded events (2 claims) | Blocked |
 

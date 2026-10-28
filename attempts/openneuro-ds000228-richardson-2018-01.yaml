@@ -117,7 +117,16 @@ outcomes:
     four O2 and O3 readings; the three means are out of tolerance under all. O1 with only voxels
     with data gives identical values. Variants outside the paper's method (no high-pass, 50 s
     high-pass, no CompCor) give adult means from .556 to .645 within-ToM and -.051 to .059
-    across, none near the paper's.
+    across, none near the paper's. Further diagnostic variants, adults (within-ToM, within-Pain,
+    across), are mean r in place of z .519, .354, -.049; the high-pass basis in the nuisance
+    regression .593, .393, -.086; left and right M1 as two regressors .599, .390, -.037; and the
+    mean ToM and Pain signal as an added regressor .286, .258, -.382. Only the last, which is not
+    the paper's method, moves the across value past the paper's, so the offset is in the direction
+    of a shared signal removed in the paper's processing and not here, which no step of the
+    Methods accounts for. The ROI masks are in MNI mm (9 mm sphere centroids within 3.7 mm of the
+    stated centers, every voxel within 8.9 mm), and the images are int16 with no scaling. Fig. 2
+    shows the mean matrices only as colours, so the offset cannot be traced pair by pair; the
+    adult and 3yo mean matrices are printed in the notebook.
   deviations:
   - The 100 s high-pass filter is SPM's discrete cosine basis (spm_filter); the Methods say SPM8
     and "a cutoff of 100 s" without naming the filter. A standard choice.
@@ -171,7 +180,7 @@ outcomes:
     dataset's README names as the Julian et al. 2012 parcels; the claims file treats them as an
     outside input, but no outside data were used. The M1 and V1 ROIs are also deposited.
 - claim: irc-williams
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_richardson_2018.ipynb
   output: claim:irc-williams
   notes: Williams' T2 (and Steiger's Z, which agrees) on the age correlations of
@@ -181,9 +190,10 @@ outcomes:
     -2.95 and -4.0 for across ToM-Pain against Face-Scene and M1-V1). ToM against Scene (t = .75)
     and ToM against M1 (t = 1.32) are not significant, as in the paper, but Pain against Scene (t
     = 2.62, p = .0098) and Pain against M1 (t = 2.92, p = .0043) are, so the within-Pain age
-    effect is stronger than Scene and M1, unlike the paper. 8 of 10 comparisons follow the paper.
-    The criterion states only the reproduced outcome; the partial outcome is the protocol's
-    "holds only in part".
+    effect is stronger than Scene and M1, unlike the paper. 8 of 10 comparisons follow the paper
+    under every reading. The criterion requires all ten and states no partial outcome, and two of
+    the paper's tests (p = .19 and .47) come out on the other side of .05, which Rule S counts as
+    failed tests, so the claim is not reproduced.
   deviations:
   - The paper reports z for Williams' test; Williams' T2 is a t on n - 3 df. Both T2 and
     Steiger's Z are shown; they give the same conclusions.
@@ -211,7 +221,8 @@ outcomes:
   notes: In the 3yo mean matrix (main reading) the strongest Pain pair is RInsula-LInsula (.856)
     and the three homologous Pain pairs rank first to third (.856, .656, .339). Among ToM pairs
     RTPJ-PC (.637), LTPJ-PC (.635) and DMPFC-MMPFC (.609) are above RTPJ-LTPJ (.558), which ranks
-    fourth, so neither reading holds for ToM. O3b gives the same order.
+    fourth, so neither reading holds for ToM. RTPJ-LTPJ ranks fourth and RInsula-LInsula first
+    under all eight O1, O2 and O3 readings.
 - claim: irc-3yo-nonbilateral
   outcome: partially_reproduced
   notebook: reproduce_richardson_2018.ipynb
@@ -294,23 +305,30 @@ outcomes:
   output: claim:rc-overlap
   measured: [0, 0.002]
   notes: The found events (O5a) overlap at no timepoint, against 1 in the paper; permutation p =
-    .002 under both readings of the zero counts (mean permuted overlap 11.9 and 11.1 TRs). Under
-    O5b and O5c the overlap is also 0, p = .019 to .036. With the paper's own events (Supplementary
+    .002 under reading (a), 158 TRs, and p < .001 (0 of 1000) under reading (b), 159 TRs (mean
+    permuted overlap 11.9 TRs under both). Under O5b and O5c the overlap is also 0, p = .019 to
+    .049. With the paper's own events (Supplementary
     Table 3, variant) the overlap is 1 TR, p = .002 and .008. Less overlap than chance holds; the
     overlap count does not match.
   deviations:
   - Seed fixed (a standard choice); the random gaps split the remaining zeros by a multinomial
     draw after one zero between events, a reading of Methods paragraph 10, which says only "a
     random proportion of zeros between events".
+  - Reading (b) of the criterion is run as 159-TR timecourses (159 minus each network's event
+    TRs as zeros), the length implied by the paper's zeros (125, 116) and event totals (34, 43
+    TRs); with the Supplementary Table 3 events it gives 125 and 116 zeros.
 - claim: rc-child-adult-timecourse
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_richardson_2018.ipynb
   output: claim:rc-child-adult-timecourse
   measured: [0.212, 0.329, 0.564, 0.703, 0.785, 0.531, 0.516, 0.701, 0.797, 0.862]
   notes: Every r is significant at the paper's Bonferroni alpha of .01 (ToM 3yo p = .0076, all
     others p < 3e-05); 8 of 10 are within 10%, ToM 3yo (.212 against .28) and Pain 3yo (.531
-    against .60) are below. ToM 3yo has an exact p in the paper (.00046), judged on the side of
-    the corrected alpha.
+    against .60) are below. Three correlations miss the paper's bounds, ToM 3yo p = .0076 against
+    p < .0005 (the paper's exact p is .00046), Pain 3yo p = 7.1e-13 against p < 1e-15 and Pain 4yo
+    p = 4.0e-12 against p < 1e-13. The criterion's partial outcome needs every r significant at
+    the paper's bounds, so the claim is not reproduced. Judged only at the Bonferroni alpha it
+    would be partially reproduced.
 - claim: supp-table4-other-networks
   outcome: not_reproduced
   notebook: reproduce_richardson_2018.ipynb
@@ -370,14 +388,16 @@ outcomes:
     because Methods paragraph 9 z-normalizes each ROI timecourse first and leaves out the first 10
     timepoints only from the t-tests. Under O6a the claim would not be reproduced.
 - claim: maturity-across
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_richardson_2018.ipynb
   output: claim:maturity-across
   measured: [-4.52, -3.55]
   notes: Maturity on across, within, age and motion (n = 122). Across effect ToM t = -4.52, p =
     1.5e-05; Pain t = -3.55, p = .00055; both negative and significant but out of tolerance under
     every reading. Within-ToM t = 1.53, p = .13, not significant, as in the paper; within-Pain t =
-    2.40, p = .018, significant, where the paper has p = .06. z-scaled b across -.34 and -.28.
+    2.40, p = .018 (.0054 to .018 under every reading), significant, where the paper has p = .06.
+    The criterion requires the within-network effects to be not significant, so the claim is not
+    reproduced. z-scaled b across -.34 and -.28.
 - claim: maturity-within
   outcome: reproduced
   assumed: true
@@ -430,7 +450,10 @@ outcomes:
   notes: The independent sample of 20 adults is not in the snapshot, and neither the paper nor the
     dataset's README names an archive that holds it. The claims file marks the claim `elsewhere`
     with no archive; as the data are public nowhere, data_missing would apply, which the checker
-    does not allow for an `elsewhere` claim.
+    does not allow for an `elsewhere` claim. The dataset's README lists the events that
+    replicated across the two adult samples; they overlap all seven ToM events and the pain events
+    of Supplementary Table 3 except P08, P09 and P11, as the claim states. This restates the
+    authors' result and is not the second sample's data, so the claim stays blocked.
 - claim: hand-coded-events
   outcome: blocked
   blocked_by: other
@@ -477,3 +500,293 @@ findings:
 - kind: other
   statement: The independent sample of 20 adults that defined the ToM and pain ROIs and replicated
     the events is not deposited anywhere; the ROIs it produced are in the dataset.
+verifications:
+- date: '2026-10-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-1, same harness, separate context, did not
+    write the notebook)
+  reviewed: Round 1. The executed notebook with the conclusion cells removed, the helper module and
+    the claims file, with the paper. The summary cell was not removed by the handover, as it shared
+    a cell with the blocked claims, and the verifier read it after forming most of its outcomes. It
+    queried the archive's file list for the blocked claims and tested the helper functions on
+    synthetic inputs. Of 42 claims it agreed with 39 outcomes and disagreed on irc-williams,
+    rc-child-adult-timecourse and maturity-across.
+  results:
+  - claim: participants
+    agrees: true
+    outcome: reproduced
+    reason: Every count matches exactly (122, 33, 64, 20, 17/14/34/23/34). Mean child age is 6.71.
+    response: No change needed.
+  - claim: supp-table1-behavior-by-age
+    agrees: true
+    outcome: reproduced
+    reason: All five means are within 10%, and the FB split 4/4/9, 3/7/4, 23/9/2 matches exactly.
+    response: No change needed.
+  - claim: beh-tom-age
+    agrees: true
+    outcome: reproduced
+    reason: tau-b is .665 (p 5e-26) for ToM score and .198 (p .048) for DCCS.
+    response: No change needed.
+  - claim: beh-tom-dccs
+    agrees: true
+    outcome: reproduced
+    reason: Partial tau .186, p .031.
+    response: No change needed.
+  - claim: beh-fb-groups
+    agrees: true
+    outcome: reproduced
+    reason: Groups 30/20/15 with 15/13/6 female. Recomputing from FB_Composite gives the same groups.
+    response: No change needed.
+  - claim: beh-fb-tom
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a), means .546/.572/.753 and H = 22.95. Tukey p values are 3.8e-5, 7.8e-5 and
+      .85, and the z-scale diffs are 1.24/1.08/.16, as in the paper.
+    response: No change needed.
+  - claim: beh-fb-age
+    agrees: true
+    outcome: reproduced
+    reason: Means 4.08/4.75/5.23. Tukey p values are 4.3e-6, .015 and .047, all on the paper's side.
+    response: No change needed.
+  - claim: beh-fb-dccs
+    agrees: true
+    outcome: reproduced
+    reason: Means 1.73/2.26/2.33, H = 7.56 (p .023), Pass vs Fail p .012.
+    response: No change needed.
+  - claim: motion-child-adult
+    agrees: true
+    outcome: reproduced
+    reason: Means 10.51 and 2.82, Welch t(137.7) = 6.49.
+    response: No change needed. The verifier could not check per-participant artifact counts
+      against the ART thresholds; recomputing ART from the raw images is outside this attempt, and
+      only the deposited indicators are used, as stated.
+  - claim: motion-not-age-tom
+    agrees: true
+    outcome: reproduced
+    reason: p values .86 and .94.
+    response: No change needed.
+  - claim: motion-not-fb
+    agrees: true
+    outcome: reproduced
+    reason: p values .90 and .24.
+    response: No change needed.
+  - claim: irc-adult
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both paired tests are p < 1e-18 and within > across. The means (.604, .398, -.051) are
+      outside the ±.02 tolerance under every reading. The IRC values have a systematic offset from
+      the paper that is never explained, and no output localizes it.
+    response: Added the adult and 3yo mean 13 x 13 matrices (Fig. 2 has no numbers to set beside
+      them), the NIfTI scaling and value range (int16, no scaling), each ROI's centroid and largest
+      distance from its stated center (the masks are in MNI mm), and diagnostic variants (mean r,
+      high-pass in the nuisance regression, left and right M1 regressors, a shared-signal
+      regressor). None of the stated pipeline's choices closes the gap; only a shared-signal
+      regressor outside the paper's method moves the across value past the paper's. The offset
+      stays unexplained, as the notes say. Outcome kept.
+  - claim: irc-age-within
+    agrees: true
+    outcome: not_reproduced
+    reason: Within-ToM rs is .31 to .32 with p ≥ 2.9e-4, which misses the paper's p < .00005 bound.
+      Within-Pain rs is .46 to .47 against .28±.028.
+    response: No change needed.
+  - claim: irc-age-across
+    agrees: true
+    outcome: not_reproduced
+    reason: rs is -.26 to -.27 (tolerance -.315 to -.385) and p .003 to .004 against the paper's p
+      < .0001. The direction holds.
+    response: No change needed.
+  - claim: irc-adult-vs-child
+    agrees: true
+    outcome: partially_reproduced
+    reason: All three group effects are significant with the paper's signs. The t values (-6.5,
+      -6.7, 4.5) are outside tolerance, and the motion effect on within-ToM is n.s. where the paper
+      has t = -4.3.
+    response: No change needed.
+  - claim: irc-control-networks
+    agrees: true
+    outcome: partially_reproduced
+    reason: Within-ToM (.367) and across (-.247) are in tolerance. Within-Pain (.525), Scene and M1
+      are out of tolerance. The across M1-V1 absence fails (p .017 to .034).
+    response: No change needed. The verifier asked for ROI centroids to settle whether the face,
+      scene, M1 and V1 masks are in mm; they are now printed, and M1 and V1 are centered exactly on
+      the stated coordinates with radius 10 mm.
+  - claim: irc-williams
+    agrees: false
+    outcome: not_reproduced
+    reason: Under both Williams readings, within-Pain vs Scene (p .010) and within-Pain vs M1 (p
+      .004) come out significant where the paper has n.s. That is 8/10 comparisons as in the paper,
+      and the criterion has no partial clause.
+    response: Changed to not_reproduced. The criterion states only the reproduced outcome, and two
+      of the paper's listed tests come out on the other side of .05, which Rule S counts as failed
+      tests.
+  - claim: irc-3yo-distinct
+    agrees: true
+    outcome: not_reproduced
+    reason: All four values are out of tolerance (within-ToM .326, within-Pain .179, t 8.4 and 4.5).
+      The Pain test p is 3e-4 against the paper's p < .00001. Within > across holds.
+    response: No change needed.
+  - claim: irc-3yo-not-anticorrelated
+    agrees: true
+    outcome: partially_reproduced
+    reason: The mean is .074, not negative but outside .05±.02. It is significantly above 0 (p
+      .002).
+    response: No change needed.
+  - claim: irc-3yo-homologous
+    agrees: true
+    outcome: not_reproduced
+    reason: RTPJ-LTPJ ranks 4th among ToM pairs. The Pain half holds (the three homologous pairs are
+      the top three). The ranking is shown for only 2 of the 8 readings.
+    response: The ranking is now printed for all eight readings; RTPJ-LTPJ ranks fourth and
+      RInsula-LInsula first under each. Outcome kept.
+  - claim: irc-3yo-nonbilateral
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under reading (b) both tests hold (p 1e-6 and .008) but the values are out of
+      tolerance. Under reading (a) the Pain test fails (p .2).
+    response: No change needed.
+  - claim: irc-tom-behavior
+    agrees: true
+    outcome: partially_reproduced
+    reason: Within-ToM tau .246 is in tolerance. Across tau -.125 is out of tolerance, with p .03 to
+      .05 (on the same side of .05 as the paper).
+    response: No change needed.
+  - claim: irc-tom-behavior-age
+    agrees: true
+    outcome: not_reproduced
+    reason: Under O3a the ToM-score effect on within-ToM is significant (p .044 and .048). Under O3b
+      it is not (p .069 and .088). The absence claim flips between readings and a verdict needs a
+      stated rule; the verifier used the main reading (O2a, O3a).
+    response: The notebook now states the rule. Where readings of a pipeline detail disagree, an
+      absence claim is judged under the reading the paper best supports, adopted as an assumption
+      (protocol, author step 1.6), with every reading shown; here O2a and O3a. Outcome kept,
+      marked as assumed.
+  - claim: irc-fb-within
+    agrees: true
+    outcome: not_reproduced
+    reason: t .60 to .71, p ≥ .48.
+    response: No change needed.
+  - claim: irc-fb-within-dccs
+    agrees: true
+    outcome: not_reproduced
+    reason: p .59 to .69, outside the .05 to .10 band.
+    response: No change needed.
+  - claim: irc-fb-across
+    agrees: true
+    outcome: not_reproduced
+    reason: A significant group effect under 3 of 4 readings (p .034 to .047). Only O2a+O3b gives p
+      .051. The absence claim flips between readings; the verifier used the main reading.
+    response: The rule for absence claims under several readings is now stated in the notebook, as
+      for irc-tom-behavior-age. Outcome kept, marked as assumed.
+  - claim: rc-events
+    agrees: true
+    outcome: partially_reproduced
+    reason: No reading gives 7 ToM and 12 pain events within the time tolerance. At p < .05 all 7
+      ToM events and 10 of 12 pain events are found (68 s ToM is out at 80 s).
+    response: No change needed.
+  - claim: rc-overlap
+    agrees: true
+    outcome: partially_reproduced
+    reason: 0 overlapping TRs against the paper's 1 (tolerance 0), with permutation p .002 to .004.
+      In reading (b) the paper's zero counts are combined with this attempt's event lengths, so the
+      two permuted series differ in length and are truncated, which is not the claims file's 159-TR
+      reading.
+    response: Reading (b) now uses 159-TR timecourses (159 minus each network's event TRs as
+      zeros). Under it the found events give p < .001 (0 of 1000), and the table events, which have
+      125 and 116 zeros, p = .008 as before. Outcome kept.
+  - claim: rc-child-adult-timecourse
+    agrees: false
+    outcome: not_reproduced
+    reason: ToM 3yo r .212 (p .0076) and Pain 3yo .531 are out of tolerance. The 3yo ToM p misses
+      the paper's "all p < .0005" bound, and Pain 3yo/4yo miss its "p < 1e-13" bound. All are
+      significant at the Bonferroni α .01, so a laxer reading of the criterion would give partial.
+      The notebook checks every bin only against p < .0005.
+    response: Changed to not_reproduced. The notebook now checks each bin against the paper's bound
+      (ToM p < .0005, Pain p < 1e-13, Pain 3yo p < 1e-15); three bins miss it, so the criterion's
+      partial outcome, which needs every r significant at the paper's bounds, does not apply.
+  - claim: supp-table4-other-networks
+    agrees: true
+    outcome: not_reproduced
+    reason: 17 of 25 values are in tolerance, below the 20 required for partial.
+    response: No change needed.
+  - claim: rc-age-events
+    agrees: true
+    outcome: not_reproduced
+    reason: The passing events are T02, T03, T07 and P04. Only 2 of the paper's 5 pass; P08 has rs
+      .02.
+    response: No change needed.
+  - claim: rc-t04-tom
+    agrees: true
+    outcome: not_reproduced
+    reason: T04 t 0.7 to 1.2, p ≥ .24 under every reading.
+    response: No change needed.
+  - claim: rc-fb-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: Under O7a no event is significant (min p .072, T03 permutation p .66 to .72). It is
+      fragile; under O7b, T05 gives p = .0497.
+    response: The rule for absence claims under several readings is now stated in the notebook;
+      the outcome rests on O7a, marked as assumed. Outcome kept.
+  - claim: rc-3yo-events
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under the reading (all, p<.05) the cross-overlaps hold (6 s of pain events in T04, 4 s of
+      ToM events in P01), but the counts and times differ. The O6 tie-break toward all 168 TRs is
+      the author's choice, defensible from Methods paragraph 9; under O6a the P01 overlap is 0 and
+      the claim would be not reproduced.
+    response: No change. The dependence on O6 is recorded as an assumption, with the O6a result, in
+      the notes and deviations.
+  - claim: maturity-across
+    agrees: false
+    outcome: not_reproduced
+    reason: The across-network effects hold (t -4.5 and -3.6, out of tolerance). The within-Pain
+      effect is significant under every reading (p .005 to .018), which fails the criterion's
+      condition.
+    response: Changed to not_reproduced. The criterion requires the within-network effects to be
+      not significant, and within-Pain is significant under every reading.
+  - claim: maturity-within
+    agrees: true
+    outcome: reproduced
+    reason: Maturity effects are n.s. under the main reading (p .41 and .075). Under O2b+O3b the
+      Pain effect has p .040.
+    response: The rule for absence claims under several readings is now stated in the notebook.
+      Outcome kept, marked as assumed.
+  - claim: maturity-tom-behavior
+    agrees: true
+    outcome: reproduced
+    reason: Partial rs .498 (p 6e-9). In the regression the ToM-score effect has p .97 and age has p
+      1.8e-5.
+    response: No change needed.
+  - claim: maturity-fb
+    agrees: true
+    outcome: reproduced
+    reason: p .13.
+    response: No change needed.
+  - claim: face-rc
+    agrees: true
+    outcome: not_reproduced
+    reason: 3yo r .589 is outside .72±.072, and no reading gives 7 adult events or 4 3yo events / 18
+      s. The age absence holds.
+    response: No change needed.
+  - claim: face-overlap
+    agrees: true
+    outcome: reproduced
+    reason: Every reading has p ≥ .052 for ToM and ≥ .94 for pain.
+    response: No change needed.
+  - claim: replication-sample
+    agrees: true
+    outcome: blocked
+    reason: The archive has no data for the 20 independent adults (API file list, only sub-pixar*,
+      ROIs, mriqc). The deposited README lists the 7 ToM and 9 pain events that replicated, which
+      map onto all Supplementary Table 3 events except P08, P09 and P11; this restates the
+      authors' result, not data, and the notebook could have reported the check.
+    response: Added the check to the notebook (the README events overlap all table events except
+      P08, P09 and P11) and to the notes. Kept blocked with blocked_by other, since the checker does
+      not allow data_missing on an `elsewhere` claim, as the notes say.
+  - claim: hand-coded-events
+    agrees: true
+    outcome: blocked
+    reason: The Jacoby et al. 2016 coding is not in the snapshot. It exists in an unpinned Saxe-lab
+      script (movloc.zip); as the notebook's reason is that it is unpinned, "other" fits better than
+      "data_missing". The claim becomes partly testable if an unpinned outside input is accepted.
+    response: No change needed; the record already gives blocked_by other for this reason. The
+      protocol allows only pinned outside inputs, so the script is not used.

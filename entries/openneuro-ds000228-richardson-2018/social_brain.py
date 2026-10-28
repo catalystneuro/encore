@@ -184,8 +184,10 @@ def extract_subject(sub: str) -> dict:
     img = nib.Nifti1Image.from_bytes(raw)
     data = np.asanyarray(img.dataobj)
     inv = np.linalg.inv(img.affine)
+    slope, inter = img.header.get_slope_inter()
     out = {"shape": img.shape, "zooms": img.header.get_zooms(), "affine": img.affine,
-           "dtype": str(data.dtype)}
+           "dtype": str(data.dtype), "scl_slope": slope, "scl_inter": inter,
+           "range": (float(np.nanmin(data)), float(np.nanmax(data)))}
     rois = {}
     for name, mm in all_roi_mm().items():
         vox = np.rint(inv[:3, :3] @ mm + inv[:3, 3:4]).astype(int)
