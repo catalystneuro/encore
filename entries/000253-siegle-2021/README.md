@@ -11,21 +11,23 @@ the paper's GitHub repository.
 | Claim | Outcome |
 |---|---|
 | 58 sessions by genotype; 284 of 332 probes in the CCF; units per experiment, probe and area | Reproduced |
-| 60% of visual area units with a receptive field, 1.4% in the hippocampus | Partially reproduced (60.8%, 1.6%) |
+| 60% of visual area units with a receptive field, 1.4% in the hippocampus | Partially reproduced (60.7%, 1.58%) |
 | The paper's per-unit tables link to the dandisets' units (added link) | Partially reproduced (latencies differ) |
 | Latency, RF size, modulation index and decay timescale follow the hierarchy (Fig. 3c, f, i, l) | Reproduced |
 | Pairwise area differences: latency, RF size | Partially reproduced |
 | Pairwise area differences: modulation index, decay timescale | Not reproduced |
-| Figure 3 unit counts | Reproduced with the code's windows (assumption) |
+| Figure 3 unit counts | Not reproduced (the scripts' windows give the paper's counts, as a variant) |
 | Intrinsic timescale, firing rate and spontaneous latency do not follow the hierarchy | Reproduced |
-| Superficial and deep layers differ in the four metrics | Partially reproduced (3 of 4) |
+| Superficial and deep layers differ in the four metrics | Not reproduced (1 of 4; the scripts' windows give 3 of 4) |
 | Anatomical hierarchy order | Reproduced |
 | Behaviour metrics: latency, change modulation, decoders (Fig. 4e to h, Extended Data Fig. 9k to p) | Reproduced |
 | Behavioural performance (Fig. 4b) | Blocked: data missing |
 | Gaze stability | Reproduced |
-| Sharp CCG peaks, V1 leads LM, DS correlates with hierarchy, THS, superficial leads deep | Reproduced |
+| Sharp CCG peaks (16,119 of 2,089,890 pairs) | Not reproduced (21,962 of 2,116,259) |
+| V1 leads LM, total hierarchy score, superficial leads deep | Reproduced |
+| DS correlates with hierarchy (r = 0.74) | Partially reproduced (r = 0.827, above the tolerance) |
 | Neighbouring areas differ from within-area offsets; V1 leads, AM follows | Partially reproduced |
-| Hierarchy absent in spontaneous activity | Not reproduced |
+| Hierarchy absent in spontaneous activity | Not reproduced with all units; absent with the Extended Data Fig. 1j filters |
 | Distance does not explain the DS correlation | Blocked: metadata insufficient |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -37,6 +39,6 @@ The record, with the reasons and the differences from the paper's method, is
 - `reproduce_siegle_2021.ipynb`: everything but the CCGs. About 12 minutes, most of it streaming the
   spike times of about 70,000 units from 58 sessions.
 - `ccg_siegle_2021.ipynb`: the jitter-corrected cross-correlograms of the 26 Functional
-  Connectivity sessions. About 18 minutes.
+  Connectivity sessions. About 20 minutes.
 - `siegle.py`: loading, the per-unit measures (receptive field test and area, times to first spike,
   modulation index, timescales) and the CCGs, with the source of every parameter in its docstring.

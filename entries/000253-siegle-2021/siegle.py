@@ -19,6 +19,10 @@ Where each parameter comes from:
   Gaussian smoothing sigma 1, threshold max - std, largest contiguous region times 100 deg2).
   Contiguity uses scipy.ndimage.label's default 4-connectivity, a standard choice. The p-value is
   the fraction of shuffled statistics at least as large as the observed one, a standard choice.
+  As the AllenSDK's ReceptiveFieldMapping (the code the paper names for stimulus metrics; v2.0.0,
+  minimum_spike_count=10.0), a unit with fewer than 10 spikes over all Gabor presentations gets no
+  p-value (p_value_rf is NaN, so it never counts as significant); the p-value before this rule is
+  kept as p_value_rf_all, a variant. The AllenSDK uses spike counts per presentation, as here.
 - Time to first spike: Methods, "Response latency" (first spike from 30 ms after onset, trials
   without a spike within 250 ms excluded, median over trials) and functions/time_to_first_spike.py
   (1 ms bins, default end 500 ms, a variant). Figure3/get_flash_PSTH.py, which wrote the paper's
@@ -299,7 +303,9 @@ def load_session(asset, n_shuffles=1000, seed=0):
             r = {"index": i}
             c = window_counts(st, gb.start_time.values, 0.25).astype(float)
             p, O = rf_test(c, loc, n_loc, perms)
-            r["p_value_rf"] = p
+            r["n_spikes_gabor"] = c.sum()
+            r["p_value_rf_all"] = p
+            r["p_value_rf"] = p if c.sum() >= 10 else np.nan
             r["area_rf"] = rf_area(O.reshape(len(ys), len(xs))) if np.isfinite(p) else np.nan
             for lab, m in (("all", slice(None)), ("dark", dark), ("light", ~dark)):
                 r[f"tfs_{lab}_250"] = first_spike(st, fon[m], 0.030, 0.250)
@@ -439,8 +445,10 @@ def ccg_group(spikes, onsets, T):
     padw = MAXLAG // JW + 1
     LW = W.shape[1]
     G = {}
-    for k in range(-padw, padw + 1):
-        G[k] = W[:, :LW - k] @ W[:, k:].T if k >= 0 else W[:, :LW + k] @ W[:, -k:].T
+    for k in range(padw + 1):
+        G[k] = W[:, :LW - k] @ W[:, k:].T  # G[k][i, j] = sum_t W_i[t] W_j[t + k]
+    for k in range(1, padw + 1):
+        G[-k] = G[k].T
     for tau in np.r_[-LAGS_USED[::-1], LAGS_USED[1:]]:
         k, r = tau // JW, tau % JW
         raw[:, :, MAXLAG + tau] -= ((JW - r) * G[k] + r * G[k + 1]) / JW ** 2
@@ -476,7 +484,8 @@ def load_ccg_session(asset, windows=(2000, 3000), spont=True):
     idx = u["spike_times_index"][:]
     U["i1"] = idx
     U["i0"] = np.r_[0, idx[:-1]]
-    E = pd.DataFrame({"peak_channel_id": e["id"][:], "location": e["location"][:].astype(str)})
+    E = pd.DataFrame({"peak_channel_id": e["id"][:], "location": e["location"][:].astype(str),
+                      "x": e["x"][:], "y": e["y"][:], "z": e["z"][:]})
     U = U.merge(E, on="peak_channel_id", how="left")
     dg = _intervals(f, "drifting_gratings_75_repeats_presentations", ["orientation", "contrast", "temporal_frequency"])
     dg = dg[(dg.contrast == 0.8)].sort_values("start_time")
