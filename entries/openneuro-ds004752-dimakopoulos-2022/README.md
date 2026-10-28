@@ -18,7 +18,7 @@ from 15 epilepsy patients performing a modified Sternberg task.
 | Participant 1, GC reversal between hippocampus and C2 | Not reproduced (rests on an assumption) |
 | Participant 1, spatial pattern of GC on the grid | Not reproduced |
 | Participants 2 and 3, GC reversal | Not reproduced (rests on an assumption) |
-| Participant 4, no GC on right parietal cortex | Blocked: methods underspecified |
+| Participant 4, no GC on right parietal cortex | Blocked: methods underspecified (a change to not reproduced is proposed) |
 | Over 80% of significant EEG sources in the left hemisphere | Blocked: not runnable |
 | Group GC reversal with the auditory source | Not reproduced |
 | Temporal scalp electrodes, eliminated by a Laplacian | Reproduced (rests on an assumption) |
@@ -36,12 +36,14 @@ The per-participant net flow reproduces the paper's sign pattern only when it is
 minimum (encoding) or maximum (maintenance) over 4 to 8 Hz, as the paper's code does; the same
 statistic gives the pattern for every area and for spectra with no direction, and the band mean
 shows no effect. The per-frequency significance test flags a GC reversal in many trial pairings
-with no coupling, so the ECoG reversals are judged with the cluster test. The derivative files
+with no trial-by-trial coupling (they keep the stimulus-locked responses; subtracting those does
+not change this), so the ECoG reversals are judged with the cluster test. The scrambled-trial
+cluster test that the figure legends name agrees on the reversals and finds GC in Participant 4. The derivative files
 hold no beamformer filters, but each virtual sensor is an exact linear combination of the scalp
 channels, so the filters were recovered and applied to the incorrect trials. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/openneuro-ds004752-dimakopoulos-2022-01.yaml`](../../attempts/openneuro-ds004752-dimakopoulos-2022-01.yaml).
 
-- `reproduce_dimakopoulos_2022.ipynb`: the analysis. It takes about 18 minutes, most of it Granger
+- `reproduce_dimakopoulos_2022.ipynb`: the analysis. It takes about 26 minutes, most of it Granger
   causality permutations and about 2.5 GB of streaming.
 - `wmflow.py`: streaming the snapshot's files (EDF by byte range, the derivative MAT files), the
   hippocampal readings, spectral Granger causality with Wilson factorisation, PSD and PLV, and the

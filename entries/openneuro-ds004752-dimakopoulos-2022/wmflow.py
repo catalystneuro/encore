@@ -666,15 +666,41 @@ def window40(x: np.ndarray, per: str, fs: int = 500) -> np.ndarray:
     return cut(to_fs(x, fs), t40, WINDOWS[per], 40)
 
 
-def gc_test(hx: list, cx: np.ndarray, n_perm: int, seed: int) -> dict:
-    """ΔGranger and its direction-swap null for one hippocampal reading (h3: mean over channels).
+def granger_shuffle_null(x_hipp, x_ctx, n_perm: int, rng, fs: float = 40.0, batch: int = 50):
+    """ΔGranger null: the cortical trials paired with the hippocampal ones in a random order
+    (scrambled trials, Figure 2h and 3 legends; the code's Granger_significance_calculation.m).
+    The stimulus-locked parts of both signals stay in every pairing."""
+    F, f = fourier(np.stack([x_hipp, x_ctx], axis=1), fs)
+    Fh, Fc = F[:, 0], F[:, 1]
+    ntr, nf = Fh.shape
+    shh, scc = (np.abs(Fh) ** 2).mean(0), (np.abs(Fc) ** 2).mean(0)
+    out = []
+    for b0 in range(0, n_perm, batch):
+        nb = min(batch, n_perm - b0)
+        perm = np.stack([rng.permutation(ntr) for _ in range(nb)])
+        shc = (Fh[None] * np.conj(Fc[perm])).mean(1)
+        S = np.empty((nb, nf, 2, 2), complex)
+        S[..., 0, 0], S[..., 1, 1], S[..., 0, 1], S[..., 1, 0] = shh, scc, shc, np.conj(shc)
+        g = granger_from_csd(S)
+        out.append(g[:, 0] - g[:, 1])
+    return np.concatenate(out), f
 
-    The same random swaps are used for each channel of h3.
+
+def gc_test(hx: list, cx: np.ndarray, n_perm: int, seed: int, null: str = "swap", erp: bool = False) -> dict:
+    """ΔGranger and its null for one hippocampal reading (h3: mean over channels).
+
+    ``null="swap"``: the direction-swap null (Methods); ``"shuffle"``: scrambled trials.
+    ``erp=True`` subtracts each signal's trial average (the evoked response) first. The same
+    random draws are used for each channel of h3.
     """
+    if erp:
+        hx = [h - h.mean(0) for h in hx]
+        cx = cx - cx.mean(0)
+    make = granger_direction_null if null == "swap" else granger_shuffle_null
     dg, nulls = [], []
     for h in hx:
         r = granger(h, cx)
-        nl, f = granger_direction_null(h, cx, n_perm, np.random.default_rng(seed))
+        nl, f = make(h, cx, n_perm, np.random.default_rng(seed))
         dg.append(r["dg"]); nulls.append(nl)
     return dict(freq=f, dg=np.mean(dg, 0), null=np.mean(nulls, 0))
 

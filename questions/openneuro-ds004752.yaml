@@ -1,7 +1,7 @@
-# Questions from attempt openneuro-ds004752-dimakopoulos-2022-01 (author revision after verifier round 1,
-# 2026-10-28) about claims/openneuro-ds004752/10.7554-elife.78677.yaml, asked under docs/protocol.md,
-# "Hand over for verification". The verifier reported this as a place where the claims file misreads
-# the paper; the claims were tested as the file has them.
+# Questions from attempt openneuro-ds004752-dimakopoulos-2022-01 (author revisions after verifier rounds 1
+# and 2, 2026-10-28) about claims/openneuro-ds004752/10.7554-elife.78677.yaml, asked under docs/protocol.md,
+# "Hand over for verification". The verifier reported these as places where the claims file misreads
+# the paper or leaves a test open; the claims were tested as the file has them.
 dataset: OPENNEURO:ds004752
 paper: doi:10.7554/elife.78677
 questions:
@@ -26,3 +26,46 @@ questions:
     balanced-correct-subset (reproduced) pass under d2 only, and fail under d1 (12 to 18 matching signs;
     no reading with p below 0.05). If d2 is excluded, or the criteria require the pattern to exceed what
     d2 gives on the null, both become not reproduced.
+- claim: fig2h-gc-reversal-p1
+  asked: 2026-10-28
+  question: Should the test of fig2h-gc-reversal-p1 and fig3-gc-reversal-p2-p3 be the cluster-based test
+    against a null with scrambled trials that the Figure 2h and Figure 3 legends name? The criterion makes
+    the Methods' direction-swap null primary, per frequency (c1) or with clusters (c2), and runs a scrambled-trial
+    null only as the code's variant, for Participant 1 only, at the 1st and 99th percentiles and not as
+    a cluster test. The same question applies to fig3no-p4-right-no-gc, whose criterion takes the test
+    of fig2h-gc-reversal-p1.
+  passage: The net information flow ΔGranger ... was significant in the [6 8] Hz range (blue bar in Figure
+    2h, p<0.05 permutation test against a null distribution) (Results, Directed functional coupling between
+    hippocampus and ECoG, paragraph 1), against the Figure 2h and Figure 3 legends, which describe a
+    cluster-based non-parametric permutation test against a null distribution with scrambled trials, and
+    Methods, Statistics, paragraph 1, which describes switching the direction at random across trials.
+  why: The verifier reported this as a place where the criterion departs from the figure legends. The
+    attempt ran the legends' test beside the criterion. On shifted trial pairs it flags a theta cluster
+    in 0% to 20% of single tests and the reversal in none, while the criterion's per-frequency test flags
+    the reversal in 20% to 90%. On the real pairings it shows no reversal in Participants 1 to 3, as c2
+    does, and finds clusters at all 12 right parietal contacts of Participant 4, against fig3no-p4-right-no-gc.
+- claim: fig2bc-gamma-encoding-p1
+  asked: 2026-10-28
+  question: Does the third condition of the criterion, that the contacts with z above 1.96 lie in the
+    temporal and occipital-parietal parts of the grid only, test anything on this grid? By the dataset's
+    atlas labels every one of the 64 grid contacts of Participant 1 is temporal, parietal, occipital or
+    unlabelled, apart from one labelled hippocampus, so almost any set of significant contacts meets it.
+    Should the outcome then rest on the two contacts (H3 and C2) alone?
+  passage: gamma increased significantly only in temporal and occipital-parietal contacts (claim statement,
+    from Results, Power spectral density in cortical and hippocampal recordings, paragraph 1, and Figure
+    2a).
+  why: The verifier holds that the condition is near-empty and that the outcome should be not reproduced,
+    as C2 rises by 17% against the required 100%. The attempt keeps partially reproduced because H3 rises
+    by 179%, and the record notes the disagreement.
+- claim: scalp-temporal-laplacian
+  asked: 2026-10-28
+  question: Should the criterion require the sign pattern of the "similar GC pattern" (negative ΔGranger
+    in encoding and positive in maintenance), or a correction over its 18 readings and two tests? As written
+    it passes when, under one reading, encoding is below maintenance at p < 0.05 with the mastoid reference
+    and not after the Laplacian.
+  passage: A similar GC pattern emerged when using the signals from left temporal scalp electrodes but was
+    eliminated when using a Laplacian derivation (Results, Directed functional coupling between hippocampus
+    and averaged EEG sources, paragraph 1).
+  why: The claim passes on 1 of 36 cells (h1, T5, d1, paired test, p = 0.020 uncorrected) where the encoding
+    median is positive (0.0035), so the flow toward the hippocampus in encoding that the paper's pattern
+    has is absent. The verifier reported that the criterion does not require the sign pattern.

@@ -57,10 +57,11 @@ outcomes:
   measured: 6.59
   notes: Reading (a), rates over all trials times 8, mean over participants, gives 6.59 (range 5.56 to
     7.62); the median is 6.63 and the same over sessions 6.57 and 6.67, all within 6.1 +- 0.61. K from
-    the set size 8 rates alone is 5.43 (mean) and 5.33 (median), outside.
+    the set size 8 rates alone is 5.43 (mean) and 5.33 (median) over participants, outside; over sessions
+    its median is 5.61, within, and its mean 5.41, outside.
   deviations:
-  - The set size and the averaging are open in the paper; the criterion's readings were all run and four
-    of eight match.
+  - The set size and the averaging are open in the paper; the criterion's readings were all run and 5
+    of 8 match.
 - claim: fig1c-response-time
   outcome: reproduced
   notebook: reproduce_dimakopoulos_2022.ipynb
@@ -94,7 +95,9 @@ outcomes:
     H2 and H3 without an atlas label), all in temporal and occipital-parietal cortex. That statistic z-scores
     over frequency and takes the maximum; on one trial-permuted data set it exceeded 1.96 at 1 contact
     of 64. The outcome is partial because two of the criterion's three parts hold (H3 and the z-test)
-    and C2 does not.
+    and C2 does not. The third part tests little on this grid. By the atlas labels the 64 contacts are
+    25 temporal, 24 parietal, 6 occipital, 8 unlabelled and 1 labelled hippocampus, so almost any set
+    of significant contacts meets it; the partial outcome rests on H3 holding and C2 not.
   deviations:
   - The ECoG is re-referenced to a white-matter depth contact chosen by rule (the paper names none); the
     contact used is printed in the data check.
@@ -137,7 +140,8 @@ outcomes:
     below 0.36. It does not exceed fixation (p = 0.72, 0.49 and 0.35) and no contact shows a significant
     theta increase over fixation except 2 non-auditory contacts under h2. Against encoding, the variant,
     C3 is significant (p = 0.010 to 0.025) with 16 to 21 significant contacts, 4 to 6 of them auditory.
-    The highest maintenance theta PLV is at A1 to A3, with C3 and B3 among the six highest.
+    The highest maintenance theta PLV is at A1 under every reading; the six highest include C3 and B3
+    under h1, B3 but not C3 under h2, and C3 and B3 but not A3 under h3.
   deviations:
   - The per-contact and per-frequency test is a trial-wise swap of the two periods' phasors, 200 times,
     against the 95th percentile; the cluster step of the code is reported as runs of significant frequencies.
@@ -149,18 +153,28 @@ outcomes:
   notes: With clusters (c2) no reading shows the reversal between the hippocampus and C2. Under h1 encoding
     has significant clusters overlapping theta (7.55 to 9.05 Hz, p = 0.01) and maintenance none; under
     h2 and h3 neither period has a theta cluster. The per-frequency test (c1) shows the reversal under
-    h1 only (encoding 6.75 to 7.2 and 7.55 to 9.05 Hz, maintenance 7.0 to 7.45 Hz). On mismatched trial
-    pairs of this participant (cortical trials shifted by 1 to 10 positions) c1 flags the reversal in
-    40% (h1) and 20% (h2) of shifts and theta in 30% to 70% of single tests, and c2 flags the reversal
-    in 0% of shifts; the direction-swap null puts 8% to 16% of bins beyond its 5th or 95th percentile,
-    against 5%. The code's variant (AHL2-AHL3, trial-shuffle null, 1st and 99th percentiles) finds encoding
-    at 5.9 to 6.15 Hz and nothing in maintenance.
+    h1 only (encoding 6.75 to 7.2 and 7.55 to 9.05 Hz, maintenance 7.0 to 7.45 Hz). On shifted trial pairs
+    of this participant (cortical trials shifted by 1 to 10 positions) c1 flags the reversal in 40% (h1)
+    and 20% (h2) of shifts and theta in 30% to 70% of single tests, and c2 flags the reversal in 0% of
+    shifts; the direction-swap null puts 8% to 16% of bins beyond its 5th or 95th percentile, against
+    5%. With each period's evoked response subtracted from both signals, c1 still flags the reversal in
+    20% to 50% of shifts in Participants 1 to 4 and theta in 20% to 83% of single tests, and c2 the reversal
+    in none, so c1's excess does not come from the evoked responses; with a scrambled-trial null c1 flags
+    theta in 20% to 60% of single tests. The scrambled-trial cluster test of the Figure 2h legend, run
+    beside the criterion, flags theta in 0% to 20% of single shifted tests and the reversal in none; on
+    the real pairing it finds an encoding cluster overlapping theta under h1 (7.45 to 9.05 Hz) and no
+    maintenance cluster under any reading. The rates rest on 5 to 10 shifts per cell. The code's variant
+    (AHL2-AHL3, trial-shuffle null, 1st and 99th percentiles) finds encoding at 5.9 to 6.15 Hz and nothing
+    in maintenance.
   deviations:
   - The outcome rests on the cluster reading (c2). The per-frequency reading (c1), which the Methods describe,
-    flags the reversal in 20% to 90% of trial pairings with no coupling in Participants 1 to 3, far from
-    the 5% of the paper's p < 0.05, so as run here it is not the paper's test; c2, which the Figure 2h
-    legend names (cluster-based), flags it in 0% to 10%. The electrode (AHL) and the white-matter reference
-    contact are chosen by rule, not given by the paper.
+    flags the reversal in 20% to 90% of shifted trial pairings in Participants 1 to 3, which have no trial-by-trial
+    coupling but keep the stimulus-locked responses, and in 20% to 50% with those responses subtracted,
+    far from the 5% of the paper's p < 0.05, so as run here it is not the paper's test; c2, the cluster
+    version of the same test, flags it in 0% to 10%. The Figure 2h legend names a cluster test against
+    scrambled trials, which the criterion does not; it was run beside the criterion and agrees with c2
+    (asked of a reader in questions/openneuro-ds004752.yaml). The electrode (AHL) and the white-matter
+    reference contact are chosen by rule, not given by the paper.
   - GC is computed in Python with a Wilson factorisation following FieldTrip, checked on an analytic autoregressive
     process; signals are resampled with scipy's polyphase filter.
 - claim: fig2ijk-spatial-spread-p1
@@ -174,7 +188,7 @@ outcomes:
     having a median of -0.0041 against a null median of -0.0012 and a null 95th percentile of 0.013 (0%
     of true values above it).
   deviations:
-  - For the notebook's time limit (each spatial test takes about 4 minutes), the per-contact tests ran
+  - For the notebook's time limit (each spatial test takes about 6 minutes), the per-contact tests ran
     with h1 only (h2 and h3 values are shown without a test), and the spatial test ran on maintenance
     with h1 only.
   - In the spatial null each trial's window is drawn at random from fixation (1 s) or maintenance (2 s),
@@ -185,14 +199,18 @@ outcomes:
   assumed: true
   notebook: reproduce_dimakopoulos_2022.ipynb
   output: claim:fig3-gc-reversal-p2-p3
-  notes: With clusters (c2) neither participant shows the reversal under any reading. In Participant 2
-    (sub-11, most anterior contact TBAL1) maintenance has a positive theta cluster under h1 (4.0 to 5.65
-    Hz) and h2 (4.0 to 6.75 Hz) and encoding none. In Participant 3 (sub-12, most posterior contact PL1,
-    right hippocampus AHR with the right white-matter reference AHR3) encoding has a negative cluster
+  notes: 'With clusters (c2) neither participant shows the reversal under any reading. In Participant
+    2 (sub-11, most anterior contact TBAL1) maintenance has a positive theta cluster under h1 (4.0 to
+    5.65 Hz) and h2 (4.0 to 6.75 Hz) and encoding none. In Participant 3 (sub-12, most posterior contact
+    PL1, right hippocampus AHR with the right white-matter reference AHR3) encoding has a negative cluster
     only at 15.5 to 17.15 Hz, outside theta, and maintenance none; with the left hippocampus maintenance
     has theta clusters and encoding none. The per-frequency test (c1) shows the reversal in Participant
-    3 under h1 and h2 and in Participant 2 under no reading; on mismatched trial pairs c1 flags the reversal
-    in 40% to 90% of shifts in these participants and c2 in 0% to 10%.
+    3 under h1 and h2 and in Participant 2 under no reading; on shifted trial pairs c1 flags the reversal
+    in 40% to 90% of shifts in these participants (20% to 40% with the evoked responses subtracted) and
+    c2 in 0% to 10%. The scrambled-trial cluster test of the Figure 3 legend, run beside the criterion,
+    agrees with c2: in Participant 2 maintenance has theta clusters under h1 to h3 and encoding none in
+    theta, and in Participant 3 neither period has a cluster under any reading; on shifted pairs it flags
+    the reversal in none.'
   deviations:
   - The outcome rests on the cluster reading (c2), for the calibration given under fig2h-gc-reversal-p1;
     the Figure 3 legend and the claims file's statistics name a cluster-based test.
@@ -205,7 +223,7 @@ outcomes:
   notes: The test as run here cannot show an absence at the paper's 5% level. On the real pairing the
     per-frequency test finds significant ΔGranger somewhere in [4 20] Hz in 24 of 24 contact and period
     tests with h1, 20 of 24 with h2 and 24 of 24 with h3 (in [4 8] Hz in 21, 13 and 23), and the cluster
-    test in 16, 14 and 22 of 24; the largest absolute theta ΔGranger is 0.041, 0.101 and 0.039. On mismatched
+    test in 16, 14 and 22 of 24; the largest absolute theta ΔGranger is 0.041, 0.101 and 0.039. On shifted
     trial pairs of Participant 4 (4 contacts, 5 shifts), with no trial-by-trial coupling, the per-frequency
     test flags 90% to 100% of tests and the cluster test 10% to 40%, against the nominal 5%, so the criterion
     (no contact significant) fails under either test whether or not there is GC. The cluster test flags
@@ -213,9 +231,24 @@ outcomes:
     encoding 58% against 40%, h1 maintenance 75% against 10%, h2 encoding 100% against 30%, h2 maintenance
     17% against 30%). The direction-swap null of the Methods is not described in enough detail to reach
     the paper's false-positive rate, and the code's significance script uses a different null (trial shuffling,
-    1st and 99th percentiles).
+    1st and 99th percentiles). The scrambled-trial cluster test of the Figure 2h and 3 legends, run beside
+    the criterion, flags a cluster anywhere in [4 20] Hz in 17% of encoding and 0% of maintenance tests
+    on shifted pairs of this participant, and a theta cluster in none; on the real pairing it flags all
+    12 contacts in at least one period under each of h1, h2 and h3, with an encoding theta cluster at
+    7, 12 and 12 of 12 contacts.
   blocked_by: methods_underspecified
   output: claim:fig3no-p4-right-no-gc
+  proposed:
+    outcome: not_reproduced
+    reason: The block rested on the criterion's tests flagging shifted trial pairs too often to show an
+      absence. The scrambled-trial cluster test that the Figure 2h and 3 legends name holds its false-positive
+      rate on shifted pairs of this participant (a theta cluster in 0% of tests, any cluster in 0% to
+      17%) and on the real pairing finds significant GC at every one of the 12 right parietal contacts
+      under each hippocampal reading, so the absence fails on a test that can show it. The criterion's
+      own cluster test (c2) also flags the real pairing more often than the shifted one in three of four
+      cells, and the verifier of round 2 holds that the method was specified and run, so the claim is
+      not reproduced. The analysis is in the notebook's fig2h-gc-reversal-p1 and fig3no-p4-right-no-gc
+      cells.
 - claim: table1-left-hemisphere-sources
   outcome: blocked
   blocked_by: not_runnable
@@ -244,20 +277,24 @@ outcomes:
   notes: The derivative scalp channels are referenced to the averaged mastoids (A1 = -A2). Under h1, T5
     (e2), d1 and the paired test (s1), encoding ΔGranger is below maintenance with the mastoid reference
     (medians 0.0035 and 0.0109, p = 0.020, 10 participants) and not after the spline Laplacian (p = 0.29)
-    or the Hjorth derivation (p = 0.89). This holds in 1 of the 18 h, e and d readings, 1 of 9 d1 readings
-    at p = 0.02, and the encoding median is positive, so the flow toward the hippocampus in encoding is
-    absent. Under h2 and h3 no d1 reading is significant with the mastoid reference. Under every d2 reading
-    the test is significant with the mastoid reference (p = 0.005 to 0.015) and stays significant after
-    both derivations (p = 0.005 to 0.025). The group test (s2) finds no reversal under any reading. 8
-    participants have T3 and 10 have T5 in the derivative files.
+    or the Hjorth derivation (p = 0.89). This holds in 1 of 36 cells (18 h, e and d readings, two tests),
+    1 of 9 d1 readings, at p = 0.02 without correction for the readings, and appeared only after the white-matter
+    reference was moved (verifier round 1), and the encoding median is positive, so the flow toward the
+    hippocampus in encoding is absent. Under h2 and h3 no d1 reading is significant with the mastoid reference.
+    Under every d2 reading the test is significant with the mastoid reference (p = 0.005 to 0.015) and
+    stays significant after both derivations (p = 0.005 to 0.025). The group test (s2) finds no reversal
+    under any reading. 8 participants have T3 and 10 have T5 in the derivative files.
   deviations:
   - The scalp channels are those of the derivative files (the same trials as the sources); the spline
     Laplacian is MNE's on standard 10-20 positions, standing in for FieldTrip's.
   - The outcome rests on readings h1 and d1. h1 is adopted because the Methods describe the hippocampal
     LFP re-referenced to a white-matter contact, which h1 is (h2 is the code's bipolar derivation, and
     the Methods come first); d1 because the Results say ΔGranger was averaged over [4 8] Hz, while d2
-    makes the pattern by construction (fig4d-reversal-all). Before the white-matter reference was moved
-    to the hemisphere of the hippocampal contact (verifier round 1), no reading met the criterion.
+    makes the pattern by construction (fig4d-reversal-all). The criterion lets the electrode and the test
+    vary (one electrode and test reading) and leaves h and d open, so the adoption of h1 and d1 decides
+    which cells count; whether the criterion should require the sign pattern is asked of a reader. Before
+    the white-matter reference was moved to the hemisphere of the hippocampal contact (verifier round
+    1), no reading met the criterion.
   assumed: true
 - claim: fig4bc-auditory-strongest
   outcome: not_reproduced
@@ -364,16 +401,20 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_dimakopoulos_2022.ipynb
   output: claim:fig4f-incorrect-no-reversal
-  notes: Each derivative virtual sensor is an exact linear combination of the file's scalp channels (R²
-    = 1.000000 in all 150 fits), so each period's filter was recovered and applied to the raw EEG, re-referenced
-    to the averaged mastoids. On the correct trials the recomputed AC source matches the deposited one
-    (median correlation per participant 0.996 to 0.999, theta ΔGranger within 0.0001). On the 254 incorrect
-    trials of set sizes 6 and 8 without the artifact flag (5 to 40 per participant), with d1 encoding
-    and maintenance ΔGranger do not differ under any reading, p = 0.71 (h1), 0.19 (h2) and 1.00 (h3) with
-    200 sign flips (exact 0.66, 0.17 and 1.00), median differences -0.0001 to 0.014. Encoding is negative
-    in 6 or 7 of 15 participants and the full pattern appears in 3 to 5, so the direction is not the same
-    in all. The signs match Table 1's incorrect-trial values in 9 to 11 of 29 cells. With d2 the test
-    is significant (p = 0.005) under every reading, as d2 gives the pattern by construction.
+  notes: 'Each derivative virtual sensor is an exact linear combination of the file''s scalp channels
+    (R² = 1.000000 in all 150 fits), so each period''s filter was recovered and applied to the raw EEG,
+    re-referenced to the averaged mastoids. On the correct trials the recomputed AC source matches the
+    deposited one (median correlation per participant 0.996 to 0.999, theta ΔGranger within 0.0001). On
+    the 254 incorrect trials of set sizes 6 and 8 without the artifact flag (5 to 40 per participant),
+    with d1 encoding and maintenance ΔGranger do not differ under any reading, p = 0.71 (h1), 0.19 (h2)
+    and 1.00 (h3) with 200 sign flips (exact 0.66, 0.17 and 1.00), median differences -0.0001 to 0.014.
+    Encoding is negative in 6 or 7 of 15 participants and the full pattern appears in 3 to 5, so the direction
+    is not the same in all. The signs match Table 1''s incorrect-trial values in 9 to 11 of 29 cells,
+    below the 14.5 that chance gives. The result does not discriminate between correct and incorrect trials:
+    under the same d1 reading the correct trials show no reversal either (fig4d-reversal-all, p = 0.13
+    to 0.92), so the paper''s contrast between them is not reproduced, although this claim''s criterion
+    is met. With d2 the test is significant (p = 0.005) under every reading, as d2 gives the pattern by
+    construction.'
   assumed: true
   deviations:
   - The auditory source of the incorrect trials is computed from the raw scalp EEG with the filters recovered
@@ -435,12 +476,13 @@ findings:
     flag, apparently placeholders; ProbeLetter is n/a for every trial of sub-10 to sub-15. Neither is
     described in the events sidecar.
 - kind: code_mismatch
-  statement: In calculateGranger_random_trial_sampling.m (and the group medians of MeanSourceGranger.m)
-    the same row of FieldTrip's grangerspctrm is stored as cortex to hippocampus for encoding and as hippocampus
-    to cortex for maintenance, although both periods use the same channel pair, so the sign of maintenance
-    ΔGranger is flipped relative to encoding. Combined with the minimum (encoding) and maximum (maintenance)
-    over 4 to 8 Hz taken in MeanSourceGranger.m and DeltaGranger_EEG.m, this yields negative encoding
-    and positive maintenance values without a directed effect.
+  statement: In calculateGranger_random_trial_sampling.m at commit 395ae13 (lines 31 and 34 to 37; and
+    the group medians of MeanSourceGranger.m) the same row of FieldTrip's grangerspctrm is stored as cortex
+    to hippocampus for encoding and as hippocampus to cortex for maintenance, although both periods use
+    the same channel pair, so the sign of maintenance ΔGranger is flipped relative to encoding. Combined
+    with the minimum (encoding) and maximum (maintenance) over 4 to 8 Hz taken in MeanSourceGranger.m
+    and DeltaGranger_EEG.m, this yields negative encoding and positive maintenance values without a directed
+    effect.
 - kind: paper_inconsistency
   statement: The Results say ΔGranger was averaged over [4 8] Hz for each participant ("We averaged ΔGranger"),
     while the Figure 4d legend reports the "maximal ΔGranger" and the code takes the minimum in encoding
@@ -463,9 +505,11 @@ findings:
   statement: Question for the authors. How was the direction-swap null of the per-frequency GC test built
     (Methods, Statistics, paragraph 1), and was significance corrected over frequencies? Built here by
     swapping the two channels in a random half of the trials, the null puts 4% to 26% of bins beyond its
-    5th or 95th percentile on trial pairings with no coupling, and the per-frequency test flags a theta
-    reversal in 20% to 90% of them, far from the 5% of p < 0.05. The code's significance script uses a
-    trial-shuffle null with the 1st and 99th percentiles instead.
+    5th or 95th percentile on shifted trial pairings, which have no trial-by-trial coupling but keep the
+    stimulus-locked responses, and the per-frequency test flags a theta reversal in 20% to 90% of them
+    (20% to 50% with those responses subtracted), far from the 5% of p < 0.05. The code's significance
+    script uses a trial-shuffle null with the 1st and 99th percentiles instead, and the Figure 2h and
+    3 legends name a cluster test against scrambled trials.
 - kind: methods_unavailable
   statement: Question for the authors. For the incorrect trials of Figure 4f, was the LCMV filter computed
     from the incorrect trials' own data or taken from the correct trials? The deposited files hold only
@@ -669,3 +713,186 @@ verifications:
       sign (problem 1).
     response: No change of outcome; after the reference change 5 of 12 pass, all d2. The d2 problem is
       asked of a reader.
+- date: '2026-10-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook of commit fc3c318b (author-revise-1) with its conclusions
+    and summary, the helper module, the README, this attempt record, the claims file and the round-1 report,
+    with the paper. agrees compares its outcome with the outcome of the record it reviewed. Its other
+    points: the README''s run time (about 18 minutes, against about 23 from the printed timings), the
+    code_mismatch finding, which it could not check from its materials, and the ECoG reference of sub-10
+    and sub-12 (AHL4, next to the hippocampal reference AHL3), which is documented and may feed a shared
+    signal into the PLV and GC of Participants 1 and 3. In reply the run time is corrected (26 minutes
+    with the added cells), the finding cites the code''s lines (31 and 34 to 37 of calculateGranger_random_trial_sampling.m
+    at 395ae13), and the ECoG reference is left as documented, as no other white-matter contact is available
+    on another depth electrode in those subjects.'
+  results:
+  - claim: cohort-sessions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree (cell 16).
+    response: No change.
+  - claim: fig1b-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 19).
+    response: No change.
+  - claim: capacity-cowan-k
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 22). The record's deviation says the criterion's readings were all run and four
+      of eight match, but cell 22 prints 5 of 8. The over-sessions median for set size 8 is 5.61, which
+      is within tolerance. Cell 23 says reading (c) is 5.43 (mean) and 5.33 (median), outside, which is
+      true only over participants.
+    response: Corrected in the conclusion, the notes and the deviation (5 of 8; over sessions reading
+      (c) has median 5.61, within, and mean 5.41, outside).
+  - claim: fig1c-response-time
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The pass rests on pool p2 with the median, and the record says so (cell 25).
+    response: No change.
+  - claim: fig2bc-gamma-encoding-p1
+    agrees: false
+    outcome: not_reproduced
+    reason: 'C2 rises 17% against the required 100% (cell 30). The part that holds is near-empty on this
+      grid: every one of the 64 contacts is temporal, parietal, occipital or unlabelled, plus one labelled
+      hippocampus (cell 28). Almost any set of significant contacts would satisfy it, so only H3 carries
+      information.'
+    response: Kept as partially reproduced and the disagreement recorded. H3 rises by 179%, so one of
+      the two contacts the statement names holds even without the regional part, which the protocol's
+      definition (holds only in part) calls partially reproduced. The notes now say the regional part
+      tests little on this grid (25 temporal, 24 parietal, 6 occipital, 8 unlabelled, 1 hippocampus),
+      and the question is filed for a reader in questions/openneuro-ds004752.yaml.
+  - claim: fig2d-cortical-beta-maintenance-p1
+    agrees: true
+    outcome: reproduced
+    reason: 'Agree. The notes rightly call it weak: no contact survives a Benjamini-Hochberg correction
+      (cell 34).'
+    response: No change.
+  - claim: hipp-beta-maintenance
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree (cell 37).
+    response: No change.
+  - claim: fig2fg-plv-theta-p1
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree (cell 40). Cell 41 and the record say the highest maintenance theta PLV is at A1 to
+      A3, with C3 and B3 among the six highest; under h2, C3 is not in the top six, and under h3, A3 is
+      not.
+    response: Corrected in the conclusion and the notes, reading by reading.
+  - claim: fig2h-gc-reversal-p1
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agree, with a reservation. The assumption is stated: the per-frequency test (c1) is dropped
+      because it flags shifted-trial pairs. That is reasonable only if those pairs carry no directed effect,
+      which is not shown: the shifted pairs keep the evoked responses, a consistent lag between them is
+      a real directional effect, and the direction-swap null would correctly flag it. Without that assumption,
+      the claims file''s under one reading rule passes the claim under h1 with c1. c2 is not calibrated
+      per test either, and ten shifts per cell give coarse rates. What would settle it is to rerun the
+      calibration after subtracting each period''s trial average (the ERP) from both channels, and to
+      run the legends'' own test, a cluster test against a scrambled-trial null, on the real pairings
+      of Participants 1 to 4. The text says trial pairings with no coupling, the null is narrower than
+      nominal, and that the legend names c2, whose null is the direction swap.'
+    response: Both analyses were added (a new cell after the calibration). With the evoked responses subtracted,
+      c1 still flags the reversal in 20% to 50% of shifts and theta in 20% to 83% of single tests, and
+      with a scrambled-trial null it flags theta in 20% to 60%, so its excess comes from testing each
+      frequency without correction, not from the evoked responses; the assumption is kept. The legends'
+      scrambled-trial cluster test flags theta in 0% to 20% of single shifted tests (pooled 4% in encoding,
+      0% in maintenance) and the reversal in none; on the real pairing of Participant 1 it shows an encoding
+      cluster and no maintenance cluster, so the outcome is unchanged. The wording is corrected (no trial-by-trial
+      coupling, the stimulus-locked responses kept, narrower removed, the legend's test described as scrambled-trial),
+      and the criterion's departure from the legends is asked of a reader.
+  - claim: fig2ijk-spatial-spread-p1
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree (cells 49 to 50). Cell 48 and the record say each spatial test takes about 4 minutes;
+      cell 50 prints 344 s. The per-contact tests for h2 and h3, and the spatial test for h3 and for encoding,
+      are still not run, as the record states.
+    response: 'Corrected to about 6 minutes. The other spatial tests were not added: the notebook now
+      takes 26 minutes against the 30-minute limit, and three more spatial tests would take about 18 minutes.'
+  - claim: fig3-gc-reversal-p2-p3
+    agrees: true
+    outcome: not_reproduced
+    reason: Same reservation as fig2h. Under c1, Participant 3 passes with h1 and h2 (cell 53).
+    response: 'The same added analyses apply. With the evoked responses subtracted c1 still flags the
+      reversal in 20% to 40% of shifts in these participants. The legends'' scrambled-trial cluster test
+      agrees with c2: Participant 2 has maintenance theta clusters and no encoding theta cluster, and
+      Participant 3 has no cluster under any reading. The outcome is unchanged.'
+  - claim: fig3no-p4-right-no-gc
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The criterion''s test was run and flags every contact (cell 56). Against the attempt''s own
+      shifted-pair baseline, the real pairing is flagged more often by the cluster test: h1 maintenance
+      75% against 10%, h2 encoding 100% against 30%. That is evidence of GC, against a claim of absence.
+      The method was specified and run, so this is not a block.'
+    response: The outcome stays blocked, as no outcome may change in this round, and a change to not reproduced
+      is proposed. The legends' scrambled-trial cluster test, run in reply, holds its false-positive rate
+      on shifted pairs of this participant (no theta cluster; any cluster in 17% of encoding and 0% of
+      maintenance tests) and flags all 12 right parietal contacts on the real pairing under each of h1
+      to h3, which supports the verifier's reading.
+  - claim: table1-left-hemisphere-sources
+    agrees: true
+    outcome: blocked
+    reason: Accept. The author cites not_runnable as a category in the protocol, which I cannot see. The
+      notes now say the MNE approximation was not attempted.
+    response: No change.
+  - claim: fig4a-group-gc-reversal
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree (cell 62).
+    response: No change.
+  - claim: scalp-temporal-laplacian
+    agrees: true
+    outcome: reproduced
+    reason: 'Agree by the letter of the criterion, but it is not evidence. One cell of 36 (18 readings
+      x 2 tests) passes: h1, T5, band mean d1, paired test s1, at p = 0.020 uncorrected (cell 65). The
+      encoding median is positive, so the similar pattern is absent. The result changed from not reproduced
+      only because of the reference change. The h1/d1 adoption is not what the pass rests on, since the
+      criterion accepts any one reading; it rests on that single cell. The criterion does not require
+      the sign pattern of the similar GC pattern.'
+    response: No change of outcome. The conclusion and the notes now say the pass is 1 of 36 cells at
+      an uncorrected p = 0.02 and appeared only after the reference change. The criterion lets only the
+      electrode and the test vary, so h and d have to be chosen and the h1 and d1 adoption decides which
+      cells count; the deviation says so. Whether the criterion should require the sign pattern is asked
+      of a reader.
+  - claim: fig4bc-auditory-strongest
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree (cell 68).
+    response: No change.
+  - claim: fig4d-reversal-all
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree (cells 71 to 73).
+    response: No change.
+  - claim: table1-heschl-dgranger-correct
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree by the criterion. The participant mapping is now stated as an assumption. The sign match
+      comes only from d2, which builds in the sign.
+    response: No change.
+  - claim: fig4e-lpfc-no-reversal
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agree. h1 is adopted consistently and the choice is stated. The outcome depends on the reference
+      rule: h1 gave p = 0.065 before the reference change and 0.010 after (cell 79).'
+    response: No change; the notes already give both p-values.
+  - claim: fig4f-incorrect-no-reversal
+    agrees: true
+    outcome: reproduced
+    reason: 'Agree by the criterion. Applying the recovered filters to the incorrect trials is a reasonable,
+      stated choice; the recomputed source matches the deposited one (r = 0.996 to 0.999, ΔGranger within
+      0.0001; cell 82). But the result does not discriminate: under the same d1 reading the correct trials
+      also show no reversal (fig4d, p = 0.13 to 0.92), so the paper''s correct/incorrect contrast is not
+      reproduced. The notes should say this. The notes say the signs match Table 1 in 9 to 11 of 29 cells,
+      about what chance gives; chance is about 14.5 of 29, so 9 to 11 is below chance.'
+    response: The conclusion and the notes now say that d1 shows no reversal on the correct trials either,
+      so the contrast is not reproduced although the criterion is met, and that 9 to 11 of 29 is below
+      the 14.5 chance gives.
+  - claim: balanced-correct-subset
+    agrees: true
+    outcome: reproduced
+    reason: Agree by the criterion. All 5 passing readings are d2, and the record says the pass is not
+      evidence.
+    response: No change.
