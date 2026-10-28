@@ -1,0 +1,905 @@
+{
+ "dataset": {
+  "archive": "openneuro",
+  "id": "ds002778",
+  "label": "OPENNEURO:ds002778"
+ },
+ "page": "datasets/openneuro/ds002778/",
+ "generated": "2026-10-28T23:17:21+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 9,
+  "partially_reproduced": 9,
+  "not_reproduced": 6,
+  "blocked": 0
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "openneuro-ds002778-jackson-2019-01",
+   "dataset": {
+    "archive": "openneuro",
+    "id": "ds002778",
+    "version": "1.0.5",
+    "doi": "10.18112/openneuro.ds002778.v1.0.5"
+   },
+   "key": "openneuro:ds002778",
+   "label": "OPENNEURO:ds002778",
+   "dataset_version": "1.0.5",
+   "paper": "10.1523/eneuro.0151-19.2019",
+   "paper_title": null,
+   "date": "2026-10-27",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-12"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/40594416398"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "openneuro-ds002778-jackson-2019",
+   "entry_title": "Beta waveform shape in Parkinson's disease scalp EEG (Jackson et al. 2019)",
+   "description": "Tests the findings of Jackson, Cole, Voytek and Swann (2019) on OpenNeuro ds002778, which holds the resting EEG of 15 patients with Parkinson's disease off and on medication and 16 controls. It computes beta and alpha sharpness ratio, steepness ratio and phase-amplitude coupling over sensorimotor and temporal electrodes, compares medication states and groups, and classifies waveform shape by peak-to-trough and rise-to-fall ratios. The paper's manual artifact marks are not in the dataset, so no samples are rejected.",
+   "notebooks": [
+    {
+     "path": "reproduce_jackson_2019.ipynb",
+     "title": "Reproducing Jackson et al. (2019) from OpenNeuro ds002778",
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig2-sharpness-off-on",
+     "statement": "Over sensorimotor electrodes (C3 and C4 composite), beta sharpness ratio is higher in PD patients off medication than on medication.",
+     "source": "Results, Waveform metrics differentiate PD medication state, paragraph 1; Figure 2A, B; Table 1",
+     "quote": "Medication reduced beta waveform sharpness ratio (p = 0.012, FDR corrected; Fig. 2)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank",
+       "statistic": "signed rank = 12",
+       "p": 0.006,
+       "corrected": "none (FDR corrected p = 0.0121)",
+       "n": "15 patients, on and off"
+      },
+      {
+       "test": "Wilcoxon signed rank",
+       "statistic": "signed rank = 12",
+       "p": 0.0121,
+       "corrected": "FDR",
+       "n": "15 patients, on and off"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "Composite C3 and C4 beta sharpness ratio is higher off than on in 13 of 15 patients, signed rank W = 13 (expected 12 +/- 1.2), p = 0.0076 (exact 0.0054), FDR corrected over the six tests of Table 1 p = 0.0228 under all 12 combinations of filter readings. Cohen's d = 0.73, below 0.86 +/- 0.086. Without sub-pd6 and sub-pd16, whose on sessions come from preprocessed files, W = 11, p = 0.016, d = 0.81.",
+     "deviations": [
+      "No samples rejected and no electrode excluded, as the dataset holds neither the paper's manual artifact marks nor its excluded electrodes (claims file readings (b); reading (a), the dataset's own marks, has nothing to apply since every channels.tsv says good and the events files hold only a start trigger).",
+      "The paper computed its measures on preprocessed MATLAB files that are not public; here the preprocessing of the Methods is applied to the BDF files."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-steepness-off-on",
+     "statement": "Over sensorimotor electrodes, beta steepness ratio is higher in PD patients off medication than on medication.",
+     "source": "Results, Waveform metrics differentiate PD medication state, paragraph 1; Figure 2A, B; Table 1",
+     "quote": "steepness ratio (p = 0.012, FDR corrected; Fig. 2) in PD patients over sensorimotor electrodes",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank",
+       "statistic": "signed rank = 9",
+       "p": 0.004,
+       "corrected": "none (FDR corrected p = 0.0121)",
+       "n": "15 patients, on and off"
+      },
+      {
+       "test": "Wilcoxon signed rank",
+       "statistic": "signed rank = 9",
+       "p": 0.0121,
+       "corrected": "FDR",
+       "n": "15 patients, on and off"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "Beta steepness ratio is higher off than on in 12 of 15 patients, p = 0.0125 (exact 0.0103), FDR corrected 0.0249; d = 0.70 is within 0.68 +/- 0.068 but W = 16 is outside 9 +/- 0.9. Without sub-pd6 and sub-pd16, W = 5, p = 0.0046, d = 0.75.",
+     "deviations": [
+      "No artifact rejection or electrode exclusion (as for fig2-sharpness-off-on)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-pac-off-on",
+     "statement": "Over sensorimotor electrodes, beta-gamma PAC is higher in PD patients off medication than on medication.",
+     "source": "Results, Waveform metrics differentiate PD medication state, paragraph 1; Figure 2A, B; Table 1",
+     "quote": "PAC also decreased with medication (p = 0.017, FDR corrected; Fig. 2), as has been previously published",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank",
+       "statistic": "signed rank = 15",
+       "p": 0.011,
+       "n": "15 patients, on and off"
+      },
+      {
+       "test": "Wilcoxon signed rank",
+       "statistic": "signed rank = 15",
+       "p": 0.0166,
+       "corrected": "FDR",
+       "n": "15 patients, on and off"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "Beta PAC is higher off than on in 13 of 15 patients; W = 13, p = 0.0076 with the Methods' filters (118 and 123 samples) and W = 12, p = 0.0064 with the code's (231 and 240 taps); FDR corrected 0.0228. d on raw PAC is 0.85 and 0.86, within 0.83 +/- 0.083; on log10 PAC 0.73 and 0.86. The statistic is outside 15 +/- 1.5 under both filter readings. The criterion's last sentence names only the test and d; taken alone it would make the claim reproduced, but the statistic is an expected value of the claim and is out of tolerance, so the outcome is partially reproduced; which sentence governs is asked of a reader (questions/openneuro-ds002778.yaml). Dropping the filtered edges, as pacpy's firf does, changes PAC by at most 5.1% in any recording (ratio 0.949 to 1.043) and leaves W at 13 and 12. Without sub-pd6 and sub-pd16, W = 13 and 12, p = 0.023 and 0.019, d = 0.73 and 0.75.",
+     "deviations": [
+      "No artifact rejection or electrode exclusion (as for fig2-sharpness-off-on).",
+      "The criterion combines \"As for fig2-sharpness-off-on\" (statistic and d within tolerance) with a last sentence naming the test and d only; the expected statistic was kept as part of the judgement."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "bipolar-off-on",
+     "statement": "With a bipolar montage (C3-CP1 and C4-CP2), sharpness ratio, steepness ratio and PAC each differ between PD patients off and on medication.",
+     "source": "Results, Waveform metrics differentiate PD medication state, paragraph 1",
+     "quote": "we also calculated these measures using a bipolar scheme (C3-CP1 and C4-CP2) and found very similar results (p < 0.004, FDR corrected for each of the three measures examined)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank",
+       "p": 0.004,
+       "p_relation": "<",
+       "corrected": "FDR, over the three measures",
+       "n": "15 patients, on and off"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "With C3-CP1 and C4-CP2, off is higher than on for sharpness ratio (W = 15, p = 0.0106, 13 of 15), steepness ratio (W = 4, p = 0.0015, 13 of 15) and PAC (W = 12, p = 0.0064 Methods' filters; W = 11, p = 0.0054 code's). FDR corrected over the three, 0.0106, 0.0044 and 0.0096 (0.0081), all below 0.05. None is below the paper's bound of 0.004 after correction (steepness 0.0044 is closest); uncorrected, only steepness is (0.0015).",
+     "deviations": [
+      "No artifact rejection or electrode exclusion (as for fig2-sharpness-off-on)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "temporalis-f7f8-null",
+     "statement": "Over the electrodes closest to the temporalis muscles (F7 and F8), none of sharpness ratio, steepness ratio or PAC differs between patients off and on medication.",
+     "source": "Results, Waveform metrics differentiate PD medication state, paragraph 2",
+     "quote": "none of these measures differed between patients on and off medication over these electrodes ... sharpness ratio, p = 0.73, uncorrected, steepness ratio, p = 0.394, uncorrected PAC, p = 0.191, uncorrected",
+     "statistics": [
+      {
+       "about": "sharpness ratio",
+       "test": "Wilcoxon signed rank",
+       "p": 0.73,
+       "corrected": "none",
+       "n": "15 patients, on and off"
+      },
+      {
+       "about": "steepness ratio",
+       "test": "Wilcoxon signed rank",
+       "p": 0.394,
+       "corrected": "none",
+       "n": "15 patients, on and off"
+      },
+      {
+       "about": "PAC",
+       "test": "Wilcoxon signed rank",
+       "p": 0.191,
+       "corrected": "none",
+       "n": "15 patients, on and off"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "At the F7 and F8 composite, sharpness ratio p = 0.69 (d 0.31), steepness ratio p = 0.17 (d 0.57), PAC p = 0.0995 (Methods' filters) and 0.078 (code's), d 0.67; none below 0.05 uncorrected. Paper p = 0.73, 0.394 and 0.191.",
+     "deviations": [
+      "No artifact rejection or electrode exclusion. The paper's argument is that these electrodes carry muscle artifact; here artifacts were not removed at any electrode."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "temporalis-t7t8-null",
+     "statement": "Over T7 and T8, also near the temporalis muscles, none of the three measures differs between patients off and on medication.",
+     "source": "Results, Waveform metrics differentiate PD medication state, paragraph 2",
+     "quote": "Results were similar for T7 and T8, also near temporalis muscles (p > 0.05, uncorrected for all comparisons)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank",
+       "p": 0.05,
+       "p_relation": ">",
+       "corrected": "none",
+       "n": "15 patients, on and off"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "At the T7 and T8 composite, sharpness ratio p = 0.36 (d 0.42), steepness ratio p = 0.95 (d -0.04), PAC p = 0.11 under both filter readings (d 0.56 and 0.59).",
+     "deviations": [
+      "No artifact rejection or electrode exclusion."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-topography-sensorimotor",
+     "statement": "Scalp topographies of the off against on medication test statistic for each measure are consistent with a sensorimotor origin.",
+     "source": "Results, Waveform metrics differentiate PD medication state, paragraph 2; Figure 2C legend",
+     "quote": "found that topographies were consistent with a sensorimotor origin (Fig. 2C)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "Signed rank tests at each of the 32 electrodes. Steepness ratio meets the criterion (smallest p at C4, 0.023; F7, F8, T7, T8 p 0.21 to 0.57). PAC with the Methods' filters has its smallest p at CP6 (0.027), and F7 has p = 0.041, so it meets the criterion under the FDR reading only; with the code's filters Fz and CP6 tie for the smallest p (0.020), and Fz is outside the sensorimotor set. Sharpness ratio has its smallest p at P8 (0.0064), then CP6 (0.017) and AF3 (0.031); C3 is fourth (0.0995). No electrode survives FDR over 32 for any measure. Two of three measures meet the criterion under one reading, one does not under any.",
+     "deviations": [
+      "No artifact rejection or electrode exclusion.",
+      "The paper's topographies were drawn with EEGLAB topoplot from test statistics; here the test at each electrode is listed and plotted as -log10 p, as the criterion uses only the tests."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "offctrl-sharpness-null",
+     "statement": "Beta sharpness ratio over sensorimotor electrodes does not differ between patients off medication and controls.",
+     "source": "Results, Waveform metrics differentiate PD medication state, paragraph 3; Table 2",
+     "quote": "There was no significant difference between these groups for beta waveform sharpness ratio (p = 0.363, uncorrected)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank sum",
+       "statistic": "rank sum = 0.91",
+       "p": 0.3631,
+       "corrected": "none (FDR corrected p = 1)",
+       "n": "15 patients off medication and 16 controls"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "Rank sum z = 0.47, p = 0.64 (paper z = 0.91, p = 0.363); no difference. d = 0.09 is outside the expected 0.19 +/- 0.019; the claim of absence is judged on the test.",
+     "deviations": [
+      "No artifact rejection or electrode exclusion."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "offctrl-steepness",
+     "statement": "Beta steepness ratio over sensorimotor electrodes is higher in patients off medication than in controls, with the average reference and with a bipolar montage.",
+     "source": "Results, Waveform metrics differentiate PD medication state, paragraph 3; Table 2",
+     "quote": "however steepness ratio did distinguish patients from controls (p = 0.033 using the average referencing scheme and p = 0.028 for a bipolar referencing scheme, both FDR corrected)",
+     "statistics": [
+      {
+       "about": "average reference",
+       "test": "Wilcoxon rank sum",
+       "statistic": "rank sum = 2.53",
+       "p": 0.011,
+       "corrected": "none (FDR corrected p = 0.0331)",
+       "n": "15 patients off medication and 16 controls"
+      },
+      {
+       "about": "average reference",
+       "test": "Wilcoxon rank sum",
+       "statistic": "rank sum = 2.53",
+       "p": 0.0331,
+       "corrected": "FDR",
+       "n": "15 patients off medication and 16 controls"
+      },
+      {
+       "about": "bipolar montage",
+       "test": "Wilcoxon rank sum",
+       "p": 0.028,
+       "corrected": "FDR",
+       "n": "15 patients off medication and 16 controls"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "With the average reference, beta steepness ratio is higher off than in controls, z = 2.37 (within 2.53 +/- 0.253), d = 0.85 (within 0.88 +/- 0.088), p = 0.0177 uncorrected, but FDR corrected over the six tests of Table 2 p = 0.0531 under every filter reading, just above 0.05 (the alpha steepness test has p = 0.0143, so the two smallest of six give 0.0531). With the bipolar pairs z = 2.37, p = 0.0177 as a single test (significant), 0.0531 FDR corrected over the three bipolar measures. Both outcomes the criterion names other than not reproduced need the corrected average reference test to hold, and it does not, so the claim is not reproduced (changed from partially reproduced after verification round 1). The miss rests on the uncorrected p (0.0177 against the paper's 0.011; BH over six needs p < 0.0167 here). Holm 0.0885, Bonferroni 0.106 and Benjamini-Yekutieli 0.130 over six are further from 0.05; BH over the three beta tests gives 0.0531. Without sub-pd6 and sub-pd16 z = 2.15, p = 0.032 uncorrected.",
+     "deviations": [
+      "No artifact rejection or electrode exclusion."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "offctrl-pac-null",
+     "statement": "With the average reference, beta PAC over sensorimotor electrodes does not differ between patients off medication and controls.",
+     "source": "Results, Waveform metrics differentiate PD medication state, paragraph 3; Table 2",
+     "quote": "Somewhat surprisingly there was also no significant difference between PD patients off medication and control participants for the PAC calculation (p = 0.236, uncorrected)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank sum",
+       "statistic": "rank sum = 1.19",
+       "p": 0.236,
+       "corrected": "none",
+       "n": "15 patients off medication and 16 controls"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "Rank sum z = 0.99, p = 0.32 with the Methods' filters; z = 1.07, p = 0.29 with the code's (paper z = 1.19, p = 0.236). d = 0.20.",
+     "deviations": [
+      "No artifact rejection or electrode exclusion."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "offctrl-pac-csd",
+     "statement": "With a current source density montage, beta PAC over sensorimotor electrodes is higher in patients off medication than in controls.",
+     "source": "Results, Waveform metrics differentiate PD medication state, paragraph 3",
+     "quote": "When we tested the CSD referencing scheme using the current method for PAC calculation, there was a significant difference between patients off medication and controls (p = 0.022)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank sum",
+       "p": 0.022,
+       "n": "15 patients off medication and 16 controls"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "With the CSD transform, beta PAC at C3 and C4 is higher off (0.032) than in controls (0.025), z = 1.78, p = 0.075 under both filter readings, d = 0.35, against the paper's p = 0.022. The CSD montage increases the off against on difference (d = 1.20, p = 0.0106); every CSD variant gives a higher mean off than on, with 12 or 13 of 15 patients higher off (p 0.0045 to 0.015). The result depends on the spline parameters and no variant reaches 0.05 off against controls; m = 4 gives p = 0.30 and 0.29, lambda 1e-4 gives 0.18 and 0.21, lambda 1e-6 gives 0.11 and 0.12 (Methods' and code's filters). The CSD raises 50 to 150 Hz power relative to beta at C3 and C4 (median ratio 0.22 in controls and 0.34 off, against 0.12 and 0.18 with the average reference). Whether MNE's output equals the CSD toolbox's was not checked.",
+     "deviations": [
+      "CSD computed with MNE's spherical spline (stiffness m = 3, lambda 1e-5, 50 Legendre terms, the CSD toolbox's defaults) on the BioSemi 32 template positions, as the dataset holds no digitized positions; the paper used the MATLAB CSD toolbox (Methods, Data preprocessing).",
+      "No artifact rejection or electrode exclusion."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "updrs-improvement",
+     "statement": "Clinical scores improve with medication, UPDRS being lower on medication than off.",
+     "source": "Results, Waveform metrics differentiate PD medication state, paragraph 1",
+     "quote": "these changes were in the context of significant clinical improvement with medication as measured by Unified Parkinson's Disease Rating Scale measures (Wilcoxon signed rank test statistic = 3.5, p = 0.003)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank",
+       "statistic": "signed rank = 3.5",
+       "p": 0.003,
+       "n": "15 patients, on and off"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "The dataset's \"Total UPDRS\" (16 to 58; it exceeds \"UPDRS 18-26\" by 1 to 14, which fits the motor examination, items 18 to 31) is lower on medication in 12 patients, equal in 2, higher in 1. Signed rank W = 3.5, p = 0.0033 (scipy's default drops the two ties), the paper's values. The dataset holds no other part of the UPDRS, so both readings of the criterion give this field. Items 18 to 26 alone give W = 6.5, p = 0.011.",
+     "deviations": [
+      "The UPDRS fields have no description in the dataset; \"Total UPDRS\" is taken as the motor total from its values (it exceeds \"UPDRS 18-26\" by 1 to 14), which is consistent with the values, not shown."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1c-beta-alpha-peaks",
+     "statement": "The average power spectrum of each group shows an oscillation in the beta band and a prominent mu/alpha oscillation.",
+     "source": "Figure 1C legend; Results, Waveform metrics differentiate PD medication state, paragraph 4",
+     "quote": "Plots confirm that there is a \u03b2 oscillation as well as a prominent \u03b1/\u03bc oscillation",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "Welch spectra (Hamming 256, overlap 128, nFFT 450) averaged over C3 and C4 and over the participants of each group. Controls have local maxima at 10.24 Hz and 18.2 Hz. The off group's mean spectrum has its only maximum from 6 to 13 Hz at 7.96 Hz, below the 8 to 12 Hz band, and none from 13 to 30 Hz; the on group's has none. Over all electrodes off has beta maxima at 17.1 and 21.6 Hz and no alpha maximum. The on mean is dominated by sub-pd16 on (about 100 times the power of others), but without it there is still no maximum. With the mean of log power, off has an alpha maximum at 9.1 Hz and no beta maximum. Single recordings have an alpha maximum in 8 of 15 off, 8 of 15 on and 11 of 16 controls, and a beta maximum in 9, 10 and 14.",
+     "deviations": [
+      "Spectra computed without artifact rejection; artifacts weigh on a mean of raw power more than on the ratio measures."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-alpha-shape-off-on",
+     "statement": "In the mu/alpha band (8 to 12 Hz), sharpness ratio and steepness ratio are also higher off medication than on.",
+     "source": "Results, Waveform metrics differentiate PD medication state, paragraph 4; Table 1",
+     "quote": "We found these values to be overall similar to those we found for \u03b2, with the exception of PAC",
+     "statistics": [
+      {
+       "about": "alpha sharpness ratio",
+       "test": "Wilcoxon signed rank",
+       "statistic": "signed rank = 20",
+       "p": 0.0278,
+       "corrected": "FDR",
+       "n": "15 patients, on and off"
+      },
+      {
+       "about": "alpha steepness ratio",
+       "test": "Wilcoxon signed rank",
+       "statistic": "signed rank = 12",
+       "p": 0.0121,
+       "corrected": "FDR",
+       "n": "15 patients, on and off"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "With the 192-tap filter, alpha sharpness ratio W = 18, p = 0.0171, d = 0.71 (11 of 15 higher off) and alpha steepness ratio W = 21, p = 0.0268, d = 0.58 (12 of 15); with 118 samples, W = 19, d = 0.66 and W = 21, d = 0.59. FDR corrected p 0.0256 to 0.0321. Both tests hold and three of four values are within tolerance under both readings; the steepness statistic (21) is outside 12 +/- 1.2.",
+     "deviations": [
+      "No artifact rejection or electrode exclusion."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-alpha-pac-null",
+     "statement": "In the mu/alpha band, PAC does not differ significantly between patients off and on medication.",
+     "source": "Results, Waveform metrics differentiate PD medication state, paragraph 4; Table 1",
+     "quote": "with the exception of PAC, which was non-significant for \u03bc/\u03b1, while being significant for \u03b2",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank",
+       "statistic": "signed rank = 30",
+       "p": 0.0881,
+       "corrected": "FDR",
+       "n": "15 patients, on and off"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "FDR corrected over Table 1, alpha PAC off against on gives p = 0.0609 with a 192-tap phase filter (reading a, W = 27), 0.0783 with the code's 231 and 240 taps (reading b, W = 29), and 0.0356 with 118 samples (reading c, W = 23). Readings a and b find no difference, reading c does. The criterion takes the outcome all readings give; the null holds under two of three, so the claim is not reproduced (changed after verification round 1 from reproduced under the assumption of a 192-tap filter). d on raw PAC is 0.70, 0.72 and 0.66, above 0.51 +/- 0.051 under every reading; on log10 PAC 0.84, 0.82, 0.70. Without sub-pd6 and sub-pd16 (a variant) the uncorrected p is 0.064 to 0.087 and the null holds after FDR correction under all three readings. The question of the alpha phase filter length is for the paper's authors, since the Methods give 231 ms for the beta filter only, and the code holds no alpha analysis.",
+     "deviations": [
+      "The alpha phase filter length is not given; the three readings of the claims file (192, 231 and 118 taps) are run and disagree.",
+      "No artifact rejection or electrode exclusion."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table2-alpha-offctrl",
+     "statement": "In the mu/alpha band, steepness ratio is higher in patients off medication than in controls, while sharpness ratio and PAC do not differ after correction.",
+     "source": "Table 2",
+     "quote": "",
+     "statistics": [
+      {
+       "about": "alpha sharpness ratio",
+       "test": "Wilcoxon rank sum",
+       "statistic": "rank sum = 1.03",
+       "p": 1,
+       "corrected": "FDR",
+       "n": "15 patients off medication and 16 controls"
+      },
+      {
+       "about": "alpha steepness ratio",
+       "test": "Wilcoxon rank sum",
+       "statistic": "rank sum = 2.53",
+       "p": 0.0331,
+       "corrected": "FDR",
+       "n": "15 patients off medication and 16 controls"
+      },
+      {
+       "about": "alpha PAC",
+       "test": "Wilcoxon rank sum",
+       "statistic": "rank sum = 2.17",
+       "p": 0.0602,
+       "corrected": "FDR",
+       "n": "15 patients off medication and 16 controls"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "Values from Table 2; the text says only that alpha values were overall similar to beta, except PAC.",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "Alpha steepness ratio, off against controls, z = 2.45 (192 taps) or 2.53 (118 samples), within 2.53 +/- 0.253, d = 0.89, within 0.87 +/- 0.087, p = 0.0143 or 0.0114 uncorrected, FDR corrected 0.0531 under every reading, just above 0.05. Sharpness ratio (corrected 0.57 or 0.72) and PAC (0.12 to 0.41) do not differ after correction, as the claim says. Both outcomes the criterion names other than not reproduced need the steepness result to hold, so the claim is not reproduced (changed from partially reproduced after verification round 1). Holm, Bonferroni and Benjamini-Yekutieli over six give 0.086 to 0.130; BH over the three alpha tests, not the family the criterion names, gives 0.043.",
+     "deviations": [
+      "No artifact rejection or electrode exclusion."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pac-beta-larger-than-alpha",
+     "statement": "The off against on medication difference in PAC is larger in the beta band than in the mu/alpha band.",
+     "source": "Results, Waveform metrics differentiate PD medication state, paragraph 4",
+     "quote": "for PAC, the difference between off medication and on medication in \u03b2 was significantly larger than the difference in \u03bc/\u03b1 for the same comparison (Wilcoxon signed rank test statistic = 11, p = 0.005)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank",
+       "statistic": "signed rank = 11",
+       "p": 0.005,
+       "n": "15 patients"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "On raw PAC the beta off minus on difference exceeds the alpha one in 12 or 13 of 15 patients, W = 17 (18 for the code's beta filters with reading c), p = 0.015 to 0.017, under all six combinations of filter readings. W is outside 11 +/- 1.1. On log10 PAC (variant) W = 40 to 54, p = 0.26 to 0.73. The criterion has no partial clause; partially reproduced follows the protocol's definition (the effect is present but weaker), and the question is asked of a reader (questions/openneuro-ds002778.yaml).",
+     "deviations": [
+      "No artifact rejection or electrode exclusion."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-sharpness-pac-correlation",
+     "statement": "Across patients, beta sharpness ratio and PAC over sensorimotor electrodes are positively correlated both off and on medication.",
+     "source": "Results, Relationships between sharpness/steepness ratio and PAC, paragraph 1; Figure 3",
+     "quote": "sharpness ratio and PAC were correlated in both on and off medication states in sensorimotor electrodes (off medication ... r = 0.70, p = 0.004; on medication ... r = 0.74, p = 0.002; Fig. 3)",
+     "statistics": [
+      {
+       "about": "off medication",
+       "test": "Spearman correlation",
+       "statistic": "r = 0.70",
+       "p": 0.004,
+       "n": "15 patients"
+      },
+      {
+       "about": "on medication",
+       "test": "Spearman correlation",
+       "statistic": "r = 0.74",
+       "p": 0.002,
+       "n": "15 patients"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "Spearman r between composite beta sharpness ratio and PAC, Methods' filters, off 0.59 (p = 0.022, below 0.63 to 0.77) and on 0.79 (p = 0.0005, within); code's filters off 0.63 (p = 0.012, within) and on 0.84 (p = 0.0001, above 0.666 to 0.814). Both positive and significant under both readings, with one r out of tolerance in each. Without sub-pd6 and sub-pd16, off r = 0.51 (p = 0.074) and 0.57 (p = 0.041), on r = 0.87 and 0.88.",
+     "deviations": [
+      "No artifact rejection or electrode exclusion."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-steepness-pac-correlation",
+     "statement": "Across patients, beta steepness ratio and PAC over sensorimotor electrodes are positively correlated both off and on medication.",
+     "source": "Results, Relationships between sharpness/steepness ratio and PAC, paragraph 1; Figure 3",
+     "quote": "steepness ratio and PAC are also highly correlated for both medication states (off medication ... r = 0.74, p = 0.002; on medication ... r = 0.68, p = 0.006)",
+     "statistics": [
+      {
+       "about": "off medication",
+       "test": "Spearman correlation",
+       "statistic": "r = 0.74",
+       "p": 0.002,
+       "n": "15 patients"
+      },
+      {
+       "about": "on medication",
+       "test": "Spearman correlation",
+       "statistic": "r = 0.68",
+       "p": 0.006,
+       "n": "15 patients"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "Methods' filters, off r = 0.80 (p = 0.0003, within 0.666 to 0.814), on r = 0.45 (p = 0.095, not significant); code's filters, off r = 0.80 (p = 0.0004), on r = 0.53 (p = 0.041, below 0.612 to 0.748). Under the code's filters both are positive and significant with one r out of tolerance. Without sub-pd6 and sub-pd16 (a variant) both r are within tolerance under both filter readings (off 0.75, on 0.64 and 0.65, p 0.0033 to 0.019), so the on medication miss rests on these two patients.",
+     "deviations": [
+      "No artifact rejection or electrode exclusion."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4a-sensorimotor-q4",
+     "statement": "Over sensorimotor electrodes, patients' beta waveforms mostly have sharper peaks than troughs and steeper decays than rises (quadrant 4 of peak-to-trough against rise-to-fall ratio).",
+     "source": "Results, Waveform shape, paragraph 1; Figure 4A, C",
+     "quote": "In general, sensorimotor electrode oscillations had a sharper peak with a steeper decay, falling in quadrant 4 (Q4) in Figure 4",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "Of the 60 patient points (C3 and C4, off and on), 48 (80%) have positive log10 peak-to-trough and negative log10 rise-to-fall ratio (Q4); Q1 6, Q2 4, Q3 2. Q4 holds 13, 10, 13 and 12 of the 15 points at C3 off, C3 on, C4 off and C4 on.",
+     "deviations": [
+      "No artifact rejection or electrode exclusion."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "q4-patient-counts",
+     "statement": "Nine of 15 patients have both off and on data in Q4 at C3, eight at C4; eight have both electrodes in Q4, giving nine patients with at least one electrode in Q4 on and off.",
+     "source": "Results, Waveform shape, paragraph 2",
+     "quote": "Out of 15 patients, nine patients met this criterion for C3 and eight met the criterion for C4 ... Using this approach there were nine total Q4 observations for each waveform metric",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "Patients with both off and on in Q4 are 10 at C3, 10 at C4, 7 at both and 13 at one or more, against 9, 8, 8 and 9 (+/- 1). The C3 and both counts are within tolerance, the C4 count and the at-least-one count are not, in either electrode order (swapped, C3 10 against 8). Without sub-pd6 and sub-pd16 the counts are 9, 9, 6 and 12. Of the 60 points, 16 lie within 0.01 of an axis (log10 ratios), and 10 of them decide membership at their electrode (moving their near-axis coordinates across zero would change whether the patient counts there), in pd3, pd5, pd11, pd12, pd22, pd26 and pd28; the per-patient values are printed.",
+     "deviations": [
+      "No artifact rejection or electrode exclusion; the selection depends on the shape measures, which the paper computed after rejection."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-temporalis-variable-shape",
+     "statement": "Electrodes closest to the temporalis muscles (F7 and F8) show a more variable waveform shape than sensorimotor electrodes.",
+     "source": "Results, Waveform shape, paragraph 1; Figure 4B",
+     "quote": "In contrast, electrodes closest to temporalis muscles had a more variable waveform shape pattern",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "Reading (a), the most common quadrant holds 68% of the 60 F7 and F8 points (41, Q2) against 80% (48, Q4) at C3 and C4; reading (b), RMS distance to the centroid 0.093 against 0.076. Both readings agree. The F7 and F8 points concentrate in Q2 (sharper troughs, steeper rises).",
+     "deviations": [
+      "No artifact rejection or electrode exclusion."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "controls-q4",
+     "statement": "Control participants show the same pattern, their sensorimotor beta waveforms falling mainly in Q4.",
+     "source": "Results, Waveform shape, paragraph 1",
+     "quote": "Although not shown, control participant data exhibited the same pattern (i.e., sensorimotor electrode data fell mainly in Q4)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "25 of the 32 control points (78%) are in Q4 (13 of 16 at C3, 12 of 16 at C4); Q1 2, Q2 2, Q3 3.",
+     "deviations": [
+      "No artifact rejection or electrode exclusion."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table3-q4-effect-size",
+     "statement": "Restricting to patients whose sensorimotor waveforms fall in Q4 both off and on increases the off against on effect size of all three measures.",
+     "source": "Results, Waveform shape, paragraph 2; Table 3",
+     "quote": "Effect size increased for all measures, at least marginally, when using the Q4 shape as an inclusion criterion (Table 3)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_jackson_2019.ipynb",
+     "notes": "With the 13 patients who have at least one electrode in Q4 off and on, d rises for all three measures under every reading; sharpness 0.73 to 0.99 (within 0.95 +/- 0.095), steepness 0.70 to 0.82 (above 0.70 +/- 0.07), raw PAC with the Methods' filters 0.85 to 0.95 (above 0.83 +/- 0.083; code's 0.86 to 0.96, log10 0.73 to 1.06 and 0.86 to 1.07). The all-patient PAC d of Table 3 (0.75) is matched by log10 PAC with the Methods' filters (0.73), not by raw PAC (0.85, given as measured, first reading). The Q4 group has 13 patients where the paper has 9 (q4-patient-counts, not reproduced), so the Q4 values come from a different and larger subset than Table 3's. Without sub-pd6 and sub-pd16 (12 Q4 patients) d rises for sharpness (0.81 to 1.09) and raw PAC (0.73 to 0.87) and falls slightly for steepness (0.75 to 0.72).",
+     "deviations": [
+      "No artifact rejection or electrode exclusion."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The manual artifact marks (rejected samples) and the list of excluded noisy electrodes that the paper's preprocessing used are not in the dataset; every channels.tsv marks all channels good and the events files hold only a start trigger. The paper's code loads them from rejectscombined.mat, which is not public. Analyses here run without rejection.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The questionnaire fields of the beh JSON files (Total UPDRS, UPDRS 18-26, Brady kinesia UPDRS, Rigidity UPDRS, Left and Right UPDRS, H&Y, Beck) have no description; the only beh sidecar describes a dummy trial column. Which part of the UPDRS \"Total UPDRS\" covers has to be inferred from the values.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The sub-pd16 ses-on recording, which participants.tsv says was exported from a preprocessed EEGLAB file, has electrode standard deviations about six times those of every other recording after the same preprocessing (median 62.6 uV), about 100 times their power, and no alpha peak; its means are near zero but its channels are not average referenced. The dataset does not say how it was processed or scaled. The sub-pd6 ses-on file, also exported from EEGLAB, is average referenced and lasts 289 s.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The events files hold one trigger (value 1) a few seconds into most recordings, and other values in sub-pd16 ses-on (130817) and sub-pd17 ses-off (a second 65536); what the trigger marks is not described.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "For the paper's authors. The filter length of the mu/alpha (8 to 12 Hz) phase filter for PAC is not given (the Methods give 231 ms for beta; the code has no alpha analysis). With 192 taps (three cycles of 8 Hz, pacpy's default) or the code's 231 taps, alpha PAC off against on is not significant after FDR correction (0.061, 0.078), as Table 1 reports; with 118 samples it is (0.036). Which length was used?",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "Table 2 gives FDR corrected p = 1 for beta sharpness ratio, beta PAC and alpha sharpness ratio, where Benjamini-Hochberg over the six tests of the table, as stated, gives smaller values (about 0.36 for the printed p-values); Table 1's corrected values do match Benjamini-Hochberg. Table 3 gives d = 0.75 for PAC in all patients where Table 1 gives 0.83.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-27",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The executed notebook of the first run with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's full text. The verifier recomputed W, p, d and Spearman r from the printed per-patient values, tested the helpers on synthetic signals (shape ratios, PAC, the FFT high-pass against filtfilt, fdr_bh against statsmodels) and queried the archive's file list. Report in transcripts/openneuro-ds002778/verifier-1-report.md.",
+     "agreed": 21,
+     "of": 24,
+     "disagreements": [
+      {
+       "claim": "offctrl-steepness",
+       "outcome": "not_reproduced",
+       "reason": "z 2.37 and d 0.855 are within tolerance, but FDR p over Table 2 is 0.0531 under every filter reading. The bipolar single test (p 0.0177) would hold, but the criterion needs the average-reference result first. Whether the paper used BH for Table 2 is uncertain, so a sensitivity output under other correction procedures would show how fragile the outcome is."
+      },
+      {
+       "claim": "table1-alpha-pac-null",
+       "outcome": "not_reproduced",
+       "reason": "Readings disagree, FDR p 0.061 (a192) and 0.078 (b231) are null, but 0.036 (c118) is significant. The criterion asks for the outcome all readings give. d is 0.66 to 0.72 against 0.51 +/- 0.05 in every reading. The notebook reports every reading but does not flag the disagreement."
+      },
+      {
+       "claim": "table2-alpha-offctrl",
+       "outcome": "not_reproduced",
+       "reason": "Steepness z 2.45 and d 0.89 are within tolerance, but FDR p is 0.0531 under all readings. Sharpness and PAC are null as expected. The outcome hinges on BH giving 0.0531, and a sensitivity output under other correction procedures would show how fragile it is."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-27",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the revised run (cells 0 to 84), the helper module, the claims file and the attempt record, with the paper's full text. The verifier read every printed output, recomputed from the printed per-patient values the variants without pd6 and pd16 (beta sharpness, steepness and PAC, and the Spearman r on and off), recomputed the BH correction for Table 2 from the printed p-values, and checked the Q4 counts in the paper's text. Report in transcripts/openneuro-ds002778/verifier-2-report.md.",
+     "agreed": 24,
+     "of": 24,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "openneuro-ds002778-jackson-2019",
+   "type": "reproduction",
+   "title": "Beta waveform shape in Parkinson's disease scalp EEG (Jackson et al. 2019)",
+   "description": "Tests the findings of Jackson, Cole, Voytek and Swann (2019) on OpenNeuro ds002778, which holds the resting EEG of 15 patients with Parkinson's disease off and on medication and 16 controls. It computes beta and alpha sharpness ratio, steepness ratio and phase-amplitude coupling over sensorimotor and temporal electrodes, compares medication states and groups, and classifies waveform shape by peak-to-trough and rise-to-fall ratios. The paper's manual artifact marks are not in the dataset, so no samples are rejected.",
+   "datasets": [
+    "openneuro:ds002778"
+   ],
+   "papers": [
+    "10.1523/eneuro.0151-19.2019"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_jackson_2019.ipynb",
+     "title": "Reproducing Jackson et al. (2019) from OpenNeuro ds002778",
+     "executed": null
+    }
+   ]
+  }
+ ]
+}
