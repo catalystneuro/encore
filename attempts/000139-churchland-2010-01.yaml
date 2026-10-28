@@ -1,0 +1,368 @@
+schema_version: 2
+id: 000139-churchland-2010-01
+dataset:
+  archive: dandi
+  id: "000139"
+  version: 0.220113.0408
+  doi: 10.48324/dandi.000139/0.220113.0408
+paper: doi:10.1016/j.neuron.2010.09.015
+date: 2026-10-28
+entry: 000139-churchland-2010
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/40756774586
+outcomes:
+- claim: j-array-recordings
+  outcome: partially_reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:j-array-recordings
+  measured:
+  - 152
+  - 27
+  - 250
+  notes: The dandiset holds 152 units (within 146 +/- 14.6), 75 and 77 on the two arrays by unit id,
+    recorded over 27 conditions (9 mazes, each in the no-barrier, barrier and distractor versions)
+    and 250 labelled trials per unit, 350 with the 100 unlabelled test segments, against the paper's
+    108 conditions and 2166 trials per neuron. The trial count is reported only, as the criterion
+    says. The criterion's partial outcome applies because the units match and the conditions are a
+    27-condition maze set; that these 9 mazes are among the paper's 108 is consistent with the data
+    (same monkey, task and three-version design) but cannot be shown, as nothing in the files links
+    the session (2009-09-29) to the paper's J-array dataset.
+  deviations:
+  - The 100 test trials of the Neural Latents Benchmark carry no condition labels or go cue times,
+    so only the 250 training and validation trials are used in every analysis.
+- claim: fig4d-mean-correlation-j-array
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig4d-mean-correlation-j-array
+  measured:
+  - 0.172
+  - 0.139
+  notes: Under the adopted reading 17 neurons pass both thresholds; mean Pearson r = 0.172 and mean
+    Spearman r = 0.139, both outside tolerance. The mean is above zero by the t-test (p = 0.042) and
+    the Fisher-z t-test (p = 0.044), not by the Wilcoxon test (p = 0.071). Over the 8 trial-selection
+    readings mean r is 0.141 to 0.207 (all inside 0.054 to 0.231) and p < 0.05 by some test in 5;
+    in the other 3 (onset a with condition-mean proto and separate profiles, onset a with medoid
+    and concatenated profiles, onset b with medoid and separate profiles) the smallest p is 0.052,
+    0.056 and 0.080, and the outcome would be not reproduced. No reading puts both means in
+    tolerance with p < 0.05 (onset b, medoid, separate has both in tolerance, 0.141 and 0.119, with
+    p = 0.080). The SD tuning measure leaves no neuron passing both thresholds in any reading. The
+    result moves with the thresholds (at 1.5 times, 3 to 30 neurons and mean r 0.114 to 0.210 for
+    preparatory thresholds of 10 to 3 spikes/s; table in the notebook).
+  deviations:
+  - Assumed the tuning strength is the range across conditions. The Methods give the thresholds in
+    spikes/s of tuning ("at least 10 spikes/s of preparatory tuning", Methods, Neural recordings and
+    datasets) without the measure; the SD reading leaves 5 to 8 of 152 units above 5 spikes/s and
+    none passing both thresholds, which cannot be the paper's array analysis, so the range is the
+    reading the paper supports.
+  - Assumed the proto-trial is the condition-mean velocity profile and that the horizontal and
+    vertical profiles are concatenated. The Supplemental Experimental Procedures (Task design and
+    behavioral control) keep "the subset of trials (typically ~90% of all trials)" that correlate
+    with the proto-trial at r > 0.9; concatenation keeps 93 to 96% of trials, comparing the
+    profiles separately keeps 70 to 82%. Mean against medoid is not settled by the paper; a template
+    is usually a mean. All 8 readings are shown.
+  - Movement onset is the dataset's move_onset_time (reading a); onset from hand speed (10% of
+    peak, a standard choice, a median 12 ms later) is run as reading b.
+  - 6 to 10 trials per condition, against about 20 in the paper's J-array dataset.
+- claim: fig4abc-mean-correlation-other-datasets
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds one maze-task array session of monkey J. The speed-task datasets of
+    monkeys A and B and the single-electrode monkey J dataset are not in it (assets and metadata
+    checked) and the paper names no other archive for them.
+- claim: fig4-broad-unimodal
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig4-broad-unimodal
+  notes: In every selection reading the per-neuron correlations run from negative (-0.36 to -0.50)
+    to positive (0.54 to 0.68) values, the mean is 0.141 to 0.207, no neuron has |r| > 0.8 while 13
+    to 18 have |r| < 0.5, and Hartigan's dip test does not reject unimodality (p = 0.195 to 0.993).
+    Main reading n = 17, SD 0.321, dip p = 0.788. With 15 to 20 neurons the test has little power.
+  deviations:
+  - Rests on the tuning measure and trial selection adopted in fig4d-mean-correlation-j-array.
+- claim: fig4e-correlation-time-course
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig4e-correlation-time-course
+  notes: With the neurons of Figure 4D and the spliced trace, mean r is 0.703 at 400 ms before onset,
+    0.492 at 200 ms before and 0.118 at onset (not above zero, t-test p = 0.127), and the decline
+    begins at -263 ms. These two readings meet the criterion in 7 of 8 selection readings. The
+    movement-locked trace alone puts the decline at -307 ms, just outside -300 to -100, and with all
+    preparatory neurons the onset value (0.107, n = 76) is above zero (p = 0.0036) and above 0.1;
+    22 of 32 combinations meet the criterion.
+  deviations:
+  - Assumed the neurons of Figure 4A to 4D (both thresholds) and the spliced trace. The legend of
+    Figure 4 places E with A to D, and the Supplemental Experimental Procedures (Computing the mean
+    firing rate) say the spliced trace "was also useful for the analysis in Figure 4E". The splice
+    maps the go-locked trace (-200 to +100 ms) to movement time with the median RT (354 ms) and
+    continues with the movement-locked trace; where the paper splices is not given.
+- claim: suppfig1-population-psth-weak-movement-tuning
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:suppfig1-population-psth-weak-movement-tuning
+  notes: Under the main reading (17 neurons) the strongest-minus-weakest difference of normalized
+    rate is 0.108 in the preparatory window and 0.101 at movement onset (ratio 0.942); it is smaller
+    (criterion reading a) in all 8 selection readings but less than half (reading b) only under the
+    separate-profile readings (0.184 to 0.357). The statement's "little relationship" by onset is
+    supported under those readings and with all preparatory neurons (ratio 0.047 to 0.213), not
+    under the concatenated-profile readings.
+  deviations:
+  - The two intermediate conditions are those at one third and two thirds of the rank order of
+    preparatory rate, a standard choice (the legend says only "two intermediate conditions").
+  - Rests on the tuning measure and trial selection adopted in fig4d-mean-correlation-j-array.
+- claim: fig6d-perimovement-best-j-array
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig6d-perimovement-best-j-array
+  notes: 76 neurons fitted. Best peri-movement performance 0.117 (k = 6) with S fixed and 0.226 (k =
+    13) with S recomputed in each fold, against the best kinematic space 0.016 to 0.024 and the best
+    task space 0.030 (initial velocity), under all 8 combinations of S, kinematic window and
+    replication. Over the selection readings the peri-movement space is highest under all
+    combinations in 7 of 8 and under some in the eighth (onset a, medoid, separate). All levels are
+    low; the split-half reliability of preparatory tuning is a median r of 0.374 and the estimated
+    upper limit (0.068, S fixed) is below the peri-movement best. The array-1 neurons reach 0.291 and
+    the array-2 neurons -0.006.
+  deviations:
+  - Rests on the tuning measure and trial selection adopted in fig4d-mean-correlation-j-array.
+  - Reach end, used for endpoints and the trajectory-based task spaces, is where the condition-mean
+    speed falls below 10% of its peak, a standard choice; acceleration is the derivative of the
+    smoothed velocity; the T-matrices are sampled every 10 ms, a standard choice.
+  - The EMG space cannot be built; the paper recorded no EMG for J-array.
+- claim: fig6-perimovement-best-each-dimensionality
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig6-perimovement-best-each-dimensionality
+  notes: The peri-movement space wins 20 or 21 of 22 comparisons (14 kinematic dimensionalities and 8
+    task spaces), 0.909 to 0.955, under every reading of S, kinematic window and replication, and
+    both sets of task-space variants.
+  deviations:
+  - Rests on the tuning measure and trial selection adopted in fig4d-mean-correlation-j-array.
+- claim: fig6-dimensionality-peak
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig6-dimensionality-peak
+  notes: With S fixed the peri-movement curve goes from -0.006 at k = 1 to 0.117 at k = 6 and -0.980
+    at k = 14; the kinematic curves peak at k = 2 (0.016 to 0.022) and fall to about -2 at k = 14.
+    With S recomputed in each fold the peri-movement curve peaks at k = 13 (0.226), outside 2 to 10,
+    and is flat above k = 10 (0.221 to 0.226), so the criterion fails under that reading. With S fixed
+    the best k is 2 to 6 in all 8 selection readings.
+  deviations:
+  - Assumed S is computed once from all conditions and only the PD regression leaves the condition
+    out. The Methods (Using a PD, PD performance) define S as "a c x k matrix containing the location
+    of every condition" and say "One condition was left out and we found the PD that best captured
+    tuning for the remaining conditions", which refits only the PD. The recomputed reading is shown.
+- claim: fig6-maze-task-spaces
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig6-maze-task-spaces
+  notes: Under the main reading initial velocity is above zero (0.030) and endpoints + maximum speed
+    (-0.045) is below the 3-D peri-movement space (0.052 S fixed, 0.065 recomputed) and below initial
+    velocity. Segment directions are above zero with segments equal in time (0.008) and below with
+    segments equal in path length (-0.027), so the two readings give different outcomes, and the
+    paper ("the individual horizontal and vertical displacements after dividing the reach trajectory
+    into three segments", Methods, Task spaces) does not say which. Neither choice has a basis in the
+    paper. In the other selection readings segment directions are -0.156 to 0.008 and initial
+    velocity -0.028 to 0.040. The question is asked of the paper's authors (findings).
+- claim: fig6abc-perimovement-best-other-datasets
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the speed-task and single-electrode datasets and EMG, which are not in the dandiset.
+- claim: fig6e-summary-rank
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Pools monkeys A, B and J (single electrodes) and EMG spaces, which are not in the dandiset;
+    the summary excludes J-array.
+- claim: fig6-preparatory-dimensionality
+  outcome: not_reproduced
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig6-preparatory-dimensionality
+  measured: 12
+  notes: 90% of the variance of the c x n preparatory matrix takes 12 PCs for the main reading (PD
+    neurons, not normalized), and 12 to 19 over all readings of neurons, normalization and trial
+    selection, outside 6.3 to 11 and below the bound of 26. With condition labels shuffled the same
+    count is 17, so with 6 to 10 trials per condition it measures noise more than the structure of
+    preparatory activity; the paper had about 20 per condition and 108 conditions.
+- claim: fig7a-shuffled-space-poor
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig7a-shuffled-space-poor
+  notes: Averaged over 20 shuffles the shuffled space's best performance is -0.069 with S fixed and
+    -0.010 recomputed (single draws -0.099 to 0.042), below the unshuffled peri-movement best (0.117,
+    0.226), reading a, and below the best kinematic (0.022, 0.024) and task (0.030) spaces, reading b.
+  deviations:
+  - Rests on the tuning measure and trial selection adopted in fig4d-mean-correlation-j-array.
+- claim: fig7b-window-start-slide
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig7b-window-start-slide
+  measured: 0.911
+  notes: With the window end fixed at 800 ms, performance at the best k falls from 0.117 to 0.107 as
+    the start moves from -150 ms to onset (fraction 0.911) with S fixed, and from 0.226 to 0.218
+    (0.962) with S recomputed, both within 0.97 +/- 0.097. Shifting the whole window gives 0.853 and
+    0.937; 0.853 is outside 0.97 +/- 0.097 but inside reading b's 0.846 to 1.067.
+  deviations:
+  - S fixed across folds, as adopted in fig6-dimensionality-peak; the recomputed reading also
+    reproduces.
+- claim: ap-location-no-effect-j-array
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:ap-location-no-effect-j-array
+  notes: Regressing each neuron's tuning correlation on its array (PMd 1, M1 0) gives r = 0.165, p =
+    0.526 (17 neurons, 9 on array 1) under the main reading and p = 0.53 to 0.91 over the selection
+    readings, so the paper's test finds no effect at p < 0.05. Mean r is 0.221 on array 1 and 0.117
+    on array 2.
+  deviations:
+  - The electrode table has no positions, so AP location is read as the array (the claims file's
+    reading b) and the median split of the paper cannot be made within an array.
+  - Assumed unit id prefix 1 is the PMd array. The units' electrode references all point at PMd rows;
+    those of prefix-1 units (rows 0 to 89) are consistent with PMd, those of prefix-2 units (rows 14
+    to 94) with M1 channels missing the offset of 96 rows, and the electrode table lists PMd first.
+    The regression's p does not depend on which array is coded 1.
+- claim: ap-location-no-effect-other-datasets
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The single-electrode datasets are not in the dandiset.
+- claim: fig7c-anterior-posterior-performance
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig7c-anterior-posterior-performance
+  notes: No half is within 10% of the random halves' normalized value under any reading of S or of
+    the upper limit. The normalization is unstable because the upper limits are near zero or
+    negative (6-D upper limit -0.107 on array 2, -0.043 averaged over random halves, S fixed), so the
+    ratios range from -0.740 to 8.000. Unnormalized 6-D performance is 0.271 on array 1 (PMd) and
+    -0.060 on array 2 (M1) with S fixed, 0.270 and 0.049 recomputed, against 0.095 and 0.140 for
+    random halves; the peri-movement space captures tuning on array 1 but hardly on array 2.
+  deviations:
+  - Halves are the two arrays, not a median split of AP location (no positions in the dandiset);
+    array 1 is taken as PMd, as in ap-location-no-effect-j-array.
+  - Random halves are 20 random splits of the units into two equal halves, a standard choice.
+- claim: prep-activity-more-anterior
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:prep-activity-more-anterior
+  notes: With the range measure 35 of 75 units on array 1 (0.467) and 41 of 77 on array 2 (0.532)
+    pass the 5 spikes/s preparatory threshold (Fisher p = 0.517), and array 1 has the lower fraction
+    in all 8 selection readings. With the SD measure array 1 is higher (4 of 75 against 1 of 77, p =
+    0.206). The outcome depends on array 1 being PMd; if it were M1 the range result would favour the
+    anterior array (still not at p < 0.05). With 6 to 10 trials per condition the range threshold
+    also passes noise, and noise ranges grow with firing rate.
+  deviations:
+  - AP location read as the array and array 1 taken as PMd (see ap-location-no-effect-j-array);
+    tuning measured as the range, as adopted in fig4d-mean-correlation-j-array.
+- claim: fig7d-pd-consistency
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig7d-pd-consistency
+  notes: Mean PD consistency over 76 neurons is higher in the peri-movement space than in endpoints +
+    maximum speed (0.698 against 0.597, Wilcoxon p < 0.0001), segment directions (0.613 against 0.605
+    with time segments, p = 0.897; 0.615 against 0.542 with path segments, p = 0.023) and the
+    kinematic space at its best k = 2 (0.729 against 0.670, p = 0.0004). The segment-directions
+    comparison with time segments is a tie in practice.
+  deviations:
+  - 100 pairs of draws per neuron, a standard choice; S from all conditions; the peri-movement
+    space at the dimensionality of each comparison space.
+  - Rests on the tuning measure and trial selection adopted in fig4d-mean-correlation-j-array.
+- claim: some-neurons-better-elsewhere
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:some-neurons-better-elsewhere
+  notes: 60 of 76 neurons (0.789) with S fixed and 44 of 76 (0.579) with S recomputed perform better
+    in at least one other space than in the peri-movement space at its best k (6 and 13).
+  deviations:
+  - Rests on the tuning measure and trial selection adopted in fig4d-mean-correlation-j-array.
+- claim: high-dimensional-task-spaces-underperform
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:high-dimensional-task-spaces-underperform
+  notes: The kitchen-sink spaces (-0.244 and -0.221) and segment directions (0.008 and -0.027) are
+    below the peri-movement space at the same dimensionality (11-D -0.184 and 6-D 0.117 with S fixed;
+    0.221 and 0.145 recomputed) and below its best (0.117, 0.226), under both readings.
+  deviations:
+  - Rests on the tuning measure and trial selection adopted in fig4d-mean-correlation-j-array.
+- claim: fig8-linear-dynamics-simulation
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_churchland_2010.ipynb
+  output: claim:fig8-linear-dynamics-simulation
+  notes: With the gray interval read as one full cycle (360 steps), the central 95% of the
+    correlation over 1000 draws is -0.397 to 0.387 (uniform initial states) and -0.400 to 0.404
+    (Gaussian), containing 0.08; over a quarter cycle it is 0.496 to 0.847 and 0.455 to 0.871, not
+    containing it. The 2-D PCA peri-movement space fits unit 1's initial rates with performance 1.0
+    in every draw.
+  deviations:
+  - The distribution of initial states and the gray interval are not given (Figure 8 legend); both
+    readings of each are run and the outcome rests on the full-cycle interval.
+findings:
+- kind: metadata_error
+  statement: Every unit's electrode reference points at a row of the PMd electrode group, although
+    the unit ids (array x 1000 + channel x 10 + sort) put 77 of the 152 units on a second array. The
+    references of those units (rows 14 to 94) match their channel numbers without the offset of 96
+    that would place them on the M1 rows, so the M1 units are labelled as PMd.
+- kind: metadata_insufficient
+  statement: The electrode table's x, y, z and impedance columns are empty, so the anterior-posterior
+    location of a unit cannot be read; the array is known only through the unit id convention, which
+    the files do not describe.
+- kind: data_missing
+  statement: The dandiset holds one array session of monkey J on the maze task with 27 conditions and
+    250 labelled trials. The paper's J-array dataset had 108 conditions and about 2166 trials per
+    neuron, and the speed-task datasets of monkeys A and B, the single-electrode monkey J dataset and
+    all EMG are not deposited, so 4 of the paper's main findings cannot be tested and the others rest
+    on 6 to 10 trials per condition.
+- kind: identifier_missing
+  statement: Nothing in the files or the dandiset metadata says whether this session (2009-09-29) is
+    the paper's J-array recording or a different one, or how its 27 conditions relate to the paper's
+    108.
+- kind: selection_undocumented
+  statement: The files keep 250 successful trials split into train and val, and 100 test trials as
+    700 ms segments without condition labels, go cue or behaviour. How the trials and the 9 mazes
+    were chosen from the session is not described.
+- kind: methods_unavailable
+  statement: For the paper's authors. The supplement keeps trials whose velocity profiles correlate
+    with a reference proto-trial at r > 0.9. Is the proto-trial the condition mean or one trial, and
+    are the horizontal and vertical profiles correlated separately or together? Here separate
+    comparison keeps 70 to 82% of trials and concatenation 93 to 96%, against the stated ~90%; the
+    mean with concatenation was assumed, and the mean correlation of Figure 4D passes p < 0.05 under
+    5 of 8 readings.
+- kind: methods_unavailable
+  statement: For the paper's authors. How is "spikes/s of preparatory tuning" measured (range or
+    standard deviation of condition means)? The range was assumed; with the standard deviation almost
+    no array unit passes 5 spikes/s.
+- kind: methods_unavailable
+  statement: For the paper's authors. In the leave-one-condition-out performance, is the PCA-based
+    space S recomputed without the left-out condition? S fixed was assumed (one S per space, only the
+    PD refitted). With S recomputed, peri-movement performance here does not decline at high
+    dimensionality (best k = 13).
+- kind: methods_unavailable
+  statement: For the paper's authors. For the segment-directions and kitchen-sink spaces, is the
+    reach divided into three segments of equal time or equal path length? Here segment directions
+    perform above zero with time segments (0.008) and below with path segments (-0.027), which
+    decides fig6-maze-task-spaces, blocked for this reason.
+- kind: methods_unavailable
+  statement: For the paper's authors. How was movement onset detected, where is the go-locked trace
+    spliced to the movement-locked one in Figure 4E, and what is the gray interval of Figure 8? Here
+    the dataset's onsets, a splice at the median RT and a full cycle were used, and the other readings
+    shown.
