@@ -103,18 +103,39 @@ def read_file(asset):
                      "experiment": _s(h["general/experiment_description"][()])
                      if "general/experiment_description" in h else None,
                      "acquisition": sorted(h["acquisition"].keys()),
-                     "units": "units" in h}
+                     "units": "units" in h,
+                     "session_description": _s(h["session_description"][()]),
+                     "subject_description": _s(h["general/subject/description"][()])
+                     if "general/subject/description" in h else None}
+                # groups that could hold condition data: their member names, two levels down
+                groups = []
+                for top in ("intervals", "stimulus", "analysis", "processing", "general"):
+                    if top not in h:
+                        continue
+                    for k, o in h[top].items():
+                        groups.append(f"/{top}/{k}")
+                        if isinstance(o, h5py.Group) and k not in ("extracellular_ephys",):
+                            groups += [f"/{top}/{k}/{c}" for c in o.keys()]
+                d["groups"] = groups
+                el = h["general/extracellular_ephys/electrodes"]
+                d["electrode_columns"] = sorted(el.keys())
+                d["electrode_groups"] = sorted({_s(x) for x in el["group_name"][:]}) if "group_name" in el else []
+                d["electrode_locations"] = sorted({_s(x) for x in el["location"][:]}) if "location" in el else []
+                d["channel_names"] = [_s(x) for x in el["channel_name"][:]] if "channel_name" in el else []
                 lfp = h["processing/ecephys/LFP/ElectricalSeriesLFP"]
                 d["lfp_t0"] = float(lfp["starting_time"][()])
                 d["lfp_rate"] = float(lfp["starting_time"].attrs["rate"])
                 d["lfp_n"], d["lfp_channels"] = lfp["data"].shape
-                tables = {}
+                tables, attrs = {}, {}
                 for k in h["processing/ecephys"].keys():
                     if k == "LFP":
                         continue
                     g = h["processing/ecephys"][k]
                     tables[k] = pd.DataFrame({c: g[c][:] for c in RIPPLE_COLUMNS if c in g})
+                    # every attribute of the table, to look for stored detection parameters
+                    attrs[k] = {a: _s(v) for a, v in g.attrs.items() if a not in ("namespace", "object_id")}
                 d["tables"] = tables
+                d["table_attrs"] = attrs
                 ss = None
                 if "processing/behavior/sleep_states" in h:
                     g = h["processing/behavior/sleep_states"]
@@ -344,3 +365,17 @@ def subject_events(fs, tables=CA1_TABLES, min_peak_sd=MIN_PEAK_SD, reference=Non
     if not ev:
         return None, []
     return pd.concat(ev).sort_values("t").reset_index(drop=True), iv
+
+
+def time_read(asset_id, seconds=1800):
+    """Seconds taken to read the first `seconds` of LFP (all channels) and of accelerometer of one file.
+
+    Used only to estimate the cost of predictors computed from these signals."""
+    import time
+    with open_h5(asset_id) as h:
+        t0 = time.time()
+        h["processing/ecephys/LFP/ElectricalSeriesLFP/data"][: int(LFP_RATE * seconds), :]
+        t1 = time.time()
+        acc = h["acquisition/Accelerometer"]
+        acc["data"][: int(acc["starting_time"].attrs["rate"] * seconds), :]
+        return t1 - t0, time.time() - t1

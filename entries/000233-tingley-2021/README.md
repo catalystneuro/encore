@@ -14,7 +14,7 @@ or cohort labels, so the optogenetic, DREADD, fasting and unit findings cannot b
 | Interval, amplitude, duration, frequency rank in that order | Partially reproduced |
 | Phase dispersion of glucose drops more after higher SPW-R rates | Not reproduced |
 | Power-power and phase-power coupling, SPW-R rhythm faster | Partially reproduced |
-| Glucose oscillates at about 60 min | Partially reproduced |
+| Glucose oscillates at about 60 min | Not reproduced |
 | Glucose is circadian and rises after meals | Blocked: data missing |
 | The sensor current decays over days, its fluctuations do not | Reproduced |
 | 9.5 SPW-Rs per minute, about 14,000 a day | Reproduced |
@@ -23,7 +23,7 @@ or cohort labels, so the optogenetic, DREADD, fasting and unit findings cannot b
 | A 20-ms refractory period between ripples | Not reproduced |
 | The correlation does not differ between NREM and waking | Reproduced |
 | No hour of the day differs (smallest P = 0.53) | Not reproduced |
-| Ventral SPW-Rs correlate less with glucose than dorsal | Blocked: one rat |
+| Ventral SPW-Rs correlate less with glucose than dorsal | Blocked: data missing (glucose in one of three rats) |
 | Predictor models (Extended Data Fig. 6, three claims) | Blocked: too large |
 | Optogenetic stimulation (Figure 3, Extended Data Fig. 7, seven claims) | Blocked: data missing |
 | DREADD inhibition of the septum (Figure 4, Extended Data Fig. 10, six claims) | Blocked: metadata insufficient |
@@ -37,8 +37,9 @@ repairs them, which adds about 580 h of glucose overlapping the electrophysiolog
 are deposited twice. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/000233-tingley-2021-01.yaml`](../../attempts/000233-tingley-2021-01.yaml).
 
-- `reproduce_tingley_2021.ipynb`: the analysis. It takes about four minutes, most of it reading the
-  metadata, SPW-R tables and glucose series of the 345 files.
+- `reproduce_tingley_2021.ipynb`: the analysis. It takes about seven minutes, most of it reading the
+  metadata, SPW-R tables and glucose series of the 345 files and the shuffles of the coupling
+  analysis.
 - `sprglu.py`: loading the files, the repair of the glucose dates, the 5-min binning of SPW-R rate
   and glucose change, cross-correlograms and circular shuffles. Other notebooks on this dandiset
   can import it.

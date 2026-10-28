@@ -42,7 +42,13 @@ outcomes:
     count over the 5 min after each reading no per-rat combination matches (mean lags 19.2 to 37.8
     min), and with the change to the next reading 4 of 8 match. With all stored events (no 5 s.d.
     threshold) the Spearman per-rat reading gives R -0.212 at 16.1 min and the Pearson one -0.175 at
-    14.2 min. The paper's n is 30 rats; 18 is all the dandiset allows.
+    14.2 min. The paper's n is 30 rats; 18 is all the dandiset allows. The match is fragile. With at
+    least 6 h of both per rat only the high-pass, Spearman, per-session, -100 to +100 min combination
+    matches. The median of the per-rat lags is 5 to 15 min in every combination, but only 7 to 10 rats
+    peak between +5 and +15 min; in the raw, Pearson, per-rat combination single-rat lags run from
+    -100 to +80 min, and the mean falls in tolerance because peaks at -100 to -20 min offset peaks at
+    +55 to +80 min. R negative in most rats holds by construction, as R is the minimum over 41
+    offsets.
   deviations:
   - 18 rats where the paper has 30. The dandiset holds 25 subjects; 7 have no SPW-R table or no
     glucose recorded on the days of the electrophysiology.
@@ -57,6 +63,10 @@ outcomes:
     day is 12 or less (see findings). Without the repair 1139 h of overlap remain of 1717.
   - The high-pass reading subtracts a centred 24-h running mean, a standard choice for a cutoff
     the paper does not give; a session is one file with at least 6 h of bins, a standard choice.
+    Differencing already removes slow drift, so this reading changes delta little and nearly repeats
+    the raw one.
+  - Reading (a) of the rats leaves out CNO days and the stimulation periods of the optogenetic rats.
+    The files label neither, so every day of every rat is used.
 - claim: fig2ef-correlation-beyond-shuffle
   outcome: reproduced
   notebook: reproduce_tingley_2021.ipynb
@@ -89,7 +99,11 @@ outcomes:
     differs (the criterion's partial case). With 5-percentile bins duration (0.0967) and interval
     (0.0966) are tied ahead of amplitude (0.061) and frequency (0.060). Per rat with deciles,
     amplitude has the largest range in 7 of 18 rats and the interval in 6. 1083233 SPW-Rs from 18
-    rats.
+    rats. Resampling rats (1000 bootstraps, decile edges fixed), the interval has the largest range in
+    64.7% of resamples and the full order interval > amplitude > duration > frequency occurs in 1.5%.
+    The most clustered decile (shortest intervals) has the least negative effect, +0.004 nA against
+    -0.027 nA in the decile with the longest intervals, the opposite direction to
+    fig2g-clustered-ripples.
   deviations:
   - The inter-SPW-R interval is the time from the previous SPW-R in the same file, a standard
     choice (previous or next is not said).
@@ -102,7 +116,8 @@ outcomes:
     baseline (a) and 0.55 (p = 0.098) with baseline (b), the same for the 15 to 75 and 15 to 90 min
     bands. The decrease in the top decile is positive under all four readings (0.022 to 0.506), but
     it is positive in every decile, the lowest included (0.23 to 0.47), so it does not single out
-    high rates.
+    high rates. The minimum over seven offsets favours a decrease; with the mean over 0 to +30 min in
+    its place rho is -0.19 to 0.56 (p = 0.09 to 0.86).
   deviations:
   - Band-pass filtering within runs of at least 24 h of readings (second-order Butterworth, zero
     phase), a standard choice.
@@ -110,18 +125,24 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_tingley_2021.ipynb
   output: claim:edfig5-cross-frequency-coupling
-  notes: Power-power coupling over 15 to 60 min exceeds circular shuffles (mean R 0.107 against
-    -0.007, paired t = 5.07, p = 9.5e-05, 18 rats), and the rate-weighted glucose phases are
-    non-uniform (Rayleigh p = 1.4e-13, resultant length 0.038). The comodulogram peak (R 0.180) is
-    on the diagonal at 51.9 min for both signals, and the mean correlation above and below the
-    diagonal is the same (0.082), so the third condition, a peak at a longer glucose period, fails.
-    The paper's p bounds (1e-24, 1e-18) are not reached.
+  notes: Over stretches of at least 12 h with both signals (16 rats), power-power coupling over 15
+    to 60 min exceeds 100 circular shuffles per rat (mean R 0.064 against -0.007, paired t = 2.57,
+    p = 0.021), and the rate-weighted glucose phases are non-uniform (Rayleigh p = 3.2e-09,
+    resultant length 0.033, above all 200 circular shifts of SPW-R rate, whose 95th percentile is
+    0.013; p < 0.05 in 10 of 16 rats singly). The comodulogram peak (R 0.216) is on the diagonal at
+    79.0 min for both signals, so the third condition, a peak at a longer glucose period, fails; the
+    mean correlation above the diagonal is 0.072 against 0.047 below. With 6-h stretches the same
+    holds (p = 0.025 and 1.1e-08, peak at 79.0 min for both). With 24-h stretches only 3 rats remain
+    and neither test reaches p < 0.05 (p = 0.24 and 0.82). The paper's p bounds (1e-24, 1e-18) are
+    not reached.
   deviations:
   - Periods 12 to 120 min in place of 10 to 120, since 10 min is the Nyquist period of 5-min
     readings; band edges at the period divided and multiplied by 1.25 (a standard choice).
-  - 20 shuffles per rat for the comodulogram, to keep the run short.
+  - Both signals are filtered only over stretches where both are recorded, of at least 12 h (six
+    cycles of the longest period), a choice; 24 h and 6 h are shown, and the 24-h variant, with 3
+    rats, does not match.
 - claim: edfig1-glucose-rhythm
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_tingley_2021.ipynb
   output: claim:edfig1-glucose-rhythm
   measured: 51.4
@@ -129,11 +150,14 @@ outcomes:
     to 131 min, with the peak of the mean residual at 51.4 min (per subject 32 to 60 min), outside
     60 +- 6 min. Below 22 min the residual is negative, so it is positive at 51 of the 81
     frequencies between 15 and 90 min. The first side peak of the mean autocorrelogram is at 70 min
-    (0.013), also outside the tolerance. An oscillation of about 50 min is present; the expected
+    (0.013), also outside the tolerance. Neither condition holds under any of 12 variants of the
+    fit's axes (log-log, semi-log, linear), its range (all frequencies or 10 to 300 min) and the
+    segment length (24 or 12 h); the residual peak lies at 43.6 to 51.4 min (log-log), 10.1 min
+    (semi-log) or 68.6 to 72.0 min (linear). An oscillation of about 50 min is present; the expected
     period and the 15 to 90 min range are not matched.
   deviations:
   - All 25 subjects with a 24-h run of readings, where the legend has 8 rats; Welch spectra with
-    24-h segments, a standard choice.
+    24-h segments, a standard choice (12-h segments shown).
 - claim: edfig1-glucose-circadian-meals
   outcome: blocked
   blocked_by: data_missing
@@ -141,8 +165,12 @@ outcomes:
   output: claim:edfig1-glucose-circadian-meals
   notes: The meal times of the fasting experiment (36 meals, 4 rats) are not in the dandiset, and no
     subject is labelled as part of it, so the meal part and both expected values cannot be tested.
-    The circadian part was run and does not find a modulation (one-way ANOVA of hour of day on the
-    hourly means of 25 subjects, F = 0.46, p = 0.99; 28.6 to 31.3 nA).
+    The circadian part was run and does not find a modulation under the criterion's test (one-way
+    ANOVA of hour of day on the hourly means of 25 subjects, F = 0.46, p = 0.99; 28.6 to 31.3 nA).
+    That test pools hourly means across subjects whose offsets differ by tens of nA. Within
+    subjects, with each run's linear decay and each subject's mean removed, hour of day is
+    significant (one-way ANOVA p = 0.024, Friedman p = 5.2e-05; lowest at 06:00 to 07:00, -0.84
+    nA, highest at 13:00 to 14:00, +0.65 nA).
 - claim: edfig1-sensor-decay
   outcome: reproduced
   notebook: reproduce_tingley_2021.ipynb
@@ -175,8 +203,10 @@ outcomes:
   notes: In all 15 rats with at least 3 days of 6 h or more, the daily median amplitude (peak
     normed power) and duration show no Spearman trend with day at p < 0.05; the daily rate is
     consistent in 13 of 15 (no trend in 11). Amplitude stays within 20% of the median in only 5
-    rats and the rate in 4, so the result rests on the absence of trends. Amplitude in microvolts
-    trends with day in 5 rats.
+    rats and the rate in 4, so the result rests on the absence of trends, which a Spearman test over
+    3 to 5 days rarely shows; the criterion's "or" passes most rats with few days. Amplitude in
+    microvolts trends with day in 5 rats; in CGM30 its overall median is 0, which makes its
+    deviation infinite (not used by the criterion).
   deviations:
   - Days with at least 6 h of CA1 recording, a standard choice.
 - claim: edfig3-ripple-rate-rhythms
@@ -191,7 +221,9 @@ outcomes:
   notes: The mean Lomb-Scargle spectrum of SPW-R rate of the 8 rats with the most recording has local
     peaks at 24.0 h and 3.8 h, inside the tolerances, but larger peaks at 42.3 and 19.5 h. Those 8
     rats hold 1889.8 h, outside 1568.5 +- 156.85 h. With all 11 rats of at least 48 h (2072.2 h) the
-    nearest peaks are at 24.0 and 4.1 h.
+    nearest peaks are at 24.0 and 4.1 h. By prominence the 24.0-h peak ranks 4th of 45 local peaks
+    and the 3.8-h peak 12th (prominence 0.0034 against 0.0175 for the 42.3-h peak); on a 400-point
+    grid a nearby local peak is weak evidence of a 4-h rhythm.
   deviations:
   - Lomb-Scargle periodogram, a standard choice for gapped recordings; the 8 rats with the most
     recording, since the dandiset does not say which 8 the paper used.
@@ -200,10 +232,20 @@ outcomes:
   notebook: reproduce_tingley_2021.ipynb
   output: claim:edfig2-refractory-period
   measured: 34.4
-  notes: The shortest interval between consecutive SPW-R peaks within a file is 25.6 to 38.4 ms
-    (median 34.4 ms over 22 rats); no interval below 20 ms occurs and no rat has its shortest
-    interval in 18 to 22 ms. The stored tables appear to have merged or dropped events closer than
-    about 25 to 30 ms, so the data cannot show a 20-ms drop.
+  notes: The shortest interval between consecutive SPW-R peaks within a file, the criterion's
+    reading, is 28.8 to 39.2 ms (median 34.4 ms over 22 rats); no interval below 20 ms occurs and no
+    rat has its shortest interval in 18 to 22 ms. Start-to-start intervals do not match either
+    (median shortest 40.8 ms). The gap from one event's stop to the next one's start has its minimum
+    at exactly 20.0 ms in 19 rats and at 15.2 ms in CGM1, CGM2 and CGM3, so it lies in 18 to 22 ms
+    in 19 of 22 rats. A floor at the same value in nearly every rat matches the merging of
+    neighbouring events in the detection (Methods, SPW-R detection, "merging neighbouring events"),
+    so the 20-ms drop of the legend may be this rule measured from stop to start. The detection
+    parameters are not stored with the NWB tables, so the rule cannot be confirmed.
+  deviations:
+  - The time point of each event is the claims file's choice (the peak); start-to-start,
+    stop-to-stop and stop-to-next-start are shown as variants. The legend shows auto-correlograms
+    of all inter-ripple intervals; their shortest interval is the same as that of consecutive
+    intervals.
 - claim: edfig4-nrem-wake
   outcome: reproduced
   notebook: reproduce_tingley_2021.ipynb
@@ -224,16 +266,18 @@ outcomes:
   output: claim:edfig4-no-hour-differs
   notes: Over 12 rats with at least 24 h of both signals, Student's t-test finds 10 of 276 pairs of
     hours at p < 0.05 (smallest p = 0.010), where the paper reports a smallest P of 0.53; the paired
-    variant finds 25. The integrated correlation is most negative from 17:00 to 21:00 (-0.37 to
-    -0.51) and near zero from 02:00 to 05:00. Ten is fewer than the 14 pairs expected by chance
-    among 276 uncorrected tests, so the difference from the paper is in the smallest p, not in a
-    clear effect of hour.
+    variant finds 25. 3 of 288 rat-hours have no valid correlation and are left out. The integrated
+    correlation is most negative from 17:00 to 21:00 (-0.37 to -0.51) and near zero from 02:00 to
+    05:00. Ten is fewer than the 13.8 pairs expected by chance among 276 uncorrected tests, so the
+    difference from the paper is in the smallest p, not in a clear effect of hour; with this many
+    uncorrected tests the criterion's bound is hard to meet whatever the data.
   deviations:
   - Rats with at least 24 h of both signals, a standard choice; Spearman correlation as in
-    edfig4-nrem-wake.
+    edfig4-nrem-wake. A rat-hour where any of the four correlations cannot be computed is left
+    out.
 - claim: edfig9-dorsal-ventral
   outcome: blocked
-  blocked_by: other
+  blocked_by: data_missing
   notebook: reproduce_tingley_2021.ipynb
   output: claim:edfig9-dorsal-ventral
   notes: The dorsal and ventral rats are CGM37, CGM48 and Vanessa (tables Dorsalripples and
@@ -241,7 +285,9 @@ outcomes:
     Only Vanessa has glucose recorded with the electrophysiology, on two days, too few for the
     criterion's t-tests; per day the ventral correlations at +10 min (-0.088, 0.096) are more
     negative than the dorsal (0.115, 0.239), paired p = 0.11, and Vanessa's sensor reads a median
-    of 0.25 nA. In CGM37 and CGM48 the glucose readings cover other days than the electrophysiology.
+    of 0.25 nA. In CGM37 and CGM48 the glucose readings cover other days than the electrophysiology,
+    so the glucose the comparison needs is missing for two of the three rats. The rate-correlation
+    part can be tested on its own (above); the claim's glucose part cannot.
 - claim: edfig3e-ca1-firing-decrease
   outcome: blocked
   blocked_by: data_missing
@@ -258,9 +304,13 @@ outcomes:
   notebook: reproduce_tingley_2021.ipynb
   notes: Six of the seven predictors must be computed from the LFP (stored in chunks of 707 samples
     by 32 channels, so one channel means reading all) and the 5-kHz accelerometer over the 1717 h with
-    both signals. The notebook times 30 min of each and puts the reading at about 6.4 h of LFP and
-    2.4 h of accelerometer, against a 30-min notebook limit and less time than that left in the run.
-    Sleep states, the binarized brain state, are stored for 3 of the 18 rats.
+    both signals. The notebook times 30 min of each from one file (5.7 h of LFP and 2.1 h of
+    accelerometer for 1717 h, one file at a time) and 8 such pieces at once in 4 processes, the
+    cores of the machine running it (7.1 s of wall time per hour of recording). Reading alone
+    would take about 203 min for all 18 rats, 172 min for the 8 rats with the most hours (the
+    legend's n is 8) and 66 min for the 3 rats whose brain state is stored, each over the 30-min
+    notebook limit. Sleep states, the binarized brain state, are stored for 3 of the 18 rats; in the
+    others the brain state would first have to be scored.
 - claim: edfig6d-pairwise-predictors
   outcome: blocked
   blocked_by: too_large
@@ -342,7 +392,10 @@ findings:
     jumps by about a month at each midnight. The session reference times of some of these subjects
     are swapped the same way (CGM46 2021-04-03 for files of 4 March). Swapping back joins the
     readings into runs of 5-min steps and raises the hours of glucose overlapping the
-    electrophysiology from 1139 to 1717.
+    electrophysiology from 1139 to 1717. In CGM32, 86 readings are dated up to 2021-12-02, more than
+    30 days from the subject's other readings, which looks like the same swap for 1 to 12 February;
+    swapping all of CGM32's dates does not reduce its breaks, so they were left as stored (no CGM32
+    recording falls on those days).
 - kind: other
   statement: 27 recordings of CGM1, CGM3, CGM30, CGM31 and CGM32 are deposited twice, under file
     names with dashes and with underscores, with the same LFP start, length and SPW-R events.
@@ -377,9 +430,15 @@ findings:
     contribute to the SPW-R and glucose analyses. Vanessa's glucose current has a median of 0.25 nA,
     against about 30 nA in the other subjects.
 - kind: other
-  statement: No interval between stored SPW-R peaks is shorter than 25.6 ms in any rat, so the
-    tables cannot show the 20-ms refractory period of Extended Data Fig. 2a; the detection appears
-    to merge or drop events closer than about 25 to 30 ms.
+  statement: No interval between stored SPW-R peaks is shorter than 28.8 ms in any rat, and the gap
+    from one event's stop to the next one's start is never below 20.0 ms (15.2 ms in CGM1, CGM2 and
+    CGM3), with its minimum at exactly 20.0 ms in 19 of 22 rats. This matches a rule in the
+    detection that merges events closer than 20 ms, and the 20-ms refractory period of Extended Data
+    Fig. 2a may be this rule.
+- kind: methods_unavailable
+  statement: The Methods say the input parameters of the SPW-R detection are stored with each
+    session's ripple events. The NWB SPW-R tables carry only their column names and a description,
+    so the thresholds and the merging interval used for each subject are not in the dandiset.
 - kind: methods_unavailable
   statement: Question for the authors. How were the 5-min SPW-R counts aligned with the glucose
     readings for the cross-correlograms (the count of the interval ending at a reading paired with
@@ -387,3 +446,414 @@ findings:
     Spearman), and over which offsets was the peak lag searched? With 18 rats the mean lag of 10.7
     min is matched only under some combinations, and moving the alignment by one reading moves the
     mean lag by 5 min.
+verifications:
+- date: '2026-10-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper. The verifier queried the archive metadata and tested the
+    helper functions on synthetic inputs. Its report had no attempt record and gave its own outcome for
+    each claim; 33 of 35 agree with the record as reviewed.
+  results:
+  - claim: fig2-ripple-rate-predicts-glucose
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 18: mean R holds in every combination (Spearman -0.21, Pearson -0.18). The lag holds in 3
+      of 16 combinations, all with the -100..+100 lag range (e.g. raw/Pearson/per rat: R -0.176, lag
+      14.2 min). 18 rats, not 30. Fragile (B1): it holds in only 1 of 16 combinations once rats with
+      less than 6 h are dropped; per-rat lag s.d. is 30-42 min against the paper's 4.5, and the mean
+      lag in tolerance comes from averaging peaks at -40 and -30 min with peaks at +55 to +65 min; R
+      negative in most rats holds by construction, since R is the minimum over 41 offsets; the outcome
+      depends on the alignment assumption. Reading (a) excludes CNO days and stimulation periods, and
+      the notebook uses every day of every rat without saying so (B2).
+    response: >-
+      Outcome kept. Added the combination that passes with at least 6 h per rat (high-pass, Spearman,
+      per session, -100..+100), the per-rat lags of each passing combination, and the median per-rat
+      lag and number of rats peaking at +5 to +15 min for every combination. The conclusion and notes
+      now say the match is fragile, that the mean lag in tolerance comes from offsetting early and
+      late peaks, and that R negative in most rats holds by construction. The markdown and deviations
+      now say that CNO days and stimulation periods cannot be left out, as neither is labelled.
+  - claim: fig2ef-correlation-beyond-shuffle
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 22: observed median R at +10 min is -0.076 (Pearson) and -0.106 (Spearman), against a
+      shuffled median of about 0.00. KS p = 1.5e-4 and 4.0e-6.
+    response: >-
+      No change needed.
+  - claim: fig2g-clustered-ripples
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 24, reading (a), more than 150 SPW-Rs per epoch: -0.191 nA against +0.050 nA after isolated
+      epochs, 3.9 times the magnitude. Reading (b) fails (-0.032). No test is required; Welch p =
+      0.059, and the curve is not monotonic.
+    response: >-
+      No change needed.
+  - claim: edfig4-ripple-features
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Cell 26, deciles: interval > duration > frequency > amplitude, so interval is largest but the
+      rest of the order differs. With 5-percentile bins duration comes first (0.0967 against 0.0966).
+      The margins are within noise (B7): the range-of-bin-means measure has no uncertainty, and events
+      sharing a 5-min bin share one delta value; the most clustered decile has the least negative
+      delta (+0.004 against -0.027), the opposite direction to Fig. 2g.
+    response: >-
+      Outcome kept. Added a bootstrap over rats with the decile edges fixed (1000 resamples): the
+      interval has the largest range in 64.7% of resamples and the full order in 1.5%. The conclusion
+      and notes now state the direction of the most clustered decile.
+  - claim: fig2h-phase-reset
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 28: all 4 readings fail. Spearman rho is -0.24 (p = 0.51) or 0.55 (p = 0.098). Taking the
+      minimum over 7 offsets against a single baseline value biases the decrease upward (B12); the
+      claim fails anyway.
+    response: >-
+      Outcome kept. Added a variant with the mean over 0 to +30 min in place of the minimum (rho -0.19
+      to 0.56, p = 0.09 to 0.86).
+  - claim: edfig5-cross-frequency-coupling
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Cell 30: power-power paired t-test p = 9.5e-5 and Rayleigh p = 1.4e-13. The comodulogram peak is
+      on the diagonal (51.9 min for both), and the means above and below the diagonal are equal
+      (0.082). The claimed asymmetry is absent. B6: rate.fillna(mean) fills SPW-R rate across glucose-
+      only stretches, so the 18 rats with a run of at least 24 h include CGM48 (2.25 h of SPW-Rs) and
+      CGM49 (6 h); the Rayleigh test pools 20,017 autocorrelated bins, so its p is anti-conservative;
+      20 shuffles were used instead of 100.
+    response: >-
+      Outcome kept, on new numbers. Both signals are now filtered only over stretches where both are
+      recorded, with 100 shuffles per rat, and the hours used per rat are printed. With stretches of
+      at least 12 h (16 rats) power-power gives p = 0.021 and Rayleigh p = 3.2e-09, the observed
+      resultant length exceeds all 200 circular shifts of SPW-R rate and 10 of 16 rats have p < 0.05
+      singly; the peak is on the diagonal at 79.0 min. 6-h stretches give the same; with 24-h
+      stretches only 3 rats remain and neither test passes, which the notes state.
+  - claim: edfig1-glucose-rhythm
+    agrees: false
+    outcome: not_reproduced
+    reason: >-
+      Cell 32: the residual peaks at 51.4 min (tolerance 54-66). The first side peak of the
+      autocorrelogram is at 70 min. The residual is negative at 15-21 min, so power is not elevated
+      across 15-90 min. B4: only a log-log fit over all frequencies was run; the legend says linear
+      best fit and does not give the axes, and the flat mean residual from about 40 to 60 min could
+      move the peak into 54-66 min under linear axes, another fit range or another segment length.
+    response: >-
+      Outcome changed from partially_reproduced to not_reproduced: neither condition of the criterion
+      holds, so no part of it is met. Added 12 variants (log-log, semi-log and linear axes, fitted
+      over all frequencies or 10 to 300 min, with 24-h and 12-h segments); none puts the peak in 54 to
+      66 min or makes the residual positive over 15 to 90 min.
+  - claim: edfig1-glucose-circadian-meals
+    agrees: false
+    outcome: not_reproduced
+    reason: >-
+      Circadian part, cell 34: ANOVA p = 0.986. The meal part is blocked (data_missing, no meal
+      times). B9: the ANOVA runs on per-rat hourly means of absolute current, without removing
+      between-rat offsets or sensor decay; a within-rat test was not shown.
+    response: >-
+      Outcome kept as blocked (data_missing), disagreement recorded. Both expected values and half of
+      the criterion concern meals, which cannot be tested, and the failure of the circadian half
+      depends on the criterion's pooled test: added the within-subject variant (decay of each run and
+      each subject's mean removed), which finds hour of day significant (ANOVA p = 0.024, Friedman p =
+      5.2e-05).
+  - claim: edfig1-sensor-decay
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 36: current slope is negative in 31 of 31 placements. The relative slope of |delta| is
+      smaller in 18 of 31; median -0.047 against -0.107 per day.
+    response: >-
+      No change needed.
+  - claim: supp-ripple-rate
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 38, reading (a): 10.19 per minute and 14,671 per day, both within tolerance; maximum 258
+      per minute. CGM1 alone falls outside tolerance (10.76 per minute).
+    response: >-
+      No change needed.
+  - claim: supp-ripples-stable-across-days
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 40: amplitude is consistent in 15 of 15 rats under the criterion's or. Only 5 of 15 stay
+      within 20%. B14: Spearman over 3-5 days rarely reaches p < 0.05, so the or makes the criterion
+      close to automatic; in CGM30 the overall median peak_amplitude is 0, which gives an infinite
+      deviation.
+    response: >-
+      Outcome kept. The conclusion and notes now say that the criterion's or passes most rats with few
+      days, and note the infinite deviation of CGM30 in a variant the criterion does not use.
+  - claim: edfig3-ripple-rate-rhythms
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Cell 42: there are local peaks at 24.0 h and 3.8 h. Hours are 1,889.8, against 1,568.5 +- 156.9.
+      The largest peaks are at 42.3 h and 19.5 h. B13: on a 400-point grid of a noisy Lomb-Scargle
+      spectrum a local peak within 10% almost always exists; the prominence of the 3.8-h peak is not
+      reported.
+    response: >-
+      Outcome kept. Added the prominence and rank of the peaks nearest 24 h and 4 h: the 3.8-h peak
+      ranks 12th of 45 (prominence 0.0034 against 0.0175), the 24.0-h peak 4th. The conclusion says
+      the 4-h peak is weak evidence.
+  - claim: edfig2-refractory-period
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 44: the shortest interval is 28.8-39.2 ms in all 22 rats, and 0 of 22 fall in 18-22 ms.
+      Only one reading was run (B5): start-to-start and stop-to-start were possible; the floor of
+      about 29-39 ms with zero counts below 20 ms suggests an event-merging rule in the detection,
+      which was not checked. Minor claims-file misreading: the legend shows auto-correlograms of all
+      inter-ripple intervals, not a histogram.
+    response: >-
+      Outcome kept under the criterion's peak-to-peak reading. Added start-to-start, stop-to-stop and
+      stop-to-next-start: the stop-to-next-start gap has its minimum at exactly 20.0 ms in 19 of 22
+      rats, which matches the merging of neighbouring events in the Methods' detection; the notes and
+      a finding say so. The detection parameters are not stored with the tables (now printed). The
+      histogram reading and the time point are asked of a reader in questions/000233.yaml.
+  - claim: edfig3e-ca1-firing-decrease
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (data_missing). There are no units tables (cell 4), and the archive's variableMeasured
+      lists no Units.
+    response: >-
+      No change needed.
+  - claim: edfig4-fasting-fed
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (data_missing). No meal times.
+    response: >-
+      No change needed.
+  - claim: edfig4-nrem-wake
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 46: no test gives p < 0.05 (blocks p = 0.057; paired p = 0.27; transitions p = 0.15 and
+      0.23). Only 3 of the paper's 8 rats, so the test of absence has little power.
+    response: >-
+      No change needed.
+  - claim: edfig4-no-hour-differs
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 48: smallest Student's t-test p = 0.010, with 10 of 276 pairs below 0.05. The paper gives a
+      minimum P of 0.53. B8: np.nansum turns a rat-hour with no valid correlation into 0 instead of
+      NaN; with 276 uncorrected pairs, 10 below 0.05 is fewer than chance alone would give, so the
+      outcome reflects the criterion's design as much as the data.
+    response: >-
+      Outcome kept. A rat-hour with any correlation missing is now left out (3 of 288), with the same
+      smallest p and count. The notes give the 13.8 pairs expected by chance and say the bound is hard
+      to meet with this many uncorrected tests.
+  - claim: edfig6-ripple-rate-best-predictor
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (too_large, contested). Not attempted (B3): the timing printed is 4.3 h of LFP plus 1.6
+      h of accelerometer, about 6 h serial, while the markdown says about 9 h; the 0.5 h limit is the
+      notebook's own, and the reading was not parallelized although read_all already uses 16
+      processes; a subset matching the paper's 8 rats was not tried, so three claims are left untested
+      on a weak basis.
+    response: >-
+      Outcome kept. The markdown now matches the printed timing, and the notebook times 8 pieces read
+      at once in 4 processes (the cores of the machine that runs it) and scales them to all 18 rats,
+      to the 8 rats with the most hours and to the 3 rats whose brain state is stored. Each estimate
+      exceeds the 30-min limit at which the registry's runner fails a notebook (in the final run about
+      203, 172 and 66 min for the reading alone), and 15 of the 18 rats would first need sleep
+      scoring.
+  - claim: edfig6d-pairwise-predictors
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (too_large, contested). Not attempted (B3): the timing printed is 4.3 h of LFP plus 1.6
+      h of accelerometer, about 6 h serial, while the markdown says about 9 h; the 0.5 h limit is the
+      notebook's own, and the reading was not parallelized although read_all already uses 16
+      processes; a subset matching the paper's 8 rats was not tried, so three claims are left untested
+      on a weak basis.
+    response: >-
+      Outcome kept. The markdown now matches the printed timing, and the notebook times 8 pieces read
+      at once in 4 processes (the cores of the machine that runs it) and scales them to all 18 rats,
+      to the 8 rats with the most hours and to the 3 rats whose brain state is stored. Each estimate
+      exceeds the 30-min limit at which the registry's runner fails a notebook (in the final run about
+      203, 172 and 66 min for the reading alone), and 15 of the 18 rats would first need sleep
+      scoring.
+  - claim: edfig6ef-latent-variables
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (too_large, contested). Not attempted (B3): the timing printed is 4.3 h of LFP plus 1.6
+      h of accelerometer, about 6 h serial, while the markdown says about 9 h; the 0.5 h limit is the
+      notebook's own, and the reading was not parallelized although read_all already uses 16
+      processes; a subset matching the paper's 8 rats was not tried, so three claims are left untested
+      on a weak basis.
+    response: >-
+      Outcome kept. The markdown now matches the printed timing, and the notebook times 8 pieces read
+      at once in 4 processes (the cores of the machine that runs it) and scales them to all 18 rats,
+      to the 8 rats with the most hours and to the 3 rats whose brain state is stored. Each estimate
+      exceeds the 30-min limit at which the registry's runner fails a notebook (in the final run about
+      203, 172 and 66 min for the reading alone), and 15 of the 18 rats would first need sleep
+      scoring.
+  - claim: fig3d-induced-ripples-lower-glucose
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (data_missing). No stimulation times. The archive's variableMeasured has no optogenetic
+      series, and no subject metadata names opto or PPC rats. Not checked: whether /intervals,
+      /stimulus, general/optogenetics or the electrode and channel names of ElectricalSeriesRaw hold
+      condition data.
+    response: >-
+      No change of outcome. The data check now prints the full description strings, every group under
+      /intervals, /stimulus, /analysis, /processing and /general, and the electrode columns, locations
+      and channel names of all 345 files: /intervals is absent, /stimulus and /analysis are empty, and
+      channels are named by number, so no stimulation or TTL channel is stored.
+  - claim: fig3-induced-effect-size
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (data_missing). No stimulation times. The archive's variableMeasured has no optogenetic
+      series, and no subject metadata names opto or PPC rats. Not checked: whether /intervals,
+      /stimulus, general/optogenetics or the electrode and channel names of ElectricalSeriesRaw hold
+      condition data.
+    response: >-
+      No change of outcome. The data check now prints the full description strings, every group under
+      /intervals, /stimulus, /analysis, /processing and /general, and the electrode columns, locations
+      and channel names of all 345 files: /intervals is absent, /stimulus and /analysis are empty, and
+      channels are named by number, so no stimulation or TTL channel is stored.
+  - claim: fig3ef-stimulation-dose-response
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (data_missing). No stimulation times. The archive's variableMeasured has no optogenetic
+      series, and no subject metadata names opto or PPC rats. Not checked: whether /intervals,
+      /stimulus, general/optogenetics or the electrode and channel names of ElectricalSeriesRaw hold
+      condition data.
+    response: >-
+      No change of outcome. The data check now prints the full description strings, every group under
+      /intervals, /stimulus, /analysis, /processing and /general, and the electrode columns, locations
+      and channel names of all 345 files: /intervals is absent, /stimulus and /analysis are empty, and
+      channels are named by number, so no stimulation or TTL channel is stored.
+  - claim: fig3f-stimulation-vs-shuffle
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (data_missing). No stimulation times. The archive's variableMeasured has no optogenetic
+      series, and no subject metadata names opto or PPC rats. Not checked: whether /intervals,
+      /stimulus, general/optogenetics or the electrode and channel names of ElectricalSeriesRaw hold
+      condition data.
+    response: >-
+      No change of outcome. The data check now prints the full description strings, every group under
+      /intervals, /stimulus, /analysis, /processing and /general, and the electrode columns, locations
+      and channel names of all 345 files: /intervals is absent, /stimulus and /analysis are empty, and
+      channels are named by number, so no stimulation or TTL channel is stored.
+  - claim: edfig7ab-stimulation-protocol
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (data_missing). No stimulation times. The archive's variableMeasured has no optogenetic
+      series, and no subject metadata names opto or PPC rats. Not checked: whether /intervals,
+      /stimulus, general/optogenetics or the electrode and channel names of ElectricalSeriesRaw hold
+      condition data.
+    response: >-
+      No change of outcome. The data check now prints the full description strings, every group under
+      /intervals, /stimulus, /analysis, /processing and /general, and the electrode columns, locations
+      and channel names of all 345 files: /intervals is absent, /stimulus and /analysis are empty, and
+      channels are named by number, so no stimulation or TTL channel is stored.
+  - claim: edfig7jm-induced-ripples-decoupled
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (data_missing). No stimulation times. The archive's variableMeasured has no optogenetic
+      series, and no subject metadata names opto or PPC rats. Not checked: whether /intervals,
+      /stimulus, general/optogenetics or the electrode and channel names of ElectricalSeriesRaw hold
+      condition data.
+    response: >-
+      No change of outcome. The data check now prints the full description strings, every group under
+      /intervals, /stimulus, /analysis, /processing and /general, and the electrode columns, locations
+      and channel names of all 345 files: /intervals is absent, /stimulus and /analysis are empty, and
+      channels are named by number, so no stimulation or TTL channel is stored.
+  - claim: edfig7-ppc-stimulation-no-effect
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (data_missing). No stimulation times. The archive's variableMeasured has no optogenetic
+      series, and no subject metadata names opto or PPC rats. Not checked: whether /intervals,
+      /stimulus, general/optogenetics or the electrode and channel names of ElectricalSeriesRaw hold
+      condition data.
+    response: >-
+      No change of outcome. The data check now prints the full description strings, every group under
+      /intervals, /stimulus, /analysis, /processing and /general, and the electrode columns, locations
+      and channel names of all 345 files: /intervals is absent, /stimulus and /analysis are empty, and
+      channels are named by number, so no stimulation or TTL channel is stored.
+  - claim: edfig8-lateral-septum-rectified
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (data_missing). No units.
+    response: >-
+      No change needed.
+  - claim: edfig9-dorsal-ventral
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (data_missing). Only Vanessa has ventral SPW-Rs with glucose, on 2 days. The rate-
+      correlation part can be tested: r = 0.13, 0.44 and 0.83 in 3 rats. In Vanessa the per-day dorsal
+      R is positive (0.115, 0.239), the opposite of the main claim.
+    response: >-
+      blocked_by changed from other to data_missing, as the verifier gives: the glucose recorded with
+      the electrophysiology is missing for two of the three dorsal and ventral rats.
+  - claim: fig4-cno-controls-no-change
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (metadata_insufficient). DREADD recordings may be in the files, but subject metadata has
+      no genotype or cohort. Session descriptions say only Consult Supplementary Table 1 or no
+      description. That table has no subject names, and there are no CNO, vehicle or injection labels.
+    response: >-
+      No change needed; the full description strings are now printed in the data check.
+  - claim: fig4-ls-dreadd-decouples
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (metadata_insufficient). DREADD recordings may be in the files, but subject metadata has
+      no genotype or cohort. Session descriptions say only Consult Supplementary Table 1 or no
+      description. That table has no subject names, and there are no CNO, vehicle or injection labels.
+    response: >-
+      No change needed; the full description strings are now printed in the data check.
+  - claim: fig4-ls-dreadd-chance-level
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (metadata_insufficient). DREADD recordings may be in the files, but subject metadata has
+      no genotype or cohort. Session descriptions say only Consult Supplementary Table 1 or no
+      description. That table has no subject names, and there are no CNO, vehicle or injection labels.
+    response: >-
+      No change needed; the full description strings are now printed in the data check.
+  - claim: fig4e-dreadd-time-course
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (metadata_insufficient). DREADD recordings may be in the files, but subject metadata has
+      no genotype or cohort. Session descriptions say only Consult Supplementary Table 1 or no
+      description. That table has no subject names, and there are no CNO, vehicle or injection labels.
+    response: >-
+      No change needed; the full description strings are now printed in the data check.
+  - claim: fig4c-medial-septum-no-effect
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (metadata_insufficient). DREADD recordings may be in the files, but subject metadata has
+      no genotype or cohort. Session descriptions say only Consult Supplementary Table 1 or no
+      description. That table has no subject names, and there are no CNO, vehicle or injection labels.
+    response: >-
+      No change needed; the full description strings are now printed in the data check.
+  - claim: edfig10-expression-correlates-effect
+    agrees: true
+    outcome: blocked
+    reason: >-
+      blocked (metadata_insufficient; scores data_missing). As for the DREADD claims; the histology
+      scores exist only in the figure.
+    response: >-
+      No change needed.
