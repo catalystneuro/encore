@@ -7,8 +7,8 @@ contour images. The 2p imaging and holography data of the paper are not in it.
 
 | Claims | Outcome |
 |---|---|
-| 14 Neuropixels claims (unit counts, functional subsets, fixed gaze, eye, cross-correlograms, decoding, population responses) | Reproduced (ed6b, ed2b and fig2d rest on an assumption; for fig2d a change to blocked, methods_underspecified, is proposed, as one of eight combinations does not meet the criterion as written) |
-| fig3d-npx-areas-inference | Partially reproduced (four areas significant under the adopted decoder reading with the first seed, five under the other reading with every seed and under the adopted reading with two further seeds; a change to reproduced is proposed) |
+| 14 Neuropixels claims (unit counts, functional subsets, fixed gaze, eye, decoding, population responses) | Reproduced (ed6b, ed2b and fig3d rest on an assumption; fig3d meets the criterion with two of three seeds under the adopted decoder reading and with every seed under the other) |
+| fig2d-npx-ccg-hva-input | Blocked: methods_underspecified (7 of 8 combinations of the criterion meet it; in the eighth the medians are equal; the effect is present in all 8) |
 | fig1e, fig1f, fig1g (exclusively center-responsive V1 units) | Not reproduced (44 or 52 units against 18) |
 | supp3-decoder-types | Blocked: too_large (the network); the quadratic and RBF SVMs agree with the linear SVM |
 | 21 claims on 2p imaging, mesoscope and holography | Blocked: data_missing |

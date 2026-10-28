@@ -161,39 +161,22 @@ outcomes:
   - The paper names no test for the absence of systematic differences; the criterion's Friedman test is
     a reader's choice.
 - claim: fig2d-npx-ccg-hva-input
-  outcome: reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_shin_2025.ipynb
   output: claim:fig2d-npx-ccg-hva-input
   measured:
   - 79
   - 526
-  assumed: true
-  proposed:
-    outcome: blocked
-    blocked_by: methods_underspecified
-    reason: The criterion requires a higher median for IC-encoders and p < 0.05 under every combination,
-      and sends the claim to blocked (methods_underspecified) when the readings differ. A cell added after
-      the CCG table applies this rule as written; 7 of 8 combinations meet it, and boxcar smoothing with
-      the raw flank and the number of connections does not (medians 1 and 1). Equal medians are not a
-      higher median, so the criterion decides that combination and leaves no tie to break; the tie-break
-      of the recorded outcome departs from the criterion as written, as the verifier said in both rounds.
-      The effect itself is present in every combination (P(IC-encoder > segment responder) 0.62 to 0.64,
-      p from 1.0e-05 to 3.9e-04).
   notes: The groups hold 79 V1 IC-encoders and 526 V1 segment responders, the paper's numbers. In all
     8 combinations of smoothing (boxcar, Gaussian), flank (raw, corrected) and measure (fraction, number
     of connected HVA units), IC-encoders have the larger mean and P(IC-encoder > segment responder) from
     0.62 to 0.64, with a tie-corrected two-sided rank-sum p from 1.0e-05 to 3.9e-04 (paper 7.0e-06). The
     medians are higher for IC-encoders in 7 combinations; for the number of connections with boxcar smoothing
-    and the raw flank they are equal (1 and 1). Applying the criterion as written, 7 of 8 combinations
-    meet it, so the readings differ; a change to blocked (methods_underspecified) is proposed.
+    and the raw flank they are equal (1 and 1, p = 9.8e-05). The criterion requires a higher median and
+    p < 0.05 under every combination; 7 of 8 meet it, so the readings differ and the criterion sends the
+    claim to blocked (methods_underspecified). The effect the claim describes is present under every combination.
   deviations:
-  - Assumption. The criterion asks for a higher median under every combination. For one combination the
-    integer medians tie at 1; the recorded outcome treats this as a criterion unable to decide and breaks
-    the tie by the direction of the rank-sum test, the paper's test, which favours IC-encoders (P = 0.63,
-    p = 9.8e-05). The rule followed is docs/protocol.md, reader step 3, "If a criterion turns out unable
-    to decide (two candidates tied), break the tie as the paper's methods or code imply, record it as
-    a deviation, and show the other result." The verifier judged the claim blocked on the literal rule,
-    and the change is proposed.
   - The per-pair normalisation by the square root of the spike counts is left out; it does not change
     the comparison of a pair's peak with its own flank.
 - claim: fig3a-npx-v1-decoding
@@ -224,30 +207,21 @@ outcomes:
     partly did not converge (12 to 17 of 36 per C value), and the one-vs-all coding changed the best inner
     accuracy by -0.012 to 0.024 (decoding_checks_shin_2025.ipynb).
 - claim: fig3d-npx-areas-inference
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: decoding_shin_2025.ipynb
   output: claim:fig3d-npx-areas-inference
   assumed: true
-  proposed:
-    outcome: reproduced
-    reason: Under the adopted reading (b), the two further cross-validation seeds each give five significant
-      areas with LM, V1 and AL the three largest mean scores, which meets the criterion (seed +100000 V1,
-      LM, RL, AL and PM, PM p = 0.0425, AM p = 0.083; seed +200000 V1, LM, RL, AL and AM, AM p = 0.0186,
-      PM p = 0.052; decoding_seed1_shin_2025.ipynb, decoding_seed2_shin_2025.ipynb). Reading (a) meets
-      it with all three seeds. The criterion is met in five of the six runs, and the recorded partial outcome
-      rests on the first seed under reading (b), where PM (0.077) and AM (0.083) fall just above 0.05.
-      The partition seed is not a method choice, so the outcome most runs give is proposed. Which of PM
-      and AM is significant changes with the seed.
-  notes: 'The decoder readings differ. Under reading (b), adopted, four areas decode TRE as IC significantly
-    more than as LC (V1 p = 0.0024, LM 0.0156, RL 0.0049, AL 0.0020; PM 0.077, AM 0.083), and LM, V1 and
-    AL have the three largest mean scores (0.346, 0.308, 0.285): three or four areas significant gives
-    a partial reproduction. Under reading (a), five areas are significant (V1, LM, RL, AL and AM; PM p
-    = 0.092) and V1, LM and AL are the three largest, which meets the criterion; two further seeds give
-    the same five areas. Reading (b) with the two further seeds gives five significant areas each, V1,
-    LM, RL, AL and PM (AM p = 0.083) and V1, LM, RL, AL and AM (PM p = 0.052), with LM, V1 and AL the three
-    largest, so a change to reproduced is proposed. The statement names PM as significant and AM as not;
-    that set appears only with reading (b) and seed +100000. Sessions per area 12, 8, 11, 10, 12, 11, as
-    in the paper.'
+  notes: 'Under reading (b), adopted, the first seed gives four areas that decode TRE as IC significantly
+    more than as LC (V1 p = 0.0024, LM 0.0156, RL 0.0049, AL 0.0020; PM 0.077, AM 0.083), with LM, V1 and
+    AL the three largest mean scores (0.346, 0.308, 0.285). The two further seeds give five significant
+    areas each, V1, LM, RL, AL and PM (PM p = 0.0425, AM p = 0.083) and V1, LM, RL, AL and AM (AM p = 0.0186,
+    PM p = 0.052), with LM, V1 and AL the three largest. Under reading (a), five areas are significant
+    with all three seeds (V1, LM, RL, AL and AM; PM p = 0.092 with the first seed) and V1, LM and AL are
+    the three largest. The criterion is met in five of six runs. V1, LM, RL and AL are significant and
+    LM, V1 and AL the three largest in all six; only the fifth area changes, and PM p runs from 0.0425
+    to 0.092 and AM p from 0.0020 to 0.083. The statement names PM as significant and AM as not; that set
+    appears only with reading (b) and seed +100000, and the criterion counts areas without naming them.
+    Sessions per area 12, 8, 11, 10, 12, 11, as in the paper.'
   deviations:
   - Assumption. The Methods do not say how the SVM hyperparameters were set; the paper's code chooses
     them with OptimizeHyperparameters. Reading (b), C chosen by an inner cross-validation, is adopted
@@ -257,6 +231,11 @@ outcomes:
     per C value), and the one-vs-all coding changed the best inner accuracy by -0.026 to 0.027, which
     could change the chosen coding in some sessions; its effect on the inference scores was not computed
     (decoding_checks_shin_2025.ipynb). Asked of the authors under findings (methods_unavailable).
+  - Assumption. The cross-validation partition is random, and reading (b) meets the criterion with two
+    of three seeds (the first seed gives four significant areas). The outcome follows the majority of
+    the seeds, a rule chosen after the first seed's result and not stated in the criterion. A rule requiring
+    every seed would give partially reproduced; averaging the per-session scores over the seeds was not
+    computed.
   - The decoder is scikit-learn's libsvm SVM, not MATLAB's fitcecoc.
 - claim: ed7b-npx-xre-inference
   outcome: reproduced
@@ -1111,3 +1090,46 @@ verifications:
     outcome: blocked
     reason: Agrees (data_missing; the 2p, mesoscope and holography data are not in the dandiset).
     response: No change.
+- date: '2026-10-28'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The two proposed changes of outcome (fig2d to blocked, fig3d to reproduced) and the
+    analysis behind them in the executed notebooks after the round-2 revision (reproduce cells 51 and
+    53, decoding cells 14 and 15, checks cell 8, seed1 and seed2 cell 8), with the claims file and the
+    paper. Nothing else was reviewed. Report in transcripts/000248/verifier-3-report.md.
+  results:
+  - claim: fig2d-npx-ccg-hva-input
+    agrees: true
+    outcome: blocked
+    reason: Reproduce cell 53 applies the criterion as written. A combination meets it when IC-encoders
+      have a strictly higher median and the tie-corrected rank-sum p is below 0.05. Seven of the eight
+      combinations meet it. The one that does not is boxcar smoothing with the raw flank, measured as number
+      of connections, where the medians are 1 and 1 (p = 9.8e-05). The criterion sends readings that differ
+      to blocked (methods_underspecified), so the proposal follows it. The groups hold 79 IC-encoders and
+      526 segment responders, P(IC-encoder > segment responder) is 0.62 to 0.64 and tie-corrected p runs
+      from 1.0e-05 to 3.9e-04. No choice was made to reach the result. The substance still supports the
+      paper's direction under every combination, and the record says so.
+    response: Outcome changed to blocked (methods_underspecified) and the proposal removed. The tie-break
+      assumption and its deviation are removed, as the outcome no longer rests on them. The notebook's
+      result cell and summary, the README and the notes now give the blocked outcome with the effect present
+      in all 8 combinations.
+  - claim: fig3d-npx-areas-inference
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with a reservation. The proposed numbers match the notebooks, and the criterion is met
+      in 5 of 6 runs. The partition seed is random cross-validation noise, not a method choice. V1, LM,
+      RL and AL are significant every time and LM, V1 and AL are always the three largest; only the fifth
+      area changes, and it sits near the threshold either way (PM p 0.0425 to 0.092, AM p 0.0020 to 0.083).
+      Deciding by the majority of seeds is a rule added after the first-seed result, and it is not in the
+      criterion. A rule requiring every seed under reading (b) would keep the claim partial. The rule should
+      be recorded as an assumption in the fig3d deviations. Averaging per-session scores over seeds would
+      be a more principled rule, but it was not computed. The statement's pattern, PM significant and AM
+      not, appears in only 1 of the 6 runs; the criterion counts areas and does not name them. The claims
+      file's fig3d criterion still does not say which decoder reading decides. In passing, checks cell
+      16 still gives 4.4 ms per epoch and about 18 hours, where the cell before it showed 3.60 ms and about
+      15 h.
+    response: Outcome changed to reproduced and the proposal removed. The majority-of-seeds rule is now
+      a deviation marked as an assumption, saying it was chosen after the first seed's result, that a rule
+      requiring every seed would give partially reproduced, and that averaging over seeds was not computed.
+      The notes give all six runs and the parts that are stable across them. Decoding cell 15 and the summaries
+      say the same. Checks cell 16 now refers to the printed timing and gives the range seen across runs.
