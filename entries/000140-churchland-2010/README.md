@@ -21,7 +21,7 @@ single-electrode datasets of monkeys A, B and J and its EMG are not in the dandi
 | Summary ranking across monkeys A, B and J (Figure 6E) | Blocked: data missing |
 | 7 to 10 dimensions capture 90% of preparatory variance | Not reproduced |
 | Shuffled peri-movement space performs poorly | Reproduced (weak) |
-| Window start can slide to movement onset (97% of performance) | Not reproduced |
+| Window start can slide to movement onset (97% of performance) | Not reproduced (assumption) |
 | Tuning correlation does not depend on AP location, J-array | Reproduced (assumption) |
 | The same for monkeys A, B and J | Blocked: data missing |
 | Peri-movement space works at anterior and posterior sites | Blocked: other (normalisation undefined) |

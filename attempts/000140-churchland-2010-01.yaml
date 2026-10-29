@@ -80,7 +80,9 @@ outcomes:
     noise of the same 1 to 4 trials and the preparatory window ends about 220 ms before onset. With the
     two means from disjoint trials the correlation at -200 ms is only 0.12 to 0.18 for all units, and
     the criterion is met in 4 of 12 readings (fig4 units) and 9 of 12 (all units). Under O1 SD (3 to 8
-    units) the value at onset is 0.091 to 0.244, partially reproduced in 10 of 12 readings.
+    units) the value at onset is 0.091 to 0.244, partially reproduced in 11 of 12 readings; in the
+    twelfth (O3a, O4a, O2 ii, 5 units) r at onset is 0.091 but the largest drop starts at +90 ms, so it
+    is neither a pass nor a partial.
   deviations:
   - Assumed O1 is the range across conditions (see fig4-broad-near-zero).
   - The time axis uses go-locked means from -200 to +200 ms and movement-locked means from -400 to
@@ -95,8 +97,9 @@ outcomes:
     main normalised reading; -0.175 to 0.295 over readings), with the strongest trace on top at -150
     ms. Trial noise also meets the criterion. With condition labels shuffled it is met in 11 of 20
     shuffles, and with the preparatory and movement-locked means from disjoint trials in 2 of 12
-    readings, so the strongest trace being on top at -150 ms comes mostly from noise shared within the
-    same trials, and the pass carries little evidence.
+    readings. This suggests that the strongest trace being on top at -150 ms comes mostly from noise
+    shared within the same trials, but does not show it, as each disjoint half uses about half the
+    trials and the added noise could also hide a real effect. The pass carries little evidence.
   deviations:
   - Each unit is normalised by its maximum condition-mean rate over the go-locked and movement-locked
     spans stored (-300 to +200 ms and -400 to +900 ms); the legend says "normalizing each neuron's
@@ -200,6 +203,7 @@ outcomes:
     0.041 against an intact 0.129 to 0.249.
 - claim: fig7b-window-start-slide
   outcome: not_reproduced
+  assumed: true
   notebook: reproduce_churchland_2010.ipynb
   output: claim:fig7b-window-start-slide
   measured: 0.501
@@ -209,6 +213,9 @@ outcomes:
     ratio is undefined; it falls from there to -0.059 to -0.046 at onset. Only the monkey J value under
     reading (a) can be computed; the monkeys A and B value (0.94) is not in the dandiset.
   deviations:
+  - Assumed O1 SD (O1b). Under the O1 range reading adopted elsewhere (see fig4-broad-near-zero)
+    performance at -150 ms is below zero and the ratio is undefined, so the outcome rests on the O1b
+    readings (7 or 8 units) alone.
   - Start times -150 to +100 ms in 50 ms steps, end fixed at +800 ms, best k up to 14 for each start
     (Figure 7B legend, "the best dimensionality for that dataset/start-time").
 - claim: ap-location-no-effect-j-array
@@ -245,7 +252,8 @@ outcomes:
     -1.454 and -1.293 from all units, against -1.008 and -1.400 for random halves. Under O1 SD (4 and
     4 units) the upper limits are positive (0.145 and 0.184) but the 6-D performance is not
     (normalised -12.048 and -2.915, random halves -7.282), so a threshold at 70% of the random-half
-    value has no meaning either. Which half is anterior is also not known
+    value has no meaning either. Under O1 SD the upper limit of all 8 units (0.123) is also below the
+    best peri-movement performance (0.209), so it is not a ceiling. Which half is anterior is also not known
     (prep-activity-more-anterior); with prefix 1 as PMd the anterior half is lower in raw
     performance, with the arrays swapped higher.
   deviations:
@@ -282,7 +290,7 @@ outcomes:
   deviations:
   - The paper does not give the scale of task-space axes, which sets a PD's direction when units are
     mixed (mm and mm/s); raw and z-scored axes are both run and agree on the segment-directions
-    comparison in 23 of 24 readings.
+    comparison in 11 of 12 pairs (they differ under O1 SD with O3a and O4b).
   - Draws in which the unit's rate is the same in all drawn conditions (a zero PD) are dropped; 100
     repeats per unit, the claim's standard choice.
 - claim: fig8-linear-dynamics-simulation
@@ -403,9 +411,7 @@ verifications:
     reason: 64 runs reproduced and 32 partial (initial vel. >= peri under O3/O4 a,b / b,a / b,b). The
       criterion needs every reading to hold. Under O1a every space has negative performance, and the
       gaps are about 0.005; peri vs kinematic p=0.62 and peri vs initial vel. p=0.81. No per-reading
-      SEs or paired tests were output (problem 3). The peri T matrix uses all 142 recorded units,
-      untuned ones included; the Methods' "all neurons" could mean recorded or included neurons, and
-      only the first reading was run (problem 6).
+      SEs or paired tests were output.
     response: Outcome changed from reproduced to partially_reproduced, as the criterion asks that it
       hold under each reading. Added per-reading SEs and paired t-tests (no reading has the
       peri-movement space better at p < 0.05, p 0.47 to 0.98), the T matrix of the included units as
@@ -512,3 +518,137 @@ verifications:
       is never applied (problem 7).
     response: Outcome kept. The hold parameter is removed from simulate_rotation and its docstring
       says why no hold is simulated; the deviation about a hold is removed from the record.
+- date: 2026-10-29
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook), verifier-2
+  reviewed: The full executed notebook of the first revision, with its conclusions and summary, the
+    helper module, the README, the attempt record and the claims file, with the paper under paper/.
+  results:
+  - claim: fig4d-mean-correlation-j-array
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The values in the conclusion match the printed numbers.
+    response: None needed.
+  - claim: fig4abc-mean-correlation-other-datasets
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: None needed.
+  - claim: fig4-broad-near-zero
+    agrees: true
+    outcome: not_reproduced
+    reason: O1a is stated and reasonable. The O1b passes rest on 3 to 5 units.
+    response: None needed.
+  - claim: fig4e-correlation-time-course
+    agrees: true
+    outcome: reproduced
+    reason: Agrees on the criterion only. O1a is stated and reasonable. The noise control shows the
+      pass is mostly shared trial noise; with disjoint trials the fig4 units have r at -200 ms of only
+      0.02 to 0.145, and 4 of 12 readings pass, which the record says. The text says O1b is partially
+      reproduced in 10 of 12 readings, but the table shows 11 of 12 marked partial; the 12th (O3a,
+      O4a, sd, ii; r at onset 0.091, drop starting at +90 ms) is neither a pass nor a partial.
+    response: Corrected to 11 of 12 in the conclusion and the notes, and the twelfth reading is
+      described as neither a pass nor a partial.
+  - claim: suppfig1-population-averages-lose-tuning
+    agrees: true
+    outcome: reproduced
+    reason: Agrees on the criterion only. That the strongest trace on top at -150 ms comes mostly from
+      noise shared within the same trials is an inference, not something shown; the disjoint halves
+      also use about half the trials, so the extra noise could hide a real effect. "Suggests" would be
+      accurate.
+    response: The conclusion and the notes now say the disjoint-trial result suggests this but does not
+      show it, and give the reason the verifier gives.
+  - claim: fig6d-perimovement-best-j-array
+    agrees: true
+    outcome: partially_reproduced
+    reason: O1a is stated and reasonable. Under O1a both T-matrix readings give reproduced or partial
+      in every setting, so O1a alone carries the outcome. The round-1 reason recorded for this claim
+      included problem 6, which the verifier had marked as not affecting a conclusion.
+    response: The round-1 reason no longer includes problem 6. The Summary sentence on the SD reading,
+      which said the peri-movement space performs best on those units, now says it has the highest mean
+      in 5 of 6 O3/O4 settings (with O3b and O4b the kinematic space is higher, 0.134 against 0.129)
+      and that no difference is significant (p 0.47 to 0.98). For "clearer tuning", which no output
+      showed, cell 11 now prints the split-half reliability of the SD units (median 0.57 against 0.20
+      over all units), and the Summary cites it, noting the units are selected on the same trials.
+  - claim: fig6abc-perimovement-best-other-datasets
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: None needed.
+  - claim: fig6-perimovement-best-each-dimensionality
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: None needed.
+  - claim: fig6-maze-endpoint-speed-space-poor
+    agrees: true
+    outcome: not_reproduced
+    reason: O1a is stated and reasonable.
+    response: None needed.
+  - claim: fig6-dimensionality-trend
+    agrees: true
+    outcome: not_reproduced
+    reason: O1a is stated and reasonable.
+    response: None needed.
+  - claim: fig6e-summary-rank
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: None needed.
+  - claim: prep-dimensionality-7-to-10
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: None needed.
+  - claim: fig7a-shuffled-space-poor
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, a weak result.
+    response: None needed.
+  - claim: fig7b-window-start-slide
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, but the assumption is not marked. Under the adopted O1a reading the ratio is
+      undefined, so the outcome rests only on the O1b readings (7 to 8 units). Everywhere else O1b is
+      the non-adopted reading. The record should carry assumed true and say that the outcome rests on
+      O1b.
+    response: The outcome now carries assumed true, with a deviation saying it rests on the O1b
+      readings alone because the ratio is undefined under O1a. The conclusion, the Summary and the
+      README say the same.
+  - claim: ap-location-no-effect-j-array
+    agrees: true
+    outcome: reproduced
+    reason: Array identity as AP location is stated, reasonable, and valid under both mappings.
+    response: None needed.
+  - claim: ap-location-no-effect-other-datasets
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: None needed.
+  - claim: fig7c-anterior-posterior-performance
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The O1b upper limit (0.123) is below the peri-movement best (0.209), so it bounds
+      nothing; that affects only fig7c's O1b normalisation, and fig7c is blocked anyway. fig7c is still
+      run on O3a/O4a only, which is stated.
+    response: The conclusion and the notes now say that under O1b the upper limit is below the best
+      peri-movement performance and so is not a ceiling. The O3a/O4a restriction is kept, as the claim
+      is blocked under them.
+  - claim: prep-activity-more-anterior
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: None needed.
+  - claim: fig7d-pd-consistency
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The deviation says raw and z-scored axes agree on the segment-directions comparison
+      in 23 of 24 readings, but there are 12 raw/z pairs, and they agree in 11 of 12; 23 of 24 is the
+      number of rows where the peri-movement space loses.
+    response: The deviation now says 11 of 12 pairs, and names the pair that differs.
+  - claim: fig8-linear-dynamics-simulation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: None needed.
