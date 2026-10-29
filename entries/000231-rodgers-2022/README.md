@@ -20,7 +20,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000231-rodgers-2022-01.yaml`](../../attempts/000231-rodgers-2022-01.yaml).
 
-- `reproduce_rodgers_2022.ipynb`: the analysis. It takes about five minutes, most of it streaming
+- `reproduce_rodgers_2022.ipynb`: the analysis. It takes four to seven minutes (4.1 min in the last run), most of it streaming
   the 115 NWB files in parallel.
 - `rodgers.py`: listing the pinned version, streaming each NWB file and reducing it to per-session
   summaries, reading video headers, and the measures used by the claims. Other notebooks on this

@@ -60,14 +60,17 @@ outcomes:
     sessions, within 0.05 h of 33.8; each session has 64 channel files of equal length. The record
     headers of CH1 show a second, shorter segment in 7 sessions (0.48 to 0.51 s at the start of 6
     files, and in KF134 2018-02-10 a separate recording, number 0, of 39.73 s before the main one,
-    number 1); these 42.8 s are left out as the test recordings. The whole files give 33.782 h, also
-    within. Reading (a), the span of the NWB recordings, gives 33.656 h (-0.42%). The NWB files hold
+    number 1); these 42.8 s are left out. Nothing printed shows they are the test recordings the
+    paper mentions, which it says were a few seconds long, while six of the seven are 14 or 15
+    records under the main segment's recording number; leaving them out is a choice of this
+    attempt. The whole files give 33.782 h, also within, so the outcome does not depend on it. Reading (a), the span of the NWB recordings, gives 33.656 h (-0.42%). The NWB files hold
     56 to 64 channels.
   deviations:
   - The samples of each Open Ephys file are computed from its size (1024-byte header, 2070-byte
-    records of 1024 samples). The test recordings the Data Records mention ("In some cases the
-    Open Ephys file includes test recordings that were just a few seconds long") are found from the
-    first and last record headers and a bisection on the record timestamps of channel CH1, which
+    records of 1024 samples). To leave out segments apart from the main recording, such as the test
+    recordings the Data Records mention ("In some cases the Open Ephys file includes test
+    recordings that were just a few seconds long"), segments are found from the first and last
+    record headers and a bisection on the record timestamps of channel CH1, which
     splits each file where the timestamps break; the longest contiguous segment is taken as the
     main recording.
 - claim: task-rules
@@ -121,10 +124,11 @@ outcomes:
   notes: On 32,085 non-spoiled trials, the first lick at or after the window opening is within 5 ms
     of choice_time on 77.6% (78.0% allowing a lick 5 ms early), below 99% in every session (lowest
     52.5%); its side matches choice on 99.1%. On the 7,185 trials that do not match, choice_time is
-    0 to 5 ms after the window opening on all of them, a lick in the 100 ms before the opening
+    0 to 5 ms after the window opening on 7,183 of them, a lick in the 100 ms before the opening
     precedes it on 84.8%, and a lick lies within 5 ms of choice_time on only 5.7%. This suggests
     that a lick already under way when the window opens is taken as the choice at the opening, which
-    the definition does not say. On all 265 spoiled trials choice_time is NaN, not 45 s after the
+    the definition does not say. Over all 32,085 non-spoiled trials choice_time is 0 to 5 ms after
+    the opening on 7,848 (24.5%), 7,183 of them mismatched. On all 265 spoiled trials choice_time is NaN, not 45 s after the
     window.
 - claim: outcome-consistency
   outcome: reproduced
@@ -220,7 +224,9 @@ outcomes:
   blocked_by: data_missing
   notebook: reproduce_rodgers_2022.ipynb
   notes: All times in the NWB files are in the video timebase, and the dandiset's other files are
-    videos and Open Ephys and Kilosort files; no Arduino log or behavioral timebase is deposited.
+    videos, Open Ephys files and Kilosort/Phy outputs; its 44 .log files are all named phy.log, one
+    in each of 44 sorting folders under sourcedata (printed), so they are spike-sorting logs. No
+    Arduino log or behavioral timebase is deposited.
     The paper does not say where the Arduino times are. The README of the original release on
     Zenodo (ref. 13, doi:10.5281/zenodo.4743837) lists a per-session behavioral_logfile; asked
     whether the claim should use it, a reader answered that the paper never says what that release
@@ -326,7 +332,10 @@ outcomes:
     (variant), the largest fraction is 2.007% for C0 to C3 and 2.008% for C1 to C3, both in KM91
     2016-12-16 (54 of 2,691 and 54 of 2,689 contacts), just above 2%; 1 session (i) or 2 sessions
     (ii) exceed 2%. It would be 1.94% with
-    exclusive stops, which the files rule out.
+    exclusive stops, which the files rule out. Pooled, the result rests on one contact (53 of 2,691
+    would be 1.97%) and on counting a frame absent from the processed series as missing, as the
+    criterion says. Whether the 2% bound is per whisker or pooled over a session's contacts is asked
+    of a reader (questions/000231.yaml); the outcome is tested on the claims file as it is.
   deviations:
   - A contact covers its frames from start to stop inclusive, as duration_frames = frame_stop -
     frame_start + 1 and stop_time = frame_stop x 0.005 s in the files (shown in the notebook).
@@ -423,9 +432,9 @@ findings:
     that Table 6 does not list or describe.
 - kind: metadata_error
   statement: choice_time is NaN on all 265 spoiled trials, where Table 6 says it is 45 s after the
-    window opens. On 22% of the other trials it falls 0 to 5 ms after the window opening with no
-    lick within 5 ms on 94% of them, so it is not the first lick after the window as Table 6
-    defines it.
+    window opens. On the 22% of the other trials where it is not the first lick in the window
+    (7,185 of 32,085), it falls 0 to 5 ms after the window opening on 7,183, with no lick within 5
+    ms of it on 94% of them, so it is not the first lick after the window as Table 6 defines it.
 - kind: metadata_error
   statement: 160 spoiled trials have ignore_trial False, where Table 6 says spoiled trials have it
     True; in the files ignore_trial equals "non-random or optogenetic" on every trial.
@@ -737,4 +746,256 @@ verifications:
     agrees: true
     outcome: blocked
     reason: The claims file gives no method.
+    response: No change.
+- date: '2026-10-29'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the revised run, with its conclusions and summary,
+    the helper module, the README, the attempt record and the claims file, with the paper under paper/.
+    The verifier agreed with all 39 outcomes and asked for text corrections; the README run time and the
+    Method paragraph of cell 0 were also corrected in reply.
+  results:
+  - claim: dataset-size
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the stated outcome. Round-1 problem 7 (container frame count overwritten) is
+      resolved: no video stream reports a frame count (0 of 115).'
+    response: No change.
+  - claim: neural-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: neural-hours
+    agrees: true
+    outcome: reproduced
+    reason: The main recordings give 33.770 h and the whole files 33.782 h, both within 0.05 h of 33.8
+      (cell 17), so the outcome no longer depends on how the test recordings are handled; round-1 problem
+      2 is resolved for the outcome. But six of the seven separate segments are 14 to 15 records (0.48
+      to 0.51 s) with the same recording number (0) as the main segment, the paper describes test recordings
+      as "a few seconds long", and nothing printed shows these segments are test recordings. Leaving them
+      out is a reasonable choice, but cell 18, the Summary and the note state it as a finding. This does
+      not affect the outcome.
+    response: No change of outcome. Cell 18, the Summary, the method of cell 16, the note and the deviation
+      now say the segments are left out as a choice of this attempt, and that nothing printed shows they
+      are the test recordings the paper mentions (six are about 0.5 s under the main recording's number,
+      against the paper's "a few seconds").
+  - claim: task-rules
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. Round-1 problem 5 is resolved: the reading is stated, with
+      a crosstab, and task_from_metadata now uses the description first.'
+    response: No change.
+  - claim: nothing-detection-only
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. Round-1 problem 5 is resolved: the reading is stated, with
+      a crosstab, and task_from_metadata now uses the description first.'
+    response: No change.
+  - claim: one-task-per-mouse
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: servo-positions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: response-window-timing
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: choice-time-first-lick
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome. The Summary and the choice_time finding say "on 22% of other
+      trials it falls 0 to 5 ms after the window opening", but the 22% is the share of mismatched trials
+      (7,185 of 32,085). Cell 34 does not print how many of all non-spoiled trials have choice_time 0
+      to 5 ms after the opening, and matched trials can fall there too. It should read "on the 22% where
+      it is not the first lick in the window, it falls...".
+    response: No change of outcome. Cell 34 now prints that choice_time is 0 to 5 ms after the opening
+      on 7,848 of all 32,085 non-spoiled trials (24.5%), 7,183 of them mismatched. The Summary, the finding
+      and the notes now say it as the verifier proposes. The same output showed that the earlier "on all
+      of them" (cell 35 and the notes) was a rounded 1.000; it is now 7,183 of the 7,185 mismatched trials.
+  - claim: outcome-consistency
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: reward-and-timeout
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the stated outcome. Round-1 problem 3 is resolved: the verdict line, the conclusion
+      and a metadata_error finding now state that right reward equals right licks.'
+    response: No change.
+  - claim: forced-alternation-start
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Cell 44 says "the other 5 sessions begin at trial 61 or later",
+      but cell 43 prints only the first random trial of those 5 sessions (61, 76, 88, 102, 124), not the
+      first trial in each table; the output only shows that those tables start after trial 44. The attempt
+      record says this correctly.
+    response: No change of outcome. Cell 43 now prints the first trial of each of the 5 tables, which
+      is 61, 76, 88, 102 and 124, each that session's first random trial, and cell 44 says the tables
+      begin after trial 44, at those trials.
+  - claim: ignore-trial-definition
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: trials-table-structure
+    agrees: true
+    outcome: not_reproduced
+    reason: 'not_reproduced is correct for the claims file as written. Round-1 problem 6 is open: the
+      outcome depends on how the claims file reads "next trial"; the question is with a reader, and the
+      variant holds on all 32,230 consecutive-number pairs. If the reader adopts the next-trial-run reading,
+      the outcome would become reproduced.'
+    response: No change; the question in questions/000231.yaml awaits a reader, and the outcome stays
+      as tested on the claims file.
+  - claim: video-timebase
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: sync-gap-and-interpolation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: bend-null-interpolated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: neural-timestamps
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: neural-video-alignment
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: behavior-clock-drift
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. The note says the dataset's other files are videos and Open
+      Ephys and Kilosort files, but cell 66 lists 44 .log, 88 .mat, 88 .m and 44 .py files, and the notebook
+      never identifies the .log files. The verifier's round-1 asset query found them to be sorting and
+      acquisition logs; since there are only 44, in ecephys sourcedata only, they cannot be per-session
+      behavioral logs for all 115 sessions. The statement is right, but the printed output does not back
+      it.
+    response: 'No change of outcome. Cell 66 now prints the .log files: 44, all named phy.log, one in
+      each of 44 sorting folders under sourcedata. Cell 65 and the note say so.'
+  - claim: unit-quality-isi
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the stated outcome. Round-1 problems 8 and 9 are resolved: amplitude drift is
+      reported outside the outcome (max 1.47%/min over 893 matched units), and leaving out the 16 units
+      of KF134 2018-02-09 changes no count.'
+    response: No change.
+  - claim: unit-depth-layer
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. Round-1 problem 4 is resolved: it is a case difference only,
+      and 999 of 999 agree once case is ignored (cell 71).'
+    response: No change.
+  - claim: electrodes-order
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: recording-columns
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: units-obs-intervals
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: pose-structure
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: c0-rare-contacts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: session-min-trials
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: session-labeling-quality
+    agrees: true
+    outcome: not_reproduced
+    reason: not_reproduced is now firm; round-1 problem 1 is resolved. The stop frame is inclusive (duration_frames
+      equals frame_stop - frame_start + 1 on all 290,345 contacts, cell 92), and all four readings of
+      the claims file fail. Pooling contacts over the whiskers of a session is not a reading in the claims
+      file and also exceeds 2% (2.007% and 2.008%). The claims file takes the 2% bound per whisker, while
+      the paper's "≤2% of the contact events" of a session reads more naturally as pooled over whiskers.
+      Under the pooled reading the outcome would still be not_reproduced, but it would rest on one contact
+      in one session (54 of 2,691 is 2.007%, 53 would be 1.97%) and on the helper's rule that a frame
+      absent from the processed series counts as missing. The per-whisker reading fails clearly at 7.7%,
+      so the outcome stands as tested.
+    response: No change of outcome. The per-whisker against pooled reading is asked of a reader in questions/000231.yaml,
+      and the notes now say how narrow the pooled result is and that it rests on the absent-frame rule
+      of the criterion.
+  - claim: contacts-structure
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: nwb-structure
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. Round-1 problem 10 is resolved: the Table 4 columns are checked
+      in all 44 files.'
+    response: No change.
+  - claim: file-layout
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: video-format
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: subjects-sex-age-strain
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: tracking-mean-error
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: tracking-error-dataset1
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: tracking-error-challenge
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: prior-task-strategies
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: prior-orthogonal-subspaces
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
     response: No change.
