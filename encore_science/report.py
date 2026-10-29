@@ -16,14 +16,21 @@ KINDS = {"metadata_error": "Metadata error", "data_missing": "Data missing", "id
          "paper_inconsistency": "Paper inconsistency", "other": "Other"}
 
 
+def files_in(directory: Path, pattern: str) -> list[Path]:
+    """The files in a directory that match a pattern, sorted, leaving out hidden ones. On a drive that is not
+    formatted for macOS (exFAT, FAT32, a network share), macOS writes a "._" file beside every file it writes,
+    and "._c.yaml" matches "*.yaml" but is not YAML."""
+    return sorted(p for p in directory.glob(pattern) if not p.name.startswith("."))
+
+
 def latest_attempt(registry: Path, folder: str) -> dict | None:
-    found = sorted((registry / "attempts").glob(f"{folder}-*.yaml"))
+    found = files_in(registry / "attempts", f"{folder}-*.yaml")
     return yaml.safe_load(found[-1].read_text()) if found else None
 
 
 def claims_of(registry: Path, folder: str) -> dict[str, dict]:
     out = {}
-    for path in sorted((registry / "claims" / folder).glob("*.yaml")):
+    for path in files_in(registry / "claims" / folder, "*.yaml"):
         for c in (yaml.safe_load(path.read_text()) or {}).get("claims") or []:
             out[c["id"]] = c
     return out

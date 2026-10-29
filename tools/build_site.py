@@ -60,6 +60,7 @@ SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of papers from 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from datasets import ARCHIVES, archive_name, key_of, split_key, targets as all_targets  # noqa: E402
 from datasets import folder as dir_of, key_of_folder as key_of_dir, label as dataset_label, url as archive_url  # noqa: E402,F401
+import paper_match  # noqa: E402
 
 
 def page_of(key: str) -> str:
@@ -118,7 +119,8 @@ FINDING_KINDS = {
     "paper_inconsistency": "Paper inconsistent",
     "other": "Other",
 }
-STATUS = {"attempted": "Attempted", "pilot": "In the pilot", "open": "Not yet attempted"}
+STATUS = {"attempted": "Attempted", "pilot": "In the pilot", "open": "Not yet attempted",
+          "no_match": "No matching paper"}
 VERIFICATION_TIER = {"agent": "agent_verified", "person": "human_verified",
                      "paper_author": "author_endorsed"}
 CAUTION = "A failure to reproduce is not a finding that the paper is wrong."
@@ -259,14 +261,20 @@ def collect(executed: Path | None = None) -> dict:
     reconcile(attempts)
     attempted = {a["key"] for a in attempts}
     targets = []
+    fixes = paper_match.triage()
     for t in all_targets():
-        papers = [p for p in t["papers"] if not p["preprint"]] or t["papers"]
         key = t["key"]
-        status = "attempted" if key in attempted else "pilot" if key in pilot else "open"
+        # The paper an attempt uses (papers/triage.yaml, papers/match/), else the archive's first publication.
+        match, chosen = paper_match.choose(t, fixes.get(t["folder"], {}), paper_match.load(t["folder"]))
+        titles = {paper_match.clean_doi(p["doi"]): p["title"] for p in t["papers"]}
+        first = ([{"doi": p["doi"], "title": p.get("title") or titles.get(p["doi"])} for p in chosen]
+                 or [p for p in t["papers"] if not p["preprint"]] or t["papers"])[0]
+        status = ("attempted" if key in attempted else "pilot" if key in pilot
+                  else "no_match" if match == "no_match" else "open")
         targets.append({
             "key": key, "label": dataset_label(key), "name": t["name"], "size_gb": t["size_gb"],
             "files": t["asset_count"], "status": status,
-            "paper": papers[0]["doi"], "paper_title": papers[0]["title"] or t["name"],
+            "paper": first["doi"], "paper_title": first["title"] or t["name"],
             "papers": [p["doi"] for p in t["papers"]],
             "n_papers": len(t["papers"]),
             "technique": sorted({part.replace(" approach", "").strip()
@@ -587,10 +595,12 @@ def rows(data: dict) -> dict[str, list]:
         outcomes = [o for a in atts or [] if not a.get("deprecated") for o in a["outcomes"]]
         dandisets.append({
             "id": t["key"], "label": t["label"], "name": t["name"], "paper": t["paper"], "paper_title": t["paper_title"],
-            "technique": t["technique"], "species": t["species"], "size_gb": t["size_gb"], "files": t["files"],
+            "archive": split_key(t["key"])[0], "technique": t["technique"], "species": t["species"], "size_gb": t["size_gb"], "files": t["files"],
             "status": t["status"], "tier": weakest_tier(atts) if atts else None,
             "date": max(a["date"] for a in atts) if atts else None,
             "counts": outcome_counts(atts) if atts else None,
+            # The paper's claims on data outside the dataset, counted apart (outcome_counts), links aside.
+            "elsewhere": sum(sum(outcome_counts(atts, g).values()) for g in ("with_inputs", "elsewhere")) if atts else None,
             "claims": len(outcomes) if atts else None,
             "failures": sum(1 for o in outcomes if o["outcome"] == "not_reproduced") if atts else None,
             "has": sorted({o["outcome"] for o in outcomes}),
@@ -1371,10 +1381,10 @@ def page_about(data: dict) -> str:
 LISTS = {
     "datasets": {
         "title": "Datasets", "noun": "datasets", "data": "data/datasets.json",
-        "intro": "Every public dataset whose metadata names a paper, so far all on the DANDI Archive. Attempted ones open a page with the "
+        "intro": "Every public dataset whose metadata names a paper, on the DANDI Archive and other archives. Attempted ones open a page with the "
                  "claims tested, what was found about the data, and the executed notebook.",
-        "facets": [("status", "Status"), ("has", "Has a claim that is"), ("blocked_by", "Has a claim blocked by"),
-                   ("tier", "Verification"), ("found", "Findings about the data"),
+        "facets": [("status", "Status"), ("archive", "Archive"), ("has", "Has a claim that is"),
+                   ("blocked_by", "Has a claim blocked by"), ("tier", "Verification"), ("found", "Findings about the data"),
                    ("converted", "Converted by"), ("technique", "Technique"), ("species", "Species")],
         "sorts": [("-date", "Most recently attempted"), ("id", "Identifier"),
                   ("-id", "Identifier, newest first"), ("-failures", "Most claims not reproduced"),
@@ -1401,6 +1411,7 @@ def page_list(data: dict, kind: str) -> str:
             "converted": {"catalystneuro": "CatalystNeuro", "other": "Others or not stated"},
             "verifier": {"disagreed": "Disagreed at first", "(none)": "No disagreement"},
             "technique": {"(none)": "Not stated"}, "species": {"(none)": "Not stated"},
+            "archive": {k: a["name"].removeprefix("the ") for k, a in ARCHIVES.items()},
         },
     }
     export = '<button class="ghost" id="export" type="button">Download CSV</button>' if spec["csv"] else ""

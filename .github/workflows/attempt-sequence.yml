@@ -1,6 +1,7 @@
 name: Attempt sequence
 
-# A whole attempt on one dataset, given by its folder name (000147, or <archive>-<id>): the reader's claims and their check (papers.yml), the author,
+# A whole attempt on one dataset, given by its folder name (000147, or <archive>-<id>): the paper match, which goes on only when
+# a paper is the paper behind the data (docs/pipeline.md step 1), the reader's claims and their check (papers.yml), the author,
 # the first verification round,
 # the author's revision, the second round and the final revision, each an Agent
 # run (attempt.yml), and a third round when the final revision proposed changes. Each step starts when the one before has succeeded, so a
@@ -24,7 +25,23 @@ permissions:
   contents: write
 
 jobs:
+  paper-match:
+    uses: ./.github/workflows/papers.yml
+    with: {dataset: "${{ inputs.dataset }}", role: paper-match, model: "${{ inputs.model }}"}
+    secrets: inherit
+  paper-matched:
+    # The claims are read only from a paper whose data the dataset holds.
+    needs: paper-match
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: "attempt/${{ inputs.dataset }}", persist-credentials: false}
+      - run: |
+          pip install -q pyyaml
+          status=$(python tools/paper_match.py status "${{ inputs.dataset }}")
+          [ "$status" = matched ] || { echo "::error::No paper matches the dataset ($status): see papers/match/${{ inputs.dataset }}.yaml"; exit 1; }
   claims:
+    needs: paper-matched
     uses: ./.github/workflows/papers.yml
     with: {dataset: "${{ inputs.dataset }}", role: claims, model: "${{ inputs.model }}"}
     secrets: inherit

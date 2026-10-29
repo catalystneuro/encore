@@ -9,8 +9,9 @@
 DATASET is written any way tools/datasets.py accepts (000003, DANDI:000003, ebrains:<id>); the
 functions below take its folder name.
 
-ROLE is one of author, verifier-1, author-revise-1, verifier-2, author-revise-2,
-the order in which an attempt goes through docs/protocol.md, and verifier-3 and
+ROLE is paper-match, which judges whether each paper the archive names is the paper behind the data
+(docs/pipeline.md, step 1; papers.yml runs it, with claims, claims-check and answer), or one of
+author, verifier-1, author-revise-1, verifier-2, author-revise-2, the order in which an attempt goes through docs/protocol.md, and verifier-3 and
 author-revise-3, the third round that settles changes proposed after the second. A repeat attempt
 then has reconcile, which compares it with the attempt before it: until then its runs are blind to
 earlier attempts (tools/blind.sh). A last role, recorder, writes the finished attempt's notes in docs/pilot-notes/<attempt>.md. The prompts are
@@ -40,7 +41,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import datasets  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-TEMPLATES = {"claims": "claims", "claims-check": "claims-check", "answer": "answer",
+TEMPLATES = {"paper-match": "paper-match", "claims": "claims", "claims-check": "claims-check", "answer": "answer",
              "author": "author", "author-answers": "author-answers",
              "verifier-1": "verifier-1", "author-revise-1": "author-revise",
              "verifier-2": "verifier-2", "author-revise-2": "author-revise",
@@ -56,23 +57,19 @@ def target(dandiset: str) -> dict:
     for t in yaml.safe_load((ROOT / "targets" / "pilot.yaml").read_text())["targets"]:
         if datasets.key_of("dandi", t["dandiset"]) == key:
             return {"paper": t["paper"].removeprefix("doi:"), "title": t["title"]}
-    # The papers the archive names, corrected by hand in papers/triage.yaml: a paper triage names
-    # as the one behind the data comes first, and those it says are not papers are left out.
-    from papers_manifest import clean_doi
-    fix = ((yaml.safe_load((ROOT / "papers" / "triage.yaml").read_text()) or {}).get("targets", {})
-           .get(datasets.folder(key), {}))
-    drop = {clean_doi(d) for d in fix.get("not_papers", {})}
+    # The papers the archive names, corrected by hand in papers/triage.yaml and judged in papers/match/
+    # (tools/paper_match.py): a paper triage names comes first, then the primary papers, then the partial ones.
+    import paper_match
     for t in datasets.targets():
         if t["key"] == key:
-            listed = [dict(p, doi=clean_doi(p["doi"])) for p in t["papers"] if clean_doi(p["doi"]) not in drop]
-            titles = {p["doi"]: p["title"] for p in listed}
-            named = [clean_doi(d) for d in fix.get("papers", {})]
-            if named:
-                return {"paper": named[0], "title": titles.get(named[0]) or t["name"]}
-            if not listed:
-                raise SystemExit(f"error: papers/triage.yaml leaves dataset {datasets.label(key)} no paper")
-            p = next((p for p in listed if not p["preprint"]), listed[0])
-            return {"paper": p["doi"], "title": p["title"] or t["name"]}
+            folder = datasets.folder(key)
+            status, papers = paper_match.choose(t, paper_match.triage().get(folder, {}), paper_match.load(folder))
+            if not papers:
+                raise SystemExit(f"error: no paper matches dataset {datasets.label(key)} ({status}): "
+                                 f"see papers/match/{folder}.yaml")
+            titles = {paper_match.clean_doi(p["doi"]): p.get("title") for p in t["papers"]}
+            p = papers[0]
+            return {"paper": p["doi"], "title": p["title"] or titles.get(p["doi"]) or t["name"]}
     raise SystemExit(f"error: dataset {datasets.label(key)} is not in the queue")
 
 
@@ -132,6 +129,8 @@ def fill(role: str, dandiset: str, model: str, version: str | None = None) -> st
 
 def _fill(role: str, dandiset: str, model: str, version: str | None = None) -> str:
     key = datasets.key_of_folder(dandiset)
+    if role == "paper-match":
+        return paper_match_prompt(dandiset, model)
     # `dandiset` and `folder` name the dataset's folder in the repository; `dataset` is how it is shown.
     details = {"dandiset": dandiset, "folder": dandiset, "dataset": datasets.label(key),
                "archive": datasets.archive_name(key), "access": datasets.access(key),
@@ -209,6 +208,28 @@ def _fill(role: str, dandiset: str, model: str, version: str | None = None) -> s
             raise SystemExit(f"error: {report} does not exist; run verifier-{n} first")
         details.update(round=n, report=report.as_posix())
     return (ROOT / "docs" / "agents" / f"{TEMPLATES[role]}.md").read_text().format(**details)
+
+
+def paper_match_prompt(folder: str, model: str) -> str:
+    """The prompt for the paper match: the papers to judge, and where the dataset's metadata is."""
+    import paper_match
+    key = datasets.key_of_folder(folder)
+    t = paper_match.target_of(folder)
+    papers = paper_match.listed(t, paper_match.triage().get(folder, {}))
+    lines = "\n".join(f'- doi:{p["doi"]}, "{p["title"] or "(no title given)"}"; '
+                      + ("named by a person in papers/triage.yaml: not to judge" if p["named"]
+                         else f'relation {p["relation"] or "(none)"}') for p in papers)
+    archive, id_ = datasets.split_key(key)
+    if archive == "dandi":
+        version = t.get("published_version") or "draft"
+        metadata = f"`curl -s https://api.dandiarchive.org/api/dandisets/{id_}/versions/{version}/`"
+        files = f"`curl -s 'https://api.dandiarchive.org/api/dandisets/{id_}/versions/{version}/assets/?page_size=1000'`, the `path` of each"
+    else:
+        metadata = f"the dataset's page, {datasets.url(key)}, and its entry in targets/ ({datasets.ARCHIVES[archive]['list']})"
+        files = "the file list on its page"
+    return (ROOT / "docs" / "agents" / "paper-match.md").read_text().format(
+        dataset=datasets.label(key), folder=folder, papers=lines, metadata=metadata, files=files,
+        model=model, date=datetime.date.today().isoformat(), **runner())
 
 
 def package(role: str, dandiset: str, dest: Path) -> None:
