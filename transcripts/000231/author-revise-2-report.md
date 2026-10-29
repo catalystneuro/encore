@@ -1,0 +1,14 @@
+None of the 39 outcomes changed, and nothing was proposed for a third round. The verifier agreed with all 39 (23 reproduced, 6 not reproduced, 10 blocked). I re-ran the entry twice with `python tools/entry.py all`: 0 check errors, the notebook passed, and the run took 4.1 min. Every number the conclusions use came out as before.
+
+**What I added or corrected:**
+- **forced-alternation-start:** cell 43 now prints the first trial of the 5 tables that lack trials 0 to 44. They start at trials 61, 76, 88, 102 and 124, and each is also that session's first random trial. Cell 44 now says this.
+- **choice-time-first-lick:** cell 34 now prints that `choice_time` is 0 to 5 ms after the window opens on 7,848 of all 32,085 non-spoiled trials (24.5%), 7,183 of them mismatched. I rewrote the Summary, the `choice_time` finding and the notes as the verifier proposed.
+  - The new output also showed an error the verifier did not raise: cell 35 and the notes said this applied to "all" 7,185 mismatched trials. That came from a rounded 1.000; it is 7,183, and I corrected it.
+- **neural-hours:** cells 16 and 18, the Summary, the note and the deviation no longer call the short Open Ephys segments test recordings. They now say leaving them out is this attempt's choice and that nothing printed shows they are the test recordings the paper mentions.
+- **behavior-clock-drift:** cell 66 now prints the `.log` files. All 44 are named `phy.log`, one in each of 44 spike-sorting folders under `sourcedata/`. Cell 65 and the note say so.
+- **README:** the run time now reads "four to seven minutes (4.1 min in the last run)".
+- **Cell 0, Method paragraph:** it now lists the raw files that are streamed (the CH1 record headers, the `.openephys` indexes and the Kilosort `.npy` files).
+- **session-labeling-quality:** the verifier said the paper's "≤2% of the contact events" reads more naturally as pooled over a session's whiskers, while the claims file applies it per whisker. I added this to `questions/000231.yaml` as a question for a reader and left the claim unchanged. The notes now say the pooled result falls short by one contact (54 of 2,691 is 2.007%; 53 would be 1.97%). That result also depends on counting a frame missing from the processed series as missing.
+- **Round 2 in the attempt record:** recorded under `verifications` for all 39 claims, with the verifier's reasons in its own words and my changes under `response`.
+
+**Not done:** the trials-table-structure question (whether "next trial" means the next table row or the next trial number) is still waiting for a reader. Its outcome stays not_reproduced as tested on the claims file; if the reader adopts the next-trial reading, the verifier says it would become reproduced. I left `tools/runner/chain.sh` as I found it: it was already modified before this run. Nothing is committed.
