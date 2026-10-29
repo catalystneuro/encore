@@ -34,6 +34,19 @@ Where the parameters come from:
   sweep's ISI falls clearly into one bin, which the notebook shows. The ISI is the median silent
   gap between syllables, assigned to the nearest of `ISI_BINS` (the ISIs of the Fig. 2h,i and
   Extended Data Fig. 6e legends, which the claims file adopts).
+- Call onset ("from the start of the call", Methods). The first syllable of many calls is much
+  quieter than the others and falls under the syllable threshold, so the onset is taken
+  separately (`call_onset`): the first sample at which the smoothed microphone envelope exceeds
+  its median by `MIC_ONSET_K` robust s.d. (1.4826 MAD) of the whole sweep. Playback starts at a
+  fixed time in every sweep of a file (the notebook shows it); a sweep whose onset differs from
+  its file's median by more than `MIC_ONSET_TOL_S` takes the file median. A standard choice for
+  finding a sound's start in a quiet recording; the earlier rule (onset of the first syllable
+  above `MIC_THRESHOLD`) is kept as `onset_loud` and run as a variant.
+- Significant evoked PSC, for the Methods' inclusion rule ("Only neurons that exhibited at least
+  five significant prototype-evoked E/IPSCs were used"). The paper does not define a significant
+  PSC. Assumed: a trial whose evoked current, in the expected direction (inward for EPSCs,
+  outward for IPSCs), exceeds `SIG_K` times the s.d. of the same cell's sham measure (the same
+  computation in windows before the call, where nothing was played). k = 2 and 3 are both run.
 - Holding potentials, stimulus sets and notes come from the spreadsheets in the figshare
   articles. Notes "stop @sweep N", "drop @sweep N" keep sweeps before N, "from sweep N" keeps
   sweeps from N; a note "drop" or "block + stop" drops the file (an assumption: the
@@ -44,8 +57,9 @@ Where the parameters come from:
 - Operant touch times (claims file, fig1i-operant-prototypes): the MATLAB task code
   (KAMB_OperantTask_*.m, figshare 13054076 v1) appends to the csv the time (s, `toc`) of every
   polling sample at which the sensor reads a touch. A press is a run of samples; the gap that ends
-  a press is either twice the session's median inter-sample interval or 100 ms (the two readings
-  the claims file names). Duration is last minus first sample of the run.
+  a press is either twice the median inter-sample interval or 100 ms (the two readings the claims
+  file names). The interval is the polling period of the task code, so its median is taken over
+  all sessions, from the part of each session printed at 0.1 ms (`interval_samples`). Duration is last minus first sample of the run.
 - Slice short-term depression (Methods, "In vitro whole-cell recordings"): "The peak amplitude of
   evoked EPSCs and IPSCs were measured and normalized to the event evoked by the first
   stimulation on each trial (Sn/S1)". Peak search window and baseline: `SLICE_PEAK_WIN_S` after
@@ -88,6 +102,11 @@ ISI_BINS = (125, 175, 275, 575)
 MIC_SMOOTH_S = 0.002
 MIC_THRESHOLD = 0.15
 MIC_MERGE_S = 0.025
+MIC_ONSET_K = 6
+MIC_ONSET_TOL_S = 0.02
+SIG_K = (2, 3)
+TRACE_BIN_S = 0.005          # current traces kept at 5 ms bins, for trial averages
+TRACE_WIN_S = (-1.0, 3.0)    # around call onset
 
 _session = requests.Session()
 
@@ -202,6 +221,41 @@ def group_from_description(desc):
 def figshare_article(article_id, version):
     return _session.get(f"https://api.figshare.com/v2/articles/{article_id}/versions/{version}",
                         timeout=60).json()
+
+
+def figshare_collection_titles():
+    """Article id and title of every item of the figshare collection the dandiset links, with the
+    mouse id, experience group, cell class and hemisphere read from titles such as
+    "EV56_Experienced_Exc" or "EV84_Experienced-Right ACtx_Exc". Also returns the collection's
+    pinned-version record."""
+    cid, ver = FIGSHARE_COLLECTION
+    # the API lists the articles of the current version only; the notebook checks that it is
+    # the pinned one and that the counts agree
+    arts, page = [], 1
+    while True:
+        a = _session.get(f"https://api.figshare.com/v2/collections/{cid}/articles",
+                         params={"page": page, "page_size": 100}, timeout=60).json()
+        if not a:
+            break
+        arts += a
+        page += 1
+    rows = []
+    for a in arts:
+        title = a["title"].strip()
+        m = re.match(r"^([A-Za-z]+-?\d+)_(.+)$", title)
+        if not m:
+            rows.append({"article": a["id"], "title": title, "mouse": None})
+            continue
+        rest = m.group(2).lower()
+        group = ("dam" if "dam" in rest else "EV" if "experienced" in rest else
+                 "NV" if "naive" in rest else "unknown")
+        cells = ("pan-neuronal (opto-OT)" if "synapsin" in rest else "inhibitory" if "inh" in rest else
+                 "excitatory" if "exc" in rest else "unknown")
+        rows.append({"article": a["id"], "title": title, "mouse": m.group(1).upper(),
+                     "title_group": group, "title_cells": cells,
+                     "title_hemisphere": "right" if "right" in rest else "not stated"})
+    meta = _session.get(f"https://api.figshare.com/v2/collections/{cid}/versions/{ver}", timeout=60).json()
+    return pd.DataFrame(rows), meta
 
 
 def figshare_files(key):
@@ -345,39 +399,79 @@ def sweep_range(notes, n_sweeps, apply_notes=True):
     return list(range(n_sweeps)), "all"
 
 
+def call_onset(mic, fs):
+    """Start of the sound in a microphone sweep (s): first sample, after the first 50 ms, at which
+    the envelope (2 ms smoothing) exceeds its median by `MIC_ONSET_K` robust s.d."""
+    env = uniform_filter1d(np.abs(mic - np.median(mic)), max(1, int(MIC_SMOOTH_S * fs)))
+    i0 = int(0.05 * fs)
+    e = env[i0:]
+    med = np.median(e)
+    mad = 1.4826 * np.median(np.abs(e - med))
+    above = np.flatnonzero(e > med + MIC_ONSET_K * mad)
+    return (above[0] + i0) / fs if len(above) else np.nan
+
+
+def _binned(y, fs, t0):
+    """Mean current in `TRACE_BIN_S` bins over `TRACE_WIN_S` around t0 (NaN outside the sweep)."""
+    nb = int(round((TRACE_WIN_S[1] - TRACE_WIN_S[0]) / TRACE_BIN_S))
+    w = int(round(TRACE_BIN_S * fs))
+    out = np.full(nb, np.nan, np.float32)
+    start = int(round((t0 + TRACE_WIN_S[0]) * fs))
+    for k in range(nb):
+        a = start + k * w
+        if a >= 0 and a + w <= len(y):
+            out[k] = y[a:a + w].mean()
+    return out
+
+
 def invivo_file_sweeps(b, name):
     """Per sweep: call onset, offset, ISI, baseline and evoked current, from one ABF in memory."""
     abf = abf_from_bytes(b, name)
     fs = abf.dataRate
-    rows = []
+    rows, ys = [], []
     for s in range(abf.sweepCount):
         abf.setSweep(s, channel=1)
-        on, off = syllables(abf.sweepY, fs)
+        mic = abf.sweepY.copy()
+        on, off = syllables(mic, fs)
         abf.setSweep(s, channel=0)
-        y = abf.sweepY
-        row = {"file": name.replace(".abf", ""), "sweep": s, "n_syll": len(on),
-               "holding_current": float(np.median(y))}
-        if len(on) >= 2:
-            gap = float(np.median(on[1:] - off[:-1]) * 1000)
-            t0, t1 = on[0], off[-1] + POST_OFFSET_S
-            i0, i1 = int(t0 * fs), int(min(t1, abf.sweepLengthSec) * fs)
+        ys.append(abf.sweepY.copy())
+        rows.append({"file": name.replace(".abf", ""), "sweep": s, "n_syll": len(on),
+                     "holding_current": float(np.median(ys[-1])),
+                     "onset_raw": call_onset(mic, fs) if len(on) >= 2 else np.nan,
+                     "onset_loud": on[0] if len(on) >= 2 else np.nan,
+                     "offset": off[-1] if len(on) >= 2 else np.nan,
+                     "gap_ms": float(np.median(on[1:] - off[:-1]) * 1000) if len(on) >= 2 else np.nan})
+    df = pd.DataFrame(rows)
+    med = df.onset_raw.median()
+    df["onset_replaced"] = (df.onset_raw - med).abs() > MIC_ONSET_TOL_S
+    df["onset"] = np.where(df.onset_replaced, med, df.onset_raw)
+    df.loc[df.onset_loud.isna(), "onset"] = np.nan
+    traces = []
+    for i, r in df.iterrows():
+        y = ys[r.sweep]
+        traces.append(_binned(y, fs, r.onset) if np.isfinite(r.onset) else None)
+        if not np.isfinite(r.onset):
+            continue
+        df.loc[i, "isi"] = min(ISI_BINS, key=lambda v: abs(v - r.gap_ms))
+        i1 = int(min(r.offset + POST_OFFSET_S, abf.sweepLengthSec) * fs)
+        for label, t0 in (("", r.onset), ("_loud", r.onset_loud)):
+            i0 = int(t0 * fs)
             ib = max(0, int((t0 - BASELINE_S) * fs))
             base = float(y[ib:i0].mean())
-            stim = float(y[i0:i1].mean())
-            # a sham measure before the call, as a control for noise: the mean over the 0.75 s
-            # before onset minus the mean over the 0.75 s before that
-            i_s = max(0, int((t0 - 1.5) * fs))
-            i_m = int((t0 - 0.75) * fs)
-            sham = float(y[i_m:i0].mean() - y[i_s:i_m].mean())
-            row.update({"onset": t0, "offset": off[-1], "gap_ms": gap,
-                        "isi": min(ISI_BINS, key=lambda v: abs(v - gap)),
-                        "baseline": base, "evoked": stim - base, "sham": sham,
-                        "baseline_sd": float(y[ib:i0].std())})
-        rows.append(row)
-    df = assign_isi_by_duration(pd.DataFrame(rows))
+            df.loc[i, "evoked" + label] = float(y[i0:i1].mean()) - base
+            if not label:
+                df.loc[i, "baseline"] = base
+                df.loc[i, "baseline_sd"] = float(y[ib:i0].std())
+        # a sham measure before the call, as a control for noise: the mean over the 0.7 s before
+        # onset minus the mean over the 0.7 s before that (after the protocol's first 78 ms)
+        i0 = int(r.onset * fs)
+        i_m, i_s = int((r.onset - 0.7) * fs), max(int(0.08 * fs), int((r.onset - 1.4) * fs))
+        df.loc[i, "sham"] = float(y[i_m:i0].mean() - y[i_s:i_m].mean())
+    df["trace"] = traces
+    df = assign_isi_by_duration(df)
     return df, {"rate": fs, "sweeps": abf.sweepCount, "sweep_s": abf.sweepLengthSec,
-                                "adc": list(zip(abf.adcNames, abf.adcUnits)),
-                                "protocol": abf.protocol, "date": str(abf.abfDateTime)}
+                "adc": list(zip(abf.adcNames, abf.adcUnits)),
+                "protocol": abf.protocol, "date": str(abf.abfDateTime)}
 
 
 def load_invivo(threads=8):
@@ -405,10 +499,15 @@ def load_invivo(threads=8):
 
 
 def psc_table(lst, sweeps, top_n=5, apply_notes=True, best_call_only=True, check_holding=True,
-              measure="evoked"):
-    """Per cell, current (EPSC at -70 mV, IPSC at 0 mV or above) and ISI: mean absolute evoked
-    current over the largest `top_n` trials, and the number of trials available. `measure` is
-    "evoked" (the Methods' measure) or "sham" (the same taken before the call, a noise control)."""
+              measure="evoked", select="abs", cells=None):
+    """Per cell, current (EPSC at -70 mV, IPSC at 0 mV or above) and ISI: the mean over the largest
+    `top_n` trials, and the number of trials available. `select` "abs" ranks trials by absolute
+    evoked current and averages the absolute values (the Methods' "absolute magnitudes (pA) from the
+    largest 5-10 evoked trials"); "expected" ranks them by the current in the expected direction
+    (inward for EPSCs, outward for IPSCs) and averages that signed value, a second reading.
+    `measure` is "evoked" (the Methods' measure), "evoked_loud" (the same from the onset of the
+    first loud syllable, a variant) or "sham" (the same taken before the call, a noise control).
+    `cells`, if given, is a set of (cell, kind) kept (the inclusion rule)."""
     rows = []
     sw = sweeps.dropna(subset=["isi"])
     for _, f in lst[lst.on_figshare].iterrows():
@@ -424,13 +523,18 @@ def psc_table(lst, sweeps, top_n=5, apply_notes=True, best_call_only=True, check
         if "5xcalls" in f.set:
             continue
         kind = "EPSC" if f.holding < -30 else "IPSC"
+        if cells is not None and (f.cell, kind) not in cells:
+            continue
+        sign = -1.0 if kind == "EPSC" else 1.0
         if check_holding:
             # a sweep whose holding current contradicts the listed holding potential (above
             # +100 pA in a -70 mV file, below -100 pA in a depolarized one) is dropped
             s = s[(s.holding_current <= 100) if kind == "EPSC" else (s.holding_current >= -100)]
         for _, r in s.iterrows():
-            rows.append({"group": f.group, "cell": f.cell, "kind": kind, "file": f.file,
-                         "isi": int(r.isi), "mag": abs(r[measure]), "evoked": r[measure]})
+            v = r[measure]
+            rows.append({"group": f.group, "cell": f.cell, "kind": kind, "file": f.file, "sweep": r.sweep,
+                         "isi": int(r.isi), "mag": abs(v) if select == "abs" else sign * v,
+                         "evoked": v, "directed": sign * v})
     t = pd.DataFrame(rows)
     out = (t.groupby(["group", "cell", "kind", "isi"])
              .agg(n_trials=("mag", "size"),
@@ -438,6 +542,24 @@ def psc_table(lst, sweeps, top_n=5, apply_notes=True, best_call_only=True, check
                   signed=("evoked", "mean"))
              .reset_index())
     return out, t
+
+
+def significant_cells(lst, sweeps, k, isi=175, n_min=5, **kw):
+    """(cell, kind) pairs with at least `n_min` significant prototype-evoked PSCs (Methods), a
+    significant PSC being a trial whose current in the expected direction exceeds k times the s.d.
+    of the cell's sham measure (see the module docstring). Returns the set and a per-cell table."""
+    _, ev = psc_table(lst, sweeps, measure="evoked", **kw)
+    _, sh = psc_table(lst, sweeps, measure="sham", **kw)
+    sd = sh.groupby(["group", "cell", "kind"]).directed.std().rename("sham_sd")
+    ev = ev.merge(sd.reset_index(), on=["group", "cell", "kind"])
+    ev["sig"] = ev.directed > k * ev.sham_sd
+    tab = (ev.groupby(["group", "cell", "kind"])
+             .apply(lambda d: pd.Series({"proto_trials": int((d.isi == isi).sum()),
+                                         "proto_sig": int(d[d.isi == isi].sig.sum()),
+                                         "sig_share": d.sig.mean()}))
+             .reset_index())
+    tab["included"] = tab.proto_sig >= n_min
+    return set(map(tuple, tab[tab.included][["cell", "kind"]].values)), tab
 
 
 # ---------------------------------------------------------------- operant
@@ -466,13 +588,19 @@ def resolution(t):
     return np.where(t < 100, 0.001, np.where(t < 1000, 0.01, 0.1))
 
 
-def sampling_interval(t):
-    """Median interval between touch samples, from the part of the session printed at 1 ms
-    (below 100 s), over steps of at most 5 ms (within a press)."""
+def interval_samples(t):
+    """Intervals between touch samples within a press (steps of at most 5 ms), from the part of
+    the session printed at 0.1 ms (below 10 s). Above 10 s the times are printed at 1 ms or more,
+    so most printed intervals there are 0 or 1 ms whatever the true interval."""
     t = np.sort(np.asarray(t, float))
-    d = np.diff(t[t < 100])
-    d = d[d <= 0.005]
-    return float(np.mean(d)) if len(d) else np.nan
+    d = np.diff(t[t < 10])
+    return d[d <= 0.005]
+
+
+def sampling_interval(t):
+    """Median interval between touch samples (`interval_samples`)."""
+    d = interval_samples(t)
+    return float(np.median(d)) if len(d) else np.nan
 
 
 def presses(t, gap_rule, interval=np.nan):
