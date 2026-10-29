@@ -127,7 +127,9 @@ CAUTION = "A failure to reproduce is not a finding that the paper is wrong."
 
 
 def load_yaml(path: Path):
-    return yaml.safe_load(path.read_text())
+    # libyaml when PyYAML has it: the site reads every claims file and record, and the pure-Python parser
+    # takes most of the build.
+    return yaml.load(path.read_text(), Loader=getattr(yaml, "CSafeLoader", yaml.SafeLoader))
 
 
 def tier_of(attempt: dict) -> str:

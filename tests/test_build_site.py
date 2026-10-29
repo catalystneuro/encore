@@ -42,25 +42,30 @@ def test_a_verification_that_disagrees_on_any_claim_does_not_count():
 
 def broken_links(root: Path) -> list[str]:
     """Internal links and anchors in the built site that do not resolve."""
-    ids = {}
     pages = sorted(root.rglob("*.html"))
-    for page in pages:
-        ids[page] = set(re.findall(r'\bid="([^"]+)"', page.read_text()))
+    texts = {page: page.read_text() for page in pages}
+    # Each page's anchors, by its resolved path, which is how links are resolved below.
+    ids = {page.resolve(): set(re.findall(r'\bid="([^"]+)"', text)) for page, text in texts.items()}
+    found: dict[Path, Path | None] = {}   # a resolved link -> the file it reaches, or None
+
+    def reach(target: Path) -> Path | None:
+        if target not in found:
+            file = target / "index.html" if target.is_dir() else target
+            found[target] = file if file.is_file() else None
+        return found[target]
+
     broken = []
-    for page in pages:
-        for href in re.findall(r'<a\b[^>]*\bhref="([^"]+)"', page.read_text()):
+    for page, text in texts.items():
+        for href in re.findall(r'<a\b[^>]*\bhref="([^"]+)"', text):
             href = href.replace("&amp;", "&")
             if re.match(r"[a-z]+:", href):
                 continue                                   # external
             path, _, fragment = href.partition("#")
             path = path.split("?")[0]
-            target = (page.parent / path).resolve() if path else page.resolve()
-            if target.is_dir():
-                target = target / "index.html"
-            if not target.is_file():
+            target = reach((page.parent / path).resolve() if path else page.resolve())
+            if target is None:
                 broken.append(f"{page.relative_to(root)}: {href}")
-            elif fragment and target.suffix == ".html" and fragment not in ids.get(target, ids.get(
-                    next((p for p in pages if p.resolve() == target), page), set())):
+            elif fragment and target.suffix == ".html" and fragment not in ids.get(target, set()):
                 broken.append(f"{page.relative_to(root)}: {href} (no such anchor)")
     return broken
 

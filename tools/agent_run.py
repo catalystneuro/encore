@@ -41,6 +41,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import datasets  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
+LOADER = getattr(yaml, "CSafeLoader", yaml.SafeLoader)   # libyaml when PyYAML has it: records_of reads every record
 TEMPLATES = {"paper-match": "paper-match", "claims": "claims", "claims-check": "claims-check", "answer": "answer",
              "author": "author", "author-answers": "author-answers",
              "verifier-1": "verifier-1", "author-revise-1": "author-revise",
@@ -82,7 +83,7 @@ def records_of(dandiset: str) -> list[Path]:
     """The attempt records on the dataset in a folder, oldest first."""
     key = datasets.key_of_folder(dandiset)
     return sorted(p for p in (ROOT / "attempts").glob("*.yaml")
-                  if record_key(yaml.safe_load(p.read_text()) or {}) == key)
+                  if record_key(yaml.load(p.read_text(), Loader=LOADER) or {}) == key)
 
 
 def attempt_of(dandiset: str) -> tuple[dict, Path] | None:
