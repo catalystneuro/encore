@@ -36,3 +36,20 @@ questions:
     does not say where the curated sets are is accurate. Whether they are public somewhere is
     for the author to record in the notes of the data_missing block, as step 4 asks ("its notes
     say where you looked").
+- claim: trials-table-structure
+  asked: 2026-10-29
+  question: Should the criterion compare stop_time with the start_time of the next trial run (the
+    next trial number) instead of the next row of the table? The criterion compares consecutive
+    rows. The verifier noted that the table can lack trials, so "the next trial" of Table 6 may
+    mean the next trial the mouse ran, which is not in the table where a trial is missing.
+  passage: stop_time (float) Stop time of the trial. (Equal to the start time of the next trial.)
+    (Data Records, trials table, Table 6). In some cases the video recording was not started until
+    after the first trial. Trials before the video began are excluded from this trials table.
+    Therefore the first trial number in this table is not necessarily 0 (Data Records, paragraph
+    after Table 6).
+  why: Under the criterion as written the claim is not reproduced, because 5 of 32,235 pairs of
+    consecutive rows, in 4 sessions, differ by 7.0 to 68.0 s, and all 5 are where a trial number
+    is skipped. Compared only where the trial numbers are consecutive, all 32,230 pairs agree, so
+    the reading decides the outcome. The paper describes only trials dropped before the video
+    began (at the start of a table) and says munged trials are kept with ignore_trial True; it
+    does not mention trials missing inside a table.

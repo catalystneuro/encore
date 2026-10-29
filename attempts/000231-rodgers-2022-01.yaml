@@ -40,7 +40,8 @@ outcomes:
   deviations:
   - Video frame counts are read from each file's duration tag at the nominal 30 frames/s, not by
     decoding 2 TB of video. Every duration is a whole number of seconds; the container duration
-    equals the tag in all 115 files.
+    equals the tag in all 115 files. No video stream reports its own frame count (0 of 115), so the
+    tag is the only count the headers give.
   - Reading (b) takes the longest of the four whiskers' raw pose series in each session, as the
     criterion's N_frames differs between whiskers.
 - claim: neural-sessions
@@ -55,13 +56,20 @@ outcomes:
   notebook: reproduce_rodgers_2022.ipynb
   output: claim:neural-hours
   measured: 33.78
-  notes: Reading (b), the Open Ephys files under sourcedata, gives 33.782 h over 44 sessions, within
-    0.05 h of 33.8; each session has 64 channel files of equal length. Reading (a), the span of the
-    NWB recordings, gives 33.656 h (-0.4%). The NWB files hold 56 to 64 channels.
+  notes: Reading (b), the main Open Ephys recordings under sourcedata, gives 33.770 h over 44
+    sessions, within 0.05 h of 33.8; each session has 64 channel files of equal length. The record
+    headers of CH1 show a second, shorter segment in 7 sessions (0.48 to 0.51 s at the start of 6
+    files, and in KF134 2018-02-10 a separate recording, number 0, of 39.73 s before the main one,
+    number 1); these 42.8 s are left out as the test recordings. The whole files give 33.782 h, also
+    within. Reading (a), the span of the NWB recordings, gives 33.656 h (-0.42%). The NWB files hold
+    56 to 64 channels.
   deviations:
   - The samples of each Open Ephys file are computed from its size (1024-byte header, 2070-byte
-    records of 1024 samples), not read. Each file's index lists one recording; test recordings
-    inside a file, which the Data Records mention, cannot be told apart this way and are counted.
+    records of 1024 samples). The test recordings the Data Records mention ("In some cases the
+    Open Ephys file includes test recordings that were just a few seconds long") are found from the
+    first and last record headers and a bisection on the record timestamps of channel CH1, which
+    splits each file where the timestamps break; the longest contiguous segment is taken as the
+    main recording.
 - claim: task-rules
   outcome: reproduced
   notebook: reproduce_rodgers_2022.ipynb
@@ -69,8 +77,10 @@ outcomes:
   notes: The task assigned by the rule matches the experiment description in all 115 sessions (30
     detection, 85 discrimination). Over trials to analyse with Table 6 stimuli, 21,752 of 21,752
     follow the rule, in every session; all 32,350 trials follow it, including 1,533 with flatter
-    shapes given the rule of their shape. The keywords name "shape discrimination" in every file and
-    were not used.
+    shapes given the rule of their shape. The metadata task is taken from the experiment
+    description, and from the keywords only where the description names none, which never happens;
+    the keywords name "shape discrimination" in every file, detection sessions included. The task
+    given by "nothing" alone also agrees with the description in all 115 sessions.
   deviations:
   - The files hold stimuli "flatter convex" and "flatter concave", which Table 6 does not list. The
     rule is judged on the Table 6 stimuli, and the flatter shapes are shown apart with the rule of
@@ -81,6 +91,10 @@ outcomes:
   output: claim:nothing-detection-only
   notes: The experiment description names the task in every file. All 3,749 "nothing" trials are in
     the 30 detection sessions; none of the 85 discrimination sessions has one.
+  deviations:
+  - The criterion allows the task from the experiment description or the keywords. The description
+    is used. The keywords include "shape discrimination" in all 115 files, the 30 detection
+    sessions included, so they cannot name the task.
 - claim: one-task-per-mouse
   outcome: reproduced
   notebook: reproduce_rodgers_2022.ipynb
@@ -127,10 +141,12 @@ outcomes:
   notes: The criterion's two readings of the timeout disagree, and it blocks the claim in that case.
     Over trials to analyse, the median of stop_time minus choice_time is 12.21 s on error trials
     (reading a, outside 9 +- 0.9 s) and 3.88 s on correct trials, so the difference is 8.34 s
-    (reading b, within); per session the difference is 7.04 to 8.54 s. The reward part holds on the
+    (reading b, within); per session the difference is 7.04 to 8.54 s. The reward part also fails
+    as computed, with a reward on 8.5% of the 5,130 error trials over both sides. It holds on the
     left (reward on 100% of 8,917 correct trials and on none of 2,497 error trials) but not on the
     right, where the reward series is identical to the right lick series in every file and a
-    "reward" falls on 16.6% of error trials. Which interval the paper calls the timeout is a
+    "reward" falls on 16.6% of error trials; there it counts licks, so right rewards cannot be
+    tested, a defect of the deposit (findings). Which interval the paper calls the timeout is a
     question for the paper's authors (findings).
 - claim: forced-alternation-start
   outcome: reproduced
@@ -154,7 +170,10 @@ outcomes:
   notes: id equals trial on all 32,350 rows. stop_time equals the next start_time within 1 ms on
     32,230 of 32,235 consecutive pairs; the 5 others, in 4 sessions, are all where the trial
     numbers skip, with gaps of 7.0 to 68.0 s. The criterion asks for every row, so it is not
-    reproduced; the statement holds wherever the next trial is in the table.
+    reproduced. Read as the next trial run, the statement holds on all 32,230 pairs whose trial
+    numbers are consecutive (variant). The paper mentions only trials dropped before the video
+    began, at the start of a table. Whether the criterion should compare the next trial run is
+    asked of a reader (questions/000231.yaml); the outcome is tested on the claims file as it is.
 - claim: video-timebase
   outcome: reproduced
   notebook: reproduce_rodgers_2022.ipynb
@@ -215,10 +234,20 @@ outcomes:
   notes: The ISI part holds for all 999 units (largest fraction of intervals below 3 ms 4.93%). The
     firing-rate part fails under both readings, so the criterion gives not reproduced; with 60 s
     bins 6 units exceed 20% (largest 23.3%), with one bin per trial 78 do (largest 40.2%); at a 30%
-    bound, 0 and 6. The amplitude criteria were not run.
+    bound, 0 and 6. Leaving out the 16 units of KF134 2018-02-09, whose neural clock the data check
+    did not establish, changes neither count. Amplitude criteria, outside the outcome as the
+    criterion says. 893 of 999 units match their Kilosort cluster by id with equal spike counts,
+    and their NWB spike times equal the Kilosort samples over the rate plus a constant (spread
+    2.3e-12 s); the other 106 have more Kilosort spikes than NWB spikes. None of the 893 changes
+    amplitude by more than 1.5% per minute (largest 1.47%, median 0.33%). The criteria on amplitudes
+    below the detection threshold and below 10 uV, and on common-mode artefacts, were not run.
   deviations:
   - In reading (a) the last, partial 60 s bin of each unit's interval is left out (a standard
     choice).
+  - The change per minute in spike amplitude is measured, for information only, as the slope of a
+    least-squares line of Kilosort amplitude against time over the mean amplitude; the paper does
+    not say how it measured it. Kilosort amplitudes are template scaling factors, not microvolts,
+    and the paper gives no detection threshold, so the other amplitude criteria cannot be run.
 - claim: unit-depth-layer
   outcome: reproduced
   notebook: reproduce_rodgers_2022.ipynb
@@ -226,6 +255,8 @@ outcomes:
   notes: All 999 units have the depth of the electrodes row their neuron_channel indexes, and
     electrode ids equal row indexes. The layer depth ranges do not overlap and run 1 (10 to 127 um),
     2/3, 4, 5a, 5b, 6, 6b (1372 to 1424 um); the files spell L1 to L6 this way, with sublayers.
+    Each unit's layer is the layer in its electrode's location string for all 999 units once case is
+    ignored; the 446 that differ as spelled are 5a, 5b and 6b against 5A, 5B and 6B.
   deviations:
   - The layer names of the files ("1", "2/3", "4", "5a", "5b", "6", "6b") are read as L1 to L6, with
     5a and 5b in L5 and 6b in L6.
@@ -288,10 +319,17 @@ outcomes:
     hold an interpolated or absent frame, and 16 sessions exceed 2% for C1 to C3 (27 for C0 to C3).
     The frame part holds for C1 to C3 (at least 99.35% of processed frames not interpolated, at
     least 97.6% of video frames with a pose) but not for C0 (93.1% and 89.7% at worst). Measured
-    values are under whiskers (i) and frames (a).
+    values are under whiskers (i) and frames (a). The stop frame belongs to the contact,
+    duration_frames equals frame_stop - frame_start + 1 on all 290,345 contacts and stop_time equals
+    frame_stop x 0.005 s; with stops taken as exclusive the largest fraction is still 7.7%. The
+    expected value is per whisker and session. With contacts pooled over the whiskers of a session
+    (variant), the largest fraction is 2.007% for C0 to C3 and 2.008% for C1 to C3, both in KM91
+    2016-12-16 (54 of 2,691 and 54 of 2,689 contacts), just above 2%; 1 session (i) or 2 sessions
+    (ii) exceed 2%. It would be 1.94% with
+    exclusive stops, which the files rule out.
   deviations:
   - A contact covers its frames from start to stop inclusive, as duration_frames = frame_stop -
-    frame_start + 1 in the files.
+    frame_start + 1 and stop_time = frame_stop x 0.005 s in the files (shown in the notebook).
 - claim: contacts-structure
   outcome: reproduced
   notebook: reproduce_rodgers_2022.ipynb
@@ -306,8 +344,9 @@ outcomes:
   notes: Under the naming of Table 1 and UsageNotes.ipynb (one module "behavior"), all 115 files
     hold left and right licks and rewards, the four raw pose and processed position interfaces with
     the seven Table 3 series, contacts, the 14 Table 6 columns and a video link that resolves to a
-    deposited video; the 44 ecephys files hold the recording, the electrodes and units with the
-    Table 5 columns. The group names of the Data Records sections are used in no file. 29 files hold
+    deposited video; the 44 ecephys files hold the recording, units with the Table 5 columns, and
+    electrodes with the Table 4 columns (y, location and one electrode group per session, x and z
+    null). The group names of the Data Records sections are used in no file. 29 files hold
     three contacts tables, not the four the Data Records describe.
 - claim: file-layout
   outcome: reproduced
@@ -419,3 +458,283 @@ findings:
   statement: "Question for the paper's authors: which trials count as \"trials to analyze\" in the
     rule that excludes sessions with fewer than 90? With ignore_trial False one included session
     has 84; with random, non-spoiled trials every session has at least 90."
+verifications:
+- date: 2026-10-29
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusions and summary
+    removed, the helper module and the claims file, with the paper under paper/. The verifier also
+    checked the archive's asset list for the blocked claims.
+  results:
+  - claim: dataset-size
+    agrees: true
+    outcome: not_reproduced
+    reason: Mice 15, sessions 115 and video frames 63,979,800 (88.86 h) match exactly. Trials are
+      32,350 (a) or 22,905 (b), +74.7% and +23.7%, both outside the 10% partial band.
+    response: No change of outcome. Cell 1 overwrote the container's frame count with duration x 30
+      without showing it (problem 7); it is now kept and printed. No video stream reports a frame
+      count (0 of 115), so the duration tag is the only count the headers give.
+  - claim: neural-sessions
+    agrees: true
+    outcome: reproduced
+    reason: 44 files are named ecephys and 44 hold the ElectricalSeries and units.
+    response: No change.
+  - claim: neural-hours
+    agrees: true
+    outcome: reproduced
+    reason: Reading (b) gives 33.782 h, inside 33.8 +- 0.05; reading (a) gives 33.656 h. 64 channel
+      files per session. Caveat, problem 2, the criterion leaves out the Open Ephys test recordings,
+      but the notebook counts whole files and never reads the per-record recording number; leaving
+      them out can only lower 33.782 h, and the margin to 33.75 h is about 115 s.
+    response: No change of outcome. The record headers of CH1 of every session are now read (first
+      and last record, and a bisection on the timestamps for breaks). 43 files hold recording 0 only
+      and one holds recordings 0 and 1; 7 files have a second, shorter segment (0.48 to 0.51 s in 6,
+      a 39.73 s recording 0 in KF134 2018-02-10). Leaving out these 42.8 s gives 33.770 h, still
+      within 0.05 h of 33.8; whole files are shown as a variant.
+  - claim: task-rules
+    agrees: true
+    outcome: reproduced
+    reason: 21,752 of 21,752 trials to analyse, in 115 of 115 sessions, follow the rule. The
+      rule-based task agrees with experiment_description in 30 + 85 sessions.
+    response: No change of outcome. task_from_metadata now reads the experiment description first
+      and the keywords only where it names no task (problem 5), so the metadata branch of the rule
+      fires for the 30 detection sessions; the task given by "nothing" alone is also compared with
+      the description and agrees in all 115 sessions.
+  - claim: nothing-detection-only
+    agrees: true
+    outcome: reproduced
+    reason: 0 of 85 discrimination sessions (by experiment_description) contain "nothing". Caveat,
+      problem 5, general/keywords say "shape discrimination" in all 115 files, including the 30
+      detection sessions, while the criterion allows "description or keywords"; using the
+      description alone is reasonable, but the choice should be stated as a reading.
+    response: The notebook and the record now state the reading (description alone) and why the
+      keywords cannot name the task, with a crosstab of the keywords against the description.
+  - claim: one-task-per-mouse
+    agrees: true
+    outcome: reproduced
+    reason: Every mouse has a single task, 5 detection mice and 10 discrimination mice.
+    response: No change.
+  - claim: servo-positions
+    agrees: true
+    outcome: reproduced
+    reason: Trials with a shape use exactly {close, medium, far}, and all 115 sessions have all
+      three.
+    response: No change.
+  - claim: response-window-timing
+    agrees: true
+    outcome: blocked
+    reason: No motor-time column or series exists. The asset list shows only NWB, mkv, Open Ephys
+      and Kilosort/Phy files, so no part can be tested.
+    response: No change.
+  - claim: choice-time-first-lick
+    agrees: true
+    outcome: not_reproduced
+    reason: On non-spoiled trials the first lick matches choice_time in only 0.776 of trials; every
+      session is below 0.99. On all 265 spoiled trials choice_time is NaN, not 45 s.
+    response: No change.
+  - claim: outcome-consistency
+    agrees: true
+    outcome: reproduced
+    reason: 32,350 of 32,350 trials are consistent, direct-delivery trials included.
+    response: No change.
+  - claim: reward-and-timeout
+    agrees: true
+    outcome: blocked
+    reason: Timeout reading (a) is 12.21 s (fails) and reading (b) 8.34 s (holds), so the readings
+      disagree. The reward part also fails as computed (8.5% of error trials "rewarded"), but
+      rewards/right is identical to licks/right in all 115 files, so the right side cannot be
+      tested; the left side holds. Problem 3, this deposit defect should be reported as such, and
+      the verdict line returns "blocked" without stating that the reward part also fails.
+    response: No change of outcome. The verdict line now says the reward part also fails as
+      computed, on the right side only, where the reward series is the right lick series. The
+      conclusion and the notes say the reward part fails as computed (8.5% of error trials) and
+      that right rewards cannot be tested, a deposit defect already recorded as a metadata_error
+      finding.
+  - claim: forced-alternation-start
+    agrees: true
+    outcome: reproduced
+    reason: In 110 of 110 sessions that include trials 0 to 44, none is random, and the first random
+      trial is 45. The other 5 tables start at trial 61 to 124 and pass only vacuously.
+    response: No change.
+  - claim: ignore-trial-definition
+    agrees: true
+    outcome: not_reproduced
+    reason: 160 spoiled random trials in 50 sessions have ignore_trial False. ignore_trial equals
+      (not random or optogenetic) on every trial.
+    response: No change.
+  - claim: trials-table-structure
+    agrees: true
+    outcome: not_reproduced
+    reason: 5 row pairs in 4 sessions break stop_time = next start_time (7 to 68 s apart), all where
+      a trial number is skipped; id equals trial on every row. Problem 6, the criterion compares
+      consecutive rows, and the paper's "next trial" may mean the next trial run, so not_reproduced
+      may be due to the claims file's reading and not to the data.
+    response: No change of outcome; the claim is tested as the claims file has it. The reading is
+      asked of a reader in questions/000231.yaml. The next-trial-run reading is shown as a variant,
+      under which all 32,230 pairs with consecutive trial numbers agree.
+  - claim: video-timebase
+    agrees: true
+    outcome: reproduced
+    reason: Processed, pose and contact times lie on the 5 ms grid within 9e-13 s, with no step
+      shorter than one frame.
+    response: No change.
+  - claim: sync-gap-and-interpolation
+    agrees: true
+    outcome: reproduced
+    reason: The longest interpolated run is 4 frames. The trial-start gap has median 0.135 s, and the
+      lowest session-wise fraction within 10% is at least 0.984 for each of C1, C2 and C3.
+    response: No change.
+  - claim: bend-null-interpolated
+    agrees: true
+    outcome: reproduced
+    reason: 0 of 368,927 interpolated frames have a bend value.
+    response: No change.
+  - claim: neural-timestamps
+    agrees: true
+    outcome: reproduced
+    reason: Stored rates are 29,999.9354 to 30,000.0199 Hz and none is exactly 30 kHz. Spacing is
+      constant because the file stores a rate, not a timestamps array.
+    response: No change.
+  - claim: neural-video-alignment
+    agrees: true
+    outcome: blocked
+    reason: ADC and AUX files are listed in the .openephys index but not deposited, and
+      all_channels.events holds only its header. Each exp.dat is 2 bytes x 64.0 channels x samples,
+      so it holds neural channels only. The neural side cannot be tested.
+    response: No change.
+  - claim: behavior-clock-drift
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no Arduino times or logs; file kinds are NWB, mkv, Open Ephys,
+      settings.xml and Kilosort/Phy files only.
+    response: No change.
+  - claim: unit-quality-isi
+    agrees: true
+    outcome: not_reproduced
+    reason: The ISI part holds (max 4.93%). The firing-rate part fails under both readings, 6 units
+      with 60 s bins (max 23.3%) and 78 units with trial bins. Problem 8, the amplitude criteria were
+      not reported, although amplitudes.npy is in sourcedata and the criterion asks for them "where
+      sourcedata allows". Problem 9, the clock check fails for KF134 2018-02-09 (ratio 1.01), and
+      that session's units still enter this and the other unit claims.
+    response: No change of outcome. The amplitude change per minute is now reported from
+      amplitudes.npy, outside the outcome as the criterion says. 893 of 999 units match their
+      Kilosort cluster by id and spike count, and none of them exceeds 1.5% per minute (largest
+      1.47%); the other amplitude criteria need microvolts and a detection threshold, which the
+      files and the paper do not give. Leaving out the 16 units of KF134 2018-02-09 changes no
+      count (6 and 78 units above 20%, 0 above 5% ISI).
+  - claim: unit-depth-layer
+    agrees: true
+    outcome: reproduced
+    reason: Depth equals the y of the neuron_channel electrode for 999 of 999 units, and the layer
+      depth ranges do not overlap and run in order. Problem 4, the unit's layer equals the layer in
+      its electrode's location string for only 553 of 999 units; the notebook neither explains nor
+      reports this.
+    response: No change of outcome. A crosstab of the two labels and the depth ranges of the
+      location-string layers are now printed. They agree for all 999 units once case is ignored;
+      the 446 that differ are 5a, 5b and 6b against 5A, 5B and 6B.
+  - claim: electrodes-order
+    agrees: true
+    outcome: reproduced
+    reason: In 44 of 44 sessions y increases in steps that are multiples of 20 um, rows (56 to 64)
+      equal the data columns, and every location string parses into its 5 items.
+    response: No change.
+  - claim: recording-columns
+    agrees: true
+    outcome: reproduced
+    reason: Each of the 44 sessions names a column; C1, C2 and C3 account for 33.
+    response: No change.
+  - claim: units-obs-intervals
+    agrees: true
+    outcome: reproduced
+    reason: Each unit has one interval holding all its spikes. The interval starts at the first
+      sample and stops exactly one sample after the last, within the criterion's one sample.
+    response: No change.
+  - claim: pose-structure
+    agrees: true
+    outcome: reproduced
+    reason: 115 of 115 sessions have 4 x 8 series of shape (N, 2) and one conversion value; the
+      conversion varies across sessions.
+    response: No change.
+  - claim: c0-rare-contacts
+    agrees: true
+    outcome: reproduced
+    reason: C0 makes fewer contacts than each of C1 to C3 in 10 of 15 mice.
+    response: No change.
+  - claim: session-min-trials
+    agrees: true
+    outcome: blocked
+    reason: Reading (a) gives a minimum of 84 (228CR, 2019-07-15) and reading (b) a minimum of 90, so
+      the readings disagree.
+    response: No change.
+  - claim: session-labeling-quality
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced, provisional. The contact-missing maximum is 0.077 under all four
+      readings, but problem 1 could move a reading under 2%, which would make this blocked. The code
+      counts the stop_time frame as part of each contact and never checks this against frame_stop
+      and duration_frames; if stop is exclusive every contact gets one extra frame. The fraction is
+      taken per whisker; pooling the contacts of a session over whiskers is a reading the paper
+      allows that was not run.
+    response: No change of outcome. The notebook now shows that duration_frames = frame_stop -
+      frame_start + 1 on all 290,345 contacts and stop_time = frame_stop x 0.005 s, so the stop
+      frame belongs to the contact; with stops taken as exclusive the per-whisker maximum is still
+      7.7%. Pooled over the whiskers of a session (a variant, since the expected value is per
+      whisker and session) the maximum is 2.007% for C0 to C3 and 2.008% for C1 to C3 (KM91
+      2016-12-16), above 2% under both whisker sets, so no reading holds.
+  - claim: contacts-structure
+    agrees: true
+    outcome: reproduced
+    reason: 431 tables, all with tip_x/tip_y and angle and no start after stop. The missing tables
+      are 21 for C0 and 8 for C3.
+    response: No change.
+  - claim: nwb-structure
+    agrees: true
+    outcome: reproduced
+    reason: Every section is present under the "behavior" module naming, and video paths resolve in
+      115 of 115 files. Problem 10, Table 4 electrode columns are checked only by row count.
+    response: No change of outcome. The electrodes table is now checked for the Table 4 columns (y,
+      location, one electrode group per session, x and z null), which all 44 files hold.
+  - claim: file-layout
+    agrees: true
+    outcome: reproduced
+    reason: 115 files are named and placed correctly, 115 have exactly one video, and 44 sourcedata
+      folders hold Open Ephys and Phy files.
+    response: No change.
+  - claim: video-format
+    agrees: true
+    outcome: reproduced
+    reason: All files are matroska/h264 at a nominal 30 fps, and 111 of 115 are 640 x 550.
+    response: No change.
+  - claim: subjects-sex-age-strain
+    agrees: true
+    outcome: reproduced
+    reason: All are C57BL6/J. Sex is 10 F / 5 M (binomial p = 0.302, minority exactly 1/3). First
+      sessions are at 197 to 436 days.
+    response: No change.
+  - claim: tracking-mean-error
+    agrees: true
+    outcome: blocked
+    reason: No curated labels or predictions exist in the asset list, which the verifier confirmed
+      against the archive.
+    response: No change.
+  - claim: tracking-error-dataset1
+    agrees: true
+    outcome: blocked
+    reason: Same reason as tracking-mean-error.
+    response: No change.
+  - claim: tracking-error-challenge
+    agrees: true
+    outcome: blocked
+    reason: Same reason as tracking-mean-error.
+    response: No change.
+  - claim: prior-task-strategies
+    agrees: true
+    outcome: blocked
+    reason: The claims file gives no method.
+    response: No change.
+  - claim: prior-orthogonal-subspaces
+    agrees: true
+    outcome: blocked
+    reason: The claims file gives no method.
+    response: No change.

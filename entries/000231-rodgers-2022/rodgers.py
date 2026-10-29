@@ -13,6 +13,11 @@ Where parameters come from:
   the criterion of claim sync-gap-and-interpolation.
 - 60 s bins and one bin per trial for the firing-rate criterion: the two readings of the criterion
   of unit-quality-isi. A last, partial 60 s bin is left out (a standard choice, said to be one).
+- The test recordings left out of the neural hours: segments of an Open Ephys file other than its
+  longest contiguous one (`openephys_records`), from the Data Records' "test recordings that were
+  just a few seconds long".
+- The measure of amplitude change per minute (`amplitude_drift`): a linear fit, a choice of this
+  attempt for a criterion the paper does not define; it is reported and decides no outcome.
 - `CONTACT_WINDOW` (5 to 25 ms after a contact onset, against 25 to 5 ms before) and the 1 s shift
   used in the clock check of the neural stream: a standard choice for a check of alignment, not a
   method of the paper; it decides no claim.
@@ -209,6 +214,12 @@ def _whisker(f, w: str, trials: pd.DataFrame) -> dict:
         if "frame_start" in g:
             fs = g["frame_start"][:]
             out["contact_frame_vs_time"] = float(np.abs(fs * FRAME - st).max()) if st.size else np.nan
+        if {"frame_start", "frame_stop", "duration_frames"} <= set(g.keys()) and st.size:
+            fs, fe, du = g["frame_start"][:], g["frame_stop"][:], g["duration_frames"][:]
+            # is stop_time the last frame of the contact (inclusive) or one past it?
+            out["contact_stop_vs_frame_stop"] = float(np.abs(fe * FRAME - sp).max())
+            out["contact_duration_inclusive"] = int((du == fe - fs + 1).sum())
+            out["contact_duration_exclusive"] = int((du == fe - fs).sum())
         if cum is not None and st.size:
             a = np.round(st / FRAME).astype(np.int64)
             b = np.round(sp / FRAME).astype(np.int64)
@@ -216,6 +227,11 @@ def _whisker(f, w: str, trials: pd.DataFrame) -> dict:
             nlab = cum[b_c + 1] - cum[a_c]
             full = (b - a + 1)
             out["contact_missing"] = (nlab < full) | (a < 0) | (b >= len(labeled))
+            # variant: stop exclusive, frames start to stop - 1 (at least the start frame)
+            b2 = np.maximum(a, b - 1)
+            b2_c = np.clip(b2, 0, len(labeled) - 1)
+            nlab2 = cum[b2_c + 1] - cum[a_c]
+            out["contact_missing_excl"] = (nlab2 < b2 - a + 1) | (a < 0) | (b2 >= len(labeled))
     return out
 
 
@@ -242,6 +258,9 @@ def _ecephys(f, trials: pd.DataFrame) -> dict:
     out["el_y"] = e["y"][:]
     out["el_location"] = _str(e["location"][:])
     out["el_group_name"] = _str(e["group_name"][:])
+    out["el_columns"] = sorted(e.keys())
+    out["el_x_all_nan"] = bool(np.isnan(e["x"][:]).all()) if "x" in e else None
+    out["el_z_all_nan"] = bool(np.isnan(e["z"][:]).all()) if "z" in e else None
     groups = [k for k in f["general/extracellular_ephys"].keys() if k != "electrodes"]
     out["groups"] = {k: _str(f["general/extracellular_ephys"][k].attrs.get("location")) for k in groups}
     u = f["units"]
@@ -382,13 +401,15 @@ def low_rate_fraction_trials(spikes: np.ndarray, start: float, stop: float, tria
 
 
 def task_from_metadata(s: dict) -> str | None:
-    """The task the session metadata names (experiment description, then keywords)."""
-    text = (s.get("experiment_description") or "").lower() + " " + " ".join(s.get("keywords") or []).lower()
-    det, dis = "shape detection" in text, "shape discrimination" in text
-    if det and not dis:
-        return "detection"
-    if dis and not det:
-        return "discrimination"
+    """The task the session metadata names: the experiment description, and the keywords only
+    when the description names no task (the keywords say "shape discrimination" in every file,
+    detection sessions included, so they cannot decide the task where the description does)."""
+    for text in ((s.get("experiment_description") or "").lower(), " ".join(s.get("keywords") or []).lower()):
+        det, dis = "shape detection" in text, "shape discrimination" in text
+        if det and not dis:
+            return "detection"
+        if dis and not det:
+            return "discrimination"
     return None
 
 
@@ -399,3 +420,92 @@ def assign_trials(times: np.ndarray, trials: pd.DataFrame) -> np.ndarray:
     i = np.searchsorted(st, times, side="right") - 1
     ok = (i >= 0) & (times < sp[np.clip(i, 0, None)])
     return np.where(ok, i, -1)
+
+
+def openephys_records(asset: dict) -> dict:
+    """The contiguous segments of an Open Ephys 0.4 .continuous file, from its record headers
+    (timestamp int64, sample count uint16, recording number uint16), read by HTTP range requests.
+    Within a segment each record's timestamp is the first record's plus 1024 per record. A break
+    is found by bisection, since after a break the timestamps never fall back onto the segment's
+    line; the search then restarts at the break, so every break is found. Returns the records,
+    the recording numbers seen at segment starts and the file's last record, and the segments as
+    (first record, number of records)."""
+    url = s3_url(asset["asset_id"])
+    nrec = (asset["size"] - 1024) // 2070
+
+    def head(k):
+        a = 1024 + k * 2070
+        r = requests.get(url, headers={"Range": f"bytes={a}-{a + 11}"}, timeout=60)
+        r.raise_for_status()
+        b = r.content
+        return (int(np.frombuffer(b[:8], "<i8")[0]), int(np.frombuffer(b[8:10], "<u2")[0]),
+                int(np.frombuffer(b[10:12], "<u2")[0]))
+    segs, recs, start = [], set(), 0
+    while start < nrec:
+        t0, _, r0 = retry(head, start)
+        recs.add(r0)
+        lo, hi = start, nrec - 1
+        if retry(head, hi)[0] == t0 + (hi - start) * 1024:
+            lo = hi
+        else:
+            while hi - lo > 1:
+                m = (lo + hi) // 2
+                if retry(head, m)[0] == t0 + (m - start) * 1024:
+                    lo = m
+                else:
+                    hi = m
+        segs.append((start, lo - start + 1))
+        start = lo + 1
+    recs.add(retry(head, nrec - 1)[2])
+    return {"path": asset["path"], "n_records": nrec, "recordings": sorted(recs), "segments": segs}
+
+
+def _npy(asset: dict) -> np.ndarray:
+    import io
+
+    def get():
+        r = requests.get(s3_url(asset["asset_id"]), timeout=600)
+        r.raise_for_status()
+        return r.content
+    return np.load(io.BytesIO(retry(get))).ravel()
+
+
+def amplitude_drift(job: tuple) -> list[dict]:
+    """Change per minute of each unit's spike amplitude, from the Kilosort/Phy outputs under
+    sourcedata/ (amplitudes.npy, spike_clusters.npy, spike_times.npy). job is (assets of the sort
+    folder by file name, NWB unit ids, NWB spike times per unit, sampling rate).
+
+    The NWB unit id is the Kilosort cluster id; the match is checked by the spike count and by the
+    spread of NWB time minus Kilosort sample / rate over the unit's spikes. The paper gives the
+    criterion (<=1.5% change per minute in spike amplitude) but not how the change is measured;
+    here it is the slope of a least-squares line of amplitude against time in minutes, over the
+    unit's mean amplitude, in percent (a choice of this attempt; it decides no outcome).
+    Kilosort amplitudes are template scaling factors, not microvolts, so a relative change is the
+    only amplitude criterion they allow."""
+    files, unit_ids, unit_spikes, rate = job
+    sc = _npy(files["spike_clusters.npy"])
+    am = _npy(files["amplitudes.npy"])
+    st = _npy(files["spike_times.npy"]).astype(np.float64)
+    out = []
+    for uid, sp in zip(unit_ids, unit_spikes):
+        m = sc == uid
+        a, t = am[m], st[m] / rate
+        row = {"unit": int(uid), "n_ks": int(m.sum()), "n_nwb": int(len(sp))}
+        if row["n_ks"] == row["n_nwb"] and row["n_ks"] > 1:
+            off = np.sort(sp) - np.sort(t)
+            row["offset_spread"] = float(off.max() - off.min())
+            tm = (t - t.mean()) / 60
+            slope = float((tm * (a - a.mean())).sum() / (tm ** 2).sum())
+            row["drift_pct_per_min"] = 100 * slope / float(a.mean())
+        out.append(row)
+    return out
+
+
+def amplitude_drifts(jobs: list[tuple], workers: int = 8) -> list[list[dict]]:
+    with ProcessPoolExecutor(workers) as ex:
+        return list(ex.map(amplitude_drift, jobs))
+
+
+def openephys_records_all(assets: list[dict], workers: int = 8) -> list[dict]:
+    with ProcessPoolExecutor(workers) as ex:
+        return list(ex.map(openephys_records, assets))
