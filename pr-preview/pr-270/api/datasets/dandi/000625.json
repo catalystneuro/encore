@@ -1,0 +1,799 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000625",
+  "label": "DANDI:000625"
+ },
+ "page": "datasets/dandi/000625/",
+ "generated": "2026-10-29T22:57:08+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 4,
+  "partially_reproduced": 4,
+  "not_reproduced": 6,
+  "blocked": 12
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000625-geiller-2020-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000625",
+    "version": "0.231114.0019",
+    "doi": "10.48324/dandi.000625/0.231114.0019"
+   },
+   "key": "dandi:000625",
+   "label": "DANDI:000625",
+   "dataset_version": "0.231114.0019",
+   "paper": "10.1016/j.neuron.2020.09.013",
+   "paper_title": "Large-Scale 3D Two-Photon Imaging of Molecularly Identified CA1 Interneuron Dynamics in Behaving Mice",
+   "date": "2026-10-14",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-4"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/38505788399"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000625-geiller-2020",
+   "entry_title": "Molecularly identified CA1 interneurons during random foraging (Geiller, Vancura et al. 2020)",
+   "description": "Tests the findings of Geiller, Vancura et al. (2020) that can be tested on dandiset 000625, which holds three random-foraging sessions of one mouse with 231 interneurons, 74 of them assigned one of the paper's six subtypes. It checks the imaging clock against the behaviour, then measures each interneuron's correlation with running speed, run-stop responses, spatial selectivity, position decoding and the stability of tuning curves within and across sessions. The sharp-wave ripple, novel-context, goal-oriented learning and VIP experiments are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_geiller_2020.ipynb",
+     "title": "Reproducing Geiller, Vancura et al. (2020) from dandiset 000625",
+     "executed": "notebooks/000625-geiller-2020/reproduce_geiller_2020.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig1-cells-per-mouse",
+     "statement": "About 227 interneurons were imaged per mouse (226.6 \u00b1 27.3, mean \u00b1 std over 16 mice), and 121.0 \u00b1 28.4 per mouse were assigned a putative subtype.",
+     "source": "Results, Fast, targeted in vivo calcium imaging in 3D and post hoc molecular identification of CA1 INs, paragraph 1",
+     "quote": "total of 3626 INs in 16 mice, 226.6 \u00b1 27.3 INs per mouse, mean \u00b1 std ... 1936 were assigned to a putative IN subtype identity (121.0 \u00b1 28.4 per mouse, mean \u00b1 std)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_geiller_2020.ipynb",
+     "notes": "The mouse has 231 ROIs, inside 226.6 \u00b1 27.3 (199.3 to 253.9). 74 ROIs carry one of the six subtypes and 83 are not labelled UNIDENTIFIED; both are below 121.0 \u00b1 28.4 (92.6 to 149.4).",
+     "deviations": [
+      "One mouse, compared with the paper's mean and standard deviation over 16 mice.",
+      "Two readings of \"assigned a subtype\" were allowed, as the labels NOTHING and UNIDENTIFIED are not explained."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1-depth-distribution",
+     "statement": "The layer distribution of each subtype along the CA1 depth axis is consistent with earlier anatomical studies.",
+     "source": "Figure 1F",
+     "quote": "The overall proportion (Figure S1) and layer distribution of each of these subtypes was consistent with previous studies (Figure 1F)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The files hold no depth or 3D coordinates of the ROIs. The plane segmentation has only id and pixel_mask (x, y, weight, no z); the masks lie on a strip of the 231 cropped frames side by side, and the imaging plane's origin_coords and grid_spacing are placeholders. The paper's Z-stacks and coordinates are not public as far as the dandiset and the paper's repository show.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-most-positive",
+     "statement": "The majority of interneurons were positively correlated with running velocity, and about 10% were negatively correlated, across all subtypes (156 negative and 1429 positive in Figure 2D).",
+     "source": "Results, Locomotion-state-dependent activity of molecularly identified IN subpopulations during spatial navigation, paragraph 1; Figure 2C, 2D",
+     "quote": "found that the majority of INs were positively correlated with velocity ... we also observed that ~10% of cells exhibited negative correlations, present across all subtypes (Figure 2C)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_geiller_2020.ipynb",
+     "notes": "Averaged over sessions, 90.5% of the 74 ROIs in the six subtypes are positively correlated with velocity and 0.095 negatively, inside 0.088 to 0.108. Among all 228 imaged ROIs 96.5% are positive and 0.035 negative, outside the tolerance. The claim holds under the six-subtype reading, and only because r is averaged over sessions; per session that reading gives 0.055, 0.143 and 0.164, all outside the range. Per session the all-ROI reading gives 0.065, 0.111 and 0.089, in range in session 21322 only. The sign of r changes between sessions in 17 of the 74 subtyped ROIs (7 of 15 CCKC); 18 are negative in at least one session and 7 on average. The result is at the edge of the range; 6 or 8 of 74 would fall outside it.",
+     "deviations": [
+      "One mouse, three sessions, where the paper has seven mice.",
+      "Frame rates for sessions 21324 and 21322 fitted from the data; on the stated clock 28% of ROIs in session 21322 are negatively correlated.",
+      "Velocity smoothed with a Gaussian of 0.5 s, a width the paper does not give; 0 and 1 s change the averaged fractions by no more than 0.005 under either reading, and a per-session fraction by at most 0.014.",
+      "Correlations averaged over sessions on the assumption that the ROI index is the same cell, which the data are consistent with but do not show.",
+      "The denominator can be read two ways; the six-subtype reading matches and the all-ROI reading does not."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-cck-negative",
+     "statement": "Negatively correlated cells were significantly enriched in CCKC, where nearly half of cells were more active during immobility.",
+     "source": "Results, Locomotion-state-dependent activity of molecularly identified IN subpopulations during spatial navigation, paragraph 1; Figure 2B, 2C",
+     "quote": "Negatively correlated cells were significantly enriched in CCKC, where nearly half of cells showed increased activity during immobility (Figure 2B, 2C)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_geiller_2020.ipynb",
+     "notes": "6 of 15 CCKC (0.40) are negatively correlated against 1 of 59 cells in the other five subtypes, one-sided Fisher exact p = 0.00017. By session the CCKC fraction is 0.13, 0.50 and 0.43.",
+     "deviations": [
+      "One mouse, 15 CCKC, where the paper has 44 from seven mice.",
+      "The threshold of 0.35 for \"nearly half\" is ours."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-subtypes-differ",
+     "statement": "The correlation with velocity differs between the six subtypes (one-way ANOVA, p < 1e-10, with Tukey's post hoc test).",
+     "source": "Figure 2C legend",
+     "quote": "Pearson\u2019s correlation coefficients of \u0394F/F traces and velocity ... One-way ANOVA",
+     "statistics": [
+      {
+       "test": "one-way ANOVA",
+       "p": 1e-10,
+       "p_relation": "<",
+       "n": "134 PVBC, 180 SomC, 75 BiC, 56 AAC, 44 CCKC and 119 IvC/NGFC from 7 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_geiller_2020.ipynb",
+     "notes": "One-way ANOVA across the six subtypes gives p = 0.0015. Tukey's test places the difference with CCKC, lower than PVBC (p = 0.0009) and IvC/NGFC (p = 0.005). Per session the ANOVA is significant in one session of three. The paper's p < 1e-10 rests on seven mice and is not reached here.",
+     "deviations": [
+      "One mouse; significance threshold 0.05 in place of the paper's reported p-value."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-ngfc-less-modulated",
+     "statement": "IvC/NGFC were less modulated by locomotion than other subtypes.",
+     "source": "Results, Locomotion-state-dependent activity of molecularly identified IN subpopulations during spatial navigation, paragraph 1; Figure 2C",
+     "quote": "We also found that IvC/NGFC were less modulated by locomotion, consistent with previous results",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_geiller_2020.ipynb",
+     "notes": "Averaged over sessions IvC/NGFC have a mean correlation of 0.511 against 0.484 for PVBC, SomC, BiC and AAC pooled (one-sided Mann-Whitney p = 0.58), and the same for the absolute correlation. Session 21324 alone shows a lower correlation for IvC/NGFC (0.368 against 0.525, p = 0.005); the other two sessions do not.",
+     "deviations": [
+      "One mouse with 13 IvC/NGFC, where the paper has 119.",
+      "The comparison group (PVBC, SomC, BiC and AAC pooled) and the test are ours."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-negative-cells-in-oriens",
+     "statement": "Negatively correlated cells were enriched in stratum oriens and positively correlated cells in stratum pyramidale.",
+     "source": "Figure 2D legend",
+     "quote": "Negatively correlated cells are more dorsal in stratum oriens than positively correlated cells, which are closer to stratum pyramidale",
+     "statistics": [
+      {
+       "about": "depth distributions",
+       "test": "two-sample Kolmogorov-Smirnov",
+       "p": 0.02,
+       "n": "156 negatively and 1429 positively correlated cells from 7 mice"
+      },
+      {
+       "about": "depth populations",
+       "test": "Mann-Whitney U",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "156 negatively and 1429 positively correlated cells from 7 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the depth of each ROI, which the files do not hold.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s2-lags",
+     "statement": "The activity of positively correlated cells followed changes in velocity by up to several seconds, while the activity of negatively correlated cells was more tightly linked in time to changes in velocity.",
+     "source": "Results, Locomotion-state-dependent activity of molecularly identified IN subpopulations during spatial navigation, paragraph 1 (Figure S2)",
+     "quote": "while the activity of positively correlated cells generally followed changes in velocity by up to several seconds, the activity of negatively correlated cells was more tightly linked in time to changes in velocity",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_geiller_2020.ipynb",
+     "notes": "Positively correlated ROIs lag velocity (median -1.67 s), as stated. The 8 negatively correlated ROIs have a larger median absolute lag (2.06 s against 1.67 s, one-sided p = 0.60), and the same direction holds in each session taken alone. Lags are averaged over sessions even where the sign of r changes; keeping only ROIs with the same sign in every session leaves 1 negatively correlated ROI, too few to test. Figure S2 itself was not available.",
+     "deviations": [
+      "One mouse; the paper's Figure S2 was not available, so the criterion rests on the Results text.",
+      "Lags depend on imaging and behaviour starting together at time 0, which the files state and which could not be checked independently."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s2-cck-run-stop",
+     "statement": "Run-start and run-stop responses show that immobility-triggered activation is specific to CCKC.",
+     "source": "Results, Locomotion-state-dependent activity of molecularly identified IN subpopulations during spatial navigation, paragraph 1 (Figure S2)",
+     "quote": "we calculated the average run-start and run-stop responses for each cell (Figure S2), which further detailed the unicity of immobility-triggered activation of CCKC",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_geiller_2020.ipynb",
+     "notes": "At run stops the other five subtypes drop by 0.06 to 0.10 dF/F while CCKC stay flat on average (-0.003), a significant difference (one-sided Mann-Whitney p = 0.0009 at separations of 3, 5 and 10 s). CCKC do not rise on average, which the criterion requires. The 6 negatively correlated CCKC rise (0.084) and the other 9 fall (-0.061). By session the mean CCKC response is -0.005, 0.024 and -0.023, while every other subtype falls in every session (-0.021 to -0.173); the CCKC negatively correlated in a session rise in all three (0.019, 0.123 and 0.102).",
+     "deviations": [
+      "One mouse; event separation of 5 s chosen for \"several seconds\", with 3 and 10 s shown."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s3-subtype-classification",
+     "statement": "A deep network classified PV-expressing, SOM-expressing, CCK and IvC/NGFC cells from dF/F, velocity and depth with accuracies of 64, 71, 60 and 59%.",
+     "source": "Results, Decoding of IN molecular identity with a machine-learning approach, paragraph 1 (Figure S3)",
+     "quote": "a 4-class problem consisting of, PV-expressing INs, SOM-expressing INs, CCKC, and IvC/NGFC. The classification showed higher accuracy (64%, 71% 60% and 59%, respectively)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The reported accuracies come from a network trained on cells pooled from the paper's mice with depth as a feature. The dandiset holds one mouse (74 identified cells, 13 to 33 per merged class) and no depth. A dF/F-only network could be trained on this mouse, but it would not test the reported accuracies. The code is public (TensorFlow 2.1, Keras 2.3.1); its data files are not.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-swr-pvbc-vs-somc",
+     "statement": "During sharp-wave ripples PVBC were generally strongly modulated while most SomC were not.",
+     "source": "Figure 3D",
+     "quote": "PVBC were generally strongly modulated ... while most SomC were not",
+     "statistics": [
+      {
+       "test": "one-way ANOVA",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "122 PVBC, 79 SomC, 54 BiC, 72 AAC, 16 CCKC and 58 IvC/NGFC from 4 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The ripple experiments used LFP and 40 Hz imaging of about 30 cells in four other mice. The dandiset holds no LFP and no 40 Hz sessions.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-swr-bimodal",
+     "statement": "AAC and BiC showed bimodal modulation during sharp-wave ripples, and all subtypes but CCKC and IvC/NGFC split into a modulated and a non-modulated group.",
+     "source": "Figure 3E, 3F",
+     "quote": "AAC and BiC showed prominent bimodal profiles (Figure S4), with some cells strongly modulated during SWRs but others remaining silent ... All subtypes but CCKC and NGFC separated into 2 distinct groups",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "As for fig3-swr-pvbc-vs-somc.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-fraction-spatial",
+     "statement": "17.5 \u00b1 6.4% (mean \u00b1 sem over 6 mice, 3 sessions each) of interneurons, blind of subtype, passed the test for significant spatial selectivity.",
+     "source": "Results, Spatially selective activity dynamics of CA1 INs during head-fixed spatial navigation, paragraph 1; Figure 4",
+     "quote": "spatially-selective INs (blind of subtype, 17.5 \u00b1 6.4% in total passed the threshold, mean \u00b1 sem, n = 6 mice, 3 sessions per mouse)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_geiller_2020.ipynb",
+     "notes": "With the paper's rule, including a peak above 100% dF/F, 1.0% of ROIs are selected on average over sessions, since only 1.1% of ROIs have a tuning curve reaching 1.0 dF/F. Without the peak rule 69.8% are selected, against 8.6% on a surrogate with dF/F rotated against behaviour. Neither reading is within 17.5 \u00b1 6.4%. A peak rule of 50% dF/F gives 13.0%, but that threshold is not the paper's. The paper states no false-positive rate for the rule.",
+     "deviations": [
+      "One mouse, three sessions, where the paper has six mice with three sessions each.",
+      "Fields may wrap around the end of the belt (not stated in the paper); without wrapping the rule without the peak selects 66.0%.",
+      "The belt is 2.11 m long in the data, divided into 100 bins of 2.11 cm, where the paper has 2 m and 2 cm bins.",
+      "The dF/F in the files may not be scaled as the paper's was; this cannot be checked."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-fraction-negative",
+     "statement": "12.7 \u00b1 8.3% of interneurons (mean \u00b1 sem) had negative spatial selectivity, slightly fewer than had positive selectivity.",
+     "source": "Results, Spatially selective activity dynamics of CA1 INs during head-fixed spatial navigation, paragraph 1 (Figure S5)",
+     "quote": "The fraction of negative spatially modulated cells was also slightly lower (blind of subtype, 12.7 \u00b1 8.3%, mean \u00b1 sem, n = 6 mice, 3 sessions per mouse) than the fraction of positive spatially modulated cells",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_geiller_2020.ipynb",
+     "notes": "On average 66.4% of ROIs have a negative field (47.0%, 74.5% and 77.7% by session), against 10.8% on the surrogate and 12.7 \u00b1 8.3% in the paper. Under the paper's rule the two kinds of field are coupled, as a strong field raises the rotated shuffles at every bin. On synthetic cells, a cell with only a positive field is also flagged negative, and a cell with only a negative field is flagged positive under the rule without the peak. With the positive rule without the peak, 55.8% of ROIs on average have both kinds, 10.6% only a negative field and 13.9% only a positive one. The coupling explains part of the 66.4%, not all of it; 78.4% of ROIs with a positive field have a negative field, and so do 37.7% of ROIs without one, about 3.5 times the surrogate rate. Counting only ROIs with a negative field and no positive field gives 10.6%, inside the paper's range, but that variant depends on the positive rule without the peak (65.3% with the peak rule), excludes real negative cells flagged positive, and was chosen after the result, so the outcome is kept.",
+     "deviations": [
+      "As for fig4-fraction-spatial."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-decoding",
+     "statement": "Position decoded from the small subset of spatially selective interneurons was about as accurate as from all interneurons, and more accurate than from as many randomly chosen interneurons or with position shuffled.",
+     "source": "Figure 4D",
+     "quote": "Decoding accuracy originates mainly from spatially modulated cells, although they represent only a small fraction of all recorded interneurons",
+     "statistics": [
+      {
+       "test": "one-way ANOVA",
+       "p": 1e-08,
+       "p_relation": "<",
+       "n": "18 sessions from 6 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_geiller_2020.ipynb",
+     "notes": "The criterion holds in one session of three. In 21324 the 162 selected ROIs give an error of 13.8 cm, against 13.2 cm from all ROIs, 14.4 cm from random subsets and 48.7 cm with position shuffled. In 21333 the 118 selected ROIs do no better than random subsets (25.2 against 24.8 cm). In 21322 the 6 peak-rule ROIs give 30.3 cm against 15.4 cm from all ROIs. Shuffling position brings the error to about chance (49 to 53 cm, chance 52.7 cm) in every session, and all ROIs decode position with errors of 13 to 21 cm.",
+     "deviations": [
+      "The selected subset is not small in two sessions (118 and 162 ROIs), because the peak rule selects fewer than 5 ROIs there and the rule without the peak is used.",
+      "A one-vs-one linear SVM (scikit-learn SVC, C = 1); the paper names a linear SVM without the multi-class scheme or penalty.",
+      "Shuffled position made by rotating dF/F against position by at least 60 s, three draws; ten random subsets."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4e-bic-recurrence",
+     "statement": "BiC had a higher probability than other subtypes of being spatially modulated again in other sessions.",
+     "source": "Figure 4E, bottom",
+     "quote": "BiC have a higher probability to stay spatially modulated on different sessions",
+     "statistics": [
+      {
+       "test": "one-way ANOVA",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "105 PVBC, 145 SomC, 50 BiC, 39 AAC, 41 CCKC and 111 IvC/NGFC from 6 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "The dandiset has 3 BiC, below the 5 the criterion requires; the paper had 50.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4f-selectivity-no-difference",
+     "statement": "The selectivity index of spatially selective cells did not differ between subtypes (one-way ANOVA, p = 0.35).",
+     "source": "Figure 4F",
+     "quote": "SomC have a subset of cells with sharp fields but the mean is not different from that of the other subtypes (one-way ANOVA, p = 0.35)",
+     "statistics": [
+      {
+       "test": "one-way ANOVA",
+       "p": 0.35,
+       "n": "40 PVBC, 66 SomC, 32 BiC, 10 AAC, 7 CCKC and 43 IvC/NGFC from 6 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_geiller_2020.ipynb",
+     "notes": "One-way ANOVA across the six subtypes of the selectivity index of selected cells gives p = 0.17, so no difference is found. Subtype means range from 0.012 to 0.033 with a standard deviation of 0.020 across cells. The tuning curves of the selected subtyped cells have a median minimum of 0.158 dF/F and a median maximum of 0.255; subtracting each curve's minimum raises the median index from 0.016 to 0.307. The test compares near-flat curves and has little power.",
+     "deviations": [
+      "Selection without the peak rule in two sessions, as for fig4d-decoding, so the cells are many more than the paper's spatially selective cells."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4h-pvbc-more-stable",
+     "statement": "Spatially selective PVBC had a more stable within-session recruitment (odd-even lap correlation of tuning curves) than spatially selective SomC.",
+     "source": "Results, Spatially selective activity dynamics of CA1 INs during head-fixed spatial navigation, paragraph 1; Figure 4H",
+     "quote": "spatially-selective PVBC displayed a significantly more stable within-session recruitment than spatially-selective SomC (Figure 4H)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_geiller_2020.ipynb",
+     "notes": "For 22 spatially selective PVBC and 9 SomC, the mean odd-even correlation is 0.678 and 0.736 (unpaired t-test p = 0.42); SomC are higher in each session where both are present.",
+     "deviations": [
+      "Selection as for fig4d-decoding.",
+      "Each cell's correlation averaged over the sessions in which it was selected."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s6-within-session-order",
+     "statement": "Within-session stability of tuning curves differed between subtypes, PVBC showing the highest and CCKC the lowest odd-even correlations.",
+     "source": "Results, Spatially selective activity dynamics of CA1 INs during head-fixed spatial navigation, paragraph 2 (Figure S6A, S6B)",
+     "quote": "While there were differences in within session stability across molecularly defined IN subtypes, with PVBC and CCKC showing the highest and lowest within-session correlations, respectively",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_geiller_2020.ipynb",
+     "notes": "CCKC have the lowest mean odd-even correlation (0.500). PVBC (0.598) are second to SomC (0.606). The one-way ANOVA across the five subtypes with at least 5 cells gives p = 0.56, so the statement that subtypes differ does not hold here.",
+     "deviations": [
+      "One mouse; Figure S6 was not available, so the criterion rests on the Results text."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s6-later-lower-above-chance",
+     "statement": "Tuning curve correlations of the same cells after 1 hour and after 24 hours were lower than within-session correlations, and still higher than chance.",
+     "source": "Results, Spatially selective activity dynamics of CA1 INs during head-fixed spatial navigation, paragraph 2 (Figure S6I)",
+     "quote": "Tuning curve correlations after both 1 hour and 24 hours were significantly lower than the within-session correlations across all IN subtypes ... correlations at later time points (1h and 24h) were still significantly higher than chance levels",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_geiller_2020.ipynb",
+     "notes": "Across-session correlations are lower than within-session ones in every pair (0.22 against 0.61 for the same-day pair, Wilcoxon p = 4e-07; 0.06 and 0.14 for the two-day pairs). Above chance holds only for the same-day pair with identities shuffled among all cells (p = 0.047), not with shuffles within subtype (p = 0.10), and for neither two-day pair (p = 0.075 and 0.53).",
+     "deviations": [
+      "Sessions 2.5 h and 54 to 56 h apart stand in for 1 h and 24 h. The order rests on the stated start times, which put 21333 first although its id is the highest; nothing else in the files dates the sessions.",
+      "The ROI index is taken as the same cell across sessions; tuning curves of the same index agree above a shuffled null only for one pair, so a failure here may reflect the ROI mapping."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-context-decorrelation",
+     "statement": "Interneuron tuning curves decorrelated on exposure to a novel belt, more than with the passage of time, and context could be decoded from population activity.",
+     "source": "Figure 5B, 5C, 5D",
+     "quote": "INs displayed a significant decorrelation in their spatial tuning upon exposure to belt B (Figure 5B). This remapping could not be explained simply by the passage of time",
+     "statistics": [
+      {
+       "test": "one-way ANOVA",
+       "p": 1e-10,
+       "p_relation": "<",
+       "n": "1080 cells from 6 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "All three sessions are random foraging; no novel-belt session is included, and the files do not name the belt.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-novel-context-decrease",
+     "statement": "PVBC, SomC, BiC and AAC decreased their activity in the first laps on a novel belt; CCKC were not modulated.",
+     "source": "Figure 5F, 5H",
+     "quote": "we observed a significant decrease in IN activity for the first several laps in context B for PVBC, SomC, BiC, and AAC subtypes (Figure 5F, H). CCKC were not modulated by the context change",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "As for fig5-context-decorrelation.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-reward-somc-bic",
+     "statement": "In goal-oriented learning, SomC and BiC had higher reward modulation indices than other subtypes.",
+     "source": "Figure 6D",
+     "quote": "On average, SomC and BiC had significantly higher RMI values than the other subtypes, reflecting a preferential reward-related modulation (Figure 6D)",
+     "statistics": [
+      {
+       "test": "one-way ANOVA",
+       "p": 1e-10,
+       "p_relation": "<",
+       "n": "165 PVBC, 830 SomC, 220 BiC, 109 AAC, 127 CCKC and 228 IvC/NGFC from 4 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No goal-oriented learning session and no lick record are included.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-old-zone",
+     "statement": "After the reward zone moved, SomC and BiC activity increased at the old zone above chance, and this decreased over the session.",
+     "source": "Figure 6G, 6H",
+     "quote": "observed a significant increase from chance level only in SomC and BiC (Figure 6G, S7) ... SomC and BiC activity levels gradually decreased and increased in the old and current reward zones, respectively (Figure 6H)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "As for fig6-reward-somc-bic.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-vip-subtypes-immobility",
+     "statement": "VIP+/CCK+ and VIP+/M2R+ cells were negatively correlated with velocity, and all ISI subtypes positively.",
+     "source": "Figure 7C",
+     "quote": "We observed that all ISI subtypes were positively correlated with velocity ... VIP+/CCK+ INs all exhibited negative velocity correlations and were more active during immobility ... all VIP+/M2R+ cells were activated during immobility (Figure 7C)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "These cells come from VIP-Cre mice and strategy 3 VGAT-Cre mice; the dandiset's mouse tg19 is a strategy 1 mouse, without VIP, CR or M2R staining.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-isi-correlations",
+     "statement": "VIP+/CR- cells and type III ISIs were less correlated with SomC and BiC than with PV+ cells.",
+     "source": "Figure 7H, 7I",
+     "quote": "the activity dynamics of VIP+/CR\u2212 cells and Type III ISIs, but not Type I ISIs, were significantly less correlated with SomC and BiC than with perisomatic-targeting PV+ INs (PVBCs and AACs) (Figure 7H, 7I)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "As for fig7-vip-subtypes-immobility.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "The imaging rate is stated as 5.7981 Hz for all three sessions. For sessions 21324 and 21322 that makes imaging 680 s long against 900 s and 879 s of behaviour, and the population activity does not follow running (r = 0.16 and 0.09). Rates of 4.395 and 4.385 Hz give r = 0.72 and 0.87, decode running at 0.94 and 0.89 balanced accuracy, and make all three sessions about 898 s long. Session 21333's stated rate fits.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The unit of the dF/F series is given as lumens; the values are dF/F fractions.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The Fluorescence series is the same HDF5 object as the DfOverF series, so the raw fluorescence the description lists is not in the files.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The description of the subtype column reads \"Recording location in Middle Earth\", and the subtype table has 232 rows for 231 ROIs (id 231 has no ROI).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The labels NOTHING and UNIDENTIFIED, the label \"AAC (RIGHT CELL)\", and the reward and water intervals have no description.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "identifier_missing",
+     "statement": "Nothing states that a ROI index refers to the same cell in every session. The data are consistent with it (velocity correlations of the same index agree across sessions above a shuffled null) but tuning curves agree above the null for only one pair of sessions.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The files hold no depth or position of the ROIs in the imaged volume, which several of the paper's analyses use, and no lick record.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "All three sessions are described as \"session 1 of 4\", and the experiment description names four random-foraging sessions; only three are in the dandiset. The session ids (21322, 21324, 21333) and the start times (21333 two days before the other two) give different orders, and nothing else in the files dates the sessions.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The pixel masks lie on a strip of the 231 cropped frames side by side (x from 0 to 10625), the imaging plane's origin_coords (0, 0) and grid_spacing (50, 50 um) are placeholders, and there are no reference images, so a ROI has no position in the field of view or in depth.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The dandiset holds one of the paper's 16 mice and only its random-foraging sessions, without saying which part of the paper it covers.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The emission wavelength is given as 920 nm, equal to the excitation, and the subject's age is P60D in sessions two days apart, where the paper gives 3 to 5 months.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The description lists raw images of individual cropped ROIs, but each file holds a single cropped series (33 x 46 or 25 x 46 pixels) without saying which ROI it shows.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "With the paper's place-field rule, which requires a peak above 100% dF/F, 1.0% of ROIs qualify, as only 1.1% of tuning curves reach 1.0 dF/F. The dF/F in the files may be scaled or smoothed differently from the paper's.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-14",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The first executed notebook with the conclusion cells and the summary removed, the helper module, the claims file and the paper's full text (PMC7736348). The verifier checked the archive's version and asset metadata through the DANDI REST API, and ran synthetic checks of place_fields, run_events, sparsity_index, velocity_correlation, decode_position and lap_tuning.",
+     "agreed": 26,
+     "of": 26,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-14",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook after the first revision, with the conclusion cells and the summary, the helper module, the claims file, the README, the attempt record and the paper's full text (PMC7736348).",
+     "agreed": 26,
+     "of": 26,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000625-geiller-2020",
+   "type": "reproduction",
+   "title": "Molecularly identified CA1 interneurons during random foraging (Geiller, Vancura et al. 2020)",
+   "description": "Tests the findings of Geiller, Vancura et al. (2020) that can be tested on dandiset 000625, which holds three random-foraging sessions of one mouse with 231 interneurons, 74 of them assigned one of the paper's six subtypes. It checks the imaging clock against the behaviour, then measures each interneuron's correlation with running speed, run-stop responses, spatial selectivity, position decoding and the stability of tuning curves within and across sessions. The sharp-wave ripple, novel-context, goal-oriented learning and VIP experiments are not in the dandiset.",
+   "datasets": [
+    "dandi:000625"
+   ],
+   "papers": [
+    "10.1016/j.neuron.2020.09.013"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_geiller_2020.ipynb",
+     "title": "Reproducing Geiller, Vancura et al. (2020) from dandiset 000625",
+     "executed": "notebooks/000625-geiller-2020/reproduce_geiller_2020.html"
+    }
+   ]
+  }
+ ]
+}
