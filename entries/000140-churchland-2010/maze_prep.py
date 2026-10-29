@@ -43,6 +43,11 @@ S = a standard choice for a detail that cannot change a result):
 - Upper limit of PD performance: PCA space of the c x n preparatory matrix (C; Supplemental
   Experimental Procedures, Estimating the upper limit), here without the fitted unit, as for the
   peri-movement space (A).
+- Units in the peri-movement T matrix: "all neurons except the neuron whose preparatory activity
+  we were trying to capture" (Methods, PCA-based spaces), read as all recorded units (main) or the
+  units passing the inclusion rule ("Analysis of preparatory responses was restricted to neurons
+  with at least 10 spikes/s of preparatory tuning", Methods); `leave_one_out_scores(members=...)`
+  gives the second reading.
 - Array of a unit: the first digit of its id (1 or 2). The file's `units/electrodes` points every
   unit to the PMd electrode group, and the electrodes table has no positions; unit ids
   1xxx map to electrode index xx-1 of that table, which is the PMd group, so prefix 1 is read
@@ -431,10 +436,11 @@ def pd_consistency(x, S, rng, n_draw=25, n_rep=100, standardize=False) -> float:
 
 # ---------------------------------------------------------------- Figure 8 simulation
 
-def simulate_rotation(rng, n_cond=25, hold=100, n_steps=360, init="disk"):
-    """x(t+1) = W x(t), W = [[1, -2pi/360], [2pi/360, 1]] (Figure 8 legend), after holding the
-    initial state for `hold` steps. Returns initial states (c x 2) and released trajectories
-    (c x n_steps x 2)."""
+def simulate_rotation(rng, n_cond=25, n_steps=360, init="disk"):
+    """x(t+1) = W x(t), W = [[1, -2pi/360], [2pi/360, 1]] (Figure 8 legend), released from the
+    initial state. Holding the initial state before release (the figure's preparatory period) would
+    not change either measure, so no hold is simulated. Returns initial states (c x 2) and released
+    trajectories (c x n_steps x 2)."""
     if init == "disk":
         r = np.sqrt(rng.uniform(0, 1, n_cond))
         th = rng.uniform(0, 2 * np.pi, n_cond)
