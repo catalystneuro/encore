@@ -34,7 +34,7 @@ def lead(folder: str) -> str:
 
 def claim_kinds(dandiset: str, paper: str) -> dict[str, str]:
     for path in sorted((ROOT / "claims" / dandiset).glob("*.yaml")):
-        data = yaml.safe_load(path.read_text())
+        data = yaml.load(path.read_text(), Loader=getattr(yaml, "CSafeLoader", yaml.SafeLoader))
         if data.get("paper") == paper:
             return {c["id"]: "link" if c.get("kind") == "link" else c.get("data", "dataset")
                     for c in data["claims"]}
