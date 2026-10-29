@@ -1,0 +1,275 @@
+schema_version: 2
+id: 000223-xue-2022-01
+dataset:
+  archive: dandi
+  id: "000223"
+  version: 0.260528.0906
+  doi: 10.48324/dandi.000223/0.260528.0906
+paper: doi:10.1088/1741-2552/ac8765
+date: "2026-10-29"
+entry: 000223-xue-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/40812150219
+inputs:
+- what: The paper's stored draw of 1'000 release probabilities (notebooks/log_release_Pr.npy), used only
+    for a variant of claim acceptance-9-of-20. Every other method detail taken from the paper's code
+    is cited in the helper module.
+  source: https://github.com/starquakes/mea_spineca_mapping at commit 99c2a478393341a24c58d6ef6ab5db5b0b528d03
+outcomes:
+- claim: data-scale
+  outcome: reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:data-scale
+  measured:
+  - 19
+  - 10
+  - 20
+  - 101.7
+  - 42.6
+  notes: The 20 files hold 19 distinct recordings (two files are the same blob) from 10 subjects, with
+    20 spine and shaft ROI pairs, two of them in one recording. Units per recording are 101.7 with a
+    population SD of 42.6 (sample SD 43.7). Every per-row unit count is within 10% of Table 1; rows 16
+    and 18 have 59 and 101 units against 58 and 100, and in each of these files one unit has no
+    spikes, so the counts of units with spikes equal Table 1's. Each subject id is taken to be one
+    culture, which the unit counts per subject support.
+- claim: table1-best-r
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:table1-best-r
+  notes: 18 of 20 spines have a best-R within 10% of Table 1 under at least one reading of p_thresh (96
+    to 99) and hyperactive strategy, with the Methods' 5-point smoothing; 19 of 20 with the code's
+    lowess (frac 0.0002), and 14 of 20 with the code's default pair (97, percentile strategy). Row 13
+    reaches at most 0.142 against 0.160 (0.146 with the code's smoothing) and row 16 at most 0.538
+    against 0.676. Over the carried-forward readings best-R spans 0.137 to 0.761 (Table 1, 0.148 to
+    0.765). The assignment of files to rows 14 and 15 (two recordings of subject 3112 with 133 units
+    each) and to rows 16 and 20 (subjects 2748 and 2765, 59 units each) is not fixed by culture and
+    unit count; it was taken from the spike contrast, as an assumption. With subjects 2748 and 2765
+    the other way round, rows 16 and 20 would both miss.
+  deviations:
+  - The convolved traces are computed at the frame times as a sum over spikes of the same causal
+    exponential kernel, not with elephant at every 20 kHz sample; for three units of one recording the
+    largest difference from elephant is 0.13 to 0.34 Hz on peaks of 19 to 45 Hz (R above 0.99997).
+  - Units whose convolved trace is constant over the kept frames have an undefined R and are left out
+    of the ranking (one unit in each of rows 16 and 18); the code's np.argsort would rank such a NaN
+    first.
+  - Bursts touching the start or end of the recording, which the code cannot handle (it would raise
+    an error), are dropped, as Methods 2.6 says ("Edge cases, where data began or ended during a
+    burst, were excluded").
+  - Assumption. Table 1 rows are matched to files by subject (culture) and unit count, as the claims
+    file says; where two assignments fit equally (rows 14 and 15; rows 16 and 20) the one whose spike
+    contrast is nearer to Table 1 is taken. In the file with two spines, the first ROI pair is taken
+    as row 9 and the second as row 10. The paper gives no identifier that settles either.
+  - The ROI pairs are taken in the order spine, shaft, as notebook 1 of the code draws and loads them
+    ("the drawing order has to be spine1, adjacent shaft of spine1, ..."); the spine ROI is the smaller
+    of each pair in 19 pairs and equal in one.
+- claim: fig1e-best-r-gap
+  outcome: reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:fig1e-best-r-gap
+  notes: With the carried-forward reading, the gap between best-R and the second R is the largest of the
+    consecutive gaps for 7 of 20 spines (rows 1, 2, 3, 4, 6, 13 and 14), so the unnamed example can be
+    one of them. For the other 13 spines it is not (rank 2 to 46). A weak test, as the claims file says.
+- claim: table1-optimal-thresholds
+  outcome: partially_reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:table1-optimal-thresholds
+  notes: Under the Methods' classification (the claims file's main reading) the maximum F is within 10%
+    of Table 1 for 15 of 19 recordings, with each of the three noise regions; rows 6, 14 and 15 are
+    higher here (0.669, 0.586 and 0.578 against 0.599, 0.485 and 0.520) and row 17 lower (0.478
+    against 0.537). With the code's classification 17 of 19 match. The optimal quantiles differ from
+    Table 1's; Q_test is 0.939 to 0.970 here for every recording where Table 1 has 0.545 to 0.960, and
+    the pair of quantiles lies within 10% of Table 1's for 0 or 1 of 19 recordings. Each maximum is
+    unique, except row 7 with region 2 (5 maxima). Recording 3 (rows 9 and 10) was run with each
+    spine's noise estimate; the two give 0.775 to 0.781, against 0.795.
+  deviations:
+  - The background region of the noise estimate is not in the dataset; three 6 by 6 pixel squares
+    near each spine were placed by a rule fixed before any R was computed (see acceptance-9-of-20),
+    and each was run.
+  - The release probabilities are a fresh draw with the Methods' parameters (seeded), as the claims
+    file's main reading.
+  - The test-R quantiles are computed from the R tensor with weights, which gives the same values as
+    np.nanquantile on the pooled 1'000 by 1'000 test-Rs of the code's compute_test_r.
+- claim: mean-max-fscore
+  outcome: partially_reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:mean-max-fscore
+  measured:
+  - 0.695
+  - 0.121
+  notes: Under the Methods' classification, over 19 recordings (recording 3 once, with row 9's
+    estimate), the mean maximum F is 0.695 and the population SD 0.121 with noise region 0 (0.120 to
+    0.121 over the regions), so the mean is within tolerance and the SD just below the 0.1224 bound.
+    With the code's classification the mean is 0.666 and the SD 0.133, both within tolerance. F-scores
+    are large across recordings, as the paper states; the spread under the main reading is slightly
+    smaller than reported.
+  deviations:
+  - As for table1-optimal-thresholds.
+- claim: acceptance-9-of-20
+  outcome: partially_reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:acceptance-9-of-20
+  measured: 7
+  notes: With Table 1's quantiles (reading a), 7 spines are accepted with each of the three noise
+    regions and 18 of 20 decisions agree with Table 1; rows 3 and 16, accepted in Table 1, are rejected
+    here, in each of five seeds and regions. Row 3 has best-R 0.222 (Table 1, 0.217) but a test threshold
+    of 0.251 against 0.190; row 16 has best-R 0.538 (Table 1, 0.676) and a GT threshold of 0.684. With
+    the optimal quantiles found here (reading b), 7, 7 and 6 are accepted (18, 18 and 17 decisions
+    agree). All readings and regions fall in the claims file's band for a partial reproduction (17 to
+    19 decisions), so the outcome does not depend on the noise region. The stored release
+    probabilities and a Bernoulli draw per spike give the same 7. GT thresholds are within 10% of Table
+    1 for 12 or 13 spines and test thresholds for 10 or 11. Rows 9 and 10, two spines of one recording,
+    have identical thresholds in Table 1 (0.507 and 0.639); here each spine has its own noise
+    estimate and the thresholds differ (0.498 and 0.653 against 0.482 and 0.634 with region 0), which
+    suggests the paper used one noise estimate per recording. Rows 6 and 18 keep their Table 1
+    decisions in five seeds.
+  deviations:
+  - The dataset holds no background ROI for the noise estimate (Methods 2.7, "We selected a background
+    ROI close to the spine"). As the claims file asks, three background squares were placed near each
+    spine before any R was computed, by a fixed rule in the helper (6 by 6 pixels, at least 4 pixels
+    from any ROI, mean image intensity at or below the 25th percentile of the squares in the 96 by 96
+    pixel window around the spine, the three nearest to the spine). Square size, margin, window and
+    percentile are this attempt's choices. Each region was run.
+  - Spine pixel traces are read from the image series with the spine ROI mask of the file; their mean
+    equals the stored ROI trace exactly in every recording.
+- claim: best-r-accepted-vs-rejected
+  outcome: partially_reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:best-r-accepted-vs-rejected
+  measured:
+  - 0.622
+  - 0.337
+  - 5
+  notes: With this attempt's classification (7 accepted, 13 rejected, reading a, every region), accepted
+    spines have best-R 0.622 (SD 0.081) and rejected 0.337 (SD 0.137); both means are within tolerance.
+    The Mann-Whitney test gives the smaller U = 5 (86 for the accepted group), two-sided p = 0.0015
+    and one-sided p = 0.0008, so the accepted group is higher with P below 0.05. U is not within 12 ±
+    1.2; with 7 and 13 spines in place of 9 and 11 the statistic is on a different scale. Reading b
+    with region 2 gives U = 10 (6 and 14 spines, p = 0.0093).
+- claim: best-r-not-predictive
+  outcome: partially_reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:best-r-not-predictive
+  measured:
+  - 0.625
+  - 0.515
+  notes: The largest best-R of a rejected spine is 0.625 (row 17), within tolerance of about 0.6, and it
+    exceeds the smallest accepted best-R, so no cut on best-R separates the two groups. The smallest
+    accepted best-R is 0.515 (row 2), not about 0.2; row 3, accepted in Table 1 with 0.217, is rejected
+    here. Reading b with region 2 gives a largest rejected best-R of 0.675 (row 9).
+- claim: fig5a-rejection-scenarios
+  outcome: reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:fig5a-rejection-scenarios
+  measured:
+  - 5
+  - 4
+  - 4
+  notes: All three scenarios occur among the rejected spines under every reading and region. With Table
+    1's quantiles and region 0, 5 spines fall below the test threshold only, 4 below the GT threshold
+    only and 4 below both (Table 1, 4, 1 and 6); the other readings and regions give 5 to 9, 2 to 4 and
+    3 to 4.
+- claim: fig5a-threshold-order
+  outcome: reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:fig5a-threshold-order
+  notes: With Table 1's quantiles and region 0, the test threshold is above the GT threshold for 14
+    spines and below it for 6 (Table 1, 15 and 5); the other readings and regions give 15 to 18 and 2 to
+    5.
+- claim: table1-network-measures
+  outcome: not_reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:table1-network-measures
+  notes: Spike contrast is within 10% of Table 1 for all 19 recordings with all sorted units, whole
+    recording or imaging span (16 of 19 without the hyperactive units). OUT/IN is within 10% for at
+    most 6 of 19 recordings under any combination of unit set, span and burst extension, so both
+    measures match for 6 recordings, below the 10 the claims file asks for a partial reproduction.
+    OUT/IN here is mostly higher than in Table 1 (row 8, 0.419 against 0.060; row 6, 0.762 against
+    0.189). With the bursts of each p_thresh and strategy, 10 of 19 recordings can be matched one by one,
+    and row 8 reaches at least 0.139 under every reading. The spike contrast part of the claim holds;
+    the OUT/IN values could not be recovered with the burst detection the paper describes. For rows 14,
+    15, 16 and 20 the spike contrast also decided the row-to-file assignment (table1-best-r), so its
+    match there is not independent.
+  deviations:
+  - Spike contrast is computed with elephant 1.2.1, where the paper used 0.10.0; the spike_contrast
+    function and its helper are the same in the two versions apart from the docstring (compared in
+    preparing this attempt).
+  - OUT/IN uses the bursts of the carried-forward reading of table1-best-r.
+- claim: fig5c-spike-contrast-vs-fscore
+  outcome: reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:fig5c-spike-contrast-vs-fscore
+  measured: -0.724
+  notes: Over the 20 rows, spike contrast (all units, imaging span, the combination of
+    table1-network-measures) against the maximum F of noise region 0 and the Methods' classification
+    gives Spearman R = -0.724 (P = 0.0003); over 19 recordings -0.726 (P = 0.0004). Every combination,
+    region and classification gives -0.724 to -0.786 with P at most 0.0004, within -0.737 ± 0.074.
+- claim: fig5d-out-in-vs-fscore
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:fig5d-out-in-vs-fscore
+  measured: 0.592
+  notes: Over the 20 rows, OUT/IN against maximum F gives Spearman R = 0.592 (P = 0.006) with noise
+    region 0 and the Methods' classification, and 0.598 (P = 0.007) over 19 recordings, below the
+    tolerance of 0.672 ± 0.067. The correlation is positive and significant under every combination,
+    region and classification (R 0.592 to 0.759, P at most 0.007). Region 1 gives 0.615 and the code's
+    classification 0.646, both within tolerance, so the outcome depends on the noise region; region 0,
+    the background square nearest the spine, was adopted as the best reading of the Methods' "a
+    background ROI close to the spine". The OUT/IN values themselves differ from Table 1's
+    (table1-network-measures).
+  deviations:
+  - Assumption. The noise region is the background square nearest the spine (region 0), from Methods
+    2.7 ("close to the spine"); regions 1 and 2 are shown. The question is put to the paper's authors
+    in the findings.
+findings:
+- kind: other
+  statement: Two of the 20 files are the same recording. sub-3112/sub-3112_ecephys+ophys.nwb and
+    sub-3112/sub-3112_ses-20210227T190233_ecephys+ophys.nwb share one blob, so the dandiset holds 19
+    recordings, as the paper reports, and its file count of 20 overstates them.
+- kind: identifier_missing
+  statement: Nothing in the files or the dandiset metadata links a file to its row (spine ID) or
+    culture ID in the paper's Table 1. Subjects can be matched to cultures and files to rows by unit
+    count, except two pairs that have equal counts (the two sub-3112 recordings, rows 14 and 15; the
+    sub-2748 and sub-2765 recordings, rows 16 and 20), and the file with two spines does not say which
+    ROI pair is spine 9 and which spine 10.
+- kind: data_missing
+  statement: The background ROIs the paper used to estimate the recording noise for its surrogates
+    (Methods 2.7) are not in the files, which hold only the spine and shaft ROIs. The noise estimate,
+    and with it the acceptance thresholds and F-scores, cannot be repeated exactly.
+- kind: metadata_insufficient
+  statement: The ROIs of the plane segmentation are not labelled as spine or dendritic shaft, nor paired;
+    their roles are inferred from the order the paper's code uses and from their sizes. The stored
+    `Dff` series has no description and is not the dF/F the paper describes (25th percentile over 100
+    frames); recomputed from the ROI traces, the two differ by up to 0.23.
+- kind: metadata_error
+  statement: The imaging plane gives the indicator as "unknown"; the paper used jGCaMP7b. The image
+    series has no description and its unit is "n.a.".
+- kind: other
+  statement: Two files (sub-2748 and sub-3278) each hold one unit with no spikes. Table 1 counts 58 and
+    100 units for these recordings, the files 59 and 101; without the empty units the counts agree.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which p_thresh and which hyperactive-unit strategy were
+    used for each recording (Methods 2.6 says p_thresh "was visually chosen for each data set")? This
+    attempt took, per recording, the pair whose best-R is nearest to Table 1, by the claims file's rule;
+    the code's default pair (97, percentile) gives 14 of 20 best-R values within 10% of Table 1.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Where was the background ROI of each spine (Methods 2.7,
+    "a background ROI close to the spine"), and was one noise estimate used per recording (Table 1
+    gives spines 9 and 10 identical thresholds)? This attempt placed three dim squares near each spine;
+    the regions agree on every outcome except the OUT/IN correlation of Figure 5(d), where region 0
+    gives R = 0.592 and region 1 gives 0.615 against 0.672.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How was the OUT/IN ratio of Table 1 computed (which units,
+    which burst periods, which time span)? With the burst detection of Methods 2.6 and any p_thresh
+    from 96 to 99, OUT/IN matches Table 1 for 10 of 19 recordings at best, and for row 8 it is at least
+    0.139 against 0.060.
