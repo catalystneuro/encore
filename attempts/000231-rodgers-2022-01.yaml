@@ -1,0 +1,407 @@
+schema_version: 2
+id: 000231-rodgers-2022-01
+dataset:
+  archive: dandi
+  id: "000231"
+  version: 0.220904.1554
+  doi: 10.48324/dandi.000231/0.220904.1554
+paper: doi:10.1038/s41597-022-01728-1
+date: 2026-10-29
+entry: 000231-rodgers-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/40812211322
+outcomes:
+- claim: dataset-size
+  outcome: not_reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:dataset-size
+  measured:
+  - 15
+  - 115
+  - 32350
+  - 63979800
+  - 88.86
+  notes: Mice (15 subject folders) and sessions (115 NWB files) match. The video frames match
+    exactly under reading (a), 63,979,800 frames or 88.86 h; reading (b), the longest raw pose
+    series of each session, gives 63,082,162 (-1.40%). The trials match under neither reading,
+    32,350 rows (+74.7%) under (a) and 22,905 with ignore_trial False (+23.7%) under (b), both
+    outside 10%, so the criterion gives not reproduced. Other counts were tried for information
+    (random trials 24,776; random and not spoiled 24,590; ignore_trial False with Table 6 stimuli
+    21,752; ignore_trial False in sessions without optogenetics 17,287); none gives 18,514.
+  deviations:
+  - Video frame counts are read from each file's duration tag at the nominal 30 frames/s, not by
+    decoding 2 TB of video. Every duration is a whole number of seconds; the container duration
+    equals the tag in all 115 files.
+  - Reading (b) takes the longest of the four whiskers' raw pose series in each session, as the
+    criterion's N_frames differs between whiskers.
+- claim: neural-sessions
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:neural-sessions
+  measured: 44
+  notes: 44 files are named with ecephys, and the same 44 hold the extracellular array recording
+    and a non-empty units table.
+- claim: neural-hours
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:neural-hours
+  measured: 33.78
+  notes: Reading (b), the Open Ephys files under sourcedata, gives 33.782 h over 44 sessions, within
+    0.05 h of 33.8; each session has 64 channel files of equal length. Reading (a), the span of the
+    NWB recordings, gives 33.656 h (-0.4%). The NWB files hold 56 to 64 channels.
+  deviations:
+  - The samples of each Open Ephys file are computed from its size (1024-byte header, 2070-byte
+    records of 1024 samples), not read. Each file's index lists one recording; test recordings
+    inside a file, which the Data Records mention, cannot be told apart this way and are counted.
+- claim: task-rules
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:task-rules
+  notes: The task assigned by the rule matches the experiment description in all 115 sessions (30
+    detection, 85 discrimination). Over trials to analyse with Table 6 stimuli, 21,752 of 21,752
+    follow the rule, in every session; all 32,350 trials follow it, including 1,533 with flatter
+    shapes given the rule of their shape. The keywords name "shape discrimination" in every file and
+    were not used.
+  deviations:
+  - The files hold stimuli "flatter convex" and "flatter concave", which Table 6 does not list. The
+    rule is judged on the Table 6 stimuli, and the flatter shapes are shown apart with the rule of
+    their shape.
+- claim: nothing-detection-only
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:nothing-detection-only
+  notes: The experiment description names the task in every file. All 3,749 "nothing" trials are in
+    the 30 detection sessions; none of the 85 discrimination sessions has one.
+- claim: one-task-per-mouse
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:one-task-per-mouse
+  notes: Each of the 15 mice has sessions of one task only, 10 discrimination and 5 detection, by
+    the rule and by the experiment description.
+- claim: servo-positions
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:servo-positions
+  notes: Trials with a shape take exactly close (9,564), medium (9,494) and far (9,543), and all 115
+    sessions hold the three. Nothing trials also carry a servo position.
+- claim: response-window-timing
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_rodgers_2022.ipynb
+  notes: No motor start or stop time is in the files; the trials table's only servo column is
+    servo_position. For information, the window opens a median 3.023 s after start_time (5th to
+    95th percentile 3.020 to 3.443 s), the same for each position.
+- claim: choice-time-first-lick
+  outcome: not_reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:choice-time-first-lick
+  notes: On 32,085 non-spoiled trials, the first lick at or after the window opening is within 5 ms
+    of choice_time on 77.6% (78.0% allowing a lick 5 ms early), below 99% in every session (lowest
+    52.5%); its side matches choice on 99.1%. On the 7,185 trials that do not match, choice_time is
+    0 to 5 ms after the window opening on all of them, a lick in the 100 ms before the opening
+    precedes it on 84.8%, and a lick lies within 5 ms of choice_time on only 5.7%. This suggests
+    that a lick already under way when the window opens is taken as the choice at the opening, which
+    the definition does not say. On all 265 spoiled trials choice_time is NaN, not 45 s after the
+    window.
+- claim: outcome-consistency
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:outcome-consistency
+  notes: On all 32,350 trials outcome is correct exactly when choice equals rewarded_side, error
+    when it is the other side, and spoil exactly when choice is nogo; the 46 direct-delivery trials
+    are consistent too.
+- claim: reward-and-timeout
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:reward-and-timeout
+  notes: The criterion's two readings of the timeout disagree, and it blocks the claim in that case.
+    Over trials to analyse, the median of stop_time minus choice_time is 12.21 s on error trials
+    (reading a, outside 9 +- 0.9 s) and 3.88 s on correct trials, so the difference is 8.34 s
+    (reading b, within); per session the difference is 7.04 to 8.54 s. The reward part holds on the
+    left (reward on 100% of 8,917 correct trials and on none of 2,497 error trials) but not on the
+    right, where the reward series is identical to the right lick series in every file and a
+    "reward" falls on 16.6% of error trials. Which interval the paper calls the timeout is a
+    question for the paper's authors (findings).
+- claim: forced-alternation-start
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:forced-alternation-start
+  notes: In the 110 sessions whose table holds trials numbered 0 to 44, all 4,229 such trials are
+    non-random and the first random trial is number 45. The other 5 tables begin after trial 44;
+    their first random trials are 61, 76, 88, 102 and 124.
+- claim: ignore-trial-definition
+  outcome: not_reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:ignore-trial-definition
+  notes: All 46 direct-delivery, 7,574 non-random and 2,482 optogenetic trials have ignore_trial
+    True, but 160 of the 265 spoiled trials (random, not optogenetic, in 50 sessions) have it False.
+    ignore_trial equals "stim_is_random False or optogenetic" on every trial, and no trial is
+    ignored without one of the four flags (no munged trials are marked).
+- claim: trials-table-structure
+  outcome: not_reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:trials-table-structure
+  notes: id equals trial on all 32,350 rows. stop_time equals the next start_time within 1 ms on
+    32,230 of 32,235 consecutive pairs; the 5 others, in 4 sessions, are all where the trial
+    numbers skip, with gaps of 7.0 to 68.0 s. The criterion asks for every row, so it is not
+    reproduced; the statement holds wherever the next trial is in the table.
+- claim: video-timebase
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:video-timebase
+  notes: All processed and pose timestamps of 460 whisker series are within 9e-13 s of the 0.005 s
+    grid, with no step shorter than one frame (252,019,206 of 252,170,504 steps are one frame, the
+    rest gaps). Contact starts and stops are on the grid and equal frame_start x 0.005.
+  deviations:
+  - For each whisker the angle timestamps are read in full; the other six processed series are
+    checked to have the same length and the same first and last time, not read in full.
+- claim: sync-gap-and-interpolation
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:sync-gap-and-interpolation
+  measured: 0.135
+  notes: No run of interpolated frames is longer than 4 frames. In every session at least 98.4% of
+    trials have a gap at the trial start within 10% of 133 ms for each of C1 to C3 (C0 at least
+    90.3%). The gap (missing time) is a median 0.135 s, 27 frames, and 0.135 to 0.140 s on 90% of
+    trials.
+- claim: bend-null-interpolated
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:bend-null-interpolated
+  notes: Bend is NaN on all 368,927 interpolated frames and on no non-interpolated frame.
+- claim: neural-timestamps
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:neural-timestamps
+  notes: The 44 recordings are stored as a starting time and a rate, so spacing is exactly regular;
+    rates are 29,999.9354 to 30,000.0199 Hz, within 0.0003% of 30 kHz, and none is exactly 30 kHz.
+  deviations:
+  - The files hold no timestamps array, contrary to Table 2; the rate and regular spacing are taken
+    from the stored rate, which equals (samples minus one) over the span.
+- claim: neural-video-alignment
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_rodgers_2022.ipynb
+  notes: The pulse in the neural stream is on an analog input of Open Ephys. The 44 .openephys
+    indexes list 360 ADC and 270 AUX channel files besides the 2,880 CH files, but the dandiset
+    holds only 2,816 CH files (64 per session) and all_channels.events holds only its 1024-byte
+    header. The video side would also need the brightness of every frame of 2 TB of video.
+- claim: behavior-clock-drift
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_rodgers_2022.ipynb
+  notes: All times in the NWB files are in the video timebase, and the dandiset's other files are
+    videos and Open Ephys and Kilosort files; no Arduino log or behavioral timebase is deposited.
+    The README of the original release on Zenodo (ref. 13) lists a per-session behavioral_logfile;
+    whether the claims file should use it is asked of a reader (questions/000231.yaml).
+- claim: unit-quality-isi
+  outcome: not_reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:unit-quality-isi
+  notes: The ISI part holds for all 999 units (largest fraction of intervals below 3 ms 4.93%). The
+    firing-rate part fails under both readings, so the criterion gives not reproduced; with 60 s
+    bins 6 units exceed 20% (largest 23.3%), with one bin per trial 78 do (largest 40.2%); at a 30%
+    bound, 0 and 6. The amplitude criteria were not run.
+  deviations:
+  - In reading (a) the last, partial 60 s bin of each unit's interval is left out (a standard
+    choice).
+- claim: unit-depth-layer
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:unit-depth-layer
+  notes: All 999 units have the depth of the electrodes row their neuron_channel indexes, and
+    electrode ids equal row indexes. The layer depth ranges do not overlap and run 1 (10 to 127 um),
+    2/3, 4, 5a, 5b, 6, 6b (1372 to 1424 um); the files spell L1 to L6 this way, with sublayers.
+  deviations:
+  - The layer names of the files ("1", "2/3", "4", "5a", "5b", "6", "6b") are read as L1 to L6, with
+    5a and 5b in L5 and 6b in L6.
+- claim: electrodes-order
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:electrodes-order
+  measured: 20
+  notes: In all 44 sessions y increases strictly in multiples of 20 um (26 sessions have a larger
+    step at a broken channel), the table has 56 to 64 rows, as many as the data columns, and the
+    ElectricalSeries rows are 0 to n-1. All 2,747 location strings hold the five items, and y minus
+    20 um times the anatomical index including broken channels is constant in each session, so a
+    full probe spans 1260 um between end sites.
+- claim: recording-columns
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:recording-columns
+  notes: Each of the 44 sessions has one electrode group naming a column; C3 13, C1 10, C2 10, D2 3,
+    C4 2, D1 2, and one each of B2, B3, E1 and E2.
+- claim: units-obs-intervals
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:units-obs-intervals
+  notes: All 999 units have one interval holding all their spikes. It starts at the first sample
+    time and ends one sample period after the last sample time, within the criterion's one sample.
+- claim: pose-structure
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:pose-structure
+  notes: All 115 sessions hold four PoseEstimation objects with eight series of shape (N, 2) each,
+    and one conversion value per session; it varies across sessions from 0.0403 to 0.0524 mm per
+    pixel.
+- claim: c0-rare-contacts
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:c0-rare-contacts
+  notes: Over trials to analyse, C0 makes fewer contacts than each of C1, C2 and C3 in 10 of 15
+    mice (C0 fraction 0.0% to 7.3%); in 219CR, 234CR, 245CR, 255CR and KF119 it makes 20% to 49% of
+    contacts.
+  deviations:
+  - A whisker with no contacts table in a session (C0 in 21 sessions, C3 in 8) is counted as making
+    no contacts there.
+- claim: session-min-trials
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:session-min-trials
+  notes: The readings disagree, and the criterion blocks the claim in that case. Under (a),
+    ignore_trial False, one session (228CR, 2019-07-15) has 84 trials; under (b), random and not
+    spoiled, it has 101 and every session has at least 90. Which trials the paper counts is a
+    question for the paper's authors (findings).
+- claim: session-labeling-quality
+  outcome: not_reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:session-labeling-quality
+  measured:
+  - 0.9309
+  - 0.0769
+  notes: The contact part fails under every reading; up to 7.7% of a whisker's contacts in a session
+    hold an interpolated or absent frame, and 16 sessions exceed 2% for C1 to C3 (27 for C0 to C3).
+    The frame part holds for C1 to C3 (at least 99.35% of processed frames not interpolated, at
+    least 97.6% of video frames with a pose) but not for C0 (93.1% and 89.7% at worst). Measured
+    values are under whiskers (i) and frames (a).
+  deviations:
+  - A contact covers its frames from start to stop inclusive, as duration_frames = frame_stop -
+    frame_start + 1 in the files.
+- claim: contacts-structure
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:contacts-structure
+  notes: All 431 contacts tables (290,345 rows) have start_time, stop_time, tip_x, tip_y, base_x,
+    base_y and angle, and no row starts after it stops. 29 whisker-sessions have no table (C0 in 21,
+    C3 in 8), read as whiskers that made no contact, as the criterion's wording allows.
+- claim: nwb-structure
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:nwb-structure
+  notes: Under the naming of Table 1 and UsageNotes.ipynb (one module "behavior"), all 115 files
+    hold left and right licks and rewards, the four raw pose and processed position interfaces with
+    the seven Table 3 series, contacts, the 14 Table 6 columns and a video link that resolves to a
+    deposited video; the 44 ecephys files hold the recording, the electrodes and units with the
+    Table 5 columns. The group names of the Data Records sections are used in no file. 29 files hold
+    three contacts tables, not the four the Data Records describe.
+- claim: file-layout
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:file-layout
+  notes: All 115 NWB files are in their subject's folder and named as described (71
+    behavior+image, 44 behavior+ecephys+image), each with one video in a folder of its name.
+    sourcedata holds a folder for each of the 44 ecephys sessions and no other, each with Open Ephys
+    files and Kilosort/Phy outputs.
+- claim: video-format
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:video-format
+  notes: All 115 videos are Matroska, H.264, at a nominal 30 frames/s; 111 are 640 x 550 and 4 are
+    640 x 600. Frames over 200 exceed the last whisker time by 0.005 to 0.065 s (1 to 13 frames).
+- claim: subjects-sex-age-strain
+  outcome: reproduced
+  notebook: reproduce_rodgers_2022.ipynb
+  output: claim:subjects-sex-age-strain
+  notes: All 15 mice are C57BL/6J (spelled C57BL6/J), 10 female and 5 male (binomial p = 0.302,
+    minority one third, so both sex readings hold), 197 to 436 days old at their first session.
+- claim: tracking-mean-error
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The human-curated labels and held-out predictions are not in the dandiset, whose files are
+    NWB files, videos and Open Ephys and Kilosort files. The README of the original release on
+    Zenodo (ref. 13) lists a folder trainset/ with per-frame error tables; whether the claims file
+    should use it is asked of a reader (questions/000231.yaml).
+- claim: tracking-error-dataset1
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As for tracking-mean-error; asked of a reader (questions/000231.yaml).
+- claim: tracking-error-challenge
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As for tracking-mean-error; depends on tracking-error-dataset1.
+- claim: prior-task-strategies
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: A finding of ref. 8 restated without a method; the claims file blocks it.
+- claim: prior-orthogonal-subspaces
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: A finding of ref. 10 restated without a method; the claims file blocks it.
+findings:
+- kind: data_missing
+  statement: The analog input that carries the trial synchronization pulse in the neural stream is
+    not deposited. Each session's Continuous_Data.openephys lists 100_ADC1 to 100_ADC8 and
+    100_AUX1 to 100_AUX6, but sourcedata holds only the 64 100_CH files, and all_channels.events
+    holds no events, so the neural to video alignment cannot be checked from the raw data.
+- kind: data_missing
+  statement: The behavioral (Arduino) timebase is not in the dataset, and neither are the curated
+    whisker training sets and held-out predictions behind the tracking accuracy figures, which the
+    abstract offers to users.
+- kind: metadata_error
+  statement: The keywords of all 30 detection sessions include "shape discrimination", contrary to
+    their experiment description ("whisker-based shape detection").
+- kind: metadata_error
+  statement: In every file the right reward series (described as the times of reward deliveries to
+    the right) is identical to the right lick series, 315,782 times in all against 12,447 correct
+    right-rewarded trials, so right reward times are not available.
+- kind: metadata_insufficient
+  statement: 1,533 trials have stimulus "flatter convex" or "flatter concave", values
+    that Table 6 does not list or describe.
+- kind: metadata_error
+  statement: choice_time is NaN on all 265 spoiled trials, where Table 6 says it is 45 s after the
+    window opens. On 22% of the other trials it falls 0 to 5 ms after the window opening with no
+    lick within 5 ms on 94% of them, so it is not the first lick after the window as Table 6
+    defines it.
+- kind: metadata_error
+  statement: 160 spoiled trials have ignore_trial False, where Table 6 says spoiled trials have it
+    True; in the files ignore_trial equals "non-random or optogenetic" on every trial.
+- kind: paper_inconsistency
+  statement: The Data Records sections name processing groups behavioral_events,
+    raw_whisker_position, processed_whisker_position and identified_whisker_contacts, with
+    interfaces whisker_C2; the files, Table 1 and the paper's UsageNotes.ipynb use one module
+    behavior with raw_position_whisker_C2, processed_position_whisker_C2 and
+    contacts_by_whisker_C2. The access code printed in the Data Records fails on these files.
+- kind: metadata_error
+  statement: The neural recording has no timestamps array, which Table 2 and the paper's access
+    code (.timestamps[:]) describe; its times are stored as a starting time and a rate.
+- kind: other
+  statement: 29 files hold three contacts tables, not the four the Data Records describe (no C0
+    table in 21, no C3 table in 8), without a note on whether the whisker made no contact.
+- kind: other
+  statement: The dataset does not meet the paper's inclusion criteria as the files allow them to be
+    checked. In 27 sessions more than 2% of a whisker's contacts hold an interpolated or absent
+    frame (16 sessions for C1 to C3, up to 7.7%), C0 is labeled in fewer than 95% of frames in 3 to
+    7 sessions, and one session (228CR, 2019-07-15) has 84 trials with ignore_trial False.
+- kind: other
+  statement: The paper's 18,514 trials cannot be recovered from the files, which hold 32,350 trials,
+    22,905 with ignore_trial False; no other combination of the trial flags tried gives it. The
+    video frame total (63,979,800) and the 44 neural sessions match exactly.
+- kind: methods_unavailable
+  statement: "Question for the paper's authors: how is the typical 9 s timeout measured? After an
+    error, stop_time minus choice_time is a median 12.21 s, and 8.34 s longer than after a correct
+    trial; only the second is near 9 s."
+- kind: methods_unavailable
+  statement: "Question for the paper's authors: which trials count as \"trials to analyze\" in the
+    rule that excludes sessions with fewer than 90? With ignore_trial False one included session
+    has 84; with random, non-spoiled trials every session has at least 90."
