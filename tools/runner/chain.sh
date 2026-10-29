@@ -81,8 +81,15 @@ is_done(){ done_roles | grep -qx "$1"; }
 workflow_of(){ case "$1" in paper-match|claims|claims-check|answer) echo papers.yml;; *) echo attempt.yml;; esac; }
 run_of(){ gh run list --workflow "$(workflow_of "$1")" --limit 100 --json databaseId,displayTitle,status \
   | python "$here/describe.py" run "$d" "$1"; }
-wait_run(){ local st; while true; do
-  st=$(gh run view "$1" --json status,conclusion --jq '"\(.status) \(.conclusion)"' 2>/dev/null) || { sleep 60; continue; }
+# A failed check is retried, but logged after 5 in a row and then hourly, so that a chain that cannot reach
+# GitHub (as on 2026-10-29, when every gh call from the running chains failed TLS for 15 hours) shows in its log.
+wait_run(){ local st fails=0; while true; do
+  if ! st=$(gh run view "$1" --json status,conclusion --jq '"\(.status) \(.conclusion)"' 2>&1); then
+    fails=$((fails + 1))
+    [ $((fails % 60)) = 5 ] && log "cannot check run $1 ($fails tries): $(echo "$st" | head -n 1)" >&2
+    sleep 60; continue
+  fi
+  fails=0
   case "$st" in completed*) echo "${st#completed }"; return;; esac; sleep 60; done; }
 
 # Put the branch back where a run started, and check that it took.
