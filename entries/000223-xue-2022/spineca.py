@@ -28,8 +28,9 @@ passage of the paper taken by the author (protocol, author step 1.6). "Assumptio
   peak_prominences, strict as in the code), edges where the smoothed rate falls to the baseline
   (index arithmetic of the code), bursts touching the start or end dropped (Methods: "Edge
   cases ... were excluded"; the code would stop with an error there), bursts without spikes
-  dropped, bursts closer than 75 ms merged by the code's single pass, extended by 0.1 s before
-  and 0.5 s after. Smoothing by lowess over 5 points (Methods, n_span = 5, the claims' main
+  dropped, bursts closer than 75 ms merged by the code's single pass (a variant merges every
+  chain into one burst, as Methods 2.6 says, "merged into a single larger burst"), extended by
+  0.1 s before and 0.5 s after. Smoothing by lowess over 5 points (Methods, n_span = 5, the claims' main
   reading) or with frac 0.0002 (the code, a variant). Hyperactive units: rate at or above the
   99.75th percentile ("pc", the code's default) or at or above 15 Hz ("hz"). p_thresh 96 to 99.
 - Frames excluded: frames whose time on np.linspace(0, MEA duration, n_frames) lies strictly
@@ -351,8 +352,12 @@ def _burst_counts(s, strategy, smoothing, bin_s=10e-3):
 
 
 def detect_bursts(s, p_thresh=97, strategy="pc", smoothing="span5", p_baseline=85,
-                  bin_s=10e-3, t_ipi=50e-3, t_ibi=75e-3):
-    """Network bursts as (start, end) arrays in seconds, before the 0.1 s / 0.5 s extension."""
+                  bin_s=10e-3, t_ipi=50e-3, t_ibi=75e-3, merge="code"):
+    """Network bursts as (start, end) arrays in seconds, before the 0.1 s / 0.5 s extension.
+
+    merge="code" is the code's single pass, which keeps the first two bursts of a chain of three
+    or more closer than t_ibi and drops the rest (counted in info["chain_lost"]); merge="full"
+    merges every chain into one burst, as Methods 2.6 says (a variant)."""
     spikes, tvec, n, sm_n, n_drop = _burst_counts(s, strategy, smoothing, bin_s)
     thr = np.percentile(n, p_thresh)
     base = np.percentile(n, p_baseline)
@@ -377,10 +382,16 @@ def detect_bursts(s, p_thresh=97, strategy="pc", smoothing="span5", p_baseline=8
     cnt = np.array([np.count_nonzero((spikes >= a) & (spikes <= b)) for a, b in zip(starts, ends)])
     empty = int(np.sum(cnt == 0))
     starts, ends = starts[cnt > 0], ends[cnt > 0]
-    # the code's single merging pass
+    chain_lost = 0
     if len(starts) > 1:
         ibi = starts[1:] - ends[:-1]
         i_neg = np.where(ibi < t_ibi)[0]
+        chain_lost = int(np.sum(np.isin(i_neg - 1, i_neg)))
+    if merge == "full" and len(starts) > 1:
+        group = np.concatenate([[0], np.cumsum(ibi >= t_ibi)])
+        starts = np.array([starts[group == k].min() for k in np.unique(group)])
+        ends = np.array([ends[group == k].max() for k in np.unique(group)])
+    elif len(starts) > 1:  # the code's single merging pass
         ends = ends.copy()
         starts = starts.copy()
         ends[i_neg] = ends[i_neg + 1]
@@ -389,7 +400,8 @@ def detect_bursts(s, p_thresh=97, strategy="pc", smoothing="span5", p_baseline=8
         ok = ~np.isnan(starts)
         starts, ends = starts[ok], ends[ok]
     info = {"threshold": thr, "baseline": base, "n_peaks": int(len(peaks)), "edge_dropped": edge,
-            "empty_dropped": empty, "n_hyperactive": n_drop, "n_bursts": int(len(starts))}
+            "empty_dropped": empty, "n_hyperactive": n_drop, "n_bursts": int(len(starts)),
+            "chain_lost": chain_lost}
     return starts, ends, info
 
 
@@ -546,12 +558,13 @@ def fscore_grid(R, q=None, beta=0.5):
     best unit is another is FP if its best R passes and TN if not (Methods 2.8, "methods") or
     FN (the code, "code"). With unit i removed, the best R of the other units passing is FP,
     else TN. Threshold: the larger of the two quantiles.
-    Returns {reading: (F, counts)}, F indexed [Q_test, Q_GT]."""
+    Returns {reading: (F, counts)}, F indexed [Q_test, Q_GT], and "stats"."""
     if q is None:
         q = np.round(np.linspace(0, 1, 100), 3)
     n, S, _ = R.shape
     zeros = lambda: np.zeros((len(q), len(q)))
     c = {k: zeros() for k in ["TP", "FN_m", "FP_m", "TN_m", "FN_c", "FP_rem", "TN_rem"]}
+    n_hit, gt_med, test_med = 0, [], []
     for i in range(n):
         Ri = R[i].astype(float)                      # surrogates x units
         Ri = np.where(np.isfinite(Ri), Ri, -np.inf)
@@ -564,8 +577,12 @@ def fscore_grid(R, q=None, beta=0.5):
         nogt = Rno.max(axis=1)
         sb_counts = np.bincount(second, minlength=n)
         js = np.where(sb_counts > 0)[0]
-        r1 = weighted_quantile(R[js, :, i].astype(float).ravel(), np.repeat(sb_counts[js], S), q)
+        r1 = weighted_quantile(R[js, :, i].astype(float).ravel(), np.repeat(sb_counts[js], S), np.append(q, 0.5))
+        r1, test_r_median = r1[:-1], r1[-1]
         r2 = np.nanquantile(R[i, :, i].astype(float), q)
+        n_hit += int(hit.sum())
+        gt_med.append(np.nanmedian(R[i, :, i].astype(float)))
+        test_med.append(test_r_median)
         thr = np.maximum(r1[:, None], r2[None, :])  # [Q_test, Q_GT]
 
         def n_above(vals):
@@ -594,6 +611,10 @@ def fscore_grid(R, q=None, beta=0.5):
             rec = TP / (TP + FN)
             F = (1 + beta ** 2) * prec * rec / (beta ** 2 * prec + rec)
         out[reading] = (F, {"TP": TP, "FN": FN, "FP": FP, "TN": TN, "q": q})
+    # share of surrogates whose best unit is their own unit (Methods 2.8 calls the others "rare"),
+    # and the median over units of each unit's median GT-R and median test-R
+    out["stats"] = {"hit_fraction": n_hit / (n * S), "gt_r_median": float(np.nanmedian(gt_med)),
+                    "test_r_median": float(np.nanmedian(test_med))}
     return out
 
 
