@@ -26,8 +26,8 @@ re-implemented here from the paper's Methods and code (`makin.py`).
 | Quality falls and the advantage grows with derivative order | Partially reproduced (3 of 4 widths) |
 | The advantage grows with derivative order for each amount of training data | Reproduced |
 | Static decoders' position SNR is affine in the fraction of neurons, KFlatent the most curved | Not reproduced |
-| Decoders with a kinematic model rise faster, then saturate | Reproduced |
-| Tests across the paper's 49 sessions (12 claims) | Blocked: the dandiset holds one session (single-session values are printed) |
+| Decoders with a kinematic model rise faster, then saturate | Reproduced, only because KFlatent (+KF) diverges with 13 units |
+| Tests across the paper's 49 sessions (12 claims) | Blocked: the dandiset holds one session (single-session values are printed for ten of them) |
 | Monkey C against monkey I | Blocked: monkey C's data have no archive identifier |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
