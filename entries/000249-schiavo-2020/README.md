@@ -5,8 +5,9 @@ Tests the findings of [Schiavo et al. (2020)](https://doi.org/10.1038/s41586-020
 collection the dandiset links (doi:10.6084/m9.figshare.c.5043830.v6). The dandiset holds the raw,
 unaligned two-photon movies of 54 mice, with no ROIs, stimulus times or stimulus order, so the
 paper's imaging findings cannot be tested from it. The whole-cell, slice and operant findings are
-tested on the figshare recordings. The in vivo whole-cell recordings show no current that
-follows the played calls, so the in vivo findings are blocked.
+tested on the figshare recordings. In the in vivo whole-cell recordings the current almost never
+follows the played calls (two of the listed cells carry an inward current during the call), so the
+Methods' inclusion rule leaves too few cells and the in vivo findings are blocked.
 
 | Claim | Outcome |
 |---|---|
@@ -14,7 +15,7 @@ follows the played calls, so the in vivo findings are blocked.
 | Slice IPSCs depress faster than EPSCs at 175 ms | Not reproduced (on an assumption) |
 | Only prototype listeners lengthen lever presses | Blocked: methods underspecified |
 | Lever press counts do not increase | Blocked: methods underspecified |
-| In vivo EPSC tuning in experienced and naive cortex | Blocked: no call-evoked currents in the recordings |
+| In vivo EPSC tuning in experienced and naive cortex | Blocked: call-evoked currents in too few recorded cells |
 | Morph-evoked EPSCs larger in experienced females | Blocked: as above |
 | IPSCs weaker in naive females | Blocked: as above |
 | IPSC-EPSC ratio correlated with ISI in experienced females | Blocked: as above |

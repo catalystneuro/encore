@@ -73,6 +73,7 @@ import io
 import os
 import re
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
@@ -109,6 +110,10 @@ TRACE_BIN_S = 0.005          # current traces kept at 5 ms bins, for trial avera
 TRACE_WIN_S = (-1.0, 3.0)    # around call onset
 
 _session = requests.Session()
+# Retry dropped connections and server errors (a standard choice that cannot change a result).
+_session.mount("https://", requests.adapters.HTTPAdapter(max_retries=requests.adapters.Retry(
+    total=5, connect=5, read=5, backoff_factor=2, status_forcelist=(429, 500, 502, 503, 504),
+    allowed_methods=("GET",))))
 
 
 # ---------------------------------------------------------------- DANDI
@@ -264,11 +269,17 @@ def figshare_files(key):
     return {f["name"]: f for f in art["files"]}, art
 
 
-def fetch(url):
-    """Bytes of a file, in memory."""
-    r = _session.get(url, timeout=300)
-    r.raise_for_status()
-    return r.content
+def fetch(url, tries=4):
+    """Bytes of a file, in memory (retried when the connection drops mid-transfer)."""
+    for k in range(tries):
+        try:
+            r = _session.get(url, timeout=300)
+            r.raise_for_status()
+            return r.content
+        except (requests.ConnectionError, requests.exceptions.ChunkedEncodingError):
+            if k == tries - 1:
+                raise
+            time.sleep(5 * (k + 1))
 
 
 def read_sheet(key, name_contains=".xlsx"):
