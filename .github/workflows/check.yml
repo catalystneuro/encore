@@ -41,14 +41,8 @@ jobs:
         run: python -m pytest -q tests
 
       - name: Check every entry
-        run: |
-          status=0
-          for dir in entries/*/; do
-            echo "::group::${dir}"
-            python tools/entry.py check "$dir" || status=1
-            echo "::endgroup::"
-          done
-          exit $status
+        # One process for all entries, so the claims files and attempt records they share are read once.
+        run: python tools/entry.py check entries/*/
 
       - name: List the entries to run
         id: changed

@@ -2,6 +2,7 @@
 
     python tools/entry.py lock  entries/<name>   # pin the environment
     python tools/entry.py check entries/<name>   # validate metadata and conventions
+    python tools/entry.py check entries/*/       # the same for every entry, in one process
     python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
     python tools/entry.py all   entries/<name>   # check, then run
     python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
@@ -40,6 +41,7 @@ script itself. The entry's own dependencies come only from its lock file.
 from __future__ import annotations
 
 import argparse
+import functools
 import json
 import os
 import re
@@ -77,26 +79,46 @@ def dataset_id(record: dict) -> str | None:
     """The identifier of the dataset a claims file or attempt record is about, in its archive."""
     return (record.get("dataset") or {}).get("id")
 
+@functools.cache
 def schema(name: str) -> Draft202012Validator:
     return Draft202012Validator(json.loads((ROOT / "schemas" / f"{name}.schema.json").read_text()))
 
 
+# Every entry's check reads every claims file and attempt record, so each text is parsed and validated once
+# per process (keyed by its contents, so a changed file is read again), with libyaml when PyYAML has it.
+# Nothing here changes what it reads.
+LOADER = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
+
+
+@functools.cache
+def _parsed(text: str):
+    try:
+        return yaml.load(text, Loader=LOADER), None
+    except yaml.YAMLError as e:
+        return None, f"not valid YAML: {e}"
+
+
+@functools.cache
+def _schema_errors(text: str, schema_name: str) -> tuple[str, ...]:
+    data, _ = _parsed(text)
+    return tuple(f'{"/".join(str(p) for p in err.path) or "(top level)"}: {err.message}'
+                 for err in sorted(schema(schema_name).iter_errors(_plain(data)), key=lambda e: list(e.path)))
+
+
 def load(report: Report, path: Path):
     """The parsed file, or None after reporting that it is not valid YAML."""
-    try:
-        return yaml.safe_load(path.read_text())
-    except yaml.YAMLError as e:
-        report.error(path.relative_to(ROOT), f"not valid YAML: {e}")
-        return None
+    data, problem = _parsed(path.read_text())
+    if problem:
+        report.error(path.relative_to(ROOT), problem)
+    return data
 
 
 def validate(report: Report, path: Path, schema_name: str) -> dict | None:
     data = load(report, path)
     if data is None:
         return None
-    for err in sorted(schema(schema_name).iter_errors(_plain(data)), key=lambda e: list(e.path)):
-        where = "/".join(str(p) for p in err.path) or "(top level)"
-        report.error(path.relative_to(ROOT), f"{where}: {err.message}")
+    for message in _schema_errors(path.read_text(), schema_name):
+        report.error(path.relative_to(ROOT), message)
     return data if isinstance(data, dict) else None
 
 
@@ -404,14 +426,31 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("command", choices=["lock", "check", "run", "all", "handover"])
-    parser.add_argument("entry", type=Path, help="the entry directory, e.g. entries/000582-sargolini-2006")
+    parser.add_argument("entry", type=Path, nargs="+",
+                        help="the entry directory, e.g. entries/000582-sargolini-2006; `check` takes several")
     parser.add_argument("--output-dir", type=Path, help="where executed notebooks go")
     parser.add_argument("--timeout", type=int, default=3600, help="seconds allowed per cell")
     parser.add_argument("--max-minutes", type=float, default=30,
                         help="a notebook that takes longer than this fails")
     args = parser.parse_args()
 
-    entry_dir = args.entry.resolve()
+    if args.command == "check" and len(args.entry) > 1:
+        # Several entries in one process, so that the claims files and records are read once.
+        failed = 0
+        for entry in args.entry:
+            entry_dir = entry.resolve()
+            if not (entry_dir / "entry.yaml").is_file():
+                parser.error(f"{entry} has no entry.yaml")
+            report = check(entry_dir)
+            print(f"{entry_dir.name}: {len(report.errors)} error(s)")
+            for line in report.errors:
+                print(f"  error: {line}")
+            failed += bool(report.errors)
+        print(f"{failed} of {len(args.entry)} entries with errors")
+        return 1 if failed else 0
+    if len(args.entry) > 1:
+        parser.error(f"{args.command} takes one entry")
+    entry_dir = args.entry[0].resolve()
     if not (entry_dir / "entry.yaml").is_file():
         parser.error(f"{args.entry} has no entry.yaml")
     output_dir = args.output_dir or ROOT / "executed" / entry_dir.name
