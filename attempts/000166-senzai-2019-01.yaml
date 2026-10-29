@@ -1,0 +1,657 @@
+schema_version: 2
+id: 000166-senzai-2019-01
+dataset:
+  archive: dandi
+  id: '000166'
+  version: 0.250624.0434
+  doi: 10.48324/dandi.000166/0.250624.0434
+paper: doi:10.1016/j.neuron.2018.12.009
+date: '2026-10-29'
+entry: 000166-senzai-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/40815140604
+outcomes:
+- claim: fig1f-sink-b-deeper
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_senzai_2019.ipynb
+  notes: The light-evoked CSD needs the times of the 520 nm flashes in the 13 stimulated mice. The dataset holds
+    them in 2 files only, the `Visual laser` tables of YMV05 and YMV08 (498 intervals of 0.4 s each, plus the optogenetic
+    pulses). With 2 mice a signed-rank test cannot reach p < 0.05 (its smallest two-sided p is 0.5). The DOWN-UP
+    half of the comparison is computed under fig1g-landmark-distances-consistent.
+- claim: fig1f-other-landmarks-same-depth
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Needs the light-evoked landmarks a', d' and e', which need the flash times of 13 mice; the dataset has
+    them for 2 (see fig1f-sink-b-deeper). It also depends on fig1f-sink-b-deeper.
+- claim: fig1g-landmark-distances-consistent
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Every reading was run (CSD as the unsmoothed second difference of the claims file and, as a variant, over
+    two sites; windows 0-100 and 0-50 ms; "varied" as the range and as the largest deviation from the mean). The
+    MUA peak c is found in all 19 mice, but the rule of the claims file (most negative CSD for b above c and d below
+    it, most positive for a above b and e below d) places all five landmarks in only 15 or 16 mice, and among those
+    the ranges of the adjacent distances are 220 to 620 um (largest deviations 114 to 420 um), against less than
+    110 um. In 7 mice landmark a falls one site above b, a single-site deviation of the unsmoothed CSD. The paper
+    places the landmarks by eye ("the most prominent current source density (CSD) sinks and sources", Results, Anchoring
+    Mesoscopic Patterns, paragraph 1; asterisks in Figure 1D), and neither it nor the claims file gives a rule that
+    can be run; the rule here is not the paper's procedure, so the claim is blocked with every reading shown. The
+    claim also depends on fig1f-sink-b-deeper, blocked as data_missing, but uses only its DOWN-UP landmarks, which
+    the dataset can give. Question for the paper's authors (finding) is how the landmarks were chosen.
+  deviations:
+  - DOWN-UP transitions are the dataset's UP onsets that follow a DOWN interval, averaged over the 1000 s of each
+    session holding the most of them (114 to 1,541 transitions), not over the whole session.
+  - MUA power (landmark c) is computed from the two 30 s raw blocks used for the waveforms, not the whole session.
+  - Site 0 is taken as the most superficial, as the files' rel_y runs from -1 to -64; the electrode table gives
+    no depth.
+- claim: fig2b-six-coherence-clusters
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig1g-landmark-distances-consistent, blocked as methods_underspecified, as its test compares
+    across mice in normalized depth, which needs the landmarks. Apart from this, the claim was not attempted in
+    this run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102
+    h of recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it
+    needs (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig2b-clusters-same-across-states
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig2b-six-coherence-clusters, which is blocked, through fig1g-landmark-distances-consistent,
+    as methods_underspecified. The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results,
+    Anchoring Mesoscopic Patterns, paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent
+    does not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that
+    rests on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted
+    in this run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook
+    (102 h of recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses
+    it needs (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig2c-six-gamma-ics
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig1g-landmark-distances-consistent, blocked as methods_underspecified, as its test compares
+    across mice in normalized depth, which needs the landmarks. Apart from this, the claim was not attempted in
+    this run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102
+    h of recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it
+    needs (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: ica-volume-conduction-fraction
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig2c-six-gamma-ics, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig2d-superficial-ic-power
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig2c-six-gamma-ics, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig3c-slow-oscillation-nrem-deep
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig2b-six-coherence-clusters, which is blocked, through fig1g-landmark-distances-consistent,
+    as methods_underspecified. The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results,
+    Anchoring Mesoscopic Patterns, paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent
+    does not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that
+    rests on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted
+    in this run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook
+    (102 h of recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses
+    it needs (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig3d-slow-oscillation-gamma-coupling
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Its criterion needs the phase site in layer 6 and the superficial and deep sites (above landmark b, below
+    landmark c), placed by the depth landmarks. The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD
+    map (Results, Anchoring Mesoscopic Patterns, paragraph 1, and the asterisks of Figure 1D), and the rule run
+    for fig1g-landmark-distances-consistent does not place them consistently, so normalized depth, layer 4 and layer
+    6 sites, and every layer group that rests on them cannot be formed by a procedure the paper gives. Apart from
+    this, the claim was not attempted in this run; reading the LFP of the 19 files alone is estimated at 46 to 56
+    min across runs of the notebook (102 h of recording; the estimate moves with the network), above the 30 min
+    notebook limit, before the analyses it needs (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units,
+    K-means).
+- claim: slow-gamma-superficial-wake
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig2b-six-coherence-clusters, which is blocked, through fig1g-landmark-distances-consistent,
+    as methods_underspecified. The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results,
+    Anchoring Mesoscopic Patterns, paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent
+    does not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that
+    rests on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted
+    in this run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook
+    (102 h of recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses
+    it needs (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig3c-3-6hz-layer4
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig2b-six-coherence-clusters, which is blocked, through fig1g-landmark-distances-consistent,
+    as methods_underspecified. The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results,
+    Anchoring Mesoscopic Patterns, paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent
+    does not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that
+    rests on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted
+    in this run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook
+    (102 h of recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses
+    it needs (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig3d-3-6hz-cross-frequency
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Its criterion needs the phase site in layer 4, placed by the depth landmarks. The paper places landmarks
+    a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns, paragraph 1, and the asterisks
+    of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does not place them consistently, so
+    normalized depth, layer 4 and layer 6 sites, and every layer group that rests on them cannot be formed by a
+    procedure the paper gives. Apart from this, the claim was not attempted in this run; reading the LFP of the
+    19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of recording; the estimate moves
+    with the network), above the 30 min notebook limit, before the analyses it needs (CSD, coherence clustering,
+    ICA, wavelet coupling for 1,477 units, K-means).
+- claim: figs2c-3-6hz-theta-anticorrelation
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Its criterion needs the 3-6 Hz power of layer 4, placed by the depth landmarks. The paper places landmarks
+    a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns, paragraph 1, and the asterisks
+    of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does not place them consistently, so
+    normalized depth, layer 4 and layer 6 sites, and every layer group that rests on them cannot be formed by a
+    procedure the paper gives. Apart from this, the claim was not attempted in this run; reading the LFP of the
+    19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of recording; the estimate moves
+    with the network), above the 30 min notebook limit, before the analyses it needs (CSD, coherence clustering,
+    ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig3f-units-lock-3-6hz-trough
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Its criterion needs the layer 4 LFP whose 3-6 Hz phase the spikes are taken on, placed by the depth landmarks.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: figs2d-visual-offset-rebound
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Needs the 400 ms flash times across mice; the dataset holds them for 2 of the 13 stimulated mice (YMV05
+    and YMV08, 498 intervals of 0.4 s each), too few for a test across mice. The layer 4 site it uses is also placed
+    by the landmarks, which could not be placed (fig1g-landmark-distances-consistent).
+- claim: fig3ab-alpha-analogy
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: The criterion records this claim as methods_underspecified; the paper compares with published monkey figures
+    (Bollimunta et al. 2008) and gives no measure of similarity. Not run.
+- claim: fig4a-unit-counts
+  outcome: reproduced
+  notebook: reproduce_senzai_2019.ipynb
+  output: claim:fig4a-unit-counts
+  measured:
+  - 1477
+  - 246
+  - 1016
+  notes: 1,477 units in the files (1,476 of quality good; 1,472 ± 147). From the wide-band mean waveform, as the
+    Results describe ("the unfiltered waveform was quantified by the trough-to-peak latency", Assignment of Neurons
+    to Physiologically Defined Layers, paragraph 1), 246 narrow I cells (251 ± 25) and 1,016 wide E cells (1,075
+    ± 108); 105 positive units, no fiber unit, and 110 units with fewer than 10 spikes in the 60 s used. With a
+    300 Hz high-pass the counts are 320 and 941, both outside tolerance. At thresholds of 0.50 and 0.60 ms the I
+    count is 215 and 323. Each mouse contributes 5 to 20 I cells.
+  deviations:
+  - The dataset holds no waveforms; mean waveforms are averaged from 60 s of raw signal per session (two 30 s blocks
+    at 1000 and 3000 s, median 127 spikes per unit), where the paper used all spikes, and 110 units with fewer than
+    10 spikes there are left unclassified.
+  - The wide-band signal follows the Results' unfiltered waveform; the STAR Methods do not say whether the waveform
+    is filtered, and the 300 Hz high-pass of Kilosort is shown as a variant, which does not match.
+  - The fiber rule reads the STAR Methods' kurtosis of the second derivative of the normalized waveform, with units
+    beyond the mean ± 5 SD of the negative units as fibers; none is.
+- claim: fig4a-ccg-classification
+  outcome: not_reproduced
+  notebook: reproduce_senzai_2019.ipynb
+  output: claim:fig4a-ccg-classification
+  measured:
+  - 673
+  - 187
+  - 74.9
+  - 72.7
+  notes: 673 CCG-based E cells and 187 I cells (347 ± 35 and 100 ± 10), 122 of them both; 74.9% of CCG-based E cells
+    are waveform E cells and 72.7% of CCG-based I cells are waveform I cells (80.9% and 79.5% of those with a waveform
+    class), against 97.4% and 98.0%. The hollowed predictor gives 682 and 188. The dataset's own synaptic_effect
+    labels count 444 excitatory and 145 inhibitory units, also above the paper's counts, and agree with this detection
+    for 349 and 116 of them.
+  deviations:
+  - The CCG half width is 50 ms and the Gaussian kernel is cut at 5 SD with reflected edges, standard choices that
+    do not reach the tested bins.
+  - The paper's code may apply selections that the STAR Methods do not state; none is applied here.
+- claim: fig4de-optotagging
+  outcome: not_reproduced
+  notebook: reproduce_senzai_2019.ipynb
+  output: claim:fig4de-optotagging
+  measured:
+  - 62
+  - 48
+  - 18
+  - 14
+  notes: In the 11 mice labelled PV-Cre::Ai32 in the files, 62 units are tagged with pulses pooled and 48 of them
+    are waveform I cells (15 ± 1.5 and 14 ± 1.4); in the 3 VGAT-Cre::Ai32 mice, 18 and 14 (52 ± 5.2 and 40 ± 4).
+    Each intensity separately gives 61 and 18. No unit is tagged in other genotypes or with onsets shifted by 0.5
+    s. Pooled over both lines, 80 units are tagged and 62 (78%) are I cells, against the paper's 67 and 54 (81%).
+    The genotype counts in the files (11 PV, 3 VGAT) differ from the paper's (5 and 9), so the mice cannot be split
+    as the paper split them.
+  deviations:
+  - Pulses are the dataset's `Laser diode` intervals (10 ms; three amplitude levels of about 496 pulses, read as
+    the three intensities); YMV08 and YMV14 have 992 pulses at some levels.
+  - The mice are split by the genotype written in the files, which disagrees with the paper's counts.
+- claim: fig5b-eight-clusters
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig2c-six-gamma-ics, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig5a-spike-ic-depth-stratification
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig2c-six-gamma-ics, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig6a-firing-rate-layers
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig6b-deep-wake-higher
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig6b-superficial-no-state-change
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig6c-burst-index
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig6d-transient-steady
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig6e-down-up-latency
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig6f-3-6hz-phase-layers
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig6g-3-6hz-modulation-strength
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig6h-gamma-coupling-wake
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: figs7-strongest-3-6hz-coupling
+  outcome: partially_reproduced
+  notebook: reproduce_senzai_2019.ipynb
+  output: claim:figs7-strongest-3-6hz-coupling
+  measured:
+  - 0.0719
+  - 0.0479
+  assumed: true
+  notes: With the LFP 10 sites (200 um) from each unit, the mean modulation strength is largest in 3-6 Hz (0.072),
+    then 0.5-3 Hz (0.063); 30-60 Hz is fifth (0.048). By preferred frequency, 0.5-3 Hz leads (590 of 1,271 significantly
+    modulated units), then 3-6 Hz (346); 30-60 Hz has 71. With the LFP of the unit's own site, 60-100 Hz leads under
+    both readings (716 units; mean 0.107), as expected when the unit's spike leaks into its own LFP. 3-6 Hz coupling
+    is the strongest under one reading, but under no reading is 30-60 Hz second; the Figure S7C legend itself notes
+    strong coupling below 2 Hz. The LFP site is an assumption; the question for the authors is in the findings.
+    Measured values are the mean modulation strength at 3-6 and 30-60 Hz (distant site).
+  deviations:
+  - The LFP site is not given by the STAR Methods or the Figure S7 legend. The site 10 sites from the unit's peak
+    site, toward the longer side of the probe, is adopted as an assumption, so that the unit's spike is not in the
+    LFP; the unit's own site is shown and does not match either.
+  - Waking is up to 600 s per session from the longest `Awake` epochs of at least 30 s, spikes within 6 s of an
+    epoch edge left out, the LFP decimated to 312.5 Hz, 25 log-spaced frequencies from 0.5 to 100 Hz, Morlet w0
+    = 6 (Torrence and Compo 1998, cited by the STAR Methods); 118 units with fewer than 50 waking spikes and YMV19
+    (no state table) are left out.
+  - Significance is the Rayleigh test at each unit's preferred frequency, without correction over the 25 frequencies,
+    as the STAR Methods describe it.
+- claim: fig7-connection-counts
+  outcome: not_reproduced
+  notebook: reproduce_senzai_2019.ipynb
+  output: claim:fig7-connection-counts
+  measured:
+  - 121842
+  - 1295
+  - 578
+  notes: 1,295 excitatory and 578 inhibitory connections (525 ± 53 and 323 ± 32); 1,328 and 591 with the hollowed
+    predictor. Potential pairs are 121,842 ordered among all units, 89,046 ordered among E and I units, 60,921 and
+    44,523 unordered; none is within 102,332 ± 10,233. YMV07 alone gives 235 excitatory and 96 inhibitory connections.
+    482 excitatory connections join units 0 or 1 site apart; without them 813 and 462 remain, still above the paper's
+    counts.
+- claim: fig7-within-layer-fractions
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means). It also depends on fig7-connection-counts,
+    which was not reproduced (1,295 excitatory and 578 inhibitory connections against 525 and 323).
+- claim: fig7eg-l23-targets
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig7c-divergence-convergence
+  outcome: partially_reproduced
+  notebook: reproduce_senzai_2019.ipynb
+  output: claim:fig7c-divergence-convergence
+  measured: 29
+  notes: 549 E-I connections (waveform E to waveform I). Targets per presynaptic E cell have mode 1 (242 of 362
+    cells) and presynaptic E cells per I cell have mode 1 (39 of 138), as the claim says, but the largest convergence
+    is 29 (an I cell in YMV07; the next is 18), outside 16 ± 1.6. The E-I connections rest on the detection of fig7-connection-counts,
+    which finds more connections than the paper.
+- claim: figs8b-reciprocal-connections
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig7d-l23e-l5i-weaker-nrem
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig7e-l23e-l4i-weaker-nrem
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig7h-l23e-l5e-weaker-nrem
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig7g-deep-ee-stronger-nrem
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: figs8f-ie-dip-wake
+  outcome: not_reproduced
+  notebook: reproduce_senzai_2019.ipynb
+  output: claim:figs8f-ie-dip-wake
+  measured:
+  - 39.6
+  - 39.9
+  notes: Over 563 inhibitory connections with spikes in both states, mean dips 39.6% in waking and 39.9% in non-REM
+    (medians 35.6% and 36.0%), outside 24.1 ± 2.41% and 22.8 ± 2.28%; waking is not stronger (signed-rank p = 0.37,
+    265 of 563 pairs larger in waking, median difference -0.14 points). The waveform I to E reading gives 40.0%
+    and 39.4% (p = 0.57). YMV19 has no state table and is left out.
+  deviations:
+  - I-E connections are read as all inhibitory connections, as the Results count 323 I-E connections (Within-Layer
+    and Inter-layer Interactions among Neurons, paragraph 1), the total of inhibitory connections; the waveform
+    I to E subset is a variant.
+  - Waking is the dataset's `Awake` intervals; micro-arousals (`MA`) are left out of both states.
+  - A state's CCG uses the presynaptic spikes in that state, with its own predictor.
+- claim: figs8c-lognormal-strength
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  output: claim:figs8c-lognormal-strength
+  notes: The criterion records this claim as methods_underspecified, as the paper reports no test or measure of
+    lognormality. As description, excitatory transmission probabilities (1,295 connections, median 0.0085) have
+    skewness 2.89, and 0.25 below zero after log10; inhibitory ones (578, absolute values, median 0.0030) 8.45 and
+    0.05.
+- claim: fig8-down-active-neurons
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig5b-eight-clusters, which is blocked, through fig1g-landmark-distances-consistent, as methods_underspecified.
+    The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring Mesoscopic Patterns,
+    paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent does
+    not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that rests
+    on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted in this
+    run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook (102 h of
+    recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses it needs
+    (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means). The dataset's `cell_type` column
+    labels 10 units "down state", in 6 mice (YMV07 4, YMV05 2, YMV01, YMV08, YMV15 and YMV17 1 each), where the
+    paper reports 5 neurons in 4 mice; their selection rule is not documented. This is reported, not tested.
+- claim: fig8-down-up-rates
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig8-down-active-neurons, which is blocked, through fig1g-landmark-distances-consistent, as
+    methods_underspecified. The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring
+    Mesoscopic Patterns, paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent
+    does not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that
+    rests on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted
+    in this run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook
+    (102 h of recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses
+    it needs (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+- claim: fig8cd-down-active-suppressed
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig8-down-active-neurons, which is blocked, through fig1g-landmark-distances-consistent, as
+    methods_underspecified. The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring
+    Mesoscopic Patterns, paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent
+    does not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that
+    rests on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted
+    in this run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook
+    (102 h of recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses
+    it needs (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means). The flash part would also
+    need flash times, which the dataset holds for 2 of the 13 stimulated mice.
+- claim: fig8eh-down-active-inverse-correlation
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_senzai_2019.ipynb
+  notes: Depends on fig8-down-active-neurons, which is blocked, through fig1g-landmark-distances-consistent, as
+    methods_underspecified. The paper places landmarks a, b, d and e by eye on the DOWN-UP CSD map (Results, Anchoring
+    Mesoscopic Patterns, paragraph 1, and the asterisks of Figure 1D), and the rule run for fig1g-landmark-distances-consistent
+    does not place them consistently, so normalized depth, layer 4 and layer 6 sites, and every layer group that
+    rests on them cannot be formed by a procedure the paper gives. Apart from this, the claim was not attempted
+    in this run; reading the LFP of the 19 files alone is estimated at 46 to 56 min across runs of the notebook
+    (102 h of recording; the estimate moves with the network), above the 30 min notebook limit, before the analyses
+    it needs (CSD, coherence clustering, ICA, wavelet coupling for 1,477 units, K-means).
+findings:
+- kind: data_missing
+  statement: The 520 nm flash times behind the visual evoked CSD (Figure 1E, 1F, S2D) are in 2 of the 13 stimulated
+    mice, as the `Visual laser` tables of YMV05 and YMV08 (498 intervals of 0.4 s each). The other files hold no
+    visual stimulus times.
+- kind: metadata_error
+  statement: The `Visual laser` tables ("Laser pulses for subject stimulation") of YMV05 and YMV08 also hold the
+    optogenetic pulses of the `Laser diode` table (1,488 and 2,715 of their intervals start within 5 ms of a `Laser
+    diode` pulse), and one YMV05 interval lasts 49.6 s.
+- kind: metadata_error
+  statement: The genotypes in the files are 11 PV-Cre::Ai32 and 3 VGAT-Cre::Ai32 mice; the paper's STAR Methods
+    give 5 PV-Cre::Ai32 and 9 VGAT-Cre::Ai32. The other genotypes (3 Ai35, 1 CaMKII-Cre::Ai35, 1 CaMKII-Cre::Ai32)
+    agree.
+- kind: metadata_insufficient
+  statement: The electrode table gives no depth or position (x, y and z are NaN, location "unknown", impedance -1);
+    only rel_y (-1 to -64) implies the site order. The units carry no waveform, layer, depth, landmark or cluster
+    label, so every laminar analysis of the paper must be rebuilt from the raw signal and LFP.
+- kind: metadata_insufficient
+  statement: The units' `max_channel` equals the site of the largest mean waveform (in the column order of the raw
+    data) for 76 of 1,367 units; what it indexes is not documented.
+- kind: metadata_insufficient
+  statement: The `cell_type` labels (Pyramidal Cell 836, Narrow Interneuron 277, Wide Interneuron 223, Unknown 15,
+    down state 10) follow a scheme the paper does not describe; 198 "Wide Interneuron" units have a waveform E trough-to-peak
+    latency. The 10 "down state" units are in 6 mice, where the paper reports 5 DOWN state-active neurons in 4 mice.
+    The `synaptic_effect` labels (444 Excitatory, 145 Inhibitory) do not match the paper's 347 CCG-based E and 100
+    I cells, and their rule is not given.
+- kind: other
+  statement: YMV03 has no unit columns but quality (no cell_type, synaptic_effect, max_channel or firing_rate),
+    and one of its units is "unsorted". YMV19 has no Sleep states table.
+- kind: other
+  statement: YMV07, a CaMKII-Cre::Ai35 mouse, has 41,022 laser pulses of 20 ms at one level, a protocol the paper
+    does not describe.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How were the CSD landmarks a, b, d and e chosen on the DOWN-UP CSD
+    map? The paper calls them "the most prominent" sinks and sources and marks them by hand in Figure 1D. A rule
+    that takes the extreme CSD above and below the MUA peak places them inconsistently (adjacent distances ranging
+    by 220 to 620 um across mice), so normalized depth and every layer group of the paper cannot be rebuilt from
+    the text.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which LFP site gives the phases of the spike-LFP coupling of Figure
+    S7 (the unit's own site, a fixed layer, or an IC)? With the unit's own site the unit's spike dominates the high
+    frequencies; 10 sites away 3-6 Hz is strongest but 0.5-3 Hz is second and 30-60 Hz fifth.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Were further selections applied in the monosynaptic detection (for
+    example on pairs recorded on the same or neighbouring sites, on firing rates, or by refractory contamination)?
+    The rule of the STAR Methods applied to these units finds 1,295 excitatory and 578 inhibitory connections and
+    673 and 187 CCG-based E and I cells, about twice the paper's 525, 323, 347 and 100, and the pair count of 102,332
+    matches no count of pairs of the 1,477 units.
