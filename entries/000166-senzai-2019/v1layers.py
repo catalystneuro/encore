@@ -132,11 +132,17 @@ def load_session(asset):
         "lfp_shape": f["processing/ecephys/LFP/LFP/data"].shape,
         "lfp_rate": float(f["processing/ecephys/LFP/LFP/starting_time"].attrs["rate"]),
         "rel_y": f["general/extracellular_ephys/electrodes/rel_y"][:],
+        "electrode_id": f["general/extracellular_ephys/electrodes/id"][:],
+        "series_electrodes": f["acquisition/ElectricalSeries/electrodes"][:],
         "electrode_y": f["general/extracellular_ephys/electrodes/y"][:],
         "electrode_location": np.array(_dec(f["general/extracellular_ephys/electrodes/location"][:])),
         "electrode_imp": f["general/extracellular_ephys/electrodes/imp"][:],
     }
     s["duration"] = s["raw_shape"][0] / s["raw_rate"]
+    s["groups"] = sorted(f"{top}/{k}" for top in ("acquisition", "processing", "intervals", "stimulus", "analysis")
+                         if top in f for k in f[top])
+    s["groups"] += sorted(f"{top}/{k}/{j}" for top in ("processing", "stimulus") if top in f
+                          for k in f[top] for j in f[top][k])
     s["_file"] = f
     return s
 
@@ -294,7 +300,7 @@ def landmarks(csd, lags, mua_power, window, step=1):
 COUPLING_FREQS = np.logspace(np.log10(0.5), np.log10(100.0), 25)   # claims file: 0.5 to 100 Hz, log spaced
 COUPLING_WAKE_MAX = 600.0      # s of waking LFP used per session (longest Awake epochs; reduction, standard)
 COUPLING_MIN_EPOCH = 30.0      # s; shorter Awake epochs are not used
-COUPLING_EDGE = 6.0            # s at each epoch edge where spikes are not used (wavelet edge, standard)
+COUPLING_EDGE = 8.0            # s at each epoch edge where spikes are not used (beyond the +-4 SD of the 0.5 Hz wavelet, 7.6 s)
 COUPLING_DECIMATE = 4          # LFP decimated to 312.5 Hz before the wavelet (above 2 x 100 Hz)
 COUPLING_DISTANT = 10          # sites (200 um) between a unit and the LFP of reading 2 (standard choice)
 MORLET_W0 = 6.0                # Torrence and Compo (1998), cited by the STAR Methods
@@ -318,16 +324,7 @@ def spike_lfp_coupling(s, unit_sites, n_sites=64):
     st = s["states"]
     if st is None:
         return None
-    m = st["label"] == "Awake"
-    a, b = st["start"][m], st["stop"][m]
-    keep = (b - a) >= COUPLING_MIN_EPOCH
-    a, b = a[keep], b[keep]
-    order = np.argsort(-(b - a))
-    a, b = a[order], b[order]
-    total = np.cumsum(b - a)
-    n_ep = int(np.searchsorted(total, COUPLING_WAKE_MAX) + 1)
-    a, b = a[:n_ep], b[:n_ep]
-    b = np.minimum(b, a + COUPLING_WAKE_MAX)
+    a, b = state_blocks(st, "Awake", COUPLING_WAKE_MAX)
     rate = s["lfp_rate"]
     fs = rate / COUPLING_DECIMATE
     L = s["_file"]["processing/ecephys/LFP/LFP/data"]
@@ -516,6 +513,433 @@ def rate_in(train, starts, stops):
     return (i1 - i0).sum() / np.sum(stops - starts)
 
 
+# --- laminar analyses: LFP blocks of each state, gamma ICA, spike-IC coupling ----------------
+#
+# Where the parameters come from:
+# - ICA: STAR Methods, "Independent Component Analysis of LFPs": LFP band-passed 30-100 Hz, PCA
+#   reduced to the first ten PCs, ICA (runica, Bell and Sejnowski 1995), ICs ranked by the variance
+#   they explain in the original data (relative power), loadings as the columns of the mixing matrix.
+#   runica (EEGLAB infomax) is not available in Python; scikit-learn's FastICA, which seeks the same
+#   maximally non-Gaussian sources, is used instead (a substitution, stated in the notebook). The ICA
+#   is fitted on waking (fig2c-six-gamma-ics names waking as a reading; Figure 5A is waking) and its
+#   unmixing applied to non-REM.
+# - Spike-IC coupling: STAR Methods, "Spectral analysis, cross-frequency coupling, and spike-LFP
+#   coupling": wavelet phase at 20 log-spaced scales from 30 to 100 Hz at each spike, mean resultant
+#   length, Rayleigh p < 0.05, preferred frequency as the largest mean vector length.
+# - Coherence clustering: STAR Methods, "Gamma coherence and gradient descent clustering": energy
+#   gap moves of single sites between clusters from random initial assignments, repeated.
+# - Power by site and state: Welch spectra of each state's LFP (4096-sample Hann segments, a standard
+#   choice for 0.3 Hz resolution); the band means equal those of a wavelet power average.
+# - The blocks of each state are its longest epochs of at least 30 s, up to LAMINAR_MAX s in total, a
+#   reduction for speed (standard choice), as for the waking coupling above.
+
+LAMINAR_MAX = {"Awake": 600.0, "Non-REM": 600.0, "REM": 300.0}
+GAMMA_BAND = (30.0, 100.0)
+GAMMA_FREQS = np.logspace(np.log10(30.0), np.log10(100.0), 20)
+N_PCS = 10
+POWER_BANDS = {"0.5-3": (0.5, 3.0), "3-6": (3.0, 6.0), "6-9": (6.0, 9.0), "30-60": (30.0, 60.0),
+               "60-100": (60.0, 100.0)}
+F_36 = np.sqrt(3.0 * 6.0)       # centre (geometric) of the 3-6 Hz band for its wavelet phase
+
+
+def state_blocks(states, label, max_s, min_epoch=COUPLING_MIN_EPOCH):
+    """Longest epochs of a state, at least min_epoch s each, up to max_s s in total."""
+    if states is None:
+        return np.zeros(0), np.zeros(0)
+    m = states["label"] == label
+    a, b = states["start"][m], states["stop"][m]
+    keep = (b - a) >= min_epoch
+    a, b = a[keep], b[keep]
+    order = np.argsort(-(b - a))
+    sa, sb, used = [], [], 0.0
+    for t0, t1 in zip(a[order], b[order]):
+        if used >= max_s:
+            break
+        t1 = min(t1, t0 + max_s - used)
+        if t1 - t0 >= min_epoch:
+            sa.append(t0)
+            sb.append(t1)
+            used += t1 - t0
+    return np.array(sa), np.array(sb)
+
+
+def read_blocks(s, label):
+    """LFP (uV, all sites) of the blocks of a state."""
+    a, b = state_blocks(s["states"], label, LAMINAR_MAX[label])
+    rate = s["lfp_rate"]
+    L = s["_file"]["processing/ecephys/LFP/LFP/data"]
+    out = []
+    for t0, t1 in zip(a, b):
+        x = L[int(t0 * rate):int(t1 * rate), :].astype(np.float32) * np.float32(s["raw_conversion"] * 1e6)
+        out.append((t0, t1, x))
+    return out
+
+
+def welch_power(blocks, fs):
+    """Mean power spectrum [freq, site] over blocks, weighted by length."""
+    acc, w, f = None, 0, None
+    for _, _, x in blocks:
+        f, p = signal.welch(x, fs, nperseg=4096, axis=0)
+        acc = p * len(x) if acc is None else acc + p * len(x)
+        w += len(x)
+    return f, acc / w
+
+
+def gamma_coherence(blocks, fs, band=GAMMA_BAND, nperseg=1250):
+    """Magnitude-squared coherence between all site pairs, averaged over the band."""
+    win = signal.windows.hann(nperseg).astype(np.float32)
+    freqs = np.fft.rfftfreq(nperseg, 1 / fs)
+    fm = (freqs >= band[0]) & (freqs <= band[1])
+    S = None
+    for _, _, x in blocks:
+        n = len(x) // nperseg
+        if n == 0:
+            continue
+        seg = x[: n * nperseg].reshape(n, nperseg, -1)
+        seg = seg - seg.mean(axis=1, keepdims=True)
+        X = np.fft.rfft(seg * win[None, :, None], axis=1)[:, fm, :]
+        part = np.einsum("sfi,sfj->fij", X.conj(), X)
+        S = part if S is None else S + part
+    d = np.real(np.einsum("fii->fi", S))
+    coh = np.abs(S) ** 2 / (d[:, :, None] * d[:, None, :])
+    return coh.mean(axis=0)
+
+
+def coherence_clusters(C, n_init, rng, max_iter=200):
+    """Energy-gap clustering of sites (STAR Methods): each site moves to the cluster B with the largest
+    positive gap mean_{j in B} C_ij - mean_{k in A, k != i} C_ik, until no site moves. Starts from
+    n_init random clusters; empty clusters disappear. Returns labels relabelled by depth order."""
+    n = C.shape[0]
+    lab = rng.integers(0, n_init, n)
+    C = C.copy()
+    np.fill_diagonal(C, 0.0)
+    for _ in range(max_iter):
+        moved = False
+        for i in rng.permutation(n):
+            ks = np.unique(lab)
+            means = np.empty(len(ks))
+            for q, k in enumerate(ks):
+                m = lab == k
+                cnt = m.sum() - (lab[i] == k)
+                means[q] = C[i, m].sum() / cnt if cnt > 0 else -np.inf
+            best = ks[int(np.argmax(means))]
+            own = means[int(np.where(ks == lab[i])[0][0])]
+            if best != lab[i] and means.max() > own:
+                lab[i] = best
+                moved = True
+        if not moved:
+            break
+    # energy: -sum over clusters of mean pairwise coherence within, as the STAR Methods define it
+    energy = 0.0
+    for k in np.unique(lab):
+        m = lab == k
+        energy -= C[np.ix_(m, m)].sum() / m.sum()
+    # relabel by the median site of each cluster
+    ks = np.unique(lab)
+    order = ks[np.argsort([np.median(np.where(lab == k)[0]) for k in ks])]
+    out = np.empty(n, int)
+    for q, k in enumerate(order):
+        out[lab == k] = q
+    return out, energy
+
+
+def bandpass(x, band, fs, order=3):
+    return signal.sosfiltfilt(signal.butter(order, band, btype="band", fs=fs, output="sos"), x, axis=0)
+
+
+def gamma_ica(blocks, fs, seed=0):
+    """FastICA on the first N_PCS PCs of the 30-100 Hz LFP of the blocks. Returns the mixing matrix
+    [site, IC] (each column signed so that its largest absolute value is positive), the unmixing
+    matrix [IC, site] and each IC's share of the band-passed LFP variance (relative power)."""
+    from sklearn.decomposition import FastICA
+    xs = [bandpass(x, GAMMA_BAND, fs).astype(np.float32)[::4] for _, _, x in blocks]
+    X = np.concatenate(xs)
+    X = X - X.mean(axis=0)
+    cov = X.T @ X / len(X)
+    ev, E = np.linalg.eigh(cov)
+    E = E[:, np.argsort(ev)[::-1][:N_PCS]]
+    Z = X @ E
+    ica = FastICA(n_components=N_PCS, whiten="unit-variance", random_state=seed, max_iter=1000)
+    Sx = ica.fit_transform(Z)
+    A = E @ ica.mixing_                                   # site x IC
+    var = (A ** 2).sum(axis=0) * Sx.var(axis=0)
+    rel = var / np.trace(cov)
+    sign = np.sign(A[np.argmax(np.abs(A), axis=0), np.arange(A.shape[1])])
+    A = A * sign
+    W = np.linalg.pinv(A)                                 # IC x site, applied to centred band-passed LFP
+    return A, W, rel
+
+
+def rayleigh_p(n, mrl):
+    with np.errstate(invalid="ignore", divide="ignore", over="ignore"):
+        rn = n * mrl
+        p = np.exp(np.sqrt(1 + 4 * n + 4 * (n ** 2 - rn ** 2)) - (1 + 2 * n))
+    return np.minimum(p, 1.0)
+
+
+def spike_phase_sums(blocks, trains, signals, fs_lfp, freqs, decim=COUPLING_DECIMATE):
+    """Sum of exp(i phase) at each spike [unit, signal, freq], and spikes used per unit, over blocks.
+    `signals(x)` maps a block [sample, site] to the signals [sample, k] whose phases are taken."""
+    fs = fs_lfp / decim
+    sums, counts = None, np.zeros(len(trains), int)
+    for t0, t1, x in blocks:
+        y = signals(x)
+        y = signal.decimate(y, decim, axis=0, zero_phase=True)
+        if sums is None:
+            sums = np.zeros((len(trains), y.shape[1], len(freqs)), complex)
+        idx = []
+        for k, tr in enumerate(trains):
+            sp = tr[(tr >= t0 + COUPLING_EDGE) & (tr < t1 - COUPLING_EDGE)]
+            idx.append(np.minimum(np.round((sp - t0) * fs).astype(int), y.shape[0] - 1))
+            counts[k] += len(sp)
+        for j in range(y.shape[1]):
+            ph = np.exp(1j * morlet_phase(y[:, j], fs, freqs))
+            for k in range(len(trains)):
+                sums[k, j] += ph[:, idx[k]].sum(axis=1)
+    return sums, counts
+
+
+def wavelet_amplitude(x, fs, freqs, w0=MORLET_W0):
+    """Amplitude [freq, sample] of the complex Morlet transform."""
+    out = np.empty((len(freqs), len(x)))
+    for i, f in enumerate(freqs):
+        sd = w0 / (2 * np.pi * f)
+        t = np.arange(-4 * sd, 4 * sd + 1 / fs, 1 / fs)
+        k = np.exp(2j * np.pi * f * t) * np.exp(-t ** 2 / (2 * sd ** 2))
+        k = k / np.abs(k).sum()
+        out[i] = np.abs(signal.fftconvolve(x, k[::-1].conj(), mode="same"))
+    return out
+
+
+def laminar(s):
+    """Per-state power and gamma coherence by site, gamma ICA (waking), spike-IC coupling in waking and
+    non-REM, and spike phases on the 3-6 Hz LFP of a layer 4 site in waking."""
+    if s["states"] is None:
+        return None
+    fs = s["lfp_rate"]
+    trains = s["trains"]
+    out = {"power": {}, "coherence": {}, "seconds": {}}
+    blocks = {}
+    for lab in ("Awake", "Non-REM", "REM"):
+        blocks[lab] = read_blocks(s, lab)
+        out["seconds"][lab] = float(sum(t1 - t0 for t0, t1, _ in blocks[lab]))
+        if out["seconds"][lab] == 0:
+            continue
+        f, p = welch_power(blocks[lab], fs)
+        out["power"][lab] = {k: p[(f >= a) & (f < b)].mean(axis=0) for k, (a, b) in POWER_BANDS.items()}
+        out["coherence"][lab] = gamma_coherence(blocks[lab], fs)
+    wake = blocks["Awake"]
+    if out["seconds"]["Awake"] == 0:
+        return out
+    A, W, rel = gamma_ica(wake, fs)
+    out.update(A=A, W=W, rel=rel)
+
+    def ics(x):
+        xb = bandpass(x, GAMMA_BAND, fs)
+        return (xb - xb.mean(axis=0)) @ W.T
+
+    for lab, key in (("Awake", "wake"), ("Non-REM", "nrem")):
+        if out["seconds"][lab] == 0:
+            continue
+        sums, counts = spike_phase_sums(blocks[lab], trains, ics, fs, GAMMA_FREQS)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            mrl = np.abs(sums) / counts[:, None, None]
+        out[f"ic_mrl_{key}"] = mrl                      # unit x IC (all ten) x frequency
+        out[f"ic_p_{key}"] = rayleigh_p(counts[:, None, None].astype(float), mrl)
+        out[f"ic_n_{key}"] = counts
+
+    # layer 4 site: peak loading of the third of the six highest-variance ICs ordered by depth
+    top6 = np.argsort(rel)[::-1][:6]
+    peaks = np.sort(np.argmax(A[:, top6], axis=0))
+    l4 = int(peaks[2])
+    out["l4_site"] = l4
+    sums, counts = spike_phase_sums(wake, trains, lambda x: x[:, [l4]].astype(float), fs, np.array([F_36]))
+    z = sums[:, 0, 0]
+    with np.errstate(invalid="ignore", divide="ignore"):
+        out["p36_mrl"] = np.abs(z) / counts
+        out["p36_phase"] = np.angle(z)
+    out["p36_p"] = rayleigh_p(counts.astype(float), out["p36_mrl"])
+    out["p36_n"] = counts
+
+    # 3-6 Hz and 6-9 Hz amplitude over time in waking (figs2c), at the layer 4 site and the deepest site
+    fsd = fs / COUPLING_DECIMATE
+    amp = {"l4_36": [], "l4_69": [], "deep_69": []}
+    win = {"l4_36": [], "l4_69": [], "deep_69": []}
+    for t0, t1, x in wake:
+        y = signal.decimate(x[:, [l4, x.shape[1] - 1]].astype(float), COUPLING_DECIMATE, axis=0, zero_phase=True)
+        e = int(COUPLING_EDGE * fsd)
+        a36 = wavelet_amplitude(y[:, 0], fsd, np.linspace(3, 6, 4)).mean(axis=0)
+        a69 = wavelet_amplitude(y[:, 0], fsd, np.linspace(6, 9, 4)).mean(axis=0)
+        d69 = wavelet_amplitude(y[:, 1], fsd, np.linspace(6, 9, 4)).mean(axis=0)
+        step = int(fsd / 10)                           # 10 Hz time base for the correlation
+        for k, v in (("l4_36", a36), ("l4_69", a69), ("deep_69", d69)):
+            amp[k].append(v[e:-e:step])
+        # 10 s windows stepped by 1 s (state-scoring spectrogram time base)
+        f10, t10, Z = signal.stft(y, fsd, nperseg=int(10 * fsd), noverlap=int(9 * fsd), axis=0,
+                                  boundary=None, padded=False)
+        P = np.abs(Z) ** 2                              # freq x site x time
+        win["l4_36"].append(P[(f10 >= 3) & (f10 <= 6), 0].mean(axis=0))
+        win["l4_69"].append(P[(f10 >= 6) & (f10 <= 9), 0].mean(axis=0))
+        win["deep_69"].append(P[(f10 >= 6) & (f10 <= 9), 1].mean(axis=0))
+    out["amp_time"] = {k: np.concatenate(v) for k, v in amp.items()}
+    out["pow_win"] = {k: np.concatenate(v) for k, v in win.items()}
+
+    # phase-amplitude coupling: 3-6 Hz phase at the layer 4 site in waking; slow oscillation phase in
+    # non-REM at a layer 6 site, 15 sites (300 um) below c, the MUA peak in mid layer 5 (an assumption)
+    out["pac_wake_36"] = pac(wake, fs, l4, (3.0, 6.0))
+    if out["seconds"]["Non-REM"] > 0:
+        l6 = int(min(np.argmax(s["mua_power"]) + 15, 63))
+        out["l6_site"] = l6
+        out["pac_nrem_13"] = pac(blocks["Non-REM"], fs, l6, (1.0, 3.0))
+        out["pac_nrem_053"] = pac(blocks["Non-REM"], fs, l6, (0.5, 3.0))
+    return out
+
+
+# --- phase-amplitude coupling (Figure 3D) ---------------------------------------------------
+#
+# Tort et al. (2008) modulation index, cited by the STAR Methods (Spectral analysis, cross-frequency
+# coupling, and spike-LFP coupling), with 18 phase bins of 20 degrees (the cited method's setting, as the
+# claims file gives it). The phase band is band-passed (3rd-order Butterworth, zero phase) and its phase
+# taken by the Hilbert transform, as Tort et al. do; amplitudes are Morlet wavelet amplitudes (w0 = 6)
+# at PAC_FREQS, computed in the frequency domain, on every other site. 2 s at each block edge are left out.
+
+PAC_FREQS = np.logspace(np.log10(5.0), np.log10(200.0), 24)    # Figure 3D axis, 5 to 200 Hz (claims file)
+PAC_SITES = np.arange(0, 64, 2)
+PAC_BINS = 18
+PAC_EDGE = 2.0
+
+
+def morlet_amplitudes(x, fs, freqs, w0=MORLET_W0):
+    """Amplitude [freq, sample] of a Morlet transform done in the frequency domain (scale-free, as the
+    modulation index does not depend on the amplitude's scale)."""
+    n = len(x)
+    X = np.fft.fft(x - x.mean())
+    fr = np.fft.fftfreq(n, 1 / fs)
+    out = np.empty((len(freqs), n), np.float32)
+    for i, f in enumerate(freqs):
+        g = np.exp(-0.5 * ((fr - f) / (f / w0)) ** 2) * (fr > 0)
+        out[i] = np.abs(np.fft.ifft(X * g))
+    return out
+
+
+def pac(blocks, fs, phase_site, band):
+    """Modulation index [site of PAC_SITES, freq of PAC_FREQS] of amplitude by the phase of `band` at
+    `phase_site`, accumulated over blocks."""
+    acc = np.zeros((len(PAC_SITES), len(PAC_FREQS), PAC_BINS))
+    edges = np.linspace(-np.pi, np.pi, PAC_BINS + 1)
+    for _, _, x in blocks:
+        e = int(PAC_EDGE * fs)
+        if len(x) <= 2 * e:
+            continue
+        ph = np.angle(signal.hilbert(bandpass(x[:, phase_site].astype(float), band, fs)))[e:-e]
+        b = np.clip(np.digitize(ph, edges) - 1, 0, PAC_BINS - 1)
+        for q, site in enumerate(PAC_SITES):
+            a = morlet_amplitudes(x[:, site].astype(float), fs, PAC_FREQS)[:, e:-e]
+            for j in range(PAC_BINS):
+                acc[q, :, j] += a[:, b == j].sum(axis=1)
+    P = acc / acc.sum(axis=2, keepdims=True)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        H = -(P * np.log(P)).sum(axis=2)
+    return (np.log(PAC_BINS) - H) / np.log(PAC_BINS)
+
+
+# --- unit firing measures (Figures 6 and 8) -----------------------------------------------
+
+ACG_BIN = 0.0005
+ACG_MAX = 0.3
+
+
+@njit(cache=True)
+def _acg(t, nbins, binsize):
+    out = np.zeros(nbins, np.int64)
+    n = t.shape[0]
+    for i in range(n):
+        j = i + 1
+        while j < n:
+            d = t[j] - t[i]
+            b = int(d / binsize)
+            if b >= nbins:
+                break
+            out[b] += 1
+            j += 1
+    return out
+
+
+@njit(cache=True)
+def _xcorr(ref, tgt, nbins, binsize, half):
+    out = np.zeros(nbins, np.int64)
+    j0 = 0
+    m = tgt.shape[0]
+    for i in range(ref.shape[0]):
+        r = ref[i]
+        while j0 < m and tgt[j0] < r - half:
+            j0 += 1
+        j = j0
+        while j < m and tgt[j] < r + half:
+            b = int((tgt[j] - r + half) / binsize)
+            if 0 <= b < nbins:
+                out[b] += 1
+            j += 1
+    return out
+
+
+def downup_onsets(ud):
+    """UP onsets that start where a DOWN interval ends (DOWN-UP transitions)."""
+    up = ud["label"] == "UP"
+    on = ud["start"][up]
+    return on[np.isin(np.round(on, 4), np.round(ud["stop"][~up], 4))]
+
+
+def firing_measures(s):
+    """Autocorrelogram (0.5 ms bins to 300 ms), PETH around DOWN-UP transitions (5 ms bins, -300 to
+    +300 ms) and the median first-spike latency after them."""
+    trains = s["trains"]
+    nb = int(round(ACG_MAX / ACG_BIN))
+    out = {"acg": np.array([_acg(tr, nb, ACG_BIN) for tr in trains])}
+    ud = s["updown"]
+    if ud is None:
+        return out
+    on = downup_onsets(ud)
+    edges = np.arange(-0.3, 0.3 + 1e-9, 0.005)
+    peth = np.zeros((len(trains), len(edges) - 1))
+    first = np.full(len(trains), np.nan)
+    for k, tr in enumerate(trains):
+        i0 = np.searchsorted(tr, on - 0.3)
+        i1 = np.searchsorted(tr, on + 0.3)
+        rel = np.concatenate([tr[a:b] - o for a, b, o in zip(i0, i1, on)]) if len(on) else np.zeros(0)
+        peth[k] = np.histogram(rel, edges)[0]
+        j = np.searchsorted(tr, on)
+        ok = j < len(tr)
+        lat = tr[j[ok]] - on[ok]
+        lat = lat[lat < 0.3]
+        if len(lat):
+            first[k] = np.median(lat)
+    out.update(peth=peth / max(len(on), 1) / 0.005, peth_edges=edges, first_latency=first, n_onsets=len(on))
+    return out
+
+
+def long_ccgs(s, refs, half=1.0, binsize=0.01):
+    """CCGs (10 ms bins, +-1 s) of each unit in refs against every unit, per state (Awake, Non-REM),
+    with the reference spikes in that state, as counts."""
+    trains = s["trains"]
+    nb = int(round(2 * half / binsize))
+    out = {}
+    for lab in ("Awake", "Non-REM"):
+        st = s["states"]
+        if st is None:
+            continue
+        m = st["label"] == lab
+        for r in refs:
+            tr = trains[r]
+            ins = np.zeros(len(tr), bool)
+            for a, b in zip(st["start"][m], st["stop"][m]):
+                i0, i1 = np.searchsorted(tr, [a, b])
+                ins[i0:i1] = True
+            ref = tr[ins]
+            out[(lab, int(r))] = (np.array([_xcorr(ref, t, nb, binsize, half) for t in trains]), len(ref))
+    return out
+
+
 # --- one session, reduced to what the notebook uses ----------------------------------------
 
 def process_session(asset):
@@ -526,7 +950,7 @@ def process_session(asset):
                              "cell_type", "synaptic_effect", "quality", "max_channel", "states",
                              "updown", "laser", "visual", "raw_shape", "raw_rate", "lfp_shape",
                              "lfp_rate", "rel_y", "electrode_y", "electrode_location",
-                             "electrode_imp", "duration")}
+                             "electrode_imp", "duration", "electrode_id", "series_electrodes", "groups")}
     out["n_spikes"] = np.array([len(tr) for tr in s["trains"]])
     out["sorted_ok"] = np.array([bool(np.all(np.diff(tr) >= 0)) for tr in s["trains"]])
     out["t_range"] = (float(min(tr[0] for tr in s["trains"] if len(tr))),
@@ -547,6 +971,11 @@ def process_session(asset):
     # cross-correlograms and connections
     c, nspk = ccgs(s)
     out["nspk_state"] = nspk
+    # connections detected within each state, with the reference spikes in that state (a diagnostic)
+    out["conn_state"] = {}
+    for code, name in ((1, "Awake"), (2, "Non-REM")):
+        e_, i_, _ = detect_connections(c[code])
+        out["conn_state"][name] = (int(e_.sum()), int(i_.sum()))
     for hollow in (0.0, 0.6):
         exc, inh, pred = detect_connections(c[0], hollow)
         key = "conn" if hollow == 0 else "conn_hollow"
@@ -562,6 +991,8 @@ def process_session(asset):
                 pp = predictor(cc)
                 res[f"ccg_{name}"] = cc
                 res[f"dip_{name}"] = dip(cc, pp)
+                with np.errstate(divide="ignore", invalid="ignore"):
+                    res[f"ratio_{name}"] = (cc[:, SYN_BINS] / pp[:, SYN_BINS]).max(axis=-1)
                 res[f"stp_{name}"] = ((cc[:, SYN_BINS] - pp[:, SYN_BINS]).sum(-1)
                                       / np.maximum(nspk[code][pairs[:, 0]], 1))
             out["pairs"] = res
@@ -597,6 +1028,31 @@ def process_session(asset):
                 rates[(lab, shift)] = np.array([rate_in(tr, ud["start"][m] + shift, ud["stop"][m] + shift)
                                                 for tr in s["trains"]])
         out["updown_rates"] = rates
+
+    # firing measures, laminar LFP analyses, light-pulse PSTHs
+    out["firing"] = firing_measures(s)
+    s["mua_power"] = out["mua_power"]
+    out["laminar"] = laminar(s)
+    out["laser_psth"] = None
+    if s["laser"] is not None and len(s["laser"]["start"]):
+        out["laser_psth"] = np.array([psth_counts(tr, s["laser"]["start"], -0.1, 0.1)[0] for tr in s["trains"]]) \
+            / len(s["laser"]["start"]) / 0.001
+    out["visual_psth"] = None
+    if s["visual"] is not None:
+        vd = s["visual"]["stop"] - s["visual"]["start"]
+        von = s["visual"]["start"][(vd > 0.39) & (vd < 0.41)]
+        out["visual_psth"] = np.array([psth_counts(tr, von, -0.1, 0.5, 0.01)[0] for tr in s["trains"]]) \
+            / len(von) / 0.01
+    # DOWN state-active candidates (either reading of fig8-down-active-neurons) and their long CCGs
+    out["long_ccg"], out["down_cand"] = {}, None
+    if out["updown_rates"] is not None and out["firing"].get("peth") is not None:
+        r = out["updown_rates"]
+        cand_a = np.where(r[("DOWN", 0.0)] > r[("UP", 0.0)])[0]
+        pe, ed = out["firing"]["peth"], out["firing"]["peth_edges"][:-1]
+        pre, post = pe[:, (ed >= -0.1) & (ed < 0)].mean(1), pe[:, (ed >= 0) & (ed < 0.1)].mean(1)
+        cand_b = np.where((pre > post) & (ed[np.argmax(pe, axis=1)] < 0))[0]
+        out["down_cand"] = {"a": cand_a, "b": cand_b}
+        out["long_ccg"] = long_ccgs(s, np.union1d(cand_a, cand_b))
     out["state_rates"] = None
     if s["states"] is not None:
         st = s["states"]
