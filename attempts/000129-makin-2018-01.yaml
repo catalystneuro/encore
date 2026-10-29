@@ -1,0 +1,907 @@
+schema_version: 2
+id: 000129-makin-2018-01
+dataset:
+  archive: dandi
+  id: "000129"
+  version: 0.241017.1444
+  doi: 10.48324/dandi.000129/0.241017.1444
+paper: doi:10.1088/1741-2552/aa9e95
+date: 2026-10-28
+entry: 000129-makin-2018
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/40749995806
+inputs:
+- what: The paper's list of monkey I sessions (NeuralAnalysis/Indy_HC_Sessions.csv), read only to
+    check whether the dandiset's session is one of the paper's. The decoders follow the same
+    repository's code where the Methods are silent (cited in makin.py), but no file of it is
+    loaded.
+  source: https://github.com/jgmakin/rbmish at commit 700062f5118b0910411cf9a8f73498e22203731d
+outcomes:
+- claim: units-monkey-i
+  outcome: not_reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:units-monkey-i
+  measured: [111, 111]
+  notes: 111 of the 130 units in the file fire above 0.5 Hz over the 649.1 s session, below the
+    criterion's range of 153.9 to 454.3. The file holds sorted units only (unit ids end in 1 to
+    4, none in 00), on 82 channels; the paper's counts include one unsorted hash unit per channel
+    (Methods, Data acquisition), up to 96 more on this array, so the shortfall is consistent with
+    the missing hash units and does not contradict the paper. With thresholds of 0.25 and 1 Hz the
+    count is 117 and 94. No unit is a duplicate of another.
+  deviations:
+  - One session, the only one in the dataset (dated 2017-02-02, not in the paper's session list),
+    for a range over 37 sessions.
+  - The rate is taken over the training file (649.1 s); the test file holds 190.3 s more of 98 of
+    the units.
+- claim: fig2-refh-kf-best
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig2-refh-kf-best
+  notes: The criterion needs the bootstrap of the session-weighted mean SNR difference over the
+    paper's 49 sessions. The dandiset holds one session, which is not in the paper's list. The
+    paper's 47 Sabes-lab sessions are public on Zenodo (doi:10.5281/zenodo.583331), but the claim
+    is on the dataset (`data` is not `elsewhere`), so a reader is asked whether it should be
+    (questions/000129.yaml). On the one session the mean part holds. The rEFH (+KF) has the
+    highest SNR for position, velocity and acceleration (5.91, 5.06 and 2.36 dB), ahead of the
+    next decoder by 0.28 dB (UKF), 1.19 and 0.45 dB (static rEFH), and it is highest with the
+    other seeds and the code's kinematics (position margin 0.11 to 0.51 dB). This does not decide
+    the outcome.
+- claim: intro-gain-over-nearest
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:intro-gain-over-nearest
+  notes: The criterion needs the bootstrap over the 49 sessions for the position gain (p >= 0.01);
+    see fig2-refh-kf-best. On the one session the gains of the rEFH (+KF) are 0.28, 1.24 and 1.02 dB
+    over the nearest decoder other than the two rEFH decoders (reading a; UKF, UKF and WF) and
+    0.28, 1.24 and 1.25 dB over the UKF (reading b). Position and velocity are outside tolerance
+    under both readings and with every seed (position 0.11 to 0.28 dB, velocity 1.24 to 1.31 dB);
+    with the code's kinematics velocity is inside (1.45 and 1.55 dB) and position is 0.51 dB. No
+    reading gets all three gains within tolerance on this session. This does not decide the
+    outcome.
+- claim: fig2-velocity-boost
+  outcome: not_reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig2-velocity-boost
+  assumed: true
+  notes: Velocity SNR gains over linear regression are 3.67 dB for the rEFH (+KF), 1.91 for KFobs
+    and 2.42 for the UKF. The rEFH's gain is 1.92 times KFobs's (the criterion needs more than 2)
+    and 1.51 times the UKF's (inside 1.5 to 2.2), so only the UKF part holds, which the criterion
+    does not grade as partial. The result is borderline. With the code's kinematics (cursor, no
+    filter, bin means) the ratios are 2.05 and 1.70 and the claim is reproduced; with rEFH seeds 1
+    and 2 the KFobs ratio is 1.93 and 1.95. The copy the verifier reviewed, from an earlier run of
+    the same notebook, gave 1.97 with seeds 1.92 to 1.99, so the ratio also moves by a few
+    hundredths between runs; every run under the Methods kinematics has been below 2. The outcome rests on the kinematics reading. Question for the paper's authors
+    (finding below) was the decoded kinematic state the fingertip position filtered at 10 Hz and
+    subsampled, as the Methods say, or the unfiltered cursor position averaged over each bin, as
+    getLatentsBMI.m and binSpikeCounts.m do?
+  deviations:
+  - One session in place of 49; the session-weighted means are this session's values, so a margin
+    this small carries one session's noise.
+  - The kinematics follow the Methods (fingertip, 4th-order Butterworth at 10 Hz, last sample of
+    each bin), as the claims file makes its main reading; the code's reading changes the outcome,
+    and this reading is adopted as the one the paper's text states.
+  - Sorted units only (111), without the hash units the paper used.
+  - The UKF is a re-implementation of Li's UKF2; its fitting code is not in the paper's repository.
+- claim: fig2-kflatent-dynamic-little-effect
+  outcome: reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig2-kflatent-dynamic-little-effect
+  notes: KFlatent (+KF) minus static KFlatent is 0.18, 0.21 and 0.09 dB for position, velocity and
+    acceleration, all below 0.5 dB. With the two other EM seeds it is 0.18 to 0.19, 0.17 to 0.21 and
+    0.10 to 0.11 dB, and with the code's kinematics 0.29, 0.45 and 0.22 dB. EM ran the full 100
+    epochs in every run; the last epoch's gain was 4.3e-4 to 6.6e-4 of the total in the six runs of
+    the first notebook (the code-kinematics run 4.3e-4), and 4.3e-4 to 9.4e-4 over every
+    configuration of the second, above the Methods' criterion of 1e-4.
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111); EM convergence judged on the log-likelihood, which the Methods'
+    cross-entropy criterion is equivalent to up to a constant.
+- claim: fig2-refh-static-vel-acc
+  outcome: reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig2-refh-static-vel-acc
+  notes: The static rEFH has 3.87 dB velocity SNR against the best other decoder's 3.82 (UKF), and
+    1.90 dB acceleration SNR against 1.34 (WF). The velocity margin is small, 0.05 dB here, 0.08 and
+    0.17 dB with rEFH seeds 1 and 2, and 0.09 dB over KFlatent (+KF) with the code's kinematics;
+    the claim holds in all six runs, the EM seeds included.
+  deviations:
+  - One session in place of 49, so the small velocity margin carries one session's noise.
+  - Sorted units only (111); the UKF is a re-implementation of Li's UKF2.
+- claim: fig2-position-dynamic-gain
+  outcome: not_reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig2-position-dynamic-gain
+  measured: 4.45
+  notes: The dynamic mapping raises the rEFH's position SNR from 1.46 to 5.91 dB, a gain of 4.45
+    dB (4.32 for x, 4.58 for y), outside 3 +- 0.5 dB. The effect is present and larger than the
+    paper's; it is 4.22 to 4.52 dB with the other seeds and the code's kinematics. The static map
+    has position R2 0.39 and 0.51 (x, y) on the training bins it was fitted on and 0.19 and 0.37 on
+    the test bins, so the second KF, fitted on the training outputs as the paper's dynamic map is,
+    sees outputs less noisy than those it filters at test. Whether this makes the gain larger than
+    the paper's is not tested here.
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111).
+- claim: fig2-sagittal-better
+  outcome: partially_reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig2-sagittal-better
+  notes: y has the higher SNR in 23 of 24 decoder and variable pairs; the exception is the static
+    rEFH's velocity (y minus x -0.06 dB). Linear regression's velocity margin is 0.01 dB. With rEFH
+    seed 2 all 24 hold; with rEFH seed 1, the two other EM seeds and the code's kinematics 23, with
+    the same exception. The copy the verifier reviewed, from an earlier run of the same notebook,
+    gave 24 of 24, so the outcome depends on the training run of the rEFH.
+  deviations:
+  - One session in place of 49; the per-session comparison is this session's.
+  - Sorted units only (111).
+- claim: fig2-linear-worst
+  outcome: reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig2-linear-worst
+  notes: Every other decoder exceeds linear regression for each of the six variables; the smallest
+    margin is 0.45 dB (static rEFH, x position). It holds in every variant (smallest 0.20 dB, KFobs
+    x acceleration, code kinematics).
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111).
+- claim: fig2-gross-failures
+  outcome: reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig2-gross-failures
+  notes: No decoder has a negative R2 at 64 ms in this session (the lowest is 0.055, linear
+    regression), so the criterion holds trivially; the claim's "in a few sessions" cannot be tested
+    on one session. Outside the criterion's 64 ms with all units and 320 s of training, the second
+    notebook prints negative R2 for linear regression (16 ms, 80 and 160 s, f = 1/8 and 1/4),
+    static KFlatent, KFlatent (+KF) and the static rEFH (f = 1/8 and 1/4), KFobs (f = 1/4, x
+    position), the UKF (f = 1/8, ay, and f = 1/4, x position), and KFlatent (+KF) at 16 ms; most are within 0.05 of zero, and at f = 1/8
+    KFlatent (+KF) diverges (position SNR -76.63 dB). Under a reading of "in our experiments" that
+    covers every configuration the claim would fail; a reader is asked (questions/000129.yaml).
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111).
+- claim: fig4-vel-acc-every-session
+  outcome: reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig4-vel-acc-every-session
+  notes: In this session the rEFH (+KF) beats KFobs and the UKF in all 8 velocity and acceleration
+    comparisons, by 1.04 to 1.81 dB, and in every variant (smallest margin 1.04 dB). The criterion's
+    second part, the bootstrap across sessions at p < 0.01, cannot be run on one session; the
+    outcome rests on the per-session part, which the claims file names as testable on one
+    session. The verifier graded it partially reproduced in round 1 and agreed in round 2.
+  deviations:
+  - One session in place of 49; the bootstrap part of the criterion is not tested.
+  - Sorted units only (111); the UKF is a re-implementation of Li's UKF2.
+- claim: fig4-advantage-grows
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The regression of rEFH (+KF) SNR on KFobs SNR runs over all sessions and both axes; one
+    session gives two points and no degrees of freedom for the F-test. The dandiset holds no other
+    session; see fig2-refh-kf-best.
+- claim: fig4-position
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig4-position
+  notes: Needs the bootstrap over the 49 sessions; see fig2-refh-kf-best. On the one session the
+    rEFH (+KF) position SNR exceeds KFobs's by 0.90 dB and the UKF's by 0.28 dB (0.73 to 1.02 and
+    0.11 to 0.51 dB across the variants), which does not decide the outcome.
+- claim: fig4-best-variable
+  outcome: not_reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig4-best-variable
+  notes: Position is the best-decoded variable for all three decoders. The rEFH (+KF) has 5.91 dB
+    for position against 5.06 for velocity and 2.36 for acceleration; KFobs (5.00, 3.30, 1.02) and
+    the UKF (5.63, 3.82, 1.11) have position highest, as the paper says. The ordering is the same
+    with the other seeds and the code's kinematics, and at every bin width in the second
+    notebook.
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111).
+- claim: fig4-task-similar
+  outcome: blocked
+  blocked_by: other
+  notes: The comparison is of monkey C's two sessions with the range of monkey I's 37 sessions. The
+    dandiset holds one monkey I session, not among the 37. Monkey C's data are named only by the
+    preprint (Dyer et al., biorxiv 080861), with no archive identifier to pin, so they cannot be
+    used as an input (author, step 1.4). The claim is `data elsewhere`, so it is not blocked as
+    data_missing, which the verifier gave.
+- claim: fig5-vel-acc-all-bins
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: binwidth_training_neurons.ipynb
+  output: claim:fig5-vel-acc-all-bins
+  notes: Needs the bootstrap over the 49 sessions at four bin widths; see fig2-refh-kf-best. On the
+    one session the rEFH (+KF) has the highest velocity and acceleration SNR at 32, 64 and 128 ms
+    (margins 0.53 and 0.32, 1.19 and 0.45, 0.45 and 0.12 dB), but at 16 ms the WF is higher for
+    velocity (3.30 against 3.01 dB) and acceleration (1.39 against 0.96 dB), against the claim.
+    This does not decide the outcome.
+- claim: fig5-position-bins
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: binwidth_training_neurons.ipynb
+  output: claim:fig5-position-bins
+  notes: Needs the pairwise bootstrap over the 49 sessions at four bin widths; see
+    fig2-refh-kf-best. On the one session the UKF's position SNR exceeds the rEFH (+KF)'s by 0.29
+    dB at 16 ms, the direction the paper reports; the absence of differences at 32 to 128 ms can be
+    judged only with the test.
+- claim: fig5-advantage-with-binwidth
+  outcome: reproduced
+  notebook: binwidth_training_neurons.ipynb
+  output: claim:fig5-advantage-with-binwidth
+  notes: The rEFH (+KF) SNR rises from 3.01 to 5.46 dB (velocity) and 0.96 to 2.39 dB
+    (acceleration) from 16 to 128 ms, with no fall between neighbouring widths. Its advantage over
+    the best decoder other than the two rEFH decoders rises from -0.29 to 1.60 dB (velocity) and
+    -0.44 to 1.14 dB (acceleration), and in percent from -8.9 to 41.6% and -31.3 to 92.0%, so the
+    claim holds under both readings. The WF's velocity SNR does not improve with width (3.30 to
+    3.17 dB); the criterion tests only the rEFH (+KF).
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111); the UKF is a re-implementation of Li's UKF2.
+- claim: fig5-derivative-order
+  outcome: partially_reproduced
+  notebook: binwidth_training_neurons.ipynb
+  output: claim:fig5-derivative-order
+  notes: The mean SNR of the six non-rEFH decoders falls from position to velocity to acceleration
+    at all four widths (64 ms, 3.79, 3.06 and 0.99 dB). The percent advantage of the rEFH (+KF)
+    rises from position to velocity to acceleration at 32, 64 and 128 ms (64 ms, 4.9, 32.6 and
+    76.5%) but not at 16 ms, where it is -6.2, -8.9 and -31.3%. Both parts hold at 3 of 4 widths,
+    which the criterion grades as partial. The statement's exception (the rEFH best at velocity),
+    which the criterion does not test, does not hold; the rEFH (+KF) decodes position best at
+    every width.
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111).
+- claim: fig6-training-time
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: binwidth_training_neurons.ipynb
+  output: claim:fig6-training-time
+  notes: Part (ii) needs the bootstrap over the 49 sessions, and part (iii) its p-values; see
+    fig2-refh-kf-best. On the one session part (i) holds on point values, the rEFH (+KF) having the
+    highest velocity and acceleration SNR at 80, 160 and 320 s (velocity margins 0.33, 1.01 and 1.19
+    dB). For position it is 0.87 dB below the UKF at 80 s and 0.10 and 0.28 dB above at 160 and
+    320 s; against KFobs it is above at 320 s (0.90 dB) and below at 80 s (0.20 dB), the directions
+    of part (iii). This does not decide the outcome.
+- claim: fig7-vel-acc-neurons
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: binwidth_training_neurons.ipynb
+  output: claim:fig7-vel-acc-neurons
+  notes: Needs the bootstrap over the 49 sessions at each fraction; see fig2-refh-kf-best. On the
+    one session the rEFH (+KF) ties the WF for velocity at f = 1/4 (1.56 dB each) and is the best
+    decoder at f = 1/2 and 1. Its percent gain over the best decoder other than the two rEFH
+    decoders rises with f for velocity (0.2, 19.1 and 32.6%) but not for acceleration (38.2, 87.1
+    and 76.5%), and over each decoder it also falls somewhere (over the UKF for velocity, 19.4 to
+    19.1% from f = 1/4 to 1/2). This does not decide the outcome.
+- claim: fig7-position-neurons
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: binwidth_training_neurons.ipynb
+  output: claim:fig7-position-neurons
+  notes: Needs the bootstrap over the 49 sessions at each fraction; see fig2-refh-kf-best. On the
+    one session the rEFH (+KF) has the highest position SNR at f = 1/4 (by 0.21 dB) and is 0.15 dB
+    below the UKF at f = 1/2; the copy the verifier reviewed, from an earlier run, had it highest
+    at both.
+    This does not decide the outcome.
+- claim: fig7-affine-position
+  outcome: not_reproduced
+  notebook: binwidth_training_neurons.ipynb
+  output: claim:fig7-affine-position
+  measured: [0.995, 0.995, 0.986, 0.991]
+  notes: Correlations of position SNR with f are 0.995 (linear regression), 0.995 (static KFlatent),
+    0.986 (WF) and 0.991 (static rEFH) under reading a, and 0.956, 0.948, 0.954 and 0.914 with log2
+    f (reading b); all are within tolerance. Static KFlatent does not have the lowest correlation
+    under either reading (the WF has under a, the static rEFH under b), so the ordering condition
+    fails under both. At f = 1/8 and 1/4 (13 and 27 units) the position SNR of these decoders is
+    within 0.33 dB of zero, so the correlations rest mostly on f = 1/2 and 1.
+  deviations:
+  - One session in place of 49; fractions of 111 sorted units (13, 27, 55 and 111).
+- claim: fig7-kinematic-model-saturates
+  outcome: reproduced
+  notebook: binwidth_training_neurons.ipynb
+  output: claim:fig7-kinematic-model-saturates
+  notes: Under reading b (1/8 to 1/2) the position SNR of KFobs, KFlatent (+KF), the UKF and the
+    rEFH (+KF) rises 6.67, 207.33, 6.93 and 6.22 dB per unit f, faster than from 1/2 to 1 (3.79,
+    6.27, 4.95, 5.79) and faster than the largest initial slope of the static decoders (5.00,
+    static KFlatent). Under reading a (1/8 to 1/4) it fails for KFobs, the UKF and the rEFH (+KF),
+    whose position SNR is slightly lower at 1/4 than at 1/8. KFlatent (+KF) passes under b only
+    because its filter diverges at f = 1/8 (-76.63 dB, 13 units); its slope from 1/4 to 1/2 is 4.20,
+    below its late slope of 6.27, and it would pass only with an f = 1/8 SNR below -1.23 dB, where
+    every other decoder is between -0.10 and 0.68 dB. Without that value the claim fails under both
+    readings, so the outcome rests on a gross failure of one of the four decoders. The other three
+    pass under b on their own slopes.
+  deviations:
+  - One session in place of 49; fractions of 111 sorted units.
+- claim: fig8-velocity-variants
+  outcome: not_reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig8-velocity-variants
+  measured: [0.11, -0.08]
+  notes: Static velocity SNR is 0.11 dB lower without the updated visible units (text 0.7, figure 8
+    about 0.3) and 0.08 dB higher, not lower, with standard-normal units on standardized counts
+    (text 0.4). With the code's transform 2 sqrt(R + 3/8) the standard-normal rEFH loses 2.11 dB.
+    Under the dynamic mapping the canonical rEFH (+KF) exceeds the variants by 0.15, 0.15 and 1.68
+    dB, so that part holds. The static rEFH's own velocity advantage over the UKF is 0.05 dB in
+    this session, against about 0.94 dB in figure 8. Neither standard-normal reading matches.
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111).
+  - The standard-normal rEFH uses the code's learning rate for such units (mw0 = 200, setParams.m).
+- claim: fig8-position-variants
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig8-position-variants
+  notes: The dynamic part needs the bootstrap over the 49 sessions; see fig2-refh-kf-best. On the
+    one session the static part holds, the canonical static rEFH having a higher position SNR
+    (1.46 dB) than both variants (1.43 and 1.38). Under the dynamic mapping the canonical rEFH
+    (+KF) is 0.11 and 0.16 dB above them. This does not decide the outcome.
+- claim: fig8-gaussian-still-beats-ukf
+  outcome: reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:fig8-gaussian-still-beats-ukf
+  assumed: true
+  notes: Trained on standardized counts, the standard-normal rEFH (+KF) exceeds the UKF by 1.09 dB
+    for velocity and 1.17 dB for acceleration. Trained on the code's transform it is 0.43 dB below
+    the UKF for velocity and 0.12 dB above for acceleration, so the claim fails under the code's
+    reading. Question for the paper's authors (finding below) were the standard-normal visible
+    units fed standardized counts, as the Results say, or 2 sqrt(R + 3/8), as getLatentsBMI.m
+    does?
+  deviations:
+  - One session in place of 49.
+  - The input of the standard-normal rEFH is the standardized counts the Results name (z-scored
+    with the training mean and SD; Results, Variant decoders, "first standardizing the data
+    (separately for each neuron)"), as the claims file makes its main reading; the code's transform changes the
+    outcome.
+  - The UKF is a re-implementation of Li's UKF2.
+- claim: fig9-taps
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Every grade of the criterion needs part (ii), the bootstrap over the 49 sessions at three
+    bin widths, which the dandiset does not hold; see fig2-refh-kf-best. Parts (i) and (iii) are
+    single-session comparisons that could be computed, but whatever they give the claim stays
+    blocked, and the tapped decoders were not implemented. The tapped UKF follows Li's UKF2 (past
+    and future kinematic states in the state, one bin of spike history), whose code is not in the
+    paper's repository, and the tapped rEFH feeds the hidden units to that code without tuning
+    nonlinearities (Results, Augmenting the decoders with taps), so both would be further
+    re-implementations.
+- claim: kflatent-modest
+  outcome: reproduced
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:kflatent-modest
+  notes: Reading a (velocity), the better KFlatent decoder exceeds KFobs by 0.10 dB and the UKF by
+    0.51 dB; reading b (velocity and acceleration) 0.08 and 0.30 dB; reading c (all three) KFlatent
+    is 0.20 dB below KFobs. With the two other EM seeds KFlatent leads KFobs by 0.08 and 0.08 dB
+    under reading a and 0.07 and 0.08 dB under reading b, so a and b hold in all three EM runs,
+    though by small margins. With the code's kinematics readings a and b fail (0.49 and 0.39 dB for
+    KFlatent against 0.38 and 0.22 for the UKF) and reading c holds (0.07 against 0.32 dB), so the
+    claim holds under one reading with either kinematics. EM stopped at 100 epochs in every run,
+    not at the Methods' criterion.
+  deviations:
+  - One session in place of 49.
+  - Sorted units only (111); the UKF is a re-implementation of Li's UKF2.
+- claim: advantage-grows-with-derivative
+  outcome: reproduced
+  notebook: binwidth_training_neurons.ipynb
+  output: claim:advantage-grows-with-derivative
+  notes: The percent advantage of the rEFH (+KF) over the best non-rEFH decoder rises from position
+    to velocity to acceleration with 80 s (-26.1, 10.9, 76.4%), 160 s (2.4, 32.5, 71.3%) and 320 s
+    (4.9, 32.6, 76.5%) of training. It also rises at each amount when the shorter trainings are
+    scored only on the bins after 320 s.
+  deviations:
+  - One session in place of 49.
+  - For 80 and 160 s of training the paper does not say which bins are tested; the code tests on
+    every bin after the training bins (getLatentsBMI.m, getTestBins), and this is the main reading.
+    Scoring on the bins after 320 s gives the same outcome.
+- claim: static-refh-position-worse
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_makin_2018.ipynb
+  output: claim:static-refh-position-worse
+  notes: Needs the bootstrap over the 49 sessions, and depends on fig4-position, which is blocked;
+    see fig2-refh-kf-best. On the one session the static rEFH's position SNR is 4.17 dB below the
+    UKF's (1.46 against 5.63; 4.01 to 4.12 dB in the variants), the direction the claim states,
+    which does not decide the outcome.
+findings:
+- kind: data_missing
+  statement: The dandiset holds one session of one of the paper's three monkeys (monkey I, M1 array,
+    649.1 s with kinematics), released for the Neural Latents Benchmark. The paper used 49 sessions.
+    The file dates the session 2017-02-02, which is not in the paper's list of monkey I sessions
+    (NeuralAnalysis/Indy_HC_Sessions.csv, ending 2017-01-31), so it is probably not one of the
+    paper's sessions, though the dandiset names the paper as describing it. The paper's own
+    sessions are on Zenodo (doi:10.5281/zenodo.583331). The paper's tests across
+    sessions cannot be run on the dandiset.
+- kind: data_missing
+  statement: The units table holds sorted units only (ids are channel times 100 plus 1 to 4). The
+    paper kept an unsorted hash unit for every channel and counted them among its 171 to 413 units
+    per monkey I session; without them 111 units pass the 0.5 Hz cut.
+- kind: selection_undocumented
+  statement: The training file has three gaps of 0.1 s (162.2 to 162.3, 324.5 to 324.6 and 486.8 to
+    486.9 s) where every behavioural series is NaN and no unit has a spike, splitting it into four
+    segments; neither the file nor the dandiset says what was removed. The test file (190.3 s, 98
+    units) has no kinematics, so it cannot be used to score decoding.
+- kind: code_mismatch
+  statement: The Methods decode the fingertip position low-pass filtered at 10 Hz and subsampled
+    per bin; the paper's code (getLatentsBMI.m, binSpikeCounts.m) decodes the cursor position with
+    the filter commented out and averages each bin. The two readings change the outcome of
+    fig2-velocity-boost. Question for the paper's authors, which kinematics were decoded?
+- kind: code_mismatch
+  statement: The Results say the standard-normal rEFH variant was trained on standardized spike
+    counts; the code (getLatentsBMI.m) feeds it 2 sqrt(R + 3/8). The two readings change the outcome
+    of fig8-gaussian-still-beats-ukf. Question for the paper's authors, which input was used for
+    figure 8?
+- kind: methods_unavailable
+  statement: The UKF follows Li's UKF2 package (fit_ar_ukf_hist_rrcv.m, ar_ukf_hist.m), which the
+    paper's repository calls but does not hold; the attempt re-implemented it from the paper's
+    description (linear state transition, tuning to the six states, their magnitudes and the
+    position-velocity products, regression with full noise covariances, standard unscented
+    transform). Question for the paper's authors, can the UKF2 code and its ridge setting be
+    published with the paper's code?
+verifications:
+- date: 2026-10-28
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebooks)
+  reviewed: The handover of the author-answers run, the executed notebooks with the conclusions and
+    summaries removed, the helper module and the claims file. The verifier also read the paper and
+    queried the DANDI API for 000129 at version 0.241017.1444.
+  results:
+  - claim: units-monkey-i
+    agrees: true
+    outcome: not_reproduced
+    reason: 111 units above 0.5 Hz, outside 153.9 to 454.3. The file has no hash units (ids end in 1
+      to 4, 82 channels), and its session date, 2017-02-02, is not in the paper's list. Adding hash
+      units could reach the range, so this does not contradict the paper.
+    response: No change of outcome. The notes now say the shortfall does not contradict the paper.
+  - claim: fig2-refh-kf-best
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. The bootstrap needs 49 sessions. The mean part is testable on one
+      session and holds (rEFH (+KF) highest for pos, vel and acc, 5.90, 5.16, 2.37), and the notebook
+      does not report this.
+    response: Blocked as data_missing in place of too_large, since the dandiset holds one session; a
+      reader is asked whether the claims that need the paper's sessions should be on the Zenodo
+      deposit (questions/000129.yaml). A section of the first notebook now prints the mean part
+      (5.91, 5.06 and 2.36 dB in this run, highest in every variant).
+  - claim: intro-gain-over-nearest
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. The p-value needs sessions. The gains are testable on one
+      session but not reported; neither reading gets all three gains within tolerance.
+    response: Blocked as data_missing. The gains under both readings and every variant are now
+      printed (0.28, 1.24 and 1.02 dB under reading a, 0.28, 1.24 and 1.25 under reading b), and the
+      notes say no reading gets all three within tolerance.
+  - claim: fig2-velocity-boost
+    agrees: true
+    outcome: not_reproduced
+    reason: KFobs ratio is 1.97, below the required 2; the UKF ratio 1.55 is inside 1.5 to 2.2. Only
+      the UKF part holds, which the criterion does not count as partial. It is borderline; the rEFH
+      seeds give 1.92 to 1.99, and the code-kinematics variant passes (2.12).
+    response: No change of outcome. This run gives 1.92 (seeds 1.93 and 1.95; code kinematics 2.05).
+      The notes now say the result is borderline, that the ratio moves by a few hundredths between
+      runs, and that the one-session margin carries one session's noise.
+  - claim: fig2-kflatent-dynamic-little-effect
+    agrees: true
+    outcome: reproduced
+    reason: Differences of 0.18, 0.21 and 0.09 dB, all under 0.5. Also holds with code kinematics.
+    response: No change of outcome. The EM stopping threshold was 1e-6 of the total gain and is now
+      the Methods' 1e-4. Every EM run still reached the 100-epoch limit (last gains 4.3e-4 to 9.4e-4
+      of the total, now printed), so no result changed. Two more EM seeds were added (velocity
+      difference 0.17 to 0.21 dB).
+  - claim: fig2-refh-static-vel-acc
+    agrees: true
+    outcome: reproduced
+    reason: Static rEFH beats the best other decoder by 0.12 dB for vel (UKF) and 0.53 dB for acc
+      (WF). Holds for all seeds and variants. One session only, and the velocity margin is small.
+    response: No change of outcome. The deviation now says the small margin carries one session's
+      noise; the claim also holds with the two added EM seeds.
+  - claim: fig2-position-dynamic-gain
+    agrees: true
+    outcome: not_reproduced
+    reason: Gain is 4.41 dB against 3 +- 0.5. Every seed and variant gives 4.38 to 4.45.
+    response: No change of outcome. The training and test R2 of the static rEFH map are now printed
+      (position 0.39 and 0.51 on training, 0.19 and 0.37 on test), and the notes say the second KF is
+      fitted on the less noisy training outputs, as the paper's dynamic map is.
+  - claim: fig2-sagittal-better
+    agrees: false
+    outcome: reproduced
+    reason: y beats x in 24 of 24 pairs; one rEFH seed gives 23. The static rEFH velocity and linear
+      velocity margins are only 0.01 to 0.04 dB.
+    response: Kept partially reproduced. In this run y beats x in 23 of 24 pairs (static rEFH velocity
+      -0.06 dB), and in 23 with rEFH seed 1, both added EM seeds and the code's kinematics; only rEFH
+      seed 2 gives 24. The copy the verifier reviewed came from an earlier run, which gave 24. The
+      notes say the outcome depends on the rEFH's training run.
+  - claim: fig2-linear-worst
+    agrees: true
+    outcome: reproduced
+    reason: Every decoder is above linear regression for every variable; smallest margin 0.46 dB.
+    response: No change.
+  - claim: fig2-gross-failures
+    agrees: true
+    outcome: reproduced
+    reason: No negative R2 at 64 ms, so the criterion holds trivially. Outside 64 ms negative R2
+      appears for linear regression, static KFlatent and static rEFH at f = 1/8, and for linear
+      regression acc at 80 s; the claims file's restriction to 64 ms may be a narrower reading than
+      the paper's "in our experiments".
+    response: No change of outcome. The second notebook now lists every negative R2 outside 64 ms
+      with the decoder, and a reader is asked whether the claim should cover every configuration
+      (questions/000129.yaml); under that reading it would fail.
+  - claim: fig4-vel-acc-every-session
+    agrees: false
+    outcome: partially_reproduced
+    reason: The per-session part holds; 8 of 8 comparisons favour the rEFH (+KF), smallest margin
+      1.08 dB across seeds. The across-session bootstrap cannot be tested (one session).
+    response: Kept reproduced, and the disagreement is recorded in the notes. The claims file names
+      this claim's per-session part as what one session can test, and the bootstrap part is
+      recorded as untested, not as failed; the other mean claims tested on one session are graded
+      the same way.
+  - claim: fig4-advantage-grows
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. The regression is over sessions and axes; one session gives two
+      points.
+    response: Blocked as data_missing in place of too_large.
+  - claim: fig4-position
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. Bootstrap needs sessions. The point differences are testable
+      but not reported (+0.90 dB over KFobs and +0.27 dB over UKF).
+    response: Blocked as data_missing; the point differences are now printed (0.90 and 0.28 dB).
+  - claim: fig4-best-variable
+    agrees: true
+    outcome: not_reproduced
+    reason: Position is the best variable for rEFH (+KF) (5.90 vs 5.16), and this holds for all
+      seeds and the code reading.
+    response: No change.
+  - claim: fig4-task-similar
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. Monkey C is not on the archive, and there is only one monkey I
+      session.
+    response: Blocked as other in place of too_large. The claim is `data elsewhere`, for which
+      data_missing is not allowed; the block is that monkey C's data have no archive identifier to
+      pin, with monkey I's other sessions not in the dandiset.
+  - claim: fig5-vel-acc-all-bins
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. Bootstrap needs sessions. The point estimates are testable but
+      not reported; at 16 ms the WF beats rEFH (+KF) for vel and acc. The direction holds at 32, 64
+      and 128 ms.
+    response: Blocked as data_missing; the point estimates are now printed (at 16 ms WF 3.30 against
+      3.01 dB for velocity and 1.39 against 0.96 for acceleration). The WF now takes the history of
+      the first test bins from the last training bins in place of zeros (problem 7); its SNR moved
+      by at most 0.01 dB.
+  - claim: fig5-position-bins
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. Only the direction can be tested; UKF exceeds rEFH (+KF) at 16
+      ms (4.68 vs 4.42). The "no difference" parts need the test.
+    response: Blocked as data_missing; the pairwise differences are now printed (UKF above by 0.29
+      dB at 16 ms).
+  - claim: fig5-advantage-with-binwidth
+    agrees: true
+    outcome: reproduced
+    reason: rEFH (+KF) SNR and its advantage both rise under both readings.
+    response: No change.
+  - claim: fig5-derivative-order
+    agrees: true
+    outcome: partially_reproduced
+    reason: Holds at 3 of 4 widths; fails at 16 ms. The criterion drops the paper's clause "except
+      for the rEFH, which is best at velocity", which fails at every width.
+    response: No change; the notes say the untested clause fails at every width.
+  - claim: fig6-training-time
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. Part (ii) needs the test. On point values, (i) holds at 80, 160
+      and 320 s. For (iii), rEFH (+KF) is above KFobs at 320 s and below it at 80 s, as the paper
+      says.
+    response: Blocked as data_missing; the point values of all three parts are now printed.
+  - claim: fig7-vel-acc-neurons
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. Bootstrap needs sessions. On point values, velocity at f = 1/4
+      ties the WF (1.56 vs 1.56). The percent gain in acc over the best rival falls from f = 1/2
+      (about 95%) to f = 1 (78%).
+    response: Blocked as data_missing; the point values and the percent gains under both readings
+      are now printed (acceleration 87.1% at f = 1/2 and 76.5% at f = 1 in this run).
+  - claim: fig7-position-neurons
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. Only the direction can be tested; rEFH (+KF) is highest at f =
+      1/4 and 1/2.
+    response: Blocked as data_missing; the point values are now printed. In this run the rEFH (+KF)
+      is highest at f = 1/4 and 0.15 dB below the UKF at f = 1/2.
+  - claim: fig7-affine-position
+    agrees: true
+    outcome: not_reproduced
+    reason: All rho values are within tolerance, but the lowest is WF under reading (a) and static
+      rEFH under (b), never static KFlatent.
+    response: No change.
+  - claim: fig7-kinematic-model-saturates
+    agrees: true
+    outcome: reproduced
+    reason: Holds under reading (b) (1/8 to 1/2); fails under (a). It passes under (b) partly
+      because of KFlatent (+KF)'s failure at f = 1/8 (-2.56 dB); KFobs, UKF and rEFH (+KF) all drop
+      from 1/8 to 1/4.
+    response: No change of outcome; the notes say KFlatent (+KF) passes partly because its filter
+      diverges at f = 1/8, and the other three pass on their own slopes.
+  - claim: fig8-velocity-variants
+    agrees: true
+    outcome: not_reproduced
+    reason: Losses of 0.21 and 0.05 dB against the text's 0.7 and 0.4 (and the figure's about 0.3
+      and 0.4). The dynamic part holds (0.25 and 0.27 dB). The standard-normal loss of 0.05 dB is
+      within the 0.13 dB rEFH seed spread, which does not change the verdict.
+    response: No change.
+  - claim: fig8-position-variants
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. The dynamic part needs the test. The static part holds on this
+      session (1.49 > 1.43 and 1.41), but the notebook does not mark it.
+    response: Blocked as data_missing; a section now prints the static and dynamic differences, and
+      the notes say the static part holds.
+  - claim: fig8-gaussian-still-beats-ukf
+    agrees: true
+    outcome: reproduced
+    reason: Standardized-count variant (paper l. 1122, "standardizing ... separately for each
+      neuron"), +1.07 dB vel and +1.13 dB acc over the UKF. The code-transform variant fails (-0.37
+      vel).
+    response: No change; the deviation now quotes the passage.
+  - claim: fig9-taps
+    agrees: true
+    outcome: blocked
+    reason: Blocked, methods not run. No tapped decoders are implemented. Parts (i) and (iii) are
+      single-session comparisons that could have been tested; only (ii) needs sessions. The stated
+      block reason, "bootstrap", covers only part (ii).
+    response: Blocked as data_missing, with the reason stated in full. Every grade of the criterion
+      needs part (ii), so the claim stays blocked whatever (i) and (iii) give; the tapped decoders
+      were not implemented, since the tapped UKF is Li's UKF2, whose code is not in the paper's
+      repository, and the notes say so.
+  - claim: kflatent-modest
+    agrees: true
+    outcome: reproduced
+    reason: Holds under readings (a) and (b), fails under (c). The KFlatent margin is 0.10 dB from
+      one EM run. With code kinematics only (c) holds.
+    response: No change of outcome. Two more EM seeds were added; readings a and b hold in all three
+      EM runs, with margins of 0.07 to 0.10 dB.
+  - claim: advantage-grows-with-derivative
+    agrees: true
+    outcome: reproduced
+    reason: Percent advantage rises pos < vel < acc at 80, 160 and 320 s, under both test-set
+      readings.
+    response: No change.
+  - claim: static-refh-position-worse
+    agrees: true
+    outcome: blocked
+    reason: Blocked as data_missing. The test needs sessions. The direction holds strongly (static
+      rEFH 1.49 vs UKF 5.63 dB).
+    response: Blocked as data_missing; the point difference is now printed (4.17 dB below the UKF).
+- date: '2026-10-29'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The full executed notebooks of the author-revise-1 run with their conclusions and summaries,
+    the README, the attempt record, the helper module and the claims file. The verifier also read the
+    paper. It did not check the cited rbmish code details, which were not in its materials, and it notes
+    that the UKF re-implements Li's UKF2, which cannot be checked against the original.
+  results:
+  - claim: units-monkey-i
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; no comment on this claim.
+    response: No change.
+  - claim: fig2-refh-kf-best
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the data_missing block is correct, as the claim needs a bootstrap or regression across
+      sessions.
+    response: No change.
+  - claim: intro-gain-over-nearest
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the data_missing block is correct, as the claim needs a bootstrap or regression across
+      sessions.
+    response: No change.
+  - claim: fig2-velocity-boost
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The assumption (fingertip position, 10 Hz Butterworth filter, last sample of each
+      bin) is stated, is the claims file's main reading, and is reasonable; the code reading reverses
+      the outcome (KFobs ratio 2.05), and the finding raises it as a question for the authors. The outcome
+      can still flip with one session or one training run (ratio 1.92 against the required 2).
+    response: No change. The notes already say the result is borderline and rests on one session and on
+      the kinematics reading; testing more sessions needs data the dandiset does not hold.
+  - claim: fig2-kflatent-dynamic-little-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The notes say the last epoch's gain was 4.3e-4 to 6.6e-4 in every run, but the code-kinematics
+      run's gain is not printed (nb1 cell 17), and the round-1 response gives 4.3e-4 to 9.4e-4, the range
+      over all configurations (nb2 cell 6); the two statements are inconsistent.
+    response: The first notebook now prints the code-kinematics run's last gain (4.25e-4). The notes now
+      give both ranges, 4.3e-4 to 6.6e-4 over the six runs of the first notebook and 4.3e-4 to 9.4e-4
+      over every configuration of the second.
+  - claim: fig2-refh-static-vel-acc
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The outcome can still flip with one session or one training run (velocity margin 0.05
+      dB). nb1 cell 29 says the claim holds in all four runs, but cell 28 prints six.
+    response: No change of outcome. Cell 29 now says all six runs and names them; the small margin is
+      already stated in the notes and deviations.
+  - claim: fig2-position-dynamic-gain
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The gain is 4.45 dB against 3 +- 0.5; whether fitting the second Kalman filter on
+      the training outputs inflates it is stated but not tested.
+    response: No change. Not tested; a test would need rEFH outputs on training bins the rEFH was not
+      fitted on, so a rEFH refitted on part of the training data, which is a different model from the
+      one the paper fits. The notes say it is not tested.
+  - claim: fig2-sagittal-better
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees for this run, which gives 23 of 24 pairs (the exception is the static rEFH's velocity
+      at -0.06 dB); the round-1 copy gave 24 of 24 and rEFH seed 2 still gives 24. The notes correctly
+      say the outcome depends on the rEFH's training run.
+    response: No change; the re-run gives the same 23 of 24.
+  - claim: fig2-linear-worst
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; no comment on this claim.
+    response: No change.
+  - claim: fig2-gross-failures
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The Summary of nb1 (cell 69) says no negative R2 at all, but there is none only at
+      64 ms; nb2 cell 9 lists 24 negative R2 values in other configurations. nb2 cell 10 and the notes
+      name the UKF only at f = 1/4 for x position, while cell 9 also shows it negative at f = 1/8 for
+      ay (-0.001), and static KFlatent at f = 1/8 for ay (-0.000); minor, with no bearing on the outcome.
+    response: No change of outcome. The Summary row now says no negative R2 at 64 ms and points to the
+      other configurations. nb2 cell 10 and the notes now add the UKF at f = 1/8 (ay); static KFlatent
+      at f = 1/8 was already covered by its f = 1/8 entry, which includes ay.
+  - claim: fig4-vel-acc-every-session
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, dropping the round-1 disagreement. The criterion defines a per-session grade, the
+      claims header names the claim as testable on one session, the outcome is labelled for this session
+      and the bootstrap is recorded as untested. The round-1 response's reason that the other mean claims
+      tested on one session are graded the same way does not hold, since claims whose criterion includes
+      a bootstrap, such as fig2-refh-kf-best, are blocked.
+    response: No change of outcome. The round-1 reason that the verifier found does not hold is withdrawn;
+      the outcome rests on the criterion's per-session grade and the claims header. The notes now say
+      the verifier agreed in round 2.
+  - claim: fig4-advantage-grows
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the data_missing block is correct, as the claim needs a bootstrap or regression across
+      sessions. No single-session values are printed for it, although the README says they are printed
+      for all 12.
+    response: The README row now says single-session values are printed for ten of the twelve. None are
+      printed for this claim, since its regression needs more than one session.
+  - claim: fig4-position
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the data_missing block is correct, as the claim needs a bootstrap or regression across
+      sessions.
+    response: No change.
+  - claim: fig4-best-variable
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; no comment on this claim.
+    response: No change.
+  - claim: fig4-task-similar
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked as other is correct. The claim is data elsewhere and monkey C has no archive
+      identifier. The nb1 Summary says the dandiset holds none of the paper's monkey I sessions, but cell
+      6 and the findings say probably not one of the paper's, since a misdated session cannot be excluded.
+    response: No change of outcome. The Summary row now says the dandiset's one monkey I session is probably
+      not one of the paper's.
+  - claim: fig5-vel-acc-all-bins
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the data_missing block is correct, as the claim needs a bootstrap or regression across
+      sessions.
+    response: No change.
+  - claim: fig5-position-bins
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the data_missing block is correct, as the claim needs a bootstrap or regression across
+      sessions.
+    response: No change.
+  - claim: fig5-advantage-with-binwidth
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; no comment on this claim.
+    response: No change.
+  - claim: fig5-derivative-order
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; no comment on this claim.
+    response: No change.
+  - claim: fig6-training-time
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the data_missing block is correct, as the claim needs a bootstrap or regression across
+      sessions.
+    response: No change.
+  - claim: fig7-vel-acc-neurons
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the data_missing block is correct, as the claim needs a bootstrap or regression across
+      sessions.
+    response: No change.
+  - claim: fig7-position-neurons
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the data_missing block is correct, as the claim needs a bootstrap or regression across
+      sessions.
+    response: No change.
+  - claim: fig7-affine-position
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; no comment on this claim.
+    response: No change.
+  - claim: fig7-kinematic-model-saturates
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome, but the record's partly should be only. KFlatent (+KF)'s slope from
+      1/4 to 1/2 is (1.12 - 0.07)/0.25 = 4.2 dB per unit f, below its late slope of 6.27; under reading
+      b it passes only if its f = 1/8 SNR is below -1.23 dB, and every other decoder is between -0.10
+      and 0.68 dB there. So reproduced rests on a gross failure of one of the four decoders; if that value
+      is excluded the claim fails under both readings. The notes should say only, and the outcome should
+      carry that caveat; the README row says Reproduced with no qualifier.
+    response: No change of outcome; the criterion is met as written. The second notebook now prints the
+      slope from 1/4 to 1/2 (4.20), the f = 1/8 threshold (-1.23 dB) and the other decoders' f = 1/8 values.
+      The notes, the result cell, the notebook summary and the README row now say the claim passes only
+      because KFlatent (+KF) diverges at f = 1/8, and that without that value it fails under both readings.
+  - claim: fig8-velocity-variants
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; no comment on this claim.
+    response: No change.
+  - claim: fig8-position-variants
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the data_missing block is correct, as the claim needs a bootstrap or regression across
+      sessions.
+    response: No change.
+  - claim: fig8-gaussian-still-beats-ukf
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption of standardized counts is stated, is the claims file's main reading
+      and the Results' (first standardizing the data, separately for each neuron), and is reasonable;
+      the code's transform reverses the outcome (velocity -0.43 dB against the UKF).
+    response: No change.
+  - claim: fig9-taps
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Every grade of its criterion needs part (ii), so it stays blocked whatever parts (i)
+      and (iii) give, and the record now states this. No single-session values are printed for it, although
+      the README says they are printed for all 12.
+    response: The README row now says single-session values are printed for ten of the twelve. The tapped
+      decoders are still not implemented, for the reason in the notes.
+  - claim: kflatent-modest
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Readings a and b hold in all three EM runs, but the outcome can still flip with one
+      session or one training run (margins of 0.07 to 0.10 dB).
+    response: No change; the margins are stated in the notes, and more sessions are not in the dandiset.
+  - claim: advantage-grows-with-derivative
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; no comment on this claim.
+    response: No change.
+  - claim: static-refh-position-worse
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the data_missing block is correct, as the claim needs a bootstrap or regression across
+      sessions.
+    response: No change.
