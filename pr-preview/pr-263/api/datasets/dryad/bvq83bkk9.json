@@ -1,0 +1,1087 @@
+{
+ "dataset": {
+  "archive": "dryad",
+  "id": "bvq83bkk9",
+  "label": "DRYAD:bvq83bkk9"
+ },
+ "page": "datasets/dryad/bvq83bkk9/",
+ "generated": "2026-10-29T01:39:58+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 11,
+  "partially_reproduced": 2,
+  "not_reproduced": 0,
+  "blocked": 18
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "dryad-bvq83bkk9-dias-2025-01",
+   "dataset": {
+    "archive": "dryad",
+    "id": "bvq83bkk9",
+    "version": "333377",
+    "doi": "10.5061/dryad.bvq83bkk9"
+   },
+   "key": "dryad:bvq83bkk9",
+   "label": "DRYAD:bvq83bkk9",
+   "dataset_version": "333377",
+   "paper": "10.1098/rspb.2024.2556",
+   "paper_title": null,
+   "date": "2026-10-27",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-10"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/40506524181"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "dryad-bvq83bkk9-dias-2025",
+   "entry_title": "Wing length allometry and climate in five migratory passerines (Dias et al. 2025)",
+   "description": "Tests the findings of Dias, Lemoine, Yanco, Zimova, Bay and Weeks (2025) on Dryad dataset bvq83bkk9, which holds the wing and tarsus lengths of 27 486 Field Museum specimens of five migratory passerines collected in Chicago from 1981 to 2016, the climate of each species and year, and the phylogeny. It checks the sample sizes, refits the preliminary phylogenetic mixed models (Tables S4 to S8) and the hierarchical Stan model of the autumn after-hatch-year birds (Table 3), and times the other Stan models, which are too slow to run here.",
+   "notebooks": [
+    {
+     "path": "reproduce_dias_2025.ipynb",
+     "title": "Data check, sample sizes and the preliminary models (Tables S4 to S8)",
+     "executed": "notebooks/dryad-bvq83bkk9-dias-2025/reproduce_dias_2025.html"
+    },
+    {
+     "path": "stan_models.ipynb",
+     "title": "How long the hierarchical Stan models take",
+     "executed": "notebooks/dryad-bvq83bkk9-dias-2025/stan_models.html"
+    },
+    {
+     "path": "autumn_ahy_main_a.ipynb",
+     "title": "The autumn AHY main model (Table 3), data as deposited",
+     "executed": "notebooks/dryad-bvq83bkk9-dias-2025/autumn_ahy_main_a.html"
+    },
+    {
+     "path": "autumn_ahy_main_c.ipynb",
+     "title": "The autumn AHY main model (Table 3), outliers removed per species and sex",
+     "executed": "notebooks/dryad-bvq83bkk9-dias-2025/autumn_ahy_main_c.html"
+    },
+    {
+     "path": "autumn_ahy_main_d.ipynb",
+     "title": "The autumn AHY main model (Table 3), outliers removed with the unscaled MAD",
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "sample-sizes",
+     "statement": "The deposited data are the specimens the paper modelled, 27 366 in total, giving 177 species-years and 11 798 birds for HY allometry, 174 and 12 318 for spring AHY, and 171 and 3250 for autumn AHY, and 11 731, 11 481 and 3122 birds in the three preliminary models.",
+     "source": "Methods, Morphological data, paragraph 1; Methods, Identifying key climatic variables, paragraph 2; Methods, Testing whether climate drives changes in wing length allometry, paragraph 6",
+     "quote": "HY allometry was estimated for 177 unique species-year combinations using 11 798 individuals, AHY spring allometry was estimated for 174 unique species-year combinations using 12 318 individuals, and AHY autumn allometry was estimated for 171 unique species-year combinations using 3250 individuals",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_dias_2025.ipynb",
+     "notes": "Under filtering reading (a), the data as deposited, every count equals the paper's exactly (177, 174 and 171 species-years and 11798, 12318 and 3250 birds in the main models; 11731, 11481 and 3122 in the preliminary models). The three main models together hold 27366 birds, the paper's total; the file has 27486 specimens, the 120 others being in species-years dropped for a missing climate value, within the 10% tolerance. Readings (c) and (d) remove 17 and 70 specimens and keep every count within tolerance; reading (b) removes none. The rows the scripts drop by number are the rows with a missing value in the columns they select, in all six tables.",
+     "deviations": [
+      "The specimen count compared with 27366 is the file's 27486; the paper's 27366 is the number in the main models, which is also printed."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-hy-wintering-temperature",
+     "statement": "In HY birds, warmer temperature in the wintering season before the autumn of collection is associated with a more positive allometric slope (beta 0.02, pd 94.8%) but not with the allometric intercept (beta 0.01, pd 76.1%).",
+     "source": "Results, Spring migration, pre-breeding and wintering season temperatures do not have long-term impacts on wing length allometry, paragraph 1; Table 1",
+     "quote": "we find that the wintering season temperature prior to the autumn when HY birds were collected is significantly and positively associated with the allometric slope (\u03b2 = 0.02, probability of direction (pd) = 94.8%) but is not significantly associated with the allometric intercept (\u03b2 = 0.01, pd = 76.1%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "stan_models.ipynb",
+     "notes": "Needs the HY Stan model, which stan_models.ipynb estimates at 87 minutes for one filtering reading (4 chains of 4000 iterations, timed on 200 iterations of early warm-up). The autumn AHY full fits took 13.1, 12.3 and 14.0 minutes (autumn_ahy_main_a, _c and _d, cell 5) against an estimate of 21, 0.59 to 0.67 of it; scaled by that, HY takes about 51 to 58 minutes, over the 30-minute notebook limit, and three readings are needed. Not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-hy-prebreeding-temperature",
+     "statement": "In HY birds, warmer pre-breeding temperature is associated with a more positive allometric intercept (beta 0.05, pd 98.7%) and not with the slope (beta -0.01, pd 89.5%).",
+     "source": "Results, Spring migration, pre-breeding and wintering season temperatures do not have long-term impacts on wing length allometry, paragraph 1; Table 1",
+     "quote": "We also find that the pre-breeding temperature prior to when HY birds are collected has a significant and positive association with the allometric intercept (\u03b2 = 0.05, pd = 98.7%), but no significant association with the allometric slope (\u03b2 = \u22120.01, pd = 89.5%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "stan_models.ipynb",
+     "notes": "Needs the HY Stan model, estimated at 87 minutes per filtering reading (about 51 to 58 scaled by the autumn AHY fits). Not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s4-s6-spring-migration-temperature-none",
+     "statement": "Spring migration temperature has no significant effect on wing length, or interaction with body size, in any of the three preliminary phylogenetic mixed models, and so is left out of the main models.",
+     "source": "Results, Spring migration, pre-breeding and wintering season temperatures do not have long-term impacts on wing length allometry, paragraph 1; Tables S4 to S6",
+     "quote": "We do not include temperature during spring migration as a parameter in any of our main models of allometry because it does not have a significant effect in any of the phylogenetic mixed models",
+     "statistics": [
+      {
+       "about": "HY, previous spring temperature",
+       "test": "phylogenetic mixed model (MCMCglmm), 95% interval",
+       "ci": {
+        "level": 0.95,
+        "low": -0.02,
+        "high": 0.0
+       }
+      },
+      {
+       "about": "spring AHY, spring migration temperature",
+       "test": "phylogenetic mixed model (MCMCglmm), 95% interval",
+       "ci": {
+        "level": 0.95,
+        "low": -0.03,
+        "high": 0.0
+       }
+      },
+      {
+       "about": "autumn AHY, spring migration temperature",
+       "test": "phylogenetic mixed model (MCMCglmm), 95% interval",
+       "ci": {
+        "level": 0.95,
+        "low": -0.03,
+        "high": 0.03
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_dias_2025.ipynb",
+     "notes": "The two seed readings of the criterion give different outcomes. Seed reading (1), the recorded run, gives not reproduced. All 10 intervals per filtering reading (MinTempSpringMig in the three models, MinTempNextSpringMig and PrevMinTempSpringMig, and their tarsus interactions) include 0 under interval reading (i), the pooled quantiles, but under reading (ii) the chain-4 HPD interval of MinTempNextSpringMig in the spring AHY model is -0.0275 to -0.0002 (filtering reading a) and -0.0292 to -0.0005 (reading c), excluding 0; its pooled interval is -0.0275 to 0.0007, estimate -0.013, pMCMC 0.056. Seed reading (2), ten other seed sets, gives reproduced. No term's interval excludes 0 in most of them, under either interval reading or any filtering reading; the most is the HPD interval of MinTempNextSpringMig, in 1 of 10 sets under reading (a), 0 under (c) and 2 under (d), and the pooled intervals exclude 0 in none. What the answer of 2026-10-27 changed. The earlier outcome, not reproduced, applied the criterion to the recorded run alone and noted that the call rested on the Monte Carlo draw. The answer added the two seed readings and the rule that a claim is blocked as methods_underspecified when they differ, since the seed is the attempt's choice; the seed sets were extended from this one term to every term of the claim in the three models and filtering readings. The block follows the criterion; the evidence beyond the recorded run points towards the absence the claim states.",
+     "deviations": [
+      "The MCMCglmm models are sampled with a Gibbs sampler of the same model and priors written in Python (wingallom.gibbs_glmm), since MCMCglmm, an R package, cannot be installed in the entry's locked Python environment. Seeds are chosen here; the paper's code sets none.",
+      "Seed reading (2) uses ten seed sets, \"most\" meaning more than 5 of 10; the criterion does not fix the number of sets."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s5-s6-ahy-prebreeding-wintering-temperature-none",
+     "statement": "Pre-breeding and wintering season temperatures have no significant association with AHY wing length in the preliminary models of spring and autumn AHY birds.",
+     "source": "Results, Spring migration, pre-breeding and wintering season temperatures do not have long-term impacts on wing length allometry, paragraph 1; Tables S5 and S6",
+     "quote": "However, temperatures during these periods do not have any significant associations with AHY allometry (electronic supplementary material, tables S5\u2013S6)",
+     "statistics": [
+      {
+       "about": "spring AHY, previous wintering temperature",
+       "test": "phylogenetic mixed model (MCMCglmm), 95% interval",
+       "ci": {
+        "level": 0.95,
+        "low": -0.03,
+        "high": 0.0
+       }
+      },
+      {
+       "about": "spring AHY, pre-breeding temperature",
+       "test": "phylogenetic mixed model (MCMCglmm), 95% interval",
+       "ci": {
+        "level": 0.95,
+        "low": -0.0,
+        "high": 0.03
+       }
+      },
+      {
+       "about": "autumn AHY, previous wintering temperature",
+       "test": "phylogenetic mixed model (MCMCglmm), 95% interval",
+       "ci": {
+        "level": 0.95,
+        "low": -0.0,
+        "high": 0.06
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_dias_2025.ipynb",
+     "notes": "In the spring and autumn AHY preliminary models, every interval of TempWinMo, PrevTempWinMo, PrevPrevTempWinMo, AvgTempPreBreedBase and PrevAvgTempPreBreedBase and of their tarsus interactions includes 0, under both interval readings and all three filtering readings. The closest is spring AHY PrevTempWinMo, -0.015 (-0.031 to 0.002) under reading (a).",
+     "deviations": [
+      "MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-hy-breeding-temperature",
+     "statement": "In HY birds, warmer breeding season temperature is associated with a more negative allometric intercept (beta -0.06, pd 99.1%), that is shorter wings for a given body size, and not with the slope (beta 0.01, pd 78.1%).",
+     "source": "Results, Colder breeding season temperatures during development are associated with increases in relative wing length, paragraph 1; Table 1",
+     "quote": "we find that breeding season temperature has a significant negative association with the allometric intercept of the relationship between body size and wing length (\u03b2 = \u22120.06, pd = 99.1%) and no relationship with the allometric slope (\u03b2 = 0.01, pd = 78.1%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "stan_models.ipynb",
+     "notes": "Needs the HY Stan model, estimated at 87 minutes per filtering reading (about 51 to 58 scaled by the autumn AHY fits). Not run. The HY preliminary model, which is run, gives TempBreedMoBase -0.065 (-0.083 to -0.048), but that is not the claim's test.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table2-spring-ahy-breeding-temperature",
+     "statement": "In spring AHY birds, the temperature of the breeding season in which they developed has no significant association with the allometric intercept (beta -0.01, pd 72.7%) or slope (beta -0.01, pd 83.5%).",
+     "source": "Results, Colder breeding season temperatures during development are associated with increases in relative wing length, paragraph 1; Table 2",
+     "quote": "The association with the allometric intercept is not significant among AHY birds collected during the following spring (allometric intercept \u03b2 = \u22120.01, pd = 72.7%; allometric slope \u03b2 = \u22120.01, pd = 83.5%; table 2)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "stan_models.ipynb",
+     "notes": "Needs the spring AHY Stan model, estimated at 72 minutes per filtering reading (about 42 to 48 scaled by the autumn AHY fits). Not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table3-autumn-ahy-prior-breeding-temperature",
+     "statement": "In autumn AHY birds, warmer temperature in the breeding season of their development (the year before the most recent) is again associated with a more negative allometric intercept (beta -0.09, pd 99.5%) and not with the slope (beta -0.01, pd 75.1%).",
+     "source": "Results, Colder breeding season temperatures during development are associated with increases in relative wing length, paragraph 1; Table 3",
+     "quote": "but it is significant again among AHY birds collected in the following autumn (allometric intercept \u03b2 = \u22120.09, pd = 99.5%; allometric slope \u03b2 = \u22120.01, pd = 75.1%; table 3)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "autumn_ahy_main_a.ipynb",
+     "notes": "PrevTempBreedBase in the autumn AHY Stan model has an intercept effect of -0.094 (pd 99.59%) and a slope effect of -0.012 (pd 71.30%) under reading (a); -0.091 (99.39%) and -0.026 (76.51%) under (c) (autumn_ahy_main_c.ipynb); -0.099 (99.59%) and -0.009 (75.80%) under (d) (autumn_ahy_main_d.ipynb). All within tolerance, and each pd is at least 11.6 Monte Carlo errors from 90% under (a) and (c), and under (d) on chains 1 to 3. The fits do not converge well (1107, 1530 and 2683 of 8000 draws divergent; largest R-hat 1.083, 1.188 and 1.596). Under (d) chain 4 is stuck, every kept draw divergent, and the fit fails the R-hat check; chains 1 to 3 pooled give -0.094 (pd 99.45%) and -0.010 (pd 67.73%), each chain 99.15% to 99.65% and 67.40% to 68.30%, the same call. The draws can depend on the CPU, since the model is compiled with -march=native as Script01 does; the run reviewed in round 1 gave other values with the same seed. The re-run of this revision, on an AMD EPYC 7763, gave the same draws as the run reviewed in round 2 (AMD EPYC 9V74).",
+     "deviations": [
+      "lm_mod.stan is run with CmdStan 2.40 through cmdstanpy, in place of rstan, after a port to the current array syntax that leaves the model unchanged; PyStan does not load on Python 3.13. With the code's seed the draws still differ from the paper's."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s6-autumn-ahy-recent-breeding-temperature-none",
+     "statement": "In the autumn AHY preliminary model, temperature of the most recent breeding season is not significantly associated with wing length.",
+     "source": "Results, Colder breeding season temperatures during development are associated with increases in relative wing length, paragraph 1; Table S6",
+     "quote": "However, temperature during the breeding season most recent to when autumn AHY birds were collected is not significantly associated with wing length among autumn AHY birds",
+     "statistics": [
+      {
+       "about": "autumn AHY, breeding temperature (most recent)",
+       "test": "phylogenetic mixed model (MCMCglmm), 95% interval",
+       "ci": {
+        "level": 0.95,
+        "low": -0.02,
+        "high": 0.06
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_dias_2025.ipynb",
+     "notes": "TempBreedMoBase in the autumn AHY preliminary model is 0.022 (-0.017 to 0.061, chain-4 HPD -0.015 to 0.062) under reading (a), and its tarsus interaction 0.020 (-0.017 to 0.058); both include 0 under both interval readings and all filtering readings.",
+     "deviations": [
+      "MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s4-hy-autumn-migration-temperature-none",
+     "statement": "In the HY preliminary model, autumn migration temperature has no significant association with wing length.",
+     "source": "Results, Autumn migration temperatures have mixed effects on wing length allometry of after hatch-year birds, paragraph 1; Table S4",
+     "quote": "Temperature during autumn migration does not have a significant association with HY wing length",
+     "statistics": [
+      {
+       "about": "HY, fall migration temperature",
+       "test": "phylogenetic mixed model (MCMCglmm), 95% interval",
+       "ci": {
+        "level": 0.95,
+        "low": -0.02,
+        "high": 0.01
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_dias_2025.ipynb",
+     "notes": "MinTempFallMig in the HY preliminary model is -0.007 (-0.020 to 0.006) under reading (a) and its tarsus interaction -0.000 (-0.013 to 0.013); both include 0 under both interval readings and all filtering readings.",
+     "deviations": [
+      "MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table2-spring-ahy-autumn-migration-temperature",
+     "statement": "In spring AHY birds, warmer temperature during the preceding autumn migration is associated with a more negative allometric intercept (beta -0.04, pd 94.8%) and not with the slope (beta 0.00, pd 55.6%).",
+     "source": "Results, Autumn migration temperatures have mixed effects on wing length allometry of after hatch-year birds, paragraph 1; Table 2",
+     "quote": "temperature during the autumn migration prior to when spring AHY birds were collected is significantly and negatively associated with the allometric intercept (\u03b2 = \u22120.04, pd = 94.8%) and has no significant relationship with the allometric slope (\u03b2 = 0.00, pd = 55.6%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "stan_models.ipynb",
+     "notes": "Needs the spring AHY Stan model, estimated at 72 minutes per filtering reading (about 42 to 48 scaled by the autumn AHY fits). Not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table3-autumn-ahy-prior-autumn-temperature",
+     "statement": "In autumn AHY birds, the temperature of the autumn migration before the most recent one has no significant association with the allometric intercept (beta -0.02, pd 78.0%) or slope (beta 0.01, pd 70.9%).",
+     "source": "Results, Autumn migration temperatures have mixed effects on wing length allometry of after hatch-year birds, paragraph 1; Table 3",
+     "quote": "Among AHY birds collected in the autumn of the next year (table 3), the association with the allometric intercept is no longer significant (allometric intercept \u03b2 = \u22120.02, pd = 78.0%; allometric slope \u03b2 = 0.01, pd = 70.9%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "autumn_ahy_main_a.ipynb",
+     "notes": "PrevMinTempFallMig has intercept and slope effects -0.020 (pd 76.19%) and 0.013 (pd 69.85%) under reading (a), -0.019 (74.17%) and 0.008 (63.35%) under (c), -0.018 (59.17%) and 0.007 (53.33%) under (d); both pd stay below 90% under every reading. Under (d) chain 4 is stuck, and chains 1 to 3 pooled give -0.024 (pd 78.90%) and 0.014 (pd 71.10%), each chain 78.10% to 79.95% and 68.50% to 74.55%. All means within tolerance. The draws can depend on the CPU, since the model is compiled with -march=native as Script01 does; the run reviewed in round 1 gave other values with the same seed. The re-run of this revision, on an AMD EPYC 7763, gave the same draws as the run reviewed in round 2 (AMD EPYC 9V74).",
+     "deviations": [
+      "lm_mod.stan run with CmdStan in place of rstan, as for table3-autumn-ahy-prior-breeding-temperature."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table3-autumn-ahy-recent-autumn-temperature",
+     "statement": "In autumn AHY birds, temperature during the autumn migration in which they were collected has no significant association with the allometric intercept (beta 0.03, pd 88.6%) but a negative association with the allometric slope (beta -0.03, pd 90.3%).",
+     "source": "Results, Autumn migration temperatures have mixed effects on wing length allometry of after hatch-year birds, paragraph 1; Table 3",
+     "quote": "temperature during the following autumn migration (i.e. the same period in which autumn AHY birds were collected) has no significant relationship with the allometric intercept of autumn AHY birds (\u03b2 = 0.03, pd = 88.6%) but has a negative relationship with the allometric slope (\u03b2 = \u22120.03, pd = 90.3%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "autumn_ahy_main_a.ipynb",
+     "notes": "MinTempFallMig has an intercept effect of 0.028 (pd 87.64%) and a slope effect of -0.032 (pd 90.48%) under reading (a), and 0.027 (88.92%) and -0.032 (91.24%) under (c), so the claim holds under both in this run. The (a) slope pd is 1.0 Monte Carlo error (0.46%) above 90%, and the run reviewed in round 1 gave 89.98% under (a), so the (a) call changes between runs; under (c) it is 2.3 errors above. Under (d) chain 4 is stuck (every kept draw divergent, R-hat 1.596), so the fit fails the paper's R-hat check and the (d) call rests on chains 1 to 3. Pooled, they give an intercept of 0.025 (pd 85.83%) and a slope of -0.024 (pd 83.32%, Monte Carlo error 1.24%, 5.4 errors below 90%; each chain 82.20% to 84.65%), so the slope falls below 90% and the outcome is partially reproduced. The round-1 (d) fit, which had no stuck chain, gave a slope pd of 85.1%. The four chains pooled give 87.49%. Signs and means hold under every reading. The paper's pd values (88.6% and 90.3%) are themselves within 1.5 points of the line. The draws can depend on the CPU, since the model is compiled with -march=native as Script01 does; the run reviewed in round 1 gave other values with the same seed. The re-run of this revision, on an AMD EPYC 7763, gave the same draws as the run reviewed in round 2 (AMD EPYC 9V74).",
+     "deviations": [
+      "lm_mod.stan run with CmdStan in place of rstan, as for table3-autumn-ahy-prior-breeding-temperature."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-hy-wintering-prebreeding-precipitation",
+     "statement": "In HY birds, lower precipitation in the wintering season and the pre-breeding period before development is associated with a more positive allometric intercept (wintering beta -0.03, pd 94.1%; pre-breeding beta -0.02, pd 91.6%) and not with the slope (pd 66.9% and 61.7%).",
+     "source": "Results, Drier wintering seasons and pre-breeding periods prior to development are associated with increases in relative wing length among hatch-year and spring after-hatch-year birds, paragraph 1; Table 1",
+     "quote": "we find that precipitation during the wintering and pre-breeding periods prior to when HY birds hatch, develop and are collected are significantly and negatively associated with the allometric intercept (wintering precipitation \u03b2 = \u22120.03, pd = 94.1%; pre-breeding precipitation \u03b2 = \u22120.02, pd = 91.6%) but not associated with the allometric slope (wintering precipitation \u03b2 = 0.01, pd = 66.9%; pre-breeding precipitation \u03b2 = 0.00, pd = 61.7%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "stan_models.ipynb",
+     "notes": "Needs the HY Stan model, estimated at 87 minutes per filtering reading (about 51 to 58 scaled by the autumn AHY fits). Not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table2-spring-ahy-wintering-prebreeding-precipitation",
+     "statement": "The negative associations of wintering and pre-breeding precipitation before development with the allometric intercept hold in spring AHY birds (beta -0.02, pd 92.7%; beta -0.03, pd 93.5%), with no slope effects (pd 71.1% and 83.5%).",
+     "source": "Results, Drier wintering seasons and pre-breeding periods prior to development are associated with increases in relative wing length among hatch-year and spring after-hatch-year birds, paragraph 1; Table 2",
+     "quote": "These associations are maintained among AHY birds collected in the following spring (table 2; allometric intercept (wintering precipitation) \u03b2 = \u22120.02, pd = 92.7%; allometric intercept (pre-breeding precipitation) \u03b2 = \u22120.03, pd = 93.5%; allometric slope (wintering precipitation) \u03b2 = 0.01, pd = 71.1%; allometric slope (pre-breeding precipitation) \u03b2 = \u22120.02, pd = 83.5%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "stan_models.ipynb",
+     "notes": "Needs the spring AHY Stan model, estimated at 72 minutes per filtering reading (about 42 to 48 scaled by the autumn AHY fits). Not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table3-autumn-ahy-prior-wintering-precipitation",
+     "statement": "In autumn AHY birds the HY association does not hold. Wintering precipitation before development has a positive association with the allometric intercept (beta 0.03, pd 90.0%), none with the slope (beta 0.02, pd 88.7%), and pre-breeding precipitation before development is not associated with wing length in the preliminary model (Table S6).",
+     "source": "Results, Drier wintering seasons and pre-breeding periods prior to development are associated with increases in relative wing length among hatch-year and spring after-hatch-year birds, paragraph 2; Table 3; Table S6",
+     "quote": "However, these associations are not maintained among AHY birds collected in the autumn over a year later (table 3). Precipitation during the wintering season prior to development has a positive association with the allometric intercept (\u03b2 = 0.03, pd = 90.0%), while the relationship with the allometric slope is still not significant (\u03b2 = 0.02, pd = 88.7%), and precipitation during the pre-breeding period prior to development is not associated with autumn AHY wing length",
+     "statistics": [
+      {
+       "about": "autumn AHY preliminary model, previous pre-breeding precipitation",
+       "test": "phylogenetic mixed model (MCMCglmm), 95% interval",
+       "ci": {
+        "level": 0.95,
+        "low": -0.0,
+        "high": 0.06
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "autumn_ahy_main_a.ipynb",
+     "notes": "Under reading (a) the claim holds. PrevPrevPrecipWinMo has intercept and slope effects of 0.031 (pd 90.38%, 0.6 Monte Carlo errors above 90%) and 0.027 (pd 88.60%), and in the preliminary model PrevPrecipPreBreedBase (0.027, -0.002 to 0.055) and its tarsus interaction include 0 under both interval readings and all filtering readings. Under (c) the intercept pd is 89.15%, 1.3 errors below 90% (slope 0.020, pd 81.46%). Under (d) chain 4 is stuck (R-hat 1.596), so the four-chain Monte Carlo errors are not valid and the (d) call rests on chains 1 to 3. Pooled, they give an intercept of 0.031 (pd 91.35%) and a slope of 0.030 (pd 91.72%, Monte Carlo error 0.68%, 2.5 errors above 90%; each chain 90.80% to 93.15%, chain 1 under one point from the line), so the slope effect falls on the other side of its line. The round-1 (d) fit gave a slope pd of 93.6%, and the four chains pooled give 93.79%. Signs and means hold under all three readings, and in this run each reading has at most one effect on the wrong side, so it is partially reproduced. All three calls are within a few Monte Carlo errors of the line. Round 1's (d) fit had both effects on the wrong side (intercept pd 89.4%), a case the criterion does not cover; a question asks the reader for it. The paper's intercept pd is 90.0%, on the line. The draws can depend on the CPU, since the model is compiled with -march=native as Script01 does; the run reviewed in round 1 gave other values with the same seed. The re-run of this revision, on an AMD EPYC 7763, gave the same draws as the run reviewed in round 2 (AMD EPYC 9V74).",
+     "deviations": [
+      "lm_mod.stan run with CmdStan in place of rstan, and MCMCglmm replaced by a Gibbs sampler of the same model, as for the claims above."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table2-spring-ahy-recent-wintering-precipitation",
+     "statement": "In spring AHY birds, precipitation of the most recent wintering season, after the HY stage, has no significant association with the allometric intercept (beta -0.01, pd 79.7%) or slope (beta 0.00, pd 51.2%).",
+     "source": "Results, Drier wintering seasons and pre-breeding periods prior to development are associated with increases in relative wing length among hatch-year and spring after-hatch-year birds, paragraph 2; Table 2",
+     "quote": "among spring AHY birds, precipitation during the most recent wintering season, which occurs after HY birds were collected, does not have a significant relationship with the allometric intercept (\u03b2 = \u22120.01, pd = 79.7%) or allometric slope (\u03b2 = 0.00, pd = 51.2%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "stan_models.ipynb",
+     "notes": "Needs the spring AHY Stan model, estimated at 72 minutes per filtering reading (about 42 to 48 scaled by the autumn AHY fits). Not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s6-autumn-ahy-recent-wintering-prebreeding-precipitation-none",
+     "statement": "In the autumn AHY preliminary model, precipitation of the most recent wintering season and pre-breeding period is not associated with wing length.",
+     "source": "Results, Drier wintering seasons and pre-breeding periods prior to development are associated with increases in relative wing length among hatch-year and spring after-hatch-year birds, paragraph 2; Table S6",
+     "quote": "Precipitation during the most recent wintering and pre-breeding periods are not associated with autumn AHY wing length",
+     "statistics": [
+      {
+       "about": "autumn AHY, wintering precipitation (most recent)",
+       "test": "phylogenetic mixed model (MCMCglmm), 95% interval",
+       "ci": {
+        "level": 0.95,
+        "low": -0.05,
+        "high": 0.01
+       }
+      },
+      {
+       "about": "autumn AHY, pre-breeding precipitation (most recent)",
+       "test": "phylogenetic mixed model (MCMCglmm), 95% interval",
+       "ci": {
+        "level": 0.95,
+        "low": -0.03,
+        "high": 0.03
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_dias_2025.ipynb",
+     "notes": "The two seed readings of the criterion give different outcomes. Seed reading (1), the recorded run, gives not reproduced. PrevPrecipWinMo (-0.020, -0.047 to 0.007 under filtering reading a), PrecipPreBreedBase (0.004, -0.029 to 0.034) and their tarsus interactions include 0 under both interval readings in filtering readings (a) and (c), but under reading (d) the chain-4 HPD of the tarsus by PrevPrecipWinMo interaction is -0.0532 to -0.0003 and excludes 0 (pooled interval -0.0532 to 0.0009, pMCMC 0.054). Seed reading (2), ten other seed sets, gives reproduced. None of the four terms' intervals excludes 0 in most of them, under either interval reading or any filtering reading; the most is that interaction's HPD interval under reading (d), in 1 of 10 sets (upper bound -0.0013 to 0.0040), and the pooled intervals exclude 0 in none. What the answer of 2026-10-27 changed. The earlier outcome, not reproduced, applied the criterion to the recorded run alone. The answer added the two seed readings and the rule that a claim is blocked as methods_underspecified when they differ; the seed sets were extended from this one term to all four terms under every filtering reading.",
+     "deviations": [
+      "MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none.",
+      "Seed reading (2) uses ten seed sets, \"most\" meaning more than 5 of 10, as for s4-s6-spring-migration-temperature-none."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "tables1-3-breeding-precipitation",
+     "statement": "In all three models, lower precipitation in the breeding season of development is associated with a more positive allometric intercept (HY beta -0.03, pd 95.4%; spring AHY -0.03, pd 90.1%; autumn AHY -0.05, pd 93.4%), with no slope effect in any (pd 67.0%, 71.2%, 65.3%).",
+     "source": "Results, Drier breeding season conditions during development are associated with increases in relative wing length, paragraph 1; Tables 1 to 3",
+     "quote": "In all our models of allometry, we consistently find a significant and negative association between precipitation during the breeding season prior to development and the allometric intercept ... The relationship with the allometric slope is not significant across all models",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "stan_models.ipynb",
+     "notes": "Needs the HY and spring AHY Stan models, estimated at 87 and 72 minutes per filtering reading (about 51 to 58 and 42 to 48 scaled by the autumn AHY fits). Not run. The autumn AHY part was run (autumn_ahy_main_a.ipynb, _c and _d) and holds; PrevPrecipBreedBase has intercept effects of -0.046, -0.056 and -0.044 (pd 93.0%, 93.8% and 95.7%) and slope pd of 65.4%, 56.2% and 76.5% under readings (a), (c) and (d); under (d) chains 1 to 3, without the stuck chain 4, give -0.047 (pd 94.3%) and slope pd 68.7%.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s6-autumn-ahy-recent-breeding-precipitation-none",
+     "statement": "In the autumn AHY preliminary model, precipitation of the most recent breeding season is not significant.",
+     "source": "Results, Drier breeding season conditions during development are associated with increases in relative wing length, paragraph 1; Table S6",
+     "quote": "However, in the autumn AHY phylogenetic mixed model, precipitation during the most recently experienced breeding season is not significant",
+     "statistics": [
+      {
+       "about": "autumn AHY, breeding precipitation (most recent)",
+       "test": "phylogenetic mixed model (MCMCglmm), 95% interval",
+       "ci": {
+        "level": 0.95,
+        "low": -0.02,
+        "high": 0.06
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_dias_2025.ipynb",
+     "notes": "PrecipBreedMoBase in the autumn AHY preliminary model is 0.020 (-0.018 to 0.059) under reading (a), and its tarsus interaction 0.010 (-0.030 to 0.048); both include 0 under both interval readings and all filtering readings.",
+     "deviations": [
+      "MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "tables1-3-year-intercept",
+     "statement": "In all three models, year is positively associated with the allometric intercept, so wing length relative to body size increases through time after accounting for climate (HY beta 0.18, pd 100%; spring AHY 0.19, pd 99.9%; autumn AHY 0.19, pd 99.8%; per decade).",
+     "source": "Results, Relative wing length increases through time but shifts in the allometric slope of the relationship between body size and wing length are not observed among after-hatch-year birds, paragraph 1; Tables 1 to 3",
+     "quote": "In all our models of allometry, we consistently find a positive relationship between year and the allometric intercept (HY model ... \u03b2 = 0.18, pd = 100.0%; table 1; spring AHY model ... \u03b2 = 0.19, pd = 99.9%; table 2; autumn AHY model ... \u03b2 = 0.19, pd = 99.8%; table 3)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "stan_models.ipynb",
+     "notes": "Needs the HY and spring AHY Stan models, estimated at 87 and 72 minutes per filtering reading (about 51 to 58 and 42 to 48 scaled by the autumn AHY fits). Not run. The autumn AHY part holds; the year effect on the intercept is 0.192, 0.197 and 0.193 per decade (pd 99.5%, 99.5% and 99.7%) under readings (a), (c) and (d), against 0.19; under (d) chains 1 to 3 give 0.192 (pd 99.65%).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-hy-year-slope",
+     "statement": "Among HY birds, year is also negatively associated with the allometric slope (beta -0.02, pd 92.5%).",
+     "source": "Results, Relative wing length increases through time but shifts in the allometric slope of the relationship between body size and wing length are not observed among after-hatch-year birds, paragraph 1; Table 1",
+     "quote": "Among HY birds, the positive association between year and the allometric intercept is accompanied by a negative association between year and the allometric slope (\u03b2 = \u22120.02, pd = 92.5%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "stan_models.ipynb",
+     "notes": "Needs the HY Stan model, estimated at 87 minutes per filtering reading (about 51 to 58 scaled by the autumn AHY fits). Not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "tables2-3-ahy-year-slope-none",
+     "statement": "Among AHY birds, year has no significant association with the allometric slope (spring AHY beta -0.01, pd 63.6%; autumn AHY beta 0.02, pd 75.9%).",
+     "source": "Results, Relative wing length increases through time but shifts in the allometric slope of the relationship between body size and wing length are not observed among after-hatch-year birds, paragraph 1; Tables 2 and 3",
+     "quote": "However, among AHY birds, the association between year and the allometric slope is not significant (spring AHY model ... \u03b2 = \u22120.01, pd = 63.6%; autumn AHY model ... \u03b2 = 0.02, pd = 75.9%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "stan_models.ipynb",
+     "notes": "Needs the spring AHY Stan model, estimated at 72 minutes per filtering reading (about 42 to 48 scaled by the autumn AHY fits). Not run. The autumn AHY part holds; the year effect on the slope is 0.014, 0.014 and 0.018 (pd 73.2%, 73.1% and 83.8%) under readings (a), (c) and (d), all below 90%; under (d) chains 1 to 3 give 0.019 (pd 78.3%).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table-s1-species-consistency-hy",
+     "statement": "Within each of the five species, breeding season temperature has a negative effect on the HY allometric intercept (pd 98.8% to 100%) and year a positive one (pd 100%).",
+     "source": "Supplement, Table S1 caption",
+     "quote": "breeding season temperature (between 98.8% ... and 100% probability of negative effect) ... Year has a consistently positive effect ... on the allometric intercept (100% probability of positive effect) as well",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "stan_models.ipynb",
+     "notes": "Needs the HY Stan model, estimated at 87 minutes per filtering reading (about 51 to 58 scaled by the autumn AHY fits). Not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s7-low-phylogenetic-signal",
+     "statement": "Phylogenetic signal is low in all three preliminary models (posterior mode of lambda 0.02, 0.02 and 0.04), so the main models do not control for phylogeny.",
+     "source": "Methods, Testing whether climate drives changes in wing length allometry, paragraph 6; Table S7",
+     "quote": "These hierarchical Bayesian models did not control for phylogenetic relatedness because there was low phylogenetic signal in our preliminary phylogenetic mixed models (electronic supplementary material, table S7)",
+     "statistics": [
+      {
+       "about": "HY model, lambda, 95% HPD",
+       "test": "phylogenetic mixed model (MCMCglmm)",
+       "ci": {
+        "level": 0.95,
+        "low": 0.01,
+        "high": 0.21
+       }
+      },
+      {
+       "about": "spring AHY model, lambda, 95% HPD",
+       "test": "phylogenetic mixed model (MCMCglmm)",
+       "ci": {
+        "level": 0.95,
+        "low": 0.01,
+        "high": 0.16
+       }
+      },
+      {
+       "about": "autumn AHY model, lambda, 95% HPD",
+       "test": "phylogenetic mixed model (MCMCglmm)",
+       "ci": {
+        "level": 0.95,
+        "low": 0.01,
+        "high": 0.21
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_dias_2025.ipynb",
+     "notes": "The posterior modes of lambda (chain 4) are 0.056, 0.062 and 0.087 for the HY, spring AHY and autumn AHY models under reading (a), and 0.038 to 0.089 over the three filtering readings, each inside the paper's HPD interval (0.01 to 0.21, 0.01 to 0.16, 0.01 to 0.21). They are larger than the paper's 0.02, 0.02 and 0.04, and the HPD intervals found here are wider (0.013 to 0.385, 0.013 to 0.303 and 0.012 to 0.481 under reading a). The modes of single chains range from 0.041 to 0.096. The four chains pooled give modes of 0.040 to 0.096 and HPD upper bounds of 0.335 to 0.484 over the readings, so the wider intervals are not the noise of chain 4; the Gibbs sampler here gives a wider posterior of the species variance than the paper's MCMCglmm runs. The criterion, the mode inside the paper's interval, is met all the same.",
+     "deviations": [
+      "MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s4-s6-no-multicollinearity",
+     "statement": "The predictors of the preliminary models are not collinear; every variance inflation factor is below 10 (largest 3.34 for HY, 2.43 for spring AHY, 6.08 for autumn AHY).",
+     "source": "Methods, Testing whether climate drives changes in wing length allometry, paragraph 6; Tables S4 to S6",
+     "quote": "our phylogenetic mixed models confirmed that our results were not influenced by correlations among the predictor variables",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_dias_2025.ipynb",
+     "notes": "Every VIF is below 10. The largest are 3.339 (HY, tarsus by year), 2.427 (spring AHY, tarsus) and 6.084 (autumn AHY, tarsus by year) under reading (a), against 3.34, 2.43 and 6.08; under readings (c) and (d) they range from 3.312 to 3.379, 2.400 to 2.426 and 6.088 to 6.472, all within tolerance.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s4-s6-climate-variable-selection",
+     "statement": "The climate variables with 95% intervals excluding 0 in each preliminary model are those included in that class's main model.",
+     "source": "Methods, Identifying key climatic variables, paragraph 1; Tables S4 to S6",
+     "quote": "We then included the climatic variables identified as significant (i.e. having 95% confidence intervals that did not overlap with 0) in our main models",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_dias_2025.ipynb",
+     "notes": "Under interval reading (i), the climate main effects whose interval excludes 0 are exactly the main models' climate predictors in all three classes, under every filtering reading (no difference). Under reading (ii), MinTempNextSpringMig is also selected in the spring AHY model under filtering readings (a) and (c), one difference; its HPD bound is the one discussed under s4-s6-spring-migration-temperature-none. The bounds the claim names are, unrounded under reading (a), 0.0014 (HY MinTempSpringMig, upper), -0.0048 (spring AHY PrecipWinMo, upper), 0.0028 (autumn AHY PrevPrevPrecipWinMo, lower) and 0.0043 (autumn AHY MinTempFallMig, lower). The criterion has no seed rule, so the recorded run decides. Over ten other seed sets the selection is the same. The three bounds of main-model predictors exclude 0 in 10 of 10 sets, except autumn AHY PrevPrevPrecipWinMo under filtering reading (c), 9 of 10 (i) and 7 of 10 (ii); HY MinTempSpringMig excludes 0 in none, and MinTempNextSpringMig in at most 2 of 10, so under a majority of seeds reading (ii) also matches.",
+     "deviations": [
+      "MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s4-s5-climate-size-interactions",
+     "statement": "In the preliminary models, previous wintering temperature interacts positively with body size in HY birds, previous wintering precipitation interacts positively with body size in spring AHY birds, and no climate variable interacts with body size in autumn AHY birds.",
+     "source": "Supplement, Table S4, Table S5 and Table S6 captions",
+     "quote": "We also find ... a significant positive interaction between temperature during the previous wintering season and ... body size among HY birds ... We also find a significant positive ... interaction between precipitation during the previous wintering season and body size among ... Spring AHY birds ... We do not find any significant ... interactions between climate and body size among Fall AHY birds",
+     "statistics": [
+      {
+       "about": "HY, tarsus by previous wintering temperature",
+       "test": "phylogenetic mixed model (MCMCglmm), 95% interval",
+       "ci": {
+        "level": 0.95,
+        "low": 0.0,
+        "high": 0.03
+       }
+      },
+      {
+       "about": "spring AHY, tarsus by previous wintering precipitation",
+       "test": "phylogenetic mixed model (MCMCglmm), 95% interval",
+       "ci": {
+        "level": 0.95,
+        "low": 0.0,
+        "high": 0.03
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_dias_2025.ipynb",
+     "notes": "Under interval reading (i) and every filtering reading, the HY tarsus by PrevTempWinMo (0.0155, 0.0030 to 0.0277 under reading a) and the spring AHY tarsus by PrevPrecipWinMo (0.0151, 0.0003 to 0.0295) interactions are positive and exclude 0, and no other tarsus by climate interaction does in any model. Under reading (ii) the same holds except under filtering reading (d), where the autumn AHY tarsus by PrevPrecipWinMo HPD also excludes 0. The criterion has no seed rule, so the recorded run decides, and a question asks whether the seed readings of the answer of 2026-10-27 apply. Over ten other seed sets the two named interactions exclude 0 in 10 of 10 under both interval readings and every filtering reading. The HY tarsus by pre-breeding temperature interaction is at the line. Under filtering reading (a) its pooled interval ends at 0.0008 here (0.0002 to 0.0010 over the ten sets, never excluding 0) and its chain-4 HPD excludes 0 in 4 of 10; under reading (c) it excludes 0 in 6 of 10 sets under interval reading (i) and 8 of 10 under (ii). Seed reading (2), the majority of seeds, would give partially reproduced under filtering reading (c), with one other interaction excluding 0. If the seed rule of the answer of 2026-10-27 applied to this claim, the recorded run (reproduced) and the majority of seeds (partially reproduced) would disagree, and the rule would give blocked as methods_underspecified; a question asks whether it applies.",
+     "deviations": [
+      "MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s8-climate-trends",
+     "statement": "Over time, pre-breeding precipitation, breeding season temperature and precipitation, autumn migration temperature and wintering temperature increase, wintering precipitation decreases, and pre-breeding and spring migration temperatures show no trend.",
+     "source": "Supplement, Long-Term Climatic Trends, Table S8",
+     "quote": "that pre-breeding precipitation, breeding season temperature, breeding season precipitation, fall ... migration temperature, and wintering season temperature increase through time, while wintering ... season precipitation decreases through time. Pre-breeding temperature and spring migration ... temperature show no significant trend through time",
+     "statistics": [
+      {
+       "about": "pre-breeding temperature trend",
+       "test": "phylogenetic mixed model (MCMCglmm), pMCMC from the 4th chain",
+       "ci": {
+        "level": 0.95,
+        "low": -0.01,
+        "high": 0.01
+       },
+       "p": 0.89
+      },
+      {
+       "about": "pre-breeding precipitation trend",
+       "test": "phylogenetic mixed model (MCMCglmm), pMCMC from the 4th chain",
+       "ci": {
+        "level": 0.95,
+        "low": 0.01,
+        "high": 0.04
+       },
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "breeding season temperature trend",
+       "test": "phylogenetic mixed model (MCMCglmm), pMCMC from the 4th chain",
+       "ci": {
+        "level": 0.95,
+        "low": 0.02,
+        "high": 0.04
+       },
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "breeding season precipitation trend",
+       "test": "phylogenetic mixed model (MCMCglmm), pMCMC from the 4th chain",
+       "ci": {
+        "level": 0.95,
+        "low": 0.04,
+        "high": 0.06
+       },
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "fall migration temperature trend",
+       "test": "phylogenetic mixed model (MCMCglmm), pMCMC from the 4th chain",
+       "ci": {
+        "level": 0.95,
+        "low": 0.0,
+        "high": 0.03
+       },
+       "p": 0.01
+      },
+      {
+       "about": "wintering season temperature trend",
+       "test": "phylogenetic mixed model (MCMCglmm), pMCMC from the 4th chain",
+       "ci": {
+        "level": 0.95,
+        "low": 0.01,
+        "high": 0.03
+       },
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "wintering season precipitation trend",
+       "test": "phylogenetic mixed model (MCMCglmm), pMCMC from the 4th chain",
+       "ci": {
+        "level": 0.95,
+        "low": -0.03,
+        "high": -0.01
+       },
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "spring migration temperature trend",
+       "test": "phylogenetic mixed model (MCMCglmm), pMCMC from the 4th chain",
+       "ci": {
+        "level": 0.95,
+        "low": -0.01,
+        "high": 0.01
+       },
+       "p": 0.8
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_dias_2025.ipynb",
+     "notes": "Under both data readings and both interval readings, the eight trend calls match Table S8. Under data reading (a) the trends per year are 0.0209 (pre-breeding precipitation), 0.0339 (breeding temperature), 0.0546 (breeding precipitation), 0.0155 (autumn migration temperature), 0.0240 (wintering temperature) and -0.0199 (wintering precipitation), all within tolerance, with intervals excluding 0; pre-breeding temperature (-0.0025, -0.0160 to 0.0112) and spring migration temperature (-0.0045, -0.0184 to 0.0090) include 0. Data reading (b) gives the same calls.",
+     "deviations": [
+      "The code's input table (envdata3) is defined nowhere; it is built from the deposited climate files under the claims file's two readings. Reading (a) has 185 species-years, 1980 to 2016; the files hold no same-year value for 2017.",
+      "MCMCglmm replaced by a Gibbs sampler of the same model, as for s4-s6-spring-migration-temperature-none."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "climate-trends-cannot-explain-wing-increase",
+     "statement": "The directions of the climate effects and of the climate trends do not fit a role for climate in the long-term increase in wing length. Breeding temperature, autumn migration temperature and breeding precipitation have risen through time while their association with relative wing length is negative.",
+     "source": "Discussion, Long-term increases in wing length are not driven by climate or by changes in body size, paragraph 1",
+     "quote": "While colder breeding and autumn migration temperatures are associated with longer wings, the direction of the temperature-wing length relationships and the long-term trends in temperature are inconsistent with a direct role for increasing temperatures in driving multi-decadal increases in wing length (electronic supplementary material, table S8). This is similarly true for reductions in breeding season precipitation",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Depends on table1-hy-breeding-temperature, tables1-3-breeding-precipitation and table2-spring-ahy-autumn-migration-temperature, which are blocked as too large. Of its inputs, s8-climate-trends (positive breeding temperature, breeding precipitation and autumn migration temperature trends) and table3-autumn-ahy-prior-breeding-temperature (negative intercept effect) were tested and agree with it.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "climate-explains-little",
+     "statement": "Climate explains only a small part of the variation in wing length across age classes and through time.",
+     "source": "Discussion, Long-term increases in wing length are not driven by climate or by changes in body size, paragraph 1",
+     "quote": "Additionally, climate only explains a small amount of the variation in wing length observed across age classes and through time",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Depends on tables1-3-year-intercept, blocked as too large; both of its readings need the three main models. The autumn AHY part of reading (a) holds (autumn_ahy_main_a.ipynb, _c and _d, last cell); every climate effect on the intercept is smaller in absolute value than the year effect, the largest being PrevTempBreedBase (0.094, 0.091 and 0.099 against 0.192, 0.197 and 0.193 under filtering readings a, c and d). Reading (b) was not computed.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "s9-s11-expanded-ranges",
+     "statement": "Refitting the three main models with climate taken over two expanded breeding ranges changes the sign of no parameter.",
+     "source": "Methods, Climate data, paragraph 1; Supplement, Fig. S1 and Tables S9 to S11",
+     "quote": "We find that none of the parameters in the models based on expanded potential breeding ranges ... differ in sign from our main HY model results",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "stan_models.ipynb",
+     "notes": "Needs six more Stan fits per filtering reading (two per class), about 360 minutes for one reading by the estimates of stan_models.ipynb, and depends on tables1-3-year-intercept, which is blocked. Not run. The two autumn AHY sensitivity models (about 13 minutes each, as the main autumn AHY fit) would fit a notebook, but the claim needs all six models and the HY and spring AHY main models for the signs it compares, so the autumn part alone cannot decide it; it was not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "The README says some specimens in morphdata.csv were filtered out before analysis and that the filtering steps are in the code. The code applies no filter, and the deposited file gives every sample size of the paper exactly without one; the Methods' 5-MAD filter, applied to the file, would remove 0 to 70 more specimens depending on how it is read. The file appears to be the filtered data.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The paper's 27 366 specimens are the birds in the three main models; morphdata.csv holds 27 486, the other 120 being in species-years without climate data. Neither the README nor the paper says so.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "identifier_missing",
+     "statement": "morphdata.csv has no catalogue number or other specimen identifier, so its measurements cannot be linked to catnodata.csv. catnodata.csv has 26 436 rows, 1050 fewer than morphdata.csv, 5061 rows without a catalogue number and 945 repeated catalogue numbers; for 44 catalogue numbers the repeated rows differ in species, sex, age, year or season.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "ed_FHY.csv and ed_AHYfall.csv are identical files, and ed_AHYspring.csv is the same table shifted by one year; this fits the README's description of their use, but the README does not say so.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "The code selects climate columns by number from R's merged table and drops species-years by hand-coded row numbers; the notebook shows these match the deposited files. The Table S8 code reads an object (envdata3) that no script defines.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The hierarchical Stan model as published converges poorly on the autumn AHY data with the code's seed and settings (13.8% to 33.5% of draws divergent, largest R-hat 1.083 to 1.596; under one filtering reading a chain is stuck with every draw divergent). The Methods say convergence was confirmed with R-hat and trace plots, but no diagnostic values are reported. Script01 compiles the model with -march=native, so with the same seed the draws differ between machines, and pd values near 90% can fall on either side.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-27",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "The executed notebooks of commit 6e7d7831b (author-answers) with the conclusion cells and the summaries removed, the helper module and the claims file, with the paper. agrees compares its outcome with the outcome of the record it reviewed. Its table lists 31 of the 32 claims; table1-hy-breeding-temperature is not in it and has no result here.",
+     "agreed": 31,
+     "of": 31,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-27",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "The full executed notebooks of commit c95b52bb0 (author-revise-1), with the conclusions and summaries, the attempt record and the README, the helper module and the claims file, with the paper. It also reported that the README's outcome table covered 31 claims, its preliminary-model row giving seven claims, 8 reproduced and 2 blocked, where the record has 11, 9 reproduced and 2 blocked; the row now gives 11 claims, 9 reproduced.",
+     "agreed": 32,
+     "of": 32,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "dryad-bvq83bkk9-dias-2025",
+   "type": "reproduction",
+   "title": "Wing length allometry and climate in five migratory passerines (Dias et al. 2025)",
+   "description": "Tests the findings of Dias, Lemoine, Yanco, Zimova, Bay and Weeks (2025) on Dryad dataset bvq83bkk9, which holds the wing and tarsus lengths of 27 486 Field Museum specimens of five migratory passerines collected in Chicago from 1981 to 2016, the climate of each species and year, and the phylogeny. It checks the sample sizes, refits the preliminary phylogenetic mixed models (Tables S4 to S8) and the hierarchical Stan model of the autumn after-hatch-year birds (Table 3), and times the other Stan models, which are too slow to run here.",
+   "datasets": [
+    "dryad:bvq83bkk9"
+   ],
+   "papers": [
+    "10.1098/rspb.2024.2556"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_dias_2025.ipynb",
+     "title": "Data check, sample sizes and the preliminary models (Tables S4 to S8)",
+     "executed": "notebooks/dryad-bvq83bkk9-dias-2025/reproduce_dias_2025.html"
+    },
+    {
+     "path": "stan_models.ipynb",
+     "title": "How long the hierarchical Stan models take",
+     "executed": "notebooks/dryad-bvq83bkk9-dias-2025/stan_models.html"
+    },
+    {
+     "path": "autumn_ahy_main_a.ipynb",
+     "title": "The autumn AHY main model (Table 3), data as deposited",
+     "executed": "notebooks/dryad-bvq83bkk9-dias-2025/autumn_ahy_main_a.html"
+    },
+    {
+     "path": "autumn_ahy_main_c.ipynb",
+     "title": "The autumn AHY main model (Table 3), outliers removed per species and sex",
+     "executed": "notebooks/dryad-bvq83bkk9-dias-2025/autumn_ahy_main_c.html"
+    },
+    {
+     "path": "autumn_ahy_main_d.ipynb",
+     "title": "The autumn AHY main model (Table 3), outliers removed with the unscaled MAD",
+     "executed": null
+    }
+   ]
+  }
+ ]
+}

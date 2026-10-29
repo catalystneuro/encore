@@ -1,0 +1,980 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000115",
+  "label": "DANDI:000115"
+ },
+ "page": "datasets/dandi/000115/",
+ "generated": "2026-10-29T01:39:58+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 2,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 31
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000115-gillespie-2021-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000115",
+    "version": "0.210914.1732",
+    "doi": "10.48324/dandi.000115/0.210914.1732"
+   },
+   "key": "dandi:000115",
+   "label": "DANDI:000115",
+   "dataset_version": "0.210914.1732",
+   "paper": "10.1016/j.neuron.2021.07.029",
+   "paper_title": null,
+   "date": "2026-10-22",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-10"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/39800733929"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000115-gillespie-2021",
+   "entry_title": "Hippocampal replay and the eight-arm goal task (Gillespie et al. 2021)",
+   "description": "Tests the findings of Gillespie et al. (2021) on dandiset 000115, which holds the raw CA1 tetrode broadband, port events, position and task logs of four rats in an eight-arm win-stay lose-switch task. Trials, goal blocks and reward rates are rebuilt from the task logs and checked against the hardware events. The replay findings need ripples and a clusterless decoder run on about 9.1 TB of raw data, which the dandiset holds in no reduced form.",
+   "notebooks": [
+    {
+     "path": "reproduce_gillespie_2021.ipynb",
+     "title": "Reproducing Gillespie et al. (2021) from dandiset 000115",
+     "executed": "notebooks/000115-gillespie-2021/reproduce_gillespie_2021.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig1d-sessions-blocks",
+     "statement": "The analysis includes 24, 32, 23 and 33 behavioural sessions and 89, 85, 105 and 166 trial blocks for the four subjects.",
+     "source": "Figure 1D and 1E-F legends",
+     "quote": "n = 24, 32, 23, and 33 sessions per subject, respectively ... n = 89, 85, 105, and 166 trial blocks per subject, respectively",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_gillespie_2021.ipynb",
+     "notes": "Re-run after the two questions were answered. With the first valid trial after each goal change in the old block, all eight counts are within 10% under both session readings. Sessions are 25, 32, 24 and 33 against 24, 32, 23 and 33. Blocks with a trial of task phase 4 or more are 88 for jaq against 89 under reading (a) (day 6 epochs 2 and 5 left out), 85 against 85 for roquefort, 109 against 105 for despereaux and 166 against 166 for montague. Under reading (b), day 6 epoch 4 is the only jaq session with fewer than eight arms visited, so it is the second excluded session; the first (fewer than 75% decoded on the same segment) cannot be found without the decoder, so each of the other 26 jaq sessions was tried, giving 88 to 93 jaq blocks, all 26 within tolerance (91 with day 6 epoch 2). Measured values are reading (a), the first the criterion lists. What the answers changed. The closing-trial answer moves montague from 167 blocks (the old-goal-visit reading, which the earlier record reported as its measured value) to 166 and leaves the other subjects unchanged; over all 116 run epochs, of the first trials after a goal change, 383 visit the old goal, 35 another arm unrewarded and 5 the new goal with a reward, all 5 counted in the old block as the claims file says. The session answer adds the search over the poorly decoded session under (b); before, (b) was day 6 epochs 2 and 4 only. The outcome is unchanged (reproduced). With no session excluded (a variant), jaq has 27 sessions, outside tolerance, and 96 blocks. The files hold one more run epoch for jaq and for despereaux than the paper counts, and which one cannot be told; leaving out any one more under reading (a) gives 24 and 23 sessions and 82 to 87 jaq blocks and 100 to 108 despereaux blocks, all within tolerance. All run epochs are the goal_delay task, and none uses forage assist: forageNum is 1 in the 111 logs whose header states it, and no log, the five without a header included, names more than one arm in a CURRENTGOAL line. The DIO beam breaks confirm that arm 6 was never entered in jaq day 6 epoch 4, also after its last logged trial; it is the only jaq session with fewer than eight arms in the log or in the DIO.",
+     "deviations": [
+      "Trials are rebuilt from the StateScript logs in the files (port entries, the printed goal, reward and timeout lines), not from the paper's preprocessed trial structures; rewards match the DIO pump onsets in 115 of 116 epochs.",
+      "Under session reading (b), the session with fewer than 75% of movement frames decoded on the same segment cannot be identified without decoding, which is blocked; every candidate is run and all give the same outcome.",
+      "Session selection by decode quality (the code's gooddecode) cannot be applied without decoding; all run epochs are counted, less the two excluded for jaq."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1ef-reward-rate",
+     "statement": "Aligned to the goal change, the outer-arm reward rate starts at chance (0.125) and rises; aligned to the first reward at the new goal, it is well above chance, so all subjects keep visiting a goal once found.",
+     "source": "Results, Rats learn to perform a flexible spatial memory task, paragraph 5; Figure 1E and 1F",
+     "quote": "Aligned to the first search trial of each trial block, the reward rate at the outer arms for all subjects began at chance (0.125) and rose (Figure 1E) ... the outer reward rate was well above chance, indicating that all subjects preferentially visited the goal location consistently after finding it (Figure 1F)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_gillespie_2021.ipynb",
+     "notes": "Re-run after the two questions on fig1d-sessions-blocks were answered, with blocks closed by the first valid trial after each goal change (the closing trial dropped) and sessions under reading (a) and under reading (b) for each of the 26 candidates for jaq's poorly decoded session. In all four subjects, the reward rate on the first trial after the goal change is 0.065 to 0.133 with its lower S.E.M. bound at or below 0.125 (0.039 to 0.106). It rises to 0.584 to 0.710 by trial 15, with bands not overlapping trial 1 and Spearman rho 0.943 to 0.993 (largest p 1.4e-7, montague). After the first reward at the new goal every point of trials 1 to 15 has its band above 0.125 (lowest lower bound 0.234, roquefort). Blocks are 88, 85, 109 and 166 under reading (a). What the answers changed. The closing-trial rule, against the old-goal-visit reading, moves roquefort's trial 15 from 0.597 to 0.584 and its Spearman rho from 0.985 to 0.979, despereaux's rho from 0.996 to 0.979 and its lowest Figure 1F bound from 0.420 to 0.429, montague's rho from 0.950 to 0.943, and under reading (b) (day 6 epochs 2 and 4) jaq's trial 15 from 0.696 to 0.681 and its rho from 0.993 to 0.975; it leaves every condition holding; the session answer adds the candidates under (b) (jaq trial 1 0.065 to 0.080, trial 15 0.662 to 0.710, lowest Figure 1F bound 0.420 to 0.453). The outcome is unchanged (reproduced). Jaq (0.068) and roquefort (0.094) start below chance on trial 1, not at it, which the criterion's \"or lies below\" allows. The plain reading of \"rises\" (trial 15 above trial 1) holds in every subject too. The per-trial values (p, S.E.M., n for trials 1 to 15) are printed for each subject.",
+     "deviations": [
+      "Trials are rebuilt from the StateScript logs, as for fig1d-sessions-blocks, with the same session readings.",
+      "The criterion's \"rises\" is judged as trial 15 above trial 1 with non-overlapping S.E.M. bands and a positive Spearman correlation of rate with trial number; both are printed."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1c-swr-reward-consumption",
+     "statement": "SWRs occur mainly during reward consumption at the home port, the center ports and the rewarded goal arm, and are rarely detected at unrewarded outer ports.",
+     "source": "Results, Most SWRs contain interpretable spatial content, paragraph 1; Supplementary Figure 1C",
+     "quote": "SWRs occurred primarily during reward consumption (Supplementary Figure 1C) ... As expected, SWRs were rarely detected at non-goal outer arm ports, which did not provide reward",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripples detected on the raw broadband across the CA1 cell-layer tetrodes. The electrode table also gives every channel's location as None, so the CA1 cell-layer tetrodes and the corpus callosum reference tetrode the Methods use cannot be identified.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3abc-decode-accuracy",
+     "statement": "During movement the decoded position (posterior maximum) is usually on the same or an adjacent maze segment as the real position, and the median deviation between them is less than one 5 cm bin, on every maze segment.",
+     "source": "Results, Most SWRs contain interpretable spatial content, paragraph 3; Supplementary Figure 3A-C; Methods, Spatial decoding, paragraph 5",
+     "quote": "The median deviation between predicted and real position was less than a single spatial bin (5 cm), indicating that the maximum of the posterior and the subject's real position most often corresponded to the same spatial bin, and this was consistent across all segments of the maze",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs the clusterless state space decoder, run on spikes detected above 100 uV from the raw broadband of every CA1 tetrode for whole sessions. The electrode table also gives every channel's location as None, so the CA1 cell-layer tetrodes and the corpus callosum reference tetrode the Methods use cannot be identified.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3df-goal-arm-no-remapping",
+     "statement": "Decoding error on the goal arm shows no systematic change over the course of a trial block, so repeated reward does not change spatial coding at the ensemble level.",
+     "source": "Results, Most SWRs contain interpretable spatial content, paragraph 3; Supplementary Figure 3D-F",
+     "quote": "We found no systematic changes in the deviation over the course of the trial block, indicating that the changing reward location did not alter overall spatial coding at the ensemble level",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs the clusterless state space decoder, run on spikes detected above 100 uV from the raw broadband of every CA1 tetrode for whole sessions. It depends on figs3abc-decode-accuracy.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3g-continuous-fraction",
+     "statement": "About 95% of SWRs contain spatially continuous representations.",
+     "source": "Results, Most SWRs contain interpretable spatial content, paragraph 4; Supplementary Figure 3G",
+     "quote": "We found that the vast majority of SWRs (~95%) contained spatially continuous representations of the environment",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on figs3abc-decode-accuracy.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "likelihood-decode-same-segment",
+     "statement": "A history-independent Bayesian decoder with 20 ms bins and no movement model assigns more than 90% of SWRs to the same maze segment as the state space decoder.",
+     "source": "Results, Most SWRs contain interpretable spatial content, paragraph 4",
+     "quote": "We found that >90% of SWRs decoded to the same maze segment and our main results were unchanged with the use of this simplified decoding approach",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs both the state space decoder and a 20 ms Bayesian decoder run on clusterless spikes from the raw broadband.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2f-remote-fraction",
+     "statement": "A substantial fraction of all detected SWRs contain remote replay, 35.1%, 41.1%, 34.5% and 47.2% for the four subjects.",
+     "source": "Results, Most SWRs contain interpretable spatial content, paragraph 6; Figure 2F",
+     "quote": "Across all animals, we found that a substantial fraction of detected SWRs contained remote replay ... 35.1%, 41.1%, 34.5%, and 47.2% for the 4 subjects (Figure 2F)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on figs3abc-decode-accuracy.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3a-box-majority",
+     "statement": "The large majority of spatially continuous replay events occur in the box area, before the arm choice, and include local and remote events.",
+     "source": "Results, Replay content is enriched for previous goal locations, paragraph 1; Figure 3A",
+     "quote": "The large majority of spatially continuous replay events occurred in the box area, before arm choice, and included both local and remote representations (Figure 3A)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on figs3abc-decode-accuracy.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-search-prevgoal-enriched",
+     "statement": "In search trials where the past, future and previous goal arms are distinct, the previous goal arm is consistently and strongly over-represented in pre-choice remote replay, about 20% of these events, in all subjects.",
+     "source": "Results, Replay content is enriched for previous goal locations, paragraph 2; Figure 3B",
+     "quote": "In contrast, we saw consistent and strong enrichment for replay of the previous goal arm ... such replay accounted for roughly 20% of all pre-choice remote replay events during these search trials (Figure 3B, previous goal)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank-sum test against a random distribution matched for remote event numbers per session",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "22, 23, 16 and 26 sessions per subject"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig2f-remote-fraction.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-search-past-depleted",
+     "statement": "In those search trials the immediately past arm is replayed far less often than chance.",
+     "source": "Results, Replay content is enriched for previous goal locations, paragraph 2; Figure 3B",
+     "quote": "we found far fewer replays of the immediate past arm than would be expected by chance (Figure 3B, past)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank-sum test against a random distribution",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "22, 23, 16 and 26 sessions per subject"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig3b-search-prevgoal-enriched.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-search-future-inconsistent",
+     "statement": "In those search trials the upcoming (future) arm shows a small but significant enrichment in two of the four subjects only.",
+     "source": "Results, Replay content is enriched for previous goal locations, paragraph 2; Figure 3B",
+     "quote": "while we did see a small but significant enrichment for the upcoming arm in two out of four subjects, this enrichment was not consistent across animals (Figure 3B, future)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank-sum test against a random distribution",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "22, 23, 16 and 26 sessions per subject"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig3b-search-prevgoal-enriched.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-search-other",
+     "statement": "Each of the other arms is replayed at about chance per arm, yet the other arms together make up the majority of pre-choice remote replay.",
+     "source": "Results, Replay content is enriched for previous goal locations, paragraph 2; Figure 3B right",
+     "quote": "Finally, replay of other arms occurred at roughly chance levels per arm (Figure 3B, other), but the total fraction of \"other\" events comprised the majority of replay events overall (Figure 3B, right)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig3b-search-prevgoal-enriched.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-repeat-prevgoal",
+     "statement": "In repeat trials where past, future and current goal are the same arm and the previous goal is distinct, all animals still strongly over-replay the previous goal, while the future (past and goal) arm shows only a small and variable effect; other arms together are again the majority.",
+     "source": "Results, Replay content is enriched for previous goal locations, paragraph 3; Figure 3C",
+     "quote": "During the large subset of repeat trials in which the past, future, and goal arm refer to the same location, distinct from the previous goal arm, all animals still showed a strong and highly significant tendency to replay the previous goal location (Figure 3C, previous goal). In contrast, replay of the future arm still showed only a small and variable effect",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank-sum test against a random distribution",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "23, 30, 22 and 31 sessions per subject"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig3b-search-prevgoal-enriched.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-glm-search",
+     "statement": "In a Poisson GLM over all search trials, being the previous goal roughly doubles an arm's replay rate, the strongest effect; the past arm is consistently replayed less; the future arm has a small increase significant in three of four subjects.",
+     "source": "Results, Replay content is enriched for previous goal locations, paragraph 5; Figure 3D",
+     "quote": "During search trials, previous goal arm status had the strongest impact on replay, such that if an arm was the previous goal, there was an approximately two-fold increase in replay rate from baseline (Figure 3D). The past arm showed a significant and consistent reduction in the rate of replay. The future category showed a small increase in replay rate that was significant in three of the four subjects but not in the fourth",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig2f-remote-fraction.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-glm-repeat",
+     "statement": "In a Poisson GLM over all repeat trials the previous goal arm is again the strongest and most consistent driver of replay and the past arm is reliably replayed less.",
+     "source": "Results, Replay content is enriched for previous goal locations, paragraph 5; Figure 3E",
+     "quote": "Applying the GLM approach to repeat trials yielded similar results (Figure 3E), confirming that for both search and repeat phase, the previous goal arm was the strongest and most consistent driver of replay content, while the replay of the past arm was reliably reduced",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig3d-glm-search.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4ab-current-goal-late",
+     "statement": "Replay of the current goal is consistently enhanced only late in the repeat phase (five or more rewards at the goal), while the effects of the other three categories do not differ much between early and late repeat trials.",
+     "source": "Results, Replay of current goal location increases with experience, paragraph 2; Figure 4A-B",
+     "quote": "Indeed, we found a consistent enhancement of current goal replay only in the late portion of the repeat phase. In contrast, the three other categories did not differ substantially between early and late conditions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig3e-glm-repeat.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-current-goal-reward-correlation",
+     "statement": "On correct repeat trials, the number of current goal replays correlates positively with the number of rewards already received at that goal in every subject, with low R2.",
+     "source": "Results, Replay of current goal location increases with experience, paragraph 2; Figure 4C",
+     "quote": "Quantified on a trial-by-trial basis, we found significant positive correlations between the number of replays of the current goal and the number of rewards already received at that location, although there was substantial variability across trials, as indicated by the low R2 values (R2=0.033, 0.015, 0.012, and 0.025; p=1.54e-6, 0.0003, 0.0004, and 2.87e-11; n=923, 1007, 847, and 1340 trials per subject, respectively)",
+     "statistics": [
+      {
+       "about": "subject 1",
+       "test": "correlation",
+       "statistic": "R2 = 0.033",
+       "p": 1.54e-06,
+       "n": "923 trials"
+      },
+      {
+       "about": "subject 2",
+       "test": "correlation",
+       "statistic": "R2 = 0.015",
+       "p": 0.0003,
+       "n": "1007 trials"
+      },
+      {
+       "about": "subject 3",
+       "test": "correlation",
+       "statistic": "R2 = 0.012",
+       "p": 0.0004,
+       "n": "847 trials"
+      },
+      {
+       "about": "subject 4",
+       "test": "correlation",
+       "statistic": "R2 = 0.025",
+       "p": 2.87e-11,
+       "n": "1340 trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig3d-glm-search.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-future-replay-rate",
+     "statement": "Replay of the future arm occurs on average less than once per trial, and more often in search than in repeat trials for three of the four subjects.",
+     "source": "Results, Subsequent arm choice is not biased by replay, paragraph 2; Figure 5A",
+     "quote": "Future replay per trial tends to occur less than once per trial, and more often during search trials than repeat trials for three of the four subjects ... Search vs repeat rate p = 0.001, 5.002e-11, 0.264, and 4.111e-5 for each subject, respectively, using Wilcoxon rank-sum test",
+     "statistics": [
+      {
+       "about": "subject 1",
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.001,
+       "n": "534 search and 924 repeat trials"
+      },
+      {
+       "about": "subject 2",
+       "test": "Wilcoxon rank-sum test",
+       "p": 5.002e-11,
+       "n": "617 search and 1019 repeat trials"
+      },
+      {
+       "about": "subject 3",
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.264,
+       "n": "570 search and 894 repeat trials"
+      },
+      {
+       "about": "subject 4",
+       "test": "Wilcoxon rank-sum test",
+       "p": 4.111e-05,
+       "n": "879 search and 1302 repeat trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig3d-glm-search.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5b-future-correct-error",
+     "statement": "On repeat trials, future arm replay does not differ between correct and error trials in two subjects and is higher on error trials in the other two, the opposite of what planning predicts.",
+     "source": "Results, Subsequent arm choice is not biased by replay, paragraph 2; Figure 5B",
+     "quote": "However, we found no difference in future replay rate between correct and incorrect repeat trials for two out of the four subjects (Figure 5B). For the other two subjects, future arm replay was actually higher, on average, for error as compared to correct trials",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "923, 1007, 847 and 1340 correct and 424, 654, 307 and 390 error trials per subject"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig5a-future-replay-rate.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-current-goal-correct-error",
+     "statement": "Current goal replay does not differ consistently between correct and error repeat trials for three subjects, and the fourth has more current goal replay on error trials.",
+     "source": "Results, Subsequent arm choice is not biased by replay, paragraph 4; Figure 5C",
+     "quote": "Again, we found no consistent significant difference between the amount of current goal replay on correct compared to error trials for three subjects (Figure 5C), and the fourth subject showed a significant increase",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "923, 1007, 847 and 1340 correct and 424, 654, 307 and 390 error trials per subject"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig5b-future-correct-error.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs7-early-late-correct-error",
+     "statement": "The lack of a correct over error difference in future and current goal replay holds both early and late in the repeat phase.",
+     "source": "Results, Subsequent arm choice is not biased by replay, paragraph 4; Supplementary Figure 7A-D",
+     "quote": "Importantly, these results were consistent for trials that occurred both early and late in the repeat phase of the trial block, indicating that familiarity with the goal location did not modulate the effect (Supplementary Figure 7A-D)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig5c-current-goal-correct-error.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs7e-remote-rate-error",
+     "statement": "Error trials have more remote replay than correct trials regardless of content, while SWR amplitude, event duration and spike rate of remote events do not differ.",
+     "source": "Results, Subsequent arm choice is not biased by replay, paragraph 4; Supplementary Figure 7E",
+     "quote": "We also examined features of remote events on correct and error trials, independent of their content, and found that while characteristics such as SWR amplitude, event duration, and spike rate did not differ, the rate of remote replay was consistently higher on error trials",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "881, 963, 829 and 1319 correct and 404, 626, 301 and 384 error trials per subject"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig5b-future-correct-error.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5d-glm-predict-chance",
+     "statement": "Binomial GLMs predicting correct or error repeat trials from the counts of future arm, current goal, or all four category replays perform at or very near chance (50% misclassification), far worse than the animals.",
+     "source": "Results, Subsequent arm choice is not biased by replay, paragraph 6; Figure 5D",
+     "quote": "In all cases the models performed at or very close to chance levels, far worse than the animals (Figure 5D)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig5b-future-correct-error.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pg-replay-visits-correlation",
+     "statement": "Across trial blocks, the rate of previous goal replay shows no consistent correlation with the number of visits to the previous goal during that block.",
+     "source": "Results, Subsequent arm choice is not biased by replay, paragraph 8",
+     "quote": "There was no consistent correlation between the rate of previous goal replay with the number of subsequent visits to the previous goal location during the subsequent trial block (for each subject: R2=0.008, 0.019, 0.021, and 0.023; p=0.49, 0.32, 0.18, and 0.08, respectively)",
+     "statistics": [
+      {
+       "about": "subject 1",
+       "test": "correlation",
+       "statistic": "R2 = 0.008",
+       "p": 0.49
+      },
+      {
+       "about": "subject 2",
+       "test": "correlation",
+       "statistic": "R2 = 0.019",
+       "p": 0.32
+      },
+      {
+       "about": "subject 3",
+       "test": "correlation",
+       "statistic": "R2 = 0.021",
+       "p": 0.18
+      },
+      {
+       "about": "subject 4",
+       "test": "correlation",
+       "statistic": "R2 = 0.023",
+       "p": 0.08
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig3d-glm-search.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5e-pg-replay-no-avoidance",
+     "statement": "Pre-choice replay of the previous goal is no more or less likely to precede a visit to the previous goal than a visit to any other arm.",
+     "source": "Results, Subsequent arm choice is not biased by replay, paragraph 8; Figure 5E",
+     "quote": "However, we found that previous goal replay was no more or less likely to precede visits to the previous goal as it was to precede visits to any other arm (Figure 5E)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig3d-glm-search.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-pg-replay-persists",
+     "statement": "Replay of a goal arm stays enriched long after it stops being rewarded, peaking several trials after the switch, extended and significant in all subjects; two subjects also show elevated replay before the switch.",
+     "source": "Results, Previous goal replay persists through multiple trial blocks, paragraph 2; Figure 6A",
+     "quote": "The enrichment for replay of a goal location peaked several trials after it ceased to provide reward and continued for many subsequent trials. This enrichment was extended and significant for all subjects (Figure 6A). We also saw elevated replay before the transition for two out of the four subjects",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank-sum test per trial",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "Bonferroni (80 comparisons)",
+       "n": "89, 85, 104 and 161 goal arms and 347, 437, 268 and 397 unrewarded arms per subject"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig3d-glm-search.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-visits-decay",
+     "statement": "The behavioural bias to the previously rewarded arm decays very quickly after the switch, returning to baseline within a few trials.",
+     "source": "Results, Previous goal replay persists through multiple trial blocks, paragraph 2; Figure 6B",
+     "quote": "In contrast, behavioral bias to the previously rewarded arm decays extremely quickly after the switch, returning to baseline levels within a few trials (Figure 6B)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank-sum test per trial",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "Bonferroni (80 comparisons)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_gillespie_2021.ipynb",
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The criterion compares the visit decay with the replay enrichment of fig6a-pg-replay-persists, which needs ripples and decoding, so the claim is blocked with it. Its behavioural half was computed after the first verification round. Per block 1 to 8, goal-arm visits from 40 trials before to 40 after the last rewarded trial, against arms never a goal in the session, with a rank-sum test per trial at 0.05/80 and 0.05/81. The goal arm is visited on 0.84 to 0.90 of trial +1 (the closing trial of a completed block, the next trial of the same block for the open last block of a session), 0.33 to 0.48 of +2 and 0.23 to 0.26 of +3, against 0.06 to 0.12 for never-goal arms. With the tie-corrected test (scipy mannwhitneyu), the last trial after 0 with the goal significantly above is +2 or +3 in jaq, despereaux and montague, within both bounds (+3 and +5), under every session reading and with completed blocks only. In roquefort it is +29, a single late trial (9 of 39 goal traces against 8 of 170, p = 1.6e-4), so the behavioural half fails there. Trial +29 stands alone (+28 and +30 have p = 0.74 and 0.45, and no other trial from +20 to +40 is below 6.7e-3), and its 9 goal visits come from 9 sessions, all in a later block, none rewarded and none made while the arm was the goal again. Without tie correction (scipy ranksums) +29 gives p = 0.074 and every subject ends at +2. The claims file does not say which form, and the question asked is open. Matlab's ranksum, which the paper's code would use, corrects for ties for large samples, so the tie-corrected form is likely the code's; the outcome is blocked under either form. No trial after 0 has the goal significantly below the never-goal arms. Goal traces are 94, 95, 112 and 169 under reading (a), against 89, 85, 104 and 161 goal arms in the legend.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-pg-replay-two-blocks",
+     "statement": "Enhanced replay of a previous goal persists for at least two complete trial blocks after it served as the goal, in all four animals.",
+     "source": "Results, Previous goal replay persists through multiple trial blocks, paragraph 3; Figure 6C",
+     "quote": "This analysis revealed that the enhanced replay of a previous goal location persisted for at least two complete trial blocks for all four animals (Figure 6C)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank-sum test per sub-block",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "Bonferroni (6 comparisons)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig6a-pg-replay-persists.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-recency",
+     "statement": "During search, never-rewarded arms not visited for 5 trials are replayed more than those visited one or two trials ago, and replay rate correlates with how long ago the arm was visited (1 to 5 trials) in every subject.",
+     "source": "Results, Pre-choice replay is biased toward non-recent past, paragraph 1; Figure 7",
+     "quote": "We found consistently higher replay rates for arms that had not been visited within 5 trials compared to those visited within one or two trials (Figure 7). Although highly variable, the replay rate of arms visited within 1-5 trials was strongly correlated with visit recency (for each subject: R2=0.011, 0.028, 0.012, and 0.018; p=1.04e-4, 4.04e-13, 7.94e-5, and 2.76e-8, respectively)",
+     "statistics": [
+      {
+       "about": "5 against 1 and 2 trials ago, each subject",
+       "test": "Wilcoxon rank-sum test (from the code; the legend names none)",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "159-433, 212-555, 144-386 and 198-520 trials per bar per subject"
+      },
+      {
+       "about": "correlation, subject 1",
+       "test": "correlation",
+       "statistic": "R2 = 0.011",
+       "p": 0.000104
+      },
+      {
+       "about": "correlation, subject 2",
+       "test": "correlation",
+       "statistic": "R2 = 0.028",
+       "p": 4.04e-13
+      },
+      {
+       "about": "correlation, subject 3",
+       "test": "correlation",
+       "statistic": "R2 = 0.012",
+       "p": 7.94e-05
+      },
+      {
+       "about": "correlation, subject 4",
+       "test": "correlation",
+       "statistic": "R2 = 0.018",
+       "p": 2.76e-08
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig3d-glm-search.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8-outer-prevgoal",
+     "statement": "Replay at the rewarded outer arm port also favours the previous goal; beyond the expected strong over-representation of the current arm, the previous goal arm is replayed more than other arms, consistently in a GLM over all rewarded trials.",
+     "source": "Results, Enhanced replay of previous goal at outer arms, paragraph 2; Figure 8A-B",
+     "quote": "However, we also observed greater replay of the previous goal compared to other arms (Figure 8A). We used a Poisson GLM to quantify these effects during all rewarded trials and found that in addition to overrepresentation of the current arm (the goal arm), we also saw consistent, strong enrichment for replay of the previous goal arm (Figure 8B)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig3d-glm-search.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs8-outbound-final-events",
+     "statement": "Among outbound remote events, and among the final remote event before each choice, the previous goal is still the most consistently enriched arm, and future and current goal replay still do not differ consistently between correct and error trials.",
+     "source": "Results, Subsequent arm choice is not biased by replay, paragraph 5; Supplementary Figure 8",
+     "quote": "For neither of these subsets of events did we see any difference in the relationships between content and behavior ... previous goal replay remained more strongly and consistently enriched compared to future arm or current goal replay and we still did not observe consistent differences between correct and error trials (Supplementary Figure 8)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus 150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on fig3e-glm-repeat, fig5c-current-goal-correct-error.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "robustness-controls",
+     "statement": "The main results are unchanged with MUA-based event detection, with a more permissive definition of remote events, after excluding stationary events identified by a three-state decoder, and with a simple 20 ms Bayesian decoder.",
+     "source": "Results, Most SWRs contain interpretable spatial content, paragraphs 1, 4 and 5; Methods, Spatial decoding, paragraphs 4 and 7",
+     "quote": "Additionally, we verified that our conclusions were unchanged by using a multiunit activity-based event detection strategy ... instead of a SWR-based one ... Use of this alternative definition did not alter any of our conclusions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The notebook measures 8.8 MB/s when streaming it (data check), at which one 90-minute run epoch takes 79 minutes and the whole dandiset 288 hours, far beyond the 30-minute limit, before any spike detection or decoding. Each control (MUA events, a permissive remote definition, a three-state decoder, a 20 ms decoder) needs spikes and decoding from the raw broadband.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds the raw 30 kHz broadband, port events, position and task logs, but none of the derived data the paper's findings rest on: no spike times or waveform features, LFP, ripple or multiunit event times, linearised position or decoder output. 31 of the paper's 33 claims need ripples or clusterless decoding recomputed from about 9.1 TB of raw data, which cannot be streamed within the registry's limits.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The electrode table gives the location of all 128 channels as None in every file, so the CA1 cell-layer tetrodes used for ripple detection and decoding, and the corpus callosum tetrode used as LFP reference, cannot be identified from the data.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The files do not mark which run sessions the paper analysed. They hold 27, 32, 24 and 33 run epochs for jaq, roquefort, despereaux and montague, where the paper used 26 (24 after excluding sessions 1 and 3 of subject 1), 32, 23 and 33, and the excluded sessions are named only by number. Which jaq and despereaux epoch the paper did not count cannot be told: possible ones are jaq day 7 epoch 2 (6 rewards in 74 valid trials, no outerreps printed) and the epochs shorter than the Methods' 45 minutes (jaq day 6 epoch 4 and day 9 epoch 6, despereaux day 4 epoch 4). The paper's code repository (LorenFrankLab/Gillespie_Neuron_2021) holds a saved filter output with per-animal epoch lists that may identify them; it was not used here.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "55 of the draft version's 57 files differ in content (SHA-256) from the published version's; their draft assets were modified in February and March 2022. In the file compared (montague day 4), written as NWB 2.4.0 on 2022-01-14, the DIO timestamps agree with the published version to within a microsecond, but the draft's position timestamps are shifted by about -1.59e9 s and no longer share the DIO clock; in the published version they do. The README of the paper's code links the draft.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Position is sampled at 32.9 to 33.0 Hz, where the Methods state 30 Hz, and 110 of 116 run epochs end with 1 to 4 NaN position timestamps (all of them the last samples of the series, none elsewhere); two epochs have non-increasing timestamps (up to 200).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "In montague day 16 epoch 2 the StateScript log's clock steps by about 3.4 s twice against the DIO pump times early in the epoch, and in jaq day 6 epoch 4 the DIO holds one more reward pump (arm 8) 226 s after the last logged reward and 40 s after the last logged trial, so that log appears to end before the epoch. Elsewhere the log and the DIO agree to a few milliseconds and on every reward.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The task logs (StateScript, embedded as text in processing/associated_files) are the only record of the goal arm, trial structure and timeouts; there is no trials table. Five run epochs carry the log without the Python observer header that states the task parameters (rewards per goal, forage assist); for these, forage assist can be ruled out only from the log lines (no CURRENTGOAL line names more than one arm).",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-22",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebook of the run after the two answered questions, with the conclusion cells and the summary removed, the helper module and the claims file, with the paper under paper/. The verifier checked the blocked claims against the archive's asset list and tested label_task_phase, full_blocks, reward_curves and trials_from_events on synthetic inputs. Report in transcripts/000115/verifier-1-report.md.",
+     "agreed": 33,
+     "of": 33,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-23",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the revision after round 1, with its conclusion cells and summary, the helper module, the claims file and the attempt record, with the paper under paper/. The verifier checked every sentence of the conclusion cells, the summary and the record's notes against the printed outputs, and its round-1 reasons as recorded. Report in transcripts/000115/verifier-2-report.md.",
+     "agreed": 33,
+     "of": 33,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000115-gillespie-2021",
+   "type": "reproduction",
+   "title": "Hippocampal replay and the eight-arm goal task (Gillespie et al. 2021)",
+   "description": "Tests the findings of Gillespie et al. (2021) on dandiset 000115, which holds the raw CA1 tetrode broadband, port events, position and task logs of four rats in an eight-arm win-stay lose-switch task. Trials, goal blocks and reward rates are rebuilt from the task logs and checked against the hardware events. The replay findings need ripples and a clusterless decoder run on about 9.1 TB of raw data, which the dandiset holds in no reduced form.",
+   "datasets": [
+    "dandi:000115"
+   ],
+   "papers": [
+    "10.1016/j.neuron.2021.07.029"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_gillespie_2021.ipynb",
+     "title": "Reproducing Gillespie et al. (2021) from dandiset 000115",
+     "executed": "notebooks/000115-gillespie-2021/reproduce_gillespie_2021.html"
+    }
+   ]
+  }
+ ]
+}
