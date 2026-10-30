@@ -35,6 +35,17 @@ inputs:
     the SVM precision and recall of cell-classification.
   source: BossDB open data, https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/minnie65/cell_types/allen_visp_column_soma_coarse_types_v1.csv
     (ETag 3426029512b8ac2b06775c9446577818, modified 2021-07-27)
+- what: Synapse table of subvolume 65 at materialization 1181, counted for synapse-detection.
+  source: BossDB open data, https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/minnie65/synapse_graph/cave_exports/v1181/synapses_pni_2_v1_filtered_view.csv.gz
+    (ETag ee1acee8ee947d4c94177fa730cb5898-2390, modified 2025-06-12)
+- what: Synapse table of subvolume 35, counted for synapse-detection.
+  source: BossDB open data, https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/minnie35/synapse_graph/assigned.csv.gz
+    (ETag 18a9076355afc9c5220a4fa2918749dc-1646, modified 2021-07-01)
+- what: EM imagery of the two subvolumes (neuroglancer precomputed, read at 64 and 16 nm per pixel), for
+    the sections of em-sections.
+  source: BossDB open data, https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/minnie35/em/ and
+    https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/minnie65/em/ (info files ETag 86c239509471d9d0e4c4507d5bd690ec
+    and 431519e1cf233898a0c04f5c61ae7f3b, modified 2021-08-03)
 outcomes:
 - claim: scans-14-p75-p81
   outcome: reproduced
@@ -175,8 +186,9 @@ outcomes:
     8,960 measured directions lie within 7.9 degrees of the grid (99% within 5.0 degrees; 36 more than
     6.25 degrees off). Both showings of every seed give the same 16 directions. The phase correlation
     estimate of the first round gave 15 directions in 4 trials (10 degree rule) or 6 (grid), with deviations
-    up to 11.0 degrees; for the two seeds it flagged (7637 in scan 5-6, 6154 in scan 9-6) the optical
-    flow hits all 16 grid directions, and the period it put at 124.9 degrees in seed 7637 measures 111.3.
+    up to 11.0 degrees, in 8 trials (both showings of seeds 7637 in scan 5-6, 5145 and 2618 in scan 6-7
+    and 6154 in scan 9-6); in all 8 the optical flow hits all 16 grid directions, and the period the
+    phase correlation put at 124.9 degrees in seed 7637 measures 111.3.
     The spacing is the 22.5 degree grid. The speed is not in the dataset and is not tested.
   deviations:
   - The table gives no direction or onset per period, so both were measured from the stimulus video in
@@ -194,12 +206,14 @@ outcomes:
     0.275 and 0.465 under reading (b), increasing, with the 99th above 0. In the variant, the mean pairwise
     correlation between single repeats of the 100 units nearest each percentile is 0.084, 0.203 and 0.524
     (a) and 0.096, 0.205 and 0.394 (b). Median scores by scan range from 0.208 to 0.348. The criterion
-    is met by any score whose 99th percentile is above 0, so it tests little. The score on fluorescence
-    carries a shared stimulus-locked signal. The 10,041 artifact masks score 0.235, 0.402 and 0.650 at
-    the three percentiles, as high as the somatic masks, and the mean trace of a field scores 0.499 (median
-    of 104 fields, range 0.161 to 0.780). With each mask's fit on its field's mean trace removed, the
-    somatic scores are 0.200, 0.380 and 0.665 and the artifact scores 0.229, 0.380 and 0.613, so the score
-    here does not separate neural reliability from that shared signal (neuropil, or light from the monitor).
+    is met by any score whose 99th percentile is above 0, so it tests little. The 10,041 artifact masks
+    score 0.235, 0.402 and 0.650 at the three percentiles, as high as the somatic masks, and the mean
+    trace of a field scores 0.499 (median of 104 fields, range 0.161 to 0.780). With each mask's fit on
+    its field's mean trace removed, the somatic scores are 0.200, 0.380 and 0.665 and the artifact scores
+    0.229, 0.380 and 0.613, barely changed, so a signal shared across the field does not drive them. What
+    makes the artifact masks score as high is not shown (a local neuropil signal or real neurites could
+    account for it), and the score on fluorescence cannot separate the reliability of a neuron from that
+    of what else its mask holds.
   deviations:
   - Fluorescence traces replace the deconvolved traces of the paper, which are not in the dataset.
   - Frames are taken from each field's time stamps from the onset of each repeat; the per-unit delay within
@@ -213,10 +227,13 @@ outcomes:
     reading (b), and by at least 4,698 with the windows shifted by +0.47 s, where the split-half reliability
     of the tuning peaks in all 104 fields. The count tests little with this many units; the argmax of
     the difference between the two halves of the trials, which holds no shared tuning, puts 6,153 to 8,217
-    units on each direction. The evidence of tuning is the split-half variant. The 80 units shown respond
-    more at their first-half preferred direction than at the mean of the other 15 in the second half in
-    91.2% of cases (median second-half preference index 2.87); over all somatic masks the share is 62.9%
-    (0.5 without tuning).
+    units on each direction. The split-half variant gives the evidence of tuning. Over all somatic masks
+    the response at the first-half preferred direction exceeds the mean of the other 15 in the second half
+    for 62.9% (0.5 without tuning), and for 63.7% of 80 units chosen on the first half alone. The 80 units
+    shown are chosen on all 40 trials, so their 91.2% is raised by the selection. The test does not separate
+    neural tuning from a stimulus-locked signal that masks share. The artifact masks pass it as often
+    (65.9% of 10,041), and the most common first-half preferred direction of a field holds a median 11.3%
+    of its somatic masks (8.6% to 17.7% over 104 fields), against 6.25% if spread evenly.
   deviations:
   - Fluorescence replaces the deconvolved traces, which are not in the dataset.
   - The direction of each period comes from the video (see monet2-directions), snapped to the 22.5 degree
@@ -236,8 +253,10 @@ outcomes:
     radii (19.96 to 20.01 Hz). The treadmill covers the imaging period in all 14 scans; the eye tracking
     covers it in 13, and in scan 4-7 it ends 968 s before the last imaging frame (85% coverage). File
     4-7 holds one eye position series and two pupil radius series, all ending at 5,392.9 s, so no other
-    series covers the rest of the scan. A pupil is fitted in 84.9% to 99.9% of eye frames. Outside the
-    paper's 14, the eye tracking of 4-10, 5-3 and 8-7 also ends early.
+    series covers the rest of the scan. A pupil is fitted in 84.9% to 99.9% of eye frames. By the same 1
+    s rule, the eye tracking misses the imaging period in all 5 files outside the paper's 14. It ends 3,264
+    to 4,582 s early in 4-10, 5-3 and 8-7, and 3.9 and 6.2 s early in 4-9 and 8-9 (in 4-9 it also starts
+    1.77 s late).
 - claim: photodiode-89pct
   outcome: blocked
   blocked_by: data_missing
@@ -288,21 +307,40 @@ outcomes:
 - claim: em-sections
   outcome: blocked
   blocked_by: too_large
-  notes: The imagery is public on BossDB in sharded precomputed format. Its metadata give chunk-aligned
-    bounds (subvolume 35 from section 7,904, subvolume 65 from 14,816 to 27,903), which cannot settle
-    an exact count. Reading one 128 x 128 pixel patch at 64 nm per pixel, outside the notebook, found
-    the first section with data in subvolume 35 at 7,931, as the paper says; deciding the first and last
-    section of each subvolume needs whole sections, about 600 MB each at the coarsest scale that keeps
-    single sections, for every candidate section at each end. This was not run, and the outcome rests
-    on nothing run outside the notebook.
+  notebook: em_volume_counts.ipynb
+  output: claim:em-sections
+  notes: The verified outcome is kept. The imagery is public on BossDB in sharded precomputed format, and
+    em_volume_counts.ipynb now reads it. The metadata give bounds in whole chunks of 64 sections, 7,904
+    to 14,847 for subvolume 35 and 14,816 to 27,903 for subvolume 65, 20,000 sections with a share of
+    34.56% before subvolume 65. Sampling the chunk layers at each end on a grid of 2,288 chunks at 64 nm
+    per pixel, the imagery holds data from section 7,931 to 14,847 in subvolume 35 and from 14,825 to
+    27,882 in subvolume 65; a sparser grid and 16 chunks at 16 nm give the same last section. The region
+    with data is 19,952 sections against the expected 19,974 (tolerance 0); the share of subvolume 35 is
+    34.55% to 34.67%, within 35 +- 3.5%. The metadata give no count of sections cut or imaged.
+  proposed:
+    outcome: partially_reproduced
+    reason: The first rounds judged whole sections too large to read; sampled on a grid of chunks, the
+      imagery is read in 2 minutes (em_volume_counts.ipynb). The first section, 7,931, and the share of
+      subvolume 35, 34.55% to 34.67% (34.56% from the metadata alone), match the paper. The region with
+      data ends at 27,882, not 27,904, so it holds 19,952 sections, not 19,974, and the count fails its
+      tolerance of 0.
 - claim: synapse-detection
   outcome: blocked
   blocked_by: too_large
-  notes: The synapse table of subvolume 65 at materialization 1181 is public on BossDB as a 20.0 GB gzipped
-    CSV (synapse_graph/cave_exports/v1181/synapses_pni_2_v1_filtered_view.csv.gz). A notebook that streams
-    it and counts its lines took 10 minutes in a run made while preparing, but in the entry's run the
-    stream stalled and the cell was stopped at the 60 minute limit, so the notebook was dropped and no
-    count is in the record. No public table of subvolume 35 and no manual synapse annotations were found.
+  notebook: em_volume_counts.ipynb
+  output: claim:synapse-detection
+  notes: The verified outcome is kept. In the first rounds the stream of the 20 GB table stalled in the
+    entry's run, which, as the verifier says, is a failed run and not a file too large to process. em_volume_counts.ipynb
+    now streams each table once and resumes a broken stream at the byte reached. The export of subvolume
+    65 at materialization 1181 (synapse_graph/cave_exports/v1181/synapses_pni_2_v1_filtered_view.csv.gz,
+    20.0 GB, no header line) holds 337,312,429 synapses, and the table of subvolume 35 (minnie35/synapse_graph/assigned.csv.gz,
+    13.8 GB, 2021, one header line), which the first rounds missed, holds 186,268,895; together 523.6
+    million. No manual synapse annotations were found, so precision, recall and F1 are not tested.
+  proposed:
+    outcome: partially_reproduced
+    reason: Both counts now run in the notebook (12 minutes) and match the paper within tolerance, 337.3
+      million in subvolume 65 (expected 337 +- 33.7) and 186.3 million in subvolume 35 (186 +- 18.6). Precision,
+      recall and F1 stay untested, as the manual annotations are not public.
 - claim: nuclei-144120
   outcome: reproduced
   notebook: reproduce_microns_2025.ipynb
@@ -437,7 +475,7 @@ findings:
     and the subject age is the range P75D/P81D in every file, though each scan was recorded on one day.
 - kind: other
   statement: In scan 4-7, one of the paper's 14, the eye tracking ends 968 s before the last imaging frame;
-    in files 4-10, 5-3 and 8-7 it ends 54 to 76 minutes early. Several files have missing (NaN) time stamps
+    in files 4-10, 5-3 and 8-7 it ends 54 to 76 minutes early, and in 4-9 and 8-9 3.9 and 6.2 s early. Several files have missing (NaN) time stamps
     in the treadmill and eye series (up to 190).
 - kind: other
   statement: Trippy seed 6831 is shown in both scans 6-4 and 7-5, while the Methods say the 10 seeds that
@@ -445,6 +483,11 @@ findings:
 - kind: other
   statement: All fields of a scan share one array of frame time stamps, though the fields are imaged one
     after another within each frame; the per-field offset is not recorded.
+- kind: other
+  statement: The EM imagery of subvolume 65 on BossDB holds data up to section 27,882, while the paper
+    gives the processed region as sections 7,931 to 27,904. The imagery of the two subvolumes overlaps
+    from section 14,825 to 14,847, and the metadata give the bounds of each subvolume only in whole chunks
+    of 64 sections (7,904 to 14,847 and 14,816 to 27,903).
 - kind: format_error
   statement: pt_root_id and pt_supervoxel_id are stored as 64-bit floats, which hold integers exactly
     only up to 2**53; root ids near 8.65e17 are spaced by 128 in float64, so ids that differ in their
@@ -568,19 +611,26 @@ verifications:
       is nearly automatic, since units picked at increasing percentiles increase by construction. The
       artifact masks score like somata, consistent with a shared stimulus-locked signal in raw fluorescence
       (neuropil, or light from the monitor), which was not examined; an artifact-only score distribution
-      would settle it.'
+      would settle it. Problem 7 (does not affect a conclusion): field_responses uses fluorescence in place
+      of deconvolved traces and applies no per-unit delay, and all fields share one timestamp array although
+      they are imaged one after another within a frame; all three are disclosed and cannot change the ordering-based
+      outcomes.'
     response: No change of outcome. The notebook now gives the artifact-only distribution (0.235, 0.402
       and 0.650 at the three percentiles), the score of each field's mean trace (median 0.499), and the
       scores with each mask's fit on its field's mean trace removed (somatic 0.200, 0.380 and 0.665; artifact
       0.229, 0.380 and 0.613). The shared signal is there and the regression does not remove it, which
-      the conclusion and notes now state.
+      the conclusion and notes now state. Problem 7 is disclosed in the deviations (no per-unit delay, one
+      timestamp array per scan) and unchanged.
   - claim: fig3g-direction-tuning
     agrees: true
     outcome: reproduced
     reason: 'Cell 35: the fewest units on any direction is 5,203 under (a) and 5,113 under (b), against
       the 5 required. The test cannot fail; an argmax over 16 directions on pure noise for 100,000 units
       gave at least 6,111 per direction. The informative number is the split-half variant, 0.629 of units
-      against 0.5 expected without tuning, with the clock check in cell 29.'
+      against 0.5 expected without tuning, with the clock check in cell 29. Problem 7 (does not affect
+      a conclusion): field_responses uses fluorescence in place of deconvolved traces and applies no per-unit
+      delay, and all fields share one timestamp array although they are imaged one after another within
+      a frame; all three are disclosed and cannot change the ordering-based outcomes.'
     response: No change of outcome. A reference from the data (argmax of the first-half minus second-half
       responses, which holds no shared tuning) gives 6,153 to 8,217 units per direction, and the conclusion
       now says the count tests little and rests the evidence on the split-half variant and the clock check.
@@ -647,7 +697,8 @@ verifications:
     outcome: blocked
     reason: Blocked (other), not verified; the attempt record was not available, so the reason could not
       be checked against the public BossDB exports.
-    response: No change of outcome.
+    response: Kept blocked, with the reason changed from other to too_large, since whole sections of the
+      imagery were judged too large to read; the round-2 revision reads them on a grid of chunks.
   - claim: synapse-detection
     agrees: true
     outcome: blocked
@@ -747,3 +798,258 @@ verifications:
     reason: Blocked (other), not verified; the attempt record was not available, so the reason could not
       be checked against the public BossDB exports.
     response: No change of outcome.
+- date: 2026-10-30
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision (conclusions and summary included),
+    the helper module, the claims file and the attempt record, with the paper under paper/.
+  results:
+  - claim: scans-14-p75-p81
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The 14-scan list was read from the image of Extended Data Table 1, a choice stated
+      as a deviation and reasonable; the exact mask totals in cell 14 support it. The cells of the table
+      are now cited but cannot be printed from the data.
+    response: No change.
+  - claim: scan-configurations
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The fields-by-depth table shows exactly two per depth in all 19 files.
+    response: No change.
+  - claim: masks-125413-somatic-115372
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: unique-neurons-75909
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as data_missing.
+    response: No change.
+  - claim: area-split-half-visp
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as metadata_insufficient; the verifier said data_missing in round 1, and either
+      fits.
+    response: No change.
+  - claim: z-drift-under-10um
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as data_missing.
+    response: No change.
+  - claim: structural-stack
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as data_missing.
+    response: No change.
+  - claim: stimulus-composition
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: stimulus-conserved-across-scans
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The repeated Trippy seed is recorded.
+    response: No change.
+  - claim: oracle-same-order
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The check now counts trials inside a repeat.
+    response: No change.
+  - claim: spontaneous-periods
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The bounds are now compared and the outcome is partially reproduced.
+    response: No change.
+  - claim: monet2-directions
+    agrees: true
+    outcome: reproduced
+    reason: 'Now agrees. Cell 33 measures the directions by optical flow: all 560 trials have 16 distinct
+      directions under both measures, the largest deviation from the grid is 7.9 degrees, and both showings
+      of each seed give the same directions in 280 of 280 pairs, which checks the method independently.
+      The method was changed after the first one failed; this is disclosed and justified by the bias of
+      the phase correlation towards whole-pixel shifts. Cell 35 and the notes say "for the two seeds it
+      flagged", but the phase correlation flagged 4 trials by the 10 degree rule and 6 on the grid, only
+      one trial each of seeds 7637 and 6154 is printed, and at least two of the 6 grid-flagged trials belong
+      to seeds that are not printed. The outcome does not depend on this.'
+    response: Cell 33 now prints every trial the phase correlation flagged, 8 in all (both showings of seeds
+      7637 in scan 5-6, 5145 and 2618 in scan 6-7, and 6154 in scan 9-6), with the directions of both measures;
+      the optical flow hits all 16 grid directions in each. Cell 35 and the notes now name the 8 trials.
+  - claim: fig3f-oracle-reliability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the criterion tests little, and the record says so. Cell 43 and the notes say the score
+      on fluorescence "carries a shared, stimulus-locked signal", but cell 41 shows that removing each mask's
+      fit on its field's mean trace barely changes the scores (somatic 0.200, 0.380 and 0.665 against 0.208,
+      0.396 and 0.702), which is evidence against a field-wide shared signal driving them. The high artifact-mask
+      scores stay unexplained; a local neuropil signal or real neurites could account for them. "Cannot
+      separate" is fair; "carries a shared signal" is not shown for the unit scores.
+    response: Cell 43, the summary and the notes now say that the regression barely changes the scores,
+      so a signal shared across the field does not drive them, that what makes the artifact masks score
+      as high is not shown (a local neuropil signal or real neurites could account for it), and that the
+      score on fluorescence cannot separate a neuron's reliability from that of what else its mask holds.
+  - claim: fig3g-direction-tuning
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the criterion tests little, and the record says so. Cell 47 and the notes say the 80
+      units shown respond more at their preferred direction in 91.2% of cases (median 2.87), but the 80
+      are chosen by a preference index over all 40 trials, which include the second-half trials used to
+      test them, so 91.2% and 2.87 are inflated by selection. The unbiased number is 0.629 over all somatic
+      masks; the fig3f caveat about shared stimulus-locked signals also applies to it and is not discussed.
+    response: The conclusion now rests on the 62.9% over all somatic masks, and cell 46 adds 80 units chosen
+      the same way on the first half alone (63.7%); the 91.2% is described as raised by the selection.
+      For the shared-signal caveat, cell 46 adds the test on the artifact masks, which pass as often (65.9%),
+      and the share of a field's somatic masks on its most common first-half preferred direction (median
+      11.3% against 6.25%). Cell 47 and the notes state that the test does not separate neural tuning from
+      a stimulus-locked signal that masks share. The outcome is kept, as the criterion is the count per
+      direction.
+  - claim: behaviour-recorded
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Cell 30 and the notes say that of the 5 files outside the paper's 14 the eye tracking
+      also stops early in 4-10, 5-3 and 8-7, but by the notebook's own 1 s rule (cell 29) 4-9 (3.9 s early,
+      starting 1.77 s late) and 8-9 (6.2 s early) also fail, so all 5 fail. These files are not among the
+      14, so no conclusion changes.
+    response: Cell 29 now prints the files outside the 14 that fail the 1 s rule, all 5, and cell 30, the
+      notes, the finding and the summary say so.
+  - claim: photodiode-89pct
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as data_missing.
+    response: No change.
+  - claim: manual-coreg-19181
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the with_inputs claims blocked. The summary row says "variants on the dataset's own
+      EM identifiers above" for all three with_inputs claims.
+    response: No change of outcome. The summary row now says the dataset's EM identifiers are counted and
+      the ed4 test is run on them, with no variant for fig6k-target-responses.
+  - claim: ed4-matched-higher-signal-correlation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the with_inputs claims blocked. The variant is run on reading (b) only and decides
+      nothing.
+    response: No change.
+  - claim: fig6k-target-responses
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the with_inputs claims blocked. The with_inputs row of the summary says "variants
+      on the dataset's own EM identifiers above" for fig6k-target-responses too, but no variant was run
+      for it.
+    response: The summary row is corrected; no variant is claimed for fig6k-target-responses.
+  - claim: fiducial-automatch
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as other. The summary's "the CAVE tables that choose their neurons need an account
+      token" does not fit this claim, for which the CAVE tables are the data themselves.
+    response: The summary row now says the CAVE tables the claims test, or that choose their neurons, need
+      an account token, and that fiducial-transform-residual names no table.
+  - claim: vessel-automatch
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as other. The summary's "the CAVE tables that choose their neurons need an account
+      token" does not fit this claim, for which the CAVE tables are the data themselves.
+    response: The summary row is corrected, as for fiducial-automatch.
+  - claim: hybrid-automatch
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as other. The summary's "the CAVE tables that choose their neurons need an account
+      token" does not fit this claim, for which the CAVE tables are the data themselves.
+    response: The summary row is corrected, as for fiducial-automatch.
+  - claim: fiducial-transform-residual
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as other. The summary's "the CAVE tables that choose their neurons need an account
+      token" does not fit this claim, for which no table is named.
+    response: The summary row is corrected, as for fiducial-automatch.
+  - claim: em-sections
+    agrees: false
+    reason: 'Does not fully agree with blocked (too_large). The record''s metadata bounds (7,904; 14,816;
+      27,903) already decide the second expected quantity, the share of sections in subvolume 35: (14,816
+      - 7,904) / 20,000 = 34.6%, against 35 +- 3.5. Only the exact section count needs whole sections. The
+      patch read that put the first section at 7,931 was run outside the notebook and has no printed output.
+      The round-1 response says "No change of outcome", but the outcome changed from the verifier''s round-1
+      blocked (other) to too_large.'
+    response: The outcome is kept as verified, and a change to partially_reproduced is proposed. A new notebook,
+      em_volume_counts.ipynb, prints the metadata bounds (share 34.56%) and reads the imagery at 64 nm on
+      a grid of 2,288 chunks per layer at each end of each subvolume, which takes 2 minutes. The first section
+      with data is 7,931, as the paper says, and the last is 27,882, not 27,904, so the region holds 19,952
+      sections against 19,974; the share of subvolume 35 is 34.55% to 34.67%. The patch read outside the
+      notebook is replaced by this. The round-1 response now says the reason changed from other to too_large.
+  - claim: synapse-detection
+    agrees: false
+    outcome: blocked
+    reason: Does not fully agree with blocked (too_large). The record says a count of the same 20 GB file
+      took 10 minutes in an earlier run and that the entry's run stalled; that is a failed run, not a file
+      too large to process. The count for subvolume 65 should be retried, or the reason recorded as other.
+      The subvolume 35 count and the precision and recall would stay untested either way. The earlier 10-minute
+      count has no printed output.
+    response: The outcome is kept as verified, and a change to partially_reproduced is proposed. em_volume_counts.ipynb
+      streams the table and resumes a broken stream at the byte reached. The version 1181 export of subvolume
+      65 holds 337,312,429 synapses; a table of subvolume 35 on BossDB (minnie35/synapse_graph/assigned.csv.gz),
+      missed in the first rounds, holds 186,268,895. Both are within tolerance. Precision, recall and F1
+      stay untested. The notes no longer rest on the earlier count outside the notebook.
+  - claim: nuclei-144120
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: cell-classification
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The 82,247 sum is stated.
+    response: No change.
+  - claim: proofreading-scale
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as other. The notes now list the public exports and why they do not suffice;
+      the BossDB stack path and the export sizes (about 20 GB each) rest on nothing printed in the notebook.
+    response: em_volume_counts.ipynb now prints the BossDB files the record cites with their sizes, among
+      them the synapse exports, the connection table, the structural stacks and the 2021 proofreading release.
+  - claim: dendrite-input-precision
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as other. The BossDB stack path and the export sizes (about 20 GB each) rest
+      on nothing printed in the notebook.
+    response: The files and sizes are now printed in em_volume_counts.ipynb.
+  - claim: axon-lengths
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as other. The BossDB stack path and the export sizes (about 20 GB each) rest
+      on nothing printed in the notebook.
+    response: The files and sizes are now printed in em_volume_counts.ipynb.
+  - claim: multisoma-split
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as other.
+    response: No change.
+  - claim: fig6f-outputs-mapped
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as other. The BossDB stack path and the export sizes (about 20 GB each) rest
+      on nothing printed in the notebook.
+    response: The files and sizes are now printed in em_volume_counts.ipynb.
+  - claim: fig6gh-example-cell
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as other.
+    response: No change.
+  - claim: outputs-94-axons
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as other. The BossDB stack path and the export sizes (about 20 GB each) rest
+      on nothing printed in the notebook.
+    response: The files and sizes are now printed in em_volume_counts.ipynb.
+  - claim: fig7abc-laminar-connectivity
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as other. The BossDB stack path and the export sizes (about 20 GB each) rest
+      on nothing printed in the notebook.
+    response: The files and sizes are now printed in em_volume_counts.ipynb.
+  - claim: fig7d-l3-two-hop
+    agrees: true
+    outcome: blocked
+    reason: Agrees, blocked as other. The summary's "the CAVE tables that choose their neurons need an account
+      token" does not fit this claim, for which no table is named.
+    response: The summary row is corrected, as for fiducial-automatch.

@@ -5,6 +5,7 @@ that can be tested on [DANDI:000402](https://dandiarchive.org/dandiset/000402/0.
 holds the 19 two-photon scans of the MICrONS mouse: masks, fluorescence traces, stimulus tables and
 video, treadmill and eye tracking. The paper describes 14 of these scans (its Extended Data Table 1).
 Most of the paper's EM findings rest on CAVE tables that need an account token and are not tested.
+The proposed outcomes of two EM claims await a third verification round.
 
 | Claim | Outcome |
 |---|---|
@@ -26,8 +27,9 @@ Most of the paper's EM findings rest on CAVE tables that need an account token a
 | Photodiode code recovered for 89% of trials | Blocked: data missing |
 | 144,120 nuclei in subvolume 65 | Reproduced |
 | Neuron and cell type classification | Reproduced |
-| Synapse counts, EM sections | Blocked: too large |
-| Co-registration and the other EM claims (16 claims) | Blocked: other (the CAVE tables they need, or that choose their neurons, need an account token) |
+| Synapse counts | Blocked: too large, as verified; proposed partially reproduced (both counts within tolerance, precision and recall not tested) |
+| EM sections | Blocked: too large, as verified; proposed partially reproduced (share of subvolume 35 within tolerance, 19,952 sections with data against 19,974) |
+| Co-registration and the other EM claims (16 claims) | Blocked: other (the CAVE tables they test, or that choose their neurons, need an account token) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -37,7 +39,11 @@ deconvolved traces. The direction of each Monet2 period is not in the stimulus t
 from the stimulus video by optical flow. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/000402-microns-2025-01.yaml`](../../attempts/000402-microns-2025-01.yaml).
 
-- `reproduce_microns_2025.ipynb`: the analysis. It takes about 12 minutes, most of it reading the
-  stimulus video and the traces of the oracle and Monet2 trials.
+- `reproduce_microns_2025.ipynb`: the analysis of the dandiset and of the nucleus and cell type
+  tables. It took 10 minutes in the last run, most of it reading the stimulus video and the traces
+  of the oracle and Monet2 trials.
+- `em_volume_counts.ipynb`: the EM sections, from the imagery on BossDB, and the synapse counts of
+  the two subvolumes, from their tables on BossDB. It took 14 minutes in the last run, most of it
+  streaming the two synapse tables (34 GB).
 - `microns.py`: loading the files, the oracle score, the Monet2 directions from the video, the
-  per-mask responses and the mask centroids. Other notebooks on this dandiset can import it.
+  per-mask responses and the mask centroids, and reading the EM imagery and synapse tables on BossDB. Other notebooks on this dandiset can import it.

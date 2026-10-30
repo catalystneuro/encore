@@ -1,7 +1,8 @@
 """Loading and measures for dandiset 000402 (MICrONS two-photon functional imaging).
 
-Used by reproduce_microns_2025.ipynb. Every file is streamed from the DANDI Archive at the
-pinned version with remfile and h5py; nothing is downloaded to disk.
+Used by reproduce_microns_2025.ipynb and em_volume_counts.ipynb. Every file is streamed from the
+DANDI Archive at the pinned version with remfile and h5py, and the EM files from the BossDB open
+data bucket; nothing is downloaded to disk.
 
 Where parameters come from:
 - DANDISET_VERSION: the version the paper cites (reference 73, "version 0.230307.2132").
@@ -653,3 +654,133 @@ def oracle_trace(asset_id, field, roi_index, frame_ts, onsets, nfr):
     out = np.array([d[row[0]:row[-1] + 1, roi_index] for row in idx])
     f.close()
     return out
+
+
+# ---------------------------------------------------------------------------------------------
+# Public BossDB data of the EM volume (claims em-sections and synapse-detection).
+
+BOSS_ROOT = "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/"
+EM_SCALE = "64_64_40"   # the coarsest scale that keeps single 40 nm sections
+_session = requests.Session()
+
+
+def boss_list(prefix):
+    """Keys and sizes (bytes) under a prefix of the BossDB open data bucket."""
+    import re
+    rows, token = [], None
+    while True:
+        params = {"list-type": 2, "prefix": "iarpa_microns/minnie/" + prefix}
+        if token:
+            params["continuation-token"] = token
+        t = _session.get("https://bossdb-open-data.s3.amazonaws.com/", params=params, timeout=60).text
+        rows += [(k, int(s)) for k, s in re.findall(r"<Key>(.*?)</Key>.*?<Size>(\d+)</Size>", t)]
+        m = re.search(r"<NextContinuationToken>(.*?)</NextContinuationToken>", t)
+        if not m:
+            return pd.DataFrame(rows, columns=["key", "bytes"])
+        token = m.group(1)
+
+
+def _range(url, start, end, tries=5):
+    """Bytes [start, end) of a URL, retried on network errors."""
+    for i in range(tries):
+        try:
+            r = _session.get(url, headers={"Range": f"bytes={start}-{end - 1}"}, timeout=60)
+            r.raise_for_status()
+            return r.content
+        except requests.RequestException:
+            if i == tries - 1:
+                raise
+
+
+def em_scale(vol, key=EM_SCALE):
+    """One scale of the precomputed EM imagery of a subvolume (minnie35 or minnie65)."""
+    info = _session.get(f"{BOSS_ROOT}{vol}/em/info", timeout=60).json()
+    return next(s for s in info["scales"] if s["key"] == key)
+
+
+def _morton(g, grid):
+    """Compressed Morton code of a chunk's grid position (neuroglancer precomputed format)."""
+    bits = [max(0, int(n - 1).bit_length()) for n in grid]
+    code, j = 0, 0
+    for i in range(max(bits)):
+        for d in range(3):
+            if i < bits[d]:
+                code |= ((g[d] >> i) & 1) << j
+                j += 1
+    return code
+
+
+_minishards = {}
+
+
+def em_chunk(vol, scale, g):
+    """Chunk at grid position g = (x, y, z) of a sharded jpeg scale, as a (z, y, x) uint8 array;
+    None when the shard holds no such chunk. Reads the neuroglancer_uint64_sharded_v1 format."""
+    import gzip
+    import io
+    from PIL.JpegImagePlugin import JpegImageFile
+    sh, cs = scale["sharding"], scale["chunk_sizes"][0]
+    grid = [-(-s // c) for s, c in zip(scale["size"], cs)]
+    cid = _morton(g, grid)
+    h = cid >> sh["preshift_bits"]
+    mini = h & ((1 << sh["minishard_bits"]) - 1)
+    shard = (h >> sh["minishard_bits"]) & ((1 << sh["shard_bits"]) - 1)
+    url = f"{BOSS_ROOT}{vol}/em/{scale['key']}/{shard:0{-(-sh['shard_bits'] // 4)}x}.shard"
+    header = 16 << sh["minishard_bits"]
+    if (url, mini) not in _minishards:
+        a, b = np.frombuffer(_range(url, 16 * mini, 16 * mini + 16), "<u8")
+        index = {}
+        if b > a:
+            m = np.frombuffer(gzip.decompress(_range(url, header + int(a), header + int(b))), "<u8").reshape(3, -1)
+            sizes = m[2]
+            starts = np.cumsum(m[1] + np.concatenate([[0], sizes[:-1]]))
+            index = {int(i): (int(s), int(n)) for i, s, n in zip(np.cumsum(m[0]), starts, sizes)}
+        _minishards[(url, mini)] = index
+    loc = _minishards[(url, mini)].get(cid)
+    if loc is None:
+        return None
+    s, n = loc
+    im = np.array(JpegImageFile(io.BytesIO(_range(url, header + s, header + s + n))))   # jpeg-encoded voxels
+    shape = [min(c, size - gi * c) for c, size, gi in zip(cs, scale["size"], g)]
+    return im.reshape(shape[2], shape[1], shape[0])
+
+
+def em_sections_with_data(vol, gz, step=8, workers=16):
+    """For the chunk layer gz of a subvolume, the number of sampled chunks with any non-zero
+    voxel in each section. Chunks are sampled on a grid of every `step`-th chunk in x and y.
+    Returns (first section of the layer, number of chunks sampled, counts per section)."""
+    from concurrent.futures import ThreadPoolExecutor
+    scale = em_scale(vol)
+    grid = [-(-s // c) for s, c in zip(scale["size"], scale["chunk_sizes"][0])]
+    gs = [(x, y, gz) for x in range(step // 2, grid[0], step) for y in range(step // 2, grid[1], step)]
+    with ThreadPoolExecutor(workers) as ex:
+        arrs = [a for a in ex.map(lambda g: em_chunk(vol, scale, g), gs) if a is not None]
+    nz = min(a.shape[0] for a in arrs)
+    counts = np.array([(a[:nz].reshape(nz, -1) > 0).any(axis=1) for a in arrs]).sum(axis=0)
+    return scale["voxel_offset"][2] + gz * scale["chunk_sizes"][0][2], len(gs), counts
+
+
+def count_csv_gz_lines(url, block=8 << 20, report_gb=2.0):
+    """Stream a gzipped CSV once and count its lines, keeping nothing. A stalled or broken
+    stream is resumed at the byte reached, with a range request. Returns (lines, bytes read)."""
+    import zlib
+    d = zlib.decompressobj(16 + zlib.MAX_WBITS)
+    size = int(_session.head(url, timeout=60).headers["Content-Length"])
+    lines, got, next_report, failures = 0, 0, report_gb, 0
+    while got < size:
+        try:
+            with _session.get(url, headers={"Range": f"bytes={got}-"}, stream=True, timeout=(30, 60)) as r:
+                r.raise_for_status()
+                for chunk in r.iter_content(block):
+                    lines += d.decompress(chunk).count(b"\n")
+                    got += len(chunk)
+                    if got / 1e9 >= next_report:
+                        print(f"  {got / 1e9:.0f} of {size / 1e9:.1f} GB, {lines / 1e6:.0f} million lines", flush=True)
+                        next_report += report_gb
+        except requests.RequestException as e:
+            failures += 1
+            print(f"  stream broke at {got / 1e9:.2f} GB ({type(e).__name__}); resuming", flush=True)
+            if failures > 20:
+                raise
+    lines += d.flush().count(b"\n")
+    return lines, got
