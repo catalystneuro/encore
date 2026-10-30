@@ -121,8 +121,8 @@ outcomes:
     holds. The percent of the unipolar mean is 54.5% averaged over the range (reading a, given as
     measured) and 31.6% at its lowest, at 14.24 kV/cm (reading b), both outside 18 to 22%, so
     the claim is at most partially reproduced. Where the p < 0.01 test is made is not given;
-    four readings are run. At every ROI of the range it fails (largest p 0.79 against unipolar,
-    0.072 against 25 and 100%); on dish means over the range it fails (smallest p 0.011, 50%
+    four readings are run. At every ROI of the range it fails for both amplitudes (largest p for
+    50%, 0.79 against unipolar and 0.072 against 25 and 100%; for 75%, 0.996 and 0.249); on dish means over the range it fails (smallest p 0.011, 50%
     against 25 and 100%, normalised values); at both named fields it fails (50% against
     unipolar, p 0.79 at 8.94 and 0.0018 at 15.24 kV/cm). At one ROI or more it holds, 50%
     against unipolar at 15.24 kV/cm (p 0.0018), the only one of 36 tests (2 amplitudes, 2
@@ -207,8 +207,9 @@ outcomes:
   notes: The dishes of the pulse duration experiment (Fig. 4) are not in the dandiset; it has no
     300 ns pulses. The Fig. 2 dishes with 0 and 50% second phase had the same exposure as
     the 600 ns pair; on them the claim's measure gives a ratio of the bipolar to the unipolar fit of
-    34.4 to 64.9% with exponential fits, and polynomial fits that cross zero (notebook, section on
-    the 600 ns exposure). These are other dishes, so this decides no outcome. The data are in
+    34.4 to 64.9% with exponential fits. With polynomial fits the ratio crosses zero above 7 kV/cm
+    (minimum -457.4%) and runs from 34.8 to 1537.4% above 8 kV/cm (notebook, section on the 600 ns
+    exposure). These are other dishes, so this decides no outcome. The data are in
     dandiset 000549 (doi:10.48324/dandi.000549/0.230519.2043), which names this paper
     (IsPublishedIn) and is a separate target of the registry. The claims file does not name it as a
     source for 000489, so it is not used here, and the claim is blocked for this dataset, not for the
@@ -412,7 +413,13 @@ verifications:
       bottom side gives 2 paired against 3 unpaired, so this outcome depends on the ROI reading.
       The notebook runs reading (b) only as a variant, and each outcome uses the both-sides table
       alone, with no rule for combining top and bottom. The 3 mm extent of the ROI (weakest ROI at
-      5.13 kV/cm) is the author's choice, not stated as an assumption.
+      5.13 kV/cm) is the author's choice, not stated as an assumption. The sub-Fig2-0-03 exclusion
+      is well supported but leaves unipolar at n = 2, below the paper's 3 to 8, and the unipolar
+      arm is the denominator of every Fig. 2C claim and one of the failing fig2a amplitudes. In
+      000548, Uni5-03 may hold the real 0-03 YP image; the notebook did not look. The "with
+      sub-Fig2-0-03" variant counts a 25% image as unipolar and is not a valid reading. Dates
+      confound amplitude (all unipolar dishes from 2021-07-29, all 75% and 100% dishes from
+      2021-08-24); this does not affect a conclusion.
     response: No change of outcome. The notebook now says why reading (a), both sides averaged, is
       adopted as an assumption (Methods 2.3 and Fig. 1C draw bb' as one line through the centre,
       where the field is symmetric, and the paper names no side), and that reading (b) is two
@@ -420,7 +427,10 @@ verifications:
       the outcome stays marked assumed. The ROI extent is stated as an assumption in bipolar.py,
       and the test is shown with the weakest ROI at 2.0 mm (same outcome) and 2.4 mm (6.75 kV/cm,
       2 amplitudes paired, 3 unpaired). The invalid variant with sub-Fig2-0-03 is replaced by one
-      with the field scaled to 15.1 kV/cm at the centre (same outcome).
+      with the field scaled to 15.1 kV/cm at the centre (same outcome). The data check now shows that
+      000548 sub-Fig3-Uni5-03 has the same MemBrite channel as 0-03 and a YP channel that registers
+      with it (peak 0.301), recorded as a finding; it is not measured, as it is outside this
+      dandiset. The dates confound is reported as a finding.
   - claim: fig2a-vertical-scales
     agrees: true
     outcome: not_reproduced
@@ -582,3 +592,155 @@ verifications:
     reason: Blocked (data_missing). No dandiset with thermochromic photographs found in an archive
       search.
     response: No change; the notes add that none of the four other dandisets of the paper holds them.
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-2, run 41106506929; same harness, separate
+    context, did not write the notebook)
+  reviewed: The revision of the author-revise-1 run (commit da2f03abf), the full executed notebook
+    with its conclusions and summary, the helper module, the claims file, the README and the attempt
+    record.
+  results:
+  - claim: fig2a-uptake-rises-with-field
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (cell 17). The assumption is stated and reasonable, ROI reading (a), both
+      footprints, ROI extent of 3 mm. Bottom side, left footprint and a weakest ROI at 2.4 mm each
+      give methods_underspecified, and the notes say so. The unipolar arm failing at n = 2 also rests
+      on leaving dish 0-03 out. 000548 sub-Fig3-Uni5-03 holds the missing image but was not measured;
+      until it is, the outcome rests on 2 unipolar dishes. Whether reading it is in scope is a
+      protocol question. Round-1 problem 2 (the 0-03 exclusion, the invalid "with 0-03" variant) and
+      problem 11 (dates confounding amplitude) appear in no claim's reason in the record. Cell 7 says
+      "a variant keeps it as the dandiset presents it", which is stale; no such variant exists.
+    response: No change of outcome. Cell 7 no longer mentions the removed variant. The round-1 reason of this claim now includes problems 2 and 11
+      of the round-1 report, and the round-1 response says what was done about them. The third
+      unipolar dish is not measured; author step 1.4 allows data from outside the dataset only where
+      the claims file says the paper relies on them, and the claims file names no outside source for
+      Fig. 2. The notes and deviations say the test has 2 unipolar dishes, and the finding on
+      sub-Fig2-0-03 says where the missing image is.
+  - claim: fig2a-vertical-scales
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees (cell 20). Stated and reasonable, camera counts are taken as the paper's a.u. The
+      75% value is 255.2 to 342.8 under every variant. Image units remain unverifiable, though the
+      assumption is stated.
+    response: No change. The files say nothing more about units, so the assumption stays as stated.
+  - claim: fig2b-exponential-same-slope
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees (cell 23). Applies the criterion as written; all 12 readings agree. The assumption
+      is stated; top side, scale from electrodes and right footprint give methods_underspecified.
+    response: No change.
+  - claim: fig2c-max-inhibition-50-75
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Stated, and reasonable but a judgement call. The p < 0.01 is placed over the whole
+      range; the "one ROI or more" reading gives partially_reproduced (50% against unipolar at 15.24
+      kV/cm, p 0.0018). At the ROI of strongest inhibition (14.24 kV/cm) p is 0.027 and 0.019, so the
+      test fails there too. The ~20% value fails under every reading. The sentence "At every ROI of
+      the range it fails (largest p 0.79 against unipolar, 0.072 against 25 and 100%)" gives the 50%
+      values only; for 75% the largest p is 0.996 against unipolar and 0.249 against 25 and 100%. The
+      denominator has 2 unipolar dishes.
+    response: No change of outcome; the placement of the test stays a stated assumption, with every
+      reading shown. The sentence in the conclusion (cell 27) and in the notes now gives the largest p
+      for both amplitudes (50%, 0.79 and 0.072; 75%, 0.996 and 0.249). On the 2 unipolar dishes, as
+      for fig2a-uptake-rises-with-field.
+  - claim: fig2c-inhibition-flat-above-8-7
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees (cell 29). Holds under every variant, so it needs no assumption. The denominator has
+      2 unipolar dishes.
+    response: No change. On the 2 unipolar dishes, as for fig2a-uptake-rises-with-field.
+  - claim: fig2c-weaker-at-6-7
+    agrees: true
+    outcome: blocked
+    reason: Agrees (cell 32). The background rule (mean at most 2 s.e.m.) is the attempt's own and is
+      stated. The block rests on reading (a) and both footprints. Bottom side and left footprint give
+      reproduced, and the notes say so. Reasonable. The unipolar s.e.m. comes from 2 dishes. The
+      status table of cell 0 marks the claim "tested", while its outcome is blocked.
+    response: No change of outcome. The status table of cell 0 now says the claim was analysed and is
+      blocked (other). On the 2 unipolar dishes, as for fig2a-uptake-rises-with-field.
+  - claim: fig3-uptake-linear-in-pulse-number
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 8 confirms the data are in 000548, 000549, 000550 and 000448, and the claims
+      file names none of them. "other" is consistent with protocol.md's definition of data_missing.
+    response: No change.
+  - claim: fig3d-cancellation-independent-of-number
+    agrees: true
+    outcome: blocked
+    reason: As for fig3-uptake-linear-in-pulse-number.
+    response: No change.
+  - claim: fig4ac-ns-bipolar-20-25pct
+    agrees: true
+    outcome: blocked
+    reason: As for fig3-uptake-linear-in-pulse-number. The Summary and the notes say the polynomial
+      fits cross zero; this holds only at the 7 kV/cm cutoff (ratio minimum -457.4%). At 8 kV/cm the
+      polynomial ratio runs from 34.8 to 1537.4% with no sign change. No outcome rests on it.
+    response: No change of outcome. The Summary and the notes now give both cutoffs (crosses zero
+      above 7 kV/cm, minimum -457.4%; 34.8 to 1537.4% above 8 kV/cm).
+  - claim: fig4d-1200ns-tenfold
+    agrees: true
+    outcome: blocked
+    reason: As for fig3-uptake-linear-in-pulse-number.
+    response: No change.
+  - claim: fig4eg-us-bipolar-30-50pct
+    agrees: true
+    outcome: blocked
+    reason: As for fig3-uptake-linear-in-pulse-number.
+    response: No change.
+  - claim: fig4h-us-stronger-at-low-field
+    agrees: true
+    outcome: blocked
+    reason: As for fig3-uptake-linear-in-pulse-number.
+    response: No change.
+  - claim: fig5-ns-symmetric-along-aa
+    agrees: true
+    outcome: blocked
+    reason: As for fig3-uptake-linear-in-pulse-number.
+    response: No change.
+  - claim: fig5-us-anode-stronger
+    agrees: true
+    outcome: blocked
+    reason: As for fig3-uptake-linear-in-pulse-number.
+    response: No change.
+  - claim: fig6ad-unipolar-833khz-enhanced
+    agrees: true
+    outcome: blocked
+    reason: As for fig3-uptake-linear-in-pulse-number.
+    response: No change.
+  - claim: fig6be-bipolar-khz-less-than-1hz
+    agrees: true
+    outcome: blocked
+    reason: As for fig3-uptake-linear-in-pulse-number.
+    response: No change.
+  - claim: fig6cf-833khz-thirtyfold
+    agrees: true
+    outcome: blocked
+    reason: As for fig3-uptake-linear-in-pulse-number.
+    response: No change.
+  - claim: fig6cf-cancellation-stronger-at-high-field
+    agrees: true
+    outcome: blocked
+    reason: As for fig3-uptake-linear-in-pulse-number.
+    response: No change.
+  - claim: fig7-charging-time-constant
+    agrees: true
+    outcome: blocked
+    reason: As for fig3-uptake-linear-in-pulse-number. The cell types in 000448 (5 unipolar and 4
+      bipolar cells) are now shown.
+    response: No change.
+  - claim: fig7-bipolar-overshoot
+    agrees: true
+    outcome: blocked
+    reason: As for fig7-charging-time-constant.
+    response: No change.
+  - claim: fig7-summation-without-buildup
+    agrees: true
+    outcome: blocked
+    reason: As for fig7-charging-time-constant.
+    response: No change.
+  - claim: fig1e-heating
+    agrees: true
+    outcome: blocked
+    reason: Agrees. No assumption.
+    response: No change.
