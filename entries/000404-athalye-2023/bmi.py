@@ -169,6 +169,43 @@ def fit_decoder(d, monkey):
                 n_updates=len(up), max_abs_residual=float(np.abs(res).max()))
 
 
+def j_command_fit_variants(d):
+    """Monkey J: readings of the linear map from 5 ms counts to the velocity update, for
+    monkey-j-linear-command. The criterion fits the PPF's update over rewarded trials with no
+    intercept; the files hold neither the update nor the PPF's parameters, so the update is
+    estimated. Frames: every frame of the session, or frames from go to reward of the trials table.
+    Cursor dynamics F: fitted jointly with the map on the state before (position, velocity, with or
+    without the offset column, which acts as an intercept), or the identity on velocity (update =
+    velocity minus the velocity before). Variance accounted for as in the criterion: 1 minus the
+    summed squared residual of x and y over the summed squares of the demeaned update."""
+    S = d["decoder_state"]
+    Y = d["spike_counts"].astype(float)
+    up = np.arange(1, len(S))
+    go = np.round(d["start"] * d["rate"]).astype(int)
+    rw = np.round(d["stop"] * d["rate"]).astype(int)
+    intr = np.zeros(len(S), bool)
+    for g, r in zip(go, rw):
+        intr[g + 1:r + 1] = True
+    out = []
+    for frames in ["all", "rewarded trials"]:
+        u = up if frames == "all" else up[intr[up]]
+        tgt, prev, yb = S[u][:, 2:4], S[u - 1], Y[u]
+        for fname, cols in [("fitted, with offset", [0, 1, 2, 3, 4]), ("fitted, no offset", [0, 1, 2, 3]),
+                            ("identity on velocity", None)]:
+            if cols is None:
+                upd = tgt - prev[:, 2:4]
+                K, *_ = np.linalg.lstsq(yb, upd, rcond=None)
+                res = upd - yb @ K
+            else:
+                X = np.hstack([prev[:, cols], yb])
+                beta, *_ = np.linalg.lstsq(X, tgt, rcond=None)
+                upd = tgt - prev[:, cols] @ beta[:len(cols)]
+                res = tgt - X @ beta
+            out.append(dict(frames=frames, dynamics=fname, n=len(u),
+                            vaf=1 - (res ** 2).sum() / ((upd - upd.mean(0)) ** 2).sum()))
+    return out
+
+
 def cw_ccw(center, target, traj):
     """util_fcns.CW_CCW_obs: 0 for clockwise, 1 for counterclockwise. traj is T x 2."""
     tc = target - center
@@ -333,6 +370,32 @@ def match_pool(cmd_cond, cmd_pool, ix_mov, psig=0.05, perc_drop=0.05):
             return np.array([], int)
         order = np.argsort(cost, kind="stable")
         idx = np.delete(idx, order[-nd:])
+
+
+def match_pairwise(c1, c2, psig=0.05, perc_drop=0.05):
+    """plot_fr_diffs.distribution_match_mov_pairwise: while a t-test on either command dimension
+    gives p <= psig, drop the perc_drop share of the larger set farthest (variance-scaled squared
+    distance) from the smaller set's mean. Returns kept positions in c1 and c2."""
+    i1, i2 = np.arange(len(c1)), np.arange(len(c2))
+    m1, m2, s1, s2 = c1.mean(0), c2.mean(0), c1.std(0), c2.std(0)
+    while True:
+        p = [scipy.stats.ttest_ind(c1[i1, v], c2[i2, v]).pvalue for v in range(c1.shape[1])]
+        if np.all(np.array(p) > psig):
+            return i1, i2
+        if len(i1) == 0 or len(i2) == 0:
+            return np.array([], int), np.array([], int)
+        if len(i1) >= len(i2):
+            cost = (((c1[i1] - m2) / s2) ** 2).sum(1)
+            nd = int(np.floor(perc_drop * len(cost)))
+            if nd == 0:
+                return np.array([], int), np.array([], int)
+            i1 = np.delete(i1, np.argsort(cost)[-nd:])
+        else:
+            cost = (((c2[i2] - m1) / s1) ** 2).sum(1)
+            nd = int(np.floor(perc_drop * len(cost)))
+            if nd == 0:
+                return np.array([], int), np.array([], int)
+            i2 = np.delete(i2, np.argsort(cost)[-nd:])
 
 
 def tuples(B, mags, min_obs=MIN_OBS, min_conds=1, edge_bins=0):

@@ -129,7 +129,7 @@ def subtrajectory_distances(B, tups, nboot, rng, kind="subtraj"):
         sel = np.argsort(rng.random((nboot, len(ip))), axis=1)[:, :len(ic)]
         nd = np.linalg.norm(Sp[sel].mean(1) - gm, axis=1)
         out.append(dict(mag=t["mag"], ang=t["ang"], cond=t["cond"], dist=dist, null=nd,
-                        n_conds=t["n_conds"]))
+                        n_conds=t["n_conds"], n_eligible=len(ic)))
     return out
 
 
@@ -404,22 +404,36 @@ def run_session(B, monkey, nshuff, seed):
                    cmd=bmi.r2_pooled(cmd_t, cv["next"] @ B["Kc"].T), conly=bmi.r2_pooled(Xn, cv["conly"]))
     mb, ab = bmi.command_bins(B["cmd"], B["mags"])
     mb_t, ab_t, mb_p, ab_p = mb[t], ab[t], mb[tm1], ab[tm1]
-    # Two readings of which pairs an R2 is scored on: "all" pairs, or "analysed" commands only
-    # (Methods, "Command discretization": commands above the 95th percentile of magnitude are not
-    # analysed), the command at t for predictions given the command and at t-1 for next predictions.
+    # Readings of which pairs an R2 is scored on. "code": the model's test pairs whose commands at t
+    # and t-1 are both below the 95th percentile of magnitude, the full model and the shuffle models
+    # scored on the same pairs (generalization_plots.check_ix_lo, "Remove mag command 4", lines
+    # 588-593, and plot_loo_r2_overall, which scores the full model and every shuffle on the
+    # left-out model's test bins, lines 2785-2867). "analysed": the command at t (predictions given
+    # the command) or at t-1 (next predictions) below the 95th percentile (Methods, "Command
+    # discretization": commands above it are "not analyzed"). "all": every test pair. Each R2 is
+    # recorded with the mask of the pairs it is scored on, and the shuffle models are scored on
+    # exactly that mask (_shuffle_with_stats).
     an_c, an_n = mb_t < 4, mb_p < 4
-    R["pair_masks"] = {"analysed_cond": an_c, "analysed_next": an_n}
+    an_both = an_c & an_n
+    R["pair_masks"] = {"analysed_cond": an_c, "analysed_next": an_n, "code": an_both}
     tab = {}
+    masks = {}
 
     def score(model, cond, nxt, test_c, test_n):
-        for reading, sel_c, sel_n in [("all", None, None), ("analysed", an_c, an_n)]:
+        for reading, sel_c, sel_n in [("all", None, None), ("analysed", an_c, an_n), ("code", an_both, an_both)]:
             mc = None if test_c is None else (test_c if sel_c is None else test_c & sel_c)
             mn = None if test_n is None else (test_n if sel_n is None else test_n & sel_n)
             if cond is not None and mc.sum() > 0:
                 tab[(model, "cond", reading)] = bmi.r2_pooled(Xn[mc], cond[mc])
+                tab[(model + " [full model]", "cond", reading)] = bmi.r2_pooled(Xn[mc], cv["cond"][mc])
+                masks[(model, "cond", reading)] = mc
             if nxt is not None and mn.sum() > 0:
                 tab[(model, "next", reading)] = bmi.r2_pooled(Xn[mn], nxt[mn])
                 tab[(model, "cmd", reading)] = bmi.r2_pooled(cmd_t[mn], nxt[mn] @ B["Kc"].T)
+                tab[(model + " [full model]", "next", reading)] = bmi.r2_pooled(Xn[mn], cv["next"][mn])
+                tab[(model + " [full model]", "cmd", reading)] = bmi.r2_pooled(cmd_t[mn], cv["next"][mn] @ B["Kc"].T)
+                masks[(model, "next", reading)] = mn
+                masks[(model, "cmd", reading)] = mn
     allp = np.ones(len(t), bool)
     score("full", cv["cond"], cv["next"], allp, allp)
     # left out command: transitions to and from the command are left out of training (Figure S4A legend)
@@ -462,6 +476,7 @@ def run_session(B, monkey, nshuff, seed):
     R["null_alpha"] = nd["alpha"]
     score("decoder-null", None, nd["next"], allp, allp)
     R["r2tab"] = tab
+    R["score_masks"] = masks
     # in-sample fits for eigenvalues (Figure S3)
     W, b = bmi.ridge_fit(Xp, Xn, alpha)
     R["A_full"] = W.T
@@ -516,8 +531,14 @@ def _shuffle_with_stats(B, alpha, fold, nshuff, rng, ts, R):
                sign_ok=np.zeros((nshuff, T), bool), ang_err=np.zeros((nshuff, T)),
                comp_r2={k: np.zeros(nshuff) for k in R["ts_masks"]},
                neur_by_neuron={k: np.zeros((nshuff, N)) for k in R["ts_masks"]},
-               analysed={m: np.zeros(nshuff) for m in ("cond", "next", "cmd")})
+               analysed={m: np.zeros(nshuff) for m in ("cond", "next", "cmd")},
+               masked={key: np.zeros(nshuff) for key in R["score_masks"]})
     Kc = B["Kc"]
+    # R2 on a mask from per-pair squared errors: 1 - SSE(mask) / SST(mask), SST about the mask's mean
+    sst = {}
+    for key, m in R["score_masks"].items():
+        y = cmd[m] if key[1] == "cmd" else Xn[m]
+        sst[key] = ((y - y.mean(0)) ** 2).sum()
     for s in range(nshuff):
         perm = _perm_within(lab, rng)
         Xs = X[perm]
@@ -539,6 +560,9 @@ def _shuffle_with_stats(B, alpha, fold, nshuff, rng, ts, R):
         out["analysed"]["cond"][s] = bmi.r2_pooled(Xn[mc], cond[mc])
         out["analysed"]["next"][s] = bmi.r2_pooled(Xn[mn], nxt[mn])
         out["analysed"]["cmd"][s] = bmi.r2_pooled(cmd[mn], nxt[mn] @ Kc.T)
+        e = {"cond": ((Xn - cond) ** 2).sum(1), "next": ((Xn - nxt) ** 2).sum(1), "cmd": ((cmd - nxt @ Kc.T) ** 2).sum(1)}
+        for key, m in R["score_masks"].items():
+            out["masked"][key][s] = 1 - e[key[1]][m].sum() / sst[key]
         o = ts(cond, nxt)
         out["pop"][s] = o["pop"]
         out["neur_tuple"][s] = o["neur"].mean(1)
@@ -602,7 +626,8 @@ def behavior_models(B, monkey, tm1, t, fold):
 
 def pairwise(B, tups, ts, real, cv):
     """Figure S6: for each command, each pair of conditions with 15 or more occurrences: true and
-    predicted distances between the conditions' mean activity (per neuron, Hz, and the population
+    predicted distances (unmatched, over each condition's own bins, and, as *_m, after the code's
+    pairwise command matching, None or NaN where the matching keeps fewer than 15 of either) between the conditions' mean activity (per neuron, Hz, and the population
     in the decoder-null space over sqrt(N)), between mean next commands (true and predicted), and
     between command subtrajectories (2 x 11, occurrences away from trial edges)."""
     N = B["spk"].shape[1]
@@ -618,6 +643,17 @@ def pairwise(B, tups, ts, real, cv):
     for x in tk:
         ic = x["ix"][ok[x["ix"]]]
         sub.append(C[ic[:, None] + offs[None, :]].reshape(len(ic), -1).mean(0) if len(ic) else None)
+    # per-bin predictions for the pairwise command matching (plot_pred_fr_diffs.py 2016-2050:
+    # distribution_match_mov_pairwise on the two conditions' commands, skipped when either keeps
+    # fewer than 15); bins that have a prediction (a previous bin in the trial)
+    tm1, t = pair_index(B)
+    row_t = np.full(len(B["spk"]), -1)
+    row_t[t] = np.arange(len(t))
+    Xn, cmd_t = B["spk"][t], B["cmd"][t]
+    rws = []
+    for x in tk:
+        r = row_t[x["ix"]]
+        rws.append(r[r >= 0])
     rows = []
     bycmd = {}
     for i, x in enumerate(tk):
@@ -627,7 +663,17 @@ def pairwise(B, tups, ts, real, cv):
         for a in range(len(idx)):
             for b2 in range(a + 1, len(idx)):
                 i, j = idx[a], idx[b2]
-                rows.append(dict(
+                k1, k2 = bmi.match_pairwise(cmd_t[rws[i]], cmd_t[rws[j]])
+                if len(k1) >= bmi.MIN_OBS and len(k2) >= bmi.MIN_OBS:
+                    r1, r2 = rws[i][k1], rws[j][k2]
+                    tm_i, tm_j = Xn[r1].mean(0) * 10.0, Xn[r2].mean(0) * 10.0
+                    pm_i, pm_j = cv["cond"][r1].mean(0) * 10.0, cv["cond"][r2].mean(0) * 10.0
+                    matched = dict(neur_true_m=np.abs(tm_i - tm_j), neur_pred_m=np.abs(pm_i - pm_j),
+                                   pop_true_m=np.linalg.norm((tm_i - tm_j) @ B["Nb"]) / np.sqrt(N),
+                                   pop_pred_m=np.linalg.norm((pm_i - pm_j) @ B["Nb"]) / np.sqrt(N))
+                else:
+                    matched = dict(neur_true_m=None, neur_pred_m=None, pop_true_m=np.nan, pop_pred_m=np.nan)
+                rows.append(dict(**matched,
                     command=f"{cmdk[0]}_{cmdk[1]}", n_conds=nconds,
                     neur_true=np.abs(true_m[i] - true_m[j]), neur_pred=np.abs(pred_m[i] - pred_m[j]),
                     pop_true=np.linalg.norm((true_m[i] - true_m[j]) @ B["Nb"]) / np.sqrt(N),

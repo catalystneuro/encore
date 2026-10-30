@@ -2,7 +2,7 @@ schema_version: 2
 id: 000404-athalye-2023-01
 dataset:
   archive: dandi
-  id: "000404"
+  id: '000404'
   version: 0.230605.2024
   doi: 10.48324/dandi.000404/0.230605.2024
 paper: doi:10.1016/j.cub.2023.06.027
@@ -20,11 +20,10 @@ provenance:
     platform: GitHub Actions
     url: https://github.com/catalystneuro/encore/actions/runs/40988949601
 inputs:
-- what: Positions of Monkey J's obstacle-task targets (targPos) in resim_ppf/jeev_obs_positions_from_amy.mat,
-    used with the code's trial list (resim_ppf/file_key.trialList) to recover the code's obstacle trial
-    types from the start and end targets, so that types 0 and 1 can be left out and the code's fixed
-    clockwise labels applied (analysis_config.min_targix and jeev_cw_ccw_dict). The other method details
-    taken from the code are cited in the helpers.
+- what: Positions of Monkey J's obstacle-task targets (targPos) in resim_ppf/jeev_obs_positions_from_amy.mat, used
+    with the code's trial list (resim_ppf/file_key.trialList) to recover the code's obstacle trial types from the
+    start and end targets, so that types 0 and 1 can be left out and the code's fixed clockwise labels applied (analysis_config.min_targix
+    and jeev_cw_ccw_dict). The other method details taken from the code are cited in the helpers.
   source: https://github.com/pkhanna104/bmi_dynamics_code at commit 416187366f84f2b7367ac54205aa321480e1acd1
 outcomes:
 - claim: conditions-per-session
@@ -32,36 +31,36 @@ outcomes:
   notebook: reproduce_athalye_2023.ipynb
   output: claim:conditions-per-session
   measured: 17.46
-  notes: Reading (a), conditions with at least one rewarded trial, gives a mean of 17.46 over the 13
-    sessions (Monkey G 18.00, Monkey J 16.25, at most 20), inside 14.4 to 18.7. Reading (b), conditions
-    with a tuple of 15 or more occurrences, gives 16.23. Monkey J's 31 obstacle trials of the code's
-    types 0 and 1 are left out.
+  notes: Reading (a), conditions with at least one rewarded trial, gives a mean of 17.46 over the 13 sessions (Monkey
+    G 18.00, Monkey J 16.25, at most 20), inside 14.4 to 18.7. Reading (b), conditions with a tuple of 15 or more
+    occurrences, gives 16.23. Monkey J's 31 obstacle trials of the code's types 0 and 1 are left out.
   deviations:
-  - Targets are read from the cursor position at reward, as the files' target series do not give the
-    trial's target (see findings); obstacle trials are labelled clockwise or counterclockwise by the
-    code's rule (util_fcns.CW_CCW_obs), with the code's fixed labels for Monkey J types 3, 4, 5, 8 and 9.
+  - Targets are read from the cursor position at reward, as the files' target series do not give the trial's target
+    (see findings); obstacle trials are labelled clockwise or counterclockwise by the code's rule (util_fcns.CW_CCW_obs),
+    with the code's fixed labels for Monkey J types 3, 4, 5, 8 and 9.
 - claim: figs1b-conditions-per-command
   outcome: reproduced
   notebook: reproduce_athalye_2023.ipynb
   output: claim:figs1b-conditions-per-command
   measured: 7.06
-  notes: Over commands with at least two conditions of 15 or more occurrences, the mean number of such
-    conditions is 7.06 pooled over commands (reading a) and 6.98 over session means (reading b); the
-    median is 7 (25th to 75th percentile 5 to 9). With one or more conditions the mean is 6.69.
+  notes: Over commands with at least two conditions of 15 or more occurrences, the mean number of such conditions
+    is 7.06 pooled over commands (reading a) and 6.98 over session means (reading b); the median is 7 (25th to 75th
+    percentile 5 to 9). With one or more conditions the mean is 6.69.
   deviations:
-  - The command is the decoder gain applied to the binned counts, with the gain recovered from the
-    files by least squares (exact for Monkey G; for Monkey J the linear approximation the paper itself
-    uses). The files hold no decoder matrices.
+  - The command is the decoder gain applied to the binned counts, with the gain recovered from the files by least
+    squares (exact for Monkey G; for Monkey J the linear approximation the paper itself uses). The files hold no
+    decoder matrices.
 - claim: figs1d-command-subtrajectories-differ
   outcome: reproduced
   notebook: reproduce_athalye_2023.ipynb
   output: claim:figs1d-command-subtrajectories-differ
   measured:
   - 1.953
-  - 2.330
-  notes: Mean normalized subtrajectory distance 1.953 (G) and 2.330 (J), within 10% of 1.920 and 2.342;
-    p < 0.001 in 9 of 9 and 4 of 4 sessions and pooled (no bootstrap average reached the data). With
-    commands of one or more conditions, 1.951 and 2.322.
+  - 2.33
+  notes: Mean normalized subtrajectory distance 1.953 (G) and 2.330 (J), within 10% of 1.920 and 2.342; p < 0.001
+    in 9 of 9 and 4 of 4 sessions and pooled (no bootstrap average reached the data). With commands of one or more
+    conditions, 1.951 and 2.322. Counting a tuple only when 15 or more occurrences remain after the edge occurrences
+    are removed gives 2.026 and 2.481, with the same tests.
   deviations:
   - Commands from the recovered decoder gain (see figs1b-conditions-per-command).
 - claim: figs1e-next-commands-differ
@@ -71,8 +70,10 @@ outcomes:
   measured:
   - 1.873
   - 2.218
-  notes: Every session and both pooled tests give p < 0.001. Monkey J's mean normalized next-command
-    distance, 2.218, is within 10% of 2.178; Monkey G's, 1.873, is above the upper bound of 1.844.
+  notes: Every session and both pooled tests give p < 0.001. Monkey J's mean normalized next-command distance, 2.218,
+    is within 10% of 2.178; Monkey G's, 1.873, is above the upper bound of 1.844. Counting a tuple only when 15
+    or more occurrences remain after a trial's last bin is removed gives 1.870 (G, still outside) and 2.236 (J),
+    with the same tests.
   deviations:
   - Commands from the recovered decoder gain (see figs1b-conditions-per-command).
 - claim: fig3d-population-distance
@@ -82,13 +83,12 @@ outcomes:
   measured:
   - 1.2374
   - 1.7683
-  notes: Measured under the first readings (behavior-preserving shuffle; commands with two or more
-    qualifying conditions). All four combinations of readings give 1.2366 to 1.2380 for Monkey G and
-    1.7651 to 1.7713 for Monkey J, session means 1.10 to 1.98, and p < 0.001 in every session and both
-    pooled tests (1000 shuffles, none reaching the data). No tuple was dropped by the matching.
+  notes: Measured under the first readings (behavior-preserving shuffle; commands with two or more qualifying conditions).
+    All four combinations of readings give 1.2366 to 1.2380 for Monkey G and 1.7651 to 1.7713 for Monkey J, session
+    means 1.10 to 1.98, and p < 0.001 in every session and both pooled tests (1000 shuffles, none reaching the data).
+    No tuple was dropped by the matching.
   deviations:
-  - Commands and the decoder-null space from the recovered decoder gain (see
-    figs1b-conditions-per-command).
+  - Commands and the decoder-null space from the recovered decoder gain (see figs1b-conditions-per-command).
 - claim: fig3b-single-neuron-distance
   outcome: reproduced
   notebook: reproduce_athalye_2023.ipynb
@@ -96,9 +96,9 @@ outcomes:
   measured:
   - 1.1659
   - 1.2224
-  notes: Mean single-neuron distance 1.166 to 1.167 Hz (G) and 1.221 to 1.222 Hz (J) under the
-    readings, within 10% of 1.167 and 1.235; p < 0.001 in every session and pooled. The shuffle means,
-    1.002 to 1.004 Hz and 0.751 to 0.752 Hz, match the 1.004 and 0.745 the paper's code prints.
+  notes: Mean single-neuron distance 1.166 to 1.167 Hz (G) and 1.221 to 1.222 Hz (J) under the readings, within
+    10% of 1.167 and 1.235; p < 0.001 in every session and pooled. The shuffle means, 1.002 to 1.004 Hz and 0.751
+    to 0.752 Hz, match the 1.004 and 0.745 the paper's code prints.
   deviations:
   - Commands from the recovered decoder gain (see figs1b-conditions-per-command).
 - claim: fig3e-fractions-significant
@@ -109,51 +109,52 @@ outcomes:
   - 0.373
   - 0.709
   - 0.699
-  - 0.950
+  - 0.95
   - 0.403
-  - 0.890
-  notes: Measured under the behavior-preserving shuffle, commands with two or more conditions, neurons
-    over all tuples. Every combination of readings puts four of the six fractions within tolerance, none
-    all six. Monkey G's fraction of significant tuples is 0.373 to 0.375 under every reading (claim 0.27
-    to 0.33). Monkey J's neurons are 0.890 or 0.903 over all tuples (claim 0.72 to 0.88), 0.878 over
-    population-significant tuples with the subsampling null, where Monkey G's neurons are then 0.471
-    (claim 0.36 to 0.44). Commands are 0.672 to 0.700 (G) and 0.921 to 0.950 (J), tuples for J 0.707 to
-    0.710, neurons for G over all tuples 0.401 to 0.409, all within tolerance. All fractions are far
-    above 0.05.
+  - 0.89
+  notes: Measured under the behavior-preserving shuffle, commands with two or more conditions, neurons over all
+    tuples. Every combination of readings puts four of the six fractions within tolerance, none all six. Monkey
+    G's fraction of significant tuples is 0.373 to 0.375 under every reading (claim 0.27 to 0.33). Monkey J's neurons
+    are 0.890 or 0.903 over all tuples (claim 0.72 to 0.88), 0.878 over population-significant tuples with the subsampling
+    null, where Monkey G's neurons are then 0.471 (claim 0.36 to 0.44). Commands are 0.672 to 0.700 (G) and 0.921
+    to 0.950 (J), tuples for J 0.707 to 0.710, neurons for G over all tuples 0.401 to 0.409, all within tolerance.
+    All fractions are far above 0.05. The second reading, fractions pooled over all items of a monkey's sessions,
+    also gives four of six within tolerance under every combination; Monkey G's tuples are 0.389 to 0.392 under
+    it.
   deviations:
   - Commands from the recovered decoder gain (see figs1b-conditions-per-command).
 - claim: fig4c-dynamics-predict-activity-given-command
   outcome: reproduced
-  assumed: true
   notebook: reproduce_athalye_2023.ipynb
   output: claim:fig4c-dynamics-predict-activity-given-command
   measured:
-  - 0.1705
-  - 0.2574
-  - 0.1674
-  - 0.2497
-  - 0.1680
-  - 0.2471
-  notes: Scored on the bins of analysed commands (the adopted reading), R2 is 0.171 and 0.257 (full),
-    0.167 and 0.250 (command left out), 0.168 and 0.247 (condition left out), all within 10%, each beating
-    the shuffle with p < 0.001 in 9 of 9 and 4 of 4 sessions and pooled. The shuffle's pooled 95th
-    percentiles under this reading are 0.132 and 0.203, close to Table S1's 0.130 and 0.196; scored on all
-    bins they are 0.157 and 0.238. Scored on all bins the full model gives 0.194 and 0.291 and the
-    condition left-out model 0.192 and 0.281, outside tolerance, and the command left-out model beats the
-    shuffle in 6 of 9 G and 3 of 4 J sessions. Reading (a) of the shuffle ridge parameter (chosen on one
-    shuffled dataset, 200 shuffles) leaves every full-model test significant.
+  - 0.1655
+  - 0.2492
+  - 0.1624
+  - 0.2418
+  - 0.1631
+  - 0.2391
+  notes: Scored as the code scores it, R2 is 0.1655 and 0.2492 (full), 0.1624 and 0.2418 (command left out), 0.1631
+    and 0.2391 (condition left out), all within 10%, each beating the shuffle scored on the same pairs with p <
+    0.001 in 9 of 9 and 4 of 4 sessions and pooled. The shuffle's pooled 95th percentiles, 0.1282 and 0.1963, match
+    Table S1's 0.130 and 0.196. On pairs whose command at t is analysed the tests are the same and the values within
+    tolerance (full 0.1705 and 0.2574). On all pairs the tests are the same, the command left-out model beating
+    the shuffle in 9 of 9 and 4 of 4 sessions, but the full and condition left-out R2 (0.1942 and 0.2913, 0.1916
+    and 0.2808) are outside tolerance. Reading (a) of the shuffle ridge parameter (chosen on one shuffled dataset,
+    200 shuffles) leaves every full-model test significant.
   deviations:
-  - Assumption. The paper does not say which bins an R2 is computed over. The Methods say commands above
-    the 95th percentile of magnitude "were not analyzed" (Methods, "Command discretization for
-    analysis"); scoring the model and the shuffle models on the bins whose command is below it is
-    adopted because it is the reading under which the shuffle percentiles match Table S1. Both readings
-    are shown.
-  - Commands, the decoder-null space and the conditioning on the command use the recovered decoder gain
-    (see figs1b-conditions-per-command).
-  - The left-out command model leaves out pairs whose first or second bin issues the command (Figure S4A
-    legend) and is tested on pairs whose second bin issues it.
-  - Folds are random over pairs of bins, stratified by task, with a fixed seed; the shuffle models use
-    the real data's ridge parameter (reading b) with 1000 shuffles, reading (a) is shown with 200.
+  - 'The scored pairs are taken from the code: each model''s test pairs whose commands at t and t-1 are both below
+    the 95th percentile of magnitude (generalization_plots.check_ix_lo, lines 588-593, "Remove mag command 4"),
+    with the full model and every shuffle model scored on exactly those pairs (generalization_plots.plot_loo_r2_overall,
+    lines 2785-2867). The readings on pairs whose command at t (or t-1) is analysed and on all test pairs are shown,
+    each with the shuffle on the same pairs.'
+  - Commands, the decoder-null space and the conditioning on the command use the recovered decoder gain (see figs1b-conditions-per-command).
+  - The left-out command model leaves out pairs whose first or second bin issues the command (Figure S4A legend)
+    and is tested on pairs whose second bin issues it.
+  - Folds are random over pairs of bins, stratified by task, with a fixed seed; the shuffle models use the real
+    data's ridge parameter (reading b) with 1000 shuffles, reading (a) is shown with 200. As in the code (generalization_plots.predict_shuffles_v2_with_cond,
+    one session-wide shuffle index per shuffle passed with the fold test indices), each shuffle permutes the whole
+    session before the folds are split.
 - claim: fig4de-condition-specific-activity-predicted
   outcome: reproduced
   notebook: reproduce_athalye_2023.ipynb
@@ -163,9 +164,9 @@ outcomes:
   - 1.1975
   - 0.8924
   - 0.8332
-  notes: Over all tuples (reading a), single-neuron error 1.241 (G) and 1.198 Hz (J), population error
-    over the shuffle mean 0.892 and 0.833, all within 10%; below the shuffle with p < 0.001 in every
-    session and pooled. Reading (b), tuples significant in fig3d, gives 1.295, 1.200, 0.868 and 0.810.
+  notes: Over all tuples (reading a), single-neuron error 1.241 (G) and 1.198 Hz (J), population error over the
+    shuffle mean 0.892 and 0.833, all within 10%; below the shuffle with p < 0.001 in every session and pooled.
+    Reading (b), tuples significant in fig3d, gives 1.295, 1.200, 0.868 and 0.810.
   deviations:
   - Tuple averages use the tuple's bins that have a previous bin in the trial (all tuples keep bins).
   - Recovered decoder gain (see figs1b-conditions-per-command).
@@ -175,12 +176,11 @@ outcomes:
   output: claim:fig4f-condition-specific-component
   measured:
   - 0.2149
-  - 0.3030
-  notes: Reading (a) gives 0.215 (G) and 0.303 (J), reading (b) 0.243 and 0.333, all within 10% of 0.226
-    and 0.330, against shuffle means of -0.010 to 0.005, with p < 0.001 in every session and pooled. The
-    criterion's per-session range fails. Under reading (a) Monkey G sessions 5, 6, 7 and 8 (0.121 to
-    0.160) and Monkey J session 3 (0.155) are below 0.18; under reading (b) Monkey G sessions 5 to 8
-    (0.130 to 0.168) are.
+  - 0.303
+  notes: Reading (a) gives 0.215 (G) and 0.303 (J), reading (b) 0.243 and 0.333, all within 10% of 0.226 and 0.330,
+    against shuffle means of -0.010 to 0.005, with p < 0.001 in every session and pooled. The criterion's per-session
+    range fails. Under reading (a) Monkey G sessions 5, 6, 7 and 8 (0.121 to 0.160) and Monkey J session 3 (0.155)
+    are below 0.18; under reading (b) Monkey G sessions 5 to 8 (0.130 to 0.168) are.
   deviations:
   - Recovered decoder gain (see figs1b-conditions-per-command).
 - claim: fig4g-majority-predicted
@@ -204,66 +204,69 @@ outcomes:
   measured:
   - 0.083
   - 0.068
-  notes: Long-timescale eigenvalues number 2 to 5 for the full model in Monkey G (5 in session 4, outside
-    2 to 4) and 2 to 3 in Monkey J; for decoder-null dynamics 2 to 5 in G and 1 to 4 in J (1 in session 3,
-    outside 2 to 5). Monkey G's mean frequencies are 0.083 Hz (full) and 0.068 Hz (decoder-null), outside
-    0.09 to 0.11 and 0.054 to 0.066. Monkey J's long-timescale eigenvalues are real except one pair in
-    session 0 at 0.036 Hz. Decay times are at most 0.38 s. The 99% step changes no count.
+  notes: Long-timescale eigenvalues number 2 to 5 for the full model in Monkey G (5 in session 4, outside 2 to 4)
+    and 2 to 3 in Monkey J; for decoder-null dynamics 2 to 5 in G and 1 to 4 in J (1 in session 3, outside 2 to
+    5). Monkey G's mean frequencies are 0.083 Hz (full) and 0.068 Hz (decoder-null), outside 0.09 to 0.11 and 0.054
+    to 0.066. Monkey J's long-timescale eigenvalues are real except one pair in session 0 at 0.036 Hz. Decay times
+    are at most 0.38 s. The 99% step changes no count. Fitting on rates in Hz with the same ridge grid leaves every
+    count unchanged and Monkey G's mean frequency at 0.083 Hz; the ridge fit is invariant to the scale where the
+    grid holds the scaled parameter.
   deviations:
-  - In-sample ridge fits on all pairs with the session's cross-validated parameter; decoder-null dynamics
-    fit on activity projected with the recovered decoder's null space.
+  - In-sample ridge fits on all pairs with the session's cross-validated parameter; decoder-null dynamics fit on
+    activity projected with the recovered decoder's null space.
 - claim: fig5c-next-activity
-  outcome: partially_reproduced
-  assumed: true
+  outcome: reproduced
   notebook: reproduce_athalye_2023.ipynb
   output: claim:fig5c-next-activity
   measured:
+  - 0.0995
+  - 0.1115
+  - 0.0984
   - 0.1083
-  - 0.1251
-  - 0.1067
-  - 0.1193
-  - 0.1053
-  - 0.1123
-  - 0.0871
-  - 0.0878
-  notes: On the bins of analysed commands all eight R2 values are within 10%. Every model beats the
-    shuffle pooled with p < 0.001, and every model except decoder-null dynamics in every session.
-    Decoder-null dynamics beat it in 7 of 9 Monkey G sessions (not sessions 1 and 5), where the criterion
-    needs 8. On all bins the full model gives 0.119 and 0.140, outside tolerance.
+  - 0.0966
+  - 0.0992
+  - 0.0811
+  - 0.0793
+  notes: Scored as the code scores it, all eight R2 values are within 10%. Every model beats the shuffle scored
+    on the same pairs pooled with p < 0.001 and in every session with p < 0.001, except decoder-null dynamics in
+    Monkey G session 1 (p = 0.007), 8 of 9 as the criterion needs. On pairs whose command at t-1 is analysed, and
+    on all pairs, decoder-null dynamics beat the shuffle in 7 of 9 G sessions, and on all pairs the full model's
+    R2 (0.1194 and 0.1399) is outside tolerance.
   deviations:
-  - Assumption on the scored bins, as in fig4c-dynamics-predict-activity-given-command (here the command
-    of the bin the prediction starts from).
+  - Scored pairs from the code, as in fig4c-dynamics-predict-activity-given-command (the code removes pairs with
+    a command above the 95th percentile at t or t-1 for next predictions too).
   - The command left-out model is tested on pairs whose first bin issues the left-out command.
   - Recovered decoder gain (see figs1b-conditions-per-command).
 - claim: fig5d-four-dimensions
   outcome: reproduced
   notebook: reproduce_athalye_2023.ipynb
   output: claim:fig5d-four-dimensions
-  notes: Under reading (a), dimensions with R2 above the session's pooled R2, the median over sessions is
-    4 (G) and 3 (J); under reading (b), above the shuffle's 95th percentile, 6 and 4.
+  notes: Under reading (a), dimensions with R2 above the session's pooled R2, the median over sessions is 4 (G)
+    and 3 (J); under reading (b), above the shuffle's 95th percentile, 6 and 4.
   deviations:
   - The pooled R2 of reading (a) is the full model's on all bins.
 - claim: fig5e-next-command
   outcome: partially_reproduced
-  assumed: true
   notebook: reproduce_athalye_2023.ipynb
   output: claim:fig5e-next-command
   measured:
-  - 0.3226
-  - 0.2535
-  - 0.3158
-  - 0.2372
-  - 0.3143
-  - 0.2326
-  - -0.0013
-  - -0.0037
-  notes: On the bins of analysed commands the tests hold. Full and command left-out models beat the
-    shuffle with p < 0.001 in 9 of 9 G sessions and in 4 and 3 of 4 J sessions and pooled; the condition
-    left-out model beats it pooled in both monkeys; decoder-null dynamics in no session. Monkey G's values
-    are within 10%; Monkey J's 0.254, 0.237 and 0.233 are above the upper bounds 0.233, 0.232 and 0.212.
-    On all bins the command left-out model does not beat the shuffle (0 of 4 J sessions).
+  - 0.3095
+  - 0.2297
+  - 0.3064
+  - 0.2231
+  - 0.3008
+  - 0.2096
+  - -0.0083
+  - -0.0228
+  notes: Scored as the code scores it, every R2 is within tolerance. The full and command left-out models beat the
+    shuffle with p < 0.001 in 9 of 9 and 4 of 4 sessions and pooled; decoder-null dynamics in no session. The condition
+    left-out model beats it in 9 of 9 G sessions and pooled for G, but for Monkey J in 2 of 4 sessions (p = 0.560
+    and 1.000 in sessions 1 and 3) and pooled with p = 0.003, where the paper gives p < 0.001. On pairs whose command
+    at t-1 is analysed the tests hold (pooled p < 0.001) but Monkey J's 0.2535, 0.2372 and 0.2326 are above the
+    upper bounds 0.233, 0.232 and 0.212; on all pairs they are higher still. Every reading falls short in one part,
+    so the outcome does not rest on the choice of pairs.
   deviations:
-  - Assumption on the scored bins, as in fig5c-next-activity.
+  - Scored pairs from the code, as in fig5c-next-activity.
   - Recovered decoder gain (see figs1b-conditions-per-command).
 - claim: fig5f-condition-specific-next-command
   outcome: reproduced
@@ -272,15 +275,14 @@ outcomes:
   measured:
   - 3.973
   - 7.052
-  notes: The prediction beats the shuffle with p < 0.001 in every session and pooled, and is significant
-    for 0.805 (G) and 0.617 (J) of tuples on average. The errors, ten times the error in the command's
-    own units as the amended criterion takes them, are 3.973 (G) and 7.052 (J), within tolerance of 3.956
-    and 7.324; in the command's own units they are 0.397 and 0.705. The pooled shuffle 5th percentiles
-    are 5.011 (G) and 8.051 (J), against 5.38 and 9.240 in Table S1. The reader's answer in
-    questions/000404.yaml settled the units (the code that prints Table S1 applies K to activity in Hz,
-    counts per 100 ms bin times 10) and the claims file was amended to say so. Under the criterion as
-    first written, in the command's own units, the outcome was partially reproduced; the tests and the
-    fractions are unchanged, only the scale of the error and its shuffle.
+  notes: The prediction beats the shuffle with p < 0.001 in every session and pooled, and is significant for 0.805
+    (G) and 0.617 (J) of tuples on average. The errors, ten times the error in the command's own units as the amended
+    criterion takes them, are 3.973 (G) and 7.052 (J), within tolerance of 3.956 and 7.324; in the command's own
+    units they are 0.397 and 0.705. The pooled shuffle 5th percentiles are 5.011 (G) and 8.051 (J), against 5.38
+    and 9.240 in Table S1. The reader's answer in questions/000404.yaml settled the units (the code that prints
+    Table S1 applies K to activity in Hz, counts per 100 ms bin times 10) and the claims file was amended to say
+    so. Under the criterion as first written, in the command's own units, the outcome was partially reproduced;
+    the tests and the fractions are unchanged, only the scale of the error and its shuffle.
   deviations:
   - Monkey J's commands are in cm/s summed over 20 frames of 5 ms (Methods; the code converts m to cm).
   - Recovered decoder gain (see figs1b-conditions-per-command).
@@ -289,13 +291,13 @@ outcomes:
   notebook: reproduce_athalye_2023.ipynb
   output: claim:fig5h-turn-predicted
   measured:
-  - 0.7030
-  - 0.6060
+  - 0.703
+  - 0.606
   - 20.12
   - 9.23
-  notes: All four values are within 10%. The angle error beats the shuffle in every session and pooled
-    (p < 0.001). The sign beats it pooled and in 4 of 4 J sessions with p < 0.001, and in 7 of 9 G
-    sessions (p = 0.005 and 0.001 in sessions 6 and 7), where the criterion needs 8.
+  notes: All four values are within 10%. The angle error beats the shuffle in every session and pooled (p < 0.001).
+    The sign beats it pooled and in 4 of 4 J sessions with p < 0.001, and in 7 of 9 G sessions (p = 0.005 and 0.001
+    in sessions 6 and 7), where the criterion needs 8.
   deviations:
   - The angle error is taken modulo 360 degrees (the smaller of the two differences).
   - Recovered decoder gain (see figs1b-conditions-per-command).
@@ -303,93 +305,98 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_athalye_2023.ipynb
   output: claim:figs5b-dynamics-beyond-behavior
-  notes: Adding previous activity raises the held-out R2 in 9 of 9 G sessions (paired T = -8.852,
-    p = 2.09e-05) and 4 of 4 J sessions (T = -5.634, p = 0.0111); the paper gives T = -7.182 and -5.141.
+  notes: Adding previous activity raises the held-out R2 in 9 of 9 G sessions (paired T = -8.852, p = 2.09e-05)
+    and 4 of 4 J sessions (T = -5.634, p = 0.0111); the paper gives T = -7.182 and -5.141.
   deviations:
-  - Target position is the cursor at reward (inside the target); the categorical variable is the
-    condition (target, task and direction around the obstacle) one-hot coded.
+  - Target position is the cursor at reward (inside the target); the categorical variable is the condition (target,
+    task and direction around the obstacle) one-hot coded.
 - claim: figs5f-nonlinear-no-better
   outcome: blocked
-  blocked_by: too_large
-  notes: The rsLDS (ssm, github.com/lindermanlab/ssm at commit eb6c8aa33e5311d3564075807dec340759dd8081)
-    installs, but while preparing, one Laplace-EM iteration of a 2-state model with latent dimension
-    N - 1 on 80% of the trials of Monkey J session 2 (20 units, the smallest sessions) did not finish in
-    10 minutes; this timing was run outside the notebook. The criterion needs 10 iterations for each of
-    K = 1 to 5 states and 5 folds in 13 sessions, with latent dimensions up to 150 in Monkey G, which is
-    far beyond the 30-minute notebook limit and the run's time.
+  blocked_by: not_runnable
+  notes: The rsLDS package the paper's code uses, ssm (github.com/lindermanlab/ssm at commit eb6c8aa33e5311d3564075807dec340759dd8081,
+    or its only PyPI release, 0.0.1), cannot be installed in the entry's locked environment. Its setup.py imports
+    numpy and Cython but declares no build dependencies, so `uv pip install`, which the registry uses to build the
+    environment, fails with build isolation ('No module named Cython'). Outside the entry, with build isolation
+    off, it installs. A timing run there, not part of the notebook, gave about 3 h of single-core compute for the
+    criterion's design on the 4 Monkey J sessions (5 folds, K = 1 to 5, 10 Laplace-EM iterations). It gave about
+    35 h for Monkey G, most of it sessions 2 and 4 (110 to 115 units above 0.5 Hz). Monkey J alone would fit in
+    two notebooks of about 20 minutes each on 4 cores if the package could be installed.
 - claim: figs3f-residual-early-late
   outcome: reproduced
   notebook: reproduce_athalye_2023.ipynb
   output: claim:figs3f-residual-early-late
-  notes: The held-out residual is smaller late than early, LME slope -0.0752 (z = -24.55,
-    p = 3.97e-133, N = 2774) for Monkey G and -0.0261 (z = -4.63, p = 3.65e-06, N = 948) for Monkey J;
-    the paper gives -0.242 and -0.0625. Every session's late mean is below its early mean except Monkey J
-    session 1 (0.7656 against 0.7623).
+  notes: The held-out residual is smaller late than early, LME slope -0.0752 (z = -24.55, p = 3.97e-133, N = 2774)
+    for Monkey G and -0.0261 (z = -4.63, p = 3.65e-06, N = 948) for Monkey J; the paper gives -0.242 and -0.0625.
+    Every session's late mean is below its early mean except Monkey J session 1 (0.7656 against 0.7623).
   deviations:
-  - The residual is of the next-activity prediction on held-out folds, its norm over the square root of
-    the number of neurons, in counts per bin.
+  - The residual is of the next-activity prediction on held-out folds, its norm over the square root of the number
+    of neurons, in counts per bin.
 - claim: figs4b-generalize-command-sets
   outcome: reproduced
-  assumed: true
   notebook: reproduce_athalye_2023.ipynb
   output: claim:figs4b-generalize-command-sets
   measured:
-  - 0.1621
-  - 0.2324
-  - 0.1640
-  - 0.2448
-  notes: On the bins of analysed commands the four R2 values are within 10%; the angle models beat the
-    shuffle in 9 of 9 G and 3 of 4 J sessions with p < 0.001 and the magnitude models in 9 of 9 and 4 of
-    4, and both pooled. Against the shuffle scored on all bins the angle models fail in 3 of 9 G and 2 of
-    4 J sessions and in Monkey J's pooled test.
+  - 0.1571
+  - 0.2241
+  - 0.1589
+  - 0.2367
+  notes: Scored as the code scores it, the angle left-out models give 0.1571 (G) and 0.2241 (J) and the magnitude
+    left-out models 0.1589 and 0.2367, all within 10%. Against the shuffle on the same pairs the angle models beat
+    it with p < 0.001 in 9 of 9 G and 3 of 4 J sessions (J session 3, p = 0.321), the magnitude models in 9 of 9
+    and 4 of 4, and both pooled. The other two readings give the same session counts and values within tolerance.
   deviations:
-  - Assumption on the scored bins, as in fig4c-dynamics-predict-activity-given-command.
+  - Scored pairs from the code, as in fig4c-dynamics-predict-activity-given-command.
   - Recovered decoder gain (see figs1b-conditions-per-command).
 - claim: figs4g-generalize-condition-classes
-  outcome: partially_reproduced
-  assumed: true
+  outcome: reproduced
   notebook: reproduce_athalye_2023.ipynb
   output: claim:figs4g-generalize-condition-classes
   measured:
-  - 0.1680
-  - 0.2503
-  - 0.1602
-  - 0.2464
-  - 0.1710
-  - 0.2128
-  - 0.1662
-  notes: On the bins of analysed commands all seven R2 values are within 10% and every class beats the
-    shuffle pooled with p < 0.001 and in 9 of 9 G sessions. Monkey J's diagonal 1 class beats it with
-    p < 0.001 in 2 of 4 sessions, where the criterion needs 3; its other classes in 4 of 4.
+  - 0.1621
+  - 0.2458
+  - 0.1556
+  - 0.2341
+  - 0.1675
+  - 0.2053
+  - 0.1593
+  notes: Scored as the code scores it, all seven R2 values are within 10% (vertical 0.1621 and 0.2458, horizontal
+    0.1556 and 0.2341, diagonal 1 0.1675 and 0.2053, diagonal 2 0.1593), and every class beats the shuffle scored
+    on the same pairs with p < 0.001 in 9 of 9 G and 4 of 4 J sessions and pooled. The other two readings give the
+    same tests; on all pairs five of the seven values are outside tolerance. The first run's failure of Monkey J's
+    diagonal 1 class (2 of 4 sessions) came from comparing the class's R2 with the shuffle's R2 on all analysed
+    pairs.
   deviations:
-  - Assumption on the scored bins, as in fig4c-dynamics-predict-activity-given-command.
-  - Classes as the code defines them; Monkey G's by target direction from the cursor at reward, Monkey
-    J's by the code's center-out indices and obstacle trial types (Monkey J's center-out targets 3 and 7
-    and obstacle type 7 are in no class, as in the code).
+  - Scored pairs from the code, as in fig4c-dynamics-predict-activity-given-command.
+  - Classes as the code defines them; Monkey G's by target direction from the cursor at reward, Monkey J's by the
+    code's center-out indices and obstacle trial types (Monkey J's center-out targets 3 and 7 and obstacle type
+    7 are in no class, as in the code).
 - claim: figs6cd-pairwise-distances-predicted
   outcome: reproduced
   notebook: reproduce_athalye_2023.ipynb
   output: claim:figs6cd-pairwise-distances-predicted
   measured:
-  - 0.594
-  - 0.680
-  - 0.646
-  - 0.789
-  notes: Every session and both pooled regressions give a positive slope with p < 0.001. N is 430145 and
-    39712 neuron pairs, 5960 and 1965 population pairs (paper 377489, 34643, 5112, 1714).
+  - 0.586
+  - 0.655
+  - 0.65
+  - 0.766
+  notes: With the code's pairwise command matching (7310 of 7925 pairs of conditions keep 15 or more occurrences
+    of each), pooled r of predicted on true distance is 0.586 and 0.655 (neurons) and 0.650 and 0.766 (population),
+    with slopes 0.225, 0.301, 0.357 and 0.434 (paper 0.221, 0.317, 0.350, 0.449). Every session and both pooled
+    regressions give a positive slope with p < 0.001. N is 399524 and 37627 neuron pairs, 5448 and 1862 population
+    pairs (paper 377489, 34643, 5112, 1714). Without the matching r is 0.594, 0.680, 0.646 and 0.789.
   deviations:
-  - Pairs of conditions are not matched pairwise on the command (the code's
-    distribution_match_mov_pairwise); each condition's mean is over its own occurrences.
+  - Recovered decoder gain (see figs1b-conditions-per-command). Each pair's means are over the matched bins that
+    have a previous bin in the trial.
 - claim: figs6g-distance-tracks-behavior
   outcome: reproduced
   notebook: reproduce_athalye_2023.ipynb
   output: claim:figs6g-distance-tracks-behavior
-  notes: Pooled LME slopes are positive with p < 0.001 for true distances (G slope 0.251, z = 38.69,
-    N = 5509; J 0.129, z = 16.66, N = 1844) and predicted distances (z = 42.27 and 24.37); the paper
-    gives z = 31.04 and 14.18 (true), 33.1 and 22.5 (predicted).
+  notes: Pooled LME slopes are positive with p < 0.001 for true distances (G slope 0.251, z = 38.69, N = 5509; J
+    0.129, z = 16.66, N = 1844) and predicted distances (z = 42.27 and 24.37); the paper gives z = 31.04 and 14.18
+    (true), 33.1 and 22.5 (predicted).
   deviations:
-  - Session as the grouping factor with command as a variance component nested in it (statsmodels
-    mixedlm); no pairwise command matching.
+  - Session as the grouping factor with command as a variance component nested in it (statsmodels mixedlm); no pairwise
+    command matching.
 - claim: figs6k-next-command-pairs
   outcome: reproduced
   notebook: reproduce_athalye_2023.ipynb
@@ -397,30 +404,36 @@ outcomes:
   measured:
   - 0.774
   - 0.654
-  notes: Pooled r is 0.774 (G) and 0.654 (J), slopes positive, p < 0.001; all 9 G sessions (session 7 at
-    p = 0.046) and 4 of 4 J sessions are significant at p < 0.05.
+  notes: Pooled r is 0.774 (G) and 0.654 (J), slopes positive, p < 0.001; all 9 G sessions (session 7 at p = 0.046)
+    and 4 of 4 J sessions are significant at p < 0.05.
 - claim: fig6c-dynamics-reduce-input
   outcome: reproduced
   assumed: true
   notebook: ofc_simulations.ipynb
   output: claim:fig6c-dynamics-reduce-input
-  notes: The Full Dynamics Model needs less input than the No Dynamics Model in every session (ratio 0.44
-    to 0.91; Wilcoxon p < 0.05 in 9 of 9 and 4 of 4 sessions); LME z = -11.27 (p = 1.87e-29, N = 432) for
-    G and -14.94 (p = 1.87e-50, N = 192) for J. Every simulated trial ends within 0.365 cm of its target.
+  notes: The Full Dynamics Model needs less input than the No Dynamics Model in every session (ratio 0.44 to 0.91;
+    Wilcoxon p < 0.05 in 9 of 9 and 4 of 4 sessions); LME z = -11.27 (p = 1.87e-29, N = 432) for G and -14.94 (p
+    = 1.87e-50, N = 192) for J. Every simulated trial ends within 0.365 cm of its target. With Monkey J's velocity
+    gain fixed to the summed 5 ms gain (sensitivity reading), the effect holds (LME z = -16.61, Wilcoxon p < 0.05
+    in 4 of 4 sessions).
   deviations:
-  - Assumption for Monkey J. The paper builds Monkey J's 100 ms decoder from the PPF's parameters, not in
-    the files; here its 100 ms cursor update is the least-squares update of the decoder state over each
-    100 ms bin (variance accounted for above 99%). Monkey G's is recovered exactly.
-  - The terminal weight 100 is the code's (behavior_co_obs.py); the dynamics are in-sample ridge fits on
-    counts per bin.
+  - Assumption for Monkey J. The paper builds Monkey J's 100 ms decoder from the PPF's parameters, not in the files;
+    here its 100 ms cursor update is the least-squares update of the decoder state over each 100 ms bin (variance
+    accounted for above 99%). Monkey G's is recovered exactly. The notebook also shows Monkey J with the velocity
+    gain fixed to the summed 5 ms gain and the velocity rows of the cursor dynamics refitted.
+  - The terminal weight 100 is the code's (behavior_co_obs.py); the dynamics are in-sample ridge fits on counts
+    per bin.
 - claim: fig6d-decoder-null-dynamics-no-saving
   outcome: reproduced
   assumed: true
   notebook: ofc_simulations.ipynb
   output: claim:fig6d-decoder-null-dynamics-no-saving
-  notes: Claim of absence, judged on the paper's tests. The LME finds no difference (G z = -0.00,
-    p = 0.998; J z = 0.02, p = 0.988) and no session's Wilcoxon test does (smallest p 0.069); the input
-    ratios are 0.998 to 1.003.
+  notes: Claim of absence, judged on the paper's tests. The LME finds no difference (G z = -0.00, p = 0.998; J z
+    = 0.02, p = 0.988) and no session's Wilcoxon test does (smallest p 0.069); the input ratios are 0.998 to 1.003.
+    With Monkey J's velocity gain fixed to the summed 5 ms gain (sensitivity reading), the LME still finds no difference
+    (p = 0.995) but Monkey J session 1's Wilcoxon test does (p = 0.0016), so under that reading the absence holds
+    only in part; the fitted 100 ms update, which accounts for more of the 100 ms velocity (0.995 to 0.998 against
+    0.984 to 0.994), stays the adopted reading.
   deviations:
   - As fig6c-dynamics-reduce-input.
 - claim: fig6g-ofc-uses-distinct-patterns
@@ -428,69 +441,305 @@ outcomes:
   assumed: true
   notebook: ofc_simulations.ipynb
   output: claim:fig6g-ofc-uses-distinct-patterns
-  notes: Under both nulls (1000 draws), the Full Dynamics Model's distances exceed the null (LME z = 25.4
-    to 26.0 for G, 15.5 to 15.7 for J; Mann-Whitney p < 0.05 in 9 of 9 and 4 of 4 sessions). Both No
-    Dynamics models show no difference (LME p 0.83 to 0.999; no session significant). Decoder-null
-    dynamics show none for Monkey G (p = 0.18) or in any session, but Monkey J's LME finds one
-    (effect 0.016, z = 2.30 to 2.33, p = 0.020 to 0.021, mean normalized distance 1.09), so that absence
-    is not reproduced. The LME here codes the simulation as 1 and the null as 0, so its z has the
-    opposite sign to the paper's.
+  notes: 'Under both nulls (1000 draws), the Full Dynamics Model''s distances exceed the null (LME z = 25.4 to 26.0
+    for G, 15.5 to 15.7 for J; Mann-Whitney p < 0.05 in 9 of 9 and 4 of 4 sessions). Both No Dynamics models show
+    no difference (LME p 0.83 to 0.999; no session significant). Decoder-null dynamics show none for Monkey G (p
+    = 0.18) or in any session, but Monkey J''s LME finds one (effect 0.016, z = 2.30 to 2.33, p = 0.020 to 0.021,
+    mean normalized distance 1.09), so that absence is not reproduced. The LME here codes the simulation as 1 and
+    the null as 0, so its z has the opposite sign to the paper''s. With Monkey J''s velocity gain fixed to the summed
+    5 ms gain, the result is the same: the decoder-null LME finds a difference (p = 0.0059 and 0.0051) and the other
+    tests hold.'
   deviations:
-  - As fig6c-dynamics-reduce-input. Commands of the simulations are discretized with the simulations'
-    own magnitude percentiles.
+  - As fig6c-dynamics-reduce-input. Commands of the simulations are discretized with the simulations' own magnitude
+    percentiles.
 - claim: monkey-j-linear-command
-  outcome: not_reproduced
-  assumed: true
+  outcome: blocked
   notebook: reproduce_athalye_2023.ipynb
   output: claim:monkey-j-linear-command
-  measured: 98.89
-  notes: The linear map accounts for 98.92, 98.89, 99.57 and 99.25% of the variance of the velocity
-    update; sessions 0 and 1 are below 99%, and three sessions differ from the reported values by more
-    than 0.5 points (the lowest, 98.89, is measured).
+  notes: The criterion needs the point process filter's velocity update or its parameters and says the claim is
+    blocked when the dataset has neither; the files hold neither (see findings). The notebook shows estimates in
+    which the cursor dynamics are fitted jointly with the map, which favours the fit, so none is the criterion's
+    test. Over all frames with the offset column in the fitted dynamics the map accounts for 98.92, 98.89, 99.57
+    and 99.25%; over the frames of rewarded trials 99.63, 99.63, 99.57 and 99.80% with the offset column and 99.10,
+    99.09, 99.09 and 99.63% without it; with the update taken as the change in velocity, 87.05 to 93.89%. The paper
+    gives 99.6, 99.6, 99.5 and 99.8%.
   deviations:
-  - Assumption. The files hold no PPF parameters or PPF update; the update is the velocity minus the
-    cursor dynamics, with the cursor dynamics fitted jointly with the map by least squares on the 5 ms
-    decoder state. The shortfall may come from this estimate.
+  - Not tested. The estimated readings fit the cursor dynamics jointly with the map on the 5 ms decoder state, as
+    the files hold no PPF parameters.
+  blocked_by: data_missing
 findings:
 - kind: data_missing
-  statement: The files hold no decoder matrices (Kalman gain, steady-state cursor dynamics, the PPF's
-    parameters), although the paper's Data availability lists decoder parameters among the deposited
-    data. The code that wrote the files has these lines commented out (online_analysis/nwb_utils.py).
-    Monkey G's steady-state gain and cursor update can be recovered exactly from the decoder state and
-    spike counts (variance accounted for above 0.99999 on 99% of updates); Monkey J's PPF cannot, and its
-    linear approximation must be refitted.
+  statement: The files hold no decoder matrices (Kalman gain, steady-state cursor dynamics, the PPF's parameters),
+    although the paper's Data availability lists decoder parameters among the deposited data. The code that wrote
+    the files has these lines commented out (online_analysis/nwb_utils.py). Monkey G's steady-state gain and cursor
+    update can be recovered exactly from the decoder state and spike counts (variance accounted for above 0.99999
+    on 99% of updates); Monkey J's PPF cannot, and its linear approximation must be refitted.
 - kind: format_error
-  statement: Monkey J's target_state and obs_details series carry one target and obstacle for every
-    trial of a session; the writer indexes frames with the position of each go event in the event list
-    (nwb_utils.py, targets[(go_ - start_index_overall):] with go_ an index into strobed), so the last
-    trial's values fill the file. In Monkey G's sessions 0 and 1, checked, target_state at reward is one
-    value for all trials and does not hold the trial's target. Targets have to be read from the cursor
-    position at reward.
+  statement: Monkey J's target_state and obs_details series carry one target and obstacle for every trial of a session;
+    the writer indexes frames with the position of each go event in the event list (nwb_utils.py, targets[(go_ -
+    start_index_overall):] with go_ an index into strobed), so the last trial's values fill the file. In Monkey
+    G's sessions 0 and 1, checked, target_state at reward is one value for all trials and does not hold the trial's
+    target. Targets have to be read from the cursor position at reward.
 - kind: metadata_insufficient
-  statement: The trials table has only start and stop times. Task, target, direction around the obstacle
-    and Monkey J's obstacle trial type are not given; the task can be read from the obstacle series of
-    each task entry, the target from the cursor at reward, and Monkey J's obstacle trial types (the
-    paper analyses only partial and full obstruction) only by matching start and end positions to a
-    target list in the paper's code.
+  statement: The trials table has only start and stop times. Task, target, direction around the obstacle and Monkey
+    J's obstacle trial type are not given; the task can be read from the obstacle series of each task entry, the
+    target from the cursor at reward, and Monkey J's obstacle trial types (the paper analyses only partial and full
+    obstruction) only by matching start and end positions to a target list in the paper's code.
 - kind: metadata_error
-  statement: Units differ within Monkey J's files. The cursor and decoder state are in m and m/s, while
-    target_state, obstacle_position and obs_details are stated in cm; target_state holds center-out
-    targets in m (0.1027, 0.1384) and obstacle-task targets in cm (-3.25, 8.13) under that one unit.
-    Monkey G's files are in cm throughout.
+  statement: Units differ within Monkey J's files. The cursor and decoder state are in m and m/s, while target_state,
+    obstacle_position and obs_details are stated in cm; target_state holds center-out targets in m (0.1027, 0.1384)
+    and obstacle-task targets in cm (-3.25, 8.13) under that one unit. Monkey G's files are in cm throughout.
 - kind: methods_unavailable
-  statement: Question for the authors. Over which bins are the R2 of the dynamics models and of the
-    shuffle models computed (Figures 4C, 5C, 5E, S4B, S4G), all bins of rewarded trials, or only bins
-    whose command is below the 95th percentile of magnitude ("not analyzed", Methods, Command
-    discretization)? Here the second reading reproduces Table S1's shuffle 95th percentiles (0.132 and
-    0.203 against 0.130 and 0.196; all bins give 0.157 and 0.238) and the paper's R2 values, and is
-    adopted as an assumption.
-- kind: methods_unavailable
-  statement: Question for the authors. How was Monkey J's 100 ms decoder for the simulations built (the
-    expression for F in Methods, "BMI cursor dynamics", does not survive in the text), and in what units
-    are the next-command errors of Table S1 (row 5E)? Here the 100 ms cursor update was fitted to the
-    decoder state, and the errors match the paper's only when multiplied by 10.
+  statement: Question for the authors. How was Monkey J's 100 ms decoder for the simulations built (the expression
+    for F in Methods, "BMI cursor dynamics", does not survive in the text), and in what units are the next-command
+    errors of Table S1 (row 5E)? Here the 100 ms cursor update was fitted to the decoder state, and the errors match
+    the paper's only when multiplied by 10.
 - kind: other
-  statement: Monkey G's decoder state does not follow the steady-state filter on 0.03 to 0.95% of
-    updates per session, among them the first updates of each task entry, where the filter had not
-    converged. The gain recovered on the other updates accounts for 0.928 to 1 of the variance of the
-    velocity update over all updates, so the gain must be fitted on the updates the filter explains.
+  statement: Monkey G's decoder state does not follow the steady-state filter on 0.03 to 0.95% of updates per session,
+    among them the first updates of each task entry, where the filter had not converged. The gain recovered on the
+    other updates accounts for 0.928 to 1 of the variance of the velocity update over all updates, so the gain must
+    be fitted on the updates the filter explains.
+verifications:
+- date: 2026-10-30
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'The handover of the first run: the executed notebooks with the conclusions and summary removed, the
+    helper modules and the claims file, with the paper under paper/.'
+  results:
+  - claim: conditions-per-session
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 17: the mean is 17.46 under reading (a) and 16.23 under (b). Both lie in 14.4-18.7, and the maximum
+      is 20, within the paper''s "up to 24".'
+    response: No change of outcome.
+  - claim: figs1b-conditions-per-command
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 19: the pooled mean is 7.06 and the mean of session means 6.98, both in 6.3-7.7. The median is
+      7, within 4.5-11.'
+    response: No change of outcome.
+  - claim: figs1d-command-subtrajectories-differ
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 21: G 1.953 and J 2.330 are within tolerance. Session tests give p<0.001 in 9/9 and 4/4, and both
+      pooled p<0.001.'
+    response: No change of outcome. In reply to problem 6, a variant counts a tuple only when 15 or more occurrences
+      remain after the edge occurrences are removed (2.026 and 2.481, same tests).
+  - claim: figs1e-next-commands-differ
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 21: all tests hold (9/9 and 4/4 at p<0.01, pooled p<0.001). J 2.218 is within tolerance, but G
+      1.873 is above the 1.508-1.844 range.'
+    response: No change of outcome. The variant for problem 6 gives 1.870 (G, still outside) and 2.236 (J).
+  - claim: fig3d-population-distance
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 23: under all four reading combinations, G is about 1.237 and J about 1.77, both within tolerance.
+      Session means run from 1.10 to 1.98, inside 0.99-3.3, and every session and pooled p is below 0.001.'
+    response: No change of outcome.
+  - claim: fig3b-single-neuron-distance
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 24: G 1.166 Hz and J 1.222 Hz, with all tests p<0.001. The shuffle means (1.002 and 0.752) match
+      the code''s printed 1.004 and 0.745.'
+    response: No change of outcome.
+  - claim: fig3e-fractions-significant
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 25: at best 4 of the 6 values are within tolerance. G tuples is 0.373 against 0.27-0.33 under
+      every reading. J neurons is 0.89-0.90 (outside) except under the subsample null with significant tuples (0.878),
+      but that combination puts G neurons at 0.471 (outside). Every fraction is well above the 0.05 chance level.
+      Problem 5: the second reading, the fraction pooled over all items, was never computed (pooled_frac is unused).'
+    response: 'No change of outcome. The pooled-over-items reading is now computed and printed: four of six within
+      tolerance under every combination, Monkey G''s tuples 0.389 to 0.392.'
+  - claim: fig4c-dynamics-predict-activity-given-command
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced on the notebook''s own reading. Cell 29, "analysed" pairs: all R2 within tolerance and all
+      tests 9/9 and 4/4, pooled p=0. On all pairs the full model''s R2 is 0.194/0.291, outside tolerance, which
+      would make this partially_reproduced. Problem 1: the "all"/"analysed" choice is not in the claims file, and
+      the "all" rows for the command, angle and magnitude left-out models compare them with shuffle R2 over all
+      pairs, an invalid comparison.'
+    response: 'Outcome kept as reproduced; it no longer rests on an assumption. The paper''s code fixes the scored
+      pairs: generalization_plots.check_ix_lo removes test pairs with a command above the 95th percentile at t or
+      t-1, and plot_loo_r2_overall scores the full model and every shuffle on the left-out model''s test pairs.
+      This is now the main reading (full 0.1655 and 0.2492, command left out 0.1624 and 0.2418, condition left out
+      0.1631 and 0.2391; shuffle 95th percentiles 0.1282 and 0.1963 against Table S1''s 0.130 and 0.196). Every
+      reading now compares each model with the shuffle scored on exactly the model''s pairs, and the full model
+      is also shown on each left-out model''s pairs. On all pairs the command left-out model now beats the shuffle
+      in 9 of 9 and 4 of 4 sessions; the full and condition left-out R2 stay outside tolerance under that reading.
+      The methods_unavailable finding that asked which bins are scored is removed. Problem 7 (each shuffle permutes
+      the whole session before the fold split) is not changed: the code does the same, drawing one session-wide
+      shuffle index per shuffle and passing it with the fold test indices (generalization_plots.predict_shuffles_v2_with_cond);
+      the deviations now say so.'
+  - claim: fig4de-condition-specific-activity-predicted
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 35, reading "all": single-neuron error 1.241/1.198 Hz and population error 0.892/0.833, all within
+      tolerance, and every p=0. The shuffle 5th percentile (1.356 for G) matches Table S1''s 1.359.'
+    response: No change of outcome.
+  - claim: fig4f-condition-specific-component
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 36: the means are within tolerance under both readings (G 0.215 and J 0.303 on all tuples; 0.243
+      and 0.333 on significant ones), and all tests hold. But G5-G8 and J3 fall below 0.18 under both readings,
+      so not every session is in 0.18-0.44.'
+    response: No change of outcome.
+  - claim: fig4g-majority-predicted
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 37: the mean session fractions for tuples, commands and neurons are 0.89/0.98/0.75 (G) and 0.91/0.96/0.91
+      (J), all above 0.5.'
+    response: No change of outcome.
+  - claim: figs3-low-dimensional-decaying-dynamics
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 39: the full model''s dimensionality reaches 5 in G4 and the decoder-null model''s falls to 1
+      in J3. The G mean frequencies (0.083 and 0.068 Hz) are outside 0.09-0.11 and 0.054-0.066. J0''s full model
+      has a complex long-timescale eigenvalue (0.024 Hz). Problem 9: dynamics are fit on counts while the code appears
+      to use Hz, which shifts the effective ridge grid by a factor of 100 and could move a borderline eigenvalue
+      count.'
+    response: 'No change of outcome. A variant fits the dynamics on rates in Hz with the same grid: every count
+      is unchanged and Monkey G''s mean frequency stays 0.083 Hz (ridge regression is invariant to the scale where
+      the grid holds the scaled parameter). The code''s own shuffle prediction divides activity in Hz by 10 before
+      fitting (generalization_plots.py 65-80), consistent with fits on counts.'
+  - claim: fig5c-next-activity
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 32, "analysed": all 8 R2 values are within tolerance. The decoder-null model beats the shuffle
+      in only 7 of 9 G sessions (G1 p=0.85, G5 p=0.77) under both readings. The criterion has no partial clause
+      for a failed test; judged partial because 3 of 4 models pass fully and the decoder-null model passes pooled.'
+    response: Outcome changed to reproduced. Under the code's scored pairs (test pairs with both commands analysed,
+      shuffle on the same pairs; see fig4c-dynamics-predict-activity-given-command) all eight R2 values are within
+      tolerance and decoder-null dynamics beat the shuffle with p < 0.001 in 8 of 9 G sessions (G1 p = 0.007), as
+      the criterion needs. The other two readings still give 7 of 9 and are shown.
+  - claim: fig5d-four-dimensions
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 41, reading (a): the median is 4 for G and 3 for J, both in 3-5. Under reading (b), G is 6.'
+    response: No change of outcome.
+  - claim: fig5e-next-command
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 33, "analysed": all tests hold (J3 command left out p=0.027 still leaves 3 of 4; decoder-null
+      never beats the shuffle). All G values are within tolerance, but J full (0.254), command left out (0.237)
+      and condition left out (0.233) are outside.'
+    response: 'Outcome kept, for a different reason under the code''s scored pairs: every R2 is within tolerance
+      there (J 0.2297, 0.2231, 0.2096), but the condition left-out model beats the shuffle for Monkey J pooled with
+      p = 0.003 and in 2 of 4 sessions, where the paper gives pooled p < 0.001. Every reading falls short in one
+      part, so the outcome no longer rests on an assumption.'
+  - claim: fig5f-condition-specific-next-command
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 43: errors are G 3.973 and J 7.052, within tolerance. All p=0, and the mean fractions of significant
+      tuples (0.805 and 0.617) are above 0.5.'
+    response: No change of outcome.
+  - claim: fig5h-turn-predicted
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 44: all four values are within tolerance and the pooled tests p=0. The sign test reaches p<0.001
+      in only 7 of 9 G sessions (G6 p=0.005, G7 p=0.001), short of the 8 the criterion needs.'
+    response: No change of outcome.
+  - claim: figs5b-dynamics-beyond-behavior
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 46: paired t-tests give G T=-8.85, p=2.1e-5 and J T=-5.63, p=0.011, with dynamics higher in every
+      session. Problem 8: the ridge parameter is chosen and R2 reported on the same cross-validation folds; the
+      bias is the same for both models.'
+    response: No change. Problem 8 does not affect the comparison, as the report says; nested cross-validation was
+      not added.
+  - claim: figs5f-nonlinear-no-better
+    agrees: false
+    outcome: blocked
+    reason: Blocked (too_large, contested). Not run. The data are present, and at least the J sessions and the code's
+      own G subset look testable; it was not attempted even on the 4 J sessions (20-21 units, 5-9k bins) or on the
+      code's subset of G sessions without G2 and G4.
+    response: 'Still blocked, now as not_runnable. ssm at the code''s commit (and its only PyPI release) cannot
+      be installed in the entry''s locked environment: its setup.py imports numpy and Cython without declaring them,
+      so the registry''s uv install fails under build isolation. Outside the entry, a timing run (not in the notebook)
+      put the criterion''s design at about 3 h single-core for the J sessions and about 35 h for G; the notes record
+      both.'
+  - claim: figs3f-residual-early-late
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 48: the late-minus-early slope is -0.075 (p=4e-133) for G and -0.026 (p=3.7e-6) for J. Problem
+      10: the slopes and N (2774 for G) are not on the paper''s scale (-0.242; N=4746); only the sign and p-value
+      are tested.'
+    response: No change; the notes already give the paper's slopes beside ours.
+  - claim: figs4b-generalize-command-sets
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced on the "analysed" reading. Cell 30: angle left out 0.162/0.232 and magnitude left out 0.164/0.245,
+      all within tolerance. Session tests are 9/9 and 3/4 (angle) and 9/9 and 4/4 (magnitude), and pooled p=0. The
+      angle-bin J pooled p=1 on all pairs is a spurious failure of an invalid comparison.'
+    response: No change of outcome; it no longer rests on an assumption. Under the code's scored pairs the values
+      are 0.1571, 0.2241, 0.1589 and 0.2367, with the same session counts; every reading now uses the shuffle on
+      the model's own pairs, which removes the spurious all-pairs failures.
+  - claim: figs4g-generalize-condition-classes
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 31: all 7 R2 values are within tolerance (analysed). The diagonal-1 class in J beats the shuffle
+      in only 2 of 4 sessions (J1 p=1, J3 p≈1); the criterion needs 3 of 4.'
+    response: Outcome changed to reproduced. The class's R2 had been compared with shuffle R2 on all analysed pairs,
+      not on the class's own pairs (the invalid comparison of problem 1). With the shuffle scored on the same pairs,
+      every class beats it with p < 0.001 in 9 of 9 G and 4 of 4 J sessions under every reading, and under the code's
+      scored pairs all seven values are within tolerance.
+  - claim: figs6cd-pairwise-distances-predicted
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 50: pooled r is 0.594/0.680 (neurons) and 0.646/0.789 (population), all within tolerance. Every
+      session and pooled p is far below 0.001 with positive slope. Problem 4: the criterion asks for pairwise command
+      matching as in the code, and the notebook uses per-condition means without it; the regression is true-on-predicted
+      (slopes above 1), the reverse of the paper''s.'
+    response: 'No change of outcome. The code''s pairwise matching (plot_fr_diffs.distribution_match_mov_pairwise)
+      is now the main reading and the regression is predicted on true, as in the code: r 0.586, 0.655, 0.650 and
+      0.766, slopes 0.225, 0.301, 0.357 and 0.434 against the paper''s 0.221, 0.317, 0.350 and 0.449; the unmatched
+      reading is shown.'
+  - claim: figs6g-distance-tracks-behavior
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 51: the mixed-model slope is positive with p≈0 for true and predicted distances in both monkeys.'
+    response: No change of outcome.
+  - claim: figs6k-next-command-pairs
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 52: pooled r is 0.774 (G) and 0.654 (J), within tolerance. Sessions are significant in 9 of 9
+      G at p<0.05 (8 at p<0.001) and 4 of 4 J.'
+    response: No change of outcome.
+  - claim: fig6c-dynamics-reduce-input
+    agrees: true
+    outcome: reproduced
+    reason: 'ofc_simulations cell 8: mixed-model p is 1.9e-29 (G) and 1.9e-50 (J), with full-dynamics input lower.
+      Wilcoxon p<0.05 in 9 of 9 and 4 of 4 sessions.'
+    response: No change of outcome. The sensitivity run asked for in section C (Monkey J with the summed 5 ms gain)
+      gives the same result (LME z = -16.61, 4 of 4 sessions).
+  - claim: fig6d-decoder-null-dynamics-no-saving
+    agrees: true
+    outcome: reproduced
+    reason: 'ofc_simulations cell 8: mixed-model p is 0.998 (G) and 0.988 (J), and no session''s Wilcoxon reaches
+      p<0.05.'
+    response: No change of outcome. Under the summed 5 ms gain for Monkey J the LME still finds no difference (p
+      = 0.995) but session 1's Wilcoxon test does (p = 0.0016); the notes and the notebook say so, and the fitted
+      100 ms update, the closer approximation of the decoder at 100 ms, stays the adopted reading.
+  - claim: fig6g-ofc-uses-distinct-patterns
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'ofc_simulations cell 10: the full-dynamics effect holds and both No Dynamics absences hold. The decoder-null
+      absence fails for J: mixed-model p=0.020 (shuffle null) and 0.021 (subsample null). The J OFC simulations
+      use an estimated 100 ms decoder whose velocity gain differs from the summed 5 ms gains by 14-26%; a sensitivity
+      run using the summed 5 ms gain would show whether the J decoder-null result depends on it.'
+    response: No change of outcome. With the summed 5 ms gain the decoder-null LME for Monkey J gives p = 0.0059
+      and 0.0051, so the result does not depend on the decoder reading.
+  - claim: monkey-j-linear-command
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Not reproduced (unsafe). Cell 54: the fit accounts for 98.92, 98.89, 99.57 and 99.25%. But the fit
+      departs from the criterion (problem 2): it is fit on every 5 ms frame including frames between trials, where
+      the criterion says rewarded trials only; it includes the state offset, which acts as an intercept, where the
+      criterion says no intercept; and the update is defined using a fitted transition F, not the PPF''s own update.
+      Any of these can move the variance accounted for by tenths of a percent.'
+    response: 'Outcome changed to blocked (data_missing), as the criterion directs when the dataset holds neither
+      the PPF update nor its parameters. The notebook now shows the fit over rewarded-trial frames, with and without
+      the offset column, and with the update as the change in velocity: 99.63, 99.63, 99.57 and 99.80% with the
+      offset column, 99.10, 99.09, 99.09 and 99.63% without it, 87 to 94% with the change in velocity. Because the
+      cursor dynamics are fitted jointly with the map, none of these is the criterion''s test.'

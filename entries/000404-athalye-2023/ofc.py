@@ -38,9 +38,11 @@ N_TRIALS = 20
 TARGET_CM = 10.0
 
 
-def cursor_update(d, B, monkey):
+def cursor_update(d, B, monkey, j_gain="fitted"):
     """F (5 x 5) and K (5 x N) of s_t = F s_{t-1} + K y_t at the 100 ms bin, by least squares over the
-    bins of rewarded trials (positions and velocities in cm and cm/s)."""
+    bins of rewarded trials (positions and velocities in cm and cm/s). j_gain="summed" (Monkey J, a
+    sensitivity reading): the velocity gain is fixed to the summed 5 ms gain (B["Kc"], the command
+    matrix of the other analyses) and the velocity rows of F are refitted with it."""
     S = d["decoder_state"].astype(float)
     if monkey == "J":
         S = S.copy()
@@ -74,6 +76,10 @@ def cursor_update(d, B, monkey):
             r = np.abs(now[:, :4] - X @ beta).max(1)
             keep = r < max(1e-3 * np.abs(now[:, :4]).max(), 20 * np.median(r))
             beta, *_ = np.linalg.lstsq(X[keep], now[keep, :4], rcond=None)
+    if monkey == "J" and j_gain == "summed":
+        bv, *_ = np.linalg.lstsq(prev, now[:, 2:4] - yb @ B["Kc"].T, rcond=None)
+        beta[:5, 2:4] = bv
+        beta[5:, 2:4] = B["Kc"].T
     F = np.vstack([beta[:5].T, np.eye(5)[4]])
     K = np.vstack([beta[5:].T, np.zeros((1, Y.shape[1]))])
     res = now[:, :4] - X @ beta
@@ -179,12 +185,12 @@ def noise_sigma(A0b, F, K, x0):
     return float(np.sqrt(sim["spk"].var(0).mean()))
 
 
-def session_models(d, B, monkey):
+def session_models(d, B, monkey, j_gain="fitted"):
     """The four models of Figure 6 for one session: Full Dynamics (A, b fit on all pairs with the
     session's cross-validated ridge parameter), No Dynamics (A = 0, same b), Decoder-null Dynamics
     (fit on activity projected into the decoder-null space, its own parameter) and its No Dynamics
     model (A = 0, the decoder-null offset). Each starts at its fixed point."""
-    F, K, vaf = cursor_update(d, B, monkey)
+    F, K, vaf = cursor_update(d, B, monkey, j_gain)
     tm1, t = bmi.pairs_in_trials(B)
     fold = bmi.folds(len(t), B["task"][t], seed=0)
     X = B["spk"]
@@ -212,13 +218,13 @@ def session_models(d, B, monkey):
     return dict(F=F, K=K, vaf=vaf, Nb=Nb, alpha=alpha, alpha_null=alpha_n, models=models, sigmas=sigmas)
 
 
-def run_session(d, B, monkey, seed, nshuff):
+def run_session(d, B, monkey, seed, nshuff, j_gain="fitted"):
     """Simulates the four models (20 trials x 24 conditions) and, on each simulation, the distances
     of Figure 6G: tuples of 15 or more occurrences, decoder-null population distance between the
     condition's mean and the matched condition-pooled mean, and the mean of its null under the
     behavior-preserving shuffle and under subsampling of the matched pool."""
     import analyses as an
-    S = session_models(d, B, monkey)
+    S = session_models(d, B, monkey, j_gain)
     out = dict(vaf=S["vaf"], alpha=S["alpha"], alpha_null=S["alpha_null"], sigmas=S["sigmas"], models={})
     for i, (name, (A, b, x0)) in enumerate(S["models"].items()):
         rng = np.random.default_rng([seed, 6, i])
