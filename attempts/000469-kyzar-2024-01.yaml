@@ -189,8 +189,9 @@ outcomes:
   - 21.38
   notes: Of 449 MTL Sternberg units, 96 (21.38%) are concept cells with a two-sided second test
     and 100 (22.27%) with a one-sided one; both are within tolerance of 94 and 20.94%. The code's
-    parametric tests give 94 (20.94%), the paper's numbers exactly. Over all areas the counts are
-    123, 128 and 119.
+    parametric tests give 94 (20.94%), the paper's numbers exactly. With three other seeds the
+    counts are 95 to 97 (two-sided) and 99 to 100 (one-sided), all within tolerance. Over all areas
+    the counts are 123, 128 and 119.
   deviations:
   - As for screening-concept-mtl (2000 permutations; difference of means permuted).
 - claim: persistent-activity
@@ -235,10 +236,14 @@ outcomes:
   - 30.91
   notes: Of 453 MFC Sternberg units, label shuffling gives 140 (30.91%, non-preferred as Encoding
     1) and 139 (30.68%, preferred not shown), sign flipping 144 (31.79%) and 143 (31.57%); every
-    concept cell set gives the same counts. All are within tolerance of 144 and 31.79%. The code's
-    paired t-tests give 144 (31.79%) and 143.
+    concept cell set gives the same counts. All are within tolerance of 144 and 31.79%. Counting
+    permuted values equal to the observed one as exceedances (on the same permutations) leaves
+    label shuffling at 140 and 139 and gives 142 and 141 for sign flipping, all within tolerance.
+    The code's paired t-tests give 144 (31.79%) and 143.
   deviations:
-  - 2000 permutations, from the code's comment; the p-value as for screening-concept-mtl.
+  - 2000 permutations, from the code's comment; the p-value as for screening-concept-mtl. Exceedances
+    are counted with a strict inequality, as permutationTest.m does, which with discrete spike counts
+    makes the tests slightly anti-conservative; counting ties is shown as a variant.
 - claim: probe-cells-mfc
   outcome: blocked
   blocked_by: methods_underspecified
@@ -247,8 +252,10 @@ outcomes:
   notes: All four readings were run on the 453 MFC units. Sign flipping gives 118 (26.05%, pooled
     encoding rate) and 111 (24.50%, Encoding 1), within tolerance; label shuffling gives 109
     (24.06%) and 104 (22.96%), outside it. With three other seeds label shuffling with Encoding 1
-    stays outside (104 or 105) and sign flipping stays inside (110 to 124), so the readings
-    disagree whatever the seed, and the criterion blocks the claim. The code's paired one-sided
+    stays outside (104 or 105), label shuffling with the pooled rate is just inside (110 or 111,
+    bound 109.8) and sign flipping stays inside (110 to 124), so the readings disagree whatever the
+    seed, and the criterion blocks the claim. Counting ties as exceedances on the main seed gives 108
+    and 103 for label shuffling and 118 and 111 for sign flipping, the same disagreement. The code's paired one-sided
     t-tests give 122 (26.93%), the paper's numbers. What is open is whether the Methods'
     "permutation t-tests" between probe and encoding or maintenance rates permute rates between
     the two periods as independent samples or keep each trial's pair (the code's own tests are
@@ -300,6 +307,157 @@ findings:
 - kind: other
   statement: Two Sternberg trials have implausible timestamps. In one trial of subject 9 (load 1)
     Encoding 1 lasts 2.5 s and the maintenance and probe onsets fall at the same time (529.288 s),
-    so it has no maintenance period. In one trial of subject 21 the fixation cross lasts 14.07 s,
-    against the 0.9 to 1 s the paper describes (99% of trials are 0.93 to 1.20 s). Both are
-    included in the analysis, as the code includes them.
+    so it has no maintenance period. In another trial of subject 9 (load 3) the fixation cross and
+    Encoding 1 onsets are 0.03 ms apart (1189.469 s), so the baseline window falls on the image. In
+    one trial of subject 21 the fixation cross lasts 14.07 s, against the 0.9 to 1 s the paper
+    describes (99% of trials are 0.93 to 1.20 s). All three are included in the analysis, as the
+    code includes them.
+verifications:
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier queried the archive for the pinned
+    version and tested helper functions on synthetic inputs. It gave its own outcome for each claim; all
+    20 agree with the record. It found eight problems, none affecting a conclusion.
+  results:
+  - claim: subjects-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Cell 10 gives 21 subjects, 41 sessions, 21 Sternberg, 20 screening; only subject 19 (P47HMH)
+      has no screening session, and its own API query agrees. Subjects 13 and 14 (P39CS and P39CS_2)
+      share age, sex, year and diagnosis, so the 21 patients may be 20 people; the criterion counts
+      subject IDs and Table 1 lists 21 rows, so the outcome stands, but neither the claims file nor the
+      notebook says so (problem 6).
+    response: No change needed. The conclusion cell, the summary and the record (notes and a
+      metadata_insufficient finding) already say this; the verifier saw the notebook without them.
+  - claim: sternberg-unit-yield
+    agrees: true
+    outcome: reproduced
+    reason: 902 units (Hipp 190, Amg 259, dACC 171, pre-SMA 250, vmPFC 32). Every count is exact.
+    response: No change needed.
+  - claim: screening-unit-yield
+    agrees: true
+    outcome: reproduced
+    reason: 907 units, MTL 421, within 10% of both 449 and 421.
+    response: No change needed.
+  - claim: behavior-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Mean over sessions 88.73%.
+    response: No change needed.
+  - claim: behavior-rt-load
+    agrees: true
+    outcome: reproduced
+    reason: Correct trials give F(2,40) = 7.92, p = 0.0013, and the mean of session medians rises 1.055,
+      1.130, 1.198 s; rm_anova_load gives the same F as statsmodels AnovaRM on synthetic data. The RT
+      figure was not inspected.
+    response: No change needed.
+  - claim: behavior-accuracy-load
+    agrees: true
+    outcome: reproduced
+    reason: Accuracy falls monotonically, 91.22, 88.62, 86.35%.
+    response: No change needed.
+  - claim: isi-violations
+    agrees: true
+    outcome: reproduced
+    reason: On all units the mean (0.428) is in tolerance but the s.d. (0.625) is not; with the code's
+      filter (units below 4%, n = 901) 0.416 and 0.498, both in tolerance. The criterion accepts either
+      reading. Spike times are unsorted in one Sternberg unit, which matches the code and has a
+      negligible effect (problem 8).
+    response: No change needed.
+  - claim: firing-rate
+    agrees: true
+    outcome: reproduced
+    reason: Mean 2.546 Hz, min 0.108 Hz, max 33.824 Hz.
+    response: No change needed.
+  - claim: projection-distance
+    agrees: true
+    outcome: reproduced
+    reason: 13.774 plus or minus 7.325 over 734 non-zero values.
+    response: No change needed.
+  - claim: waveform-snr
+    agrees: true
+    outcome: reproduced
+    reason: peak_snr gives 6.625 plus or minus 3.632; mean_snr does not match, but one reading is enough.
+    response: No change needed.
+  - claim: cv2
+    agrees: true
+    outcome: reproduced
+    reason: 0.938 plus or minus 0.138.
+    response: No change needed.
+  - claim: isolation-distance
+    agrees: true
+    outcome: reproduced
+    reason: Median 31.138 over the 676 non-NaN units.
+    response: No change needed.
+  - claim: screening-concept-mtl
+    agrees: true
+    outcome: reproduced
+    reason: 140 MTL units (33.25%) under both readings, in tolerance; the code's parametric test gives
+      exactly 138 (32.78%). The paper's numbers come from the code's parametric tests; the notebook
+      follows the claims file in using the Methods' permutation tests, which is the stated rule, not a
+      misreading (problem 7).
+    response: No change needed.
+  - claim: screening-concept-mfc
+    agrees: true
+    outcome: reproduced
+    reason: 27 (5.56%) under both readings, well below the MTL. Fragile; seed 46911 gives 29 (5.97%),
+      outside tolerance, and 20,000 permutations near p = 0.05 give 26 (5.35%); the margin is about one
+      unit (problem 2).
+    response: No change in the analysis. The record and conclusion already give the four seeds and the
+      20000-permutation refinement that settles the count within tolerance.
+  - claim: fig4-screening-examples
+    agrees: true
+    outcome: reproduced
+    reason: All 5 units pass under both readings and the parametric test.
+    response: No change needed.
+  - claim: sternberg-concept-mtl
+    agrees: true
+    outcome: reproduced
+    reason: 96 (21.38%) two-sided and 100 (22.27%) one-sided, both in tolerance; parametric gives exactly
+      94. The counts are not repeated across seeds, and the one-sided reading is 3.4 units from the upper
+      bound (problem 4).
+    response: Added three more seeds to the cell. They give 95 to 97 (two-sided) and 99 to 100
+      (one-sided), all within tolerance, recorded in the notes. Outcome kept.
+  - claim: persistent-activity
+    agrees: true
+    outcome: not_reproduced
+    reason: In the maintenance window, under both cell and both trial readings, p at most 1.7e-7 with
+      preferred higher, but the preferred mean is 2.57 to 3.13 Hz against 4.76 plus or minus 0.476, and
+      no reading puts all four values in tolerance. The Encoding 1 window variant matches all four values,
+      so the paper's numbers come from the encoding window. The claims file does not misread the paper.
+      Two anomalous trials are kept (a subject 9 trial with 0 s maintenance, and a trial with 0 s from
+      fixation to Encoding 1) (problem 5).
+    response: Cell 5 now lists trials with fixation to Encoding 1 under 0.5 s; the second anomalous
+      trial is subject 9, load 3, with onsets 0.03 ms apart. It is added to the finding and summary. The
+      trials are kept, as the code keeps them; two of 2673 trials do not move any result. Outcome kept.
+  - claim: fig5-sternberg-examples
+    agrees: true
+    outcome: reproduced
+    reason: Both units are amygdala concept cells under every test, with maintenance rate higher on
+      preferred-shown trials (5.05 vs 1.43 Hz; 5.73 vs 4.17 Hz).
+    response: No change needed.
+  - claim: maintenance-cells-mfc
+    agrees: true
+    outcome: reproduced
+    reason: All permutation and non-preferred readings give 139 to 144 (30.68 to 31.79%) of 453 MFC units,
+      in tolerance. perm_ttest and signflip_test count exceedances with a strict inequality, which with
+      discrete spike counts makes them anti-conservative; correcting it would lower the counts by a few
+      units, and maintenance keeps a 10-unit margin (problem 1).
+    response: Added a ties option to perm_ttest and signflip_test and a variant on the same permutations
+      counting ties as exceedances. It gives 140 and 139 for label shuffling and 142 and 141 for sign
+      flipping, all within tolerance. The strict rule stays the main reading, as permutationTest.m uses
+      it; the deviation says so. Outcome kept.
+  - claim: probe-cells-mfc
+    agrees: true
+    outcome: blocked
+    reason: The readings disagree. Label shuffling with the Encoding 1 rate gives 104 to 105 and fails on
+      every seed; sign flipping gives 111 to 124 and is in tolerance; label shuffling with the pooled rate
+      gives 109 on the main seed and 110 to 111 on the others. The code's t-tests give exactly 122. The
+      extra seeds are printed without tolerance flags (problem 3), and the tie rule would lower the
+      counts, though shuffle-Encoding 1 already fails (problem 1). The block exists only under the
+      claims file's rule of using permutation tests (problem 7).
+    response: The extra seeds now print tolerance flags, and a variant on the main seed counts ties
+      (108 and 103 for label shuffling, outside; 118 and 111 for sign flipping, inside). The readings
+      still disagree. Outcome kept.

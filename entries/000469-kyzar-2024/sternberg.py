@@ -231,13 +231,22 @@ def perm_anova(y: np.ndarray, labels: np.ndarray, perms: np.ndarray) -> tuple[fl
     return float(f_obs), float(p)
 
 
+def _exceed(null: np.ndarray, obs: float, ties: bool) -> int:
+    """Null values above obs; with ties, values equal to obs (to rounding) count too."""
+    n = np.sum(null > obs)
+    if ties:
+        n += np.sum(np.isclose(null, obs, rtol=1e-9, atol=1e-12) & ~(null > obs))
+    return int(n)
+
+
 def perm_ttest(a: np.ndarray, b: np.ndarray, perms: np.ndarray | None,
                rng: np.random.Generator | None = None,
-               n_perm: int = N_PERM) -> tuple[float, float, float]:
+               n_perm: int = N_PERM, ties: bool = False) -> tuple[float, float, float]:
     """Two-sample permutation test of mean(a) - mean(b), as permutationTest.m.
 
     Returns (difference, p two-sided, p one-sided larger). `perms` permutes len(a)+len(b) items;
-    when it is None, it is drawn from rng.
+    when it is None, it is drawn from rng. Exceedances are counted with `>`, as permutationTest.m
+    does; with ties, permuted values equal to the observed one count as well (`>=`).
     """
     allv = np.concatenate([a, b])
     if perms is None:
@@ -247,17 +256,19 @@ def perm_ttest(a: np.ndarray, b: np.ndarray, perms: np.ndarray | None,
     shuffled = allv[perms]
     diff = shuffled[:, :na].mean(1) - shuffled[:, na:].mean(1)
     n = len(perms)
-    p_two = (np.sum(np.abs(diff) > abs(obs)) + 1) / (n + 1)
-    p_larger = (np.sum(diff > obs) + 1) / (n + 1)
+    p_two = (_exceed(np.abs(diff), abs(obs), ties) + 1) / (n + 1)
+    p_larger = (_exceed(diff, obs, ties) + 1) / (n + 1)
     return float(obs), float(p_two), float(p_larger)
 
 
-def signflip_test(d: np.ndarray, rng: np.random.Generator, n_perm: int = N_PERM) -> float:
-    """Paired permutation test, one-sided (mean of d larger than 0), by flipping signs."""
+def signflip_test(d: np.ndarray, rng: np.random.Generator, n_perm: int = N_PERM,
+                  ties: bool = False) -> float:
+    """Paired permutation test, one-sided (mean of d larger than 0), by flipping signs.
+    Exceedances are counted with `>`, or `>=` with ties, as in perm_ttest."""
     obs = d.mean()
     signs = rng.choice([-1.0, 1.0], size=(n_perm, len(d)))
     null = (signs * d).mean(1)
-    return float((np.sum(null > obs) + 1) / (n_perm + 1))
+    return float((_exceed(null, obs, ties) + 1) / (n_perm + 1))
 
 
 def concept_test(rates: np.ndarray, labels: np.ndarray, perms: np.ndarray,
@@ -392,14 +403,14 @@ def sternberg_concept(sessions: list[dict], rng: np.random.Generator) -> pd.Data
 
 
 def sternberg_maintenance(sessions: list[dict], concept: pd.DataFrame,
-                          rng: np.random.Generator) -> pd.DataFrame:
+                          rng: np.random.Generator, ties: bool = False) -> pd.DataFrame:
     """Maintenance tests of every Sternberg unit (claim maintenance-cells-mfc).
 
     One-sided tests that the maintenance rate exceeds the baseline, by (a) label shuffling
     (permutationTest.m, 'larger') and (b) sign flipping of per-trial differences, and the code's
     paired one-sided t-test (`t`). The extra test for concept cells is on non-preferred trials,
     read as (i) Encoding 1 image not preferred (`enc1`) and (ii) preferred image not shown in any
-    encoding period (`any`). `concept` gives each unit's preferred image.
+    encoding period (`any`). `concept` gives each unit's preferred image. `ties` as in perm_ttest.
     """
     from scipy import stats
     rows = []
@@ -411,26 +422,27 @@ def sternberg_maintenance(sessions: list[dict], concept: pd.DataFrame,
             m, f = r["maint"], r["fix"]
             res = {"subject": s["subject"], "unit_id": u.unit_id, "area": u.area,
                    "maint_mean": m.mean(), "fix_mean": f.mean(),
-                   "p_shuffle": perm_ttest(m, f, None, rng)[2],
-                   "p_flip": signflip_test(m - f, rng),
+                   "p_shuffle": perm_ttest(m, f, None, rng, ties=ties)[2],
+                   "p_flip": signflip_test(m - f, rng, ties=ties),
                    "p_t": stats.ttest_rel(m, f, alternative="greater").pvalue}
             for name, mask in pref_masks(t, pref[(s["subject"], u.unit_id)]).items():
                 non = ~mask
-                res[f"p2_shuffle_{name}"] = perm_ttest(m[non], f[non], None, rng)[2]
-                res[f"p2_flip_{name}"] = signflip_test(m[non] - f[non], rng)
+                res[f"p2_shuffle_{name}"] = perm_ttest(m[non], f[non], None, rng, ties=ties)[2]
+                res[f"p2_flip_{name}"] = signflip_test(m[non] - f[non], rng, ties=ties)
                 res[f"p2_t_{name}"] = stats.ttest_rel(m[non], f[non], alternative="greater").pvalue
             rows.append(res)
     return pd.DataFrame(rows)
 
 
 def sternberg_probe(sessions: list[dict], rng: np.random.Generator,
-                    areas: tuple[str, ...] | None = None) -> pd.DataFrame:
+                    areas: tuple[str, ...] | None = None, ties: bool = False) -> pd.DataFrame:
     """Probe tests of every Sternberg unit (claim probe-cells-mfc).
 
     The probe rate against the encoding rate and against the maintenance rate, each one-sided.
     Encoding rate (i) pooled over the encoding periods shown (`pooled`) or (ii) Encoding 1 only
     (`enc1`); permutation (a) label shuffling or (b) sign flipping. A unit's p is the larger of
-    its two tests. `p_code` is the code's paired t-tests with its Encoding 3 window.
+    its two tests. `p_code` is the code's paired t-tests with its Encoding 3 window. `ties` as in
+    perm_ttest.
     """
     from scipy import stats
     rows = []
@@ -443,9 +455,10 @@ def sternberg_probe(sessions: list[dict], rng: np.random.Generator,
             res = {"subject": s["subject"], "unit_id": u.unit_id, "area": u.area,
                    "probe_mean": p.mean(), "maint_mean": m.mean()}
             for name, e in (("pooled", r["enc_pooled"]), ("enc1", r["enc1"])):
-                res[f"p_shuffle_{name}"] = max(perm_ttest(p, e, None, rng)[2],
-                                               perm_ttest(p, m, None, rng)[2])
-                res[f"p_flip_{name}"] = max(signflip_test(p - e, rng), signflip_test(p - m, rng))
+                res[f"p_shuffle_{name}"] = max(perm_ttest(p, e, None, rng, ties=ties)[2],
+                                               perm_ttest(p, m, None, rng, ties=ties)[2])
+                res[f"p_flip_{name}"] = max(signflip_test(p - e, rng, ties=ties),
+                                            signflip_test(p - m, rng, ties=ties))
             res["p_code"] = max(stats.ttest_rel(p, r["enc_code"], alternative="greater").pvalue,
                                 stats.ttest_rel(p, m, alternative="greater").pvalue)
             rows.append(res)
