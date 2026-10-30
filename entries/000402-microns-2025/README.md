@@ -18,7 +18,7 @@ Most of the paper's EM findings rest on CAVE tables that need an account token a
 | Stimulus composition of each scan | Reproduced |
 | Stimuli conserved across scans | Partially reproduced |
 | Oracle clips in the same order | Reproduced |
-| Spontaneous periods before and after the stimulus | Reproduced |
+| Spontaneous periods before and after the stimulus | Partially reproduced |
 | Monet2: 16 directions per 15 s block | Reproduced |
 | Fig. 3f: oracle reliability | Reproduced |
 | Fig. 3g: direction tuning | Reproduced |
@@ -27,17 +27,17 @@ Most of the paper's EM findings rest on CAVE tables that need an account token a
 | 144,120 nuclei in subvolume 65 | Reproduced |
 | Neuron and cell type classification | Reproduced |
 | Synapse counts, EM sections | Blocked: too large |
-| Co-registration and the other EM claims (16 claims) | Blocked: other (CAVE needs an account token) |
+| Co-registration and the other EM claims (16 claims) | Blocked: other (the CAVE tables they need, or that choose their neurons, need an account token) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
 The dataset holds fluorescence traces only, so the trace analyses use fluorescence in place of the
 deconvolved traces. The direction of each Monet2 period is not in the stimulus table and is measured
-from the stimulus video. The attempt record, with the reasons and the differences from the paper's
+from the stimulus video by optical flow. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/000402-microns-2025-01.yaml`](../../attempts/000402-microns-2025-01.yaml).
 
-- `reproduce_microns_2025.ipynb`: the analysis. It takes about 11 minutes, most of it reading the
+- `reproduce_microns_2025.ipynb`: the analysis. It takes about 12 minutes, most of it reading the
   stimulus video and the traces of the oracle and Monet2 trials.
-- `microns.py`: loading the files, the oracle score, the Monet2 directions from the video, and the
-  per-mask responses. Other notebooks on this dandiset can import it.
+- `microns.py`: loading the files, the oracle score, the Monet2 directions from the video, the
+  per-mask responses and the mask centroids. Other notebooks on this dandiset can import it.

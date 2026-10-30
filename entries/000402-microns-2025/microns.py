@@ -132,6 +132,8 @@ def scan_metadata(asset_id):
             row["n_with_root_id"] = int(np.isfinite(root).sum())
             row["root_ids"] = root
             row["mask_type_arr"] = mask_type
+            row["pt_position"] = np.c_[ps["pt_x_position"][:], ps["pt_y_position"][:], ps["pt_z_position"][:]]
+            row["root_id_dtype"] = str(ps["pt_root_id"].dtype)
         fields.append(row)
     out["fields"] = pd.DataFrame(fields)
     out["frame_ts"] = frame_ts
@@ -158,11 +160,22 @@ def scan_metadata(asset_id):
     if video:
         vt = acq[video[0]]["timestamps"][:]
         out["video"].update({"t0": vt[0], "t1": vt[-1], "rate_hz": _rate(vt)})
-    other = {"stimulus/presentation": list(f["stimulus/presentation"].keys()),
+    other = {"file root": sorted(f.keys()),
+             "acquisition": sorted(acq.keys()),
+             "stimulus/presentation": list(f["stimulus/presentation"].keys()),
              "stimulus/templates": list(f["stimulus/templates"].keys()),
              "analysis": list(f["analysis"].keys()),
-             "processing/ophys": sorted(oph.keys())}
+             "processing": sorted(f["processing"].keys()),
+             "processing/ophys": sorted(oph.keys()),
+             "general": sorted(f["general"].keys())}
     out["other_groups"] = other
+    # every series of the eye and pupil tracking, with its time range (behaviour-recorded)
+    series = []
+    for g in ("EyeTracking", "PupilTracking"):
+        for name in acq[g].keys():
+            st = acq[g][name]["timestamps"][:]
+            series.append({"series": f"{g}/{name}", "n": len(st), "t0": float(np.nanmin(st)), "t1": float(np.nanmax(st))})
+    out["eye_series"] = series
     f.close()
     return out
 
@@ -241,15 +254,18 @@ def read_trace_rows(asset_id, field, frame_index):
 # Monet2 motion directions, from the stimulus video stored in each file.
 #
 # The Monet2 table gives num_directions and the trial duration but not the direction of each
-# period. Each period's direction is measured here from the video: the shift between successive
-# frames by phase correlation (a standard image registration method), summed over the period.
-# Period boundaries are the frames where the direction of the mean shift over the 15 frames
+# period. Each period's direction is measured here from the video by global optical flow
+# (period_directions_flow). The shift between successive frames by phase correlation (a standard
+# image registration method), summed over the period, is kept for comparison and for the
+# boundaries. Period boundaries are the frames where the direction of the mean shift over the 15 frames
 # before and after changes by more than BOUNDARY_DEG, at least 20 frames apart. These detection
 # parameters are standard choices; the notebook shows the boundaries found.
 
 BOUNDARY_DEG = 12.0
 BOUNDARY_WINDOW = 15
 EDGE_S = 0.1
+# Smoothing of the frames before the optical flow (pixels): a standard choice.
+FLOW_SIGMA = 1.0
 
 
 def frame_shifts(frames):
@@ -309,22 +325,54 @@ def period_directions(shifts, t, n_periods, duration):
     return np.array(out)
 
 
+def period_directions_flow(frames, t, n_periods, duration, sigma=FLOW_SIGMA):
+    """Direction (degrees, 0 = rightward, counter-clockwise) of each of n equal periods, from the
+    global optical flow of the period (gradient method, Lucas and Kanade, 1981).
+
+    One velocity (u, v) per period solves the brightness constancy equation Ix u + Iy v + It = 0
+    by least squares over every pixel of every pair of successive frames in the period, the first
+    and last EDGE_S seconds left out. The frames are smoothed with a Gaussian of sigma pixels
+    first. Unlike the peak of the phase correlation, this estimate is not pulled towards whole
+    pixel shifts, which bias the direction of the sub-pixel shifts of Monet2 towards the axes and
+    diagonals (the notebook shows both).
+    """
+    from scipy.ndimage import gaussian_filter
+    out = []
+    p = duration / n_periods
+    for j in range(n_periods):
+        m = np.where((t >= j * p + EDGE_S) & (t < (j + 1) * p - EDGE_S))[0]
+        x = gaussian_filter(frames[m].astype(np.float32), (0, sigma, sigma))
+        mid = 0.5 * (x[1:] + x[:-1])
+        gy, gx = np.gradient(mid, axis=(1, 2))
+        gt = x[1:] - x[:-1]
+        a = np.array([[np.sum(gx * gx), np.sum(gx * gy)], [np.sum(gx * gy), np.sum(gy * gy)]])
+        b = -np.array([np.sum(gx * gt), np.sum(gy * gt)])
+        u, v = np.linalg.solve(a, b)
+        out.append(np.degrees(np.arctan2(-v, u)) % 360)    # rows run downwards on the screen
+    return np.array(out)
+
+
 def monet2_trial_directions(asset_id, video_name, starts, stops, num_directions, durations):
-    """For each Monet2 trial: the boundaries found and the direction of each period."""
+    """For each Monet2 trial: the boundaries found and the direction of each period.
+
+    "directions" come from the optical flow at full resolution (period_directions_flow), the
+    measure used; "directions_pc" from the phase correlation shifts, shown for comparison.
+    """
     f = open_asset(asset_id)
     v = f[f"acquisition/{video_name}"]
     vt = v["timestamps"][:]
     out = []
     for s, e, n, dur in zip(starts, stops, num_directions, durations):
         i0, i1 = np.searchsorted(vt, [s, e])
-        frames = v["data"][i0:i1, :, :, 0].astype(np.float32)
-        # 2 x 2 block average: halves the cost and leaves directions unchanged.
-        n_, ny, nx = frames.shape
-        frames = frames[:, :ny // 2 * 2, :nx // 2 * 2].reshape(n_, ny // 2, 2, nx // 2, 2).mean(axis=(2, 4))
+        full = v["data"][i0:i1, :, :, 0].astype(np.float32)
+        # 2 x 2 block average for the phase correlation: halves the cost.
+        n_, ny, nx = full.shape
+        frames = full[:, :ny // 2 * 2, :nx // 2 * 2].reshape(n_, ny // 2, 2, nx // 2, 2).mean(axis=(2, 4))
         t = vt[i0:i1] - s
         sh = frame_shifts(frames)
         out.append({"boundaries": direction_boundaries(sh, t),
-                    "directions": period_directions(sh, t, int(n), float(dur)),
+                    "directions": period_directions_flow(full, t, int(n), float(dur)),
+                    "directions_pc": period_directions(sh, t, int(n), float(dur)),
                     "n_video_frames": i1 - i0,
                     "video_rate_hz": 1.0 / np.median(np.diff(t))})
     f.close()
@@ -375,6 +423,9 @@ def n_distinct_directions(directions, tol_deg=10.0):
 # The response is the mean of the frames whose time stamps fall in that window.
 
 CENTRAL_S = 0.5
+# Common time grid (s from clip onset) of the trial-averaged oracle responses, so that scans at
+# different frame rates can be correlated: a standard choice of resampling.
+CLIP_GRID_S = np.arange(0.25, 9.76, 0.25)
 # Shifts of the Monet2 windows used to check that the traces and the stimulus table share a
 # clock (protocol, author step 2): one and two direction periods either way, and half of one.
 CLOCK_LAGS_S = (-1.875, -0.9375, -0.46875, 0.0, 0.46875, 0.9375, 1.875)
@@ -403,7 +454,8 @@ def field_responses(args):
     monet_dirs: (n_trials, 16) direction (degrees on the 22.5 degree grid) of each period.
     Returns a dict of per-ROI arrays.
     """
-    (asset_id, field, ts, oracle_onsets, nfr, clip_bounds, monet_starts, monet_dirs, period_s) = args
+    (asset_id, field, ts, oracle_onsets, nfr, clip_bounds, monet_starts, monet_dirs, period_s,
+     clip_offsets, keep_clip_means) = args
     oracle_idx = oracle_frame_index(ts, np.asarray(oracle_onsets), nfr)
 
     def windows(lag):
@@ -435,6 +487,26 @@ def field_responses(args):
     score_a = oracle_score(oracle)
     per_clip = [oracle_score(oracle[:, a:b]) for a, b in clip_bounds]
     score_b = np.nanmean(np.array(per_clip), axis=0)
+    # Shared signal (fig3f check): the score of the mean trace over all ROIs of the field, and each
+    # ROI's score after removing its least-squares fit on that mean trace over the oracle frames.
+    fmean = oracle.mean(axis=2)                                  # (10, nfr)
+    score_field_mean = float(oracle_score(fmean[:, :, None])[0])
+    g = fmean.ravel() - fmean.mean()
+    flat = oracle.reshape(-1, oracle.shape[2])
+    beta = (g @ (flat - flat.mean(axis=0))) / (g @ g)
+    resid = (flat - np.outer(g, beta)).reshape(oracle.shape)
+    score_a_resid = oracle_score(resid)
+    clip_means = None
+    if keep_clip_means:
+        # trial-averaged oracle response of each clip (in the scan's clip order) on a common time
+        # grid, for the signal correlations of the ed4 variant
+        rate = 1.0 / np.median(np.diff(ts))
+        clip_means = np.empty((len(clip_bounds), len(CLIP_GRID_S), oracle.shape[2]), np.float32)
+        mean = oracle.mean(axis=0)
+        for c, ((a, b), off) in enumerate(zip(clip_bounds, clip_offsets)):
+            tt = np.arange(a, b) / rate - off
+            w = np.array([np.interp(CLIP_GRID_S, tt, e) for e in np.eye(b - a)]).T   # linear interpolation
+            clip_means[c] = w @ mean[a:b]
     # mean pairwise correlation between single repeats (variant of fig3f)
     z = oracle - oracle.mean(axis=1, keepdims=True)
     z /= np.sqrt((z ** 2).sum(axis=1, keepdims=True))
@@ -464,6 +536,7 @@ def field_responses(args):
     # clock check: split-half reliability of the direction tuning with the windows shifted in time
     lag_reliability = {lag: float(np.nanmedian(split_half_r(by_direction(w)))) for lag, w in lag_windows.items()}
     return {"score_a": score_a, "score_b": score_b, "pairwise": pairwise, "by_dir": by_dir,
+            "score_field_mean": score_field_mean, "score_a_resid": score_a_resid, "clip_means": clip_means,
             "by_dir_late": by_dir_late, "lag_reliability": lag_reliability,
             "n_rois": data.shape[1],
             "n_frames_read": data.shape[0], "frames_per_window": [len(w) for w in win_idx]}
@@ -520,8 +593,31 @@ def field_jobs(asset_id, meta, trial_dirs):
     mo = meta["monet2"].sort_values("start_time").reset_index(drop=True)
     grid = np.round(np.asarray(trial_dirs) / 22.5) * 22.5 % 360
     period = float(mo.duration.iloc[0]) / int(mo.num_directions.iloc[0])
-    return [(asset_id, int(fl), meta["frame_ts"][int(fl)], on, nfr, bounds, mo.start_time.values, grid, period)
-            for fl in meta["fields"].field]
+    _, reps = oracle_repeats(meta["clip"])
+    offsets = (reps[0].start_time - reps[0].start_time.iloc[0]).values
+    em = dict(zip(meta["fields"].field, meta["fields"].has_em_columns))
+    return [(asset_id, int(fl), meta["frame_ts"][int(fl)], on, nfr, bounds, mo.start_time.values, grid, period,
+             offsets, bool(em[fl])) for fl in meta["fields"].field]
+
+
+def field_centroids(args):
+    """Centroid (row, column, in pixels) of every ROI's image mask in one field."""
+    asset_id, field = args
+    f = open_asset(asset_id)
+    d = f[f"processing/ophys/ImageSegmentation/PlaneSegmentation{field}/image_mask"]
+    yy, xx = np.mgrid[:d.shape[1], :d.shape[2]]
+    out = []
+    for i in range(0, d.shape[0], 84):
+        x = d[i:i + 84]
+        w = x.sum(axis=(1, 2))
+        out.append(np.c_[(x * yy).sum(axis=(1, 2)) / w, (x * xx).sum(axis=(1, 2)) / w])
+    f.close()
+    return np.concatenate(out)
+
+
+def all_field_centroids(jobs, workers=N_WORKERS):
+    with mp.get_context("fork").Pool(workers) as pool:
+        return pool.map(field_centroids, jobs)
 
 
 def von_mises_peak(R, step_deg=1.0, kappas=(0.5, 1, 2, 4, 8, 16), batch=5000):
