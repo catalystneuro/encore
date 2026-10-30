@@ -1,0 +1,602 @@
+schema_version: 2
+id: 000223-xue-2022-01
+dataset:
+  archive: dandi
+  id: "000223"
+  version: 0.260528.0906
+  doi: 10.48324/dandi.000223/0.260528.0906
+paper: doi:10.1088/1741-2552/ac8765
+date: "2026-10-29"
+entry: 000223-xue-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/40812150219
+inputs:
+- what: The paper's stored draw of 1'000 release probabilities (notebooks/log_release_Pr.npy), used only
+    for a variant of claim acceptance-9-of-20. Every other method detail taken from the paper's code
+    is cited in the helper module.
+  source: https://github.com/starquakes/mea_spineca_mapping at commit 99c2a478393341a24c58d6ef6ab5db5b0b528d03
+outcomes:
+- claim: data-scale
+  outcome: reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:data-scale
+  measured:
+  - 19
+  - 10
+  - 20
+  - 101.7
+  - 42.6
+  notes: The 20 files hold 19 distinct recordings (two files are the same blob) from 10 subjects, with
+    20 spine and shaft ROI pairs, two of them in one recording. Units per recording are 101.7 with a
+    population SD of 42.6 (sample SD 43.7). Every per-row unit count is within 10% of Table 1; rows 16
+    and 18 have 59 and 101 units against 58 and 100, and in each of these files one unit has no
+    spikes, so the counts of units with spikes equal Table 1's. Each subject id is taken to be one
+    culture, which the unit counts per subject support.
+- claim: table1-best-r
+  outcome: partially_reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:table1-best-r
+  notes: 17 of 20 spines have a best-R within 10% of Table 1 under at least one reading of p_thresh (96
+    to 99) and hyperactive strategy, with the Methods' 5-point smoothing; 19 of 20 with the code's
+    lowess (frac 0.0002), and 14 of 20 with the code's default pair (97, percentile strategy). Row 13
+    reaches at most 0.143 against 0.160 (0.146 with the code's smoothing), row 14 at most 0.354, just
+    below the bound of 0.355 for 0.394, and row 16 at most 0.537 against 0.676. Over the
+    carried-forward readings best-R spans 0.137 to 0.762 (Table 1, 0.148 to 0.765). The assignment of
+    files to rows 14 and 15 (two recordings of subject 3112 with 133 units each) and to rows 16 and 20
+    (subjects 2748 and 2765, 59 units each) is not fixed by culture and unit count; it was taken from
+    the spike contrast. The outcome does not rest on it, as swapping rows 16 and 20 gives 16 matches,
+    swapping rows 14 and 15 gives 17, and swapping both gives 16, all within 15 to 19. Within a spine
+    best-R moves widely across the eight readings (row 15, 0.320 to 0.701; row 7, 0.269 to 0.605), so
+    a match under some reading is a weak test, and the later claims inherit a reading chosen for being
+    nearest to Table 1; their outcomes are conditional on that choice. With every chain of close
+    bursts merged into one (Methods 2.6) in place of the code's single pass, 16 of 20 carried-forward
+    best-R values match, against 17 (row 20 moves from 0.293 to 0.340).
+  deviations:
+  - The convolved traces are computed at the frame times as a sum over spikes of the same causal
+    exponential kernel, not with elephant at every 20 kHz sample; for three units of one recording the
+    largest difference from elephant is 0.13 to 0.34 Hz on peaks of 19 to 45 Hz (R above 0.99997).
+  - Units whose convolved trace is constant over the kept frames have an undefined R and are left out
+    of the ranking (one unit in each of rows 16 and 18); the code's np.argsort would rank such a NaN
+    first.
+  - Bursts touching the start or end of the recording, which the code cannot handle (it would raise
+    an error), are dropped, as Methods 2.6 says ("Edge cases, where data began or ended during a
+    burst, were excluded").
+  - Table 1 rows are matched to files by subject (culture) and unit count, as the claims file says;
+    where two assignments fit equally (rows 14 and 15; rows 16 and 20) the one whose spike contrast is
+    nearer to Table 1 is taken, and the swapped assignments are shown (16 to 17 matches, the same
+    outcome). In the file with two spines, the first ROI pair is taken as row 9 and the second as row
+    10. The paper gives no identifier that settles either.
+  - The lowess-smoothed population counts are rounded to 9 decimals before they are compared with the
+    integer burst baseline. In every recording some smoothed values equal the baseline up to rounding
+    error (within 1e-9) and lie above it unrounded, so without rounding the burst edges, and with them
+    every later number, depend on the last bits of floating-point arithmetic, which can differ between
+    machines. This is the likely reason the run the round-2 verifier read differed from the author's
+    run, which this machine still reproduced unchanged before the fix. The paper's code compares the
+    unrounded values.
+  - The ROI pairs are taken in the order spine, shaft, as notebook 1 of the code draws and loads them
+    ("the drawing order has to be spine1, adjacent shaft of spine1, ..."); the spine ROI is the smaller
+    of each pair in 19 pairs and equal in one.
+- claim: fig1e-best-r-gap
+  outcome: reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:fig1e-best-r-gap
+  notes: With the carried-forward reading, the gap between best-R and the second R is the largest of the
+    consecutive gaps for 7 of 20 spines (rows 1, 2, 3, 4, 6, 13 and 14), so the unnamed example can be
+    one of them. For the other 13 spines it is not (rank 2 to 45). A weak test, as the claims file says.
+- claim: table1-optimal-thresholds
+  outcome: partially_reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:table1-optimal-thresholds
+  notes: Under the Methods' classification (the claims file's main reading) the maximum F is within 10%
+    of Table 1 for 15 of 19 recordings, with each of the three noise regions; rows 6, 14 and 15 are
+    higher here (0.669 to 0.674, 0.586 and 0.575 to 0.578 against 0.599, 0.485 and 0.520) and row 17
+    lower (0.477 to 0.481 against 0.537). With the code's classification 17 of 19 match. The optimal quantiles differ from
+    Table 1's; Q_test is 0.939 to 0.970 here for every recording where Table 1 has 0.545 to 0.960, and
+    the pair of quantiles lies within 10% of Table 1's for 0 or 1 of 19 recordings. Each maximum is
+    unique, except row 7 with region 2 (5 maxima). Recording 3 (rows 9 and 10) was run with each
+    spine's noise estimate; the two give 0.777 to 0.785, against 0.795. The share of ground-truth
+    surrogates whose best unit is not their own unit, which Methods 2.8 calls rare, is 0.064 to 0.439
+    (0.064 to 0.126 for rows 1 to 5; 0.383 to 0.439 for rows 8, 14, 15, 16, 17 and 20), nearly the
+    same in the three regions. Recordings with a larger share have lower maximum F (Spearman 0.89)
+    and a larger gap between the two classifications (up to 0.067, row 14), so this share is why the
+    two readings give 15 and 17 of 19. Whether the paper's share was as large cannot be told from the
+    paper. Rows 16 and 18 keep a unit with no spikes; without it, max F changes by at most 0.003 under
+    either classification (0.003 for row 16 under the code's).
+  deviations:
+  - The background region of the noise estimate is not in the dataset; three 6 by 6 pixel squares
+    near each spine were placed by a rule fixed before any R was computed (see acceptance-9-of-20),
+    and each was run.
+  - The release probabilities are a fresh draw with the Methods' parameters (seeded), as the claims
+    file's main reading.
+  - The test-R quantiles are computed from the R tensor with weights, which gives the same values as
+    np.nanquantile on the pooled 1'000 by 1'000 test-Rs of the code's compute_test_r.
+- claim: mean-max-fscore
+  outcome: partially_reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:mean-max-fscore
+  measured:
+  - 0.696
+  - 0.121
+  notes: Under the Methods' classification, over 19 recordings (recording 3 once, with row 9's
+    estimate), the mean maximum F is 0.696 and the population SD 0.121 with noise region 0 (mean 0.695
+    to 0.696 and SD 0.120 to 0.121 over the regions), so the mean is within tolerance and the SD just
+    below the 0.1224 bound. With the code's classification the mean is 0.665 to 0.666 and the SD
+    0.134, both within tolerance. F-scores
+    are large across recordings, as the paper states; the spread under the main reading is slightly
+    smaller than reported. The two classifications differ by the misidentified surrogates (6 to 44%
+    of them, table1-optimal-thresholds), so whether the SD falls inside the tolerance depends on
+    that share.
+  deviations:
+  - As for table1-optimal-thresholds.
+- claim: acceptance-9-of-20
+  outcome: partially_reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:acceptance-9-of-20
+  measured: 7
+  notes: With Table 1's quantiles (reading a), 7 spines are accepted with each of the three noise
+    regions and 18 of 20 decisions agree with Table 1; rows 3 and 16, accepted in Table 1, are rejected
+    here, in each of five seeds and regions. Row 3 has best-R 0.221 (Table 1, 0.217) but a test
+    threshold of 0.249 against 0.190 (region 0); row 16 has best-R 0.537 (Table 1, 0.676) and a GT
+    threshold of 0.684. With the optimal quantiles found here (reading b), 7, 7 and 6 are accepted (18,
+    18 and 17 decisions agree). All readings and regions fall in the claims file's band for a partial
+    reproduction (17 to 19 decisions), so the outcome does not depend on the noise region. The stored
+    release probabilities and a Bernoulli draw per spike also give 7 accepted and 18 agreeing. GT
+    thresholds are within 10% of Table 1 for 12 or 13 spines and test thresholds for 10 or 11. Rows 9
+    and 10, two spines of one recording, have identical thresholds in Table 1 (0.507 and 0.639); here
+    each spine has its own noise estimate and the thresholds differ (0.497 and 0.649 against 0.483 and
+    0.632 with region 0). The two spines share their best (115) and second-best (44) units, and with
+    row 9's noise estimate row 10's thresholds equal row 9's in every region, so Table 1 fits one noise
+    estimate per recording. Row 3's GT threshold is near Table 1's (0.112 to 0.121 against 0.112), but
+    its test-Rs reach 0.245 to 0.254 at Q_test 0.96, against 0.190. Row 16's GT-Rs have median 0.71, so
+    its GT threshold at Q_GT 0.424 is 0.683 to 0.684 against 0.383, and its best-R is 0.537, not 0.676.
+    Both distributions are nearly the same in the three regions, so neither mismatch comes from the
+    noise region. Rows 6 and 18 keep their Table 1 decisions in five seeds. In row 10, background
+    squares 0 and 2 sit on bright processes (noise SD 126 and 96, against 39 for square 1), against the
+    aim of the placement rule; row 10's decision is the same with each square.
+  deviations:
+  - The dataset holds no background ROI for the noise estimate (Methods 2.7, "We selected a background
+    ROI close to the spine"). As the claims file asks, three background squares were placed near each
+    spine before any R was computed, by a fixed rule in the helper (6 by 6 pixels, at least 4 pixels
+    from any ROI, mean image intensity at or below the 25th percentile of the squares in the 96 by 96
+    pixel window around the spine, the three nearest to the spine). Square size, margin, window and
+    percentile are this attempt's choices. Each region was run.
+  - Spine pixel traces are read from the image series with the spine ROI mask of the file; their mean
+    equals the stored ROI trace exactly in every recording.
+- claim: best-r-accepted-vs-rejected
+  outcome: partially_reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:best-r-accepted-vs-rejected
+  measured:
+  - 0.622
+  - 0.337
+  - 5
+  notes: With this attempt's classification (7 accepted, 13 rejected, reading a, every region), accepted
+    spines have best-R 0.622 (SD 0.081) and rejected 0.337 (SD 0.137); both means are within tolerance.
+    The Mann-Whitney test gives the smaller U = 5 (86 for the accepted group), two-sided p = 0.0005
+    and one-sided p = 0.0002, so the accepted group is higher with P below 0.05. U is not within 12 ±
+    1.2; with 7 and 13 spines in place of 9 and 11 the statistic is on a different scale. Reading b
+    with region 2 gives U = 10 (6 and 14 spines, two-sided p = 0.0064).
+- claim: best-r-not-predictive
+  outcome: partially_reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:best-r-not-predictive
+  measured:
+  - 0.627
+  - 0.515
+  notes: The largest best-R of a rejected spine is 0.627 (row 17), within tolerance of about 0.6, and it
+    exceeds the smallest accepted best-R, so no cut on best-R separates the two groups. The smallest
+    accepted best-R is 0.515 (row 2), not about 0.2; row 3, accepted in Table 1 with 0.217, is rejected
+    here. Reading b with region 2 gives a largest rejected best-R of 0.673 (row 9).
+- claim: fig5a-rejection-scenarios
+  outcome: reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:fig5a-rejection-scenarios
+  measured:
+  - 5
+  - 4
+  - 4
+  notes: All three scenarios occur among the rejected spines under every reading and region. With Table
+    1's quantiles and region 0, 5 spines fall below the test threshold only, 4 below the GT threshold
+    only and 4 below both (Table 1, 4, 1 and 6); the other readings and regions give 5 to 9, 2 to 4 and
+    3 to 4.
+- claim: fig5a-threshold-order
+  outcome: reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:fig5a-threshold-order
+  notes: With Table 1's quantiles and region 0, the test threshold is above the GT threshold for 14
+    spines and below it for 6 (Table 1, 15 and 5); the other readings and regions give 15 to 18 and 2 to
+    5.
+- claim: table1-network-measures
+  outcome: not_reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:table1-network-measures
+  notes: Spike contrast is within 10% of Table 1 for all 19 recordings with all sorted units, whole
+    recording or imaging span (16 of 19 without the hyperactive units). OUT/IN is within 10% for at
+    most 6 of 19 recordings (rows 1, 2, 9, 14, 15 and 19) under any combination of unit set, span and
+    burst extension, so both measures match for 6 recordings, below the 10 the claims file asks for a partial reproduction.
+    OUT/IN here is mostly higher than in Table 1 (row 8, 0.419 against 0.060; row 6, 0.762 against
+    0.189). With the bursts of each p_thresh and strategy, 10 of 19 recordings can be matched one by one,
+    and row 8 reaches at least 0.139 under every reading. The spike contrast part of the claim holds;
+    the OUT/IN values could not be recovered with the burst detection the paper describes. For rows 14,
+    15, 16 and 20 the spike contrast also decided the row-to-file assignment (table1-best-r), so its
+    match there is not independent. The code's single merging pass drops every burst after the second
+    in a chain of three or more bursts closer than 75 ms; with the carried-forward reading it loses
+    bursts in 7 of 19 recordings (1 to 6, and 18 in row 20). Merging every chain, as Methods 2.6 says,
+    changes OUT/IN by at most 0.18 (row 2, 2.194 to 2.016), and the code's lowess smoothing with the
+    same pair by at most 0.25 (row 3, 2.293 to 2.547); each still matches 6 of 19.
+  deviations:
+  - Spike contrast is computed with elephant 1.2.1 (printed in the notebook), where the paper used
+    0.10.0; the spike_contrast function and its helper are the same in the two versions apart from
+    the docstring (compared in preparing this attempt).
+  - OUT/IN uses the bursts of the carried-forward reading of table1-best-r.
+- claim: fig5c-spike-contrast-vs-fscore
+  outcome: reproduced
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:fig5c-spike-contrast-vs-fscore
+  measured: -0.731
+  notes: Over the 20 rows, spike contrast (all units, imaging span, the combination of
+    table1-network-measures) against the maximum F of noise region 0 and the Methods' classification
+    gives Spearman R = -0.731 (P = 0.0003); over 19 recordings -0.726 (P = 0.0004). Every combination,
+    region and classification gives -0.726 to -0.784 with P at most 0.0004, within -0.737 ± 0.074.
+- claim: fig5d-out-in-vs-fscore
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_xue_2022.ipynb
+  output: claim:fig5d-out-in-vs-fscore
+  measured: 0.585
+  notes: Over the 20 rows, OUT/IN against maximum F gives Spearman R = 0.585 (P = 0.007) with noise
+    region 0 and the Methods' classification, and 0.598 (P = 0.007) over 19 recordings, both below the
+    tolerance of 0.672 ± 0.067 (bound 0.605). Region 2 gives 0.582 and 0.595, also below. Region 1
+    gives 0.615 and 0.623, and the code's classification 0.625 to 0.645 over 20 rows, within
+    tolerance. Under the claims file's main (Methods) classification the outcome therefore depends on
+    the noise region; region 0, the background square nearest the spine, was adopted as the best
+    reading of the Methods' "a background ROI close to the spine". Over 19 recordings, which leave out
+    row 10 (whose squares 0 and 2 sit on processes), region 0 still gives 0.598. The correlation is
+    positive and significant under every combination, region and classification (R 0.582 to 0.754, P
+    at most 0.0072). The OUT/IN values themselves differ from Table 1's (table1-network-measures).
+  deviations:
+  - Assumption. The noise region is the background square nearest the spine (region 0), from Methods
+    2.7 ("close to the spine"); regions 1 and 2 are shown. The question is put to the paper's authors
+    in the findings.
+findings:
+- kind: other
+  statement: Two of the 20 files are the same recording. sub-3112/sub-3112_ecephys+ophys.nwb and
+    sub-3112/sub-3112_ses-20210227T190233_ecephys+ophys.nwb share one blob, so the dandiset holds 19
+    recordings, as the paper reports, and its file count of 20 overstates them.
+- kind: identifier_missing
+  statement: Nothing in the files or the dandiset metadata links a file to its row (spine ID) or
+    culture ID in the paper's Table 1. Subjects can be matched to cultures and files to rows by unit
+    count, except two pairs that have equal counts (the two sub-3112 recordings, rows 14 and 15; the
+    sub-2748 and sub-2765 recordings, rows 16 and 20), and the file with two spines does not say which
+    ROI pair is spine 9 and which spine 10.
+- kind: data_missing
+  statement: The background ROIs the paper used to estimate the recording noise for its surrogates
+    (Methods 2.7) are not in the files, which hold only the spine and shaft ROIs. The noise estimate,
+    and with it the acceptance thresholds and F-scores, cannot be repeated exactly.
+- kind: metadata_insufficient
+  statement: The ROIs of the plane segmentation are not labelled as spine or dendritic shaft, nor paired;
+    their roles are inferred from the order the paper's code uses and from their sizes. The stored
+    `Dff` series has no description and is not the dF/F the paper describes (25th percentile over 100
+    frames); recomputed from the ROI traces, the two differ by up to 0.23.
+- kind: metadata_error
+  statement: The imaging plane gives the indicator as "unknown"; the paper used jGCaMP7b. The image
+    series has no description and its unit is "n.a.".
+- kind: other
+  statement: Two files (sub-2748 and sub-3278) each hold one unit with no spikes. Table 1 counts 58 and
+    100 units for these recordings, the files 59 and 101; without the empty units the counts agree.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which p_thresh and which hyperactive-unit strategy were
+    used for each recording (Methods 2.6 says p_thresh "was visually chosen for each data set")? This
+    attempt took, per recording, the pair whose best-R is nearest to Table 1, by the claims file's rule;
+    the code's default pair (97, percentile) gives 14 of 20 best-R values within 10% of Table 1.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Where was the background ROI of each spine (Methods 2.7,
+    "a background ROI close to the spine"), and was one noise estimate used per recording (Table 1
+    gives spines 9 and 10 identical thresholds)? This attempt placed three dim squares near each spine;
+    the regions agree on every outcome except the OUT/IN correlation of Figure 5(d), where region 0
+    gives R = 0.585 and region 1 gives 0.615 against 0.672.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How was the OUT/IN ratio of Table 1 computed (which units,
+    which burst periods, which time span)? With the burst detection of Methods 2.6 and any p_thresh
+    from 96 to 99, OUT/IN matches Table 1 for 10 of 19 recordings at best, and for row 8 it is at least
+    0.139 against 0.060.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. What share of the simulated ground-truth surrogates had
+    a best unit other than their own (Methods 2.8, "in rare cases")? Here it is 6% to 44% per
+    recording, and it decides how far the Methods' and the code's classifications of those surrogates
+    differ (maximum F within 10% of Table 1 for 15 against 17 of 19 recordings).
+- kind: code_mismatch
+  statement: Methods 2.6 says bursts closer than t_ibi "were merged into a single larger burst". The
+    code's single merging pass (notebook 1) merges the first two bursts of a chain of three or more
+    and drops the rest, so those periods are no longer bursts. With this attempt's burst readings it
+    drops bursts in 7 of 19 recordings, 18 in one of them.
+verifications:
+- date: "2026-10-29"
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: Round 1. The handover of the first run, the executed notebook with the conclusions and
+    summary removed, the helper module and the claims file. The verifier also compared the helper with
+    the paper's code (starquakes/mea_spineca_mapping at 99c2a47), tested helper functions on synthetic
+    inputs and queried the archive's asset list.
+  results:
+  - claim: data-scale
+    agrees: true
+    outcome: reproduced
+    reason: Cell 11 finds 19 distinct recordings (20 assets, two share a blob, confirmed against the
+      archive), 10 subjects and 20 spine/shaft ROI pairs. Units per recording are 101.7 ± 42.6 (ddof
+      0), against 102 ± 43, and every row's unit count is within 10%.
+    response: No change of outcome.
+  - claim: table1-best-r
+    agrees: true
+    outcome: partially_reproduced
+    reason: 18 of 20 spines are within 10% under at least one p_thresh/strategy reading. Row 13 misses
+      (at most 0.142 against 0.160), and so does row 16 (at most 0.538 against 0.676). The lowess
+      variant would give 19 of 20, but the criterion only shows it, so it does not count. Problem 2,
+      the burst-reading pair carried forward to every later claim is the one whose best-R is nearest
+      Table 1, best-R moves a lot across the 8 readings (row 15, 0.319 to 0.701; row 7, 0.269 to
+      0.605), so a match under any reading is a weak test and the downstream outcomes are conditional
+      on that choice; the claims file prescribes this, so it is not counted as an error. Problem 5,
+      spike contrast was used to break the file-to-row ties, so the spike-contrast match is partly
+      circular for rows 14, 15, 16 and 20, though swapping would make best-R worse for rows 16 and 20.
+    response: No change of outcome. The notebook and the notes now say that best-R moves widely across
+      readings, that the later claims are conditional on the carried-forward reading, and (under
+      table1-network-measures) that the spike-contrast match is not independent for rows 14, 15, 16
+      and 20. Best-R with every burst chain merged is now shown (17 of 20).
+  - claim: fig1e-best-r-gap
+    agrees: true
+    outcome: reproduced
+    reason: The gap between best-R and second R is the largest gap for 7 of 20 spines; the criterion
+      needs at least 1.
+    response: No change of outcome.
+  - claim: table1-optimal-thresholds
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under the Methods reading max F is within 10% for 15 of 19 recordings in every noise region,
+      the code reading 17 of 19, and the optimal quantiles almost never match (0 to 1 of 19), mainly
+      because Q_GT differs. Problem 1, the share of simulated ground-truth surrogates whose best unit
+      is not the true unit ranges from 0.10 to 0.44, while Methods 2.8 calls these cases rare; the
+      notebook never reports or checks this, it is the reason the two readings differ, and it may mean
+      the surrogate signal-to-noise differs from the paper's. Problem 3, rows 16 and 18 keep a unit
+      with no spikes, and its effect on max F is not measured.
+    response: No change of outcome. The F-score grid now reports, per recording and region, the share
+      of surrogates whose best unit is their own, with the median GT-R and test-R; the misidentified
+      share is 0.06 to 0.44, related to max F (Spearman 0.90) and to the gap between the readings. It is
+      stated in the notes and put to the paper's authors as a finding. The grid of rows 16 and 18 was
+      re-run without the empty unit; max F changes by at most 0.002.
+  - claim: mean-max-fscore
+    agrees: true
+    outcome: partially_reproduced
+    reason: The mean is 0.694 to 0.695 under the Methods reading and 0.665 to 0.666 under the code
+      reading, both within 0.692 ± 0.069. The SD is 0.120 to 0.121 under the Methods reading, just
+      outside 0.136 ± 0.0136, and 0.133 to 0.134 under the code reading, inside.
+    response: No change of outcome. The notes say the SD's dependence on the reading comes from the
+      misidentified share of problem 1.
+  - claim: acceptance-9-of-20
+    agrees: true
+    outcome: partially_reproduced
+    reason: 7 spines are accepted, not 9, and 18 of 20 decisions agree under reading (a) in all three
+      regions; under reading (b) 18, 18 and 17 agree. Rows 3 and 16 are rejected in every seed, region
+      and reading. Every reading falls in the same outcome band, so this is not methods_underspecified.
+      Problem 6, rows 9 and 10 both have best unit 115 but get different thresholds, against identical
+      values in Table 1, and the notebook does not print the second-best units or comment on this.
+      The verifier asked for the second-best unit per spine and the GT-R and test-R distributions of
+      rows 3 and 16, and images of the background squares.
+    response: No change of outcome. The notebook now prints the best and second-best unit of every
+      spine, the GT-R and test-R quantiles of rows 3 and 16 in each region, and row 10's thresholds
+      with row 9's noise estimate, which equal row 9's (both spines have best unit 115 and second-best
+      44), so Table 1 fits one noise estimate per recording. Both mismatches are the same in every
+      region; row 3's test-Rs and row 16's GT-Rs and best-R are higher than Table 1's thresholds imply.
+      A figure shows the background squares on each spine's mean image.
+  - claim: best-r-accepted-vs-rejected
+    agrees: true
+    outcome: partially_reproduced
+    reason: Accepted 0.622 and rejected 0.337 are both within tolerance, and two-sided p is 0.0015 with
+      the accepted group higher. U is 5, against 12 ± 1.2, with n = 7 and 13. The U miss follows from
+      the acceptance mismatch.
+    response: No change of outcome.
+  - claim: best-r-not-predictive
+    agrees: true
+    outcome: partially_reproduced
+    reason: The largest rejected best-R is 0.625 (row 17; expected 0.6 ± 0.06) and the two groups
+      overlap. The smallest accepted is 0.515, not about 0.2, because row 3 is rejected.
+    response: No change of outcome.
+  - claim: fig5a-rejection-scenarios
+    agrees: true
+    outcome: reproduced
+    reason: All three scenarios occur under every reading and region. Counts are 5/4/4 under reading
+      (a) against 4/1/6 in Table 1; the criterion says counts do not decide.
+    response: No change of outcome.
+  - claim: fig5a-threshold-order
+    agrees: true
+    outcome: reproduced
+    reason: The test threshold is above the GT threshold for 14 to 18 spines and below it for 2 to 6.
+    response: No change of outcome.
+  - claim: table1-network-measures
+    agrees: true
+    outcome: not_reproduced
+    reason: Spike contrast matches for 19 of 19 recordings (all units). OUT/IN matches for at most 6 of
+      19 under any combination, and it is systematically too high (row 8, 0.42 against 0.060; row 5,
+      0.81 against 0.318). The criterion needs both measures for at least 10. Problem 4, when three or
+      more bursts are each less than 75 ms apart the merging pass drops the third, copied faithfully
+      from the paper's notebook 1 but against the Methods' "merged into a single larger burst", and its
+      effect on OUT/IN is not measured. Problem 7, OUT/IN is only computed with the carried-forward
+      bursts; the per-recording any-reading variant (10 of 19) is not admissible. The verifier could
+      not check the elephant version, and asked how many burst chains the merging pass truncates and
+      OUT/IN under the lowess variant.
+    response: No change of outcome. The notebook prints the elephant version (1.2.1). A new cell counts
+      the bursts the single pass drops (7 of 19 recordings, 1 to 6 bursts, 18 in row 20) and gives
+      OUT/IN with every chain merged and with the lowess smoothing; each matches 6 of 19 recordings.
+      The notes say the 10 of 19 variant does not count, and the merging is recorded as a code_mismatch
+      finding.
+  - claim: fig5c-spike-contrast-vs-fscore
+    agrees: true
+    outcome: reproduced
+    reason: Spearman R is -0.724 to -0.759 (all combinations -0.726 to -0.786), all within -0.737 ±
+      0.074, with P at most 0.0004.
+    response: No change of outcome.
+  - claim: fig5d-out-in-vs-fscore
+    agrees: false
+    outcome: reproduced
+    reason: R is 0.615 to 0.646 (inside 0.672 ± 0.067) with P < 0.006 for region 1 and for the code F
+      reading. Under the Methods reading in region 0 it falls outside (0.592 and 0.598). The criterion
+      needs only one reading, but the result is fragile and rests on OUT/IN values that themselves do
+      not match Table 1.
+    response: Outcome kept as partially_reproduced, resting on the assumption of region 0, and the
+      disagreement recorded. The criterion's "under one reading" names the two readings it lists, the
+      20 rows and the 19 recordings, and both fall outside the tolerance under the main
+      classification and region 0. The noise region and the classification are details the paper
+      leaves open or the claims file ranks (the Methods classification is its main reading), so under
+      the protocol the readings that disagree are resolved by the best-supported choice, the square
+      nearest the spine for "a background ROI close to the spine", marked as an assumption, with the
+      other regions and the code classification shown.
+- date: "2026-10-29"
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: Round 2. The full executed notebook of the run made for the verifier after the round-1
+    revision, with its conclusions and summary, the helper module, the claims file, this record and the
+    README; the verifier also read the paper under paper/. That run printed numbers different from the
+    ones the round-1 revision wrote its text from.
+  results:
+  - claim: data-scale
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (cell 11).
+    response: No change.
+  - claim: table1-best-r
+    agrees: true
+    outcome: partially_reproduced
+    reason: 18 of 20 match (cell 14). The assumption (ties in the row-to-file mapping broken by spike
+      contrast) is stated and reasonable, but the outcome does not depend on it, as swapping 2748/2765
+      gives 17 of 20 and swapping the 3112 pair gives 16, both still in the 15 to 19 band, so "resting
+      on an assumption" overstates it. Cell 16 says the code's default pair matches 14 of 20 where
+      cell 14 prints 15, and the sentence that rows 16 and 20 would both miss under the swap is true
+      but row 16 already misses, so the count only drops to 17.
+    response: Outcome kept. The burst detection now rounds the smoothed counts before comparing them
+      with the baseline (see the reason below for the numbers moving between runs). With it 17 of 20
+      spines match under some reading (row 14 now falls just below its bound, 0.354 against 0.355) and
+      the default pair matches 14 of 20. The notebook now prints the counts with the tied assignments
+      swapped (16, 17 and 16 of 20), so `assumed` is removed and the assignment is a plain deviation.
+      The swap sentence is replaced by these counts. Why the numbers moved, for every claim. The
+      round-1 text was written from a run that this machine reproduces exactly when re-run unchanged;
+      the verifier's copy was run on another machine. Many lowess-smoothed counts equal the integer
+      burst baseline up to rounding error (within 1e-9; a new data-check cell counts them for each
+      recording), so the burst edges depended on the last bits of the arithmetic. They are now rounded
+      to 9 decimals, two re-runs gave identical outputs, and every number in the text was regenerated
+      from the new run.
+  - claim: fig1e-best-r-gap
+    agrees: true
+    outcome: reproduced
+    reason: 7 of 20 (cell 18).
+    response: No change of outcome; still 7 of 20 after the fix.
+  - claim: table1-optimal-thresholds
+    agrees: true
+    outcome: partially_reproduced
+    reason: 15 of 19 under the Methods reading and 17 under the code reading, in every region (cell 28).
+      Cell 31 and the record say "about 0.06 to 0.13 for rows 1 to 5" where row 3 in region 1 is 0.142,
+      and the record says max F changes by at most 0.002 without the empty unit where row 18 changes by
+      0.003 under the code classification (cell 30).
+    response: No change of outcome (15 and 17 of 19 after the fix). The text gives the new values
+      (0.064 to 0.126 for rows 1 to 5) and says max F changes by at most 0.003 under either
+      classification.
+  - claim: mean-max-fscore
+    agrees: true
+    outcome: partially_reproduced
+    reason: The Methods SD is 0.119 to 0.120, outside 0.136 ± 0.0136 (cell 33). Cell 34 and the record
+      give 0.121 and, for the code reading, mean 0.666 and SD 0.133 where cell 33 prints 0.120 for
+      region 0 and 0.665 / 0.132.
+    response: No change of outcome. After the fix the Methods mean is 0.696 and the SD 0.121 with region
+      0 (0.120 to 0.121 over regions), the code reading 0.665 to 0.666 and 0.134; the text and the
+      measured values give these.
+  - claim: acceptance-9-of-20
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, but the band is reached differently from what the record says. Reading (a), region
+      0 gives 6 accepted and 17 agreeing, because row 12 is rejected at 0.584 against a test threshold
+      of 0.588; regions 1 and 2 give 7 and 18 (cell 24). Reading (b) gives 6/7/6 accepted and 17/18/17
+      agreeing (cell 36). The text's row 3 values (best-R 0.222, test threshold 0.251, test-Rs 0.247 to
+      0.256), the reading (b) counts and the 7 accepted with the stored probabilities and the Bernoulli
+      draw do not match the printed outputs; the measured value of 7 should be 6 for region 0. Not
+      bearing on conclusions, in the cell 22 figure regions 0 and 2 of row 10 sit on bright processes,
+      with noise SD 126 and 96 against 39 for region 1, which contradicts the rule's aim of squares
+      without visible cell structure; row 10's decision is the same in every region.
+    response: No change of outcome. After the fix reading (a) gives 7 accepted and 18 agreeing in every
+      region, reading (b) 7, 7 and 6 (18, 18 and 17), and the two variants 7 and 18; row 3 has best-R
+      0.221 and a test threshold of 0.245 to 0.254. The measured value 7 is the region-0 value of this
+      run, and the text quotes these numbers. The row 10 squares are now described in the notebook and
+      the notes as failing the rule's aim; the rule is kept, as it was fixed before any R was computed
+      and row 10's decision does not depend on the square.
+  - claim: best-r-accepted-vs-rejected
+    agrees: true
+    outcome: partially_reproduced
+    reason: Region 0, reading (a), accepted mean 0.628, rejected 0.354, both within tolerance; U = 6,
+      not 12 ± 1.2 (cell 39). Cell 40 mixes regions; the record's one-sided p belongs to region 0, its
+      p = 0.0093 for reading (b) region 2 is printed as 0.0064, and the measured values [0.622, 0.337,
+      5] do not correspond to region 0.
+    response: No change of outcome. After the fix every region of reading (a) gives 7 and 13 spines,
+      0.622 against 0.337, U = 5, two-sided p = 0.0005 (one-sided 0.0002), and reading (b) region 2
+      gives U = 10 with p = 0.0064; the measured values are the region-0 values of this run.
+  - claim: best-r-not-predictive
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (cell 42).
+    response: No change of outcome. The largest rejected best-R is now 0.627 (row 17), the measured value
+      updated.
+  - claim: fig5a-rejection-scenarios
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (cell 45). Cell 46 says 5 below the test threshold only with Table 1's quantiles and
+      region 0 where cell 45 prints 6; the measured [5, 4, 4] should be [6, 4, 4].
+    response: No change of outcome. After the fix cell 45 prints 5, 4 and 4 for region 0, as measured.
+  - claim: fig5a-threshold-order
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (cell 45).
+    response: No change.
+  - claim: table1-network-measures
+    agrees: true
+    outcome: not_reproduced
+    reason: OUT/IN matches 7 of 19 at best, against the 10 the criterion needs (cell 48). Cell 50 says 6
+      of 19, and that the lowess smoothing changes OUT/IN by at most 0.35 with 6 of 19 matching each,
+      where cell 49 prints a largest change of 0.274 (row 3) and 7, 7 and 6 matches.
+    response: No change of outcome. After the fix OUT/IN matches 6 of 19 (rows 1, 2, 9, 14, 15 and 19),
+      full merging changes it by at most 0.18 and the lowess smoothing by at most 0.25 (row 3), each
+      with 6 of 19; the text quotes these.
+  - claim: fig5c-spike-contrast-vs-fscore
+    agrees: true
+    outcome: reproduced
+    reason: R is -0.712 to -0.768, all within tolerance, with P at most 0.0006 (cell 52). The text's R =
+      -0.724 (P = 0.0003) and range -0.724 to -0.781 are not the printed -0.712 (P = 0.0004) and
+      -0.712 to -0.768.
+    response: No change of outcome. After the fix R is -0.731 (P = 0.0003) for region 0 and the Methods
+      classification over 20 rows, and -0.726 to -0.784 over every combination; the measured value and
+      text give these.
+  - claim: fig5d-out-in-vs-fscore
+    agrees: true
+    outcome: partially_reproduced
+    reason: Now agrees with the outcome, but not with the assumption it is said to rest on. The Methods
+      classification gives R = 0.571, 0.594 and 0.577 over 20 rows in regions 0, 1 and 2, and 0.574,
+      0.598 and 0.580 over 19, all below the 0.605 bound; only the code classification falls inside
+      (0.612 to 0.621). The outcome no longer depends on the noise region, so the region-0 assumption
+      decides nothing and should be removed; it rests on the claims file's ranking of the Methods
+      classification as the main reading. Partially is reasonable because the correlation is positive
+      and significant under every combination. The round-1 disagreement, which rested on region 1
+      being inside tolerance, is withdrawn. The noise-region finding's statement that the regions
+      disagree only on fig5d is wrong on the printed numbers.
+    response: Outcome kept. After the fix the Methods classification gives 0.585 (region 0), 0.615
+      (region 1) and 0.582 (region 2) over 20 rows, and 0.598, 0.623 and 0.595 over 19, so region 1 is
+      again inside the tolerance and the outcome again depends on the noise region. `assumed` and the
+      region-0 deviation are therefore kept, and the disagreement with the request to remove them is
+      recorded here. The 19-recording reading leaves out row 10, whose squares 0 and 2 sit on
+      processes, and still gives 0.598 with region 0. The noise-region finding is true on the new
+      numbers and quotes them (0.585 against 0.615).
