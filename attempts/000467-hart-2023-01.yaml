@@ -122,8 +122,8 @@ outcomes:
     ants; median areas are 2,810 um2 for 3-hexanone, 1,092 for ethylpyrazine, 390 for isopropanol, 342
     for propionic acid and 54 for ethanol. The ratio to ethylpyrazine is 2.57 (2.58 without the AL mask),
     to the others 7.2 to 51.6. In round 1, with a 13-pixel Minimum filter in place of ImageJ's 21-pixel
-    radius-2 kernel, the ratio was 1.91 and the outcome partially reproduced; the corrected kernel removes
-    more of the thin edges of the thresholded regions, and ethylpyrazine's area falls more than 3-hexanone's.
+    radius-2 kernel, the ratio was 1.91 and the outcome partially reproduced; the round-1 areas are not
+    shown by the current notebook.
   deviations:
   - Area counted inside the AL mask; the whole field of view is shown as a variant and gives the same.
   - The Minimum filter uses ImageJ's radius-2 kernel (21 pixels, RankFilters); round 1 used a 13-pixel
@@ -136,7 +136,8 @@ outcomes:
     responding pixels correlate at r = 0.143, 0.185 and 0.072 against -0.015, -0.024 and -0.008 for the
     half-width shift. The ROI counts differ by more than one in at least one ant under every reading (bix
     4 and 5, 4 and 8, 1 and 3; aix 5 and 8, 4 and 5, 3 and 4). One of the criterion's two parts holds
-    in every ant, so the outcome is partial.
+    in every ant, so the outcome is partial. The verifier would give not reproduced, since the criterion
+    needs both parts and defines no partial outcome; the disagreement is recorded under verifications.
   deviations:
   - The two ALs lie one above the other in the 1X images; the midline is the least fluorescent row between
     30% and 70% of the height, and the files do not say which AL is the left one.
@@ -260,7 +261,16 @@ outcomes:
     of 13 ants (1 of 8 at 48%). All four readings with the ROI mean (aix, aiy, bix, biy) meet the criterion
     (shared ROIs in 0 to 2 ants); the four with the ROI maximum do not (medians 1 to 3, shared ROIs in
     11 of 13 ants at the higher concentration). With heptanone or hexanol only (the statement's wording)
-    the result is the same.
+    the result is the same. The criterion asks for the result under each M2 reading, which fails (met under
+    4 of 8 readings at both concentration readings), so a change to not reproduced is proposed.
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion says "Reproduced when, under each M2 reading and under (a) or (b)", and the four
+      readings with the ROI's maximum (aiix, aiiy, biix, biiy) fail at both concentration readings, with
+      medians 1 to 3 and shared ROIs in 11 of 13 ants at the higher concentration (alarm_pheromones.ipynb,
+      figs5c cell, "under every reading False"). Adopting the ROI mean sets aside the criterion's own wording,
+      which figs5b-shared-glomerulus and fig4b-vehicle-no-response are judged by. The verifier pointed
+      this out in round 2, and the author agrees.
   deviations:
   - The outcome rests on the adopted M2 reading, the ROI mean (see figs5a-sparse-median-6); the readings
     disagree by ROI value.
@@ -273,7 +283,8 @@ outcomes:
   notebook: alarm_pheromones.ipynb
   output: claim:fig6-shared-panic-pathway
   notes: Imaging half only. figs5b-shared-glomerulus is not met under any reading at the higher concentration
-    and only under biy at 48%; figs5c-mho-rarely-overlaps is met under the four mean-value readings. The
+    and only under biy at 48%; figs5c-mho-rarely-overlaps is met under the four mean-value readings and
+    fails under the four maximum-value readings (a change to not reproduced is proposed for it). The
     behaviour half rests on fig1e-categorical-response, whose data are not in the dataset.
   deviations:
   - Judged on figs5b-shared-glomerulus and figs5c-mho-rarely-overlaps as tested here.
@@ -310,10 +321,15 @@ outcomes:
     9.8 um lateral with SDs up to 14.0 um; 6G (1 to 10 ants) lies 7.6 to 20.8 um lateral with SDs of 1.3
     to 8.8 um. The image axes are those the files give ("up is lateral, right is anterior"); a baseline
     image of ant1-m4-d26-y2022 with the three centres marked shows PGa anterior and 6G lateral of PGb,
-    as in Figure 5B.
+    as in Figure 5B. The direction conditions do not hold in every ant under every reading, since the
+    centres are taken again after identification; PGa is not anterior in every ant under aiiy bc, biix
+    bd and biiy bd, and 6G is not lateral in every ant under aiix bd, aiiy ad and bd, aiy ad and bd, biix
+    ac and biiy ac.
   deviations:
   - Centres were taken on 4 x 4 binned per-plane maps (1.16 um) in PGb's plane.
-  - PGa anterior and 6G lateral of PGb hold by construction, since M4 identifies them by these directions.
+  - M4 identifies PGa and 6G by their direction from PGb, but the centres measured here are taken again
+    on the defining odors' maps, so the direction conditions are tested and do not hold by construction
+    (round 1 said they did, which the outputs do not show).
 - claim: fig5c-s6-tuning
   outcome: partially_reproduced
   assumed: true
@@ -328,12 +344,15 @@ outcomes:
     which the criterion counts as neither a response nor no response. The sets of PGb, PGa and 6G differ
     under the disc. With the region ROI, which takes in neighbours within 17.5 um, PGb responds to 6MHO
     in some fits and under aiiy the sets differ in one of four fits. No reading meets the whole criterion;
-    the PGb and 6G parts hold.'
+    the PGb and 6G parts hold. For the region ROI, 618 of the 1,684 traces had no disc pixel of at least
+    0.2 and fell back to the disc, which narrows the difference between the two ROIs.'
   deviations:
   - The single-glomerulus traces are computed for two identifications, bix (the adopted M2 reading) and
     aiiy (the reading that identifies PGa in the most ants, chosen in the notebook by that rule), for
     both plane readings and both of the claims file's ROIs (the 15 um disc and the region of at least
-    0.2 at the centre).
+    0.2 at the centre). aiiy uses the ROI's maximum and drawing a, the reading set aside for the counts
+    of figs5a-sparse-median-6 and figs5c-mho-rarely-overlaps, and 356 of drawing a's 436 regions are under
+    10 um across; it is used only because it finds PGa in the most ants, and the PGa results rest on it.
   - 'The outcome rests on the disc ROI (the claims file''s first M3 ROI and the typical glomerulus of
     Figure 5D), adopted as an assumption: the region of at least 0.2 is chosen on the same trial''s peak
     map and absorbs neighbouring glomeruli.'
@@ -353,12 +372,16 @@ outcomes:
     peak for 36.1 to 37.3 s. PGa is identified only under aiiy (9 trials from 3 ants at 48%, 24 from 4
     pooled); its heptanol and hexanol traces end at -0.149 to 0.046, but its hexanol trace peaks at only
     0.129 to 0.148. With the region ROI the PGb heptanol trace ends at 0.272 to 0.472 and the criterion
-    fails. The PGb and 6G parts hold; the PGa part rests on 3 or 4 ants under one identification.
+    fails. The PGb and 6G parts hold; the PGa part rests on 3 or 4 ants under one identification, and
+    with no clear hexanol response in PGa it passes trivially. For the region ROI, 618 of the 1,684 traces
+    fell back to the disc (no disc pixel of at least 0.2).
   deviations:
   - The single-glomerulus traces are computed for two identifications, bix (the adopted M2 reading) and
     aiiy (the reading that identifies PGa in the most ants, chosen in the notebook by that rule), for
     both plane readings and both of the claims file's ROIs (the 15 um disc and the region of at least
-    0.2 at the centre).
+    0.2 at the centre). aiiy uses the ROI's maximum and drawing a, the reading set aside for the counts
+    of figs5a-sparse-median-6 and figs5c-mho-rarely-overlaps, and 356 of drawing a's 436 regions are under
+    10 um across; it is used only because it finds PGa in the most ants, and the PGa results rest on it.
   - The outcome rests on the disc ROI, as for fig5c-s6-tuning.
   - Each plane's row band is stabilized (phase correlation against the baseline mean, as for the maps);
     the unstabilized disc trace is kept for comparison (PGb peak fold change, median absolute difference
@@ -376,13 +399,17 @@ outcomes:
     to 3.6 s and 80% for 4.8 to 8.4 s, against about 30 s, and returns 27.5 to 56.6 s after odor presentation,
     against 80 +/- 8 s (measured gives aiiy, disc, plane a, reading ade: the 80% plateau and the return
     below baseline mean plus 3 SD from odor onset). With the region ROI the return is 70.8 to 91.5 s but
-    the plateau 7.2 to 15.7 s. One trial returns more than 100 s after odor presentation (100.7 to 105.7
-    s). None of the 64 combinations meets the criterion.'
+    the plateau 7.2 to 15.7 s. Under the disc one trial returns more than 100 s after odor presentation
+    (100.7 to 105.7 s by onset reading); under the region ROI with return reading b two trials do (105.9
+    to 110.9 s and 100.7 to 105.7 s). For the region ROI, 618 of the 1,684 traces fell back to the disc
+    (no disc pixel of at least 0.2). None of the 64 combinations meets the criterion.'
   deviations:
   - The single-glomerulus traces are computed for two identifications, bix (the adopted M2 reading) and
     aiiy (the reading that identifies PGa in the most ants, chosen in the notebook by that rule), for
     both plane readings and both of the claims file's ROIs (the 15 um disc and the region of at least
-    0.2 at the centre).
+    0.2 at the centre). aiiy uses the ROI's maximum and drawing a, the reading set aside for the counts
+    of figs5a-sparse-median-6 and figs5c-mho-rarely-overlaps, and 356 of drawing a's 436 regions are under
+    10 um across; it is used only because it finds PGa in the most ants, and the PGa results rest on it.
   - Each plane's row band is stabilized (phase correlation against the baseline mean, as for the maps);
     the unstabilized disc trace is kept for comparison (PGb peak fold change, median absolute difference
     0.035, largest 0.591, r = 0.98; 3 of 129 trials change side of 0.2). Volume times include the centre
@@ -396,14 +423,17 @@ outcomes:
     fit with 18 PGa and 48 PGb traces at 48% (with the disc 8 or 9 PGa traces never exceed the bound and
     are excluded, with the region 2 or 3; 1 PGb trace with the disc). Across the 12 combinations of ROI,
     plane and p-value reading, 1 to 4 of the 5 effects have p < 0.05, and the time-to-maximum interaction
-    has p < 0.05 in 9 of 12, where the paper reports p = 0.88. All fits converged. The evidence is weak,
-    with PGa from 3 ants against the paper's 8.
+    has p < 0.05 in 9 of 12, where the paper reports p = 0.88. Of the 24 sets of fits, 23 converged; the
+    ML fits of reading (a) for onset with the region ROI and plane a did not. The evidence is weak, with
+    PGa from 3 ants against the paper's 8.
   assumed: true
   deviations:
   - The single-glomerulus traces are computed for two identifications, bix (the adopted M2 reading) and
     aiiy (the reading that identifies PGa in the most ants, chosen in the notebook by that rule), for
     both plane readings and both of the claims file's ROIs (the 15 um disc and the region of at least
-    0.2 at the centre).
+    0.2 at the centre). aiiy uses the ROI's maximum and drawing a, the reading set aside for the counts
+    of figs5a-sparse-median-6 and figs5c-mho-rarely-overlaps, and 356 of drawing a's 436 regions are under
+    10 um across; it is used only because it finds PGa in the most ants, and the PGa results rest on it.
   - The outcome rests on the aiiy identification, the only one under which the claim can be tested; under
     the adopted bix it cannot.
   - Each plane's row band is stabilized (phase correlation against the baseline mean, as for the maps);
@@ -703,3 +733,247 @@ verifications:
       half is blocked (data_missing, as fig1e).
     response: Changed to not reproduced, since figs5b-shared-glomerulus is now not reproduced. figs5c-mho-rarely-overlaps
       is kept as reproduced (see that claim).
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebooks of the revision after round 1, with the conclusions and the summary,
+    the helper module, the attempt record and the claims file, with the paper. In reply the text was corrected where
+    the outputs did not support it (Summary, fig5d, figs7a, figs7c, fig3fg, README runtimes), outputs were added
+    (the figs5c criterion as written, the readings where the fig5d direction conditions fail, trials over 100 s,
+    convergence of every fit), the aiiy inconsistency and the region ROI's fallback to the disc were named, and
+    a change of figs5c-mho-rarely-overlaps to not reproduced was proposed.
+  results:
+  - claim: fig1cd-new-pheromones-leave-nest
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 15 blocked claims. 8 are blocked as data_missing: fig1cd, fig1e, the three fig1f claims,
+      table1, fig2b-s1a and figs2cf.'
+    response: No change needed.
+  - claim: fig1e-categorical-response
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 15 blocked claims. 8 are blocked as data_missing: fig1cd, fig1e, the three fig1f claims,
+      table1, fig2b-s1a and figs2cf.'
+    response: No change needed.
+  - claim: fig1f-hexanol-like-native
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 15 blocked claims. 8 are blocked as data_missing: fig1cd, fig1e, the three fig1f claims,
+      table1, fig2b-s1a and figs2cf.'
+    response: No change needed.
+  - claim: fig1f-mho-differs
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 15 blocked claims. 8 are blocked as data_missing: fig1cd, fig1e, the three fig1f claims,
+      table1, fig2b-s1a and figs2cf.'
+    response: No change needed.
+  - claim: fig1f-vehicle-differs
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 15 blocked claims. 8 are blocked as data_missing: fig1cd, fig1e, the three fig1f claims,
+      table1, fig2b-s1a and figs2cf.'
+    response: No change needed.
+  - claim: table1-transgenesis
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 15 blocked claims. 8 are blocked as data_missing: fig1cd, fig1e, the three fig1f claims,
+      table1, fig2b-s1a and figs2cf.'
+    response: No change needed.
+  - claim: fig2b-s1a-transgene-fluorescence
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 15 blocked claims. 8 are blocked as data_missing: fig1cd, fig1e, the three fig1f claims,
+      table1, fig2b-s1a and figs2cf.'
+    response: No change needed.
+  - claim: fig2cd-gcamp-in-osns
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 15 blocked claims. 7 are marked data: elsewhere in the claims file. The author kept
+      other/not_runnable as their reasons and explained why. I accept that and drop my round-1 data_missing reason.'
+    response: No change needed.
+  - claim: figs1-expression-outside-al
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 15 blocked claims. 7 are marked data: elsewhere in the claims file. The author kept
+      other/not_runnable as their reasons and explained why. I accept that and drop my round-1 data_missing reason.'
+    response: No change needed.
+  - claim: figs2ab-glomerulus-counts
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 15 blocked claims. 7 are marked data: elsewhere in the claims file. The author kept
+      other/not_runnable as their reasons and explained why. I accept that and drop my round-1 data_missing reason.'
+    response: No change needed.
+  - claim: fig2e-t7-ammc
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 15 blocked claims. 7 are marked data: elsewhere in the claims file. The author kept
+      other/not_runnable as their reasons and explained why. I accept that and drop my round-1 data_missing reason.'
+    response: No change needed.
+  - claim: fig2f-ablation
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 15 blocked claims. 7 are marked data: elsewhere in the claims file. The author kept
+      other/not_runnable as their reasons and explained why. I accept that and drop my round-1 data_missing reason.'
+    response: No change needed.
+  - claim: ablation-al-volume-trend
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 15 blocked claims. 7 are marked data: elsewhere in the claims file. The author kept
+      other/not_runnable as their reasons and explained why. I accept that and drop my round-1 data_missing reason.'
+    response: No change needed.
+  - claim: figs2cf-gcamp-ants-behavior
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 15 blocked claims. 8 are blocked as data_missing: fig1cd, fig1e, the three fig1f claims,
+      table1, fig2b-s1a and figs2cf.'
+    response: No change needed.
+  - claim: figs3-single-insertion
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 15 blocked claims. 7 are marked data: elsewhere in the claims file. The author kept
+      other/not_runnable as their reasons and explained why. I accept that and drop my round-1 data_missing reason.'
+    response: No change needed.
+  - claim: fig3f-general-odorants-unique
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with not_reproduced.
+    response: No change needed.
+  - claim: fig3fg-hexanone-broad
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (ratio 2.57 after the kernel fix). The explanation in the notes that "ethylpyrazine's area
+      falls more than 3-hexanone's" compares with round-1 numbers, which no current output shows.
+    response: Removed the explanation from the notes; they now say only that the round-1 ratio was 1.91 and that
+      the round-1 areas are not shown by the current notebook. Outcome kept.
+  - claim: figs4a-bilateral-symmetry
+    agrees: false
+    outcome: not_reproduced
+    reason: I still think this is not_reproduced. The criterion needs both parts in every ant, defines no partial
+      outcome, and the count part fails under every reading (cell 14). This is a classification point and the disagreement
+      is recorded.
+    response: 'Outcome kept as partially reproduced and the disagreement recorded, in the notes too: the correlation
+      part holds in all three ants and the count part fails, which the protocol''s partially_reproduced (holds only
+      in part) describes. The numbers are unchanged after the re-run.'
+  - claim: fig4b-vehicle-no-response
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with not_reproduced.
+    response: No change needed.
+  - claim: fig4-no-decreases
+    agrees: true
+    outcome: not_reproduced
+    reason: not_reproduced (under the reader's rule; the placement points to motion).
+    response: No change needed.
+  - claim: fig4-large-lasting-responses
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with not_reproduced.
+    response: No change needed.
+  - claim: figs5a-sparse-median-6
+    agrees: true
+    outcome: reproduced
+    reason: 'Reasonable. Its criterion accepts "a reading", so it hardly needs the assumption. In the Summary (cell
+      53) "the readings with the ROI''s maximum do not [meet the criteria]" is wrong for figs5a: biix and biiy meet
+      it (largest median 4, cell 15); the readings that fail are aiy, aiix and aiiy. Point 4 partly resolved: drawing
+      a was rebuilt as the claims file describes it, now 8 to 40 ROIs per ant, but 356 of its 436 regions are still
+      under 10 um across (median 3.9 um, smallest 1.3 um; cell 9). It still mostly yields sub-glomerular fragments.
+      That weakens the "both drawings meet it" support.'
+    response: 'Corrected the Summary: for figs5a-sparse-median-6, aiy, aiix and aiiy fail and biix and biiy meet
+      it. Drawing a''s fragments are the subject of the reader question already in questions/000467.yaml, and the
+      claim is tested as the claims file has it. Outcome kept.'
+  - claim: figs5a-concentration-more-glomeruli
+    agrees: true
+    outcome: reproduced
+    reason: 'Reasonable. 5 of the 8 readings meet it. As the notebook itself says, drawing ROIs at the higher concentration
+      favours the subset part. The Summary paragraph (cell 53) leaves out figs5a-concentration, which the table
+      marks "(assumed)". Point 4 partly resolved: drawing a was rebuilt as the claims file describes it, now 8 to
+      40 ROIs per ant, but 356 of its 436 regions are still under 10 um across (median 3.9 um, smallest 1.3 um;
+      cell 9). It still mostly yields sub-glomerular fragments.'
+    response: Added figs5a-concentration-more-glomeruli to the Summary paragraph, with the readings that fail (aiix,
+      aiiy, biix). Outcome kept.
+  - claim: figs5b-shared-glomerulus
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with not_reproduced.
+    response: No change needed.
+  - claim: figs5c-mho-rarely-overlaps
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The criterion says "Reproduced when, under each M2 reading...". The four ROI-maximum readings fail:
+      medians 1 to 3, with shared ROIs in 11 of 13 ants (cell 21). By that rule the outcome is not_reproduced. The
+      attempt applies the same "each reading" wording literally for figs5b but not for figs5c. The assumption is
+      stated, but it overrides the criterion.'
+    response: The author agrees. Outcome kept as reproduced, since no outcome may change in round 2, and a change
+      to not reproduced is proposed under `proposed`. The notebook now prints the criterion as written (met under
+      4 of 8 readings at both concentration readings, under every reading False) and the conclusion, Summary and
+      README state the proposed change.
+  - claim: fig6-shared-panic-pathway
+    agrees: true
+    outcome: not_reproduced
+    reason: 'fig6, imaging half: not_reproduced. fig6 is not affected by the figs5c point, since it is already not
+      reproduced.'
+    response: The notes and the conclusion now say that figs5c-mho-rarely-overlaps fails under the maximum-value
+      readings and that a change is proposed for it. Outcome kept.
+  - claim: fig5ab-focal-glomeruli
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with not_reproduced.
+    response: No change needed.
+  - claim: fig5d-stereotyped-positions
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 35, and the fig5d deviation: "PGa anterior and 6G lateral of PGb hold by construction". Cell 36
+      prints False for these: "PGa anterior in all" for aiiy bc, biix bd, biiy bd; "6G lateral in all" for aiix
+      bd, aiiy ad and bd, aiy ad and bd, biix ac, biiy ac. The centres are re-estimated after identification, so
+      the condition does not hold by construction. It does not change the outcome. My round-1 point 10 made the
+      same wrong claim.'
+    response: Removed the by-construction statement from the notebook and the deviation; the notebook now prints
+      the readings where a direction condition fails, and the notes list them. Outcome kept.
+  - claim: fig5c-s6-tuning
+    agrees: true
+    outcome: partially_reproduced
+    reason: partially_reproduced. The disc ROI is reasonable. These outcomes also rest on the aiiy identification,
+      which uses the ROI maximum and drawing a. That is the reading the attempt sets aside for figs5a and figs5c.
+      PGa comes from 4 ants (3 at 48%). The record states all this, but the inconsistency is not named. For the
+      region ROI, 618 of 1,684 traces fell back to the disc (cell 39). The conclusions do not say so, and it softens
+      the region-ROI comparisons in fig5c-s6, fig5c-6g-slow and figs7a.
+    response: 'Named the inconsistency in the deviation on the two identifications and in the notebook''s conclusions:
+      aiiy uses the ROI maximum and drawing a, the reading set aside for the counts, and 356 of drawing a''s 436
+      regions are under 10 um across. Added the region ROI''s fallback to the disc (618 of 1,684 traces) to the
+      notes and the conclusion cell. Outcome kept.'
+  - claim: fig5c-6g-slow
+    agrees: true
+    outcome: partially_reproduced
+    reason: partially_reproduced. The PGa part passes trivially. PGa's hexanol trace peaks at only 0.129 to 0.148,
+      so there is no response to decline. "Partial" is fair. The disc ROI is reasonable. These outcomes also rest
+      on the aiiy identification, which uses the ROI maximum and drawing a. That is the reading the attempt sets
+      aside for figs5a and figs5c. PGa comes from 4 ants (3 at 48%). The record states all this, but the inconsistency
+      is not named. For the region ROI, 618 of 1,684 traces fell back to the disc (cell 39). The conclusions do
+      not say so, and it softens the region-ROI comparisons in fig5c-s6, fig5c-6g-slow and figs7a.
+    response: 'Named the inconsistency in the deviation on the two identifications and in the notebook''s conclusions:
+      aiiy uses the ROI maximum and drawing a, the reading set aside for the counts, and 356 of drawing a''s 436
+      regions are under 10 um across. Added the region ROI''s fallback to the disc (618 of 1,684 traces) to the
+      notes and the conclusion cell. The notes now say the PGa part passes trivially. Outcome kept.'
+  - claim: figs7a-6g-extended
+    agrees: true
+    outcome: not_reproduced
+    reason: 'not_reproduced. Cell 49, and the figs7a notes: "One trial returns more than 100 s". Under the region
+      ROI with return reading b, two trials do (105.9 to 110.9 s and 100.7 to 105.7 s, cell 48). For the region
+      ROI, 618 of 1,684 traces fell back to the disc (cell 39). The conclusions do not say so, and it softens the
+      region-ROI comparisons in fig5c-s6, fig5c-6g-slow and figs7a.'
+    response: Corrected the notes and the conclusion (one trial under the disc, two under the region ROI with return
+      reading b) and added a printed count of trials over 100 s per reading. Added the region ROI's fallback to
+      the disc (618 of 1,684 traces) to the notes and the conclusion cell. Outcome kept.
+  - claim: figs7c-temporal-lme
+    agrees: true
+    outcome: not_reproduced
+    reason: not_reproduced. The figs7c notes say "All fits converged". Cell 51 prints convergence only for the coefficient-test
+      (c) fits, not for the ML fits behind reading (a). The disc ROI is reasonable. These outcomes also rest on
+      the aiiy identification, which uses the ROI maximum and drawing a. That is the reading the attempt sets aside
+      for figs5a and figs5c. PGa comes from 4 ants (3 at 48%). The record states all this, but the inconsistency
+      is not named.
+    response: 'The notebook now prints convergence for every fit, the ML fits of reading (a) included: 23 of 24
+      sets converged, and the ML fits for onset with the region ROI and plane a did not. The notes say so. Named
+      the inconsistency in the deviation on the two identifications and in the notebook''s conclusions: aiiy uses
+      the ROI maximum and drawing a, the reading set aside for the counts, and 356 of drawing a''s 436 regions are
+      under 10 um across. Outcome kept.'

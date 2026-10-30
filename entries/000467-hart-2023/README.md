@@ -17,7 +17,7 @@ The behaviour, transgenesis, confocal and genome data of the paper are not in it
 | At most a median of 6 glomeruli per pheromone | Reproduced (assumed) |
 | Higher concentrations recruit a few more glomeruli | Reproduced (assumed) |
 | One glomerulus (PGb) shared by the three panic pheromones | Not reproduced |
-| 6MHO rarely shares glomeruli with the others | Reproduced (assumed) |
+| 6MHO rarely shares glomeruli with the others | Reproduced (assumed); change to not reproduced proposed |
 | PGb, 6G and PGa found in 13, 13 and 11 of 13 ants, PGb mid-depth | Not reproduced |
 | Tuning of PGb, PGa and 6G | Partially reproduced (assumed) |
 | PGb and PGa responses decline, 6G responses are slow | Partially reproduced (assumed) |
@@ -31,7 +31,10 @@ The behaviour, transgenesis, confocal and genome data of the paper are not in it
 "(assumed)" marks an outcome that rests on the adopted reading of a method the paper leaves open: the
 paper drew its ROIs by eye, and the counts of responding glomeruli rest on the ROI's mean value with
 the Methods' trial-mean rule; the single-glomerulus outcomes rest on the identification of the focal
-glomeruli and on a 15 um disc ROI. The other readings are shown in the notebooks.
+glomeruli (under aiiy, a reading with the ROI's maximum, for PGa) and on a 15 um disc ROI. The other
+readings are shown in the notebooks. For 6MHO's overlaps the criterion asks for every reading, and the
+readings with the ROI's maximum fail, so a change of that outcome to not reproduced is proposed for the
+next verification round.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and
 the differences from the paper's method.
@@ -39,10 +42,11 @@ the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000467-hart-2023-01.yaml`](../../attempts/000467-hart-2023-01.yaml).
 
-- `general_odorants.ipynb`: the general odorant and bilateral experiments (about 6 minutes).
+- `general_odorants.ipynb`: the general odorant and bilateral experiments (4.1 minutes in the last run).
 - `alarm_pheromones.ipynb`: the alarm pheromone experiment at each ant's higher concentration, the
-  focal glomeruli and their traces (about 21 minutes).
-- `concentration.ipynb`: responding glomeruli at both concentrations (about 17 minutes).
+  focal glomeruli and their traces (17.3 minutes in the last run, 24.6 in an earlier
+  one; the time depends on the archive's transfer speed).
+- `concentration.ipynb`: responding glomeruli at both concentrations (11.9 minutes in the last run, 20.2 in an earlier one).
 - `al_imaging.py`: streaming the plane files, peak fold change maps, ROIs and responding glomeruli,
   identification of the focal glomeruli and their traces. Other notebooks on this dandiset can import it.
 
