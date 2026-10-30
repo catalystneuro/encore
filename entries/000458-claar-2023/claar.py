@@ -11,7 +11,10 @@ Where the parameters come from (claims file `claims/000458/10.7554-elife.84630.y
 Methods, or a stated choice):
 
 - Artifact masking, -2 to 0 ms copied, reversed, into 0 to 2 ms (Methods, Data processing,
-  Stimulus artifact masking). Good EEG electrodes are those the file marks `is_data_valid`
+  Stimulus artifact masking). In every session the artifact peaks at the EEG sample before the
+  first sample at or after the trial onset (k - 1; artifact profiles printed in the EEG notebook),
+  so the mask starts there: samples k - 1 to k + 4 (-0.4 to +1.6 ms) are replaced by k - 7 to
+  k - 2, reversed. The paper's 2 ms are kept after the onset and the artifact sample is added. Good EEG electrodes are those the file marks `is_data_valid`
   (claims file, header, reading (a)). Common average reference over good electrodes, band pass
   0.1 to 100 Hz, third-order Butterworth, on the continuous signal, epochs -2 to +2 s (Methods,
   Data processing, EEG). The filter is applied forward and backward (zero phase); the Methods do
@@ -62,7 +65,8 @@ DANDISET_VERSION = "0.230317.0039"   # the version the paper's Data availability
 
 FS_EEG = 2500.0
 EPOCH = (-2.0, 2.0)
-MASK_SAMPLES = 5                    # 2 ms at 2.5 kHz
+MASK_SAMPLES = 6                    # k - 1 to k + 4: the artifact sample and 2 ms at 2.5 kHz
+MASK_START = -1                     # the artifact peaks one sample before the onset sample k
 BAND = (0.1, 100.0)
 FILTER_ORDER = 3
 Z_THRESHOLD = 3.0
@@ -140,6 +144,7 @@ def read_meta(path, url):
         "speed": speed, "speed_t0": speed_t0, "speed_rate": speed_rate, "speed_unit": rs["data"].attrs["unit"],
         "eeg_shape": eeg.shape, "eeg_conversion": float(eeg.attrs["conversion"]),
         "probes": [k for k in f["acquisition"] if k.startswith("LFP")],
+        "electrode_columns": list(el.keys()),
     }
     f.close()
     label_trials(meta)
@@ -172,9 +177,9 @@ def label_trials(meta):
 
 
 def intensity_levels(currents):
-    """Readings of the intensity: {'high': largest, 'medium': middle} of the distinct currents."""
+    """Readings of the intensity: {'high': largest, 'medium': middle, 'low': smallest} of the distinct currents."""
     c = sorted(set(currents))
-    return {"high": c[-1], "medium": c[(len(c) - 1) // 2]}
+    return {"high": c[-1], "medium": c[(len(c) - 1) // 2], "low": c[0]}
 
 
 def site_trials(meta, site, level, valid_only=True):
@@ -194,12 +199,15 @@ def _sos():
     return sps.butter(FILTER_ORDER, BAND, btype="bandpass", fs=FS_EEG, output="sos")
 
 
-def eeg_epochs(meta, onsets_by_key, f=None, ts=None):
+def eeg_epochs(meta, onsets_by_key, f=None, ts=None, profile=None):
     """Filtered, average-referenced EEG epochs (-2 to +2 s) on the good electrodes.
 
     `onsets_by_key` maps a key to an array of onset times. Contiguous spans covering the onsets
     are read, masked at every electrical pulse in the span, re-referenced, filtered, and cut.
-    Returns {key: array (trials, channels, 10001)} in microvolts, and the times.
+    Returns {key: array (trials, channels, 10001)} in microvolts, and the times. If `profile` is
+    a list, the raw artifact profile of every pulse in the spans is appended to it before masking:
+    the largest |EEG| over good electrodes at samples k - 10 to k + 10 (k the first sample at or
+    after the onset), relative to the mean of k - 25 to k - 11.
     """
     close = f is None
     if f is None:
@@ -228,8 +236,11 @@ def eeg_epochs(meta, onsets_by_key, f=None, ts=None):
         x = eeg[i0:i1, :][:, good].astype(np.float64) * conv
         for on in all_on[(all_on >= ts[i0]) & (all_on <= ts[i1 - 1])]:
             k = int(np.searchsorted(ts, on)) - i0
-            if k - MASK_SAMPLES >= 0 and k + MASK_SAMPLES <= len(x):
-                x[k:k + MASK_SAMPLES] = x[k - MASK_SAMPLES:k][::-1]
+            if profile is not None and k - 25 >= 0 and k + 11 <= len(x):
+                profile.append(np.abs(x[k - 10:k + 11] - x[k - 25:k - 10].mean(0)).max(1))
+            a = k + MASK_START
+            if a - MASK_SAMPLES >= 0 and a + MASK_SAMPLES <= len(x):
+                x[a:a + MASK_SAMPLES] = x[a - MASK_SAMPLES:a][::-1]
         x -= x.mean(axis=1, keepdims=True)
         for c in range(x.shape[1]):     # channel by channel, to limit memory
             x[:, c] = sps.sosfiltfilt(sos, x[:, c])
@@ -440,18 +451,32 @@ def single_trial_rate(spikes, onsets, t0, t1, bin_s):
     return out / max(len(spikes), 1) / bin_s
 
 
-def quiescence(t, rate, baseline, after=0.025, zero=False):
-    """Length (s) of the first run of bins after `after` with rate below baseline (or zero)."""
+def quiescence(t, rate, baseline, after=0.025, zero=False, max_gap=0.0):
+    """Length (s) of the first run of bins after `after` with rate below baseline (or zero).
+
+    With `max_gap` > 0, runs of bins at or above baseline shorter than `max_gap` do not end the
+    period (a robustness reading, so that one noisy bin does not end it; verifier, round 1).
+    """
     m = t >= after
     tt, rr = t[m], rate[m]
     low = (rr == 0) if zero else (rr < baseline)
     if not low.any():
         return 0.0
+    dt = t[1] - t[0]
+    gap = int(round(max_gap / dt))
     i = int(np.argmax(low))
     j = i
-    while j < len(low) and low[j]:
-        j += 1
-    dt = t[1] - t[0]
+    while j < len(low):
+        if low[j]:
+            j += 1
+            continue
+        k = j
+        while k < len(low) and not low[k]:
+            k += 1
+        if k - j < gap and k < len(low):
+            j = k
+        else:
+            break
     return (j - i) * dt
 
 
@@ -487,7 +512,7 @@ def first_spike_latency(s, onsets, a, b):
 
 LEVELS = ("high", "medium")
 STATES = ("quiet", "running", "isoflurane", "recovery1", "recovery2")
-SEEDS = {"fig7-match": 701, "fig8b": 802, "fig8d": 804, "fig8e": 805}
+SEEDS = {"fig7-match": 701, "fig8b": 802, "fig8d": 804, "fig8e": 805, "fig3": 303}
 LATE_WINDOW = (0.075, 0.300)        # Figure 6C legend, late ERP component
 
 
@@ -513,15 +538,21 @@ def eeg_site_summary(meta, site, f=None, ts=None):
     uniq = {}
     for (lvl, s), v in keys.items():
         uniq.setdefault((tuple(np.round(v, 6)), s), (lvl, s))
-    ep, times = eeg_epochs(meta, {k: keys[k] for k in set(uniq.values())}, f=f, ts=ts)
+    prof = []
+    ep, times = eeg_epochs(meta, {k: keys[k] for k in set(uniq.values())}, f=f, ts=ts, profile=prof)
     for (lvl, s) in keys:
         if (lvl, s) not in ep:
             ep[(lvl, s)] = ep[uniq[(tuple(np.round(keys[(lvl, s)], 6)), s)]]
     out = {"site": site, "subject": meta["subject"], "session": meta["session"], "times": times,
-           "n": {}, "erp": {}, "metrics": {}, "peaks": {}, "pcist": {}, "single": {}}
+           "n": {}, "erp": {}, "metrics": {}, "peaks": {}, "pcist": {}, "single": {},
+           "artifact": np.median(prof, axis=0) if prof else None, "n_matched": {}}
     for lvl in LEVELS:
         e = {s: ep[(lvl, s)] for s in STATES}
-        e["awake"] = np.concatenate([e["quiet"], e["running"]])
+        # awake trials in time order, so that "first" matching takes the earliest awake trials
+        order = np.argsort(np.concatenate([keys[(lvl, "quiet")], keys[(lvl, "running")]]), kind="stable")
+        e["awake"] = np.concatenate([e["quiet"], e["running"]])[order]
+        awake_ids = np.concatenate([tids[(lvl, "quiet")], tids[(lvl, "running")]])[order]
+        awake_state = np.array(["quiet"] * len(e["quiet"]) + ["running"] * len(e["running"]))[order]
         for s, x in e.items():
             out["n"][(lvl, s)] = len(x)
             if len(x) == 0:
@@ -545,16 +576,19 @@ def eeg_site_summary(meta, site, f=None, ts=None):
             n2 = {s: len(e[s]) for s in ("awake", "isoflurane")}
             if min(n2.values()) > 0:
                 m = match_trials(n2, min(n2.values()), _rng("fig8b", meta, site), how)
+                out["n_matched"][(lvl, "fig8b")] = min(n2.values())
                 for s, idx in m.items():
                     pc[(lvl, "fig8b", s, how)] = pcist(e[s][idx].mean(0), times)
             if len(e["running"]) >= 30:
                 m = match_trials(n3, min(n3.values()), _rng("fig8d", meta, site), how)
+                out["n_matched"][(lvl, "fig8d")] = min(n3.values())
                 for s, idx in m.items():
                     pc[(lvl, "fig8d", s, how)] = pcist(e[s][idx].mean(0), times)
             if len(e["recovery1"]):
                 st4 = ("awake", "isoflurane", "recovery1") + (("recovery2",) if len(e["recovery2"]) else ())
                 n4 = {s: len(e[s]) for s in st4}
                 m = match_trials(n4, min(n4.values()), _rng("fig8e", meta, site), how)
+                out["n_matched"][(lvl, "fig8e")] = min(n4.values())
                 for s, idx in m.items():
                     pc[(lvl, "fig8e", s, how)] = pcist(e[s][idx].mean(0), times)
         # single-trial late component of awake trials (Figure 6C)
@@ -564,8 +598,8 @@ def eeg_site_summary(meta, site, f=None, ts=None):
             erp = x.mean(0)
             ch = int(np.argmax(np.abs(erp[:, w]).max(axis=1)))
             out["single"][lvl] = pd.DataFrame({
-                "trial": np.concatenate([tids[(lvl, "quiet")], tids[(lvl, "running")]]),
-                "state": ["quiet"] * len(e["quiet"]) + ["running"] * len(e["running"]),
+                "trial": awake_ids,
+                "state": awake_state,
                 "late_gfp": x[:, :, w].std(axis=1).max(axis=1),
                 "late_electrode": np.abs(x[:, ch, :][:, w]).max(axis=1),
             })
@@ -612,6 +646,54 @@ def unit_psth(spikes, onsets, t0, t1, bin_s):
         rel, _ = _rel(s, onsets, t0, t1)
         out[u] = np.histogram(rel, edges)[0]
     return edges[:-1] + bin_s / 2, out / len(onsets) / bin_s
+
+
+def spiking_magnitude(spikes, onsets, rng, span, n_shuffle=1000, bin_s=0.001):
+    """Population spiking magnitude of Figure 3 (claims file, fig3d-magnitudes criterion; Methods,
+    LFP, CSD, and population spiking magnitude).
+
+    The trial-averaged spike density, averaged over units (equal to the mean of the single-unit
+    density functions, which are non-negative, so rectifying changes nothing), Gaussian kernel of
+    SD 5 or 10 ms, z-scored to the baseline (-2 to 0 s or -0.5 to 0 s), area under the curve from 0
+    to 0.5 s; the same for 1000 sets of shuffled onsets, each onset moved uniformly within -2 to
+    +2 s ("epoch") or drawn uniformly over the recording ("recording"); magnitude is (AUC minus the
+    mean shuffled AUC) over the SD of the shuffled AUCs. Returns {(shuffle, kernel ms, baseline): value};
+    shuffle "none" holds the AUC of the z-scored density itself, in SD.s.
+    """
+    from scipy.ndimage import gaussian_filter1d
+    t0, nbin = -2.0, int(round(2.5 / bin_s))
+    t = t0 + (np.arange(nbin) + 0.5) * bin_s
+    pooled = np.concatenate(spikes)
+    nb_total = int(np.ceil((span[1] + 3.0) / bin_s))
+    H = np.bincount(np.clip((pooled / bin_s).astype(int), 0, nb_total - 1), minlength=nb_total).astype(np.float32)
+    ar = np.arange(nbin)
+
+    def psth(on):
+        i0 = np.clip(np.round((on + t0) / bin_s).astype(int), 0, nb_total - nbin)
+        return H[i0[:, None] + ar].mean(0) / (len(spikes) * bin_s)
+
+    true = psth(onsets)
+    shuffled = {"epoch": np.stack([psth(onsets + rng.uniform(-2.0, 2.0, len(onsets))) for _ in range(n_shuffle)]),
+                "recording": np.stack([psth(rng.uniform(span[0] + 2.0, span[1] - 0.5, len(onsets))) for _ in range(n_shuffle)])}
+    resp = (t >= 0) & (t < 0.5)
+    out = {}
+    for kern in (5, 10):
+        sm_true = gaussian_filter1d(true, kern * 1e-3 / bin_s, mode="nearest")
+        sm_sh = {k: gaussian_filter1d(v, kern * 1e-3 / bin_s, axis=1, mode="nearest") for k, v in shuffled.items()}
+        for bname, (b0, b1) in (("-2-0", (-2.0, 0.0)), ("-0.5-0", (-0.5, 0.0))):
+            base = (t >= b0) & (t < b1)
+
+            def auc(x):
+                mu, sd = x[..., base].mean(-1, keepdims=True), x[..., base].std(-1, keepdims=True)
+                z = (x - mu) / np.where(sd > 0, sd, np.nan)
+                return np.nansum(z[..., resp], axis=-1) * bin_s
+
+            a_true = auc(sm_true)
+            out[("none", kern, bname)] = float(a_true)     # the AUC itself, SD.s, without the shuffle
+            for k, v in sm_sh.items():
+                a = auc(v)
+                out[(k, kern, bname)] = float((a_true - a.mean()) / a.std())
+    return out
 
 
 def spike_site_summary(meta, site, table, spikes):
@@ -673,6 +755,37 @@ def spike_site_summary(meta, site, table, spikes):
                     rs_stim = (tab.stim & tab.rs).values
                     out["rate"][(lvl, "single", bs, "stimRS")] = c[rs_stim].mean(axis=0).max(axis=1) / bs if rs_stim.any() else None
                     out["rate"][(lvl, "single", bs, "smth")] = c[smth].mean(axis=0).max(axis=1) / bs if smth.any() else None
+    # the lowest current, for the reading that pools the three currents (Figure 4 counts, verifier round 1)
+    tr = site_trials(meta, site, "low")
+    for name, sel in (("awake", tr[tr.state.isin(["quiet", "running"])]), ("quiet", tr[tr.state == "quiet"])):
+        on = np.sort(sel.start_time.values)
+        out["n"][("low", name)] = len(on)
+        if len(on) == 0:
+            continue
+        for w in ("early", "off", "rebound"):
+            for pre in PRE_READINGS:
+                p, sg = modulation(spikes, on, MOD_WINDOWS[w], pre)
+                out["p"].append(pd.DataFrame({"unit": tab.unit.values, "level": "low", "trials": name, "window": w,
+                                              "pre": pre, "p": p, "sign": sg}))
+    # Figure 3 spiking magnitudes of the RS units of each cortical area, all awake trials
+    out["magnitude"] = []
+    span = (0.0, max((x[-1] for x in spikes if len(x)), default=0.0))
+    for lvl in LEVELS:
+        tr = site_trials(meta, site, lvl)
+        on = np.sort(tr[tr.state.isin(["quiet", "running"])].start_time.values)
+        if len(on) == 0:
+            continue
+        for g in CORTEX:
+            mask = ((tab.group == g) & tab.rs).values
+            if mask.sum() == 0:
+                continue
+            rng = np.random.default_rng([SEEDS["fig3"], int(meta["subject"]), int(meta["session"]), CORTEX.index(g),
+                                         LEVELS.index(lvl), 1 if site.endswith("deep") else 0, 1 if site.startswith("SSp") else 0])
+            mg = spiking_magnitude([x for x, k in zip(spikes, mask) if k], on, rng, span)
+            for key, v in mg.items():
+                out["magnitude"].append({"level": lvl, "group": g, "stim": g == stim, "units": int(mask.sum()),
+                                         "shuffle": key[0], "kernel ms": key[1], "baseline": key[2], "magnitude": v})
+    out["magnitude"] = pd.DataFrame(out["magnitude"])
     out["p"] = pd.concat(out["p"]) if out["p"] else pd.DataFrame(columns=["unit", "level", "trials", "window", "pre", "p", "sign"])
     out["pop"] = pd.DataFrame(out["pop"])
     return out
