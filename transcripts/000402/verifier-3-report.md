@@ -1,0 +1,22 @@
+**Verifier report, round 3: doi:10.1038/s41586-025-08790-w on DANDI:000402 (0.230307.2132)**
+
+The attempt record proposes a change of outcome for 2 claims, em-sections and synapse-detection. Both are verified as blocked (`too_large`), and both proposals are to partially reproduced. The analysis for both is in `em_volume_counts.ipynb`. Cell numbers below are 0-based positions in that notebook; the execution counts are in brackets.
+
+| Claim | Proposed outcome | Agree | My outcome if different | Reason |
+|---|---|---|---|---|
+| em-sections | partially_reproduced | Yes | | **Cell 5 [2]:** reads the 64 nm imagery on a grid of 2,288 chunks at each end of each subvolume. The section numbers are the imagery's own z indices.<br>• Subvolume 35 has no data before section 7,931, then 737 or more sampled chunks with data per section. That matches the paper's 7,931 exactly, so the numbering agrees with the paper's.<br>• Subvolume 65 drops from 573 to 596 chunks with data to 0 after section 27,882.<br>**Cell 6 [3]:** a sparser grid and 16 chunks at 16 nm give the same last section. The 8 nm scale was not checked, which is minor.<br>**Cell 7 [4]:** applies the criterion as written.<br>• Sections 7,931 to 27,882 give 19,952 sections, against 19,974 with tolerance 0, so the count fails.<br>• The share of subvolume 35 is 34.47% to 34.67% under all 4 definitions printed (expected 31.5 to 38.5), so the share passes. Since all 4 are printed and all pass, no definition was picked to get the result.<br>• Sections cut and imaged are not in the metadata, and the criterion only asks for them if they are.<br>The sampling covers a small part of each section, and the result goes against the author, so it was not chosen to reach a result. With one quantity passing and one failing, partially reproduced fits. |
+| synapse-detection | partially_reproduced | Yes | | **Cell 10 [5]:** streams both tables in full and counts lines.<br>• 20.05 of 20.0 GB and 13.81 of 13.8 GB are read.<br>• The progress lines grow evenly (84, 168, 253, 337 million; 68, 135, 186 million), so the whole gzip stream was decoded.<br>• The header handling is backed by the printed first lines: none for v1181, a column-name line for minnie35.<br>**Results:** 337,312,429 synapses in subvolume 65 (expected 337 ± 33.7 million) and 186,268,895 in subvolume 35 (expected 186 ± 18.6 million). Both pass.<br>**Choice of table:**<br>• Version 1181 is the version the paper's code reads (claims file header), so it was not chosen for the result.<br>• Cell 2 [1] lists the v1078 and v1300 exports at about the same size (20,045 MB), so the version would hardly change the count.<br>**Untested:** precision, recall and F1 need the manual annotations. The criterion allows testing them only if the annotations are public, and none were found. The search covered only the listed BossDB prefixes, which is adequate since the paper names no location.<br>With two quantities passing and three untestable, partially reproduced fits. |
+
+**Statements that do not match the printed output** (no outcome changes):
+- **Run times:**
+  - Cell 5 prints 213 s. The proposed em-sections reason and the round-2 response say the imagery "is read in 2 minutes".
+  - Cell 10 prints 1,288 s, about 21 minutes. The proposed synapse-detection reason says "12 minutes", cell 9 says "about 11 minutes while preparing", and the README says the whole notebook "took 14 minutes".
+- **Imagery overlap:** the overlap from 14,825 to 14,847 is reported in cell 8. The first section of subvolume 65's imagery (14,825, against the paper's 14,816) is not in the record's proposed reason. That is acceptable, since the criterion's expected quantities do not test it.
+
+**Where the claims file departs from the paper** (reported, not corrected):
+- **em-sections:**
+  - The paper gives section indices ("sections 7,931–27,904") and "800-µm", not a count. The tolerance-0 count of 19,974 is the reader's inclusive arithmetic.
+  - 27,904 is the metadata's exclusive end of subvolume 65 (14,816 + 13,088, cell 5). The paper's upper bound may therefore be exclusive, or may be a bounding box and not the last section with data.
+  - The criterion also states that the released imagery gives the paper's ranges, which the imagery does not bear out.
+  - None of this changes my outcome, because the criterion is applied as written.
+- **synapse-detection:** the statement includes 98% partner assignment accuracy on 191 held-out synapses, but there is no expected quantity for it. It is not tested and should be listed as untested.
