@@ -15,9 +15,11 @@ Where the parameters come from:
   encoding 0.9 to 1.7 s, maintenance 1.7 to 2.6 s, test 2.6 to 4.6 s. These are the durations of
   the claims file's opening comment (Methods 2.2 and 2.3); the notebook checks them against the
   epochs table of every file.
-- Region of a unit: from the label of its microwire bundle, AH and PH hippocampus, EC entorhinal
-  cortex, A amygdala, as the claims file (neurons-recorded) and the Table 1 legend of the paper
-  define them. The `location` column is not used; see the notebook's data check.
+- Region of a unit: the claims file (neurons-recorded) names two readings. `region_of` gives
+  reading (b), the electrode name of the unit's microwire bundle, AH and PH hippocampus, EC
+  entorhinal cortex, A amygdala (Table 1 legend). Reading (a), the anatomical location of the
+  microwire tips (Figure 1d legend), is built in the notebook's data check from the atlas label of
+  each bundle's tip contact. The `location` column is not used; see the notebook's data check.
 - Response time: the files' response timestamps are the conversion's `Response time` plus the
   trial start plus 1.7 s (usz-neuro-conversion, convert_Human_MTL_units_visual_WM.ipynb,
   `write_behavior` and `_get_time_offset`, commit c31dad914fd3f63476750dffff30f119386f60ec).

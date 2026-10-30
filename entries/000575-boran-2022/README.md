@@ -33,7 +33,8 @@ claims that compare trials by their labels (workload, set size, correct against 
 in the files, the workload information of the spikes is at chance and peaks when the spikes of each
 trial window are paired with the label of the trial three later, which points to a misalignment of
 the spikes and the trial table in part of the sessions. The units' regions as the paper assigned
-them are not in the files. The attempt record, with the reasons and the differences from the
+them are not in the files; the per-region claims are tested both by the atlas label of each
+bundle's tip contact and by the electrode name, and give the same outcomes under both. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/000575-boran-2022-01.yaml`](../../attempts/000575-boran-2022-01.yaml).
 
 - `reproduce_boran_2022.ipynb`: the analysis. It takes about 18 minutes, most of it in permutation
