@@ -18,9 +18,9 @@ the MUA power peak.
 | Spike-LFP coupling strongest at 3-6 Hz, then 30-60 Hz | Partially reproduced (assumed LFP site) |
 | Six gamma ICs consistent across mice | Partially reproduced (assumed) |
 | Volume-conducted gamma fraction 0.34; superficial ICs stronger | Not reproduced |
-| Six gamma coherence clusters, the same across states | Reproduced (assumed) |
+| Six gamma coherence clusters, the same across states | Reproduced (assumed), only under the reading that imposes six clusters and compares each mouse with the across-mouse median, which can hardly fail; each boundary ranges by 620 to 800 um across mice |
 | Slow oscillation dominant in non-REM and deep layers | Partially reproduced |
-| 3-6 Hz power largest in layer 4; slow gamma superficial, waking > REM > non-REM | Reproduced |
+| 3-6 Hz power largest in layer 4; slow gamma superficial, waking > REM > non-REM | Reproduced (assumed for layer 4); the criterion tests only the state order of slow gamma, and in waking it is not larger superficially |
 | 3-6 Hz power anticorrelated with theta | Not reproduced (assumed) |
 | E and I cells locked to the 3-6 Hz trough | Reproduced (assumed) |
 | Eight K-means unit clusters | Not reproduced |

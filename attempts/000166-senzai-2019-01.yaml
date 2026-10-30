@@ -68,7 +68,11 @@ outcomes:
     clustering converges to 8 to 20 clusters from 64 random labels (6 to 10 from 16), and against the matching IC boundaries
     three of five boundaries differ (p = 0.033, 0.013, 0.028; median differences 3.5 to 5.8 sites). The comparison with
     the across-mouse median can hardly fail by construction, so the outcome shows only that six clusters can be placed
-    with boundaries spread around common depths (medians 21, 13.5 and 3 sites above c and 4.5 and 12.5 below it).'
+    with boundaries spread around common depths (medians 21, 13.5 and 3 sites above c and 4.5 and 12.5 below it). Each
+    boundary ranges across mice by 31 to 40 sites (620 to 800 um; boundary 1 from 46.5 to 12.5 sites above c), wider
+    than the 220 to 620 um spread of the landmark distances that fig1g-landmark-distances-consistent calls inconsistent.
+    The criterion''s reading (b) for the cluster number together with its reading (b) for the boundaries can hardly fail;
+    this is asked of a reader in questions/000166.yaml.'
   deviations:
   - Coherence is the magnitude-squared coherence in 1 s Hann segments, averaged over 30-100 Hz, on the waking blocks
     of the ICA (up to 600 s per mouse).
@@ -86,8 +90,8 @@ outcomes:
   output: claim:fig2b-clusters-same-across-states
   assumed: true
   notes: No boundary of the six-cluster solutions differs across waking, non-REM and REM (one-way ANOVA p 0.53, 0.58,
-    0.71, 0.86, 0.87; Kruskal-Wallis p 0.41 to 0.87; 18 mice per state); the boundary means differ by at most 3 sites
-    between states.
+    0.71, 0.86, 0.87; Kruskal-Wallis p 0.41 to 0.87; 18 mice per state); the boundary means differ by at most 3.2 sites
+    between states (boundary 1, 23.4 against 20.2 sites above c).
   deviations:
   - Non-REM and REM coherence come from up to 600 s and 300 s of each state; six clusters imposed as in fig2b reading
     (b).
@@ -106,7 +110,10 @@ outcomes:
     six fails for one. The pairwise reading gives p below 0.001 for five ICs and 0.02 for IC 4. With the six confined
     ICs (reading b), ICs 1-3 pass and ICs 4-6 do not (p 0.0056 to 0.016). The ICs lie in depth from a median 26 sites
     above c to 24 below it. In 17 of 18 mice one of the six peaks at or near the deepest site and carries 0.03 to 0.71
-    of the band variance. 18 mice (YMV19 has no state table).
+    of the band variance. This deepest IC is main IC 6 under reading (a) and is spread over depth in 9 of 18 mice, so
+    there it is also counted as volume conducted in ica-volume-conduction-fraction reading (a); its loading is the most
+    consistent IC across mice (median rho 0.94). Reading (b) leaves the spread ICs out and
+    fails for ICs 4-6. 18 mice (YMV19 has no state table).
   deviations:
   - The gamma ICA (STAR Methods, Independent Component Analysis of LFPs) is fitted on up to 600 s of waking per mouse
     (the longest `Awake` epochs of at least 30 s), with scikit-learn's FastICA on the first ten PCs of the 30-100 Hz
@@ -129,7 +136,9 @@ outcomes:
   notes: Reading (a), the ICs whose loadings are spread over depth (half the sites or more above half their peak) carry
     0.534 ± 0.163 of the gamma variance (1 to 4 such ICs per mouse); reading (b), one minus the share of the six main
     ICs, is 0.056 ± 0.022. Neither is within 0.34 ± 0.11. The ten PCs hold 0.99 of the band-passed variance, so reading
-    (b) is bound to be small.
+    (b) is bound to be small. In 9 of 18 mice the main IC 6 of fig2c reading (a) is one of the spread ICs, so reading
+    (a) here and fig2c reading (a) count the same component in two roles; under the consistent pairing (spread ICs as
+    volume conducted, confined ICs as main), fig2c reading (b) fails for ICs 4-6 and fig2d still fails.
   deviations:
   - The gamma ICA (STAR Methods, Independent Component Analysis of LFPs) is fitted on up to 600 s of waking per mouse
     (the longest `Awake` epochs of at least 30 s), with scikit-learn's FastICA on the first ten PCs of the 30-100 Hz
@@ -147,7 +156,9 @@ outcomes:
   assumed: true
   notes: Relative power of ICs 1-3 is 0.106 ± 0.101 (within 0.14 ± 0.04) and of ICs 4-6 0.209 ± 0.200 (outside 0.08 ±
     0.03), 54 values each; the deep ICs are larger (rank-sum p = 0.035), the opposite of the claim. The deepest IC carries
-    most of this (median 0.30). With the six confined ICs, ICs 1-3 average 0.086 and ICs 4-6 0.061.
+    most of this (median 0.30); it is spread over depth in 9 of 18 mice. With the six confined ICs, which leave the
+    spread ICs out, ICs 1-3 average 0.086 ± 0.079 (outside 0.14 ± 0.04) and ICs 4-6 0.061 ± 0.067 (within 0.08 ± 0.03),
+    superficial larger with rank-sum p = 0.0089, so the claim fails under that reading too.
   deviations:
   - The gamma ICA (STAR Methods, Independent Component Analysis of LFPs) is fitted on up to 600 s of waking per mouse
     (the longest `Awake` epochs of at least 30 s), with scikit-learn's FastICA on the first ten PCs of the 30-100 Hz
@@ -178,11 +189,13 @@ outcomes:
   - 0.00281
   assumed: true
   notes: 'With the 1-3 Hz phase of the layer 6 site in non-REM (reading a), the index averaged over the sites above the
-    layer 4 site peaks at 70.9 ± 16.2 Hz over 18 mice (69 ± 12), within tolerance, and the deep sites (below c) couple
-    to amplitudes above 100 Hz. The indices are larger than the paper''s: 0.0053 ± 0.0039 superficially (0.0027 ± 0.0005)
-    and 0.0028 ± 0.0019 deep (0.0023 ± 0.0003). With the rule''s b (16 mice) the values are 70.6 Hz, 0.0051 and 0.0026;
-    with the 0.5-3 Hz phase (reading b), 70.7 Hz, 0.0078 and 0.0048. The coupling pattern holds, the index values do
-    not.'
+    layer 4 site peaks at 70.9 ± 16.2 Hz over 18 mice (69 ± 12), within tolerance. The indices are larger than the paper''s:
+    0.0053 ± 0.0039 superficially (0.0027 ± 0.0005) and 0.0028 ± 0.0019 deep (0.0023 ± 0.0003). With the rule''s b (16
+    mice) the values are 70.6 Hz, 0.0051 and 0.0026; with the 0.5-3 Hz phase (reading b), 70.7 Hz, 0.0078 and 0.0048.
+    The superficial coupling at about 70 Hz holds; the index values do not. The deep part of the statement does not
+    hold as stated either: below c the index peaks above 100 Hz in only 5 of 18 mice (6 with the 0.5-3 Hz phase), and
+    its peak over 5-200 Hz has a median of 71 Hz; the criterion''s deep index, the largest above 100 Hz, falls at a median
+    of 185 Hz (range 105-200).'
   deviations:
   - Tort et al. (2008) modulation index with 18 phase bins; the phase band is band-passed (3rd-order Butterworth, zero
     phase) and its phase taken by the Hilbert transform; amplitudes are Morlet (w0 = 6) amplitudes at 24 log-spaced frequencies
@@ -202,7 +215,9 @@ outcomes:
   output: claim:slow-gamma-superficial-wake
   notes: Over coherence clusters 1-2, 30-60 Hz power is highest in waking, then REM, then non-REM (medians 37.8, 30.7
     and 24.2 uV^2/Hz, 18 mice); Kruskal-Wallis p = 0.0025 (reading a); signed-rank waking against REM p = 0.00025 (16
-    of 18 mice) and REM against non-REM p = 0.00053 (17 of 18) (reading b).
+    of 18 mice) and REM against non-REM p = 0.00053 (17 of 18) (reading b). The criterion tests only this state order.
+    The statement's "dominates in superficial layers" does not hold here, as in waking, 30-60 Hz power in coherence cluster
+    1 lies below the mean over sites (median difference -7.06 uV^2/Hz).
   deviations:
   - Clusters are the waking six-cluster coherence solution (fig2b reading b); power as in fig3c-slow-oscillation-nrem-deep.
   - YMV19 has no state table and is left out.
@@ -256,7 +271,8 @@ outcomes:
   assumed: true
   notes: In waking, 3-6 Hz power at the layer 4 site correlates positively with 6-9 Hz power at the deepest site (median
     Spearman rho 0.08, negative in 1 of 18 mice with the wavelet time base, 5 of 18 with 10 s windows) and at the same
-    site (0.45 and 0.41, negative in none); the signed-rank tests reject zero in the positive direction.
+    site (0.45 and 0.41, negative in none). The signed-rank tests reject zero in the positive direction at p < 0.01 in
+    three of the four comparisons; with 10 s windows at the deepest site p = 0.01.
   deviations:
   - 'The layer 4 site is the peak loading site of the third of the six highest-variance gamma ICs ordered by depth, an
     assumption: landmark b cannot be placed by a rule the paper gives, and Figures S3B and S3D label the six LFP layers
@@ -364,7 +380,9 @@ outcomes:
     at 8. In the eight-cluster solution of the full profile the clusters are numbered by depth, but the medians of clusters
     1 to 5 all lie between 6.5 and 12 sites above c, so the clusters do not separate depth as Figure 5C does; 38-40%
     of the units of clusters 1-2 lie above the rule's b and 31-39% of clusters 7-8 below its d. The eight-cluster solution
-    is still used for the layer claims, as the criterion says.
+    is still used for the layer claims, as the criterion says. On the six ICs confined in depth (fig2c reading b), which
+    leave out the spread deepest IC, the silhouette favours 2 clusters for both the full profile and one value per IC
+    (1,195 units).
   deviations:
   - K-means with the cityblock distance is run as k-medians (L1 assignment, median centres), ten restarts, lowest within-cluster
     sum.
@@ -591,7 +609,7 @@ outcomes:
   assumed: true
   notes: 'Within-cluster fractions: E-I 210 of 533 (0.394; 0.404 to 0.494), E-E 144 of 351 (0.410; 0.190 to 0.232), I-E
     132 of 360 (0.367; 0.273 to 0.333), counting connections whose units both have a cluster. Without units 0-1 sites
-    apart, 0.402, 0.269 and 0.364. The detection finds 549 E-I, 371 E-E and 372 I-E connections against the paper''s
+    apart, 0.402, 0.269 and 0.364, all three still outside (0.402 is just below 0.404). The detection finds 549 E-I, 371 E-E and 372 I-E connections against the paper''s
     385, 90 and 323.'
   deviations:
   - The eight unit clusters are those of fig5b-eight-clusters (k-medians on the full waking spike-IC coupling profile,
@@ -770,6 +788,9 @@ outcomes:
   notes: In the PV and VGAT mice (by the file genotypes), 17 of the 20 DOWN state-active cells of reading (a) fire less
     during the 10 ms pulse than in the -100 to 0 ms baseline, so the per-cell condition fails for 3; on average they
     rebound at 30-50 ms (6.97 against 5.66 Hz) while the other 685 E cells are still suppressed (0.60 against 3.15 Hz).
+    The mean rebound comes mostly from three cells the dataset labels "down state", YMV05 units 40 and 71 (18.8 and 31.6
+    Hz at 30-50 ms against baselines of 6.2 and 14.0 Hz) and YMV08 unit 60 (14.3 against 7.2 Hz); no other cell exceeds
+    its baseline by more than 2 Hz at 30-50 ms.
     The three such cells recorded with flashes (YMV05, YMV08) fire less in the 100 ms after onset than before (6.9 against
     13.4, 5.7 against 10.9, 1.2 against 2.7 Hz); the other 11 stimulated mice have no flash times. The cell set itself
     (fig8-down-active-neurons) is far larger than the paper's.
@@ -782,8 +803,10 @@ outcomes:
   notebook: reproduce_senzai_2019.ipynb
   output: claim:fig8eh-down-active-inverse-correlation
   notes: Over 1,366 D-E pairs, the mean CCG within ±50 ms is below its level at 0.5-1 s in both states (mean ratio 0.945
-    in waking, 0.867 in non-REM; D-I pairs 0.952 and 0.914). The cells the dataset labels "down state" give the strongest
-    inverse correlation (ratios 0.42 to 0.86); many cells of reading (a) give ratios near 1.
+    in waking, 0.867 in non-REM; D-I pairs 0.952 and 0.914). The five cells of reading (a) that the dataset labels "down
+    state" have the five lowest waking ratios (0.49 to 0.86) and five of the six lowest non-REM ratios (0.42 to 0.77);
+    the unlabelled YMV10 unit 36 (0.74 in non-REM) lies below the labelled YMV15 unit 33 (0.77). Many cells of reading
+    (a) give ratios near 1.
   deviations:
   - CCGs have 10 ms bins over ±1 s, with the reference spikes of the DOWN state-active cell in `Awake` or `Non-REM` intervals;
     cells are reading (a) of fig8-down-active-neurons.
@@ -1256,3 +1279,312 @@ verifications:
       Its outcome: blocked (other: not run; testable, fig8cd only in part).'
     response: 'The block was wrong and is removed. Tested: partially_reproduced (17 of 20 cells suppressed by the pulse;
       mean rebound while other E cells stay suppressed; the 3 cells with flashes suppressed).'
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2 (verifier-2): the full executed notebook with its conclusions and summary, the README, the helper module,
+    the claims file and this record, as of commit b0066c136.'
+  results:
+  - claim: fig1f-sink-b-deeper
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 47 outcomes.
+    response: No change.
+  - claim: fig1f-other-landmarks-same-depth
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 47 outcomes.
+    response: No change.
+  - claim: fig1g-landmark-distances-consistent
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 47 outcomes. B3 is resolved: CSD maps are shown, the mice where the rule lands near the probe
+      edge are listed, and the message is fixed. fig1g stays blocked, which I agree with.'
+    response: No change.
+  - claim: fig2b-six-coherence-clusters
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 47 outcomes. This follows the letter of the criterion, but the passing reading cannot fail:
+      six clusters are imposed (reading b); each mouse''s boundaries are tested against the across-mouse median, which gives
+      p 0.74 to 1 by construction; left free, the clustering converges to 8-20 clusters (6-10 from 16 starts), and 3 of 5
+      boundaries differ from the IC boundaries (cell 48). The boundaries also range across mice by up to 34 sites (680 um),
+      wider than the 220-620 um the attempt calls inconsistent for fig1g. The README shows a plain "Reproduced (assumed)".
+      This is a flaw in the claims-file criterion: reading (b) for the cluster number together with reading (b) for the boundaries
+      cannot fail. I am reporting it, not correcting it.'
+    response: The notebook now prints the range of each boundary across mice (31 to 40 sites, 620 to 800 um); the conclusion,
+      the notes, the Summary and the README give it and say the passing reading can hardly fail. The criterion's combination
+      of readings is asked of a reader in questions/000166.yaml. Outcome kept.
+  - claim: fig2b-clusters-same-across-states
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable. The notes and
+      cell 52 say "differ by at most 3 sites." Boundary 1 differs by 3.2 (-23.4 against -20.2, cell 51).
+    response: Corrected to at most 3.2 sites in the conclusion and the notes.
+  - claim: fig2c-six-gamma-ics
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable. There is one
+      assumption problem that runs across claims. The deepest-site component is a high-variance IC that peaks at site 63 in
+      15 of 18 mice and is spread over depth (cell 36: YMV01 0.592, YMV12 0.712). It is counted as volume-conducted in ica-volume-conduction-fraction
+      reading (a), but it is also "IC 6" in fig2c, fig2d, the IC layers of fig3c and the features of fig5b. It plausibly inflates
+      fig2c IC 6 (rho 0.94) and drives fig2d''s "deep larger" result (median 0.30).'
+    response: 'Added outputs: the main IC 6 is spread over depth in 9 of 18 mice; with the six confined ICs (which leave the
+      spread ICs out) fig2d gives 0.086 ± 0.079 against 0.061 ± 0.067 (superficial larger, p = 0.0089, superficial mean outside
+      tolerance), and fig5b''s silhouette favours 2 clusters on both feature readings. fig2c reading (b) already leaves the
+      spread ICs out and fails for ICs 4-6. The notes of fig2c, ica-volume-conduction-fraction, fig2d and fig5b now state
+      the double role and these results. No outcome changes.'
+  - claim: ica-volume-conduction-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable. There is one
+      assumption problem that runs across claims. The deepest-site component is a high-variance IC that peaks at site 63 in
+      15 of 18 mice and is spread over depth (cell 36: YMV01 0.592, YMV12 0.712). It is counted as volume-conducted in ica-volume-conduction-fraction
+      reading (a), but it is also "IC 6" in fig2c, fig2d, the IC layers of fig3c and the features of fig5b. It plausibly inflates
+      fig2c IC 6 (rho 0.94) and drives fig2d''s "deep larger" result (median 0.30).'
+    response: 'Added outputs: the main IC 6 is spread over depth in 9 of 18 mice; with the six confined ICs (which leave the
+      spread ICs out) fig2d gives 0.086 ± 0.079 against 0.061 ± 0.067 (superficial larger, p = 0.0089, superficial mean outside
+      tolerance), and fig5b''s silhouette favours 2 clusters on both feature readings. fig2c reading (b) already leaves the
+      spread ICs out and fails for ICs 4-6. The notes of fig2c, ica-volume-conduction-fraction, fig2d and fig5b now state
+      the double role and these results. No outcome changes.'
+  - claim: fig2d-superficial-ic-power
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable. The Summary
+      (cell 126) shows fig2d without "(assumed)"; the record has assumed true. There is one assumption problem that runs across
+      claims. The deepest-site component is a high-variance IC that peaks at site 63 in 15 of 18 mice and is spread over depth
+      (cell 36: YMV01 0.592, YMV12 0.712). It is counted as volume-conducted in ica-volume-conduction-fraction reading (a),
+      but it is also "IC 6" in fig2c, fig2d, the IC layers of fig3c and the features of fig5b. It plausibly inflates fig2c
+      IC 6 (rho 0.94) and drives fig2d''s "deep larger" result (median 0.30).'
+    response: 'The Summary now shows "(assumed)". Added outputs: the main IC 6 is spread over depth in 9 of 18 mice; with
+      the six confined ICs (which leave the spread ICs out) fig2d gives 0.086 ± 0.079 against 0.061 ± 0.067 (superficial larger,
+      p = 0.0089, superficial mean outside tolerance), and fig5b''s silhouette favours 2 clusters on both feature readings.
+      fig2c reading (b) already leaves the spread ICs out and fails for ICs 4-6. The notes of fig2c, ica-volume-conduction-fraction,
+      fig2d and fig5b now state the double role and these results. No outcome changes.'
+  - claim: fig3c-slow-oscillation-nrem-deep
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 47 outcomes.
+    response: No change.
+  - claim: fig3d-slow-oscillation-gamma-coupling
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable. Cell 121 and
+      the notes say "the deep sites couple to amplitudes above 100 Hz." This is not shown. mi_deep is by construction the
+      largest index above 100 Hz, and f_deep is computed but never printed (cell 120). The statement is unsupported until
+      f_deep is printed.
+    response: f_deep and the peak over all 5-200 Hz on the deep sites are now printed. The deep index peaks above 100 Hz in
+      only 5 of 18 mice (6 with the 0.5-3 Hz phase); the overall deep peak has a median of 71 Hz, and the largest index above
+      100 Hz falls at a median of 185 Hz. The unsupported sentence is removed and the notes say the deep part of the statement
+      does not hold as stated. Outcome kept, as the criterion's index values were already outside tolerance and the superficial
+      frequency within.
+  - claim: slow-gamma-superficial-wake
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 47 outcomes. Cell 61 and the notes omit the output in cell 60 that waking 30-60 Hz power in cluster
+      1, minus the site mean, has a median of -7.06. That runs against the claim's "dominates in superficial layers". The
+      criterion tests only the state order, which leaves this part of the claim untested. The conclusion should report the
+      -7.06 output against superficial dominance.
+    response: The conclusion and notes now report the -7.06 median and say the superficial part of the statement does not
+      hold; the README row says the criterion tests only the state order. Outcome kept, as the criterion decides it.
+  - claim: fig3c-3-6hz-layer4
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable. The README
+      row for "3-6 Hz power largest in layer 4" shows "Reproduced" without "(assumed)". The record has assumed true.
+    response: The README row now reads "Reproduced (assumed for layer 4)".
+  - claim: fig3d-3-6hz-cross-frequency
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: figs2c-3-6hz-theta-anticorrelation
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable. The notes say
+      "the signed-rank tests reject zero in the positive direction." For the 10 s windows at the deepest site, p = 0.01 (cell
+      63), which is not below the criterion's 0.01.
+    response: The notes and conclusion now say three of the four comparisons reject zero at p < 0.01 and the 10 s windows
+      at the deepest site give p = 0.01.
+  - claim: fig3f-units-lock-3-6hz-trough
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: figs2d-visual-offset-rebound
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 47 outcomes.
+    response: No change.
+  - claim: fig3ab-alpha-analogy
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 47 outcomes.
+    response: No change.
+  - claim: fig4a-unit-counts
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 47 outcomes.
+    response: No change.
+  - claim: fig4a-ccg-classification
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes.
+    response: No change.
+  - claim: fig4de-optotagging
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes.
+    response: No change.
+  - claim: fig5b-eight-clusters
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable. There is one
+      assumption problem that runs across claims. The deepest-site component is a high-variance IC that peaks at site 63 in
+      15 of 18 mice and is spread over depth (cell 36: YMV01 0.592, YMV12 0.712). It is counted as volume-conducted in ica-volume-conduction-fraction
+      reading (a), but it is also "IC 6" in fig2c, fig2d, the IC layers of fig3c and the features of fig5b. It plausibly inflates
+      fig2c IC 6 (rho 0.94) and drives fig2d''s "deep larger" result (median 0.30).'
+    response: 'Added outputs: the main IC 6 is spread over depth in 9 of 18 mice; with the six confined ICs (which leave the
+      spread ICs out) fig2d gives 0.086 ± 0.079 against 0.061 ± 0.067 (superficial larger, p = 0.0089, superficial mean outside
+      tolerance), and fig5b''s silhouette favours 2 clusters on both feature readings. fig2c reading (b) already leaves the
+      spread ICs out and fails for ICs 4-6. The notes of fig2c, ica-volume-conduction-fraction, fig2d and fig5b now state
+      the double role and these results. No outcome changes.'
+  - claim: fig5a-spike-ic-depth-stratification
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: fig6a-firing-rate-layers
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: fig6b-deep-wake-higher
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: fig6b-superficial-no-state-change
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: fig6c-burst-index
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: fig6d-transient-steady
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: fig6e-down-up-latency
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: fig6f-3-6hz-phase-layers
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: fig6g-3-6hz-modulation-strength
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: fig6h-gamma-coupling-wake
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: figs7-strongest-3-6hz-coupling
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 47 outcomes. In round 1 I said not_reproduced. I now accept partial. Under the adopted distant-site
+      reading (b), 3-6 Hz is first (0.073), which is half of the claim. 30-60 Hz is fifth under that reading and never second
+      under any reading, including the IC reading that has now been run (cell 45). The record states the disagreement.
+    response: No change; the round-1 disagreement stays recorded under round 1.
+  - claim: fig7-connection-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes.
+    response: No change.
+  - claim: fig7-within-layer-fractions
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable. Cell 97 says
+      "0.402, 0.269 and 0.364, still outside for E-E and I-E." This implies E-I is inside, but 0.402 is below the 0.404 lower
+      bound, so all three are outside.
+    response: 'Corrected in the conclusion and the notes: all three are outside.'
+  - claim: fig7eg-l23-targets
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: fig7c-divergence-convergence
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 47 outcomes.
+    response: No change.
+  - claim: figs8b-reciprocal-connections
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: fig7d-l23e-l5i-weaker-nrem
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: fig7e-l23e-l4i-weaker-nrem
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: fig7h-l23e-l5e-weaker-nrem
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: fig7g-deep-ee-stronger-nrem
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: figs8f-ie-dip-wake
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes.
+    response: No change.
+  - claim: figs8c-lognormal-strength
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 47 outcomes.
+    response: No change.
+  - claim: fig8-down-active-neurons
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes. The assumptions are all stated in the deviations and are reasonable.
+    response: No change.
+  - claim: fig8-down-up-rates
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 47 outcomes.
+    response: No change.
+  - claim: fig8cd-down-active-suppressed
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 47 outcomes. I accept partial. The per-cell condition fails for 3 of 20 cells. The mean rebound
+      (6.97 against 5.66 Hz) comes mostly from three cells the dataset labels "down state" (YMV05 units 40 and 71 at 18.8
+      and 31.6 Hz, YMV08 unit 60 at 14.3 Hz); most of the others do not rebound (cell 114). The notes should say so.
+    response: The conclusion and notes now say the mean rebound comes mostly from these three cells and that no other cell
+      exceeds its baseline by more than 2 Hz at 30-50 ms.
+  - claim: fig8eh-down-active-inverse-correlation
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 47 outcomes. Cell 118 and the notes say "strongest for the cells the dataset labels down state."
+      This holds mostly but not strictly: YMV10 unit 36, which is not labelled, has a non-REM ratio of 0.74, below the labelled
+      YMV15 unit 33 at 0.77 (cell 117).'
+    response: 'Reworded: the five labelled cells have the five lowest waking ratios and five of the six lowest non-REM ratios,
+      and YMV10 unit 36 (0.74) lies below YMV15 unit 33 (0.77).'
