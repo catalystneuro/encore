@@ -27,6 +27,8 @@ import zipfile
 
 import numpy as np
 import requests
+from scipy.special import i0e, i1e, ive
+from scipy.optimize import brentq
 from scipy.stats import norm
 
 # ---------------------------------------------------------------------------------------------
@@ -89,6 +91,14 @@ class Code:
     def npz(self, name):
         return np.load(io.BytesIO(self.read("data_processed/" + name)))
 
+    def source_lines(self, name, pattern):
+        """The lines of a released script or notebook that match the regular expression, so that the
+        notebook can show where a grid, an axis or a parameter is defined."""
+        text = self.read(name).decode()
+        if name.endswith(".ipynb"):
+            text = "\n".join(self.notebook_cells(name))
+        return [ln.rstrip() for ln in text.splitlines() if re.search(pattern, ln)]
+
     def notebook_cells(self, name):
         nb = json.loads(self.read(name))
         return ["".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "code"]
@@ -116,6 +126,34 @@ def objective(values, mu=0.5, sigma=1.0, rates=RATES):
     return np.sum(0.5 * (f[1:] + f[:-1]) * np.diff(x))
 
 
+def resultant_se(R, n=10000):
+    """Monte Carlo standard error of an accuracy |m1| = |mean exp(i error)| over n independent runs
+    (n = 10,000 in every performance_scan_*.py). Delta method with the mean error at 0, so that
+    |m1| is about the mean of cos(error): SE = sd(cos error) / sqrt(n). Two values are returned:
+    under von Mises errors with resultant R (var cos = (1 + A2) / 2 - R^2, A2 = I2/I0), and the
+    distribution-free upper bound sqrt((1 - R^2) / n). A standard choice; it sets only how a
+    difference is read, not a criterion."""
+    R = np.atleast_1d(np.asarray(R, float))
+    vm = np.empty_like(R)
+    for k, r in enumerate(R):
+        r = min(max(r, 1e-6), 1 - 1e-9)
+        kap = brentq(lambda x: i1e(x) / i0e(x) - r, 1e-9, 1e6)
+        a2 = ive(2, kap) / i0e(kap)
+        vm[k] = np.sqrt(max((1 + a2) / 2 - r ** 2, 0) / n)
+    return vm, np.sqrt((1 - R ** 2) / n)
+
+
+def objective_se(se_per_rate, rates=RATES, mu=0.5, sigma=1.0):
+    """Standard error of objective() when each rate's value has its own independent error: the
+    objective is a fixed linear combination of the per-rate values (trapezoidal weights)."""
+    x = np.log(rates)
+    w = norm.pdf(x, loc=mu, scale=sigma)
+    c = np.zeros(len(x))
+    c[1:] += 0.5 * w[1:] * np.diff(x)
+    c[:-1] += 0.5 * w[:-1] * np.diff(x)
+    return np.sqrt(np.sum((c * np.asarray(se_per_rate)) ** 2))
+
+
 # ---------------------------------------------------------------------------------------------
 # Figure 2H: run the released notebook's own cells
 def run_figure2h(code, rate=15):
@@ -141,12 +179,18 @@ def circ_diff(a, b):
 # ---------------------------------------------------------------------------------------------
 # Neural noise: a batched copy of RNN_filter_Run, checked against it in the notebook
 def rnn_batch(rng, runs, T, N, sigma_N, w_even, w_quad, tau=1.0, kappa_0=1.0, phi_0=0.0, dt=0.01,
-              noise=None):
+              noise=None, inh_fixed=None, traces=None):
     """RNN_filter_Run (circularFiltering.py) for `runs` independent runs at once, with no angular
     velocity input (w_odd = 0, dy = 0), no HD input (I_ext = 0) and stoch_corr = 0 (claims file).
     Same update, term by term: decay, even recurrence (2/N w_even cos), quadratic inhibition
     (pi/N sum of rectified rates), additive noise sigma_N sqrt(dt) N(0,1). `noise` may pass the
-    standard normal draws (steps x runs x N) to reproduce a given run."""
+    standard normal draws (steps x runs x N) to reproduce a given run.
+
+    Diagnostics for the noise claim (not in RNN_filter_Run): `inh_fixed`, if given, replaces the
+    global inhibition w_quad pi/N sum max(r, 0) by that constant, so that the noise acts only
+    through the linear terms, as in the SI derivation (section 5, Eqs. S107 to S109, where the
+    noise is one more input and the other dynamics are unchanged). `traces`, a dict, receives the
+    run-mean global inhibition and zero mode (population mean rate) at every step."""
     steps = int(T / dt)
     phi_r = np.linspace(-np.pi, np.pi - 2 * np.pi / N, N)
     W = 2 / N * w_even * np.cos(phi_r[:, None] - phi_r[None, :])
@@ -160,11 +204,20 @@ def rnn_batch(rng, runs, T, N, sigma_N, w_even, w_quad, tau=1.0, kappa_0=1.0, ph
         return np.arctan2(th[:, 1], th[:, 0]), np.hypot(th[:, 0], th[:, 1])
 
     mu[0], kappa[0] = decode(r)
+    if traces is not None:
+        traces["inh"], traces["zero_mode"] = np.zeros(steps), np.zeros(steps)
     for i in range(1, steps):
         inh = w_quad * (np.pi / N) * np.maximum(r, 0).sum(1, keepdims=True)
+        if traces is not None:
+            traces["inh"][i - 1], traces["zero_mode"][i - 1] = inh.mean(), r.mean()
+        if inh_fixed is not None:
+            inh = inh_fixed
         dW = (noise[i] if noise is not None else rng.standard_normal((runs, N))) * np.sqrt(dt)
         r = r - r / tau * dt + (r @ W.T) * dt - inh * r * dt + sigma_N * dW
         mu[i], kappa[i] = decode(r)
+    if traces is not None:
+        traces["inh"][-1] = (w_quad * (np.pi / N) * np.maximum(r, 0).sum(1)).mean()
+        traces["zero_mode"][-1] = r.mean()
     return mu, kappa
 
 
@@ -238,7 +291,13 @@ def fourier(act, k=2):
     PB midline (k = 2: the two copies of the bump across the bridge; the frequency is checked in the
     notebook as the peak of the spatial spectrum). Each ROI's preferred HD is 2 pi k j / n, the
     decoder A = (cos phi, sin phi) of the Methods, scaled by 2/n as in the paper's code (Figure2h:
-    theta = 2/N A r). Returns (phase, amplitude) per frame."""
+    theta = 2/N A r). Returns (phase, amplitude) per frame.
+
+    The phase is the angle of sum r_j exp(-i 2 pi k j / n), so a bump peaking at ROI angle theta
+    gives phase -theta: ROIs are taken in order of decreasing angle. The sense in which the ROI
+    order maps onto heading is not in the files, so the sign is a convention; the data check uses
+    the phase only against the cue and shows that it locks to it with this sign. The amplitude, the
+    only quantity the prediction uses, does not depend on the sign or on an offset."""
     n = act.shape[1]
     ph = 2 * np.pi * k * np.arange(n) / n
     z = 2 / n * act @ np.exp(-1j * ph)
@@ -251,8 +310,16 @@ def spectrum(act):
 
 
 def raw_roi_fluorescence(f, frames, masks, projection="mean", smooth=4.0):
+    """See _raw_roi; `smooth` may be a tuple of SDs, which returns a dict of results, one per SD,
+    from one read of the frames."""
+    if isinstance(smooth, (tuple, list)):
+        return _raw_roi(f, frames, masks, projection, smooth)
+    return _raw_roi(f, frames, masks, projection, (smooth,))[smooth]
+
+
+def _raw_roi(f, frames, masks, projection, smooths):
     """Raw fluorescence per ROI from the TwoPhotonSeries for the given frame blocks: the volume is
-    projected over planes (`projection`), smoothed in the plane with a Gaussian of SD `smooth`
+    projected over planes (`projection`), smoothed in the plane with a Gaussian of each SD in `smooths`
     pixels, and averaged over each ROI's 2D mask (5 to 9 pixels on the PB midline). Neither the
     projection nor the extent of an ROI is stated in the files; the notebook picks them by agreement
     with the stored dF/F, and shows the alternatives."""
@@ -260,11 +327,11 @@ def raw_roi_fluorescence(f, frames, masks, projection="mean", smooth=4.0):
     d = f["acquisition/TwoPhotonSeries/data"]
     m = masks.reshape(masks.shape[0], -1).astype(float)
     m /= m.sum(1, keepdims=True)
-    out = []
+    out = {sm: [] for sm in smooths}
     for a, b in frames:
         v = d[a:b].astype(np.float32)
-        p = v.mean(1) if projection == "mean" else v.max(1)
-        if smooth:
-            p = gaussian_filter(p, (0, smooth, smooth))
-        out.append(p.reshape(p.shape[0], -1) @ m.T)
-    return np.concatenate(out)
+        p0 = v.mean(1) if projection == "mean" else v.max(1)
+        for sm in smooths:
+            p = gaussian_filter(p0, (0, sm, sm)) if sm else p0
+            out[sm].append(p.reshape(p.shape[0], -1) @ m.T)
+    return {sm: np.concatenate(v) for sm, v in out.items()}

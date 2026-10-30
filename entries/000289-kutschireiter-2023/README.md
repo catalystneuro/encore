@@ -23,9 +23,9 @@ EPG neurons from a separate study of the same lab (Basnak et al.), which this pa
 | Neural noise drops accuracy below 70% without retuning | Reproduced |
 | Retuning reduces the drop by about 35% | Reproduced |
 | Neural noise: unbiased position diffusion, upward amplitude drift, 1/sqrt(N) scaling | Partially reproduced |
-| Connectome motifs: shifted PEN1 projections, broad Delta7 inhibition | Reproduced (assumed) |
+| Connectome motifs: shifted PEN1 projections, broad Delta7 inhibition | Partially reproduced (assumed; one sort of two) |
 | The Drosophila-like network matches the Bayesian attractor | Partially reproduced |
-| Accuracy depends little on the number of neurons | Partially reproduced |
+| Accuracy depends little on the number of neurons | Not reproduced (one value of 161) |
 | Prediction: higher bump amplitude with a reliable cue (dandiset) | Blocked: methods underspecified |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -34,8 +34,9 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000289-kutschireiter-2023-01.yaml`](../../attempts/000289-kutschireiter-2023-01.yaml).
 
-- `reproduce_kutschireiter_2023.ipynb`: the analysis. It takes about nine minutes, most of it
+- `reproduce_kutschireiter_2023.ipynb`: the analysis. It takes about seven minutes, most of it
   streaming 10% of the raw imaging of 15 sessions.
 - `bra.py`: loading the paper's Zenodo deposit in memory (with the two patches its code needs), the
   hemibrain export, and the dandiset's sessions; the bump decoder; a batched copy of the paper's
-  single-population network.
+  single-population network, with diagnostics of its global inhibition; the Monte Carlo error of
+  the stored accuracies.
