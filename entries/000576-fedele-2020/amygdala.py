@@ -25,7 +25,8 @@ Where the parameters come from:
   the standard choice. Under z-scoring over the whole trial (reading a) it has no effect.
 - Z-scoring readings (claims file): "trial" over the whole 26 s epoch; "baseline" over the 2 s
   baseline clip (Methods 4.8, "The baseline was a 2 s landscape clip"); "amygdala" over all epochs
-  and time points of the amygdala.
+  and time points of the amygdala. Two variants, shown but not deciding outcomes, are in
+  `normalise`, and so are the two other baselines Methods 4.8 name.
 - Envelopes are kept at 10 Hz (`STEP_S`) after the 1 s smoothing, which removes everything faster;
   a standard choice.
 - Group test: Power ~ condition + (1|Patients) per time point (Methods 4.11). With every patient
@@ -170,16 +171,41 @@ def times() -> np.ndarray:
     return np.arange(int(EPOCH_S / STEP_S)) * STEP_S + STEP_S / 2 - ONSET_S
 
 
-def normalise(env: np.ndarray, zscore: str) -> np.ndarray:
-    """Baseline correction (subtract the mean of the 1 s before onset), then z-scoring by reading."""
+def normalise(env: np.ndarray, zscore: str, base: str = "1s") -> np.ndarray:
+    """Baseline correction, then z-scoring by reading.
+
+    Baseline correction (Methods 4.8) subtracts, by `base`: "1s" the mean of the 1 s before onset
+    of the same epoch (the main reading); "allepochs" the mean of that 1 s over all epochs; or
+    "prevepoch" the mean of the whole previous epoch (the first epoch uses its own 1 s), the two
+    variants Methods 4.8 name ("taking as baseline the mean of all epochs, or the mean of the
+    previous epoch").
+
+    Z-scoring readings: "trial", "baseline" and "amygdala" are the claims file's; "trialsd" (the
+    corrected envelope divided by its SD in the trial) and "baselinepool" (the epoch's baseline
+    mean and the SD of the baseline clips pooled over all epochs of the amygdala, a stable form
+    of "baseline", whose SD rests on a 2 s clip smoothed over 1 s) are variants.
+    """
     t = times()
     base1 = (t >= -1.0) & (t < 0.0)
-    x = env - env[:, base1].mean(axis=1, keepdims=True)
+    if base == "1s":
+        ref = env[:, base1].mean(axis=1, keepdims=True)
+    elif base == "allepochs":
+        ref = env[:, base1].mean()
+    elif base == "prevepoch":
+        m = env.mean(axis=1)
+        ref = np.r_[env[0, base1].mean(), m[:-1]][:, None]
+    else:
+        raise ValueError(base)
+    x = env - ref
+    b = t < 0.0
     if zscore == "trial":
         return (x - x.mean(1, keepdims=True)) / x.std(1, keepdims=True)
     if zscore == "baseline":
-        b = t < 0.0
         return (x - x[:, b].mean(1, keepdims=True)) / x[:, b].std(1, keepdims=True)
+    if zscore == "baselinepool":
+        xb = x[:, b]
+        sd = np.sqrt(((xb - xb.mean(1, keepdims=True)) ** 2).mean())
+        return (x - xb.mean(1, keepdims=True)) / sd
     if zscore == "trialsd":
         return x / x.std(1, keepdims=True)
     if zscore == "amygdala":
@@ -375,18 +401,39 @@ def block_series(x100: np.ndarray, epoch: int, base: str) -> np.ndarray:
 
 
 def condition_corr(a100, b100, obs, aversive, base, span):
-    """Spearman r of two 100 ms series (epochs x bins) within one condition's blocks: "concat" over
-    the blocks laid end to end (smoothing over the observed session), or "block" per block and
-    averaged. Returns (r in AVERSIVE, r in NEUTRAL)."""
+    """Spearman r of two 100 ms series (epochs x bins) within one condition's blocks. Spans:
+    "concat", the condition's blocks laid end to end, each block smoothed (or binned) on its own so
+    that no other block or baseline clip enters it; "block", per block and averaged; and
+    "concat_session", the blocks laid end to end after smoothing over the whole observed session
+    (the first revision's form, kept as a variant: smoothing then mixes in the neighbouring
+    blocks of the other condition and the baseline clips). Returns (r in AVERSIVE, r in NEUTRAL)."""
     out = []
     for cond in (True, False):
-        if span == "concat":
+        eps = np.where(obs & (aversive == cond))[0]
+        if span == "concat_session":
             xa, ep_of, t_of = series(a100, obs, base)
             xb, _, _ = series(b100, obs, base)
             m = (aversive[ep_of] == cond) & (t_of >= 0)
             out.append(spearman(xa[m], xb[m]))
+        elif span == "concat":
+            xa = np.concatenate([block_series(a100, e, base) for e in eps])
+            xb = np.concatenate([block_series(b100, e, base) for e in eps])
+            out.append(spearman(xa, xb))
         else:
-            rs = [spearman(block_series(a100, e, base), block_series(b100, e, base))
-                  for e in np.where(obs & (aversive == cond))[0]]
+            rs = [spearman(block_series(a100, e, base), block_series(b100, e, base)) for e in eps]
             out.append(np.nanmean(rs))
     return tuple(out)
+
+
+def coincidences(a: np.ndarray, b: np.ndarray, near_s: float = 0.001, lo_s: float = 0.002,
+                 hi_s: float = 0.012) -> tuple[int, float]:
+    """Spikes of b within +-near_s of a spike of a, and the number expected from the flanks
+    lo_s < |dt| <= hi_s scaled to the same width. Units sorted on the same microwire cannot fire
+    within the detector's dead time of each other, so a pair with none where several are
+    expected is likely on one wire (a heuristic, used for a variant of SSI)."""
+    a, b = np.sort(a), np.sort(b)
+    def count(w):
+        return int((np.searchsorted(b, a + w, side="right") - np.searchsorted(b, a - w, side="left")).sum())
+    near = count(near_s)
+    flank = count(hi_s) - count(lo_s)
+    return near, flank * (2 * near_s) / (2 * (hi_s - lo_s))
