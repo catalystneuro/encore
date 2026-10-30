@@ -1,0 +1,579 @@
+# Claims for Yemini, Lin, Nejatbakhsh et al. (2021), NeuroPAL, Cell 184, 272-288, on dandiset 000541.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-10-30,
+# protocol pilot-12 as stated in docs/protocol.md.
+#
+# Text read: the accepted author manuscript in PubMed Central (PMC10494711, NIHMS1925874), with
+# its Results, Discussion, figure legends, STAR Methods and Key Resources Table, and the two
+# supplement PDFs Methods S1 (semi-automated identification, statistical atlas) and Methods S2
+# (optimal coloring). The version of record was not read. Tables S1 to S6 (spreadsheets) were
+# not in the paper store. Table S6 holds the per-neuron statistics of the whole-brain imaging
+# (Figure 6), so the claims below on Figure 6 take their findings from the Results text and
+# their method from the STAR Methods, with no per-neuron p or q value to compare against.
+#
+# Code read: github.com/venkatachalamlab/NeuroPAL-traces at 92b27ed (trace extraction from
+# GCaMP movies, the older method the paper used for strain OH15500 only); github.com/amin-nejat/
+# CELL_ID at 759898d (the NeuroPAL ID software: neuron detection, statistical atlas,
+# identification); github.com/Eviatar/Optimal_Coloring at f01284f (the optimal-coloring
+# solver). None of them holds the statistics or the correlation and connectome analysis of
+# Figure 6, so those methods come from the STAR Methods alone.
+#
+# The dandiset ("NeuroPAL Microfluidic Chip Images and GCaMP activity") is meant to hold the
+# whole-brain imaging of Figure 6, Figure S1H and Figure S2. The paper describes these data as
+# follows. Strain OH16230 (otIs669[NeuroPAL]; otIs672[panneuronal GCaMP6s]), young-adult
+# hermaphrodites with at most 2 visible eggs, immobilized with 1 mM tetramisole in a microfluidic
+# chip. Per animal: one 4-color NeuroPAL landmark volume for identification, a 2 min unlit wait,
+# then a 4 min single-channel nuclear GCaMP6s recording at about 4 Hz. After 1 min, three 10 s
+# pulses (160 mM NaCl, 1e-4 2-butanone, 1e-4 2,3-pentanedione) in CTX buffer, one per minute, in
+# an order rotated between animals. 21 heads (189 identified neurons) and, separately, 21 tails
+# (42 neurons); heads were kept when ASE responded to NaCl and AWC to both odors; tails were
+# kept without that check. A second strain, OH15500 (200 mM NaCl for 20 s, in water), is in
+# the supplement only and is not discussed in the paper's text. Measured variables: neuron
+# identities from the NeuroPAL volume, GCaMP6s traces per identified neuron, stimulus timing.
+# The paper also deposited the imaging data and whole-brain activity on Zenodo
+# (doi:10.5281/zenodo.3906530). The Figure 6J and 6K comparison uses the connectome of Cook et
+# al. 2019 (doi:10.1038/s41586-019-1352-7).
+#
+# The trace processing the STAR Methods fix ("Brainwide imaging of neuronal activity traces"):
+# traces extracted with dNMF; first 1 s and last frame removed; downsampled to the lowest frame
+# rate of the group (4 Hz heads, 3.87 Hz tails); dF/F0 with dF the trace minus a fitted first-order
+# exponential bleach curve and F0 the 5th percentile of the trace; neurons within 5 um of each
+# other with traces correlated at 95% or more removed; neuron types with N of 3 or fewer not
+# evaluated. The response tests ("Analysis of brainwide imaging data"): premotor interneurons
+# (AVA, AVB, AVD, AVE, PVC) and ventral-cord motor neurons excluded; left and right neurons of a
+# class pooled except for asymmetry tests; two-tailed paired t-test of the mean during the 10 s
+# stimulus against the identical period immediately before, in the same neuron; p values
+# corrected by Storey (2002) FDR q values; significance at p or q of 0.05 or less.
+#
+# Most findings of the paper (the reagent, the receptor expression maps, the mutant analyses, the
+# positional atlas and the identification software) rest on imaging the dandiset is not
+# described as holding. They are listed so the paper's main findings are covered.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000541"
+paper: doi:10.1016/j.cell.2020.12.012
+claims:
+- id: fig6-sample-sizes
+  statement: Whole-brain activity was recorded in 21 heads (189 identified neurons) and,
+    separately, 21 tails (42 neurons), with a median of 18 animals per neuron type.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 1
+  quote: We recorded 21 worm heads (189 neurons) and, separately, 21 worm tails (42 neurons), with
+    a median representation of 18 animals per neuron type
+  expected:
+  - quantity: head recordings
+    value: 21
+    tolerance: 0
+    unit: animals
+  - quantity: identified head neurons
+    value: 189
+    tolerance: 18.9
+    unit: neurons
+  - quantity: tail recordings
+    value: 21
+    tolerance: 0
+    unit: animals
+  - quantity: identified tail neurons
+    value: 42
+    tolerance: 4.2
+    unit: neurons
+  - quantity: median number of animals per neuron type
+    value: 18
+    tolerance: 1.8
+    unit: animals
+  criterion: Counts of OH16230 recordings. Animal counts are exact (tolerance 0, as they are
+    counts of files the paper lists). The paper does not say whether "189 neurons" counts
+    neurons with left and right separate or neuron names over all animals; the readings are
+    (a) the number of distinct neuron names identified in at least one head; (b) the same,
+    after the STAR Methods removals (near-duplicate traces, N of 3 or fewer). "Neuron type" is
+    read as (a) a neuron name, left and right separate, or (b) a class, left and right pooled,
+    with the median over types of the number of animals in which the type was identified.
+    Reproduced when, under one reading, every value is within tolerance.
+- id: fig6-all-heads-responsive
+  statement: All 21 head recordings showed the published responses of the primary sensory
+    neurons, ASE excitation to NaCl and AWC inhibition to both odors, in the left or the right
+    neuron.
+  source: STAR Methods, Analysis of brainwide imaging data
+  quote: Worms were marked as stimulus responsive if either their left or right neuron showed the
+    published response to their corresponding stimuli (ASE excitation for NaCl and AWC inhibition
+    for odors) ... 21 heads responded to all three stimuli
+  expected:
+    quantity: heads responding to all three stimuli
+    value: 21
+    tolerance: 0
+    unit: animals
+  criterion: The paper does not say how a single neuron's response was judged in one animal,
+    which had one pulse of each stimulus. The readings are (a) the mean dF/F0 during the 10 s
+    pulse exceeds (ASE) or falls below (AWC) the mean over the 10 s before; (b) the same
+    difference exceeds two standard deviations of the 10 s before. Reproduced when, under one
+    reading, all head recordings in the dataset pass for all three stimuli.
+- id: fig6d-ase-nacl
+  statement: NaCl evokes left/right asymmetric responses in the two ASE neurons, and ASER shows
+    an increase in calcium upon NaCl presentation.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2;
+    Figure 6D
+  quote: NaCl evoked stereotyped left/right (L/R) asymmetric responses in the two ASE neurons.
+    However, ASER exhibited an increase in [Ca 2+ ] upon NaCl presentation
+  statistics:
+  - about: ASER response to NaCl, stimulus against prior period
+    test: two-tailed paired t test
+    p: 0.05
+    p_relation: "<"
+    corrected: FDR (Storey q values)
+  - about: ASEL against ASER response
+    test: two-tailed two-sample (unpaired) t test
+    p: 0.05
+    p_relation: "<"
+  criterion: Per the STAR Methods, ASER's mean dF/F0 during the NaCl pulse against the identical
+    10 s before, two-tailed paired t-test over head recordings; reproduced in part when the
+    mean is higher with q of 0.05 or less. For the asymmetry, a two-tailed unpaired t-test of
+    ASEL against ASER. The measure the asymmetry test compares is open; the readings are (a)
+    the response, mean during the pulse minus mean before; (b) the mean during the pulse.
+    The FDR family is open; the readings are (a) all neuron and stimulus tests of the heads
+    together; (b) each stimulus apart. Reproduced when ASER is excited and the asymmetry test
+    gives p of 0.05 or less under one pair of readings; partially reproduced when only one of
+    the two holds.
+- id: fig6-nacl-unknown-interneurons
+  statement: NaCl evokes significant responses in six interneurons with no previously known
+    function, AIN, AVF, AVH, AVJ, I2 and MI.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2;
+    Figures 6C to 6F
+  quote: In particular, we detected significant NaCl responses in six interneurons with no
+    previously known function ... AIN, AVF, AVH, AVJ, I2, and MI
+  statistics:
+  - test: two-tailed paired t test, stimulus against prior period
+    p: 0.05
+    p_relation: "<"
+    corrected: FDR (Storey q values)
+  criterion: Per the STAR Methods, for each class (left and right pooled) the mean dF/F0 during
+    the NaCl pulse against the identical period before, two-tailed paired t-test, significant
+    at p or q of 0.05 or less. The figure legend says significant responses are those with "p
+    or q" of 0.05 or less, so the readings are (a) q from Storey FDR over all head tests of the
+    three stimuli; (b) q over the NaCl tests only; (c) uncorrected p. Reproduced when all six
+    classes are significant under one reading; partially reproduced for three to five.
+- id: fig6c-odors-more-inhibitory
+  statement: Both odors evoke responses in many sensory and interneurons throughout the brain,
+    with more inhibitory (decreasing calcium) activity than NaCl.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2;
+    Figure 6C
+  quote: We found that odors also evoked responses in a large set of both sensory and
+    interneurons, throughout the brain, but exhibited more inhibitory activity (decreasing [Ca 2+
+    ]) than seen for NaCl
+  criterion: The paper gives no measure for "more inhibitory". Figure 6C shows peak activity
+    before and during the stimulus per head class. The readings are (a) the number of head
+    classes with a significant decrease (paired t-test as in fig6-nacl-unknown-interneurons,
+    q of 0.05 or less) and (b) the fraction of head classes whose mean response (during minus
+    before) is negative. Reproduced when, under one reading, each odor exceeds NaCl.
+  depends_on:
+  - fig6-nacl-unknown-interneurons
+- id: fig6d-awc-asymmetric
+  statement: 2-butanone and 2,3-pentanedione evoke stochastically asymmetric responses in the
+    AWC ON and AWC OFF neurons, AWC OFF being the one srsx-3 colors in NeuroPAL.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2;
+    Figure 6D
+  quote: 2-butanone and 2,3-pentanedione evoked stochastically asymmetric responses in the AWC
+    ON/OFF neuron pair ( Figure 6D ); srsx-3 distinguishably colors AWC OFF in NeuroPAL
+  statistics:
+  - test: two-tailed two-sample (unpaired) t test
+    p: 0.05
+    p_relation: "<"
+  criterion: The dataset must label AWC ON and AWC OFF, or AWCL and AWCR with the ON/OFF side;
+    without it the claim is blocked. Per the STAR Methods, a two-tailed unpaired t-test of AWC
+    ON against AWC OFF responses, per odor. The measure is open, with the readings of
+    fig6d-ase-nacl. Reproduced when the test gives p of 0.05 or less for both odors;
+    partially reproduced for one.
+- id: fig6-asj-ric
+  statement: The ASJ sensory neurons are excited by NaCl but inhibited by both odors, whereas
+    the RIC interneurons are excited only by 2,3-pentanedione.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2;
+    Figures 6C to 6E
+  quote: For example, the ASJ sensory neurons were excited by NaCl but inhibited by both odors,
+    whereas the RIC interneurons were excited solely by 2,3-pentanedione
+  statistics:
+  - test: two-tailed paired t test, stimulus against prior period
+    p: 0.05
+    p_relation: "<"
+    corrected: FDR (Storey q values)
+  criterion: The paired t-test of fig6-nacl-unknown-interneurons, under the same readings, with
+    the sign of the mean response. Reproduced when, under one reading, ASJ is significantly
+    excited by NaCl and significantly inhibited by both odors, and RIC is significantly excited
+    by 2,3-pentanedione and not significantly excited by NaCl or 2-butanone. Partially
+    reproduced when four or five of these six parts hold.
+- id: fig6-interneurons-downstream
+  statement: Downstream of the sensory neurons many interneurons respond significantly, many
+    with no previously known function, for example AIN, AVH, RIF, RIG and RIR.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2;
+    Figures 6E and 6F
+  quote: Downstream of sensory neurons, we observed significant responses in many interneurons,
+    many with no previously known function (e.g., AIN, AVH, RIF, RIG, and RIR)
+  statistics:
+  - test: two-tailed paired t test, stimulus against prior period
+    p: 0.05
+    p_relation: "<"
+    corrected: FDR (Storey q values)
+  criterion: The paired t-test of fig6-nacl-unknown-interneurons, under the same readings.
+    The sentence names no stimulus, so a class counts when it responds significantly to at
+    least one of the three. Reproduced when all five classes do under one reading; partially
+    reproduced for three or four.
+- id: fig6-tail-responses
+  statement: In the tail, PVQ is significantly excited by 2,3-pentanedione, and a mix of sensory
+    and interneurons show significant post-stimulus responses to all three stimuli, including
+    LUA, PVN, PVQ, PVR and PVW.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2
+  quote: In the tail, the PVQ interneurons were significantly excited upon presentation of
+    2,3-pentanedione, while a mix of sensory and interneurons exhibited significant post-stimulus
+    responses ... to all three stimuli ... Many of these post-stimulus responses were observed in
+    interneurons with no previously known behavioral function (LUA, PVN, PVQ, PVR, and PVW)
+  statistics:
+  - about: PVQ excitation by 2,3-pentanedione
+    test: two-tailed paired t test, stimulus against prior period
+    p: 0.05
+    p_relation: "<"
+    corrected: FDR (Storey q values)
+  - about: post-stimulus responses
+    test: one-tailed paired t test, post-stimulus mean against stimulus mean
+    p: 0.05
+    p_relation: "<"
+    corrected: FDR
+  criterion: Tail recordings. PVQ by the paired test of fig6-nacl-unknown-interneurons. A
+    post-stimulus response per the STAR Methods, first the mean during the stimulus exceeds the
+    mean before it, then a one-tailed paired t-test that the post-stimulus mean exceeds the
+    stimulus mean, FDR corrected. The post-stimulus window is open; the readings are (a) the
+    10 s after the pulse ends, the length of the other windows; (b) the 20 s after it, the
+    period Figure S2A shows after the pulse. The FDR family has the readings of
+    fig6d-ase-nacl. Reproduced when, under one pair of readings, PVQ is excited by
+    2,3-pentanedione, each stimulus has at least one significant post-stimulus response, and
+    at least three of LUA, PVN, PVQ, PVR and PVW show one; partially reproduced when two of
+    these three parts hold.
+- id: fig6f-pharyngeal
+  statement: Both salt and odors elicit responses across the pharyngeal nervous system.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2;
+    Figure 6F
+  quote: Surprisingly, both salt and odors elicited responses across the pharyngeal nervous system
+  statistics:
+  - test: two-tailed paired t test, stimulus against prior period
+    p: 0.05
+    p_relation: "<"
+    corrected: FDR (Storey q values)
+  criterion: The paired t-test of fig6-nacl-unknown-interneurons, under the same readings, on
+    the pharyngeal classes, the 20-neuron network the Results name (I1 to I6, M1 to M5, MC,
+    MI and NSM, a list the paper does not give). "Across" is read as more than one
+    pharyngeal class. Reproduced when, under one reading, at least two pharyngeal classes
+    respond significantly to NaCl and at least two to one of the odors.
+- id: fig6-stimulus-sets-distinct
+  statement: The sets of neurons activated by the three stimuli are partly overlapping but
+    distinct for each stimulus.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2;
+    Figures 6C to 6F
+  quote: The set of neurons activated by all three stimuli was partly overlapping but distinct for
+    each stimulus
+  criterion: Head classes significant for each stimulus by the paired t-test of
+    fig6-nacl-unknown-interneurons, under the same readings. Reproduced when, under one
+    reading, each pair of stimuli shares at least one significant class and no two stimuli
+    have the same set.
+  depends_on:
+  - fig6-nacl-unknown-interneurons
+- id: figs1h-avf-cyclic
+  statement: In many animals the AVF interneurons show robust cyclical activity of about 0.3 Hz
+    for the whole 4 min recording, whatever the stimulus, similar to the crawling frequency of
+    freely moving worms of this strain.
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 3;
+    Figure S1H
+  quote: in many animals, the pair of AVF interneurons displayed robust cyclical activity for the
+    entire 4-min recording, irrespective of delivery of gustatory or olfactory stimuli. The
+    frequency of this activity was ~0.3 Hz
+  expected:
+    quantity: AVF cycle frequency
+    value: 0.3
+    tolerance: 0.03
+    unit: Hz
+  criterion: Per the Figure S1H legend, AVF traces median filtered at 0.5 s, and the frequency
+    counted as the number of peaks per 4 min interval. How peaks are detected, and which
+    animals count as cyclical, are open. The readings for peaks are (a) local maxima of the
+    filtered trace with prominence of at least one standard deviation of the trace; (b) the
+    same with half a standard deviation. The readings for animals are (a) all head recordings
+    with AVF identified; (b) those whose AVF trace has its largest spectral peak between 0.1
+    and 1 Hz. Reproduced when, under one pair of readings, the median frequency over AVF
+    neurons is within tolerance. The crawling frequency (Figure S1G, Table S2) is from a
+    behavioral assay the dandiset is not described as holding, and is not tested.
+- id: fig6gi-stimulus-specific-correlations
+  statement: Pairwise correlations between neurons are similar across individuals for a
+    stimulus, but each stimulus generates its own brainwide correlation pattern, even the two
+    attractive odors.
+  source: Results, Whole-Brain Neuronal Dynamics and Connectivity, paragraph 1; Figures 6G to 6I
+    and S2C to S2E
+  quote: We found similar stimulus-specific neuronal correlations across individuals, but each
+    stimulus generated its own brainwide correlation pattern ... Even the two attractive odors
+    produced distinct sets of neuronal correlations among and between sensory and interneurons
+  criterion: Per the Figure 6 legend, Pearson correlations between head neurons in each animal
+    over the 30 s following stimulus onset, averaged across animals. The paper gives no test
+    of "similar" or "distinct". The readings are (a) for each pair of animals, the correlation
+    between their correlation matrices over shared neuron pairs, same stimulus against
+    different stimuli, compared by a one-sided Wilcoxon signed-rank test over animal pairs;
+    (b) split the animals in two halves at random 100 times, and compare the correlation of
+    the two halves' mean matrices for the same stimulus against that for different stimuli.
+    Reproduced when, under one reading, same-stimulus similarity exceeds different-stimulus
+    similarity for each of the three stimulus pairs (p < 0.05 for reading a; in at least 95 of
+    100 splits for reading b); partially reproduced when it holds for NaCl against the odors
+    but not between the two odors.
+- id: figs2a-pca-trajectories
+  statement: The average trajectories of whole-brain activity in the space of its first three
+    principal components, over the 10 s stimulus and 20 s after, show similarities but remain
+    distinguishable between the three stimuli.
+  source: Figure S2A and S2B; Results, Whole-Brain Neuronal Dynamics and Connectivity, paragraph 1
+  quote: Average phase trajectories (N = 21 animal heads) of whole-brain neuronal activity in
+    response to stimuli (10 s of stimulus application and 20 s thereafter) ... The average
+    stimulus trajectories exhibit similarities but remain distinguishable
+  criterion: The paper does not say how the principal components are computed or how
+    "distinguishable" is judged. The PCA is read as (a) on the matrix of class-averaged traces
+    over the whole recording, or (b) on the stimulus windows only, with neurons missing from
+    an animal left out. A trajectory is distinguishable from another when the two
+    trajectories' mean distance exceeds twice the mean standard error of the mean over the
+    21 heads (the mesh of Figure S2A). Reproduced when, under one reading, all three pairs are
+    distinguishable.
+- id: fig6jk-connectome-correlation
+  statement: Functional correlations correspond little to the anatomical connectome; the R2 of
+    the Pearson correlation between absolute functional correlations and synapse counts is
+    2.8% (head) and 1.7% (tail) for electrical synapses, and 0.5% (head) and 1.5% (tail) for
+    chemical synapses.
+  source: Results, Whole-Brain Neuronal Dynamics and Connectivity, paragraph 2; Figures 6J and 6K
+  quote: We found low Pearson correlation between these functional and structural matrices. For
+    electrical connectivity, R 2 = 2.8% in the head and R 2 = 1.7% in the tail, and for chemical
+    connectivity, R 2 = 0.5% in the head and R 2 = 1.5% in the tail
+  data: with_inputs
+  expected:
+  - quantity: R2, electrical synapses, head
+    value: 2.8
+    tolerance: 0.28
+    unit: percent
+  - quantity: R2, electrical synapses, tail
+    value: 1.7
+    tolerance: 0.17
+    unit: percent
+  - quantity: R2, chemical synapses, head
+    value: 0.5
+    tolerance: 0.05
+    unit: percent
+  - quantity: R2, chemical synapses, tail
+    value: 1.5
+    tolerance: 0.15
+    unit: percent
+  criterion: Per the Results, the absolute value of the functional correlation matrix against
+    the synapse count matrix of Cook et al. 2019 (hermaphrodite), Pearson R2. Open details and
+    their readings. The functional matrix is (a) the per-animal correlation over the whole
+    recording averaged over animals (the variations the paper lists include limiting to
+    stimulus periods, so the default is read as the whole recording); (b) per-animal neuron
+    pairs pooled. Neuron pairs are (a) all off-diagonal pairs of identified neurons, those
+    without synapses counted as zero; (b) only pairs with at least one synapse. Electrical
+    counts are made symmetric; chemical counts are (a) summed over both directions; (b) the
+    larger direction. Reproduced when, under one combination of readings, all four values are
+    within tolerance; partially reproduced when all four R2 values are below 5% but not within
+    tolerance.
+- id: fig6-connectome-variations
+  statement: Variations of the comparison (thresholding for low sampling, ranked correlation,
+    log-scaled synapse counts, stimulus or non-stimulus periods only) do not noticeably improve
+    the correlation between functional activity and the connectome.
+  source: Results, Whole-Brain Neuronal Dynamics and Connectivity, paragraph 2
+  quote: We tried multiple variations in our calculations (e.g., thresholding for low sampling,
+    using ranked correlation metrics, log-scaling synaptic counts, and limiting functional
+    activity to only stimulus or non-stimulus delivery periods) but these did not noticeably
+    improve correlation between functional activity and the structural connectome
+  data: with_inputs
+  depends_on:
+  - fig6jk-connectome-correlation
+  criterion: The paper gives no threshold for "noticeably" and the values are in Table S6, not
+    read. Each variation is run on the reading of fig6jk-connectome-correlation that matched
+    (the first listed if none did); thresholding for low sampling keeps pairs seen in more
+    than 5, 10 or 15 animals, the thresholds of Figure S2C to S2E (N is the number of worms,
+    STAR Methods, Statistical analysis); ranked correlation is
+    Spearman. Reproduced when no variation gives an R2 above 3.1%, the largest R2 the paper
+    reports widened by 10%.
+- id: fig1-neuropal-color-map
+  statement: The NeuroPAL transgene of 41 reporter-fluorophore fusions gives a stereotyped color
+    map that lets every neuron of the hermaphrodite be identified by color and position.
+  source: Results, Empirical Assembly of NeuroPAL, paragraph 2; Figure 1E
+  quote: The final transgene, composed of 41 different reporter-fluorophore fusions, allowed us to
+    unambiguously assign identities to every neuron in C. elegans based on a stereotyped color map
+- id: fig1-neuropal-stable-variable-classes
+  statement: The NeuroPAL color pattern was stable across hundreds of scored animals, except for
+    variable brightness in four neuron classes, AVL, RIM, RIS and PVW.
+  source: Results, Neuronal Color Verification and Phenotypic Assessment of NeuroPAL Strains,
+    paragraph 1
+  quote: We found that the NeuroPAL expression pattern was stable, robust, and stereotyped
+    throughout the nervous system over hundreds of scored animals ... A minor exception was four
+    neuron classes that exhibited variable brightness (AVL, RIM, RIS, and PVW)
+- id: figs1-integrant-health
+  statement: All NeuroPAL integrants can be revived and give progeny; otIs669 (OH15262) is the
+    brightest and otIs670 (OH15263) has locomotion and chemotaxis closest to wild type.
+  source: Results, Neuronal Color Verification and Phenotypic Assessment of NeuroPAL Strains,
+    paragraph 2; Figures S1A to S1G; Table S2
+  quote: The brightest integrant was otls669 (strain OH15262). The integrant with locomotion and
+    chemotactic behavior closest to wild-type, otls670 (strain OH15263), is less bright
+- id: fig2-positional-variability
+  statement: Neuron positions within a ganglion vary between animals, with different variability
+    across neuron types; OLLR has over twice the anterior-posterior positional variability of
+    OLLL.
+  source: Results, Variability in Neuronal Cell Body Positions; Figures 2C and 2D
+  quote: This map revealed different positional variability across neuron types ... OLLR exhibits
+    over twice the positional variability of OLLL in its anterior-posterior axis
+- id: fig4c-receptor-coverage
+  statement: Metabotropic acetylcholine, glutamate and GABA receptors are expressed in 97% of all
+    neurons; 70% express GARs, 54% MGLs and 89% GBBs.
+  source: Results, Expression Maps for All Metabotropic Neurotransmitter Receptors, paragraph 2;
+    Figure 4C
+  quote: these receptors are expressed in 97% of all neurons ... 70% express GARs, 54% express
+    MGLs, and 89% express GBBs
+  expected:
+  - quantity: neurons expressing any metabotropic receptor
+    value: 97
+    tolerance: 9.7
+    unit: percent
+  - quantity: neurons expressing GARs
+    value: 70
+    tolerance: 7
+    unit: percent
+  - quantity: neurons expressing MGLs
+    value: 54
+    tolerance: 5.4
+    unit: percent
+  - quantity: neurons expressing GBBs
+    value: 89
+    tolerance: 8.9
+    unit: percent
+- id: fig4bd-gaba-network
+  statement: Every postsynaptic partner of every GABA-releasing neuron expresses a GABA-B
+    receptor, against 60% that express a GABA-A receptor; 76% of postsynaptic partners of
+    cholinergic neurons express GARs and 66% of those of glutamatergic neurons express MGLs.
+  source: Results, Expression Maps for All Metabotropic Neurotransmitter Receptors, paragraph 2;
+    Figures 4B, 4D and 4G
+  quote: We found that every postsynaptic partner of every GABA-releasing neuron expresses one of
+    the two GABA B receptors. In contrast, only 60% of postsynaptic partners of GABAergic neurons
+    express any of the seven GABA A receptors ... 76% of the postsynaptic partners of cholinergic
+    neurons express GAR receptors, and 66% of the postsynaptic partners of glutamatergic neurons
+    express MGL receptors
+  data: with_inputs
+  expected:
+  - quantity: postsynaptic partners of GABAergic neurons expressing GABA-B receptors
+    value: 100
+    tolerance: 10
+    unit: percent
+  - quantity: postsynaptic partners of GABAergic neurons expressing GABA-A receptors
+    value: 60
+    tolerance: 6
+    unit: percent
+  - quantity: postsynaptic partners of cholinergic neurons expressing GARs
+    value: 76
+    tolerance: 7.6
+    unit: percent
+  - quantity: postsynaptic partners of glutamatergic neurons expressing MGLs
+    value: 66
+    tolerance: 6.6
+    unit: percent
+- id: fig4e-extrasynaptic
+  statement: Many receptor-expressing neurons have no presynaptic partner releasing the cognate
+    transmitter (31% of GABA-A and 37% of GABA-B expressing neurons; 3% of GAR and 10% of MGL
+    expressing neurons), and 92% of neurons express GABA receptors while only 10% release
+    GABA, suggesting widespread extrasynaptic signaling, most prominently onto sensory neurons.
+  source: Results, Expression Maps for All Metabotropic Neurotransmitter Receptors, paragraph 2;
+    Figures 4E and 4F
+  quote: 31% of GABA A and 37% of GABA B receptor-expressing neurons have no presynaptic GABAergic
+    partner. Moreover, we found 92% of all neurons express GABA receptors, and yet only 10% of
+    neurons release GABA ... Notably, sensory neurons appear to be the most prominent recipients
+    of extrasynaptic communication
+  data: with_inputs
+  expected:
+  - quantity: GABA-A expressing neurons without a GABAergic presynaptic partner
+    value: 31
+    tolerance: 3.1
+    unit: percent
+  - quantity: GABA-B expressing neurons without a GABAergic presynaptic partner
+    value: 37
+    tolerance: 3.7
+    unit: percent
+  - quantity: neurons expressing GABA receptors
+    value: 92
+    tolerance: 9.2
+    unit: percent
+  - quantity: neurons releasing GABA
+    value: 10
+    tolerance: 1
+    unit: percent
+  - quantity: GAR expressing neurons without a cholinergic presynaptic partner
+    value: 3
+    tolerance: 0.3
+    unit: percent
+  - quantity: MGL expressing neurons without a glutamatergic presynaptic partner
+    value: 10
+    tolerance: 1
+    unit: percent
+- id: fig5ab-pag3-fate
+  statement: In pag-3 null mutants the NeuroPAL color codes of the VA and VB motor neurons are
+    absent, and the AVE and PVR interneurons change color; a pag-3 fosmid reporter is expressed
+    in previously unidentified neurons including AVE and PVR.
+  source: Results, Uncovering Determinants of Cell Fate, paragraph 1; Figures 5A to 5C; Table S5
+  quote: As predicted, the color codes that identify the VA and VB cell types in NeuroPAL are
+    absent in pag-3 mutants ... Unexpectedly, we also found color changes in the AVE and PVR
+    interneurons caused by pag-3 mutation
+  criterion: Per the STAR Methods, one-sided Fisher's exact tests for PVR, VA2 and VB3 and a
+    one-sided rank-sum test for AVE (scored 0, 1 or 2 altered AVE neurons), Bonferroni corrected
+    for eight tests, in each of the two alleles n3098 and ok488. The p values are in Table S5,
+    not read.
+- id: fig5ef-eor1-rme
+  statement: In eor-1 null mutants the dorsal and ventral RME neurons (RMED/V) lose all their
+    blue NeuroPAL coloring but keep the panneuronal label, while RMEL/R are unchanged; an
+    unc-25/GAD reporter confirms the loss, with no defect in UNC-47/VGAT expression.
+  source: Results, Uncovering Determinants of Cell Fate, paragraph 2; Figures 5E to 5G; Table S5
+  quote: The dorsal and ventral RME neurons (RMED/V) lost all their blue coloring but retained
+    their panneuronal label ... In contrast, the left and right RME neurons (RMEL/R) exhibited no
+    changes in their color codes ... but at the same time found no defects in UNC-47/VGAT
+    expression
+  criterion: Per the STAR Methods, a one-sided Fisher's exact test for loss of RMED/V blue color
+    and a one-sided rank-sum test of unc-25 reporter scores (0 lost, 1 weak, 2 unchanged),
+    Bonferroni corrected for eight tests, in each of the alleles cs28 and ok1127. The p values
+    are in Table S5, not read.
+- id: fig7bc-id-accuracy
+  statement: The semi-automated identification pipeline identifies 86% of head and 94% of tail
+    neurons correctly; eight manual annotations on average bring head accuracy above 90%; with
+    position alone accuracy drops to 50% (head) and 68% (tail).
+  source: Results, Semi-automated Neuronal Identification, paragraph 2; Figures 7B and 7C;
+    Methods S1, section 6.3
+  quote: Accuracy was 86% for the head and 94% for the tail ... Adding eight manual annotations, on
+    average, brings the head accuracy above 90% ... automated accuracy dropped to 50% for the head
+    and 68% for the tail
+  expected:
+  - quantity: head identification accuracy
+    value: 86
+    tolerance: 8.6
+    unit: percent
+  - quantity: tail identification accuracy
+    value: 94
+    tolerance: 9.4
+    unit: percent
+  - quantity: head accuracy, position only
+    value: 50
+    tolerance: 5
+    unit: percent
+  - quantity: tail accuracy, position only
+    value: 68
+    tolerance: 6.8
+    unit: percent
+  criterion: Per Methods S1 (Figure 6.4), leave-one-out cross validation over the 10 young-adult
+    otIs669 worms of the positional atlas, with neuron class used in place of left and right
+    where the pair sits near the midline. These 10 worms are imaged on the Zeiss LSM880, not in
+    the microfluidic chip.
+- id: fig7de-optimal-coloring
+  statement: Simulated optimal-coloring alternatives to NeuroPAL from WormBase reporters give
+    1.7% color violations with 39 reporters and 10.5% with only 3 reporters.
+  source: Results, An Optimal-Coloring Algorithm for Other Tissues and Model Organisms, paragraph
+    2; Figures 7D and 7E; Methods S2
+  quote: In our simulations, we achieve color violations of 1.7% when using 39 reporters and 10.5%
+    when restricting the solution to only 3 reporters
+  data: with_inputs
+  expected:
+  - quantity: color violations, 39 reporters
+    value: 1.7
+    tolerance: 0.17
+    unit: percent
+  - quantity: color violations, 3 reporters
+    value: 10.5
+    tolerance: 1.05
+    unit: percent
