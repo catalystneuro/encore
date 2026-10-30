@@ -81,7 +81,8 @@ claims:
     tolerance: 1.8
     unit: animals
   criterion: Counts of OH16230 recordings. Animal counts are exact (tolerance 0, as they are
-    counts of files the paper lists). The paper does not say whether "189 neurons" counts
+    whole counts of animals the paper states). The Figure 6 and S2 legends speak of correlations
+    "between 189 neurons", which supports reading (a). The paper does not say whether "189 neurons" counts
     neurons with left and right separate or neuron names over all animals; the readings are
     (a) the number of distinct neuron names identified in at least one head; (b) the same,
     after the STAR Methods removals (near-duplicate traces, N of 3 or fewer). "Neuron type" is
@@ -89,9 +90,9 @@ claims:
     with the median over types of the number of animals in which the type was identified.
     Reproduced when, under one reading, every value is within tolerance.
 - id: fig6-all-heads-responsive
-  statement: All 21 head recordings showed the published responses of the primary sensory
-    neurons, ASE excitation to NaCl and AWC inhibition to both odors, in the left or the right
-    neuron.
+  statement: 21 head recordings showed the published responses of the primary sensory neurons,
+    ASE excitation to NaCl and AWC inhibition to both odors, in the left or the right neuron,
+    and were kept for analysis.
   source: STAR Methods, Analysis of brainwide imaging data
   quote: Worms were marked as stimulus responsive if either their left or right neuron showed the
     published response to their corresponding stimuli (ASE excitation for NaCl and AWC inhibition
@@ -101,11 +102,13 @@ claims:
     value: 21
     tolerance: 0
     unit: animals
-  criterion: The paper does not say how a single neuron's response was judged in one animal,
-    which had one pulse of each stimulus. The readings are (a) the mean dF/F0 during the 10 s
-    pulse exceeds (ASE) or falls below (AWC) the mean over the 10 s before; (b) the same
-    difference exceeds two standard deviations of the 10 s before. Reproduced when, under one
-    reading, all head recordings in the dataset pass for all three stimuli.
+  criterion: The paper says only that ASE and AWC responses were "reviewed", and does not say
+    how a single neuron's response was judged in one animal, which had one pulse of each
+    stimulus. The readings are (a) the mean dF/F0 during the 10 s pulse exceeds (ASE) or falls
+    below (AWC) the mean over the 10 s before; (b) the same difference exceeds two standard
+    deviations of the 10 s before. The paper does not say how many heads were recorded before
+    this selection. Reproduced when, under one reading, 21 head recordings in the dataset pass
+    for all three stimuli (all of them when the dataset holds only the 21 heads the paper kept).
 - id: fig6d-ase-nacl
   statement: NaCl evokes left/right asymmetric responses in the two ASE neurons, and ASER shows
     an increase in calcium upon NaCl presentation.
@@ -119,10 +122,6 @@ claims:
     p: 0.05
     p_relation: "<"
     corrected: FDR (Storey q values)
-  - about: ASEL against ASER response
-    test: two-tailed two-sample (unpaired) t test
-    p: 0.05
-    p_relation: "<"
   criterion: Per the STAR Methods, ASER's mean dF/F0 during the NaCl pulse against the identical
     10 s before, two-tailed paired t-test over head recordings; reproduced in part when the
     mean is higher with q of 0.05 or less. For the asymmetry, a two-tailed unpaired t-test of
@@ -172,10 +171,6 @@ claims:
     Figure 6D
   quote: 2-butanone and 2,3-pentanedione evoked stochastically asymmetric responses in the AWC
     ON/OFF neuron pair ( Figure 6D ); srsx-3 distinguishably colors AWC OFF in NeuroPAL
-  statistics:
-  - test: two-tailed two-sample (unpaired) t test
-    p: 0.05
-    p_relation: "<"
   criterion: The dataset must label AWC ON and AWC OFF, or AWCL and AWCR with the ON/OFF side;
     without it the claim is blocked. Per the STAR Methods, a two-tailed unpaired t-test of AWC
     ON against AWC OFF responses, per odor. The measure is open, with the readings of
@@ -218,7 +213,8 @@ claims:
   statement: In the tail, PVQ is significantly excited by 2,3-pentanedione, and a mix of sensory
     and interneurons show significant post-stimulus responses to all three stimuli, including
     LUA, PVN, PVQ, PVR and PVW.
-  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2
+  source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2;
+    Table S6
   quote: In the tail, the PVQ interneurons were significantly excited upon presentation of
     2,3-pentanedione, while a mix of sensory and interneurons exhibited significant post-stimulus
     responses ... to all three stimuli ... Many of these post-stimulus responses were observed in
@@ -242,8 +238,9 @@ claims:
     period Figure S2A shows after the pulse. The FDR family has the readings of
     fig6d-ase-nacl. Reproduced when, under one pair of readings, PVQ is excited by
     2,3-pentanedione, each stimulus has at least one significant post-stimulus response, and
-    at least three of LUA, PVN, PVQ, PVR and PVW show one; partially reproduced when two of
-    these three parts hold.
+    each of LUA, PVN, PVQ, PVR and PVW shows one to at least one stimulus; partially reproduced
+    when two of these three parts hold, or when all hold except that only three or four of the
+    five classes show one.
 - id: fig6f-pharyngeal
   statement: Both salt and odors elicit responses across the pharyngeal nervous system.
   source: Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2;
@@ -255,8 +252,9 @@ claims:
     p_relation: "<"
     corrected: FDR (Storey q values)
   criterion: The paired t-test of fig6-nacl-unknown-interneurons, under the same readings, on
-    the pharyngeal classes, the 20-neuron network the Results name (I1 to I6, M1 to M5, MC,
-    MI and NSM, a list the paper does not give). "Across" is read as more than one
+    the pharyngeal classes. The Results give the network as 20 neurons without listing them;
+    the standard pharyngeal set (I1 to I6, M1 to M5, MC, MI and NSM, 20 neurons) is used, a
+    list taken from outside the paper. "Across" is read as more than one
     pharyngeal class. Reproduced when, under one reading, at least two pharyngeal classes
     respond significantly to NaCl and at least two to one of the odors.
 - id: fig6-stimulus-sets-distinct
@@ -287,7 +285,8 @@ claims:
     tolerance: 0.03
     unit: Hz
   criterion: Per the Figure S1H legend, AVF traces median filtered at 0.5 s, and the frequency
-    counted as the number of peaks per 4 min interval. How peaks are detected, and which
+    counted as the number of peaks per 4 min interval; the legend shows traces from five
+    OH16230 worms, and the Results say "in many animals". How peaks are detected, and which
     animals count as cyclical, are open. The readings for peaks are (a) local maxima of the
     filtered trace with prominence of at least one standard deviation of the trace; (b) the
     same with half a standard deviation. The readings for animals are (a) all head recordings
@@ -383,9 +382,11 @@ claims:
   criterion: The paper gives no threshold for "noticeably" and the values are in Table S6, not
     read. Each variation is run on the reading of fig6jk-connectome-correlation that matched
     (the first listed if none did); thresholding for low sampling keeps pairs seen in more
-    than 5, 10 or 15 animals, the thresholds of Figure S2C to S2E (N is the number of worms,
-    STAR Methods, Statistical analysis); ranked correlation is
-    Spearman. Reproduced when no variation gives an R2 above 3.1%, the largest R2 the paper
+    than 5, 10 or 15 animals, the thresholds of Figure S2C to S2E. That legend writes "N > 5,
+    10, and 15 neurons", while the STAR Methods (Statistical analysis) say N is the number of
+    worms; the worm reading is used, as a neuron count does not define a sampling threshold
+    for a pair. Ranked correlation is Spearman, a standard choice the paper does not name.
+    The 3.1% bound for "noticeably" is a choice of this file, not the paper's. Reproduced when no variation gives an R2 above 3.1%, the largest R2 the paper
     reports widened by 10%.
 - id: fig1-neuropal-color-map
   statement: The NeuroPAL transgene of 41 reporter-fluorophore fusions gives a stereotyped color
@@ -412,7 +413,8 @@ claims:
   statement: Neuron positions within a ganglion vary between animals, with different variability
     across neuron types; OLLR has over twice the anterior-posterior positional variability of
     OLLL.
-  source: Results, Variability in Neuronal Cell Body Positions; Figures 2C and 2D
+  source: Results, Variability in Neuronal Cell Body Positions, paragraph 1; Figure 2 legend,
+    panels C and D
   quote: This map revealed different positional variability across neuron types ... OLLR exhibits
     over twice the positional variability of OLLL in its anterior-posterior axis
 - id: fig4c-receptor-coverage
@@ -505,6 +507,11 @@ claims:
     value: 10
     tolerance: 1
     unit: percent
+  criterion: The Results sentence pairs GAR with glutamatergic and MGL with cholinergic inputs
+    ("glutamatergic and cholinergic neurons, respectively"), the reverse of the receptors'
+    cognate transmitters. The readings are (a) cognate pairing, GAR with cholinergic and MGL
+    with glutamatergic, as in the expected values; (b) the pairing as printed. Reproduced when,
+    under one reading, every value is within tolerance.
 - id: fig5ab-pag3-fate
   statement: In pag-3 null mutants the NeuroPAL color codes of the VA and VB motor neurons are
     absent, and the AVE and PVR interneurons change color; a pag-3 fosmid reporter is expressed
@@ -577,3 +584,37 @@ claims:
     value: 10.5
     tolerance: 1.05
     unit: percent
+checks:
+- date: 2026-10-30
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig6-sample-sizes, criterion reworded the reason for tolerance 0 (the paper lists no files) and
+    cited the Figure 6 and S2 legends ("between 189 neurons") as support for reading (a).
+  - fig6-all-heads-responsive, statement and criterion no longer say all recorded heads responded;
+    the STAR Methods describe a selection ("21 heads responded to all three stimuli") without
+    saying how many heads were recorded, so the criterion asks for 21 passing heads.
+  - fig6d-ase-nacl, removed the ASEL against ASER statistics entry; the paper reports no result
+    of an asymmetry test (the Figure 6 legend marks significance for responses only), so p < 0.05
+    was the Methods threshold, not a result. The criterion's test is kept.
+  - fig6d-awc-asymmetric, removed the statistics entry for the same reason.
+  - fig6-tail-responses, source adds Table S6, which the Results cite; the criterion now asks for
+    all five named classes (LUA, PVN, PVQ, PVR, PVW), as the paper names all five, with three or
+    four counted as partial; "at least three" was not from the paper.
+  - fig6f-pharyngeal, criterion states that the 20-neuron list is the standard pharyngeal set
+    taken from outside the paper, since the Results give only the count.
+  - figs1h-avf-cyclic, criterion adds that the Figure S1H legend shows five OH16230 worms.
+  - fig6-connectome-variations, criterion names the conflict between the Figure S2 legend ("N >
+    5, 10, and 15 neurons") and the STAR Methods (N is worms), names Spearman as a standard
+    choice, and states that the 3.1% bound for "noticeably" is not the paper's.
+  - fig2-positional-variability, source points at the Figure 2 legend, where the OLLR sentence is.
+  - fig4e-extrasynaptic, added a criterion naming the two readings of the GAR and MGL pairing,
+    since the Results print the transmitters "respectively" in the reverse of cognate order.
+  - Open, the Figure 6 statistics entries record "p or q <= 0.05" as p < 0.05 because the schema
+    has no "<=" relation; no per-neuron p or q values are available as Table S6 was not read.
+  - Open, the "noticeably" bound of fig6-connectome-variations, the distinguishability rule of
+    figs2a-pca-trajectories and the similarity tests of fig6gi-stimulus-specific-correlations
+    are choices of this file; the paper gives no test for them, and each is stated as open.
+  - Open, fig7bc-id-accuracy does not hold "above 90% with eight manual annotations" as an
+    expected value; it is in the statement only.
