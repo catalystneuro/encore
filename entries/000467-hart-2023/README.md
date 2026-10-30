@@ -17,7 +17,7 @@ The behaviour, transgenesis, confocal and genome data of the paper are not in it
 | At most a median of 6 glomeruli per pheromone | Reproduced (assumed) |
 | Higher concentrations recruit a few more glomeruli | Reproduced (assumed) |
 | One glomerulus (PGb) shared by the three panic pheromones | Not reproduced |
-| 6MHO rarely shares glomeruli with the others | Reproduced (assumed); change to not reproduced proposed |
+| 6MHO rarely shares glomeruli with the others | Not reproduced |
 | PGb, 6G and PGa found in 13, 13 and 11 of 13 ants, PGb mid-depth | Not reproduced |
 | Tuning of PGb, PGa and 6G | Partially reproduced (assumed) |
 | PGb and PGa responses decline, 6G responses are slow | Partially reproduced (assumed) |
@@ -33,8 +33,8 @@ paper drew its ROIs by eye, and the counts of responding glomeruli rest on the R
 the Methods' trial-mean rule; the single-glomerulus outcomes rest on the identification of the focal
 glomeruli (under aiiy, a reading with the ROI's maximum, for PGa) and on a 15 um disc ROI. The other
 readings are shown in the notebooks. For 6MHO's overlaps the criterion asks for every reading, and the
-readings with the ROI's maximum fail, so a change of that outcome to not reproduced is proposed for the
-next verification round.
+readings with the ROI's maximum fail, so that outcome is not reproduced (changed after the third
+verification round).
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and
 the differences from the paper's method.
