@@ -19,7 +19,9 @@ Where the parameters come from:
   reading (b), the electrode name of the unit's microwire bundle, AH and PH hippocampus, EC
   entorhinal cortex, A amygdala (Table 1 legend). Reading (a), the anatomical location of the
   microwire tips (Figure 1d legend), is built in the notebook's data check from the atlas label of
-  each bundle's tip contact. The `location` column is not used; see the notebook's data check.
+  each bundle's tip contact. For the units whose tip contact has no MTL label, it takes the label
+  of the contact nearest the tip that has one (a2, adopted as an assumption) or the electrode name
+  (a1). The `location` column is not used; see the notebook's data check.
 - Response time: the files' response timestamps are the conversion's `Response time` plus the
   trial start plus 1.7 s (usz-neuro-conversion, convert_Human_MTL_units_visual_WM.ipynb,
   `write_behavior` and `_get_time_offset`, commit c31dad914fd3f63476750dffff30f119386f60ec).
@@ -188,7 +190,9 @@ def paired_t(d: np.ndarray, signs: np.ndarray | None = None) -> np.ndarray:
 
 
 def welch_t(x: np.ndarray, y: np.ndarray) -> np.ndarray:
-    """Unpaired t of x (trials, units) against y (trials, units), unequal variances as in statcond."""
+    """Unpaired t of x (trials, units) against y (trials, units), unequal variances (a standard
+    choice; whether statcond pools the variances was not checked). With equal group sizes, as for
+    two periods of the same trials, it equals the pooled-variance t."""
     nx, ny = x.shape[0], y.shape[0]
     with np.errstate(divide="ignore", invalid="ignore"):
         return (x.mean(0) - y.mean(0)) / np.sqrt(x.var(0, ddof=1) / nx + y.var(0, ddof=1) / ny)
