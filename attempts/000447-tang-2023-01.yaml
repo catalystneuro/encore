@@ -200,7 +200,9 @@ outcomes:
     under (a) only. The other widths give no more, 4 cm CA1 rises under (a) (p = 0.0079) but PFC rises too (p =
     0.0004), 2 cm CA1 does not rise under either reading (p = 0.30 and 1) and PFC is stable (p = 0.076 and 1). The
     code's decoder (variant) finds no CA1 rise under (a) (p = 1), and under (b) both regions rise (p = 0.00027 and
-    0.0013).
+    0.0013). Calling the outcome partial at every width is a judgement. At 2 cm only the PFC claim of absence holds
+    and CA1 rises under neither reading, which alone would be closer to not reproduced; the outcome is partial or
+    worse at every width and reproduced at none, so the width rule does not block it.
   deviations:
   - Both readings of trial -1 in the criterion are run. Reading (a) is the last N trial; the legend's "Trial-by-trial
     decoding error during environment switch (N to F)" and the Results' "the first trial after environment switching"
@@ -385,7 +387,10 @@ outcomes:
   notes: With the signed SI no correlation of R with SI(IN) or SI(OUT) reaches p < 0.05 in either region (8 cm,
     smallest p 0.26). With the absolute SI three of four do (CA1 SI(IN) r = -0.174, p = 0.025; PFC SI(IN) r = -0.241,
     p = 5.2e-06; PFC SI(OUT) r = -0.208, p = 8.7e-05). The criterion makes the claim methods_underspecified when
-    only one reading finds a correlation. Question for the paper's authors, whether Figure S5F plots the signed
+    only one reading finds a correlation. At 4 cm the same holds (signed none, smallest p 0.21; absolute four of
+    four, p <= 0.037). At 2 cm both readings find one (signed PFC SI(OUT) r = 0.097, p = 0.047; absolute three of
+    four), so there the claim would not reproduce; the outcome changes with the width, which also makes it
+    methods_underspecified under the claims file's width rule. Question for the paper's authors, whether Figure S5F plots the signed
     or the absolute selectivity index.
   deviations:
   - The 1D smoothing width of the linearized maps is garbled in the paper's text (Methods, Spatial fields and linearization,
@@ -469,7 +474,9 @@ outcomes:
     computed, and the plotted embeddings are made of one thread per pass, not a clean ring or double V.
   deviations:
   - UMAP is umap-learn with seed 0 (seeds 1 and 2 as variants), not the MATLAB toolbox with the paper's saved templates,
-    which are not public (a standard choice named in the claims file).
+    which are not public (a standard choice named in the claims file). Numba is compiled for a generic x86-64 target,
+    with the BLAS kernel and numpy's dispatch fixed, so that the embedding is the same on every machine; before
+    this the embeddings differed between machines.
   - Assumption. Empty 1-cm bins inside a pass of the single-trial maps are filled linearly, as cal_PVsimilarity.m
     fills session maps; the Methods say only that bins with spikes from fewer than 5 neurons are discarded. The
     maps without filling are run as a variant (8 and 2 cm).
@@ -484,14 +491,20 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_tang_2023.ipynb
   output: claim:fig3h-inseq-outseq-distance
-  notes: Seed 0, CA1 (by location) OutSeq 13.81 against InSeq 16.05, rank-sum p = 0.0098; PFC (by phase) InSeq 14.24
-    against OutSeq 17.17, p = 0.0012. Every alignment and seed keeps both directions at p < 0.01. The 4-cm and 2-cm
-    widths agree (p <= 0.013), and so do the maps without gap filling at 8 cm (CA1 p = 4.2e-27, PFC p = 0.00044);
-    without gap filling at 2 cm PFC InSeq and OutSeq do not differ (13.8 and 13.9, p = 0.28), so the outcome rests
-    on the filling.
+  notes: Seed 0, CA1 (by location) OutSeq 13.67 against InSeq 17.27, rank-sum p = 0.0005; PFC (by phase) InSeq 14.04
+    against OutSeq 17.51, p = 8.9e-06. With the main alignment both directions hold under seeds 1 and 2 (CA1 p =
+    1.4e-05 and 0.0026, PFC p = 0.00033 and 0.042); of the other alignments PFC by location is weaker under seed 2
+    (p = 0.069), and the rest give p < 0.01. The 4-cm and 2-cm widths agree (p <= 3.2e-11), and so do the maps
+    without gap filling at 8 cm (CA1 p = 4.2e-27, PFC p = 0.022); without gap filling at 2 cm PFC InSeq and OutSeq
+    do not differ (16.4 and 16.7, p = 0.34), so the outcome rests on the filling. The result moves with the
+    embedding. In the verifier's round-2 copy, embedded on another machine before numba's CPU target was fixed, CA1
+    with the main alignment gave p = 0.096 under seed 1. Seed 0, the standard choice of the claims file, passed in
+    every execution.
   deviations:
   - UMAP is umap-learn with seed 0 (seeds 1 and 2 as variants), not the MATLAB toolbox with the paper's saved templates,
-    which are not public (a standard choice named in the claims file).
+    which are not public (a standard choice named in the claims file). Numba is compiled for a generic x86-64 target,
+    with the BLAS kernel and numpy's dispatch fixed, so that the embedding is the same on every machine; before
+    this the embeddings differed between machines.
   - Assumption. Empty 1-cm bins inside a pass of the single-trial maps are filled linearly, as cal_PVsimilarity.m
     fills session maps; the Methods say only that bins with spikes from fewer than 5 neurons are discarded. The
     maps without filling are run as a variant (8 and 2 cm).
@@ -505,13 +518,15 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_tang_2023.ipynb
   output: claim:fig3i-phase-location-distance
-  notes: Methods reading, seed 0, PFC same-phase 14.41 against same-location 17.02 (p near 0); CA1 location 14.20
-    against phase 16.81 (p = 7.1e-259). Seeds 1 and 2, the 4-cm and 2-cm widths and the maps without gap filling
-    agree (p <= 7.5e-47). The code's variant (both from same-side pairs) fails under seed 0 (CA1 reversed, p = 0.008;
-    PFC p = 0.19) and for CA1 under seed 1 (p = 0.44), and holds under seed 2.
+  notes: Methods reading, seed 0, PFC same-phase 14.08 against same-location 17.72 (p near 0); CA1 location 14.33 against
+    phase 17.45 (p near 0). Seeds 1 and 2, the 4-cm and 2-cm widths and the maps without gap filling agree (p <=
+    9.2e-43). The code's variant (both from same-side pairs) fails under seed 0 (CA1 reversed, p = 2.4e-09; PFC p =
+    0.68) and for CA1 under seed 1 (reversed, p = 0.03), and holds under seed 2.
   deviations:
   - UMAP is umap-learn with seed 0 (seeds 1 and 2 as variants), not the MATLAB toolbox with the paper's saved templates,
-    which are not public (a standard choice named in the claims file).
+    which are not public (a standard choice named in the claims file). Numba is compiled for a generic x86-64 target,
+    with the BLAS kernel and numpy's dispatch fixed, so that the embedding is the same on every machine; before
+    this the embeddings differed between machines.
   - Assumption. Empty 1-cm bins inside a pass of the single-trial maps are filled linearly, as cal_PVsimilarity.m
     fills session maps; the Methods say only that bins with spikes from fewer than 5 neurons are discarded. The
     maps without filling are run as a variant (8 and 2 cm).
@@ -524,15 +539,19 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_tang_2023.ipynb
   output: claim:fig3j-familiar-novel-manifold
-  notes: PFC F states lie closer to N' states than the shuffle (11.99 against 13.86, 13.5% closer, rank-sum p =
-    1.4e-127). CA1 F states are also closer than the shuffle, by less (12.60 against 13.38, 5.9% closer, p = 2.0e-47),
-    so the claim that CA1 does not differ from the shuffle fails by the paper's test; seeds 1 and 2 give CA1 6.8%
-    and 7.4% and PFC 26.0% and 14.1% closer. The 4-cm and 2-cm widths and the unfilled maps at 8 cm agree (CA1 3.9%
-    to 5.9%, PFC 5.9% to 59.6% closer). Without gap filling at 2 cm PFC is not closer than the shuffle (+1.8%, p
-    = 0.41), so the PFC part rests on the filling.
+  notes: PFC F states lie closer to N' states than the shuffle (11.86 against 15.28, 22.4% closer, rank-sum p near 0).
+    CA1 F states are also closer than the shuffle, by less (13.44 against 14.05, 4.4% closer, p = 1.4e-30), so the
+    claim that CA1 does not differ from the shuffle fails by the paper's test; seeds 1 and 2 give CA1 6.8% and 4.1%
+    and PFC 31.5% and 11.7% closer. CA1 is closer than the shuffle in every width and gap-filling variant (1.9% to
+    10.8%, p <= 4.6e-19), PFC in all but one (7.8% to 60.2%). Without gap filling at 2 cm PFC is not closer than the
+    shuffle (0.8% farther, p = 0.029), so the PFC part rests on the filling. In the verifier's round-2 copy,
+    embedded on another machine before numba's CPU target was fixed, that variant gave PFC 4.9% closer (p =
+    6.2e-12).
   deviations:
   - UMAP is umap-learn with seed 0 (seeds 1 and 2 as variants), not the MATLAB toolbox with the paper's saved templates,
-    which are not public (a standard choice named in the claims file).
+    which are not public (a standard choice named in the claims file). Numba is compiled for a generic x86-64 target,
+    with the BLAS kernel and numpy's dispatch fixed, so that the embedding is the same on every machine; before
+    this the embeddings differed between machines.
   - Assumption. Empty 1-cm bins inside a pass of the single-trial maps are filled linearly, as cal_PVsimilarity.m
     fills session maps; the Methods say only that bins with spikes from fewer than 5 neurons are discarded. The
     maps without filling are run as a variant (8 and 2 cm).
@@ -569,17 +588,23 @@ outcomes:
   blocked_by: methods_underspecified
   notebook: reproduce_tang_2023.ipynb
   output: claim:fig4d-pfc-ccgp
-  notes: With 8-cm single-trial maps 12 of the 16 PFC decoders have p < 0.001 by the code's strict count, but the
-    two task-sequence decoders tested on the inbound pair predict one class for every test point (CCGP 0.500, every
-    shuffle ties, p = 1 counting ties). Counting ties, 10 of 16 have p < 0.001; the phase decoders tested on IN_R
-    (0.512, p = 0.36) and OUT_R (0.562, p = 0.007) and two environment phase decoders (0.390 and 0.408, p = 1) fail,
-    so the claim would not reproduce. With 4-cm maps 15 of 16 and with 2-cm maps all 16 decoders lie above every
-    one of 200 shuffles, which could reproduce it; unfilled 8-cm maps give 4 of 16. The single-trial maps' smoothing
-    is not in the Methods and the session width is garbled; the outcome changes with it, and the claims file's rule
-    for the width (fig2d-pv-similarity) makes the claim methods_underspecified.
+  notes: With 8-cm single-trial maps 10 of the 16 PFC decoders have p < 0.001 by the code's strict count, but the task-
+    sequence decoder tested on the inbound pair at the late segment predicts one class for every test point (CCGP
+    0.500, every shuffle ties, p = 1 counting ties). Counting ties, 9 of 16 have p < 0.001; the phase decoders
+    tested on IN_R, OUT_R and OUT_L (CCGP 0.500, p >= 0.54 counting ties), that sequence decoder and three
+    environment phase decoders (0.560, 0.560 and 0.541; p = 0.004, 0.004 and 0.020) fail, so the claim would not
+    reproduce at 8 cm. Above every one of 100 shuffles are 14 of 16 decoders with 4-cm maps and 15 of 16 with 2-cm
+    maps, and 4 of 16 without gap filling at 8 and at 2 cm; in this run no width gives all 16. In the verifier's
+    round-2 copy, embedded on another machine before numba's CPU target was fixed, all 16 were above every one of
+    200 shuffles at 2 cm, so at the narrow widths the result sits at the edge of the criterion. The single-trial
+    maps' smoothing is not in the Methods and the session width is garbled; at 8 cm the claim fails clearly and at 2
+    cm it can pass, and the claims file's rule for the width (fig2d-pv-similarity) makes the claim
+    methods_underspecified.
   deviations:
   - UMAP is umap-learn with seed 0 (seeds 1 and 2 as variants), not the MATLAB toolbox with the paper's saved templates,
-    which are not public (a standard choice named in the claims file).
+    which are not public (a standard choice named in the claims file). Numba is compiled for a generic x86-64 target,
+    with the BLAS kernel and numpy's dispatch fixed, so that the embedding is the same on every machine; before
+    this the embeddings differed between machines.
   - Assumption. Empty 1-cm bins inside a pass of the single-trial maps are filled linearly, as cal_PVsimilarity.m
     fills session maps; the Methods say only that bins with spikes from fewer than 5 neurons are discarded. The
     maps without filling are run as a variant (8 and 2 cm).
@@ -597,14 +622,17 @@ outcomes:
   blocked_by: methods_underspecified
   notebook: reproduce_tang_2023.ipynb
   output: claim:fig4d-ca1-ccgp-chance
-  notes: Blocked because it depends on fig4d-pfc-ccgp, which is blocked; a claim that depends on a blocked claim
-    is blocked for the same reason. Its own result does not change with the width or the filling. At 8 cm 8 of the
-    16 CA1 decoders predict one class for every test point (all phase and sequence decoders, CCGP 0.500), and 6
-    have p < 0.05 counting ties, all environment decoders (CCGP 0.578 to 0.680 against 95th percentiles of 0.500
-    to 0.547); the variants give 5 to 7 (200 shuffles). Tested alone, it would not reproduce.
+  notes: Blocked because it depends on fig4d-pfc-ccgp, which is blocked. The claims file lists fig4d-pfc-ccgp under
+    depends_on, and the protocol (Author, step 1.5) blocks a claim that depends on a blocked claim for the same
+    reason. Its own result does not change with the width or the filling. At 8 cm 4 of the 16 CA1 decoders predict
+    one class for every test point (the four phase decoders, CCGP 0.500), and 8 have p < 0.05 counting ties, two
+    sequence decoders (CCGP 0.547 and 0.578) and six environment decoders (0.568 to 0.780), against 95th percentiles
+    of 0.500 to 0.544; the variants give 4 to 11 (100 shuffles). Tested alone, it would not reproduce.
   deviations:
   - UMAP is umap-learn with seed 0 (seeds 1 and 2 as variants), not the MATLAB toolbox with the paper's saved templates,
-    which are not public (a standard choice named in the claims file).
+    which are not public (a standard choice named in the claims file). Numba is compiled for a generic x86-64 target,
+    with the BLAS kernel and numpy's dispatch fixed, so that the embedding is the same on every machine; before
+    this the embeddings differed between machines.
   - Assumption. Empty 1-cm bins inside a pass of the single-trial maps are filled linearly, as cal_PVsimilarity.m
     fills session maps; the Methods say only that bins with spikes from fewer than 5 neurons are discarded. The
     maps without filling are run as a variant (8 and 2 cm).
@@ -617,17 +645,20 @@ outcomes:
   blocked_by: methods_underspecified
   notebook: reproduce_tang_2023.ipynb
   output: claim:figs7b-geometric-null
-  notes: Blocked because it depends on fig4d-pfc-ccgp, which is blocked. At 8 cm no PFC variable's CCGP (mean of
-    its decoders, phase 0.582, sequence 0.637, environment 0.631) exceeds the 95th percentile of its null under
-    reading (a), permuted UMAP coordinates (p 0.58 to 0.85), or reading (b), permuted neuron axes embedded with
-    the N' fit (p 0.05 to 0.42). No CA1 variable does either (p 0.17 to 0.77). The null was not run at the other
-    widths.
+  notes: Blocked because it depends on fig4d-pfc-ccgp, which is blocked. At 8 cm the PFC CCGP (mean of its decoders) is
+    0.549 for phase, 0.745 for sequence and 0.681 for environment. Under reading (a), permuted UMAP coordinates,
+    none exceeds the 95th percentile of its null (p 0.08 to 0.59). Under reading (b), permuted neuron axes embedded
+    with the N' fit, sequence does (0.745 against 0.684, no null draw above it) and phase and environment do not (p
+    = 0.76 and 0.48). No CA1 variable exceeds its null (p 0.21 to 1.00 in reading a, 0.26 to 0.56 in reading b). The
+    null was not run at the other widths. Tested alone, it would not reproduce.
   deviations:
   - The CCGP of a variable is the mean over its decoders, compared with the same mean under the null; the legend
     plots each decoder with the median. Both readings of the space (claims file) are run; the code for the model
     is not public.
   - UMAP is umap-learn with seed 0 (seeds 1 and 2 as variants), not the MATLAB toolbox with the paper's saved templates,
-    which are not public (a standard choice named in the claims file).
+    which are not public (a standard choice named in the claims file). Numba is compiled for a generic x86-64 target,
+    with the BLAS kernel and numpy's dispatch fixed, so that the embedding is the same on every machine; before
+    this the embeddings differed between machines.
   - Assumption. Empty 1-cm bins inside a pass of the single-trial maps are filled linearly, as cal_PVsimilarity.m
     fills session maps; the Methods say only that bins with spikes from fewer than 5 neurons are discarded. The
     maps without filling are run as a variant (8 and 2 cm).
@@ -638,16 +669,18 @@ outcomes:
   blocked_by: methods_underspecified
   notebook: reproduce_tang_2023.ipynb
   output: claim:figs7d-dichotomies-decodable
-  notes: Blocked because it depends on fig4d-pfc-ccgp, which is blocked. At 8 cm most dichotomies are decoded above
-    their shuffles, CA1 35 of 35 (median accuracy 0.830), PFC 32 of 35 (median 0.635), the same counting ties. The
-    accuracies differ, CA1 above PFC (rank-sum p = 1.2e-09, median difference 0.195), so the similarity part would
+  notes: Blocked because it depends on fig4d-pfc-ccgp, which is blocked. At 8 cm most dichotomies are decoded above their
+    50 shuffles, CA1 35 of 35 (median accuracy 0.830), PFC 34 of 35 (median 0.631), the same counting ties. The
+    accuracies differ, CA1 above PFC (rank-sum p = 8.6e-09, median difference 0.199), so the similarity part would
     fail. The other widths were not run for this test.
   deviations:
-  - The label-permutation test uses 100 shuffles per dichotomy in place of the paper's 1,000, for time (1,000 would
-    take about 45 minutes per region here, estimated from timing 20 shuffles); p is resolved to 0.01, enough to
-    decide p < 0.05.
+  - The label-permutation test uses 50 shuffles per dichotomy in place of the paper's 1,000, for time (100 took
+    about 3 minutes per region here, and the notebook must run within 30 minutes); p is resolved to 0.02, enough
+    to decide p < 0.05 (at most 2 of 50 shuffles above).
   - UMAP is umap-learn with seed 0 (seeds 1 and 2 as variants), not the MATLAB toolbox with the paper's saved templates,
-    which are not public (a standard choice named in the claims file).
+    which are not public (a standard choice named in the claims file). Numba is compiled for a generic x86-64 target,
+    with the BLAS kernel and numpy's dispatch fixed, so that the embedding is the same on every machine; before
+    this the embeddings differed between machines.
   - Assumption. Empty 1-cm bins inside a pass of the single-trial maps are filled linearly, as cal_PVsimilarity.m
     fills session maps; the Methods say only that bins with spikes from fewer than 5 neurons are discarded. The
     maps without filling are run as a variant (8 and 2 cm).
@@ -719,9 +752,9 @@ findings:
 - kind: methods_unavailable
   statement: Question for the authors. How were the single-trial rate maps behind the UMAP manifolds smoothed, and
     were 1-cm bins that hold no position sample within a pass filled or left empty? The Methods say only that bins
-    with spikes from fewer than 5 neurons were discarded. The PFC CCGP of Figure 4D passes for every decoder with
-    2-cm smoothing (16 of 16) but not with 8 cm (10 of 16), and without filling the PFC parts of Figure 3H and 3J
-    fail at 2 cm.
+    with spikes from fewer than 5 neurons were discarded. The PFC CCGP of Figure 4D fails clearly with 8-cm smoothing
+    (9 of 16 decoders) and comes within one decoder of passing, or passes, with 2-cm smoothing (15 or 16 of 16,
+    depending on the embedding), and without filling the PFC parts of Figure 3H and 3J fail at 2 cm.
 verifications:
 - date: '2026-10-30'
   kind: agent
@@ -946,3 +979,245 @@ verifications:
       higher.'
     response: Changed to blocked, methods_underspecified, because it depends on fig4d-pfc-ccgp; the 8-cm result
       is in the notes. Ties are now counted in the dichotomy tests too (problem 2); the counts do not change.
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the first revision, with conclusions and summary, the attempt record, the helper
+    module and the claims file (transcripts/000447/verifier-2-report.md).
+  results:
+  - claim: fig1b-faster-novel-learning
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all four data_missing blocks.
+    response: No change.
+  - claim: fig1-denovo-final-performance
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all four data_missing blocks.
+    response: No change.
+  - claim: fig1c-session-performance
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all four data_missing blocks.
+    response: No change.
+  - claim: figs1b-first-session-inbound-outbound
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all four data_missing blocks.
+    response: No change.
+  - claim: fig1c-familiar-above-novel
+    agrees: true
+    outcome: not_reproduced
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: cells-per-session
+    agrees: true
+    outcome: reproduced
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: figs3a-ca1-global-remapping
+    agrees: true
+    outcome: reproduced
+    reason: 'Listed among the outcomes the verifier agrees with. Minor issue: cell 23 says the shuffle result is shown
+      "over 200 draws"; cell 25 runs 100.'
+    response: Cell 23 now says 100 draws.
+  - claim: figs3a-pfc-similar-ca1-lower
+    agrees: true
+    outcome: partially_reproduced
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: fig2d-pv-similarity
+    agrees: true
+    outcome: reproduced
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: fig2e-ca1-error-familiar
+    agrees: true
+    outcome: partially_reproduced
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: fig2e-pfc-error-stable
+    agrees: true
+    outcome: partially_reproduced
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: fig2f-switch-dynamics
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed with reservations. At 2 cm, CA1 does not rise under either reading. Only the PFC claim of absence
+      holds there, so "the other widths give no more" hides a qualitative difference. Calling it partial at every width
+      is a judgement call, not a reading of the criterion.
+    response: Outcome kept. The conclusion and the notes now say that calling it partial at every width is a judgement,
+      that at 2 cm only the PFC part holds and CA1 rises under neither reading, and that the width rule does not block
+      it because the outcome is partial or worse at every width and reproduced at none.
+  - claim: figs3c-pfc-assimilation
+    agrees: true
+    outcome: reproduced
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: figs3d-pfc-similarity-over-trials
+    agrees: true
+    outcome: partially_reproduced
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: figs4-ramping-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: figs4-ramping-generalization
+    agrees: true
+    outcome: blocked
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: figs4d-reward-location-similarity
+    agrees: true
+    outcome: blocked
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: figs5d-path-equivalence
+    agrees: true
+    outcome: reproduced
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: figs5e-path-equivalence-stable
+    agrees: true
+    outcome: blocked
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: figs5f-path-equivalence-vs-selectivity
+    agrees: true
+    outcome: blocked
+    reason: 'Listed among the outcomes the verifier agrees with. Minor issue: cell 71 reports only 8 cm. At 2 cm the
+      signed SI also gives a correlation (PFC SI(OUT) p = 0.047, cell 70). The outcome does not change.'
+    response: The conclusion and notes now give 4 and 2 cm. At 4 cm only the absolute reading finds correlations; at
+      2 cm both do, so there the claim would not reproduce. The outcome changes with the width, so it stays methods_underspecified.
+  - claim: fig3d-selectivity-index
+    agrees: true
+    outcome: blocked
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: fig3e-selectivity-stable
+    agrees: true
+    outcome: blocked
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: manifold-cell-counts
+    agrees: true
+    outcome: reproduced
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: fig3fg-manifold-shapes
+    agrees: true
+    outcome: reproduced
+    reason: Agreed with reservations. Holds at seed 0; it follows fig3h, whose outcome depends on the seed (at seed 1
+      the CA1 main alignment gives p = 0.096, cell 81). The assumed flag follows fig3h, so it is fine.
+    response: The cause of the mismatch is that UMAP's numba code is compiled for the host CPU and the optimization amplifies
+      rounding differences, so each machine gave a different embedding (the author's text came from the author's run,
+      the verifier's copy from a run on another runner, and a run here gave a third set). On one machine the embedding
+      repeats exactly (a second fit with seed 0 in the notebook gives identical coordinates, and two full executions
+      here gave identical outputs in every code cell). The header cell now compiles numba for a generic x86-64 target
+      and fixes the BLAS kernel and numpy's dispatch, the variation is stated in the notebook (embeddings section, summary)
+      and the deviations, and every UMAP-based conclusion and note is rewritten from the new run. Outcome kept. In the
+      new run fig3h and fig3i hold at every seed; the conclusion now says the outcome carries fig3h's dependence on the
+      gap filling and its seed sensitivity.
+  - claim: fig3h-inseq-outseq-distance
+    agrees: true
+    outcome: reproduced
+    reason: Agreed with reservations. Holds at seed 0. At seed 1, the CA1 main alignment gives p = 0.096 (cell 81), so
+      the outcome depends on the seed; the record says the opposite. The stated numbers (13.81 against 16.05, p = 0.0098;
+      14.24 against 17.17, p = 0.0012; "p < 0.01 under every alignment and seed"; PFC p = 0.00044 without gap filling
+      at 8 cm; 13.8 and 13.9, p = 0.28) do not match the outputs. The assumed flag is stated and reasonable; without
+      gap filling at 2 cm, PFC gives p = 0.105.
+    response: The cause of the mismatch is that UMAP's numba code is compiled for the host CPU and the optimization amplifies
+      rounding differences, so each machine gave a different embedding (the author's text came from the author's run,
+      the verifier's copy from a run on another runner, and a run here gave a third set). On one machine the embedding
+      repeats exactly (a second fit with seed 0 in the notebook gives identical coordinates, and two full executions
+      here gave identical outputs in every code cell). The header cell now compiles numba for a generic x86-64 target
+      and fixes the BLAS kernel and numpy's dispatch, the variation is stated in the notebook (embeddings section, summary)
+      and the deviations, and every UMAP-based conclusion and note is rewritten from the new run. New numbers, seed 0,
+      CA1 13.67 against 17.27 (p = 0.0005), PFC 14.04 against 17.51 (p = 8.9e-06); with the main alignment both hold
+      under seeds 1 and 2 (PFC seed 2 p = 0.042), and PFC by location fails under seed 2 (p = 0.069). Without gap filling
+      at 2 cm PFC fails (p = 0.34), so the assumed flag stays. The verifier's seed-1 result is recorded in the notes.
+      Outcome kept and no change proposed, as seed 0, the claims file's standard choice, passed in every execution seen.
+  - claim: fig3i-phase-location-distance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The stated numbers (14.41 against 17.02; 14.20 against 16.81, p = 7.1e-259) and the per-seed pattern
+      of the code's variant do not match the outputs (cell 84), which show the opposite pattern.
+    response: The cause of the mismatch is that UMAP's numba code is compiled for the host CPU and the optimization amplifies
+      rounding differences, so each machine gave a different embedding (the author's text came from the author's run,
+      the verifier's copy from a run on another runner, and a run here gave a third set). On one machine the embedding
+      repeats exactly (a second fit with seed 0 in the notebook gives identical coordinates, and two full executions
+      here gave identical outputs in every code cell). The header cell now compiles numba for a generic x86-64 target
+      and fixes the BLAS kernel and numpy's dispatch, the variation is stated in the notebook (embeddings section, summary)
+      and the deviations, and every UMAP-based conclusion and note is rewritten from the new run. New numbers, PFC 14.08
+      against 17.72, CA1 14.33 against 17.45 (p near 0 for both, at every seed and variant); the code's variant fails
+      under seeds 0 and 1 and holds under seed 2.
+  - claim: fig3j-familiar-novel-manifold
+    agrees: true
+    outcome: partially_reproduced
+    reason: The assumed flag is stated, but the current outputs do not support it. Without gap filling at 2 cm, PFC is
+      4.86% closer than the shuffle, p = 6.2e-12 (cell 79). Every variant now agrees, so the outcome does not rest on
+      the gap filling. The stated numbers, the Summary bullet, the finding and the README line built on it are not supported.
+    response: The cause of the mismatch is that UMAP's numba code is compiled for the host CPU and the optimization amplifies
+      rounding differences, so each machine gave a different embedding (the author's text came from the author's run,
+      the verifier's copy from a run on another runner, and a run here gave a third set). On one machine the embedding
+      repeats exactly (a second fit with seed 0 in the notebook gives identical coordinates, and two full executions
+      here gave identical outputs in every code cell). The header cell now compiles numba for a generic x86-64 target
+      and fixes the BLAS kernel and numpy's dispatch, the variation is stated in the notebook (embeddings section, summary)
+      and the deviations, and every UMAP-based conclusion and note is rewritten from the new run. In the new run, without
+      gap filling at 2 cm PFC is 0.8% farther than the shuffle (p = 0.029), so neither part holds there and the assumed
+      flag is kept; the conclusion and notes say that this variant moved with the embedding (4.9% closer in the verifier's
+      copy). The Summary bullet now says "in this run", and the finding gives both results.
+  - claim: figs6-high-dimensional-distances
+    agrees: true
+    outcome: partially_reproduced
+    reason: Listed among the outcomes the verifier agrees with.
+    response: No change.
+  - claim: fig4d-pfc-ccgp
+    agrees: true
+    outcome: blocked
+    reason: Agrees (blocked, methods_underspecified). This still holds on the current outputs; 8 of 16 decoders pass
+      at 8 cm, and all 16 pass at 2 cm (cell 79). The stated counts (12, 10, two constant decoders, the failing decoders
+      named, 15 of 16 at 4 cm, 4 of 16 unfilled) do not match cell 97 and cell 79.
+    response: The cause of the mismatch is that UMAP's numba code is compiled for the host CPU and the optimization amplifies
+      rounding differences, so each machine gave a different embedding (the author's text came from the author's run,
+      the verifier's copy from a run on another runner, and a run here gave a third set). On one machine the embedding
+      repeats exactly (a second fit with seed 0 in the notebook gives identical coordinates, and two full executions
+      here gave identical outputs in every code cell). The header cell now compiles numba for a generic x86-64 target
+      and fixes the BLAS kernel and numpy's dispatch, the variation is stated in the notebook (embeddings section, summary)
+      and the deviations, and every UMAP-based conclusion and note is rewritten from the new run. New numbers, 9 of 16
+      at 8 cm counting ties (one constant decoder; the failing ones are named from cell 97), and above every one of 100
+      shuffles 14 of 16 at 4 cm and 15 of 16 at 2 cm. In this run no width gives all 16; in the verifier's copy 2 cm
+      gave 16. Outcome kept, as the result at the narrow widths sits at the edge of the criterion and changes with the
+      embedding while 8 cm fails clearly; the notes say so. The variants' CCGP now uses 100 shuffles, for the 30-minute
+      limit.
+  - claim: fig4d-ca1-ccgp-chance
+    agrees: true
+    outcome: blocked
+    reason: Agreed with reservations. The rule "a claim that depends on a blocked claim is blocked" is not in the claims
+      file, and the verifier cannot check it against the protocol. Its own result does not change with width (4 to 7
+      significant decoders in every variant), so on its own it would be not_reproduced. The stated counts do not match
+      cell 99.
+    response: Outcome kept. The claims file lists fig4d-pfc-ccgp under this claim's depends_on, and docs/protocol.md
+      (Author, step 1.5) says "A claim that depends on a blocked claim is blocked for the same reason"; the conclusion
+      now cites both. The notes give the own result from the new run (8 of 16 at p < 0.05 counting ties, 4 constant decoders,
+      variants 4 to 11), not reproduced at every width.
+  - claim: figs7b-geometric-null
+    agrees: true
+    outcome: blocked
+    reason: Agreed with reservations; blocked because it depends on fig4d-pfc-ccgp, a rule the verifier cannot find in
+      the claims file. The null was not run at the other widths. The stated p ranges and means do not match cell 102.
+    response: Outcome kept, for the reason given under fig4d-ca1-ccgp-chance. Numbers rewritten from the new run; in
+      it the PFC sequence CCGP exceeds its reading (b) null, phase and environment do not. The null was still not run
+      at the other widths, for the 30-minute limit of the notebook.
+  - claim: figs7d-dichotomies-decodable
+    agrees: true
+    outcome: blocked
+    reason: Agreed with reservations; blocked because it depends on fig4d-pfc-ccgp, a rule the verifier cannot find in
+      the claims file. The dichotomies were not run at the other widths. The stated counts (32 of 35, 0.830 against 0.635,
+      p = 1.2e-09) do not match cell 105.
+    response: Outcome kept, for the reason given under fig4d-ca1-ccgp-chance. Numbers rewritten from the new run (PFC
+      34 of 35, 0.830 against 0.631, p = 8.6e-09). The shuffles are now 50 per dichotomy, for the 30-minute limit; the
+      other widths were not run, for the same reason.

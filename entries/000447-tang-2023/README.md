@@ -45,6 +45,10 @@ The width of the Gaussian that smooths the linearized rate maps is garbled in th
 claims whose outcome changes between 8, 4 and 2 cm are blocked as methods underspecified, with the
 results at every width in the notebook.
 
+The manifold results (Figures 3H to 3J, 4D, S7) move with the UMAP embedding: three seeds are
+shown. Numba is compiled for a generic CPU, so the embedding is the same on every machine; before
+this round it was not, and the round-2 verifier's copy differed from the author's.
+
 The dandiset has no linearized positions, ripple or theta times, or cell labels, and its units
 table stores tetrode numbers where the format expects electrode rows. The attempt record, with the
 reasons and the differences from the paper's method, is
