@@ -10,9 +10,9 @@ and the licking of the separate group of Fig S8L.
 | The code's session lists can be applied to the dandiset | Partially reproduced |
 | Session counts per experiment (Methods) | Reproduced |
 | Experiment 1: excluded rewards, Tests 1 and 2, Fig S8B, S8D, S8G, S8H, S8K, S8L | Reproduced |
-| Fig S8E: lick bout onset responses | Partially reproduced |
+| Fig S8E: lick bout onset responses | Blocked: methods underspecified (the windows give different outcomes) |
 | Experiments 2 to 5: Tests 3, 4, 5, 6 and 9, Fig 4I, 4L, S10C | Reproduced |
-| Fig 4P: faster decay of the cue response with background rewards (Test 7) | Partially reproduced |
+| Fig 4P: faster decay of the cue response with background rewards (Test 7) | Not reproduced |
 | Experiment 6: intermediate cue and reward responses (Test 8, Fig S11D-E) | Reproduced |
 | Experiment 7: Fig 6D, 6G, 6I learning, last-session licking, Fig S12F | Reproduced |
 | Experiment 7: lower CS1 response with inhibition in the last session | Not reproduced |

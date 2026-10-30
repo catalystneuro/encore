@@ -253,10 +253,20 @@ def align(t, x, ev, window, resolution=0):
 
 def auc_aligned(time, rows, window, dt_ms):
     """aucsignal.m: nansum of the aligned samples with time in the window, times the mean bin
-    (ms, as the Matlab code's time axis is in ms)."""
+    (ms, as the Matlab code's time axis is in ms). As in the code ("auc(~out) =
+    nansum(signal(~out,time>=window(1) & time<=window(2)),2)*binsize"), a trial whose window
+    is all NaN gets 0 and one with some NaN samples the sum of the others; `incomplete` flags
+    them."""
     m = (time >= window[0] - 1e-9) & (time <= window[1] + 1e-9)
     binsize = np.nanmean(np.diff(time * 1000))
     return np.nansum(rows[:, m], axis=1) * binsize
+
+
+def incomplete(time, rows, window):
+    """True for each trial with any NaN aligned (and, where smoothed, smoothed) sample in the
+    window: outside or at the edge of the dF/F coverage, or near a NaN sample."""
+    m = (time >= window[0] - 1e-9) & (time <= window[1] + 1e-9)
+    return np.isnan(rows[:, m]).any(axis=1)
 
 
 def classify_licks(lick, reward, end, bout=1.0):
@@ -325,6 +335,40 @@ TRIALLESS_END = _bymouse([78, 68, 72, 49, 54, 55, 50])
 OMISSION_DAYS = _bymouse(list(zip([29, 24, 32, 19, 24, 19, 20], [70, 61, 66, 42, 46, 47, 43])))
 # analysis/figS10/cue_acquisition.m and analysis/fig6/backpropagation_pavlovian.m use the
 # initial learning start and end days and LEARNED_DAY, the same as CUMSUM_* column 0.
+
+
+CODE_URL = ("https://raw.githubusercontent.com/namboodirilab/ANCCR/"
+            "cff44144e60a4313a30ffbb4bb8a1f3dd398b525/")
+CODE_SCRIPTS = ["analysis/fig4/cumsum_pavlovian.m", "analysis/fig4/cumsum_bgdrw_vs_extinction.m",
+                "analysis/fig5/intermediate_rsp_trialless.m", "analysis/figS10/omission.m",
+                "analysis/figS10/cue_acquisition.m", "analysis/fig6/backpropagation_pavlovian.m"]
+CODE_NAMES = ["mouseList", "startday", "endday", "learnedday", "ndaybeforestart", "ratio"]
+
+
+def fetch_code_lists():
+    """The mouse and day lists of the scripts named in CODE_SCRIPTS, read from the repository at
+    the pinned commit: per script, the source lines that define them (Matlab continuation lines
+    joined) and their values (mouseList as dandiset names, the others as integer or float
+    arrays, one row per row of the Matlab matrix)."""
+    from urllib.request import urlopen
+    out = {}
+    for path in CODE_SCRIPTS:
+        text = urlopen(CODE_URL + path, timeout=60).read().decode()
+        text = re.sub(r"\.\.\.\s*\n\s*", " ", text)
+        found = {}
+        for line in text.splitlines():
+            m = re.match(r"\s*(\w+)\s*=\s*([\[{].*?[\]}])\s*;", line)
+            if not m or m.group(1) not in CODE_NAMES:
+                continue
+            name, body = m.groups()
+            if name == "mouseList":
+                value = [x.replace("_", "-") for x in re.findall(r"'([^']+)'", body)]
+            else:
+                value = np.array([[float(v) for v in row.split(",")]
+                                  for row in body.strip("[]").split(";")])
+            found[name] = (line.strip(), value)
+        out[path] = found
+    return out
 
 
 def matlab_round(x):
@@ -516,6 +560,10 @@ def cs_plus_trials(s, csrw):
     # unsmoothed AUCs for cue_acquisition.m and backpropagation_pavlovian.m
     time0, rows0, dt0 = align(s["t"], x, cst, (-2.0, 3.0), 0)
     return {"cs_time": cst, "da": cue - base, "da_base": base,
+            "da_incomplete": incomplete(time, rows, (-1.0, 2.0)),
+            "omit3_incomplete": incomplete(time, rows, (-1.0, 4.0)),
+            "omit9_incomplete": incomplete(time, rows, (-1.0, 10.0)),
+            "unsmoothed_incomplete": incomplete(time0, rows0, (-1.0, 3.0)),
             "lick_methods": count_rate(lick, cst, (0.0, 2.0)) - count_rate(lick, cst, (-1.0, 0.0)),
             "lick_code_cs": count_rate(lick, cst, (0.0, trace_end)),
             "lick_code_base": count_rate(lick, cst, (-1.0, 0.0)),
@@ -548,18 +596,24 @@ def weibull(x, A, L, S, b):
     return A * (1 - 2.0 ** (-(x / L) ** S)) + b
 
 
-def fit_weibull(y, lower, upper, rng, starts=20):
+def fit_weibull(y, lower, upper, rng, starts=20, bounded=True):
     """Least squares fit of the changing model within the code's bounds, from several random
-    start points (Matlab's fit starts custom models at random points); returns the RSS."""
+    start points (Matlab's fit starts custom models at random points); returns the RSS. With
+    `bounded=False` the start points are drawn the same way but only L > 0 and S > 0 are kept
+    (the model is undefined otherwise)."""
     from scipy.optimize import least_squares
     x = np.arange(1, len(y) + 1, dtype=float)
     lo, hi = np.array(lower, float), np.array(upper, float)
+    fit_lo = lo if bounded else np.array([-np.inf, 1e-6, 1e-6, -np.inf])
+    fit_hi = hi + 1e-12 if bounded else np.full(4, np.inf)
     best = np.inf
     for _ in range(starts):
         p0 = lo + rng.random(4) * (hi - lo)
         p0[1] = max(p0[1], 1e-6)
+        if not bounded:
+            p0[2] = max(p0[2], 1e-6)
         try:
-            r = least_squares(lambda p: weibull(x, *p) - y, p0, bounds=(lo, hi + 1e-12))
+            r = least_squares(lambda p: weibull(x, *p) - y, p0, bounds=(fit_lo, fit_hi))
         except ValueError:
             continue
         best = min(best, float(np.sum(r.fun ** 2)))
@@ -571,14 +625,17 @@ def aic(rss, k, n):
     return 2 * k + n * np.log(rss)
 
 
-def trialless_pairs(s, peak_readings=None):
+def trialless_pairs(s, peak_readings=None, drop_incomplete=False):
     """intermediate_rsp_trialless.m for one session. Intermediate cues follow the previous cue by
     less than the mean cue-reward delay; cues in runs of three, pairs 0.5 s apart or less and
     intermediate cues 2.5 to 3 s after the previous cue are dropped (code). Cue response, AUC
     (unsmoothed) from 0 to 0.5 s minus the AUC 0.5 s before the previous cue (for both cues of a
     pair); reward response, AUC (smoothed) 0 to 0.5 s after the first lick after the reward minus
     the same baseline, only where that lick precedes the next reward. Returns per-session means
-    for previous (0) and intermediate (1) cues, and the Fig S11D-E peak readings."""
+    for previous (0) and intermediate (1) cues, and the Fig S11D-E peak readings. With
+    `drop_incomplete`, cue and reward values with a NaN sample in their windows (`incomplete`)
+    are left out of the means; the counts of such values among the pairs are returned either
+    way."""
     ev = pavlovian_events(s, trialless=True)
     cst, rwt, first = ev["cs_time"], ev["rw_time"], ev["first_lick"]
     delay = np.mean(rwt - cst)
@@ -605,11 +662,19 @@ def trialless_pairs(s, peak_readings=None):
     inlick = np.r_[first[:-1] < rwt[1:], False]
     base[idx[:, 1]] = base[idx[:, 0]]
     cue_b, rew_b = cue - base, rew - base
-    out = {"n_pairs": int(idx[:, 1].sum()), "n_cues": len(cst), "delay": float(delay)}
+    inc_c = incomplete(tc, rc, (-0.5, 0.5))
+    inc_c[idx[:, 1]] |= inc_c[idx[:, 0]]
+    inc_r = (incomplete(tr, rr, (0.0, 0.5)) & np.isfinite(first)) | inc_c
+    out = {"n_pairs": int(idx[:, 1].sum()), "n_cues": len(cst), "delay": float(delay),
+           "n_incomplete_cue": int((inc_c & idx.any(1)).sum()),
+           "n_incomplete_rew": int((inc_r & idx.any(1) & inlick).sum())}
+    if drop_incomplete:
+        cue_b[inc_c] = np.nan
+        rew_b[inc_r] = np.nan
     for k, name in enumerate(["prev", "inter"]):
-        out[f"cue_{name}"] = float(np.mean(cue_b[idx[:, k]])) if idx[:, k].any() else np.nan
+        out[f"cue_{name}"] = float(np.nanmean(cue_b[idx[:, k]])) if idx[:, k].any() else np.nan
         sel = idx[:, k] & inlick
-        out[f"rew_{name}"] = float(np.mean(rew_b[sel])) if sel.any() else np.nan
+        out[f"rew_{name}"] = float(np.nanmean(rew_b[sel])) if sel.any() else np.nan
     # Fig S11D-E: peak dF/F after each cue minus dF/F immediately before it.
     if peak_readings:
         for (pw, bw), _ in peak_readings.items():
@@ -620,8 +685,10 @@ def trialless_pairs(s, peak_readings=None):
             else:
                 b = np.nanmean(rc[:, (tc >= -0.5 - 1e-9) & (tc < 0)], axis=1)
             v = peak - b
+            if drop_incomplete:
+                v[inc_c] = np.nan
             for k, name in enumerate(["prev", "inter"]):
-                out[f"peak_{pw}_{bw}_{name}"] = float(np.mean(v[idx[:, k]])) if idx[:, k].any() else np.nan
+                out[f"peak_{pw}_{bw}_{name}"] = float(np.nanmean(v[idx[:, k]])) if idx[:, k].any() else np.nan
     return out
 
 
