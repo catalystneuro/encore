@@ -48,6 +48,17 @@ Methods, or a stated choice):
   significant (claims file, a standard choice).
 - Bursts: two or more spikes with ISI < 4 ms preceded by at least 100 ms of silence (Results,
   CTC interactions, paragraph 2).
+- LFP and CSD magnitudes of Figure 3 (`lfp_magnitudes`; claims file, fig3d-magnitudes criterion;
+  Methods, Neuropixels LFP, Neuropixels CSD, and LFP, CSD, and population spiking magnitude):
+  decimation to 1.25 kHz, first-order Butterworth high pass (0.1 or 1 Hz, the claims file's
+  readings), re-reference to the median of the ACSF channels, CSD after 8 ms and 26 then 4
+  channel smoothing. Choices: zero-phase filters (standard, as for the EEG); the Chebyshev
+  rejection applied per channel, once; the CSD on rows of two channels; the recording-wide shuffle
+  drawn over the span of the awake pulses; layer 1 approximated by the top 100 um of each area
+  (an assumption, since the files give no layers; the result is also given without it).
+- Baseline variant ending 20 ms before the pulse (`BASE_END_EXCL`), a check of the artifact
+  residue that the zero-phase filter spreads before the onset; not the paper's, and it decides
+  no outcome.
 """
 
 from __future__ import annotations
@@ -72,6 +83,8 @@ FILTER_ORDER = 3
 Z_THRESHOLD = 3.0
 PCIST_PAR = dict(baseline_window=(-0.8, -0.002), response_window=(0.002, 0.8), k=1.2,
                  min_snr=1.6, max_var=99, embed=False, n_steps=100)
+BASE_END_EXCL = -0.020              # baseline variant that leaves out the 20 ms before the pulse, where the
+                                    # filtered artifact residue lies (verifier, round 2; not the paper's)
 RS_MIN_MS = 0.4
 SM_TH = ("AV", "CL", "MD", "PO", "RT", "VAL", "VPL", "VPM", "VM")
 CORTEX = ("MO", "ACA", "SS", "VIS")
@@ -256,24 +269,24 @@ def eeg_epochs(meta, onsets_by_key, f=None, ts=None, profile=None):
             for k, v in out.items()}, times
 
 
-def gfp_z(erp, times):
-    """Global field power (SD across electrodes) z-scored to -2 to 0 s."""
+def gfp_z(erp, times, base_end=0.0):
+    """Global field power (SD across electrodes) z-scored to -2 to 0 s (or to -2 s to `base_end`)."""
     g = erp.std(axis=0)
-    base = (times >= -2.0) & (times < 0)
+    base = (times >= -2.0) & (times < base_end)
     return (g - g[base].mean()) / g[base].std()
 
 
-def erp_metrics(erp, times):
+def erp_metrics(erp, times, base_end=0.0):
     """Duration and magnitude of the z-scored GFP above z = 3 in 0 to 2 s, in each reading.
 
     duration_a: total time above 3; duration_b: onset to the last sample above 3.
     magnitude_a: area above 3 (SD.s); magnitude_b: magnitude_a divided by the area under |z| in
     the baseline (the area under the signed z of a z-scored baseline is zero by construction).
     """
-    z = gfp_z(erp, times)
+    z = gfp_z(erp, times, base_end)
     dt = 1 / FS_EEG
     resp = (times >= 0) & (times <= 2.0)
-    base = (times >= -2.0) & (times < 0)
+    base = (times >= -2.0) & (times < base_end)
     zr, tr = z[resp], times[resp]
     above = zr > Z_THRESHOLD
     out = {"duration_a": above.sum() * dt,
@@ -333,10 +346,13 @@ def _stq_fast(sig, times, k, baseline_window, response_window, n_steps=100, **kw
     return np.array(dnst)
 
 
-def pcist(erp, times, fast=True):
-    """PCIst of an ERP (channels x time, times in s) with the paper's parameters."""
+def pcist(erp, times, fast=True, base_end=None):
+    """PCIst of an ERP (channels x time, times in s) with the paper's parameters (or a baseline
+    ending at `base_end`)."""
     from PCIst import pci_st
     par = dict(PCIST_PAR)
+    if base_end is not None:
+        par["baseline_window"] = (par["baseline_window"][0], base_end)
     sig, t = pci_st.preprocess_signal(erp.astype(np.float64), times,
                                       (par["baseline_window"][0], par["response_window"][1]), **par)
     svd, _, _, _ = pci_st.dimensionality_reduction(sig, t, **par)
@@ -560,6 +576,7 @@ def eeg_site_summary(meta, site, f=None, ts=None):
             erp = x.mean(0)
             out["erp"][(lvl, s)] = erp
             out["metrics"][(lvl, s, "all")] = erp_metrics(erp, times)
+            out["metrics"][(lvl, s, "excl20")] = erp_metrics(erp, times, BASE_END_EXCL)
             out["peaks"][(lvl, s)] = {r: gfp_peaks(erp, times, w[0], w[1]) for r, w in
                                       {"a": ((0.002, 0.05), (0.15, 0.3)), "b": ((0.002, 0.025), (0.1, 0.3))}.items()}
         # Figure 7C/7D: states matched to the smallest of quiet, running, isoflurane
@@ -579,11 +596,15 @@ def eeg_site_summary(meta, site, f=None, ts=None):
                 out["n_matched"][(lvl, "fig8b")] = min(n2.values())
                 for s, idx in m.items():
                     pc[(lvl, "fig8b", s, how)] = pcist(e[s][idx].mean(0), times)
+                    if lvl == "medium":
+                        pc[(lvl, "fig8b", s, how + "-excl20")] = pcist(e[s][idx].mean(0), times, base_end=BASE_END_EXCL)
             if len(e["running"]) >= 30:
                 m = match_trials(n3, min(n3.values()), _rng("fig8d", meta, site), how)
                 out["n_matched"][(lvl, "fig8d")] = min(n3.values())
                 for s, idx in m.items():
                     pc[(lvl, "fig8d", s, how)] = pcist(e[s][idx].mean(0), times)
+                    if lvl == "medium":
+                        pc[(lvl, "fig8d", s, how + "-excl20")] = pcist(e[s][idx].mean(0), times, base_end=BASE_END_EXCL)
             if len(e["recovery1"]):
                 st4 = ("awake", "isoflurane", "recovery1") + (("recovery2",) if len(e["recovery2"]) else ())
                 n4 = {s: len(e[s]) for s in st4}
@@ -591,6 +612,8 @@ def eeg_site_summary(meta, site, f=None, ts=None):
                 out["n_matched"][(lvl, "fig8e")] = min(n4.values())
                 for s, idx in m.items():
                     pc[(lvl, "fig8e", s, how)] = pcist(e[s][idx].mean(0), times)
+                    if lvl == "medium":
+                        pc[(lvl, "fig8e", s, how + "-excl20")] = pcist(e[s][idx].mean(0), times, base_end=BASE_END_EXCL)
         # single-trial late component of awake trials (Figure 6C)
         x = e["awake"]
         if len(x):
@@ -657,8 +680,11 @@ def spiking_magnitude(spikes, onsets, rng, span, n_shuffle=1000, bin_s=0.001):
     SD 5 or 10 ms, z-scored to the baseline (-2 to 0 s or -0.5 to 0 s), area under the curve from 0
     to 0.5 s; the same for 1000 sets of shuffled onsets, each onset moved uniformly within -2 to
     +2 s ("epoch") or drawn uniformly over the recording ("recording"); magnitude is (AUC minus the
-    mean shuffled AUC) over the SD of the shuffled AUCs. Returns {(shuffle, kernel ms, baseline): value};
-    shuffle "none" holds the AUC of the z-scored density itself, in SD.s.
+    mean shuffled AUC) over the SD of the shuffled AUCs. Returns {(shuffle, kernel ms, baseline,
+    signal): value}; shuffle "none" holds the AUC of the z-scored density itself, in SD.s. Signal
+    "signed" integrates z as the Methods describe it; "|z|" integrates |z|, a variant in which a fall
+    below baseline adds to the magnitude ("our magnitude metric accounts for both reductions as well
+    as increases", Results, Global ERPs..., paragraph 1; verifier, round 2).
     """
     from scipy.ndimage import gaussian_filter1d
     t0, nbin = -2.0, int(round(2.5 / bin_s))
@@ -683,16 +709,17 @@ def spiking_magnitude(spikes, onsets, rng, span, n_shuffle=1000, bin_s=0.001):
         for bname, (b0, b1) in (("-2-0", (-2.0, 0.0)), ("-0.5-0", (-0.5, 0.0))):
             base = (t >= b0) & (t < b1)
 
-            def auc(x):
+            def auc(x, rect):
                 mu, sd = x[..., base].mean(-1, keepdims=True), x[..., base].std(-1, keepdims=True)
                 z = (x - mu) / np.where(sd > 0, sd, np.nan)
-                return np.nansum(z[..., resp], axis=-1) * bin_s
+                return np.nansum(rect(z[..., resp]), axis=-1) * bin_s
 
-            a_true = auc(sm_true)
-            out[("none", kern, bname)] = float(a_true)     # the AUC itself, SD.s, without the shuffle
-            for k, v in sm_sh.items():
-                a = auc(v)
-                out[(k, kern, bname)] = float((a_true - a.mean()) / a.std())
+            for sig, rect in (("signed", lambda z: z), ("|z|", np.abs)):
+                a_true = auc(sm_true, rect)
+                out[("none", kern, bname, sig)] = float(a_true)     # the AUC itself, SD.s, without the shuffle
+                for k, v in sm_sh.items():
+                    a = auc(v, rect)
+                    out[(k, kern, bname, sig)] = float((a_true - a.mean()) / a.std())
     return out
 
 
@@ -784,7 +811,8 @@ def spike_site_summary(meta, site, table, spikes):
             mg = spiking_magnitude([x for x, k in zip(spikes, mask) if k], on, rng, span)
             for key, v in mg.items():
                 out["magnitude"].append({"level": lvl, "group": g, "stim": g == stim, "units": int(mask.sum()),
-                                         "shuffle": key[0], "kernel ms": key[1], "baseline": key[2], "magnitude": v})
+                                         "shuffle": key[0], "kernel ms": key[1], "baseline": key[2], "signal": key[3],
+                                         "magnitude": v})
     out["magnitude"] = pd.DataFrame(out["magnitude"])
     out["p"] = pd.concat(out["p"]) if out["p"] else pd.DataFrame(columns=["unit", "level", "trials", "window", "pre", "p", "sign"])
     out["pop"] = pd.DataFrame(out["pop"])
@@ -807,3 +835,201 @@ def late_amplitudes(meta, site):
                                  "late_gfp": x[:, :, w].std(axis=1).max(axis=1),
                                  "late_electrode": np.abs(x[:, ch, :][:, w]).max(axis=1)})
     return out
+
+
+# ---------------------------------------------------------------- Neuropixels LFP and CSD (Figure 3)
+
+FS_LFP = 2500.0
+FS_LFP_OUT = 1250.0                 # Methods, Neuropixels LFP: down sampled to 1.25 kHz
+LFP_HIGHPASS = (0.1, 1.0)           # first-order Butterworth; cutoff not given (claims file readings)
+CSD_TIME_MS = 8                     # Methods, Neuropixels CSD: 8 ms in time
+CSD_SPACE_CH = (26, 4)              # and 26 then 4 channels in space
+LAYER1_UM = (0, 100)                # readings of the layer-1 exclusion: none, or the top 100 um of the region
+
+
+def lfp_channels(f, probe):
+    """Electrode rows of one probe's LFP columns: column, location, vertical and horizontal position, valid."""
+    es = f[f"acquisition/LFP{probe}/ElectricalSeries{probe}"]
+    el = f["general/extracellular_ephys/electrodes"]
+    rows = es["electrodes"][:]
+    tab = pd.DataFrame({"column": np.arange(len(rows)), "row": rows,
+                        "location": _str(el["location"][:])[rows],
+                        "vertical": el["probe_vertical_position"][:][rows],
+                        "horizontal": el["probe_horizontal_position"][:][rows],
+                        "valid": el["is_data_valid"][:][rows].astype(bool)})
+    tab["group"] = [area_group(a) for a in tab.location]
+    return tab
+
+
+def _csd(avg, chans):
+    """CSD of trial-averaged LFP (channels x time, channels sorted by depth) after the Methods' steps.
+
+    Channels of one 20 um row (two per row on Neuropixels) are averaged into one depth profile;
+    smoothing is a moving average of 8 ms in time and of 13 then 2 rows (26 then 4 channels) in
+    space; the CSD is minus the second difference over rows (20 um), the constant conductivity
+    being a scale that the z-score removes. Edge rows are dropped. Returns (rows x time, row depths).
+    """
+    from scipy.ndimage import uniform_filter1d
+    depth = chans.vertical.values
+    rows_u = np.unique(depth)
+    prof = np.stack([avg[depth == d].mean(0) for d in rows_u])
+    prof = uniform_filter1d(prof, int(round(CSD_TIME_MS * 1e-3 * FS_LFP_OUT)), axis=1, mode="nearest")
+    for w in CSD_SPACE_CH:
+        prof = uniform_filter1d(prof, max(w // 2, 1), axis=0, mode="nearest")
+    csd = -(prof[2:] - 2 * prof[1:-1] + prof[:-2])
+    return csd, rows_u[1:-1]
+
+
+def _cheb_reject(x, nsd=7.0):
+    """Channels (rows of x) whose RMS lies more than `nsd` SD from that of the other channels are
+    replaced by the mean of their depth neighbours, iteratively (a channel-level version of the
+    Methods' Chebyshev rejection, which works per sample and epoch). Returns x and the rejected rows."""
+    bad = []
+    for _ in range(len(x)):
+        rms = np.sqrt((x ** 2).mean(1))
+        ok = np.setdiff1d(np.arange(len(x)), bad)
+        mu, sd = rms[ok].mean(), rms[ok].std()
+        cand = [i for i in ok if abs(rms[i] - mu) > nsd * sd]
+        if not cand:
+            break
+        i = max(cand, key=lambda j: abs(rms[j] - mu))
+        bad.append(i)
+        nb = [j for j in (i - 2, i - 1, i + 1, i + 2) if 0 <= j < len(x) and j not in bad]
+        x[i] = x[nb].mean(0) if nb else 0
+    return x, bad
+
+
+def lfp_magnitudes(meta, site, probe, groups, rng, n_shuffle=1000, f=None, timing=None):
+    """LFP and CSD magnitudes of Figure 3 for the cortical area groups on one probe, all awake trials.
+
+    Claims file, fig3d-magnitudes criterion, and Methods (Neuropixels LFP; Neuropixels CSD; LFP,
+    CSD, and population spiking magnitude). The raw LFP of the area's channels and of the channels
+    in the ACSF above the brain ("none") is read over the span of the site's awake pulses; every
+    pulse is masked as the EEG is (samples k - 1 to k + 4); the signal is low-pass filtered and
+    decimated to 1.25 kHz (scipy decimate, FIR, zero phase), high-pass filtered (first-order
+    Butterworth, zero phase, 0.1 or 1 Hz) and re-referenced to the median of the ACSF channels.
+    For each set of onsets (true, or shuffled) the trial average of each channel is taken, and from
+    it the CSD; each signal is rectified, averaged over the area's channels (or CSD rows), z-scored to
+    the baseline (-2 to 0 s or -0.5 to 0 s) and integrated from 0 to 0.5 s. Shuffles: each onset
+    moved uniformly within -2 to +2 s ("epoch"), or drawn uniformly over the span read ("span", in
+    place of the whole recording). Layer 1 is not labelled in the files; the readings leave out
+    nothing or the channels in the top 100 um of the area (an assumed thickness of layer 1).
+    Returns a DataFrame with one row per level, group, signal, cutoff, layer-1 reading, baseline
+    and shuffle; shuffle "none" holds the AUC itself in SD.s.
+    """
+    import time as _time
+    t_start = _time.time()
+    close = f is None
+    if f is None:
+        f = open_nwb(meta["url"])
+    chans = lfp_channels(f, probe)
+    es = f[f"acquisition/LFP{probe}/ElectricalSeries{probe}"]
+    conv = float(es["data"].attrs["conversion"]) * 1e6
+    ons = {}
+    for lvl in LEVELS:
+        tr = site_trials(meta, site, lvl)
+        ons[lvl] = np.sort(tr[tr.state.isin(["quiet", "running"])].start_time.values)
+    allon = np.concatenate(list(ons.values()))
+    ts_all = es["timestamps"]
+    n_ts = ts_all.shape[0]
+    # timestamps are regular at 2.5 kHz; locate the span from the first and last stamps
+    t0_ts, t1_ts = float(ts_all[0]), float(ts_all[n_ts - 1])
+    rate = (n_ts - 1) / (t1_ts - t0_ts)
+    i0 = max(int((allon.min() - 4.5 - t0_ts) * rate), 0)
+    i1 = min(int((allon.max() + 3.0 - t0_ts) * rate), n_ts)
+    ts = ts_all[i0:i1]
+    # area channels the file marks valid; the ACSF channels are all marked invalid (outside the brain)
+    use = chans[(chans.group.isin(groups) & chans.valid) | (chans.location == "none")]
+    c0, c1 = int(use.column.min()), int(use.column.max()) + 1
+    pulses = meta["estim"].start_time.values
+    pulses = pulses[(pulses > ts[0]) & (pulses < ts[-1])]
+    kk = np.searchsorted(ts, pulses) + MASK_START
+    kk = kk[(kk - MASK_SAMPLES >= 0) & (kk + MASK_SAMPLES <= len(ts))]
+    q = int(round(FS_LFP / FS_LFP_OUT))
+    t_out = ts[::q]
+    dec, prof = {}, []
+    wanted = set(use.column.values)
+    area_cols = set(use[use.location != "none"].column.values)
+    for b0 in range(c0, c1, 32):                # blocks of columns, to limit memory
+        b1 = min(b0 + 32, c1)
+        if not wanted.intersection(range(b0, b1)):
+            continue
+        raw = es["data"][i0:i1, b0:b1]
+        for col in range(b0, b1):
+            if col not in wanted:
+                continue
+            x = raw[:, col - b0].astype(np.float64) * conv
+            if col in area_cols:
+                ok = kk[(kk - 25 >= 0) & (kk + 6 <= len(x))]
+                prof.append(np.median(np.abs(x[ok[:, None] + np.arange(-3, 6)] - x[ok[:, None] + np.arange(-25, -10)].mean(1, keepdims=True)), axis=0))
+            for a in kk:
+                x[a:a + MASK_SAMPLES] = x[a - MASK_SAMPLES:a][::-1]
+            dec[col] = sps.decimate(x, q, ftype="fir", zero_phase=True).astype(np.float32)[:len(t_out)]
+        del raw
+    t_read = _time.time() - t_start
+    acsf_cols = use[use.location == "none"].column.values
+    rows = []
+    n0, n1 = int(round(-2.0 * FS_LFP_OUT)), int(round(0.5 * FS_LFP_OUT))
+    tt = np.arange(n0, n1) / FS_LFP_OUT
+    resp = (tt >= 0) & (tt < 0.5)
+    bases = {"-2-0": (tt >= -2.0) & (tt < 0), "-0.5-0": (tt >= -0.5) & (tt < 0)}
+    for hp in LFP_HIGHPASS:
+        sos = sps.butter(1, hp, btype="highpass", fs=FS_LFP_OUT, output="sos")
+        ref = np.median(np.stack([sps.sosfiltfilt(sos, dec[c]).astype(np.float32) for c in acsf_cols]), axis=0)
+        for g in groups:
+            ch = use[use.group == g].sort_values(["vertical", "horizontal"])
+            if len(ch) < 6:
+                continue
+            X = np.stack([(sps.sosfiltfilt(sos, dec[c]) - ref).astype(np.float32) for c in ch.column.values])
+            X, bad = _cheb_reject(X)
+            XT = np.ascontiguousarray(X.T)          # time x channels, for contiguous trial slices
+            del X
+            top = ch.vertical.max() + 10            # upper edge of the area's top row
+            for lvl in LEVELS:
+                on = ons[lvl]
+                if len(on) == 0:
+                    continue
+                span_lo, span_hi = t_out[0] + 2.0, t_out[-1] - 0.5
+
+                def avg(onsets):
+                    idx = np.searchsorted(t_out, onsets) + n0
+                    idx = idx[(idx >= 0) & (idx + (n1 - n0) <= len(XT))]
+                    acc = np.zeros((n1 - n0, XT.shape[1]), np.float32)
+                    for i in idx:
+                        acc += XT[i:i + n1 - n0]
+                    return (acc / len(idx)).T.astype(np.float64)
+
+                sets = {"true": [on]}
+                sets["epoch"] = [on + rng.uniform(-2.0, 2.0, len(on)) for _ in range(n_shuffle)]
+                sets["span"] = [rng.uniform(span_lo, span_hi, len(on)) for _ in range(n_shuffle)]
+                curves = {}
+                for name, lst in sets.items():
+                    for onset in lst:
+                        a = avg(onset)
+                        c, crow = _csd(a, ch)
+                        for l1 in LAYER1_UM:
+                            keep_ch = (top - ch.vertical.values) > l1
+                            keep_row = (top - crow) > l1
+                            curves.setdefault((name, "LFP", l1), []).append(np.abs(a[keep_ch]).mean(0))
+                            curves.setdefault((name, "CSD", l1), []).append(np.abs(c[keep_row]).mean(0))
+                for (sig, l1) in {(k[1], k[2]) for k in curves}:
+                    tr_c = np.array(curves[("true", sig, l1)])
+                    for bname, bm in bases.items():
+                        def auc(cv):
+                            z = (cv - cv[:, bm].mean(1, keepdims=True)) / cv[:, bm].std(1, keepdims=True)
+                            return z[:, resp].sum(1) / FS_LFP_OUT
+                        a_true = float(auc(tr_c)[0])
+                        base_row = {"level": lvl, "group": g, "signal": sig, "highpass Hz": hp, "layer1 um": l1,
+                                    "baseline": bname, "channels": int(len(ch)), "rejected": len(bad), "trials": len(on)}
+                        rows.append({**base_row, "shuffle": "none", "magnitude": a_true})
+                        for shname in ("epoch", "span"):
+                            a = auc(np.array(curves[(shname, sig, l1)]))
+                            rows.append({**base_row, "shuffle": shname, "magnitude": float((a_true - a.mean()) / a.std())})
+            del XT
+    if close:
+        f.close()
+    if timing is not None:
+        timing.update({"read s": t_read, "total s": _time.time() - t_start, "samples": int(i1 - i0),
+                       "columns": len(use),
+                       "artifact uV, k-3..k+5": np.round(np.median(prof, axis=0), 1) if prof else None})
+    return pd.DataFrame(rows)

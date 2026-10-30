@@ -2,8 +2,9 @@
 
 Tests the findings of [Claar et al. (2023)](https://doi.org/10.7554/eLife.84630) on
 [DANDI:000458](https://dandiarchive.org/dandiset/000458/0.230317.0039), version 0.230317.0039, the version the
-paper cites. The dandiset holds the skull EEG, Neuropixels LFP and sorted units of 23 mice stimulated with single
-current pulses in superficial or deep layers of MOs or SSp, awake, under isoflurane and in recovery.
+paper cites. The dandiset holds the skull EEG of 23 mice, and Neuropixels LFP and sorted units for 17 of them (18
+sessions), stimulated with single current pulses in superficial or deep layers of MOs or SSp, awake, under
+isoflurane and in recovery.
 
 | Claim | Outcome |
 |---|---|
@@ -17,7 +18,7 @@ current pulses in superficial or deep layers of MOs or SSp, awake, under isoflur
 | Quiescence after superficial MOs stimulation | Reproduced |
 | Triphasic response of stimulated cortex to deep stimulation | Partially reproduced |
 | Triphasic response of SM-TH | Partially reproduced |
-| LFP, CSD and spiking magnitudes by region (Figure 3, two claims) | Blocked: metadata insufficient (spiking part computed) |
+| LFP, CSD and spiking magnitudes by region (Figure 3, two claims) | Blocked: metadata insufficient (proposed after round 2: the example session partially reproduced, Figure 3D too large) |
 | RS unit counts of Figure 4 | Not reproduced |
 | Modulated units at 2 to 25 ms | Not reproduced |
 | Modulated units at 25 to 150 ms | Not reproduced |
@@ -49,12 +50,20 @@ The paper does not say which of the three currents of each stage it analysed; ev
 and at the middle current, and several outcomes depend on the choice. The middle current with all awake trials gives
 the paper's example ERP (1.011 s and 11.133 SD.s against 1.01 and 11.13) and its p-values for Figures 1E and 1F,
 which points to it as the paper's choice. The files carry no cortical layers and no
-position or depth of the stimulating electrode, which blocks five claims. The RS unit counts of Figure 4 are three
-times the counts of units in the files; counting each unit once per current gives the legend's counts. The attempt
+position or depth of the stimulating electrode. Six claims are blocked in the record: the stimulation depths, the
+sign flip of the first ERP peak, the CSD by layer (two claims) and the two Figure 3 claims. The RS unit counts of Figure 4 are three times the counts of units in
+the files; counting each unit once per current gives the legend's first three counts exactly and 9486 against
+9363. After the second verification round the LFP and CSD magnitudes of the example session were computed, with
+layer 1 approximated by the top 100 um of each area; they support a partial reproduction of Figure 3A to 3C,
+which the record proposes for a third round. The spiking magnitudes of Figure 3 come near the paper's, in the example and with deep
+stimulation, only when falls below baseline are counted (|z|). The attempt
 record, with the reasons and the differences from the paper's
 method, is [`attempts/000458-claar-2023-01.yaml`](../../attempts/000458-claar-2023-01.yaml).
 
-- `claar_eeg.ipynb`: the EEG claims (Figures 1, 7C, 7D, 8). About 15 minutes, most of it streaming the EEG.
-- `claar_spikes.ipynb`: the spiking claims (Figures 2, 4, 5, 6B, 6C, 7E to 7H). About 20 minutes.
-- `claar.py`: loading, trial states, EEG epochs and ERP measures, PCIst with the paper's parameters, and the
-  spiking measures. Other notebooks on this dandiset can import it.
+- `claar_eeg.ipynb`: the EEG claims (Figures 1, 7C, 7D, 8). About 17 minutes, most of it streaming the EEG.
+- `claar_spikes.ipynb`: the spiking claims (Figures 2, 4, 5, 6B, 6C, 7E to 7H) and the spiking part of Figure 3.
+  About 20 minutes.
+- `claar_lfp.ipynb`: the LFP and CSD magnitudes of the example session of Figure 3, and the size of the Figure 3D
+  computation. About 8 minutes.
+- `claar.py`: loading, trial states, EEG epochs and ERP measures, PCIst with the paper's parameters, the
+  spiking measures, and the LFP and CSD magnitudes. Other notebooks on this dandiset can import it.
