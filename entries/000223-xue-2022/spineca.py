@@ -31,7 +31,9 @@ passage of the paper taken by the author (protocol, author step 1.6). "Assumptio
   dropped, bursts closer than 75 ms merged by the code's single pass (a variant merges every
   chain into one burst, as Methods 2.6 says, "merged into a single larger burst"), extended by
   0.1 s before and 0.5 s after. Smoothing by lowess over 5 points (Methods, n_span = 5, the claims' main
-  reading) or with frac 0.0002 (the code, a variant). Hyperactive units: rate at or above the
+  reading) or with frac 0.0002 (the code, a variant). The smoothed counts are rounded to 9
+  decimals before they are compared with the baseline, a standard choice: many equal the integer
+  baseline up to rounding error, and without it the burst edges depended on the machine. Hyperactive units: rate at or above the
   99.75th percentile ("pc", the code's default) or at or above 15 Hz ("hz"). p_thresh 96 to 99.
 - Frames excluded: frames whose time on np.linspace(0, MEA duration, n_frames) lies strictly
   inside an extended burst; the last frame is never excluded (notebook 1, as the claims file
@@ -347,6 +349,9 @@ def _burst_counts(s, strategy, smoothing, bin_s=10e-3):
         n = np.histogram(spikes, bins=bins)[0]
         frac = 5 / len(n) if smoothing == "span5" else 0.0002
         sm_n = sm.nonparametric.lowess(n, np.arange(len(n)), frac=frac)[:, 1]
+        # Rounded so that a smoothed count equal to the integer baseline up to the last bits
+        # compares equal on every machine (unrounded, the edges differed between runners).
+        sm_n = np.round(sm_n, 9)
         cache[(strategy, smoothing)] = (spikes, tvec, n, sm_n, len(drop))
     return cache[(strategy, smoothing)]
 

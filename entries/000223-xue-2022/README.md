@@ -10,7 +10,7 @@ network measures of Table 1.
 | Claim | Outcome |
 |---|---|
 | 19 recordings in 10 cultures, 20 spines, 102 ± 43 units | Reproduced |
-| Per-spine best-R of Table 1 | Partially reproduced (assumption) |
+| Per-spine best-R of Table 1 | Partially reproduced |
 | Best-R has the largest gap to the next R (Figure 1e) | Reproduced |
 | Per-recording maximum F and optimal quantiles of Table 1 | Partially reproduced |
 | Mean maximum F of 0.692 ± 0.136 | Partially reproduced |
@@ -21,7 +21,7 @@ network measures of Table 1.
 | Test threshold above GT threshold for some recordings, below for others | Reproduced |
 | Spike contrast and OUT/IN ratio of Table 1 | Not reproduced |
 | Spike contrast correlates with maximum F (Figure 5c) | Reproduced |
-| OUT/IN ratio correlates with maximum F (Figure 5d) | Partially reproduced (assumption) |
+| OUT/IN ratio correlates with maximum F (Figure 5d) | Partially reproduced (assumption: noise region) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
