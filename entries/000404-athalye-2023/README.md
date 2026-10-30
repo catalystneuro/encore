@@ -22,7 +22,7 @@ performing a center-out and an obstacle-avoidance task with a 2D cursor BMI.
 | Dynamics predict next activity (Figure 5C) | Partially reproduced (assumption) |
 | About 4 dimensions predicted (Figure 5D) | Reproduced |
 | Dynamics predict the next command (Figure 5E) | Partially reproduced (assumption) |
-| Condition-specific next command predicted (Figure 5F) | Partially reproduced |
+| Condition-specific next command predicted (Figure 5F) | Reproduced |
 | Direction and angle of the turn predicted (Figure 5H) | Partially reproduced |
 | Dynamics add to behavior-encoding models (Figure S5B) | Reproduced |
 | rsLDS no better than linear dynamics (Figure S5F) | Blocked: too large |
