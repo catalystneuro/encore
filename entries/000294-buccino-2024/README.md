@@ -25,12 +25,15 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The patch sampling is 20.41 kHz for most protocols and 125 kHz for APWaveform, where the paper says
-20 kHz and about 200 kHz. The model fits need more than 3000 CPU hours. The attempt record, with the
+20 kHz and about 200 kHz. The model fits need more than 1000 CPU hours for the ground-truth fits and as
+many again for the experimental fits (2457 and 2182 CPU hours in the run recorded; the estimate varies
+with the runner's load). The attempt record, with the
 reasons and the differences from the paper's method, is
 [`attempts/000294-buccino-2024-01.yaml`](../../attempts/000294-buccino-2024-01.yaml).
 
-- `reproduce_buccino_2024.ipynb`: the analysis. It takes about fifteen minutes: streaming the MEA data
-  around the spikes, and the ground-truth simulations.
+- `reproduce_buccino_2024.ipynb`: the analysis. It takes about ten to fifteen minutes (12.2 minutes in the run
+  recorded; it prints its time): streaming the MEA data around the spikes, and the ground-truth
+  simulations.
 - `multimodal.py`: loading the files, the stimulus segments, spike detection and the paper's
   patch-triggered template. Other notebooks on this dandiset can import it.
 - `gtmodel.py`: fetches the paper's repository at a pinned commit and simulates its ground-truth

@@ -64,9 +64,11 @@ outcomes:
   measured: -69.54
   notes: The median pre-stimulus membrane potential is -69.54 mV for cell 1 (given as measured) and
     -69.12 mV for cell 2, over 300 and 240 sweeps, within -70 +/- 7 mV (reading a). Run medians range
-    from -71.0 to -66.6 mV. Neither cell is within -84 +/- 8.4 mV (reading b), so the stored voltages
-    are the uncorrected read-out. The window before the code's ton gives the same values to within
-    0.1 mV.
+    from -71.0 to -66.6 mV. Neither cell is within -84 +/- 8.4 mV (reading b); the files do not say
+    whether the voltages are corrected for the junction potential, and reading (b) failing does not
+    show that they are not. The window before the code's ton gives the same values to within 0.1 mV.
+    Whether the criterion's window should end at the code's ton or at the onset in the files is asked
+    of a reader (questions/000294.yaml).
   deviations:
   - The pre-stimulus window ends at the first change of the injected current found in each sweep (350
     ms for most protocols), which in these files is 50 ms before the code's ton (400 ms for IDrest);
@@ -81,7 +83,8 @@ outcomes:
     (peak-to-peak 274.0 uV) for cell 1 and 159.2 uV (192.2 uV) for cell 2; the smaller, cell 2's, is
     given as measured. Every run of both cells is above 50 uV under both readings (negative peaks
     159.2 to 218.0 uV). 125 to 217 patch spikes per run outside PosCheops, 92 to 98% of waveforms kept
-    by the 2 SD rule. The code's mean template is higher by up to 13.3 uV. The largest channel of
+    by the 2 SD rule. The code's mean template is higher by up to 13.6 uV (negative peak) and 13.7 uV
+    (peak-to-peak). The largest channel of
     cell 1 is the channel the export notebook plots (ch885); for cell 2 that notebook plots ch384,
     adjacent to the largest channel found here (156.8 uV). The patch and MEA clocks stay aligned
     within sweeps; all 1616 spikes have their MEA trough 0.15 to 0.70 ms before the patch peak,
@@ -201,13 +204,14 @@ outcomes:
   outcome: blocked
   blocked_by: too_large
   notes: Needs 10 optimizations per strategy of 600 generations of 20 offspring (480,000
-    evaluations for the four strategies). One evaluation of the six training protocols on the
-    released ground-truth model takes 16.8 s intracellularly (NEURON simulator) and 27.9 s with the
-    extracellular signals (the code's evaluator for the all strategy on the LFPy simulator), so at
-    least 3350 CPU hours, 837 hours on the 4 cores of the runner, against a 30-minute notebook limit
-    and a 5-hour run. No optimization results are in the repository. The code's evaluators do build
-    and run in the locked environment (table1-feature-counts), so time is the only obstacle. In the
-    first round the intracellular evaluation took 8.3 s; the timing varies with the runner's load.
+    evaluations for the four strategies). In the run recorded, one evaluation of the six training
+    protocols on the released ground-truth model takes 12.2 s intracellularly (NEURON simulator) and
+    20.5 s with the extracellular signals (the code's evaluator for the all strategy on the LFPy
+    simulator), so at least 2457 CPU hours, 614 hours on the 4 cores of the runner, against a
+    30-minute notebook limit and a 5-hour run. The timing varies with the runner's load; the run
+    reviewed in round 2 printed 8.0 and 14.3 s and 1699 CPU hours. No optimization results are in the
+    repository. The code's evaluators do build and run in the locked environment
+    (table1-feature-counts), so time is the only obstacle.
 - claim: gt-intracellular-scores
   outcome: blocked
   blocked_by: too_large
@@ -231,7 +235,8 @@ outcomes:
   notes: Needs the best solution of each strategy's optimizations; see fig4a-strategy-balance. The
     extracellular features of the ground truth's firepattern 120% template, computed as
     4-optimization-performance.ipynb does, are 11 kinds on 80 electrodes, 880, of which 800 are
-    finite (recovery_slope is not finite on any electrode); the claim states 796.
+    finite (recovery_slope is not finite on any electrode); the claim states 796, and 800 is within
+    its tolerance of 80.
 - claim: fig4d-templates-better-than-soma
   outcome: blocked
   blocked_by: too_large
@@ -244,8 +249,9 @@ outcomes:
   outcome: blocked
   blocked_by: too_large
   notes: Needs 10 optimizations of 600 generations of 20 offspring for soma and all on each cell,
-    480,000 evaluations; at the ground-truth model's cost (16.8 s per intracellular evaluation, 27.9
-    s with the extracellular signals), at least 2980 CPU hours. The dataset holds what the fits need
+    480,000 evaluations; at the ground-truth model's cost in the run recorded (12.2 s per
+    intracellular evaluation, 20.5 s with the extracellular signals), at least 2182 CPU hours, 546
+    hours on the 4 cores of the runner (1487 CPU hours in the run reviewed in round 2). The dataset holds what the fits need
     from the recordings (the patch sweeps of every protocol and the MEA data from which templates of
     159 to 218 uV are computed here), and the linked runs are those the code used
     (recordings-two-cells-runs).
@@ -319,11 +325,6 @@ findings:
     ordered only between samples or in a finer simulation (5 to 7 us at the crossing, 20 to 25 us at
     the peak). Question for the authors - was the order read from a finer simulation than the plotted
     cut-outs?
-- kind: code_mismatch
-  statement: Run here, the code's validation feature computation (4-optimization-performance.ipynb,
-    compute_extra_features on the ground truth's firepattern 120% template) gives 11 kinds of
-    extracellular features on 80 electrodes, 880, of which 800 are finite, where Results 3.2 states 796
-    extracellular validation features.
 verifications:
 - date: 2026-10-30
   kind: agent
@@ -451,8 +452,8 @@ verifications:
     outcome: blocked
     reason: These need 4 strategies x 10 seeds x 600 generations x 20 offspring; the lower bound is
       1466 CPU-hours, and the repository holds no optimization results.
-    response: The estimate now includes an extracellular evaluation with the code's evaluator (27.9 s)
-      and is at least 3350 CPU hours.
+    response: The estimate now includes an extracellular evaluation with the code's evaluator; the
+      figures are those printed by the run recorded (see the notes; corrected in round 2).
   - claim: gt-intracellular-scores
     agrees: true
     outcome: blocked
@@ -475,8 +476,8 @@ verifications:
     outcome: blocked
     reason: Needs the optimizations. The count of about 796 extracellular features could have been
       computed from the repository's feature files and template, but does not decide the claim.
-    response: Added; the code's computation gives 880 features, 800 finite, not 796, recorded as a
-      code_mismatch finding.
+    response: Added; the code's computation gives 880 features, 800 finite. A code_mismatch finding
+      added in this round was removed in round 2, since 800 is within the claim's 796 +/- 80.
   - claim: fig4d-templates-better-than-soma
     agrees: true
     outcome: blocked
@@ -491,7 +492,8 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Needs the same kind of fits on the two cells; again at least 1466 CPU-hours.
-    response: Estimate updated to at least 2980 CPU hours.
+    response: Estimate updated with the extracellular evaluation; the figures are those printed by the
+      run recorded (see the notes; corrected in round 2).
   - claim: experimental-intracellular-scores
     agrees: true
     outcome: blocked
@@ -512,4 +514,166 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Needs the fitted models.
+    response: No change.
+- date: 2026-10-30
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The full executed notebook of the second run, with its conclusions and summary, the helper
+    modules, the claims file, the README and this record, with the paper under paper/.
+  results:
+  - claim: recordings-two-cells-runs
+    agrees: true
+    outcome: reproduced
+    reason: 2 files with 5 and 4 runs; median run 195.8 s (cell 18).
+    response: No change.
+  - claim: ecode-protocol-structure
+    agrees: true
+    outcome: reproduced
+    reason: All checks pass under reading (a); the largest amplitude error is 1.2 points (cells 21 and
+      22).
+    response: No change.
+  - claim: holding-potential
+    agrees: true
+    outcome: reproduced
+    reason: -69.54 and -69.12 mV (cell 25). The sentence "so the stored voltages are not corrected for
+      the junction potential" is an inference; that reading (b) fails does not by itself show the data
+      are uncorrected. It does not affect the outcome. The claims file treats the code's ton as the
+      pre-stimulus point, but in the files the stimulus starts 50 ms earlier; reported, not corrected.
+    response: The sentence now says that reading (b) fails and that the files do not say whether the
+      voltages are corrected, in the notebook and the notes. The ton reading is added to
+      questions/000294.yaml for a reader; the claim is unchanged.
+  - claim: extracellular-spikes-above-50uv
+    agrees: true
+    outcome: reproduced
+    reason: Negative peaks of 217.0 and 159.2 uV; every run is at least 159.2 uV (cell 28). "The code's
+      mean template is higher by up to 13.3 uV" does not match cell 28, which shows 13.6 uV (negative
+      peak) and 13.7 uV (peak-to-peak) for cell 1 run3.
+    response: Corrected to 13.6 and 13.7 uV in the notebook and the notes; cell 28 now prints the
+      largest difference over runs (13.6 and 13.7 uV).
+  - claim: mea-electrodes-and-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Yes, with a reservation. The facts are right; the electrodes and the MEA rate pass, and the
+      patch rate fails (cell 34). But the criterion has no partial clause, so read strictly the outcome
+      is not_reproduced. The record now says this openly. The claims file allows only 20 or 200 kHz for
+      APWaveform where the paper says "typically 200 kHz".
+    response: Outcome kept, as the verifier agreed with it. partially_reproduced is the protocol's
+      outcome for a claim that holds only in part, which is the case here (electrodes and MEA rate
+      hold, patch rate fails); the reservation is recorded here and in the notes. The APWaveform
+      question is in questions/000294.yaml.
+  - claim: culture-age
+    agrees: true
+    outcome: blocked
+    reason: blocked (metadata_insufficient).
+    response: No change.
+  - claim: fig6-ais-from-dendrite
+    agrees: true
+    outcome: reproduced
+    reason: In both cells the AIS parent point is type 3 (cell 38).
+    response: No change.
+  - claim: gt-rheobase
+    agrees: true
+    outcome: reproduced
+    reason: 150 and 140 pA; the code's own function gives the same (cell 41).
+    response: No change.
+  - claim: fig3b-ap-initiates-distal-ais
+    agrees: true
+    outcome: reproduced
+    reason: assumed is stated, and the assumption is reasonable. On the code's 0.05 ms cut-outs the
+      distal and middle AIS fall on the same sample under both readings, so a strict reading on those
+      cut-outs would not give the order. Read between samples the distal AIS leads by 0.0042 ms
+      (crossing) and 0.0202 ms (peak); the fixed-step run (dt 0.005 ms) gives the order in 12 of 12
+      spikes under both readings. The paper does not say at what resolution the order was read, and
+      the methods_unavailable finding asks the authors. Reproduced only under the stated resolution
+      assumption.
+    response: No change; the re-run gives the same values.
+  - claim: fig3a-largest-channel-at-ais
+    agrees: true
+    outcome: reproduced
+    reason: Channel 43 is nearest, 16.8 um against 39.3 um for the next. The recomputed template
+      matches the file, correlation 0.99992, RMS difference 1.3% (cell 47).
+    response: No change.
+  - claim: table1-feature-counts
+    agrees: true
+    outcome: reproduced
+    reason: Counted on the code's evaluators, 76 / 87 / 109 / 153 (cell 50).
+    response: No change.
+  - claim: fig4a-strategy-balance
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large); even the cost printed in cell 53 is far beyond the limits. But the
+      notes ("16.8 s ... 27.9 s ... at least 3350 CPU hours, 837 hours on the 4 cores") and the round-1
+      response (3350) are not what cell 53 prints (8.0 s, 14.3 s, 1699 CPU hours); "In the first round
+      the intracellular evaluation took 8.3 s" contradicts the delivered notebook, which gives 8.0 s.
+      The cell 54 text ("about 17 s ... about 28 s ... more than 3000 CPU hours, more than 800 hours on
+      4 cores") and the README ("more than 3000 CPU hours", true only for the two estimates added
+      together; "about fifteen minutes", where the printed timings add up to about 8.5 minutes) do not
+      match the outputs either.
+    response: The notes and the round-1 response now give the figures the run recorded prints (12.2 s
+      and 20.5 s, 2457 CPU hours, 614 hours on 4 cores) and say the timing varies with the runner's
+      load, citing the round-2 run's 8.0 and 14.3 s and 1699 CPU hours. The cell 54 text no longer
+      quotes timings; it states a bound that cell 53 now prints (each estimate above 300 CPU hours and
+      above 60 hours on 4 cores). The README gives each set's figure and the notebook's printed time
+      (12.2 min).
+  - claim: gt-intracellular-scores
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig4a-strategy-balance.
+    response: As for fig4a-strategy-balance.
+  - claim: fig4c-hyperdepol-only-single
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig4a-strategy-balance.
+    response: As for fig4a-strategy-balance.
+  - claim: fig4b-intra-no-difference
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig4a-strategy-balance.
+    response: As for fig4a-strategy-balance.
+  - claim: fig4b-extra-better-than-soma
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large). The code_mismatch finding (796 extracellular features) is overstated;
+      the printed 800 finite features (cell 56) are within the claims file's own tolerance (796 +/-
+      80), and the criterion also leaves out invalid values per model, so the difference may come from
+      models, not code. It should be reworded or dropped.
+    response: The code_mismatch finding is removed; the notes and the notebook (cell 57) say 800 is
+      within the claim's 796 +/- 80.
+  - claim: fig4d-templates-better-than-soma
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig4a-strategy-balance.
+    response: As for fig4a-strategy-balance.
+  - claim: fig5-ap-distribution
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig4a-strategy-balance.
+    response: As for fig4a-strategy-balance.
+  - claim: fig78a-soma-intra-all-extra
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large). The notes and the round-1 response say "at least 2980 CPU hours";
+      cell 53 prints 1487.
+    response: The notes and the round-1 response now give the figure the run recorded prints (2182 CPU
+      hours, 546 hours on 4 cores), with the round-2 run's 1487 CPU hours.
+  - claim: experimental-intracellular-scores
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig78a-soma-intra-all-extra.
+    response: As for fig78a-soma-intra-all-extra.
+  - claim: fig78b-validation-spiking
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig78a-soma-intra-all-extra.
+    response: No change; the recorded ranges are the same in the re-run.
+  - claim: fig78c-cell2-worse-extracellular
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig78a-soma-intra-all-extra.
+    response: No change.
+  - claim: fig10-cell2-soma-underestimated
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig78a-soma-intra-all-extra.
     response: No change.
