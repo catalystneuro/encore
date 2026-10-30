@@ -25,12 +25,15 @@ Where the parameters come from:
 - Image Stabilizer (Fiji) is not available in Python. In its place each frame is aligned to the
   mean of the baseline frames by phase correlation on 2 x 2 binned images (whole-pixel
   translation in steps of 2 pixels), an assumption that stands for the Methods' translation
-  stabilization; `MAX_SHIFT` reports how far frames moved.
+  stabilization; "max_shift" and "shift" report how far frames moved.
+- The Minimum filter's footprint is ImageJ's for radius 2 (RankFilters: dx^2 + dy^2 <= r^2 + 1,
+  21 pixels).
 - The 1-sigma Gaussian blur of the Methods' first look (claims file, fig4-no-decreases).
 - Per-plane maps are kept binned 4 x 4 (1.16 um bins) to fit in memory, a storage choice; the
   max projections and the ROIs drawn on them are kept at full resolution.
-- ROIs (claims file, M2): pixels of at least 0.2 (`THRESHOLD`, the Methods' response threshold)
-  in at least two trials of one odor at a concentration, as connected regions; reading "a"
+- ROIs (claims file, M2): the connected regions of at least 0.2 (`THRESHOLD`, the Methods' response
+  threshold) in each trial's map that recur in another trial of the same odor at a concentration
+  (claims file, drawing (a); `recurring_regions`), merged into connected regions; reading "a"
   keeps them all, reading "b" keeps those at least `GLOM_MIN_UM` across (10 um, the lower end of
   the 10 to 20 um glomerulus diameter in the Results, "Recording calcium responses to general
   odorants") and splits those wider than `GLOM_MAX_UM` (20 um) at local maxima at least 10 um
@@ -43,9 +46,9 @@ Where the parameters come from:
 - Single glomeruli (claims file, M3): per volume, the maximum of raw fluorescence over the centre
   plane and its two neighbours, then the ROI's mean, then dF/F0 with F0 the mean of volumes 1 to
   5 (Methods, "For analyses of single glomeruli"). The ROI is a disc of `DISC_UM` (15 um)
-  diameter on the glomerulus centre (claims file, M3). Traces are not stabilized (an
-  assumption; they are read as row bands, and the shifts measured on the full planes are at most
-  a few pixels, under 1 um).
+  diameter on the glomerulus centre or the region of at least 0.2 there, the two ROIs the claims
+  file names (M3). Each plane's row band is stabilized as the maps are (`stabilize_band`), as the
+  claims file's M3 assumes; the unstabilized disc trace is kept for comparison.
 - Onset: the first volume after stimulus start where dF/F0 exceeds the baseline mean plus 3 SD
   of the baseline (volumes 1 to 5); time to maximum: the volume of the largest dF/F0 (Methods,
   "Statistical analyses of odor responses"). Volume times are (index - 1) x VOLUME_S plus the
@@ -204,7 +207,8 @@ def file_metadata(blob: str) -> dict:
 
 # --- per-plane peak maps (M1) ----------------------------------------------------------------
 
-DISC2 = np.hypot(*np.mgrid[-2:3, -2:3]) <= 2.0   # ImageJ "Minimum" radius 2
+# ImageJ "Minimum" radius 2: RankFilters takes the pixels with dx^2 + dy^2 <= r^2 + 1, 21 pixels
+DISC2 = (np.mgrid[-2:3, -2:3] ** 2).sum(0) <= 2 ** 2 + 1
 
 
 def _bin(x: np.ndarray, k: int) -> np.ndarray:
@@ -214,8 +218,8 @@ def _bin(x: np.ndarray, k: int) -> np.ndarray:
 def _shift(ref_f: np.ndarray, img: np.ndarray) -> tuple[int, int]:
     c = np.fft.ifft2(ref_f * np.conj(np.fft.fft2(img))).real
     i, j = np.unravel_index(np.argmax(c), c.shape)
-    n = c.shape[0]
-    return (i - n if i > n // 2 else i), (j - n if j > n // 2 else j)
+    n, m = c.shape
+    return (i - n if i > n // 2 else i), (j - m if j > m // 2 else j)
 
 
 def _ratio(a, b):
@@ -336,13 +340,44 @@ def al_mask(maps: dict, index) -> np.ndarray:
     return ndimage.binary_fill_holes(lab == big)
 
 
+def recurring_regions(proj: np.ndarray, mask_al: np.ndarray | None = None) -> np.ndarray:
+    """Claims file, M2 drawing (a): the connected regions of at least 0.2 in each trial's map (inside
+    the AL mask), kept when they recur in another trial of the same odor; returns the union of the
+    kept regions. A region recurs when it and a region of another trial overlap by at least
+    MERGE_OVERLAP (half) of the smaller of the two, the same rule as for one glomerulus responding to
+    two odors (an assumption: the claims file does not say how much overlap makes a recurrence)."""
+    labs = []
+    for p in proj:
+        m = p >= THRESHOLD
+        if mask_al is not None:
+            m = m & mask_al
+        lab, n = ndimage.label(m)
+        labs.append((lab, n, np.bincount(lab.ravel(), minlength=n + 1)))
+    keep = np.zeros(proj.shape[1:], bool)
+    for t, (lab, n, sizes) in enumerate(labs):
+        if n == 0:
+            continue
+        kept = np.zeros(n + 1, bool)
+        for u, (lab2, n2, sizes2) in enumerate(labs):
+            if u == t or n2 == 0:
+                continue
+            both = (lab > 0) & (lab2 > 0)
+            cnt = np.bincount(lab[both].astype(np.int64) * (n2 + 1) + lab2[both],
+                              minlength=(n + 1) * (n2 + 1)).reshape(n + 1, n2 + 1)
+            smaller = np.minimum(sizes[:, None], sizes2[None, :])
+            kept |= ((cnt > 0) & (cnt >= MERGE_OVERLAP * smaller)).any(1)
+        kept[0] = False
+        keep |= kept[lab]
+    return keep
+
+
 def draw_rois(maps: dict, trial_rows: pd.DataFrame, reading: str, mask_al: np.ndarray | None = None,
               pixel_um: float = PIXEL_UM) -> list[dict]:
     """ROIs for one ant, drawn on the trials given (one concentration per odor). For each odor with at
-    least two trials, binned pixels of at least 0.2 in at least two of its trials' max projections,
-    inside the AL mask (Methods: "every glomerular region that responded to any odor in at least two
-    trials"), form connected regions; under reading "b" they are filtered and split by size
-    (`_split_wide`). Each region has a depth, the plane of its largest trial-mean response to its own
+    least two trials, the regions of at least 0.2 in its trials' max projections that recur in two
+    trials (`recurring_regions`), inside the AL mask (Methods: "every glomerular region that responded
+    to any odor in at least two trials"), form connected regions; under reading "b" they are filtered
+    and split by size (`_split_wide`). Each region has a depth, the plane of its largest trial-mean response to its own
     odor. Regions of different odors that overlap at the same depth (`same_depth`) are one glomerulus
     and share a `group`; overlaps at different depths stay separate (Methods). Regions overlap when
     at least MERGE_OVERLAP (half) of the smaller lies in the larger, an assumption: adjacent
@@ -352,9 +387,7 @@ def draw_rois(maps: dict, trial_rows: pd.DataFrame, reading: str, mask_al: np.nd
         if len(g) < 2:
             continue
         proj = np.stack([_bin(maps[i]["proj"], BIN) for i in g.index])
-        mask = (proj >= THRESHOLD).sum(0) >= 2
-        if mask_al is not None:
-            mask &= mask_al
+        mask = recurring_regions(proj, mask_al)
         mean_planes = np.mean([maps[i]["planes"] for i in g.index], axis=0)
         for reg in _split_wide(mask, proj.mean(0), reading, pixel_um):
             regs.append({"mask": reg, "odor": odor, "depth": int(np.argmax(mean_planes[:, reg].mean(1))),
@@ -538,39 +571,90 @@ def identify_focal(maps: dict, rois: list[dict], hi: pd.DataFrame, value: str = 
 
 
 def band_for(centres: list[tuple[float, float]], margin_um: float = 20.0) -> tuple[int, int]:
+    """Rows from `margin_um` above the highest centre to as far below the lowest, an even number of
+    rows (for 2 x 2 binning in the stabilization). The margin (20 um) leaves room for the disc
+    (7.5 um radius) and for shifts up to 12.5 um (43 pixels) before rows rolled in from the other
+    edge of the band reach the disc; the largest shift measured in the maps is 42 pixels."""
     rows = [c[0] for c in centres]
     m = margin_um / PIXEL_UM
-    return max(0, int(min(rows) - m)), min(NX, int(np.ceil(max(rows) + m)))
+    r0, r1 = max(0, int(min(rows) - m)), min(NX, int(np.ceil(max(rows) + m)))
+    if (r1 - r0) % 2:
+        r1, r0 = (r1 + 1, r0) if r1 < NX else (r1, r0 - 1)
+    return r0, r1
 
 
-def trial_m3(blobs: list[str], nvol: int, rows: tuple[int, int], focal: dict, window: int = 1) -> dict:
-    """M3 for one trial: for each focal glomerulus, the trace with the centre plane chosen (a) where
+def stabilize_band(x: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Align each volume of one plane's row band to the mean of its baseline volumes, as
+    `plane_maps` does for whole frames (phase correlation on 2 x 2 binned images, whole-pixel
+    translation in steps of 2 pixels). Returns the aligned band and the shifts (rows, columns)."""
+    small = np.stack([_bin(f, 2) for f in x])
+    ref = np.fft.fft2(small[BASE].mean(0))
+    shifts = 2 * np.array([_shift(ref, s_) for s_ in small])
+    return np.stack([np.roll(f, tuple(int(v) for v in sh), (0, 1)) for f, sh in zip(x, shifts)]), shifts
+
+
+def region_roi(stacks: list[np.ndarray], disc: np.ndarray, near: np.ndarray) -> np.ndarray:
+    """The claims file's second M3 ROI: the region of at least 0.2 at the centre. On the peak fold
+    change map of the three-plane maximum (minimum-filtered as in M1), the connected region of at
+    least 0.2 within `near` that overlaps the disc most; the disc itself when no pixel of the disc is
+    at least 0.2 (a trial without a response there)."""
+    proj = np.maximum.reduce(stacks)
+    f0 = proj[BASE].mean(0)
+    pk = ndimage.minimum_filter(_ratio(proj[PEAK].mean(0) - f0, f0), footprint=DISC2)
+    lab, n = ndimage.label((pk >= THRESHOLD) & near)
+    if n == 0:
+        return disc
+    ov = np.bincount(lab[disc], minlength=n + 1)
+    ov[0] = 0
+    return lab == int(np.argmax(ov)) if ov.max() > 0 else disc
+
+
+def trial_m3(blobs: list[str], nvol: int, rows: tuple[int, int], focals: dict[str, dict], window: int = 1) -> dict:
+    """M3 for one trial, for one or more identifications of the focal glomeruli (`focals`, keyed by
+    the M2 reading that identified them). For each glomerulus, the centre plane is chosen (a) where
     the glomerulus's area of at least 0.2 (peak fold change, within 20 um of its centre) is largest,
     or (b) where the disc's peak fold change is highest, among its higher-concentration depth +-
-    `window` planes. Reads the needed planes as row bands, all volumes."""
-    planes = sorted({p for d in focal["depth"].values() for p in range(d - window - 1, d + window + 2)
-                     if 0 <= p < N_PLANES})
-    stacks = band_stacks([(p, blobs[p], nvol, rows) for p in planes], workers=8)
-    out = {}
-    for name, d in focal["depth"].items():
-        c = focal["centroid"][name]
-        disc = disc_mask(c, rows)
-        near = disc_mask(c, rows, 20.0 + DISC_UM)
-        best = {}
-        for p in range(d - window, d + window + 1):
-            if not (0 <= p < N_PLANES) or p not in stacks:
-                continue
-            x = stacks[p]
-            f0 = x[BASE].mean(0)
-            pk = _ratio(x[PEAK].mean(0) - f0, f0)
-            area = int((pk[near] >= THRESHOLD).sum())
-            disc_pk = float(_ratio(x[PEAK][:, disc].mean() - x[BASE][:, disc].mean(), x[BASE][:, disc].mean()))
-            best[p] = (area, disc_pk)
-        res = {}
-        for rd, key in (("a", 0), ("b", 1)):
-            p = max(best, key=lambda q: (best[q][key], -abs(q - d)))
-            three = [stacks[q] for q in (p - 1, p, p + 1) if q in stacks]
-            tr = m3_trace(three, disc)
-            res[rd] = {"plane": p, "trace": tr, "peak": peak_fold_change(tr)}
-        out[name] = res
+    `window` planes. The ROI is the 15 um disc ("disc") or the region of at least 0.2 at the centre
+    ("region", `region_roi`), the two ROIs the claims file names. Each plane's band is stabilized
+    (`stabilize_band`), the M3 reading of the claims file; the disc trace without stabilization is
+    kept ("raw") to show what stabilization changes. Reads the needed planes as row bands, all
+    volumes."""
+    planes = sorted({p for f in focals.values() for d in f["depth"].values()
+                     for p in range(d - window - 1, d + window + 2) if 0 <= p < N_PLANES})
+    raw = band_stacks([(p, blobs[p], nvol, rows) for p in planes], workers=8)
+    stab, shifts = {}, {}
+    for p, x in raw.items():
+        stab[p], shifts[p] = stabilize_band(x)
+    out = {"_shift": shifts}
+    for label, focal in focals.items():
+        res_f = {}
+        for name, d in focal["depth"].items():
+            c = focal["centroid"][name]
+            disc = disc_mask(c, rows)
+            near = disc_mask(c, rows, 20.0 + DISC_UM)
+            best = {}
+            for p in range(d - window, d + window + 1):
+                if p not in stab:
+                    continue
+                x = stab[p]
+                f0 = x[BASE].mean(0)
+                pk = _ratio(x[PEAK].mean(0) - f0, f0)
+                area = int((pk[near] >= THRESHOLD).sum())
+                disc_pk = float(_ratio(x[PEAK][:, disc].mean() - x[BASE][:, disc].mean(), x[BASE][:, disc].mean()))
+                best[p] = (area, disc_pk)
+            res = {}
+            for rd, key in (("a", 0), ("b", 1)):
+                p = max(best, key=lambda q: (best[q][key], -abs(q - d)))
+                qs = [q for q in (p - 1, p, p + 1) if q in stab]
+                three = [stab[q] for q in qs]
+                reg = region_roi(three, disc, near)
+                for roi_name, m in (("disc", disc), ("region", reg)):
+                    tr = m3_trace(three, m)
+                    res[rd, roi_name] = {"plane": p, "trace": tr, "peak": peak_fold_change(tr),
+                                         "roi_px": int(m.sum())}
+                if rd == "b":
+                    tr = m3_trace([raw[q] for q in qs], disc)
+                    res["b", "raw"] = {"plane": p, "trace": tr, "peak": peak_fold_change(tr), "roi_px": int(disc.sum())}
+            res_f[name] = res
+        out[label] = res_f
     return out
