@@ -1,0 +1,1466 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000463",
+  "label": "DANDI:000463"
+ },
+ "page": "datasets/dandi/000463/",
+ "generated": "2026-10-30T12:39:52+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 3
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 1,
+  "not_reproduced": 1,
+  "blocked": 32
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000463-gao-2025-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000463",
+    "version": "0.250829.1248",
+    "doi": "10.48324/dandi.000463/0.250829.1248"
+   },
+   "key": "dandi:000463",
+   "label": "DANDI:000463",
+   "dataset_version": "0.250829.1248",
+   "paper": "10.1523/jneurosci.2218-24.2025",
+   "paper_title": "Transcranial Focused Ultrasound Modulates Feedforward and Feedback Cortico-Thalamo-Cortical Pathways by Selectively Activating Excitatory Neurons",
+   "date": "2026-10-30",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-12"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41034930656"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000463-gao-2025",
+   "entry_title": "Ultrasound modulation of cortico-thalamo-cortical pathways (Gao et al. 2025)",
+   "description": "Tests the findings of Gao, Ramachandran, Yu and He (2025) on transcranial focused ultrasound of rat S1. Dandiset 000463 cites the paper but holds only broadband S1 recordings of four other rats, without units or trial times, so the claims are tested on the paper's own deposit, dandiset 000946. Its units are not typed as RSU or FSU, so only the auditory cortex claims can be tested, the unit counts and the responses to five PRFs.",
+   "notebooks": [
+    {
+     "path": "reproduce_gao_2025.ipynb",
+     "title": "Reproducing Gao et al. (2025) from dandisets 000463 and 000946",
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig4-unit-counts",
+     "statement": "The analysis of Figure 4 rests on 312 RSUs and 54 FSUs from S1 and 233 RSUs and 17 FSUs from POm in the 3000 Hz PRF sessions, and on 148 RSUs and 61 FSUs from S1 and 189 RSUs and 43 FSUs from POm in the 30 Hz PRF sessions; Figure 6 pools 1050 RSUs and 247 FSUs from S1 and 913 RSUs and 106 FSUs from POm over the five PRFs.",
+     "source": "Figure 4 legend; Figure 6 legend",
+     "quote": "There are 312 RSUs and 54 FSUs recorded from S1, 233 RSUs and 17 FSUs recorded from POm for PRF 3,000 Hz. There are 148 RSUs and 61 FSUs recorded from S1 and189 RSUs and 43 FSUs recorded from POm for PRF 30 Hz. ... sorted 1,050 RSUs (A) and 247 FSUs (B) recorded from S1 ... sorted 913 RSUs (C) and 106 FSUs (D) recorded from POm",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The criterion compares counts by type, so none of the 12 can be compared. Untyped, the constant-PD series of the 10 subjects with POm recordings holds 320 S1 and 339 POm units with more than 2000 spikes at 3000 Hz (paper, RSU plus FSU, 366 and 250), 390 and 315 at 30 Hz (209 and 232), and 1630 and 1429 over the five PRFs (1297 and 1019), leaving out the one recording whose copies are labelled both S1 and POm. Since RSU plus FSU is the untyped total, both counts of a region and condition can be within 10% only if the total is within the sum of their ranges; that fails in all six groups, so at most 6 of the 12 counts could match under any typing. The claim therefore cannot be reproduced, but whether it is partially (6 to 9) or not reproduced depends on the types, so it stays blocked. The sorting itself is the paper's (units are deposited); it is not redone.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig4a-s1-rsu-timelocked-3000",
+     "statement": "S1 RSUs are activated during sonication (0 to 67 ms) with 3000 Hz PRF, 60% DC tFUS targeting S1.",
+     "source": "Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 1; Figure 4A",
+     "quote": "RSUs from S1 (n = 312, p = 3.13 \u00d7 10\u22127) and POm (n = 233, p = 0.0003) were both activated during 3,000 Hz PRF sonication",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against baseline",
+       "p": 3.13e-07,
+       "corrected": "Bonferroni",
+       "n": "312 S1 RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The 3000 Hz 60% DC and 30 Hz 0.6% DC sessions with S1 and POm recordings are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-pom-rsu-timelocked-3000",
+     "statement": "POm RSUs show a response synchronized with S1 RSUs, being activated during 3000 Hz PRF sonication of S1.",
+     "source": "Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 1; Figure 4B",
+     "quote": "RSUs from S1 (n = 312, p = 3.13 \u00d7 10\u22127) and POm (n = 233, p = 0.0003) were both activated during 3,000 Hz PRF sonication",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against baseline",
+       "p": 0.0003,
+       "corrected": "Bonferroni",
+       "n": "233 POm RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The 3000 Hz 60% DC and 30 Hz 0.6% DC sessions with S1 and POm recordings are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig4-post-3000",
+     "statement": "After 3000 Hz PRF sonication, S1 RSUs, POm RSUs and S1 FSUs show delayed activation from 134 ms.",
+     "source": "Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 1; Figure 4",
+     "quote": "Postsonication activations were presented for S1 RSUs (p = 5 \u00d7 10\u221218), POm RSUs (p = 0.0007), and S1 FSUs (n = 54, p = 4.03 \u00d7 10\u22128) from 134 ms",
+     "statistics": [
+      {
+       "about": "S1 RSUs",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against baseline",
+       "p": 5e-18,
+       "corrected": "Bonferroni",
+       "n": "312 S1 RSUs"
+      },
+      {
+       "about": "POm RSUs",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against baseline",
+       "p": 0.0007,
+       "corrected": "Bonferroni",
+       "n": "233 POm RSUs"
+      },
+      {
+       "about": "S1 FSUs",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against baseline",
+       "p": 4.03e-08,
+       "corrected": "Bonferroni",
+       "n": "54 S1 FSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The 3000 Hz 60% DC and 30 Hz 0.6% DC sessions with S1 and POm recordings are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig4-30hz-responses",
+     "statement": "With 30 Hz PRF, 0.6% DC, S1 RSUs show an inhibitory response after sonication (67 to 134 ms) and POm RSUs show delayed excitatory activity (134 to 268 ms).",
+     "source": "Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 1; Figure 4 legend",
+     "quote": "At 30 Hz PRF, the S1 RSUs showed an inhibitory response after sonication (67\u2013134 ms, n = 148, p = 0.0029) and POm RSUs expressed delayed excitatory activities (n = 189, p = 2 \u00d7 10\u22129)",
+     "statistics": [
+      {
+       "about": "S1 RSUs, 67 to 134 ms, decrease",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against baseline",
+       "p": 0.0029,
+       "corrected": "Bonferroni",
+       "n": "148 S1 RSUs"
+      },
+      {
+       "about": "POm RSUs, 134 to 268 ms, increase",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against baseline",
+       "p": 2e-09,
+       "corrected": "Bonferroni",
+       "n": "189 POm RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The 3000 Hz 60% DC and 30 Hz 0.6% DC sessions with S1 and POm recordings are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig4-fsu-no-change",
+     "statement": "S1 FSUs show no time-locked response to 3000 Hz PRF, and there is no activity change among S1 FSUs to 30 Hz PRF nor among POm FSUs to either PRF.",
+     "source": "Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraphs 1 and 3; Figure 4",
+     "quote": "There was no activity change among S1 FSUs (n = 61) to 30 Hz PRF and POm FSUs to both PRFs (3,000 Hz, n = 17; 30 Hz, n = 43) ... only S1 RSUs showed time-locked responses to 3,000 Hz PRF instead of 30 Hz PRF",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The 3000 Hz 60% DC and 30 Hz 0.6% DC sessions with S1 and POm recordings are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-sham-no-response",
+     "statement": "In sham sessions without tFUS, S1 and POm neurons show no time-locked and no delayed (201 to 268 ms) activity changes.",
+     "source": "Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 2; Figure 5A",
+     "quote": "In sham condition (no tFUS), S1 neurons and POm neurons showed no time-locked",
+     "statistics": [
+      {
+       "about": "time-locked, S1 RSUs",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against baseline",
+       "p": 1.0,
+       "corrected": "Bonferroni",
+       "n": "31 S1 RSUs"
+      },
+      {
+       "about": "time-locked, S1 FSUs",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against baseline",
+       "p": 0.55,
+       "corrected": "Bonferroni",
+       "n": "53 S1 FSUs"
+      },
+      {
+       "about": "time-locked, POm RSUs and POm FSUs; delayed, all four groups",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against baseline",
+       "p": 1.0,
+       "corrected": "Bonferroni",
+       "n": "67 POm RSUs and 67 POm FSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No sham session (no tFUS) is in 000463 or in the paper's deposit 000946: every recording of 000946 names a PRF and PD in its identifier and a stimulation target in its notes, and 000463 has no trial times at all. The voltage field of every parsed identifier of 000946 is 5 V, so none is a 0 V session, and the 14 files whose notes name no main area are stimulated at S1 or M1. The S1 and POm units would also need types, which 000946 does not give.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5b-control-cg1-no-response",
+     "statement": "With 3000 Hz PRF tFUS targeting the cingulate cortex (CG1) as control, S1 and POm neurons show no time-locked and no delayed (201 to 268 ms) responses.",
+     "source": "Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 2; Figure 5B",
+     "quote": "In control condition (tFUS targeted at CG1), S1 neurons and POm neurons showed no time-locked",
+     "statistics": [
+      {
+       "about": "time-locked, POm FSUs",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against baseline",
+       "p": 0.33,
+       "corrected": "Bonferroni",
+       "n": "42 POm FSUs"
+      },
+      {
+       "about": "delayed, S1 FSUs",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against baseline",
+       "p": 0.1,
+       "corrected": "Bonferroni",
+       "n": "34 S1 FSUs"
+      },
+      {
+       "about": "delayed, POm RSUs",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against baseline",
+       "p": 0.32,
+       "corrected": "Bonferroni",
+       "n": "55 POm RSUs"
+      },
+      {
+       "about": "the other five tests (time-locked S1 RSUs, S1 FSUs, POm RSUs; delayed S1 RSUs, POm FSUs)",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against baseline",
+       "p": 1.0,
+       "corrected": "Bonferroni",
+       "n": "12 S1 RSUs, 34 S1 FSUs, 55 POm RSUs, 42 POm FSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No session targeted at the cingulate cortex CG1 is in 000463 or 000946. 000946 has sessions targeted at M1 (identifier suffixes _MOTOR and _POM_MOTOR, notes 'stim at:M1') and at POm, which the paper does not describe; they are not the paper's control and were not used. The units would also need types.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-s1-rsu-timelocked-prf",
+     "statement": "With constant 200 us pulse duration, time-locked responses of S1 RSUs are elicited only by the high PRFs 1500, 3000 and 4500 Hz, and 1500 Hz evokes the highest response (123.34 +/- 4.3%).",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 1; Figure 6A",
+     "quote": "time-locked S1 RSUs\u2019 responses could only be elicited from high PRFs ... among which 1,500 Hz evoked highest response level of 123.34 \u00b1 4.3%",
+     "statistics": [
+      {
+       "about": "across PRFs, 0 to 67 ms",
+       "test": "Kruskal-Wallis",
+       "p": 1.49e-15,
+       "n": "1050 S1 RSUs"
+      },
+      {
+       "about": "1500 Hz against baseline",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 2.74e-06,
+       "corrected": "Bonferroni",
+       "n": "284 S1 RSUs"
+      },
+      {
+       "about": "3000 Hz against baseline",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 3.13e-07,
+       "corrected": "Bonferroni",
+       "n": "312 S1 RSUs"
+      },
+      {
+       "about": "4500 Hz against baseline",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.0028,
+       "corrected": "Bonferroni",
+       "n": "152 S1 RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. Recordings of the constant-PD series (PD 200 us) are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-s1-rsu-delayed-prf",
+     "statement": "Delayed responses (201 to 268 ms) of S1 RSUs occur at PRFs higher than 30 Hz, and are highest at 4500 Hz (148.39 +/- 5.41%).",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 1; Figure 6A",
+     "quote": "The delayed responses (201\u2013268 ms) of RSUs could be observed at PRFs higher than 30 Hz and the highest response occurred at 4,500 Hz (148.39 \u00b1 5.41%)",
+     "statistics": [
+      {
+       "about": "across PRFs, 201 to 268 ms",
+       "test": "Kruskal-Wallis",
+       "p": 5.14e-13,
+       "n": "1050 S1 RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. Recordings of the constant-PD series (PD 200 us) are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-s1-fsu-prf",
+     "statement": "S1 FSUs show no time-locked response to any PRF and only delayed responses at PRFs higher than 1500 Hz, highest at 4500 Hz (158.75 +/- 10.75%).",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 1; Figure 6B",
+     "quote": "FSUs did not show time-locked responses to any PRFs and only presented delayed responses at PRFs higher than 1,500 Hz, with the highest response level at 4,500 Hz (158.75 \u00b1 10.75%)",
+     "statistics": [
+      {
+       "about": "across PRFs, 201 to 268 ms",
+       "test": "Kruskal-Wallis",
+       "p": 5.19e-13,
+       "n": "247 S1 FSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. Recordings of the constant-PD series (PD 200 us) are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-pom-rsu-prf",
+     "statement": "POm RSUs show time-locked responses to 1500 and 3000 Hz PRF; their delayed responses are induced by PRFs higher than 1500 Hz and are highest at 1500 Hz (141.68 +/- 2.38%).",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 1; Figure 6C",
+     "quote": "time-locked responses (Fig. 6B) from POm RSUs could be elicited by 1,500 Hz (n = 153, p = 0.003) and 3,000 Hz PRFs (n = 233, p = 0.0003). However, the delayed responses (201\u2013268 ms) of POm RSUs were induced by PRFs higher than 1,500 Hz and were highest (141.68 \u00b1 2.38%) at 1,500 Hz",
+     "statistics": [
+      {
+       "about": "across PRFs, 0 to 67 ms",
+       "test": "Kruskal-Wallis",
+       "p": 2.09e-21,
+       "n": "913 POm RSUs"
+      },
+      {
+       "about": "across PRFs, 201 to 268 ms",
+       "test": "Kruskal-Wallis",
+       "p": 6.03e-17,
+       "n": "913 POm RSUs"
+      },
+      {
+       "about": "1500 Hz against baseline, 0 to 67 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.003,
+       "corrected": "Bonferroni",
+       "n": "153 POm RSUs"
+      },
+      {
+       "about": "3000 Hz against baseline, 0 to 67 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.0003,
+       "corrected": "Bonferroni",
+       "n": "233 POm RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. Recordings of the constant-PD series (PD 200 us) are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig6d-pom-fsu-prf",
+     "statement": "POm FSUs show no time-locked response against baseline to any PRF, though they differ between 30 and 1500 Hz, and show delayed responses only to 4500 Hz.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 1; Figure 6D legend",
+     "quote": "The FSUs did not show any time-locked responses and only expressed the delayed responses to 4,500 Hz (n = 26, p = 4.2 \u00d7 10\u22126)",
+     "statistics": [
+      {
+       "about": "4500 Hz against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 4.2e-06,
+       "corrected": "Bonferroni",
+       "n": "26 POm FSUs"
+      },
+      {
+       "about": "30 against 1500 Hz, 0 to 67 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.004,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "across PRFs, 201 to 268 ms",
+       "test": "Kruskal-Wallis",
+       "p": 0.000399,
+       "n": "106 POm FSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. Recordings of the constant-PD series (PD 200 us) are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig7a-s1-rsu-dc-3000",
+     "statement": "At 3000 Hz PRF the time-locked responses of S1 RSUs depend on DC, being elicited at 30% and 60% DC, and delayed activities appear at 6, 30 and 60% DC.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 3; Figure 7A",
+     "quote": "with 3,000 Hz PRF, the time-locked responses of S1 RSUs were dependent on DCs which can be elicited with DC of 30% (n = 194, p = 3.38 \u00d7 10\u22126) and 60% (n = 312, p = 5.96 \u00d7 10\u22126). Delayed activities of RSUs were found at 6% (n = 56, p = 0.001), 30% (n = 194, p = 9.64 \u00d7 10\u221232), and 60% (n = 312, p = 1.38 \u00d7 10\u221215)",
+     "statistics": [
+      {
+       "about": "across DCs, 0 to 67 ms",
+       "test": "Kruskal-Wallis",
+       "p": 1.34e-11,
+       "n": "645 S1 RSUs"
+      },
+      {
+       "about": "across DCs, 201 to 268 ms",
+       "test": "Kruskal-Wallis",
+       "p": 2.52e-29,
+       "n": "645 S1 RSUs"
+      },
+      {
+       "about": "30% DC against baseline, 0 to 67 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 3.38e-06,
+       "corrected": "Bonferroni",
+       "n": "194 S1 RSUs"
+      },
+      {
+       "about": "60% DC against baseline, 0 to 67 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 5.96e-06,
+       "corrected": "Bonferroni",
+       "n": "312 S1 RSUs"
+      },
+      {
+       "about": "6% DC against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.001,
+       "corrected": "Bonferroni",
+       "n": "56 S1 RSUs"
+      },
+      {
+       "about": "30% DC against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 9.64e-32,
+       "corrected": "Bonferroni",
+       "n": "194 S1 RSUs"
+      },
+      {
+       "about": "60% DC against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 1.38e-15,
+       "corrected": "Bonferroni",
+       "n": "312 S1 RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. Recordings of the 3000 Hz DC series (PD 2, 20, 100, 200, 300 us) are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig7b-s1-fsu-dc-3000",
+     "statement": "At 3000 Hz PRF, delayed responses of S1 FSUs are elicited by 6, 30 and 60% DC, the same range as S1 RSUs, and 0.6% differs from 30% DC postsonication.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 3; Figure 7B",
+     "quote": "Delayed responses of FSUs could be elicited by 6% (n = 22, p = 1.29 \u00d7 10\u22128), 30% (n = 49, p = 2.32 \u00d7 10\u221211), and 60% (n = 54, p = 2.38 \u00d7 10\u22128) DCs (Fig. 7B), which were the same range of S1 RSUs",
+     "statistics": [
+      {
+       "about": "6% DC against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 1.29e-08,
+       "corrected": "Bonferroni",
+       "n": "22 S1 FSUs"
+      },
+      {
+       "about": "30% DC against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 2.32e-11,
+       "corrected": "Bonferroni",
+       "n": "49 S1 FSUs"
+      },
+      {
+       "about": "60% DC against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 2.38e-08,
+       "corrected": "Bonferroni",
+       "n": "54 S1 FSUs"
+      },
+      {
+       "about": "0.6% against 30% DC, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.002,
+       "corrected": "Bonferroni",
+       "n": "171 S1 FSUs in the series"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. Recordings of the 3000 Hz DC series (PD 2, 20, 100, 200, 300 us) are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig7c-pom-rsu-dc-3000",
+     "statement": "At 3000 Hz PRF the time-locked responses of POm RSUs do not depend on DC and are highest at 60% (106 +/- 0.77%); their delayed responses are activated by DCs from 6% up.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 3; Figure 7C",
+     "quote": "The POm RSUs\u2019 time-locked responses did not show DC dependence and were highest at 60% (106 \u00b1 0.77%; Fig. 7C). Delayed responses could be activated by DC higher than 6% (6%, n = 22, p = 1.55 \u00d7 10\u22126; n = 7, p = 0.001; 60%, n = 233, p = 1.28 \u00d7 10\u22126; 90%, n = 18, p = 0.006)",
+     "statistics": [
+      {
+       "about": "across DCs, 201 to 268 ms",
+       "test": "Kruskal-Wallis",
+       "p": 0.000361,
+       "n": "286 POm RSUs"
+      },
+      {
+       "about": "6% DC against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 1.55e-06,
+       "corrected": "Bonferroni",
+       "n": "22 POm RSUs"
+      },
+      {
+       "about": "a DC the text does not name (read as 30%), against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.001,
+       "corrected": "Bonferroni",
+       "n": "7 POm RSUs"
+      },
+      {
+       "about": "60% DC against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 1.28e-06,
+       "corrected": "Bonferroni",
+       "n": "233 POm RSUs"
+      },
+      {
+       "about": "90% DC against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.006,
+       "corrected": "Bonferroni",
+       "n": "18 POm RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. Recordings of the 3000 Hz DC series (PD 2, 20, 100, 200, 300 us) are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig7d-pom-fsu-dc-3000",
+     "statement": "At 3000 Hz PRF, POm FSUs show no time-locked response against baseline but higher activity at 30% than at 0.6% and 6% DC during sonication; their delayed activities occur at 30, 60 and 90% DC.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 3; Figure 7D",
+     "quote": "There was no time-locked responses of POm FSUs compared with baseline while 30% DC showed higher activities compared with 0.6% (p = 0.0001) and 6% DC (p = 0.0003). The delayed activities of POm FSUs occurred at 30% (n = 18, p = 0.003), 60% (n = 17, p = 0.005), and 90% (n = 52, p = 6.8 \u00d7 10\u22125) DCs",
+     "statistics": [
+      {
+       "about": "across DCs, 0 to 67 ms",
+       "test": "Kruskal-Wallis",
+       "p": 0.000332,
+       "n": "129 POm FSUs"
+      },
+      {
+       "about": "30% against 0.6% DC, 0 to 67 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.0001,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "30% against 6% DC, 0 to 67 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.0003,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "30% DC against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.003,
+       "corrected": "Bonferroni",
+       "n": "18 POm FSUs"
+      },
+      {
+       "about": "60% DC against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.005,
+       "corrected": "Bonferroni",
+       "n": "17 POm FSUs"
+      },
+      {
+       "about": "90% DC against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 6.8e-05,
+       "corrected": "Bonferroni",
+       "n": "52 POm FSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. Recordings of the 3000 Hz DC series (PD 2, 20, 100, 200, 300 us) are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig8a-s1-rsu-dc-30",
+     "statement": "At 30 Hz PRF, S1 RSUs show time-locked responses to 6, 30 and 90% DC and delayed responses to 90% DC.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 3; Figure 8A",
+     "quote": "With 30 Hz PRF stimulation (Fig. 8A), the S1 RSUs showed time-locked responses to DC of 6% (n = 81, p = 1.19 \u00d7 10\u22128), 30% (n = 61, p = 0.001), and 90% (n = 66, p = 2.17 \u00d7 10\u22126) and delayed responses to 90% DC (n = 66, p = 1.5 \u00d7 10\u221224)",
+     "statistics": [
+      {
+       "about": "across DCs, 0 to 67 ms",
+       "test": "Kruskal-Wallis",
+       "p": 6.98e-12,
+       "n": "442 S1 RSUs"
+      },
+      {
+       "about": "across DCs, 201 to 268 ms",
+       "test": "Kruskal-Wallis",
+       "p": 1.02e-27,
+       "n": "442 S1 RSUs"
+      },
+      {
+       "about": "6% DC against baseline, 0 to 67 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 1.19e-08,
+       "corrected": "Bonferroni",
+       "n": "81 S1 RSUs"
+      },
+      {
+       "about": "30% DC against baseline, 0 to 67 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.001,
+       "corrected": "Bonferroni",
+       "n": "61 S1 RSUs"
+      },
+      {
+       "about": "90% DC against baseline, 0 to 67 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 2.17e-06,
+       "corrected": "Bonferroni",
+       "n": "66 S1 RSUs"
+      },
+      {
+       "about": "90% DC against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 1.5e-24,
+       "corrected": "Bonferroni",
+       "n": "66 S1 RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. Recordings of the 30 Hz DC series (PD 200, 2000, 10000, 20000, 30000 us) are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig8b-s1-fsu-dc-30",
+     "statement": "At 30 Hz PRF, 90% DC induces a positive time-locked response in S1 FSUs, and S1 FSUs show delayed responses only to 90% DC.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 3; Figure 8B",
+     "quote": "Moreover, 90% DC with 30 Hz PRF induced positive time-locked response in S1 FSUs (Fig. 8B; n = 28, p = 4.57 \u00d7 10\u221211). Like S1 RSUs, S1 FSUs only showed delayed responses to 90% DC (n = 28, p = 0.007) with 30 Hz PRF",
+     "statistics": [
+      {
+       "about": "across DCs, 0 to 67 ms",
+       "test": "Kruskal-Wallis",
+       "p": 1.89e-08,
+       "n": "147 S1 FSUs"
+      },
+      {
+       "about": "90% DC against baseline, 0 to 67 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 4.57e-11,
+       "corrected": "Bonferroni",
+       "n": "28 S1 FSUs"
+      },
+      {
+       "about": "90% DC against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.007,
+       "corrected": "Bonferroni",
+       "n": "28 S1 FSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. Recordings of the 30 Hz DC series (PD 200, 2000, 10000, 20000, 30000 us) are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig8b-s1-fsu-no-dc-difference-post",
+     "statement": "Postsonication (201 to 268 ms), S1 FSUs show no difference between DCs at 30 Hz PRF.",
+     "source": "Figure 8B legend",
+     "quote": "The comparison of neuronal responses for sorted 147 FSUs recorded from S1 with 30 Hz PRF showed DC-dependent responses during sonication (p = 1.89 \u00d7 10\u22128) and no difference to DCs postsonication (201\u2013268 ms)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. Recordings of the 30 Hz DC series (PD 200, 2000, 10000, 20000, 30000 us) are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig9a-s1-rsu-prf-60dc",
+     "statement": "At constant 60% DC only 30 Hz PRF has a different effect from the other PRFs on S1 RSUs during sonication, while postsonication activity is highest at 4500 Hz.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 3; Figure 9A",
+     "quote": "only 30 Hz PRF showed different effects to other PRFs (300 Hz, p = 0.008; 1,500 Hz, p = 0.006; 3,000 Hz, p = 0.007; 4,500 Hz, p = 0.0003) on S1 RSUs during sonication, while postsonication activities preferred 4,500 Hz",
+     "statistics": [
+      {
+       "about": "across PRFs, 0 to 67 ms",
+       "test": "Kruskal-Wallis",
+       "p": 0.000247,
+       "n": "759 S1 RSUs"
+      },
+      {
+       "about": "across PRFs, 201 to 268 ms",
+       "test": "Kruskal-Wallis",
+       "p": 1.65e-25,
+       "n": "759 S1 RSUs"
+      },
+      {
+       "about": "30 against 300 Hz, 0 to 67 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.008,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "30 against 1500 Hz, 0 to 67 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.006,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "30 against 3000 Hz, 0 to 67 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.007,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "30 against 4500 Hz, 0 to 67 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.0003,
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. Recordings of the 60% DC series are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig9b-s1-fsu-prf-60dc",
+     "statement": "At constant 60% DC, S1 FSUs respond to 1500 Hz PRF during sonication and respond most to 4500 Hz postsonication.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 3; Figure 9B",
+     "quote": "S1 FSUs responded to 1,500 Hz PRF (n = 48, p = 3.35 \u00d710\u22126) during sonication and preferred 4,500 Hz post sonication (n = 18, p = 5.84 \u00d7 10\u221210; Fig. 9B)",
+     "statistics": [
+      {
+       "about": "across PRFs, 0 to 67 ms",
+       "test": "Kruskal-Wallis",
+       "p": 0.0079,
+       "n": "151 S1 FSUs"
+      },
+      {
+       "about": "across PRFs, 201 to 268 ms",
+       "test": "Kruskal-Wallis",
+       "p": 4.996e-05,
+       "n": "151 S1 FSUs"
+      },
+      {
+       "about": "1500 Hz against baseline, 0 to 67 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 3.35e-06,
+       "corrected": "Bonferroni",
+       "n": "48 S1 FSUs"
+      },
+      {
+       "about": "4500 Hz against baseline, 201 to 268 ms",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 5.84e-10,
+       "corrected": "Bonferroni",
+       "n": "18 S1 FSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. Recordings of the 60% DC series are in 000946.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig10a-feedback-s1rsu-pomrsu",
+     "statement": "With 3000 Hz PRF, 60% DC, S1 RSUs show increased directional correlation to POm RSUs during sonication, taken as activation of the feedback CTC pathway.",
+     "source": "Results, tFUS elicited correlation change in CTC pathway, paragraph 1; Figure 10A",
+     "quote": "When 3,000 Hz PRF was applied, S1 RSUs showed an increased correlation to POm RSUs during sonication (p = 0.01)",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against prestimulation",
+       "p": 0.01
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The claim's pairs are of S1 and POm units by type. 000946 also holds 370 files of precomputed STTC (undirected, A to B, B to A, within each area) per pair, trial and 67 ms window from -67 to 603 ms; the notes of 364 of them name AC, POm or M1 against S1. The notebook opens one (M1 against S1); its units table has no type, and its arrays are 4-D where the description lists five dimensions, so their order is not established.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig10a-pomrsu-s1fsu",
+     "statement": "With 3000 Hz PRF, POm RSUs show enhanced correlation to S1 FSUs during sonication, and the other directional correlations (S1 RSU to POm FSU, POm RSU to S1 RSU) do not change significantly during sonication.",
+     "source": "Results, tFUS elicited correlation change in CTC pathway, paragraph 1; Figure 10A legend",
+     "quote": "At the same period, POm RSUs showed enhanced correlation to S1 FSUs (p = 0.02). The other directional correlation did not show significant change during sonication.",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against prestimulation",
+       "p": 0.02
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The claim's pairs are of S1 and POm units by type. 000946 also holds 370 files of precomputed STTC (undirected, A to B, B to A, within each area) per pair, trial and 67 ms window from -67 to 603 ms; the notes of 364 of them name AC, POm or M1 against S1. The notebook opens one (M1 against S1); its units table has no type, and its arrays are 4-D where the description lists five dimensions, so their order is not established.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig10a-post-decrease",
+     "statement": "After 3000 Hz PRF sonication, the correlation from S1 RSUs to POm FSUs and from POm RSUs to S1 RSUs decreases significantly.",
+     "source": "Results, tFUS elicited correlation change in CTC pathway, paragraph 1; Figure 10A",
+     "quote": "Postsonication, we found the correlation from S1 RSUs to POm FSUs and POm RSUs to S1 RSUs significantly decreased, representing the desynchronization of spikes",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The claim's pairs are of S1 and POm units by type. 000946 also holds 370 files of precomputed STTC (undirected, A to B, B to A, within each area) per pair, trial and 67 ms window from -67 to 603 ms; the notes of 364 of them name AC, POm or M1 against S1. The notebook opens one (M1 against S1); its units table has no type, and its arrays are 4-D where the description lists five dimensions, so their order is not established.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig10b-30hz-dsttc",
+     "statement": "With 30 Hz PRF, S1 RSUs show a time-locked increase in correlation to POm FSUs, while POm RSUs show decreased correlation to S1 FSUs during sonication.",
+     "source": "Results, tFUS elicited correlation change in CTC pathway, paragraph 1; Figure 10B",
+     "quote": "When delivering 30 Hz ultrasound, S1 RSUs to POm FSUs higher correlated (p = 0.0058), while POm RSUs showed decreased correlation to S1 FSUs during sonication (p = 0.0058)",
+     "statistics": [
+      {
+       "about": "S1 RSUs to POm FSUs, increase",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against prestimulation",
+       "p": 0.0058
+      },
+      {
+       "about": "POm RSUs to S1 FSUs, decrease",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against prestimulation",
+       "p": 0.0058
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The claim's pairs are of S1 and POm units by type. 000946 also holds 370 files of precomputed STTC (undirected, A to B, B to A, within each area) per pair, trial and 67 ms window from -67 to 603 ms; the notes of 364 of them name AC, POm or M1 against S1. The notebook opens one (M1 against S1); its units table has no type, and its arrays are 4-D where the description lists five dimensions, so their order is not established.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig10c-sttc-constant-pd",
+     "statement": "With constant 200 us pulse duration, the change of STTC between S1 RSUs and POm RSUs during sonication does not depend on PRF, though 1500 Hz gives a higher change than 30 Hz.",
+     "source": "Results, tFUS elicited correlation change in CTC pathway, paragraph 2; Figure 10C",
+     "quote": "When applying tFUS with constant 200 \u03bcs PD, varying the DC and PRF, the correlation did not show PRF-dependent change. A total of 1,500 Hz PRF did show a higher correlation change compared with 30 Hz PRF (Fig. 10C; p = 0.02).",
+     "statistics": [
+      {
+       "about": "1500 against 30 Hz",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 0.02
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The claim's pairs are of S1 and POm units by type. 000946 also holds 370 files of precomputed STTC (undirected, A to B, B to A, within each area) per pair, trial and 67 ms window from -67 to 603 ms; the notes of 364 of them name AC, POm or M1 against S1. The notebook opens one (M1 against S1); its units table has no type, and its arrays are 4-D where the description lists five dimensions, so their order is not established.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig10d-sttc-60dc",
+     "statement": "With constant 60% DC, the change of correlation between S1 RSUs and POm RSUs depends on PRF, with a preference for 1500 and 3000 Hz.",
+     "source": "Results, tFUS elicited correlation change in CTC pathway, paragraph 2; Figure 10D legend",
+     "quote": "Unlike the neuronal responses (Fig. 9), the correlation showed the preference to 1,500 and 3,000 Hz (Fig. 10D)",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis",
+       "p": 0.0012
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The claim's pairs are of S1 and POm units by type. 000946 also holds 370 files of precomputed STTC (undirected, A to B, B to A, within each area) per pair, trial and 67 ms window from -67 to 603 ms; the notes of 364 of them name AC, POm or M1 against S1. The notebook opens one (M1 against S1); its units table has no type, and its arrays are 4-D where the description lists five dimensions, so their order is not established.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig10e-sttc-30hz-dc",
+     "statement": "At 30 Hz PRF the change of correlation between S1 RSUs and POm RSUs depends on DC, largest at middle DCs (6, 30, 60%) and smaller at 0.6% and 90%.",
+     "source": "Results, tFUS elicited correlation change in CTC pathway, paragraph 2; Figure 10E legend",
+     "quote": "For 30 Hz PRF (Fig. 10E), the correlation tended to change most at a middle range (6, 30, 60%) and respond less to lower (e.g., 0.6%) and higher DC (e.g., 90%)",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis",
+       "p": 0.0054
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The claim's pairs are of S1 and POm units by type. 000946 also holds 370 files of precomputed STTC (undirected, A to B, B to A, within each area) per pair, trial and 67 ms window from -67 to 603 ms; the notes of 364 of them name AC, POm or M1 against S1. The notebook opens one (M1 against S1); its units table has no type, and its arrays are 4-D where the description lists five dimensions, so their order is not established.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig10f-sttc-3000hz-dc-independent",
+     "statement": "At 3000 Hz PRF the change of correlation between S1 RSUs and POm RSUs does not depend on DC.",
+     "source": "Results, tFUS elicited correlation change in CTC pathway, paragraph 2; Figure 10F",
+     "quote": "For 3,000 Hz PRF, the pathway correlation showed DC independence (Fig. 10F).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The claim's pairs are of S1 and POm units by type. 000946 also holds 370 files of precomputed STTC (undirected, A to B, B to A, within each area) per pair, trial and 67 ms window from -67 to 603 ms; the notes of 364 of them name AC, POm or M1 against S1. The notebook opens one (M1 against S1); its units table has no type, and its arrays are 4-D where the description lists five dimensions, so their order is not established.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "synthesis-prf-pathway",
+     "statement": "The PRFs that elicit the strongest local S1 RSU responses (1500 and 3000 Hz) also give the highest POm responses and the strongest correlation change, so pathway modulation is PRF dependent.",
+     "source": "Discussion, The feedback and feedforward cortico-thalomo-cortical circuits activated by cell-type selective tFUS, paragraph 2",
+     "quote": "Our results show S1 RSUs\u2019 preference for 1,500 and 3,000 Hz, and the POm highest responses as well as the strongest correlation change were induced by the same PRF range",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "Depends on fig6a-s1-rsu-timelocked-prf, fig6c-pom-rsu-prf and fig10d-sttc-60dc, which are blocked because the units of 000946 are not typed.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig11-ac-unit-counts",
+     "statement": "The auditory-confound analysis rests on 453 AC neurons over the PRFs, with 83, 107, 104 and 100 neurons in the 30, 1500, 3000 and 4500 Hz sessions.",
+     "source": "Results, Auditory confound on CTC pathway modulation using tFUS, paragraph 1; Figure 11 legend",
+     "quote": "The comparison of the responses of sorted 453 neurons from AC to different PRFs was conducted using Kruskal\u2013Wallis",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "AC units with more than 2000 spikes, each recording counted once. In the constant-PD series (6 of the 7 AC-group subjects, 3 or 4 sessions per PRF, 500 trials each) the dandiset has 633 units, 112 at 30 Hz, 89 at 300 Hz, 138 at 1500 Hz, 167 at 3000 Hz and 127 at 4500 Hz, against 453, 83, 107, 104 and 100; none of the five counts is within 10%, and every one is higher. Under the second reading (every AC session at these PRFs, all PDs, 147 sessions) the counts are 1111 to 1196 per PRF, none within tolerance. Without the 2000-spike selection the constant-PD counts are 667 in all.",
+     "deviations": [
+      "Tested on the paper's deposit DANDI:000946 (`data: elsewhere`); the target 000463 holds no units.",
+      "Recordings deposited more than once in 000946 are counted once."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig11b-ac-prf-responses",
+     "statement": "AC neurons show time-locked responses to 1500 and 3000 Hz PRF tFUS targeting S1 and postsonication responses to 30, 1500, 3000 and 4500 Hz, with the least response to 300 Hz.",
+     "source": "Results, Auditory confound on CTC pathway modulation using tFUS, paragraph 1; Figure 11A and the PRF panel of Figure 11 (labelled B in the text, C in the legend)",
+     "quote": "During sonication, the AC neurons showed time-locked responses to 1,500 Hz (n = 107, p = 9.9 \u00d7 10\u22125) and 3,000 Hz PRF (n = 104, p = 1.98 \u00d7 10\u22127). Postsonication, neuronal responses were activated by 30 Hz (n = 83, p = 1.77 \u00d7 10\u221220), 1,500 Hz, (n = 107, p = 1.36 \u00d7 10\u22125), 3,000 Hz (n = 104, p = 4.47 \u00d7 10\u221213), and 4,500 Hz (n = 100, p = 1.66 \u00d7 10\u221240)",
+     "statistics": [
+      {
+       "about": "across PRFs, during sonication",
+       "test": "Kruskal-Wallis",
+       "p": 0.000318,
+       "n": "453 AC neurons"
+      },
+      {
+       "about": "across PRFs, postsonication",
+       "test": "Kruskal-Wallis",
+       "p": 2.67e-43,
+       "n": "453 AC neurons"
+      },
+      {
+       "about": "1500 Hz against baseline, during",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 9.9e-05,
+       "corrected": "Bonferroni",
+       "n": "107 AC neurons"
+      },
+      {
+       "about": "3000 Hz against baseline, during",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 1.98e-07,
+       "corrected": "Bonferroni",
+       "n": "104 AC neurons"
+      },
+      {
+       "about": "30 Hz against baseline, postsonication",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 1.77e-20,
+       "corrected": "Bonferroni",
+       "n": "83 AC neurons"
+      },
+      {
+       "about": "1500 Hz against baseline, postsonication",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 1.36e-05,
+       "corrected": "Bonferroni",
+       "n": "107 AC neurons"
+      },
+      {
+       "about": "3000 Hz against baseline, postsonication",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 4.47e-13,
+       "corrected": "Bonferroni",
+       "n": "104 AC neurons"
+      },
+      {
+       "about": "4500 Hz against baseline, postsonication",
+       "test": "one-tail two-sample Wilcoxon",
+       "p": 1.66e-40,
+       "corrected": "Bonferroni",
+       "n": "100 AC neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "633 AC units of the constant-PD series, none dropped. Under O2a, Kruskal-Wallis across PRFs p = 7.8e-6 during sonication and 5.2e-49 after it; mean normalized rates during 105.9, 99.7, 140.3, 107.1 and 108.0% at 30, 300, 1500, 3000 and 4500 Hz, after 176.4, 94.3, 147.9, 310.5 and 210.8%, so 300 Hz is lowest in both windows. 1500 and 3000 Hz are significant during sonication and 30, 1500, 3000 and 4500 Hz after it under every O3 and O4 reading (6 of 6 named results), and 300 Hz is not significant after it. But 4500 Hz is also significant during sonication under all six O3 and O4 readings (corrected p 2.4e-6 to 0.009), 30 Hz under three and 300 Hz under the two O3b readings, where the claim has only 1500 and 3000 Hz responding. Under O2b every mean, the -134 to -67 ms baseline included, is 54 to 74%, the during-sonication Kruskal-Wallis test gives p = 0.021, and at most 2 of the 6 named results hold (not reproduced). Session means vary widely (1500 Hz 99 to 302% during sonication; 3000 Hz 112 to 654% after it). With every AC session at these PRFs (all PDs) the outcome under O2a is also partial and 300 Hz is not the lowest. Leaving out any one of the six subjects gives partially reproduced or reproduced under every O2a reading, never not reproduced. Under the claims file's header a claim whose method readings disagree is blocked; O2a is adopted as an assumption because O2b does not put no change at 100%: on synthetic Poisson units without a stimulus effect O2a gives 99.9 to 101.6% at 2 to 40 Hz and O2b 13, 31, 77 and 127% at 2, 5, 15 and 40 Hz. Whether O2b should stay a reading is asked of a reader (questions/000463.yaml). Question for the paper's authors (finding): how was the normalized rate formed, the ratio of mean counts or the mean of per-trial ratios.",
+     "deviations": [
+      "Tested on the paper's deposit DANDI:000946 (`data: elsewhere`), constant-PD series of the AC group, 6 subjects (the paper reports 12 rats in the AC group) and 633 units where the paper has 453.",
+      "Assumed the normalized rate is the mean count in the window over the mean count in the 67 ms before onset (O2a). The Methods say only that the rate 'was normalized to 67 ms before each stimulation'. The other reading (O2b, mean of per-trial ratios) puts an unchanged window near 60% where the paper's scale has 100% for no change (sham and control p = 1.0, responses reported at 123 to 159%), so O2a is the reading the paper supports. On synthetic Poisson units with no stimulus effect O2a gives about 100% at every rate and O2b 13 to 127% depending on the rate (notebook). Under O2b the claim is not reproduced; both are shown.",
+      "Sessions are the constant-PD series, from the Methods, Transcranial focused ultrasound stimulation, paragraph 3 ('For the PRF effect exploration, the pulse duration (PD) was set at 200 \u03bcs for all the PRFs'); every AC session at these PRFs is shown as a variant.",
+      "Sonication onset is the trial start_time, as the files' general/stimulus says; the notebook shows the population rate rising at it and not at times shifted by 1 s."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig11c-ac-s1-30hz-dsttc",
+     "statement": "With 30 Hz PRF, the directional correlation from AC neurons to S1 RSUs increases significantly during sonication and lasts about 150 to 200 ms, indicating that the auditory cortex is activated directly by 30 Hz tFUS.",
+     "source": "Results, Auditory confound on CTC pathway modulation using tFUS, paragraph 2; Figure 11 legend, panel C",
+     "quote": "During tFUS sonication with 30 Hz PRF, the correlation from 878 paired AC neurons to S1 RSUs significantly increased (p = 0.0014) which lasting for \u223c150 ms",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon against prestimulation",
+       "p": 0.0014,
+       "n": "878 pairs of AC neurons and S1 RSUs (1421 pairs in all)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The AC neurons are untyped in the paper, but the claim pairs them with S1 RSUs or FSUs. 000946 also holds 370 files of precomputed STTC (undirected, A to B, B to A, within each area) per pair, trial and 67 ms window from -67 to 603 ms; the notes of 364 of them name AC, POm or M1 against S1. The notebook opens one (M1 against S1); its units table has no type, and its arrays are 4-D where the description lists five dimensions, so their order is not established.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig11c-ac-s1fsu-30hz",
+     "statement": "With 30 Hz PRF, the directional correlation from AC neurons to S1 FSUs also changes during and right after sonication; the legend says it decreased, while the Results say the same synchronization as with S1 RSUs was found.",
+     "source": "Figure 11 legend, panel C; Results, Auditory confound on CTC pathway modulation using tFUS, paragraph 2",
+     "quote": "The correlation of AC neurons to S1 FSUs decreased during and right after sonication.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The AC neurons are untyped in the paper, but the claim pairs them with S1 RSUs or FSUs. 000946 also holds 370 files of precomputed STTC (undirected, A to B, B to A, within each area) per pair, trial and 67 ms window from -67 to 603 ms; the notes of 364 of them name AC, POm or M1 against S1. The notebook opens one (M1 against S1); its units table has no type, and its arrays are 4-D where the description lists five dimensions, so their order is not established.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "fig11d-ac-s1-3000hz-dsttc",
+     "statement": "With 3000 Hz PRF, AC neurons show no directional correlation change with S1 RSUs, while the correlation of AC neurons with S1 FSUs changes only postsonication, at about 200 to 300 ms.",
+     "source": "Results, Auditory confound on CTC pathway modulation using tFUS, paragraph 2; Figure 11 legend, panel D",
+     "quote": "However, when delivering 3,000 Hz PRF ultrasound energy to S1, auditory neurons did not show directional correlation change with S1 RSUs. The correlation change of AC neurons with S1 FSUs only occurred \u223c200\u2013300 ms.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The paper's deposit DANDI:000946 holds sorted units and trial tables for these sessions, but every unit's celltype_label is 0 (the column says 1 is RSU and 2 is FSU), 33 recordings have no such column, and no waveforms are deposited, so the RSU and FSU types the claim needs (Methods, Neuronal type classification, k-means on each spike's IP and AHP) cannot be assigned. The AC neurons are untyped in the paper, but the claim pairs them with S1 RSUs or FSUs. 000946 also holds 370 files of precomputed STTC (undirected, A to B, B to A, within each area) per pair, trial and 67 ms window from -67 to 603 ms; the notes of 364 of them name AC, POm or M1 against S1. The notebook opens one (M1 against S1); its units table has no type, and its arrays are 4-D where the description lists five dimensions, so their order is not established.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI 000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)",
+     "proposed": null
+    },
+    {
+     "claim": "methods-insitu-pressure",
+     "statement": "With 1500 Hz PRF, 200 us PD, 67 ms UD and 5 V input, the in situ peak-to-peak pressure with beam steering to S1, measured ex vivo through a rat skull, is 88 kPa, with ISPTA 29.42 mW/cm2 (free-water spatial peak 1626.4 kPa).",
+     "source": "Methods, Transcranial focused ultrasound stimulation, paragraph 2; Figure 1C",
+     "quote": "The measured peak-to-peak in situ ultrasound pressure magnitude with beam steering (targeting S1) was 88 kPa (Fig. 1C) and spatial-peak temporal average (ISPTA) was 29.42 mW/cm2.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The hydrophone scans of Figure 1C are in neither 000463 (voltage recordings only) nor 000946 (units, trial tables and STTC only); the paper does not say they were deposited.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "other",
+     "statement": "Dandiset 000463 cites this paper as its detailed description, but holds none of the recordings the paper analyses. Its 29 files are 32-channel broadband and LFP recordings of one S1 probe from rats BH395, BH396, BH401 and BH444 (November 2022 to February 2023), with intensities given in volts in the identifiers; the paper's deposit, dandiset 000946, has 19 other subjects recorded from August 2023, two areas per recording and mostly 500 trials per recording (691 of 814; the others 400 to 499). None of the paper's claims can be tested on 000463.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The files of 000463 have no units, no trials or epochs table and no stimulus series, so the sonication onsets and the conditions' trials cannot be read; the conditions appear only in the identifiers (for example BH401_3000_200_67_5V, BH396_test5_24V). The description says 200 or 500 trials per recording; the recording lengths give 121 to 515 intervals of 2.5 s.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "In 000463 every electrode's location is 'unknown' and the electrode group's location is the placeholder 'brain area', so the recorded area is not stated.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "In 000946 the units table's celltype_label column is described as 'label 1 = RSU, label 2 = FSU', but all 22599 values in it are 0 (each recording counted once), and 33 recordings have no such column. No waveforms or waveform measures are deposited, so the RSU and FSU types, on which 31 of the 37 claims rest directly, cannot be recovered.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "Most recordings of 000946 are deposited more than once under different file names: of 1550 spike files, 728 recordings have two copies, 2 have three and 1 has four (same trial table, spike counts and first and last spike times); 84 have one.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "In 000946 one recording, BH499_300_200_67_5_POM_S1, has identical spikes in two files noted 'Recording:S1' and two noted 'Recording:POM', so at least one area label is wrong and that session's other area may be missing; the attempt leaves it out of all counts.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "000946 holds no sham sessions and no sessions targeted at CG1, the paper's control (Figure 5), and not the hydrophone scans of Figure 1C. It holds M1- and POm-targeted sessions and PRF series at 300, 1500 and 4500 Hz that the paper does not describe.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The AC group of 000946 has 7 subjects and the subjects with POm recordings number 10, where the paper reports 12 and 16 rats. The constant-PD AC sessions hold 633 units with more than 2000 spikes where the paper reports 453, and each PRF count is higher; which sessions and units the paper used is not documented.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors: is the normalized spiking rate the mean count in the window divided by the mean count in the 67 ms before onset, or the mean over trials of per-trial ratios? fig11b-ac-prf-responses is partially reproduced under the first and not reproduced under the second; the attempt assumed the first. Also, is 'against baseline' a rank-sum test against the prestimulation window (all 100%), against another window, or a signed-rank test against 100%, and is the Bonferroni factor the number of windows or of parameter levels? These did not change the outcome here.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-30",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebook of the author run with the conclusion cells and the summary removed, the helper module and the paper. The verifier was given the claims file of dandiset 000946 (claims/000946, 33 claims) where this attempt is written against claims/000463 (37 claims), so its claim ids, readings and criteria are those of the other file; its results are mapped here to this file's claims. methods-insitu-pressure and fig11-ac-unit-counts have no counterpart in its file, and the verifier gave no outcome for them. Its other points: the duplicate recording labelled both S1 and POm is now left out from all counts; spike times are checked to be in increasing order in every loaded file (none is out of order); the S1 and POm counts are broken down by subject and PRF.",
+     "agreed": 33,
+     "of": 35,
+     "disagreements": [
+      {
+       "claim": "fig4-unit-counts",
+       "outcome": "not_reproduced",
+       "reason": "The RSU/FSU split can't be tested, but the criterion's partial clause needs only the per-area totals, which don't depend on typing. Cell 16: 3000 Hz S1 320 vs 366, POm 339 vs 250; 30 Hz S1 390 vs 209, POm 315 vs 232. None is within 10%. For the Figure 6 counts, untyped totals over five PRFs: S1 1648 vs 1297 (+27%), POm 1429 vs 1019 (+40%), both outside the 10% the partial clause allows, under any typing."
+      },
+      {
+       "claim": "fig11b-ac-prf-responses",
+       "outcome": "blocked",
+       "reason": "With the claims file's readings (N1/N2 x B1/B2, Bonferroni C1 = x5), cells 20 and 21 give: N1/B1 partial (during 1500, 3000 and 4500; 4500 is one extra); N1/B2 not reproduced (during adds 300 and 4500, two extras); N2/B1 and N2/B2 not reproduced (KW during p = 0.021). The readings disagree and none reproduces, so it is blocked as methods_underspecified. judge() applies the wrong partial rule (kw_ok and sum(named) >= 4 against the file's sets differ by one PRF in one window), never applies the header rule that disagreeing readings make the claim blocked, requires 300 Hz lowest in both windows where the file says at least one, uses Bonferroni x2, which is not a reading in the file, and lets O3c, which is not the file's B3, decide outcomes. The N2 reading is biased by firing rate: on synthetic Poisson units with no stimulus effect it gives about 33%, 89% and 121% at 5, 15 and 40 Hz."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-30",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of author-revise-1, the helper module, the attempt record and this attempt's claims file (claims/000463, 37 claims). Other points: the Summary said most spike files are deposited twice under different session start times, where cell 8 shows the start time differs in 27 of 731 duplicate groups (corrected to different file names); the first finding said 500 trials per condition, where cell 9 shows 691 of 814 recordings with 500 trials and the others 400 to 499 (corrected).",
+     "agreed": 37,
+     "of": 37,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000463-gao-2025",
+   "type": "reproduction",
+   "title": "Ultrasound modulation of cortico-thalamo-cortical pathways (Gao et al. 2025)",
+   "description": "Tests the findings of Gao, Ramachandran, Yu and He (2025) on transcranial focused ultrasound of rat S1. Dandiset 000463 cites the paper but holds only broadband S1 recordings of four other rats, without units or trial times, so the claims are tested on the paper's own deposit, dandiset 000946. Its units are not typed as RSU or FSU, so only the auditory cortex claims can be tested, the unit counts and the responses to five PRFs.",
+   "datasets": [
+    "dandi:000463",
+    "dandi:000946"
+   ],
+   "papers": [
+    "10.1523/jneurosci.2218-24.2025"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_gao_2025.ipynb",
+     "title": "Reproducing Gao et al. (2025) from dandisets 000463 and 000946",
+     "executed": null
+    }
+   ]
+  }
+ ]
+}

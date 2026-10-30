@@ -1,0 +1,731 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000019",
+  "label": "DANDI:000019"
+ },
+ "page": "datasets/dandi/000019/",
+ "generated": "2026-10-30T12:39:52+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 1,
+  "partially_reproduced": 1,
+  "not_reproduced": 4,
+  "blocked": 16
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000019-bouchard-2013-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000019",
+    "version": "0.220126.2148",
+    "doi": "10.48324/dandi.000019/0.220126.2148"
+   },
+   "key": "dandi:000019",
+   "label": "DANDI:000019",
+   "dataset_version": "0.220126.2148",
+   "paper": "10.1038/nature11911",
+   "paper_title": "Functional organization of human sensorimotor cortex for speech articulation",
+   "date": "2026-10-21",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-10"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/39692741052"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000019-bouchard-2013",
+   "entry_title": "Speech articulation in human sensorimotor cortex (Bouchard et al. 2013)",
+   "description": "Tests the findings of Bouchard, Mesgarani, Johnson and Chang (2013) on dandiset 000019, which holds raw ECoG and syllable annotations of subjects reading consonant-vowel syllables. High gamma is computed from the raw voltage. It tests the active electrodes, the articulator timing, the mixed tuning of electrodes and the cortical state-space analyses. The spatial maps cannot be tested, as the dandiset gives no electrode positions relative to the central sulcus and Sylvian fissure.",
+   "notebooks": [
+    {
+     "path": "reproduce_bouchard_2013.ipynb",
+     "title": "Reproducing Bouchard et al. (2013) from dandiset 000019",
+     "executed": "notebooks/000019-bouchard-2013/reproduce_bouchard_2013.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "data-composition",
+     "statement": "Three subjects with high-density ECoG (two left, one right hemisphere) read aloud CV syllables made of 18 or 19 consonants followed by /a/, /i/ or /u/, each CV produced 15 to 100 times, with the microphone recorded with the ECoG at 3052 Hz.",
+     "source": "Methods, Subjects and Experimental Task, and Data acquisition and Signal Processing; Supplementary Table 1",
+     "quote": "Three native English speaking human subjects underwent chronic implantation of a high-density, subdural electrocortigraphic (ECoG) array over the left hemisphere (two subjects) or right hemisphere (one subject) ... composed of 18\u201319 consonants (19 consonants for two subjects, 18 consonants for one subject), followed by one of three vowels. Each CV was produced between 15 and 100 times",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_bouchard_2013.ipynb",
+     "notes": "The dandiset holds four subjects (EC2, EC9, GP31, GP33); EC2, GP31 and GP33 are taken to be the paper's EC2, EC31 and EC33, and EC9 is not in the paper. The rate is 3051.76 Hz. The three subjects have 57, 55 and 57 CVs (169, paper 168), each with 19 consonants, and 2 to 107 renditions per CV (EC2 /thi/ 10, GP31 /thi/ 2, 33 GP31 CVs above 100); leaving out CVs below 15 renditions gives 56 + 54 + 57 = 167. The audio was removed. EC2 and GP31 have negative x coordinates (left hemisphere if x is the usual axis); GP33 has no coordinates, so the right hemisphere of EC33 cannot be checked. The answer of 2026-10-22 on CVs with fewer than 15 renditions leaves this claim as it was; the paper's 168 CVs fit neither reading, and the outcome is unchanged. No field in the files links GP31 and GP33 to EC31 and EC33; the subject fields hold only species and id, and the session descriptions name only the block. The electrode group of EC2 and GP31 is named `L256Grid electrodes` in every file, which fits a left hemisphere; that of GP33 is `auto_group`, with location `location`. In EC2 and GP31, 18 consonants have all three vowels with 15 or more renditions each, and in GP33 19, so GP31 fits the paper's subject with 18 consonants and 54 CVs.",
+     "deviations": [
+      "The correspondence of GP31 and GP33 to the paper's EC31 and EC33 is an assumption; no metadata links them."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "active-electrodes",
+     "statement": "About 30 active vSMC electrodes were found per subject during syllable articulation, an electrode being active when its high-gamma z-score changed by more than 2 for any syllable.",
+     "source": "Results, vSMC Physiology During Syllable Production, paragraph 1",
+     "quote": "During syllable articulation, approximately 30 active vSMC electrode sites were identified per subject (~1200 mm 2 , change in z-score > 2 for any syllable)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_bouchard_2013.ipynb",
+     "notes": "Mean active vSMC electrodes per subject. With every CV, 24.3 with the pre-utterance baseline (EC2 15, GP31 49, GP33 9), 21.3 with the whole block and 34.0 with the rest period; none is within 27 to 33, so this CV reading gives not reproduced. With only CVs of 15 or more renditions, 10.7, 7.0 and 27.0 (rest; EC2 29, GP31 31, GP33 21), so one baseline is within tolerance, at its lower edge, and this reading gives partially reproduced. Both readings of the change give the same counts. The count depends strongly on the threshold (41.7 at 1.5, 11.7 at 2.5, pre baseline, every CV). What the answers changed. The rest period, a variant in the first run, is now baseline reading (c) of the claims file, and the CV set is now a reading of the claims file whose two readings give different outcomes. The first run recorded not reproduced; the outcome is now blocked as methods_underspecified. Measured is the first reading (pre, every CV). The CV split comes from one syllable. Every GP31 electrode active with every CV but not with the 15+ CVs is above 2 for /thi/, which GP31 has 2 renditions of (40 electrodes under pre, 43 under whole, 20 under rest); in EC2 one electrode is active through /thi/ (10 renditions). A variant that leaves out the 162 trials overlapping intervals marked as ECoG artifacts, not a reading of the claims file, gives means of 22.7, 21.0 and 26.0 with every CV and 8.0, 6.7 and 15.0 with the 15+ CVs, none within 27 to 33; GP31's count under rest with the 15+ CVs falls from 31 to 2, so the one reading within tolerance rests on trials the files mark as artifacts.",
+     "deviations": [
+      "High gamma computed from the raw ECoG with a filter bank whose widths the paper does not give (standard choice); bad channels from the dataset's flags.",
+      "vSMC taken as the electrodes labelled precentral or postcentral, good in every block (268 over the three subjects, paper 266); no label marks the guenon."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1c-e-articulator-electrodes",
+     "statement": "In one subject, dorsal electrodes (e124, e108) were active for /b/ (lips), mid vSMC electrodes (e129, e133, e105) for /d/ (front tongue), and a more ventral electrode (e104) was most active for /g/ (back tongue).",
+     "source": "Results, vSMC Physiology During Syllable Production, paragraph 1; Figure 1c-e",
+     "quote": "Dorsally located electrodes (e.g. e124, e108; black) were active during production of /b/, which requires transient closure of the lips. In contrast, mid-positioned electrodes (e.g. e129, e133, e105; grey) were active during production of /d/ ... Amore ventral electrode (e.g. e104; red) was most active during production of /g/",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_bouchard_2013.ipynb",
+     "notes": "No subject, numbering from 1 or from 0, puts all six named electrodes on vSMC. The most is 5 of 6, in EC2 counted from 0, where e129 is labelled middle temporal; GP31 has at most 4 and GP33 at most 3. The criterion blocks the claim in that case. The dataset does not say how the paper numbered electrodes, and gives no distance from the Sylvian fissure for the order part. For information, in EC2 counted from 1 (3 of 6 on vSMC), five of the six named electrodes prefer their syllable under both measures and all three baselines; counted from 0, two or three do. The answer of 2026-10-22 to the question on positions says the paper measures them on each subject's MRI reconstruction and gives no way to derive them from grid geometry, unlabelled coordinates or atlas labels, so the block stands.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-h-phonetic-contrasts",
+     "statement": "Fricatives with different tongue-tip constriction locations (/th/, /s/, /sh/) engaged different electrodes; front-tongue consonants of different manner (/l/, /n/, /d/) engaged overlapping electrodes with different magnitudes; for /ja/, /ji/, /ju/ the activity was similar before the C-V transition, while a dorsal electrode was active during /u/ only.",
+     "source": "Results, vSMC Physiology During Syllable Production, paragraph 2; Figure 1f-h",
+     "quote": "Syllables with the same consonant followed by different vowels ( Fig. 1h, /ja/, /ji/, /ju/ ) revealed similar activity patterns preceding the CV transition. During vowel phonation, a dorsal electrode is clearly active during /u/ (black arrow), but not /i/ or /a/",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_bouchard_2013.ipynb",
+     "notes": "Under all 96 readings (3 baselines, 2 CV sets, 8 timing readings for T_A, 2 p-value readings) no GLM electrode with a positive lips weight has z above 2 for /ju/ at +250 ms and below 2 for /ja/ and /ji/ in any subject. With the rest baseline some lips-positive electrodes exceed 2 for /ju/ (13 of 96 readings, largest 3.54), but at each of them /ja/ or /ji/ is above 2 as well; under the pre and whole baselines the largest /ju/ value is below 2. The fricative and manner contrasts are not judged, as the claims file says. What the answers changed. The rest baseline and the CV set are now readings of the claims file; the 32 rest readings added give the same outcome, not reproduced, as in the first run. Without the GLM selection, among all vSMC electrodes, one EC2 electrode under rest (both CV sets) has /ju/ above 2 and /ja/ and /ji/ below 2; under pre and whole no vSMC electrode in any subject reaches 2 for /ju/ (largest 1.19), so there the result does not come from the selection.",
+     "deviations": [
+      "The lips weights come from the GLM of fig2a-lips-dorsal, which is blocked for its spatial judgement only; the weights and electrode selection need no positions and are computed, so this claim is tested."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2a-lips-dorsal",
+     "statement": "Each articulator is represented across vSMC; the lip representation lies in dorsal vSMC and the tongue representation is spread over its ventral part.",
+     "source": "Results, Spatial Representation of Articulators, paragraph 1; Figure 2a",
+     "quote": "We found representations for each articulator distributed across vSMC ( Fig. 2a ). For example, the lip representation was localized to the dorsal aspect of vSMC, whereas the tongue representation was more distributed across the ventral aspect",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_bouchard_2013.ipynb",
+     "notes": "The claim judges where the lips and tongue weights lie as dorsal-ventral distance from the Sylvian fissure. The dandiset gives no electrode position relative to the Sylvian fissure or the central sulcus. EC2 and GP31 have x, y, z coordinates with no unit or frame; GP33 has none. The GLM electrodes and weights are computed (they need no positions) and used by fig1f-h, suppfig6 and suppfig9. For information only, under the first reading the median z coordinate of the top 10% of lips weights is above that of the tongue weights in EC2 (36.6 against 15.6); GP31 has no tongue window in that reading, so it gives no comparison. The answer of 2026-10-22 to the question on positions says the paper measures them on each subject's MRI reconstruction and gives no way to derive them from grid geometry, unlabelled coordinates or atlas labels, so the block stands.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-somatotopic-sequence",
+     "statement": "Across subjects the articulator representations are laid out from dorsal to ventral as larynx, lips, jaw, tongue and larynx, with a laryngeal representation at the dorsal end of vSMC as well as a ventral one.",
+     "source": "Results, Spatial Representation of Articulators, paragraph 2; Figure 2b; Discussion, paragraph 1",
+     "quote": "We found an overall somatotopic dorsal-ventral arrangement of articulator representations laid out in the following sequence: larynx (X), lips (L), jaw (J), tongue (T), and larynx (X)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "Needs positions relative to the central sulcus and Sylvian fissure in all three subjects (see fig2a-lips-dorsal). The answer of 2026-10-22 to the question on positions says the paper measures them on each subject's MRI reconstruction and gives no way to derive them from grid geometry, unlabelled coordinates or atlas labels, so the block stands.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig3b-spatial-clustering",
+     "statement": "Electrodes with similar articulator representations lie closer together than chance; the mean spatial autocorrelation within 3 mm is 0.45 against 0.26 for permuted electrode positions.",
+     "source": "Supplementary Figure 3a, b legend",
+     "quote": "The correlation values for the data (0.45 \u00b1 0.03, mean \u00b1 s.e., 3 subjects x 4 articulators, n = 12) were significantly greater than for the randomized data (0.26 \u00b1 0.02, mean \u00b1 s.d., 1000 randomizations for each subject; P < 10-3)",
+     "statistics": [
+      {
+       "test": "permutation test, electrode locations shuffled within subject, 1000 randomizations",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "3 subjects x 4 articulators, 12 maps"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "Needs the smoothed maps in the plane of distances from the central sulcus and Sylvian fissure (see fig2a-lips-dorsal). The answer of 2026-10-22 to the question on positions says the paper measures them on each subject's MRI reconstruction and gives no way to derive them from grid geometry, unlabelled coordinates or atlas labels, so the block stands.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig3d-cross-subject",
+     "statement": "Each articulator's representation lies in a more consistent place across subjects than chance (mean cross-subject correlation within 3 mm 0.195 against 0.031).",
+     "source": "Supplementary Figure 3c, d legend",
+     "quote": "The correlation values for the data (0.195 \u00b1 0.064, mean \u00b1 s.e., 3 subjects x 4 articulators, n = 12) were significantly greater than for the randomized data (0.031 \u00b1 0.021, mean \u00b1 s.d., P < 10-3, 1000 iteration permutation test)",
+     "statistics": [
+      {
+       "test": "permutation test, 1000 iterations",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "3 subject pairs x 4 articulators, 12 comparisons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "Needs maps in a common frame across subjects, from distances to the central sulcus and Sylvian fissure (see fig2a-lips-dorsal); GP33 has no coordinates at all. The answer of 2026-10-22 to the question on positions says the paper measures them on each subject's MRI reconstruction and gives no way to derive them from grid geometry, unlabelled coordinates or atlas labels, so the block stands.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig3f-dv-sequence",
+     "statement": "Within each subject, adjacent articulator representations (larynx-tongue, tongue-jaw, jaw-lips) are spatially sequenced along the dorsal-ventral axis, with positive cross-correlation on one side of the diagonal (0.099) and negative on the other (-0.102), both beyond chance.",
+     "source": "Supplementary Figure 3e, f legend",
+     "quote": "The correlation values for the above diagonal data were positive (0.099 \u00b1 0.052, mean \u00b1 s.e., 3 subjects x 3 cross-articulator comparisons, n = 9) and significantly greater than for the randomized data ... the correlation values for the below diagonal data were negative (-0.102 \u00b1 0.052, mean \u00b1 s.e., n = 9)",
+     "statistics": [
+      {
+       "about": "above the diagonal",
+       "test": "permutation test, 1000 permutations for each subject",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "3 subjects x 3 comparisons, 9"
+      },
+      {
+       "about": "below the diagonal",
+       "test": "permutation test, 1000 permutations for each subject",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "3 subjects x 3 comparisons, 9"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "Needs the maps of suppfig3b-spatial-clustering (see fig2a-lips-dorsal). The answer of 2026-10-22 to the question on positions says the paper measures them on each subject's MRI reconstruction and gives no way to derive them from grid geometry, unlabelled coordinates or atlas labels, so the block stands.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig5-intermediate-organization",
+     "statement": "The observed map is neither a perfect linear somatotopy nor random; the mean distance between electrodes preferring the same articulator (11.06 mm) and between those preferring different ones (15.11 mm) lie between the two null models.",
+     "source": "Supplementary Figure 5b legend",
+     "quote": "The observed intra-articulator distances (11.06 \u00b1 1.01 mm. mean \u00b1 s.e., n = 3188 pair-wise distances) and across articulator distances (15.11 \u00b1 1.01mm, mean \u00b1 s.e., n = 4587 pair-wise distances) are both intermediate to these bounding values",
+     "statistics": [
+      {
+       "about": "observed against both null models; printed as \"P >10-3\", which with the figure's *** marks reads as P < 10-3",
+       "test": "comparison with 1000 simulated maps per null model",
+       "p": 0.001,
+       "p_relation": ">",
+       "n": "3188 within- and 4587 across-articulator distances"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "Needs Euclidean distances in mm between electrodes in the paper's plane (see fig2a-lips-dorsal). The EC2 and GP31 coordinates have no stated unit or frame, and GP33 has none. The answer of 2026-10-22 to the question on positions says the paper measures them on each subject's MRI reconstruction and gives no way to derive them from grid geometry, unlabelled coordinates or atlas labels, so the block stands.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig6-mixed-tuning",
+     "statement": "Single electrodes show a clear preferred articulator and also carry weights for other articulators.",
+     "source": "Results, Spatial Representation of Articulators, paragraph 2; Supplementary Figure 6",
+     "quote": "This analysis revealed clear preferred tuning for individual articulators at single electrodes (Fig. 2c, electrodes categorized according to the strongest articulator representation), and also demonstrated that single electrodes had functional representations of multiple articulators",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_bouchard_2013.ipynb",
+     "notes": "Under all 96 readings, each group of GLM electrodes (grouped by largest weight) has its preferred articulator with the largest mean share of positive weight (lips 63 to 79%, tongue 48 to 96%, larynx 49 to 84%, jaw 69 to 84%) and non-zero shares of the others; in one reading no electrode prefers the tongue. The GLM electrodes number 49 to 117 over the three subjects. In the readings where a subject has no window T_A for an articulator, its weights there are missing. What the answers changed. The rest baseline and the CV set are now readings of the claims file; the 32 rest readings added hold as well, and the outcome is reproduced, as in the first run. The criterion barely discriminates. On weights permuted across each subject's electrodes, which removes any tuning of single electrodes, the same test holds in 94 of 96 readings, because grouping by the largest weight puts the preferred articulator first almost by construction. The outcome follows the criterion; a clear preferred articulator beyond what the grouping gives is not shown by it.",
+     "deviations": [
+      "Uses the GLM weights of fig2a-lips-dorsal, which is blocked for its spatial judgement only."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-timing-sequence",
+     "statement": "Articulator correlations follow a staggered sequence consistent across subjects; lip and tongue correlations begin well before sound onset, jaw and larynx align to the C-V transition, and the high and back tongue vowel features peak near the vowel midpoint (~250 ms).",
+     "source": "Results, Timing of Articulator Representations, paragraph 1; Figure 3a-d",
+     "quote": "lip and tongue correlations began well before sound onset ( Fig. 3a, c, d ); jaw and larynx correlations were aligned to the CV transition ( Fig. 3a, c, d ); high tongue and back tongue features showed high temporal specificity for the vowel phase, peaking near the acoustic mid-point of the vowels (~250 ms, Fig. 3b\u2013d ). This sequence of articulator correlations was consistent across subjects",
+     "statistics": [
+      {
+       "test": "ANOVA",
+       "statistic": "F = 40, df = 5",
+       "p": 1e-10,
+       "p_relation": "<",
+       "n": "211 electrodes from 3 subjects"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_bouchard_2013.ipynb",
+     "notes": "Under all 96 readings (3 baselines, 2 CV sets, threshold per subject or pooled and over all articulators or per articulator, onset at threshold or half peak, ANOVA on onset or peak) none of the three order conditions holds. Mean lips onsets are -270 to -54 ms, but tongue onsets are -26 to +290 ms, so lips and tongue both precede the substitute acoustic onset (-110 ms, CV range -257 to -11 ms) in no reading; jaw onsets are -270 to -116 ms, as early as the lips; high-tongue peaks are 276 to 325 ms. Against t = 0, shown beside it as the criterion now asks, lips and tongue both begin before 0 ms in 2 of 96 readings and the outcome is the same. The ANOVA has F = 9.4 to 39.2 with p below 1e-10 in 76 of 96 readings. Electrodes 162 to 226 (paper 211). Measured values are from the first reading (175 electrodes; mean of back and high tongue peaks, 235 and 305 ms). What the answers changed. The criterion now allows the hand-marked syllable start as the acoustic onset, as a deviation, which the first run had used while asking; the rest baseline and the CV set are now readings. The outcome is not reproduced, as in the first run. Tongue electrodes number 2 to 7 under the readings with one threshold for all six articulators (2 to 45 over all readings), so those tongue onsets rest on few electrodes. A variant that leaves out the trials overlapping intervals marked as ECoG artifacts gives the same outcome (one condition holds in 4 of 96 readings, none in the others; lips onsets -338 to -125 ms, tongue -6 to 289 ms).",
+     "deviations": [
+      "The acoustic onset is the hand-marked syllable start of the trial table, averaged per CV, as the audio is not in the dandiset; the criterion allows this substitute since the answer of 2026-10-22. The outcome against t = 0 is the same."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig7-no-latency-difference",
+     "statement": "Onset latencies of the articulator model fit do not differ between electrodes just anterior and just posterior to the central sulcus (within 10 mm), nor across the guenon.",
+     "source": "Results, Timing of Articulator Representations, paragraph 1; Supplementary Figure 7",
+     "quote": "we found no significant latency differences in those areas immediately anterior and posterior to the central sulcus (\u00b110 mm), or across the geunon (a-b, P > 0.4, Rank-Sum test; n = 71 and n = 67 electrodes",
+     "statistics": [
+      {
+       "test": "rank-sum test",
+       "p": 0.4,
+       "p_relation": ">",
+       "n": "71 electrodes (pre against post central) and 67 electrodes (across the guenon), three subjects"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "Needs electrodes within 10 mm anterior and posterior of the central sulcus and the guenon's boundary; the dandiset gives no distances to the central sulcus and no guenon label. The answer of 2026-10-22 to the question on positions says the paper measures them on each subject's MRI reconstruction and gives no way to derive them from grid geometry, unlabelled coordinates or atlas labels, so the block stands.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pca-nine-components",
+     "statement": "The cortical state-space has nine spatial PCs in every subject, the eigenvalues falling fast up to the ninth and slowly after, together explaining about 60% of the variance.",
+     "source": "Results, Phonetic Organization of Spatial Patterns, paragraph 1; Methods, PCA and Cortical-State Space; Supplementary Figure 8",
+     "quote": "we used principal components analysis to transform the observed cortical activity patterns into a \u2018cortical state-space\u2019 (9 spatial PCs for all subjects, ~60% of variance explained",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_bouchard_2013.ipynb",
+     "notes": "With row z-scoring, nine PCs explain a mean of 0.60 to 0.66 over subjects, within 0.54 to 0.66 in 11 of 12 baseline, CV set and window readings (rest, every CV, -375 to 620 ms gives 0.661). With time z-scoring, 0.49 to 0.56, within under the rest baseline (4 readings) and once under the whole block, outside in the other 7. The readings give different outcomes (16 within, 8 not). The variance explained does not depend on the input projected. No sharp change at the ninth eigenvalue is seen; not judged. Measured is the first reading (pre, row, every CV, epoch). What the answers changed. The paper fixes neither z-scoring nor the CV set, which the claims file now names as readings, and the rest period is now a baseline reading; the outcome stays blocked as methods_underspecified, as in the first run. The z-scoring decides most of the split (row 11 of 12 within, time 5 of 12); the CV set and the window do not change the count (8 of 12 within each).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4a-consonant-clusters",
+     "statement": "At the consonant time (-25 ms) k-means clustering of the cortical state-space groups syllables by major oral articulator (labial, coronal, dorsal), and three clusters are more parsimonious than two or four (mean silhouette 0.47 against 0.45 and 0.43).",
+     "source": "Results, Phonetic Organization of Spatial Patterns, paragraph 1; Figure 4a; Methods, Clustering Analysis, paragraph 2",
+     "quote": "On average across subjects, this analysis validated the claim that three clusters (Average Silhouette = 0.47) was a more parsimonious clustering scheme than either two (Average Silhouette = 0.45) or four clusters (Average Silhouette = 0.43)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_bouchard_2013.ipynb",
+     "notes": "Under 23 of the 24 readings (3 baselines, 2 z-scorings, 2 projections, 2 CV sets) k = 3 does not have the highest mean silhouette (not reproduced). Under one, rest baseline, time z-scoring, projection (i) and every CV, k = 3 is highest by a small margin (0.333 against 0.329 for k = 2 and 0.241 for k = 4), with values outside tolerance (partially reproduced). k = 3 gives 0.19 to 0.36 against the paper's 0.47. GP31's k = 2 silhouette is 0.35 to 0.80 with every CV and 0.24 to 0.68 with CVs of 15 or more renditions. Measured values are the first reading (pre, row, projection i, every CV) for k = 3, 2 and 4. What the answers changed. The rest baseline and projection (ii) are now readings, and one of the readings added gives partially reproduced, so the readings differ. The first run recorded not reproduced; the outcome is now blocked as methods_underspecified. Over the 24 readings k = 2 has the highest mean silhouette in 20, k = 4 in 3 and k = 3 in 1.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig11-co-clustering",
+     "statement": "Clusters of the cortical state-space match the major articulators at the consonant time (median co-clustering 0.50 against 0.32 by chance) and the vowels at the vowel time (0.65 against 0.37), across subjects.",
+     "source": "Results, Phonetic Organization of Spatial Patterns, paragraph 1; Supplementary Figure 11a, b",
+     "quote": "clustering of CV\u2019s in the cortical state-space co-clustered with the major articulators significantly more than expected by chance (Red: observed distribution, median = 0.50, Black: null distribution from 1000 random permutations of articulator assignments of CVs, median = 0.32",
+     "statistics": [
+      {
+       "about": "consonants",
+       "test": "Wilcoxon signed-rank test",
+       "p": 1e-20,
+       "p_relation": "<",
+       "n": "168 syllables from three subjects"
+      },
+      {
+       "about": "vowels",
+       "test": "Wilcoxon signed-rank test",
+       "p": 1e-15,
+       "p_relation": "<",
+       "n": "168 syllables from three subjects"
+      },
+      {
+       "about": "consonants and vowels, main text",
+       "test": "not named",
+       "p": 1e-10,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_bouchard_2013.ipynb",
+     "notes": "Clusters match the major articulators beyond chance in every reading (consonant p from 9e-23 to 3e-13). Observed consonant medians 0.633 to 0.909 with labels (a) and 0.595 to 0.800 with labels (b) (paper 0.50 +- 0.05), vowel medians 0.41 to 0.70 (paper 0.65 +- 0.065), nulls 0.336 to 0.412 for consonants and 0.343 to 0.430 for vowels (paper 0.32 and 0.37). Of the 48 readings (24 by two label readings) 38 give partially reproduced. In five readings, all with projection (i) (row with 15+ CVs under each baseline, rest with row and every CV, rest with time and 15+ CVs), the vowel test gives p from 3e-10 to 5e-07, above 1e-10, and not reproduced under both label readings. Projection (ii) gives partially reproduced in all 24 of its readings. Each label reading is judged with its own consonant test and the vowel test. Measured is the first reading (pre, row, projection i, every CV, labels a). What the answers changed. The answers left z-scoring and the CV set open and added the rest baseline and projection (ii) as readings; projection (ii) gives partially reproduced in every reading, and the outcome stays blocked as methods_underspecified, as in the first run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-d-hierarchy",
+     "statement": "Hierarchical clustering of the state-space puts the major oral articulator (dorsal, labial, coronal) at the top tier for consonants, superordinate to constriction location, with constriction degree only at the lowest level; for vowels the first split is lip rounding (/u/ against /a/ and /i/).",
+     "source": "Results, Phonetic Organization of Spatial Patterns, paragraph 2; Figure 4c, d",
+     "quote": "For consonants, this analysis confirmed that the primary tier of organization was defined by the major oral articulator features: dorsal, labial, or coronal ( Fig. 4c ) ... during the vowel period, a primary distinction was based upon the presence/absence of lip-rounding (/u/ vs. /a/ & /i/)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_bouchard_2013.ipynb",
+     "notes": "Both splits hold together in at most one subject, EC2 (14 of 24 readings), so no reading gives reproduced; 28 of the 48 readings (with the two label readings) give partially reproduced and 20 not reproduced. Under time z-scoring with projection (i) no subject meets both. The vowel split never holds in GP31. The purity rule of two thirds is the claims file's own. What the answers changed. The rest baseline and projection (ii) are now readings, and z-scoring and the CV set stay open; the outcome stays blocked as methods_underspecified, as in the first run. Projection (ii) gives partially reproduced in 20 of 24 readings and projection (i) in 8 of 24; the CV set and the label reading do not change the counts (14 of 24 each).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4ef-feature-correlations",
+     "statement": "Over early times (-375 to 120 ms) constriction location correlates with the state-space structure more than constriction degree, which correlates more than the upcoming vowel; over later times (125 to 620 ms) vowel configuration correlates most.",
+     "source": "Results, Phonetic Organization of Spatial Patterns, paragraph 3; Figure 4e, f",
+     "quote": "Across early time points (\u2212375:120 ms), we found that consonant features describing constriction location yielded a significantly greater correlation with the cortical state-space than constriction degree, which in turn was significantly more correlated than the upcoming vowel ... across later time points (125:620 ms), we found that vowel features provided the greatest correlation",
+     "statistics": [
+      {
+       "about": "early window, location against degree against vowel",
+       "test": "Wilcoxon signed-rank test",
+       "p": 1e-10,
+       "p_relation": "<",
+       "n": "297 from 3 subjects"
+      },
+      {
+       "about": "late window, vowel configuration against the others",
+       "test": "Wilcoxon signed-rank test",
+       "p": 1e-10,
+       "p_relation": "<",
+       "n": "297 from 3 subjects"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_bouchard_2013.ipynb",
+     "notes": "Early window, location over degree over vowel with p < 1e-10 under every Euclidean reading (n = 297) except two (rest, projection i, 15+ CVs, location over degree p = 3e-05 and 3e-04). Late window, the vowel features correlate more than both other sets with p < 1e-10 in 10 of 24 readings (reproduced), every 15+ reading with projection (ii) among them; the other 14 give partially reproduced, mostly with every CV, where location correlates as much as or more than the vowel features. Hamming distances are a variant and are not judged. What the answers changed. The rest baseline and projection (ii) are now readings, and z-scoring and the CV set stay open; the readings still give reproduced and partially reproduced, and the outcome stays blocked as methods_underspecified, as in the first run. Projection (ii) gives 8 of the 10 reproduced readings, and the 15+ CVs 8 of 10.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-separability-timing",
+     "statement": "Cluster separability, averaged over subjects, rises from about -300 ms and peaks about 200 ms before the C-V transition for consonants, and rises from about 50 ms and peaks at +250 ms for vowels.",
+     "source": "Results, Dynamics of Phonetic Representations, paragraph 2; Figure 5c",
+     "quote": "separability peaked ~200 ms before the CV transition for consonants (onset, ~\u2212300 ms), and at +250 ms for vowels (onset, ~50 ms)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_bouchard_2013.ipynb",
+     "notes": "Under all 120 readings (24 baseline, z-scoring, projection and CV readings by five cluster readings) the peaks are not both within tolerance. With phonetic groups the consonant peak is at -155 to +15 ms (paper -200) and the vowel peak at 155 to 235 ms; with k-means at each time one curve serves both, peaking between -170 and 375 ms. Consonant onsets (reading a) are -375 to -180 ms, vowel onsets 55 to 105 ms. Measured is the first reading (pre, row, projection i, every CV, groups a; onset reading a). What the answers changed. The rest baseline and projection (ii) are now readings; the readings added give the same outcome, not reproduced, as in the first run. After the first verification the bootstrap no longer pairs a token with its own copies, which changes only the s.e. of onset reading (a) (first reading's vowel onset 100 to 105 ms); every reading factor still gives not reproduced in all its readings.",
+     "deviations": [
+      "The onset reading (a) takes the curve's value at -500 ms as its pre-epoch level, the earliest time of the epoch. The claims file says \"pre-epoch level\" without a time; this is the attempt's choice, and it decides only the onset, not the peaks on which the outcome rests."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5d-separability-coupling",
+     "statement": "Cluster separability and the correlation of the state-space with phonetic features are tightly linked over time for consonants and vowels in each subject (R2 0.42 to 0.98, all P < 1e-10).",
+     "source": "Results, Dynamics of Phonetic Representations, paragraph 2; Figure 5c, d",
+     "quote": "Across subjects, we found that cluster separability and the correlation between cortical state-space organization and phonetic features were tightly linked for both consonants and vowels in a time-dependent fashion (R 2 range = [0.42\u20130.98], P < 10 \u221210 for all)",
+     "statistics": [
+      {
+       "test": "linear regression R2 between time courses",
+       "p": 1e-10,
+       "p_relation": "<",
+       "n": "3 subjects x consonants and vowels, time points as samples"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_bouchard_2013.ipynb",
+     "notes": "With phonetic-group clusters and the matching feature set (location for consonants, vowel for vowels), the six R2 lie within 0.38 to 1 with p < 1e-10 in 80 of 96 readings, are positive and significant with some below 0.38 in 15, and fail in 1 (R2 0.14 to 0.99). With the mean of the three feature sets, or with k-means clusters, the coupling fails in every reading. The claims file's own readings give different outcomes. What the answers changed. The rest baseline and projection (ii) are now readings; the outcome stays blocked as methods_underspecified, as in the first run. Two readings of the claims file decide the split, that of R and that of the clusters. With the mean of three feature sets all 120 readings fail, and with k-means clusters all 48 fail, the 24 with the matching feature set among them. Every level of the baseline, z-scoring, projection and CV set has both reproduced and not reproduced readings, so the split does not come from these details.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig13-consonant-vowel-distance",
+     "statement": "Consonant and vowel representations occupy distinct regions of the state-space; consonant-vowel distances are larger than consonant-consonant and vowel-vowel distances, and consonant-consonant distances are larger than vowel-vowel ones.",
+     "source": "Results, Dynamics of Phonetic Representations, paragraph 3; Supplementary Figure 13",
+     "quote": "We found that the distribution of distances comparing consonants and vowels was significantly greater than the consonant-consonant comparison or vowel-vowel comparison, and the consonant-consonant comparison was greater than the vowel-vowel comparison",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test",
+       "p": 1e-10,
+       "p_relation": "<",
+       "corrected": "Bonferroni, 3 comparisons",
+       "n": "4623 for all"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_bouchard_2013.ipynb",
+     "notes": "With row z-scoring, and with time z-scoring and projection (ii), consonant-vowel distances exceed consonant-consonant ones, which exceed vowel-vowel ones, with corrected p < 1e-10; with time z-scoring and projection (i) the consonant-vowel distances are shorter than the consonant-consonant ones in every baseline and CV set. The pairs number 4677 (every CV) or 4567 (15+ CVs), not 4623, so no reading meets the criterion as written. The criterion defines only reproduced; a reading where all orderings hold and only the pair count differs is counted as partially reproduced (36 of 48), by the protocol's general definition of an effect that holds in part, and one where an ordering fails as not reproduced (12, all with time z-scoring and projection (i)). Read strictly, every reading is not reproduced; the outcome is kept blocked because the pair count is fixed by the dataset's syllables (data-composition), while whether the orderings hold depends on readings the paper does not fix. What the answers changed. The paper fixes neither z-scoring nor the CV set, and projection (ii), added as a reading, gives the orderings under both z-scorings; the outcome stays blocked as methods_underspecified, as in the first run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig9-pc-articulator-weights",
+     "statement": "The first three PCs are weighted toward tongue over lips, and toward lips over jaw and larynx, while jaw and larynx do not differ.",
+     "source": "Supplementary Figure 9a legend",
+     "quote": "the magnitude of the articulator weightings (log10(|(PCNi*Wij)|)) was significantly biased towards tongue over lips (P < 0.05) over jaw and larynx (P < 0.001 for each), while the difference between jaw and larynx was not significant (P > 0.2)",
+     "statistics": [
+      {
+       "about": "tongue against lips",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "Bonferroni, 6 comparisons per PC",
+       "n": "266 electrodes across subjects for each PC"
+      },
+      {
+       "about": "lips (in one reading, tongue and lips) against jaw and larynx",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "Bonferroni, 6 comparisons per PC",
+       "n": "266 electrodes across subjects for each PC"
+      },
+      {
+       "about": "jaw against larynx",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.2,
+       "p_relation": ">",
+       "corrected": "Bonferroni, 6 comparisons per PC",
+       "n": "266 electrodes across subjects for each PC"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_bouchard_2013.ipynb",
+     "notes": "Under all 288 readings the condition fails in all three PCs; tongue weights are not larger than lips weights. In the reading printed in full (268 vSMC electrodes, pre, every CV) lips minus tongue has a median paired difference of +0.03 in log10 (corrected p = 1), and jaw and larynx differ (corrected p = 5e-11). By Methods Eq. 6 the PC term cancels in paired comparisons of one electrode's articulators, so the three PCs give the same tests. What the answers changed. The rest baseline is now a reading (96 readings added); the input projected does not enter this test. The outcome is not reproduced, as in the first run. Electrodes without a window T_A for an articulator are dropped, none in 168 readings, up to 83 in the others (GP31 lacks a tongue window in some timing readings), leaving 32 to 268 electrodes; every reading fails either way.",
+     "deviations": [
+      "Uses the GLM weights of fig2a-lips-dorsal, which is blocked for its spatial judgement only."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_insufficient",
+     "statement": "No electrode has a position relative to the central sulcus or the Sylvian fissure, the frame of the paper's spatial analyses. EC2 and GP31 have x, y, z coordinates with no unit or coordinate frame described; GP33 and EC9 have none. No electrode is labelled as on the guenon. Seven spatial findings of the paper cannot be tested.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The microphone recordings were removed (dandiset description), so the acoustic onset, peak and offset of each syllable used by the paper cannot be computed; only hand-marked start, C-V transition and stop times are given.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "identifier_missing",
+     "statement": "Subjects GP31 and GP33 do not carry the paper's names (EC31, EC33), and nothing links them. GP31's coordinates fit a left hemisphere, as the paper's EC31; GP33 has no coordinates, so the right hemisphere of EC33 cannot be checked. The subject fields hold only species and id. The electrode group of EC2 and GP31 is `L256Grid electrodes`; that of GP33 is `auto_group`, with location `location`, so no field gives GP33's hemisphere.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The dandiset holds a fourth subject, EC9 (7 blocks, 1653 trials), that is not in the paper. It has extra syllables (/ch/, /dh/, /j/, /sk/), labels on 79 of 256 electrodes and no coordinates.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "Renditions per syllable range from 2 to 107 (GP31 /thi/ 2, EC2 /thi/ 10, GP31 up to 107) against the paper's 15 to 100, and GP31 lacks /tha/ and /thu/. The three subjects have 169 distinct syllables against the paper's 168 (57 + 57 + 54). The dandiset does not say which trials or syllables the paper used.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The raw ElectricalSeries gives unit volt with a conversion factor of 0.001, but the stored values have an SD of a few 1e-5, which is a usual ECoG amplitude if read as volts and tens of nanovolts with the factor; the data are consistent with values already in volts.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Two syllable labels are misspelt (`she` for `shee` in EC2 and EC9, `ha` for `haa` in GP33 and EC9). Electrode ids start at 0 in EC2 and GP31 and at 1 in GP33 and EC9.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The archive summary counts four subjects and 31 files; bad-channel flags differ between blocks of one subject (EC2 has none in two blocks and up to 10 in others), and 162 of 9370 analysed trials overlap intervals marked as ECoG artifacts (38 in GP31 block 63, whose rest period has a high-gamma SD of 0.3 times the block's). One file (EC2 block 1) holds a power spectrum of the 256 channels in a processing module; no other file has one.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-22",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The handover of the run after the answers of 2026-10-22, the executed notebook with the conclusions and summary removed, the helper module and the claims file. The verifier also read the paper under paper/, checked the archive's asset list through the API, checked the helpers on synthetic inputs and compared the transcription of Supplementary Figure 1d with the supplement. Cell numbers in the reasons are those of the round-1 notebook.",
+     "agreed": 22,
+     "of": 22,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-22",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the run after round 1, with its conclusions and summary, the README, the helper module, the attempt record and the claims file. The verifier also read the paper, read the `separability` code of the helper module and checked the transcription of Supplementary Figure 12 against the image in the supplement PDF. Cell numbers in the reasons are those of the round-2 notebook.",
+     "agreed": 22,
+     "of": 22,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000019-bouchard-2013",
+   "type": "reproduction",
+   "title": "Speech articulation in human sensorimotor cortex (Bouchard et al. 2013)",
+   "description": "Tests the findings of Bouchard, Mesgarani, Johnson and Chang (2013) on dandiset 000019, which holds raw ECoG and syllable annotations of subjects reading consonant-vowel syllables. High gamma is computed from the raw voltage. It tests the active electrodes, the articulator timing, the mixed tuning of electrodes and the cortical state-space analyses. The spatial maps cannot be tested, as the dandiset gives no electrode positions relative to the central sulcus and Sylvian fissure.",
+   "datasets": [
+    "dandi:000019"
+   ],
+   "papers": [
+    "10.1038/nature11911"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_bouchard_2013.ipynb",
+     "title": "Reproducing Bouchard et al. (2013) from dandiset 000019",
+     "executed": "notebooks/000019-bouchard-2013/reproduce_bouchard_2013.html"
+    }
+   ]
+  }
+ ]
+}
