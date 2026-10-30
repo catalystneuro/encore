@@ -181,6 +181,15 @@ def describe_000946_file(a):
     return r
 
 
+def describe_sttc_file(a):
+    """Identifier, notes, units-table description and every units dataset of one STTC file of 000946."""
+    f = h5py.File(remfile.File(s3_url(a["asset_id"])), "r")
+    u = f["units"]
+    return dict(path=a["path"], identifier=_str(f["identifier"][()]), notes=_str(f["general/notes"][()]),
+                units_description=_str(u.attrs["description"]),
+                datasets={k: (u[k].shape, _str(u[k].attrs.get("description", ""))) for k in u.keys()})
+
+
 def load_spikes(a):
     """Spike times of every unit and the trial onsets of one file of 000946."""
     f = h5py.File(remfile.File(s3_url(a["asset_id"])), "r")
