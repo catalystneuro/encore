@@ -305,42 +305,50 @@ outcomes:
   notes: The paper gives no table name or version for the fiducials, and no public copy was found on the
     BossDB bucket; the CAVE tables need an account token.
 - claim: em-sections
-  outcome: blocked
-  blocked_by: too_large
+  outcome: partially_reproduced
   notebook: em_volume_counts.ipynb
   output: claim:em-sections
-  notes: The verified outcome is kept. The imagery is public on BossDB in sharded precomputed format, and
-    em_volume_counts.ipynb now reads it. The metadata give bounds in whole chunks of 64 sections, 7,904
-    to 14,847 for subvolume 35 and 14,816 to 27,903 for subvolume 65, 20,000 sections with a share of
-    34.56% before subvolume 65. Sampling the chunk layers at each end on a grid of 2,288 chunks at 64 nm
-    per pixel, the imagery holds data from section 7,931 to 14,847 in subvolume 35 and from 14,825 to
-    27,882 in subvolume 65; a sparser grid and 16 chunks at 16 nm give the same last section. The region
-    with data is 19,952 sections against the expected 19,974 (tolerance 0); the share of subvolume 35 is
-    34.55% to 34.67%, within 35 +- 3.5%. The metadata give no count of sections cut or imaged.
-  proposed:
-    outcome: partially_reproduced
-    reason: The first rounds judged whole sections too large to read; sampled on a grid of chunks, the
-      imagery is read in 2 minutes (em_volume_counts.ipynb). The first section, 7,931, and the share of
-      subvolume 35, 34.55% to 34.67% (34.56% from the metadata alone), match the paper. The region with
-      data ends at 27,882, not 27,904, so it holds 19,952 sections, not 19,974, and the count fails its
-      tolerance of 0.
+  measured:
+  - 19952
+  - 34.55
+  notes: The imagery is public on BossDB in sharded precomputed format, and em_volume_counts.ipynb reads
+    it. The metadata give bounds in whole chunks of 64 sections, 7,904 to 14,847 for subvolume 35 and
+    14,816 to 27,903 for subvolume 65, 20,000 sections with a share of 34.56% before subvolume 65. Sampling
+    the chunk layers at each end on a grid of 2,288 chunks at 64 nm per pixel, the imagery holds data
+    from section 7,931 to 14,847 in subvolume 35 and from 14,825 to 27,882 in subvolume 65; a sparser grid
+    and 16 chunks at 16 nm give the same last section. The 8 nm scale was not checked. The first section,
+    7,931, matches the paper. The region with data is 19,952 sections against the expected 19,974 (tolerance
+    0), so the count fails. The share of subvolume 35 is 34.47% to 34.67% under the four definitions printed
+    (34.55% with subvolume 35 up to the first section of subvolume 65, given as measured), within 35 +-
+    3.5%, so the share passes. The metadata give no count of sections cut or imaged. The paper gives section
+    indices, not a count, and 27,904 is the metadata's exclusive end of subvolume 65 (14,816 + 13,088),
+    so the paper's upper bound may be exclusive or a bounding box; this is asked of a reader in questions/000402.yaml.
+    In the first two verification rounds the outcome was blocked (too_large); round 3 agreed with the
+    change to partially_reproduced.
+  deviations:
+  - The first and last sections with data are read from the imagery at 64 nm per pixel on a grid of every
+    8th chunk in x and y (2,288 chunks a layer), a choice of this attempt; the release gives no list of
+    processed sections.
 - claim: synapse-detection
-  outcome: blocked
-  blocked_by: too_large
+  outcome: partially_reproduced
   notebook: em_volume_counts.ipynb
   output: claim:synapse-detection
-  notes: The verified outcome is kept. In the first rounds the stream of the 20 GB table stalled in the
-    entry's run, which, as the verifier says, is a failed run and not a file too large to process. em_volume_counts.ipynb
-    now streams each table once and resumes a broken stream at the byte reached. The export of subvolume
-    65 at materialization 1181 (synapse_graph/cave_exports/v1181/synapses_pni_2_v1_filtered_view.csv.gz,
-    20.0 GB, no header line) holds 337,312,429 synapses, and the table of subvolume 35 (minnie35/synapse_graph/assigned.csv.gz,
-    13.8 GB, 2021, one header line), which the first rounds missed, holds 186,268,895; together 523.6
-    million. No manual synapse annotations were found, so precision, recall and F1 are not tested.
-  proposed:
-    outcome: partially_reproduced
-    reason: Both counts now run in the notebook (12 minutes) and match the paper within tolerance, 337.3
-      million in subvolume 65 (expected 337 +- 33.7) and 186.3 million in subvolume 35 (186 +- 18.6). Precision,
-      recall and F1 stay untested, as the manual annotations are not public.
+  measured:
+  - 337.312429
+  - 186.268895
+  notes: em_volume_counts.ipynb streams each table once and resumes a broken stream at the byte reached.
+    The export of subvolume 65 at materialization 1181 (synapse_graph/cave_exports/v1181/synapses_pni_2_v1_filtered_view.csv.gz,
+    20.0 GB, no header line) holds 337,312,429 synapses (expected 337 +- 33.7 million), and the table of
+    subvolume 35 (minnie35/synapse_graph/assigned.csv.gz, 13.8 GB, 2021, one header line) holds 186,268,895
+    (expected 186 +- 18.6 million); together 523.6 million against the paper's 524 million. Both counts
+    pass. No manual synapse annotations were found on the BossDB prefixes searched, so precision, recall
+    and F1 are not tested, and measured gives the two counts only. The 98% partner assignment accuracy
+    on 191 held-out synapses in the statement has no expected quantity and is not tested either. In the
+    first two verification rounds the outcome was blocked (too_large); round 3 agreed with the change to
+    partially_reproduced.
+  deviations:
+  - The paper names no materialization version. Subvolume 65 is counted on the export of version 1181,
+    the version the paper's code reads; subvolume 35 on its only public table, assigned.csv.gz (2021).
 - claim: nuclei-144120
   outcome: reproduced
   notebook: reproduce_microns_2025.ipynb
@@ -973,7 +981,7 @@ verifications:
       blocked (other) to too_large.'
     response: The outcome is kept as verified, and a change to partially_reproduced is proposed. A new notebook,
       em_volume_counts.ipynb, prints the metadata bounds (share 34.56%) and reads the imagery at 64 nm on
-      a grid of 2,288 chunks per layer at each end of each subvolume, which takes 2 minutes. The first section
+      a grid of 2,288 chunks per layer at each end of each subvolume. The first section
       with data is 7,931, as the paper says, and the last is 27,882, not 27,904, so the region holds 19,952
       sections against 19,974; the share of subvolume 35 is 34.55% to 34.67%. The patch read outside the
       notebook is replaced by this. The round-1 response now says the reason changed from other to too_large.
@@ -1053,3 +1061,45 @@ verifications:
     reason: Agrees, blocked as other. The summary's "the CAVE tables that choose their neurons need an account
       token" does not fit this claim, for which no table is named.
     response: The summary row is corrected, as for fiducial-automatch.
+- date: 2026-10-30
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The proposed changes of outcome for em-sections and synapse-detection, with the analysis
+    behind them in em_volume_counts.ipynb (executed), the claims file and the attempt record, with the
+    paper under paper/.
+  results:
+  - claim: em-sections
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 5 reads the 64 nm imagery on a grid of 2,288 chunks at each end of each subvolume. Subvolume
+      35 has no data before section 7,931, which matches the paper exactly; subvolume 65 drops to 0 chunks
+      with data after section 27,882. Cell 6: a sparser grid and 16 chunks at 16 nm give the same last section;
+      the 8 nm scale was not checked, which is minor. Cell 7: sections 7,931 to 27,882 give 19,952 sections,
+      against 19,974 with tolerance 0, so the count fails. The share of subvolume 35 is 34.47% to 34.67%
+      under all 4 definitions printed, so it passes, and no definition was picked to get the result. With
+      one quantity passing and one failing, partially reproduced fits. Statements that do not match the
+      printed output: cell 5 prints 213 s, not 2 minutes; cell 10 prints 1,288 s, not 12 or 11 minutes,
+      and the README says the whole notebook took 14 minutes. The claims file departs from the paper: the
+      paper gives section indices, not a count; 27,904 is the metadata''s exclusive end of subvolume 65,
+      so the paper''s upper bound may be exclusive or a bounding box; and the criterion says the released
+      imagery gives the paper''s ranges, which it does not bear out.'
+    response: The outcome is changed to partially_reproduced. The run times are no longer stated in the
+      reasons or the notebook text; the README and entry.yaml give the run time of this run. The notes
+      give the share under all four definitions (34.47% to 34.67%) and say the 8 nm scale was not checked.
+      The departures of the claims file from the paper are added to questions/000402.yaml for a reader;
+      the claim is not changed.
+  - claim: synapse-detection
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 10 streams both tables in full and counts lines: 20.05 of 20.0 GB and 13.81 of 13.8 GB
+      are read, the progress lines grow evenly, and the header handling is backed by the printed first lines.
+      337,312,429 synapses in subvolume 65 (expected 337 +- 33.7 million) and 186,268,895 in subvolume
+      35 (expected 186 +- 18.6 million); both pass. Version 1181 is the version the paper''s code reads,
+      so it was not chosen for the result, and the v1078 and v1300 exports are about the same size. Precision,
+      recall and F1 need the manual annotations, which were not found; the search covered only the listed
+      BossDB prefixes, which is adequate since the paper names no location. With two quantities passing
+      and three untestable, partially reproduced fits. The statement includes 98% partner assignment accuracy
+      on 191 held-out synapses, with no expected quantity; it is not tested and should be listed as untested.'
+    response: The outcome is changed to partially_reproduced. The notes, the notebook and the README now
+      list the 98% partner assignment accuracy as untested, and the run time is no longer stated in the
+      notebook text. The missing expected quantity for partner accuracy is added to questions/000402.yaml.
