@@ -9,7 +9,7 @@ Tests the whole-brain imaging findings of [Yemini et al. (2021)](https://doi.org
 | 21 heads, 189 neurons, 21 tails, median 18 animals per neuron | Partially reproduced (no tails) |
 | All 21 heads show the published ASE and AWC responses | Not reproduced (19 of 21) |
 | ASER excited by NaCl, ASE asymmetric | Reproduced |
-| NaCl responses in AIN, AVF, AVH, AVJ, I2 and MI | Partially reproduced (4 of 6) |
+| NaCl responses in AIN, AVF, AVH, AVJ, I2 and MI | Reproduced (assumed: per-trace normalisation; 4 of 6 on dF/F0) |
 | Odors more inhibitory than NaCl | Reproduced |
 | AWC ON/OFF asymmetric | Blocked: metadata insufficient |
 | ASJ and RIC responses | Partially reproduced (assumed) |
@@ -18,11 +18,15 @@ Tests the whole-brain imaging findings of [Yemini et al. (2021)](https://doi.org
 | Pharyngeal responses | Reproduced |
 | Stimulus sets overlap but differ | Reproduced |
 | AVF cycles at about 0.3 Hz | Not reproduced |
-| Stimulus-specific correlations | Reproduced (assumed; a null window passes too) |
+| Stimulus-specific correlations | Partially reproduced (assumed; a null window passes in part) |
 | PCA trajectories distinguishable | Not reproduced |
 | Low R2 with the connectome | Partially reproduced (heads only) |
 | Variations do not improve it | Reproduced |
-| Figures 1, 2, 4, 5, 7 and S1A-G (11 claims) | Blocked: data missing |
+| Figures 1, 2, 4C, 5, 7B-C and S1A-G (8 claims) | Blocked: data missing |
+| GABA network and extrasynaptic signaling (Figure 4B-F) | Blocked: outside inputs, not taken up |
+| Optimal coloring (Figure 7D-E) | Blocked: not runnable (MATLAB) |
+
+Two methods the paper leaves open are taken as assumptions and shown under every reading: one member of each near-duplicate pair is removed, and traces are z-scored before the response tests. Both choices are the ones closest to the paper's own Table S6.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the differences from the paper's method.
 
