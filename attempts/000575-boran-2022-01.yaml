@@ -1,0 +1,352 @@
+schema_version: 2
+id: 000575-boran-2022-01
+dataset:
+  archive: dandi
+  id: "000575"
+  version: 0.231010.1811
+  doi: 10.48324/dandi.000575/0.231010.1811
+paper: doi:10.1016/j.neuroimage.2022.119123
+date: 2026-10-30
+entry: 000575-boran-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41115883209
+inputs:
+- what: >-
+    The offset of 1.7 s that the conversion adds to the stored response time, used to read the
+    response timestamps as response times from test onset (function write_behavior and
+    _get_time_offset in notebooks/convert_Human_MTL_units_visual_WM.ipynb). Only absolute response
+    times depend on it; the tested slopes and F values do not.
+  source: https://github.com/janhohenheim/usz-neuro-conversion at commit c31dad914fd3f63476750dffff30f119386f60ec
+outcomes:
+- claim: behavior-accuracy-by-set-size
+  outcome: reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:behavior-accuracy-by-set-size
+  measured: [97.76, 97.90, 84.32, 72.60, 88.15, 89.78]
+  notes: >-
+    Trials pooled over sessions (reading a) give 97.76, 97.90, 84.32 and 72.60% correct at set sizes
+    1, 2, 4 and 6 and 88.15% overall; the mean of session percentages (reading b) gives 97.73,
+    97.90, 84.36, 72.54 and 88.15%. The repeated-measures ANOVA over 16 sessions gives F(3, 45) =
+    89.78 (paper 89.79), permutation p = 0.0002 with set-size labels shuffled within sessions
+    (4999 permutations, largest null F 10.81); permuting the four session values instead gives the
+    same p.
+  deviations:
+  - >-
+    The sessions hold 3038 trials (174 to 192 per session), where the paper states 192 per session;
+    the 2678 correct trials equal the paper's count.
+- claim: behavior-capacity
+  outcome: reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:behavior-capacity
+  measured: [3.23, 2.25, 5.00, 3.00, 2.11, 4.50]
+  notes: >-
+    Per participant (reading a), Pashler's Kmax has median 3.23 and range 2.25 to 5.00, and Cowan's
+    K as its maximum over set sizes (reading i) median 3.00 and range 2.11 to 4.50, all within
+    tolerance. Per session (reading b) the medians are 3.46 and 3.00 and the ranges 2.25 to 5.00
+    and 1.92 to 4.50, also within tolerance. Cowan's K at set size 6 (reading ii) has median 2.67
+    per participant (just outside 3 +- 0.3) and 2.75 per session.
+- claim: table1-capacity-and-neurons
+  outcome: reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:table1-capacity-and-neurons
+  measured: [33, 36, 106, 85, 29, 96, 48, 150, 23, 62, 11, 57, 73, 2.41, 2.25, 3.04, 3.00, 2.87, 3.88,
+    3.00, 3.23, 3.58, 3.81, 5.00, 3.83, 4.50]
+  notes: >-
+    All 13 neuron counts and all 13 Kmax values equal Table 1 to two decimals, including the session
+    values of participants 3 (2.50, 3.58), 8 (3.33, 3.13) and 12 (4.00, 3.67).
+  deviations:
+  - >-
+    Participant 12's sessions are each deposited twice; each is counted once, by the session
+    number in the file identifier.
+- claim: behavior-rt-set-size
+  outcome: partially_reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:behavior-rt-set-size
+  measured: [2678, 68.8, 48.47]
+  notes: >-
+    Measured values are those of reading (b), per-session median RT, with slope reading (i); no
+    reading matches every value. There are 2678 correct trials. RT rises with set size in all 16
+    sessions. On per-session median RT the ANOVA gives F(3, 45) = 48.47, the paper's value, with
+    permutation p = 0.0002; on mean RT (reading a) F = 61.36, outside tolerance. The slope is 75.8
+    (i), 76.2 (ii) and 75.8 (iii) ms/item on mean RT and 68.8, 76.2 and 68.8 on median RT, all
+    outside 118 +- 11.8. The effect and its test hold, the slope is about 60% of the reported one.
+    The text says the ANOVA is on mean RT, and its F equals the one on median RT here (Figure 1c
+    shows medians).
+  deviations:
+  - >-
+    RT is the stored response timestamp minus trial start minus 1.7 s, read as the time from test
+    onset (data check; the conversion adds 1.7 s to the stored response time). The slopes and F
+    values do not depend on this offset.
+- claim: neurons-recorded
+  outcome: partially_reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:neurons-recorded
+  measured: [809, 361, 217, 226, 50.6, 25.4, 11, 96]
+  notes: >-
+    809 neurons, 50.6 +- 25.4 per session (range 11 to 96), all within tolerance. By the claims
+    file's rule (bundle label) 361 are in hippocampus, 217 in entorhinal cortex and 226 in amygdala,
+    and 5 on bundles the rule does not cover (PCL in participant 8, HL and HR in participant 11);
+    the entorhinal count is within tolerance, the hippocampal (454) and amygdala (146) counts are
+    not. By the atlas label of each bundle's tip contact (variant) the counts are 495, 168 and 146.
+    The question whether the paper assigned regions by electrode name or by tip location is asked
+    of a reader (questions/000575.yaml).
+- claim: spike-sorting-quality
+  outcome: not_reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:spike-sorting-quality
+  measured: [0.79, 1.77, 5.93, 2.31]
+  notes: >-
+    Over within-trial intervals 0.79 +- 1.77% of ISIs are under 3 ms (median 0.31%, maximum
+    26.46%); the mean equals the paper's, the SD is outside 1.54 +- 0.154. 506 of 809 units (62.5%)
+    are below 0.5%. The SNR, peak of the mean waveform over the mean waveform SD (reading a), is
+    5.93 +- 2.31; with the SD at the peak sample 5.96 +- 1.43, with the SD of the first five samples
+    5.92 +- 2.78, all against 3.81 +- 0.82. The criterion's partial condition needs both ISI values,
+    so neither condition is met.
+  deviations:
+  - >-
+    Reading (i) of the ISI, the whole recording, cannot be computed, as the files hold spikes only
+    inside trial windows. Reading (b) of the SNR, a noise level stored by the spike sorter, cannot
+    be computed, as the Units table has none.
+- claim: firing-rates-by-period
+  outcome: reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:firing-rates-by-period
+  measured: [1.079, 1.111, 1.089, 1.091, 1.033, 0.531, 2.450, 0.536, 2.524, 0.511, 2.516, 0.537,
+    2.508, 0.509, 2.338]
+  notes: >-
+    Correct trials (reading a), trial from fixation onset to test offset (reading i); every median
+    and quartile is within 10% of the paper's. All trials (reading b) also match every value
+    (medians 1.088, 1.117, 1.086, 1.099 and 1.044 Hz).
+  deviations:
+  - >-
+    Reading (ii) of the trial, from the warning signal to the end of the inter-trial interval,
+    cannot be computed, as no spikes are stored between trials.
+- claim: fig2c-maintenance-neurons
+  outcome: partially_reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:fig2c-maintenance-neurons
+  measured: [48, 28, 22]
+  notes: >-
+    Maintenance neurons are found in all three regions, each count significant against 499
+    within-trial shuffles of the period labels (p = 0.002 for every region and reading). The paired
+    test (reading a) gives 48 of 361 in hippocampus, 28 of 217 in entorhinal cortex and 22 of 226
+    in amygdala (98 in all), the unpaired test (reading b) 42, 26 and 18 (87); none of these counts
+    is within tolerance of 55, 21 and 16 (92 in all). With the tip contact regions (variant) the
+    paired test gives 62, 20 and 16 and the unpaired 55, 19 and 13, two of three within tolerance
+    each. The effect holds; the counts per region do not match, and depend on how units are
+    assigned to regions (asked of a reader).
+  deviations:
+  - >-
+    The p value of each per-neuron test is (number of permutation t values at least as large in
+    absolute value + 1) / 1001, a standard choice.
+- claim: fig2d-workload-modulated-maintenance-neurons
+  outcome: not_reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:fig2d-workload-modulated-maintenance-neurons
+  measured: [2, 1, 2, 3, 0]
+  notes: >-
+    Measured values are for the paired maintenance neurons and the per-neuron permutation t-test
+    (reading a). Hippocampal increase 2 (p = 0.30 against 499 shuffles of set-size labels),
+    entorhinal increase 1 (p = 0.50), hippocampal decrease 2 (p = 0.38), entorhinal decrease 3
+    (p = 0.042), amygdala increase 0. The unpaired maintenance neurons give 2, 1, 2, 2 and 0 with no
+    p below 0.13; the tip contact regions 2, 0, 2, 2 and 1; the cluster-based test (reading b, 99
+    shuffles) 1, 0, 1, 0 and 0. With every session's spikes moved by three trials (variant) the
+    counts are 1, 1, 1, 1 and 0. The expected count under shuffled labels is about 1. None of the
+    three named counts is near 10, 5 or 6 or significant.
+  deviations:
+  - >-
+    Reading (b), the cluster-based test, uses rates in 500 ms windows stepped by 50 ms (the
+    Figure 2a legend gives 500 ms bins with a 1 ms step), a two-sided t threshold at p < .05 and the
+    95th percentile of the largest cluster mass over 1000 label permutations; its counts use 99
+    label shuffles, not 499, for time.
+- claim: maintenance-neurons-correct-vs-incorrect
+  outcome: not_reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:maintenance-neurons-correct-vs-incorrect
+  measured: [47, 13]
+  notes: >-
+    Paired test, all trials of each kind (reading a): 47 hippocampal maintenance neurons on correct
+    trials and 13 on incorrect ones; the difference of 34 is not larger than with correct and
+    incorrect labels shuffled within sessions (median 31, 95th percentile 39, p = 0.33). Unpaired,
+    42 and 13 (p = 0.50); tip contact regions, 57 and 19 (p = 0.71). With correct trials subsampled
+    to the incorrect count (reading b) the correct count averages 12.6, the same as the incorrect
+    count. The correct-trial count here (47) differs by one from fig2c (48) because the per-neuron
+    permutations are drawn anew.
+- claim: fig3b-test-neurons
+  outcome: partially_reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:fig3b-test-neurons
+  measured: [86, 35, 40, 11]
+  notes: >-
+    Measured values are reading (a), paired. Test neurons are found in all three regions under every
+    reading, each count significant against shuffled period labels (p = 0.002 to 0.046). Reading (a)
+    gives 86 in all (35, 40 and 11 by region), paired; reading (b), test above encoding and above
+    maintenance, 42 (20, 18 and 4); reading (c), test against the two periods joined, 89 (40, 32 and
+    17); unpaired 79, 36 and 84. Reading (b) puts the total and the entorhinal count within
+    tolerance but not the hippocampal (17) or amygdala (10) counts; no reading, and no tip contact
+    variant, puts all four within tolerance. Under reading (b) test neurons are 43% of the 98
+    maintenance neurons, about half as the statement says.
+  deviations:
+  - >-
+    The significance of reading (b) uses 99 within-trial shuffles of the three period labels with
+    200 permutations per neuron and test, for time.
+- claim: fig4a-dpca-separates-set-sizes
+  outcome: not_reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:fig4a-dpca-separates-set-sizes
+  measured: [32.88, 81.41]
+  notes: >-
+    With no regularisation (reading c) and kernel (a), dPCs 2 to 4 explain 32.88% and the first 15
+    dPCs 81.41%, both within tolerance (kernel b, 30.97% and 77.74%; the cross-validated lambda of
+    reading d, 48.20% and 22.21% for kernel a). dPCs 2 to 4 are time components. With set-size
+    labels shuffled within sessions and dPCA refit (99 times), the set-size variance in the first
+    15 dPCs is 19.23% (median) against 19.50% observed, p = 0.35; dPCs 2 to 4 give p = 0.27 and the
+    mean distance between set-size trajectories during maintenance p = 0.53. So the variance values
+    reproduce, but the set sizes are not separated beyond chance, and the criterion's test fails.
+    With every session's spikes moved by three trials (variant) the values are 32.59% and 80.34%.
+  deviations:
+  - >-
+    Spike counts are binned at 10 ms before smoothing, not 1 ms; with a 167 or 200 ms SD kernel this
+    is a standard choice that changes the smoothed rates very little. The smoothing is renormalised
+    at the trial edges, where no spikes are stored. Explained variance is computed as in the dPCA
+    toolbox (Kobak et al. 2016), from the python package dPCA 1.0.5.
+  - The null uses 99 shuffles, not 499, for time; its smallest p is 0.01.
+- claim: fig4b-speed-lowest-in-maintenance
+  outcome: reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:fig4b-speed-lowest-in-maintenance
+  notes: >-
+    Reading (a), 500 dPCA runs on 20% subsamples of neurons with replacement: mean speed 10.43 in
+    fixation, 18.79 in encoding, 12.97 in maintenance and 16.47 in test; maintenance below encoding
+    (t = -35.9) and test (t = -22.1), p = 0.001 each, the smallest possible with 1000 permutations;
+    98.2% of runs have maintenance below both. Reading (b), 100 runs subsampling trials, gives the
+    same order (34.42, 51.35, 41.34, 46.88) and p values. Fixation is slower than maintenance, so
+    the statement's "lowest during maintenance" does not hold against fixation; the criterion
+    leaves that comparison out.
+  deviations:
+  - Reading (b) uses 100 runs, not 500, for time.
+  - >-
+    dPCA as in fig4a with kernel (a) and no regularisation, the combination whose variance values
+    match.
+- claim: fig4c-distance-largest-in-maintenance
+  outcome: partially_reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:fig4c-distance-largest-in-maintenance
+  notes: >-
+    In the runs of fig4b (reading a) the mean distance between set-size trajectories is 5.777 in
+    fixation, 5.013 in encoding, 5.375 in maintenance and 5.273 in test; maintenance exceeds
+    encoding (t = 8.1, p = 0.001) and test (p = 0.011), but fixation is the largest. Reading (b)
+    gives the same (30.66, 26.05, 27.67, 26.89; p = 0.001). The fig4a null shows that the
+    maintenance distance of the full population does not exceed that with shuffled set-size labels
+    (p = 0.53), so these distances do not show a separation of set sizes.
+- claim: fig4d-decode-workload-all
+  outcome: not_reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:fig4d-decode-workload-all
+  measured: [44.2, 44.2, 45.8]
+  notes: >-
+    Measured values are pseudo-trials (c), z-scored features (e) and the window centred at 1.2 s
+    after memory onset (reading a). All 809 neurons give median accuracies of 0.442 (1.2 s), 0.458
+    (1.3 s) and 0.452 (median over maintenance windows, reading b), p = 0.76 to 0.87 against 200
+    scrambled runs; readings (d) and (f) give 0.440 to 0.487, p of 0.54 or more. Leaving out each
+    participant gives quartiles 0.442 to 0.458 (1.2 s), 0.454 to 0.467 (1.3 s) and 0.454 to 0.462
+    (reading b). With every session's spikes moved by three trials (variant) accuracy is 0.583 to
+    0.587, p = 0.04 to 0.08, still far from 87.5%.
+  deviations:
+  - >-
+    100 resampling runs and 200 scrambled runs for readings (c) and (e), 50 and 100 for the other
+    readings, and 30 runs per left-out participant without a null, against 500 and 1000 in the
+    paper, for time; the smallest p is 0.005 (0.0099), below the corrected threshold of .0125.
+  - >-
+    Window centres are on a 100 ms grid from memory array onset (0.9 to 1.6 s); the paper does not
+    say where the grid starts.
+  - >-
+    The SVM is fitted on a precomputed linear kernel (sklearn SVC, C = 1), which is the linear
+    libsvm classifier of the NDT toolbox.
+- claim: fig4d-decode-workload-regions
+  outcome: not_reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:fig4d-decode-workload-regions
+  measured: [49.2, 45.4]
+  notes: >-
+    Readings (c), (e) and window 1.2 s for the measured values. Hippocampal neurons give 0.492 to
+    0.529 and entorhinal neurons 0.454 to 0.458 under the window readings, p of 0.30 or more,
+    against 75% and 80% with p < .0125. Amygdala neurons are not significant (0.458 to 0.467,
+    p of 0.76 or more), as the paper finds, so one of three regions matches. The tip contact regions
+    give 0.467 to 0.492, p of 0.60 or more. With spikes moved by three trials, hippocampus 0.554 to
+    0.571 and entorhinal cortex 0.542 to 0.571, p of 0.016 or more.
+  deviations:
+  - 100 resampling runs and 200 scrambled runs per region, against 500 and 1000, for time.
+- claim: decode-performance-not-significant
+  outcome: reproduced
+  notebook: reproduce_boran_2022.ipynb
+  output: claim:decode-performance-not-significant
+  measured: [46.2, 50.0, 50.0, 46.2]
+  notes: >-
+    Window 1.2 s for the measured values. With 13 trials per label (the fewest incorrect trials in a
+    session) and 13 cross-validation splits, accuracies are 0.462 to 0.538 for all neurons and each
+    region under both window readings, p from 0.27 to 0.77 against 100 scrambled runs; no group
+    reaches p < .0125, with the claims file's regions or the tip contact regions.
+  deviations:
+  - >-
+    13 cross-validation splits in place of 20, as 13 trials per label cannot be split 20 ways; 50
+    resampling runs and 100 scrambled runs, for time.
+findings:
+- kind: other
+  statement: >-
+    The spikes appear to be misaligned with the trial table in part of the sessions. Workload
+    information in the spikes (squared t of low against high workload, summed over units) peaks
+    when the spikes stored in trial window i are paired with the label of trial i + 3, not i, and
+    decoding workload from all neurons gives 0.46 as deposited, below scrambled labels, against
+    0.60 with every session moved by three trials. The best shift differs between sessions and the
+    offset per session could not be established. Within trials, the spikes are consistent with the
+    epochs.
+- kind: metadata_error
+  statement: >-
+    The location of each unit is the atlas label of the macro contact whose number equals the
+    unit's microwire number (for example the units on wire AHL6 get the label of contact AHL6, in
+    the middle temporal gyrus). The microwires protrude from the tip of the electrode, so these are
+    not the units' locations; 614 of 809 units get a label outside hippocampus, parahippocampal
+    gyrus and amygdala.
+- kind: metadata_insufficient
+  statement: >-
+    The dandiset does not hold the assignment of units to regions the paper used. By electrode name
+    the units are 361 hippocampal, 217 entorhinal and 226 amygdala; by the atlas label of the tip
+    contact 362 hippocampal, 168 parahippocampal, 146 amygdala and 133 elsewhere; the paper reports
+    454, 209 and 146. Five units are on bundles (PCL, HL, HR) that the subject descriptions do not
+    list as implanted.
+- kind: metadata_error
+  statement: >-
+    Participant 12's two sessions are each deposited twice, in four files with the same session
+    start time (2016-12-17 10:38); the pairs are identical, and only the identifiers (session01,
+    session02) tell the sessions apart.
+- kind: metadata_error
+  statement: >-
+    The response timestamps put 1385 of 3038 responses before the test array appears. The
+    conversion adds the trial start and a 1.7 s event offset to the stored response time; read
+    that way, the stored values are response times from test onset of 0.41 to 3.15 s. The response
+    series does not say what its timestamps mean.
+- kind: selection_undocumented
+  statement: >-
+    Sessions hold 174 to 192 trials (3038 in all), where the paper and the files' task description
+    state 192 per session. Trial ids run without gaps, and which trials were left out, and why, is
+    not documented.
+- kind: other
+  statement: >-
+    Spikes are stored only inside trial windows (fixation onset to 2 s after test onset), so
+    nothing between trials, including the inter-trial interval, can be analysed. The fixation
+    period is a fixed 0.9 s in the epochs, where the task description has a jittered black dot.
+- kind: paper_inconsistency
+  statement: >-
+    The Results give the response-time ANOVA (F = 48.47) on mean response time; on this dataset
+    that F is obtained exactly from per-session median response times (mean gives 61.36), which
+    Figure 1c plots. The 118 ms/item slope is not obtained by any of three readings (69 to 76).
