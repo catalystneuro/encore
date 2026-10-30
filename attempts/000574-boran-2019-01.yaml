@@ -1,0 +1,752 @@
+schema_version: 2
+id: 000574-boran-2019-01
+dataset:
+  archive: dandi
+  id: '000574'
+  version: 0.250815.1108
+  doi: 10.48324/dandi.000574/0.250815.1108
+paper: doi:10.1126/sciadv.aav3687
+date: '2026-10-30'
+entry: 000574-boran-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41113745819
+outcomes:
+- claim: behavior-accuracy-set-size
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:behavior-accuracy-set-size
+  measured:
+  - 90.26
+  - 93.12
+  - 98.44
+  - 90.47
+  - 85.12
+  - 37.28
+  notes: >-
+    Over the 37 sessions the mean of per-session percentages is 90.26% for IN and 93.12% for OUT trials,
+    and 98.44%, 90.47% and 85.12% for set sizes 4, 6 and 8, all within tolerance; pooling trials gives
+    the same within 0.4 points. The repeated-measures ANOVA gives F(2, 72) = 37.28 (paper 40.25 +/- 4.03),
+    permutation P = 0.0002. The data hold 37 sessions where the paper has 36. With one session left out
+    in turn, F ranges from 34.41 to 41.81.
+  deviations:
+  - 37 sessions and 1487 units, where the paper has 36 sessions and 1526 units.
+  - >-
+    The ANOVA's permutation scheme (set-size labels shuffled within session, 4999 permutations) is the
+    claims file's reading.
+- claim: behavior-capacity
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:behavior-capacity
+  measured: 6.67
+  notes: >-
+    67 (paper 6.8 +/- 0.68). Readings (a) 5.53, (b) 6.01 and (d) 4.71 are outside the tolerance.
+  deviations:
+  - 37 sessions and 1487 units, where the paper has 36 sessions and 1526 units.
+- claim: behavior-rt-workload
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:behavior-rt-workload
+  measured:
+  - 1676
+  - 47.0
+  - 14.98
+  notes: >-
+    1676 correct trials (paper 1630 +/- 163); RT rises from 1.262 s (set size 4) to 1.420 s (6) and 1.443
+    s (8); the slope over trials is 47.0 ms per item (paper 48 +/- 4.8), and per-session slopes give 48.7
+    ms; the one-way ANOVA over trials has F(2, 1673) = 14.98, permutation P = 0.0002 (the paper's F of
+    21.10 on 2 and 2007 degrees of freedom is reported, not judged). Per-session medians give 31.6 ms
+    per item and the set-size means 45.2 ms.
+  deviations:
+  - 37 sessions and 1487 units, where the paper has 36 sessions and 1526 units.
+  - >-
+    RT is response_time minus probe onset (trial start + 6 s); response_time is stored in session time.
+- claim: behavior-rt-correct-incorrect
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:behavior-rt-correct-incorrect
+  measured:
+  - 1.361
+  - 1.894
+  notes: >-
+    Pooled trials: correct 1.361 +/- 0.632 s, incorrect 1.894 +/- 1.228 s (paper 1.36 and 1.87), unpaired
+    permutation t = 5.27, P = 0.0005; per-session means give the same direction (paired t = 5.73, P =
+    0.0005).
+  deviations:
+  - 37 sessions and 1487 units, where the paper has 36 sessions and 1526 units.
+- claim: neurons-recorded
+  outcome: not_reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:neurons-recorded
+  measured:
+  - 1487
+  - 446
+  - 456
+  - 585
+  - 51.3
+  notes: >-
+    The dataset holds 1487 units (paper 1526). By bundle name, as the criterion defines the regions, 446
+    are hippocampal (paper 676), 456 entorhinal (449) and 585 amygdalar (401). By the atlas label of each
+    bundle's deepest contact the counts are 640, 421 and 398 (28 under fusiform gyrus), closer to the
+    paper. Per session, 51.3 +/- 35.6 over the 29 sessions with units matches the paper's 51 +/- 35; 8
+    of the 37 sessions hold no units. A question to a reader asks whether the paper assigns regions by
+    electrode name or by atlas location (questions/000574.yaml); with the atlas reading the counts would
+    still differ from the exact expected values.
+  deviations:
+  - 37 sessions and 1487 units, where the paper has 36 sessions and 1526 units.
+  - >-
+    Per-session mean recorded under reading (b), sessions with at least one unit, the reading that matches.
+- claim: spike-sorting-quality
+  outcome: partially_reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:spike-sorting-quality
+  measured:
+  - 2.569
+  - 1.748
+  - 5.343
+  notes: >-
+    The mean firing rate over the stored trials is 2.57 +/- 3.33 Hz (paper 2.55 +/- 3.30) and the percentage
+    of ISIs below 3 ms is 1.75 +/- 4.59% (paper 1.58 +/- 4.18), both within tolerance; the waveform SNR
+    is 5.34 under both noise readings (paper 3.28 +/- 1.56), outside it. The noise SD of the paper is
+    not in the files; the deposited waveform SD is a different quantity. The rate over the whole session
+    (first to last stored trial) is 1.83 +/- 2.38 Hz.
+  deviations:
+  - >-
+    Firing rate over the stored 8 s trials (reading a); the files hold only the trial epochs.
+  - ISIs counted within each stored trial; gaps between trials are not recorded.
+- claim: fig2b-maintenance-neurons-hippocampus
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig2b-maintenance-neurons-hippocampus
+  measured:
+  - 20.0
+  - 45.55
+  notes: >-
+    With atlas regions and the paired test, 128 of 640 hippocampal neurons (20.0%, paper 20.6 +/- 2.06)
+    are maintenance neurons, against 9.98% in entorhinal cortex and 5.78% in amygdala; chi-square 45.55
+    (paper 47.30 +/- 4.73), P = 1.5e-11; each area exceeds its scrambled null (P = 0.001 with 1000 repetitions,
+    0.002 with 499). The unpaired test and the bundle regions give the same pattern (19.2 to 22.2% in
+    hippocampus, chi-square 41.8 to 45.6).
+  deviations:
+  - >-
+    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
+    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
+    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
+    from the tip). The bundle-name reading is shown as a variant.
+  - 37 sessions and 1487 units, where the paper has 36 sessions and 1526 units.
+  - >-
+    Permutation reference distributions are computed once per unit and reused for the scrambled repetitions;
+    for these relabelings the reference is unchanged (sternberg.py, vectorized permutation tests).
+- claim: fig2c-load-dependent-maintenance-neurons
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig2c-load-dependent-maintenance-neurons
+  measured:
+  - 22
+  - 17.9
+  notes: >-
+    With the unpaired selection and reading (a), 22 hippocampal maintenance neurons are load dependent
+    (paper 21 +/- 2.1), above the null (P = 0.001), and neither entorhinal cortex (P = 0.32) nor amygdala
+    (P = 0.12) is significant; their percentage, 17.9% of 123, is outside the 15 +/- 1.5% tolerance, which
+    the criterion does not judge. With the paired selection, 20 of 128 (15.6%) are within both tolerances
+    but amygdala is also significant (3 of 23, P = 0.031), which is partial under the criterion. Under
+    reading (b), cluster test, 19 to 22 hippocampal neurons are load dependent and amygdala is significant
+    in some readings (P = 0.011 to 0.045).
+  deviations:
+  - >-
+    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
+    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
+    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
+    from the tip). The bundle-name reading is shown as a variant.
+  - >-
+    The percentage expected value (15 +/- 1.5%) is outside under the reading that meets the criterion;
+    the criterion judges the count only.
+- claim: fig3e-probe-neurons-entorhinal
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig3e-probe-neurons-entorhinal
+  measured:
+  - 44
+  - 13.79
+  notes: >-
+    5%; paper 41 +/- 4.1), the chi-square against the other areas is 13.79 (P = 0.0002) and every area
+    exceeds its null (P = 0.002). The chi-square value is outside its tolerance (23.16 +/- 2.32), which
+    the criterion does not judge. Window (a) gives 46 to 48 entorhinal probe neurons with chi-square 20.55
+    to 21.54; window (c) puts entorhinal cortex below amygdala.
+  deviations:
+  - >-
+    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
+    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
+    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
+    from the tip). The bundle-name reading is shown as a variant.
+  - >-
+    The files end 2 s after probe onset, so window (b) is cut at 2 s and window (c) uses presses within
+    2 s.
+  - >-
+    In the 500 scrambled repetitions the P of each t test comes from the t distribution; on the observed
+    tests it agrees with the permutation P at 0.05 in 98.7% of cases.
+- claim: fig3-probe-onset-not-movement
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig3-probe-onset-not-movement
+  measured:
+  - 7.72
+  - 6.04
+  notes: >-
+    With the probe neurons of fig3e window (a), paired test (97 neurons), peaks in 0 to 1 s after the
+    event are 7.72 +/- 5.91 Hz probe-aligned against 6.04 +/- 5.61 Hz button-aligned (paper 5.47 and 4.28,
+    both within tolerance), paired t(96) = 5.07, P = 0.0005. With the probe neurons of the fig3e reading
+    that met its criterion (window (b), unpaired), the difference is not significant (7.26 against 6.76
+    Hz, P = 0.33), and with -1 to +1 s windows the button-aligned peak is the higher in four of the six
+    readings. The outcome rests on the probe neurons of fig3e window (a), which put 46 to 48 neurons in
+    entorhinal cortex (outside the fig3e tolerance).
+  deviations:
+  - >-
+    Button-aligned windows that fall outside the stored 8 s of a trial are left out of that trial's average
+    (55 to 78% of windows covered).
+  - >-
+    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
+    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
+    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
+    from the tip). The bundle-name reading is shown as a variant.
+- claim: fig3-probe-neurons-few-task-specific
+  outcome: partially_reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig3-probe-neurons-few-task-specific
+  measured:
+  - 8
+  - 7.5
+  - 7
+  notes: >-
+    With the probe neurons of fig3e window (b), paired test (107), 8 (7.5%) differ between IN and OUT
+    over 0 to 2 s (paper 8 +/- 0.8, within; 10.5% +/- 1.05, outside), but 7 differ with workload where
+    the paper has one (0 to 2 accepted). Across all readings 2 to 13 probe neurons differ between IN and
+    OUT and 5 to 8 with workload, so the workload count never holds.
+  deviations:
+  - >-
+    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
+    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
+    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
+    from the tip). The bundle-name reading is shown as a variant.
+- claim: fig4a-dpca-workload-separation
+  outcome: not_reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig4a-dpca-workload-separation
+  measured:
+  - 32.2
+  - 64.3
+  - 180.0
+  notes: >-
+    The first three dPCs explain 32.2% (paper 44.7 +/- 4.47) and the first 15 explain 64.3% (79 +/- 7.9)
+    with the fixation-SD z-score; 18.7% and 52.3% with the other z-score. dPC2 is a time component, so
+    the three set sizes lie on a line in the dPC2-dPC3 plane (angles 0, 180, 180 degrees, not 120). In
+    the first 15 dPCs, set size 4 is farther from 6 and from 8 during maintenance than in 40 label-shuffled
+    runs (P = 0.024), but 6 and 8 are not (P = 0.68), so the partial criterion is not met either. The
+    angles are 0, 180 and 180 degrees; the largest is recorded as measured.
+  deviations:
+  - 20 ms bins in place of 2 ms, Gaussian SD 1000/6 ms (standard choices).
+  - >-
+    The toolbox's cross-validated regularization was not run (needs single-trial pseudopopulations); no
+    regularization and a fixed lambda of 1e-2 are shown.
+  - 40 label-shuffled dPCA runs for the separation test (runtime).
+  - >-
+    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
+    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
+    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
+    from the tip). The bundle-name reading is shown as a variant.
+- claim: fig4b-speed-lowest-maintenance
+  outcome: partially_reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig4b-speed-lowest-maintenance
+  notes: >-
+    Speed is lowest during maintenance (0.74 z/s over 200 runs, below fixation 1.07, encoding 0.95 and
+    retrieval 1.41 or 1.29; P = 0.0005 for each), but it is highest during retrieval, not encoding, under
+    both retrieval windows and both run counts.
+  deviations:
+  - The dPCA of fig4a (z-score a, no regularization), 20 ms steps.
+- claim: fig4c-distance-largest-maintenance
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig4c-distance-largest-maintenance
+  notes: >-
+    67) and larger than during encoding (7.49), t = 4.96, P = 0.0005. With 200 runs maintenance is still
+    the largest, but its excess over encoding is not significant (7.52 against 7.48, P = 0.74), which
+    is partial under the criterion.
+  deviations:
+  - The dPCA of fig4a (z-score a, no regularization).
+- claim: fig4d-encoding-decodes-correct
+  outcome: not_reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig4d-encoding-decodes-correct
+  measured: 51.4
+  notes: >-
+    During encoding of set size 6 and 8 trials, hippocampal neurons (201 from the 10 sessions with at
+    least five errors) decode later correctness at 51.4% (paper 80 +/- 8), at the level of the scrambled
+    null (P = 0.47); no area and no variant is above chance.
+  deviations:
+  - >-
+    100 resampling runs and 250 null runs, where the Methods use 500 and 500 (runtime).
+  - >-
+    NDT details the Methods leave open take the toolbox defaults (linear SVM, C = 1, one trial per class
+    per split, z-scoring on training data).
+  - >-
+    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
+    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
+    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
+    from the tip). The bundle-name reading is shown as a variant.
+- claim: fig4e-maintenance-decodes-workload
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig4e-maintenance-decodes-workload
+  measured: 81.4
+  notes: >-
+    Hippocampal neurons decode workload during maintenance at a median of 81.4% (paper 80 +/- 8), above
+    the scrambled null (P = 0.004, Bonferroni 0.048, the smallest this run allows); entorhinal (62.5%)
+    and amygdala (59.5%) are not significant after correction. The bundle regions give 81.6% for hippocampus;
+    the variants give 70.0% (Gaussian window), 81.4% (no normalization) and 78.9% (1:2 classes).
+  deviations:
+  - >-
+    100 resampling runs and 250 null runs, where the Methods use 500 and 500 (runtime); the smallest corrected
+    P is 0.048.
+  - NDT details the Methods leave open take the toolbox defaults.
+  - >-
+    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
+    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
+    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
+    from the tip). The bundle-name reading is shown as a variant.
+- claim: fig4e-workload-decoding-leave-one-subject-out
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig4e-workload-decoding-leave-one-subject-out
+  measured:
+  - 71.6
+  - 81.4
+  notes: >-
+    Leaving out the hippocampal units of one subject gives medians from 71.6% (without subject 1) to 81.4%,
+    inside the widened range 63.9 to 89.1%.
+  deviations:
+  - 100 resampling runs per subject left out.
+- claim: fig4e-maintenance-neurons-carry-workload
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig4e-maintenance-neurons-carry-workload
+  measured: 71.6
+  notes: >-
+    The 128 hippocampal maintenance neurons alone decode workload at 81.8%, 0.5 points from all hippocampal
+    neurons (81.4%) and above their null (P = 0.004); the other 512 hippocampal neurons give 71.6% (paper
+    71 +/- 7.1), below all neurons. The unpaired selection gives 82.3% and 71.6%.
+  deviations:
+  - 100 resampling runs and 250 null runs.
+- claim: fig4e-no-decoding-6-vs-8
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig4e-no-decoding-6-vs-8
+  notes: >-
+    Set size 6 against 8 is decoded from hippocampal neurons at 57.7%, not above the scrambled null (P
+    = 0.16).
+  deviations:
+  - 100 resampling runs and 250 null runs.
+- claim: fig4f-retrieval-decodes-response
+  outcome: not_reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig4f-retrieval-decodes-response
+  measured: 80.0
+  notes: >-
+    In the 500 ms before the press, all neurons decode IN against OUT at 80% (paper 90 +/- 9), with uncorrected
+    P = 0.02 and corrected P = 0.24; no single area is significant (hippocampus 70%, entorhinal 65%, amygdala
+    65%). Only trials whose press falls within the 2 s stored after the probe can be used.
+  deviations:
+  - >-
+    Only correct trials with the press within 2 s of the probe; later presses fall outside the stored
+    data.
+  - 100 resampling runs and 250 null runs.
+  - >-
+    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
+    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
+    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
+    from the tip). The bundle-name reading is shown as a variant.
+- claim: figs3d-hippocampus-loadings
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:figs3d-hippocampus-loadings
+  notes: >-
+    Under every component and loading reading, the hippocampal top-200 loadings exceed the entorhinal
+    and the amygdalar ones at all 200 ranks (Wilcoxon P = 1.4e-34 against entorhinal cortex). The exception
+    the statement mentions, entorhinal neurons highest at the first three ranks, does not appear in any
+    reading; the criterion does not judge it.
+  deviations:
+  - The dPCA of fig4a (z-score a, no regularization).
+  - >-
+    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
+    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
+    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
+    from the tip). The bundle-name reading is shown as a variant.
+- claim: fig5-subject1-eeg-power-workload
+  outcome: partially_reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig5-subject1-eeg-power-workload
+  notes: >-
+    In subject 1, set size 8 power exceeds set size 4 at Pz (cluster 8.5 to 14.5 Hz, P = 0.002) and Fz
+    (8 to 14 Hz, P = 0.002), as the paper shows, under every reading. But other subjects show increases
+    too: at their maximal-PLV electrode, subjects 2 and 6 with correct trials and 4 to 30 Hz, and 2 to
+    4 subjects under the other readings. Subject 1 has 55 correct set size 8 and 61 set size 4 trials
+    (116, as table S2 gives).
+  deviations:
+  - >-
+    Scalp EEG re-referenced here to the averaged mastoids (Methods, Recording setup); the deposited EEG
+    is not re-referenced although its electrodes table says it is. iEEG decimated from 2 kHz to 200 Hz
+    with a zero-phase filter before the spectra (standard choice; it cannot change spectra below 40 Hz).
+    Trials pooled over each subject's sessions, artifact-marked trials left out.
+- claim: fig5-subject1-hippocampal-power-workload
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig5-subject1-hippocampal-power-workload
+  notes: >-
+    In subject 1 the left posterior hippocampal channel (PHL, the hippocampal channel of the maximal pair)
+    has higher fixation-normalized power for set size 8 in 7.5 to 9.5 Hz (P = 0.033, correct trials, 4
+    to 30 Hz) and 7.5 to 10 Hz with all trials; without normalization the cluster is significant only
+    with all trials. With correct trials and 1 to 40 Hz the cluster has P = 0.061.
+  deviations:
+  - >-
+    Scalp EEG re-referenced here to the averaged mastoids (Methods, Recording setup); the deposited EEG
+    is not re-referenced although its electrodes table says it is. iEEG decimated from 2 kHz to 200 Hz
+    with a zero-phase filter before the spectra (standard choice; it cannot change spectra below 40 Hz).
+    Trials pooled over each subject's sessions, artifact-marked trials left out.
+  - >-
+    Fixation power from the 1 s fixation epoch (3 tapers, +/- 2 Hz), interpolated to 0.5 Hz bins, per
+    trial (standard choice; the legend says normalized to fixation).
+- claim: fig5-subject1-neurons-workload
+  outcome: partially_reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig5-subject1-neurons-workload
+  measured: 14
+  notes: >-
+    Subject 1 has 14 hippocampal maintenance neurons with more than 100 spikes in both periods (paper
+    5, tolerance 0). Their rate is higher for set size 8 in a cluster from -4.67 to -1.57 s, which spans
+    encoding and maintenance (P = 0.001), under every reading.
+  deviations:
+  - More than 100 spikes summed over correct trials in each period.
+  - >-
+    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
+    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
+    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
+    from the tip). The bundle-name reading is shown as a variant.
+- claim: fig5-subject1-plv-hippocampus-pz
+  outcome: partially_reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig5-subject1-plv-hippocampus-pz
+  assumed: true
+  notes: >-
+    The maximal pair of subject 1 is the left hippocampal channel PHL with O2 (PLV 0.741 at 9 Hz), not
+    Pz, which is second (mean alpha PLV 0.626 against 0.635). For PHL with Pz, maintenance PLV exceeds
+    encoding in 8 to 11.5 Hz, the set size 8 PLV exceeds set size 4 in 8.5 to 10 Hz, the highest alpha
+    PLV is at occipitoparietal sites (O2, Pz, O1, T6), and the PLV to Fz is higher for set size 8 in 9.5
+    to 10.5 Hz.
+  deviations:
+  - >-
+    PLV as FieldTrip computes it (cross-spectra averaged over tapers within each trial, then normalized
+    and averaged over trials); the Methods give equation 3 and cite FieldTrip but not how the seven tapers
+    enter (assumption; per-taper PLV shown as a variant for the selection).
+  - >-
+    Scalp EEG re-referenced here to the averaged mastoids (Methods, Recording setup); the deposited EEG
+    is not re-referenced although its electrodes table says it is. iEEG decimated from 2 kHz to 200 Hz
+    with a zero-phase filter before the spectra (standard choice; it cannot change spectra below 40 Hz).
+    Trials pooled over each subject's sessions, artifact-marked trials left out.
+- claim: fig6-plv-all-subjects
+  outcome: partially_reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig6-plv-all-subjects
+  measured:
+  - 9
+  - 4.0
+  - 9.5
+  assumed: true
+  notes: >-
+    All nine subjects have a significant hippocampal-scalp pair under every reading, but the median band
+    limits are 4.0 to 9.5 Hz (correct trials, 4 to 30 Hz), 7.0 to 17.0, 5.5 to 17.5 and 7.5 to 18.0 Hz
+    under the other readings, none within the paper's 6.0 +/- 0.6 to 11.5 +/- 1.15 Hz. Almost every pair
+    is significant somewhere, as the per-bin threshold is uncorrected over bins. With per-taper PLV the
+    pairs change and the values halve (0.20 to 0.44).
+  deviations:
+  - >-
+    PLV as FieldTrip computes it (cross-spectra averaged over tapers within each trial, then normalized
+    and averaged over trials); the Methods give equation 3 and cite FieldTrip but not how the seven tapers
+    enter (assumption; per-taper PLV shown as a variant for the selection).
+  - >-
+    Scalp EEG re-referenced here to the averaged mastoids (Methods, Recording setup); the deposited EEG
+    is not re-referenced although its electrodes table says it is. iEEG decimated from 2 kHz to 200 Hz
+    with a zero-phase filter before the spectra (standard choice; it cannot change spectra below 40 Hz).
+    Trials pooled over each subject's sessions, artifact-marked trials left out.
+  - Frequencies up to 40 Hz only (0.5 Hz bins).
+- claim: tables1-plv-per-subject
+  outcome: not_reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:tables1-plv-per-subject
+  measured:
+  - 0.741
+  - 0.47
+  - 0.573
+  - 0.76
+  - 0.785
+  - 0.598
+  - 0.512
+  - 0.689
+  - 0.755
+  assumed: true
+  notes: >-
+    No subject matches table S1 on scalp electrode, hemisphere and maximal PLV together under any reading;
+    the electrode matches in at most 1 subject, the hemisphere in 4 to 6, and the PLV within 10% in 2
+    to 3. With the PLV the Methods define, values are in the paper's range (0.47 to 0.88).
+  deviations:
+  - >-
+    PLV as FieldTrip computes it (cross-spectra averaged over tapers within each trial, then normalized
+    and averaged over trials); the Methods give equation 3 and cite FieldTrip but not how the seven tapers
+    enter (assumption; per-taper PLV shown as a variant for the selection).
+  - >-
+    Scalp EEG re-referenced here to the averaged mastoids (Methods, Recording setup); the deposited EEG
+    is not re-referenced although its electrodes table says it is. iEEG decimated from 2 kHz to 200 Hz
+    with a zero-phase filter before the spectra (standard choice; it cannot change spectra below 40 Hz).
+    Trials pooled over each subject's sessions, artifact-marked trials left out.
+- claim: fig6-plv-workload-eight-of-nine
+  outcome: partially_reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig6-plv-workload-eight-of-nine
+  measured:
+  - 8
+  - 10.75
+  - 11.0
+  assumed: true
+  notes: >-
+    With all trials and 1 to 40 Hz, eight of nine subjects have a higher set size 8 PLV in their individual
+    band, as the paper says, but the workload bands (median 10.75 to 11.0 Hz, range 2.0 to 34.0 Hz) differ
+    from the paper's (7.8 to 10 Hz, 5.5 to 16.5 Hz). Under the other readings 5 to 7 subjects count.
+  deviations:
+  - >-
+    PLV as FieldTrip computes it (cross-spectra averaged over tapers within each trial, then normalized
+    and averaged over trials); the Methods give equation 3 and cite FieldTrip but not how the seven tapers
+    enter (assumption; per-taper PLV shown as a variant for the selection).
+  - >-
+    Scalp EEG re-referenced here to the averaged mastoids (Methods, Recording setup); the deposited EEG
+    is not re-referenced although its electrodes table says it is. iEEG decimated from 2 kHz to 200 Hz
+    with a zero-phase filter before the spectra (standard choice; it cannot change spectra below 40 Hz).
+    Trials pooled over each subject's sessions, artifact-marked trials left out.
+  - >-
+    The workload band is the contiguous run of significant bins with the largest difference inside the
+    individual band (the Methods do not say how it is cut).
+- claim: fig6-plv-maintenance-over-encoding
+  outcome: not_reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig6-plv-maintenance-over-encoding
+  measured: 4
+  assumed: true
+  notes: >-
+    Maintenance PLV exceeds encoding PLV in the individual band in 4 to 6 of nine subjects under the readings
+    (paper eight). Measured is the first reading (correct trials, 4 to 30 Hz, set size 8).
+  deviations:
+  - >-
+    PLV as FieldTrip computes it (cross-spectra averaged over tapers within each trial, then normalized
+    and averaged over trials); the Methods give equation 3 and cite FieldTrip but not how the seven tapers
+    enter (assumption; per-taper PLV shown as a variant for the selection).
+  - >-
+    Scalp EEG re-referenced here to the averaged mastoids (Methods, Recording setup); the deposited EEG
+    is not re-referenced although its electrodes table says it is. iEEG decimated from 2 kHz to 200 Hz
+    with a zero-phase filter before the spectra (standard choice; it cannot change spectra below 40 Hz).
+    Trials pooled over each subject's sessions, artifact-marked trials left out.
+- claim: fig6-power-unchanged-individual-band
+  outcome: not_reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig6-power-unchanged-individual-band
+  assumed: true
+  notes: >-
+    Under the adopted reading (correct trials, 4 to 30 Hz), 4 of nine subjects show no EEG power difference
+    (five needed) and 7 no iEEG difference. With 1 to 40 Hz the counts are 6 and 8, which would reproduce
+    the claim; with all trials 4 and 5 to 7.
+  deviations:
+  - >-
+    The claim of absence needs one test, but its channels and band come from the PLV selection, whose
+    readings (trials, frequency range) give different outcomes. Adopted (assumption) correct trials, which
+    give subject 1 the 116 trials of table S2, and 4 to 30 Hz, the only range the Methods name; the question
+    is put to the authors.
+  - >-
+    PLV as FieldTrip computes it (cross-spectra averaged over tapers within each trial, then normalized
+    and averaged over trials); the Methods give equation 3 and cite FieldTrip but not how the seven tapers
+    enter (assumption; per-taper PLV shown as a variant for the selection).
+  - >-
+    Scalp EEG re-referenced here to the averaged mastoids (Methods, Recording setup); the deposited EEG
+    is not re-referenced although its electrodes table says it is. iEEG decimated from 2 kHz to 200 Hz
+    with a zero-phase filter before the spectra (standard choice; it cannot change spectra below 40 Hz).
+    Trials pooled over each subject's sessions, artifact-marked trials left out.
+- claim: fig6i-plv-posterior-gradient
+  outcome: not_reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig6i-plv-posterior-gradient
+  measured:
+  - 0.045
+  - 31
+  assumed: true
+  notes: >-
+    The dataset gives 31 hippocampal channels (paper 34). PLV rises toward posterior sites (slope 0.0064
+    per mm), but R2 = 0.045 (paper 0.118) and permutation P = 0.26; posterior sites are higher than anterior
+    ones without significance (0.501 against 0.385, P = 0.14). No reading is significant.
+  deviations:
+  - >-
+    The files give coordinates in a frame with +x posterior; MNI y is taken as -x (assumption). Channels
+    lie from -31.5 to -9.4 mm.
+  - >-
+    PLV as FieldTrip computes it (cross-spectra averaged over tapers within each trial, then normalized
+    and averaged over trials); the Methods give equation 3 and cite FieldTrip but not how the seven tapers
+    enter (assumption; per-taper PLV shown as a variant for the selection).
+  - >-
+    Scalp EEG re-referenced here to the averaged mastoids (Methods, Recording setup); the deposited EEG
+    is not re-referenced although its electrodes table says it is. iEEG decimated from 2 kHz to 200 Hz
+    with a zero-phase filter before the spectra (standard choice; it cannot change spectra below 40 Hz).
+    Trials pooled over each subject's sessions, artifact-marked trials left out.
+- claim: fig6i-no-left-right-difference
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:fig6i-no-left-right-difference
+  assumed: true
+  notes: >-
+    Left and right hippocampal channels do not differ (0.464 against 0.431, P = 0.65, correct trials,
+    4 to 30 Hz; P = 0.33 to 0.78 under the other readings).
+  deviations:
+  - >-
+    PLV as FieldTrip computes it (cross-spectra averaged over tapers within each trial, then normalized
+    and averaged over trials); the Methods give equation 3 and cite FieldTrip but not how the seven tapers
+    enter (assumption; per-taper PLV shown as a variant for the selection).
+- claim: soz-plv-no-difference
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:soz-plv-no-difference
+  assumed: true
+  notes: >-
+    No reading finds a difference between SOZ and non-SOZ channels (differences -0.134 to +0.056, P =
+    0.12 to 0.97).
+  deviations:
+  - >-
+    SOZ membership of a bipolar channel: either contact marked is_inside_soz.
+  - >-
+    PLV as FieldTrip computes it (cross-spectra averaged over tapers within each trial, then normalized
+    and averaged over trials); the Methods give equation 3 and cite FieldTrip but not how the seven tapers
+    enter (assumption; per-taper PLV shown as a variant for the selection).
+- claim: hfo-rates-unaffected
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_boran_2019.ipynb
+  notes: >-
+    The paper names neither the HFO detector (it cites Fedele et al. 2017, not supplied) nor the test
+    nor the comparison; the claims file blocks the claim until the detector is supplied. The files hold
+    the iEEG at 2 kHz but only for the 8 s of each trial.
+- claim: sfc-maintenance-over-encoding
+  outcome: partially_reproduced
+  notebook: reproduce_boran_2019_sfc.ipynb
+  output: claim:sfc-maintenance-over-encoding
+  measured: 73
+  assumed: true
+  notes: >-
+    73 hippocampal maintenance neurons (atlas regions, paired selection) have at least 100 spikes in the
+    last 2 s of maintenance and in encoding (paper 94 +/- 9.4), on 47 microwires. With 3-cycle windows
+    over 4 to 30 Hz the percentage of neurons with significant PPC to the LFP of their own wire is higher
+    in maintenance than in encoding in all 27 bins (means 58.4% against 42.1%), and in 39 of 40 bins over
+    1 to 40 Hz; with 5-cycle windows in 26 of 27 and 38 of 40. Coupling to the bundle's bipolar iEEG is
+    well above the 5% chance level (maintenance means 29.6% and 21.0% over 4 to 30 Hz), and to scalp EEG
+    near chance on average (5.3% and 5.0%) with single bins up to 16.4%, so the statement's 'not to the
+    iEEG or the scalp EEG' does not hold.
+  deviations:
+  - >-
+    Tested in the second notebook, which streams the LFP of the selected wires (360 s).
+  - >-
+    The window around each spike is not given; Hanning-tapered windows of 3 and 5 cycles (the claims file's
+    readings) as in FieldTrip's spike-triggered spectrum, on LFP decimated to 1 kHz.
+  - >-
+    The 100-spike rule is applied to the last 2 s of maintenance and to encoding, the windows the coherence
+    uses.
+  - >-
+    iEEG is the bipolar pair of contacts 1 and 2 of the neuron's own bundle; scalp EEG is Pz, or O1 where
+    Pz was not recorded (assumption; the paper does not say which channels).
+  - >-
+    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
+    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
+    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
+    from the tip). The bundle-name reading is shown as a variant.
+findings:
+- kind: data_missing
+  statement: >-
+    The dataset holds 37 sessions and 1487 units; the paper reports 36 sessions and 1526 units. Eight
+    sessions (subject 1 sessions 3 and 4, subject 6 sessions 3 to 7, subject 7 session 1) have no units
+    table, and the 29 sessions with units average 51.3 units, matching the paper's 51 per session, so
+    about one session of units seems to be missing.
+- kind: metadata_insufficient
+  statement: >-
+    Units point at macroelectrode rows of the electrodes table (microwire k of a bundle at contact k),
+    and the microwire LFP channels reuse the same rows. Microwires have no rows, coordinates or atlas
+    labels of their own, so the region of a unit has to be inferred from the bundle name or from a macro
+    contact.
+- kind: metadata_error
+  statement: >-
+    Electrode names and atlas labels disagree for several bundles: AR of subject 8 (186 units) and ECL
+    of subject 6 have their deepest contact labelled hippocampus, AHR of subject 2 fusiform gyrus, and
+    ECL of subject 1 amygdala. Counting units by bundle name gives 446, 456 and 585 in hippocampus, entorhinal
+    cortex and amygdala; by the deepest contact's label 640, 421 and 398 (paper 676, 449, 401).
+- kind: format_error
+  statement: >-
+    Spike times are stored unsorted in 43 units of five sessions (subject 1 sessions 1 and 2, subject
+    7 sessions 2 to 4).
+- kind: metadata_insufficient
+  statement: >-
+    response_type holds 51 and 52 on correct trials and 1 and 2 on incorrect trials, with no description.
+    From solution, 51 and 1 are IN, 52 and 2 OUT.
+- kind: metadata_error
+  statement: >-
+    In the ttl_stage table the Probe stage of each trial carries the next trial's number, and seven files
+    have no ttl_stage table at all.
+- kind: metadata_error
+  statement: >-
+    The EEG and iEEG series are labelled volts but hold values of about +/- 150 and +/- 240 (1st to 99th
+    percentile), consistent with microvolts.
+- kind: metadata_error
+  statement: >-
+    The electrodes table gives the EEG reference as averaged mastoid channels, but A1 + A2 is not zero
+    (its SD is 1.8 to 13.7 times that of A1 - A2 across subjects), so the deposited EEG is not re-referenced
+    to the mastoids.
+- kind: metadata_insufficient
+  statement: >-
+    Electrode coordinates are in a frame with +x posterior, +y inferior and +z right, not MNI as the paper
+    uses, and the scalp electrode positions are template positions on a sphere; converting to MNI y needs
+    an assumption.
+- kind: metadata_error
+  statement: >-
+    The subject description of subject 1 lists AHR among the seizure onset zone electrodes, but subject
+    1 has no AHR electrode (the data descriptor's Table 1 has the same entry); is_inside_soz marks only
+    LR.
+- kind: format_error
+  statement: >-
+    In subject 2 session 5 the microwire LFP holds 11,264,000 samples for the 46 stored trials, where
+    32 kHz times 8 s per trial gives 11,776,000 (30,609 samples per stored second); the EEG and iEEG of
+    the same file have the expected length.
+- kind: data_missing
+  statement: >-
+    Only 8 s of each trial are stored (fixation onset to 2 s after the probe), so button presses later
+    than 2 s after the probe, and the activity after them, are not in the files.
+- kind: methods_unavailable
+  statement: >-
+    For the authors: how were microwire units assigned to hippocampus, entorhinal cortex and amygdala,
+    by electrode name or by the atlas label of a contact (which)? The two give very different counts here.
+- kind: methods_unavailable
+  statement: >-
+    For the authors: how were the seven tapers combined in the PLV (cross-spectra averaged over tapers
+    per trial, as FieldTrip does, or each taper normalized), what frequency range was searched for the
+    maximal pair, and were the EEG analyses run on correct trials only? This attempt assumed FieldTrip's
+    taper averaging, correct trials and 4 to 30 Hz; the frequency range changes the outcome of fig6-power-unchanged-individual-band.
+- kind: methods_unavailable
+  statement: >-
+    For the authors: which window defined the probe response of probe neurons (a fixed window after the
+    probe, or up to the press), and in which coordinate frame are the electrode positions of Fig. 6I given?
