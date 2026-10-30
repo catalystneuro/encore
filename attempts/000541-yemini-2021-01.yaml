@@ -1,0 +1,822 @@
+schema_version: 2
+id: 000541-yemini-2021-01
+dataset:
+  archive: dandi
+  id: '000541'
+  version: 0.241009.1457
+  doi: 10.48324/dandi.000541/0.241009.1457
+paper: doi:10.1016/j.cell.2020.12.012
+date: 2026-10-30
+entry: 000541-yemini-2021
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41085956371
+inputs:
+- what: The paper's deposit of the whole-brain activity, file Whole-Brain Calcium Activity/Young Adults/Head_Activity_OH16230.mat
+    of "NeuroPAL data.zip" (per-neuron dF/F0 traces, stimulus orders, and is_AWCL_OFF, the AWC ON/OFF side per head). Used
+    for the link check link-zenodo-traces, for the "deposit" variant reading of the trace selection, and for variants of fig6d-awc-asymmetric;
+    it decides no finding of the paper.
+  source: doi:10.5281/zenodo.3906530
+- what: 'The paper''s Table S6 (mmc8.xlsx, sheet "OH16230 Heads": per-class sample counts, 95% CI, p and q of the responses)
+    and Table S1 (mmc3.xlsx, sheet "NeuroPAL Reporters-Fluorophores"), read from https://ars.els-cdn.com/content/image/1-s2.0-S0092867420316822-mmc8.xlsx
+    and -mmc3.xlsx. Used only to choose between readings of methods the paper leaves open (trace selection, per-trace normalisation,
+    FDR family, the srsx-3 fluorophore); no claim is decided on them.'
+  source: doi:10.1016/j.cell.2020.12.012
+- what: Hermaphrodite chemical and gap junction synapse counts (Supplementary Information file 41586_2019_1352_MOESM6_ESM.xlsx,
+    "number of scored synapses") and, as a variant, the size-weighted connectome adjacency matrices (SI 5, 41586_2019_1352_MOESM9_ESM.xlsx)
+    of Cook et al. 2019.
+  source: doi:10.1038/s41586-019-1352-7
+outcomes:
+- claim: link-zenodo-traces
+  outcome: partially_reproduced
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:link-zenodo-traces
+  measured: 0.817
+  notes: All 21 files match a deposit file by identifier, in the same order, and the stimulus order agrees in all 21. Of 3,663
+    named dandiset traces, 3,550 have a counterpart in the deposit. The dF/F0 computed from the dandiset correlates with the
+    deposit's trace at a median r of 0.972 (5th percentile 0.758), median slope 0.985; 81.7% of traces reach r of 0.9, below
+    the criterion's 90%. The deposit is one frame (0.25 s) later than the dandiset in all 21 files; with that offset the median
+    r is 0.980 and 85.8% reach 0.9, still below 90%. 101 dandiset traces have an empty slot in the deposit (AVL in 11 heads,
+    I5 in 8), and 4 names (AMSOL, AMSOR, HMC, DD6) are not in the deposit. The deposit's traces have the first 1 s empty,
+    as the STAR Methods say. The measured value is the fraction of traces at r of 0.9 or more, frames aligned by index.
+  deviations:
+  - The criterion was written by the author of the attempt, as link claims are, after the deposit's layout had been read and
+    with the dandiset loaded; the 0.9 and 90% thresholds are the author's.
+- claim: link-connectome-names
+  outcome: reproduced
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:link-connectome-names
+  notes: 190 of 193 dandiset names match cells of both Cook et al. matrices after removing the zero padding of motor neuron
+    numbers. AMSOL, AMSOR (amphid sheath glia) and HMC (head mesodermal cell) do not match; they are not neurons.
+- claim: fig6-sample-sizes
+  outcome: partially_reproduced
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig6-sample-sizes
+  measured:
+  - 21
+  - 193
+  - 0
+  - 0
+  - 19
+  notes: The head values match and the tail values are missing. 21 heads; 193 names identified in at least one head (190 neurons;
+    184 after the removals), within 170.1 to 207.9; median animals per name 19 under the main reading (one member of a near-duplicate
+    pair removed), 17 with both removed, 21 with none removed or under the deposit's selection; per class 20, 19.5 and 21.
+    The paper's deposit has 189 names, the paper's number, with a median of 21 animals per name and per class. The dandiset
+    holds no tails, so 21 tails and 42 tail neurons are measured as 0. The measured values are, in order, heads, names in
+    any head (reading a), tails, tail neurons, and the median per name under the main reading. Whether the paper's median
+    of 18 covers heads and tails together is asked of a reader (questions/000541.yaml).
+  deviations:
+  - The tail recordings are not in the dandiset; they are in the paper's Zenodo deposit, which this claim, marked as using
+    the dataset, was not tested on.
+  - Which member of a near-duplicate pair the paper removed is not stated; one member is removed as an assumption (see fig6-asj-ric).
+    All four readings are shown, and the median is within tolerance under one and both removed, not under none or the deposit's
+    selection (median 21). The outcome would stay partially reproduced under every reading, as the tails are missing.
+  assumed: true
+- claim: fig6-all-heads-responsive
+  outcome: not_reproduced
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig6-all-heads-responsive
+  measured: 19
+  notes: Under reading (a), 19 of 21 heads pass all three checks with no neuron removed (ASE to NaCl 21, AWC to 2-butanone
+    20, AWC to 2,3-pentanedione 19); under reading (b) 16. The main and deposit readings give the same; with both members
+    of near-duplicate pairs removed, 18 and 15. Head 20191030_07 fails on 2,3-pentanedione and 20191104_10 on both odors.
+    The dandiset holds exactly the 21 heads the paper kept, so the paper's review, which it does not describe ("we reviewed
+    ASE responses to salt and AWC responses to the odors"), passed two heads that the claims file's rules do not. AWC falls
+    about as much in the other stimulus windows as at the odor times (see the clock check), so the sign test is not specific
+    to odors.
+- claim: fig6d-ase-nacl
+  outcome: reproduced
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig6d-ase-nacl
+  notes: Under the main reading (one removed, z-scored traces) ASER rises during NaCl in 14 of 21 heads (+1.34, p = 0.0028),
+    q = 0.0036 over all tests (reading a) and 0.0031 over the NaCl tests (reading b). Every selection reading gives p of 0.016
+    or less and q of 0.028 or less; dF/F0 gives p = 0.0055 and q(a) = 0.018. ASEL against ASER, unpaired t-test, p = 4.8e-05
+    on the responses and 1.5e-05 on the means during the pulse, 3.1e-04 or less under every reading. ASEL responds more strongly
+    (+3.45, 19 of 19 heads), which the paper's "However, ASER exhibited an increase" does not contradict.
+  deviations:
+  - The ASER test is a single-side test; its p is added to the family of class tests for the q value, a choice made here,
+    as the paper's family pools left and right.
+  - Each trace is z-scored before the response tests, an assumption. The STAR Methods say "When comparing neuronal activity
+    across animals, we used dNMF to normalize activity traces per neuron class" (Brainwide imaging of neuronal activity traces)
+    and do not say how. Tests on traces scaled one by one match the p values of the paper's Table S6 far better than tests
+    on dF/F0 (rank correlation of log p 0.90 to 0.96 against 0.62 to 0.73; p of 0.05 agrees in 84 to 89 of 94 classes against
+    74 to 80); min-max scaling is close behind and matches the scale of the paper's confidence intervals. dF/F0 and min-max
+    scaling are shown as variants.
+- claim: fig6-nacl-unknown-interneurons
+  outcome: reproduced
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig6-nacl-unknown-interneurons
+  notes: 'Under the main reading all six classes respond significantly to NaCl under every FDR reading, with positive means:
+    AVH (q over all tests 4e-05), AIN (0.0034), I2 (0.0007), MI (0.0019), AVJ (0.016) and AVF (0.021). The deposit and both
+    readings give six of six; none removed gives five under reading (a) and six under (b) and (c). On dF/F0 four of six (AIN,
+    AVH, I2, MI) under every reading, AVJ (p = 0.094 in the first round) and AVF not, the outcome of the first round. Benjamini-Hochberg
+    over all tests gives four of six. The outcome rests on the per-trace normalisation; the criterion as written, on the mean
+    dF/F0, gives four of six, a partial reproduction. The claims file leaves out the paper''s normalisation sentence, which
+    is asked of a reader (questions/000541.yaml).'
+  deviations:
+  - Each trace is z-scored before the response tests, an assumption. The STAR Methods say "When comparing neuronal activity
+    across animals, we used dNMF to normalize activity traces per neuron class" (Brainwide imaging of neuronal activity traces)
+    and do not say how. Tests on traces scaled one by one match the p values of the paper's Table S6 far better than tests
+    on dF/F0 (rank correlation of log p 0.90 to 0.96 against 0.62 to 0.73; p of 0.05 agrees in 84 to 89 of 94 classes against
+    74 to 80); min-max scaling is close behind and matches the scale of the paper's confidence intervals. dF/F0 and min-max
+    scaling are shown as variants.
+  - One member of each near-duplicate pair is removed (the later in the file), an assumption. The STAR Methods say "Neurons
+    within 5 um distance of each other, whose traces showed at least 95% correlation, were deemed too similar and removed"
+    without saying which; of the four readings run (one, both, none, the traces in the paper's deposit), "one" comes closest
+    to the per-class sample counts of Table S6 (median difference 0, mean +0.6 traces per class; deposit +2.9, none +3.8,
+    both -2.3). Distances use 0.533 um in x and y, the spacing the coordinates show (see findings).
+  - Table S6's legend says "FDR was used to correct the p-values of all NaCl, 2-butanone, and 2,3-pentanedione stimulus responses
+    together", which is reading (a) of the claims file; all readings are still shown.
+  assumed: true
+- claim: fig6c-odors-more-inhibitory
+  outcome: reproduced
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig6c-odors-more-inhibitory
+  notes: 'Main reading: reading (b), the fraction of classes with a negative mean response, 0.234 for NaCl, 0.245 for 2-butanone
+    and 0.362 for 2,3-pentanedione; reading (a), significant decreases with q over all tests, ties for 2-butanone (6, as NaCl;
+    2,3-pentanedione 17). Every other reading holds under (a) or (b) (deposit (a) 2, 5, 14; both (a) 2, 4, 8; none (a) 2,
+    5, 14; dF/F0 (a) 3, 5, 10). The 2-butanone margin is thin throughout. The odors evoke significant responses in 40 and
+    47 classes (NaCl 54) under the main reading, which supports "many".'
+- claim: fig6d-awc-asymmetric
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The files name AWCL and AWCR only and do not say which is AWC ON or OFF, which the criterion requires; no trace
+    label, NeuroPAL label or description in the 21 files names ON or OFF. The NeuroPAL image carries the side: CyOFP1, the
+    fluorophore of srsx-3 in the paper''s Table S1, is brighter relative to TagRFP-T in the AWC the paper''s deposit marks
+    as OFF (is_AWCL_OFF) in 19 of 21 heads (binomial p = 0.0002). As variants only, ON and OFF responses do not differ significantly
+    by the criterion''s unpaired t-test with either label: deposit labels, main reading, p = 0.62 (2-butanone) and 0.14 (2,3-pentanedione),
+    on dF/F0 0.56 and 0.087; image-derived labels 0.68 and 0.060; no variant shown goes below 0.056.'
+- claim: fig6-asj-ric
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig6-asj-ric
+  notes: 'Under the main reading 5 of 6 parts hold with q over all tests (reading a): ASJ is excited by NaCl (+0.80, q = 0.0004)
+    and inhibited by 2-butanone (-0.52, q = 0.0004) and 2,3-pentanedione (-0.25, q = 0.040, p = 0.082); RIC is excited by
+    2,3-pentanedione (+0.29, q = 0.0056) and not by 2-butanone, but is also significantly excited by NaCl (+0.17, p = 0.033).
+    Readings (b) and (c) give 4 of 6. With the deposit''s selection or none removed all six hold under every FDR reading (RIC''s
+    NaCl p = 0.056); with both removed 4 of 6; on dF/F0 3 of 6, which would be not reproduced. Benjamini-Hochberg gives 5
+    of 6 under the main reading. Under reading (a) the ASJ inhibition by 2,3-pentanedione passes only because Storey''s pi0
+    here is 0.222, against 0.42 to 0.48 on the paper''s own p values, so q falls below p; it decides that part, not the outcome.'
+  deviations:
+  - One member of each near-duplicate pair is removed (the later in the file), an assumption. The STAR Methods say "Neurons
+    within 5 um distance of each other, whose traces showed at least 95% correlation, were deemed too similar and removed"
+    without saying which; of the four readings run (one, both, none, the traces in the paper's deposit), "one" comes closest
+    to the per-class sample counts of Table S6 (median difference 0, mean +0.6 traces per class; deposit +2.9, none +3.8,
+    both -2.3). Distances use 0.533 um in x and y, the spacing the coordinates show (see findings).
+  - Each trace is z-scored before the response tests, an assumption. The STAR Methods say "When comparing neuronal activity
+    across animals, we used dNMF to normalize activity traces per neuron class" (Brainwide imaging of neuronal activity traces)
+    and do not say how. Tests on traces scaled one by one match the p values of the paper's Table S6 far better than tests
+    on dF/F0 (rank correlation of log p 0.90 to 0.96 against 0.62 to 0.73; p of 0.05 agrees in 84 to 89 of 94 classes against
+    74 to 80); min-max scaling is close behind and matches the scale of the paper's confidence intervals. dF/F0 and min-max
+    scaling are shown as variants.
+  - Table S6's legend says "FDR was used to correct the p-values of all NaCl, 2-butanone, and 2,3-pentanedione stimulus responses
+    together", which is reading (a) of the claims file; all readings are still shown.
+- claim: fig6-interneurons-downstream
+  outcome: reproduced
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig6-interneurons-downstream
+  notes: 'All five classes respond significantly to at least one stimulus under every selection and FDR reading: under the
+    main reading AIN to NaCl and 2-butanone, AVH to all three, RIF and RIG to 2,3-pentanedione (decreases), RIR to both odors.
+    dF/F0 gives five of five. Benjamini-Hochberg gives four of five (RIG misses), three on dF/F0.'
+- claim: fig6-tail-responses
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds no tail recordings; every file is a head ("C. elegans head NeuroPAL and Calcium imaging") and
+    no tail neuron (LUA, PVN, PVQ, PVR, PVW) is named in it. The 21 tails are in the paper's Zenodo deposit (doi:10.5281/zenodo.3906530,
+    Tail_Activity_OH16230.mat); the claims file marks this claim as using the dataset, so it was not tested on the deposit.
+- claim: fig6f-pharyngeal
+  outcome: reproduced
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig6f-pharyngeal
+  notes: All 14 pharyngeal classes are tested. Under the main reading with q over all tests, NaCl 8 classes, 2-butanone 11,
+    2,3-pentanedione 4. Every reading gives at least two for NaCl and for an odor, including dF/F0 (3, 4 and 2) and Benjamini-Hochberg.
+- claim: fig6-stimulus-sets-distinct
+  outcome: reproduced
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig6-stimulus-sets-distinct
+  notes: Main reading, q over all tests, 54 classes for NaCl, 40 for 2-butanone, 47 for 2,3-pentanedione; pairs share 25,
+    28 and 26; 18 in all three; no two sets equal. Every reading gives the same pattern (dF/F0 18, 19 and 24 classes, sharing
+    9 to 12). With sets this large the test is weak.
+- claim: figs1h-avf-cyclic
+  outcome: not_reproduced
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:figs1h-avf-cyclic
+  measured: 0.121
+  notes: Main reading, 32 AVF traces from 19 heads. Peaks at 1 SD of prominence give a median of 0.121 Hz (0.046 to 0.268),
+    at 0.5 SD 0.199 Hz (0.104 to 0.301), against 0.27 to 0.33 Hz. Only 3 traces have their largest spectral peak between 0.1
+    and 1 Hz (median 0.172 and 0.180 Hz); the median spectral peak is 0.016 Hz, the lowest resolved frequency. The other selection
+    readings give 0.121 to 0.125 and 0.192 to 0.205 Hz. The measured value is the first pair of readings.
+  deviations:
+  - The 0.5 s median filter is 2 frames at 4 Hz, applied as MATLAB's medfilt1 does for an even length, since the paper ran
+    its analysis in MATLAB (STAR Methods, Statistical analysis software).
+- claim: fig6gi-stimulus-specific-correlations
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig6gi-stimulus-specific-correlations
+  notes: Under the main reading, reading (a) gives NaCl against 2-butanone p = 6.3e-04 and against 2,3-pentanedione p = 1.4e-04,
+    but not the two odors (p = 0.17); reading (b) gives 91, 96 and 95 of 100 splits, short of 95 for NaCl against 2-butanone.
+    The deposit and none readings give the partial outcome through reading (a) (odors p = 0.27 and 0.20), with reading (b)
+    at 50, 71, 16 and 56, 82, 71 splits. Only with both members of near-duplicates removed does reading (b) pass all three
+    pairs (98, 98, 99), the outcome of the first round. A null window 30 s after each onset, with no stimulus, gives 100 of
+    100 splits for NaCl against 2,3-pentanedione and for the two odors under reading (b), and Wilcoxon p = 7.5e-06 and 0.013
+    under reading (a), so differences between the three periods of the recording may drive part of the effect. The null window
+    runs 20 to 50 s after each pulse ends, when the paper reports post-stimulus responses, so lingering stimulus effects may
+    also explain it. Similarities
+    between animals are small (mean 0.043 to 0.057).
+  deviations:
+  - One member of each near-duplicate pair is removed (the later in the file), an assumption. The STAR Methods say "Neurons
+    within 5 um distance of each other, whose traces showed at least 95% correlation, were deemed too similar and removed"
+    without saying which; of the four readings run (one, both, none, the traces in the paper's deposit), "one" comes closest
+    to the per-class sample counts of Table S6 (median difference 0, mean +0.6 traces per class; deposit +2.9, none +3.8,
+    both -2.3). Distances use 0.533 um in x and y, the spacing the coordinates show (see findings). Under removing both members
+    the outcome would be reproduced.
+- claim: figs2a-pca-trajectories
+  outcome: not_reproduced
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:figs2a-pca-trajectories
+  notes: 'Main reading, 48 classes present in all 21 heads, z-scored traces: both PCA readings separate only NaCl from 2,3-pentanedione
+    (1.70 against 1.33 under reading a); NaCl and 2-butanone (1.05 against 1.48) and the two odors (1.34 against 1.45) are
+    not separated. The deposit and none readings separate one or two pairs, never NaCl from 2-butanone; dF/F0, where a few
+    classes dominate PC1 (0.76 of the variance under the main reading), separates at most one pair, and dF/F0 scaled per class
+    at most two. No reading separates all three pairs.'
+  deviations:
+  - The paper's normalisation per neuron class is not described; z-scored traces are the main reading here, with dF/F0 and
+    dF/F0 scaled per class as variants (see fig6-nacl-unknown-interneurons). The outcome is the same under all of them.
+- claim: fig6jk-connectome-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig6jk-connectome-correlation
+  notes: Head values only; all head R2 values are below 5%, none within tolerance. Electrical 1.28% under readings (a, a),
+    3.47% over pairs with a synapse (a, b), against 2.52 to 3.08%; chemical 0.04 to 0.23% against 0.45 to 0.55%. The other
+    selection readings and the SI 5 weighted matrices give electrical 0.31 to 3.68% and chemical at most 0.31%. Per-trace
+    scaling does not change Pearson correlations. Tails are not in the dandiset. The finding that functional correlation corresponds
+    little to the connectome holds in the heads. The claim depends on the name link (link-connectome-names), which holds.
+  deviations:
+  - Heads only; the tail recordings are not in the dandiset.
+  - The paper does not say which Cook et al. matrices it used; the synapse counts (SI 2) are the main reading, as the Results
+    speak of "synaptic counts", and SI 5 is a variant.
+- claim: fig6-connectome-variations
+  outcome: reproduced
+  notebook: reproduce_yemini_2021.ipynb
+  output: claim:fig6-connectome-variations
+  measured: 1.508
+  notes: On the first-listed readings, which the criterion uses as no reading matched in fig6jk-connectome-correlation, the
+    largest R2 over the seven variations is 1.51% (electrical, pairs seen in more than 10 animals), below 3.1%. Over all readings
+    the variations reach at most 3.74% (electrical, pairs with a synapse, log-scaled counts), against 3.47% for the same reading
+    without the variation. Heads only.
+- claim: fig1-neuropal-color-map
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Rests on the NeuroPAL color maps of many strains and animals imaged for the reagent's design; the dandiset holds
+    only the 21 OH16230 head recordings.
+- claim: fig1-neuropal-stable-variable-classes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the scoring of hundreds of NeuroPAL animals; not in the dandiset.
+- claim: figs1-integrant-health
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs brood size, locomotion and chemotaxis assays of the integrants; not in the dandiset.
+- claim: fig2-positional-variability
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the positional atlas worms imaged on the Zeiss LSM880; not in the dandiset. Ten such young-adult otIs669 worms
+    are in the paper's Zenodo deposit, which this claim, marked as using the dataset, was not tested on.
+- claim: fig4c-receptor-coverage
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the metabotropic receptor reporter expression maps; not in the dandiset.
+- claim: fig4bd-gaba-network
+  outcome: blocked
+  blocked_by: other
+  notes: 'A data: with_inputs claim; no dandiset data enter it. It needs the receptor expression map (the paper''s Table S4,
+    mmc6.xlsx at https://ars.els-cdn.com/content/image/1-s2.0-S0092867420316822-mmc6.xlsx, public, found during the revision
+    after the first round had looked on PMC, Europe PMC and cell.com without success), the neurotransmitter maps the paper
+    cites (Gendrel et al., 2016; Pereira et al., 2015; Serrano-Saiz et al., 2013, with the GABA-A receptor map from Gendrel
+    et al., 2016) and the Cook et al. (2019) connectome, whose synapse counts the notebook already loads for the Figure 6
+    claims. The paper names these in the same paragraph as the claim (Results, Expression Maps for All Metabotropic Neurotransmitter
+    Receptors, paragraph 2), and the Figure 4D legend gives the synapse thresholds (at least 1, 5 or 10). Earlier revisions
+    said the paper names neither the transmitter map nor the connectome; that was wrong, as the round-3 verifier found. The
+    inputs are named and public, but this attempt did not build the analysis, so the claim is untested here and a later
+    attempt can test it.'
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: The block is that the paper does not name the transmitter map or the connectome behind Figure 4, as the round-2
+      verifier says; that is a method the paper leaves unstated, which methods_underspecified names more exactly than other.
+      The round-3 verifier does not agree. The paper names the transmitter maps (Gendrel et al., 2016; Pereira et al., 2015;
+      Serrano-Saiz et al., 2013) and the connectome (Cook et al., 2019) in the same paragraph as the claim, and the Figure
+      4D legend gives the synapse thresholds, so every input is named and public and the claim should be tested; with no
+      analysis behind it, no outcome can be given.
+- claim: fig4e-extrasynaptic
+  outcome: blocked
+  blocked_by: other
+  notes: 'A data: with_inputs claim; no dandiset data enter it. It needs the same inputs as fig4bd-gaba-network (Table S4,
+    public at the publisher, the neurotransmitter maps the paper cites and the Cook et al. (2019) connectome, all named in
+    the same paragraph as the claim). The Figure 4E legend defines the quantity, the percentage of receptor-expressing neurons
+    with no presynaptic partner that releases the cognate transmitter, and the claims file''s criterion gives two readings
+    for the reversed GAR/MGL pairing in the Results. Earlier revisions said the paper names neither the transmitter map nor
+    the connectome; that was wrong, as the round-3 verifier found. This attempt did not build the analysis, so the claim
+    is untested here and a later attempt can test it under both readings.'
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: As for fig4bd-gaba-network, the block is the unnamed transmitter map and connectome, a method the paper leaves
+      unstated. The round-3 verifier does not agree, for the same reason as for fig4bd-gaba-network. The Figure 4E legend
+      defines the quantity, and the claims file's criterion handles the reversed GAR/MGL pairing with two readings, so this
+      is not an unstated method and the claim should be tested under readings (a) and (b).
+- claim: fig5ab-pag3-fate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the pag-3 mutant scoring (Table S5); not in the dandiset.
+- claim: fig5ef-eor1-rme
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the eor-1 mutant and reporter scoring (Table S5); not in the dandiset.
+- claim: fig7bc-id-accuracy
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the 10 atlas worms and the identification software (MATLAB). The worms are not in the dandiset; they are in
+    the paper's Zenodo deposit, which this claim, marked as using the dataset, was not tested on. The dandiset's NeuroPAL
+    volumes are from the microfluidic chip, not the atlas worms.
+- claim: fig7de-optimal-coloring
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: 'A data: with_inputs claim; no dandiset data enter it. The solver and its reporter data are public (https://github.com/Eviatar/Optimal_Coloring
+    at f01284f: optimal_color_solver.m, find_optimal_colors.m and data.mat), but the code "requires MATLAB" (README), which
+    cannot be installed in the entry''s locked Python environment, and the solver is randomised ("Each time the algorithm
+    is run, it chooses a different approximately optimal set"). A port was not attempted.'
+findings:
+- kind: data_missing
+  statement: The dandiset holds the 21 OH16230 head recordings of Figure 6 only. The 21 OH16230 tail recordings, the 7 OH15500
+    heads (Table S6), and the imaging behind Figures 1 to 5 and 7 are not in it. The tails, the OH15500 heads and 10 atlas
+    worms are in the paper's Zenodo deposit (doi:10.5281/zenodo.3906530).
+- kind: metadata_insufficient
+  statement: 'The files do not say which AWC neuron is ON and which is OFF in each head, which the paper''s AWC asymmetry
+    result needs. The NeuroPAL image holds it: CyOFP1, the srsx-3 fluorophore (Table S1), is brighter relative to TagRFP-T
+    in the AWC that the paper''s Zenodo deposit marks as OFF (is_AWCL_OFF) in 19 of 21 heads.'
+- kind: metadata_error
+  statement: The calcium imaging volume (CalciumImVol) states a grid spacing of 0.267, 0.267 and 1.5 um, the same as the NeuroPAL
+    volume, but in all 21 files the calcium segmentation's x and y coordinates are half those of the same neurons in the NeuroPAL
+    segmentation (fitted ratio 1.94 to 2.09; z 0.97 to 1.07), and the movie is 256 x 128 pixels against 512 x 256. The movie
+    is binned 2 x 2, and its x and y spacing is 0.533 um.
+- kind: metadata_error
+  statement: The two trace series in each file, SignalRawFluor ("Raw fluorescence activity") and SignalRawFluordNMF ("Raw
+    fluorescence activity data computed using dNMF"), hold the same numbers in all 21 files.
+- kind: metadata_error
+  statement: NeuronIDs, described as neuron labels, include three cells that are not neurons (AMSOL, AMSOR, amphid sheath
+    glia; HMC, the head mesodermal cell) and, in head 20190929_06, DD6, a motor neuron of the posterior ventral cord that
+    cannot be in a head volume. None of these four names is in the paper's deposit.
+- kind: selection_undocumented
+  statement: 126 named traces in the dandiset have no trace in the paper's deposit (AVL in 11 heads, I5 in 8, and others),
+    113 of them with finite values and 13 all NaN; 101 of them have an empty slot in the deposit. The dandiset does not mark
+    which traces the paper excluded (near duplicates, empty traces).
+- kind: metadata_error
+  statement: The stimulus table's description gives 2-butanone as "10^-4mM" (2,3-pentanedione as "10^-4") and the order as
+    random; the paper gives both odors as 10^-4 dilutions and the order as rotated, and the files show three orders, seven
+    heads each.
+- kind: other
+  statement: 'The dandiset''s traces are one frame (0.25 s) earlier than the paper''s deposited traces in all 21 files: deposit
+    frame k + 1 correlates best with dandiset frame k. Each dandiset trace has one frame fewer than its movie. Which of the
+    two is aligned with the stimulus table is not stated.'
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Of two neurons within 5 um whose traces correlate at 0.95 or more, were both
+    removed, or one (and which), and on which traces was the correlation computed? The STAR Methods say they "were deemed
+    too similar and removed". Run on the dandiset (with the corrected spacing), the rule removes 338 named traces keeping
+    one member and 651 removing both, while the paper's deposit lacks 126, and only 20 and 27 of those are among the removed.
+    Keeping one member comes closest to the per-class sample counts of Table S6, though agreement with its p values is about
+    the same under every reading. Three results here depend on the choice (fig6-asj-ric, fig6gi-stimulus-specific-correlations
+    and the head median of fig6-sample-sizes); one member is removed in this attempt, as an assumption.
+- kind: methods_unavailable
+  statement: 'Question for the paper''s authors. How were traces normalised for the response tests ("When comparing neuronal
+    activity across animals, we used dNMF to normalize activity traces per neuron class")? The p values of Table S6 cannot
+    be recomputed from the deposited dF/F0 traces with the test the STAR Methods describe (rank correlation of log p 0.57
+    to 0.75); tests on traces scaled one by one come much closer (0.87 to 0.96 with z-scores) and min-max scaling matches
+    the size of the paper''s confidence intervals, but none reproduces the table. Two outcomes here depend on the choice (fig6-nacl-unknown-interneurons,
+    fig6-asj-ric); z-scores are used, as an assumption. How a head was judged to show the published ASE and AWC responses
+    is also not described: under the claims file''s rules 19 of the 21 deposited heads pass, not 21.'
+verifications:
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'The handover of the first run (executed notebook with the conclusions and summary removed, the helper module
+    and the claims file) and the paper under paper/. Report: transcripts/000541/verifier-1-report.md.'
+  results:
+  - claim: link-zenodo-traces
+    agrees: true
+    outcome: partially_reproduced
+    reason: All 21 files match and all 21 stimulus orders agree, but only 81.7% of shared traces reach r of 0.9 or more, short
+      of the 90% the criterion asks.
+    response: 'Outcome kept. Problem 6: the frame alignment is now shown; the deposit is one frame later than the dandiset
+      in all 21 files (constant, not varying by file), and with that offset 85.8% reach r of 0.9, still below 90%. The deposit''s
+      last frame is NaN in every trace.'
+  - claim: link-connectome-names
+    agrees: true
+    outcome: reproduced
+    reason: 190 of 193 names match Cook et al. The 3 that do not (AMSOL, AMSOR, HMC) are not neurons.
+    response: No change.
+  - claim: fig6-sample-sizes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Heads = 21 and distinct names = 193 (190 neurons) are within tolerance. The median animals per name is 17 or 18
+      (within 16.2 to 19.8) only under near-duplicate readings "both" and "one"; under "none" it is 21. The tail counts cannot
+      be tested because there are no tails.
+    response: Outcome kept. The deposit's own medians are now printed (21 per name and per class, 189 names). With the corrected
+      spacing the main reading ("one") gives 19 per name and 20 per class; the deposit reading gives 21. Problem 8 (the median
+      may cover heads and tails together) is asked of a reader in questions/000541.yaml; the claim is unchanged.
+  - claim: fig6-all-heads-responsive
+    agrees: true
+    outcome: not_reproduced
+    reason: At most 19 of 21 heads pass (reading a, "none"); reading (b) passes 16. These are the paper's 21 kept heads, so
+      the criterion requires all 21.
+    response: 'Outcome kept; the one and deposit readings give the same counts. Problem 2: the clock-check text is corrected
+      (AWC does not fall more at the odor times, p = 0.29 and 0.71), and a time-shift check of the ASE NaCl response is added
+      (largest at 0 s).'
+  - claim: fig6d-ase-nacl
+    agrees: true
+    outcome: reproduced
+    reason: 'ASER is excited: p = 0.0055 to 0.020, and q(b) of 0.05 or less in every mode. q(a) is 0.0505 under "both" only.
+      The ASEL against ASER asymmetry has p of 1e-4 or less under both measures.'
+    response: 'Outcome kept. Each trace is now z-scored before the response tests, an assumption: Table S6''s p values are
+      matched far better by per-trace scaling than by dF/F0 (rank correlation 0.90 to 0.96 against 0.62 to 0.73); dF/F0 and
+      min-max scaling are variants. Table S6''s legend gives the FDR family as all three stimuli together, reading (a). Under
+      the main reading p = 0.0028, q(a) = 0.0036; every reading gives q of 0.028 or less.'
+  - claim: fig6-nacl-unknown-interneurons
+    agrees: true
+    outcome: partially_reproduced
+    reason: 4 of 6 classes (AIN, AVH, I2, MI) are significant under every FDR and duplicate reading. AVJ (p = 0.094) and AVF
+      (mean response negative) fail.
+    response: 'Outcome changed to reproduced, resting on the normalisation (assumed). Each trace is now z-scored before the
+      response tests, an assumption: Table S6''s p values are matched far better by per-trace scaling than by dF/F0 (rank
+      correlation 0.90 to 0.96 against 0.62 to 0.73); dF/F0 and min-max scaling are variants. Table S6''s legend gives the
+      FDR family as all three stimuli together, reading (a). On z-scored traces all six classes are significant under every
+      FDR reading of the main selection (AVJ q = 0.016, AVF q = 0.021); on dF/F0 the result is the verifier''s 4 of 6, shown
+      as a variant. Benjamini-Hochberg gives 4 of 6. Problem 4: the q code is now checked on the paper''s own p values against
+      its q values (Table S6; agreement at 0.05 in 273 of 285 tests); pi0 is printed over ten bootstrap seeds (0.222 for each
+      on this attempt''s p values), and Benjamini-Hochberg is shown as a conservative check.'
+  - claim: fig6c-odors-more-inhibitory
+    agrees: true
+    outcome: reproduced
+    reason: Under reading (b), the fraction of classes with a negative mean is higher for both odors than NaCl in all modes.
+      Reading (a) also holds except one tie ("none", q_stim). The butanone margin is thin.
+    response: 'Outcome kept. Problem 5: the non-neurons AMSO and HMC are now left out of the tests. Under the main reading
+      (b) holds (0.234, 0.245, 0.362) and (a) ties for 2-butanone; every reading holds under (a) or (b).'
+  - claim: fig6d-awc-asymmetric
+    agrees: true
+    outcome: blocked
+    reason: The files label only AWCL and AWCR, so the criterion blocks it. In the Zenodo-label variant, butanone gives p
+      = 0.35 to 0.56 and pentanedione p = 0.038 to 0.096, so even that would be partial at best.
+    response: 'Outcome kept (metadata_insufficient). Problem 7 and the item not checked: the search for ON/OFF now covers
+      the trace labels, the NeuroPAL labels and the descriptions of all 21 files (none). The NeuroPAL image colors at AWCL
+      and AWCR are printed: CyOFP1, the srsx-3 fluorophore in Table S1, agrees with the deposit''s side in 19 of 21 heads.
+      A variant with these image-derived labels gives p = 0.68 and 0.060.'
+  - claim: fig6-asj-ric
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under "both", 4 of 6 parts hold with q and 5 of 6 with p. Under "one" and "none" only 3 of 6 hold, which is not
+      reproduced. ASJ inhibition by pentanedione fails everywhere (p = 0.21). Fragile.
+    response: 'Outcome kept, resting on the readings (assumed). The rows for every reading are now printed. Problem 1: the
+      "deposit" reading (exactly the traces the deposit holds) is now run, with a cross-tab of the traces each reading removes
+      against the 126 named traces the deposit lacks (20 and 27 overlap). The paper''s Table S6 shows the paper tested fewer
+      traces per class than the deposit holds (+2.9 per class for the deposit reading) and that removing one member comes
+      closest (median 0, mean +0.6), so "one" is now the main reading, with deposit, both and none as variants. The 5 um distances
+      now use the spacing the coordinates show (0.533 um in x and y; the stated spacing is wrong, a new finding). Each trace
+      is now z-scored before the response tests, an assumption: Table S6''s p values are matched far better by per-trace scaling
+      than by dF/F0 (rank correlation 0.90 to 0.96 against 0.62 to 0.73); dF/F0 and min-max scaling are variants. Table S6''s
+      legend gives the FDR family as all three stimuli together, reading (a). Under the main reading 5 of 6 parts hold with
+      q over all tests; under the deposit and none readings 6 of 6; with both removed 4; on dF/F0 3.'
+  - claim: fig6-interneurons-downstream
+    agrees: true
+    outcome: reproduced
+    reason: All 5 classes respond to at least one stimulus under every reading.
+    response: No change of outcome; holds under every new reading too (Benjamini-Hochberg 4 of 5).
+  - claim: fig6-tail-responses
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed on the archive: the published versions and the draft all hold the same 21 head files, and no tail neurons
+      are named.'
+    response: No change.
+  - claim: fig6f-pharyngeal
+    agrees: true
+    outcome: reproduced
+    reason: At least 3 pharyngeal classes respond to NaCl and 4 to butanone under every reading.
+    response: No change of outcome.
+  - claim: fig6-stimulus-sets-distinct
+    agrees: true
+    outcome: reproduced
+    reason: Every pair of stimuli shares 9 to 14 classes and no two sets are identical, under all readings. With sets of about
+      20 classes this is a weak test.
+    response: No change of outcome; the conclusion now says the test is weak.
+  - claim: figs1h-avf-cyclic
+    agrees: true
+    outcome: not_reproduced
+    reason: The median peak rate is 0.12 Hz at 1 SD and 0.19 to 0.20 Hz at 0.5 SD. The spectral-peak subset (n = 3) gives
+      0.17 to 0.18 Hz. All are outside 0.27 to 0.33 Hz.
+    response: No change.
+  - claim: fig6gi-stimulus-specific-correlations
+    agrees: false
+    outcome: partially_reproduced
+    reason: Under reading (a), NaCl against each odor gives p of 0.008 or less in every mode, but butanone against pentanedione
+      gives p = 0.18 to 0.34. Reading (b) passes all three pairs only under "both", and the non-stimulus control window passes
+      too. That pass reflects the timing of the window, not the stimulus, so it is not counted as a full reproduction.
+    response: Outcome changed to partially reproduced, as the verifier gives. With the main reading now "one" (see problem
+      1), reading (b) gives 91, 96 and 95 splits and reading (a) misses the odor pair (p = 0.17); only "both" passes (b).
+      Assumed, as the outcome would be reproduced under "both".
+  - claim: figs2a-pca-trajectories
+    agrees: true
+    outcome: not_reproduced
+    reason: No reading separates all three pairs; at most one pair is distinguishable. The PCA runs on dF/F0 without normalization,
+      with values from -41 to 89, and PC1 explains 75% under "one", so a few outlier traces dominate; the outcome is not robust,
+      though the z-scored variant also fails.
+    response: 'Outcome kept. Problem 3: the PCA now runs on z-scored traces as the main reading, with dF/F0 and dF/F0 scaled
+      per class as variants, under every selection reading, and prints the largest PC1 loadings. At most two of three pairs
+      are separated (never NaCl from 2-butanone).'
+  - claim: fig6jk-connectome-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Head only. No count-based reading puts electrical R2 in 2.52 to 3.08 or chemical R2 in 0.45 to 0.55. All head
+      values are below 5%. Tails cannot be tested.
+    response: No change of outcome; values under the main reading are 1.28 and 3.47% electrical.
+  - claim: fig6-connectome-variations
+    agrees: true
+    outcome: reproduced
+    reason: On the first-listed reading the largest R2 is 1.66%, under the 3.1% bound. Off that reading, 3.64% is reached,
+      but against a baseline of 3.53%. Heads only.
+    response: No change of outcome; under the main reading 1.51%, and 3.74% against 3.47% off it.
+  - claim: fig1-neuropal-color-map
+    agrees: true
+    outcome: blocked
+    reason: The archive's 21 assets are all head GCaMP/NeuroPAL sessions of OH16230. None of the underlying imaging is there.
+    response: No change.
+  - claim: fig1-neuropal-stable-variable-classes
+    agrees: true
+    outcome: blocked
+    reason: The archive's 21 assets are all head GCaMP/NeuroPAL sessions of OH16230. None of the underlying imaging is there.
+    response: No change.
+  - claim: figs1-integrant-health
+    agrees: true
+    outcome: blocked
+    reason: The archive's 21 assets are all head GCaMP/NeuroPAL sessions of OH16230. None of the underlying imaging is there.
+    response: No change.
+  - claim: fig2-positional-variability
+    agrees: true
+    outcome: blocked
+    reason: The archive's 21 assets are all head GCaMP/NeuroPAL sessions of OH16230. None of the underlying imaging is there.
+    response: No change.
+  - claim: fig4c-receptor-coverage
+    agrees: true
+    outcome: blocked
+    reason: The archive's 21 assets are all head GCaMP/NeuroPAL sessions of OH16230. None of the underlying imaging is there.
+    response: No change.
+  - claim: fig5ab-pag3-fate
+    agrees: true
+    outcome: blocked
+    reason: The archive's 21 assets are all head GCaMP/NeuroPAL sessions of OH16230. None of the underlying imaging is there.
+    response: No change.
+  - claim: fig5ef-eor1-rme
+    agrees: true
+    outcome: blocked
+    reason: The archive's 21 assets are all head GCaMP/NeuroPAL sessions of OH16230. None of the underlying imaging is there.
+    response: No change.
+  - claim: fig7bc-id-accuracy
+    agrees: true
+    outcome: blocked
+    reason: The archive's 21 assets are all head GCaMP/NeuroPAL sessions of OH16230. None of the underlying imaging is there.
+    response: No change.
+  - claim: fig4bd-gaba-network
+    agrees: true
+    outcome: blocked
+    reason: 'These are data: with_inputs claims. They need the receptor expression tables, the connectome, or WormBase reporters
+      plus the solver, not the dandiset. Saying "not in the dandiset" is not the reason they are blocked.'
+    response: The notes now give the inputs and why the claim is blocked. Table S4 was found public at the publisher during
+      the revision, so blocked_by is now other (not taken up here; a later attempt can).
+  - claim: fig4e-extrasynaptic
+    agrees: true
+    outcome: blocked
+    reason: 'These are data: with_inputs claims. They need the receptor expression tables, the connectome, or WormBase reporters
+      plus the solver, not the dandiset. Saying "not in the dandiset" is not the reason they are blocked.'
+    response: The notes now give the inputs and why the claim is blocked. Table S4 was found public at the publisher during
+      the revision, so blocked_by is now other (not taken up here; a later attempt can).
+  - claim: fig7de-optimal-coloring
+    agrees: true
+    outcome: blocked
+    reason: 'These are data: with_inputs claims. They need the receptor expression tables, the connectome, or WormBase reporters
+      plus the solver, not the dandiset. Saying "not in the dandiset" is not the reason they are blocked.'
+    response: 'The notes now give the inputs: the solver and its data are public on GitHub (Optimal_Coloring at f01284f) but
+      need MATLAB, so blocked_by is now not_runnable.'
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'The full executed notebook of the revision after round 1, with its conclusions and summary, the helper module,
+    the claims file, the attempt record and the paper under paper/. Report: transcripts/000541/verifier-2-report.md.'
+  results:
+  - claim: link-zenodo-traces
+    agrees: true
+    outcome: partially_reproduced
+    reason: 81.7% of traces reach r of 0.9 or more, or 85.8% with the constant one-frame lag. Both are below 90%.
+    response: No change of outcome. The summary and the selection_undocumented finding now give 126 named traces missing
+      from the deposit (113 finite), of which 101 have an empty slot, as the verifier pointed out.
+  - claim: link-connectome-names
+    agrees: true
+    outcome: reproduced
+    reason: 190 of 193 names match. The 3 that don't are not neurons.
+    response: No change.
+  - claim: fig6-sample-sizes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, with a gap. The head median of 19 is in tolerance only under the "one" and "both" readings; under "deposit"
+      and "none" it is 21. So the outcome rests on the trace-selection reading, but the record does not mark it assumed.
+    response: Marked assumed, with the deviation saying which readings put the median in tolerance; the conclusion now says
+      so too. The outcome would stay partially reproduced under every reading, as the tails are missing. Point 8 (heads and
+      tails together) remains with a reader.
+  - claim: fig6-all-heads-responsive
+    agrees: true
+    outcome: not_reproduced
+    reason: Best result is 19 of 21.
+    response: No change.
+  - claim: fig6d-ase-nacl
+    agrees: true
+    outcome: reproduced
+    reason: Holds under every selection reading, on dF/F0, and under min-max scaling.
+    response: No change.
+  - claim: fig6-nacl-unknown-interneurons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees conditionally. The criterion measures the mean dF/F0, which gives 4 of 6. The claims file misreads the
+      paper; it leaves out "When comparing neuronal activity across animals, we used dNMF to normalize activity traces per
+      neuron class". The assumption is stated and Table S6 supports per-trace scaling (rank correlation of log p 0.90 to 0.96
+      against 0.62 to 0.73); min-max scaling also gives 6 of 6. Accepts reproduced (assumed); the record is right to say the
+      criterion as written gives 4 of 6.
+    response: The misreading is added to questions/000541.yaml for a reader; the claim is unchanged. The notes now say that
+      the criterion as written gives 4 of 6.
+  - claim: fig6c-odors-more-inhibitory
+    agrees: true
+    outcome: reproduced
+    reason: Reading (b) holds, 0.234 < 0.245 < 0.362. The NaCl to 2-butanone margin is about one class of 94.
+    response: No change.
+  - claim: fig6d-awc-asymmetric
+    agrees: true
+    outcome: blocked
+    reason: The CyOFP1 side is inferred from the image, not labelled, so the criterion still blocks the claim. No variant
+      reaches p < 0.05 (smallest 0.056).
+    response: No change.
+  - claim: fig6-asj-ric
+    agrees: true
+    outcome: partially_reproduced
+    reason: 5 of 6 parts under reading (a) and 4 of 6 under (b) and (c), so partial under every FDR reading of the main selection;
+      deposit and none give 6 of 6, dF/F0 3 of 6. The assumption is stated and reasonable. Under (a) the ASJ inhibition by
+      2,3-pentanedione passes only because q = 0.040 while p = 0.082, as Storey's pi0 is 0.222 here, against 0.42 to 0.48
+      on the paper's p values, so reading (a) is more lenient than the paper's.
+    response: The notes and the summary now say that the low pi0 decides that part under reading (a), not the outcome.
+  - claim: fig6-interneurons-downstream
+    agrees: true
+    outcome: reproduced
+    reason: 5 of 5 classes under every reading.
+    response: No change.
+  - claim: fig6-tail-responses
+    agrees: true
+    outcome: blocked
+    reason: No tail recordings in the dandiset.
+    response: No change.
+  - claim: fig6f-pharyngeal
+    agrees: true
+    outcome: reproduced
+    reason: Holds under every reading.
+    response: No change.
+  - claim: fig6-stimulus-sets-distinct
+    agrees: true
+    outcome: reproduced
+    reason: A weak test, as the record says.
+    response: The conclusion's set sizes are corrected to 16 to 55 classes, the range printed.
+  - claim: figs1h-avf-cyclic
+    agrees: true
+    outcome: not_reproduced
+    reason: Medians of 0.121 to 0.205 Hz, against 0.27 to 0.33 Hz.
+    response: No change.
+  - claim: fig6gi-stimulus-specific-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: The assumption is stated, and the outcome would be reproduced under "both". The null window starts 30 s after
+      onset, so it sits 20 to 50 s after each pulse ends, when the paper reports post-stimulus responses; it does not separate
+      recording time from lingering stimulus effects. The hedged "may drive part of the effect" is suitable; the outcome is
+      unaffected.
+    response: The null window's description, its conclusion and the notes now say that it falls in the post-stimulus period
+      and so does not separate the time in the recording from lingering stimulus effects. The summary no longer lists this
+      claim as changing with the normalisation (Pearson correlations do not), and lists it with fig6-asj-ric and fig6-sample-sizes
+      under the selection reading.
+  - claim: figs2a-pca-trajectories
+    agrees: true
+    outcome: not_reproduced
+    reason: No reading or normalisation separates all three pairs.
+    response: The description now says the main run uses z-scored traces, with dF/F0 and dF/F0 scaled per class as variants.
+  - claim: fig6jk-connectome-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Head values only, all R2 < 5%, none in tolerance.
+    response: No change.
+  - claim: fig6-connectome-variations
+    agrees: true
+    outcome: reproduced
+    reason: 1.51% on the first-listed reading.
+    response: No change.
+  - claim: fig1-neuropal-color-map
+    agrees: true
+    outcome: blocked
+    reason: Data missing.
+    response: No change.
+  - claim: fig1-neuropal-stable-variable-classes
+    agrees: true
+    outcome: blocked
+    reason: Data missing.
+    response: No change.
+  - claim: figs1-integrant-health
+    agrees: true
+    outcome: blocked
+    reason: Data missing.
+    response: No change.
+  - claim: fig2-positional-variability
+    agrees: true
+    outcome: blocked
+    reason: Data missing.
+    response: No change.
+  - claim: fig4c-receptor-coverage
+    agrees: true
+    outcome: blocked
+    reason: Data missing.
+    response: No change.
+  - claim: fig5ab-pag3-fate
+    agrees: true
+    outcome: blocked
+    reason: Data missing.
+    response: No change.
+  - claim: fig5ef-eor1-rme
+    agrees: true
+    outcome: blocked
+    reason: Data missing.
+    response: No change.
+  - claim: fig7bc-id-accuracy
+    agrees: true
+    outcome: blocked
+    reason: Data missing.
+    response: No change.
+  - claim: fig7de-optimal-coloring
+    agrees: true
+    outcome: blocked
+    reason: Blocked (not_runnable).
+    response: No change.
+  - claim: fig4bd-gaba-network
+    agrees: true
+    outcome: blocked
+    reason: The notes give a real block, that the paper does not name the transmitter map or the connectome for this figure,
+      but also say "the inputs are public, so a later attempt can", which makes it sound like a choice. The block should be
+      stated as the unnamed inputs.
+    response: The notes, the notebook and the README now state the block as the unnamed transmitter map and connectome. blocked_by
+      stays other, and methods_underspecified is proposed for round 3, as it names this block more exactly.
+  - claim: fig4e-extrasynaptic
+    agrees: true
+    outcome: blocked
+    reason: The notes give a real block, that the paper does not name the transmitter map or the connectome for this figure,
+      but also say "the inputs are public, so a later attempt can", which makes it sound like a choice. The block should be
+      stated as the unnamed inputs.
+    response: As for fig4bd-gaba-network; methods_underspecified is proposed.
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'The changes of outcome proposed after round 2 (fig4bd-gaba-network and fig4e-extrasynaptic) and the analysis
+    behind them, with the paper under paper/. Report: transcripts/000541/verifier-3-report.md.'
+  results:
+  - claim: fig4bd-gaba-network
+    agrees: false
+    reason: 'No analysis sits behind this outcome. Cell 77 is prose only. Its reason is that "the paper names neither the
+      transmitter map nor the connectome", and the paper does name both, in the same paragraph as the claim (Results, Expression
+      Maps for All Metabotropic Neurotransmitter Receptors, paragraph 2). The transmitter maps are "Gendrel et al., 2016;
+      Pereira et al., 2015; Serrano-Saiz et al., 2013". The connectome is the wiring diagram "(Figures 4B and 4G; Cook et
+      al., 2019)". The GABA-A receptor map is credited to Gendrel et al. (2016). The notebook already loads the Cook et al.
+      (2019) chemical and gap-junction synapse-count matrices (cell 69). The Figure 4D legend gives the synapse thresholds,
+      at least 1, 5 or 10. Table S4 is public at the publisher, as the record says. Every input is named and public. Neither
+      other nor methods_underspecified describes a real block, because both rest on the same mistaken premise. In round
+      2 I accepted that premise without checking it against the paper, and that was my mistake. Not blocked; it should be
+      tested, and with no analysis yet no outcome can be given.'
+    response: The outcome stays blocked (other), the one round 2 agreed with, and the proposal stays with this view added;
+      the analysis is not run in this revision, so testing the claim waits for a new attempt. The wrong statement that the
+      paper names no transmitter map or connectome is corrected in the notes, the notebook's conclusions and summary, and
+      the README, which now give the sources the paper cites and say the claim is untested here.
+  - claim: fig4e-extrasynaptic
+    agrees: false
+    reason: 'The reason is the same as for fig4bd-gaba-network: the same paragraph and the same named sources (cell 77; Cook
+      matrices already loaded in cell 69). The Figure 4E legend defines the quantity: the percentage of receptor-expressing
+      neurons with no presynaptic partner that releases the cognate transmitter. The claims file''s criterion already handles
+      the reversed GAR/MGL pairing in the Results with two readings. A reader who wants to choose a reading has a path, so
+      this is not an unstated method. Not blocked; it should be tested under readings (a) and (b) of the claims file''s criterion.'
+    response: As for fig4bd-gaba-network. The outcome stays blocked (other), the proposal stays with this view added, and
+      the text is corrected; testing under readings (a) and (b) waits for a new attempt.
