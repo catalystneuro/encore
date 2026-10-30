@@ -1,0 +1,353 @@
+schema_version: 2
+id: 000483-sit-2023-01
+dataset:
+  archive: dandi
+  id: "000483"
+  version: 0.230421.2321
+  doi: 10.48324/dandi.000483/0.230421.2321
+paper: doi:10.1038/s41467-023-37704-5
+date: 2026-10-30
+entry: 000483-sit-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41061724658
+inputs:
+- what: Method details only, no data. The analysis classes the paper links (trial segmentation,
+    heading-selection test, Gaussian fit bounds, light and dark segments, flip score), read and
+    reimplemented in Python.
+  source: https://github.com/ucsb-goard-lab/Neurotar-HD-Experiments at commit c6344f5
+outcomes:
+- claim: fig1-free-heading-fraction
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds no free-chamber recording. All 16 single-cue files rotate at a steady 3.1
+    to 8.0 rpm (median heading step per frame) and hold 3179 ROIs over 5 mice, exactly the
+    controlled-rotation experiment of Figure 1G. The only animal-controlled files are 5 dual-cue
+    recordings of 2022 (Figure S6). The paper names a Dryad deposit (doi 10.25349/D91G8Q) of
+    processed objects; it needs an account to download and was not checked.
+- claim: fig1g-rotation-heading-fraction
+  outcome: reproduced
+  assumed: true
+  notebook: single_cue.ipynb
+  output: claim:fig1g-rotation-heading-fraction
+  measured:
+  - 15.26
+  - 485
+  notes: With the centred fit, 485 of 3179 ROIs (15.26%) pass, within 14.2 +- 1.42% and 452 +- 45;
+    by mouse 8.9 to 25.2%, by recording 2.2 to 33.0%. With the fit as the code calls it, without
+    centring, 345 (10.85%), outside the tolerance. With stricter reliability thresholds (KS p < 0.01,
+    d > 1.2) the centred count is 393 (12.36%).
+  deviations:
+  - Inferred spikes are computed here from the raw ROI fluorescence (OASIS AR(1), Python port) without
+    the neuropil correction of the Methods (eq. 1), as the files hold no neuropil trace, dF/F or spikes.
+  - The selection test (code ControlledRotation.calculateHeadDirection) and its Gaussian fits are
+    reimplemented in numpy (bounded Levenberg-Marquardt in place of MATLAB fit).
+  - Assumption. The code fits the trial-mean curve as it is, with the peak location bounded to pi/2
+    +- pi/6, so only cells whose peak lies near one heading can pass; its center_flag option, used by
+    its 'fit' preferred direction, first shifts the peak to bin 15. The Methods do not say. The
+    centred fit is adopted because with the uncentred one 93.6% of the selected cells lie in one
+    quadrant, which contradicts the tiling of Figure 1H; both readings are shown, and they give
+    different outcomes.
+- claim: selection-shuffled-control
+  outcome: reproduced
+  notebook: single_cue.ipynb
+  output: claim:selection-shuffled-control
+  notes: Run as the commented calculateHeadDirection_shuff of Cue.m does it (the trials re-shifted in
+    every iteration), 0 of 3179 ROIs pass under both the centred and the uncentred fit. The variant
+    that shifts the trials once before the test passes 165 (5.19%).
+  deviations:
+  - Spikes computed without neuropil correction, and the test reimplemented, as for
+    fig1g-rotation-heading-fraction.
+- claim: fig1h-preferred-headings-tile
+  outcome: partially_reproduced
+  assumed: true
+  notebook: single_cue.ipynb
+  output: claim:fig1h-preferred-headings-tile
+  notes: Tiling holds. The 485 cross-validated preferred headings (centred fit) fill all 60 bins of 6
+    degrees, and the four quadrants hold 18.1 to 40.0%. The overrepresentation near the cue cannot be
+    judged. The files give heading relative to "cage door dead north" and do not say where the cue
+    is. Within 45 degrees of the dataset's 0 lie 24.7% (not above 25%). The densest 90-degree window,
+    centred at -102 degrees, holds 40.4% (Rayleigh p = 2e-05), and the densest heading differs
+    between mice (SKKS090 near +90). With the uncentred fit only 25 of 60 bins hold a cell.
+  deviations:
+  - Rests on the centred fit of fig1g-rotation-heading-fraction.
+  - The position of the cue in the dataset's heading frame is not in the files, so heading 0 of the
+    claim could not be located.
+- claim: fig2f-head-chamber-same-preference
+  outcome: reproduced
+  assumed: true
+  notebook: rotation_remapping.ipynb
+  output: claim:fig2f-head-chamber-same-preference
+  measured: 34.6
+  notes: Cells selective in both conditions, peak preference, chamber-rotation (CR) heading
+    mirrored, the 5 pairs whose stored headings run in opposite directions, give V = 34.6, n = 228,
+    p = 5.9e-04 ('fit' preference V = 36.0, p = 3.8e-04; cells selective in CR V = 47.7, p = 7.3e-05).
+    4 of 24 readings give p < 0.05 with V > 0. With all 7 pairs none does, and with the headings as
+    stored every V is negative. The V is not the paper's 14.1 (n = 32), and no reading has n near
+    32. Pairing ROIs at random within each pair gives a larger V (mean 46.2, 95th percentile 57.6),
+    because preferred headings are not uniform, so the V-test does not separate matched from random
+    pairs here. One pair alone (SKKS116, n = 115, V = 58.9) shows matched preferences; the other four
+    have V of -14.5 to 0.3.
+  deviations:
+  - Assumption. The stored headings of 5 of the 7 pairs run in opposite directions in the two
+    conditions, while the paper says the cue moves across the visual field in the same direction in
+    both (Figure 2B legend), so the CR heading is mirrored to put both in the frame of the wall
+    pattern. The files do not say how either heading is defined.
+  - Assumption. The dataset holds 7 pairs over 5 mice; the paper reports 5 over 4, which matches the
+    5 opposite-direction pairs. Both sets are shown.
+  - Cells selected with the centred fit of fig1g-rotation-heading-fraction; spikes without neuropil
+    correction.
+- claim: fig3c-coherent-remapping
+  outcome: reproduced
+  assumed: true
+  notebook: rotation_remapping.ipynb
+  output: claim:fig3c-coherent-remapping
+  measured: 47.0
+  notes: All 8 readings give V > 0 with p < 0.05. Cells selective in both contexts, peak preference,
+    expected offset (i), give V = 47.0, n = 85 over 9 recording pairs, p = 2.8e-13, against V = 25.6
+    with n = 66 in the paper. Pairing neurons at random gives a V of 35.3 on average (95th
+    percentile 44.6). Cells selective in either context give V = 193.2 to 233.5 (n = 830).
+  deviations:
+  - Cells selected with the centred fit of fig1g-rotation-heading-fraction; spikes without neuropil
+    correction.
+  - The medians of the Methods are taken as circular medians (a standard choice for angles).
+  - The 12 remapping pairs are the two files of each mouse and day; one pair (SKKS091, 2021-05-04)
+    is named 1-001 and 1-002 and is taken as a pair.
+- claim: fig4-axons-light-on-shape
+  outcome: reproduced
+  notebook: axons.ipynb
+  output: claim:fig4-axons-light-on-shape
+  notes: Under reading (b), all 1084 ADN and 247 visual axons, the mean aligned light-on curve has a
+    flip score of -0.207 (ADN) and 1.875 (visual), and single visual axons score higher (means 0.506
+    and -0.109, KS p = 1.6e-24). Under reading (a), selective axons, the visual mean curve is bimodal
+    (1.814) and single axons differ (KS p = 1.7e-21), but the ADN mean curve has a flip score of
+    0.277 with the centred fit and 1.132 with the code fit, above 0. One ADN mouse (SKKS092) has a
+    mean flip score above 0 under every reading.
+  deviations:
+  - Axon traces are inferred spikes from the raw fluorescence, with no neuropil correction; the paper
+    used Suite2P traces and excluded duplicate axons (r > 0.5), and the files give ROIs as they are.
+  - Light and dark segments are the code's hard-coded ones (Separator.m); the files do not mark them.
+- claim: fig4-axons-light-off
+  outcome: partially_reproduced
+  notebook: axons.ipynb
+  output: claim:fig4-axons-light-off
+  notes: Visual axons lose their tuning in light-off (mean light-off curve 5 to 11% of the light-on
+    range, under half). The ADN part fails both tests of the criterion. The per-recording fraction
+    selective in light-off is not significantly higher for ADN than for visual axons (medians 0.050
+    and 0.015, Mann-Whitney p = 0.35); pooled, 93 of 1084 against 11 of 247 (Fisher p = 0.035, the
+    variant). The ADN mean light-off curve keeps 72 to 86% of the light-on range, but its peak lies
+    24 degrees (reading a) or 30 degrees (reading b) from the light-on peak, beyond 18 degrees (18
+    degrees with the code fit).
+  deviations:
+  - Light-off curves take the circular shift of the mean light-on curve; the code's aligner
+    (leaveOneOutAligner) is not public.
+  - As for fig4-axons-light-on-shape.
+- claim: figs5-rotation-direction
+  outcome: reproduced
+  notebook: directions.ipynb
+  output: claim:figs5-rotation-direction
+  notes: Reading (b) passes. For the 407 cells selective in the four files that rotate both ways,
+    each cell's clockwise and counterclockwise tuning curves correlate more (median 0.210) than
+    randomly paired cells (0.118), bootstrapped KS p = 0.002. Reading (a), differences in preferred
+    heading, gives p = 0.16 (median 24 against 30 degrees). By mouse, (b) passes for SKKS125 only
+    (p = 0.044; SKKS126 0.119, SKKS127 0.699); over all active cells neither reading passes (p =
+    0.512 and 0.543). The statement's light and dark responses are not separated, as the files do
+    not mark the light condition, so the "diversity" part is not tested beyond tuning stability.
+  deviations:
+  - Figure S5 was not read; what is compared follows the claims file's readings.
+  - The dataset's 4 recordings in both directions are over 3 mice, where the paper reports 2; all 4
+    are used.
+  - In each bootstrap iteration both samples are drawn with replacement and the random pairing is
+    drawn afresh (a standard choice); dual-cue preferred headings are compared modulo 180 degrees.
+  - Spikes without neuropil correction; cells selected with the centred fit.
+- claim: figs6-arena-control
+  outcome: reproduced
+  notebook: directions.ipynb
+  output: claim:figs6-arena-control
+  notes: Reading (b) passes with a small effect. For the 381 cells selective in the motor-driven file
+    of the 5 pairs, animal-controlled and motor-driven tuning curves correlate more (median 0.027)
+    than randomly paired cells (-0.011), bootstrapped KS p = 0.026. Reading (a) gives p = 0.889. In
+    one pair (SKKS125, 2022-07-21) the mouse turned the chamber through only 6 of 60 heading bins.
+  deviations:
+  - Figure S6 was not read; what is compared follows the claims file's readings.
+  - The dataset holds 5 pairs over 4 mice, where the paper reports 7 recordings over 3; all 5 are
+    used. Tuning in the animal-controlled file is built from all turning frames (more than 0.5
+    degree per frame), as these files have few full rotations.
+  - As for figs5-rotation-direction.
+- claim: fig5-three-classes
+  outcome: not_reproduced
+  notebook: somata.ipynb
+  output: claim:fig5-three-classes
+  notes: The silhouette value is highest at k = 2 under both readings. Selective cells (1419) give
+    0.272, 0.019 and 0.032 for k = 2, 3 and 4, and all cells (11329) give 0.190, 0.120 and -0.052,
+    so neither has a local maximum at 3. The reviewer-code variant, each curve centred on its own
+    peak, has one for selective cells (0.114, 0.393, 0.004) but not for all cells.
+  deviations:
+  - Spikes without neuropil correction; cells selected with the centred fit; light-off curves aligned
+    with the shift of the mean light-on curve (leaveOneOutAligner not public).
+  - GaussianMixture of scikit-learn (full covariance, 20 initialisations, 1000 iterations) in place of
+    MATLAB's fitgmdist; the silhouette is computed on the hard assignments.
+  - One 1950-frame recording (2021-01-18, SKKS088 DualCue-002) has no light-on trial and is left out.
+- claim: fig5-class-proportions
+  outcome: not_reproduced
+  notebook: somata.ipynb
+  output: claim:fig5-class-proportions
+  measured:
+  - 12.1
+  - 7.6
+  - 78.9
+  - 13.5
+  notes: 12.10% of somata are tuned (mean over recordings, s.e.m. 1.44; pooled 12.53%, over mice
+    11.51%), within 12.1 +- 1.1. The class shares do not match. Over recordings with no outlier
+    step, landmark-like cells are 7.6%, alignment-like 78.9% and heading-like 13.5%; with the
+    chi-square outlier step (58 cells to the null cluster) 7.4, 75.3 and 13.3%. Every reading orders
+    them alignment > heading > landmark. The counts are 67 landmark, 1150 alignment and 202 heading,
+    against 522, 409 and 332 from the paper's degrees of freedom. measured gives reading (b) with
+    average (i).
+  deviations:
+  - Classes are named by a rule on the archetypes (heading, the least bimodal light-on archetype;
+    landmark, the weaker light-off archetype of the other two), as the paper names them by their
+    curves without a rule.
+  - As for fig5-three-classes.
+- claim: fig5e-alignment-peaks-coregistered
+  outcome: reproduced
+  notebook: somata.ipynb
+  output: claim:fig5e-alignment-peaks-coregistered
+  notes: For the 1150 alignment-like cells the light-off peak clusters at one of the two light-on
+    peaks (V-test V = 743.5, p < 1e-300). Only 29.2% lie within 18 degrees (about 21% for uniform
+    peaks), with a median offset of 36 degrees, so "always" is not supported. The heading-like and
+    landmark-like classes cluster the same way (V = 138.7 and 58.2). The class is not the paper's
+    alignment class (see fig5-class-proportions).
+  deviations:
+  - Tested on the classes found here, which differ from the paper's.
+- claim: fig5f-heading-flip-unchanged
+  outcome: reproduced
+  notebook: somata.ipynb
+  output: claim:fig5f-heading-flip-unchanged
+  notes: The 202 heading-like cells have flip scores 0.378 in light-on and 0.279 in light-off,
+    difference -0.100, F(1,402) = 2.2, p = 0.14 (mixed model with mouse as random intercept); with the
+    outlier step p = 0.14, with a random intercept per cell p = 0.12. The class has 202 cells where the
+    paper's degrees of freedom imply 332. During development, with a different random seed for the
+    selection, the class held 380 cells and the light effect was significant (not run here); the
+    result depends on which cells fall in the class.
+  deviations:
+  - statsmodels MixedLM (REML), F as the squared z of the light effect, in place of MATLAB fitlme.
+  - Tested on the classes found here, which differ from the paper's.
+- claim: fig5gh-landmark-alignment-flip-drop
+  outcome: reproduced
+  notebook: somata.ipynb
+  output: claim:fig5gh-landmark-alignment-flip-drop
+  notes: Flip scores fall in light-off for landmark-like cells (0.478 to -0.239, F(1,132) = 44.3, p =
+    2.8e-11, n = 67) and alignment-like cells (0.365 to 0.014, F(1,2298) = 135.4, p = 2.7e-31, n =
+    1150), against F(1,1042) = 1062.5 and F(1,816) = 209.5 in the paper.
+  deviations:
+  - As for fig5f-heading-flip-unchanged.
+- claim: fig5i-axons-in-clusters
+  outcome: reproduced
+  notebook: somata.ipynb
+  output: claim:fig5i-axons-in-clusters
+  notes: Under reading (a), 88.1% of ADN axons lie inside the heading-class 95% ellipse and 83.0% of
+    visual axons inside the landmark-class ellipse; under (b), 72.4% and 55.5%. The soma ellipses
+    overlap heavily. The alignment-class ellipse holds 84 to 96% of both axon groups, the heading
+    ellipse 81 to 93% of visual axons, and the LDA assigns 85 to 98% of axons to the alignment class.
+    Lying inside the ellipses does not separate the two axon groups here.
+  deviations:
+  - Tested on the classes found here, which differ from the paper's.
+  - The 95% ellipse is read as the 95% region of a bivariate normal fitted to the class's LDA points,
+    as the claims file says.
+- claim: fig5k-visual-cue-only
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Two visual-cue-only recordings (Suspended, SKKS125 and SKKS127, 15050 frames) are in the
+    dataset, but no recording shares their ROIs. The standard recordings of the same mice have
+    different numbers of ROIs, and no matching of ROIs is given, so neurons cannot be matched across the two conditions. Light-on and light-off
+    periods are not marked in them either.
+- claim: fig6a-population-light-on
+  outcome: blocked
+  blocked_by: other
+  notes: Not tested within the run's five-hour limit. The data the decoding needs are in the
+    dataset (the dual-cue soma recordings, their light and dark segments and the classes of
+    fig5-class-proportions). No pseudopopulation was built. The classes found here differ from the
+    paper's, so the class decoders of Figure 6B would in any case decode other groups.
+- claim: fig6a-population-light-off
+  outcome: blocked
+  blocked_by: other
+  notes: Not tested within the run's five-hour limit (see fig6a-population-light-on).
+- claim: fig6b-heading-cells
+  outcome: blocked
+  blocked_by: other
+  notes: Not tested within the run's five-hour limit (see fig6a-population-light-on).
+- claim: fig6b-landmark-cells
+  outcome: blocked
+  blocked_by: other
+  notes: Not tested within the run's five-hour limit (see fig6a-population-light-on).
+- claim: fig6b-alignment-cells
+  outcome: blocked
+  blocked_by: other
+  notes: Not tested within the run's five-hour limit (see fig6a-population-light-on).
+- claim: fig6b-180-errors
+  outcome: blocked
+  blocked_by: other
+  notes: Not tested within the run's five-hour limit (see fig6a-population-light-on).
+- claim: fig6-heading-below-population
+  outcome: blocked
+  blocked_by: other
+  notes: Not tested within the run's five-hour limit (see fig6a-population-light-on).
+findings:
+- kind: data_missing
+  statement: The free-chamber recordings of Figure 1D and E (4 recordings over 3 mice, 2665 neurons)
+    are not in the dandiset. The files hold 20 mice where the paper used 26.
+- kind: data_missing
+  statement: The files hold the raw fluorescence of each ROI but no neuropil trace, dF/F or inferred
+    spikes, so the paper's neuropil-corrected signals cannot be rebuilt without reprocessing the raw
+    video (about 695 GB). The axon recordings lack the Suite2P traces the paper used.
+- kind: metadata_insufficient
+  statement: The experiment a file belongs to (single cue, dual cue, axons, head rotation, remapping,
+    rotation direction, animal control, visual cue only) is given only inside its identifier string;
+    the session description is "floating air cage experiment" for every file.
+- kind: metadata_insufficient
+  statement: Light-on and light-off periods, which most dual-cue analyses need, are not marked in any
+    file; the paper's code hard-codes them by recording length.
+- kind: metadata_insufficient
+  statement: The heading is relative to "cage door dead north"; where the cue or cues sit in that
+    frame is not given, so heading relative to the cue cannot be computed. In the head-rotation pairs
+    the stored headings run in opposite directions in the two conditions in 5 of 7 pairs, and how
+    each is defined is not stated.
+- kind: metadata_insufficient
+  statement: The visual-cue-only recordings of Figure 5K share no ROIs with any standard recording and
+    no matching is given, so the matched neurons of Figure 5K cannot be found.
+- kind: metadata_error
+  statement: The heading and position series state a rate of 0.1 Hz; they have one sample per imaging
+    frame, at 10 Hz. The two-photon series states about 20 Hz with the same number of frames.
+- kind: metadata_error
+  statement: Every file's imaging plane is described as "soma recording from retrosplenial cortex",
+    including the 24 axon recordings.
+- kind: metadata_error
+  statement: Four files of mouse SKKS089 (2021-04-29 head rotation, 2021-05-18 remapping) carry
+    identifiers naming SKKS088.
+- kind: selection_undocumented
+  statement: The dandiset holds 7 head-rotation pairs over 5 mice (paper 5 over 4), 35 dual-cue soma
+    recordings (paper 36), 4 recordings in both rotation directions over 3 mice (paper 4 over 2) and
+    5 animal-controlled recordings over 4 mice (paper 7 over 3); which recordings the paper used is
+    not stated.
+- kind: methods_unavailable
+  statement: Question for the authors. The heading-selection code fits the Gaussian to the trial-mean
+    curve without centring it (center_flag false) and bounds the peak location to pi/2 +- pi/6, which
+    passes only cells whose peak lies near one heading (here 10.85% of single-cue cells, 93.6% of them
+    in one quadrant). Was the curve centred on its peak before the fit, as the 'fit' preferred
+    direction does? With centring, 15.26% pass and their preferred headings tile the circle.
+- kind: methods_unavailable
+  statement: Question for the authors. In the head-rotation experiment, how are the stored headings of
+    the head-rotation and chamber-rotation files defined, and was one mirrored before comparing
+    preferred headings? Which 5 of the 7 pairs in the dandiset were used?
+- kind: methods_unavailable
+  statement: The code that aligns light-off to light-on trials (leaveOneOutAligner), and the code for
+    the clustering, V-tests, decoding and statistics, are not in the linked repository.
