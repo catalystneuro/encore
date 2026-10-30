@@ -1,0 +1,362 @@
+schema_version: 2
+id: 000467-hart-2023-01
+dataset:
+  archive: dandi
+  id: "000467"
+  version: 0.261004.1655
+  doi: 10.48324/dandi.000467/0.261004.1655
+paper: doi:10.1016/j.cell.2023.05.025
+date: 2026-10-30
+entry: 000467-hart-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41046277331
+outcomes:
+- claim: fig1cd-new-pheromones-leave-nest
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The colony alarm bioassay (videos and hand-scored counts) is not in the dandiset, which holds
+    only two-photon imaging, and the paper names no deposit for it (its data availability statement
+    lists NCBI BioProject, the Brain Image Library and DANDI only).
+- claim: fig1e-categorical-response
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour videos and their categories are not in the dandiset nor named among the paper's
+    deposits (see fig1cd-new-pheromones-leave-nest).
+- claim: fig1f-hexanol-like-native
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The nest pile persistence scores are not in the dandiset nor named among the paper's deposits.
+- claim: fig1f-mho-differs
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The nest pile persistence scores are not in the dandiset nor named among the paper's deposits.
+- claim: fig1f-vehicle-differs
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The nest pile persistence scores are not in the dandiset nor named among the paper's deposits.
+- claim: table1-transgenesis
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The injection records behind Table 1 are not in the dandiset nor named among the paper's
+    deposits.
+- claim: fig2b-s1a-transgene-fluorescence
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The epifluorescence images of pupae are not in the dandiset, and the paper names only confocal
+    microscopy among its Brain Image Library deposits.
+- claim: fig2cd-gcamp-in-osns
+  outcome: blocked
+  blocked_by: other
+  notes: The confocal stacks are in the Brain Image Library (data elsewhere), under identifiers the
+    claims file gives without saying which figure each holds. The BIL retrieve API answered "no
+    entry found" for 7b20a5b168a92088, and the stacks were not located or read within this run's five
+    hours, which went to the imaging data.
+- claim: figs1-expression-outside-al
+  outcome: blocked
+  blocked_by: other
+  notes: As fig2cd-gcamp-in-osns; the Brain Image Library stacks were not located or read in this run.
+- claim: figs2ab-glomerulus-counts
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The counts come from manual segmentation of every glomerulus in LABKIT (Methods), which a
+    notebook cannot repeat, and the segmentations are not among the deposits. The stacks themselves
+    (Brain Image Library) were not located in this run (see fig2cd-gcamp-in-osns).
+- claim: fig2e-t7-ammc
+  outcome: blocked
+  blocked_by: other
+  notes: As fig2cd-gcamp-in-osns; the Brain Image Library stacks were not located or read in this run.
+- claim: fig2f-ablation
+  outcome: blocked
+  blocked_by: other
+  notes: As fig2cd-gcamp-in-osns; the Brain Image Library stacks were not located or read in this run.
+- claim: ablation-al-volume-trend
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The AL volumes come from manual reconstruction of confocal stacks (Methods), which a notebook
+    cannot repeat; the stacks (Brain Image Library) were not located in this run.
+- claim: figs2cf-gcamp-ants-behavior
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The bioassay counts of GCaMP6s ants are not in the dandiset nor named among the paper's
+    deposits.
+- claim: figs3-single-insertion
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: NCBI BioProject PRJNA947257 holds one SRA experiment of whole-genome resequencing, 17 Gbases
+    (5,561 MB), public. The Methods pipeline (Trimmomatic, bwa mem against the 220 Mb genome, Picard,
+    samtools depth) on 17 Gbases takes hours on the runner's 4 cores, beyond the 30-minute notebook
+    limit, and bwa, Trimmomatic and Picard are not installable from a locked pip environment. Only the
+    BioProject page and an SRA search were read; nothing was aligned.
+- claim: fig3f-general-odorants-unique
+  outcome: not_reproduced
+  notebook: general_odorants.ipynb
+  output: claim:fig3f-general-odorants-unique
+  notes: Across ants, 11 of 28 ant and odorant cases have their centroid closer to the same odorant in the
+    other ants than to any other odorant (3-hexanone in all 6 ants, ethanol in 4 of 6, ethylpyrazine in
+    1 of 6, isopropanol and propionic acid in none); the criterion needs more than half, under every M2
+    reading, and the centroid test does not depend on the M2 reading. Within ants, no odorant pair has
+    the same responding ROIs under the four readings a; under the readings b there are 4 to 36 identical
+    pairs summed over the 6 ants (bix 4).
+  deviations:
+  - Stabilization by whole-pixel phase correlation in place of Fiji's Image Stabilizer; ROIs drawn by
+    rule inside an AL mask (log-Otsu on baseline fluorescence), not by eye.
+  - "\"Closer\" was read as a smaller mean distance to the same odorant's centroids in the other ants
+    than to each other odorant's centroids; the claims file does not fix the distance rule."
+- claim: fig3fg-hexanone-broad
+  outcome: partially_reproduced
+  notebook: general_odorants.ipynb
+  output: claim:fig3fg-hexanone-broad
+  notes: 3-hexanone has the largest area of at least 0.2 in its trial-averaged max projection in all 6
+    ants; median areas are 3,534 um2 for 3-hexanone, 1,850 for ethylpyrazine, 1,040 for isopropanol, 940
+    for propionic acid and 331 for ethanol. The ratio to ethylpyrazine is 1.91, short of the
+    criterion's 2; to the others 3.4 to 10.7. The same without the AL mask (1.91).
+  deviations:
+  - Area counted inside the AL mask; the whole field of view is shown as a variant and gives the same.
+- claim: figs4a-bilateral-symmetry
+  outcome: partially_reproduced
+  notebook: general_odorants.ipynb
+  output: claim:figs4a-bilateral-symmetry
+  notes: Both ALs have responding ROIs in all three ants under every reading, and the mirrored maps of
+    responding pixels correlate at r = 0.200, 0.283 and 0.161 against -0.025, -0.037 and -0.014 for
+    the half-width shift. The ROI counts differ by more than one in at least one ant under every
+    reading (bix 5 and 5, 4 and 7, 2 and 2; aix 9 and 11, 7 and 8, 8 and 10).
+  deviations:
+  - The two ALs lie one above the other in the 1X images; the midline is the least fluorescent row
+    between 30% and 70% of the height, and the files do not say which AL is the left one.
+- claim: fig4b-vehicle-no-response
+  outcome: not_reproduced
+  notebook: alarm_pheromones.ipynb
+  output: claim:fig4b-vehicle-no-response
+  notes: Under every M2 reading at least one ant has an ROI responding to its single vehicle trial, 9 to 11
+    of 13 ants under the readings a and bii, and 1 ant (ant2-m4-d26-y2022, 2 ROIs) under bix and biy,
+    with a largest vehicle ROI value of 0.327 there (1.864 to 1.984 under the others). Under bix the
+    pheromones have at least one responding ROI in 11 (heptanone), 8 (heptanol), 13 (hexanol) and 7
+    (6MHO) of 13 ants. The vehicle maps of ant2-m4-d26-y2022 give 123 to 137 responding regions under
+    the readings a, a sign of a non-specific change in that trial.
+  deviations:
+  - The vehicle was given once per ant in the dataset, so its ROIs come from the pheromone trials.
+- claim: fig4-no-decreases
+  outcome: not_reproduced
+  notebook: alarm_pheromones.ipynb
+  output: claim:fig4-no-decreases
+  notes: 594 regions at least 10 um across reach -0.2 or below in at least two trials of one odor at the
+    higher concentration, in the same plane, without doing so in the vehicle trial (540 of them 10 to
+    20 um), in all 13 ants; the most negative has a mean of -0.452 (ant4-m4-d26-y2022, hexanol, plane
+    3). 168 more are negative in the vehicle trial too. The single-glomerulus models agree that 6G
+    decreases with heptanone and heptanol (predictions -0.139 to -0.082 at 48%, CIs below 0).
+  deviations:
+  - Only each ant's higher concentration was mapped for this claim.
+  - Stabilization by whole-pixel phase correlation, not Image Stabilizer; residual motion could produce
+    some of the negative regions, and the vehicle comparison removes only those it shares.
+  - A region "doing so in the vehicle trial" was read as at least half of its bins at -0.2 or below in
+    the vehicle map of the same plane; the claims file does not say how a region is matched.
+- claim: fig4-large-lasting-responses
+  outcome: partially_reproduced
+  assumed: true
+  notebook: alarm_pheromones.ipynb
+  output: claim:fig4-large-lasting-responses
+  notes: With glomerulus-sized ROIs (drawing b) the median peak fold change of responding ROI-trials is
+    1.18 with the maximum value (758 ROI-trials, 30.5% within 1 to 2) and 0.592 with the mean (405, 17.3%
+    within 1 to 2); the criterion needs both in 0.9 to 2.2. dF/F0 at 8.4 s exceeds the baseline mean plus
+    3 SD in 75.1% (mean value) and 45.6% (maximum) of them. With every region kept (drawing a) the
+    medians are 0.367 and 0.422 and 26.2 to 28.5% outlast the pulse.
+  deviations:
+  - The outcome rests on ROI drawing b, adopted as an assumption (see figs5a-sparse-median-6); drawing a
+    fails both parts.
+  - The trace for "lasting" is the ROI's mean raw fluorescence at its depth plane, on 4 x 4 binned
+    volumes 1 to 5 and 8, stabilized as the maps are.
+- claim: figs5a-sparse-median-6
+  outcome: reproduced
+  assumed: true
+  notebook: alarm_pheromones.ipynb
+  output: claim:figs5a-sparse-median-6
+  measured: 3
+  notes: Under bix the medians over ants are 1 (heptanone), 1 (heptanol), 3 (hexanol) and 0.5 or 1 (6MHO)
+    at 48% (8 ants) and at each ant's higher concentration (13 ants); the largest is 3. All four readings
+    b give at most 4. The readings a give largest medians of 33.5 to 48.3, because they keep every
+    thresholded region, down to single 1.2 um bins, as an ROI. Leaving out the 4 trials where most of
+    the AL is at least 0.2 changes nothing.
+  deviations:
+  - The paper drew ROIs by eye. Of the claims file's readings, the outcome rests on bix, adopted as an
+    assumption because the Results define glomeruli as 10 to 20 um across (reading b keeps ROIs of
+    that size), ImageJ measures an ROI by its mean (value i), and the Methods state the rule of the
+    trial-mean value (counting x). The readings disagree (b meet the criterion, a do not); all are shown.
+  - Stabilization by whole-pixel phase correlation; ROIs drawn by rule inside an AL mask.
+  - Overlapping ROIs of two odors were taken as one glomerulus when at least half of the smaller
+    overlaps the larger and their depths are within 2 planes (10 um); the Methods say only "the same
+    z-depth".
+- claim: figs5a-concentration-more-glomeruli
+  outcome: reproduced
+  assumed: true
+  notebook: concentration.ipynb
+  output: claim:figs5a-concentration-more-glomeruli
+  notes: Under bix the count at the higher concentration exceeds the lower in 24 of 52 ant and pheromone
+    pairs, falls short in none, ties in 28 (two-sided sign test p < 0.0001), and every ROI responding at
+    the lower concentration responds at the higher in 51 of 52 pairs. biy also meets the criterion (32
+    against 8, p = 0.0002; 49 of 52). The readings a pass the sign test but fail the subset condition (8
+    to 17 of 52); biix and biiy fail the sign test (p = 0.48 and 0.13). The ROIs are drawn at the higher
+    concentration, as in the Methods, which favours ROIs that respond there.
+  deviations:
+  - The outcome rests on the adopted M2 reading bix (see figs5a-sparse-median-6).
+- claim: figs5b-shared-glomerulus
+  outcome: partially_reproduced
+  assumed: true
+  notebook: alarm_pheromones.ipynb
+  output: claim:figs5b-shared-glomerulus
+  notes: Under bix the median number of ROIs responding to heptanone, heptanol and hexanol at one depth
+    is 1 at the higher concentration (13 ants) and at 48% (8 ants), but exactly one is found in 6 of 13
+    ants (4 of 8), not more than half; 6 ants have none and 1 has two. No reading meets both conditions;
+    the readings a give medians of 2 to 4 and the readings bii of 1 to 2, with more than one shared ROI
+    in 5 to 11 ants. Leaving out the flagged trials gives a median of 0 at the higher concentration under bix.
+  deviations:
+  - The outcome rests on the adopted M2 reading bix (see figs5a-sparse-median-6); under it the median
+    holds and the count of ants does not.
+- claim: figs5c-mho-rarely-overlaps
+  outcome: reproduced
+  assumed: true
+  notebook: alarm_pheromones.ipynb
+  output: claim:figs5c-mho-rarely-overlaps
+  notes: Under bix the median number of ROIs shared by 6MHO and another pheromone is 0, with any in 2 of
+    13 ants (1 of 8 at 48%); biy gives 1 of 13. The readings a and ii give medians of 1 to 4.5 with
+    shared ROIs in 4 to 13 ants, and do not meet the criterion. With heptanone or hexanol only (the
+    statement's wording) bix gives the same.
+  deviations:
+  - The outcome rests on the adopted M2 reading bix (see figs5a-sparse-median-6).
+- claim: fig6-shared-panic-pathway
+  outcome: partially_reproduced
+  assumed: true
+  notebook: alarm_pheromones.ipynb
+  output: claim:fig6-shared-panic-pathway
+  notes: Imaging half only. Under bix figs5c-mho-rarely-overlaps is met and figs5b-shared-glomerulus only
+    in part (median 1, exactly one shared ROI in 6 of 13 ants). The behaviour half rests on
+    fig1e-categorical-response, whose data are not in the dataset.
+  deviations:
+  - The outcome rests on the adopted M2 reading bix (see figs5a-sparse-median-6).
+- claim: fig5ab-focal-glomeruli
+  outcome: not_reproduced
+  notebook: alarm_pheromones.ipynb
+  output: claim:fig5ab-focal-glomeruli
+  measured:
+  - 7
+  - 4
+  - 0
+  notes: No M2 reading gives all three counts within tolerance; PGb is identified in 7 to 12 of 13 ants,
+    6G in 4 to 11 and PGa in 0 to 9 (bix 7, 4, 0, given as measured; aiix 12, 11, 9). With the deepest
+    AL plane where the AL's baseline fluorescence falls to 25% of its brightest plane, PGb lies in the
+    middle third of the depth in 2 to 4 ants per reading (bix 2 of 7; the other 5 at 0.71 to 0.81 of the
+    depth). With a 10% rule 6 to 11 ants per reading are in the middle third.
+  deviations:
+  - The identification follows M4 with "adjacent" read as centres at most 20 um apart (two touching
+    glomeruli of at most 20 um, Results); the claims file does not give a distance.
+  - The deepest plane with AL fluorescence was read with a 25% rule, with 10% and 50% shown; the claims
+    file does not give one.
+- claim: fig5d-stereotyped-positions
+  outcome: not_reproduced
+  notebook: alarm_pheromones.ipynb
+  output: claim:fig5d-stereotyped-positions
+  notes: Under bix no PGa is identified, so its two offsets cannot be measured; 6G (4 ants) is 14.1, 13.2,
+    14.2 and 8.4 um lateral and 1.9, 2.4, 2.0 and 3.8 um anterior of PGb under the centre readings ac,
+    ad, bc and bd, within tolerance for the first three. Under the readings a, which find PGa in 6 to 9
+    ants, PGa lies 3.8 to 8.5 um anterior of PGb on average (expected 12.9 +/- 1.9) and 6G 4.8 to 9.0
+    um lateral (expected 13.1 +/- 2.6). No reading meets the criterion, so the readings do not disagree
+    on the outcome. The image axes are those the files give ("up is lateral, right is anterior").
+  deviations:
+  - Centres were taken on 4 x 4 binned per-plane maps (1.16 um) in PGb's plane.
+  - The identification in the main reading depends on fig5ab-focal-glomeruli, which did not find PGa.
+- claim: fig5c-s6-tuning
+  outcome: partially_reproduced
+  assumed: true
+  notebook: alarm_pheromones.ipynb
+  output: claim:fig5c-s6-tuning
+  notes: With the glomeruli identified under bix (PGb in 7 ants, 42 trials per pheromone; 6G in 4 ants,
+    24 trials; PGa in none), PGb responds at 48% to heptanone (0.787 to 0.794), heptanol (0.574 to
+    0.598) and hexanol (0.694 to 0.727), all with CIs above 0, and not to 6MHO (-0.039 to -0.023, CIs
+    including 0); 6G responds to 6MHO (0.343 to 0.351); under both models (fixed ant effects, random
+    intercept) and both centre-plane readings. Four of the six named combinations respond; the two PGa
+    ones could not be tested. The sets of PGb and 6G differ. 6G's predictions for heptanone and
+    heptanol are negative with CIs below 0, which the criterion counts as neither a response nor no
+    response.
+  deviations:
+  - The outcome rests on the identification under the adopted M2 reading bix; PGa was not identified.
+  - The single-glomerulus ROI is a 15 um disc on the glomerulus centre; the claims file's other reading,
+    the region of at least 0.2, was not run. Traces are not stabilized.
+  - The model of reading (a) predicts for the average ant (sum-coded ant effects).
+- claim: fig5c-6g-slow
+  outcome: partially_reproduced
+  assumed: true
+  notebook: alarm_pheromones.ipynb
+  output: claim:fig5c-6g-slow
+  notes: Under every reading (48% or pooled, centre plane a or b) the mean PGb traces for heptanone,
+    heptanol and hexanol end, over the last five volumes, at -0.140 to 0.168 with end over peak at most
+    0.195, and the mean 6G trace to 6MHO stays at or above half its peak for 36.1 to 37.3 s. PGa was not
+    identified under bix, so the PGa part is untested.
+  deviations:
+  - The outcome rests on the identification under the adopted M2 reading bix.
+- claim: figs7a-6g-extended
+  outcome: not_reproduced
+  assumed: true
+  notebook: alarm_pheromones.ipynb
+  output: claim:figs7a-6g-extended
+  measured:
+  - 4.8
+  - 70.5
+  notes: 6G is identified in 3 of the 5 ants with a 144 s recording. The mean trace peaks at 0.318 at
+    21.7 s; it stays at or above 90% of its peak for 2.4 s and 80% for 4.8 s (measured gives the 80%
+    plateau and the return below baseline mean plus 3 SD from odor onset), against about 30 s. It returns
+    31.8 to 70.5 s after odor presentation across the readings, against 80 +/- 8 s, and the longest
+    single trial returns after 91 s, not more than 100 s.
+  deviations:
+  - The outcome rests on the identification under the adopted M2 reading bix; two of the five ants have
+    no 6G under it.
+- claim: figs7c-temporal-lme
+  outcome: blocked
+  blocked_by: other
+  notebook: alarm_pheromones.ipynb
+  output: claim:figs7c-temporal-lme
+  notes: The models compare PGb and PGa, and no PGa was identified under the main M2 reading, so each
+    fit fails with a single glomerulus level. For PGb at 48% (15 trials per pheromone, none excluded),
+    onset is 6.00 s after stimulus start for heptanol and 3.67 to 3.75 s for hexanol, and time to
+    maximum 12.66 to 13.22 s and 8.81 to 8.97 s. A trial run during development with the glomeruli
+    identified under aiix (which finds PGa) gave PGa traces that never exceeded the onset bound; it is
+    not in the notebook and decides nothing.
+findings:
+- kind: metadata_error
+  statement: The planes' starting_time values step by 0.0335 s, so a 33-plane volume takes 1.105 s,
+    while each file's imaging_rate is 0.83 volumes/s (1.205 s per volume) and the paper states 27.5
+    frames/s and a volume every 1.2 s. The data do not show which is right; the analysis times volumes
+    by the imaging rate.
+- kind: metadata_insufficient
+  statement: The odor, concentration and trial are given only in the file and session names and the stimulus
+    timing (onset 3 s, 5 s pulse) only in free-text descriptions; the files hold no stimulus or trial
+    table. The bilateral files do not say which antennal lobe is the left one.
+- kind: other
+  statement: Each file holds one plane of one trial as uncompressed float64, although the values are
+    13-bit integers (0 to 8191), so the dandiset is 14,685 files and 1.26 TB. A whole-lobe analysis of
+    the alarm experiment must open about 11,600 files; this attempt read about half a terabyte through
+    range requests.
+- kind: selection_undocumented
+  statement: The general odorant files hold the five odorants the paper analyses and the vehicle; the paper
+    says 7 to 9 odorants were presented, and the dandiset does not say that the others were left out.
+- kind: methods_unavailable
+  statement: Questions for the paper's authors. How were the ROIs drawn on the max projections (any
+    size or shape rule, how adjacent glomeruli were separated), was an ROI's value its mean or its
+    maximum, and was "responding" judged on the trial-mean value (Methods) or per trial and averaged
+    (Figure S5 legend)? This attempt adopted glomerulus-sized ROIs, the mean, and the trial-mean rule;
+    the counts of responding glomeruli, the vehicle responses and the identification of PGb, 6G and
+    PGa depend on these choices.
+- kind: methods_unavailable
+  statement: Questions for the paper's authors. Which trials were excluded for motion artifacts, and by
+    what rule? How was the centre plane of a glomerulus chosen, and what ROI was measured on the
+    three-plane projection? What distance makes two glomeruli adjacent when identifying 6G and PGa?
+- kind: other
+  statement: No file or trial is deposited twice. All 14,685 assets have distinct content, and no two
+    trials of an ant have identical baseline volumes in the maps computed.
