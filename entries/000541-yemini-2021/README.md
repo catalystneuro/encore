@@ -23,7 +23,7 @@ Tests the whole-brain imaging findings of [Yemini et al. (2021)](https://doi.org
 | Low R2 with the connectome | Partially reproduced (heads only) |
 | Variations do not improve it | Reproduced |
 | Figures 1, 2, 4C, 5, 7B-C and S1A-G (8 claims) | Blocked: data missing |
-| GABA network and extrasynaptic signaling (Figure 4B-F) | Blocked: the paper does not name its transmitter map or connectome (methods underspecified proposed) |
+| GABA network and extrasynaptic signaling (Figure 4B-F) | Blocked: not tested in this attempt; the inputs the paper names are public |
 | Optimal coloring (Figure 7D-E) | Blocked: not runnable (MATLAB) |
 
 Two methods the paper leaves open are taken as assumptions and shown under every reading: one member of each near-duplicate pair is removed, and traces are z-scored before the response tests. Tests on z-scored traces match the p values of the paper's Table S6 far better than tests on dF/F0. Removing one member comes closest to Table S6's per-class trace counts; agreement with its p values is about the same under all four selection readings (257 to 261 class agreements at 0.05).

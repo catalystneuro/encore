@@ -301,25 +301,40 @@ outcomes:
   blocked_by: other
   notes: 'A data: with_inputs claim; no dandiset data enter it. It needs the receptor expression map (the paper''s Table S4,
     mmc6.xlsx at https://ars.els-cdn.com/content/image/1-s2.0-S0092867420316822-mmc6.xlsx, public, found during the revision
-    after the first round had looked on PMC, Europe PMC and cell.com without success), a map of which neurons release GABA,
-    acetylcholine and glutamate, and a connectome. The paper names neither the transmitter map nor the connectome it used
-    for this figure, so the analysis cannot be rebuilt from the paper as written.'
+    after the first round had looked on PMC, Europe PMC and cell.com without success), the neurotransmitter maps the paper
+    cites (Gendrel et al., 2016; Pereira et al., 2015; Serrano-Saiz et al., 2013, with the GABA-A receptor map from Gendrel
+    et al., 2016) and the Cook et al. (2019) connectome, whose synapse counts the notebook already loads for the Figure 6
+    claims. The paper names these in the same paragraph as the claim (Results, Expression Maps for All Metabotropic Neurotransmitter
+    Receptors, paragraph 2), and the Figure 4D legend gives the synapse thresholds (at least 1, 5 or 10). Earlier revisions
+    said the paper names neither the transmitter map nor the connectome; that was wrong, as the round-3 verifier found. The
+    inputs are named and public, but this attempt did not build the analysis, so the claim is untested here and a later
+    attempt can test it.'
   proposed:
     outcome: blocked
     blocked_by: methods_underspecified
     reason: The block is that the paper does not name the transmitter map or the connectome behind Figure 4, as the round-2
       verifier says; that is a method the paper leaves unstated, which methods_underspecified names more exactly than other.
+      The round-3 verifier does not agree. The paper names the transmitter maps (Gendrel et al., 2016; Pereira et al., 2015;
+      Serrano-Saiz et al., 2013) and the connectome (Cook et al., 2019) in the same paragraph as the claim, and the Figure
+      4D legend gives the synapse thresholds, so every input is named and public and the claim should be tested; with no
+      analysis behind it, no outcome can be given.
 - claim: fig4e-extrasynaptic
   outcome: blocked
   blocked_by: other
   notes: 'A data: with_inputs claim; no dandiset data enter it. It needs the same inputs as fig4bd-gaba-network (Table S4,
-    public at the publisher, a neurotransmitter identity map and a connectome). The paper names neither the transmitter map
-    nor the connectome it used for this figure, so the analysis cannot be rebuilt from the paper as written.'
+    public at the publisher, the neurotransmitter maps the paper cites and the Cook et al. (2019) connectome, all named in
+    the same paragraph as the claim). The Figure 4E legend defines the quantity, the percentage of receptor-expressing neurons
+    with no presynaptic partner that releases the cognate transmitter, and the claims file''s criterion gives two readings
+    for the reversed GAR/MGL pairing in the Results. Earlier revisions said the paper names neither the transmitter map nor
+    the connectome; that was wrong, as the round-3 verifier found. This attempt did not build the analysis, so the claim
+    is untested here and a later attempt can test it under both readings.'
   proposed:
     outcome: blocked
     blocked_by: methods_underspecified
     reason: As for fig4bd-gaba-network, the block is the unnamed transmitter map and connectome, a method the paper leaves
-      unstated.
+      unstated. The round-3 verifier does not agree, for the same reason as for fig4bd-gaba-network. The Figure 4E legend
+      defines the quantity, and the claims file's criterion handles the reversed GAR/MGL pairing with two readings, so this
+      is not an unstated method and the claim should be tested under readings (a) and (b).
 - claim: fig5ab-pag3-fate
   outcome: blocked
   blocked_by: data_missing
@@ -774,3 +789,34 @@ verifications:
       but also say "the inputs are public, so a later attempt can", which makes it sound like a choice. The block should be
       stated as the unnamed inputs.
     response: As for fig4bd-gaba-network; methods_underspecified is proposed.
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'The changes of outcome proposed after round 2 (fig4bd-gaba-network and fig4e-extrasynaptic) and the analysis
+    behind them, with the paper under paper/. Report: transcripts/000541/verifier-3-report.md.'
+  results:
+  - claim: fig4bd-gaba-network
+    agrees: false
+    reason: 'No analysis sits behind this outcome. Cell 77 is prose only. Its reason is that "the paper names neither the
+      transmitter map nor the connectome", and the paper does name both, in the same paragraph as the claim (Results, Expression
+      Maps for All Metabotropic Neurotransmitter Receptors, paragraph 2). The transmitter maps are "Gendrel et al., 2016;
+      Pereira et al., 2015; Serrano-Saiz et al., 2013". The connectome is the wiring diagram "(Figures 4B and 4G; Cook et
+      al., 2019)". The GABA-A receptor map is credited to Gendrel et al. (2016). The notebook already loads the Cook et al.
+      (2019) chemical and gap-junction synapse-count matrices (cell 69). The Figure 4D legend gives the synapse thresholds,
+      at least 1, 5 or 10. Table S4 is public at the publisher, as the record says. Every input is named and public. Neither
+      other nor methods_underspecified describes a real block, because both rest on the same mistaken premise. In round
+      2 I accepted that premise without checking it against the paper, and that was my mistake. Not blocked; it should be
+      tested, and with no analysis yet no outcome can be given.'
+    response: The outcome stays blocked (other), the one round 2 agreed with, and the proposal stays with this view added;
+      the analysis is not run in this revision, so testing the claim waits for a new attempt. The wrong statement that the
+      paper names no transmitter map or connectome is corrected in the notes, the notebook's conclusions and summary, and
+      the README, which now give the sources the paper cites and say the claim is untested here.
+  - claim: fig4e-extrasynaptic
+    agrees: false
+    reason: 'The reason is the same as for fig4bd-gaba-network: the same paragraph and the same named sources (cell 77; Cook
+      matrices already loaded in cell 69). The Figure 4E legend defines the quantity: the percentage of receptor-expressing
+      neurons with no presynaptic partner that releases the cognate transmitter. The claims file''s criterion already handles
+      the reversed GAR/MGL pairing in the Results with two readings. A reader who wants to choose a reading has a path, so
+      this is not an unstated method. Not blocked; it should be tested under readings (a) and (b) of the claims file''s criterion.'
+    response: As for fig4bd-gaba-network. The outcome stays blocked (other), the proposal stays with this view added, and
+      the text is corrected; testing under readings (a) and (b) waits for a new attempt.
