@@ -1,0 +1,415 @@
+schema_version: 2
+id: 000351-jeong-2022-01
+dataset:
+  archive: dandi
+  id: '000351'
+  version: 0.260828.1905
+  doi: 10.48324/dandi.000351/0.260828.1905
+paper: doi:10.1126/science.abq6740
+date: '2026-10-30'
+entry: 000351-jeong-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/40984158261
+inputs:
+- what: The day lists (startday, endday, learnedday) by which the paper's Matlab scripts select each animal's sessions,
+    from analysis/fig4/cumsum_pavlovian.m, analysis/fig4/cumsum_bgdrw_vs_extinction.m, analysis/fig5/intermediate_rsp_trialless.m,
+    analysis/figS10/omission.m, analysis/figS10/cue_acquisition.m and analysis/fig6/backpropagation_pavlovian.m;
+    they name sessions by the Day number of the dandiset's file names. The measures of the scripts are ported, not
+    run.
+  source: https://github.com/namboodirilab/ANCCR at commit cff44144e60a4313a30ffbb4bb8a1f3dd398b525
+outcomes:
+- claim: session-day-link
+  outcome: partially_reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:session-day-link
+  notes: All 28 subjects of the code's lists are in the dandiset, matched with _ read as -. Of the 119 listed days
+    (startday, endday, learnedday and the single days of omission.m), 117 are sessions with the condition the script
+    names; HJ-FP-M4 Day38, the first background reward day in cumsum_pavlovian.m (condition 4) and cumsum_bgdrw_vs_extinction.m,
+    is not in the dandiset. All 320 sessions inside the ranges have the condition (3 s or 9 s cue-reward delay,
+    background rewards, no delivered reward, trial-less task). Counted literally, 320 of the 331 integer days in
+    the ranges are sessions; the 7 missing days inside the Pavlovian ranges are M2 Day23, M3 Day16 and Day31, M4
+    Day30 and Day38, F2 Day16 and M6 Day49. The subjects match and more than 90% of the listed days do, so the link
+    holds in part. The dependent claims are tested on the sessions present; the missing sessions bear on fig4p-background-faster-decay
+    (M4's first background session) and on the session counts. The spreadsheet named in the dandiset's description
+    was not used, as it has no version to pin.
+  deviations:
+  - Day numbers are read from the file names as load_dandi_url does; the Matlab scripts read them from folder names
+    of the authors' local copies, which the dandiset does not hold.
+  - The criterion's every Day number from startday to endday is reported both for the listed days and literally
+    for every integer day; the outcome uses the listed days, since integer days without a session can be days without
+    training.
+- claim: methods-session-counts
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:methods-session-counts
+  measured:
+  - 7.0
+  - 12.71
+  - 4.29
+  - 7.86
+  - 2.43
+  - 5.43
+  - 7.0
+  notes: Counted from the dandiset, the means per animal are 7.0 random reward sessions (4 to 11, SD 2.14), 12.71
+    of Experiment 2, 4.29 of Experiment 3, 7.86 of Experiment 5, 2.43 of Experiment 4, and 5.43 (WT) and 7.0 (DAT-Cre)
+    sequential conditioning sessions, all within the stated SDs. The counts of integer days in the code's ranges
+    are 13.29, 4.29, 8.14 and 2.57, which equal the paper's means for Experiments 2, 5 and 4, so the paper's counts
+    include the 7 sessions the dandiset lacks. The DAT-Cre SD is 2.45 against the paper's 0.7, from datHT-M7's 12
+    sessions.
+  deviations:
+  - Experiment 5 is counted as the sessions with background rewards in the event log, which equals the count in
+    the range of cumsum_bgdrw_vs_extinction.m (7.86); condition 4 of cumsum_pavlovian.m gives 7.14, also within
+    tolerance.
+- claim: exp1-excluded-rewards
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:exp1-excluded-rewards
+  measured:
+  - 22.59
+  - 5.66
+  notes: Reading (a), mean over the 8 animals, 22.59% of rewards with IRI under 3 s and 5.66% without a lick before
+    the next reward; reading (b), over 56 sessions, 22.59% and 5.68%. Both within tolerance under both readings.
+    The SD over animals is 2.39 and 1.04, and over sessions 7.04 and 4.27; the paper's 0.1 matches neither.
+  deviations:
+  - The paper does not say how the percentages are averaged; both readings of the criterion are shown and both match.
+- claim: fig3e-reward-response-increases
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig3e-reward-response-increases
+  notes: Per animal r between response and reward number, 0.068 to 0.677 (mean 0.308), positive in 8 of 8; t(7)
+    = 4.41, p = 0.0031 (paper t = 4.40, p = 0.0031). Of 5600 rewards, 4064 are kept by the exclusions, 4013 of them
+    with dF/F.
+- claim: fig3g-response-iri-positive
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig3g-response-iri-positive
+  notes: Per animal mean of per-session r between response and previous IRI, 0.029 to 0.405; t(7) = 5.95, p = 5.7e-4
+    (paper t = 5.95, p = 5.7e-4).
+- claim: figs8k-iri-correlation-stable
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:figs8k-iri-correlation-stable
+  notes: Linear regression of per-session r on session number over 50 sessions, slope -0.0005, t = -0.04, p = 0.969
+    (paper t = -0.04, p = 0.9707, n = 50). Mean r over animals is positive in each of sessions 1 to 7 (0.134 to
+    0.288).
+- claim: figs8b-lick-rates-constant
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:figs8b-lick-rates-constant
+  notes: Over 50 sessions, total rate slope -0.038 licks/s per session (t = -0.78, p = 0.4389), consummatory -0.008
+    (t = -0.20, p = 0.8397), non-consummatory -0.027 (t = -0.58, p = 0.5618); the paper's p values.
+- claim: figs8d-consummatory-lick-uncorrelated
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:figs8d-consummatory-lick-uncorrelated
+  notes: Per animal r from -0.20 to 0.15 (mean 0.010) over 281 to 686 rewards; t(7) = 0.23, p = 0.824 (paper t =
+    0.23, p = 0.8245). 0 to 14 rewards per animal with an infinite or missing lick rate are dropped, as the code
+    drops infinite values.
+- claim: figs8e-lick-bout-responses
+  outcome: partially_reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:figs8e-lick-bout-responses
+  notes: Under every reading the consummatory onset response is above 0 (mean z 1.76 to 3.07, t = 6.30 to 6.49,
+    p <= 4.0e-4) and above the non-consummatory one (paired t = 7.17 to 8.58, p <= 1.8e-4). The non-consummatory
+    response is negative on average under all readings but significant only under (c), 0 to 0.5 s (z = -0.35, t
+    = -2.56, p = 0.0376, against the paper's t = -2.55, p = 0.0379); under (a) 0 to 1 s z = -0.15, t = -1.65, p
+    = 0.14, and under (b) -0.5 to 1 s z = -0.02, p = 0.80. The criterion asks for all three tests under every reading,
+    so the claim holds in part. The consummatory t values are about twice the paper's (3.03), so the paper's response
+    measure differs from these readings.
+  deviations:
+  - The window of the tests is given by neither the Methods, the legend nor the code; the three readings of the
+    criterion are run, and they give different outcomes for the non-consummatory test.
+- claim: figs8g-baseline-unchanged
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:figs8g-baseline-unchanged
+  notes: With peaks kept by the Methods' rule (more than 0.5 s from any lick and more than 2 s from any reward),
+    mean r of peak size with session -0.034, t(7) = -0.13, p = 0.90; with the code's rule, mean r 0.018, t(7) =
+    0.07, p = 0.95 (paper t = 0.11, p = 0.919). Per animal r from -0.98 to 0.97. Sessions keep a median of 194 peaks
+    (5 to 516) under the Methods' rule.
+  deviations:
+  - Peaks are found with scipy.signal.find_peaks (distance 50 samples, height and prominence as the code), in place
+    of Matlab's findpeaks; NaN samples are set to the session minimum so that they form no peak.
+- claim: figs8h-baseline-uncorrelated-with-reward-change
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:figs8h-baseline-uncorrelated-with-reward-change
+  notes: Across the 8 animals, r between the baseline peak size correlation and the reward response correlation
+    is -0.10 (p = 0.81) with the Methods' rule and -0.09 (p = 0.83) with the code's. The reward response correlation
+    with session is positive in every animal (0.23 to 0.92).
+- claim: figs8l-lick-rate-tracks-iri
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:figs8l-lick-rate-tracks-iri
+  notes: With the IRI in seconds, non-consummatory slope -0.0195 licks/s per s, t = -2.73, p = 0.0147, and consummatory
+    t = 1.00, p = 0.334 (the paper's values, n = 18); with the rank of the condition, t = -2.61 (p = 0.019) and
+    t = 1.34 (p = 0.199). Every animal has two sessions at each of 6, 12 and 30 s.
+- claim: fig4ef-dopamine-leads-behavior
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig4ef-dopamine-leads-behavior
+  notes: Methods' lick measure (0 to 2 s), lick abruptness 0.85 against dopamine 0.26, paired t = 5.06, p = 0.0023;
+    change trial lick 337 against dopamine 177, t = 3.31, p = 0.016. Code's lick measure (cue and trace), t = 9.09,
+    p = 1.0e-4 and t = 2.93, p = 0.026, the paper's values with the change-trial t as lick minus dopamine (the paper
+    prints -2.93). Trials used, round(1.5 x trials before learnedday), 191 to 900.
+- claim: figs10c-cue-response-at-acquisition
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:figs10c-cue-response-at-acquisition
+  measured:
+  - 0.934
+  - 0.934
+  notes: Reading (a), mean of per-animal ratios, cue response on the learned session over the last session 0.934
+    and over the mean of the last two 0.934; reading (b), ratio of means, 0.913 and 0.947. All within tolerance.
+    Per animal the first ratio ranges from 0.59 to 1.33. The Fig 4 measure gives 0.985 and 0.955.
+- claim: fig4hi-delay-change-behavior-changes
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig4hi-delay-change-behavior-changes
+  notes: Lick timing abruptness 0.233 against dopamine 0.064, paired t = 15.34, p = 4.9e-6 (paper t = 22.92). Changing
+    model better than constant for lick timing in all 7 animals, mean delta AIC 382.8, t = 7.49, p = 2.9e-4 with
+    k = 4 (the paper's t), and t = 7.53 with k = 3. 12 to 77 trials per animal without licks in cue and trace are
+    dropped, as the code does.
+  deviations:
+  - The changing model is fitted by bounded least squares (scipy) from 20 random start points with a fixed seed,
+    keeping the best fit; Matlab's fit starts custom models at random points, so the code's fits are not repeated
+    exactly.
+  - dF/F is divided by 100 before the dopamine AUC, as the files store percent and the Methods define dF/F as the
+    fraction (470 - fitted 405)/fitted 405 (Methods, Fiber photometry), on which scale the code's bounds are set.
+- claim: fig4hi-delay-change-dopamine-unchanged
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig4hi-delay-change-dopamine-unchanged
+  notes: Dopamine delta AIC (constant minus changing) per animal -168.5 to 32.7, mean -18.7; t(6) = -0.73, p = 0.49
+    with k = 4 (paper t = -0.86, p = 0.42), and t = -0.65, p = 0.54 with k = 3. No change is found.
+  deviations:
+  - The model fit and the dF/F scale are as in fig4hi-delay-change-behavior-changes.
+- claim: figs10b-no-omission-response
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:figs10b-no-omission-response
+  notes: Cumulative response at the old reward time on the first 8 s session is at or above 0 in 7 of 7 animals;
+    the extinction omission response is negative on average (Methods' measure, mean -87.25, 6 of 7 negative; code's,
+    -45.75, 5 of 7). Paired t = 3.03, p = 0.023 (Methods) and t = 3.42, p = 0.014 (code; paper t = 3.37, p = 0.0150).
+    The criterion's reading (b), negative on average, is met; reading (a), in every animal, is not (F1 is positive
+    under both measures).
+- claim: fig4kl-extinction-abrupt-behavior
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig4kl-extinction-abrupt-behavior
+  notes: Lick abruptness exceeds dopamine abruptness with the Methods' lick measure (1.09 against 0.13, t = 3.28,
+    p = 0.017) and the code's (0.47 against 0.13, t = 9.73, p = 6.8e-5; paper t = 5.67, p = 0.0013). The change-trial
+    comparison gives t = -2.95, p = 0.026 (Methods) and t = -2.40, p = 0.0531 (code, the paper's values). 125 trials
+    per animal.
+- claim: fig4jl-extinction-cue-response-positive
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig4jl-extinction-cue-response-positive
+  notes: (a) Last extinction session, mean CS+ response positive across animals, t(6) = 4.31, p = 0.0050; (b) trials
+    after the lick change trial, t(6) = 4.16, p = 0.0060; (c) positive at p < 0.05 within the last session in 7
+    of 7 animals.
+  deviations:
+  - For reading (b) the lick change trial is taken from the code's lick measure, whose change-trial test matches
+    the paper's, and the trials after it run to the end of the extinction sessions; a standard choice, since every
+    animal's mean after it is positive (2.2 to 25.1).
+- claim: fig4p-background-faster-decay
+  outcome: partially_reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig4p-background-faster-decay
+  notes: The background reward cue response stays positive after the change (mean of the 90 post-change trials over
+    animals, t(6) = 3.40, p = 0.015). It decays further than in extinction on average under every reading, but not
+    significantly; (a) normalized cumulative sum at trial 140, 1.60 against 2.13, paired t = -2.40, p = 0.053; (b)
+    mean over the 90 trials, t = -1.97, p = 0.097; (c) post over pre mean, t = -2.40, p = 0.053 (paper t = -3.51,
+    p = 0.0126). Background is below extinction in 5 of 7 animals. The first background reward session of HJ-FP-M4
+    (Day38) is not in the dandiset, so that animal's 90 post-change trials start a session later; without M4, reading
+    (a) gives t(5) = -1.85, p = 0.12.
+  deviations:
+  - What the paired t-test compares is not in the Methods, legend or code; the three readings of the criterion are
+    run and agree.
+  - HJ-FP-M4's first Experiment 5 session is missing from the dandiset (session-day-link).
+- claim: fig5d-intermediate-cue-positive
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig5d-intermediate-cue-positive
+  notes: Per animal ratio of intermediate to previous cue response 0.12 to 0.68, mean 0.435; t(6) = 6.66, p = 5.6e-4
+    against 0 (paper t = 6.64), and below 1 (t = -8.66, p = 1.3e-4). 7 to 18 pairs per animal over 2 to 4 sessions.
+- claim: fig5d-intermediate-reward-larger
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig5d-intermediate-reward-larger
+  notes: Per animal ratio of intermediate to previous reward response 1.08 to 3.25, mean 1.85; t(6) = 2.96, p =
+    0.025 against 1 (paper t = 2.95, p = 0.0256).
+- claim: figs11de-intermediate-cue-local-baseline
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:figs11de-intermediate-cue-local-baseline
+  notes: Under all four readings (peak over 0 to 0.5 s or 0 to 1 s, baseline the last sample or the mean of the
+    0.5 s before the cue) the ratio of intermediate to previous peak response is positive in every animal (minimum
+    0.135), mean 0.25 to 0.45, t = 5.21 to 8.35, p <= 0.002 (paper t = 10.42).
+  deviations:
+  - The peak window and the baseline are not fixed by the paper; the four readings of the criterion are run and
+    agree.
+- claim: fig6b-no-backpropagation
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig6b-no-backpropagation
+  notes: Normalized late minus early response over the first 100 CS+ trials, -0.008 with the Methods' baseline (t
+    = -0.23, p = 0.83) and -0.006 without (t = -0.16, p = 0.876; paper t = -0.16, p = 0.8771). 473 to 900 trials
+    per animal, so all have the 400 the normalizer needs.
+- claim: fig6d-cues-increase-together
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig6d-cues-increase-together
+  notes: Normalized CS2 minus CS1 over the first 50 trials, mean -0.003, t = -0.03, p = 0.975 without a baseline
+    (the paper's values), -0.002 (p = 0.98) and -0.001 (p = 0.99) with the 1 s and 1.5 s baselines. 225 to 350 trials
+    per control animal.
+  deviations:
+  - The Methods' baseline window is not given; both readings of the criterion are run and agree with the code's
+    unsubtracted measure.
+- claim: fig6d-cs2-below-cs1-late
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig6d-cs2-below-cs1-late
+  notes: CS2 over CS1 response over trials 151 to 200, mean 0.549 (0.30 to 0.71) without a baseline, t(6) = -8.01,
+    p = 2.0e-4 against 1; 0.573 and 0.574 with the 1 s and 1.5 s baselines (p <= 1.1e-4).
+- claim: fig6g-inhibition-magnitude
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig6g-inhibition-magnitude
+  measured: -0.565
+  notes: With the baseline before CS1, dopamine 1 to 1.5 s after CS2 over the reward response is lower in the 6
+    DAT-Cre mice than in the 7 controls under every reading (t = -8.62, p = 3.2e-6 for (a) and (c); t = -6.86, p
+    = 2.7e-5 for (b)), and the day 1 reward response over the random reward session's is lower (0.53 against 1.48,
+    t = -4.13, p = 0.0017 with the 1 s window; t = -3.76, p = 0.0032 with 0.5 s). The DAT-Cre mean inhibition is
+    -0.565 under reading (b), within tolerance of -0.6; (a) -0.247 and (c) -0.494 are not. With the code's baseline
+    over every code-15 event (CS1 and CS2), (b) gives -0.632, t = -5.74, p = 1.3e-4, and the day 1 reward test with
+    the 0.5 s window t = -3.99, p = 0.0021, both the paper's values. The excluded DAT-Cre mouse M8 has a negative
+    day 1 reward response (-0.43), as Fig S12D says.
+  deviations:
+  - The claim's baseline is the 0.5 s before CS1; measure_inhibition_sequential.py takes it before every code-15
+    event, CS1 and CS2 alike (reftimes). Both are shown; the code's reproduces the paper's t values exactly.
+  - For the 1 s reward window the 0.5 s baseline AUC is doubled, so that the baseline covers a window of equal length
+    (claims header); a choice made here, which reading (b) does not involve.
+- claim: fig6i-learning-despite-inhibition
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig6i-learning-despite-inhibition
+  notes: Over the first three and last two sessions, CS1 response slope 0.134 per session in controls (t = 4.17,
+    p = 2.1e-4, n = 35) and 0.076 in DAT-Cre mice (t = 2.87, p = 0.0077, n = 30); lick slopes 1.53 (t = 3.67, p
+    = 8.4e-4) and 1.28 (t = 4.22, p = 2.3e-4) (paper t = 5.49, 2.55, 3.61, 4.92). In the last session all 6 DAT-Cre
+    animals have a positive CS1 response (0.12 to 0.65 of the day 1 reward response) and positive anticipatory licking
+    (0.52 to 10.78 licks).
+- claim: fig6i-lower-cs1-asymptote
+  outcome: not_reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig6i-lower-cs1-asymptote
+  notes: Last-session normalized CS1 response, controls 0.690 (n 7) against DAT-Cre 0.359 (n 6), lower on average
+    but t(11) = 1.70, p = 0.117 (paper t = 2.80, p = 0.0171). One control, WT-M3, is at 0.077, below every DAT-Cre
+    value. The other Fig 6I tests, computed the same way, are close to the paper's, so the difference is not explained
+    by the measure; it may come from the data deposited or from the selection of sessions.
+  deviations:
+  - The measure follows learnign_curve_sequential.py (session means of the CS1 AUC over 0 to 1.5 s minus the 1.5
+    s before, over the first conditioning session's mean reward response).
+- claim: fig6i-last-session-licking-similar
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:fig6i-last-session-licking-similar
+  notes: Last-session anticipatory licks 7.25 in controls against 4.84 in DAT-Cre mice, difference 2.41, t(11) =
+    1.17, p = 0.27 (paper t = 0.88, p = 0.40). No difference is found.
+- claim: figs12f-pre-cs2-licking
+  outcome: reproduced
+  notebook: reproduce_jeong_2022.ipynb
+  output: claim:figs12f-pre-cs2-licking
+  notes: Pre-CS2 licks rise from 0.33 to 1.62 between the first and last sessions; session F(1, 11) = 7.39, p =
+    0.020 (paper F = 9.07, p = 0.0118), genotype F = 0.57, p = 0.47, interaction F = 0.0003, p = 0.99. With the
+    code's baseline window (1500 s before CS1), session F = 5.23, p = 0.043, genotype p = 0.57, interaction p =
+    0.60.
+- claim: fig2-anccr-classic-results
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: A simulation of the ANCCR and TDRL models, which uses no recorded data. The paper's simulation code is
+    Matlab (simulation/ and functions/calculateANCCR.m of the ANCCR repository at the commit the claims file cites),
+    and Matlab cannot be installed in the entry's locked Python environment; a port of the models was not attempted.
+    Nothing in the dandiset bears on it.
+- claim: fig3cf-simulated-unpredicted-rewards
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: A simulation of the ANCCR and TDRL models, which uses no recorded data. The paper's simulation code is
+    Matlab (simulation/ and functions/calculateANCCR.m of the ANCCR repository at the commit the claims file cites),
+    and Matlab cannot be installed in the entry's locked Python environment; a port of the models was not attempted.
+    Nothing in the dandiset bears on it.
+- claim: fig5b-simulated-intermediate-cue
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: A simulation of the ANCCR and TDRL models, which uses no recorded data. The paper's simulation code is
+    Matlab (simulation/ and functions/calculateANCCR.m of the ANCCR repository at the commit the claims file cites),
+    and Matlab cannot be installed in the entry's locked Python environment; a port of the models was not attempted.
+    Nothing in the dandiset bears on it.
+- claim: fig6h-simulated-inhibition
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: A simulation of the ANCCR and TDRL models, which uses no recorded data. The paper's simulation code is
+    Matlab (simulation/ and functions/calculateANCCR.m of the ANCCR repository at the commit the claims file cites),
+    and Matlab cannot be installed in the entry's locked Python environment; a port of the models was not attempted.
+    Nothing in the dandiset bears on it.
+- claim: figs6-learns-causal-structure
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: A simulation of the ANCCR and TDRL models, which uses no recorded data. The paper's simulation code is
+    Matlab (simulation/ and functions/calculateANCCR.m of the ANCCR repository at the commit the claims file cites),
+    and Matlab cannot be installed in the entry's locked Python environment; a port of the models was not attempted.
+    Nothing in the dandiset bears on it.
+- claim: figs5-timescale-invariance
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: A simulation of the ANCCR and TDRL models, which uses no recorded data. The paper's simulation code is
+    Matlab (simulation/ and functions/calculateANCCR.m of the ANCCR repository at the commit the claims file cites),
+    and Matlab cannot be installed in the entry's locked Python environment; a port of the models was not attempted.
+    Nothing in the dandiset bears on it.
+- claim: figs13-ramping
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: A simulation of the ANCCR and TDRL models, which uses no recorded data. The paper's simulation code is
+    Matlab (simulation/ and functions/calculateANCCR.m of the ANCCR repository at the commit the claims file cites),
+    and Matlab cannot be installed in the entry's locked Python environment; a port of the models was not attempted.
+    Nothing in the dandiset bears on it.
+findings:
+- kind: metadata_error
+  statement: Event times (acquisition/eventlog/eventtime) are stated in milliseconds but are in seconds. The random
+    reward sessions have a mean inter-reward interval of about 12 in the files' units (Methods, 12 s), and the Fig
+    S8L sessions named 6, 12 and 30 have means near 6, 12 and 30.
+- kind: data_missing
+  statement: Seven sessions inside the day ranges of the paper's analysis code are not in the dandiset (HJ-FP-M2
+    Day23, M3 Day16 and Day31, M4 Day30 and Day38, F2 Day16, M6 Day49). M4 Day38 is a listed start day, the first
+    background reward session of that animal. The paper's mean session counts for Experiments 2, 5 and 4 (13.3,
+    8.1, 2.6) equal the counts that include these days, while the dandiset gives 12.7, 7.9 and 2.4.
+- kind: metadata_error
+  statement: In 65 of the 101 Experiment 7 files the raw photometry (acquisition/photometry) has about 12 million
+    samples per stated second and its timestamps end at 0.43 to 4.18, while the sessions last 600 to 4100 s; the
+    timestamps are in thousands of seconds (12 kHz detection).
+- kind: metadata_error
+  statement: Subject HJ-FP-datHT-stGtACR-M7, a DAT-Cre heterozygote by its name and in the paper's code, has genotype
+    wt in its files.
+- kind: metadata_insufficient
+  statement: The experimental condition of each session (Experiments 2 to 5) is not stated; only the first session
+    of a condition carries a suffix in its name (8s, 8s-bgd6s, extinction), and the files of datHT-M6 and datHT-M7
+    do not name the task. The sessions used for each figure are given only in the analysis code's day lists and
+    in a Google spreadsheet named in the description, which has no fixed version.
+- kind: other
+  statement: In 13 sessions dF/F does not cover the whole event log by more than 1 s; HJ-FP-WT-stGtACR-M2 Day6 has
+    no dF/F for its first 1117 s, and M6 Day22 and M7 Day43 lose their last 175 to 187 s. In Experiments 1 to 6
+    the first 20 or so dF/F timestamps of each session are NaN.
+- kind: methods_unavailable
+  statement: For the authors. Which window (and measure) of the z-scored lick bout onset response were the Fig S8E
+    tests run on? Neither the Methods, the legend nor the code gives it. The non-consummatory response is significantly
+    negative over 0 to 0.5 s (t = -2.56, close to the paper's -2.55) but not over 0 to 1 s or -0.5 to 1 s, and the
+    consummatory t values are about twice the paper's.
