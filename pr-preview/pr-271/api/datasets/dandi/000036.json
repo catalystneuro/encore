@@ -1,0 +1,1232 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000036",
+  "label": "DANDI:000036"
+ },
+ "page": "datasets/dandi/000036/",
+ "generated": "2026-10-30T00:49:08+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 14,
+  "partially_reproduced": 1,
+  "not_reproduced": 1,
+  "blocked": 5
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 4
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000036-mayner-2022-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000036",
+    "version": "0.230515.1917",
+    "doi": "10.48324/dandi.000036/0.230515.1917"
+   },
+   "key": "dandi:000036",
+   "label": "DANDI:000036",
+   "dataset_version": "0.230515.1917",
+   "paper": "10.1523/eneuro.0280-21.2021",
+   "paper_title": "Measuring Stimulus-Evoked Neurophysiological Differentiation in Distinct Populations of Neurons in Mouse Visual Cortex",
+   "date": "2026-10-22",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-10"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/39715560542"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000036-mayner-2022",
+   "entry_title": "Neurophysiological differentiation in mouse visual cortex (Mayner, Marshall, Billeh et al. 2022)",
+   "description": "Tests the findings of Mayner, Marshall, Billeh et al. (2022) on dandiset 000036, which holds two-photon dF/F, running and the movie stimuli of the OpenScope differentiation experiment. It links the dandiset's 57 sessions to the 44 the paper analysed, then tests the spectral differentiation contrasts by layer and area, their sensitivity to the measure's parameters, the per-session permutation tests, decoding, the differences among natural clips, the relation to stimulus differentiation, multivariate differentiation in UMAP space, and the correlation of effect size with running. Claims that need L0 calcium events or the Methods' pupil diameter are blocked.",
+   "notebooks": [
+    {
+     "path": "reproduce_mayner_2022.ipynb",
+     "title": "Reproducing Mayner et al. (2022) from dandiset 000036",
+     "executed": "notebooks/000036-mayner-2022/reproduce_mayner_2022.html"
+    },
+    {
+     "path": "multivariate_mayner_2022.ipynb",
+     "title": "Multivariate differentiation (Figure 5) from dandiset 000036",
+     "executed": "notebooks/000036-mayner-2022/multivariate_mayner_2022.html"
+    },
+    {
+     "path": "arousal_mayner_2022.ipynb",
+     "title": "Arousal and effect size (Figure 4) from dandiset 000036 and the paper's Zenodo deposit",
+     "executed": "notebooks/000036-mayner-2022/arousal_mayner_2022.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "session-link",
+     "statement": "The dandiset's sessions can be matched to the 44 sessions the paper analysed (the results/main.parquet of the paper's code), and matched sessions agree on mouse, Cre line, area, depth and number of cells, and give the paper's per-trial ND.",
+     "source": "Code accessibility; results/main.parquet of github.com/wmayner/openscope-differentiation at commit 2d959bd",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mayner_2022.ipynb",
+     "notes": "All 44 sessions of main.parquet match one dandiset session each on mouse id and start time (NWB session_start_time minus 7 hours, to the millisecond; no other whole-hour offset matches any session). All 44 agree on Cre line, layer, area and depth, and on the number of cells once the 14 ROIs whose dF/F is NaN at every frame are left out (37 of 44 agree with them counted). With the trial start moved by 0 to -6 frames, the dandiset's dF/F gives the paper's unnormalised per-trial ND to a relative 1e-6 in all 5280 trials (5279 at one shift, 1 at two). With the trial windows the NWB times give, per-trial log10 ND correlates with the paper's at r = 0.9974 (difference SD 0.0465). Thirteen dandiset sessions are unmatched; the one in L5 AL (mouse 402796, 741889312) has 63586 frames at 15.08 Hz and fits the session the paper excluded, which the deposit's metadata.csv also marks invalid (seen while preparing, not in the notebook).",
+     "deviations": [
+      "The 7 hour offset was found while preparing the attempt; the criterion was written after it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "design-sessions",
+     "statement": "Data come from 45 two-photon sessions in nine mice (three per Cre line for L2/3, L4 and L5), 15 sessions per line and 9 per area over V1, LM, AL, PM and AM, with one L5 AL session excluded for recording problems.",
+     "source": "Results, paragraph 1 and 2; Materials and Methods, paragraph 1",
+     "quote": "Data were collected from L2/3, L4, and L5 in each of five areas (V1, LM, AL, PM, and AM; Fig. 1 E ) across 45 experimental sessions (15 sessions per transgenic line; 9 sessions per area; 5 \u00b1 1 sessions per mouse ... One imaging session in L5 of AL was excluded from our analyses because of technical problems with the two-photon recording",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mayner_2022.ipynb",
+     "notes": "The 44 linked sessions plus the half-rate L5 AL session give the paper's design exactly (45 sessions from 9 mice, 3 mice and 15 sessions per line, 9 per area, 3 per layer and area pair, 4 to 6 per mouse). The dandiset holds 12 more, 57 sessions in all (25 Cux2, 15 Rorb and 17 Rbp4; 11 to 13 per area); the 12 (10 second recordings in Cux2 mice 389014 and 389020, and one more PM session in each of Rbp4 mice 402796 and 405808) are not described in the paper and are recorded as a finding. The files hold no sex; the code's table gives 2, 3 and 1 males for Cux2, Rorb and Rbp4, as the paper states. The excluded session is identified by its absence from main.parquet and its half frame rate.",
+     "deviations": [
+      "The criterion does not anticipate a dataset that holds more sessions than the paper. The outcome is judged on the paper's 45 sessions, which are all present, found through the link claim; the round-1 version of this record gave partially_reproduced on the deposited counts."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ext1-2-cell-counts",
+     "statement": "4018 cells were recorded over the 44 analysed sessions, 1683 in L2/3, 1781 in L4 and 554 in L5, with per layer and area totals from 62 (L4 AM) to 649 (L4 V1).",
+     "source": "Extended Data Figure 1-2",
+     "quote": "",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "Extended Data Figure 1-2 shows the counts as an image not in the text; the numbers are the code's own output of that figure (results/table-s1.csv at the commit named in the opening comment), the sums of the session metadata's ncells per layer and area.",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mayner_2022.ipynb",
+     "notes": "Over the 44 linked sessions there are 4032 ROIs, 14 of them NaN at every frame; the 4018 others are 1683, 1781 and 554 per layer, and all 15 layer and area totals equal table-s1.csv (15 of 15 within 10%). With the NaN ROIs counted, the totals (4032; 1687, 1790, 555) are also within tolerance. The files carry no validity flag.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ext1-3-kinetics-no-difference",
+     "statement": "Calcium indicator kinetics, measured as the half-life of an exponential fit to each cell's mean isolated-event-locked dF/F, do not differ across layers, areas or their interaction.",
+     "source": "Extended Data Figure 1-3 legend",
+     "quote": "we found no layer \u00d7 area interaction (likelihood ratio test; \u03c7 2 (8) = 1.293, p = 0.996). We tested for main effects of layer and area in two further models and likewise found none",
+     "statistics": [
+      {
+       "about": "layer x area interaction",
+       "test": "likelihood ratio test, LME models",
+       "statistic": "chi2(8) = 1.293",
+       "p": 0.996
+      },
+      {
+       "about": "layer main effect",
+       "test": "likelihood ratio test, LME models",
+       "statistic": "chi2(2) = 1.143",
+       "p": 0.565
+      },
+      {
+       "about": "area main effect",
+       "test": "likelihood ratio test, LME models",
+       "statistic": "chi2(4) = 0.2288",
+       "p": 0.994
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "The dandiset holds no L0 events. The criterion's detector, l0_analysis.py of github.com/AllenInstitute/visual_coding_2p_analysis (commit 3ceca10), is Python 2 code (cPickle) that imports allensdk and FastLZeroSpikeInference. That package is not on PyPI; its repository (github.com/jewellsean/FastLZeroSpikeInference, commit cdfaade) fails to build with pip from git because its setup.py expects the C++ sources copied into the python directory, and its current Python API has no arfpop, which l0_analysis.py calls. The latest commit that defines arfpop (7b80ccd) has a Python 2 fast.py (a SyntaxError under Python 3) and a FitSegmentModel.cpp that uses std::numeric_limits without including <limits>; the notebook's section on the L0 detector prints each of these from the published sources. Running the detector would mean patching the package and porting l0_analysis.py to Python 3. While preparing the round-1 revision, outside the notebook and not run there, the 7b80ccd sources were patched that way (<limits> added, without which g++ stopped at std::numeric_limits, and the print statements of fast.py rewritten for Python 3); the package then built and arfpop ran on a synthetic trace. l0_analysis.py was not ported and no events were computed from this dataset, so the build decides nothing; the published software still cannot be installed as released, which is the reason given. The NWB files hold no path naming events (listing of all 57 files in the notebook). The paper's own events are in its Zenodo deposit (events/, 4125 members, 4.1 GB), which the criterion does not name.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3a-layer-specific",
+     "statement": "Unscrambled stimuli evoke higher ND than their phase-scrambled versions in L2/3 but not in L4 or L5, with a significant layer by stimulus category interaction.",
+     "source": "Results, Increased differentiation for unscrambled stimuli is specific to excitatory cells in L2/3; Figure 3A",
+     "quote": "We fitted an LME model with stimulus category (unscrambled or scrambled), layer, and their interaction as fixed effects and found a significant interaction (likelihood ratio test, \u03c7 2 (2) = 13.379, p = 0.00124). Post hoc tests showed that the unscrambled versus scrambled difference was specific to L2/3",
+     "statistics": [
+      {
+       "about": "layer x stimulus category interaction",
+       "test": "likelihood ratio test",
+       "statistic": "chi2(2) = 13.379",
+       "p": 0.00124,
+       "n": "2200 trials in 44 sessions"
+      },
+      {
+       "about": "L2/3, unscrambled greater than scrambled",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 3.866, Cohen's d = 0.164, 95% CI of the contrast [0.051, inf)",
+       "p": 0.000166,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "L4",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 0.191, Cohen's d = 0.011",
+       "p": 0.81,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "L5",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = -1.168, Cohen's d = -0.067",
+       "p": 0.998,
+       "corrected": "single-step (multcomp)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mayner_2022.ipynb",
+     "notes": "2200 contrast trials of 44 sessions. Interaction chi2(2) = 14.09, p = 0.00087. Post hoc L2/3 z = 3.83, adjusted p = 0.0002, lower bound 0.050 (paper 0.051); L4 z = 0.10, p = 0.84; L5 z = -1.35, p = 0.999. Cohen's d L2/3 0.163, L4 0.006, L5 -0.079 (paper 0.164, 0.011, -0.067). The L2/3 effect is positive in all three Cux2 mice (d 0.15, 0.43, 0.29). Variant on all 56 complete dandiset sessions, chi2(2) = 8.74, p = 0.013, L2/3 the only significant layer.",
+     "deviations": [
+      "Trials are cut where the NWB stimulus times put them, 0 to 6 frames later than the paper's stimulus table (the shift grows through the session).",
+      "ROIs with all-NaN dF/F are left out (none in the paper's counts).",
+      "LME, likelihood ratio and glht tests are run with statsmodels and scipy, not R; on the paper's own per-trial values they give its printed chi2, z, p and interval bounds."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-area-specific",
+     "statement": "The higher ND for unscrambled than scrambled stimuli is specific to areas AL and AM, with a significant area by stimulus category interaction.",
+     "source": "Results, Increased differentiation for unscrambled stimuli is specific to areas AL and AM; Figure 3B",
+     "quote": "We fitted an LME model with stimulus category, area, and their interaction as fixed effects and found a significant interaction (likelihood ratio test, \u03c7 2 (4) = 15.203, p = 0.00430). Post hoc tests showed that the unscrambled versus scrambled difference was specific to AL and AM",
+     "statistics": [
+      {
+       "about": "area x stimulus category interaction",
+       "test": "likelihood ratio test",
+       "statistic": "chi2(4) = 15.203",
+       "p": 0.0043,
+       "n": "2200 trials in 44 sessions"
+      },
+      {
+       "about": "AL, unscrambled greater than scrambled",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 2.873, Cohen's d = 0.200, 95% CI of the contrast [0.022, inf)",
+       "p": 0.0101,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "AM, unscrambled greater than scrambled",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 2.446, Cohen's d = 0.268, 95% CI of the contrast [0.128, inf)",
+       "p": 0.0356,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "V1",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 0.704",
+       "p": 0.748,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "LM",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = -0.234",
+       "p": 0.989,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "PM",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = -1.843",
+       "p": 0.999,
+       "p_relation": ">",
+       "corrected": "single-step (multcomp)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mayner_2022.ipynb",
+     "notes": "Interaction chi2(4) = 15.58, p = 0.0036. AL z = 2.65, adjusted p = 0.020; AM z = 2.54, p = 0.028; V1, LM and PM p 0.81 to 1.0. Cohen's d AL 0.181 (within tolerance of 0.200) and AM 0.132, outside the tolerance of 0.268. The paper's own per-trial values give AM d = 0.127, and 0.128 with the pooled SD as the code computes it; the paper's text prints d = 0.268 with interval [0.128, inf), where the post hoc test on the paper's per-trial values gives the interval bound 0.0048, so 0.268 looks like a transcription slip in the paper and the dataset agrees with the paper's computation. The criterion's rule rests on the significance pattern, which holds. Variant on all 56 complete dandiset sessions, chi2(4) = 14.39, p = 0.006, AM significant but AL not (p = 0.072). With the pooled SD as the code computes it (variant), the paper's per-trial values give AL 0.200 and AM 0.128, and this dataset 0.184 and 0.133. A question asks a reader whether 0.268 is a misprint (questions/000036.yaml).",
+     "deviations": [
+      "As fig3a-layer-specific (trial windows from the NWB times, NaN ROIs left out, statistics in Python)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ext3-1-natural-artificial",
+     "statement": "Over all 12 stimuli, naturalistic stimuli evoke higher ND than artificial ones in L2/3 and L5 (not L4) and in AL and AM (not V1, LM or PM), with significant interactions with layer and with area.",
+     "source": "Extended Data Figure 3-1 legend",
+     "quote": "In this analysis, post hoc tests showed a significant effect also in L5; however, this contrast does not control for low-level stimulus characteristics and is thus harder to interpret",
+     "statistics": [
+      {
+       "about": "layer x category interaction",
+       "test": "likelihood ratio test",
+       "statistic": "chi2(2) = 16.343",
+       "p": 0.000283,
+       "n": "5280 trials in 44 sessions"
+      },
+      {
+       "about": "area x category interaction, as printed (the layer values repeated; the code's output is chi2(4) = 22.213, p = 0.0001817)",
+       "test": "likelihood ratio test",
+       "statistic": "chi2(2) = 16.343",
+       "p": 0.000283
+      },
+      {
+       "about": "L2/3",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 4.974, Cohen's d = 0.153",
+       "p": 9.82e-07,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "L5",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 3.745, Cohen's d = 0.144",
+       "p": 0.000271,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "AL",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 4.715, Cohen's d = 0.222",
+       "p": 6.04e-06,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "AM",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 4.249, Cohen's d = 0.156",
+       "p": 5.37e-05,
+       "corrected": "single-step (multcomp)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mayner_2022.ipynb",
+     "notes": "5280 trials. Layer chi2(2) = 16.09, p = 0.0003; area chi2(4) = 21.84, p = 0.0002 (the code prints 22.213). L2/3 (adjusted p < 0.0001) and L5 (p = 0.0004) significant, L4 not (p = 0.98); AL and AM significant (p <= 0.0001), V1, LM and PM not (p 0.28 to 1.0). All four Cohen's d within tolerance.",
+     "deviations": [
+      "As fig3a-layer-specific."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ext3-2-sensitivity",
+     "statement": "The L2/3, AL and AM specificity of the unscrambled against scrambled ND difference holds for nearly all choices of distance metric, state length, frequency spacing and spectral window.",
+     "source": "Extended Data Figures 3-2, 3-3 and 3-4 legends; Results, Increased differentiation for unscrambled stimuli is specific to areas AL and AM, paragraph 2",
+     "quote": "For nearly all other combinations of parameters, we likewise find that unscrambled stimuli elicit increased ND specifically in L2/3 of AL and AM",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mayner_2022.ipynb",
+     "notes": "36 of 108 parameter sets meet the agreement rule (33.3%), below 90% and 80%; the looser rule also gives 36. L2/3 is the only significant layer in all 108 sets and the layer and area interactions are significant in 108 and 102. The areas vary; AL and AM both significant in 36 sets, AL alone in 41, AM alone in 24, neither in 7. Agreement by window is rectangular 39%, Kaiser 33%, Tukey 28%; by state length 0% at 10 s and 72% at 2 s. The same rule on the paper's own results/stats.parquet gives 28 of 108 (25.9%); there L2/3 is also the only significant layer in all 108 sets, and AL and AM are both significant in 28, AL alone in 50, AM alone in 24, neither in 6. So the paper's outputs do not meet this reading of \"nearly all\" either; the difference is between the claims file's rule and the paper's sentence, not between the dataset and the paper's computation. The spectra are the paper's. For six sets, one per window and frequency spacing, this dF/F at the start shift found for the main set gives the paper's per-trial ND (results/sensitivity_analysis.parquet) to a relative 1.1e-14 in all 2199 contrast trials with a single matching shift, and over all 108 sets per-trial log10 ND with the NWB windows correlates with the paper's at r = 0.993 to 0.9999. A question asks a reader whether the paper supports a different agreement rule (questions/000036.yaml).",
+     "deviations": [
+      "As fig3a-layer-specific."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ext3-5-arousal-covariates",
+     "statement": "With locomotion and pupil diameter as covariates in the LME models, L2/3 of AL and AM remain the populations where ND is greater for unscrambled than scrambled stimuli, for nearly all parameter combinations.",
+     "source": "Extended Data Figures 3-5, 3-6 and 3-7 legends; Results, Increased differentiation for unscrambled stimuli is specific to areas AL and AM, paragraph 3",
+     "quote": "Consistent with the simpler models, for nearly all parameter combinations, L2/3 of AL and AM emerged as the cell populations in which ND is greater for unscrambled versus scrambled stimuli",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The criterion crosses the readings of pupil diameter, and the Methods reading (twice the semi-major axis of the fitted ellipse) is in no public file. The dandiset has no eye tracking at all; the Zenodo deposit holds pupil area per session (eye/*_area.npy), from which only the code's reading can be computed. For fig4-pupil-effect-size the two computable artifact readings already disagree in sign. Locomotion per trial is available under both readings.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ext3-8-events-spectral",
+     "statement": "Spectral ND of L0 calcium events gives results similar to dF/F, with greater ND for unscrambled than scrambled stimuli in L2/3 and in AL, while AM is at the threshold (p = 0.050).",
+     "source": "Extended Data Figure 3-8 legend",
+     "quote": "Results are similar to the main analysis on \u0394F/F 0 traces shown in Figure 3",
+     "statistics": [
+      {
+       "about": "layer x category interaction",
+       "test": "likelihood ratio test",
+       "statistic": "chi2(2) = 11.481",
+       "p": 0.00321
+      },
+      {
+       "about": "L2/3",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 3.835, Cohen's d = 0.175",
+       "p": 0.000188,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "area x category interaction",
+       "test": "likelihood ratio test",
+       "statistic": "chi2(4) = 15.102",
+       "p": 0.00445
+      },
+      {
+       "about": "AL",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 2.879, Cohen's d = 0.226",
+       "p": 0.00995,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "AM",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 2.318, Cohen's d = 0.0984",
+       "p": 0.05005,
+       "corrected": "single-step (multcomp)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "Needs L0 events; see ext1-3-kinetics-no-difference.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ext3-9-no-transients",
+     "statement": "With the 200 ms after each L0 event removed from dF/F, ND remains greater for unscrambled than scrambled stimuli in L2/3 and in AL, with significant interactions; AM is not significant (p = 0.0958).",
+     "source": "Extended Data Figure 3-9 legend",
+     "quote": "Results are similar to the main analysis shown in Figure 3 , indicating that our ND results are not driven solely by initial transients in the calcium response",
+     "statistics": [
+      {
+       "about": "layer x category interaction",
+       "test": "likelihood ratio test",
+       "statistic": "chi2(2) = 6.024",
+       "p": 0.0492
+      },
+      {
+       "about": "L2/3",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 2.823, Cohen's d = 0.175",
+       "p": 0.00713,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "area x category interaction",
+       "test": "likelihood ratio test",
+       "statistic": "chi2(4) = 12.886",
+       "p": 0.0119
+      },
+      {
+       "about": "AL",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 2.911, Cohen's d = 0.257",
+       "p": 0.00899,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "AM",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 2.055, Cohen's d = 0.125",
+       "p": 0.0958,
+       "corrected": "single-step (multcomp)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "Needs L0 events to mark the 200 ms to remove; see ext1-3-kinetics-no-difference.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "mediation-event-magnitude",
+     "statement": "Part of the effect of stimulus category on ND is mediated by mean calcium event magnitude and part is direct (mediated 0.1351, direct 0.0951, proportion mediated 0.59).",
+     "source": "Results, Increased differentiation for unscrambled stimuli is specific to areas AL and AM, paragraph 4",
+     "quote": "We also analyzed whether the mean magnitude of calcium events (a proxy for firing rate) mediated the effect of stimulus category and found evidence for both mediated and direct effects",
+     "statistics": [
+      {
+       "about": "mediated effect",
+       "test": "causal mediation analysis (Imai et al. 2010)",
+       "p": 2e-16,
+       "p_relation": "<",
+       "ci": {
+        "level": 0.95,
+        "low": 0.0784,
+        "high": 0.2
+       }
+      },
+      {
+       "about": "direct effect",
+       "test": "causal mediation analysis (Imai et al. 2010)",
+       "p": 0.002,
+       "ci": {
+        "level": 0.95,
+        "low": 0.04,
+        "high": 0.15
+       }
+      },
+      {
+       "about": "proportion of total effect mediated",
+       "test": "causal mediation analysis (Imai et al. 2010)",
+       "p": 2e-16,
+       "p_relation": "<",
+       "ci": {
+        "level": 0.95,
+        "low": 0.3963,
+        "high": 0.8
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "The mediator is the mean L0 event magnitude, which cannot be computed (see ext1-3-kinetics-no-difference). The pupil covariate also needs the Methods' diameter, which is in no public file (data_missing).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-permutation",
+     "statement": "Per-session permutation tests find ND greater for unscrambled than scrambled stimuli in all 6 sessions of L2/3 AL and AM, in 8 of 15 L2/3 sessions, 1 of 15 L4 and 0 of 14 L5 sessions.",
+     "source": "Table 1; Results, Permutation tests for individual experimental sessions",
+     "quote": "In all sessions recorded from L2/3 of AL and AM, responses to unscrambled stimuli were significantly more differentiated than to scrambled stimuli ( p < 0.05)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mayner_2022.ipynb",
+     "notes": "Methods rule, log10 ND, 20,000 permutations per session (own seed). L2/3 AL 3 of 3, AM 3 of 3, L2/3 8 of 15, L4 1 of 15, L5 0 of 14; the 15-cell table equals the code's printed table cell by cell, and the code's rule gives the same. The six L2/3 AL and AM sessions have p 0.00005 to 0.029. Untransformed ND (variant) gives 5 of 15 in L2/3 (2 of 3 in AL and in AM).",
+     "deviations": [
+      "As fig3a-layer-specific; random permutations are not the paper's."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-locomotion-effect-size",
+     "statement": "In L2/3 of AL and AM, the per-session effect size of unscrambled against scrambled ND is positively correlated with the fraction of time spent running (r = 0.896).",
+     "source": "Results, Arousal is correlated with effect size; Figure 4, top left",
+     "quote": "We found that in L2/3 of AL and AM, effect sizes were positively correlated with locomotion activity (Pearson\u2019s r = 0.896; two-sided t test; t (4) = 4.030, p = 0.0157, 95% CI [0.308, 1.00]",
+     "statistics": [
+      {
+       "test": "Pearson correlation, two-sided t test",
+       "statistic": "r = 0.896, t(4) = 4.030",
+       "p": 0.0157,
+       "ci": {
+        "level": 0.95,
+        "low": 0.308,
+        "high": 1.0
+       },
+       "n": "6 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "arousal_mayner_2022.ipynb",
+     "notes": "Over the six L2/3 AL and AM sessions, reading (a) r = 0.842, t(4) = 3.13, p = 0.035; reading (b) r = 0.844, p = 0.035; both within tolerance (0.792 to 1) and significant. Reading (b) gives the code's printed locomotion fractions to within 0.0001 and reading (a) to within 0.0008, so the lower r comes from the effect sizes (one session d = 1.111 against the code's stored 1.258). With d computed with the pooled SD as the paper's code computes it (variant), r = 0.892 (p = 0.017) under reading (a) and 0.894 (p = 0.016) under reading (b). Over all 44 sessions r = -0.03. The deposit is now streamed over parallel range requests and reached all required members after 176 s in the final run (217 s in the run reviewed in round 2), so the executed copy shows both readings.",
+     "deviations": [
+      "Reading (b) uses the deposit's parameters and vsync alignment on the dandiset's running velocity, whose first sample is dropped (the rest equal the deposit's run_speed).",
+      "Effect sizes use trial windows from the NWB times, as fig3a-layer-specific."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-pupil-effect-size",
+     "statement": "In L2/3 of AL and AM, the per-session effect size is positively but not significantly correlated with mean normalized pupil diameter (r = 0.716, p = 0.109).",
+     "source": "Results, Arousal is correlated with effect size; Figure 4, top right",
+     "quote": "and pupil diameter ( r = 0.716; t (4) = 2.054, p = 0.109, 95% CI [\u20130.227, 1.00]",
+     "statistics": [
+      {
+       "test": "Pearson correlation, two-sided t test",
+       "statistic": "r = 0.716, t(4) = 2.054",
+       "p": 0.109,
+       "ci": {
+        "level": 0.95,
+        "low": -0.227,
+        "high": 1.0
+       },
+       "n": "6 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "arousal_mayner_2022.ipynb",
+     "notes": "The dandiset has no pupil data. With the deposit's pupil area and the code's diameter (2*sqrt(area/pi)), reading (b) of artifact removal reproduces the code's printed per-session pupil values exactly and gives r = 0.651, p = 0.16 (positive, within tolerance of 0.716); reading (a), without artifact removal, gives r = -0.647, p = 0.17, because unremoved artifacts set the maximum the diameter is normalised by. The criterion requires every reading of pupil diameter, and the Methods' semi-major axis reading cannot be computed from any public file. The deposit's data/eye/ holds 45 pupil area files and a parameter file, and no ellipse fit (listed in the arousal notebook). That is the main reason (data_missing); the two computable readings also disagree, which the criterion would block as methods_underspecified.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "discussion-session-effect-sizes",
+     "statement": "Within single L2/3 AL and AM sessions effect sizes are medium to very large (Cohen's d 0.57 to 1.25), while the effect over these sessions pooled is 0.34.",
+     "source": "Discussion, paragraph 6",
+     "quote": "while we observed medium to very large effect sizes within individual experimental sessions in L2/3 of AL and AM (Cohen\u2019s d = 0.57\u20131.25), the overall effect was relatively subtle (Cohen\u2019s d = 0.34)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mayner_2022.ipynb",
+     "notes": "With the Methods' pooled SD, per-session d 0.572 to 1.111, all six within 0.513 to 1.375; smallest and pooled (0.340) within tolerance; the largest is below the tolerance of 1.25 (1.125 to 1.375), printed as a failed check in the notebook. For that session (719080059, paper 719334668) the paper's main.parquet gives 1.155 and its effect_size.parquet 1.258. The effect_size.parquet values equal, to 4e-15 in all 44 sessions, Cohen's d from main.parquet with the pooled SD as the code's analysis.pooled_std_dev computes it, each group's SD weighted by the other group's n - 1; the paper's 0.57 to 1.25 and 0.34 come from that. With that SD (variant) this dataset gives 0.584 to 1.194 and a pooled 0.343, all within tolerance. The claims file and the Methods give the standard formula, so the outcome rests on it; a question asks a reader which the criterion means (questions/000036.yaml).",
+     "deviations": [
+      "As fig3a-layer-specific.",
+      "The criterion gives no partial rule; partial is used because two of three values and the range hold and one extreme is 0.014 outside its tolerance."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-multivariate-layer",
+     "statement": "Multivariate ND (mean distance to the centroid in an 8-dimensional UMAP embedding) is higher for unscrambled than scrambled stimuli specifically in L2/3.",
+     "source": "Results, Multivariate analysis also shows increased differentiation for unscrambled stimuli; Figure 5A",
+     "quote": "The mean centroid distance was higher in response to unscrambled compared to scrambled stimuli ( Fig. 5 ), and this effect was specific to L2/3",
+     "statistics": [
+      {
+       "about": "layer x category interaction",
+       "test": "likelihood ratio test",
+       "statistic": "chi2(2) = 18.135",
+       "p": 0.0001154
+      },
+      {
+       "about": "L2/3",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 5.149, Cohen's d = 0.194",
+       "p": 3.92e-07,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "L4",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 1.749, Cohen's d = 0.0994",
+       "p": 0.116,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "L5",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = -0.938, Cohen's d = -0.0651",
+       "p": 0.995,
+       "corrected": "single-step (multcomp)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "multivariate_mayner_2022.ipynb",
+     "notes": "Interaction chi2(2) = 18.535, p = 9.4e-5. L2/3 z = 5.12, adjusted p < 0.0001; L4 p = 0.112; L5 p = 0.997. Cohen's d L2/3 0.192 (paper 0.194). Per-trial values correlate with the paper's at r = 0.995. umap-learn 0.5.12 with numba 0.68.0. The first version of this record gave 18.99 and 0.194 from the author run; the author-answers run and both runs of this revision give 18.535 and 0.192.",
+     "deviations": [
+      "UMAP version differs from the paper's run; trial windows from the NWB times."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-multivariate-area",
+     "statement": "Multivariate ND is higher for unscrambled than scrambled stimuli specifically in AL and AM.",
+     "source": "Results, Multivariate analysis also shows increased differentiation for unscrambled stimuli; Figure 5B",
+     "quote": "and areas AL and AM [area \u00d7 stimulus category interaction ... likelihood ratio test, \u03c7 2 (4) = 16.232, p = 0.00272",
+     "statistics": [
+      {
+       "about": "area x category interaction",
+       "test": "likelihood ratio test",
+       "statistic": "chi2(4) = 16.232",
+       "p": 0.00272
+      },
+      {
+       "about": "AL",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 2.941, Cohen's d = 0.184",
+       "p": 0.00816,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "AM",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 4.436, Cohen's d = 0.277",
+       "p": 2.29e-05,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "V1",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 0.420",
+       "p": 0.872,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "LM",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = -0.047",
+       "p": 0.974,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "PM",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 0.152",
+       "p": 0.945,
+       "corrected": "single-step (multcomp)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "multivariate_mayner_2022.ipynb",
+     "notes": "Interaction chi2(4) = 16.142, p = 0.0028. AL adjusted p = 0.0094, AM p < 0.0001; V1, LM, PM p 0.94 to 0.95. Cohen's d AL 0.181, AM 0.274 (paper 0.184, 0.277).",
+     "deviations": [
+      "As fig5-multivariate-layer."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ext5-1-events-multivariate",
+     "statement": "Multivariate ND of L0 events is also higher for unscrambled than scrambled stimuli in L2/3 and in AL and AM, and in V1 as well.",
+     "source": "Results, Multivariate analysis also shows increased differentiation for unscrambled stimuli, paragraph 3; Extended Data Figure 5-1",
+     "quote": "The results of multivariate differentiation analysis of these data were consistent with our results using \u0394F/F 0 traces (Extended Data Fig. 5-1 ), with the additional finding of significantly greater differentiation for unscrambled versus scrambled stimuli in L2/3 of V1 as well as AL and AM",
+     "statistics": [
+      {
+       "about": "layer x category interaction",
+       "test": "likelihood ratio test",
+       "statistic": "chi2(2) = 15.029",
+       "p": 0.000545
+      },
+      {
+       "about": "L2/3",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 5.337, Cohen's d = 0.178",
+       "p": 1.42e-07,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "area x category interaction",
+       "test": "likelihood ratio test",
+       "statistic": "chi2(4) = 20.854",
+       "p": 0.000339
+      },
+      {
+       "about": "V1",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 3.132, Cohen's d = 0.167",
+       "p": 0.00434,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "AL",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 2.757, Cohen's d = 0.100",
+       "p": 0.0145,
+       "corrected": "single-step (multcomp)"
+      },
+      {
+       "about": "AM",
+       "test": "post hoc one-sided z-test",
+       "statistic": "z = 4.372, Cohen's d = 0.158",
+       "p": 3.07e-05,
+       "corrected": "single-step (multcomp)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "Needs L0 events; see ext1-3-kinetics-no-difference.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-category-decoding",
+     "statement": "Stimulus category (unscrambled or scrambled) can be decoded accurately from most layers and areas, well above chance, without the layer and area specificity of ND.",
+     "source": "Results, Decoding analysis does not reveal layer or area specificity; Figure 6",
+     "quote": "Decoding performance was high for most areas and layers ( Fig. 6 ), in contrast to the unscrambled-scrambled difference in ND",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mayner_2022.ipynb",
+     "notes": "Mean balanced accuracy is at least 0.75 in 14 of 15 populations and at least 0.9 in 12; per layer 0.86 to 0.95, per area 0.83 to 0.96, all above 0.5; per session 0.575 to 1.0. Lowest populations L4 AM 0.66 and L4 PM 0.75. Per-session scores correlate with the paper's at r = 0.990 (mean difference -0.005). The populations with the ND effect are not the best decoded (L2/3 AL and AM 0.93, L2/3 LM 0.98).",
+     "deviations": [
+      "Trial windows from the NWB times; fold order follows the code's stacking (trial, then stimulus name)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ext6-1-identity-decoding",
+     "statement": "Stimulus identity among all 12 stimuli can be decoded accurately from most layers and areas (chance 1/12).",
+     "source": "Extended Data Figure 6-1 legend; Results, Decoding analysis does not reveal layer or area specificity",
+     "quote": "Stimulus identity can be accurately decoded from most layers and areas using responses to all 12 stimuli",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mayner_2022.ipynb",
+     "notes": "At least 0.75 in 14 of 15 populations and at least 0.9 in 10; per layer 0.83 to 0.97, per area 0.79 to 0.95, chance 0.083; L4 AM lowest at 0.51. Per-session scores correlate with the paper's at r = 0.998.",
+     "deviations": [
+      "As fig6-category-decoding."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-stimulus-effect",
+     "statement": "ND differs among the five continuous naturalistic clips, over all layers and areas.",
+     "source": "Results, Differences in ND among individual stimuli",
+     "quote": "We fitted an LME model with stimulus as a fixed effect and found it was significant (likelihood ratio test, \u03c7 2 (4) = 32.115, p = 1.812e\u20136)",
+     "statistics": [
+      {
+       "test": "likelihood ratio test",
+       "statistic": "chi2(4) = 32.115",
+       "p": 1.812e-06,
+       "n": "2200 trials of 5 stimuli in 44 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mayner_2022.ipynb",
+     "notes": "2200 trials of the five continuous natural clips over 44 sessions; chi2(4) = 31.55, p = 2.4e-6 (paper 32.115).",
+     "deviations": [
+      "As fig3a-layer-specific."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-snake-highest",
+     "statement": "The snake (predator) clip evokes higher ND than the conspecifics, crickets and man writing clips, and the mousecam clip higher ND than man writing.",
+     "source": "Results, Differences in ND among individual stimuli; Figure 7",
+     "quote": "revealed that the predator stimulus (a snake) evoked significantly higher differentiation than clips of conspecifics ... prey (crickets ... and a man writing ... The \u201cmousecam\u201d clip of movement through a wooded environment also evoked significantly higher differentiation than the clip of a man writing",
+     "statistics": [
+      {
+       "about": "snake against conspecifics",
+       "test": "post hoc two-sided z-test (emmeans pairwise)",
+       "statistic": "z = 3.229, Cohen's d = 0.156",
+       "p": 0.011,
+       "corrected": "Tukey",
+       "ci": {
+        "level": 0.95,
+        "low": 0.015,
+        "high": 0.18
+       }
+      },
+      {
+       "about": "snake against crickets",
+       "test": "post hoc two-sided z-test (emmeans pairwise)",
+       "statistic": "z = 3.928, Cohen's d = 0.181",
+       "p": 0.0008149,
+       "corrected": "Tukey",
+       "ci": {
+        "level": 0.95,
+        "low": 0.036,
+        "high": 0.201
+       }
+      },
+      {
+       "about": "snake against man writing",
+       "test": "post hoc two-sided z-test (emmeans pairwise)",
+       "statistic": "z = 5.249, Cohen's d = 0.232",
+       "p": 1.522e-06,
+       "corrected": "Tukey",
+       "ci": {
+        "level": 0.95,
+        "low": 0.076,
+        "high": 0.241
+       }
+      },
+      {
+       "about": "mousecam against man writing",
+       "test": "post hoc two-sided z-test (emmeans pairwise)",
+       "statistic": "z = 3.396, Cohen's d = 0.154",
+       "p": 0.00615,
+       "corrected": "Tukey",
+       "ci": {
+        "level": 0.95,
+        "low": 0.02,
+        "high": 0.185
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mayner_2022.ipynb",
+     "notes": "Tukey-adjusted p for snake against conspecifics 0.012, crickets 0.0008, man writing 2.8e-6, and mousecam against man writing 0.006; none of the other six pairs below 0.05 (smallest 0.18). Estimated differences 0.096, 0.118, 0.154 and 0.103 lie inside the paper's intervals. emmeans' Tukey adjustment is computed from the studentized range with infinite degrees of freedom. On the paper's own per-trial values the same code gives the paper's chi2(4) = 32.115, p = 1.812e-6, and its printed z, adjusted p and intervals for the four named pairs (z 3.229, 3.928, 5.249 and 3.396; p 0.0109, 0.00082, 2e-6 and 0.0061), with the other six pairs not significant.",
+     "deviations": [
+      "As fig3a-layer-specific."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ext7-1-arousal-mediation",
+     "statement": "Arousal alone does not account for the differences among continuous clips, with a mixture of direct and arousal-mediated effects; for the largest contrast, snake against man writing, there is evidence only for a direct effect of stimulus on ND, with locomotion or pupil diameter as mediator.",
+     "source": "Extended Data Figure 7-1 legend",
+     "quote": "Notably, for the largest contrast (predator vs man writing), for both locomotion and pupil diameter we found evidence only for a direct effect",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "One of the two mediators is pupil diameter, and the other analysis uses it as covariate; the Methods' diameter is in no public file, and the code's diameter from the deposit's area gives readings that disagree (see fig4-pupil-effect-size). The dandiset has no eye tracking.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8-nd-sd-correlation",
+     "statement": "Within L2/3 of AL and AM, mean ND per stimulus is positively correlated with stimulus differentiation across the 12 stimuli, but the noise stimulus is highly influential (Cook's D 2.318).",
+     "source": "Results, SD does not explain ND; Figure 8",
+     "quote": "Within L2/3 of AL and AM, the mean ND elicited by each stimulus was positively correlated with SD (Pearson\u2019s r = 0.746, one-sided t test; t (10) = 3.542, p = 0.00267, 95% CI [0.393, 1.00]",
+     "statistics": [
+      {
+       "test": "Pearson correlation, one-sided t test",
+       "statistic": "r = 0.746, t(10) = 3.542",
+       "p": 0.00267,
+       "ci": {
+        "level": 0.95,
+        "low": 0.393,
+        "high": 1.0
+       },
+       "n": "12 stimuli"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mayner_2022.ipynb",
+     "notes": "r = 0.746, t(10) = 3.55, one-sided p = 0.0027 over 12 stimuli and the six L2/3 AL and AM sessions (720 trials); noise has the largest Cook's distance, 2.113 (next 0.219). Stimulus differentiation from the files' movies equals the code's printed values (max difference 0.0 in log10), so the movies are the paper's.",
+     "deviations": [
+      "Mean ND per stimulus uses trial windows from the NWB times."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8-no-sd-relation-controlled",
+     "statement": "Without the noise stimulus the ND and SD correlation is weak and not significant (r = 0.258), and among the scrambled stimuli and their unscrambled counterparts there is no evidence of a relation (r = -0.378); so ND is not inherited from SD.",
+     "source": "Results, SD does not explain ND; Figure 8 legend",
+     "quote": "If we exclude this stimulus, we find a weaker correlation ( r = 0.258; one-sided t test; t (9) = 0.801, p = 0.222, 95% CI [\u20130.307, 1.00] ii ). Furthermore, there was no evidence of a relationship with ND when considering only the scrambled stimuli and their unscrambled counterparts",
+     "statistics": [
+      {
+       "about": "11 stimuli without noise",
+       "test": "Pearson correlation, one-sided t test",
+       "statistic": "r = 0.258, t(9) = 0.801",
+       "p": 0.222,
+       "ci": {
+        "level": 0.95,
+        "low": -0.307,
+        "high": 1.0
+       }
+      },
+      {
+       "about": "5 contrast stimuli, as printed in Results (the legend prints p = 0.523)",
+       "test": "Pearson correlation, two-sided t test",
+       "statistic": "r = -0.378, t(3) = -0.708",
+       "p": 0.53,
+       "ci": {
+        "level": 0.95,
+        "low": -0.945,
+        "high": 0.756
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mayner_2022.ipynb",
+     "notes": "Without noise r = 0.271, one-sided p = 0.21 (paper 0.258); five contrast stimuli r = -0.423, two-sided p = 0.48 (paper -0.378). Neither test finds a relation.",
+     "deviations": [
+      "As fig8-nd-sd-correlation."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ext8-1-no-low-level-relation",
+     "statement": "ND in L2/3 of AL and AM is not explained by stimulus luminance, contrast or spectral energy.",
+     "source": "Extended Data Figure 8-1 legend; Results, SD does not explain ND",
+     "quote": "We also did not find a relationship with stimulus luminance, contrast, or spectral energy",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_mayner_2022.ipynb",
+     "notes": "Two-sided, no property has p < 0.05 (luminance r = -0.26, p = 0.42; contrast r = 0.26, p = 0.42; spectral energy r = 0.51, p = 0.087 with per-pixel DC removal and r = 0.55, p = 0.066 with the code's global mean). One-sided, spectral energy has p = 0.044 and 0.033 under the two DC readings. The readings differ, which the criterion blocks. The code's spectral energy values are reproduced to 2e-15.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "selection_undocumented",
+     "statement": "The dandiset holds 57 sessions where the paper analysed 44 and excluded one. The 12 extra sessions (second recordings of each area in Cux2 mice 389014 and 389020, and a second PM session in Rbp4 mice 402796 and 405808) are not described in the paper, and nothing in the files or the dandiset metadata says which sessions the paper used or that the L5 AL session 741889312 was excluded. They can be identified only through the paper's code outputs. Run on all complete sessions, the area result changes (AL no longer significant).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "identifier_missing",
+     "statement": "The NWB identifier is not the session id the paper and its code use (for example 717235570 against 717911143); it is the id that names the deposit's pupil files. The paper's ids appear nowhere in the dandiset, so the sessions can be linked to the paper only by start time.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "session_start_time is 7 hours later than the start times of the paper's metadata in all 57 files while labelled -07:00; recordings appear to start between 15:00 and 00:46 local time, against 08:00 to 17:44 in the paper. The times look like UTC labelled as Pacific time (consistent with the data, not shown).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Against the 2p frame times, the NWB stimulus and running timestamps run late by an amount that grows through each session, compared with the vsync-to-frame alignment of the paper's sync files, from about 0 frames in the first minute to 1.3 to 4.4 frames (40 to 146 ms) in the last; the paper's trials start 0 to 6 frames earlier than the NWB stimulus times give. The frame timestamps themselves equal the paper's 2p vsync times.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "format_error",
+     "statement": "Every running_velocity series has one sample more than its timestamps; the extra sample is the first (the rest equal the deposit's run_speed, shifted by one), and in one session it is an artifact of -742.7 cm/s. In 39 of 57 files the dF/F timestamps have one entry more than the data has frames.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "15 ROIs (14 in the paper's sessions) have dF/F that is NaN at every frame, with no flag or description; without them the cell counts equal the paper's. The PlaneSegmentation table holds only image masks, with no validity or cell id columns.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The imaging plane states an imaging rate of 30.0 Hz; the frame timestamps step by 33.17 ms (30.15 Hz), and by 66.33 ms (15.08 Hz) in the excluded session 741889312, which was imaged at half the rate.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds no L0 calcium events, no eye tracking or pupil data, and no sex, age or date of birth of the mice, all of which the paper uses or reports. The events and pupil area are in the paper's Zenodo deposit (doi:10.5281/zenodo.5781567); the fitted pupil ellipse whose semi-major axis the Methods define as the diameter is in neither. Eight claims are blocked for these data.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "The L0 event detector the paper names (l0_analysis.py of AllenInstitute/visual_coding_2p_analysis) is Python 2 code that needs allensdk and the compiled FastLZeroSpikeInference, which is not on PyPI, does not build with pip from its repository, and no longer has the arfpop function the detector calls.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "For area AM in Figure 3 the paper prints Cohen's d = 0.268, 95% CI [0.128, inf). Its own per-trial values (results/main.parquet) give d = 0.128 with the pooled SD as its code computes it, and the post hoc test on them a lower bound of 0.0048. The paper's value looks like a transcription slip.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The code's pooled SD (analysis.pooled_std_dev) weights each group's SD by the other group's n - 1, where the Methods give the standard formula; its groupby sorts the labels, so s1 is the SD of \"artificial\" while n1 counts \"natural\". The per-session effect sizes of results/effect_size.parquet (0.570 to 1.258 in L2/3 AL and AM, the paper's 0.57 to 1.25, and the figure 4 correlation r = 0.896) come from this. They equal Cohen's d from results/main.parquet with the swapped weights to 4e-15, while the Methods' formula gives 0.592 to 1.155.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The paper says that for nearly all parameter combinations unscrambled stimuli elicit increased ND specifically in L2/3 of AL and AM; in its own sensitivity statistics (results/stats.parquet) AL and AM are both significant in 28 of 108 sets, AL alone in 50, AM alone in 24 and neither in 6, while L2/3 is the only significant layer in all of them.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-22",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebooks of the author-answers run with the conclusion cells and the summaries removed, the helper module and the claims file, with the paper. The verifier checked the archive's asset metadata for the blocked claims and tested helper functions on synthetic inputs. Its report had no attempt record and gave its own outcome for each of the 27 claims; it agreed with 26 and gave reproduced for design-sessions, recorded as partially reproduced. For blocked claims it agreed on the outcome and named another reason for the L0 claims (other) and for fig4-pupil-effect-size (data_missing).",
+     "agreed": 26,
+     "of": 27,
+     "disagreements": [
+      {
+       "claim": "design-sessions",
+       "outcome": "reproduced",
+       "reason": "The dandiset holds 57 sessions (12 extra Cux2/Rbp4 recordings). The 44 linked sessions plus the excluded one give exactly 45 sessions, 9 mice, 3 mice and 15 sessions per line, 9 per area and 3 per layer x area. Sex (2/3/1 males, from the paper's table) and 4-6 sessions per mouse fit."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-22",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebooks of the author-revise-1 run, the helper module, the claims file, the attempt record and the README, with the paper and the round-1 report. The verifier agreed with all 27 outcomes. It listed six sentences the printed outputs did not support and one gap in how its round-1 reasons were recorded, and left three points open (ext3-2-sensitivity, discussion-session-effect-sizes, the L0 claims).",
+     "agreed": 27,
+     "of": 27,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000036-mayner-2022",
+   "type": "reproduction",
+   "title": "Neurophysiological differentiation in mouse visual cortex (Mayner, Marshall, Billeh et al. 2022)",
+   "description": "Tests the findings of Mayner, Marshall, Billeh et al. (2022) on dandiset 000036, which holds two-photon dF/F, running and the movie stimuli of the OpenScope differentiation experiment. It links the dandiset's 57 sessions to the 44 the paper analysed, then tests the spectral differentiation contrasts by layer and area, their sensitivity to the measure's parameters, the per-session permutation tests, decoding, the differences among natural clips, the relation to stimulus differentiation, multivariate differentiation in UMAP space, and the correlation of effect size with running. Claims that need L0 calcium events or the Methods' pupil diameter are blocked.",
+   "datasets": [
+    "dandi:000036"
+   ],
+   "papers": [
+    "10.1523/eneuro.0280-21.2021"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_mayner_2022.ipynb",
+     "title": "Reproducing Mayner et al. (2022) from dandiset 000036",
+     "executed": "notebooks/000036-mayner-2022/reproduce_mayner_2022.html"
+    },
+    {
+     "path": "multivariate_mayner_2022.ipynb",
+     "title": "Multivariate differentiation (Figure 5) from dandiset 000036",
+     "executed": "notebooks/000036-mayner-2022/multivariate_mayner_2022.html"
+    },
+    {
+     "path": "arousal_mayner_2022.ipynb",
+     "title": "Arousal and effect size (Figure 4) from dandiset 000036 and the paper's Zenodo deposit",
+     "executed": "notebooks/000036-mayner-2022/arousal_mayner_2022.html"
+    }
+   ]
+  }
+ ]
+}
