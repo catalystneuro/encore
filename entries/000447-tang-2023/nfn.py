@@ -290,7 +290,7 @@ def _run_mask(d, ep, track=None, trial=None):
     if track is not None:
         m &= d["track"] == track
     if trial is not None:
-        m &= d["trial_of_sample"] == trial
+        m &= np.isin(d["trial_of_sample"], trial)   # one trial, or a list of trials
     return m
 
 
@@ -576,7 +576,7 @@ RATE_FLOOR = 1e-4  # Hz, standard choice so that log rates are finite where a te
 
 
 def decode_session(d, ep, units, template_maps, window=0.2, step=0.15, min_speed=MIN_SPEED,
-                   well_cm=15.0, restrict_track=False, min_active=1, n_shuffles=100, rng=None):
+                   well_cm=15.0, restrict_track=False, min_active=1, n_shuffles=100, rng=None, trials=None):
     """Memoryless Bayesian decoder (Methods, "Bayesian decoding"): Poisson spiking, uniform prior
     over position and trajectory type, templates = `template_maps` (N' maps). Time bins of
     `window` s every `step` s in epoch `ep`; a bin is decoded when all its position samples lie
@@ -585,8 +585,9 @@ def decode_session(d, ep, units, template_maps, window=0.2, step=0.15, min_speed
     the four trajectories laid end to end (a decode onto the wrong trajectory is far), in the
     N' coordinates (the session's position scaled by the ratio of trajectory lengths); with
     `restrict_track` the decode is restricted to the current trajectory (the code's variant).
-    Returns a DataFrame of bins with the error, and the errors under cell-ID shuffles of the
-    templates (one shuffle, and the median over `n_shuffles`)."""
+    With `trials` only bins inside those trials are decoded (for cross-validation). Returns a
+    DataFrame of bins with the error, the decoded trajectory, and the errors under cell-ID
+    shuffles of the templates (one shuffle, and the median over `n_shuffles`)."""
     rng = rng or np.random.default_rng(0)
     tracks = list(TRACKS)
     Ls = [template_maps[t][0].max() + BIN_CM / 2 for t in tracks]
@@ -620,6 +621,10 @@ def decode_session(d, ep, units, template_maps, window=0.2, step=0.15, min_speed
     if not rows:
         return pd.DataFrame(), None
     df = pd.DataFrame(rows, columns=["t", "track", "lin", "frac", "trial"])
+    if trials is not None:
+        df = df[df.trial.isin(trials)].reset_index(drop=True)
+        if not len(df):
+            return pd.DataFrame(), None
     edges_lo, edges_hi = df.t.values - window / 2, df.t.values + window / 2
     N = np.zeros((len(df), len(units)))
     for j, uidx in enumerate(units):
@@ -642,6 +647,7 @@ def decode_session(d, ep, units, template_maps, window=0.2, step=0.15, min_speed
         return np.abs(pos_cat[j] - act_cat)
 
     df["error"] = errors(F)
+    df["decoded_track"] = pos_track[(N @ np.log(F) - window * F.sum(0)[None, :]).argmax(1)]
     shuf = np.empty((len(df), n_shuffles))
     for s_ in range(n_shuffles):
         shuf[:, s_] = errors(F[rng.permutation(F.shape[0])])
@@ -766,23 +772,27 @@ def svm_ccgp(train, test, n_perm=1000, rng=None):
     from sklearn.svm import SVC
     rng = rng or np.random.default_rng(0)
     (Xtr, ytr), (Xte, yte) = train, test
-    acc = balanced_accuracy(yte, SVC(kernel="linear", C=1.0).fit(Xtr, ytr).predict(Xte))
+    pred = SVC(kernel="linear", C=1.0).fit(Xtr, ytr).predict(Xte)
+    acc = balanced_accuracy(yte, pred)
     null = np.empty(n_perm)
     for i in range(n_perm):
         m = SVC(kernel="linear", C=1.0).fit(Xtr, rng.permutation(ytr))
         null[i] = balanced_accuracy(rng.permutation(yte), m.predict(Xte))
-    return acc, null, float(np.mean(null > acc))
+    return acc, null, float(np.mean(null > acc)), float(np.mean(pred == 1))
 
 
 def run_ccgp(CN, CF, n_perm=1000, seed=0, n_jobs=4, **kw):
-    """All 16 decoders of one region with their permutation tests (one generator per decoder)."""
+    """All 16 decoders of one region with their permutation tests (one generator per decoder).
+    `frac_pred_1` is the fraction of test points predicted as class 1: a decoder that predicts one
+    class for every point has balanced accuracy 0.5, as has every shuffle, so the strict count
+    `p` is 0 although nothing is decoded; `p_ge` counts ties and is 1 for such a decoder."""
     from joblib import Parallel, delayed
     sets = ccgp_sets(CN, CF, **kw)
     res = Parallel(n_jobs=n_jobs)(delayed(svm_ccgp)(tr, te, n_perm, np.random.default_rng([seed, i]))
                                   for i, (_, _, tr, te) in enumerate(sets))
     return pd.DataFrame([{"variable": k, "decoder": nm, "ccgp": a, "null_95": np.percentile(nl, 95),
-                          "null_median": np.median(nl), "p": p, "p_ge": float(np.mean(nl >= a))}
-                         for (k, nm, _, _), (a, nl, p) in zip(sets, res)])
+                          "null_median": np.median(nl), "p": p, "p_ge": float(np.mean(nl >= a)), "frac_pred_1": f1}
+                         for (k, nm, _, _), (a, nl, p, f1) in zip(sets, res)])
 
 
 def ccgp_values(CN, CF):
@@ -833,4 +843,4 @@ def decode_dichotomy(C, groups, n_perm, seed):
     y = np.concatenate([[1] * len(C[k]) for k in g1] + [[2] * len(C[k]) for k in g2])
     acc = _cv_acc(X, y, rng)
     null = np.array([_cv_acc(X, rng.permutation(y), rng) for _ in range(n_perm)])
-    return acc, float(np.mean(null > acc)), null
+    return acc, float(np.mean(null > acc)), null, float(np.mean(null >= acc))
