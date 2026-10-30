@@ -1,0 +1,275 @@
+schema_version: 2
+id: 000294-buccino-2024-01
+dataset:
+  archive: dandi
+  id: "000294"
+  version: 0.260528.0854
+  doi: 10.48324/dandi.000294/0.260528.0854
+paper: doi:10.1162/neco_a_01672
+date: 2026-10-29
+entry: 000294-buccino-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/40970564195
+inputs:
+- what: The paper's code repository, which the paper names for its scripts, model files,
+    morphologies and extracted features. Used for the reconstructed morphologies
+    (cell_models/<cell>/morphology_corrected.swc), the released ground-truth model hay_ais (its
+    mechanisms, parameters and morphology, simulated here), its template, electrode locations and
+    feature and protocol files, and for method parameters of the template method, spike detection,
+    stimulus timings and the optimization settings, each cited in the helpers.
+  source: https://github.com/alejoe91/multimodalfitting at commit 24e8e6168b2d5be45c551bcc08b62fde187d01c7
+outcomes:
+- claim: recordings-two-cells-runs
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:recordings-two-cells-runs
+  measured:
+  - 2
+  - 195.8
+  notes: Two NWB files, one neuron each; cell 1 (sub-3148, the code's cell1_211006_3148) has 5 runs
+    and cell 2 (sub-3436, cell1_211011_3436) 4. The median run lasts 195.8 s from the first to the
+    last patch sample (195.7 to 195.8 s, the same span as each run's MEA series). The runs are those
+    the code used; cell 2's runs 3 to 6 are stored as run1 to run4, and the descriptions of its MEA
+    series keep the original numbers.
+- claim: ecode-protocol-structure
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:ecode-protocol-structure
+  notes: In all 9 runs, all eight protocols are present with 21, 2, 11, 11, 6, 4, 4 and 1 sweeps
+    (IDthres, firepattern, IV, IDrest, APWaveform, HyperDepol, sAHP, PosCheops). Step durations
+    measured on the timestamps are within 0.1 ms of 270, 3600, 3000, 1350, 50, 450 and 270, and 250,
+    225 and 450 ms; the PosCheops ramps rise in 3925 to 3975, 1965 to 1988 and 1307 to 1322 ms
+    measured from 5 pA above holding. Against the IDthres scale (120.4 to 120.8 pA for cell 1, 301.2
+    to 301.7 pA for cell 2) every amplitude is within 1.2 percentage points of its stated
+    percentage. IV has 11 steps from -140 to 60% (reading a); reading (b), 9 steps to 20%, does not
+    match the sweep count.
+  deviations:
+  - The 0% IV step of reading (a) has no relative tolerance; 10% of the IV increment (2% of the
+    scale) was used. Its measured level is within 2% of holding in every run.
+  - APWaveform's sweep count (6) and PosCheops' (1) are not stated in the Methods; 6 is the number
+    of amplitudes from 200 to 350% by 30%.
+- claim: holding-potential
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:holding-potential
+  measured: -69.54
+  notes: The median pre-stimulus membrane potential is -69.54 mV for cell 1 (given as measured) and
+    -69.12 mV for cell 2, over 300 and 240 sweeps, within -70 +/- 7 mV (reading a). Run medians range
+    from -71.0 to -66.6 mV. Neither cell is within -84 +/- 8.4 mV (reading b), so the stored voltages
+    are the uncorrected read-out. The window before the code's ton gives the same values to within
+    0.1 mV.
+  deviations:
+  - The pre-stimulus window ends at the first change of the injected current found in each sweep (350
+    ms for most protocols), which in these files is 50 ms before the code's ton (400 ms for IDrest);
+    the window ending at the code's ton is shown as a variant.
+- claim: extracellular-spikes-above-50uv
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:extracellular-spikes-above-50uv
+  measured: 159.2
+  notes: With the template method on the run with the most channels after denoising (cell 1 run 4,
+    561 channels; cell 2 run 1, 545), the largest channel reaches a negative peak of 217.0 uV
+    (peak-to-peak 274.0 uV) for cell 1 and 159.2 uV (192.2 uV) for cell 2; the smaller, cell 2's, is
+    given as measured. Every run of both cells is above 50 uV under both readings (negative peaks
+    159.2 to 218.0 uV). 125 to 217 patch spikes per run outside PosCheops, 92 to 98% of waveforms kept
+    by the 2 SD rule. The code's mean template is higher by up to 13.3 uV. The largest channel of
+    cell 1 is the channel the export notebook plots (ch885); for cell 2 that notebook plots ch384,
+    adjacent to the largest channel found here (156.8 uV).
+  deviations:
+  - The band-pass filter is applied forward and backward (sosfiltfilt), the default of the code's
+    filtering library; the Methods give only the order and cut-offs. A standard choice that cannot
+    move amplitudes of 159 uV and more below 50 uV.
+- claim: mea-electrodes-and-rates
+  outcome: partially_reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:mea-electrodes-and-rates
+  measured:
+  - 20000
+  - 20408.2
+  notes: The MEA recorded 678 (cell 1) and 675 (cell 2) electrodes, above 500 and at most 1024, at
+    20000 Hz in every run. The patch timestamps are at 20000 Hz only for IDthres; firepattern, IV,
+    IDrest, HyperDepol, sAHP and PosCheops are at 20408.2 Hz (49 us intervals) and APWaveform at
+    125000 Hz (8 us), neither 20 nor 200 kHz. The intervals are exact within each sweep and the step
+    durations measured on them are the nominal ones, so they are the sampling of the deposited data.
+    The electrode and MEA parts hold; the patch rate, with tolerance 0, does not.
+- claim: culture-age
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The NWB subject has only subject_id, species and description ("Rat cortical embryonic cell
+    culture"); neither the files nor the dandiset's metadata give an age, a date of birth or plating,
+    or days in vitro. The session dates (2021-10-06 and 2021-10-11) are 5 days apart, which fits
+    either reading but does not give the age.
+- claim: fig6-ais-from-dendrite
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:fig6-ais-from-dendrite
+  notes: In the repository's morphology_corrected.swc of both cells, the single AIS path (type 4,
+    184 and 192 points) starts from a dendrite point (type 3), 42.9 and 39.1 um from the soma point,
+    and the axon (type 2) starts from the AIS. The NeuroMorpho.org copies were not used.
+- claim: gt-rheobase
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:gt-rheobase
+  measured: 150
+  notes: With the ground-truth notebook's series (from 0.15 nA by 0.005 nA), the first step, 150 pA,
+    fires one spike in the 270 ms step. Because that series starts at the stated value, a series
+    from 0.10 nA was also run; the model first fires at 140 pA, also within 150 +/- 15 pA. The
+    repository's IDrest 300% step of 0.45 nA implies the same 150 pA scale.
+  deviations:
+  - Simulated with BluePyOpt's NEURON simulator (NEURON 9, BluePyOpt 1.14) on the repository's model
+    definition, in place of the LFPy-based simulator of BluePyOpt 1.13.88 the notebook uses; the
+    intracellular model is the same.
+- claim: fig3b-ap-initiates-distal-ais
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:fig3b-ap-initiates-distal-ais
+  notes: Averaged over 12 spike cut-outs of IDrest 300% (first and last left out), the AP crosses -20
+    mV at -0.360 ms from the somatic peak at the AIS end, -0.355 ms at the AIS middle and -0.185 ms at
+    the soma (reading a), and peaks at -0.24, -0.22 and 0.01 ms (reading b). Both readings give the
+    distal AIS, then the middle, then the soma. The lead of the distal over the middle AIS is small,
+    0.005 ms at the crossing and 0.02 ms at the peak.
+  deviations:
+  - Simulated with BluePyOpt's NEURON simulator in place of the LFPy-based one (see gt-rheobase).
+  - Cut-outs are averaged on a 0.01 ms grid after linear interpolation of the variable-step
+    solution, and crossings are read on a 0.0005 ms interpolation of that average (standard choices).
+- claim: fig3a-largest-channel-at-ais
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:fig3a-largest-channel-at-ais
+  notes: In the repository's ground-truth template (80 channels, 20 by 4 at 50 um), the largest
+    peak-to-peak and the largest negative peak are both on channel 43 at (25, -25) um, the electrode
+    nearest the AIS midpoint (23.3 um; the AIS runs from (0.5, -8.6) to (2.3, -39.7) um from the soma
+    centre). The next nearest electrode, at (-25, -25), is 26.8 um away, and the second-largest
+    peak-to-peak is 0.939 of the largest, so the margin is small.
+  deviations:
+  - The template is the repository's file, not recomputed. The AIS midpoint is taken from the
+    released model's 3D points relative to the mean of the soma's points, as an approximation of
+    LFPy's soma midpoint, where LFPy places the cell.
+- claim: table1-feature-counts
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:table1-feature-counts
+  measured:
+  - 76
+  - 87
+  - 109
+  - 153
+  notes: The repository's features_BPO_<strategy>.json for hay_ais hold 76 intracellular features
+    for every strategy and 0, 11, 33 and 77 extracellular ones, totals 76, 87, 109 and 153. The
+    Methods' 79 is the count of the six training protocols' features in features.json before the
+    code drops the three sag features of IV -20%.
+  deviations:
+  - Counted from the feature files the evaluator reads, one objective per feature as
+    define_fitness_calculator builds them, in place of the evaluator's objectives, which need the
+    LFPy simulator.
+- claim: fig4a-strategy-balance
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs 10 optimizations per strategy of 600 generations of 20 offspring (480,000
+    evaluations for the four strategies). One evaluation of the six training protocols on the
+    released ground-truth model takes 8.3 s without the extracellular simulation, so at least
+    1108 CPU hours, 277 hours on the 4 cores of the runner, against a 30-minute notebook limit and a
+    5-hour run. No optimization results are in the repository. The extracellular strategies also
+    need the LFPy simulator of BluePyOpt 1.13.88, which did not run with the locked Python 3.13
+    environment (it was made to run only with Python 3.11, NEURON 8.2 and LFPy 2.2 during
+    preparation, not here).
+- claim: gt-intracellular-scores
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the ground-truth optimizations; see fig4a-strategy-balance for the estimate.
+- claim: fig4c-hyperdepol-only-single
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the best solution of each strategy's optimizations; see fig4a-strategy-balance.
+- claim: fig4b-intra-no-difference
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the best solution of each strategy's optimizations; see fig4a-strategy-balance.
+- claim: fig4b-extra-better-than-soma
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the best solution of each strategy's optimizations; see fig4a-strategy-balance.
+- claim: fig4d-templates-better-than-soma
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the best solution of each strategy's optimizations; see fig4a-strategy-balance.
+- claim: fig5-ap-distribution
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the best solution of each strategy's optimizations; see fig4a-strategy-balance.
+- claim: fig78a-soma-intra-all-extra
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs 10 optimizations of 600 generations of 20 offspring for soma and all on each cell,
+    480,000 evaluations; at the ground-truth model's cost of about 8 s per evaluation, at least 1108
+    CPU hours. The dataset holds what the fits need from the recordings (the patch sweeps of every
+    protocol and the MEA data from which templates of 159 to 218 uV are computed here), and the
+    linked runs are those the code used (recordings-two-cells-runs).
+- claim: experimental-intracellular-scores
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the experimental optimizations; see fig78a-soma-intra-all-extra.
+- claim: fig78b-validation-spiking
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig78a-soma-intra-all-extra, blocked for the cost of the optimizations.
+- claim: fig78c-cell2-worse-extracellular
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig78a-soma-intra-all-extra, blocked for the cost of the optimizations.
+- claim: fig10-cell2-soma-underestimated
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig78a-soma-intra-all-extra, blocked for the cost of the optimizations.
+findings:
+- kind: metadata_error
+  statement: The dandiset's metadata name the paper by its title but link it to
+    doi:10.1162/neco_a_01676, which Crossref gives as "Energy Complexity of Convolutional Neural
+    Networks". The paper is doi:10.1162/neco_a_01672.
+- kind: metadata_error
+  statement: The CurrentClampSeries are stated in volts with conversion 1 but hold millivolts (-100 to
+    +46), and the CurrentClampStimulusSeries are stated in amperes with conversion 1 but hold
+    picoamperes (holding levels of 12 and -37, steps up to about 1000).
+- kind: other
+  statement: The patch timestamps are at 20.41 kHz (49 us) for every protocol except IDthres (20 kHz)
+    and APWaveform (125 kHz, 8 us). The paper states digitization at 20 kHz, and APWaveform at high
+    rates, typically 200 kHz. The intervals are regular and agree with the nominal step durations.
+- kind: metadata_error
+  statement: The icephys sequential recordings table leaves out the first sweep of every protocol after
+    IDthres in each run and every PosCheops sweep (35 of 300 recordings for cell 1, 28 of 240 for
+    cell 2), so the grouping tables do not describe the protocols. The protocol_name and run columns
+    of the intracellular recordings table are complete.
+- kind: metadata_insufficient
+  statement: No culture age, plating date or days in vitro is given in the files or the dandiset's
+    metadata; the subject has only an id, a species and a description.
+- kind: metadata_insufficient
+  statement: The electrodes table's x, y and z are empty (NaN), location is "unknown" and impedance -1;
+    electrode positions are only in the custom columns rel_x and rel_y, without a description of their
+    frame.
+- kind: selection_undocumented
+  statement: Cell 2's file holds runs 3 to 6 of the recording, renamed run1 to run4; only the
+    descriptions of its MEA series and the paper's export notebook say so. Runs 1 and 2 of cell 2 are
+    not deposited, and the dandiset does not say why.
+- kind: other
+  statement: In every run 117 to 132 of the 675 to 678 MEA channels are constant for at least one of
+    ten one-second segments (the channels the paper's code removes before computing templates); the
+    deposited series keep them, with nothing marking them.
+- kind: other
+  statement: In the deposited sweeps the stimulus starts 50 ms earlier than the timings of the
+    paper's feature code (350 ms against ton 400 ms for IDrest, 450 against 500 for firepattern), so
+    the code's timings cannot be applied to the files as they are.
+- kind: paper_inconsistency
+  statement: Methods 5.2 describe IV as 11 steps from -140 to 20% by 20%, which is 9 steps; the data
+    hold 11 steps from -140 to 60%.
+- kind: paper_inconsistency
+  statement: Methods 5.4 give 79 intracellular features for optimization and Table 1 gives 76; the
+    code's feature files have 79 before it drops three sag features of IV -20%, and 76 after.
