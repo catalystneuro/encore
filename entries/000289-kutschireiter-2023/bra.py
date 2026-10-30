@@ -179,7 +179,7 @@ def circ_diff(a, b):
 # ---------------------------------------------------------------------------------------------
 # Neural noise: a batched copy of RNN_filter_Run, checked against it in the notebook
 def rnn_batch(rng, runs, T, N, sigma_N, w_even, w_quad, tau=1.0, kappa_0=1.0, phi_0=0.0, dt=0.01,
-              noise=None, inh_fixed=None, traces=None):
+              noise=None, inh_fixed=None, inh_per_amp=None, traces=None):
     """RNN_filter_Run (circularFiltering.py) for `runs` independent runs at once, with no angular
     velocity input (w_odd = 0, dy = 0), no HD input (I_ext = 0) and stoch_corr = 0 (claims file).
     Same update, term by term: decay, even recurrence (2/N w_even cos), quadratic inhibition
@@ -187,9 +187,12 @@ def rnn_batch(rng, runs, T, N, sigma_N, w_even, w_quad, tau=1.0, kappa_0=1.0, ph
     standard normal draws (steps x runs x N) to reproduce a given run.
 
     Diagnostics for the noise claim (not in RNN_filter_Run): `inh_fixed`, if given, replaces the
-    global inhibition w_quad pi/N sum max(r, 0) by that constant, so that the noise acts only
-    through the linear terms, as in the SI derivation (section 5, Eqs. S107 to S109, where the
-    noise is one more input and the other dynamics are unchanged). `traces`, a dict, receives the
+    global inhibition w_quad pi/N sum max(r, 0) by that constant. This removes two things at once:
+    the noise's effect on the inhibition, and the inhibition's dependence on the amplitude, which is
+    the restoring force toward kappa* (the first mode becomes neutral). `inh_per_amp`, if given,
+    replaces the inhibition by `inh_per_amp` times the decoded amplitude of each run, the value a
+    noise-free cosine bump of that amplitude would give: the restoring force is kept and only the
+    noise's own contribution to the rectified sum is removed. `traces`, a dict, receives the
     run-mean global inhibition and zero mode (population mean rate) at every step."""
     steps = int(T / dt)
     phi_r = np.linspace(-np.pi, np.pi - 2 * np.pi / N, N)
@@ -212,6 +215,8 @@ def rnn_batch(rng, runs, T, N, sigma_N, w_even, w_quad, tau=1.0, kappa_0=1.0, ph
             traces["inh"][i - 1], traces["zero_mode"][i - 1] = inh.mean(), r.mean()
         if inh_fixed is not None:
             inh = inh_fixed
+        if inh_per_amp is not None:
+            inh = inh_per_amp * kappa[i - 1][:, None]
         dW = (noise[i] if noise is not None else rng.standard_normal((runs, N))) * np.sqrt(dt)
         r = r - r / tau * dt + (r @ W.T) * dt - inh * r * dt + sigma_N * dW
         mu[i], kappa[i] = decode(r)
@@ -320,9 +325,9 @@ def raw_roi_fluorescence(f, frames, masks, projection="mean", smooth=4.0):
 def _raw_roi(f, frames, masks, projection, smooths):
     """Raw fluorescence per ROI from the TwoPhotonSeries for the given frame blocks: the volume is
     projected over planes (`projection`), smoothed in the plane with a Gaussian of each SD in `smooths`
-    pixels, and averaged over each ROI's 2D mask (5 to 9 pixels on the PB midline). Neither the
-    projection nor the extent of an ROI is stated in the files; the notebook picks them by agreement
-    with the stored dF/F, and shows the alternatives."""
+    pixels, and averaged over each ROI's 2D mask (3 to 11 pixels, printed in the data check).
+    Neither the projection nor the extent of an ROI is stated in the files; the notebook picks them
+    by agreement with the stored dF/F, and shows the alternatives."""
     from scipy.ndimage import gaussian_filter
     d = f["acquisition/TwoPhotonSeries/data"]
     m = masks.reshape(masks.shape[0], -1).astype(float)

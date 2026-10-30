@@ -103,8 +103,9 @@ outcomes:
     0.0008 (beta 0.7 to 0.8) and 0.0014 (0.9 to 1). The two rises are smaller than the falls around
     them. With 10,000 runs per rate in each grid cell, the standard error of a cell's normalized
     performance is 0.0018 and that of a difference of two cells 0.0026, so the rises are 0.32 and
-    0.52 standard errors, within sampling error. The criterion gives no tolerance, so condition 4
-    fails as written.
+    0.52 standard errors, within sampling error. The cells are independent samples, since
+    performance_scan_figure3d.py runs each (kappa*, beta) as its own process and sets no seed (its
+    lines are printed). The criterion gives no tolerance, so condition 4 fails as written.
 - claim: fig3f-noise-drop-below-70
   outcome: reproduced
   notebook: reproduce_kutschireiter_2023.ipynb
@@ -143,12 +144,17 @@ outcomes:
     The mean amplitude falls throughout the run and ends at 0.83, 0.65, 0.82 and 0.42, all below the
     noise-free 1.00, so there is no upward drift and no overconfidence in this network. In
     RNN_filter_Run the noise also raises the rectified sum that drives the global inhibition (from
-    0.5 without noise to 0.57 to 0.76 at 1 s), and the zero mode stays near 0. With the inhibition
-    held at its noise-free level, so that the noise is only one more input to unchanged dynamics as
-    in SI section 5 (Eqs. S107 to S109), the mean amplitude rises to 1.08, 1.33, 1.01 and 1.07 after
-    5 s, within 1.5 standard errors of the mean that SI Eq. S124 implies (1.08, 1.35, 1.02, 1.08).
-    So the SI's upward drift is present in the noise's direct effect, and in the released network
-    the effect on the inhibition outweighs it. The criterion tests the full network; whether the
+    0.5 without noise to 0.57 to 0.77 at 1 s), and the zero mode stays near 0. With the inhibition
+    held at its noise-free constant the mean amplitude rises to 1.08, 1.38, 1.01 and 1.08 after 5 s,
+    within 1.9 standard errors of the mean that SI Eq. S124 implies (1.08, 1.35, 1.02, 1.08). That
+    control removes both the noise's effect on the inhibition and the restoring force toward
+    kappa* 1, so it confirms the SI's noise term but does not isolate the cause. With the inhibition
+    set to the value a noise-free bump of the decoded amplitude gives, which keeps the restoring
+    force, the mean amplitude ends at 1.002, 1.045, 1.003 and 1.005, above the noise-free 1.000 to
+    1.001 in all four settings (z 0.35, 6.2, 1.3, 1.1) and within 1.2 standard errors of the
+    reduced two-dimensional SDE of the first mode. So the noise's direct effect gives a small upward
+    drift, and in the released network the fall comes from the noise's own contribution to the
+    rectified sum that drives the inhibition. The criterion tests the full network; whether the
     paper claims the drift for the full network is asked of a reader (questions/000289.yaml).
   deviations:
   - >-
@@ -172,7 +178,8 @@ outcomes:
     than half for all 42 Delta7, but outputs do for 7 (or 0) of 42, so the breadth of the
     Delta7 to EPG side depends on the threshold. Reading (b), by ellipsoid body or gall position,
     could not be run, and the criterion requires both, so the claim holds in part (changed from
-    reproduced after verification round 1).
+    reproduced after verification round 1). Whether reading (b) belongs to the claim is asked of a
+    reader (questions/000289.yaml).
   deviations:
   - >-
     The criterion asks for two sorts. Reading (b), by the ellipsoid body or gall position in the
@@ -209,15 +216,17 @@ outcomes:
   notebook: reproduce_kutschireiter_2023.ipynb
   output: claim:figs2-performance-independent-of-n
   notes: >-
-    Of the 161 values in figureS2.npz (7 network sizes, 23 rates), one is more than 0.02 from the
-    quadratic circKF reference, N 16 at 0.1/s (0.041 below). Every other value, N 3 and 4 included,
+    Of the 160 values in figureS2.npz (7 network sizes, 23 rates, one missing), one is more than
+    0.02 from the quadratic circKF reference, N 16 at 0.1/s (0.041 below). Every other value, N 3 and 4 included,
     is within 0.019. Both readings include N 16, so neither holds, and the criterion requires both
     (changed from partially_reproduced after verification round 1). The deviation is not sampling
     error. With 10,000 runs per rate, the standard error of a difference of two independent scans
     at 0.1/s is 0.0096, and N 16 is 4.3 of them below the reference, with no other value beyond
     3, and 0.029 below the mean of the other six sizes at that rate. The 0.02 bound is near the
-    sampling error at low rates (about 1.2 values beyond it expected by chance alone), but this
-    value is far beyond it. One value (N 128 at 100/s) is missing (NaN) in the stored array.
+    sampling error at low rates (about 1.2 of the values with N of 8 and more expected beyond it by
+    chance alone), but this value is far beyond it. One value (N 128 at 100/s) is missing (NaN) in
+    the stored array. Whether "mostly independent" allows single exceptions is asked of a reader
+    (questions/000289.yaml).
 - claim: prediction-bump-amplitude-cue-reliability
   outcome: blocked
   blocked_by: methods_underspecified
@@ -273,7 +282,7 @@ findings:
 - kind: metadata_insufficient
   statement: >-
     The processing behind the stored dF/F is not described (which planes, the extent of each ROI,
-    the baseline). The ROI masks are a few pixels each on the PB midline, and the dF/F agrees with
+    the baseline). The ROI masks are 2D, 3 to 11 pixels each (median 7), and the dF/F agrees with
     the raw imaging averaged in those masks only after spatial smoothing (median correlation over
     ROIs 0.66 without, 0.93 with a 4-pixel Gaussian, sub-1). The RoiResponseSeries unit is "na".
 - kind: methods_unavailable
@@ -299,9 +308,10 @@ findings:
     In the released single-population network (RNN_filter_Run) at the Bayesian ring attractor's
     parameters, additive neural noise lowers the mean bump amplitude (from 1.00 to 0.42 to 0.83
     after 5 s, N 64 and 256, noise SD 1 and 2). The Results and SI Appendix section 5 say the noise
-    causes a positive drift of the amplitude. The fall comes from the noise raising the rectified
-    sum that drives the global inhibition; with the inhibition held at its noise-free level the
-    amplitude rises as SI Eq. S124 implies (1.01 to 1.33).
+    causes a positive drift of the amplitude. With the inhibition set to the value a noise-free bump
+    of the decoded amplitude gives, which keeps the restoring force and removes only the noise's own
+    contribution to the rectified sum that drives the inhibition, the mean amplitude ends at 1.002
+    to 1.045, above the noise-free value, so the fall comes from that contribution.
 verifications:
 - date: '2026-10-30'
   kind: agent
@@ -471,3 +481,136 @@ verifications:
       The bra.fourier docstring and the data check now state the phase sign (a convention, the
       amplitude does not depend on it) and print the ROI counts. Cell 0 now says the claim is
       tested, then blocked. Outcome kept.
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 2. The full executed notebook of the first revision with its conclusions and summary, the
+    helper module, the README, the attempt record and the claims file, with the paper. The verifier
+    checked each outcome, each assumption and each sentence of the conclusions against the printed
+    outputs, and whether its round-1 points were resolved. It agreed with all 13 outcomes.
+  results:
+  - claim: fig1-conflict-decreases-certainty
+    agrees: true
+    outcome: reproduced
+    reason: Cell 13 gives 6 of 6 under (a) and (b).
+    response: No change needed.
+  - claim: fig2h-bump-tracks-circkf
+    agrees: true
+    outcome: reproduced
+    reason: Supported by cell 16.
+    response: No change needed.
+  - claim: fig2i-accuracy-and-certainty-vs-reliability
+    agrees: true
+    outcome: reproduced
+    reason: Supported by cell 19.
+    response: No change needed.
+  - claim: fig3b-bayesian-beats-conventional
+    agrees: true
+    outcome: reproduced
+    reason: Supported by cell 22.
+    response: No change needed.
+  - claim: fig3c-update-weights
+    agrees: true
+    outcome: reproduced
+    reason: Supported by cell 25.
+    response: No change needed.
+  - claim: fig3d-best-network-slow-decay
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Condition 4 fails as written (cell 28). "Each cell is its own scan" is used to compute the SE
+      of a difference between two grid cells (0.0026), which gives the "0.32 and 0.52 SE, within
+      sampling error" verdict, but nothing printed shows that the grid cells use independent
+      trajectories; if the scan reuses trajectories, that SE is too large. This affects only the
+      "within sampling error" reading; condition 4 fails as written either way.
+    response: >-
+      The notebook now prints the lines of performance_scan_figure3d.py that set the grid cell
+      (kappa_star and beta from sys.argv) and shows that the script sets no seed, so each cell is a
+      separate process with its own operating-system seed and independent trajectories. The
+      conclusion and the notes say so. Outcome kept.
+  - claim: fig3f-noise-drop-below-70
+    agrees: true
+    outcome: reproduced
+    reason: Supported by cell 31.
+    response: No change needed.
+  - claim: fig3f-retuning-reduces-drop
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      3 of 6 readings fall in 31.5 to 38.5%, and the SNR ratio is 1.05 to 3.00 (cell 34). B10 is
+      not changed; the retuned performance is still a maximum over noisy grid cells, which biases it
+      upward, and the reduction values (34.64%) depend on it. The record keeps it because the
+      paper's notebook does the same, which is acceptable.
+    response: No change; the analysis follows the paper's notebook, as the verifier accepts.
+  - claim: noise-effects-on-mu-and-kappa
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      As the criterion is written, condition (2) fails in all 4 settings (cell 37). Criterion (2)
+      tests the drift on the full network, while SI section 5 derives only the noise term's own
+      contribution (B1, forwarded to a reader). The inh_fixed control replaces the whole inhibition
+      term with a constant; that term is the only one that depends on amplitude, the decay that
+      pulls the bump back to kappa* 1, so the first mode turns neutral and the amplitude is a free
+      2-D random walk. The control changes two things at once and shows that the SI's noise term is
+      correct, but not that the noise's effect on the inhibition is what outweighs the drift in the
+      full network. Cell 38, the bra.rnn_batch docstring ("the other dynamics are unchanged") and
+      the record ("the fall comes from the noise raising the rectified sum") go beyond what the
+      diagnostic shows. A cleaner control would keep the inhibition at the value implied by the
+      decoded amplitude alone.
+    response: >-
+      Added the cleaner control. bra.rnn_batch takes inh_per_amp, which sets the inhibition to the
+      value a noise-free cosine bump of each run's decoded amplitude gives; this keeps the restoring
+      force and removes only the noise's own contribution to the rectified sum. The mean amplitude
+      after 5 s is then 1.002, 1.045, 1.003 and 1.005, above the noise-free 1.000 to 1.001 in all
+      four settings (z 0.35, 6.2, 1.3, 1.1) and within 1.2 SE of a direct simulation of the reduced
+      two-dimensional SDE of the first mode. Cell 38, the docstring, the notes and the code_mismatch
+      finding now say that the constant-inhibition control removes both effects, and base the cause
+      on the new control. The re-run changed the constant-inhibition numbers slightly (1.08, 1.38,
+      1.01, 1.08, within 1.9 SE of the Rice means; inhibition 0.57 to 0.77 at 1 s), and the text
+      and the question to the reader were updated to them. Outcome kept.
+  - claim: fig4b-connectome-motifs
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      The criterion needs two sorts and only reading (a) can be formed (cells 6 and 40). Both
+      assumptions (any synapse counts as a connection; the offset measure) are stated and
+      reasonable. The criterion offers an ellipsoid-body or gall sort "in the name" that hemibrain
+      names cannot provide, then requires both sorts, so the partial outcome comes from how the
+      criterion is written, not from the connectome.
+    response: >-
+      Added a question for a reader (questions/000289.yaml) on whether reading (b) belongs to the
+      claim; the notes say it is asked. Outcome kept.
+  - claim: fig4gh-drosophila-network-matches
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Reading (a) fails at 0.1, 0.2 and 0.3/s (cell 43). The differences are 1.16 to 1.95 SE; the
+      outcome rests on the criterion's bounds, and the record says so.
+    response: No change needed.
+  - claim: figs2-performance-independent-of-n
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      N 16 at 0.1/s is 0.0414 off, both readings fail (cell 46); it is 4.3 SE off, so not noise.
+      The paper says "mostly independent", but the criterion requires every one of the 161 cells to
+      be within 0.02, and the outcome rests on one cell. The README's "one value of 161" is wrong,
+      as there are 160 values (one is NaN), and the record's "about 1.2 values expected" leaves out
+      that the expectation covers N of 8 and more only.
+    response: >-
+      README and notes now say 160 values; the notes and the conclusion say the 1.2 covers N of 8
+      and more. Added a question for a reader on whether "mostly" allows single exceptions. Outcome
+      kept.
+  - claim: prediction-bump-amplitude-cue-reliability
+    agrees: true
+    outcome: blocked
+    reason: >-
+      dF/F with reading (b) gives p 0.138; the other three combinations hold (cell 50). Cell 51
+      swaps the median high/low ratios (dF/F 1.120, raw 1.112 in cell 50); the record has them the
+      right way round. "The ROI masks are 5 to 9 pixels on the PB midline" in the summary is never
+      printed; the figure appears only in a bra.py docstring.
+    response: >-
+      Cell 51 now gives 1.11 for raw and 1.12 for dF/F in the right order. The data check prints
+      the mask sizes (3 to 11 pixels, median 7, over 628 ROIs), and the summary, cell 9, the
+      docstring and the metadata_insufficient finding now use them. Cell 11 now gives the lag of 5
+      frames as 0.54 s at 9.18 Hz and 0.64 s at 7.87 Hz. Outcome kept.

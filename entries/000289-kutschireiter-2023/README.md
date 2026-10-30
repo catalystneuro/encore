@@ -25,7 +25,7 @@ EPG neurons from a separate study of the same lab (Basnak et al.), which this pa
 | Neural noise: unbiased position diffusion, upward amplitude drift, 1/sqrt(N) scaling | Partially reproduced |
 | Connectome motifs: shifted PEN1 projections, broad Delta7 inhibition | Partially reproduced (assumed; one sort of two) |
 | The Drosophila-like network matches the Bayesian attractor | Partially reproduced |
-| Accuracy depends little on the number of neurons | Not reproduced (one value of 161) |
+| Accuracy depends little on the number of neurons | Not reproduced (one value of 160) |
 | Prediction: higher bump amplitude with a reliable cue (dandiset) | Blocked: methods underspecified |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
