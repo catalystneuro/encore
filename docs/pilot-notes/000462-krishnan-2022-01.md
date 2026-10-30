@@ -1,0 +1,104 @@
+# 000462, Krishnan et al. 2022
+
+Nine claims reproduced, eight partially, 14 not reproduced and ten blocked. It
+pins version 0.230416.2132, the only published version; the paper cites none.
+The paper, Krishnan, Heer, Cherian and Sheffield in Nature Communications,
+images CA1 pyramidal cells with GCaMP6f in mice running a 2 m virtual linear
+track while the reward is given (R), withheld (UR) and given again (RR), and in
+a novel environment, splits the UR laps at the lick stop and by approach
+behaviour, and shows that CA1 spatial maps degrade after reward expectation is
+lost, that inhibiting VTA dopamine neurons with DREADDs has a similar effect and
+that VTA dopamine axons in CA1 ramp towards the reward. The claims were written
+from the version of record in PubMed Central (PMC9636178) with its supplement
+and from the paper's code (seethakris/HPCrewardpaper at commit 5b3b22a), which
+holds the behaviour, decoder and cluster analyses but not the place field
+detection or parameters. The behaviour, decoder, place field and DREADD claims
+were tested on 10 of the paper's 12 wild-type mice and 4 of its 6 DREADD mice,
+and every tested outcome but `session-lap-counts` rests on an assumption, as
+dF/F, transients and place fields had to be computed with rules the paper does
+not give (the 8th percentile in a 15 s window, transients from 2 to 0.5 SD of
+at least 0.5 s, after ref. 75). Nine claims are blocked as `data_missing`, as
+the time-control mice, pupil recordings, tdTomato control mice and VTA axon
+imaging are not in the dandiset, and `supp14-reward-cells` as
+`methods_underspecified`, as any reward-cell threshold would decide the count of
+43. Among the not reproduced outcomes, `approach-ratio` gives 2.21 in R over the
+traversal against 1.30 +/- 0.02, `engaged-lap-counts` gives 106 engaged and 125
+disengaged of 231 RE low laps (46%), so that only NR6 and NR23 have more than 12
+engaged laps and every Figure 2 and 3 outcome rests on 2 mice against the
+paper's 3, `fig3b-width-intensity` gives fields of 70.1, 65.6 and 73.1 cm
+against 53.3, 60.6 and 54.1 cm, and `supp16-dreadd-running-speed` gives speeds
+of about 26 against 42 cm/s. `fig2c-spatial-correlation-drop` and
+`fig2d-remapping-all-locations` are partially reproduced, as their criteria
+require readings S1 and S2 to agree and S1 needs the control mice. The author's
+first run gave 13 reproduced, 11 partially, seven not reproduced and ten
+blocked. The author asked a reader no questions, so the answer run and the
+following author run changed nothing. Round 1 agreed with 32 of 41 outcomes; it
+found that the approach ratio included the pause after the reward and that laps
+with no defined ratio were counted as disengaged, so the engagement split was an
+artefact, and the author took the ratio over the traversal, left those laps out
+and reran every analysis that uses engaged laps, which moved `fig2a`,
+`fig3b-out-in-ratio` and `engaged-lap-counts` to not reproduced, and took the
+verifier's not reproduced for `lick-persistence-ur`, `fig3d`, `supp16` and
+`fig4h`. Its points also led to a reward zone that starts at the first lick
+before the reward, a clock check (the teleport follows the reward by 46 to 49
+frames, 1.53 to 1.63 s at 30 Hz), a listing of every HDF5 object in every file
+and two questions to a reader, put during the revision after the answer step, on
+the lick-persistence reading and on fig4m judging DCZ but not CNO. Round 2
+agreed with all 41, so there was no third round; it found sentences the outputs
+did not support, among them fields "about twice as wide as the paper's" where
+the outputs give 1.1 to 1.7 times, which were corrected, and it noted that the
+main engagement split does not match the paper's engagement numbers, so the
+Figure 2 and 3 outcomes are weak evidence either way. The author's run took
+about 2 h 10 min (08:06 to 10:15 UTC) and nothing failed; the approach-ratio
+definition was changed twice during development and the field-parameter rule
+once. The notebook ran in 646 s at first and in 857 s after round 1.
+
+The dandiset holds 10 of the 12 wild-type extinction mice and 4 of the 6 DREADD
+mice, and none of the time-control mice, dark sessions, pupil recordings,
+tdTomato control mice or VTA axon imaging; nine of the 41 claims cannot be
+tested for this reason, and the dark part of a tenth. The files hold raw
+suite2p fluorescence only, without neuropil, dF/F, transients or the place cells
+the paper used, and the subjects carry no label for the mice in each figure.
+sub-014 has 129000 behaviour rows for 135000 fluorescence frames, and decoding
+position from the fluorescence shows that 6000 behaviour rows are missing at the
+start of BeforeCNO, so every later row is misaligned in the file; sub-NR6 has 8
+extra behaviour rows and sub-CFC4 one row fewer, at the end. The DREADD files'
+raw fluorescence carries a constant offset of about 16400 to 17000 counts (file
+minima 16415 to 16471) that the wild-type files do not have (minima 57 to 678)
+and the description does not mention, and dF/F computed without removing it is
+8.0 to 12.1 times too small. Conditions are given only as frame counts in the
+free-text description of the fluorescence series, with no epochs or trial
+tables, the behaviour channels have no units, position is in volts with no scale
+to cm, and reward and lick are voltage traces. The ImagingPlane indicator is
+given as 'GFP' while the description says GCaMP6f, every file has the same
+session_start_time (2021-12-13T02:30:00-06:00) and age P12W, and the DREADD
+files' session description reads 'Reward expectation extinction' for four days
+of recordings. In 4 of the 10 extinction mice (NR6, NR14, NR23, CFC16) a reward
+is delivered in the Unrewarded condition as the frame counts delimit it. The
+paper's code keeps only part of some sessions (for NR6 only the first 11100 of
+20000 R frames) and changes some lick stops by hand, which the paper does not
+mention, and the dandiset holds the full sessions. The Methods give pre-licking
+in UR as lasting 5 +/- 1 laps but count 90 RE high laps over 12 mice, 7.5 per
+mouse, and say in one passage that 4 of 12 mice licked randomly after the lick
+stop and in another that only one did. Lap times are longer than the paper's
+(12.2 s per R lap against 7.34 s) though the clock agrees with the 1.5 s reward
+pause, for a reason not found. Five questions are put to the paper's authors:
+how dF/F, significant transients and candidate place fields were defined, how
+lap time is defined and the position voltage converted to cm, over which frames
+the approach ratio is computed, what defines a reward cell, and how stable and
+remapped fields were told apart in Figure 2e and which mice and laps form
+Figures 2 and 3.
+
+The author's points on the protocol: it does not say what to do when a required
+reading cannot run, and fig2c was judged on S2 alone and recorded as a
+deviation; thresholds written as counts of mice ("9 of 12") do not fit a
+dataset with fewer mice, and they were applied as proportions (8 of 10);
+`measured` needs one number per expected value, and approach-ratio's dark value
+could not be measured, so the numbers were given in the notes; supp14 was
+blocked as `methods_underspecified` without running the readings step 1.6 asks
+for; the clock check assumes trial tables or annotations, which these files
+lack, and a decoder with labels shifted 10 s, a lag scan for sub-014 and place
+fields found in every condition were used; it does not cover datasets that hold
+only raw signals where the paper analysed processed ones, which forces
+assumptions onto nearly every outcome; and to keep every command in the
+foreground, per-mouse processing was run two at a time inside one command.
