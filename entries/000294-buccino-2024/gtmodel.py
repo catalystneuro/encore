@@ -7,9 +7,12 @@ model files, morphologies, extracted feature files and the ground-truth template
 mechanisms are compiled there with `nrnivmodl`.
 
 The model is instantiated with the repository's own `create_ground_truth_model(model_name="hay_ais",
-release=True)`, with BluePyOpt's NEURON simulator (`model_type="neuron"`). The paper's notebooks use
-the LFPy-based simulator of BluePyOpt 1.13.88, whose interface the locked environment does not
-provide (deviation); the intracellular dynamics are the same NEURON model.
+release=True)`, with BluePyOpt's NEURON simulator (`model_type="neuron"`) for the rheobase and the
+fixed-step AIS check, and with BluePyOpt's LFPy simulator (`LFPyCellModel`, `LFPySimulator`, as the
+paper's notebooks) for the code's own AIS cut-outs, the extracellular template and the evaluators.
+The paper's notebooks use BluePyOpt 1.13.88; the locked environment has BluePyOpt 1.14.26, whose
+`LFPySimulator` takes the electrode from the cell model in place of a constructor argument. The
+intracellular dynamics are the same NEURON model under both simulators.
 
 Where the parameters come from:
 
@@ -17,15 +20,26 @@ Where the parameters come from:
   3.2: "estimated using a 270 ms step"), from 0.15 nA by 0.005 nA (the ground-truth notebook
   1-generate-ecode-protocols-and-features-hay_ais.ipynb, `rheobase_compute_params["hay_ais"]`);
   a series from 0.10 nA is a variant, to see whether a lower step also fires.
-- Spike counts: eFEL `Spikecount` at -20 mV (the code's eFEL threshold).
+- Spike counts: eFEL `Spikecount` at -20 mV (the code's eFEL threshold) for the rheobase steps,
+  which have no spike outside the step; eFEL `peak_time` at -20 mV counted within a window
+  elsewhere.
 - IDrest 300%: the protocol of protocols_BPO_all.json (delay 250 ms, 1350 ms step of 0.45 nA, total
   1841.7 ms), as in 7-AIS-test.ipynb; recordings at the soma and at the middle (x = 0.5) and end
   (x = 1) of the AIS section (`utils.get_ais_extra_recordings`: ais_mid_v, ais_end_v); spike cut-outs
   3 ms before and 10 ms after each somatic peak, first and last spikes left out, averaged
-  (`utils.get_peak_cutout`, 7-AIS-test.ipynb ms_before=3, ms_after=10).
-- AIS position for Figure 3A: LFPy places the cell with the midpoint of its soma at the origin
-  (LFPy `Cell.set_pos`), so positions are taken relative to the mean of the soma's 3D points
-  (an approximation of LFPy's soma midpoint, standard choice).
+  (`utils.get_peak_cutout`, 7-AIS-test.ipynb ms_before=3, ms_after=10). These cut-outs interpolate every trace on a 20 kHz grid
+  (0.05 ms) and cut on that grid; `code_idrest300` and `code_cutouts` run them as 7-AIS-test.ipynb
+  does (`define_protocols` with `protocols_with_lfp=["IDrest_300"]` and the AIS recordings).
+  A fixed-step NEURON run (dt 0.005 ms, cvode off) times each spike directly, as a check of the
+  ordering below the code's 0.05 ms grid (standard choice of step).
+- AIS position for Figure 3A: read from the instantiated `LFPyCellModel` (`lfpy_cell` segment
+  midpoints), the frame in which the template is simulated; LFPy's `Cell` puts the soma midpoint at
+  the origin. The probe is the code's `define_electrode(probe_type="planar")` (20 by 4 at 50 um,
+  z = 20 um), as in 1-generate-ecode-protocols-and-features-hay_ais.ipynb, and the template is
+  recomputed with `utils.calculate_eap` and `get_extra_kwargs()` on IDrest 300%.
+- Evaluators: the code's `create_evaluator` for each strategy (`protocols_with_lfp=["IDrest_300"]`
+  for the extracellular ones, run_optimizations.py) and, for validation, `all_protocols=True`
+  without IV, APWaveform and IDrest, with LFP on firepattern 120% (4-optimization-performance.ipynb).
 """
 
 from __future__ import annotations
@@ -68,6 +82,9 @@ def fetch_repo() -> Path:
 
 
 def compile_mechanisms(model: str = MODEL) -> Path:
+    """Compile the model's mechanisms; returns the folder as a Path, the type the code's
+    create_evaluator passes, since NEURON's load_mechanisms tells loaded folders apart by equality and
+    a str and a Path of one folder would load the mechanisms twice."""
     root = fetch_repo()
     folder = root / "cell_models" / model
     nrnivmodl = Path(sys.executable).parent / "nrnivmodl"
@@ -94,7 +111,7 @@ def ground_truth_cell():
     mf = package()
     import bluepyopt.ephys as ephys
     cell = mf.create_ground_truth_model(model_name=MODEL, release=True, model_type="neuron")
-    sim = ephys.simulators.NrnSimulator(cvode_active=True, mechanisms_directory=str(folder))
+    sim = ephys.simulators.NrnSimulator(cvode_active=True, mechanisms_directory=folder)
     _state["cell"], _state["sim"] = cell, sim
     return cell, sim
 
@@ -104,10 +121,21 @@ def _soma_location():
     return ephys.locations.NrnSeclistCompLocation(name="soma", seclist_name="somatic", sec_index=0, comp_x=0.5)
 
 
-def run_step(amp_na: float, delay: float, duration: float, total: float, ais: bool = False) -> dict:
+def fixed_step_simulator(dt: float):
+    """A NEURON simulator with a fixed time step (cvode off)."""
+    import bluepyopt.ephys as ephys
+    ground_truth_cell()
+    sim = ephys.simulators.NrnSimulator(dt=dt, cvode_active=False,
+                                        mechanisms_directory=compile_mechanisms(MODEL))
+    sim.neuron.h.dt = dt   # the NrnSimulator checks that h.dt is the step it was created with
+    return sim
+
+
+def run_step(amp_na: float, delay: float, duration: float, total: float, ais: bool = False, sim=None) -> dict:
     """Simulate a square current step at the soma; return {name: (time ms, voltage mV)}."""
     import bluepyopt.ephys as ephys
-    cell, sim = ground_truth_cell()
+    cell, default_sim = ground_truth_cell()
+    sim = default_sim if sim is None else sim
     soma = _soma_location()
     recs = [ephys.recordings.CompRecording(name="soma.v", location=soma, variable="v")]
     if ais:
@@ -161,18 +189,6 @@ def features_json(model: str = MODEL, name: str = "features_BPO_all.json") -> di
     return json.loads((root / "cell_models" / model / "fitting" / "efeatures" / name).read_text())
 
 
-def averaged_cutouts(resp: dict, before=CUT_BEFORE_MS, after=CUT_AFTER_MS):
-    """Average of the cut-outs around somatic peaks, first and last left out (utils.get_peak_cutout).
-    Each trace is interpolated on a common 0.01 ms grid relative to the peak."""
-    t, v = resp["soma.v"]
-    pk = peak_times(t, v)[1:-1]
-    grid = np.arange(-before, after, 0.01)
-    out = {}
-    for name, (tt, vv) in resp.items():
-        out[name] = np.mean([np.interp(p + grid, tt, vv) for p in pk], axis=0)
-    return grid, out, len(pk)
-
-
 def section_points(cell_name_filter=None):
     """3D points of every section of the instantiated model: {section name: array (n, 3)}."""
     from neuron import h
@@ -187,3 +203,103 @@ def section_points(cell_name_filter=None):
 
 def read_swc(path: Path) -> np.ndarray:
     return np.loadtxt(path)
+
+
+def per_spike_timing(resp: dict, names=("ais_end_v.v", "ais_mid_v.v", "soma.v"), before=3.0, after=1.0):
+    """For each somatic spike but the first and last: the -20 mV crossing (linear between samples) and
+    the peak time of each trace, in ms relative to the somatic peak. Returns an array
+    (spikes, 2 * len(names)): crossings, then peaks."""
+    t, v = resp["soma.v"]
+    rows = []
+    for p in peak_times(t, v)[1:-1]:
+        cross, peak = [], []
+        for name in names:
+            tt, vv = resp[name]
+            w = (tt > p - before) & (tt < p + after)
+            tt, vv = tt[w], vv[w]
+            k = int(np.where(vv >= SPIKE_THRESHOLD)[0][0])
+            cross.append(tt[k - 1] + (SPIKE_THRESHOLD - vv[k - 1]) / (vv[k] - vv[k - 1]) * (tt[k] - tt[k - 1]) - p)
+            peak.append(tt[np.argmax(vv)] - p)
+        rows.append(cross + peak)
+    return np.array(rows)
+
+
+# --- LFPy simulator, as the paper's notebooks ---------------------------------------------------
+
+def probe():
+    """The code's planar probe (define_electrode(probe_type="planar")), as notebook 1 builds it."""
+    mf = package()
+    return mf.define_electrode(probe_type="planar")
+
+
+def lfpy_cell(electrode=None):
+    """The released hay_ais model as an LFPyCellModel with the given probe, and an LFPy simulator."""
+    import bluepyopt.ephys as ephys
+    folder = compile_mechanisms(MODEL)
+    mf = package()
+    cell = mf.create_ground_truth_model(model_name=MODEL, release=True, electrode=electrode)
+    sim = ephys.simulators.LFPySimulator(cvode_active=True, mechanisms_directory=folder)
+    return cell, sim
+
+
+def lfpy_segment_midpoints() -> dict:
+    """Segment midpoints (x, y, z, um) of the instantiated LFPyCellModel, by section type
+    ('soma', 'ais', ...), in the frame where LFPy simulates the extracellular signals."""
+    cell, sim = lfpy_cell(probe())
+    cell.instantiate(sim=sim)
+    lc = cell.lfpy_cell
+    names = [lc.get_idx_name(i)[1].split(".")[-1].split("[")[0] for i in range(lc.totnsegs)]
+    mids = np.c_[lc.x.mean(axis=1), lc.y.mean(axis=1), lc.z.mean(axis=1)]
+    out = {n: mids[[k for k, m in enumerate(names) if m == n]] for n in dict.fromkeys(names)}
+    out["_somapos"] = np.asarray(lc.somapos, float)
+    cell.destroy(sim=sim)
+    return out
+
+
+def code_idrest300(electrode=None, ais: bool = True):
+    """IDrest 300% run as 7-AIS-test.ipynb runs it: the repository's protocols_BPO_all.json through
+    define_protocols, LFP on IDrest_300 and the AIS recordings, on the LFPy cell model."""
+    mf = package()
+    electrode = probe() if electrode is None else electrode
+    eff = fetch_repo() / "cell_models" / MODEL / "fitting" / "efeatures"
+    extra = {"IDrest_300": mf.utils.get_ais_extra_recordings()} if ais else None
+    prots = mf.define_protocols(MODEL, feature_file=eff / "features_BPO_all.json",
+                                protocols_file=eff / "protocols_BPO_all.json", electrode=electrode,
+                                protocols_with_lfp=["IDrest_300"], extra_recordings=extra)
+    cell, sim = lfpy_cell(electrode)
+    resp = prots["IDrest_300"].run(cell, {}, sim=sim, isolate=False)
+    return resp, prots
+
+
+def code_cutouts(resp):
+    """The code's averaged cut-outs (utils.get_peak_cutout, 3 ms before and 10 ms after,
+    7-AIS-test.ipynb): {name: (time ms from the cut-out start, voltage mV)} on its 20 kHz grid."""
+    mf = package()
+    cut = mf.utils.get_peak_cutout(resp, ms_before=CUT_BEFORE_MS, ms_after=CUT_AFTER_MS, average=True)
+    return {k.split(".", 1)[1]: (np.asarray(r["time"]), np.asarray(r["voltage"]))
+            for k, r in cut.items() if "voltage" in r}
+
+
+def template(resp, prots):
+    """The extracellular template of IDrest 300% by the code's calculate_eap and extra kwargs."""
+    mf = package()
+    return mf.utils.calculate_eap(resp, "IDrest_300", prots, **mf.utils.get_extra_kwargs())
+
+
+def evaluator(strategy: str, validation: bool = False):
+    """The code's create_evaluator for a strategy (run_optimizations.py), or the validation evaluator
+    of 4-optimization-performance.ipynb."""
+    mf = package()
+    compile_mechanisms(MODEL)
+    kw = mf.utils.get_extra_kwargs()
+    if validation:
+        return mf.create_evaluator(model_name=MODEL, strategy="all", protocols_with_lfp="firepattern_120",
+                                   all_protocols=True, exclude_protocols=["IV", "APWaveform", "IDrest"], **kw)
+    lfp = None if strategy == "soma" else ["IDrest_300"]
+    return mf.create_evaluator(model_name=MODEL, strategy=strategy, protocols_with_lfp=lfp, **kw)
+
+
+def release_params(param_names) -> dict:
+    mf = package()
+    cell = mf.create_ground_truth_model(model_name=MODEL, release=True)
+    return {p.name: p.value for p in cell.params_by_names(param_names)}

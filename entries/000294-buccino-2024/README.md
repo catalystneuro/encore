@@ -16,7 +16,7 @@ morphologies.
 | Recorded between DIV 18 and 24 | Blocked: metadata insufficient |
 | AIS starts from a dendrite in both cells (repository morphologies) | Reproduced |
 | Ground-truth rheobase of 150 pA | Reproduced |
-| AP starts in the distal AIS of the ground-truth model | Reproduced |
+| AP starts in the distal AIS of the ground-truth model | Reproduced (assumed: read between the code's 0.05 ms samples) |
 | Largest ground-truth signal on the electrode nearest the AIS | Reproduced |
 | Table 1 feature counts | Reproduced |
 | The model fits of Figures 4, 5, 7, 8 and 10 (twelve claims) | Blocked: too large |
@@ -25,13 +25,14 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The patch sampling is 20.41 kHz for most protocols and 125 kHz for APWaveform, where the paper says
-20 kHz and about 200 kHz. The model fits need more than 1000 CPU hours. The attempt record, with the
+20 kHz and about 200 kHz. The model fits need more than 3000 CPU hours. The attempt record, with the
 reasons and the differences from the paper's method, is
 [`attempts/000294-buccino-2024-01.yaml`](../../attempts/000294-buccino-2024-01.yaml).
 
-- `reproduce_buccino_2024.ipynb`: the analysis. It takes about six minutes, most of it streaming the
-  MEA data around the spikes.
+- `reproduce_buccino_2024.ipynb`: the analysis. It takes about fifteen minutes: streaming the MEA data
+  around the spikes, and the ground-truth simulations.
 - `multimodal.py`: loading the files, the stimulus segments, spike detection and the paper's
   patch-triggered template. Other notebooks on this dandiset can import it.
 - `gtmodel.py`: fetches the paper's repository at a pinned commit and simulates its ground-truth
-  model with NEURON.
+  model with BluePyOpt's NEURON and LFPy simulators, using the repository's own protocols,
+  cut-outs, template function and evaluators.
