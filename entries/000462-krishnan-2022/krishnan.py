@@ -32,10 +32,14 @@ Where each parameter comes from:
   field passing criteria 1 to 4. The number of shuffles is a standard choice.
 - Lick threshold (1 V) and reward threshold (4 V): standard choices on two-level TTL-like
   signals; the values are bimodal (checked in the notebook).
-- Reward zone: the mean position of the first lick of each R lap, ignoring licks before 20 cm,
-  which follow the teleport (Methods, Licking behavior; the 20 cm is an assumption).
-- Approach ratio: over the whole lap, teleport to teleport (main reading), or over the traversal
-  only (variant); the Methods say "lap velocity". Assumption, see the notebook.
+- Reward zone: the mean position of the first lick before the reward delivery in each R lap,
+  ignoring licks before 20 cm, which follow the teleport (Methods, Licking behavior, "the average
+  track position at which the animal started pre-licking in R"; the 20 cm is an assumption).
+- Approach ratio: over the traversal of the track, from the lap start to the first frame at the
+  track end, which leaves out the pause after the reward (Methods, Engagement with VR, "velocity
+  was calculated at each point along the 2 m track"); main reading, `ENGAGE_MAIN`. Over the whole
+  lap, teleport to teleport, and the code's ratio over the traversal are variants. Laps whose
+  ratio is undefined are neither engaged nor disengaged.
 - Transients outside a field are removed as whole transients that do not touch the field's bins
   (Methods, Place field parameters).
 - DREADD offset: the DREADD files carry a constant offset of about 17000 counts, removed as the
@@ -233,17 +237,43 @@ def lap_time(c, s, e):
     return (top[0] - t0) / FS
 
 
-def reward_zone_start(c_r, min_pos=20.0):
-    """Start of the reward zone (Methods, Licking behavior): the mean over R laps of the position
-    of the first lick in the lap, ignoring licks before `min_pos` cm, which follow the teleport and
-    belong to the previous reward (assumption)."""
+def reward_zone_start(c_r, min_pos=20.0, before_reward=True):
+    """Start of the reward zone (Methods, Licking behavior, "the average track position at which
+    the animal started pre-licking in R"): the mean over R laps of the position of the first lick
+    in the lap, ignoring licks before `min_pos` cm, which follow the teleport and belong to the
+    previous reward (assumption). With `before_reward` (main reading) only licks before the lap's
+    reward delivery count, so that consumption licks cannot set the zone; laps with no lick before
+    the reward are left out. Without it (the first version of this attempt), the first lick of the
+    lap at or after `min_pos` counts, whenever it falls."""
     firsts = []
     for s, e in complete_laps(c_r):
-        lk = c_r["licks"][(c_r["licks"] >= s) & (c_r["licks"] < e)]
+        stop = e
+        if before_reward:
+            rw = c_r["rewards"][(c_r["rewards"] >= s) & (c_r["rewards"] < e)]
+            stop = rw[0] if len(rw) else e
+        lk = c_r["licks"][(c_r["licks"] >= s) & (c_r["licks"] < stop)]
         lk = lk[c_r["pos"][lk] >= min_pos]
         if len(lk):
             firsts.append(c_r["pos"][lk[0]])
     return float(np.mean(firsts)), firsts
+
+
+def reward_timing(c):
+    """Per complete lap with a reward: frames from reaching the track end (>= 199 cm) to the
+    reward onset, and from the reward onset to the teleport; and the interval between consecutive
+    reward onsets (s). A check of the 30 Hz clock against the 1.5 s pause after the reward
+    (Methods, Behavior and virtual reality)."""
+    to_reward, to_teleport = [], []
+    for s, e in complete_laps(c):
+        rw = c["rewards"][(c["rewards"] >= s) & (c["rewards"] < e)]
+        if not len(rw):
+            continue
+        top = np.where(c["pos"][s:e] >= TRACK - 1)[0]
+        if len(top):
+            to_reward.append(int(rw[0] - (s + top[0])))
+        to_teleport.append(int(e - rw[0]))
+    return {"top_to_reward": np.array(to_reward), "reward_to_teleport": np.array(to_teleport),
+            "inter_reward_s": np.diff(c["rewards"]) / FS}
 
 
 def reward_zone_start_code(c_r):
@@ -555,6 +585,7 @@ def circ_err_cm(y, yhat):
 # ---------------------------------------------------------------- per-mouse processing
 
 LICK_READINGS = ["L1", "L2", "L3"]
+ENGAGE_MAIN = "ratios_trav"  # the approach ratio that defines engaged laps (main reading)
 
 
 def behaviour_summary(sess):
@@ -565,8 +596,10 @@ def behaviour_summary(sess):
     first = sess["segments"][0][0]
     cR = conds[first]
     zone, firsts = reward_zone_start(cR)
+    zone_any, _ = reward_zone_start(cR, before_reward=False)
     out = {"conds": conds, "zone": zone, "zone_code": reward_zone_start_code(cR),
-           "first_lick_positions": firsts}
+           "zone_any_lick": zone_any, "first_lick_positions": firsts,
+           "timing": {n: reward_timing(c) for n, c in conds.items()}}
     ratios = {n: np.array([approach_ratio(c, s, e) for s, e in complete_laps(c)])
               for n, c in conds.items()}
     ratios_code = {n: np.array([approach_ratio_code(c, s, e) for s, e in complete_laps(c)])
@@ -576,10 +609,13 @@ def behaviour_summary(sess):
                           for n, c in conds.items()}
     out["ratios_code_trav"] = {n: np.array([approach_ratio_code(c, s, e, True) for s, e in complete_laps(c)])
                                for n, c in conds.items()}
-    rt = out["ratios_trav"][first]
-    out["engage_thr_trav"] = float(np.nanmean(rt) - 1.5 * np.nanstd(rt, ddof=1))
-    rr = ratios[first]
-    out["engage_thr"] = float(np.nanmean(rr) - 1.5 * np.nanstd(rr, ddof=1))
+    # Engagement threshold (mean - 1.5 SD of the R ratios of the mouse) for each ratio: the main
+    # reading is the Methods ratio over the traversal ("ratios_trav"); the whole-lap ratio, which
+    # takes in the pause at the track end, and the code's ratio over the traversal are variants.
+    out["engage_thr"] = {}
+    for key in ["ratios_trav", "ratios", "ratios_code_trav"]:
+        rr = out[key][first]
+        out["engage_thr"][key] = float(np.nanmean(rr) - 1.5 * np.nanstd(rr, ddof=1))
     out["lap_times"] = {n: np.array([lap_time(c, s, e) for s, e in complete_laps(c)])
                         for n, c in conds.items()}
     if "Unrewarded" in conds:
@@ -590,8 +626,14 @@ def behaviour_summary(sess):
         out["ur_zone_licks_code"] = licks_in_zone(cU, out["zone_code"]) if np.isfinite(
             out["zone_code"]) else nz
         out["lick_stop"] = {L: lick_stop(nz > 0, 2, L) for L in LICK_READINGS}
-        out["engaged_ur"] = ratios["Unrewarded"] >= out["engage_thr"]
-        out["engaged_ur_trav"] = out["ratios_trav"]["Unrewarded"] >= out["engage_thr_trav"]
+        # A lap is engaged when its ratio is at least the threshold and disengaged when it is
+        # below it; a lap whose ratio is undefined (NaN) is neither, and is left out of both.
+        out["engaged_ur"], out["disengaged_ur"] = {}, {}
+        for key in ["ratios_trav", "ratios", "ratios_code_trav"]:
+            r = out[key]["Unrewarded"]
+            ok = np.isfinite(r)
+            out["engaged_ur"][key] = ok & (np.where(ok, r, -np.inf) >= out["engage_thr"][key])
+            out["disengaged_ur"][key] = ok & (np.where(ok, r, np.inf) < out["engage_thr"][key])
     return out
 
 
@@ -707,9 +749,10 @@ def process_mouse(sub, seed, decoder=True, field_sets=None):
             nN = len(complete_laps(conds["Novel"]))
             out["dec_cv_novel_all"] = decode_cv(D["Novel"], conds["Novel"], nN)
     out["maps"] = {n: lap_maps_all(D[n], TR[n], c) for n, c in conds.items()}
-    out["fields"] = {}
+    out["fields"], out["fields_laps"] = {}, {}
     if field_sets is not None:
         for name, (cn, idx) in field_sets(beh).items():
+            out["fields_laps"][name] = list(idx)
             if len(idx) < 3:
                 out["fields"][name] = None
                 continue
@@ -746,11 +789,15 @@ def wt_sets(beh):
     sets = {"R": ("Rewarded", range(nR))}
     for L in LICK_READINGS:
         ls = beh["lick_stop"][L]
-        eng = beh["engaged_ur"]
+        eng = beh["engaged_ur"][ENGAGE_MAIN]
         sets[f"RElow_eng_{L}"] = ("Unrewarded", [i for i in range(ls, nU) if eng[i]])
         sets[f"RElow_all_{L}"] = ("Unrewarded", list(range(ls, nU)))
     if "ReRewarded" in conds:
         sets["RR"] = ("ReRewarded", range(len(complete_laps(conds["ReRewarded"]))))
+        # variant for Figures 2 and 3: engaged laps by the code's ratio over the traversal, L1
+        ls = beh["lick_stop"]["L1"]
+        engc = beh["engaged_ur"]["ratios_code_trav"]
+        sets["RElow_engc_L1"] = ("Unrewarded", [i for i in range(ls, nU) if engc[i]])
     if "Novel" in conds:
         nN = len(complete_laps(conds["Novel"]))
         sets["N"] = ("Novel", range(nN))
@@ -794,18 +841,40 @@ def dreadd_sets(beh):
     nU = len(complete_laps(beh["conds"]["Unrewarded"]))
     for L in LICK_READINGS:
         ls = beh["lick_stop"][L]
-        sets[f"RElow_eng_{L}"] = ("Unrewarded", [i for i in range(ls, nU) if beh["engaged_ur"][i]])
+        eng = beh["engaged_ur"][ENGAGE_MAIN]
+        sets[f"RElow_eng_{L}"] = ("Unrewarded", [i for i in range(ls, nU) if eng[i]])
         sets[f"RElow_all_{L}"] = ("Unrewarded", list(range(ls, nU)))
     # Supplementary Fig. 18a: before saline laps above the 60th percentile of lap speed, after
-    # saline laps below (reading a) or above (reading b, as printed) the 40th percentile; within
-    # each mouse
+    # saline laps below (reading a) or above (reading b, as printed) the 40th percentile; the
+    # percentile taken within each mouse, or over the laps of all DREADD mice pooled ("_pool")
+    pooled = pooled_saline_speed_thresholds()
     for n, key, pct, above in [("BeforeSaline", "Sal_fast", 60, True), ("AfterSaline", "Sal_slow_a", 40, False),
                                ("AfterSaline", "Sal_slow_b", 40, True)]:
         if n in beh["conds"]:
             sp = lap_speeds(beh["conds"][n])
-            thr = np.nanpercentile(sp, pct)
-            sets[key] = (n, [i for i, v in enumerate(sp) if (v > thr if above else v < thr)])
+            for suffix, thr in [("", np.nanpercentile(sp, pct)), ("_pool", pooled[(n, pct)])]:
+                sets[key + suffix] = (n, [i for i, v in enumerate(sp) if (v > thr if above else v < thr)])
     return sets
+
+
+_POOLED = {}
+
+
+def pooled_saline_speed_thresholds():
+    """Percentiles of lap speed over the saline laps of all DREADD mice pooled (Supplementary Fig.
+    18a, pooled reading of the criterion). Behaviour only; cached per process."""
+    if not _POOLED:
+        sp = {"BeforeSaline": [], "AfterSaline": []}
+        for sub in DREADD:
+            sess = load(sub, fluorescence=False)
+            a, b = sess["segments"][0][1:]
+            sess["scale"] = float(np.percentile(sess["behaviour"][a:b, 0], 99.9))
+            for n in sp:
+                if n in [x[0] for x in sess["segments"]]:
+                    sp[n] += list(lap_speeds(condition(sess, n)))
+        _POOLED[("BeforeSaline", 60)] = float(np.nanpercentile(sp["BeforeSaline"], 60))
+        _POOLED[("AfterSaline", 40)] = float(np.nanpercentile(sp["AfterSaline"], 40))
+    return _POOLED
 
 
 def lap_speeds(c):

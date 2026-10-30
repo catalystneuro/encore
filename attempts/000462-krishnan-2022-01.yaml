@@ -43,22 +43,29 @@ outcomes:
   deviations:
   - The dandiset holds 10 of the 12 extinction mice (5 of the 6 with RR and a novel session).
 - claim: lick-persistence-ur
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:lick-persistence-ur
   measured:
   - 6.6
   - 4
   notes: RE high laps per mouse average 6.60 +/- 2.62 under L1, 7.60 under L2 and 8.60 under L3, outside
-    5 +/- 1 under every reading; per mouse 2 to 12 laps (L1). Random licking after the lick stop, read
-    as a reward-zone lick in an RE low lap (reading a), is found in 4 of 10 mice, the paper's count, under
-    every lick stop reading; reading (b), any lick on the track, gives 7, and reading (c) 9. With the
-    code's reward zone the means are 6.8, 7.8 and 8.8.
+    5 +/- 1 under every reading; per mouse 2 to 12 laps (L1). Counting the rewarded first UR lap of NR6
+    and NR14 as R gives 6.40 to 8.40. Random licking after the lick stop, read as a reward-zone lick in
+    an RE low lap (reading a), is found in 4 of 10 mice, the paper's count, under every lick stop reading;
+    reading (b), any lick on the track, gives 7, and reading (c) 9. The criterion needs both the mean
+    and the count, and the mean fails. The index of the first UR lap with no zone lick, a reading the
+    criterion does not list, averages 4.80 +/- 1.99, within 5 +/- 1; it is shown, not judged, and asked
+    of a reader. The reward zone (first lick before the reward) starts at 184.5 to 196.9 cm in 8 mice,
+    167.7 cm in NR14 and 129.0 cm in CFC17. With the code's reward zone (0 cm in every mouse, as licks
+    after the teleport fill the first bin) the means are 6.8, 7.8 and 8.8.
   deviations:
   - The dandiset holds 10 of the 12 extinction mice (5 of the 6 with RR and a novel session).
-  - The reward zone starts at the mean position of the first lick of each R lap, ignoring licks before
-    20 cm, which follow the teleport and belong to the previous reward (Methods, Licking behavior, says
-    'the average track position at which the animal started pre-licking in R'). Assumption.
+  - The reward zone starts at the mean position of the first lick before the reward in each R lap, ignoring
+    licks before 20 cm, which follow the teleport and belong to the previous reward (Methods, Licking
+    behavior, says 'the average track position at which the animal started pre-licking in R'). The 20
+    cm is an assumption. Counting the first lick whenever it falls, as the first version did, moved the
+    zone by 0.3 to 3.9 cm and changed no lick stop.
   assumed: true
 - claim: fig1d-decoder-drop-ur
   outcome: reproduced
@@ -66,8 +73,9 @@ outcomes:
   output: claim:fig1d-decoder-drop-ur
   notes: With the Methods decoder (first 60% of R laps, circular track) the first 3 UR laps are within
     0.1 of the held-out R laps and RE low laps are below both in 8 of 10 mice under L1, L2 and L3. The
-    criterion asks for 9 of 12 mice (75%); 8 of 10 is 80%. The code's decoder (first 50% of R frames)
-    gives 6 of 10, and the decoder without the circular treatment 2 of 10.
+    criterion asks for 9 of 12 mice (75%); applied as the same fraction of the 10 mice here it needs ceil(0.75
+    x 10) = 8, which holds; a literal 9 of 10 does not. The code's decoder (first 50% of R frames) gives
+    6 of 10, and the decoder without the circular treatment 2 of 10.
   deviations:
   - The dandiset holds 10 of the 12 extinction mice (5 of the 6 with RR and a novel session).
   - The decoder takes each prediction at its nearest copy of the true bin before R2 and error, as the
@@ -78,7 +86,8 @@ outcomes:
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The criterion's 9 of 12 mice is applied as 75% of the mice, 8 of the 10 in the dandiset.
+  - The criterion's 9 of 12 mice is applied as the same fraction, 75%, of the 10 mice in the dandiset,
+    at least 8 (ceil(0.75 x 10)); a literal 9 of 10 is not reached (shown).
   assumed: true
 - claim: fig1e-decoder-follows-licking
   outcome: reproduced
@@ -101,9 +110,11 @@ outcomes:
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The reward zone starts at the mean position of the first lick of each R lap, ignoring licks before
-    20 cm, which follow the teleport and belong to the previous reward (Methods, Licking behavior, says
-    'the average track position at which the animal started pre-licking in R'). Assumption.
+  - The reward zone starts at the mean position of the first lick before the reward in each R lap, ignoring
+    licks before 20 cm, which follow the teleport and belong to the previous reward (Methods, Licking
+    behavior, says 'the average track position at which the animal started pre-licking in R'). The 20
+    cm is an assumption. Counting the first lick whenever it falls, as the first version did, moved the
+    zone by 0.3 to 3.9 cm and changed no lick stop.
   assumed: true
 - claim: fig1f-decoder-r2
   outcome: partially_reproduced
@@ -131,9 +142,11 @@ outcomes:
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The reward zone starts at the mean position of the first lick of each R lap, ignoring licks before
-    20 cm, which follow the teleport and belong to the previous reward (Methods, Licking behavior, says
-    'the average track position at which the animal started pre-licking in R'). Assumption.
+  - The reward zone starts at the mean position of the first lick before the reward in each R lap, ignoring
+    licks before 20 cm, which follow the teleport and belong to the previous reward (Methods, Licking
+    behavior, says 'the average track position at which the animal started pre-licking in R'). The 20
+    cm is an assumption. Counting the first lick whenever it falls, as the first version did, moved the
+    zone by 0.3 to 3.9 cm and changed no lick stop.
   assumed: true
 - claim: fig1g-decoder-error-all-locations
   outcome: reproduced
@@ -181,9 +194,11 @@ outcomes:
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The reward zone starts at the mean position of the first lick of each R lap, ignoring licks before
-    20 cm, which follow the teleport and belong to the previous reward (Methods, Licking behavior, says
-    'the average track position at which the animal started pre-licking in R'). Assumption.
+  - The reward zone starts at the mean position of the first lick before the reward in each R lap, ignoring
+    licks before 20 cm, which follow the teleport and belong to the previous reward (Methods, Licking
+    behavior, says 'the average track position at which the animal started pre-licking in R'). The 20
+    cm is an assumption. Counting the first lick whenever it falls, as the first version did, moved the
+    zone by 0.3 to 3.9 cm and changed no lick stop.
   assumed: true
 - claim: supp4-lapwise-r2
   outcome: partially_reproduced
@@ -202,7 +217,8 @@ outcomes:
     included; held-out laps 145, 0.977), RE high 66 laps (0.888, SD 0.144), RE low 231 (0.646, SD 0.436),
     RR 141 (0.869, SD 0.155). Every mean is within the stated SD under every reading. The lap counts are
     not within tolerance under any reading - R 353 against 399 +/- 40, RE high 66 to 86 against 90 +/-
-    9 with RE low 231 to 211 against 244 +/- 24, RR 141 against 121 +/- 12. Two mice are missing.
+    9 with RE low 231 to 211 against 244 +/- 24, RR 141 against 121 +/- 12. Two mice are missing. RR has
+    141 laps from 5 mice against the paper's 121 from 6, so the missing mice do not explain that count.
   deviations:
   - The dandiset holds 10 of the 12 extinction mice (5 of the 6 with RR and a novel session).
   - The decoder takes each prediction at its nearest copy of the true bin before R2 and error, as the
@@ -213,9 +229,11 @@ outcomes:
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The reward zone starts at the mean position of the first lick of each R lap, ignoring licks before
-    20 cm, which follow the teleport and belong to the previous reward (Methods, Licking behavior, says
-    'the average track position at which the animal started pre-licking in R'). Assumption.
+  - The reward zone starts at the mean position of the first lick before the reward in each R lap, ignoring
+    licks before 20 cm, which follow the teleport and belong to the previous reward (Methods, Licking
+    behavior, says 'the average track position at which the animal started pre-licking in R'). The 20
+    cm is an assumption. Counting the first lick whenever it falls, as the first version did, moved the
+    zone by 0.3 to 3.9 cm and changed no lick stop.
   assumed: true
 - claim: supp2-decoder-stable-control
   outcome: blocked
@@ -241,11 +259,16 @@ outcomes:
     and 28.19 s slower (paper 7.34, 7.4, 20). The median over mice of the per-mouse R2 is R 0.985, matched
     0.763 and slower 0.695, within tolerance, and matched laps are below R (Wilcoxon p = 0.0059 with Bonferroni).
     The 5th to 95th percentile reading gives 118 and 179 laps; counting running time only, as the code
-    does, gives 203 and 94 laps and 8.50, 9.16 and 15.03 s.
+    does, gives 203 and 94 laps and 8.50, 9.16 and 15.03 s. The clock check in the notebook shows 46 to
+    49 frames (1.53 to 1.63 s at 30 Hz) from reward onset to teleport, against the 1.5 s pause of the
+    Methods, and 3.36 to 4.8 R laps per minute from the lap counts and condition lengths, so the longer
+    lap times are not a clock error; lap time does not depend on the volts-to-cm scale.
   deviations:
   - The dandiset holds 10 of the 12 extinction mice (5 of the 6 with RR and a novel session).
   - Position is stored in volts with no scale; the top of the range, where the reward is delivered at
-    the track end (Methods, Behavior and virtual reality), is read as 200 cm. Assumption.
+    the track end (Methods, Behavior and virtual reality), is read as 200 cm. Assumption. The 30 Hz clock
+    agrees with the 1.5 s pause after the reward (46 to 49 frames from reward onset to teleport in every
+    rewarded condition), and lap time does not depend on the scale.
   - The decoder takes each prediction at its nearest copy of the true bin before R2 and error, as the
     criterion's 'track treated as circular' (Methods, Position decoding) implies; without it R2 is far
     lower (shown).
@@ -260,59 +283,83 @@ outcomes:
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:approach-ratio
   notes: Only R and UR could be tested; the dark sessions are not in the dandiset. The ratio of mean binned
-    velocity at 100 to 150 cm over 175 to 200 cm, over laps pooled, is 5.17 +/- 0.89 in R and 4.44 +/-
-    1.45 in UR over whole laps (laps with zero speed in the end bins drop out), 2.21 +/- 0.09 and 1.75
-    +/- 0.07 over the traversal only, against 1.3 and 1.22. The code's ratio (velocity normalised to its
-    peak) over the traversal gives 1.259 and 1.199, the closest but outside the tolerance of 0.02. In
-    every reading R is above UR. No measured value is given for the dark.
+    velocity at 100 to 150 cm over 175 to 200 cm, taken over the traversal (lap start to the first frame
+    at the track end, main reading), is 2.214 +/- 0.092 in R (352 laps, 1 undefined) and 1.745 +/- 0.072
+    in UR (297 laps), over mice 2.224 and 1.735, against 1.3 and 1.22. Over the whole lap, which takes
+    in the 1.5 s pause at 200 cm, it is 5.17 and 4.44, with 74 R and 76 UR laps undefined (zero mean speed
+    in the end bins) and ratios up to 150.7. The code's ratio (velocity normalised to its peak) over the
+    traversal gives 1.259 and 1.199, the closest but outside the tolerance of 0.02. On a synthetic lap
+    with a true ratio of 1.600 the helper returns 1.601 over the traversal and 1.895 over the whole lap.
+    In every reading R is above UR. No measured value is given for the dark.
   deviations:
   - The dandiset holds 10 of the 12 extinction mice (5 of the 6 with RR and a novel session).
   - Position is stored in volts with no scale; the top of the range, where the reward is delivered at
-    the track end (Methods, Behavior and virtual reality), is read as 200 cm. Assumption.
+    the track end (Methods, Behavior and virtual reality), is read as 200 cm. Assumption. The 30 Hz clock
+    agrees with the 1.5 s pause after the reward (46 to 49 frames from reward onset to teleport in every
+    rewarded condition), and lap time does not depend on the scale.
   - The dark sessions of the claim are not in the dandiset.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
   assumed: true
 - claim: engaged-lap-counts
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:engaged-lap-counts
   measured:
-  - 163
-  - 68
+  - 106
+  - 125
   - 66
-  - 4.414
-  - 1.407
-  notes: With the whole-lap ratio and the threshold mean - 1.5 SD of the R laps, 163 of 231 RE low laps
-    (71%) are engaged and 68 disengaged under L1, within tolerance, with 66 RE high laps (outside 90 +/-
-    9); under L3 RE high is 86 (within) but engaged 151 and disengaged 60 are outside. No reading puts
-    all three counts within tolerance, over 10 of the 12 mice. The mean ratio of engaged laps is 4.41,
-    of disengaged 1.41 (paper 1.3 and 1.02). With the traversal-only ratio 106 of 231 laps (46%) are engaged.
+  - 2.007
+  - 1.362
+  notes: Engaged laps by the Methods ratio over the traversal (main reading), 10 mice. Under L1, of 231
+    RE low laps 106 (46%) are engaged and 125 disengaged, none undefined, with 66 RE high laps; L2 gives
+    100, 121 and 76, L3 92, 119 and 86. Only the L3 RE high count is within tolerance (90 +/- 9); the
+    engaged and disengaged counts are outside 170 +/- 17 and 74 +/- 7.4 under every reading. The mean
+    ratios of engaged and disengaged laps are 2.007 and 1.362 against 1.3 and 1.02. The code's ratio over
+    the traversal (variant, not judged) gives 154 engaged and 77 disengaged laps under L1 (67%), both
+    within tolerance, with ratios 1.284 and 1.029, but 66 RE high laps. The whole-lap reading of the first
+    version (163 and 68) counted 62 laps with an undefined ratio as disengaged; with them left out it
+    has 6 disengaged laps.
   deviations:
   - The dandiset holds 10 of the 12 extinction mice (5 of the 6 with RR and a novel session).
   - Position is stored in volts with no scale; the top of the range, where the reward is delivered at
-    the track end (Methods, Behavior and virtual reality), is read as 200 cm. Assumption.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
-  - The reward zone starts at the mean position of the first lick of each R lap, ignoring licks before
-    20 cm, which follow the teleport and belong to the previous reward (Methods, Licking behavior, says
-    'the average track position at which the animal started pre-licking in R'). Assumption.
+    the track end (Methods, Behavior and virtual reality), is read as 200 cm. Assumption. The 30 Hz clock
+    agrees with the 1.5 s pause after the reward (46 to 49 frames from reward onset to teleport in every
+    rewarded condition), and lap time does not depend on the scale.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
+  - The reward zone starts at the mean position of the first lick before the reward in each R lap, ignoring
+    licks before 20 cm, which follow the teleport and belong to the previous reward (Methods, Licking
+    behavior, says 'the average track position at which the animal started pre-licking in R'). The 20
+    cm is an assumption. Counting the first lick whenever it falls, as the first version did, moved the
+    zone by 0.3 to 3.9 cm and changed no lick stop.
   assumed: true
 - claim: supp6b-decoder-engaged-laps
   outcome: reproduced
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:supp6b-decoder-engaged-laps
   measured:
-  - 0.686
-  - 0.415
-  notes: Under L1, engaged RE low laps give a mean R2 of 0.686 [0.565 0.808] over 10 mice and disengaged
-    laps 0.415 [0.015 0.816] over 9, within tolerance; engaged laps are below R (Wilcoxon p = 0.0020)
-    and disengaged below engaged on average, in 5 of the 9 mice with both. L2 and L3 give 0.680 and 0.669,
-    0.405 and 0.355.
+  - 0.759
+  - 0.424
+  notes: Main engagement split, L1, 10 mice - engaged RE low laps decode at R2 0.759 [0.568 0.950] (paper
+    0.65 [0.49 0.81]) and disengaged laps at 0.424 [0.214 0.634] (paper 0.31 [0.06 0.5]), both within
+    tolerance; engaged laps are below R (Wilcoxon p = 0.0020) and disengaged laps below engaged on average
+    and in 9 of 10 mice. L2 and L3 give 0.696 and 0.658 (engaged) and 0.448 and 0.444 (disengaged), also
+    within tolerance, with R against engaged p = 0.0039 over the 9 mice with engaged laps. The code's
+    ratio (variant) gives 0.626 and 0.473 under L1. Some per-mouse means rest on 1 to 5 laps (NR21, NR32,
+    NR34, CFC4, CFC16 for engaged laps under L1).
   deviations:
   - The dandiset holds 10 of the 12 extinction mice (5 of the 6 with RR and a novel session).
   - The decoder takes each prediction at its nearest copy of the true bin before R2 and error, as the
@@ -323,139 +370,174 @@ outcomes:
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
   assumed: true
 - claim: disengaged-laps-uniform
   outcome: reproduced
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:disengaged-laps-uniform
-  notes: Under L1 the fraction of disengaged laps is 0.294 in the first and 0.298 in the second half of
-    RE low over 10 mice (Shapiro-Wilk p = 0.62, paired t p = 0.96, Wilcoxon p = 0.82), and the positions
-    of the 68 disengaged laps do not differ from uniform (KS D = 0.116, p = 0.29). L2 and L3 give p from
-    0.26 to 1.
+  notes: Main engagement split. Under L1 the fraction of disengaged laps is 0.383 in the first and 0.541
+    in the second half of RE low (10 mice; Shapiro-Wilk p = 0.086, paired t p = 0.094, Wilcoxon p = 0.094),
+    and the positions of the 125 disengaged laps do not differ from uniform (KS D = 0.053, p = 0.853).
+    L2 and L3 give p from 0.078 to 0.975. Both tests give p >= 0.05 under every reading, as the criterion
+    asks for a claim of absence, though the second half has 0.16 to 0.17 more disengaged laps under L1
+    and L2. The code's ratio (variant) gives 0.284 and 0.324 (paired t p = 0.639, KS p = 0.541).
   deviations:
   - The dandiset holds 10 of the 12 extinction mice (5 of the 6 with RR and a novel session).
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
   assumed: true
 - claim: supp6-pupil-engagement
   outcome: blocked
   blocked_by: data_missing
-  notes: No pupil video or pupil traces are in the dandiset; each file holds only fluorescence and three
-    behaviour channels (position, reward, licks).
+  notes: 'No pupil video or pupil traces are in the dandiset. The notebook lists every HDF5 object of
+    every file: each holds only the behaviour series (position, reward, licks) and the raw fluorescence
+    with their metadata; processing/ophys and analysis are empty.'
 - claim: fig2a-pv-cluster-transition
-  outcome: reproduced
+  outcome: not_reproduced
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:fig2a-pv-cluster-transition
-  notes: Under L1 and L2 the rule holds in 2 of 3 mice - NR21 (mean R-cluster probability R 0.84, RE high
-    0.80, RE low 0.23) and CFC4 (0.92, 0.77, 0.12); in NR23, with 2 or 3 RE high laps, RE high is already
-    low (0.52, 0.38). Under L3 it holds in 1 mouse. RR laps stay mostly outside the R cluster (0.02, 0.26,
-    0.31), so the return in RR the statement describes is weak here; it is not part of the criterion.
+  notes: 'The 2 qualifying mice (NR6, NR23). In NR6 the R-cluster probability is 0.87 in R, 0.10 in RE
+    high and 0.05 in RE low (L1): it falls at the first UR lap, not at the lick stop. In NR23, with 2
+    to 4 RE high laps, it is 0.82, 0.49 and 0.23 (L1), RE high already more than 0.2 below R. The rule
+    holds in 0 of 2 mice under every lick stop reading; the criterion asks for 2 of 3. With the code-ratio
+    split (L1c, 4 mice, not judged) it holds in 2 of 4 (NR21 0.84, 0.82, 0.15; CFC4 0.89, 0.72, 0.14).
+    RR probabilities are 0.02 to 0.30.'
   deviations:
-  - The 3 mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
-    Engagement with VR, approach behavior), NR21, NR23 and CFC4 under every lick stop reading; the files
-    do not say which mice the paper used.
+  - 'The mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
+    Engagement with VR, approach behavior): NR6 and NR23 under every lick stop reading with the main engagement
+    split, 2 mice against the paper''s 3. With the code''s ratio (reading L1c, shown, not judged) they
+    are NR6, NR21, NR23 and CFC4. The files do not say which mice the paper used.'
   - dF/F, significant transients and the place field search follow ref. 75 (Dombeck et al. 2010), which
     the Methods cite without the details (Methods, Image processing and ROI selection; Defining place
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
   - k-means from scikit-learn with one random start per run and 1000 seeded runs.
   assumed: true
 - claim: fig2c-spatial-correlation-drop
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:fig2c-spatial-correlation-drop
-  notes: Under L1, for the 605 of 607 R place cells with activity in every lap set, the mean correlation
-    of R with RE low engaged laps is 0.566, within R (first against second half of the R laps, reading
-    S2) 0.872 and R with RR 0.708; RE low against within R paired t p = 6.9e-64, RR against RE low p =
-    2.4e-17. L2 and L3 give the same.
+  notes: Reading S2 (first against second half of R in the same mice), 2 qualifying mice, 238 R place
+    cells with every correlation defined under L1 - R against RE low 0.503, within R 0.799 (paired t p
+    = 1.2e-28), R against RR 0.579, above RE low (p = 8.5e-04) and below within R; L2 and L3 the same,
+    and the L1c variant with 4 mice (0.556, 0.857, 0.678). Reading S1 needs the control mice, which are
+    not in the dandiset; the criterion requires S1 and S2 to agree, so the test can be run only in part.
   deviations:
-  - The 3 mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
-    Engagement with VR, approach behavior), NR21, NR23 and CFC4 under every lick stop reading; the files
-    do not say which mice the paper used.
+  - 'The mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
+    Engagement with VR, approach behavior): NR6 and NR23 under every lick stop reading with the main engagement
+    split, 2 mice against the paper''s 3. With the code''s ratio (reading L1c, shown, not judged) they
+    are NR6, NR21, NR23 and CFC4. The files do not say which mice the paper used.'
   - dF/F, significant transients and the place field search follow ref. 75 (Dombeck et al. 2010), which
     the Methods cite without the details (Methods, Image processing and ROI selection; Defining place
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
   - Reading S1 (within-R from the control mice) could not be run, as the control mice are not in the dandiset;
-    the outcome rests on reading S2 alone, where the criterion asks for both.
+    the criterion asks for S1 and S2 to agree, so the outcome can be partial at most.
   assumed: true
 - claim: fig2d-remapping-all-locations
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:fig2d-remapping-all-locations
-  notes: Under L1 the R against RE low correlation is below within R at the start (0.522 against 0.884,
-    n = 134 cells, p = 1.8e-16), middle (0.625 against 0.896, n = 266, p = 6.2e-27) and end (0.515 against
-    0.834, n = 206, p = 2.6e-24); 3 of 3 groups under every lick stop reading.
+  notes: Reading S2, L1, 2 qualifying mice - R against RE low below within R at the start (0.514 against
+    0.820, n = 53, p = 2.5e-07), middle (0.478 against 0.801, n = 124, p = 3.9e-17) and end (0.540 against
+    0.777, n = 62, p = 2.6e-07); 3 of 3 groups under every lick stop reading and under L1c. Reading S1,
+    which must agree, cannot be run (no control mice).
   deviations:
-  - The 3 mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
-    Engagement with VR, approach behavior), NR21, NR23 and CFC4 under every lick stop reading; the files
-    do not say which mice the paper used.
+  - 'The mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
+    Engagement with VR, approach behavior): NR6 and NR23 under every lick stop reading with the main engagement
+    split, 2 mice against the paper''s 3. With the code''s ratio (reading L1c, shown, not judged) they
+    are NR6, NR21, NR23 and CFC4. The files do not say which mice the paper used.'
   - dF/F, significant transients and the place field search follow ref. 75 (Dombeck et al. 2010), which
     the Methods cite without the details (Methods, Image processing and ROI selection; Defining place
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
-  - Reading S2 only, as for fig2c-spatial-correlation-drop.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
+  - Reading S2 only, as for fig2c-spatial-correlation-drop; S1 cannot be run, so the outcome can be partial
+    at most.
   assumed: true
 - claim: fig2e-place-field-fates
   outcome: not_reproduced
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:fig2e-place-field-fates
   measured:
-  - 608
-  - 265
-  - 631
-  - 11.3
-  - 16.1
-  - 80.8
-  - 3.1
-  - 55.5
-  - 46.4
-  - 5.9
-  - 42.8
-  - 34.0
-  - 61.9
-  - 40.7
-  notes: Under L1 the 3 mice have 608 R fields, 265 RE low engaged fields and 631 RR fields; 80.8% of
-    R fields disappear in RE low (paper 41.2%) and 55.5% of RE low fields are new (44.6%), counts that
-    do not depend on F1 to F3. Under F1 11.3% are stable through, 16.1% stable and 3.1% remapped in RE
-    low, 46.4% stable and 5.9% remapped in RR, 42.8% of lost fields reappear, 34.0% of new RE low fields
-    stay and 61.9% disappear, and 40.7% of RR fields are new (new to R and RE low; 79.1% new to RE low).
-    Under F1 to F3 and L1 to L3, 0 to 2 of the 11 percentages are within tolerance, so all readings agree
-    on the outcome.
+  - 245
+  - 151
+  - 254
+  - 11.0
+  - 19.6
+  - 75.9
+  - 4.5
+  - 60.3
+  - 40.4
+  - 9.0
+  - 34.9
+  - 41.8
+  - 53.8
+  - 35.8
+  notes: Under L1 and F1, in the 2 qualifying mice - R 245 fields, RE low engaged 151, RR 254; stable
+    through 11.0%, stable in RE low 19.6%, lost 75.9%, remapped 4.5%, new RE low 60.3%; stable in RR 40.4%,
+    remapped 9.0%; lost fields reappearing 34.9%; new RE low fields stable in RR 41.8% and lost 53.8%;
+    new RR fields 35.8%. The lost and new percentages do not depend on the fate definition. Under F1 to
+    F3 and L1 to L3, 0 or 1 of the 11 percentages is within tolerance; under L1c (4 mice) 0, with 77.5%
+    lost.
   deviations:
-  - The 3 mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
-    Engagement with VR, approach behavior), NR21, NR23 and CFC4 under every lick stop reading; the files
-    do not say which mice the paper used.
+  - 'The mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
+    Engagement with VR, approach behavior): NR6 and NR23 under every lick stop reading with the main engagement
+    split, 2 mice against the paper''s 3. With the code''s ratio (reading L1c, shown, not judged) they
+    are NR6, NR21, NR23 and CFC4. The files do not say which mice the paper used.'
   - dF/F, significant transients and the place field search follow ref. 75 (Dombeck et al. 2010), which
     the Methods cite without the details (Methods, Image processing and ROI selection; Defining place
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
   - New RR fields are counted as new to both R and RE low (main) and new to RE low (shown); the paper
     does not say.
   assumed: true
@@ -464,109 +546,134 @@ outcomes:
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:fig3a-field-numbers-similar
   measured:
-  - 608
-  - 265
-  - 631
-  notes: Under L1 the 3 mice give 608 fields in R and 631 in RR, within tolerance of 605 and 674, but
-    265 in RE low engaged laps (L2 262, L3 257) against 663. The RE low laps are fewer (18, 19 and 40
-    engaged laps in the 3 mice) than R (39 to 40).
+  - 245
+  - 151
+  - 254
+  notes: In the 2 qualifying mice, R has 245 fields, the engaged RE low laps 151 (L1; 149 under L2, 146
+    under L3) and RR 254, so RE low has 38% fewer fields than R; all three are outside the tolerances
+    of 605, 663 and 674, which count 3 mice. Under L1c (4 mice) the counts are 747, 332 and 736; RR is
+    within tolerance and RE low far below R.
   deviations:
-  - The 3 mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
-    Engagement with VR, approach behavior), NR21, NR23 and CFC4 under every lick stop reading; the files
-    do not say which mice the paper used.
+  - 'The mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
+    Engagement with VR, approach behavior): NR6 and NR23 under every lick stop reading with the main engagement
+    split, 2 mice against the paper''s 3. With the code''s ratio (reading L1c, shown, not judged) they
+    are NR6, NR21, NR23 and CFC4. The files do not say which mice the paper used.'
   - dF/F, significant transients and the place field search follow ref. 75 (Dombeck et al. 2010), which
     the Methods cite without the details (Methods, Image processing and ROI selection; Defining place
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
   assumed: true
 - claim: fig3b-reliability
   outcome: reproduced
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:fig3b-reliability
   measured:
-  - 0.556
-  - 0.321
-  - 0.493
-  notes: Over per-mouse means (L1) reliability is R 0.556 +/- 0.259, RE low 0.321 +/- 0.338, RR 0.493
-    +/- 0.236, all within tolerance; over pooled fields 0.562, 0.300 and 0.496, also within. RE low is
-    below R (pooled unpaired t p = 5.0e-66; KS p = 7.3e-47). L2 and L3 give the same.
+  - 0.545
+  - 0.381
+  - 0.495
+  notes: Per-mouse means of the 2 qualifying mice under L1 - R 0.545, RE low 0.381, RR 0.495, within 0.47
+    +/- 0.10, 0.32 +/- 0.17 and 0.41 +/- 0.10; pooled fields 0.554, 0.351, 0.478, also within. RE low
+    is below R (pooled fields, unpaired t p = 2.0e-26; KS p = 2.4e-20). L2 and L3 also hold. Under L1c
+    (4 mice) R (0.570) and RR (0.520) are just outside.
   deviations:
-  - The 3 mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
-    Engagement with VR, approach behavior), NR21, NR23 and CFC4 under every lick stop reading; the files
-    do not say which mice the paper used.
+  - 'The mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
+    Engagement with VR, approach behavior): NR6 and NR23 under every lick stop reading with the main engagement
+    split, 2 mice against the paper''s 3. With the code''s ratio (reading L1c, shown, not judged) they
+    are NR6, NR21, NR23 and CFC4. The files do not say which mice the paper used.'
   - dF/F, significant transients and the place field search follow ref. 75 (Dombeck et al. 2010), which
     the Methods cite without the details (Methods, Image processing and ROI selection; Defining place
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
   - Transients outside the field are removed as whole transients (runs of significant frames) that do
     not touch the field's bins, following the Methods (Place field parameters); the reliability is the
     mean of the off-diagonal lap by lap correlations, laps without activity left out, times the fraction
     of laps with a transient in the field.
   assumed: true
 - claim: fig3b-out-in-ratio
-  outcome: reproduced
+  outcome: not_reproduced
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:fig3b-out-in-ratio
   measured:
+  - 0.068
+  - 0.086
   - 0.075
-  - 0.12
-  - 0.083
-  notes: Under L2 the per-mouse means are R 0.075, RE low 0.120 and RR 0.083, within the tolerances of
-    0.10, 0.16 and 0.12, and RE low is above R (pooled unpaired t p = 1.4e-27; KS p = 1.2e-20). Under
-    L1 and L3 the per-mouse RE low mean (0.119, 0.117) is just below its band, and over pooled fields
-    RR (0.078) is below its band.
+  notes: Per-mouse means of the 2 qualifying mice under L1 - R 0.068, RE low 0.086, RR 0.075, against
+    0.10 +/- 0.03, 0.16 +/- 0.04 and 0.12 +/- 0.04; RE low is 0.087 and 0.092 under L2 and L3, and the
+    pooled fields give the same picture, so no reading puts the three values in tolerance. RE low is above
+    R (pooled, unpaired t p = 1.4e-03). Under L1c (4 mice) R 0.074 and RR 0.080 are within and RE low
+    0.105 is not. The first version passed under L2 with the RE low laps of the whole-lap engagement split.
   deviations:
-  - The 3 mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
-    Engagement with VR, approach behavior), NR21, NR23 and CFC4 under every lick stop reading; the files
-    do not say which mice the paper used.
+  - 'The mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
+    Engagement with VR, approach behavior): NR6 and NR23 under every lick stop reading with the main engagement
+    split, 2 mice against the paper''s 3. With the code''s ratio (reading L1c, shown, not judged) they
+    are NR6, NR21, NR23 and CFC4. The files do not say which mice the paper used.'
   - dF/F, significant transients and the place field search follow ref. 75 (Dombeck et al. 2010), which
     the Methods cite without the details (Methods, Image processing and ROI selection; Defining place
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
   assumed: true
 - claim: fig3b-width-intensity
   outcome: not_reproduced
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:fig3b-width-intensity
   measured:
-  - 93.8
-  - 97.4
-  - 84.6
-  - 0.395
-  - 0.288
-  - 0.371
-  notes: Over per-mouse means (L1) widths are 93.8 cm in R, 97.4 in RE low and 84.6 in RR, against 53.34,
-    60.56 and 54.08; the RE low widening over pooled fields is small (97.5 to 105.2 cm, p = 0.038). Firing
-    intensity is 0.395 in R and 0.288 in RE low (within tolerance; pooled t p = 4.5e-09) and 0.371 in
-    RR (outside 0.29 +/- 0.05).
+  - 70.1
+  - 65.6
+  - 73.1
+  - 0.38
+  - 0.311
+  - 0.393
+  notes: Per-mouse means of the 2 qualifying mice under L1 - width 70.1, 65.6 and 73.1 cm in R, RE low
+    and RR against 53.34, 60.56 and 54.08 (only RE low within), and RE low is not wider than R (pooled
+    p = 0.24); intensity 0.380, 0.311 and 0.393 against 0.36, 0.31 and 0.29 (RR outside), falling from
+    R to RE low (pooled p = 8.7e-04). The candidate regions the field search cuts are 31 to 35 cm wide
+    on average (L1 to L3), so the Methods width rule (field-only map above 0) roughly doubles them. Under
+    L1c (4 mice) widths are 85.8, 82.1 and 79.0 cm.
   deviations:
-  - The 3 mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
-    Engagement with VR, approach behavior), NR21, NR23 and CFC4 under every lick stop reading; the files
-    do not say which mice the paper used.
+  - 'The mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
+    Engagement with VR, approach behavior): NR6 and NR23 under every lick stop reading with the main engagement
+    split, 2 mice against the paper''s 3. With the code''s ratio (reading L1c, shown, not judged) they
+    are NR6, NR21, NR23 and CFC4. The files do not say which mice the paper used.'
   - dF/F, significant transients and the place field search follow ref. 75 (Dombeck et al. 2010), which
     the Methods cite without the details (Methods, Image processing and ROI selection; Defining place
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
   - Width is the span of contiguous bins where the field-only mean map is above 0, as the Methods define
     it; with the transient rule assumed here the fields are about twice as wide as the paper's.
   assumed: true
@@ -574,24 +681,28 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:fig3c-degradation-all-locations
-  notes: Under L1, reliability is lower in RE low at the start (0.251 against 0.499, KS p = 2.1e-12),
-    middle (p = 1.7e-26) and end (p = 1.0e-13); the out/in ratio is higher in the middle (p = 9.8e-13)
-    and end (p = 1.4e-10) and higher at the start (0.111 against 0.090) but with p = 0.024, above 0.01.
-    Three groups for one measure and two for the other, the criterion's partial case; L2 and L3 give the
-    same.
+  notes: Under L1, 2 qualifying mice - reliability lower in RE low at the start (0.257 against 0.529,
+    KS p = 2.8e-09), middle (p = 2.5e-09) and end (p = 4.7e-07); out/in higher in the middle (0.085 against
+    0.065, p = 2.7e-03) but not at the start (p = 0.22) or end (p = 0.013). Three groups for one measure,
+    the criterion's partial case; L2 and L3 give the same, and L1c 3 and 2 groups.
   deviations:
-  - The 3 mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
-    Engagement with VR, approach behavior), NR21, NR23 and CFC4 under every lick stop reading; the files
-    do not say which mice the paper used.
+  - 'The mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
+    Engagement with VR, approach behavior): NR6 and NR23 under every lick stop reading with the main engagement
+    split, 2 mice against the paper''s 3. With the code''s ratio (reading L1c, shown, not judged) they
+    are NR6, NR21, NR23 and CFC4. The files do not say which mice the paper used.'
   - dF/F, significant transients and the place field search follow ref. 75 (Dombeck et al. 2010), which
     the Methods cite without the details (Methods, Image processing and ROI selection; Defining place
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
   assumed: true
 - claim: supp11-all-mice-parameters
   outcome: not_reproduced
@@ -599,22 +710,22 @@ outcomes:
   output: claim:supp11-all-mice-parameters
   measured:
   - 0.565
-  - 0.393
+  - 0.391
   - 0.506
   - 0.075
   - 0.098
   - 0.082
   - 76.95
-  - 81.24
-  - 76.3
+  - 80.82
+  - 77.1
   - 0.441
   - 0.32
   - 0.368
-  notes: All 10 mice, all RE low laps after the lick stop. Reading (a), median of per-mouse means under
-    L1 - reliability 0.565, 0.393, 0.506; out/in 0.075, 0.098, 0.082; width 76.95, 81.24, 76.30 cm; intensity
-    0.441, 0.320, 0.368 - puts 0 of 12 within 10%; reading (b), median of pooled fields, puts 3 of 12.
-    Every direction holds (reliability and intensity lower and out/in and width higher in RE low than
-    R) under both readings and all lick stop readings.
+  notes: All 10 mice, all RE low laps after the lick stop (no engagement split). Reading (a), median of
+    per-mouse means under L1 - reliability 0.565, 0.391, 0.506; out/in 0.075, 0.098, 0.082; width 76.95,
+    80.82, 77.10 cm; intensity 0.441, 0.320, 0.368 - puts 0 of 12 within 10%; reading (b), median of pooled
+    fields, puts 3 of 12. Every direction holds (reliability and intensity lower and out/in and width
+    higher in RE low than R) under both readings and all lick stop readings.
   deviations:
   - The dandiset holds 10 of the 12 extinction mice (5 of the 6 with RR and a novel session).
   - dF/F, significant transients and the place field search follow ref. 75 (Dombeck et al. 2010), which
@@ -622,74 +733,85 @@ outcomes:
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The reward zone starts at the mean position of the first lick of each R lap, ignoring licks before
-    20 cm, which follow the teleport and belong to the previous reward (Methods, Licking behavior, says
-    'the average track position at which the animal started pre-licking in R'). Assumption.
+  - The reward zone starts at the mean position of the first lick before the reward in each R lap, ignoring
+    licks before 20 cm, which follow the teleport and belong to the previous reward (Methods, Licking
+    behavior, says 'the average track position at which the animal started pre-licking in R'). The 20
+    cm is an assumption. Counting the first lick whenever it falls, as the first version did, moved the
+    zone by 0.3 to 3.9 cm and changed no lick stop.
   assumed: true
 - claim: fig3d-reward-overrepresentation
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:fig3d-reward-overrepresentation
   measured:
-  - 113.4
-  - 106.7
-  - 111.2
-  - 59.4
-  - 54.3
-  - 60.2
-  notes: Gaussian fits to field COMs (L1) are R 113.4 +/- 59.4, RE low 106.7 +/- 54.3 and RR 111.2 +/-
-    60.2 cm, within tolerance. The end minus middle percentage is 13.1, -4.2 and 17.7 in R (above 0 in
-    2 of 3 mice), 15.1, 9.5 and 17.0 in RR, and 0.7, 11.7 and -4.3 in RE low (mean 2.7, not at or below
-    0; above R in NR23). Under L2 and L3 the RE low means are 7.3 and 2.4. The over-representation is
-    weaker in RE low than R (means 2.7 against 8.8) but the criterion's rules for every mouse are not
-    met. t-tests against 0 give p = 0.32 (R), 0.63 (RE low), 0.026 (RR).
+  - 106.4
+  - 108.4
+  - 103.8
+  - 58.6
+  - 54.7
+  - 57.9
+  notes: In the 2 qualifying mice under L1 the end minus middle excess is 6.8 and -4.2 points in R (not
+    above 0 in NR23), -14.6 and 5.5 in RE low (mean -4.6; above R in NR23) and -5.7 and 9.5 in RR, so
+    the per-mouse conditions fail under every lick stop reading. The Gaussian fits are within tolerance
+    (R 106.4 +/- 58.6, RE low 108.4 +/- 54.7, RR 103.8 +/- 57.9 cm). Under L1c (4 mice) R is above 0 in
+    3 of 4 mice, RE low below R in 3 of 4 with a mean of -7.4, and RR above 0 in 3 of 4.
   deviations:
-  - The 3 mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
-    Engagement with VR, approach behavior), NR21, NR23 and CFC4 under every lick stop reading; the files
-    do not say which mice the paper used.
+  - 'The mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
+    Engagement with VR, approach behavior): NR6 and NR23 under every lick stop reading with the main engagement
+    split, 2 mice against the paper''s 3. With the code''s ratio (reading L1c, shown, not judged) they
+    are NR6, NR21, NR23 and CFC4. The files do not say which mice the paper used.'
   - dF/F, significant transients and the place field search follow ref. 75 (Dombeck et al. 2010), which
     the Methods cite without the details (Methods, Image processing and ROI selection; Defining place
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
   assumed: true
 - claim: reward-zone-field-turnover
   outcome: not_reproduced
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:reward-zone-field-turnover
   measured:
-  - 175
-  - 35
-  - 39
-  - 33
-  - 40
-  - 75
-  - 78
-  - 37
-  - 44
-  - 98
-  notes: Under L1, 491 R fields are lost in RE low and 175 of them (35.6%) are at 150 to 200 cm (paper
-    104 of 249, 41.8%); new RE low fields are 35, 39, 33 and 40 per 50 cm (24, 27, 22, 27%, close to the
-    paper's 26, 28, 21, 25%) but every count is outside tolerance; lost end fields reappearing in RR are
-    75 (F1), 68 (F2) and 72 (F3) against 61 +/- 6.1; new RR fields are 78, 37, 44 and 98 per 50 cm (paper
-    31, 24, 18, 67). L2 and L3 give the same pattern.
+  - 50
+  - 21
+  - 16
+  - 30
+  - 24
+  - 18
+  - 29
+  - 18
+  - 17
+  - 27
+  notes: Under L1 and F1, in the 2 qualifying mice - of 186 R fields lost in RE low, 50 (26.9%) are at
+    150 to 200 cm (paper 104 of 249, 41.8%); new RE low fields per 50 cm are 21, 16, 30 and 24 (23, 18,
+    33 and 26%; paper 77, 83, 62 and 74, 26 to 28%); 18 lost end fields reappear in RR (paper 61); new
+    RR fields are 29, 18, 17 and 27 per 50 cm (paper 31, 24, 18 and 67). Every count is outside tolerance
+    under every reading; under L1c (4 mice) 200 of 579 lost fields (34.5%) are at the end.
   deviations:
-  - The 3 mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
-    Engagement with VR, approach behavior), NR21, NR23 and CFC4 under every lick stop reading; the files
-    do not say which mice the paper used.
+  - 'The mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
+    Engagement with VR, approach behavior): NR6 and NR23 under every lick stop reading with the main engagement
+    split, 2 mice against the paper''s 3. With the code''s ratio (reading L1c, shown, not judged) they
+    are NR6, NR21, NR23 and CFC4. The files do not say which mice the paper used.'
   - dF/F, significant transients and the place field search follow ref. 75 (Dombeck et al. 2010), which
     the Methods cite without the details (Methods, Image processing and ROI selection; Defining place
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
   assumed: true
 - claim: controls-no-change-over-time
   outcome: blocked
@@ -700,12 +822,14 @@ outcomes:
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:supp13-novel-environment
   notes: Five of the 6 novel mice. Late laps (last 12) against early laps (first 12) - decoder R2 0.919
-    against 0.821 (paired t p = 0.0093), reliability of block fields 0.391 against 0.304 (p = 0.016) and
-    of session fields measured on the blocks 0.425 against 0.229 (p = 0.0036), out/in ratio 0.077 against
-    0.091 (p = 0.20) and 0.229 against 0.571 (p = 0.11), pre-reward licks in the zone per lap 3.20 against
-    1.63 (p = 0.38). Two of the 4 tests hold under both readings of the block parameters. Within-condition
-    R2 (sliding 20% test block, down-sampled to the fewest laps) is 0.907 to 0.989 in R, 0.870 to 0.974
-    in RR and 0.817 to 0.941 in N.
+    against 0.821 (paired t p = 0.0093), reliability of block fields 0.392 against 0.320 (p = 0.038) and
+    of session fields measured on the blocks 0.434 against 0.230 (p = 0.0036), out/in ratio 0.080 against
+    0.091 (p = 0.34) and 0.203 against 0.550 (p = 0.096), pre-reward licks in the zone per lap 3.33 against
+    1.78 (p = 0.39). Two of the 4 tests hold under both readings of the block parameters. The session-field
+    out/in means are pulled up by fields with almost no activity in a 12-lap block (up to 20 per mouse
+    above 1); the medians are 0.121 to 0.158 early and 0.040 to 0.083 late. Within-condition R2 (sliding
+    20% test block, down-sampled to the fewest laps) is 0.907 to 0.989 in R, 0.870 to 0.974 in RR and
+    0.817 to 0.941 in N.
   deviations:
   - The dandiset holds 10 of the 12 extinction mice (5 of the 6 with RR and a novel session).
   - dF/F, significant transients and the place field search follow ref. 75 (Dombeck et al. 2010), which
@@ -716,9 +840,11 @@ outcomes:
   - The decoder takes each prediction at its nearest copy of the true bin before R2 and error, as the
     criterion's 'track treated as circular' (Methods, Position decoding) implies; without it R2 is far
     lower (shown).
-  - The reward zone starts at the mean position of the first lick of each R lap, ignoring licks before
-    20 cm, which follow the teleport and belong to the previous reward (Methods, Licking behavior, says
-    'the average track position at which the animal started pre-licking in R'). Assumption.
+  - The reward zone starts at the mean position of the first lick before the reward in each R lap, ignoring
+    licks before 20 cm, which follow the teleport and belong to the previous reward (Methods, Licking
+    behavior, says 'the average track position at which the animal started pre-licking in R'). The 20
+    cm is an assumption. Counting the first lick whenever it falls, as the first version did, moved the
+    zone by 0.3 to 3.9 cm and changed no lick stop.
   - Pre-licking is counted as licks in the reward zone before the reward is delivered; the paper does
     not say how it measured pre-licking in the novel session.
   - For the session-field reading, transients outside the field are not removed one by one; the contiguous
@@ -732,9 +858,11 @@ outcomes:
     R and N, without what counts as firing there (a field centre in the zone, a peak, an activity threshold),
     and the paper's code does not define them. The claim's main number is the count of 43 cells, which
     such a choice decides, so any choice would be arbitrary. The data needed (R and N sessions of 5 of
-    the 6 mice, reward times) are in the dandiset. Not run.
+    the 6 mice, reward times) are in the dandiset. Not run. The on-track part could be read from the R
+    and novel place fields found here (COM in the last 40 cm, 5 mice), but the criterion also needs the
+    within-R reading S1, which needs the control mice (not in the dandiset), to agree with S2; not run.
 - claim: supp16-dreadd-running-speed
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:supp16-dreadd-running-speed
   measured:
@@ -744,16 +872,20 @@ outcomes:
   - 13.54
   - 27.6
   - 14.56
-  notes: Lap speed (200 cm over the lap time), laps pooled over 4 mice - before and after saline 25.94
-    and 26.15 cm/s, before and after DCZ 27.24 and 13.54, before and after CNO 27.60 and 14.56. DCZ and
-    CNO slow the mice (unpaired t p = 7.9e-38, 2.0e-29) and saline does not (p = 0.78), but no value is
-    within tolerance (paper about 42 and 26); per-mouse means and the mean running speed (31.9 to 33.4
-    before, 19.4 to 20.4 after) are also outside. After DCZ and CNO 81 to 100% of laps per mouse have
-    a lick in the reward zone before the reward.
+  notes: Lap speed (200 cm over the time from 0 to 200 cm), laps pooled over the 4 mice - before and after
+    saline 25.94 and 26.15, DCZ 27.24 and 13.54, CNO 27.60 and 14.56 cm/s; per-mouse means and the mean
+    running speed are also all outside tolerance (0 of 6 under every reading). DCZ and CNO lower lap speed
+    (-13.70 and -13.05 cm/s, unpaired t p = 7.9e-38 and 2.0e-29) and saline does not (+0.22, p = 0.78),
+    and nearly all laps after DCZ and CNO keep a pre-reward lick in the zone. The criterion needs the
+    six means within tolerance, so the claim is not reproduced although the pattern holds. The 30 Hz clock
+    agrees with the 1.5 s reward pause and lap speed does not depend on the volts-to-cm scale, so the
+    slower speeds are in the data or in an undefined lap speed measure.
   deviations:
   - The dandiset holds 4 of the 6 DREADD mice, all 4 with saline (paper 5).
   - Position is stored in volts with no scale; the top of the range, where the reward is delivered at
-    the track end (Methods, Behavior and virtual reality), is read as 200 cm. Assumption.
+    the track end (Methods, Behavior and virtual reality), is read as 200 cm. Assumption. The 30 Hz clock
+    agrees with the 1.5 s pause after the reward (46 to 49 frames from reward onset to teleport in every
+    rewarded condition), and lap time does not depend on the scale.
   - Lap speed is read in cm/s, as the criterion reads the paper's m/s.
   assumed: true
 - claim: fig4f-dreadd-spatial-correlation
@@ -765,9 +897,9 @@ outcomes:
   - 676
   - 842
   - 641
-  notes: Under L1 (engaged RE low laps), mean correlations are R/RE low 0.365, saline 0.793, DCZ 0.657
+  notes: Under L1 (engaged RE low laps), mean correlations are R/RE low 0.351, saline 0.793, DCZ 0.657
     and CNO 0.653; DCZ and CNO are below saline (KS p = 1.9e-16, 3.3e-12). In every position group saline
-    is above R/RE low (KS p 4.5e-20 to 1.6e-31) and DCZ and CNO lie below saline; the same under every
+    is above R/RE low (KS p 4.3e-21 to 2.7e-28) and DCZ and CNO lie below saline; the same under every
     reading. The place cell counts are 610, 676, 842 and 641, outside the tolerances of 928, 1139, 1629
     and 1498 (the dandiset has 4 of the 6 mice).
   deviations:
@@ -777,10 +909,14 @@ outcomes:
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
   - The DREADD files carry a constant offset of about 17000 counts, removed as the file minimum before
     dF/F. Assumption.
   - Behaviour of sub-014 from BeforeCNO on is realigned by 6000 frames (found in the notebook).
@@ -792,15 +928,20 @@ outcomes:
   measured:
   - 30.63
   - 21.17
-  - 0.338
-  - 0.364
-  - 0.067
-  - 0.077
-  notes: Splitting within each mouse, before-saline laps above the 60th percentile run at 30.63 cm/s (paper
-    47.30) and after-saline laps below the 40th percentile at 21.17 (reading a; paper 35.03) or above
-    it at 29.41 (reading b). Reliability is 0.338 against 0.364 (a) or 0.438 (b) over per-mouse means,
-    outside tolerance; out/in ratios 0.067 against 0.077 (a) are within. The correlation drop of the split,
-    0.207 (a) or 0.136 (b) below the saline pair, is not less than half the DCZ drop (0.136).
+  - 0.34
+  - 0.366
+  - 0.066
+  - 0.076
+  notes: Percentiles within each mouse, reading (a) - fast before-saline laps 30.63 cm/s (paper 47.30),
+    slow after-saline laps 21.17 (paper 35.03); reliability per mouse 0.340 and 0.366 (paper 0.51 and
+    0.45), out/in 0.066 and 0.076 (within 0.09 +/- 0.05). Reading (b) 30.63 and 29.41 cm/s, reliability
+    0.340 and 0.433. Pooled percentiles (thresholds 28.0 and 24.4 cm/s) give 32.56 and 18.36 cm/s (a)
+    with reliability 0.351 and 0.400 per mouse, and 0.438 for the fast laps over pooled fields. Reliability
+    of the fast laps is outside tolerance under all four splits. The drop in spatial correlation from
+    the saline pair (0.793) to the split is 0.217 (a), 0.141 (b), 0.520 (pooled a) and -0.019 (pooled
+    b), against half the DCZ drop, 0.068; only pooled (b), where 55 of the 62 fast laps come from 2 mice,
+    is below it. From the same fast-lap fields against all after-saline laps the drop to the slow laps
+    is 0.086 (a) and 0.010 (b).
   deviations:
   - The dandiset holds 4 of the 6 DREADD mice, all 4 with saline (paper 5).
   - dF/F, significant transients and the place field search follow ref. 75 (Dombeck et al. 2010), which
@@ -809,18 +950,22 @@ outcomes:
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
   - Position is stored in volts with no scale; the top of the range, where the reward is delivered at
-    the track end (Methods, Behavior and virtual reality), is read as 200 cm. Assumption.
-  - Percentiles are taken within each mouse; the pooled-percentile reading was not run.
+    the track end (Methods, Behavior and virtual reality), is read as 200 cm. Assumption. The 30 Hz clock
+    agrees with the 1.5 s pause after the reward (46 to 49 frames from reward onset to teleport in every
+    rewarded condition), and lap time does not depend on the scale.
+  - Percentiles are taken within each mouse and over the laps of the 4 mice pooled; both are run, as the
+    criterion asks.
   - The drop is measured from the correlation of the whole saline pair; the paper does not say what the
-    split is compared with.
+    split is compared with. The split's fields are defined on the fast laps only, so the drop from the
+    same fields against all after-saline laps is also shown.
   assumed: true
 - claim: fig4h-dreadd-reliability-outin
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_krishnan_2022.ipynb
   output: claim:fig4h-dreadd-reliability-outin
   measured:
   - 0.37
-  - 0.273
+  - 0.276
   - 0.452
   - 0.438
   - 0.414
@@ -828,20 +973,20 @@ outcomes:
   - 0.384
   - 0.449
   - 0.097
-  - 0.088
+  - 0.081
   - 0.083
   - 0.089
   - 0.081
   - 0.087
   - 0.091
   - 0.081
-  notes: Over per-mouse means (L1, engaged RE low) all 16 means are within tolerance - reliability R 0.370,
-    RE low 0.273, DCZ 0.452 to 0.438, CNO 0.414 to 0.417, saline 0.384 to 0.449; out/in R 0.097, RE low
-    0.088, DCZ 0.083 to 0.089, CNO 0.081 to 0.087, saline 0.091 to 0.081. Out/in rises after DCZ and CNO;
-    reliability falls after DCZ but not after CNO over per-mouse means (both fall over pooled fields).
-    Saline is not without change - the out/in ratio falls (paired t over 4 mice p = 0.013) and reliability,
-    unchanged over mice (p = 0.138), differs over the cumulative histogram bins (p = 4.5e-06); the two
-    readings of the absence test disagree.
+  notes: 'Per-mouse means under L1 (engaged RE low laps) - all 16 values within tolerance (also pooled).
+    Out/in rises after DCZ and CNO; reliability falls after DCZ (0.452 to 0.438) but not after CNO (0.414
+    to 0.417) over per-mouse means, while over pooled fields both fall. Saline is not without change:
+    out/in falls after saline (0.091 to 0.081, paired t over 4 mice p = 0.013; over cumulative histogram
+    bins p = 8.0e-08) and reliability differs over the cumulative histogram bins (p = 4.5e-06). The claim
+    that saline does not change these measures fails under both pairings, and per mouse CNO does not lower
+    reliability.'
   deviations:
   - The dandiset holds 4 of the 6 DREADD mice, all 4 with saline (paper 5).
   - dF/F, significant transients and the place field search follow ref. 75 (Dombeck et al. 2010), which
@@ -849,10 +994,14 @@ outcomes:
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
   - The DREADD offset is removed as for fig4f-dreadd-spatial-correlation. Assumption.
   assumed: true
 - claim: fig4m-dreadd-overrepresentation
@@ -867,13 +1016,13 @@ outcomes:
   - 112.8
   - 113.9
   - 113.8
-  - 109.0
-  notes: Under L1 (engaged RE low) the change in end minus middle field percentage is +2.1 after DCZ,
-    +4.3 after saline and +5.8 after CNO, and -7.3 from R to RE low. DCZ against saline paired t p = 0.402
-    over 4 mice, not significant; CNO against saline Wilcoxon p = 0.625; the RE low change is larger in
-    size than the DCZ change under every reading. DCZ does not lower the over-representation in absolute
-    terms; it rises less than after saline. Gaussian means 110.0, 110.8, 115.0, 108.5, 112.8, 113.9, 113.8
-    and 109.0 cm are within 10% of the paper's.
+  - 111.3
+  notes: Change in end minus middle percentage (after minus before), 4 mice - saline +4.3, DCZ +2.1, CNO
+    +5.8; DCZ against saline paired t p = 0.402 (not significant, as the claim says), and DCZ rises less
+    than saline. RE low against R (L1, engaged laps) -11.9 over the 3 mice with enough engaged laps (009
+    has 2), larger in size than DCZ; under L3 engaged laps it is -1.1, smaller. CNO against saline Wilcoxon
+    p = 0.625; CNO rises more than saline, which the criterion does not judge (asked of a reader). Gaussian
+    means 108.5 to 115.0 cm, all within 10% of the paper's.
   deviations:
   - The dandiset holds 4 of the 6 DREADD mice, all 4 with saline (paper 5).
   - dF/F, significant transients and the place field search follow ref. 75 (Dombeck et al. 2010), which
@@ -881,17 +1030,22 @@ outcomes:
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
-  - The approach ratio is taken over the whole lap, teleport to teleport, for the engagement rule; the
-    Methods say 'lap velocity' without saying whether the reward pause at the end is in it. The whole-lap
-    reading gives 71% engaged RE low laps and 3 mice with more than 12 engaged laps, as the paper reports
-    (70%, 3 of 6); the traversal-only reading gives 44 to 46% and 2 mice, and is shown. Assumption.
+  - Engaged laps are defined by the Methods approach ratio taken over the traversal of the track, from
+    the lap start to the first frame at the track end, which leaves out the 1.5 s pause after the reward
+    (Methods, Engagement with VR, 'instantaneous velocity was calculated at each point along the 2 m track');
+    laps whose ratio is undefined are neither engaged nor disengaged. The Methods do not say where the
+    lap ends, so this is an assumption. It gives 46% engaged RE low laps under L1 and 2 of the 5 R-UR-RR
+    mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
+    gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
+    with an undefined ratio as disengaged; it is shown as a variant only.
   - The DREADD offset is removed as for fig4f-dreadd-spatial-correlation. Assumption.
   assumed: true
 - claim: supp15-tdtomato-controls
   outcome: blocked
   blocked_by: data_missing
-  notes: The three DAT-Cre tdTomato control mice are not in the dandiset; all four DAT-Cre files are described
-    as hM4D(Gi) mice ('Dat-Cre mice injected with inhibitory DREADD receptor in VTA-Dopmaine neurons').
+  notes: The three DAT-Cre tdTomato control mice are not in the dandiset; the notebook prints the full
+    subject description of all four DAT-Cre files, 'Dat-Cre mice injected with inhibitory DREADD receptor
+    in VTA-Dopmaine neurons', and none describes a tdTomato control.
 - claim: fig5-da-axon-ramps
   outcome: blocked
   blocked_by: data_missing
@@ -950,16 +1104,19 @@ findings:
     and percentile, neuropil), and what rule defined a significant transient and a candidate place field
     (refs. 44, 67 and 75 are cited)? This attempt used the 8th percentile in a 15 s window, transients
     from 2 to 0.5 SD of at least 0.5 s, and bins above 25% of the way from baseline to peak; its fields
-    are about twice as wide as the paper's (94 against 53 cm in R).
+    are wider than the paper's (70 to 90 cm against 53 cm in R), and the candidate regions it cuts (31
+    to 41 cm) are close to the paper's widths.
 - kind: methods_unavailable
-  statement: Question for the authors - how is the position voltage converted to cm, and is lap time the
-    time from 0 to 200 cm including stops? Reading the top of the voltage range as 200 cm gives R laps
-    of 12.2 s (8.5 s counting running frames only) against the paper's 7.34 s, and DREADD lap speeds of
-    about 26 cm/s against 42.
+  statement: Question for the authors - how is lap time defined, and how is the position voltage converted
+    to cm? The behaviour clock agrees with the 1.5 s reward pause (46 to 49 frames at 30 Hz) and the wild-type
+    mice run 4.11 R laps per minute, yet the time from 0 to 200 cm is 12.2 s per R lap (8.5 s counting
+    running frames only) against the paper's 7.34 s, and DREADD lap speeds are about 26 cm/s against 42.
 - kind: methods_unavailable
-  statement: Question for the authors - is the approach ratio computed over the whole lap including the
-    reward pause at the end, or over the traversal? Neither reading gives the reported 1.3 and 1.22 (5.2
-    and 4.4 whole lap, 2.2 and 1.75 traversal); the whole-lap reading gives the reported 70% engaged laps.
+  statement: Question for the authors - over which frames is the approach ratio computed, and is velocity
+    normalised as in define_attentivelaps.py? Over the traversal (lap start to the track end) the Methods
+    ratio is 2.21 in R and 1.75 in UR and 46% of RE low laps are engaged; over the whole lap with the
+    reward pause many laps have no defined ratio; the code's normalised ratio over the traversal gives
+    1.26, 1.20 and 67%, the closest to the reported 1.3, 1.22 and 70%.
 - kind: methods_unavailable
   statement: Question for the authors - what defines a reward cell (ref. 24) - what counts as firing in
     the 40 cm reward zone and within 2 s (or 1.5 s, Supplementary Fig. 14a) of reward delivery?
@@ -967,10 +1124,321 @@ findings:
   statement: Question for the authors - how were stable and remapped fields told apart in Figure 2e, and
     which mice and laps form Figures 2 and 3?
 - kind: other
-  statement: In 4 of the 10 extinction mice (NR6, NR14, NR23, CFC16) a reward is delivered at the end
-    of the first lap of the Unrewarded condition as the description's frame counts delimit it, so either
-    the boundary is one lap early or the reward was switched off one lap after imaging of UR began.
+  statement: 'In 4 of the 10 extinction mice (NR6, NR14, NR23, CFC16) a reward is delivered in the Unrewarded
+    condition as the description''s frame counts delimit it: at the end of the first complete UR lap in
+    NR6 and NR14, and in the partial lap that opens UR in NR23 and CFC16. Either the boundary is a little
+    early or the reward was switched off a lap after imaging of UR began.'
 - kind: selection_undocumented
   statement: The paper's code keeps only part of some sessions (task_framestokeep in AnimalDetails/AnimalDetailsWT.py;
     for NR6 only the first 11100 of 20000 R frames) and changes some lick stops by hand (change_lick_stop);
     the paper does not mention either, and the dandiset holds the full sessions.
+- kind: paper_inconsistency
+  statement: The Methods give pre-licking in UR as lasting '5 +/- 1' laps, but the same Methods count
+    90 RE high laps over 12 mice, 7.5 laps per mouse; and they say 4 of 12 mice licked randomly after
+    the lick stop in one passage and that only one animal did in another.
+verifications:
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier queried the archive's asset list and
+    metadata and tested the approach-ratio helper on a synthetic lap. Its report had no attempt record
+    and gave its own outcome for each claim; 32 of the 41 agree with the record as it then stood.
+  results:
+  - claim: session-lap-counts
+    agrees: true
+    outcome: reproduced
+    reason: Cell 9, complete laps - R 35.3, UR 29.7, RR 28.2, Novel 32.8. All are within tolerance.
+    response: No change needed.
+  - claim: lick-persistence-ur
+    agrees: false
+    outcome: not_reproduced
+    reason: Cell 11 - RE high laps per mouse average 6.6 / 7.6 / 8.6 under L1 to L3, against 5 +/- 1.
+      Reading (a) gives 4 random lickers, but the mean condition fails.
+    response: 'Outcome changed to not_reproduced: the criterion needs the mean and the count, and the
+      mean fails under every reading. The reward zone now starts at the first lick before the reward (problem
+      3), which changed no lick stop. Added the variant that counts the rewarded first UR lap of NR6 and
+      NR14 as R (6.40 to 8.40, problem 7) and printed the first-no-lick-lap reading (4.80); the readings
+      and the paper''s 90 RE high laps are asked of a reader in questions/000462.yaml (problem 10).'
+  - claim: fig1d-decoder-drop-ur
+    agrees: true
+    outcome: reproduced
+    reason: Cell 15, Methods decoder - holds in 8 of 10 mice under every lick-stop reading. That is 80%,
+      above the 9 of 12 (75%) the criterion fixes. Only 10 mice exist, and the notebook does not say how
+      it scales the threshold.
+    response: 'Problem 6: the notebook now prints the scaling, ceil(0.75 x 10) = 8 mice, and that a literal
+      9 is not reached; the conclusion and the deviation say so. Outcome kept.'
+  - claim: fig1e-decoder-follows-licking
+    agrees: true
+    outcome: reproduced
+    reason: Cell 17 - fit r 0.979 and fit R2 0.959 (paper 0.94 +/- 0.094). Maximum change at lap 11.23,
+      rounded to 11 (10 +/- 1). The lick minimum is at lap 14, exactly 3 laps away, the edge of the allowed
+      window.
+    response: No change needed; the numbers are unchanged after the reward zone fix.
+  - claim: fig1f-decoder-r2
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 13, main reading, L1/L2 - all four means are within tolerance and R vs RE low is significant.
+      But R vs RE high is significant (p = 0.0047; 0.028 Bonferroni) under every decoder and reading,
+      against the paper's "similar". R vs RR is significant only uncorrected (0.035; 0.21 Bonferroni).
+    response: No change needed.
+  - claim: fig1g-decoder-error-all-locations
+    agrees: true
+    outcome: reproduced
+    reason: Cell 19 - RE low error is higher than R at p < 0.01 in start, middle and end, under every
+      decoder and reading.
+    response: No change needed.
+  - claim: supp4-lickstop-definition-robust
+    agrees: true
+    outcome: reproduced
+    reason: Cell 21, "first" start reading - all four judged definitions are significant with Bonferroni
+      x5. Median RE high is 0.91 and median RE low 0.66 to 0.67, both in range. Median R is 0.976 and
+      median RR 0.842, both within tolerance.
+    response: No change needed.
+  - claim: supp4-lapwise-r2
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 23 - all means are within their SD tolerances. No lick-stop reading puts all lap counts
+      in tolerance. RR has 141 laps from 5 mice against the paper's 121 from 6, which the missing mice
+      cannot explain.
+    response: Added the RR point to the notes. Outcome kept.
+  - claim: supp2-decoder-stable-control
+    agrees: true
+    outcome: blocked
+    reason: The archive has no time-control mice.
+    response: No change needed.
+  - claim: supp5-not-running-speed
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 25 - median R2 values (0.985 / 0.763 / 0.695) are within tolerance, and the Wilcoxon
+      p is 0.006. Matched lap counts (172 or 203 against 233) and lap times (12.2 s, or 8.5 s from the
+      code variant, against 7.34 s) miss.
+    response: 'Problem 4: added a timing check to the data check section. The teleport follows the reward
+      onset by 46 to 49 frames (1.53 to 1.63 s at 30 Hz) in every rewarded condition, against the 1.5
+      s pause, and the mice run 3.36 to 4.8 R laps per minute from lap counts and condition lengths; lap
+      time does not depend on the volts-to-cm scale. The longer lap times are therefore not a clock or
+      scale error. Outcome kept.'
+  - claim: approach-ratio
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 27 - R ratio is 5.17 (whole lap), 2.21 (traversal) or 1.26 (code variant, traversal),
+      against 1.30 +/- 0.02. UR is 1.199 at best, against 1.22 +/- 0.02. The dark sessions are not in
+      the archive.
+    response: 'Problem 1: the main reading is now the traversal (2.214 in R, 1.745 in UR); the whole lap
+      is a variant. Added the undefined-ratio counts per mouse and condition and a synthetic lap (true
+      1.600; traversal 1.601, whole lap 1.895). Outcome kept.'
+  - claim: engaged-lap-counts
+    agrees: false
+    outcome: blocked
+    reason: The engaged/disengaged split is an artefact (problems 1 and 2). The lick-stop-only part also
+      misses - RE high is 66 and 76 laps under L1/L2, against 90 +/- 9.
+    response: 'Fixed the engagement split (problems 1 and 2): the approach ratio is now taken over the
+      traversal, leaving out the pause after the reward, laps with an undefined ratio are neither engaged
+      nor disengaged, and every analysis that uses engaged laps was rerun on the new split, with the code-ratio
+      split shown as a variant. With the valid split the claim can be tested: 106 engaged and 125 disengaged
+      of 231 RE low laps (46%) under L1, outside tolerance under every reading. Outcome changed from partially_reproduced
+      to not_reproduced.'
+  - claim: supp6b-decoder-engaged-laps
+    agrees: false
+    outcome: blocked
+    reason: Cell 31 meets the criterion numerically, but on the invalid engagement split. The archive
+      supports a valid rerun.
+    response: 'Fixed the engagement split (problems 1 and 2): the approach ratio is now taken over the
+      traversal, leaving out the pause after the reward, laps with an undefined ratio are neither engaged
+      nor disengaged, and every analysis that uses engaged laps was rerun on the new split, with the code-ratio
+      split shown as a variant. Rerun on the new split: engaged 0.759 and disengaged 0.424 under L1, both
+      within tolerance, engaged below R (p = 0.0020) and above disengaged in 9 of 10 mice; L2 and L3 also
+      hold. Outcome reproduced, now on a valid split.'
+  - claim: disengaged-laps-uniform
+    agrees: false
+    outcome: blocked
+    reason: Cell 33 gives p >= 0.05 for both tests. For a claim of absence, a split driven largely by
+      NaN laps is no evidence.
+    response: 'Fixed the engagement split (problems 1 and 2): the approach ratio is now taken over the
+      traversal, leaving out the pause after the reward, laps with an undefined ratio are neither engaged
+      nor disengaged, and every analysis that uses engaged laps was rerun on the new split, with the code-ratio
+      split shown as a variant. Rerun on the new split, which has no undefined laps in RE low: halves
+      0.383 and 0.541 (paired t p = 0.094), KS against uniform p = 0.853; every reading gives p >= 0.05.
+      Outcome reproduced, now on a valid split.'
+  - claim: supp6-pupil-engagement
+    agrees: true
+    outcome: blocked
+    reason: API asset metadata lists only ProcessingModule, OpticalChannel and ImagingPlane; there are
+      no pupil assets.
+    response: Added a listing of every HDF5 object in every file; no file holds pupil data, and processing/ophys
+      and analysis are empty.
+  - claim: fig2a-pv-cluster-transition
+    agrees: true
+    outcome: reproduced
+    reason: Cell 55 - holds in 2 of 3 mice under L1 and L2. Laps are filtered by the flawed engagement
+      split.
+    response: 'Fixed the engagement split (problems 1 and 2): the approach ratio is now taken over the
+      traversal, leaving out the pause after the reward, laps with an undefined ratio are neither engaged
+      nor disengaged, and every analysis that uses engaged laps was rerun on the new split, with the code-ratio
+      split shown as a variant. With the new split only NR6 and NR23 have more than 12 engaged RE low
+      laps, and the rule holds in neither (NR6 falls at the first UR lap; NR23 has 2 to 4 RE high laps).
+      Outcome changed from reproduced to not_reproduced; the code-ratio variant with 4 mice gives 2 of
+      4.'
+  - claim: fig2c-spatial-correlation-drop
+    agrees: false
+    outcome: partially_reproduced
+    reason: Cell 37, reading S2 - RE low 0.566 against within-R 0.872 (p about 1e-64); RR 0.708 lies between
+      and is above RE low (p about 1e-17). Reading S1 cannot be run because the control mice are absent,
+      and the criterion requires S1 and S2 to agree.
+    response: 'Problem 5: outcome changed to partially_reproduced, as S1 cannot be run and the criterion
+      requires S1 and S2 to agree; the section now says so. Rerun on the new engagement split (2 mice):
+      S2 holds (0.503 against 0.799, RR 0.579).'
+  - claim: fig2d-remapping-all-locations
+    agrees: false
+    outcome: partially_reproduced
+    reason: Cell 39 - 3 of 3 position groups at p < 0.01 under S2; S1 cannot be run.
+    response: 'Problem 5: outcome changed to partially_reproduced for the same reason as fig2c. Rerun
+      on the new split: 3 of 3 groups under S2.'
+  - claim: fig2e-place-field-fates
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 49 - F1 to F3 all disagree with the paper (2 of 11 values at most). For example, R fields
+      lost in RE low are 80.8% against 41.2%.
+    response: 'Rerun on the new split (2 mice): 75.9% lost, 0 or 1 of 11 within tolerance. Outcome kept.'
+  - claim: fig3a-field-numbers-similar
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 41 - R 608 and RR 631 are within tolerance; RE low engaged is 265 against 663 +/- 66.
+    response: 'Rerun on the new split: 245, 151 and 254 fields in 2 mice. Outcome kept.'
+  - claim: fig3b-reliability
+    agrees: true
+    outcome: reproduced
+    reason: Cell 43 - per-mouse means 0.556 / 0.321 / 0.493 are within tolerance, and RE low is below
+      R.
+    response: 'Rerun on the new split: 0.545, 0.381 and 0.495, within tolerance, RE low below R. Outcome
+      kept.'
+  - claim: fig3b-out-in-ratio
+    agrees: true
+    outcome: reproduced
+    reason: Only L2 per-mouse passes - RE low 0.120, exactly at the tolerance bound of 0.12. L1 and L3
+      give 0.119 and fail.
+    response: 'Fixed the engagement split (problems 1 and 2): the approach ratio is now taken over the
+      traversal, leaving out the pause after the reward, laps with an undefined ratio are neither engaged
+      nor disengaged, and every analysis that uses engaged laps was rerun on the new split, with the code-ratio
+      split shown as a variant. On the new split RE low is 0.086 to 0.092 and R 0.068 under every reading,
+      outside tolerance. Outcome changed from reproduced to not_reproduced.'
+  - claim: fig3b-width-intensity
+    agrees: true
+    outcome: not_reproduced
+    reason: Width is about 94 to 97 cm against 53 / 61 / 54 cm under every reading.
+    response: 'Rerun on the new split: widths 70.1, 65.6 and 73.1 cm, RR intensity outside. Added the
+      width of the candidate regions (31 to 35 cm), which shows how much the Methods width rule widens
+      them. Outcome kept.'
+  - claim: fig3c-degradation-all-locations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 45 - reliability holds in 3 of 3 groups; out/in fails at the start (KS p = 0.02).
+    response: 'Rerun on the new split: reliability 3 of 3, out/in 1 of 3, still the partial case. Outcome
+      kept.'
+  - claim: supp11-all-mice-parameters
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 47 - 0 of 12 (reading a) and 3 of 12 (reading b) medians within 10%. The directions hold.
+    response: No change needed; this claim does not use the engagement split.
+  - claim: fig3d-reward-overrepresentation
+    agrees: false
+    outcome: not_reproduced
+    reason: Cell 53 - NR23's R end-minus-middle is -4.2, and RE low is not below R in all mice and has
+      a positive mean. The Gaussian fits match.
+    response: 'Outcome changed to not_reproduced: the per-mouse conditions fail. Rerun on the new split
+      (2 mice): R 6.8 and -4.2, RE low above R in NR23.'
+  - claim: reward-zone-field-turnover
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 51 - lost end fields are 173 to 182 against 104; new RE low fields per bin are 30 to
+      45 against 62 to 83.
+    response: 'Rerun on the new split: 50 lost end fields, 16 to 30 new RE low fields per bin. Outcome
+      kept.'
+  - claim: controls-no-change-over-time
+    agrees: true
+    outcome: blocked
+    reason: The archive has no control mice.
+    response: No change needed.
+  - claim: supp13-novel-environment
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 57 - 2 of 4 hold (decoder R2, reliability). Pre-licking (p = 0.38) and out/in fail.
+    response: 'Problem 9: printed the medians and the number of fields above 1 for the session-field out/in
+      on each block; the large means come from fields with almost no activity in a 12-lap block. Pre-licking
+      now uses the new reward zone (p = 0.39). Outcome kept.'
+  - claim: supp14-reward-cells
+    agrees: true
+    outcome: blocked
+    reason: The block is defensible for the count of 43. Part is testable, though - R and Novel exist
+      for 5 mice, and Supplementary Fig. 14a defines on-track reward cells by field COM near reward, which
+      the notebook's fields could have used.
+    response: 'Kept blocked: the count decides the claim, and the correlation test needs the within-R
+      reading S1, which needs the control mice; the notes and the blocked-claims cell now say that the
+      on-track part could be read from the fields.'
+  - claim: supp16-dreadd-running-speed
+    agrees: false
+    outcome: not_reproduced
+    reason: Cell 61 - 0 of 6 means within tolerance (about 26 against 42 cm/s), although DCZ and CNO slow
+      running and saline does not.
+    response: 'Outcome changed to not_reproduced: the criterion needs the six means. Problem 4: the timing
+      check shows the clock agrees with the reward pause, and lap speed does not depend on the volts-to-cm
+      scale.'
+  - claim: fig4f-dreadd-spatial-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 63 - the overall and per-position patterns all hold. Place-cell counts (610 / 676 / 842
+      / 641) are all outside tolerance.
+    response: No change needed; rerun on the new split gives the same pattern.
+  - claim: supp18-saline-slow-laps
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 65 - speeds and reliability are outside tolerance, and the split drop (0.207) exceeds
+      half the DCZ drop.
+    response: 'Problem 8: added the pooled-percentile reading the criterion requires, and the drop from
+      the same fast-lap fields against all after-saline laps (0.086 and 0.010). Speeds and reliability
+      fail under all four splits. Outcome kept.'
+  - claim: fig4h-dreadd-reliability-outin
+    agrees: false
+    outcome: not_reproduced
+    reason: Cell 67 - saline out/in changes, p = 0.013 per mouse and p = 8e-8 on cumulative-histogram
+      bins (both pairings agree). Per-mouse CNO reliability does not fall.
+    response: 'Outcome changed to not_reproduced: the absence of a saline effect fails under both pairings,
+      and per mouse CNO does not lower reliability.'
+  - claim: fig4m-dreadd-overrepresentation
+    agrees: true
+    outcome: reproduced
+    reason: Cell 69 - DCZ change (2.1) is below saline (4.3), p = 0.40, and the RE low change is larger
+      in size than the DCZ change. The test uses n = 4, and CNO goes the wrong way (5.8), which the criterion
+      does not judge.
+    response: Outcome kept; the notes now give n = 4 and the CNO change, and the criterion's DCZ-only
+      test is asked of a reader in questions/000462.yaml (problem 10).
+  - claim: supp15-tdtomato-controls
+    agrees: true
+    outcome: blocked
+    reason: The 4 DREADD files are described as hM4D(Gi) mice; no tdTomato mice appear.
+    response: Printed the full subject descriptions of the 4 DREADD files; none describes a tdTomato control.
+  - claim: fig5-da-axon-ramps
+    agrees: true
+    outcome: blocked
+    reason: There are no axon-imaging assets.
+    response: No change needed; the file listing confirms it.
+  - claim: fig5k-ramp-slope-max
+    agrees: true
+    outcome: blocked
+    reason: There are no axon-imaging assets.
+    response: No change needed; the file listing confirms it.
+  - claim: fig5l-ramps-return-rr
+    agrees: true
+    outcome: blocked
+    reason: There are no axon-imaging assets.
+    response: No change needed; the file listing confirms it.
+  - claim: supp20-novel-axons
+    agrees: true
+    outcome: blocked
+    reason: There are no axon-imaging assets.
+    response: No change needed; the file listing confirms it.
+  - claim: supp21-heterogeneous-axons
+    agrees: true
+    outcome: blocked
+    reason: There are no axon-imaging assets.
+    response: No change needed; the file listing confirms it.
