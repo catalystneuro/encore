@@ -1,0 +1,1185 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000458",
+  "label": "DANDI:000458"
+ },
+ "page": "datasets/dandi/000458/",
+ "generated": "2026-10-30T14:47:31+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 12,
+  "partially_reproduced": 13,
+  "not_reproduced": 7,
+  "blocked": 5
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000458-claar-2023-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000458",
+    "version": "0.230317.0039",
+    "doi": "10.48324/dandi.000458/0.230317.0039"
+   },
+   "key": "dandi:000458",
+   "label": "DANDI:000458",
+   "dataset_version": "0.230317.0039",
+   "paper": "10.7554/elife.84630",
+   "paper_title": null,
+   "date": "2026-10-30",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-12"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41000515253"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000458-claar-2023",
+   "entry_title": "Electrically evoked EEG and cortico-thalamic spiking in head-fixed mice (Claar, Rembado et al. 2023)",
+   "description": "Tests the findings of Claar, Rembado et al. (2023) on dandiset 000458, which holds skull EEG from 23 mice, with Neuropixels LFP and sorted units from 17 of them, during single-pulse electrical stimulation of superficial or deep layers of MOs or SSp, awake, under isoflurane and in recovery. One notebook tests the ERP duration and magnitude, the peaks of the ERP and PCIst across depths and states; a second tests the spiking responses of stimulated and other cortex and of somatomotor thalamus, bursts, latencies and their trial-by-trial relation to the late ERP; a third computes the LFP and CSD magnitudes of the example session of Figure 3 and times those of Figure 3D. The CSD claims by cortical layer (Figure 6A) are not tested.",
+   "notebooks": [
+    {
+     "path": "claar_eeg.ipynb",
+     "title": "EEG claims (Figures 1, 7C, 7D and 8)",
+     "executed": null
+    },
+    {
+     "path": "claar_spikes.ipynb",
+     "title": "Spiking claims (Figures 2, 4, 5, 6B, 6C and 7E to 7H)",
+     "executed": null
+    },
+    {
+     "path": "claar_lfp.ipynb",
+     "title": "LFP and CSD magnitudes of Figure 3",
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "stim-depths",
+     "statement": "Superficial stimulation sites lay 0.41 +/- 0.04 mm and deep sites 1.06 +/- 0.05 mm below the brain surface.",
+     "source": "Results, Global evoked responses are modulated by the depth of the cortical stimulation site, paragraph 3",
+     "quote": "in layer 2/3 (superficial: 0.41\u00b10.04 mm below the brain surface) or in layer 5/6 (deep: 1.06\u00b10.05 mm below the brain surface",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The trial table gives the stimulation depth only as \"superficial\" or \"deep\" (estim_target_depth), and no file holds the depth in mm or the coordinates of the stimulating electrode. The electrode groups and devices list only the EEG array and the Neuropixels probes.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "eeg-good-electrodes",
+     "statement": "After artifact masking and visual inspection, an average of 23 +/- 4 of the 30 EEG electrodes per subject were kept as artifact-free.",
+     "source": "Methods, Data processing, EEG",
+     "quote": "leaving an average of 23\u00b14 artifact-free electrodes out of 30 for each subject",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "claar_eeg.ipynb",
+     "notes": "The EEG electrode table marks good electrodes (is_data_valid). Per subject (the two sessions of 569073 averaged) the mean is 23.07, SD 4.01, range 17 to 30; per session 23.04, SD 4.14.",
+     "deviations": [
+      "The files do not say that is_data_valid is the paper's visual selection; the agreement of the counts is consistent with it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-two-erp-peaks",
+     "statement": "Deep (layer 5/6) stimulation in the awake state usually evokes an ERP with two prominent peaks, near 25 ms and near 180 ms; the late component is not evident with superficial stimulation, in MOs or SSp.",
+     "source": "Results, Global evoked responses are modulated by the depth of the cortical stimulation site, paragraph 3; Figure 1C and 1D",
+     "quote": "when we stimulated layer 5/6 during the awake period, we usually observed two prominent peaks in the ERP: an initial response around 25 ms and a secondary peak at around 180 ms post-stimulation ... The early component was preserved, whereas the second, late component was not evident when stimulating superficially in either area",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_eeg.ipynb",
+     "notes": "Deep sites show z-scored GFP peaks above 3 in both windows in 18 of 18 under every reading (current high or medium, all awake or quiet trials, windows (a) or (b)). Superficial sites without a late peak number 0 to 2 of 12 under every reading, so the second half of the criterion fails. The late GFP peaks of superficial sites are smaller than those of deep sites (per-site table) but above z = 3.",
+     "deviations": [
+      "The paper gives no peak detection method; the two readings of the criterion were run."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1-supp1-example",
+     "statement": "In the example deep MOs session, the ERP lasts 1.01 s and has a magnitude of 11.13 SD.s.",
+     "source": "Figure 1, figure supplement 1B legend",
+     "quote": "The duration of this example is 1.01 s ... The magnitude of this example is 11.13 SD\u2219s",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "claar_eeg.ipynb",
+     "notes": "The example is subject 571619, deep MOs; it is the only subject with both superficial and deep MOs stimulation, which the Figure 1D legend says the example has. All awake trials at the medium current (40 uA) give 1.011 s and 11.133 SD.s, with duration and magnitude read as the total time and the area above z = 3 (readings a); this is the only reading with both values within tolerance. The high current gives 1.169 s and 12.556 SD.s, quiet trials at the medium current 1.040 s and 9.056 SD.s.",
+     "deviations": [
+      "The current the paper analysed is not given; the highest and the middle current of each site were both run (claims file, header).",
+      "The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of 30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed, into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1e-erp-duration",
+     "statement": "ERPs evoked by superficial stimulation were shorter than those evoked by deep stimulation (0.4 +/- 0.0 against 0.5 +/- 0.1 s), but the difference was not significant.",
+     "source": "Results, Global evoked responses are modulated by the depth of the cortical stimulation site, paragraph 3; Figure 1E",
+     "quote": "The total duration of the ERP was shorter when stimulating superficial layers compared to deep layers although not significant (mean ERP duration for superficial stimulation: 0.4\u00b10.0 s; deep stimulation: 0.5\u00b10.1 s; Student\u2019s two-tailed t-test, p=0.0843",
+     "statistics": [
+      {
+       "test": "Student's two-tailed t-test",
+       "p": 0.0843,
+       "n": "12 superficial and 18 deep stimulation sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_eeg.ipynb",
+     "notes": "Superficial ERPs are shorter than deep ERPs and the difference is not significant in every reading of duration (a), the total time above z = 3. Medium current, all awake trials (the reading that gives the example of fig1-supp1-example); superficial 0.33 +/- 0.04 s (n = 12), deep 0.49 +/- 0.06 s (n = 18), t-test p = 0.081 (paper p = 0.0843). The deep mean is within tolerance and the superficial mean is 0.02 s below 0.4 +/- 0.05. Quiet trials give 0.33 and 0.52 s, p = 0.052. At the high current both means are above tolerance (0.56 and 0.65 s, p = 0.53), and reading (b) gives 1.23 to 1.69 s. No reading puts both means within tolerance. The n of 12 superficial sites matches the paper once the site whose pulses are all marked invalid is left out. The result turns on the artifact residue that the zero-phase filter spreads into the last 20 ms of the baseline. With the z-score baseline ending 20 ms before the pulse (a variant outside the criterion, which fixes -2 to 0 s), the medium current gives 0.37 +/- 0.04 and 0.50 +/- 0.06 s, p = 0.151 (quiet trials 0.37 and 0.53 s, p = 0.092), both within tolerance. The outcome stays on the criterion's baseline; a causal filter, which would keep the residue out of the baseline within the criterion, was not run.",
+     "deviations": [
+      "The current the paper analysed is not given; the highest and the middle current of each site were both run (claims file, header).",
+      "The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of 30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed, into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1).",
+      "Zero-phase filtering (sosfiltfilt) is a standard choice; the Methods do not say."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-erp-magnitude",
+     "statement": "ERPs evoked by superficial stimulation had a significantly smaller normalized magnitude than those evoked by deep stimulation (3.3 +/- 0.8 against 6.2 +/- 0.9 SD.s).",
+     "source": "Results, Global evoked responses are modulated by the depth of the cortical stimulation site, paragraph 3; Figure 1F",
+     "quote": "When stimulating superficially, ERPs had a significantly smaller normalized magnitude compared to stimulating deep layers (mean ERP magnitude for superficial stimulation: 3.3\u00b10.8 SD\u2219s; deep stimulation: 6.2\u00b10.9 SD\u2219s; Student\u2019s two-tailed t-test, p=0.0354",
+     "statistics": [
+      {
+       "test": "Student's two-tailed t-test",
+       "p": 0.0354,
+       "n": "12 superficial and 18 deep stimulation sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "claar_eeg.ipynb",
+     "notes": "Reading (a), the area above z = 3 in SD.s, medium current, all awake trials; superficial 3.03 +/- 0.78, deep 5.86 +/- 0.90, t-test p = 0.035 (paper 3.3 +/- 0.8, 6.2 +/- 0.9, p = 0.0354). Quiet trials give 2.85 and 5.76, p = 0.028. At the high current the means are above tolerance (5.70 and 9.31, p = 0.069 all awake; 4.89 and 8.81, p = 0.043 quiet). Reading (b) divides by the area under the baseline, which is zero for a z-scored GFP (largest absolute value 4.2e-07), so it cannot be computed as written; the area under |z| is shown in its place for comparison and does not decide the outcome. With the z-score baseline ending 20 ms before the pulse (variant) the medium current gives 3.38 and 6.22, p = 0.047, also within tolerance.",
+     "deviations": [
+      "The current the paper analysed is not given; the highest and the middle current of each site were both run (claims file, header).",
+      "The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of 30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed, into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1-supp2-first-peak-flips",
+     "statement": "The amplitude of the first ERP peak decays with distance from the stimulation site and eventually flips sign, while the second component changes in a different spatial pattern.",
+     "source": "Results, Global evoked responses are modulated by the depth of the cortical stimulation site, paragraph 3; Figure 1, figure supplement 2",
+     "quote": "The amplitude of the first peak in the ERP decays systematically when moving away from the stimulation site until it eventually flips its sign, most likely reflecting volume conduction",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The criterion needs the position of the stimulation site on the skull. The EEG electrodes have coordinates, but the stimulating electrode has none in the files (the trial table gives only the target area and a depth label).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-superficial-quiescence",
+     "statement": "Stimulating superficial MOs evoked a local spike, LFP and CSD response followed by quiescence of 94.2 +/- 16.1 ms in MO neurons, with minimal to no responses in other sampled areas.",
+     "source": "Results, The spiking response pattern of the stimulated cortex echoes the ERP, paragraph 2; Figure 2C and 2D to 2F, left",
+     "quote": "Stimulating superficial MOs evoked a local spike, LFP and CSD response, followed by a period of quiescence lasting 94.2\u00b116.1 ms in MO neurons",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "Two superficial MOs sites have units (571619, 575102). Reading (a), MO RS population rate below its -2 to 0 s mean after 25 ms, high current, all awake trials, 1 ms bins; 84.0 +/- 25.0 ms (59 and 109 ms). Other readings give 81.5 to 115 ms below baseline (within 94.2 +/- 16.1 in five of eight) and 30 to 35 ms at zero rate (within the Discussion's 44.3 +/- 16.4). Two sites are few. Reading (a) is sensitive to single 1 ms bins. When runs above baseline shorter than 5 ms do not end the period, quiescence lasts 110 to 121 ms, within 94.2 +/- 16.1 only with 5 ms bins and quiet trials at the high current (110.0 ms). Reading (b), 30 to 35 ms at zero rate, is within 44.3 +/- 16.4 in all eight readings, so the outcome does not rest on reading (a) alone.",
+     "deviations": [
+      "Bin width and the quiescence measure are not given; the readings of the criterion were run."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-deep-triphasic-cortex",
+     "statement": "Stimulating deep MOs evokes in local cortex an initial excitation within 25 ms (peak population rate 38.1 +/- 4.2 Hz), quiescence of 125.0 +/- 5.5 ms, and a longer rebound excitation (peak 7.9 +/- 0.7 Hz).",
+     "source": "Results, The spiking response pattern of the stimulated cortex echoes the ERP, paragraph 2; Figure 2C, right",
+     "quote": "an initial excitation within 25 ms (peak population firing rate 38.1\u00b14.2 Hz), followed by quiescence (duration 125.0\u00b15.5 ms) and a longer period of strong excitation (peak population firing rate 7.9\u00b10.7 Hz",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "All 16 deep sites with stimulated-cortex RS units show excitation, a period below baseline and a rebound. Quiescence (reading a) is 108.7 to 131.9 ms over readings, within 125.0 +/- 5.5 or 127.8 +/- 4.1 in several. The early peak is 20 to 31 Hz with 5 ms bins and 44 to 65 Hz with 1 ms bins, against 38.1 +/- 4.2, and the rebound peak 8.5 to 14.6 Hz against 7.9 +/- 0.7; no combination of readings puts all three within tolerance. Measured is the first reading (high current, all awake, 1 ms, deep MOs, 9 sites). Requiring at least 10 ms below baseline (gaps under 5 ms ignored) keeps 16 of 16 sites triphasic.",
+     "deviations": [
+      "Stimulated cortex is the MO (or SS) area on any probe; the files give no distance from a probe to the stimulating electrode."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2f-thalamus-triphasic",
+     "statement": "The triphasic pattern of deep stimulation is replicated, shifted in time, in SM-TH; a brief excitation (peak 22.3 +/- 3.2 Hz), 74.6 +/- 15.5 ms of suppression, and rebound excitation (peak 14.7 +/- 1.0 Hz). It is absent with superficial stimulation.",
+     "source": "Results, CTC interactions underlie features of the ERPs, paragraph 1; Figure 2F",
+     "quote": "we observed a brief excitation (peak population firing rate 22.3\u00b13.2 Hz), a 74.6\u00b115.5 ms long period of suppression, followed by rebound excitation (peak population firing rate 14.7\u00b11.0 Hz). This is not the case when stimulating superficial layers",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "14 deep sites have SM-TH units; 12 of 14 are triphasic (high current, all awake, 1 ms). The suppression is 59.5 to 100.7 ms, within 74.6 +/- 15.5 in most readings, but the early (13 to 32 Hz) and rebound (14.7 to 21.7 Hz) peaks are never within tolerance together. With superficial stimulation, 3 or 4 of 4 sites have no SM-TH unit significantly increased at 150 to 300 ms (reading b); by reading (a) 1 to 3 of 4 have no rebound peak above z = 3. Requiring at least 10 ms below baseline gives the same counts of triphasic sites in every reading.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3abc-decay-with-distance",
+     "statement": "In the example deep MOs session, evoked LFP, CSD and spiking magnitudes are large near the stimulation site (54.0, 51.4 and 30.9 SD.s in MO) and smaller in distant VIS (18.0, 4.8 and 1.8 SD.s).",
+     "source": "Results, Global ERPs are associated with widespread evoked cortical activity, paragraph 1; Figure 3A to 3C",
+     "quote": "The magnitude of the LFP near the stimulation site is greater than background activity (54.0 SD\u2219s in MO) and decays with distance from the stimulation site (18.0 SD\u2219s in VIS",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_lfp.ipynb",
+     "notes": "The magnitudes average all channels of a region \"except layer 1\"; the channel locations are CCF areas without layers (MOs, SSp-ll, ...). The LFP, CSD and shuffle pipeline was run for the example session (571619, deep MOs; MO on probe F, 119 valid channels; VIS on probe C, 87), with layer 1 approximated by the top 100 um of each area and also without the exclusion (claar_lfp.ipynb). Over 128 combinations of readings MO exceeds VIS for all three signals in 112; the LFP order reverses in 4 of 32 LFP readings (high current, 1 Hz, -0.5 to 0 s baseline). No combination puts all six values within tolerance, and at most three are (medium current, 0.1 Hz, top 100 um left out, -2 to 0 s, epoch shuffle, 5 ms kernel, spiking as |z|; LFP 60.83 and 21.75, CSD 48.77 and 5.21, spiking 28.75 and 2.76, against 54.0, 18.0, 51.4, 4.8, 30.9 and 1.8). The LFP magnitude in MO is never within tolerance (7.57 to 77.16). Leaving out the top 100 um changes no ordering and moves the CSD values by up to 2.84. The spiking magnitude as the Methods describe it (signed z) is 0.31 to 3.96 in MO; integrating |z| gives 28.31 to 31.37 with the 5 ms kernel and the -2 to 0 s baseline, so the signed integral, in which the suppression cancels the excitation, most likely explains the earlier values far below 30.9 (verifier, round 2). Only the ordering is reproduced; the measured values are those of the combination named above, one of two with three values within tolerance.",
+     "deviations": [
+      "Layer 1 is not labelled in the files; it is approximated by the channels in the top 100 um of each area (an assumed thickness), and the result is shown with and without the exclusion.",
+      "The Chebyshev channel rejection is applied once per channel (no channel was rejected), where the Methods apply it per sample and epoch; the CSD is computed from the trial-averaged LFP on rows of two channels, smoothed over 13 then 2 rows for the Methods' 26 then 4 channels; decimation and high pass are zero phase; the recording-wide shuffle draws onsets over the span of the awake pulses.",
+      "The spiking magnitude is shown both as the signed integral of the Methods and as the integral of |z| (Results, Global ERPs..., paragraph 1, \"our magnitude metric accounts for both reductions as well as increases\")."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-magnitudes",
+     "statement": "Superficial stimulation modulated local LFP, CSD and spiking and non-local LFP and CSD, but evoked no spiking outside the stimulated area; deep stimulation evoked LFP, CSD and spiking both locally and in non-stimulated cortical regions.",
+     "source": "Results, Global ERPs are associated with widespread evoked cortical activity, paragraph 2; Figure 3D",
+     "quote": "Together, these data show that cortical stimulation evoked widespread changes in the LFP and CSD, but only evoked ipsilateral cortical spiking outside of the stimulated area when stimulating deep layers",
+     "statistics": [
+      {
+       "about": "superficial, stimulated region, LFP, CSD and spiking against background (each)",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.0313,
+       "corrected": "Benjamini-Hochberg FDR",
+       "n": "6 mice"
+      },
+      {
+       "about": "superficial, non-stimulated regions, LFP and CSD against background (each)",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.0078,
+       "corrected": "Benjamini-Hochberg FDR",
+       "n": "8 mice (legend, 17 regions in 7 mice)"
+      },
+      {
+       "about": "superficial, non-stimulated regions, spiking against background",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.7422,
+       "corrected": "Benjamini-Hochberg FDR",
+       "n": "8 mice (legend, 17 regions in 7 mice)"
+      },
+      {
+       "about": "deep, stimulated region, LFP, CSD and spiking against background (each)",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.0001221,
+       "corrected": "Benjamini-Hochberg FDR",
+       "n": "14 mice (legend, 15 regions in 15 mice)"
+      },
+      {
+       "about": "deep, non-stimulated regions, LFP, CSD and spiking against background (each)",
+       "test": "Wilcoxon signed-rank test",
+       "p": 3.052e-05,
+       "corrected": "Benjamini-Hochberg FDR",
+       "n": "legend, 35 regions in 16 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "claar_lfp.ipynb",
+     "notes": "The size of the LFP and CSD computation was measured (claar_lfp.ipynb). Figure 3D needs 86 probe areas over 24 stimulation sites; at the rate measured on the example's two probes, which varies from run to run, this takes 234 to 265 min with all readings, and reading the LFP alone 86 to 92 min (71 to 76 min if the areas of one probe share a read), over the runs made for this record, over the 30 min notebook limit. The estimate is rough (it scales the shuffles by samples, and counts the ACSF channels once per area), but even the read-once figure is more than twice the limit. Split across notebooks of under 30 min it would need about eight; that is left to a later attempt. Layer 1 can be approximated as in fig3abc-decay-with-distance, so the missing layers do not block the claim; its size does. The spiking part was computed for every site (claar_spikes.ipynb). With the signed z of the Methods no group median is near the paper's and no stimulated group is significantly above zero after correction. With |z| the paper's significance pattern for spiking holds in 27 of 32 shuffled rows, and with the 5 ms kernel and the -2 to 0 s baseline at the medium current the deep stimulated median is 27.96 to 29.18 (29.3 +/- 2.93) and the deep non-stimulated median 4.18 to 6.25 (4.4 +/- 0.44), but the superficial stimulated median is 4.81 to 4.86 against 1.8.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-unit-counts",
+     "statement": "Figure 4 rests on 870 RS units from stimulated and 4110 from non-stimulated cortex in 7 mice with superficial stimulation, and 2559 and 9363 in 17 mice with deep stimulation.",
+     "source": "Figure 4 legend",
+     "quote": "Panels A\u2013C are derived from 870 RS neurons from stimulated cortex and 4110 RS neurons from non-stimulated cortical regions in N=7 mice and panels D\u2013F from 2559 RS neurons from stimulated cortex and 9363 RS neurons from non-stimulated cortical regions in N=17 mice",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "The files hold 290 and 1370 RS units in stimulated and other ipsilateral cortex over the 7 superficial sites, and 853 and 3162 over the 17 deep sites (16 mice). These are exactly one third of the legend's 870, 4110 and 2559, and 1.3% above a third of its 9363. The site counts (7 and 17) match the legend's N. With presence ratio > 0.9 the counts are 221, 1020, 665 and 2421. The factor of three suggests the legend counts each unit once per current or per time window; the paper does not say. Counting each unit once per current with valid awake trials (all 24 sites with units have three currents) gives 870, 4110, 2559 and 9486 RS units, the legend's first three counts exactly and within tolerance of the fourth, and 204, 609, 447 and 1554 FS units against 180, 585, 387 and 1422. This reading is not in the claims file; it is asked of a reader (questions/000458.yaml) and the outcome stays on the claims file's count.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4ad-initial-excitation",
+     "statement": "In the initial excitation window (2 to 25 ms), the fraction of activated RS neurons is always higher in stimulated cortex than elsewhere; across 24 animals an average of 0.5% (0 to 2.6%) of neurons in non-stimulated regions were modulated against 17.8% (0 to 83.3%) in stimulated cortex, and about three times more cortical neurons respond to deep than to superficial stimulation.",
+     "source": "Results, Global ERPs are associated with widespread evoked cortical activity, paragraph 4; Figure 4A and 4D; Results, The spiking response pattern of the stimulated cortex echoes the ERP, paragraph 2",
+     "quote": "Indeed, across all 24 animals, only an average of 0.5% (minimum 0% and maximum 2.6%) of the neurons was modulated in the initial excitation, compared to an average of 17.8% (minimum 0% and maximum 83.3%) in stimulated cortex",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "Over 16 combinations of readings (current, awake trials, pre-stimulus window, FDR family), the mean fraction of modulated RS units at 2 to 25 ms is 2.4 to 5.1% per non-stimulated region (maximum 29 to 50%) and 24 to 39% in stimulated cortex (maximum 83 to 100%), against 0.5% (2.6%) and 17.8% (83.3%). The fraction increased in stimulated cortex does not exceed the other areas at every site in any reading. The deep over superficial ratio of modulated fractions is between 2 and 4 in 15 of 16 readings. Measured is the first reading (high current, all awake, adjacent window, per-site FDR). Pooling the non-stimulated areas of each session gives a mean of 2.1 to 4.3% and a maximum of 20%. With the three currents pooled (unit x current, a variant outside the claims file), 2.6 to 3.2% of non-stimulated and 26 to 29% of stimulated RS units are modulated.",
+     "deviations": [
+      "The pre-stimulus window and the FDR family are not given; both readings of each were run."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4be-off-period",
+     "statement": "In the off period (25 to 150 ms) very few neurons increased their spiking (mean 0.4%, maximum 2.8%), spiking was significantly reduced in 18 of 22 subjects, and non-stimulated areas showed decreases only with deep stimulation (mean 10.1%, maximum 55.7%).",
+     "source": "Results, Global ERPs are associated with widespread evoked cortical activity, paragraph 4; Figure 4B and 4E",
+     "quote": "There were very few neurons with increased spiking, regardless of stimulation depth and area (mean 0.4%, minimum 0%, and maximum 2.8%; Figure 4B and E ). In contrast, spiking in 18/22 subjects was significantly reduced from baseline following either superficial or deep stimulation. Interestingly, some non-stimulated areas showed decreased spiking but only in response to deep stimulation (mean 10.1%, minimum 0%, and maximum 55.7%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "At 25 to 150 ms, increases average 0.7 to 1.4% (maximum 11 to 19%) against 0.4% (2.8%); spiking is reduced in 17 to 22 of 22 stimulated areas by reading (a), 18 to 24 of 24 sites by (b) and 20 or 21 of 22 by (c), against 18 of 22; decreases outside the stimulated area with deep stimulation average 16 to 28% (maximum 73 to 83%) against 10.1% (55.7%); and 2 to 6 of 7 superficial sites show decreases outside the stimulated area, where the paper finds none. The qualitative pattern of the criterion fails on its third part. With the three currents pooled (variant), increases average 0.7 to 0.8% (maximum 7.4%), decreases outside the stimulated area with deep stimulation 17.2 to 17.3% (maximum 70 to 72%), and 2 or 3 of 7 superficial sites show such decreases.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4cf-rebound",
+     "statement": "In the rebound window (150 to 300 ms), all 16 deep-stimulation subjects showed significant rebound excitation in stimulated cortex against 1 of 6 superficial subjects; 6 of 16 deep subjects showed it in non-stimulated areas, and none of 7 superficial subjects did.",
+     "source": "Results, Global ERPs are associated with widespread evoked cortical activity, paragraph 4; Figure 4C and 4F",
+     "quote": "All 16 subjects who received deep stimulation showed significant rebound excitation in the stimulated cortex, whereas only 1/6 superficial stimulation subjects did ( Figure 4C and F ). Some subjects who received deep stimulation showed significant rebound excitation in the non-stimulated areas (6/16; Figure 4F ), but it was nonexistent amongst the superficial stimulation subjects (0/7",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "In stimulated cortex, the medium current gives 16 of 16 deep and 1 of 6 superficial sites with a significantly increased RS unit at 150 to 300 ms (reading a, per-site FDR), the paper's counts and denominators; the high current gives 15 or 16 of 16 and 3 to 6 of 6. Outside the stimulated area, deep sites show rebound in 14 to 17 of 17 (reading a) or 5 to 10 of 17 (reading b), against 6 of 16, and 1 to 5 of 7 superficial sites show it, against none. Measured is the first reading (high, all awake, adjacent, per-site FDR, reading a) in the order of the expected values. With the three currents pooled (variant), rebound outside the stimulated area appears in 15 or 16 of 17 deep and 2 of 7 superficial sites.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-supp1-fs-like-rs",
+     "statement": "FS neurons behave like RS neurons in their modulation by stimulation depth and time window.",
+     "source": "Results, Global ERPs are associated with widespread evoked cortical activity, paragraph 3; Figure 4, figure supplement 1",
+     "quote": "We separately analyzed FS neurons and found they behave like RS neurons",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "FS units follow the RS pattern in every reading; more increases in stimulated than other cortex at 2 to 25 ms (47 to 52% against 8 to 15%), decreases above increases at 25 to 150 ms, rebound in 14 of 15 deep stimulated areas. Rebound also appears in 2 to 5 of 6 superficial sites, which is not few. The FS counts (68, 203, 149 and 518, from the fig4-unit-counts cell) are far below the legend's 180, 585, 387 and 1422.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-thalamus-modulated",
+     "statement": "SM-TH neurons were almost eight times more likely to be modulated by deep than by superficial stimulation (37.9 +/- 20.6% against 5.0 +/- 4.1%).",
+     "source": "Results, CTC interactions underlie features of the ERPs, paragraph 1; Figure 5A",
+     "quote": "the neurons were almost eight times more likely to be modulated by deep than superficial stimulation (superficial: 5.0\u00b14.1% of SM-TH population, N=5; deep: 37.9\u00b120.6%, N=14; Student\u2019s two-tailed t-test, p=0.0037",
+     "statistics": [
+      {
+       "test": "Student's two-tailed t-test",
+       "p": 0.0037,
+       "n": "5 superficial and 14 deep sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "Reading (a), one 2 to 300 ms window, high current, all awake, adjacent pre window, pooled FDR; superficial 1.9 +/- 1.5% (4 sites), deep 42.7 +/- 5.8% (14 sites), p = 0.002. 15 of 32 combinations of readings meet the criterion and deep exceeds superficial with p < 0.05 in all 32. The paper has 5 superficial sites; the dandiset has 4 superficial sites with SM-TH units.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-burst-probability-depth",
+     "statement": "Deep stimulation was significantly more likely than superficial stimulation to evoke SM-TH bursts 75 to 300 ms after the stimulus (median 0.12 [0.02 to 0.2] against 0 [0 to 0.02]).",
+     "source": "Results, CTC interactions underlie features of the ERPs, paragraph 2; Figure 5C",
+     "quote": "deep stimulation had a significantly higher likelihood of evoking bursts (superficial stimulation: median 0 [0\u20130.02 IQR]; deep stimulation: median 0.12 [0.02\u20130.2 IQR]; Mann-Whitney U test, p=0.0258",
+     "statistics": [
+      {
+       "test": "Mann-Whitney U test",
+       "p": 0.0258,
+       "n": "5 superficial and 14 deep sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "Reading (b), high current, all awake; superficial median 0.003 [0.002 to 0.029] (4 sites), deep 0.131 [0.035 to 0.293] (14 sites), Mann-Whitney p = 0.025. The deep median is within 0.12 +/- 0.012 and the test holds, but the superficial median is not exactly 0 as the criterion requires (it is 0.00 at the paper's printed precision). Reading (a), any SM-TH unit bursting in a trial, gives 0.12 and 0.87. Whether the superficial tolerance should be the printing precision is asked of a reader (questions/000458.yaml); at the medium current reading (b) gives 0.002 and 0.117, p = 0.018.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5e-early-latency",
+     "statement": "During the initial excitation, stimulated cortical RS cells fired first (median first-spike latency 4.4 +/- 0.9 ms), followed by the thalamus (11.4 +/- 2.8 ms), a mean difference of 6.9 ms.",
+     "source": "Results, CTC interactions underlie features of the ERPs, paragraph 3; Figure 5E",
+     "quote": "during the initial excitation, stimulated cortical RS cells had a median first-spike latency of 4.4\u00b10.9 ms, with the thalamic population following at 11.4\u00b12.8 ms (mean latency difference of 6.9 ms; paired t-test, p=4.838E-6",
+     "statistics": [
+      {
+       "test": "paired t-test",
+       "p": 4.838e-06,
+       "n": "13 mice with simultaneous cortical and SM-TH recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "Cortex fires first in every reading; cortical latencies 4.0 to 5.2 ms (within 4.4 +/- 0.9), SM-TH 7.2 to 9.8 ms (within 11.4 +/- 2.8 in some readings), paired t-test p < 0.05 in every high-current reading (0.0012 for the first). The mean difference is 3.2 to 4.9 ms against 6.9 (or 6.7), out of tolerance in every reading. 10 to 12 sites at the high current and 6 or 7 at the medium current have responsive units in both populations, against 13.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5f-rebound-latency",
+     "statement": "During the rebound, the order flips; SM-TH fires first (median latency 148.2 +/- 21.2 ms) and cortex follows (184.2 +/- 17.3 ms), a mean difference of -36.0 ms.",
+     "source": "Results, CTC interactions underlie features of the ERPs, paragraph 3; Figure 5F",
+     "quote": "During the rebound excitation window, the temporal relationship flipped: the thalamic population had a median rebound spike latency of 148.2\u00b121.2 ms, with cortex following at 184.2\u00b117.3 ms (mean latency difference \u201336.0 ms; paired t-test, p=2.136E-4",
+     "statistics": [
+      {
+       "test": "paired t-test",
+       "p": 0.0002136,
+       "n": "13 mice with simultaneous cortical and SM-TH recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "In all 128 combinations of readings the mean SM-TH latency in the late window (155.5 to 186.2 ms) is earlier than the cortical one (174.2 to 190.4 ms), but by 0.9 to 19.5 ms against 36.0, and with p < 0.05 in 3 of 128.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-csd-sink",
+     "statement": "After deep MOs stimulation, a pronounced current sink near the border of layers 2/3 and 5 in MOs coincided with the thalamic rebound burst (about 180 ms), consistently across subjects.",
+     "source": "Results, CTC interactions underlie features of the ERPs, paragraph 4; Figure 6A",
+     "quote": "We observed a pronounced current sink near the border of layers 2/3 and 5 in MOs (near the deep stimulation site) that coincided with the timing of the thalamic rebound burst (~180 ms). This was consistent across subjects (N=9, Wilcoxon signed-rank test, p<0.05",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test, per space-time bin",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "9 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "The test maps the CSD to 10 bins per cortical layer and looks for a sink at the border of layers 2/3 and 5. The channel locations in the files are CCF areas without layers, so the layers cannot be placed; an outside atlas lookup of the coordinates is not a source the claims file names.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-supp1-erp-deep-csd",
+     "statement": "On single trials, EEG signals correlate more strongly with the CSD of deep than of superficial cortical layers.",
+     "source": "Results, CTC interactions underlie features of the ERPs, paragraph 4; Figure 6, figure supplement 1",
+     "quote": "We also analyzed the correlation between the ERP and laminar CSD on a trial-by-trial basis and found that the EEG signals correlated more strongly with CSD of deep compared to superficial layers",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "Needs layer-specific CSD; the files give no layer for any channel, as for fig6a-csd-sink, on which this claim depends.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-bursts-cortical-rate",
+     "statement": "On a trial-by-trial basis, the fraction of bursting SM-TH neurons correlated with the cortical population firing rate in the rebound window (8 of 13 mice significant, mean r 0.4 +/- 0.04).",
+     "source": "Results, CTC interactions underlie features of the ERPs, paragraph 5; Figure 6B",
+     "quote": "The fraction of bursting SM-TH neurons was correlated with the cortical population firing rate (8/13 mice with a significant correlation [p<0.05], mean Pearson r value: 0.4\u00b10.04",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "13 deep sites have both SM-TH and stimulated-cortex RS units, the paper's N. The trial-by-trial Pearson r between the fraction of SM-TH units bursting and the peak cortical rate in 75 to 300 ms averages 0.13 to 0.24 (5 or 10 ms bins, high or medium current) against 0.4 +/- 0.04; 6 to 10 of 13 sites are significant against 8. One site (569072) has a significant negative r at the high current.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-cortical-rate-late-erp",
+     "statement": "The cortical population firing rate correlated trial by trial with the magnitude of the late ERP component (9 of 13 mice significant, mean r 0.5 +/- 0.04).",
+     "source": "Results, CTC interactions underlie features of the ERPs, paragraph 5; Figure 6C",
+     "quote": "The cortical population firing rate was likewise correlated with the magnitude of the second, late component in the ERP (9/13 mice with a significant correlation [p<0.05], mean Pearson r value: 0.5\u00b10.04",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "The peak cortical rate correlates with the single-trial late ERP amplitude (reading a, peak GFP; or b, the electrode with the largest late component) with mean r 0.21 to 0.32 against 0.5 +/- 0.04; 7 to 11 of 13 sites are significant against 9.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-supp2-late-erp-bursts",
+     "statement": "The late ERP component correlated trial by trial with the fraction of bursting SM-TH neurons in every mouse (13 of 13, mean r 0.5 +/- 0.07), much more than with the SM-TH population firing rate.",
+     "source": "Results, CTC interactions underlie features of the ERPs, paragraph 5; Figure 6, figure supplement 2",
+     "quote": "the late component in the ERP was significantly correlated with the fraction of bursting SM-TH neurons (13/13 mice with a significant correlation [p<0.05], mean Pearson r value: 0.5\u00b10.07 ... much more so than it was correlated with the SM-TH population firing rate",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "Late ERP amplitude (peak GFP) against the SM-TH burst fraction; 13 of 13 sites significant, mean r 0.462 +/- 0.039 (high) and 0.455 +/- 0.077 (medium). Against the peak SM-TH rate the mean r is 0.06 to 0.10 with 4 of 13 significant. The electrode reading of the late ERP (b) does not meet the criterion; 12 of 13 sites are significant at the high current (mean r 0.424) and 11 of 13 at the medium current (0.502).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "state-trial-counts",
+     "statement": "Per animal, the state comparisons averaged a median of 97 quiet-wakefulness, 21 running and 120 anesthetized trials, across 17 animals.",
+     "source": "Results, Behavioral states modulate the ERP and the cortico-thalamic interactions, paragraph 1",
+     "quote": "We then compared average responses from 97 (median, [86\u2013104 IQR]) quiet wakefulness, 21 (median, [16\u201327 IQR]) active wakefulness, and 120 (median, [120\u2013120 IQR]) anesthetized trials across 17 animals",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "claar_eeg.ipynb",
+     "notes": "Valid trials, 17 animals with deep stimulation (the two deep sites of 569073 averaged); medians 99, 21 and 120 at the high current and 97 [86 to 104], 21 [16 to 27] and 120 at the medium current, the paper's medians and IQRs. Over all 23 animals the running median is 24, out of tolerance.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7c-erp-duration-state",
+     "statement": "ERP duration decreased from quiet wakefulness (0.5 +/- 0.1 s) to running (0.3 +/- 0.0 s) and anesthesia (0.3 +/- 0.0 s); the late component is diminished when running and absent under anesthesia.",
+     "source": "Results, Behavioral states modulate the ERP and the cortico-thalamic interactions, paragraph 1; Figure 7C",
+     "quote": "The second component in the ERP was diminished when running and nonexistent during anesthesia; this was captured by the decrease in ERP duration (quiet wakefulness 0.5\u00b10.1 s, running 0.3\u00b10.0 s, anesthetized 0.3\u00b10.0 s; Friedman test",
+     "statistics": [
+      {
+       "test": "Friedman test, state effect",
+       "statistic": "Q(2)=15.6",
+       "p": 0.0004002,
+       "n": "17 animals"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_eeg.ipynb",
+     "notes": "17 deep animals, medium current, unmatched trials, duration as the total time above z = 3; 0.52, 0.25 and 0.22 s, Friedman Q = 20.1, p = 4.3e-05 (paper Q = 15.6, p = 0.0004). Quiet wakefulness is the longest in every reading except reading (b) at the medium current. No reading puts the three means within tolerance; at the medium current the isoflurane mean is below 0.3 +/- 0.05, at the high current the quiet mean is above 0.5 +/- 0.1 (0.65, 0.35 and 0.33 s, Q = 18.4), and matched trials shorten the quiet mean to 0.31 to 0.39 s.",
+     "deviations": [
+      "The current the paper analysed is not given; the highest and the middle current of each site were both run (claims file, header).",
+      "The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of 30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed, into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7d-erp-magnitude-state",
+     "statement": "ERP magnitude decreased from quiet wakefulness (6.1 +/- 0.9) to running (1.6 +/- 0.3) and anesthesia (1.6 +/- 0.3).",
+     "source": "Results, Behavioral states modulate the ERP and the cortico-thalamic interactions, paragraph 1; Figure 7D",
+     "quote": "the decrease in ERP magnitude (quiet wakefulness 6.1\u00b10.9, running 1.6\u00b10.3, anesthetized 1.6\u00b10.3; Friedman test",
+     "statistics": [
+      {
+       "test": "Friedman test, state effect",
+       "statistic": "Q(2)=17.4",
+       "p": 0.0001656,
+       "n": "17 animals"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_eeg.ipynb",
+     "notes": "Magnitude reading (a), 17 deep animals, medium current, unmatched; 5.89, 1.51 and 1.23, Friedman Q = 21.3, p = 2.4e-05 (paper Q = 17.4). Quiet and running are within tolerance, isoflurane is 0.07 below 1.6 +/- 0.3. Every reading gives p <= 0.0004 with quiet the largest, but none puts the three means within tolerance; at the high current quiet (8.96) and running (3.40) are above it. Reading (b) cannot be computed as written (fig1f-erp-magnitude); with the area under |z| as divisor it gives 6.03, 2.17 and 1.69 at the high current, also out of tolerance. The result turns on the artifact residue in the last 20 ms of the baseline. With the z-score baseline ending 20 ms before the pulse (a variant outside the criterion) the medium current gives 6.17, 1.56 and 1.37 (Q = 20.6, p = 3.4e-05), all within tolerance. The outcome stays on the criterion's baseline; a causal filter was not run.",
+     "deviations": [
+      "The current the paper analysed is not given; the highest and the middle current of each site were both run (claims file, header).",
+      "The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of 30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed, into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7e-baseline-rates",
+     "statement": "Baseline firing rates in stimulated cortex and SM-TH were higher during running and lower during anesthesia than in quiet wakefulness (cortex 3.5, 5.2, 1.1 Hz; SM-TH 9.0, 16.4, 0.8 Hz).",
+     "source": "Results, Behavioral states modulate the ERP and the cortico-thalamic interactions, paragraph 2; Figure 7E",
+     "quote": "In both regions, the baseline firing rates (measured during the pre-stimulus epoch) were higher during running and lower during anesthesia compared to quiet wakefulness",
+     "statistics": [
+      {
+       "about": "stimulated cortex, state effect",
+       "test": "one-way repeated measures ANOVA",
+       "statistic": "F[2, 30]=66.3",
+       "p": 2.901e-09,
+       "n": "16 animals"
+      },
+      {
+       "about": "SM-TH, state effect",
+       "test": "Friedman test",
+       "statistic": "Q[2]=24.2",
+       "p": 5.689e-06,
+       "n": "13 animals"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "Deep sites, high current, -2 to 0 s; cortex 3.56, 4.97 and 1.02 Hz (15 animals, RM ANOVA F[2,28] = 86.7, p = 1e-12), SM-TH 9.11, 15.52 and 0.81 Hz (13 animals, Friedman Q = 24.2, p = 5.7e-06, the paper's Q and p). All sites give the paper's 16 cortical animals (F[2,30] = 80.7) and means within tolerance of the Results' or the Discussion's values. Running > quiet > isoflurane in every reading.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7f-early-latency-state",
+     "statement": "First-spike latencies of the initial excitation did not differ across states, in cortex (4.5, 4.0, 4.6 ms) or SM-TH (11.5, 11.3, 10.9 ms); the region effect was significant.",
+     "source": "Results, Behavioral states modulate the ERP and the cortico-thalamic interactions, paragraph 2; Figure 7F",
+     "quote": "The median first spike latencies for cortical and thalamic populations were the same when looking at the initial excitation",
+     "statistics": [
+      {
+       "about": "state effect",
+       "test": "two-way RM ANOVA",
+       "statistic": "F[2, 24]=0.3",
+       "p": 0.6281,
+       "n": "13 animals (legend, 12)"
+      },
+      {
+       "about": "region effect",
+       "test": "two-way RM ANOVA",
+       "statistic": "F[1, 12]=89.3",
+       "p": 6.581e-07,
+       "n": "13 animals (legend, 12)"
+      },
+      {
+       "about": "state by region interaction",
+       "test": "two-way RM ANOVA",
+       "statistic": "F[2, 24]=0.5",
+       "p": 0.5062,
+       "n": "13 animals (legend, 12)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "With responsive units taken from all awake trials, all 16 readings give no state effect (p = 0.08 to 0.90) and a region effect (p = 0.00016 to 0.017), 8 animals at the high current and 6 at the medium current against the paper's 12 or 13. With responsive units taken from each state's own trials, only 3 animals have units in every state and region and the region effect is not significant (p about 0.3). The SM-TH means (7.1 to 11.6 ms) are mostly below the paper's 10.9 to 11.5 ms. The absence of a state effect rests on 6 to 8 animals against the paper's 13. At the high current (8 animals) the 95% confidence intervals of the paired state differences lie within -1.3 to +0.6 ms in cortex and -7.5 to +2.4 ms in SM-TH; the SM-TH quiet against running difference (0.92 ms, CI 0.04 to 1.80) excludes zero without a correction for the six pairs.",
+     "deviations": [
+      "Which units are \"responsive\" across states is not given; the units significantly increased at 2 to 25 ms in all awake trials were taken, as one population per animal followed across states. This is an assumption; the per-state reading is shown."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7g-rebound-latency-state",
+     "statement": "Rebound spike latencies in cortex and thalamus were earlier during running than in quiet wakefulness (cortex 186.7 against 163.8 ms; SM-TH 156.0 against 123.1 ms), and were not consistently timed during anesthesia.",
+     "source": "Results, Behavioral states modulate the ERP and the cortico-thalamic interactions, paragraph 2; Figure 7G",
+     "quote": "However, the rebound spike latencies for cortex and thalamus were earlier during running compared to quiet wakefulness",
+     "statistics": [
+      {
+       "about": "state effect",
+       "test": "two-way RM ANOVA",
+       "statistic": "F[2, 24]=31.4",
+       "p": 2.02e-07,
+       "n": "13 animals (legend, 12)"
+      },
+      {
+       "about": "region effect",
+       "test": "two-way RM ANOVA",
+       "statistic": "F[1, 12]=17.2",
+       "p": 0.001349,
+       "n": "13 animals (legend, 12)"
+      },
+      {
+       "about": "state by region interaction",
+       "test": "two-way RM ANOVA",
+       "statistic": "F[2, 24]=6.6",
+       "p": 0.053,
+       "n": "13 animals (legend, 12)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "With responsive units from all awake trials (the per-state reading leaves fewer than 3 animals), all 64 readings give a significant state effect (p from 3e-08 to 3e-05) and running earlier than quiet wakefulness in both regions by the corrected paired test (q <= 0.003). No reading puts the six means within tolerance; SM-TH quiet latencies are 167 to 187 ms against 156.0 +/- 7.1, and isoflurane latencies 198 to 221 ms. 9 to 12 animals.",
+     "deviations": [
+      "Responsive units as in fig7f-early-latency-state, an assumption."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7h-burst-probability-state",
+     "statement": "The probability of evoked thalamic bursts decreased during running compared to quiet wakefulness and was very low under anesthesia (medians 0.1, 0, 0).",
+     "source": "Results, Behavioral states modulate the ERP and the cortico-thalamic interactions, paragraph 2; Figure 7H",
+     "quote": "The probability of evoking thalamic bursts decreased during running compared to quiet wakefulness and was very low (zero for many subjects) during anesthesia (N=13; median probability: quiet wakefulness 0.1 [0.01\u20130.24 IQR], running 0 [0\u20130.07 IQR], anesthetized 0 [0\u20130.002 IQR]; Friedman test",
+     "statistics": [
+      {
+       "test": "Friedman test, state effect",
+       "statistic": "Q[2]=18.6",
+       "p": 9.142e-05,
+       "n": "13 animals"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_spikes.ipynb",
+     "notes": "13 animals with SM-TH units. Burst probability falls from quiet to running to isoflurane in every reading (Friedman p 0.0002 to 0.0007, quiet highest), but the medians do not match; reading (b) gives 0.177, 0.121 and 0.005 (high) and 0.150, 0.028 and 0.006 (medium), reading (a) 0.89 to 0.93, 0.49 to 0.72 and 0.10 to 0.15, against 0.1, 0 and 0. Measured is reading (b) at the high current, whose scale is the paper's.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8b-pcist-awake-anesthesia",
+     "statement": "PCIst was higher in the awake than in the isoflurane-anesthetized state in all subjects (45.5 +/- 3.6 against 16.5 +/- 2.4).",
+     "source": "Results, Thalamo-cortical interactions affect perturbational complexity in head-fixed mice, paragraph 1; Figure 8B",
+     "quote": "We found that PCI ST was higher during the awake state than during the isoflurane-anesthetized state in all subjects (N=31; awake PCI ST 45.5\u00b13.6; anesthetized PCI ST 16.5\u00b12.4; paired t-test, p=2.508E-11",
+     "statistics": [
+      {
+       "test": "paired t-test",
+       "p": 2.508e-11,
+       "n": "31 sessions across 24 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "claar_eeg.ipynb",
+     "notes": "30 sites with valid trials (paper 31). Medium current, random matching; awake 43.26 +/- 3.72, isoflurane 14.93 +/- 2.41, both within tolerance, higher awake in 30 of 30 sites, paired t-test p = 9.8e-11. First-trial matching gives 43.47 and 14.84. At the high current the anesthetized mean is 23.4 to 23.6, above tolerance, and 29 of 30 sites are higher awake. With the PCIst baseline ending 20 ms before the pulse (variant) the medium current gives 44.59 and 15.87 (random), within tolerance.",
+     "deviations": [
+      "PCIst at 2.5 kHz with the cited code; its threshold search is computed by an exact count that gives the original's values (checked on all 30 sites, on ERPs decimated by 10, in the notebook).",
+      "The current the paper analysed is not given; the highest and the middle current of each site were both run (claims file, header).",
+      "The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of 30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed, into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1).",
+      "First-trial matching takes the earliest awake trials in time; the first version took quiet trials before running ones (verifier, round 1)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8c-pcist-depth",
+     "statement": "In the awake state PCIst was significantly lower for superficial than for deep stimulation (35.6 +/- 4.8 against 52.7 +/- 4.4).",
+     "source": "Results, Thalamo-cortical interactions affect perturbational complexity in head-fixed mice, paragraph 2; Figure 8C",
+     "quote": "we found that PCI ST was, indeed, significantly lower for superficial than for deep stimulation (superficial: N=13, awake PCI ST 35.6\u00b14.8; deep: N=18, awake PCI ST 52.7\u00b14.4; Student\u2019s two-tailed t-test, p=0.0179",
+     "statistics": [
+      {
+       "test": "Student's two-tailed t-test",
+       "p": 0.0179,
+       "n": "13 superficial and 18 deep sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "claar_eeg.ipynb",
+     "notes": "All six readings hold. High current, all awake trials; superficial 32.34 +/- 4.84 (12 sites), deep 52.51 +/- 3.69 (18), p = 0.0023. Medium current 32.90 against 51.24, p = 0.016.",
+     "deviations": [
+      "The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of 30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed, into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8d-pcist-three-states",
+     "statement": "PCIst differed between all states; highest in quiet wakefulness (55.2 +/- 10.3), lower when running (39.9 +/- 7.7), and lowest under anesthesia (14.0 +/- 5.8), with every subject higher when running than under anesthesia.",
+     "source": "Results, Thalamo-cortical interactions affect perturbational complexity in head-fixed mice, paragraph 2; Figure 8D; Discussion, Thalamo-cortical dynamics modulate perturbational complexity in mice, paragraph 2",
+     "quote": "PCI ST was significantly different for all states; the highest complexity ERPs were seen when mice were in quiet wakefulness, slightly lower complexity ERPs during active wakefulness, with the lowest complexity during anesthesia (N=8; quiet PCI ST 55.2\u00b110.3, active wakefulness 39.9\u00b17.7; anesthetized 14.0\u00b15.8; one-way RM ANOVA",
+     "statistics": [
+      {
+       "about": "state effect",
+       "test": "one-way RM ANOVA",
+       "statistic": "F[2, 14]=28.3",
+       "p": 1.202e-05,
+       "n": "8 subjects with at least 30 running trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "claar_eeg.ipynb",
+     "notes": "Sites with at least 30 running trials at the current used; 13 (11 animals) at the high current and 10 (8 animals) at the medium current, against the paper's 8. Random matching (the criterion's method), high current, per site; 45.65, 38.69 and 15.01, all within tolerance, RM ANOVA F[2,24] = 14.9, p = 6e-05, running above isoflurane in 13 of 13, but quiet against running is not significant after correction (q = 0.24; 0.34 per animal). At the medium current with random matching that pair has q = 0.057 per site and 0.095 per animal. First-trial matching at the medium current makes every pair significant with the means within tolerance (q = 0.021, 0.0009 and 0.0018 per site; 8 animals per animal), but the criterion names random subsampling. Matched trials average 41 per state (high) and 45 (medium), against the paper's 51. With the PCIst baseline ending 20 ms before the pulse (variant) the medium current with random matching gives 45.19, 32.38 and 10.20 per site, within tolerance, with quiet against running q = 0.059.",
+     "deviations": [
+      "The current the paper analysed is not given; the highest and the middle current of each site were both run (claims file, header).",
+      "The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of 30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed, into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1).",
+      "The RM ANOVA is run per site, as the paper's N of sessions suggests, and per animal (sites of one animal averaged); both are shown (verifier, round 1)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8e-pcist-recovery",
+     "statement": "After isoflurane was stopped, PCIst rose in all but one subject within the first 30 min (32.7 +/- 4.9 against 14.3 +/- 2.3 anesthetized and 48.0 +/- 4.0 awake) and did not increase further in the next 30 min (36.4 +/- 5.0).",
+     "source": "Results, Thalamo-cortical interactions affect perturbational complexity in head-fixed mice, paragraph 3; Figure 8E",
+     "quote": "All but one subject showed an increase in PCI ST (reaching pre-anesthesia levels) in the first 30 min after cessation of isoflurane, but the complexity did not increase further in the subsequent 30 min",
+     "statistics": [
+      {
+       "about": "state effect",
+       "test": "one-way RM ANOVA",
+       "statistic": "F[3, 18]=11.6",
+       "p": 0.0001804,
+       "n": "13 subjects (F[3, 18] implies 7 with all four states)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "claar_eeg.ipynb",
+     "notes": "Reading (b), the 8 sites with all four stages (paper 7, from F[3,18]), medium current, first trials matched; 46.47, 14.89, 30.74 and 34.06, all within tolerance, RM ANOVA F[3,21] = 16.9, p = 8.3e-06, first recovery above isoflurane in 8 of 8, recovery 2 against recovery 1 q = 0.48. Reading (a), the 13 sites with a first recovery stage, puts the means within tolerance but 2 of 13 sites do not rise. Random matching at the medium current puts the 13 sites' means within tolerance with 8 of 13 rising. At the high current the isoflurane mean is above tolerance (25.04 random); with first-trial matching it is 49.67 +/- 21.78 because site 546655 MOs-deep has its stages matched on one trial (PCIst 306.6). The paper states no minimum of matched trials. At the medium current every site has at least 23 matched trials per stage (546655 MOs-deep the fewest), so requiring 20 changes nothing; at the high current it removes 546655 and isoflurane stays above tolerance (26.98 to 38.78). The pass rests on one combination of readings and on the criterion's PCIst baseline; with the baseline ending 20 ms before the pulse (variant) that combination gives an isoflurane mean of 18.11, above 14.3 +/- 2.3, while the 13 sites with a first recovery stage stay within tolerance (47.02, 15.16, 29.79 and 36.52, 10 of 13 rising).",
+     "deviations": [
+      "Recovery stages are split at 30 and 60 min after the end of the isoflurane epoch (Results, paragraph 3 of the PCI section); in some sessions this cuts a stimulus block (551399 has 403 pulses in the first 30 min, 569070 has 74).",
+      "The current the paper analysed is not given; the highest and the middle current of each site were both run (claims file, header).",
+      "The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of 30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed, into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1).",
+      "First-trial matching takes the earliest awake trials in time (verifier, round 1)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The depth of the stimulating electrode in mm and its position are not in the files; the trial table gives only the target area and the label \"superficial\" or \"deep\". The paper's stimulation depths and the spatial analysis of the first ERP peak cannot be tested.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Probe channels and units carry CCF area acronyms without cortical layers (MOs, SSp-ll, ...), so the layer-resolved CSD analyses of Figure 6 (a sink at the border of layers 2/3 and 5, CSD by layer) cannot be run from the files, and the exclusion of layer 1 in Figure 3 can only be approximated (here by the top 100 um of each area).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The units' waveform_duration is described as the mean duration in seconds, but its values (0.10 to 2.07, median 0.58) are in milliseconds.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The units are described as those that passed the authors' quality threshold, which is not stated. All meet ISI violations < 0.5 and amplitude cutoff < 0.1, but presence ratios go down to 0.02, so the threshold is not the three metrics of Siegle et al. (2021) that the paper cites.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The RS unit counts in the Figure 4 legend (870, 4110, 2559 and 9363) are three times the counts of the corresponding units in the files (290, 1370, 853 and 3162; exactly three times for the first three). Every site with units has three currents, and counting each unit once per current gives 870, 4110, 2559 and 9486, so the legend most likely counts unit x current; the paper does not say.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "is_valid marks all 720 pulses of the superficial SSp site of subject 586468, and 747 of 1440 pulses of subject 569070, as invalid, for \"large electrical artifacts\" or \"off target\" stimulation, without saying which. Leaving out the 586468 superficial site gives the paper's N of 12 superficial sites in Figure 1E and 7 in Figure 4.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Each stage delivered pulses at three currents; which current, or which pulses, do the ERP, PCIst and spiking analyses use? The middle current with all awake trials gives the example ERP of Figure 1, figure supplement 1 (1.011 s and 11.133 SD.s against 1.01 and 11.13) and the p-values of Figures 1E and 1F (0.081 and 0.035 against 0.0843 and 0.0354), which points to it; the highest current gives different outcomes, for example ERP durations and magnitudes above the paper's and an anesthetized PCIst of 23.5 against 16.5.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. The ERP magnitude is \"divided by the area under the baseline window\", which is zero for a z-scored GFP. What was the divisor? The figure supplement's undivided area above z = 3, in SD.s, reproduces the example and Figure 1F at the middle current, which suggests no division.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. For the state latencies of Figures 7F and 7G, were responsive units selected once (for example from all awake trials) or separately in each state? Selected per state, only 3 animals keep units in every state and region.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. For the modulated-unit test, is the pre-stimulus window the one ending at onset or the mirror of the post window, and is the Benjamini-Hochberg correction applied per session or over all sessions? Both readings were run; neither reproduces Figure 4's fractions.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The EEG stimulus artifact is largest at the sample before the first EEG sample at or after the trial table's start_time in 24 of 30 sites, and at that sample in the other 6, so the start times lag the artifact by up to one EEG sample (0.4 ms). A mask that starts at the onset sample leaves the artifact in.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. The population spiking magnitude of Figure 3 is described as the area under the z-scored average spike density, in which a fall below baseline cancels a rise, while the Results say the metric \"accounts for both reductions as well as increases\". Was |z| integrated? In the example session the signed integral gives 2.95 in MO and the integral of |z| 28.75 (paper 30.9), and only |z| gives the deep medians and the significance pattern of Figure 3D.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-30",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "The handover of the first run; the executed notebooks with the conclusions and summaries removed, the helper module and the claims file, with the paper under paper/.",
+     "agreed": 35,
+     "of": 37,
+     "disagreements": [
+      {
+       "claim": "fig3abc-decay-with-distance",
+       "outcome": "blocked",
+       "reason": "Blocked as run, but partly testable. The archive holds raw LFP for every probe channel plus all sorted units with area and waveform duration. The spiking magnitudes (MO 30.9 against VIS 1.8 SD.s in 571619, which has 95 MO and 47 VIS RS units) need no layer labels."
+      },
+      {
+       "claim": "fig3d-magnitudes",
+       "outcome": "blocked",
+       "reason": "Blocked as run, but partly testable. The 3 spiking medians and their tests could have been run. LFP magnitudes per area are possible, with the layer-1 exclusion as a stated deviation (problem 3)."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-30",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "The full executed notebooks of the first revision (claar_eeg.ipynb, claar_spikes.ipynb) with their conclusions and summaries, the helper module, the attempt record and the README, with the claims file and the paper under paper/.",
+     "agreed": 35,
+     "of": 37,
+     "disagreements": [
+      {
+       "claim": "fig3abc-decay-with-distance",
+       "outcome": null,
+       "reason": "Disagrees with blocked as metadata_insufficient. The record says the single-session LFP/CSD pipeline was not built within the run's time; these are effort limits, not missing metadata. The layer-1 exclusion could be a stated deviation, probe_vertical_position is in the electrode table, and the claim covers one session. The spiking magnitude integrates the signed z-scored rate, so the 100+ ms suppression cancels the excitation, which likely explains the values far below 30.9; the notes present these numbers as a result on the paper's claim, though they more likely reflect a different method. The LFP timing figures in the notes appear in no output."
+      },
+      {
+       "claim": "fig3d-magnitudes",
+       "outcome": null,
+       "reason": "Disagrees with blocked as metadata_insufficient; effort limits, not missing metadata, and the layer-1 exclusion could be a stated deviation. The 80-minute estimate behind the runtime argument (1.7 s per 50,000 samples) is not in any notebook output. The spiking magnitude integrates the signed z-scored rate, so the suppression cancels the excitation; the notes present the spiking numbers as a result, though they more likely reflect a different method."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-30",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "The two outcome changes proposed after round 2 (fig3abc-decay-with-distance and fig3d-magnitudes) and the analysis behind them in the executed claar_lfp.ipynb, with the helper module, the attempt record, the claims file and the paper under paper/.",
+     "agreed": 2,
+     "of": 2,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000458-claar-2023",
+   "type": "reproduction",
+   "title": "Electrically evoked EEG and cortico-thalamic spiking in head-fixed mice (Claar, Rembado et al. 2023)",
+   "description": "Tests the findings of Claar, Rembado et al. (2023) on dandiset 000458, which holds skull EEG from 23 mice, with Neuropixels LFP and sorted units from 17 of them, during single-pulse electrical stimulation of superficial or deep layers of MOs or SSp, awake, under isoflurane and in recovery. One notebook tests the ERP duration and magnitude, the peaks of the ERP and PCIst across depths and states; a second tests the spiking responses of stimulated and other cortex and of somatomotor thalamus, bursts, latencies and their trial-by-trial relation to the late ERP; a third computes the LFP and CSD magnitudes of the example session of Figure 3 and times those of Figure 3D. The CSD claims by cortical layer (Figure 6A) are not tested.",
+   "datasets": [
+    "dandi:000458"
+   ],
+   "papers": [
+    "10.7554/elife.84630"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "claar_eeg.ipynb",
+     "title": "EEG claims (Figures 1, 7C, 7D and 8)",
+     "executed": null
+    },
+    {
+     "path": "claar_spikes.ipynb",
+     "title": "Spiking claims (Figures 2, 4, 5, 6B, 6C and 7E to 7H)",
+     "executed": null
+    },
+    {
+     "path": "claar_lfp.ipynb",
+     "title": "LFP and CSD magnitudes of Figure 3",
+     "executed": null
+    }
+   ]
+  }
+ ]
+}
