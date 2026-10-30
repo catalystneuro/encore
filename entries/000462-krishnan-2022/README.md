@@ -35,7 +35,7 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The files hold raw fluorescence only, so dF/F, transients and place fields are computed here with
-the rules of the paper's reference 75, an assumption; the fields come out about twice as wide as the
+the rules of the paper's reference 75, an assumption; the fields come out 1.1 to 1.7 times as wide as the
 paper's. Position has no scale in the files; the 30 Hz clock agrees with the 1.5 s pause after each
 reward, yet laps take longer than the paper reports. Engaged laps are defined by the approach ratio
 over the traversal of the track, which leaves 2 of the 5 R-UR-RR mice with enough engaged laps for

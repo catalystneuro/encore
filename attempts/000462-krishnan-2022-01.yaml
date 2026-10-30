@@ -88,6 +88,12 @@ outcomes:
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
   - The criterion's 9 of 12 mice is applied as the same fraction, 75%, of the 10 mice in the dandiset,
     at least 8 (ceil(0.75 x 10)); a literal 9 of 10 is not reached (shown).
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
   assumed: true
 - claim: fig1e-decoder-follows-licking
   outcome: reproduced
@@ -167,6 +173,12 @@ outcomes:
     fields) - 8th percentile baseline in a 15 s window, transients from 2 to 0.5 robust SD lasting 0.5
     s or more, candidate fields above 25% of the way from baseline to peak, 100 circular-shift shuffles.
     Assumption, as the files hold raw fluorescence only and the paper does not give these values.
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
   assumed: true
 - claim: supp4-lickstop-definition-robust
   outcome: reproduced
@@ -378,6 +390,12 @@ outcomes:
     mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
     gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
     with an undefined ratio as disengaged; it is shown as a variant only.
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
   assumed: true
 - claim: disengaged-laps-uniform
   outcome: reproduced
@@ -399,6 +417,12 @@ outcomes:
     mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
     gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
     with an undefined ratio as disengaged; it is shown as a variant only.
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
   assumed: true
 - claim: supp6-pupil-engagement
   outcome: blocked
@@ -415,7 +439,9 @@ outcomes:
     to 4 RE high laps, it is 0.82, 0.49 and 0.23 (L1), RE high already more than 0.2 below R. The rule
     holds in 0 of 2 mice under every lick stop reading; the criterion asks for 2 of 3. With the code-ratio
     split (L1c, 4 mice, not judged) it holds in 2 of 4 (NR21 0.84, 0.82, 0.15; CFC4 0.89, 0.72, 0.14).
-    RR probabilities are 0.02 to 0.30.'
+    RR probabilities are 0.02 to 0.33. Keeping only the first 24 of NR6''s 43 R laps, as the paper''s
+    code does (task_framestokeep), NR6 still fails under every reading (R 0.96, RE high 0.08 to 0.10,
+    RE low 0.09 to 0.12); NR6''s field values with fields found on those 24 laps were not computed.'
   deviations:
   - 'The mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
     Engagement with VR, approach behavior): NR6 and NR23 under every lick stop reading with the main engagement
@@ -435,6 +461,15 @@ outcomes:
     gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
     with an undefined ratio as disengaged; it is shown as a variant only.
   - k-means from scikit-learn with one random start per run and 1000 seeded runs.
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
+  - Position is stored in volts with no scale; the top of the range, where the reward is delivered
+    at the track end (Methods, Behavior and virtual reality), is read as 200 cm, and the 5 cm
+    position bins, field positions and widths rest on that scale. Assumption.
   assumed: true
 - claim: fig2c-spatial-correlation-drop
   outcome: partially_reproduced
@@ -465,6 +500,15 @@ outcomes:
     with an undefined ratio as disengaged; it is shown as a variant only.
   - Reading S1 (within-R from the control mice) could not be run, as the control mice are not in the dandiset;
     the criterion asks for S1 and S2 to agree, so the outcome can be partial at most.
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
+  - Position is stored in volts with no scale; the top of the range, where the reward is delivered
+    at the track end (Methods, Behavior and virtual reality), is read as 200 cm, and the 5 cm
+    position bins, field positions and widths rest on that scale. Assumption.
   assumed: true
 - claim: fig2d-remapping-all-locations
   outcome: partially_reproduced
@@ -494,6 +538,15 @@ outcomes:
     with an undefined ratio as disengaged; it is shown as a variant only.
   - Reading S2 only, as for fig2c-spatial-correlation-drop; S1 cannot be run, so the outcome can be partial
     at most.
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
+  - Position is stored in volts with no scale; the top of the range, where the reward is delivered
+    at the track end (Methods, Behavior and virtual reality), is read as 200 cm, and the 5 cm
+    position bins, field positions and widths rest on that scale. Assumption.
   assumed: true
 - claim: fig2e-place-field-fates
   outcome: not_reproduced
@@ -540,6 +593,15 @@ outcomes:
     with an undefined ratio as disengaged; it is shown as a variant only.
   - New RR fields are counted as new to both R and RE low (main) and new to RE low (shown); the paper
     does not say.
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
+  - Position is stored in volts with no scale; the top of the range, where the reward is delivered
+    at the track end (Methods, Behavior and virtual reality), is read as 200 cm, and the 5 cm
+    position bins, field positions and widths rest on that scale. Assumption.
   assumed: true
 - claim: fig3a-field-numbers-similar
   outcome: not_reproduced
@@ -571,6 +633,15 @@ outcomes:
     mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
     gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
     with an undefined ratio as disengaged; it is shown as a variant only.
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
+  - Position is stored in volts with no scale; the top of the range, where the reward is delivered
+    at the track end (Methods, Behavior and virtual reality), is read as 200 cm, and the 5 cm
+    position bins, field positions and widths rest on that scale. Assumption.
   assumed: true
 - claim: fig3b-reliability
   outcome: reproduced
@@ -606,6 +677,15 @@ outcomes:
     not touch the field's bins, following the Methods (Place field parameters); the reliability is the
     mean of the off-diagonal lap by lap correlations, laps without activity left out, times the fraction
     of laps with a transient in the field.
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
+  - Position is stored in volts with no scale; the top of the range, where the reward is delivered
+    at the track end (Methods, Behavior and virtual reality), is read as 200 cm, and the 5 cm
+    position bins, field positions and widths rest on that scale. Assumption.
   assumed: true
 - claim: fig3b-out-in-ratio
   outcome: not_reproduced
@@ -638,6 +718,15 @@ outcomes:
     mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
     gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
     with an undefined ratio as disengaged; it is shown as a variant only.
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
+  - Position is stored in volts with no scale; the top of the range, where the reward is delivered
+    at the track end (Methods, Behavior and virtual reality), is read as 200 cm, and the 5 cm
+    position bins, field positions and widths rest on that scale. Assumption.
   assumed: true
 - claim: fig3b-width-intensity
   outcome: not_reproduced
@@ -675,7 +764,19 @@ outcomes:
     gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
     with an undefined ratio as disengaged; it is shown as a variant only.
   - Width is the span of contiguous bins where the field-only mean map is above 0, as the Methods define
-    it; with the transient rule assumed here the fields are about twice as wide as the paper's.
+    it; with the transient rule assumed here the fields are 1.1 to 1.7 times as wide as the paper's (70.1,
+    65.6 and 73.1 cm against 53.34, 60.56 and 54.08 cm here; medians of 75 to 81 cm against 46 to 55
+    cm in supp11-all-mice-parameters). The candidate regions (31 to 35 cm) are about half as wide as
+    the fields.
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
+  - Position is stored in volts with no scale; the top of the range, where the reward is delivered
+    at the track end (Methods, Behavior and virtual reality), is read as 200 cm, and the 5 cm
+    position bins, field positions and widths rest on that scale. Assumption.
   assumed: true
 - claim: fig3c-degradation-all-locations
   outcome: partially_reproduced
@@ -703,6 +804,15 @@ outcomes:
     mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
     gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
     with an undefined ratio as disengaged; it is shown as a variant only.
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
+  - Position is stored in volts with no scale; the top of the range, where the reward is delivered
+    at the track end (Methods, Behavior and virtual reality), is read as 200 cm, and the 5 cm
+    position bins, field positions and widths rest on that scale. Assumption.
   assumed: true
 - claim: supp11-all-mice-parameters
   outcome: not_reproduced
@@ -738,6 +848,9 @@ outcomes:
     behavior, says 'the average track position at which the animal started pre-licking in R'). The 20
     cm is an assumption. Counting the first lick whenever it falls, as the first version did, moved the
     zone by 0.3 to 3.9 cm and changed no lick stop.
+  - Position is stored in volts with no scale; the top of the range, where the reward is delivered
+    at the track end (Methods, Behavior and virtual reality), is read as 200 cm, and the 5 cm
+    position bins, field positions and widths rest on that scale. Assumption.
   assumed: true
 - claim: fig3d-reward-overrepresentation
   outcome: not_reproduced
@@ -773,6 +886,15 @@ outcomes:
     mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
     gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
     with an undefined ratio as disengaged; it is shown as a variant only.
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
+  - Position is stored in volts with no scale; the top of the range, where the reward is delivered
+    at the track end (Methods, Behavior and virtual reality), is read as 200 cm, and the 5 cm
+    position bins, field positions and widths rest on that scale. Assumption.
   assumed: true
 - claim: reward-zone-field-turnover
   outcome: not_reproduced
@@ -791,9 +913,11 @@ outcomes:
   - 27
   notes: Under L1 and F1, in the 2 qualifying mice - of 186 R fields lost in RE low, 50 (26.9%) are at
     150 to 200 cm (paper 104 of 249, 41.8%); new RE low fields per 50 cm are 21, 16, 30 and 24 (23, 18,
-    33 and 26%; paper 77, 83, 62 and 74, 26 to 28%); 18 lost end fields reappear in RR (paper 61); new
-    RR fields are 29, 18, 17 and 27 per 50 cm (paper 31, 24, 18 and 67). Every count is outside tolerance
-    under every reading; under L1c (4 mice) 200 of 579 lost fields (34.5%) are at the end.
+    33 and 26%; paper 77, 83, 62 and 74, 21 to 28%); 18 lost end fields reappear in RR (paper 61); new
+    RR fields are 29, 18, 17 and 27 per 50 cm (paper 31, 24, 18 and 67). Most counts are outside tolerance
+    under every reading, but two are inside - new RR fields at 0 to 50 cm (29, 31 and 29 under L1 to
+    L3, against 31 +/- 3.1) and at 100 to 150 cm under L1 and L2 (17, against 18 +/- 1.8; 22 under L3).
+    Under L1c (4 mice) 200 of 579 lost fields (34.5%) are at the end.
   deviations:
   - 'The mice of Figures 2 and 3 are the R-UR-RR mice with more than 12 engaged RE low laps (Methods,
     Engagement with VR, approach behavior): NR6 and NR23 under every lick stop reading with the main engagement
@@ -812,6 +936,15 @@ outcomes:
     mice with more than 12 engaged laps (paper 70%, 3 of 6); the code's ratio over the traversal, a variant,
     gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
     with an undefined ratio as disengaged; it is shown as a variant only.
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
+  - Position is stored in volts with no scale; the top of the range, where the reward is delivered
+    at the track end (Methods, Behavior and virtual reality), is read as 200 cm, and the 5 cm
+    position bins, field positions and widths rest on that scale. Assumption.
   assumed: true
 - claim: controls-no-change-over-time
   outcome: blocked
@@ -849,6 +982,9 @@ outcomes:
     not say how it measured pre-licking in the novel session.
   - For the session-field reading, transients outside the field are not removed one by one; the contiguous
     active bins around the field stand in for it.
+  - Position is stored in volts with no scale; the top of the range, where the reward is delivered
+    at the track end (Methods, Behavior and virtual reality), is read as 200 cm, and the 5 cm
+    position bins, field positions and widths rest on that scale. Assumption.
   assumed: true
 - claim: supp14-reward-cells
   outcome: blocked
@@ -887,6 +1023,7 @@ outcomes:
     agrees with the 1.5 s pause after the reward (46 to 49 frames from reward onset to teleport in every
     rewarded condition), and lap time does not depend on the scale.
   - Lap speed is read in cm/s, as the criterion reads the paper's m/s.
+  - Behaviour of sub-014 from BeforeCNO on is realigned by 6000 frames (found in the notebook).
   assumed: true
 - claim: fig4f-dreadd-spatial-correlation
   outcome: partially_reproduced
@@ -920,6 +1057,15 @@ outcomes:
   - The DREADD files carry a constant offset of about 17000 counts, removed as the file minimum before
     dF/F. Assumption.
   - Behaviour of sub-014 from BeforeCNO on is realigned by 6000 frames (found in the notebook).
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
+  - Position is stored in volts with no scale; the top of the range, where the reward is delivered
+    at the track end (Methods, Behavior and virtual reality), is read as 200 cm, and the 5 cm
+    position bins, field positions and widths rest on that scale. Assumption.
   assumed: true
 - claim: supp18-saline-slow-laps
   outcome: not_reproduced
@@ -958,6 +1104,7 @@ outcomes:
   - The drop is measured from the correlation of the whole saline pair; the paper does not say what the
     split is compared with. The split's fields are defined on the fast laps only, so the drop from the
     same fields against all after-saline laps is also shown.
+  - Behaviour of sub-014 from BeforeCNO on is realigned by 6000 frames (found in the notebook).
   assumed: true
 - claim: fig4h-dreadd-reliability-outin
   outcome: not_reproduced
@@ -1003,6 +1150,16 @@ outcomes:
     gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
     with an undefined ratio as disengaged; it is shown as a variant only.
   - The DREADD offset is removed as for fig4f-dreadd-spatial-correlation. Assumption.
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
+  - Position is stored in volts with no scale; the top of the range, where the reward is delivered
+    at the track end (Methods, Behavior and virtual reality), is read as 200 cm, and the 5 cm
+    position bins, field positions and widths rest on that scale. Assumption.
+  - Behaviour of sub-014 from BeforeCNO on is realigned by 6000 frames (found in the notebook).
   assumed: true
 - claim: fig4m-dreadd-overrepresentation
   outcome: reproduced
@@ -1039,6 +1196,16 @@ outcomes:
     gives 67% and 4 mice. The whole-lap reading of the first version took in the pause and counted laps
     with an undefined ratio as disengaged; it is shown as a variant only.
   - The DREADD offset is removed as for fig4f-dreadd-spatial-correlation. Assumption.
+  - The reward zone, which sets the lick stop and so the RE high and RE low laps, starts at the mean
+    position of the first lick before the reward in each R lap, ignoring licks before 20 cm, which
+    follow the teleport (Methods, Licking behavior, 'the average track position at which the animal
+    started pre-licking in R'). The 20 cm is an assumption. Counting the first lick whenever it
+    falls moves the zone by 0.3 to 3.9 cm and changes no lick stop under L1, L2 or L3 (printed in
+    lick-persistence-ur).
+  - Position is stored in volts with no scale; the top of the range, where the reward is delivered
+    at the track end (Methods, Behavior and virtual reality), is read as 200 cm, and the 5 cm
+    position bins, field positions and widths rest on that scale. Assumption.
+  - Behaviour of sub-014 from BeforeCNO on is realigned by 6000 frames (found in the notebook).
   assumed: true
 - claim: supp15-tdtomato-controls
   outcome: blocked
@@ -1090,7 +1257,8 @@ findings:
 - kind: metadata_insufficient
   statement: The DREADD files' raw fluorescence carries a constant offset of about 16400 to 17000 counts
     (file minima 16415 to 16471) that the wild-type files do not have (minima 57 to 678) and the description
-    does not mention; dF/F computed without removing it is about ten times too small.
+    does not mention; dF/F computed without removing it is 8.0 to 12.1 times too small (99th percentile
+    over the first 9000 frames of 40 cells per file).
 - kind: metadata_insufficient
   statement: The files hold raw suite2p fluorescence only, without neuropil, dF/F, transients or the place
     cells the paper used, and the subjects carry no label for the mice in each figure (for example the
@@ -1104,8 +1272,9 @@ findings:
     and percentile, neuropil), and what rule defined a significant transient and a candidate place field
     (refs. 44, 67 and 75 are cited)? This attempt used the 8th percentile in a 15 s window, transients
     from 2 to 0.5 SD of at least 0.5 s, and bins above 25% of the way from baseline to peak; its fields
-    are wider than the paper's (70 to 90 cm against 53 cm in R), and the candidate regions it cuts (31
-    to 41 cm) are close to the paper's widths.
+    are wider than the paper's (70 to 90 cm against 53 cm in R); the candidate regions it cuts (per-mouse
+    means 31.4 to 43.2 cm) are narrower than the paper's fields (53 to 61 cm), and the Methods width rule
+    widens them to 61 to 86 cm.
 - kind: methods_unavailable
   statement: Question for the authors - how is lap time defined, and how is the position voltage converted
     to cm? The behaviour clock agrees with the 1.5 s reward pause (46 to 49 frames at 30 Hz) and the wild-type
@@ -1144,6 +1313,7 @@ verifications:
     helper module and the claims file, with the paper. The verifier queried the archive's asset list and
     metadata and tested the approach-ratio helper on a synthetic lap. Its report had no attempt record
     and gave its own outcome for each claim; 32 of the 41 agree with the record as it then stood.
+    Cell numbers in the reasons refer to that first notebook; the cells have since been renumbered.
   results:
   - claim: session-lap-counts
     agrees: true
@@ -1442,3 +1612,343 @@ verifications:
     outcome: blocked
     reason: There are no axon-imaging assets.
     response: No change needed; the file listing confirms it.
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the round-1 revision, with the conclusions, the
+    summary and the attempt record. The verifier agreed with all 41 outcomes and checked the sentences
+    of the conclusions against the outputs; cell numbers in its reasons refer to that notebook, before
+    two cells were added after the data checks.
+  results:
+  - claim: session-lap-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+    response: No change needed.
+  - claim: lick-persistence-ur
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees (now not reproduced) - a required part fails, the mean RE high laps. Cell 15 and the
+      deviations say the old zone 'changed no lick stop', but the lick stops under the old zone are not
+      printed.
+    response: Outcome kept. The lick stops under the first version's zone are now printed for L1 to L3;
+      they equal those under the main zone in every mouse.
+  - claim: fig1d-decoder-drop-ur
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The scaling of '9 of 12' to ceil(0.75 x 10) = 8 is now stated and reasonable. The
+      reward-zone assumption is missing from the deviations.
+    response: Added the reward-zone assumption to the deviations, which the report found missing. Outcome
+      kept.
+  - claim: fig1e-decoder-follows-licking
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+    response: No change needed.
+  - claim: fig1f-decoder-r2
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+    response: No change needed.
+  - claim: fig1g-decoder-error-all-locations
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+      The reward-zone assumption is missing from the deviations.
+    response: Added the reward-zone assumption to the deviations, which the report found missing. Outcome
+      kept.
+  - claim: supp4-lickstop-definition-robust
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+    response: No change needed.
+  - claim: supp4-lapwise-r2
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+    response: No change needed.
+  - claim: supp2-decoder-stable-control
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+    response: No change needed.
+  - claim: supp5-not-running-speed
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+      Cell 6, 'The paper's 7.34 s ... is shorter than either', holds for the means only; running time
+      per mouse goes down to 5.98 s (cell 5). The clock is checked, but why lap times are about 1.65 times
+      the paper's is still unknown.
+    response: Cell 6 now says 7.34 s is shorter than both means (12.45 s and 8.5 s) and names the 3 mice
+      whose running time is below it (5.98 to 7.20 s). The cause of the longer lap times stays open; the
+      question to the authors is filed. Outcome kept.
+  - claim: approach-ratio
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+    response: No change needed.
+  - claim: engaged-lap-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees (not reproduced). No reading puts all three counts in tolerance, and that includes
+      the code-ratio variant (under L1 RE high is 66; under L3 engaged is 140).
+    response: No change needed.
+  - claim: supp6b-decoder-engaged-laps
+    agrees: true
+    outcome: reproduced
+    reason: Agrees under the criterion (reproduced, now on a valid split). Engaged means rest on 1 to
+      5 laps in five mice under L1 (cell 44).
+    response: Outcome kept. Added the reward-zone assumption to the deviations, which the report found
+      missing.
+  - claim: disengaged-laps-uniform
+    agrees: true
+    outcome: reproduced
+    reason: Agrees under the criterion (reproduced, now on a valid split). The halves differ by 0.16 at
+      n = 10 (p = 0.094), so this absence has little power.
+    response: Outcome kept. Added the reward-zone assumption to the deviations, which the report found
+      missing.
+  - claim: supp6-pupil-engagement
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+      The pupil and tdTomato questions are settled by the file listing (cell 5).
+    response: No change needed.
+  - claim: fig2a-pv-cluster-transition
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees (now not reproduced). It holds in 0 of 2 mice; the 2 of 4 under the L1c variant would
+      also fall short of 2/3. Cell 82 and the notes say RR probabilities are 0.02 to 0.30, but NR23 gives
+      0.31 under L2 and 0.33 under L3. The paper's code keeps only the first 24 of NR6's 43 R laps, and
+      NR6's R-cluster probability already drops at R lap 40; whether fig2a or NR6's Fig. 2-3 values change
+      under that cut is untested. The main engagement split does not match the paper's engagement numbers
+      (46% of RE low laps engaged against 70%, R ratio 2.21 against 1.3), which leaves 2 Fig. 2-3 mice
+      against the paper's 3; every Fig. 2-3 outcome rests on those 2 mice, with 95% intervals that mean
+      nothing at n = 2. The assumption is stated and the claims file requires the Methods reading, so
+      no outcome changes, but these outcomes are weak evidence either way.
+    response: Corrected the RR range to 0.02 to 0.33. Added the variant with NR6's R laps cut to the first
+      24 (the code's 11100 frames), R place cells unchanged; NR6 still fails under every reading (R 0.96,
+      RE high 0.08 to 0.10, RE low 0.09 to 0.12), so fig2a stays 0 of 2. NR6's Fig. 2-3 field values with
+      fields found on the 24 laps were not computed, as that needs the field search rerun from the raw
+      data for NR6; this is stated. Added the reward-zone assumption and the volts-to-cm assumption to
+      the deviations, which the report found missing. No outcome change. The split, its numbers and the
+      code-ratio variant are stated in the deviations, and the question of the approach ratio to the authors
+      is filed under findings.
+  - claim: fig2c-spatial-correlation-drop
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (partially reproduced, S2 only). S1 cannot be run, and the record says so. The main
+      engagement split does not match the paper's engagement numbers (46% of RE low laps engaged against
+      70%, R ratio 2.21 against 1.3), which leaves 2 Fig. 2-3 mice against the paper's 3; every Fig. 2-3
+      outcome rests on those 2 mice, with 95% intervals that mean nothing at n = 2. The assumption is
+      stated and the claims file requires the Methods reading, so no outcome changes, but these outcomes
+      are weak evidence either way.
+    response: Added the reward-zone assumption and the volts-to-cm assumption to the deviations, which
+      the report found missing. No outcome change. The split, its numbers and the code-ratio variant are
+      stated in the deviations, and the question of the approach ratio to the authors is filed under findings.
+  - claim: fig2d-remapping-all-locations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (partially reproduced, S2 only). S1 cannot be run, and the record says so. The main
+      engagement split does not match the paper's engagement numbers (46% of RE low laps engaged against
+      70%, R ratio 2.21 against 1.3), which leaves 2 Fig. 2-3 mice against the paper's 3; every Fig. 2-3
+      outcome rests on those 2 mice, with 95% intervals that mean nothing at n = 2. The assumption is
+      stated and the claims file requires the Methods reading, so no outcome changes, but these outcomes
+      are weak evidence either way.
+    response: Added the reward-zone assumption and the volts-to-cm assumption to the deviations, which
+      the report found missing. No outcome change. The split, its numbers and the code-ratio variant are
+      stated in the deviations, and the question of the approach ratio to the authors is filed under findings.
+  - claim: fig2e-place-field-fates
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+      The main engagement split does not match the paper's engagement numbers (46% of RE low laps engaged
+      against 70%, R ratio 2.21 against 1.3), which leaves 2 Fig. 2-3 mice against the paper's 3; every
+      Fig. 2-3 outcome rests on those 2 mice, with 95% intervals that mean nothing at n = 2. The assumption
+      is stated and the claims file requires the Methods reading, so no outcome changes, but these outcomes
+      are weak evidence either way.
+    response: Added the reward-zone assumption and the volts-to-cm assumption to the deviations, which
+      the report found missing. No outcome change. The split, its numbers and the code-ratio variant are
+      stated in the deviations, and the question of the approach ratio to the authors is filed under findings.
+  - claim: fig3a-field-numbers-similar
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+      The main engagement split does not match the paper's engagement numbers (46% of RE low laps engaged
+      against 70%, R ratio 2.21 against 1.3), which leaves 2 Fig. 2-3 mice against the paper's 3; every
+      Fig. 2-3 outcome rests on those 2 mice, with 95% intervals that mean nothing at n = 2. The assumption
+      is stated and the claims file requires the Methods reading, so no outcome changes, but these outcomes
+      are weak evidence either way.
+    response: Added the reward-zone assumption and the volts-to-cm assumption to the deviations, which
+      the report found missing. No outcome change. The split, its numbers and the code-ratio variant are
+      stated in the deviations, and the question of the approach ratio to the authors is filed under findings.
+  - claim: fig3b-reliability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+      The main engagement split does not match the paper's engagement numbers (46% of RE low laps engaged
+      against 70%, R ratio 2.21 against 1.3), which leaves 2 Fig. 2-3 mice against the paper's 3; every
+      Fig. 2-3 outcome rests on those 2 mice, with 95% intervals that mean nothing at n = 2. The assumption
+      is stated and the claims file requires the Methods reading, so no outcome changes, but these outcomes
+      are weak evidence either way. Under the code-ratio variant R and RR fall outside.
+    response: Added the reward-zone assumption and the volts-to-cm assumption to the deviations, which
+      the report found missing. No outcome change. The split, its numbers and the code-ratio variant are
+      stated in the deviations, and the question of the approach ratio to the authors is filed under findings.
+  - claim: fig3b-out-in-ratio
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+      The main engagement split does not match the paper's engagement numbers (46% of RE low laps engaged
+      against 70%, R ratio 2.21 against 1.3), which leaves 2 Fig. 2-3 mice against the paper's 3; every
+      Fig. 2-3 outcome rests on those 2 mice, with 95% intervals that mean nothing at n = 2. The assumption
+      is stated and the claims file requires the Methods reading, so no outcome changes, but these outcomes
+      are weak evidence either way. Under the code-ratio variant R and RR come inside.
+    response: Added the reward-zone assumption and the volts-to-cm assumption to the deviations, which
+      the report found missing. No outcome change. The split, its numbers and the code-ratio variant are
+      stated in the deviations, and the question of the approach ratio to the authors is filed under findings.
+  - claim: fig3b-width-intensity
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+      The README and the deviation say the fields are 'about twice as wide as the paper's'; the outputs
+      give 70.1 / 65.6 / 73.1 cm against 53.3 / 60.6 / 54.1 cm (cell 61) and 75-81 cm against 46-55 cm
+      (cell 69), 1.1 to 1.7 times. What roughly doubles is the candidate width (31-35 cm). The dF/F, transient
+      and field rules that drive the widths remain open; the question to the authors is filed.
+    response: README and deviation now say 1.1 to 1.7 times, with the numbers, and that the candidate
+      regions are about half the field width. Added the reward-zone assumption and the volts-to-cm assumption
+      to the deviations, which the report found missing. Outcome kept.
+  - claim: fig3c-degradation-all-locations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+      The main engagement split does not match the paper's engagement numbers (46% of RE low laps engaged
+      against 70%, R ratio 2.21 against 1.3), which leaves 2 Fig. 2-3 mice against the paper's 3; every
+      Fig. 2-3 outcome rests on those 2 mice, with 95% intervals that mean nothing at n = 2. The assumption
+      is stated and the claims file requires the Methods reading, so no outcome changes, but these outcomes
+      are weak evidence either way.
+    response: Added the reward-zone assumption and the volts-to-cm assumption to the deviations, which
+      the report found missing. No outcome change. The split, its numbers and the code-ratio variant are
+      stated in the deviations, and the question of the approach ratio to the authors is filed under findings.
+  - claim: supp11-all-mice-parameters
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+      Widths of 70-90 cm, from the dF/F, transient and field rules, drive this outcome; this remains open,
+      and the question to the authors is filed. The volts-to-cm assumption is missing from the deviations.
+    response: Added the volts-to-cm assumption to the deviations, which the report found missing. Outcome
+      kept.
+  - claim: fig3d-reward-overrepresentation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees (now not reproduced) - a required part fails, the per-mouse conditions. The main engagement
+      split does not match the paper's engagement numbers (46% of RE low laps engaged against 70%, R ratio
+      2.21 against 1.3), which leaves 2 Fig. 2-3 mice against the paper's 3; every Fig. 2-3 outcome rests
+      on those 2 mice, with 95% intervals that mean nothing at n = 2. The assumption is stated and the
+      claims file requires the Methods reading, so no outcome changes, but these outcomes are weak evidence
+      either way.
+    response: Added the reward-zone assumption and the volts-to-cm assumption to the deviations, which
+      the report found missing. No outcome change. The split, its numbers and the code-ratio variant are
+      stated in the deviations, and the question of the approach ratio to the authors is filed under findings.
+  - claim: reward-zone-field-turnover
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+      Cell 76 and the notes say 'Every count is outside tolerance under every reading'; two counts are
+      inside (cell 75), new RR fields at 0-50 cm, 29 (L1) and 31 (L2) against 31 +/- 3.1, and at 100-150
+      cm, 17 against 18 +/- 1.8. The outcome stands because the other counts fail. The notes give the
+      paper's new RE low fields as '26 to 28%', but 62 of 296 is 21%.
+    response: Cell 77 and the notes now name the counts inside tolerance (also 29 under L3 at 0-50 cm;
+      at 100-150 cm L3 gives 22, outside) and give the paper's percentages as 21 to 28%. Added the reward-zone
+      assumption and the volts-to-cm assumption to the deviations, which the report found missing. Outcome
+      kept.
+  - claim: controls-no-change-over-time
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+    response: No change needed.
+  - claim: supp13-novel-environment
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+      The volts-to-cm assumption is missing from the deviations.
+    response: Added the volts-to-cm assumption to the deviations, which the report found missing. Outcome
+      kept.
+  - claim: supp14-reward-cells
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+    response: No change needed.
+  - claim: supp16-dreadd-running-speed
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees (now not reproduced) - the six speed means fail. The sub-014 realignment is listed
+      only for fig4f, though this outcome also uses the CNO sessions. Why lap times are longer than the
+      paper's remains open.
+    response: Added the sub-014 realignment to the deviations, which the report found missing. The question
+      on lap time to the authors is filed. Outcome kept.
+  - claim: fig4f-dreadd-spatial-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+      The reward-zone assumption is missing from the deviations. Separately, the findings' 'dF/F computed
+      without removing [the offset] is about ten times too small' and the GFP indicator, shared session_start_time,
+      P12W age and DREADD session description statements are shown in no output.
+    response: Added the reward-zone assumption and the volts-to-cm assumption to the deviations, which
+      the report found missing. Added a cell after the data checks that prints the indicator, imaging
+      plane description, session_start_time, age and session description of every file, and the 99th percentile
+      of dF/F with and without the offset in each DREADD file (8.0 to 12.1 times smaller with it kept);
+      the finding now gives that range. Outcome kept.
+  - claim: supp18-saline-slow-laps
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+      Cell 96 says 'exceeds half the DCZ drop (0.136)'; 0.136 is the whole DCZ drop, half is 0.068, as
+      the record correctly says. The sub-014 realignment is missing from the deviations.
+    response: Cell 97 now gives half the DCZ drop as 0.068. Added the sub-014 realignment to the deviations,
+      which the report found missing. Outcome kept.
+  - claim: fig4h-dreadd-reliability-outin
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees (now not reproduced) - the saline absence fails under both pairings. The reward-zone
+      and sub-014 deviations are missing.
+    response: Added the reward-zone assumption and the volts-to-cm assumption and the sub-014 realignment
+      to the deviations, which the report found missing. Outcome kept.
+  - claim: fig4m-dreadd-overrepresentation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees under the criterion. The DCZ change is +2.1, so the over-representation does not fall;
+      it only rises less than after saline. This rests on the claims file testing DCZ only, which goes
+      to a reader.
+    response: Outcome kept. The question on the DCZ-only test was already in questions/000462.yaml; its
+      reason now notes that the DCZ change is itself positive. Added the reward-zone assumption and the
+      volts-to-cm assumption and the sub-014 realignment to the deviations, which the report found missing.
+  - claim: supp15-tdtomato-controls
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+      The pupil and tdTomato questions are settled by the file listing (cell 5).
+    response: No change needed.
+  - claim: fig5-da-axon-ramps
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+    response: No change needed.
+  - claim: fig5k-ramp-slope-max
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+    response: No change needed.
+  - claim: fig5l-ramps-return-rr
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+    response: No change needed.
+  - claim: supp20-novel-axons
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+    response: No change needed.
+  - claim: supp21-heterogeneous-axons
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, which follows the claims-file criterion from the printed outputs.
+    response: No change needed.
