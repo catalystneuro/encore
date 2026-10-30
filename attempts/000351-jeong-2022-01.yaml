@@ -65,8 +65,8 @@ outcomes:
   notes: Counted from the dandiset, the means per animal are 7.0 random reward sessions (4 to 11, SD 2.14), 12.71
     of Experiment 2, 4.29 of Experiment 3, 7.86 of Experiment 5, 2.43 of Experiment 4, and 5.43 (WT) and 7.0 (DAT-Cre)
     sequential conditioning sessions, all within the stated SDs. The counts of integer days in the code's ranges
-    are 13.29, 4.29, 8.14 and 2.57, which equal the paper's means for Experiments 2, 5 and 4, so the paper's counts
-    include the 7 sessions the dandiset lacks. The SDs of the Experiment 7 counts, 0.79 (wild type) and 2.45 (DAT-Cre,
+    are 13.29, 4.29, 8.14 and 2.57, which equal the paper's means for Experiments 2, 5 and 4; this suggests that
+    the paper's counts include sessions on the 7 integer days in the ranges that have no session in the dandiset. The SDs of the Experiment 7 counts, 0.79 (wild type) and 2.45 (DAT-Cre,
     from datHT-M7's 12 sessions), are close to the paper's 2.4 and 0.7 in the other order, so the paper may have
     swapped them; the criterion tests only the means.
   deviations:
@@ -196,20 +196,31 @@ outcomes:
     keeping the best fit; Matlab's fit starts custom models at random points, so the code's fits are not repeated
     exactly.
   - dF/F is divided by 100 before the dopamine AUC, as the files store percent and the Methods define dF/F as the
-    fraction (470 - fitted 405)/fitted 405 (Methods, Fiber photometry), on which scale the code's bounds are set.
+    fraction (470 - fitted 405)/fitted 405 (Methods, Fiber photometry). The scale for which the code's bounds were
+    set is not stated; see fig4hi-delay-change-dopamine-unchanged.
 - claim: fig4hi-delay-change-dopamine-unchanged
   outcome: reproduced
   notebook: reproduce_jeong_2022.ipynb
   output: claim:fig4hi-delay-change-dopamine-unchanged
+  assumed: true
   notes: Dopamine delta AIC (constant minus changing) per animal -168.5 to 32.7, mean -18.7; t(6) = -0.73, p = 0.49
     with k = 4 (paper t = -0.86, p = 0.42), and t = -0.65, p = 0.54 with k = 3. No change is found. Without HJ-FP-M3
-    (delta AIC -168.5), t(5) = 0.99, p = 0.37. With the code's bounds applied to dF/F in percent, the stored scale,
-    delta AIC is below 0 in every animal (t = -7.74), so the outcome does not depend on the scale. It does rest on
-    the code's bounds, which the criterion fixes and which bind on the fraction scale (b at most 10, where 5 of
-    7 animals have mean responses of 13 to 45); fitted without bounds the changing model is better in every animal
-    (delta AIC 14 to 38, t = 7.83, p = 2.3e-4). Leaving out trials with a NaN dF/F sample gives t = -0.73.
+    (delta AIC -168.5), t(5) = 0.99, p = 0.37. Leaving out trials with a NaN dF/F sample gives t = -0.73. With the
+    code's bounds, which the criterion fixes, this test cannot detect a change in these data. On dF/F as a fraction,
+    the scale used, b is at most 10 where 5 of 7 animals have mean responses of 13.2 to 44.6; three animals have
+    delta AIC of exactly -6.0, the changing model collapsed to the constant one, and in HJ-FP-M3 the changing model
+    fits worse than the constant one. On dF/F in percent, the stored scale, the bounded model cannot fit the data
+    (delta AIC -272 to -817 in every animal, t = -7.74), so that variant does not test the scale. Fitted without
+    bounds the changing model is better in every animal (delta AIC 14 to 38, t = 7.84, p = 2.3e-4). The outcome
+    rests on the assumption that the paper's fit was bounded as here; the paper's t of -0.86, close to -0.73, suggests
+    it was. Which dF/F scale the bounds were set for is asked of the authors (findings).
   deviations:
   - The model fit and the dF/F scale are as in fig4hi-delay-change-behavior-changes.
+  - Assumed that the paper's fit applied the code's bounds (A -2 to 50, b -10 to 10) to dopamine values on a scale
+    where they bind as they do here. Neither the Methods nor the code states the scale of the dF/F the Matlab scripts
+    read from the authors' local files. The criterion fixes the bounds; the two scales the dandiset supports (fraction
+    and percent) both give no change, and the paper's t (-0.86) is close to the one found here (-0.73), while the
+    unbounded fit, outside the criterion, finds a change in every animal.
 - claim: figs10b-no-omission-response
   outcome: reproduced
   notebook: reproduce_jeong_2022.ipynb
@@ -257,7 +268,9 @@ outcomes:
     under every reading, which none meets, so the main part of the claim, the faster decay, is not reproduced. Leaving
     out the 0 to 4 trials per animal and condition with a NaN dF/F sample gives p = 0.048 for (a), 0.047 for (c)
     and 0.088 for (b). With the sessions of cumsum_pavlovian.m (conditions 4 and 3, one session before each) no
-    reading shows a difference (t = 0.69 and 0.72).
+    reading shows a difference (t = 0.69 and 0.72); there HJ-FP-M6's background sum over the 50 trials before the
+    change is 37.3 (288.1 with the sessions of cumsum_bgdrw_vs_extinction.m), giving it a reading (a) of 12.15,
+    and HJ-FP-M2's is -492.9.
   deviations:
   - What the paired t-test compares is not in the Methods, legend or code; the three readings of the criterion are
     run and agree that background is not below extinction at p < 0.05.
@@ -335,7 +348,8 @@ outcomes:
     p = 2.1e-4, n = 35) and 0.076 in DAT-Cre mice (t = 2.87, p = 0.0077, n = 30); lick slopes 1.53 (t = 3.67, p
     = 8.4e-4) and 1.28 (t = 4.22, p = 2.3e-4) (paper t = 5.49, 2.55, 3.61, 4.92). In the last session all 6 DAT-Cre
     animals have a positive CS1 response (0.12 to 0.65 of the day 1 reward response) and positive anticipatory licking
-    (0.52 to 10.78 licks).
+    (0.52 to 10.78 licks). HJ-FP-WT-stGtACR-M2's last session has no dF/F for its CS1 trials 1 to 17, and its mean
+    is over the other 33.
 - claim: fig6i-lower-cs1-asymptote
   outcome: not_reproduced
   notebook: reproduce_jeong_2022.ipynb
@@ -347,6 +361,9 @@ outcomes:
     reward session's reward response t = 2.84 (p = 0.016), and not normalised t = 2.85 (p = 0.016). Supplementary
     Note 10 and learnign_curve_sequential.py normalise by the reward response on day 1 of conditioning, as the
     criterion does, and no passage excludes a short session, so the outcome is kept on the criterion's measure.
+    HJ-FP-WT-stGtACR-M2's last session (Day6) has no dF/F for its first 1117 s, so its CS1 trials 1 to 17 have no
+    value and its mean is over the other 33; with its previous session in place of it, its value is 0.462 against
+    0.459 and t = 1.70, p = 0.117. No other Experiment 7 CS1 trial lacks a value.
   deviations:
   - The measure follows learnign_curve_sequential.py (session means of the CS1 AUC over 0 to 1.5 s minus the 1.5
     s before, over the first conditioning session's mean reward response).
@@ -426,10 +443,11 @@ findings:
     reward sessions have a mean inter-reward interval of about 12 in the files' units (Methods, 12 s), and the Fig
     S8L sessions named 6, 12 and 30 have means near 6, 12 and 30.
 - kind: data_missing
-  statement: Seven sessions inside the day ranges of the paper's analysis code are not in the dandiset (HJ-FP-M2
-    Day23, M3 Day16 and Day31, M4 Day30 and Day38, F2 Day16, M6 Day49). M4 Day38 is a listed start day, the first
-    background reward session of that animal. The paper's mean session counts for Experiments 2, 5 and 4 (13.3,
-    8.1, 2.6) equal the counts that include these days, while the dandiset gives 12.7, 7.9 and 2.4.
+  statement: HJ-FP-M4 Day38, a start day listed in cumsum_pavlovian.m and cumsum_bgdrw_vs_extinction.m and that animal's
+    first background reward session, is not in the dandiset. Six other integer days inside the day ranges of the
+    paper's analysis code have no session either (HJ-FP-M2 Day23, M3 Day16 and Day31, M4 Day30, F2 Day16, M6 Day49).
+    The paper's mean session counts for Experiments 2, 5 and 4 (13.3, 8.1, 2.6) equal the counts that include all
+    seven days, while the dandiset gives 12.7, 7.9 and 2.4, which suggests that these are missing sessions too.
 - kind: metadata_error
   statement: In 65 of the 101 Experiment 7 files the raw photometry (acquisition/photometry) has about 12 million
     samples per stated second and its timestamps end at 0.43 to 4.18, while the sessions last 600 to 4100 s; the
@@ -446,6 +464,12 @@ findings:
   statement: In 13 sessions dF/F does not cover the whole event log by more than 1 s; HJ-FP-WT-stGtACR-M2 Day6 has
     no dF/F for its first 1117 s, and M6 Day22 and M7 Day43 lose their last 175 to 187 s. In Experiments 1 to 6
     the first 20 or so dF/F timestamps of each session are NaN.
+- kind: methods_unavailable
+  statement: For the authors. On which scale of dF/F (fraction or percent, and with the AUC in ms) were the bounds
+    of the dopamine changing model in cumsum_pavlovian.m (A -2 to 50, b -10 to 10) set, for the Fig 4I test? On the
+    dandiset's dF/F they bind on either scale. As a fraction, the changing model cannot reach the mean response of
+    5 of 7 animals and no change is found (t = -0.73, close to the paper's -0.86); in percent it cannot fit at all;
+    without bounds it finds a change in every animal (t = 7.84).
 - kind: methods_unavailable
   statement: For the authors. Which window (and measure) of the z-scored lick bout onset response were the Fig S8E
     tests run on? Neither the Methods, the legend nor the code gives it. The non-consummatory response is significantly
@@ -543,7 +567,8 @@ verifications:
     reason: Under both lick measures, lick abruptness is greater than dopamine abruptness (t = 5.06 and 9.09) and the
       dopamine change trial comes first (t = 3.32 and 2.93, p < 0.05). The code variant matches the paper's |t|. Separately,
       jeong.auc_aligned sums with nansum, so a trial outside dF/F coverage gets an AUC of 0, not NaN, and a trial at
-      the coverage edge a partial sum; cell 8's statement that such trials are dropped is wrong. Only a few CS+ trials
+      the coverage edge a partial sum; cell 8's statement that such trials are dropped is wrong, and cell 43's count of trials
+      without a dopamine value, 0, reflects this zero-fill. Only a few CS+ trials
       per session are involved, but this was not quantified.
     response: aucsignal.m sums with nansum too, so the port keeps the code's behaviour; cell 8 now says so and quotes
       the line. jeong.incomplete flags trials with a NaN sample in their windows (37 of 8721 CS+ trials), each Experiment
@@ -717,3 +742,253 @@ verifications:
     outcome: blocked
     reason: As for fig2-anccr-classic-results; the reason should be other, not not_runnable.
     response: As for fig2-anccr-classic-results.
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook with the conclusions and summary, the helper module, the claims file and the
+    attempt record, with the paper. The verifier agreed with all 38 outcomes, and asked for an explicit assumption on fig4hi-delay-change-dopamine-unchanged,
+    a count of Experiment 7 trials without dF/F, and corrections to sentences the outputs do not support (cells 6, 45, 68,
+    80, 102 and 119, the record notes of methods-session-counts and the data_missing finding).
+  results:
+  - claim: session-day-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs. The record's round-1
+      reasons are faithful.
+    response: No change needed.
+  - claim: methods-session-counts
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The notes'' ''so the paper''s counts include the 7 sessions the dandiset lacks'' is not supported: the
+      outputs only support ''suggests'', as cell 22 says. Integer days without a session can be days without training, and
+      only M4 Day38 is directly shown to be missing, as a listed start day; the data_missing finding, the README and Summary
+      bullet 2 state the other six as fact.'
+    response: The notes now say 'suggests'. The data_missing finding, the README and the Summary now say that M4 Day38 is
+      missing and that six other integer days in the ranges have no session, which the paper's counts suggest are missing
+      sessions too. Outcome kept.
+  - claim: exp1-excluded-rewards
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: fig3e-reward-response-increases
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: fig3g-response-iri-positive
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: figs8k-iri-correlation-stable
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: figs8b-lick-rates-constant
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: figs8d-consummatory-lick-uncorrelated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: figs8e-lick-bout-responses
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees it is blocked (methods_underspecified). Cell 45''s ''The consummatory t values (6.3 to 8.6)'' is wrong:
+      the consummatory one-sample t values are 6.30 to 6.49, and 8.58 is the paired t.'
+    response: Cell 45 now gives the consummatory t values against 0 as 6.30 to 6.49, about twice the paper's 3.03. Outcome
+      kept.
+  - claim: figs8g-baseline-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: figs8h-baseline-uncorrelated-with-reward-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: figs8l-lick-rate-tracks-iri
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: fig4ef-dopamine-leads-behavior
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: figs10c-cue-response-at-acquisition
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: fig4hi-delay-change-behavior-changes
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome; the Result sentences and record notes match the outputs. Open, not affecting
+      the conclusion: the abruptness t values still differ from the paper''s (15.3 against 22.9), cause not found.'
+    response: The deviation no longer says the code's bounds are set on the fraction scale; it points to fig4hi-delay-change-dopamine-unchanged.
+      The cause of the abruptness difference is still not found. Outcome kept.
+  - claim: fig4hi-delay-change-dopamine-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Agrees under the criterion, which fixes the code's bounds, but the 'no change' result comes from those bounds,
+      not from the data. On the /100 scale b <= 10 cannot reach a starting level where 5 of 7 animals have mean responses
+      of 13.2 to 44.6; three animals have delta AIC of exactly -6.00, the changing model collapsed to the constant one; HJ-FP-M3
+      at -168.5 fits worse than the constant. On the percent scale delta AIC is -272 to -817 in every animal, so the bounded
+      model cannot fit the data at all. Fitted without bounds the changing model is better in every animal (t = 7.83, p =
+      2.3e-4). The outcome rests on an unverified premise, that the bounds were set on a scale where they do not bind; the
+      record should state it as an assumption (assumed true) or say plainly that the test cannot detect a change in this data.
+      This is a gap in the criterion, not a misreading of the paper; the paper's t of -0.86, close to -0.73, suggests its
+      fit was bounded the same way. Cell 119's 'the code's bounds suit a fraction' and cell 68's 'the criterion's result does
+      not depend on the scale assumed' are not supported, and the record's notes repeat the latter.
+    response: The outcome is marked assumed, with a deviation stating the assumption that the paper's fit was bounded as here
+      and why, and a methods_unavailable finding asking the authors which scale the bounds were set for. Cell 68, cell 10,
+      the Summary and the notes now say that the bounds bind on both scales, that the test cannot detect a change in these
+      data, and that the percent variant does not test the scale; the sentences the verifier cited are removed. Outcome kept,
+      as round 2 allows no change and the criterion's result is as stated.
+  - claim: figs10b-no-omission-response
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: fig4kl-extinction-abrupt-behavior
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome; the Result sentences and record notes match the outputs. Open, not affecting
+      the conclusion: the code variant''s abruptness t (9.7 against the paper''s 5.67) differs, cause not found.'
+    response: Cause still not found. Outcome kept.
+  - claim: fig4jl-extinction-cue-response-positive
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: fig4p-background-faster-decay
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees it is not reproduced. The result is close to the threshold, p = 0.053 under (a) and (c); leaving out the
+      NaN trials brings (a) and (c) below 0.05 while (b) stays at p = 0.088; HJ-FP-M4''s first background session is missing.
+      The record states all of this. Cell 80 and the cell 79 comment: ''as HJ-FP-M6''s pre-change sum is near 0'' is not printed;
+      it is an inference from bgd_a = 12.154.'
+    response: Cell 79 now prints each animal's sum over the 50 trials before the change. Cell 80 and the notes give HJ-FP-M6's
+      (37.3 with the sessions of cumsum_pavlovian.m, 288.1 with those of cumsum_bgdrw_vs_extinction.m) and HJ-FP-M2's (-492.9).
+      Outcome kept.
+  - claim: fig5d-intermediate-cue-positive
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: fig5d-intermediate-reward-larger
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: figs11de-intermediate-cue-local-baseline
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: fig6b-no-backpropagation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: fig6d-cues-increase-together
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: fig6d-cs2-below-cs1-late
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. Cell 102''s ''(0.37 to 0.71 per animal)'' is wrong: the no-baseline ratios in cell 101 range from 0.303
+      to 0.705. The record''s notes correctly give 0.30 to 0.71.'
+    response: Cell 102 now gives 0.30 to 0.71. Outcome kept.
+  - claim: fig6g-inhibition-magnitude
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: fig6i-learning-despite-inhibition
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs. The Experiment 7 trials
+      without dF/F (WT-M2's last session) are not counted by any output.
+    response: The new count shows WT-M2's last session lacks dF/F for CS1 trials 1 to 17; the notes say its mean is over the
+      other 33. Outcome kept.
+  - claim: fig6i-lower-cs1-asymptote
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees on the criterion''s measure; each of the three alternatives in cell 110 would give p < 0.05, and the record
+      states this. New: auc_python gives NaN when a window has no samples, and HJ-FP-WT-stGtACR-M2 Day6-Pavlovian, that control''s
+      last conditioning session, has no dF/F for its first 1117 s; about a third of its 50 CS1 trials may drop out of the
+      last-session value of 0.459. No Experiment 7 output counts these trials, and none shows the result without that session.'
+    response: 'A new output after the Experiment 7 loading cell counts, per session, the trials without a dF/F value: WT-M2''s
+      last session has none for CS1 trials 1 to 17, and elsewhere only 1 to 12 reward responses in three sessions lack one.
+      Cell 110 adds a variant with WT-M2''s previous session in place of its last; its value is 0.462 against 0.459 and t
+      = 1.70, p = 0.117, so the outcome is unchanged. Outcome kept.'
+  - claim: fig6i-last-session-licking-similar
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: figs12f-pre-cs2-licking
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences and record notes match the outputs.
+    response: No change needed.
+  - claim: fig2-anccr-classic-results
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked. The author keeps not_runnable and cites protocol Author step 1.5; the protocol is not among
+      the verifier's materials, so it cannot confirm or withdraw its round-1 statement that other is the correct reason. This
+      does not affect any conclusion.
+    response: Kept not_runnable, which Author step 1.5 lists for a method whose software cannot be run here.
+  - claim: fig3cf-simulated-unpredicted-rewards
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked. The author keeps not_runnable and cites protocol Author step 1.5; the protocol is not among
+      the verifier's materials, so it cannot confirm or withdraw its round-1 statement that other is the correct reason. This
+      does not affect any conclusion.
+    response: Kept not_runnable, which Author step 1.5 lists for a method whose software cannot be run here.
+  - claim: fig5b-simulated-intermediate-cue
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked. The author keeps not_runnable and cites protocol Author step 1.5; the protocol is not among
+      the verifier's materials, so it cannot confirm or withdraw its round-1 statement that other is the correct reason. This
+      does not affect any conclusion.
+    response: Kept not_runnable, which Author step 1.5 lists for a method whose software cannot be run here.
+  - claim: fig6h-simulated-inhibition
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked. The author keeps not_runnable and cites protocol Author step 1.5; the protocol is not among
+      the verifier's materials, so it cannot confirm or withdraw its round-1 statement that other is the correct reason. This
+      does not affect any conclusion.
+    response: Kept not_runnable, which Author step 1.5 lists for a method whose software cannot be run here.
+  - claim: figs6-learns-causal-structure
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked. The author keeps not_runnable and cites protocol Author step 1.5; the protocol is not among
+      the verifier's materials, so it cannot confirm or withdraw its round-1 statement that other is the correct reason. This
+      does not affect any conclusion.
+    response: Kept not_runnable, which Author step 1.5 lists for a method whose software cannot be run here.
+  - claim: figs5-timescale-invariance
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked. The author keeps not_runnable and cites protocol Author step 1.5; the protocol is not among
+      the verifier's materials, so it cannot confirm or withdraw its round-1 statement that other is the correct reason. This
+      does not affect any conclusion.
+    response: Kept not_runnable, which Author step 1.5 lists for a method whose software cannot be run here.
+  - claim: figs13-ramping
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked. The author keeps not_runnable and cites protocol Author step 1.5; the protocol is not among
+      the verifier's materials, so it cannot confirm or withdraw its round-1 statement that other is the correct reason. This
+      does not affect any conclusion.
+    response: Kept not_runnable, which Author step 1.5 lists for a method whose software cannot be run here.

@@ -23,8 +23,8 @@ reasoning and the differences from the paper's method.
 
 Most tests follow the paper's analysis code (github.com/namboodirilab/ANCCR at commit cff4414),
 ported to Python; many of its printed statistics are recovered to the second decimal. The session
-lists of the code (Day numbers) are applied to the dandiset's file names. Seven sessions inside
-those lists are not in the dandiset, and the event times are in seconds though the files say
+lists of the code (Day numbers) are applied to the dandiset's file names. Seven integer days
+inside those lists have no session in the dandiset, one of them a listed start day, and the event times are in seconds though the files say
 milliseconds. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000351-jeong-2022-01.yaml`](../../attempts/000351-jeong-2022-01.yaml).
 
