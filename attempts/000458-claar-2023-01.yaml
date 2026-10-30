@@ -1,0 +1,1264 @@
+schema_version: 2
+id: 000458-claar-2023-01
+dataset:
+  archive: dandi
+  id: "000458"
+  version: 0.230317.0039
+  doi: 10.48324/dandi.000458/0.230317.0039
+paper: doi:10.7554/elife.84630
+date: 2026-10-30
+entry: 000458-claar-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41000515253
+inputs:
+- what: The PCIst code the paper cites (calc_PCIst and its preprocessing, SVD and SNR selection, used
+    unchanged; its threshold search is reproduced by an exact count in claar.py and checked against
+    the original in the notebook).
+  source: https://github.com/renzocom/PCIst at commit e495a0ae299e9d5056473659722e2258738e24ba
+outcomes:
+- claim: stim-depths
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The trial table gives the stimulation depth only as "superficial" or "deep" (estim_target_depth),
+    and no file holds the depth in mm or the coordinates of the stimulating electrode. The electrode
+    groups and devices list only the EEG array and the Neuropixels probes.
+- claim: eeg-good-electrodes
+  outcome: reproduced
+  notebook: claar_eeg.ipynb
+  output: claim:eeg-good-electrodes
+  measured: 23.07
+  notes: The EEG electrode table marks good electrodes (is_data_valid). Per subject (the two sessions of
+    569073 averaged) the mean is 23.07, SD 4.01, range 17 to 30; per session 23.04, SD 4.14.
+  deviations:
+  - The files do not say that is_data_valid is the paper's visual selection; the agreement of the counts
+    is consistent with it.
+- claim: fig1d-two-erp-peaks
+  outcome: not_reproduced
+  notebook: claar_eeg.ipynb
+  output: claim:fig1d-two-erp-peaks
+  notes: Deep sites show z-scored GFP peaks above 3 in both windows in 18 of 18 under every reading
+    (current high or medium, all awake or quiet trials, windows (a) or (b)). Superficial sites without a
+    late peak number 0 to 2 of 12 under every reading, so the second half of the criterion fails. The
+    late GFP peaks of superficial sites are smaller than those of deep sites (per-site table) but above
+    z = 3.
+  deviations:
+  - The paper gives no peak detection method; the two readings of the criterion were run.
+- claim: fig1-supp1-example
+  outcome: reproduced
+  notebook: claar_eeg.ipynb
+  output: claim:fig1-supp1-example
+  measured:
+  - 1.011
+  - 11.133
+  notes: The example is subject 571619, deep MOs; it is the only subject with both superficial and deep
+    MOs stimulation, which the Figure 1D legend says the example has. All awake trials at the medium
+    current (40 uA) give 1.011 s and 11.133 SD.s, with duration and magnitude read as the total time and
+    the area above z = 3 (readings a); this is the only reading with both values within tolerance. The
+    high current gives 1.169 s and 12.556 SD.s, quiet trials at the medium current 1.040 s and 9.056 SD.s.
+  deviations:
+  - The current the paper analysed is not given; the highest and the middle current of each site were
+    both run (claims file, header).
+  - The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of
+    30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed,
+    into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1).
+- claim: fig1e-erp-duration
+  outcome: partially_reproduced
+  notebook: claar_eeg.ipynb
+  output: claim:fig1e-erp-duration
+  measured:
+  - 0.33
+  - 0.49
+  notes: Superficial ERPs are shorter than deep ERPs and the difference is not significant in every reading
+    of duration (a), the total time above z = 3. Medium current, all awake trials (the reading that gives
+    the example of fig1-supp1-example); superficial 0.33 +/- 0.04 s (n = 12), deep 0.49 +/- 0.06 s (n = 18),
+    t-test p = 0.081 (paper p = 0.0843). The deep mean is within tolerance and the superficial mean is 0.02 s
+    below 0.4 +/- 0.05. Quiet trials give 0.33 and 0.52 s, p = 0.052. At the high current both means are
+    above tolerance (0.56 and 0.65 s, p = 0.53), and reading (b) gives 1.23 to 1.69 s. No reading puts both
+    means within tolerance. The n of 12 superficial sites matches the paper once the site whose pulses are
+    all marked invalid is left out.
+    The result turns on the artifact residue that the zero-phase filter spreads into the last 20 ms of the
+    baseline. With the z-score baseline ending 20 ms before the pulse (a variant outside the criterion,
+    which fixes -2 to 0 s), the medium current gives 0.37 +/- 0.04 and 0.50 +/- 0.06 s, p = 0.151 (quiet
+    trials 0.37 and 0.53 s, p = 0.092), both within tolerance. The outcome stays on the criterion's
+    baseline; a causal filter, which would keep the residue out of the baseline within the criterion, was
+    not run.
+  deviations:
+  - The current the paper analysed is not given; the highest and the middle current of each site were
+    both run (claims file, header).
+  - The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of
+    30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed,
+    into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1).
+  - Zero-phase filtering (sosfiltfilt) is a standard choice; the Methods do not say.
+- claim: fig1f-erp-magnitude
+  outcome: reproduced
+  notebook: claar_eeg.ipynb
+  output: claim:fig1f-erp-magnitude
+  measured:
+  - 3.03
+  - 5.86
+  notes: Reading (a), the area above z = 3 in SD.s, medium current, all awake trials; superficial 3.03 +/-
+    0.78, deep 5.86 +/- 0.90, t-test p = 0.035 (paper 3.3 +/- 0.8, 6.2 +/- 0.9, p = 0.0354). Quiet trials give
+    2.85 and 5.76, p = 0.028. At the high current the means are above tolerance (5.70 and 9.31, p = 0.069 all
+    awake; 4.89 and 8.81, p = 0.043 quiet). Reading (b) divides by the area under the baseline, which is zero
+    for a z-scored GFP (largest absolute value 4.2e-07), so it cannot be computed as written; the area under
+    |z| is shown in its place for comparison and does not decide the outcome. With the z-score baseline
+    ending 20 ms before the pulse (variant) the medium current gives 3.38 and 6.22, p = 0.047, also within
+    tolerance.
+  deviations:
+  - The current the paper analysed is not given; the highest and the middle current of each site were
+    both run (claims file, header).
+  - The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of
+    30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed,
+    into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1).
+- claim: fig1-supp2-first-peak-flips
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The criterion needs the position of the stimulation site on the skull. The EEG electrodes have
+    coordinates, but the stimulating electrode has none in the files (the trial table gives only the
+    target area and a depth label).
+- claim: fig2c-superficial-quiescence
+  outcome: reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig2c-superficial-quiescence
+  measured: 84.0
+  notes: Two superficial MOs sites have units (571619, 575102). Reading (a), MO RS population rate below
+    its -2 to 0 s mean after 25 ms, high current, all awake trials, 1 ms bins; 84.0 +/- 25.0 ms (59 and
+    109 ms). Other readings give 81.5 to 115 ms below baseline (within 94.2 +/- 16.1 in five of eight)
+    and 30 to 35 ms at zero rate (within the Discussion's 44.3 +/- 16.4). Two sites are few.
+    Reading (a) is sensitive to single 1 ms bins. When runs above baseline shorter than 5 ms do not end
+    the period, quiescence lasts 110 to 121 ms, within 94.2 +/- 16.1 only with 5 ms bins and quiet
+    trials at the high current (110.0 ms). Reading (b), 30 to 35 ms at zero rate, is within 44.3 +/-
+    16.4 in all eight readings, so the outcome does not rest on reading (a) alone.
+  deviations:
+  - Bin width and the quiescence measure are not given; the readings of the criterion were run.
+- claim: fig2c-deep-triphasic-cortex
+  outcome: partially_reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig2c-deep-triphasic-cortex
+  measured:
+  - 63.4
+  - 123.2
+  - 12.5
+  notes: All 16 deep sites with stimulated-cortex RS units show excitation, a period below baseline and a
+    rebound. Quiescence (reading a) is 108.7 to 131.9 ms over readings, within 125.0 +/- 5.5 or 127.8 +/- 4.1
+    in several. The early peak is 20 to 31 Hz with 5 ms bins and 44 to 65 Hz with 1 ms bins, against
+    38.1 +/- 4.2, and the rebound peak 8.5 to 14.6 Hz against 7.9 +/- 0.7; no combination of readings puts
+    all three within tolerance. Measured is the first reading (high current, all awake, 1 ms, deep MOs, 9
+    sites).
+    Requiring at least 10 ms below baseline (gaps under 5 ms ignored) keeps 16 of 16 sites triphasic.
+  deviations:
+  - Stimulated cortex is the MO (or SS) area on any probe; the files give no distance from a probe to the
+    stimulating electrode.
+- claim: fig2f-thalamus-triphasic
+  outcome: partially_reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig2f-thalamus-triphasic
+  measured:
+  - 31.4
+  - 70.7
+  - 19.7
+  notes: 14 deep sites have SM-TH units; 12 of 14 are triphasic (high current, all awake, 1 ms). The
+    suppression is 59.5 to 100.7 ms, within 74.6 +/- 15.5 in most readings, but the early (13 to 32 Hz)
+    and rebound (14.7 to 21.7 Hz) peaks are never within tolerance together. With superficial
+    stimulation, 3 or 4 of 4 sites have no SM-TH unit significantly increased at 150 to 300 ms (reading
+    b); by reading (a) 1 to 3 of 4 have no rebound peak above z = 3.
+    Requiring at least 10 ms below baseline gives the same counts of triphasic sites in every reading.
+- claim: fig3abc-decay-with-distance
+  outcome: partially_reproduced
+  notebook: claar_lfp.ipynb
+  output: claim:fig3abc-decay-with-distance
+  measured:
+  - 60.83
+  - 21.75
+  - 48.77
+  - 5.21
+  - 28.75
+  - 2.76
+  notes: The magnitudes average all channels of a region "except layer 1"; the channel locations are CCF
+    areas without layers (MOs, SSp-ll, ...). The LFP, CSD and
+    shuffle pipeline was run for the example session (571619, deep MOs; MO on probe F, 119 valid channels;
+    VIS on probe C, 87), with layer 1 approximated by the top 100 um of each area and also without the
+    exclusion (claar_lfp.ipynb). Over 128 combinations of readings MO exceeds VIS for all three signals in
+    112; the LFP order reverses in 4 of 32 LFP readings (high current, 1 Hz, -0.5 to 0 s baseline). No
+    combination puts all six values within tolerance, and at most three are (medium current, 0.1 Hz, top
+    100 um left out, -2 to 0 s, epoch shuffle, 5 ms kernel, spiking as |z|; LFP 60.83 and 21.75, CSD 48.77
+    and 5.21, spiking 28.75 and 2.76, against 54.0, 18.0, 51.4, 4.8, 30.9 and 1.8). The LFP magnitude in
+    MO is never within tolerance (7.57 to 77.16). Leaving out the top 100 um changes no ordering and moves
+    the CSD values by up to 2.84. The spiking magnitude as the Methods describe it (signed z) is 0.31 to
+    3.96 in MO; integrating |z| gives 28.31 to 31.37 with the 5 ms kernel and the -2 to 0 s baseline, so the
+    signed integral, in which the suppression cancels the excitation, most likely explains the earlier
+    values far below 30.9 (verifier, round 2). Only the ordering is reproduced; the measured values are
+    those of the combination named above, one of two with three values within tolerance.
+  deviations:
+  - Layer 1 is not labelled in the files; it is approximated by the channels in the top 100 um of each area
+    (an assumed thickness), and the result is shown with and without the exclusion.
+  - The Chebyshev channel rejection is applied once per channel (no channel was rejected), where the Methods
+    apply it per sample and epoch; the CSD is computed from the trial-averaged LFP on rows of two channels,
+    smoothed over 13 then 2 rows for the Methods' 26 then 4 channels; decimation and high pass are zero
+    phase; the recording-wide shuffle draws onsets over the span of the awake pulses.
+  - The spiking magnitude is shown both as the signed integral of the Methods and as the integral of |z|
+    (Results, Global ERPs..., paragraph 1, "our magnitude metric accounts for both reductions as well as
+    increases").
+- claim: fig3d-magnitudes
+  outcome: blocked
+  blocked_by: too_large
+  notebook: claar_lfp.ipynb
+  output: claim:fig3d-magnitudes
+  notes: The size of the LFP and CSD computation was measured (claar_lfp.ipynb). Figure 3D needs 86 probe
+    areas over 24 stimulation sites; at the rate measured on the example's two probes, which varies from run
+    to run, this takes 234 to 265 min with all readings, and reading the LFP alone 86 to 92 min (71 to 76 min
+    if the areas of one probe share a read), over the runs made for this record, over the 30 min notebook
+    limit. The
+    estimate is rough (it scales the shuffles by samples, and counts the ACSF channels once per area), but
+    even the read-once figure is more than twice the limit. Split across notebooks of under 30 min it would
+    need about eight; that is left to a later attempt. Layer 1 can be
+    approximated as in fig3abc-decay-with-distance, so the missing layers do not block
+    the claim; its size does. The spiking part was computed for every site (claar_spikes.ipynb). With the
+    signed z of the Methods no group median is near the paper's and no stimulated group is significantly
+    above zero after correction. With |z| the paper's significance pattern for spiking holds in 27 of 32
+    shuffled rows, and with the 5 ms kernel and the -2 to 0 s baseline at the medium current the deep
+    stimulated median is 27.96 to 29.18 (29.3 +/- 2.93) and the deep non-stimulated median 4.18 to 6.25
+    (4.4 +/- 0.44), but the superficial stimulated median is 4.81 to 4.86 against 1.8.
+- claim: fig4-unit-counts
+  outcome: not_reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig4-unit-counts
+  measured:
+  - 290
+  - 1370
+  - 853
+  - 3162
+  notes: The files hold 290 and 1370 RS units in stimulated and other ipsilateral cortex over the 7
+    superficial sites, and 853 and 3162 over the 17 deep sites (16 mice). These are exactly one third of
+    the legend's 870, 4110 and 2559, and 1.3% above a third of its 9363. The site counts (7 and 17) match
+    the legend's N. With presence ratio > 0.9 the counts are 221, 1020, 665 and 2421. The factor of three
+    suggests the legend counts each unit once per current or per time window; the paper does not say.
+    Counting each unit once per current with valid awake trials (all 24 sites with units have three
+    currents) gives 870, 4110, 2559 and 9486 RS units, the legend's first three counts exactly and
+    within tolerance of the fourth, and 204, 609, 447 and 1554 FS units against 180, 585, 387 and 1422.
+    This reading is not in the claims file; it is asked of a reader (questions/000458.yaml) and the
+    outcome stays on the claims file's count.
+- claim: fig4ad-initial-excitation
+  outcome: not_reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig4ad-initial-excitation
+  measured:
+  - 4.77
+  - 50.0
+  - 38.75
+  - 83.33
+  notes: Over 16 combinations of readings (current, awake trials, pre-stimulus window, FDR family), the
+    mean fraction of modulated RS units at 2 to 25 ms is 2.4 to 5.1% per non-stimulated region (maximum 29
+    to 50%) and 24 to 39% in stimulated cortex (maximum 83 to 100%), against 0.5% (2.6%) and 17.8%
+    (83.3%). The fraction increased in stimulated cortex does not exceed the other areas at every site in
+    any reading. The deep over superficial ratio of modulated fractions is between 2 and 4 in 15 of 16
+    readings. Measured is the first reading (high current, all awake, adjacent window, per-site FDR).
+    Pooling the non-stimulated areas of each session gives a mean of 2.1 to 4.3% and a maximum of 20%.
+    With the three currents pooled (unit x current, a variant outside the claims file), 2.6 to 3.2% of
+    non-stimulated and 26 to 29% of stimulated RS units are modulated.
+  deviations:
+  - The pre-stimulus window and the FDR family are not given; both readings of each were run.
+- claim: fig4be-off-period
+  outcome: not_reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig4be-off-period
+  measured:
+  - 1.15
+  - 17.70
+  - 21
+  - 27.49
+  - 80.81
+  notes: At 25 to 150 ms, increases average 0.7 to 1.4% (maximum 11 to 19%) against 0.4% (2.8%); spiking is
+    reduced in 17 to 22 of 22 stimulated areas by reading (a), 18 to 24 of 24 sites by (b) and 20 or 21 of
+    22 by (c), against 18 of 22; decreases outside the stimulated area with deep stimulation average 16 to
+    28% (maximum 73 to 83%) against 10.1% (55.7%); and 2 to 6 of 7 superficial sites show decreases outside
+    the stimulated area, where the paper finds none. The qualitative pattern of the criterion fails on its
+    third part.
+    With the three currents pooled (variant), increases average 0.7 to 0.8% (maximum 7.4%), decreases
+    outside the stimulated area with deep stimulation 17.2 to 17.3% (maximum 70 to 72%), and 2 or 3 of 7
+    superficial sites show such decreases.
+- claim: fig4cf-rebound
+  outcome: partially_reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig4cf-rebound
+  measured:
+  - 15
+  - 4
+  - 14
+  - 2
+  notes: In stimulated cortex, the medium current gives 16 of 16 deep and 1 of 6 superficial sites with a
+    significantly increased RS unit at 150 to 300 ms (reading a, per-site FDR), the paper's counts and
+    denominators; the high current gives 15 or 16 of 16 and 3 to 6 of 6. Outside the stimulated area, deep sites
+    show rebound in 14 to 17 of 17 (reading a) or 5 to 10 of 17 (reading b), against 6 of 16, and 1 to 5
+    of 7 superficial sites show it, against none. Measured is the first reading (high, all awake,
+    adjacent, per-site FDR, reading a) in the order of the expected values.
+    With the three currents pooled (variant), rebound outside the stimulated area appears in 15 or 16 of
+    17 deep and 2 of 7 superficial sites.
+- claim: fig4-supp1-fs-like-rs
+  outcome: partially_reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig4-supp1-fs-like-rs
+  measured:
+  - 68
+  - 203
+  - 149
+  - 518
+  notes: FS units follow the RS pattern in every reading; more increases in stimulated than other cortex at
+    2 to 25 ms (47 to 52% against 8 to 15%), decreases above increases at 25 to 150 ms, rebound in 14 of 15
+    deep stimulated areas. Rebound also appears in 2 to 5 of 6 superficial sites, which is not few. The FS
+    counts (68, 203, 149 and 518, from the fig4-unit-counts cell) are far below the legend's 180, 585, 387
+    and 1422.
+- claim: fig5a-thalamus-modulated
+  outcome: reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig5a-thalamus-modulated
+  measured:
+  - 1.9
+  - 42.7
+  notes: Reading (a), one 2 to 300 ms window, high current, all awake, adjacent pre window, pooled FDR;
+    superficial 1.9 +/- 1.5% (4 sites), deep 42.7 +/- 5.8% (14 sites), p = 0.002. 15 of 32 combinations of
+    readings meet the criterion and deep exceeds superficial with p < 0.05 in all 32. The paper has 5
+    superficial sites; the dandiset has 4 superficial sites with SM-TH units.
+- claim: fig5c-burst-probability-depth
+  outcome: partially_reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig5c-burst-probability-depth
+  measured:
+  - 0.003
+  - 0.131
+  notes: Reading (b), high current, all awake; superficial median 0.003 [0.002 to 0.029] (4 sites), deep
+    0.131 [0.035 to 0.293] (14 sites), Mann-Whitney p = 0.025. The deep median is within 0.12 +/- 0.012 and
+    the test holds, but the superficial median is not exactly 0 as the criterion requires (it is 0.00 at
+    the paper's printed precision). Reading (a), any SM-TH unit bursting in a trial, gives 0.12 and 0.87.
+    Whether the superficial tolerance should be the printing precision is asked of a reader
+    (questions/000458.yaml); at the medium current reading (b) gives 0.002 and 0.117, p = 0.018.
+- claim: fig5e-early-latency
+  outcome: partially_reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig5e-early-latency
+  measured:
+  - 4.3
+  - 8.2
+  - 3.90
+  notes: Cortex fires first in every reading; cortical latencies 4.0 to 5.2 ms (within 4.4 +/- 0.9), SM-TH
+    7.2 to 9.8 ms (within 11.4 +/- 2.8 in some readings), paired t-test p < 0.05 in every high-current
+    reading (0.0012 for the first). The mean difference is 3.2 to 4.9 ms against 6.9 (or 6.7), out of
+    tolerance in every reading. 10 to 12 sites at the high current and 6 or 7 at the medium current have
+    responsive units in both populations, against 13.
+- claim: fig5f-rebound-latency
+  outcome: not_reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig5f-rebound-latency
+  measured:
+  - 173.4
+  - 180.6
+  - 7.2
+  notes: In all 128 combinations of readings the mean SM-TH latency in the late window (155.5 to 186.2 ms)
+    is earlier than the cortical one (174.2 to 190.4 ms), but by 0.9 to 19.5 ms against 36.0, and with
+    p < 0.05 in 3 of 128.
+- claim: fig6a-csd-sink
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The test maps the CSD to 10 bins per cortical layer and looks for a sink at the border of layers
+    2/3 and 5. The channel locations in the files are CCF areas without layers, so the layers cannot be
+    placed; an outside atlas lookup of the coordinates is not a source the claims file names.
+- claim: fig6-supp1-erp-deep-csd
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs layer-specific CSD; the files give no layer for any channel, as for fig6a-csd-sink, on which
+    this claim depends.
+- claim: fig6b-bursts-cortical-rate
+  outcome: not_reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig6b-bursts-cortical-rate
+  measured:
+  - 6
+  - 0.139
+  notes: 13 deep sites have both SM-TH and stimulated-cortex RS units, the paper's N. The trial-by-trial
+    Pearson r between the fraction of SM-TH units bursting and the peak cortical rate in 75 to 300 ms
+    averages 0.13 to 0.24 (5 or 10 ms bins, high or medium current) against 0.4 +/- 0.04; 6 to 10 of 13
+    sites are significant against 8. One site (569072) has a significant negative r at the high current.
+- claim: fig6c-cortical-rate-late-erp
+  outcome: not_reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig6c-cortical-rate-late-erp
+  measured:
+  - 7
+  - 0.218
+  notes: The peak cortical rate correlates with the single-trial late ERP amplitude (reading a, peak GFP; or
+    b, the electrode with the largest late component) with mean r 0.21 to 0.32 against 0.5 +/- 0.04; 7 to
+    11 of 13 sites are significant against 9.
+- claim: fig6-supp2-late-erp-bursts
+  outcome: reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig6-supp2-late-erp-bursts
+  measured:
+  - 13
+  - 0.462
+  notes: Late ERP amplitude (peak GFP) against the SM-TH burst fraction; 13 of 13 sites significant, mean r
+    0.462 +/- 0.039 (high) and 0.455 +/- 0.077 (medium). Against the peak SM-TH rate the mean r is 0.06 to
+    0.10 with 4 of 13 significant. The electrode reading of the late ERP (b) does not meet the criterion;
+    12 of 13 sites are significant at the high current (mean r 0.424) and 11 of 13 at the medium current
+    (0.502).
+- claim: state-trial-counts
+  outcome: reproduced
+  notebook: claar_eeg.ipynb
+  output: claim:state-trial-counts
+  measured:
+  - 99
+  - 21
+  - 120
+  notes: Valid trials, 17 animals with deep stimulation (the two deep sites of 569073 averaged); medians 99,
+    21 and 120 at the high current and 97 [86 to 104], 21 [16 to 27] and 120 at the medium current, the
+    paper's medians and IQRs. Over all 23 animals the running median is 24, out of tolerance.
+- claim: fig7c-erp-duration-state
+  outcome: partially_reproduced
+  notebook: claar_eeg.ipynb
+  output: claim:fig7c-erp-duration-state
+  measured:
+  - 0.52
+  - 0.25
+  - 0.22
+  notes: 17 deep animals, medium current, unmatched trials, duration as the total time above z = 3; 0.52,
+    0.25 and 0.22 s, Friedman Q = 20.1, p = 4.3e-05 (paper Q = 15.6, p = 0.0004). Quiet wakefulness is the
+    longest in every reading except reading (b) at the medium current. No reading puts the three means
+    within tolerance; at the medium current the isoflurane mean is below 0.3 +/- 0.05, at the high current
+    the quiet mean is above 0.5 +/- 0.1 (0.65, 0.35 and 0.33 s, Q = 18.4), and matched trials shorten the
+    quiet mean to 0.31 to 0.39 s.
+  deviations:
+  - The current the paper analysed is not given; the highest and the middle current of each site were
+    both run (claims file, header).
+  - The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of
+    30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed,
+    into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1).
+- claim: fig7d-erp-magnitude-state
+  outcome: partially_reproduced
+  notebook: claar_eeg.ipynb
+  output: claim:fig7d-erp-magnitude-state
+  measured:
+  - 5.89
+  - 1.51
+  - 1.23
+  notes: Magnitude reading (a), 17 deep animals, medium current, unmatched; 5.89, 1.51 and 1.23, Friedman Q =
+    21.3, p = 2.4e-05 (paper Q = 17.4). Quiet and running are within tolerance, isoflurane is 0.07 below 1.6
+    +/- 0.3. Every reading gives p <= 0.0004 with quiet the largest, but none puts the three means within
+    tolerance; at the high current quiet (8.96) and running (3.40) are above it. Reading (b) cannot be
+    computed as written (fig1f-erp-magnitude); with the area under |z| as divisor it gives 6.03, 2.17 and
+    1.69 at the high current, also out of tolerance.
+    The result turns on the artifact residue in the last 20 ms of the baseline. With the z-score baseline
+    ending 20 ms before the pulse (a variant outside the criterion) the medium current gives 6.17, 1.56 and
+    1.37 (Q = 20.6, p = 3.4e-05), all within tolerance. The outcome stays on the criterion's baseline; a
+    causal filter was not run.
+  deviations:
+  - The current the paper analysed is not given; the highest and the middle current of each site were
+    both run (claims file, header).
+  - The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of
+    30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed,
+    into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1).
+- claim: fig7e-baseline-rates
+  outcome: reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig7e-baseline-rates
+  measured:
+  - 3.56
+  - 4.97
+  - 1.02
+  - 9.11
+  - 15.52
+  - 0.81
+  notes: Deep sites, high current, -2 to 0 s; cortex 3.56, 4.97 and 1.02 Hz (15 animals, RM ANOVA F[2,28] =
+    86.7, p = 1e-12), SM-TH 9.11, 15.52 and 0.81 Hz (13 animals, Friedman Q = 24.2, p = 5.7e-06, the
+    paper's Q and p). All sites give the paper's 16 cortical animals (F[2,30] = 80.7) and means within
+    tolerance of the Results' or the Discussion's values. Running > quiet > isoflurane in every reading.
+- claim: fig7f-early-latency-state
+  outcome: reproduced
+  assumed: true
+  notebook: claar_spikes.ipynb
+  output: claim:fig7f-early-latency-state
+  measured:
+  - 4.22
+  - 3.96
+  - 4.42
+  - 8.88
+  - 7.96
+  - 10.74
+  notes: With responsive units taken from all awake trials, all 16 readings give no state effect (p = 0.08
+    to 0.90) and a region effect (p = 0.00016 to 0.017), 8 animals at the high current and 6 at the medium
+    current against the paper's 12 or 13. With responsive units taken from each state's own trials, only 3
+    animals have units in every state and region and the region effect is not significant (p about 0.3).
+    The SM-TH means (7.1 to 11.6 ms) are mostly below the paper's 10.9 to 11.5 ms.
+    The absence of a state effect rests on 6 to 8 animals against the paper's 13. At the high current (8
+    animals) the 95% confidence intervals of the paired state differences lie within -1.3 to +0.6 ms in
+    cortex and -7.5 to +2.4 ms in SM-TH; the SM-TH quiet against running difference (0.92 ms, CI 0.04 to
+    1.80) excludes zero without a correction for the six pairs.
+  deviations:
+  - Which units are "responsive" across states is not given; the units significantly increased at 2 to 25
+    ms in all awake trials were taken, as one population per animal followed across states. This is an
+    assumption; the per-state reading is shown.
+- claim: fig7g-rebound-latency-state
+  outcome: partially_reproduced
+  assumed: true
+  notebook: claar_spikes.ipynb
+  output: claim:fig7g-rebound-latency-state
+  measured:
+  - 183.1
+  - 169.2
+  - 218.3
+  - 180.3
+  - 150.1
+  - 215.8
+  notes: With responsive units from all awake trials (the per-state reading leaves fewer than 3 animals), all
+    64 readings give a significant state effect (p from 3e-08 to 3e-05) and running earlier than quiet
+    wakefulness in both regions by the corrected paired test (q <= 0.003). No reading puts the six means
+    within tolerance; SM-TH quiet latencies are 167 to 187 ms against 156.0 +/- 7.1, and isoflurane
+    latencies 198 to 221 ms. 9 to 12 animals.
+  deviations:
+  - Responsive units as in fig7f-early-latency-state, an assumption.
+- claim: fig7h-burst-probability-state
+  outcome: partially_reproduced
+  notebook: claar_spikes.ipynb
+  output: claim:fig7h-burst-probability-state
+  measured:
+  - 0.177
+  - 0.121
+  - 0.005
+  notes: 13 animals with SM-TH units. Burst probability falls from quiet to running to isoflurane in every
+    reading (Friedman p 0.0002 to 0.0007, quiet highest), but the medians do not match; reading (b) gives
+    0.177, 0.121 and 0.005 (high) and 0.150, 0.028 and 0.006 (medium), reading (a) 0.89 to 0.93, 0.49 to 0.72 and
+    0.10 to 0.15, against 0.1, 0 and 0. Measured is reading (b) at the high current, whose scale is the
+    paper's.
+- claim: fig8b-pcist-awake-anesthesia
+  outcome: reproduced
+  notebook: claar_eeg.ipynb
+  output: claim:fig8b-pcist-awake-anesthesia
+  measured:
+  - 43.26
+  - 14.93
+  notes: 30 sites with valid trials (paper 31). Medium current, random matching; awake 43.26 +/- 3.72,
+    isoflurane 14.93 +/- 2.41, both within tolerance, higher awake in 30 of 30 sites, paired t-test p =
+    9.8e-11. First-trial matching gives 43.47 and 14.84. At the high current the anesthetized mean is 23.4
+    to 23.6, above tolerance, and 29 of 30 sites are higher awake. With the PCIst baseline ending 20 ms
+    before the pulse (variant) the medium current gives 44.59 and 15.87 (random), within tolerance.
+  deviations:
+  - PCIst at 2.5 kHz with the cited code; its threshold search is computed by an exact count that gives the
+    original's values (checked on all 30 sites, on ERPs decimated by 10, in the notebook).
+  - The current the paper analysed is not given; the highest and the middle current of each site were
+    both run (claims file, header).
+  - The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of
+    30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed,
+    into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1).
+  - First-trial matching takes the earliest awake trials in time; the first version took quiet trials
+    before running ones (verifier, round 1).
+- claim: fig8c-pcist-depth
+  outcome: reproduced
+  notebook: claar_eeg.ipynb
+  output: claim:fig8c-pcist-depth
+  measured:
+  - 32.34
+  - 52.51
+  notes: All six readings hold. High current, all awake trials; superficial 32.34 +/- 4.84 (12 sites), deep
+    52.51 +/- 3.69 (18), p = 0.0023. Medium current 32.90 against 51.24, p = 0.016.
+  deviations:
+  - The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of
+    30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed,
+    into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1).
+- claim: fig8d-pcist-three-states
+  outcome: partially_reproduced
+  notebook: claar_eeg.ipynb
+  output: claim:fig8d-pcist-three-states
+  measured:
+  - 45.65
+  - 38.69
+  - 15.01
+  notes: Sites with at least 30 running trials at the current used; 13 (11 animals) at the high current and
+    10 (8 animals) at the medium current, against the paper's 8. Random matching (the criterion's method),
+    high current, per site; 45.65, 38.69 and 15.01, all within tolerance, RM ANOVA F[2,24] = 14.9, p = 6e-05,
+    running above isoflurane in 13 of 13, but quiet against running is not significant after correction (q =
+    0.24; 0.34 per animal). At the medium current with random matching that pair has q = 0.057 per site and
+    0.095 per animal. First-trial matching at the medium current makes every pair significant with the means
+    within tolerance (q = 0.021, 0.0009 and 0.0018 per site; 8 animals per animal), but the criterion names
+    random subsampling. Matched trials average 41 per state (high) and 45 (medium), against the paper's 51.
+    With the PCIst baseline ending 20 ms before the pulse (variant) the medium current with random matching
+    gives 45.19, 32.38 and 10.20 per site, within tolerance, with quiet against running q = 0.059.
+  deviations:
+  - The current the paper analysed is not given; the highest and the middle current of each site were
+    both run (claims file, header).
+  - The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of
+    30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed,
+    into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1).
+  - The RM ANOVA is run per site, as the paper's N of sessions suggests, and per animal (sites of one
+    animal averaged); both are shown (verifier, round 1).
+- claim: fig8e-pcist-recovery
+  outcome: reproduced
+  notebook: claar_eeg.ipynb
+  output: claim:fig8e-pcist-recovery
+  measured:
+  - 46.47
+  - 14.89
+  - 30.74
+  - 34.06
+  notes: Reading (b), the 8 sites with all four stages (paper 7, from F[3,18]), medium current, first trials
+    matched; 46.47, 14.89, 30.74 and 34.06, all within tolerance, RM ANOVA F[3,21] = 16.9, p = 8.3e-06, first
+    recovery above isoflurane in 8 of 8, recovery 2 against recovery 1 q = 0.48. Reading (a), the 13 sites
+    with a first recovery stage, puts the means within tolerance but 2 of 13 sites do not rise. Random
+    matching at the medium current puts the 13 sites' means within tolerance with 8 of 13 rising. At the high
+    current the isoflurane mean is above tolerance (25.04 random); with first-trial matching it is 49.67 +/-
+    21.78 because site 546655 MOs-deep has its stages matched on one trial (PCIst 306.6).
+    The paper states no minimum of matched trials. At the medium current every site has at least 23 matched
+    trials per stage (546655 MOs-deep the fewest), so requiring 20 changes nothing; at the high current it
+    removes 546655 and isoflurane stays above tolerance (26.98 to 38.78). The pass rests on one combination
+    of readings and on the criterion's PCIst baseline; with the baseline ending 20 ms before the pulse
+    (variant) that combination gives an isoflurane mean of 18.11, above 14.3 +/- 2.3, while the 13 sites
+    with a first recovery stage stay within tolerance (47.02, 15.16, 29.79 and 36.52, 10 of 13 rising).
+  deviations:
+  - Recovery stages are split at 30 and 60 min after the end of the isoflurane epoch (Results, paragraph 3
+    of the PCI section); in some sessions this cuts a stimulus block (551399 has 403 pulses in the first 30
+    min, 569070 has 74).
+  - The current the paper analysed is not given; the highest and the middle current of each site were
+    both run (claims file, header).
+  - The stimulus artifact peaks at the EEG sample before the first sample at or after the trial onset in 24 of
+    30 sites (at that sample in the other 6), so the 2 ms mask of the Methods (-2 to 0 ms copied, reversed,
+    into 0 to 2 ms) starts one sample earlier, covering -0.4 to +1.6 ms (claar.MASK_START; verifier, round 1).
+  - First-trial matching takes the earliest awake trials in time (verifier, round 1).
+verifications:
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The handover of the first run; the executed notebooks with the conclusions and summaries removed,
+    the helper module and the claims file, with the paper under paper/.
+  results:
+  - claim: stim-depths
+    agrees: true
+    outcome: blocked
+    reason: The trial table gives only "superficial"/"deep" (cell 3), and the archive description lists
+      no stimulating-electrode depth. I agree with the notebook.
+    response: No change. The verifier names metadata_insufficient; the record keeps data_missing, since
+      the depth in mm is a measurement the files do not hold.
+  - claim: eeg-good-electrodes
+    agrees: true
+    outcome: reproduced
+    reason: is_data_valid gives 23.07 +/- 4.01 good electrodes per subject, against the paper's 23 +/-
+      4 (cell 13).
+    response: No change.
+  - claim: fig1d-two-erp-peaks
+    agrees: true
+    outcome: not_reproduced
+    reason: Every deep site shows both peaks (18/18), but only 0 to 2 of 12 superficial sites lack a late
+      peak, under every reading (cell 17).
+    response: The artifact profile of every site now prints (problem 12), and the mask covers the sample
+      before the onset sample (problem 1). Re-run, the counts are unchanged (18/18 deep, 0 to 2 of 12
+      superficial). No change of outcome.
+  - claim: fig1-supp1-example
+    agrees: true
+    outcome: reproduced
+    reason: The example is 571619 MOs-deep, the only subject stimulated at both MOs depths. At high current,
+      all awake trials, duration 1.085 s and magnitude 10.99 SD.s, both within tolerance (cell 15).
+    response: Re-run with the mask covering the artifact sample (problem 1). The medium current with all
+      awake trials now gives 1.011 s and 11.133 SD.s, the paper's 1.01 and 11.13; the high current gives
+      1.169 and 12.556, out of tolerance. Outcome unchanged, measured values updated.
+  - claim: fig1e-erp-duration
+    agrees: true
+    outcome: reproduced
+    reason: High current, awake, reading (a), 0.44 against 0.53 s, p = 0.51 (cell 19). The superficial
+      SEM is 0.14, against 0.0 printed.
+    response: Changed to partially_reproduced. After the mask fix no reading puts both means within tolerance;
+      the medium current gives 0.33 and 0.49 s, p = 0.081 (paper 0.0843), the superficial mean 0.02 s
+      below tolerance, and the high current gives 0.56 and 0.65 s.
+  - claim: fig1f-erp-magnitude
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced but fragile; only one of 8 combinations passes (high current, quiet trials, reading
+      (b), 2.90 against 5.33, p = 0.044), and reading (b) rests on the author's own denominator, which
+      is close to a rescaling of (a); the paper prints SD.s, the unit of reading (a) (problems 4 and 5).
+    response: The |z| divisor is dropped as the basis of the outcome (problem 4) and reading (b) is shown
+      for comparison only. After the mask fix, reading (a) at the medium current gives 3.03 and 5.86,
+      p = 0.035 (paper p = 0.0354), and quiet trials 2.85 and 5.76, p = 0.028. Outcome stays reproduced,
+      no longer resting on an assumption.
+  - claim: fig1-supp2-first-peak-flips
+    agrees: true
+    outcome: blocked
+    reason: The stimulation coordinates are not in the files. EEG electrode x/y/z are read (read_meta)
+      but never printed, so the "both signs occur" part may have been testable.
+    response: The EEG electrode coordinates and the electrode-table columns are now printed in the data
+      check, and a cell counts electrodes of each sign at the early GFP peak (both signs at 30 of 30 sites,
+      as expected of an average reference). The distance from the stimulation site is still missing, so
+      the claim stays blocked.
+  - claim: fig2c-superficial-quiescence
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced but fragile; only 2 sites. High current, all awake, 1 ms bins, reading (a), 84.0
+      ms against 94.2 +/- 16.1 (per-site 59 and 109 ms); with 5 ms bins it is 112.5, out of tolerance
+      (cell 23). Quiescence ends at a single noisy bin (problem 9).
+    response: Added a robustness reading that ignores runs above baseline shorter than 5 ms (claar.quiescence
+      max_gap); it gives 110 to 121 ms, within tolerance in one of eight readings. Reading (b), zero rate,
+      is within the Discussion's 44.3 +/- 16.4 in all eight readings, so the outcome stays reproduced;
+      the notes say how it depends on the measure.
+  - claim: fig2c-deep-triphasic-cortex
+    agrees: true
+    outcome: partially_reproduced
+    reason: The triphasic pattern holds at 16/16 deep sites. No combination puts all three values in tolerance;
+      the early peak is 20 to 65 Hz against 38.1 +/- 4.2 (cell 24). The triphasic flag needs only one
+      bin below baseline (problem 9).
+    response: Added a triphasic flag that needs at least 10 ms below baseline; 16 of 16 sites keep it.
+      No change of outcome.
+  - claim: fig2f-thalamus-triphasic
+    agrees: true
+    outcome: partially_reproduced
+    reason: The pattern holds at 12/14 deep sites and is mostly absent with superficial stimulation. No
+      combination puts all three values in tolerance (cell 25).
+    response: Added the 10 ms flag; the counts are the same. No change of outcome.
+  - claim: fig3abc-decay-with-distance
+    agrees: false
+    outcome: blocked
+    reason: Blocked as run, but partly testable. The archive holds raw LFP for every probe channel plus
+      all sorted units with area and waveform duration. The spiking magnitudes (MO 30.9 against VIS 1.8
+      SD.s in 571619, which has 95 MO and 47 VIS RS units) need no layer labels.
+    response: Computed the spiking magnitudes as the fig3d criterion describes (claar.spiking_magnitude,
+      every reading of kernel, baseline and shuffle). In 571619 MO exceeds VIS in every reading but the
+      values (for example 3.96 and -1.21) are far below 30.9 and 1.8. The LFP and CSD parts are not run
+      (no layers for CSD, and reading the LFP of every probe exceeds the time limit), so the claim stays
+      blocked with the spiking result in the notes.
+  - claim: fig3d-magnitudes
+    agrees: false
+    outcome: blocked
+    reason: Blocked as run, but partly testable. The 3 spiking medians and their tests could have been
+      run. LFP magnitudes per area are possible, with the layer-1 exclusion as a stated deviation (problem
+      3).
+    response: Computed the spiking medians and their tests for every reading; no median is near the paper's
+      and no stimulated group is significant. The LFP and CSD magnitudes are not run, so the claim stays
+      blocked with the spiking result in the notes.
+  - claim: fig4-unit-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: RS counts are 290/1370/853/3162 against 870/4110/2559/9363 (cell 11). Each paper count is
+      about 3x the dataset count, exactly 3x for three of the four, so Figure 4 most likely pools the
+      three intensities (unit x intensity); neither the claims file nor the notebook runs an all-intensities
+      reading (problem 2).
+    response: Added the count of unit x current, which gives 870, 4110, 2559 and 9486, and asked a reader
+      whether the claims file should count this way (questions/000458.yaml). The outcome stays on the
+      claims file's count.
+  - claim: fig4ad-initial-excitation
+    agrees: true
+    outcome: not_reproduced
+    reason: '"Stimulated above non-stimulated in every session" fails under all 16 combinations. Means
+      are 2.4 to 4.8% against 0.5% (non-stimulated) and 24 to 39% against 17.8% (stimulated). Non-stimulated
+      mean and maximum are computed per area only; the 50% maximum comes from 1 of 2 ACA units (problem
+      10).'
+    response: Added the per-session pooled non-stimulated fractions (mean 2.1 to 4.3%, maximum 20%) and
+      the pooled-currents variant (2.6 to 3.2%); the full per-area table now prints. No change of outcome.
+  - claim: fig4be-off-period
+    agrees: true
+    outcome: not_reproduced
+    reason: Increased units, mean 0.7 to 1.4% (against 0.4), maximum 11 to 18% (against 2.8). 2 to 6 of
+      7 superficial sites show non-stimulated decreases, so the "deep only" pattern fails.
+    response: Added the pooled-currents variant, which also fails. No change of outcome.
+  - claim: fig4cf-rebound
+    agrees: true
+    outcome: partially_reproduced
+    reason: Stimulated cortex holds at medium current, 16/16 deep against 1/6 superficial. Non-stimulated
+      areas fail, 14/17 or 5/17 deep against 6/16, and never 0/7 superficial.
+    response: Added the pooled-currents variant (15 or 16 of 17 deep and 2 of 7 superficial outside the
+      stimulated area). No change of outcome.
+  - claim: fig4-supp1-fs-like-rs
+    agrees: true
+    outcome: partially_reproduced
+    reason: Qualitatively FS behave like RS in every row (cell 20). FS counts are about a third of the
+      legend's (cell 11).
+    response: Added FS counts of unit x current (204, 609, 447, 1554 against 180, 585, 387, 1422) and
+      the pooled-currents variant. No change of outcome.
+  - claim: fig5a-thalamus-modulated
+    agrees: true
+    outcome: reproduced
+    reason: For example, high current, pooled FDR, reading (a), 1.9% against 42.7%, p = 0.002. The superficial
+      n is 4 against the paper's 5 (cell 27).
+    response: No change.
+  - claim: fig5c-burst-probability-depth
+    agrees: true
+    outcome: partially_reproduced
+    reason: Medium current, awake, reading (b), deep median 0.117 and U-test p = 0.018. A tolerance of
+      0 on the superficial median is stricter than the paper's printing precision of 2 decimals; 0.002
+      would print as 0, and under printing precision fig5c reproduces (problem 6).
+    response: Asked a reader whether the tolerance should be the printing precision (questions/000458.yaml).
+      The outcome stays on the claims file's criterion.
+  - claim: fig5e-early-latency
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cortex fires first (about 4.3 ms) and p < 0.05, but SM-TH is 8 to 9.6 ms and the difference
+      is 3.8 to 4.9 ms against 6.9 (cell 32).
+    response: No change.
+  - claim: fig5f-rebound-latency
+    agrees: true
+    outcome: not_reproduced
+    reason: SM-TH is earlier in direction only. In the rows shown, the difference is 2 to 19 ms against
+      36, and p < 0.05 in at most 1 row (cell 33). The summary line was cut off in the outputs read.
+    response: The summary line prints in full (3 of 128 combinations with SM-TH first and p < 0.05) and
+      the table prints without truncation. No change of outcome.
+  - claim: fig6a-csd-sink
+    agrees: true
+    outcome: blocked
+    reason: No layer labels in the files. Layers could only come from an outside CCF-atlas lookup of the
+      electrode coordinates.
+    response: No change.
+  - claim: fig6-supp1-erp-deep-csd
+    agrees: true
+    outcome: blocked
+    reason: Needs the same layer-resolved CSD as fig6a.
+    response: No change.
+  - claim: fig6b-bursts-cortical-rate
+    agrees: true
+    outcome: not_reproduced
+    reason: Mean r is 0.13 to 0.24 against 0.4 +/- 0.04, with 6 to 10 of 13 sites significant (cell 36).
+    response: No change.
+  - claim: fig6c-cortical-rate-late-erp
+    agrees: true
+    outcome: not_reproduced
+    reason: Mean r is 0.21 to 0.32 against 0.5 +/- 0.04 (cell 37).
+    response: Re-run with the corrected mask; mean r 0.21 to 0.32, 7 to 11 of 13 significant. No change.
+  - claim: fig6-supp2-late-erp-bursts
+    agrees: true
+    outcome: reproduced
+    reason: High current, late GFP, 13/13 significant, r = 0.46. Against SM-TH rate, r is 0.06 with 4/13
+      significant (cell 38).
+    response: Re-run with the corrected mask; unchanged. No change.
+  - claim: state-trial-counts
+    agrees: true
+    outcome: reproduced
+    reason: Medium current, deep sites, 97 [86-104], 21 [16-27], 120 [120-120]. This matches the paper
+      exactly, IQRs included (cell 23 of the EEG notebook).
+    response: No change.
+  - claim: fig7c-erp-duration-state
+    agrees: true
+    outcome: reproduced
+    reason: High current, unmatched, deep, reading (a), 0.56/0.30/0.28 s, Friedman p = 5e-4. At medium
+      current (the reading the trial counts point to), running and anesthetized are out of tolerance.
+    response: Changed to partially_reproduced. After the mask fix no reading puts the three means within
+      tolerance; the high current gives a quiet mean of 0.65 s, above 0.5 +/- 0.1, and the medium current
+      an isoflurane mean of 0.22 s, below 0.3 +/- 0.05. The state effect and quiet as the longest hold.
+  - claim: fig7d-erp-magnitude-state
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced but fragile; passes only under high current, unmatched, deep, reading (b), 5.45/1.89/1.37,
+      p = 1e-4 (cell 26).
+    response: Changed to partially_reproduced. Reading (b) no longer decides an outcome (problem 4), and
+      after the mask fix reading (a) puts at least one mean out of tolerance in every reading; the closest,
+      medium current unmatched, gives 5.89, 1.51 and 1.23, isoflurane 0.07 below tolerance. The state
+      effect holds in every reading.
+  - claim: fig7e-baseline-rates
+    agrees: true
+    outcome: reproduced
+    reason: Every row holds. Cortex F[2,30] with 16 animals and SM-TH Friedman with n = 13 match the paper's
+      degrees of freedom (cell 40).
+    response: No change.
+  - claim: fig7f-early-latency-state
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced but weak; state effect p = 0.09 to 0.85 and region effect p < 0.05, but with 6
+      to 8 animals against 13. The low power favours "no state effect" (problem 5).
+    response: Added 95% confidence intervals of the paired state differences (within -1.3 to +0.6 ms in
+      cortex, -7.5 to +2.4 ms in SM-TH, 8 animals) and stated the low power in the notes. The outcome
+      stays reproduced, resting on the assumption about responsive units.
+  - claim: fig7g-rebound-latency-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: State effect and "running earlier" (corrected) hold in every row. No row has all six means
+      in tolerance; SM-TH quiet is about 175 against 156 ms (cell 42).
+    response: No change.
+  - claim: fig7h-burst-probability-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: Friedman p < 0.001 and quiet is highest. Medians do not match; best is 0.15/0.03/0.006 against
+      0.1/0/0 (cell 43).
+    response: No change.
+  - claim: fig8b-pcist-awake-anesthesia
+    agrees: true
+    outcome: partially_reproduced
+    reason: Awake exceeds anesthetized at 29 to 30 of 30 sites, p <= 3e-7. The anesthetized mean is 13.0
+      to 13.4 or 21.7 to 22.1, outside 16.5 +/- 2.4 (cell 29).
+    response: Changed to reproduced. The PCIst check against the original code now covers all 30 sites. With the artifact sample masked (problem 1), the medium current gives
+      43.26 and 14.93, both within tolerance, higher awake in 30 of 30 sites, p = 9.8e-11.
+  - claim: fig8c-pcist-depth
+    agrees: true
+    outcome: reproduced
+    reason: High current, all awake trials, 31.6 against 49.6, p = 0.006 (cell 31).
+    response: Re-run with the corrected mask; 32.34 against 52.51, p = 0.0023, all six readings hold.
+      No change of outcome.
+  - claim: fig8d-pcist-three-states
+    agrees: true
+    outcome: partially_reproduced
+    reason: Ordering, state effect and running > anesthesia hold. Quiet is 42 to 43 against 55.2 +/- 10.3,
+      and at high current the quiet-running pair is not significant (cell 33). The RM ANOVA uses 10 to
+      13 sites, not 8 to 11 subjects, so it repeats subjects (problem 11).
+    response: Added the per-animal analysis and the matched trial numbers (41 and 45 per state on average,
+      against 51). After the mask fix the means are within tolerance at the high current, but with random
+      matching the quiet-running pair is not significant per site or per animal at either current. Outcome
+      unchanged.
+  - claim: fig8e-pcist-recovery
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced but fragile; only 1 of 8 combinations passes (medium current, "first" trials, four-stage
+      sample of 8 sites). "First" matching for awake picks quiet trials first, not the first in time (problem
+      7). At high current with "first" matching anesthetized PCIst is 48.2 +/- 21.2, an unexplained outlier
+      (problem 8).
+    response: First-trial matching now takes the earliest awake trials in time. The outlier is site 546655
+      MOs-deep, whose stages at the high current are matched on one trial (PCIst 306.6); the per-site
+      table and the matched trial numbers now print. After the mask fix the medium current with first
+      trials passes in the four-stage sample (46.47, 14.89, 30.74, 34.06; 8 of 8 rising). Outcome unchanged.
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The full executed notebooks of the first revision (claar_eeg.ipynb, claar_spikes.ipynb) with their conclusions
+    and summaries, the helper module, the attempt record and the README, with the claims file and the paper under paper/.
+  results:
+  - claim: stim-depths
+    agrees: true
+    outcome: blocked
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: eeg-good-electrodes
+    agrees: true
+    outcome: reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig1d-two-erp-peaks
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig1-supp1-example
+    agrees: true
+    outcome: reproduced
+    reason: 'Fragile; it passes only at the medium current. That is a reading the claims file allows, and the
+      near-exact example match (1.011 s and 11.133 SD.s against 1.01 and 11.13) supports it.'
+    response: 'No change.'
+  - claim: fig1e-erp-duration
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion. Values at tolerance
+      edges could move with the artifact residue in the -20 to -2 ms window, which lies inside the GFP z-score
+      and PCIst baselines and lowers durations and magnitudes; its effect is not measured. fig1e has its
+      superficial mean 0.02 s below tolerance.'
+    response: 'Measured the residue''s effect; with the z-score baseline ending 20 ms before the pulse, a
+      variant outside the criterion, both means are within tolerance at the medium current (0.37 and 0.50 s, p
+      = 0.151). The outcome stays on the criterion''s -2 to 0 s baseline, and the notes say that it turns on
+      the residue. The EEG artifact text was corrected (k + 5, 129 uV; the unsupported sentences about the
+      paper''s mask and the early peaks were removed).'
+  - claim: fig1f-erp-magnitude
+    agrees: true
+    outcome: reproduced
+    reason: 'Fragile; it passes only at the medium current, a reading the claims file allows and that the
+      example match supports. Its round-1 entry cites problems 4 and 5, but problem 5 was a mis-reference that
+      belongs to fig7f.'
+    response: 'Added the baseline variant (3.38 and 6.22, p = 0.047, also within tolerance). The round-1
+      reason is kept as given; the mis-reference is noted here.'
+  - claim: fig1-supp2-first-peak-flips
+    agrees: true
+    outcome: blocked
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig2c-superficial-quiescence
+    agrees: true
+    outcome: reproduced
+    reason: 'Fragile; it rests on 2 sites. Under reading (b) the per-site values are 0 and 64 ms, so the
+      in-tolerance mean averages a site with no zero-rate period and one with 64 ms.'
+    response: 'No change; the notes already state that two sites are few.'
+  - claim: fig2c-deep-triphasic-cortex
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion. The statement that
+      quiescence below baseline lasts 108.7 to 135 ms is not supported; the largest value printed for
+      quiescence (a) is 131.9.'
+    response: 'Corrected to 108.7 to 131.9 ms in the notebook and the notes.'
+  - claim: fig2f-thalamus-triphasic
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig3abc-decay-with-distance
+    agrees: false
+    reason: 'Disagrees with blocked as metadata_insufficient. The record says the single-session LFP/CSD
+      pipeline was not built within the run''s time; these are effort limits, not missing metadata. The
+      layer-1 exclusion could be a stated deviation, probe_vertical_position is in the electrode table, and
+      the claim covers one session. The spiking magnitude integrates the signed z-scored rate, so the 100+ ms
+      suppression cancels the excitation, which likely explains the values far below 30.9; the notes present
+      these numbers as a result on the paper''s claim, though they more likely reflect a different method. The
+      LFP timing figures in the notes appear in no output.'
+    response: 'Built the LFP and CSD pipeline (claar.lfp_magnitudes, new notebook claar_lfp.ipynb) and ran it
+      on the example session, with layer 1 approximated by the top 100 um of each area and also without the
+      exclusion. MO exceeds VIS for all three signals in 112 of 128 combinations, but no combination puts all
+      six values within tolerance. Added the |z| integral of the spiking magnitude, which gives 28.31 to 31.37
+      in MO (paper 30.9). Removed the unprinted timing figures. The verified outcome is kept;
+      partially_reproduced is proposed for a third round.'
+  - claim: fig3d-magnitudes
+    agrees: false
+    reason: 'Disagrees with blocked as metadata_insufficient; effort limits, not missing metadata, and the
+      layer-1 exclusion could be a stated deviation. The 80-minute estimate behind the runtime argument (1.7 s
+      per 50,000 samples) is not in any notebook output. The spiking magnitude integrates the signed z-scored
+      rate, so the suppression cancels the excitation; the notes present the spiking numbers as a result,
+      though they more likely reflect a different method.'
+    response: 'The size of the computation is now measured and printed in claar_lfp.ipynb (86 probe areas,
+      about 265 min with all readings, 92 min to read the LFP alone, against a 30 min notebook limit). The
+      spiking part now also integrates |z|, which gives the paper''s spiking significance pattern in 27 of 32
+      shuffled rows and deep medians near the paper''s (27.96 to 29.18 against 29.3; 4.18 to 6.25 against
+      4.4), but not the superficial stimulated median (4.81 to 4.86 against 1.8). The verified outcome is
+      kept; blocked as too_large is proposed for a third round.'
+  - claim: fig4-unit-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Correct on the claims file as written. Counting each unit once per current reproduces 870, 4110
+      and 2559 exactly and 9486 against 9363; the disputed part is the claims file''s and is correctly
+      referred to a reader.'
+    response: 'The notebook, README and summary now say that unit x current gives the first three counts
+      exactly and 9486 against 9363.'
+  - claim: fig4ad-initial-excitation
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig4be-off-period
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig4cf-rebound
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion. The notes'' "the high
+      current gives 15 of 16" is not supported; two rows give 16/16.'
+    response: 'Corrected to 15 or 16 of 16.'
+  - claim: fig4-supp1-fs-like-rs
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig5a-thalamus-modulated
+    agrees: true
+    outcome: reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig5c-burst-probability-depth
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Correct on the claims file as written; a tolerance of exactly 0 is the claims file''s and is
+      correctly referred to a reader.'
+    response: 'No change.'
+  - claim: fig5e-early-latency
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig5f-rebound-latency
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig6a-csd-sink
+    agrees: true
+    outcome: blocked
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig6-supp1-erp-deep-csd
+    agrees: true
+    outcome: blocked
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig6b-bursts-cortical-rate
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig6c-cortical-rate-late-erp
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion. The measured value
+      0.217 does not match the printed 0.218.'
+    response: 'Measured corrected to 0.218.'
+  - claim: fig6-supp2-late-erp-bursts
+    agrees: true
+    outcome: reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion. The notes'' "the
+      electrode reading of the late ERP gives the same pattern" is not supported; none of the 4 electrode rows
+      meets the criterion (12/13 sites with r = 0.424 at the high current, 11/13 at the medium current).'
+    response: 'Replaced the sentence in the notes and the notebook with the electrode reading''s numbers,
+      which do not meet the criterion.'
+  - claim: state-trial-counts
+    agrees: true
+    outcome: reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig7c-erp-duration-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'Added the baseline variant (0.53, 0.26 and 0.24 s at the medium current; the isoflurane mean
+      stays below tolerance).'
+  - claim: fig7d-erp-magnitude-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion. Values at tolerance
+      edges could move with the artifact residue in the -20 to -2 ms window, which lies inside the GFP z-score
+      and PCIst baselines and lowers durations and magnitudes; its effect is not measured. fig7d has its
+      isoflurane mean 0.07 below tolerance.'
+    response: 'Measured; with the baseline ending 20 ms before the pulse, a variant outside the criterion, the
+      medium current gives 6.17, 1.56 and 1.37, all within tolerance. The outcome stays on the criterion''s
+      baseline, and the notes say that it turns on the residue.'
+  - claim: fig7e-baseline-rates
+    agrees: true
+    outcome: reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig7f-early-latency-state
+    agrees: true
+    outcome: reproduced
+    reason: 'The assumption (responsive units from all awake trials) is stated in the deviations and notes,
+      and reasonable, since per-state selection leaves 3 animals. The pass is still weak; it rests on 6 to 8
+      animals against 13, the state effect has p = 0.08 to 0.20 at the high current, and the SM-TH confidence
+      interval of the paired state differences spans -7.5 to +2.4 ms against latencies of about 9 ms.'
+    response: 'No change; the notes state the low power and the confidence intervals.'
+  - claim: fig7g-rebound-latency-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The assumption about responsive units is stated and reasonable.'
+    response: 'No change.'
+  - claim: fig7h-burst-probability-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig8b-pcist-awake-anesthesia
+    agrees: true
+    outcome: reproduced
+    reason: 'Fragile; it passes only at the medium current, a reading the claims file allows. Values at
+      tolerance edges could move with the artifact residue in the -20 to -2 ms window, which lies inside the
+      GFP z-score and PCIst baselines and lowers durations and magnitudes; its effect is not measured. The
+      deviation''s "checked on four sites" is not supported; the check covers all 30 sites, on ERPs decimated
+      by 10.'
+    response: 'Measured; with the PCIst baseline ending 20 ms before the pulse the medium current gives 44.59
+      and 15.87, still within tolerance. Deviation corrected to all 30 sites.'
+  - claim: fig8c-pcist-depth
+    agrees: true
+    outcome: reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion.'
+    response: 'No change.'
+  - claim: fig8d-pcist-three-states
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The outcome follows from the printed outputs and the claims-file criterion. Values at tolerance
+      edges could move with the artifact residue in the -20 to -2 ms window, which lies inside the GFP z-score
+      and PCIst baselines and lowers durations and magnitudes; its effect is not measured.'
+    response: 'Measured; with the PCIst baseline ending 20 ms before the pulse, random matching at the medium
+      current puts the means within tolerance but quiet against running stays non-significant (q = 0.059). No
+      change of outcome.'
+  - claim: fig8e-pcist-recovery
+    agrees: true
+    outcome: reproduced
+    reason: 'Fragile; 1 of 8 combinations passes (medium current, first trials, the 8 sites with all four
+      stages). The outlier is explained (546655 MOs-deep matched on 1 trial at the high current), but there is
+      no minimum trial count, that site is in the 8-site sample of the one passing reading, and the
+      medium-current per-site PCIst and matched counts, which decide the outcome, are not printed. Values at
+      tolerance edges could move with the artifact residue in the -20 to -2 ms window, which lies inside the
+      GFP z-score and PCIst baselines and lowers durations and magnitudes; its effect is not measured.'
+    response: 'Printed the medium-current per-site PCIst (random and first) and matched counts of both
+      currents (546655 has 23 at the medium current), and a reading with at least 20 matched trials per stage,
+      which leaves the medium-current result unchanged. With the PCIst baseline ending 20 ms before the pulse
+      the passing combination gives isoflurane 18.11, out of tolerance; the notes say so. The outcome stays on
+      the criterion''s baseline.'
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The two outcome changes proposed after round 2 (fig3abc-decay-with-distance and fig3d-magnitudes)
+    and the analysis behind them in the executed claar_lfp.ipynb, with the helper module, the attempt record,
+    the claims file and the paper under paper/.
+  results:
+  - claim: fig3abc-decay-with-distance
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'LFP cell 9 prints 128 combinations of readings. MO exceeds VIS for all three signals in 112 of
+      them, all six values are within tolerance in none, and at most three are within tolerance in any one.
+      The criterion calls that a partial reproduction: the ordering holds but a value is out of tolerance.
+      The ordering holds for CSD in 32 of 32 readings and for spiking in 32 of 32, also with the signed
+      spiking integral and with or without the layer-1 exclusion, so the outcome rests on neither the |z|
+      variant nor the 100 um assumption. The LFP in MO is never within tolerance (7.57 to 77.16) and the
+      signed spiking magnitude in MO is about a tenth of 30.9; only the ordering is reproduced.'
+    response: 'Outcome set to partially_reproduced. The record, the notebook and the README now say that only
+      the ordering is reproduced. The verifier''s point that the claims file fixes the spiking magnitude as
+      the signed integral without naming the |z| reading is added to questions/000458.yaml for a reader.'
+  - claim: fig3d-magnitudes
+    agrees: true
+    outcome: blocked
+    reason: 'Yes, with reservations. Cell 13 prints 86 probe areas over 24 sites, 262 min with all readings
+      and 91 min just to read the LFP (76 min if each probe is read once); even the cheapest figure is over
+      30 min. Layer 1 can be approximated as in fig3abc, so missing metadata no longer stops the test; its
+      size does. The record''s 265 and 92 min come from an earlier run and should be updated to the printed
+      ones. The estimate is rough: it scales the shuffles by samples, and counts the ACSF channels once per
+      area. Splitting the analysis across several notebooks of under 30 min is not addressed.'
+    response: 'Outcome set to blocked as too_large. The record and the notebook now give the range printed over
+      the runs made for this record (234 to 265 min, 86 to 92 min, 71 to 76 min read once; the rate varies
+      with the network),
+      say that the estimate is rough and why, and say that split into notebooks of under 30 min the
+      computation would need about eight, which is left to a later attempt.'
+findings:
+- kind: data_missing
+  statement: The depth of the stimulating electrode in mm and its position are not in the files; the trial
+    table gives only the target area and the label "superficial" or "deep". The paper's stimulation depths
+    and the spatial analysis of the first ERP peak cannot be tested.
+- kind: metadata_insufficient
+  statement: Probe channels and units carry CCF area acronyms without cortical layers (MOs, SSp-ll, ...), so
+    the layer-resolved CSD analyses of Figure 6 (a sink at the border of layers 2/3 and 5, CSD by layer)
+    cannot be run from the files, and the exclusion of layer 1 in Figure 3 can only be approximated (here by
+    the top 100 um of each area).
+- kind: metadata_error
+  statement: The units' waveform_duration is described as the mean duration in seconds, but its values (0.10
+    to 2.07, median 0.58) are in milliseconds.
+- kind: metadata_insufficient
+  statement: The units are described as those that passed the authors' quality threshold, which is not
+    stated. All meet ISI violations < 0.5 and amplitude cutoff < 0.1, but presence ratios go down to 0.02,
+    so the threshold is not the three metrics of Siegle et al. (2021) that the paper cites.
+- kind: other
+  statement: The RS unit counts in the Figure 4 legend (870, 4110, 2559 and 9363) are three times the
+    counts of the corresponding units in the files (290, 1370, 853 and 3162; exactly three times for the
+    first three). Every site with units has three currents, and counting each unit once per current
+    gives 870, 4110, 2559 and 9486, so the legend most likely counts unit x current; the paper does not
+    say.
+- kind: selection_undocumented
+  statement: is_valid marks all 720 pulses of the superficial SSp site of subject 586468, and 747 of 1440
+    pulses of subject 569070, as invalid, for "large electrical artifacts" or "off target" stimulation,
+    without saying which. Leaving out the 586468 superficial site gives the paper's N of 12 superficial
+    sites in Figure 1E and 7 in Figure 4.
+- kind: methods_unavailable
+  statement: Question for the authors. Each stage delivered pulses at three currents; which current, or
+    which pulses, do the ERP, PCIst and spiking analyses use? The middle current with all awake trials
+    gives the example ERP of Figure 1, figure supplement 1 (1.011 s and 11.133 SD.s against 1.01 and
+    11.13) and the p-values of Figures 1E and 1F (0.081 and 0.035 against 0.0843 and 0.0354), which points
+    to it; the highest current gives different outcomes, for example ERP durations and magnitudes above
+    the paper's and an anesthetized PCIst of 23.5 against 16.5.
+- kind: methods_unavailable
+  statement: Question for the authors. The ERP magnitude is "divided by the area under the baseline window",
+    which is zero for a z-scored GFP. What was the divisor? The figure supplement's undivided area above
+    z = 3, in SD.s, reproduces the example and Figure 1F at the middle current, which suggests no division.
+- kind: methods_unavailable
+  statement: Question for the authors. For the state latencies of Figures 7F and 7G, were responsive units
+    selected once (for example from all awake trials) or separately in each state? Selected per state, only
+    3 animals keep units in every state and region.
+- kind: methods_unavailable
+  statement: Question for the authors. For the modulated-unit test, is the pre-stimulus window the one ending
+    at onset or the mirror of the post window, and is the Benjamini-Hochberg correction applied per session
+    or over all sessions? Both readings were run; neither reproduces Figure 4's fractions.
+- kind: other
+  statement: The EEG stimulus artifact is largest at the sample before the first EEG sample at or after the
+    trial table's start_time in 24 of 30 sites, and at that sample in the other 6, so the start times lag the
+    artifact by up to one EEG sample (0.4 ms). A mask that starts at the onset sample leaves the artifact in.
+- kind: methods_unavailable
+  statement: Question for the authors. The population spiking magnitude of Figure 3 is described as the area
+    under the z-scored average spike density, in which a fall below baseline cancels a rise, while the Results
+    say the metric "accounts for both reductions as well as increases". Was |z| integrated? In the example
+    session the signed integral gives 2.95 in MO and the integral of |z| 28.75 (paper 30.9), and only |z|
+    gives the deep medians and the significance pattern of Figure 3D.
