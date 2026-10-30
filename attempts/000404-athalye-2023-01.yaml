@@ -113,8 +113,9 @@ outcomes:
   - 0.403
   - 0.89
   notes: Measured under the behavior-preserving shuffle, commands with two or more conditions, neurons over all
-    tuples. Every combination of readings puts four of the six fractions within tolerance, none all six. Monkey
-    G's fraction of significant tuples is 0.373 to 0.375 under every reading (claim 0.27 to 0.33). Monkey J's neurons
+    tuples. Every combination of readings puts three or four of the six fractions within tolerance, none all six.
+    Three with the shuffle null and neurons over significant tuples (Monkey G's neurons then 0.455 and 0.461), four
+    under every other combination. Monkey G's fraction of significant tuples is 0.373 to 0.375 under every reading (claim 0.27 to 0.33). Monkey J's neurons
     are 0.890 or 0.903 over all tuples (claim 0.72 to 0.88), 0.878 over population-significant tuples with the subsampling
     null, where Monkey G's neurons are then 0.471 (claim 0.36 to 0.44). Commands are 0.672 to 0.700 (G) and 0.921
     to 0.950 (J), tuples for J 0.707 to 0.710, neurons for G over all tuples 0.401 to 0.409, all within tolerance.
@@ -180,7 +181,8 @@ outcomes:
   notes: Reading (a) gives 0.215 (G) and 0.303 (J), reading (b) 0.243 and 0.333, all within 10% of 0.226 and 0.330,
     against shuffle means of -0.010 to 0.005, with p < 0.001 in every session and pooled. The criterion's per-session
     range fails. Under reading (a) Monkey G sessions 5, 6, 7 and 8 (0.121 to 0.160) and Monkey J session 3 (0.155)
-    are below 0.18; under reading (b) Monkey G sessions 5 to 8 (0.130 to 0.168) are.
+    are below 0.18; under reading (b) Monkey G sessions 5 to 8 (0.130 to 0.168) are. The criterion has no partial
+    clause; partially reproduced is a judgment, as the means and tests hold and only the per-session range fails.
   deviations:
   - Recovered decoder gain (see figs1b-conditions-per-command).
 - claim: fig4g-majority-predicted
@@ -208,9 +210,10 @@ outcomes:
     and 2 to 3 in Monkey J; for decoder-null dynamics 2 to 5 in G and 1 to 4 in J (1 in session 3, outside 2 to
     5). Monkey G's mean frequencies are 0.083 Hz (full) and 0.068 Hz (decoder-null), outside 0.09 to 0.11 and 0.054
     to 0.066. Monkey J's long-timescale eigenvalues are real except one pair in session 0 at 0.036 Hz. Decay times
-    are at most 0.38 s. The 99% step changes no count. Fitting on rates in Hz with the same ridge grid leaves every
-    count unchanged and Monkey G's mean frequency at 0.083 Hz; the ridge fit is invariant to the scale where the
-    grid holds the scaled parameter.
+    are at most 0.38 s. The 99% step changes no count. Fitting the full model on rates in Hz with the same ridge
+    grid leaves every full-model count unchanged and Monkey G's mean frequency at 0.083 Hz; the ridge fit is invariant
+    to the scale where the grid holds the scaled parameter. That variant refits only the full model, so the decoder-null
+    counts are not tested under it.
   deviations:
   - In-sample ridge fits on all pairs with the session's cross-validated parameter; decoder-null dynamics fit on
     activity projected with the recovered decoder's null space.
@@ -231,7 +234,8 @@ outcomes:
     on the same pairs pooled with p < 0.001 and in every session with p < 0.001, except decoder-null dynamics in
     Monkey G session 1 (p = 0.007), 8 of 9 as the criterion needs. On pairs whose command at t-1 is analysed, and
     on all pairs, decoder-null dynamics beat the shuffle in 7 of 9 G sessions, and on all pairs the full model's
-    R2 (0.1194 and 0.1399) is outside tolerance.
+    R2 (0.1194 and 0.1399) is outside tolerance. The outcome therefore rests on the code's scored pairs, whose shuffle
+    95th percentiles (0.0543 and 0.0527) match Table S1's 0.055 and 0.053.
   deviations:
   - Scored pairs from the code, as in fig4c-dynamics-predict-activity-given-command (the code removes pairs with
     a command above the 95th percentile at t or t-1 for next predictions too).
@@ -297,7 +301,8 @@ outcomes:
   - 9.23
   notes: All four values are within 10%. The angle error beats the shuffle in every session and pooled (p < 0.001).
     The sign beats it pooled and in 4 of 4 J sessions with p < 0.001, and in 7 of 9 G sessions (p = 0.005 and 0.001
-    in sessions 6 and 7), where the criterion needs 8.
+    in sessions 6 and 7), where the criterion needs 8. The partial clause covers values outside tolerance with the
+    tests holding, not the reverse; partially reproduced here is a judgment, as one test falls one session short.
   deviations:
   - The angle error is taken modulo 360 degrees (the smaller of the two differences).
   - Recovered decoder gain (see figs1b-conditions-per-command).
@@ -320,7 +325,11 @@ outcomes:
     off, it installs. A timing run there, not part of the notebook, gave about 3 h of single-core compute for the
     criterion's design on the 4 Monkey J sessions (5 folds, K = 1 to 5, 10 Laplace-EM iterations). It gave about
     35 h for Monkey G, most of it sessions 2 and 4 (110 to 115 units above 0.5 Hz). Monkey J alone would fit in
-    two notebooks of about 20 minutes each on 4 cores if the package could be installed.
+    two notebooks of about 20 minutes each on 4 cores if the package could be installed. Rechecked in the final revision
+    with uv 0.13.6 at the code's commit, the build stops with 'No module named numpy'. The registry installs the
+    lock file with a plain `uv pip install -r`, so the fix (no build isolation, or extra build dependencies in a uv
+    configuration) is a change to the registry's tooling, not to the entry; the rsLDS comparison is left to a new
+    attempt.
 - claim: figs3f-residual-early-late
   outcome: reproduced
   notebook: reproduce_athalye_2023.ipynb
@@ -431,8 +440,9 @@ outcomes:
   notes: Claim of absence, judged on the paper's tests. The LME finds no difference (G z = -0.00, p = 0.998; J z
     = 0.02, p = 0.988) and no session's Wilcoxon test does (smallest p 0.069); the input ratios are 0.998 to 1.003.
     With Monkey J's velocity gain fixed to the summed 5 ms gain (sensitivity reading), the LME still finds no difference
-    (p = 0.995) but Monkey J session 1's Wilcoxon test does (p = 0.0016), so under that reading the absence holds
-    only in part; the fitted 100 ms update, which accounts for more of the 100 ms velocity (0.995 to 0.998 against
+    (p = 0.995) but Monkey J session 1's Wilcoxon test does (p = 0.0016), so under that reading the criterion, which
+    fails on any session's Wilcoxon p < 0.05, would give not reproduced. The outcome therefore rests on the decoder
+    reading for Monkey J; the fitted 100 ms update, which accounts for more of the 100 ms velocity (0.995 to 0.998 against
     0.984 to 0.994), stays the adopted reading.
   deviations:
   - As fig6c-dynamics-reduce-input.
@@ -743,3 +753,188 @@ verifications:
       the offset column, and with the update as the change in velocity: 99.63, 99.63, 99.57 and 99.80% with the
       offset column, 99.10, 99.09, 99.09 and 99.63% without it, 87 to 94% with the change in velocity. Because the
       cursor dynamics are fitted jointly with the map, none of these is the criterion''s test.'
+- date: 2026-10-30
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebooks of the run after the first revision, with their conclusions and summaries,
+    the helper modules, the attempt record, the README and the claims file, with the paper under paper/.
+  results:
+  - claim: conditions-per-session
+    agrees: true
+    outcome: reproduced
+    reason: Cell 17.
+    response: No change.
+  - claim: figs1b-conditions-per-command
+    agrees: true
+    outcome: reproduced
+    reason: Cell 20.
+    response: No change.
+  - claim: figs1d-command-subtrajectories-differ
+    agrees: true
+    outcome: reproduced
+    reason: Cell 23.
+    response: No change.
+  - claim: figs1e-next-commands-differ
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 23, G 1.873 > 1.844.
+    response: No change.
+  - claim: fig3d-population-distance
+    agrees: true
+    outcome: reproduced
+    reason: Cell 26.
+    response: No change.
+  - claim: fig3b-single-neuron-distance
+    agrees: true
+    outcome: reproduced
+    reason: Cell 28.
+    response: No change.
+  - claim: fig3e-fractions-significant
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 30, at best 4/6, which matches the partial clause. The record''s notes say "Every combination of
+      readings puts four of the six fractions within tolerance", but cell 30 shows 3 within tolerance for the shuffle
+      null with neurons over significant tuples, at both min_conds values. Cell 31 ("Under the best combinations")
+      is correct.'
+    response: Notes corrected to three or four of six, with three under the shuffle null and neurons over significant
+      tuples (Monkey G's neurons then 0.455 and 0.461).
+  - claim: fig4c-dynamics-predict-activity-given-command
+    agrees: true
+    outcome: reproduced
+    reason: Cell 35 (code reading). The code reading of scored pairs is not marked as assumed, which is acceptable
+      as it is cited to the paper's code and the shuffle 95th percentiles under it match Table S1 (0.1282 and 0.1963
+      against 0.130 and 0.196).
+    response: No change.
+  - claim: fig4de-condition-specific-activity-predicted
+    agrees: true
+    outcome: reproduced
+    reason: Cell 46.
+    response: No change.
+  - claim: fig4f-condition-specific-component
+    agrees: true
+    outcome: partially_reproduced
+    reason: Yes, as a judgment (cell 48). The criterion has no partial clause; the partial verdict is the author's
+      judgment, which the verifier agreed with in round 1 and still does. Its round-1 statement that J3 falls below
+      0.18 under both readings was its own error; under reading (b) it is 0.196 (cell 48).
+    response: The notes now say that the criterion has no partial clause and that the outcome is a judgment.
+  - claim: fig4g-majority-predicted
+    agrees: true
+    outcome: reproduced
+    reason: Cell 50.
+    response: No change.
+  - claim: figs3-low-dimensional-decaying-dynamics
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 53, G4 has 5, J3 decoder-null has 1, G frequencies outside. Cell 54 and the notes say the Hz variant
+      "leaves every count ... unchanged", but the variant refits only the full model, so this holds for the full-model
+      counts only.'
+    response: Cell 54 and the notes now say the Hz variant leaves the full model's counts unchanged and does not
+      test the decoder-null counts.
+  - claim: fig5c-next-activity
+    agrees: true
+    outcome: reproduced
+    reason: Cell 41, code reading, decoder-null G 8/9 (G1 p=0.007). The outcome rests on the code's scored-pair
+      reading; under the other two readings decoder-null G is 7/9. The verifier cannot check the code citation itself,
+      though the Table S1 match (0.0543 and 0.0527 against 0.055 and 0.053) supports it.
+    response: No change of outcome. The notes now say the outcome rests on the code's scored pairs and give the
+      Table S1 match.
+  - claim: fig5d-four-dimensions
+    agrees: true
+    outcome: reproduced
+    reason: Cell 56.
+    response: No change.
+  - claim: fig5e-next-command
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 43. Under the code reading every R2 is within tolerance, but the condition-left-out pooled test for
+      J gives p=0.003 where p<0.001 is needed; under the analysed reading the tests hold and J's R2 are outside tolerance,
+      which matches the partial clause exactly. Partial is defensible under either reading.
+    response: No change.
+  - claim: fig5f-condition-specific-next-command
+    agrees: true
+    outcome: reproduced
+    reason: Cell 59.
+    response: No change.
+  - claim: fig5h-turn-predicted
+    agrees: true
+    outcome: partially_reproduced
+    reason: Yes, as a judgment (cell 61). The sign test holds in 7/9 G sessions; a test fails with values in tolerance,
+      which no clause covers (the partial clause covers only the reverse). The author's judgment, which the verifier
+      agreed with in round 1 and still does.
+    response: The notes now say the partial clause covers the reverse case and that the outcome is a judgment.
+  - claim: figs5b-dynamics-beyond-behavior
+    agrees: true
+    outcome: reproduced
+    reason: Cell 64.
+    response: No change.
+  - claim: figs5f-nonlinear-no-better
+    agrees: false
+    outcome: blocked
+    reason: Agrees only conditionally; not run. The blocker is a build-isolation failure installing ssm, not missing
+      data, and the verifier cannot verify that failure. By the record's own estimate the 4 J sessions take about
+      3 h on one core. A standard workaround (installing without build isolation, or with Cython and numpy pre-installed)
+      would let at least J and the code's G subset be tested.
+    response: 'Kept blocked (not_runnable). The failure was rechecked in this revision with uv 0.13.6 at the code''s
+      commit and the error is now in the notes. The workarounds need the environment built without build isolation
+      or with extra build dependencies, and the registry builds every entry''s environment with a plain `uv pip
+      install -r` of the lock file; that is a change to the registry''s tooling that an entry cannot make. Running
+      the rsLDS comparison would also be an analysis not yet run, which the protocol leaves to a new attempt.'
+  - claim: figs3f-residual-early-late
+    agrees: true
+    outcome: reproduced
+    reason: Cell 67.
+    response: No change.
+  - claim: figs4b-generalize-command-sets
+    agrees: true
+    outcome: reproduced
+    reason: Cell 37, angle J 3/4, J3 p=0.321.
+    response: No change.
+  - claim: figs4g-generalize-condition-classes
+    agrees: true
+    outcome: reproduced
+    reason: Cell 39, all classes 9/9 and 4/4 under the code reading. Monkey J's condition classes, fixed clockwise
+      labels and outside target list (jeev_obs_positions_from_amy.mat) cannot be checked here and affect this claim.
+    response: No change; the target list and its source are listed under inputs.
+  - claim: figs6cd-pairwise-distances-predicted
+    agrees: true
+    outcome: reproduced
+    reason: Cell 70.
+    response: No change.
+  - claim: figs6g-distance-tracks-behavior
+    agrees: true
+    outcome: reproduced
+    reason: Cell 72.
+    response: No change.
+  - claim: figs6k-next-command-pairs
+    agrees: true
+    outcome: reproduced
+    reason: Cell 74.
+    response: No change.
+  - claim: fig6c-dynamics-reduce-input
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced, assumed (ofc cells 8 and 14). The assumption, Monkey J's 100 ms decoder fitted by least squares,
+      is stated and reasonable; it accounts for 0.995-0.998 of the velocity, against 0.984-0.994 for the summed 5
+      ms gain. The ofc cell 4 sentence "variance accounted for 0.98 to 1 on the updates" is not supported, as cell
+      3 has G2 vel_y at 0.96672.
+    response: Ofc cell 4 corrected to 0.967 to 1.
+  - claim: fig6d-decoder-null-dynamics-no-saving
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced, assumed (ofc cell 8). The assumption carries weight only here: under the summed-gain reading
+      J1''s Wilcoxon test gives p=0.0016, and the criterion would then say not reproduced. The record discloses this,
+      but the outcome is fragile. Ofc cell 9 and the notes say "under that reading the absence ... holds only in
+      part", but the criterion has no partial outcome; cell 15''s "fails in one Monkey J session" is accurate.'
+    response: Ofc cell 9 and the notes now say that under the summed-gain reading the criterion would give not reproduced,
+      and the notes say the outcome rests on the Monkey J decoder reading. The outcome stays as verified.
+  - claim: fig6g-ofc-uses-distinct-patterns
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially, assumed (ofc cells 11 and 14).
+    response: No change.
+  - claim: monkey-j-linear-command
+    agrees: true
+    outcome: blocked
+    reason: Cell 77. The criterion says blocked when the PPF update and parameters are absent.
+    response: Cell 7's "98.7 to 99.6%", which the verifier found unsupported by cell 6 (0.9889 to 0.9957), is corrected
+      to 98.9 to 99.6%.
