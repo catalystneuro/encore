@@ -26,7 +26,10 @@ Where the parameters come from:
 - First phase voltage 5.75 kV (Results 3.1).
 - ROI: 200 um squares (Methods 2.5) along bb', the line at equal distance from both electrodes
   (Methods 2.3), tiled contiguously outward from the centre on both sides (claims file, opening
-  comment, reading a). The same squares along aa', the line through the electrode centres
+  comment, reading a), out to 3 mm (`N_ROI_SIDE`, 5.13 kV/cm). How far the paper's ROI extend is
+  not given (assumption: past the weakest field the paper names, 6.7 kV/cm, to where uptake
+  reaches background); the notebook shows fig2a-uptake-rises-with-field with the weakest ROI
+  nearer the centre. The same squares along aa', the line through the electrode centres
   (Methods 2.3, Fig. 5 legend), out to 1.2 mm on each side, so that the outermost square ends
   0.2 mm short of the nominal footprint edge (a standard choice). The squares are aligned with the image axes (a standard choice; the
   electrodes lie within a few degrees of the image rows, so it cannot change a result).
@@ -85,16 +88,22 @@ def _session() -> requests.Session:
     return s
 
 
-def assets() -> list[dict]:
-    """Path, asset id, size and blob of every file at the pinned version."""
-    url = f"{API}/dandisets/{DANDISET_ID}/versions/{DANDISET_VERSION}/assets/?page_size=100"
+# Dandiset 000548 (Effect of the number of pulses, Fig. 3 of the same paper) holds the 5-pulse
+# unipolar dish 03, whose YP image in 000489 is a copy of dish 25-04's. It is read only for that check.
+FIG3_DANDISET_ID = "000548"
+FIG3_DANDISET_VERSION = "0.230519.1825"
+
+
+def assets(dandiset: str = DANDISET_ID, version: str = DANDISET_VERSION) -> list[dict]:
+    """Path, asset id, size and blob of every file at a pinned version."""
+    url = f"{API}/dandisets/{dandiset}/versions/{version}/assets/?page_size=200"
     out = requests.get(url, timeout=60).json()["results"]
     return sorted(({"path": a["path"], "asset_id": a["asset_id"], "size": a["size"],
                     "blob": a.get("blob")} for a in out), key=lambda a: a["path"])
 
 
-def dandiset_metadata(version: str = DANDISET_VERSION) -> dict:
-    return requests.get(f"{API}/dandisets/{DANDISET_ID}/versions/{version}/", timeout=60).json()
+def dandiset_metadata(version: str = DANDISET_VERSION, dandiset: str = DANDISET_ID) -> dict:
+    return requests.get(f"{API}/dandisets/{dandiset}/versions/{version}/", timeout=60).json()
 
 
 def condition(path: str) -> tuple[str, int | None, str]:
@@ -340,6 +349,16 @@ def load_all(workers: int = 4) -> list[dict]:
     """All files, one process per file at a time (decompression is CPU bound)."""
     with ProcessPoolExecutor(workers) as ex:
         return list(ex.map(load_dish, assets()))
+
+
+def session_descriptions(dandiset: str, version: str) -> list[dict]:
+    """Path and NWB session_description of every file of a dandiset version (metadata only)."""
+    out = []
+    for a in assets(dandiset, version):
+        url = requests.head(f"{API}/assets/{a['asset_id']}/download/", allow_redirects=True, timeout=60).url
+        with h5py.File(remfile.File(url), "r") as f:
+            out.append({"path": a["path"], "session_description": f["session_description"][()].decode()})
+    return out
 
 
 def roi_table(dishes: list[dict], which: str = "measure", side: str = "both",
