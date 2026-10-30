@@ -30,7 +30,8 @@ outcomes:
   - 21
   notes: The files hold 21 subject IDs, 41 sessions (20 screening, 21 Sternberg) and one subject
     without a screening session, subject 19 (P47HMH). Subjects 13 and 14 have the native IDs P39CS
-    and P39CS_2, age 26, male, recorded in 2015, with different units and electrodes; the files do
+    and P39CS_2, age 26, male, recorded in 2015, with different units and electrodes (subject 13 has 48 and 33 electrodes in
+    its two files, subject 14 has 34 and 34, at different locations); the files do
     not say whether they are one person recorded twice, so the 21 subjects may be 20 patients.
     Ages in the files run from 17 to 70, as in Table 1; the text gives 17 to 71.
 - claim: sternberg-unit-yield
@@ -215,7 +216,11 @@ outcomes:
     concept cells in all areas (123 cells, 4.631 against 2.588 Hz, p = 8.6e-22; 128 cells, 4.748
     against 2.710 Hz, p = 1.3e-22). The paper's values therefore appear to be encoding responses.
     The direction the statement gives (more firing in maintenance when the preferred image is held)
-    holds; the reported magnitudes do not.
+    holds; the reported magnitudes do not. Leaving out the three trials with implausible timestamps
+    (findings) and recomputing the concept cells (97 and 102 MTL cells, 94 parametric) gives
+    maintenance-window preferred means of 2.57 to 3.10 Hz, no maintenance reading within tolerance,
+    and 4.768 plus or minus 4.712 against 2.674 plus or minus 3.656 Hz for the parametric Encoding 1
+    variant, so these trials do not change the outcome.
   deviations:
   - The concept cells are those of sternberg-concept-mtl under its two readings; the code's
     parametric set is shown too.
@@ -299,7 +304,7 @@ findings:
   statement: Column descriptions in the units and trials tables are wrong. `waveforms_mean_proj_dist`
     is described as "Cluster Isolation distance, computed using all waveforms in the cluster"
     (the description of `waveforms_isolation_distance`), and `loadsEnc3_PicIDs` as "Picture ID
-    for Enc1 loads". Every column of the electrodes table is described as "my description".
+    for Enc1 loads". Every column of the electrodes table but `id` is described as "my description".
 - kind: metadata_insufficient
   statement: Subjects 13 and 14 have the native IDs P39CS and P39CS_2, the same age (26), sex and
     recording year, and Table 1 gives the same diagnosis. Neither the files nor the paper say
@@ -310,8 +315,8 @@ findings:
     so it has no maintenance period. In another trial of subject 9 (load 3) the fixation cross and
     Encoding 1 onsets are 0.03 ms apart (1189.469 s), so the baseline window falls on the image. In
     one trial of subject 21 the fixation cross lasts 14.07 s, against the 0.9 to 1 s the paper
-    describes (99% of trials are 0.93 to 1.20 s). All three are included in the analysis, as the
-    code includes them.
+    describes (the 1st and 99th percentiles over trials are 0.93 and 1.20 s). All three are
+    included in the analysis, as the code includes them; leaving them out does not change the persistent activity result.
 verifications:
 - date: '2026-10-30'
   kind: agent
@@ -423,7 +428,7 @@ verifications:
   - claim: persistent-activity
     agrees: true
     outcome: not_reproduced
-    reason: In the maintenance window, under both cell and both trial readings, p at most 1.7e-7 with
+    reason: In the maintenance window, under both cell and both trial readings, p at most 6.3e-7 with
       preferred higher, but the preferred mean is 2.57 to 3.13 Hz against 4.76 plus or minus 0.476, and
       no reading puts all four values in tolerance. The Encoding 1 window variant matches all four values,
       so the paper's numbers come from the encoding window. The claims file does not misread the paper.
@@ -431,7 +436,7 @@ verifications:
       fixation to Encoding 1) (problem 5).
     response: Cell 5 now lists trials with fixation to Encoding 1 under 0.5 s; the second anomalous
       trial is subject 9, load 3, with onsets 0.03 ms apart. It is added to the finding and summary. The
-      trials are kept, as the code keeps them; two of 2673 trials do not move any result. Outcome kept.
+      trials are kept, as the code keeps them. Outcome kept.
   - claim: fig5-sternberg-examples
     agrees: true
     outcome: reproduced
@@ -461,3 +466,138 @@ verifications:
     response: The extra seeds now print tolerance flags, and a variant on the main seed counts ties
       (108 and 103 for label shuffling, outside; 118 and 111 for sign flipping, inside). The readings
       still disagree. Outcome kept.
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook with conclusions and summary, the helper module, the claims
+    file, the attempt record and the README, with the paper. The verifier could not run code (numpy not
+    installed) and read the new _exceed helper. It agrees with all 20 outcomes and found no misreading
+    of the claims file. It listed statements the printed outputs do not support; those not tied to one
+    claim are answered here. The metadata_error finding and the summary state column descriptions no cell
+    printed (a new cell after the clock check now prints them, which also shows the electrodes id column
+    has an empty description; the finding says so). The other finding said 99% of trials where cell 5
+    prints the 1st and 99th percentiles (corrected). The README run time was not shown (the last cell
+    now prints it, 3.6 min).
+  results:
+  - claim: subjects-sessions
+    agrees: true
+    outcome: reproduced
+    reason: The record's "with different units and electrodes" is half supported; the different units
+      are shown in cell 5, electrodes are not printed.
+    response: The subjects-sessions cell now prints the electrode count and locations of each file of subjects 13 and 14
+      (48 and 33 electrodes, 34 and 34, at different locations); the notes give the counts.
+  - claim: sternberg-unit-yield
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; every count matches cell 13.
+    response: No change needed.
+  - claim: screening-unit-yield
+    agrees: true
+    outcome: reproduced
+    reason: The summary's "every number in the paper's quality and behaviour sections is recovered" is
+      not supported; the same section gives 449 screening MTL units, but cells 16 and 73 give 421.
+    response: The summary sentence is narrowed and names the three exceptions (449 against 421, the ISI
+      s.d., the mean SNR).
+  - claim: behavior-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the number matches the printed output.
+    response: No change needed.
+  - claim: behavior-rt-load
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. It inspected the RT figure (cell 23), which agrees with the printed means and range.
+    response: No change needed.
+  - claim: behavior-accuracy-load
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the numbers match the printed output.
+    response: No change needed.
+  - claim: isi-violations
+    agrees: true
+    outcome: reproduced
+    reason: The only outcome that rests on an unstated choice, the code's filter (units below 4%); the
+      record states it as a deviation and a selection_undocumented finding, and the criterion allows either
+      reading. The ISI s.d. is recovered only with that filter; over all units cell 31 gives 0.625, so
+      the summary sentence should be narrowed.
+    response: The summary sentence is narrowed and names this exception.
+  - claim: firing-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the numbers match cell 34.
+    response: No change needed.
+  - claim: projection-distance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the numbers match cell 37.
+    response: No change needed.
+  - claim: waveform-snr
+    agrees: true
+    outcome: reproduced
+    reason: Mean SNR does not match (cell 40), though the claim allows the peak SNR reading; the summary
+      sentence should be narrowed.
+    response: The summary sentence is narrowed and names this exception.
+  - claim: cv2
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the numbers match cell 43.
+    response: No change needed.
+  - claim: isolation-distance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the number matches cell 46.
+    response: No change needed.
+  - claim: screening-concept-mtl
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the counts match the printed output.
+    response: No change needed.
+  - claim: screening-concept-mfc
+    agrees: true
+    outcome: reproduced
+    reason: Passes by about one unit at 2000 permutations (one seed of four is outside tolerance); the
+      outcome rests on the 20,000-permutation refinement, which gives 26.
+    response: No change; the notes and conclusion already say this.
+  - claim: fig4-screening-examples
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; all five units pass in the printed output.
+    response: No change needed.
+  - claim: sternberg-concept-mtl
+    agrees: true
+    outcome: reproduced
+    reason: In cell 59 the Sternberg concept counts stay in tolerance on 3 more seeds.
+    response: No change needed.
+  - claim: persistent-activity
+    agrees: true
+    outcome: not_reproduced
+    reason: The record's response "two of 2673 trials do not move any result"
+      is not tested in the notebook, no output shows a run without those trials, and there are now three
+      flagged trials in cell 5; with one such trial per session it is very unlikely to matter, but the
+      sentence states it as a result. The round-1 reason should read "p at most 6.3e-7" (cell 62, concept_one,
+      MTL, Encoding 1 trial reading), not 1.7e-7; the outcome does not change.
+    response: Added a variant that leaves out the three flagged trials and recomputes the concept cells
+      and the persistent activity table. The maintenance-window preferred means are 2.57 to 3.10 Hz, no
+      maintenance reading is within tolerance and the parametric Encoding 1 variant still gives 4.768
+      against 2.674 Hz; the notes, conclusion and finding say so, and the round-1 response no longer states
+      it untested. The round-1 reason now reads 6.3e-7, as the verifier asked. Outcome kept.
+  - claim: fig5-sternberg-examples
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the rates match the printed output.
+    response: No change needed.
+  - claim: maintenance-cells-mfc
+    agrees: true
+    outcome: reproduced
+    reason: In cell 68 the maintenance counts with ties counted are 139 to 142, all in tolerance.
+    response: No change needed.
+  - claim: probe-cells-mfc
+    agrees: true
+    outcome: blocked
+    reason: With ties counted, label shuffling gives 108 and 103 (out) and sign flipping 118 and 111 (in),
+      so the readings still disagree. Blocked only under the claims file's rule of using the permutation
+      tests the Methods name; the code's parametric test gives exactly 122, and settling it needs the
+      authors' answer. Cell 72's "that choice decides the outcome" is largely right, but under label shuffling
+      the encoding-rate choice also matters (pooled passes on 3 of 4 seeds, Encoding 1 fails on all 4).
+    response: The probe conclusion cell now says the pairing largely decides the outcome and that under label shuffling
+      the encoding rate also matters (3 of 4 seeds against none). Outcome kept.

@@ -118,6 +118,9 @@ def load_file(path: str, url: str) -> dict:
         })
         tr = f["intervals/trials"]
         trials = pd.DataFrame({c: tr[c][:] for c in TRIAL_COLUMNS if c in tr})
+        descriptions = {f"{table}/{c}": _text(g[c].attrs.get("description", ""))
+                        for table, g in (("units", u), ("trials", tr), ("electrodes", e))
+                        for c in g if isinstance(g[c], h5py.Dataset) and not c.endswith("_index")}
         sp = f["stimulus/presentation/StimulusPresentation"]
         out = {
             "path": path,
@@ -129,6 +132,7 @@ def load_file(path: str, url: str) -> dict:
             "session_start_time": _text(f["session_start_time"][()]),
             "units": units,
             "electrodes": electrodes,
+            "descriptions": descriptions,
             "trials": trials,
             "stim_ids": sp["data"][:].astype(int),
             "stim_times": sp["timestamps"][:],

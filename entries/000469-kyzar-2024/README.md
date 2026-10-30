@@ -37,8 +37,8 @@ paper's counts exactly and are shown as variants. The attempt record, with the r
 differences from the paper's method, is
 [`attempts/000469-kyzar-2024-01.yaml`](../../attempts/000469-kyzar-2024-01.yaml).
 
-- `reproduce_kyzar_2024.ipynb`: the analysis. It takes about six minutes, most of it permutation
-  tests.
+- `reproduce_kyzar_2024.ipynb`: the analysis. Its last cell prints its run time, 3.6 minutes in
+  the recorded run.
 - `sternberg.py`: loading the files without their waveforms, the spike sorting measures of the
   paper's code, window rates, and the concept, maintenance and probe cell tests. Other notebooks
   on this dandiset can import it.
