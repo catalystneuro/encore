@@ -1,0 +1,679 @@
+schema_version: 2
+id: 000294-buccino-2024-01
+dataset:
+  archive: dandi
+  id: "000294"
+  version: 0.260528.0854
+  doi: 10.48324/dandi.000294/0.260528.0854
+paper: doi:10.1162/neco_a_01672
+date: 2026-10-29
+entry: 000294-buccino-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/40970564195
+inputs:
+- what: The paper's code repository, which the paper names for its scripts, model files,
+    morphologies and extracted features. Used for the reconstructed morphologies
+    (cell_models/<cell>/morphology_corrected.swc), the released ground-truth model hay_ais (its
+    mechanisms, parameters and morphology, simulated here), its template, electrode locations and
+    feature and protocol files, and for method parameters of the template method, spike detection,
+    stimulus timings and the optimization settings, each cited in the helpers.
+  source: https://github.com/alejoe91/multimodalfitting at commit 24e8e6168b2d5be45c551bcc08b62fde187d01c7
+outcomes:
+- claim: recordings-two-cells-runs
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:recordings-two-cells-runs
+  measured:
+  - 2
+  - 195.8
+  notes: Two NWB files, one neuron each; cell 1 (sub-3148, the code's cell1_211006_3148) has 5 runs
+    and cell 2 (sub-3436, cell1_211011_3436) 4. The median run lasts 195.8 s from the first to the
+    last patch sample (195.7 to 195.8 s, the same span as each run's MEA series). The runs are those
+    the code used; cell 2's runs 3 to 6 are stored as run1 to run4, and the descriptions of its MEA
+    series keep the original numbers.
+- claim: ecode-protocol-structure
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:ecode-protocol-structure
+  notes: In all 9 runs, all eight protocols are present with 21, 2, 11, 11, 6, 4, 4 and 1 sweeps
+    (IDthres, firepattern, IV, IDrest, APWaveform, HyperDepol, sAHP, PosCheops). Step durations
+    measured on the timestamps are within 0.1 ms of 270, 3600, 3000, 1350, 50, 450 and 270, and 250,
+    225 and 450 ms; the PosCheops ramps rise in 3925 to 3975, 1965 to 1988 and 1307 to 1322 ms
+    measured from 5 pA above holding. Against the IDthres scale (120.4 to 120.8 pA for cell 1, 301.2
+    to 301.7 pA for cell 2) every amplitude is within 1.2 percentage points of its stated
+    percentage. IV has 11 steps from -140 to 60% (reading a); reading (b), 9 steps to 20%, does not
+    match the sweep count.
+  deviations:
+  - The 0% IV step of reading (a) has no relative tolerance; 10% of the IV increment (2% of the
+    scale) was used. Its measured level is within 2% of holding in every run.
+  - APWaveform's sweep count (6) and PosCheops' (1) are not stated in the Methods; 6 is the number
+    of amplitudes from 200 to 350% by 30%.
+- claim: holding-potential
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:holding-potential
+  measured: -69.54
+  notes: The median pre-stimulus membrane potential is -69.54 mV for cell 1 (given as measured) and
+    -69.12 mV for cell 2, over 300 and 240 sweeps, within -70 +/- 7 mV (reading a). Run medians range
+    from -71.0 to -66.6 mV. Neither cell is within -84 +/- 8.4 mV (reading b); the files do not say
+    whether the voltages are corrected for the junction potential, and reading (b) failing does not
+    show that they are not. The window before the code's ton gives the same values to within 0.1 mV.
+    Whether the criterion's window should end at the code's ton or at the onset in the files is asked
+    of a reader (questions/000294.yaml).
+  deviations:
+  - The pre-stimulus window ends at the first change of the injected current found in each sweep (350
+    ms for most protocols), which in these files is 50 ms before the code's ton (400 ms for IDrest);
+    the window ending at the code's ton is shown as a variant.
+- claim: extracellular-spikes-above-50uv
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:extracellular-spikes-above-50uv
+  measured: 159.2
+  notes: With the template method on the run with the most channels after denoising (cell 1 run 4,
+    561 channels; cell 2 run 1, 545), the largest channel reaches a negative peak of 217.0 uV
+    (peak-to-peak 274.0 uV) for cell 1 and 159.2 uV (192.2 uV) for cell 2; the smaller, cell 2's, is
+    given as measured. Every run of both cells is above 50 uV under both readings (negative peaks
+    159.2 to 218.0 uV). 125 to 217 patch spikes per run outside PosCheops, 92 to 98% of waveforms kept
+    by the 2 SD rule. The code's mean template is higher by up to 13.6 uV (negative peak) and 13.7 uV
+    (peak-to-peak). The largest channel of
+    cell 1 is the channel the export notebook plots (ch885); for cell 2 that notebook plots ch384,
+    adjacent to the largest channel found here (156.8 uV). The patch and MEA clocks stay aligned
+    within sweeps; all 1616 spikes have their MEA trough 0.15 to 0.70 ms before the patch peak,
+    none at the +/- 2 ms edge of the search, with medians of -0.35 to -0.25 ms in every window of
+    the sweep up to 4.5 s, and per-run slopes of -0.003 to 0.023 ms per s of sweep, against the 20.4
+    ms per s a clock mismatch of 20 against 20.41 kHz would give.
+  deviations:
+  - The band-pass filter is applied forward and backward (sosfiltfilt), the default of the code's
+    filtering library; the Methods give only the order and cut-offs. A standard choice that cannot
+    move amplitudes of 159 uV and more below 50 uV.
+- claim: mea-electrodes-and-rates
+  outcome: partially_reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:mea-electrodes-and-rates
+  measured:
+  - 20000
+  - 20408.2
+  notes: The MEA recorded 678 (cell 1) and 675 (cell 2) electrodes, above 500 and at most 1024, at
+    20000 Hz in every run. The patch timestamps are at 20000 Hz only for IDthres; firepattern, IV,
+    IDrest, HyperDepol, sAHP and PosCheops are at 20408.2 Hz (49 us intervals) and APWaveform at
+    125000 Hz (8 us), neither 20 nor 200 kHz. The intervals are exact within each sweep and the step
+    durations measured on them are the nominal ones, so they are the sampling of the deposited data.
+    The electrode and MEA parts hold; the patch rate, with tolerance 0, does not. The criterion has
+    no partial clause; partially_reproduced is used because the claim holds in part (electrodes and
+    MEA rate) and fails in part (patch rate). Whether APWaveform at 125 kHz fits the paper's
+    "typically 200 kHz" is asked of a reader (questions/000294.yaml); it cannot change the outcome,
+    since six protocols at 20.41 kHz already fail.
+- claim: culture-age
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The NWB subject has only subject_id, species and description ("Rat cortical embryonic cell
+    culture"); neither the files nor the dandiset's metadata give an age, a date of birth or plating,
+    or days in vitro. The session dates (2021-10-06 and 2021-10-11) are 5 days apart, which fits
+    either reading but does not give the age.
+- claim: fig6-ais-from-dendrite
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:fig6-ais-from-dendrite
+  notes: In the repository's morphology_corrected.swc of both cells, the single AIS path (type 4,
+    184 and 192 points) starts from a dendrite point (type 3), 42.9 and 39.1 um from the soma point,
+    and the axon (type 2) starts from the AIS. The NeuroMorpho.org copies were not used.
+- claim: gt-rheobase
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:gt-rheobase
+  measured: 150
+  notes: With the ground-truth notebook's series (from 0.15 nA by 0.005 nA), the first step, 150 pA,
+    fires one spike in the 270 ms step. Because that series starts at the stated value, a series
+    from 0.10 nA was also run; the model first fires at 140 pA, also within 150 +/- 15 pA. The
+    code's own compute_rheobase_for_model on the LFPy cell model gives the same 150 and 140 pA. The
+    repository's IDrest 300% step of 0.45 nA implies the same 150 pA scale.
+  deviations:
+  - Simulated with BluePyOpt 1.14.26 (NEURON 9) on the repository's model definition, in place of
+    BluePyOpt 1.13.88; the main series uses its NEURON simulator, and the code's
+    compute_rheobase_for_model on its LFPy simulator, as the notebook uses, is shown and agrees.
+- claim: fig3b-ap-initiates-distal-ais
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:fig3b-ap-initiates-distal-ais
+  notes: Run as 7-AIS-test.ipynb runs it (the repository's IDrest_300 protocol with the AIS
+    recordings on the LFPy cell model, get_peak_cutout over 12 spikes, first and last left out).
+    The code's cut-outs have 0.05 ms samples. At the sample the distal and middle AIS tie under both
+    readings (-0.35 ms at -20 mV, -0.25 ms at the peak, from the somatic peak sample), and the soma
+    follows 0.15 and 0.25 ms later. Between samples (linear crossing, parabolic peak) the distal AIS
+    leads the middle by 0.0042 and 0.0202 ms. A fixed-step run (dt 0.005 ms) of the whole protocol
+    times each of the 12 spikes; the distal AIS leads the middle by 0.0051 to 0.0070 ms at the
+    crossing and 0.020 to 0.025 ms at the peak, and the middle leads the soma by 0.162 to 0.168 and
+    0.23 to 0.24 ms, in 12 of 12 spikes. The order distal, middle, soma holds under both readings at
+    every resolution that separates the two AIS points.
+  deviations:
+  - Assumed. The paper does not say how the initiation site is read from Figure 3B (Results 3.2,
+    "The AP is initiated at the distal end of the AIS and travels back toward the soma"), nor at what
+    resolution. The times are read between the 0.05 ms samples of the code's cut-outs and checked on
+    a fixed-step run at 0.005 ms, because a 0.05 ms grid cannot order two points 15 um apart that the
+    simulation separates by 5 to 7 us; read at the sample, the two AIS points tie under both
+    readings and the claim's strict order would not be met.
+  - Simulated with BluePyOpt 1.14.26 in place of 1.13.88; the code's protocol, recordings and
+    get_peak_cutout run unchanged on its LFPy simulator. The fixed-step check uses its NEURON
+    simulator (dt 0.005 ms, a standard choice).
+- claim: fig3a-largest-channel-at-ais
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:fig3a-largest-channel-at-ais
+  notes: The template recomputed with the code (IDrest 300%, calculate_eap with get_extra_kwargs, the
+    code's planar probe, LFPy cell model) matches the repository's template.npy with correlation
+    0.99992 and an RMS difference of 1.3% of the template; with the probe moved by 2 or 5 um the
+    difference rises to 6.6 to 16.1%, so the file was simulated in the frame of the LFPyCellModel. In
+    that frame the AIS segment midpoints run from (11.8, -1.0) to (13.8, -28.3) um and its midpoint is
+    (12.6, -13.7) um. The nearest electrode is channel 43 at (25, -25) um, 16.8 um away against 39.3
+    um for the next, and it is the nearest electrode to every AIS segment. Channel 43 has the largest
+    peak-to-peak and the largest negative peak of the repository's template. The second-largest
+    peak-to-peak, 0.939 of the largest, is channel 24 at (-25, 25) um, 54.0 um from the AIS midpoint;
+    moving the probe by 2 um in x makes channel 24 the largest, so the largest channel depends on the
+    placement, which the match to the file fixes.
+  deviations:
+  - The AIS is placed with the segment midpoints of the instantiated LFPyCellModel (BluePyOpt 1.14.26,
+    LFPy 2.3.7), where LFPy puts the soma midpoint at the origin. In the first round it was placed
+    from NEURON's 3D points relative to the mean soma point, which puts the AIS midpoint at (1.7,
+    -23.4) um, about 14 um off; that placement also gives channel 43 as nearest (23.3 um, next 26.8
+    um) and is shown as a variant.
+- claim: table1-feature-counts
+  outcome: reproduced
+  notebook: reproduce_buccino_2024.ipynb
+  output: claim:table1-feature-counts
+  measured:
+  - 76
+  - 87
+  - 109
+  - 153
+  notes: The code's create_evaluator for hay_ais has 76 intracellular objectives for every strategy
+    and 0, 11, 33 and 77 extracellular ones, totals 76, 87, 109 and 153; the feature files
+    features_BPO_<strategy>.json give the same counts. The Methods' 79 is the count of the six
+    training protocols' features in features.json before the code drops the three sag features of
+    IV -20%.
+- claim: fig4a-strategy-balance
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs 10 optimizations per strategy of 600 generations of 20 offspring (480,000
+    evaluations for the four strategies). In the run recorded, one evaluation of the six training
+    protocols on the released ground-truth model takes 12.2 s intracellularly (NEURON simulator) and
+    20.5 s with the extracellular signals (the code's evaluator for the all strategy on the LFPy
+    simulator), so at least 2457 CPU hours, 614 hours on the 4 cores of the runner, against a
+    30-minute notebook limit and a 5-hour run. The timing varies with the runner's load; the run
+    reviewed in round 2 printed 8.0 and 14.3 s and 1699 CPU hours. No optimization results are in the
+    repository. The code's evaluators do build and run in the locked environment
+    (table1-feature-counts), so time is the only obstacle.
+- claim: gt-intracellular-scores
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the ground-truth optimizations; see fig4a-strategy-balance for the estimate.
+- claim: fig4c-hyperdepol-only-single
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the best solution of each strategy's optimizations; see fig4a-strategy-balance. The
+    ground-truth part is computed. In the validation run of the code's evaluator the ground truth
+    fires no spike in the 700 to 970 ms depolarizing phase of HyperDepol -160% (and -120%) and one
+    at -40% (and -80%), as the criterion expects of it.
+- claim: fig4b-intra-no-difference
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the best solution of each strategy's optimizations; see fig4a-strategy-balance. The
+    validation evaluator of 4-optimization-performance.ipynb has 110 objectives and 86 distinct
+    feature names, the 86 features the claim states.
+- claim: fig4b-extra-better-than-soma
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the best solution of each strategy's optimizations; see fig4a-strategy-balance. The
+    extracellular features of the ground truth's firepattern 120% template, computed as
+    4-optimization-performance.ipynb does, are 11 kinds on 80 electrodes, 880, of which 800 are
+    finite (recovery_slope is not finite on any electrode); the claim states 796, and 800 is within
+    its tolerance of 80.
+- claim: fig4d-templates-better-than-soma
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the best solution of each strategy's optimizations; see fig4a-strategy-balance.
+- claim: fig5-ap-distribution
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the best solution of each strategy's optimizations; see fig4a-strategy-balance.
+- claim: fig78a-soma-intra-all-extra
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs 10 optimizations of 600 generations of 20 offspring for soma and all on each cell,
+    480,000 evaluations; at the ground-truth model's cost in the run recorded (12.2 s per
+    intracellular evaluation, 20.5 s with the extracellular signals), at least 2182 CPU hours, 546
+    hours on the 4 cores of the runner (1487 CPU hours in the run reviewed in round 2). The dataset holds what the fits need
+    from the recordings (the patch sweeps of every protocol and the MEA data from which templates of
+    159 to 218 uV are computed here), and the linked runs are those the code used
+    (recordings-two-cells-runs).
+- claim: experimental-intracellular-scores
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the experimental optimizations; see fig78a-soma-intra-all-extra.
+- claim: fig78b-validation-spiking
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig78a-soma-intra-all-extra, blocked for the cost of the optimizations. The
+    reference of reading (a) is computed. Over runs, the recorded spike counts per sweep are, for
+    cell 1 and cell 2, firepattern 12 to 15 and 0 to 1 (120%), 33 to 37 and 14 to 30 (200%);
+    HyperDepol 0 in every sweep and run; sAHP 1 and 0 to 2, 2 to 3 and 3 to 5, 3 to 4 and 7 to 8, 4 and
+    8 to 10 (150 to 300%); PosCheops 76 to 90 and 52 to 80.
+- claim: fig78c-cell2-worse-extracellular
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig78a-soma-intra-all-extra, blocked for the cost of the optimizations.
+- claim: fig10-cell2-soma-underestimated
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig78a-soma-intra-all-extra, blocked for the cost of the optimizations.
+findings:
+- kind: metadata_error
+  statement: The dandiset's metadata name the paper by its title but link it to
+    doi:10.1162/neco_a_01676, which Crossref gives as "Energy Complexity of Convolutional Neural
+    Networks". The paper is doi:10.1162/neco_a_01672.
+- kind: metadata_error
+  statement: The CurrentClampSeries are stated in volts with conversion 1 but hold millivolts (-100 to
+    +46), and the CurrentClampStimulusSeries are stated in amperes with conversion 1 but hold
+    picoamperes (holding levels of 12 and -37, steps up to about 1000).
+- kind: other
+  statement: The patch timestamps are at 20.41 kHz (49 us) for every protocol except IDthres (20 kHz)
+    and APWaveform (125 kHz, 8 us). The paper states digitization at 20 kHz, and APWaveform at high
+    rates, typically 200 kHz. The intervals are regular and agree with the nominal step durations.
+- kind: metadata_error
+  statement: The icephys sequential recordings table leaves out the first sweep of every protocol after
+    IDthres in each run and every PosCheops sweep (35 of 300 recordings for cell 1, 28 of 240 for
+    cell 2), so the grouping tables do not describe the protocols. The protocol_name and run columns
+    of the intracellular recordings table are complete.
+- kind: metadata_insufficient
+  statement: No culture age, plating date or days in vitro is given in the files or the dandiset's
+    metadata; the subject has only an id, a species and a description.
+- kind: metadata_insufficient
+  statement: The electrodes table's x, y and z are empty (NaN), location is "unknown" and impedance -1;
+    electrode positions are only in the custom columns rel_x and rel_y, without a description of their
+    frame.
+- kind: selection_undocumented
+  statement: Cell 2's file holds runs 3 to 6 of the recording, renamed run1 to run4; only the
+    descriptions of its MEA series and the paper's export notebook say so. Runs 1 and 2 of cell 2 are
+    not deposited, and the dandiset does not say why.
+- kind: other
+  statement: In every run 117 to 132 of the 675 to 678 MEA channels are constant for at least one of
+    ten one-second segments (the channels the paper's code removes before computing templates); the
+    deposited series keep them, with nothing marking them.
+- kind: other
+  statement: In the deposited sweeps the stimulus starts 50 ms earlier than the timings of the
+    paper's feature code (350 ms against ton 400 ms for IDrest, 450 against 500 for firepattern), so
+    the code's timings cannot be applied to the files as they are.
+- kind: paper_inconsistency
+  statement: Methods 5.2 describe IV as 11 steps from -140 to 20% by 20%, which is 9 steps; the data
+    hold 11 steps from -140 to 60%.
+- kind: paper_inconsistency
+  statement: Methods 5.4 give 79 intracellular features for optimization and Table 1 gives 76; the
+    code's feature files have 79 before it drops three sag features of IV -20%, and 76 after.
+- kind: methods_unavailable
+  statement: For fig3b-ap-initiates-distal-ais, the paper does not say how the initiation site is read
+    from Figure 3B or at what time resolution. The code's cut-outs (get_peak_cutout) are on a 0.05 ms
+    grid, on which the distal and middle AIS tie at the -20 mV crossing and at the peak; they are
+    ordered only between samples or in a finer simulation (5 to 7 us at the crossing, 20 to 25 us at
+    the peak). Question for the authors - was the order read from a finer simulation than the plotted
+    cut-outs?
+verifications:
+- date: 2026-10-30
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusions and summary
+    removed, the helper modules and the claims file, with the paper under paper/. The verifier also
+    read the dandiset's metadata in the archive.
+  results:
+  - claim: recordings-two-cells-runs
+    agrees: true
+    outcome: reproduced
+    reason: There are 2 NWB files with 5 and 4 runs; the median run lasts 195.8 s, within 200 +/- 20.
+      Cell 2's runs are the original runs 3 to 6, as in the code.
+    response: No change.
+  - claim: ecode-protocol-structure
+    agrees: true
+    outcome: reproduced
+    reason: Under IV reading (a), every run of both cells has the stated sweep counts, durations and
+      amplitudes; the largest amplitude error is 1.2 percentage points. Reading (b) fails, which the
+      criterion allows. The 100% scale is fitted from IDthres itself, so the IDthres amplitude check
+      only tests linearity, as the claims file prescribes; the 2-point tolerance for the 0% IV step
+      is stated as a deviation and is reasonable.
+    response: No change.
+  - claim: holding-potential
+    agrees: true
+    outcome: reproduced
+    reason: The median pre-onset potential is -69.54 mV for cell 1 and -69.12 mV for cell 2, within
+      -70 +/- 7 under reading (a). The claims file treats the code's ton (400 ms) as the pre-stimulus
+      point, but in the files the onset is at 350 ms; the notebook rightly uses the measured onset
+      and shows the ton window as a variant. No metadata says whether the voltages are LJP-corrected;
+      reading (a) passes, so this does not matter.
+    response: No change.
+  - claim: extracellular-spikes-above-50uv
+    agrees: true
+    outcome: reproduced
+    reason: The chosen-run templates give a negative peak of 217.0 / 159.2 uV and a peak-to-peak of
+      274.0 / 192.2 uV; every run is at least 159 uV. Choosing the run by channels with peak-to-peak
+      of at least 5 uV would pick other runs, which is immaterial. The 2 SD cleaning uses the max
+      channel of the uncentred median where the code's clean_sta recomputes it from the centred
+      median; the helper behaved correctly on synthetic waveforms. It asked for each spike's
+      centring shift against its time within the sweep, for every run, to confirm that the 49 us
+      patch clock stays aligned with the 20 kHz MEA across 3.6 s sweeps.
+    response: Added the per-spike alignment for all 9 runs. All 1616 spikes have their MEA trough 0.15
+      to 0.70 ms before the patch peak, none at the edge of the search, with medians of -0.35 to
+      -0.25 ms in every window of the sweep up to 4.5 s and slopes of -0.003 to 0.023 ms per s,
+      against 20.4 ms per s for a clock mismatch. The run choice and the cleaning are kept as they
+      do not move any amplitude near 50 uV.
+  - claim: mea-electrodes-and-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: 678 and 675 electrodes are recorded, and the MEA runs at 20 kHz. The patch rate is 20.41
+      kHz (49 us) for six protocols, 20 kHz only for IDthres, and 125 kHz for APWaveform; with
+      tolerance 0 the patch-rate part fails. The criterion has no partial clause; read strictly, this
+      is not_reproduced. The 49 us interval is real data, not an export artefact. The claims file
+      allows only 20 or 200 kHz for APWaveform while the paper says "typically 200 kHz", so 125 kHz
+      arguably fits; the claims file reads the paper narrowly here, which does not change the
+      outcome.
+    response: Outcome kept as partially_reproduced, since the claim holds in part (electrodes, MEA
+      rate) and fails in part (patch rate); the notes now say the criterion has no partial clause.
+      The APWaveform reading is added to questions/000294.yaml for a reader; the claim is unchanged.
+  - claim: culture-age
+    agrees: true
+    outcome: blocked
+    reason: Confirmed in the archive that neither the dandiset nor the asset metadata (wasAttributedTo
+      has species and id only) gives an age, DIV or plating date.
+    response: No change.
+  - claim: fig6-ais-from-dendrite
+    agrees: true
+    outcome: reproduced
+    reason: In both cells the AIS root's parent has type 3.
+    response: No change.
+  - claim: gt-rheobase
+    agrees: true
+    outcome: reproduced
+    reason: The notebook's step series gives 150 pA, but it starts at 150 pA, so it cannot give
+      anything lower; the series from 0.10 nA gives 140 pA. Both are within 150 +/- 15. The
+      simulations use BluePyOpt's NEURON simulator, not the LFPy simulator the paper's notebooks use;
+      the deviation is stated and the intracellular dynamics are the same model.
+    response: Added the code's own compute_rheobase_for_model on the LFPy cell model, which gives the
+      same 150 and 140 pA. The first round's statement that the LFPy simulator does not run in the
+      locked environment was wrong; BluePyOpt 1.14.26 provides it, and it is now used for the AIS
+      timing, the template and the evaluators.
+  - claim: fig3b-ap-initiates-distal-ais
+    agrees: true
+    outcome: reproduced
+    reason: The order is distal, then middle AIS, then soma under both readings, but under reading (a)
+      the distal AIS leads the middle by only 0.005 ms, below the 0.01 ms grid of the averaged
+      cut-out and ten times below the code's get_peak_cutout, which interpolates at 20 kHz (0.05
+      ms). At the code's resolution the two would probably tie, and reading (a) would then fail.
+      Reading (b) has a 0.02 ms lead. Kept as reproduced because the cvode simulation does produce
+      this ordering, but it should be confirmed at the code's resolution.
+    response: The code's own pipeline now runs (7-AIS-test.ipynb's protocol and get_peak_cutout on the
+      LFPy simulator). At its 0.05 ms samples the distal and middle AIS tie under both readings, as
+      the verifier expected; between samples the distal AIS leads by 0.0042 and 0.0202 ms. A
+      fixed-step run at dt 0.005 ms gives the order in 12 of 12 spikes under both readings (leads of
+      0.0051 to 0.0070 and 0.020 to 0.025 ms). The outcome stays reproduced, now marked assumed, with
+      a deviation saying the order is read between samples, and a methods_unavailable finding asks
+      the authors how it was read.
+  - claim: fig3a-largest-channel-at-ais
+    agrees: true
+    outcome: reproduced
+    reason: Channel 43 has both the largest peak-to-peak and the largest negative peak, and it is
+      nearest the AIS midpoint, but the result hinges on a placement that was never checked. The AIS
+      midpoint sits at x = +1.7 um, 23.3 um from channel 43 and 26.8 um from channel 23, and their
+      peak-to-peak ratio is 0.939; an offset of about 2 um in x would make channel 23 the nearest. It
+      asked for the AIS midpoint in the coordinates of the instantiated LFPyCellModel, or the
+      template recomputed on the 20 by 4 probe from the released model.
+    response: Did both. The template recomputed with the code on the LFPyCellModel matches the
+      repository's file (correlation 0.99992, RMS difference 1.3%; 6.6 to 16.1% with the probe moved
+      by 2 to 5 um), so the frame is fixed. In it the AIS midpoint is at (12.6, -13.7) um, 14 um
+      from the first round's placement; channel 43 is nearest at 16.8 um against 39.3 um for the
+      next, and nearest to every AIS segment. The 0.939 ratio is to channel 24 at (-25, 25), not
+      channel 23; the notes say that the largest channel depends on the placement, which the match to
+      the file fixes.
+  - claim: table1-feature-counts
+    agrees: true
+    outcome: reproduced
+    reason: 76 / 87 / 109 / 153 match exactly, and the 79 variant is also found. Counting from the
+      feature files, not from the evaluator's objectives, is stated and reasonable.
+    response: The counts now come from the code's evaluators, as the criterion says, and agree with
+      the feature files; the deviation is removed.
+  - claim: fig4a-strategy-balance
+    agrees: true
+    outcome: blocked
+    reason: These need 4 strategies x 10 seeds x 600 generations x 20 offspring; the lower bound is
+      1466 CPU-hours, and the repository holds no optimization results.
+    response: The estimate now includes an extracellular evaluation with the code's evaluator; the
+      figures are those printed by the run recorded (see the notes; corrected in round 2).
+  - claim: gt-intracellular-scores
+    agrees: true
+    outcome: blocked
+    reason: Needs the same optimizations as fig4a-strategy-balance (at least 1466 CPU-hours).
+    response: Estimate updated, as for fig4a-strategy-balance.
+  - claim: fig4c-hyperdepol-only-single
+    agrees: true
+    outcome: blocked
+    reason: Needs the optimizations. The ground-truth spike counts at HyperDepol -160% and -40% could
+      have been computed with the model, but do not decide the claim.
+    response: Added; the ground truth fires 0 spikes at -160% and 1 at -40% in the depolarizing phase.
+  - claim: fig4b-intra-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Needs the optimizations. The count of 86 validation intracellular features could have been
+      computed from the repository's files, but does not decide the claim.
+    response: Added; the validation evaluator has 86 distinct intracellular features.
+  - claim: fig4b-extra-better-than-soma
+    agrees: true
+    outcome: blocked
+    reason: Needs the optimizations. The count of about 796 extracellular features could have been
+      computed from the repository's feature files and template, but does not decide the claim.
+    response: Added; the code's computation gives 880 features, 800 finite. A code_mismatch finding
+      added in this round was removed in round 2, since 800 is within the claim's 796 +/- 80.
+  - claim: fig4d-templates-better-than-soma
+    agrees: true
+    outcome: blocked
+    reason: Needs the optimizations (at least 1466 CPU-hours).
+    response: Estimate updated.
+  - claim: fig5-ap-distribution
+    agrees: true
+    outcome: blocked
+    reason: Needs the optimizations (at least 1466 CPU-hours).
+    response: Estimate updated.
+  - claim: fig78a-soma-intra-all-extra
+    agrees: true
+    outcome: blocked
+    reason: Needs the same kind of fits on the two cells; again at least 1466 CPU-hours.
+    response: Estimate updated with the extracellular evaluation; the figures are those printed by the
+      run recorded (see the notes; corrected in round 2).
+  - claim: experimental-intracellular-scores
+    agrees: true
+    outcome: blocked
+    reason: Needs the same kind of fits on the two cells; again at least 1466 CPU-hours.
+    response: Estimate updated.
+  - claim: fig78b-validation-spiking
+    agrees: true
+    outcome: blocked
+    reason: Needs the fitted models. The recorded spike-count ranges per validation sweep could have
+      been computed from the dataset, but do not decide the claim.
+    response: Added the recorded ranges over runs per validation sweep and cell.
+  - claim: fig78c-cell2-worse-extracellular
+    agrees: true
+    outcome: blocked
+    reason: Needs the fitted models.
+    response: No change.
+  - claim: fig10-cell2-soma-underestimated
+    agrees: true
+    outcome: blocked
+    reason: Needs the fitted models.
+    response: No change.
+- date: 2026-10-30
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The full executed notebook of the second run, with its conclusions and summary, the helper
+    modules, the claims file, the README and this record, with the paper under paper/.
+  results:
+  - claim: recordings-two-cells-runs
+    agrees: true
+    outcome: reproduced
+    reason: 2 files with 5 and 4 runs; median run 195.8 s (cell 18).
+    response: No change.
+  - claim: ecode-protocol-structure
+    agrees: true
+    outcome: reproduced
+    reason: All checks pass under reading (a); the largest amplitude error is 1.2 points (cells 21 and
+      22).
+    response: No change.
+  - claim: holding-potential
+    agrees: true
+    outcome: reproduced
+    reason: -69.54 and -69.12 mV (cell 25). The sentence "so the stored voltages are not corrected for
+      the junction potential" is an inference; that reading (b) fails does not by itself show the data
+      are uncorrected. It does not affect the outcome. The claims file treats the code's ton as the
+      pre-stimulus point, but in the files the stimulus starts 50 ms earlier; reported, not corrected.
+    response: The sentence now says that reading (b) fails and that the files do not say whether the
+      voltages are corrected, in the notebook and the notes. The ton reading is added to
+      questions/000294.yaml for a reader; the claim is unchanged.
+  - claim: extracellular-spikes-above-50uv
+    agrees: true
+    outcome: reproduced
+    reason: Negative peaks of 217.0 and 159.2 uV; every run is at least 159.2 uV (cell 28). "The code's
+      mean template is higher by up to 13.3 uV" does not match cell 28, which shows 13.6 uV (negative
+      peak) and 13.7 uV (peak-to-peak) for cell 1 run3.
+    response: Corrected to 13.6 and 13.7 uV in the notebook and the notes; cell 28 now prints the
+      largest difference over runs (13.6 and 13.7 uV).
+  - claim: mea-electrodes-and-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Yes, with a reservation. The facts are right; the electrodes and the MEA rate pass, and the
+      patch rate fails (cell 34). But the criterion has no partial clause, so read strictly the outcome
+      is not_reproduced. The record now says this openly. The claims file allows only 20 or 200 kHz for
+      APWaveform where the paper says "typically 200 kHz".
+    response: Outcome kept, as the verifier agreed with it. partially_reproduced is the protocol's
+      outcome for a claim that holds only in part, which is the case here (electrodes and MEA rate
+      hold, patch rate fails); the reservation is recorded here and in the notes. The APWaveform
+      question is in questions/000294.yaml.
+  - claim: culture-age
+    agrees: true
+    outcome: blocked
+    reason: blocked (metadata_insufficient).
+    response: No change.
+  - claim: fig6-ais-from-dendrite
+    agrees: true
+    outcome: reproduced
+    reason: In both cells the AIS parent point is type 3 (cell 38).
+    response: No change.
+  - claim: gt-rheobase
+    agrees: true
+    outcome: reproduced
+    reason: 150 and 140 pA; the code's own function gives the same (cell 41).
+    response: No change.
+  - claim: fig3b-ap-initiates-distal-ais
+    agrees: true
+    outcome: reproduced
+    reason: assumed is stated, and the assumption is reasonable. On the code's 0.05 ms cut-outs the
+      distal and middle AIS fall on the same sample under both readings, so a strict reading on those
+      cut-outs would not give the order. Read between samples the distal AIS leads by 0.0042 ms
+      (crossing) and 0.0202 ms (peak); the fixed-step run (dt 0.005 ms) gives the order in 12 of 12
+      spikes under both readings. The paper does not say at what resolution the order was read, and
+      the methods_unavailable finding asks the authors. Reproduced only under the stated resolution
+      assumption.
+    response: No change; the re-run gives the same values.
+  - claim: fig3a-largest-channel-at-ais
+    agrees: true
+    outcome: reproduced
+    reason: Channel 43 is nearest, 16.8 um against 39.3 um for the next. The recomputed template
+      matches the file, correlation 0.99992, RMS difference 1.3% (cell 47).
+    response: No change.
+  - claim: table1-feature-counts
+    agrees: true
+    outcome: reproduced
+    reason: Counted on the code's evaluators, 76 / 87 / 109 / 153 (cell 50).
+    response: No change.
+  - claim: fig4a-strategy-balance
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large); even the cost printed in cell 53 is far beyond the limits. But the
+      notes ("16.8 s ... 27.9 s ... at least 3350 CPU hours, 837 hours on the 4 cores") and the round-1
+      response (3350) are not what cell 53 prints (8.0 s, 14.3 s, 1699 CPU hours); "In the first round
+      the intracellular evaluation took 8.3 s" contradicts the delivered notebook, which gives 8.0 s.
+      The cell 54 text ("about 17 s ... about 28 s ... more than 3000 CPU hours, more than 800 hours on
+      4 cores") and the README ("more than 3000 CPU hours", true only for the two estimates added
+      together; "about fifteen minutes", where the printed timings add up to about 8.5 minutes) do not
+      match the outputs either.
+    response: The notes and the round-1 response now give the figures the run recorded prints (12.2 s
+      and 20.5 s, 2457 CPU hours, 614 hours on 4 cores) and say the timing varies with the runner's
+      load, citing the round-2 run's 8.0 and 14.3 s and 1699 CPU hours. The cell 54 text no longer
+      quotes timings; it states a bound that cell 53 now prints (each estimate above 300 CPU hours and
+      above 60 hours on 4 cores). The README gives each set's figure and the notebook's printed time
+      (12.2 min).
+  - claim: gt-intracellular-scores
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig4a-strategy-balance.
+    response: As for fig4a-strategy-balance.
+  - claim: fig4c-hyperdepol-only-single
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig4a-strategy-balance.
+    response: As for fig4a-strategy-balance.
+  - claim: fig4b-intra-no-difference
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig4a-strategy-balance.
+    response: As for fig4a-strategy-balance.
+  - claim: fig4b-extra-better-than-soma
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large). The code_mismatch finding (796 extracellular features) is overstated;
+      the printed 800 finite features (cell 56) are within the claims file's own tolerance (796 +/-
+      80), and the criterion also leaves out invalid values per model, so the difference may come from
+      models, not code. It should be reworded or dropped.
+    response: The code_mismatch finding is removed; the notes and the notebook (cell 57) say 800 is
+      within the claim's 796 +/- 80.
+  - claim: fig4d-templates-better-than-soma
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig4a-strategy-balance.
+    response: As for fig4a-strategy-balance.
+  - claim: fig5-ap-distribution
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig4a-strategy-balance.
+    response: As for fig4a-strategy-balance.
+  - claim: fig78a-soma-intra-all-extra
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large). The notes and the round-1 response say "at least 2980 CPU hours";
+      cell 53 prints 1487.
+    response: The notes and the round-1 response now give the figure the run recorded prints (2182 CPU
+      hours, 546 hours on 4 cores), with the round-2 run's 1487 CPU hours.
+  - claim: experimental-intracellular-scores
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig78a-soma-intra-all-extra.
+    response: As for fig78a-soma-intra-all-extra.
+  - claim: fig78b-validation-spiking
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig78a-soma-intra-all-extra.
+    response: No change; the recorded ranges are the same in the re-run.
+  - claim: fig78c-cell2-worse-extracellular
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig78a-soma-intra-all-extra.
+    response: No change.
+  - claim: fig10-cell2-soma-underestimated
+    agrees: true
+    outcome: blocked
+    reason: blocked (too_large), as for fig78a-soma-intra-all-extra.
+    response: No change.
