@@ -1,0 +1,276 @@
+schema_version: 2
+id: 000289-kutschireiter-2023-01
+dataset:
+  archive: dandi
+  id: "000289"
+  version: 0.240801.1040
+  doi: 10.48324/dandi.000289/0.240801.1040
+paper: doi:10.1073/pnas.2210622120
+date: 2026-10-29
+entry: 000289-kutschireiter-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/40969113892
+inputs:
+- what: >-
+    The paper's code and processed simulation outputs (circularFiltering.py, the figure notebooks,
+    data_processed/*.npz), read into memory from the deposit zip (md5
+    c3f0574b98eef0c6c67d139f0d20a1ae). Used for every claim except the prediction.
+  source: >-
+    doi:10.5281/zenodo.7615975 (DrugowitschLab/BayesianRingAttractor v1.0, GitHub tag v1.0, commit
+    a9db6f9)
+- what: >-
+    Hemibrain connectome, traced neurons (bodyId, type, instance) and total synapse counts per
+    neuron pair, version 1.2 export (md5 ec1e076d15442f368fa5978b00f4a61c, dated 2020-12-22). Used
+    for fig4b-connectome-motifs.
+  source: >-
+    https://storage.googleapis.com/hemibrain/v1.2/exported-traced-adjacencies-v1.2.tar.gz (Scheffer
+    et al. 2020, doi:10.7554/eLife.57443)
+outcomes:
+- claim: fig1-conflict-decreases-certainty
+  outcome: reproduced
+  notebook: reproduce_kutschireiter_2023.ipynb
+  output: claim:fig1-conflict-decreases-certainty
+  notes: >-
+    With the code's vM_Projection (kappa_phi 1, kappa_v 1, dt 0.01), for kappa_t 1, 2 and 5 and
+    per-step reliabilities 0.1416 (gamma_z 1/s) and 0.4529 (10/s), a confirmatory observation raises
+    and an opposite one lowers the certainty in all 6 cases, both for the observation update alone
+    (for example kappa_t 1, 10/s, 1.453 and 0.547) and for the full step against the step without
+    observation (1.447 and 0.546 against 0.997).
+- claim: fig2h-bump-tracks-circkf
+  outcome: reproduced
+  notebook: reproduce_kutschireiter_2023.ipynb
+  output: claim:fig2h-bump-tracks-circkf
+  notes: >-
+    The simulation cells of Figure2h.ipynb were run from the deposit. With rate 15 (notebook) and 10/s
+    (Methods), the network's position differs from the circKF's by a mean of 0.016 and 0.021 rad,
+    against a circKF error to the true HD of 0.483 and 0.491 rad. Bump amplitude and circKF certainty
+    correlate at r 0.994 and 0.993 over the cue periods. In darkness (5 to 10 s) the amplitude falls
+    from 7.21 to 1.22 (rate 15) and from 5.89 to 1.21 (rate 10), closer to the baseline of 1 than at
+    its start.
+  deviations:
+  - >-
+    The notebook calls vM_Projection_Run with the keyword kappa_y, which the function names kappa_v;
+    the keyword was renamed (claims file header). Nothing else in the cells was changed except the
+    rate for the second reading.
+- claim: fig2i-accuracy-and-certainty-vs-reliability
+  outcome: reproduced
+  notebook: reproduce_kutschireiter_2023.ipynb
+  output: claim:fig2i-accuracy-and-certainty-vs-reliability
+  notes: >-
+    From figure2i.npz, the accuracies of the circKF and the Bayesian ring attractor differ by at most
+    0.0010 at rates of 1/s and above and 0.0003 at 3/s and above, so all four combinations hold. At
+    0.01, 0.03 and 0.1/s the attractor is less accurate (by 0.073, 0.084 and 0.057) and its mean
+    certainty is higher (1.00 to 1.05 against 0.18 to 0.56).
+- claim: fig3b-bayesian-beats-conventional
+  outcome: reproduced
+  notebook: reproduce_kutschireiter_2023.ipynb
+  output: claim:fig3b-bayesian-beats-conventional
+  notes: >-
+    The optimal kappa* of the fixed-certainty filter is 1.7 (weighted accuracy 0.626 against 0.687
+    for the Bayesian attractor). The Bayesian attractor is more accurate at all 23 rates (smallest
+    difference 0.0115 at 0.01/s, largest 0.131 at 100/s) and strictly so from 0.1 to 10/s (smallest
+    0.034). The reported part, not judged, holds only in part. The difference is smallest at 0.01/s,
+    but at 0.03/s (0.036) it is larger than at 2 and 3/s (0.034 and 0.035).
+- claim: fig3c-update-weights
+  outcome: reproduced
+  notebook: reproduce_kutschireiter_2023.ipynb
+  output: claim:fig3c-update-weights
+  notes: >-
+    At rates of 1/s and above, the weights computed with the circKF's and the attractor's mean
+    certainty differ by at most 0.0010 with the Methods' weight (dt 0.01) and 0.0062 with the
+    notebook's weight (dt 0.1), inside both bounds (0.02, 0.05). The largest difference, 0.021 and
+    0.130, falls at the lowest rate, 0.01/s.
+- claim: fig3d-best-network-slow-decay
+  outcome: partially_reproduced
+  notebook: reproduce_kutschireiter_2023.ipynb
+  output: claim:fig3d-best-network-slow-decay
+  notes: >-
+    Normalized by the particle filter reference, the best network is kappa* 0.7, beta 0.3
+    (1.0012). Conditions 1, 2, 3 and 5 hold. The best beta is at most 1, the best network differs
+    from (1, 0.5), the Bayesian attractor is 0.57% below the best, and above the best beta the
+    maximizing kappa* is 0.8 to 1.6, never below 0.7. Condition 4 fails as written. The maximum over
+    kappa* falls from 1.0012 (beta 0.3) to 0.9322 (beta 8), Spearman rho -0.98, but rises twice, by
+    0.0008 (beta 0.7 to 0.8) and 0.0014 (0.9 to 1). The two rises are smaller than the falls around
+    them and may be sampling noise of the scan; this was not tested.
+- claim: fig3f-noise-drop-below-70
+  outcome: reproduced
+  notebook: reproduce_kutschireiter_2023.ipynb
+  output: claim:fig3f-noise-drop-below-70
+  notes: >-
+    The noise-free optimum is kappa* 0.5, beta 0.2. Kept at those values, the network's relative
+    performance is 63.1% at noise SD 10 and 38.1% at SD 20, under the notebook's normalization
+    (particle filter) and the legend's (same network at SD 0, 63.07% and 38.06%), below 70% under all
+    four combinations. It first falls below 70% at SD 9 (67.4%).
+- claim: fig3f-retuning-reduces-drop
+  outcome: reproduced
+  notebook: reproduce_kutschireiter_2023.ipynb
+  output: claim:fig3f-retuning-reduces-drop
+  measured: 34.64
+  notes: >-
+    The reduction of the drop by retuning is 34.64% at SD 10 with the particle filter normalization
+    (the first reading, given as measured) and 34.56% with the legend's, and 31.67% for the mean
+    over SD 1 to 10 with the particle filter normalization, inside 31.5 to 38.5%. The other readings
+    are outside it, 31.19% (mean, legend normalization) and 29.80 and 29.76% (SD 20). The retuned
+    signal-to-noise ratio is above the untuned one at every noise SD above 0 (ratio 1.05 to 3.00).
+    Fig. S4, reported only, the best kappa* grows from 0.3 to 4.8 between SD 1 and 10, and the best
+    beta from 0.1 to 2.0 but not steadily, and both fall again at SD 15 and 20.
+  deviations:
+  - >-
+    The paper does not say at which noise level the 35% is taken; the claims file names six
+    readings, three of them match, and all are shown.
+- claim: noise-effects-on-mu-and-kappa
+  outcome: partially_reproduced
+  notebook: reproduce_kutschireiter_2023.ipynb
+  output: claim:noise-effects-on-mu-and-kappa
+  notes: >-
+    2,000 runs of T 5 per setting, noise SD 1 and 2, N 64 and 256. (1) holds. The mean change of
+    position is within 2 standard errors of 0 in all four settings (z -0.74 to 0.82) and its
+    variance grows at each second (for N 64, SD 1, 0.034 at 1 s to 0.232 at 5 s). (3) holds. The SD
+    of the one-step amplitude increments at N 256 is 0.500 and 0.501 times that at N 64. (2) fails.
+    The mean amplitude falls throughout the run and ends at 0.83, 0.65, 0.82 and 0.42, all below the
+    noise-free 1.00, so there is no upward drift and no overconfidence in this network. In
+    RNN_filter_Run the noise also enters the rectified sum that drives the global inhibition, which
+    may explain the fall; the SI derivation is not checked here.
+  deviations:
+  - >-
+    The runs use a batched copy of RNN_filter_Run (bra.rnn_batch), the same update term by term; on
+    the same noise draws it matches the released function to 4e-16.
+  - >-
+    The released RNN_filter_Run has no z parameter and raises NameError; z=None was added to its
+    signature, as the claims file says.
+- claim: fig4b-connectome-motifs
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kutschireiter_2023.ipynb
+  output: claim:fig4b-connectome-motifs
+  notes: >-
+    Sorted by the PB glomerulus in the name (reading (a)), left PEN1 neurons send their EPG output a
+    mean of +0.56 glomeruli from their EPG input (10 of 10 positive, Wilcoxon p 0.002) and right PEN1
+    neurons -0.48 (9 of 10 negative, p 0.004), among same-side EPG neurons; with partners on both
+    sides, +0.37 and -0.35. The two edge neurons (L9, R9) have offsets near 0. Every Delta7 receives
+    EPG input from 13 to 16 of the 16 EPG glomeruli and sends output to EPG neurons in 9 to 15,
+    more than half. Counting only glomeruli with at least 3 (or 5) synapses, inputs still reach more
+    than half for all 42 Delta7, but outputs do for 7 (or 0) of 42, so the breadth of the
+    Delta7 to EPG side depends on the threshold. Reading (b), by ellipsoid body or gall position,
+    could not be run.
+  deviations:
+  - >-
+    The criterion asks for two sorts. Reading (b), by the ellipsoid body or gall position in the
+    neuron's name, cannot be formed: hemibrain instance names give only the PB glomerulus (EPG(PB08)_L1,
+    PEN_a(PB06a)_R2). The outcome rests on reading (a) alone.
+  - >-
+    Assumed, as the Fig. 4B legend counts "the total number of synaptic connections between each
+    cell pair" with no threshold, that a connection is any synapse; the counts at 3 and 5 synapses
+    are shown.
+  - >-
+    Assumed a measure of the offset, since the paper gives none. For each PEN1 neuron, it is the
+    synapse-weighted circular mean position (period 8 glomeruli) of its EPG targets minus that of
+    its EPG inputs, among same-side EPG neurons, with both sides shown.
+  - >-
+    The connectome is the public hemibrain v1.2 export, not v1.2.1 as in the legend. neuPrint, which
+    serves v1.2.1, now requires a personal API token for all data.
+- claim: fig4gh-drosophila-network-matches
+  outcome: partially_reproduced
+  notebook: reproduce_kutschireiter_2023.ipynb
+  output: claim:fig4gh-drosophila-network-matches
+  notes: >-
+    From figure4g.npz, the Drosophila-like network's accuracy is within 0.02 of the Bayesian ring
+    attractor's at all 23 rates (largest 0.019 at 0.1/s), so reading (b) holds, but it exceeds 0.01
+    at 0.1, 0.2 and 0.3/s (0.019, 0.014, 0.010), so reading (a) fails; the criterion needs both. At
+    0.4/s and above the difference is at most 0.004. Mean certainties, reported only, are lower in
+    the Drosophila-like network at every rate (0.88 against 1.00 at 0.01/s, 13.8 against 14.5 at
+    100/s).
+- claim: figs2-performance-independent-of-n
+  outcome: partially_reproduced
+  notebook: reproduce_kutschireiter_2023.ipynb
+  output: claim:figs2-performance-independent-of-n
+  notes: >-
+    Of the 161 values in figureS2.npz (7 network sizes, 23 rates), one is more than 0.02 from the
+    quadratic circKF reference, N 16 at 0.1/s (0.041 below). Every other value, N 3 and 4 included,
+    is within 0.019. Both readings include N 16, so neither holds as written. One value (N 128 at
+    100/s) is missing (NaN) in the stored array.
+- claim: prediction-bump-amplitude-cue-reliability
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_kutschireiter_2023.ipynb
+  output: claim:prediction-bump-amplitude-cue-reliability
+  notes: >-
+    Tested on the 15 flies of the dandiset's cue-contrast experiment, high (more reliable) against
+    low contrast, with bump amplitude the length of the population vector at the bump's spatial
+    frequency across the PB midline ROIs (frequency 2, the spectral peak in every fly). The readings
+    disagree, and the criterion blocks the claim when they do. With dF/F, amplitude is higher at high
+    contrast in 10 of 15 flies (reading (a) holds) but the one-sided Wilcoxon test gives p 0.138
+    (reading (b) fails). With raw fluorescence minus baseline, 12 of 15 flies (a) and p 0.021 (b).
+    Median high to low ratio 1.12 (dF/F) and 1.11 (raw). Variants, high against zero contrast give
+    12 of 15 flies (p 0.047) and 13 of 15 (p 0.006), and low contrast is not above zero contrast
+    (7 of 15 with either signal). Without sub-2, which has one high-contrast block, dF/F gives 9 of
+    14 (p 0.21) and raw 11 of 14 (p 0.034). Question for the paper's authors (finding below). The
+    Discussion gives no experimental method for the prediction (which activity signal, which cue
+    conditions are compared, which test). With these data the answer depends on the signal and the
+    test, and no reading has more support in the paper than another.
+  deviations:
+  - >-
+    The dandiset holds data of a separate study, not of this paper; the paper does not test its
+    prediction.
+  - >-
+    Raw fluorescence is read from 10% of the frames (25 volumes every 250), averaged over planes and
+    smoothed in the plane (Gaussian SD 4 pixels) before averaging in each ROI mask; the baseline is
+    each ROI's 10th percentile. The projection and the smoothing were chosen as those that best
+    reproduce the stored dF/F (median correlation over ROIs 0.93, against 0.66 without smoothing).
+findings:
+- kind: metadata_error
+  statement: >-
+    The dandiset's related resources name the bioRxiv preprint "Bayesian inference in ring attractor
+    networks" (10.1101/2021.12.17.473253 version 4) as the paper it supplements, but its
+    description says the data belong to "Uncertainty and learning in a biological ring attractor"
+    (Basnak et al., in preparation). The linked paper, published as Kutschireiter et al. 2023 (PNAS),
+    is a theory paper that analyses none of these data, so the dandiset links no paper that uses them.
+- kind: metadata_error
+  statement: >-
+    imaging_rate is 9.18 Hz in every file, but sub-4 and sub-10 (cue-contrast experiment) are imaged
+    at 7.87 Hz (0.127 s frame interval, 9446 frames in 1200 s) with 14 planes, against 9.18 Hz and
+    12 planes in the other 13 sessions.
+- kind: other
+  statement: >-
+    In sub-2 the trials table has five blocks (high, zero, low, zero, low) where every other fly of
+    the cue-contrast experiment has six with two of each contrast. The last block lasts 405 s
+    against about 200 s in the protocol, so it may hold a low and a high block labelled as one.
+- kind: metadata_insufficient
+  statement: >-
+    The processing behind the stored dF/F is not described (which planes, the extent of each ROI,
+    the baseline). The ROI masks are a few pixels each on the PB midline, and the dF/F agrees with
+    the raw imaging averaged in those masks only after spatial smoothing (median correlation over
+    ROIs 0.66 without, 0.93 with a 4-pixel Gaussian, sub-1). The RoiResponseSeries unit is "na".
+- kind: methods_unavailable
+  statement: >-
+    Question for the paper's authors. The Discussion predicts higher bump amplitude with reliable
+    external HD cues but gives no experimental method. Which activity signal (dF/F or raw
+    fluorescence), which comparison of cue conditions and which test would test it? On this
+    dandiset's cue-contrast experiment, high contrast exceeds low contrast in most flies with either
+    signal, but a one-sided Wilcoxon test over 15 flies gives p 0.021 with raw fluorescence and
+    p 0.138 with dF/F.
+- kind: methods_unavailable
+  statement: >-
+    Question for the paper's authors. Fig. 4B sorts neurons "by their spatial position as a proxy for
+    their preferred HD". Which position was used? The hemibrain names give only the PB glomerulus
+    for EPG and PEN1 neurons. This attempt sorted by it and counted any synapse as a connection.
+- kind: code_mismatch
+  statement: >-
+    The released code does not run as published. RNN_filter_Run (circularFiltering.py) uses z but
+    has no z parameter, and Figure2h.ipynb and the scan scripts pass kappa_y to functions whose
+    parameter is kappa_v. One NaN remains in figureS2.npz (N 128 at 100/s).
+- kind: code_mismatch
+  statement: >-
+    In the released single-population network (RNN_filter_Run) at the Bayesian ring attractor's
+    parameters, additive neural noise lowers the mean bump amplitude (from 1.00 to 0.42 to 0.83
+    after 5 s, N 64 and 256, noise SD 1 and 2). The Results and SI Appendix section 5 say the noise
+    causes a positive drift of the amplitude.
