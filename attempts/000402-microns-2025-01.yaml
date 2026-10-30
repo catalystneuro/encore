@@ -1,0 +1,382 @@
+schema_version: 2
+id: 000402-microns-2025-01
+dataset:
+  archive: dandi
+  id: "000402"
+  version: 0.230307.2132
+  doi: 10.48324/dandi.000402/0.230307.2132
+paper: doi:10.1038/s41586-025-08790-w
+date: 2026-10-30
+entry: 000402-microns-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/40986860893
+inputs:
+- what: Nucleus detections of subvolume 65 (table nucleus_detection_v0), used for nuclei-144120 and to
+    restrict the SVM calls of cell-classification to subvolume 65.
+  source: BossDB open data, https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/minnie65/nucleus_detection/nucleus_detection_v0.csv
+    (ETag 6a269d25a4b065cdc44be1d61b3ff2c4, modified 2021-07-01)
+- what: SVM neuron calls of every nucleus (table nucleus_neuron_svm), for cell-classification.
+  source: BossDB open data, https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/minnie65/cell_types/nucleus_neuron_svm.csv
+    (ETag eb96d637196c9e79a3dd9f1de5c23a2a, modified 2021-07-27)
+- what: Excitatory and inhibitory calls of the well-segmented neurons (table allen_soma_ei_class_model_v1),
+    for cell-classification.
+  source: BossDB open data, https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/minnie65/cell_types/allen_soma_ei_class_model_v1.csv
+    (ETag e35a2d2da932a7bb374132c624136bbf, modified 2021-07-27)
+- what: Manual cell type labels of the 100 um column (table allen_visp_column_soma_coarse_types_v1),
+    for the SVM precision and recall of cell-classification.
+  source: BossDB open data, https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/minnie65/cell_types/allen_visp_column_soma_coarse_types_v1.csv
+    (ETag 3426029512b8ac2b06775c9446577818, modified 2021-07-27)
+outcomes:
+- claim: scans-14-p75-p81
+  outcome: reproduced
+  notebook: reproduce_microns_2025.ipynb
+  output: claim:scans-14-p75-p81
+  measured: 14
+  notes: The 14 scans of Extended Data Table 1 are all in the dataset, recorded on 6 days (4 to 9 March
+    2018), which are P75 to P80 against the birth date of 19 December 2017. The dataset holds 19 scans,
+    the 19 completed scans of the Methods. Each scan's fields tile 1,200 x 1,100 um (1,200 x 1,000 um in
+    scan 9-6) at depths of 80 to 570 um; the files give no common frame for the scans, so the extent of
+    the whole volume is not measured.
+  deviations:
+  - Which 14 of the 19 files are the paper's scans was taken from Extended Data Table 1 (Methods, 2P
+    functional imaging, "Of 19 completed scans over 6 days of imaging, 14 are described here (Extended
+    Data Table 1)"). The text the claims file was read from holds only the table's caption; its cells were
+    read from the table's image in PMC11981939 (41586_2025_8790_Tab1_ESM.jpg). They are 4-7, 5-6, 5-7,
+    6-2, 6-4, 6-6, 6-7, 7-3, 7-4, 7-5, 8-5, 9-3, 9-4 and 9-6.
+- claim: scan-configurations
+  outcome: reproduced
+  notebook: reproduce_microns_2025.ipynb
+  output: claim:scan-configurations
+  measured:
+  - 11
+  - 2
+  - 1
+  - 420
+  notes: Of the 14 scans, 11 are at 6.30 Hz with 4 depths and 8 fields, 2 at 8.61 Hz with 3 depths and 6
+    fields, and 1 at 9.62 Hz with 2 depths and 4 fields, two fields per depth in every scan. The depth
+    spans of the 11 scans are 280 to 420 um, all within 270 to 440 um (reading a); their median is 420 um
+    (reading b, given as measured). In scan 8-5 two of the four depths are 10 um apart (210 and 220 um).
+    All 19 files fall in one of the three groups (16 at 6.3 Hz).
+- claim: masks-125413-somatic-115372
+  outcome: reproduced
+  notebook: reproduce_microns_2025.ipynb
+  output: claim:masks-125413-somatic-115372
+  measured:
+  - 125413
+  - 115372
+  - 8.01
+  notes: The dataset holds every mask with a soma or artifact label (reading a). Over the 14 scans there
+    are 125,413 masks, 115,372 somatic, so 8.01% are excluded; both counts equal the paper's. Over all 19
+    files the counts are 168,971 and 155,153.
+- claim: unique-neurons-75909
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The method groups masks by their 3D centroids in the structural stack. The dataset holds neither
+    the stack nor the registration of the fields into it nor any stack coordinate of a mask; each file
+    gives its field origins on its own axes only. The EM root ids of the dataset cover half the fields
+    and cannot stand in for the grouping.
+- claim: area-split-half-visp
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: No mask or field carries a visual area. The location of every imaging plane is the same list,
+    "VISp,VISrl,VISlm,VISal", and the area masks and sign map the Methods use are not in the dataset.
+- claim: z-drift-under-10um
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Drift was measured by registering sections of each scan into the structural stack, which is not
+    in the dataset. The raw frames are there, but without the stack there is nothing to register them to
+    in z.
+- claim: structural-stack
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds no structural stack, in any file or as a separate asset (19 assets, one per
+    functional scan).
+- claim: stimulus-composition
+  outcome: reproduced
+  notebook: reproduce_microns_2025.ipynb
+  output: claim:stimulus-composition
+  measured:
+  - 83.76
+  - 6
+  - 10
+  - 144
+  - 90
+  - 20
+  - 20
+  notes: All 14 scans have 384 clip trials (6 clips shown 10 times, 90 shown twice, 144 once), and 20
+    Monet2 and 20 Trippy seeds shown twice each; clips last 10 s and parametric trials 15 s. The total is
+    83.76 min from the trial times (reading a, given as measured) and 84.0 min nominal (reading b). Each
+    category (cinematic, Sports-1M, rendered) has 2 oracle, 30 repeated and 48 unique clips in every
+    scan, as the Methods give.
+- claim: stimulus-conserved-across-scans
+  outcome: partially_reproduced
+  notebook: reproduce_microns_2025.ipynb
+  output: claim:stimulus-conserved-across-scans
+  notes: The 96 clips shown 2 or 10 times in a scan occur in all 14 scans and the 2,016 clips shown once
+    each occur in one scan only. 10 Monet2 and 10 Trippy seeds occur in all 14 scans, and the other 140
+    Monet2 seeds each occur in one scan. One Trippy seed (6831, condition hash Xe6/vzamVqYgecKk7y51) is
+    shown twice in each of scans 6-4 and 7-5; the other 138 non-conserved Trippy seeds each occur in one
+    scan. The criterion's requirement that every remaining seed occur in one scan fails for this seed.
+- claim: oracle-same-order
+  outcome: reproduced
+  notebook: reproduce_microns_2025.ipynb
+  output: claim:oracle-same-order
+  notes: In every scan the 10 repeats each hold the 6 oracle clips consecutively and in one order (one
+    distinct order per scan), with at most 0.633 s between clips. The 6 oracle clips are the same in all
+    scans, but their order differs between scans (14 distinct orders), which the claim does not address.
+- claim: spontaneous-periods
+  outcome: reproduced
+  notebook: reproduce_microns_2025.ipynb
+  output: claim:spontaneous-periods
+  measured:
+  - 0.145
+  - 4.841
+  - 8.93
+  - 21.19
+  notes: Over the 14 scans the time from the first frame to the first stimulus is 0.145 to 4.841 min and
+    from the last stimulus to the last frame 8.93 to 21.19 min, all within the widened ranges. The
+    dataset does not say whether the monitor was on or off in these periods. In file 5-3, outside the
+    paper's 14, the first period is 5.54 min.
+- claim: monet2-directions
+  outcome: reproduced
+  notebook: reproduce_microns_2025.ipynb
+  output: claim:monet2-directions
+  measured:
+  - 16
+  - 937.1
+  notes: Every Monet2 trial has num_directions 16 and duration 15 s in the table. From the video, the
+    period fitted to the direction changes is 929.6 to 945.4 ms (median 937.1) in all 560 trials, within
+    tolerance. 556 trials have 16 directions at least 10 degrees apart; in 4 (two seeds, each shown
+    twice) two periods measure 7 to 10 degrees apart, within the measurement's error (measured
+    directions lie up to 11.0 degrees from the nearest multiple of 22.5), so these 4 are not settled
+    either way. Both showings of every seed give the same 16 directions. The spacing is near 22.5
+    degrees. The speed is not in the dataset and is not tested.
+  deviations:
+  - The table gives no direction or onset per period, so both were measured from the stimulus video in
+    each file, by phase correlation between successive frames; a method of this attempt, not the
+    paper's. Boundaries, the 10 degree tolerance for distinct directions and the 0.1 s left out at each
+    end of a period are standard choices, stated in the helper.
+- claim: fig3f-oracle-reliability
+  outcome: reproduced
+  notebook: reproduce_microns_2025.ipynb
+  output: claim:fig3f-oracle-reliability
+  notes: The score is computed for all 115,372 somatic masks of the 14 scans under both readings. The
+    units at the 34th, 79th and 99th percentiles score 0.208, 0.396 and 0.702 under reading (a) and
+    0.151, 0.275 and 0.465 under reading (b), increasing, with the 99th above 0. In the variant, the mean
+    pairwise correlation between single repeats of the 100 units nearest each percentile is 0.084, 0.203
+    and 0.524 (a) and 0.096, 0.205 and 0.394 (b). Median scores by scan range from 0.208 to 0.348.
+  deviations:
+  - Fluorescence traces replace the deconvolved traces of the paper, which are not in the dataset.
+  - Frames are taken from each field's time stamps from the onset of each repeat; the per-unit delay
+    within a frame that the paper's code adds is not in the dataset and is not applied. All fields of a
+    scan share one array of time stamps in the files.
+- claim: fig3g-direction-tuning
+  outcome: reproduced
+  notebook: reproduce_microns_2025.ipynb
+  output: claim:fig3g-direction-tuning
+  notes: Every direction is preferred by at least 5,203 somatic masks under reading (a) and 5,113 under
+    reading (b), and by at least 4,705 with the windows shifted by +0.47 s, where the split-half
+    reliability of the tuning peaks with fluorescence. In the split-half variant the 80 units shown
+    respond more at their first-half preferred direction than at the mean of the other 15 in the second
+    half in 91.2% of cases; over all somatic masks the share is 62.9% (0.5 without tuning).
+  deviations:
+  - Fluorescence replaces the deconvolved traces, which are not in the dataset.
+  - The direction of each period comes from the video (see monet2-directions), snapped to the 22.5 degree
+    grid.
+  - The 80 units shown are ranked by the preferred response minus the mean over directions, divided by
+    the standard deviation over directions, in place of the claims file's ratio, which is not defined for
+    fluorescence with its arbitrary offset. This choice only picks the units shown.
+- claim: behaviour-recorded
+  outcome: partially_reproduced
+  notebook: reproduce_microns_2025.ipynb
+  output: claim:behaviour-recorded
+  measured:
+  - 57.0
+  - 100.2
+  - 20.0
+  notes: All 14 scans hold treadmill velocity (57.0 to 100.2 Hz) and pupil position and major and minor
+    radii (19.96 to 20.01 Hz). The treadmill covers the imaging period in all 14 scans; the eye tracking
+    covers it in 13, and in scan 4-7 it ends 968 s before the last imaging frame (85% coverage). A pupil
+    is fitted in 84.9% to 99.9% of eye frames. Outside the paper's 14, the eye tracking of 4-10, 5-3 and
+    8-7 also ends early.
+- claim: photodiode-89pct
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The files hold the aligned stimulus times only, with no photodiode signal and no per-trial flag
+    of whether the flip code was read.
+- claim: manual-coreg-19181
+  outcome: blocked
+  blocked_by: other
+  notes: The match table is the CAVE table coregistration_manual_v4. CAVE serves its tables only to users
+    with an account token (the materialization API redirects to an authorization page), and this run has
+    none. The BossDB bucket holds only a 2021 match release (func_unit_em_match_release.csv, 14 kB), not
+    this table. As the variant the claims file names, the notebook counts the EM identifiers the dataset
+    holds. Only 52 of the 104 fields of the 14 scans have EM columns (one of the two fields at each depth),
+    holding 8,863 ROIs with a root id (8,326 distinct, 396 in more than one scan), so they are not
+    comparable with the paper's 19,181 and 15,439.
+- claim: ed4-matched-higher-signal-correlation
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on manual-coreg-19181, whose CAVE table needs an account token. The dataset's own EM
+    identifiers cover only half the fields.
+- claim: fiducial-automatch
+  outcome: blocked
+  blocked_by: other
+  notes: The CAVE tables coregistration_auto_phase3_fwd and coregistration_manual_v4 need an account
+    token, which this run has none of; no public copy of them was found on the BossDB bucket.
+- claim: vessel-automatch
+  outcome: blocked
+  blocked_by: other
+  notes: As for fiducial-automatch; the CAVE table apl_functional_coreg_vess_fwd needs an account token.
+- claim: hybrid-automatch
+  outcome: blocked
+  blocked_by: other
+  notes: As for fiducial-automatch.
+- claim: fiducial-transform-residual
+  outcome: blocked
+  blocked_by: other
+  notes: The paper gives no table name or version for the fiducials, and no public copy was found on the
+    BossDB bucket; the CAVE tables need an account token.
+- claim: em-sections
+  outcome: blocked
+  blocked_by: too_large
+  notes: The imagery is public on BossDB in sharded precomputed format. Its metadata give chunk-aligned
+    bounds (subvolume 35 from section 7,904, subvolume 65 from 14,816 to 27,903), which cannot settle an
+    exact count. Reading one 128 x 128 pixel patch at 64 nm per pixel, outside the notebook, found the
+    first section with data in subvolume 35 at 7,931, as the paper says; deciding the first and last
+    section of each subvolume needs whole sections, about 600 MB each at the coarsest scale that keeps
+    single sections, for every candidate section at each end. This was not run, and the outcome rests on
+    nothing run outside the notebook.
+- claim: synapse-detection
+  outcome: blocked
+  blocked_by: too_large
+  notes: The synapse table of subvolume 65 at materialization 1181 is public on BossDB as a 20.0 GB
+    gzipped CSV (synapse_graph/cave_exports/v1181/synapses_pni_2_v1_filtered_view.csv.gz). A notebook
+    that streams it and counts its lines took 10 minutes in a run made while preparing, but in the
+    entry's run the stream stalled and the cell was stopped at the 60 minute limit, so the notebook was
+    dropped and no count is in the record. No public table of subvolume 35 and no manual synapse annotations were found.
+- claim: nuclei-144120
+  outcome: reproduced
+  notebook: reproduce_microns_2025.ipynb
+  output: claim:nuclei-144120
+  measured: 144120
+  notes: The released nucleus_detection_v0 table holds 144,120 detections, all at sections 14,834 to
+    27,871, within subvolume 65.
+- claim: cell-classification
+  outcome: reproduced
+  notebook: reproduce_microns_2025.ipynb
+  output: claim:cell-classification
+  measured:
+  - 89056
+  - 69957
+  - 95.5
+  - 99.6
+  notes: Of the 144,120 nuclei of subvolume 65, 144,117 are in the SVM table and 89,056 are called
+    neurons, within the tolerance of the paper's 82,247 (8.3% higher). The excitatory and inhibitory
+    table holds 69,957 neurons, the paper's count of well-segmented neurons, all among the SVM neurons.
+    Against the manual labels of the 100 um column (2,029 cells labelled neuron or non-neuron, matched
+    by position at 0 um), the SVM has precision 95.5% and recall 99.6%. The multilayer perceptron's
+    accuracy was measured by the paper on 350 further cells that are not released, so it is not tested;
+    on the column cells, its training and validation data, the calls agree with the labels for 98.2%.
+  deviations:
+  - The tables are the 2021 releases on BossDB, not the CAVE tables the claims file names; the paper gives
+    no version.
+  - The SVM table holds 27,698 rows that are not nuclei of nucleus_detection_v0 (27,692 called
+    non-neurons); the count is restricted to subvolume 65's nuclei, as the paper's is.
+- claim: proofreading-scale
+  outcome: blocked
+  blocked_by: other
+  notes: The CAVE table proofreading_status_and_strategy and the ChunkedGraph edit history need an
+    account token. The BossDB bucket holds only a 2021 proofreading status release, neither of the
+    claims file's readings of the version.
+- claim: dendrite-input-precision
+  outcome: blocked
+  blocked_by: other
+  notes: Needs the CAVE synapse and proofreading tables with the root history, which need an account
+    token.
+- claim: axon-lengths
+  outcome: blocked
+  blocked_by: other
+  notes: Needs proofreading_status_and_strategy from CAVE (account token) to choose the axons; skeletons
+    on BossDB are of version 661 and alone do not say which axons are proofread.
+- claim: multisoma-split
+  outcome: blocked
+  blocked_by: other
+  notes: Needs nucleus_ref_neuron_svm and root ids at a recent version from CAVE (account token); the
+    2021 nucleus table on BossDB holds root ids of an early version.
+- claim: fig6f-outputs-mapped
+  outcome: blocked
+  blocked_by: other
+  notes: Needs proofreading_status_and_strategy from CAVE (account token) to choose the neurons, besides
+    the 20 GB synapse table.
+- claim: fig6gh-example-cell
+  outcome: blocked
+  blocked_by: other
+  notes: Needs the root id of nucleus 294657 at version 1181 and coregistration_manual_v4, both from CAVE
+    (account token), besides the 20 GB synapse table.
+- claim: fig6k-target-responses
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on manual-coreg-19181 (coregistration_manual_v4, CAVE, account token) and on the targets
+    of nucleus 294657 from the CAVE synapse table.
+- claim: outputs-94-axons
+  outcome: blocked
+  blocked_by: other
+  notes: Needs proofreading_status_and_strategy from CAVE (account token) to choose the 94 axons.
+- claim: fig7abc-laminar-connectivity
+  outcome: blocked
+  blocked_by: other
+  notes: Needs proofreading_status_and_strategy and aibs_metamodel_mtypes_v661_v2 at version 1181 from
+    CAVE (account token), besides the 20 GB synapse table.
+- claim: fig7d-l3-two-hop
+  outcome: blocked
+  blocked_by: other
+  notes: The csv files are public in the paper's repository, but the recount the criterion asks for
+    needs CAVE at version 1181 (account token).
+findings:
+- kind: selection_undocumented
+  statement: The dandiset holds all 19 completed scans, while the paper describes 14 (Extended Data Table
+    1). Nothing in the files or the metadata marks which 14, so its counts (for example 125,413 masks)
+    can be matched only after reading the table's image. The five other files are 4-9, 4-10, 5-3, 8-7 and
+    8-9.
+- kind: data_missing
+  statement: The files hold fluorescence traces only. The deconvolved traces that the paper's analyses
+    use, and that the paper says can be read from the NWB files, are not in them; nor are the oracle
+    scores.
+- kind: data_missing
+  statement: The structural stack, the registration of each field into it, and the stack coordinates of
+    the masks are not in the dataset, so masks imaged in more than one scan cannot be grouped and the z
+    drift cannot be measured.
+- kind: metadata_insufficient
+  statement: No mask or field has a visual area; every imaging plane's location is the same list of four
+    areas. The area masks the Methods transform into the stack are not in the dataset.
+- kind: identifier_missing
+  statement: The EM columns (cave_ids, pt_root_id, pt_supervoxel_id and positions) exist only in one of
+    the two fields at each depth (52 of the 104 fields of the paper's 14 scans) and in none of the fields
+    of files 4-9, 4-10, 8-7 and 8-9, though the paper's co-registration covers the whole field of view.
+- kind: metadata_insufficient
+  statement: The Monet2 table gives num_directions but not the direction or onset of each period, which
+    Fig. 3g needs. The directions can be measured from the stimulus video in the files, as this attempt
+    did.
+- kind: metadata_error
+  statement: The imaging_rate of every imaging plane is NaN (the rate is only in the field description),
+    and the subject age is the range P75D/P81D in every file, though each scan was recorded on one day.
+- kind: other
+  statement: In scan 4-7, one of the paper's 14, the eye tracking ends 968 s before the last imaging
+    frame; in files 4-10, 5-3 and 8-7 it ends 54 to 76 minutes early. Several files have missing (NaN)
+    time stamps in the treadmill and eye series (up to 190).
+- kind: other
+  statement: Trippy seed 6831 is shown in both scans 6-4 and 7-5, while the Methods say the 10 seeds that
+    are not conserved are unique to each scan.
+- kind: other
+  statement: All fields of a scan share one array of frame time stamps, though the fields are imaged one
+    after another within each frame; the per-field offset is not recorded.
