@@ -23,8 +23,10 @@ is github.com/ucsb-goard-lab/Neurotar-HD-Experiments at commit c6344f5):
 - Heading clean-up and trials: code ControlledRotation.getTrialResponses (claims, opening
   comment): steps of 20 to 350 degrees replaced by the previous value (up to 10 passes); breaks
   at the wraps of heading and at rests (more than 20 consecutive frames with a change under 0.5
-  degree); segments under 50 frames dropped, and segments whose 25th or 75th heading percentile
-  lies more than 50 degrees from +-90 dropped. Wraps are found as the code finds them: peaks of
+  degree); segments under 50 frames dropped, and segments dropped where
+  `any(90 - abs(prctile(heading, [25, 75])) > 50)`, that is, where the 25th or 75th heading
+  percentile lies within 40 degrees of 0 (the code's rule, ControlledRotation.m line 224 at
+  c6344f5; the claims file paraphrases it as "more than 50 degrees from +-90"). Wraps are found as the code finds them: peaks of
   the distance from the first heading within 10 degrees of its maximum (scipy's find_peaks in
   place of MATLAB's findpeaks).
 - Tuning curves: 60 bins of 6 degrees over -180 to 180 (code Cue.binData), mean activity per bin,
@@ -46,8 +48,10 @@ is github.com/ucsb-goard-lab/Neurotar-HD-Experiments at commit c6344f5):
 - Cross-validated alignment: for each trial, the peak of the mean of the other trials sets the
   circular shift that puts that peak at bin 15 (claims, opening comment; Methods).
 - Flip score: code Cue.calculateFlipScore (Methods, eq. 5): circular autocorrelation of the
-  tuning curve smoothed with MATLAB's smoothdata default (a moving mean whose width is a quarter
-  of the curve's length, here 15 bins), CC at 180 minus the mean of CC at 90 and 270 degrees.
+  tuning curve smoothed with MATLAB's smoothdata default, CC at 180 minus the mean of CC at 90 and
+  270 degrees. smoothdata picks its default window heuristically from the data; a moving mean a
+  quarter of the curve's length wide (15 bins) stands in for it (an assumption that cannot be
+  checked without MATLAB; on synthetic curves the score is about -0.2 for one peak and 2 for two).
 - V-test: circ_vtest of the Circular Statistics Toolbox (Methods, Statistical information).
 """
 
