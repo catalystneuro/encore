@@ -18,7 +18,8 @@ isoflurane and in recovery.
 | Quiescence after superficial MOs stimulation | Reproduced |
 | Triphasic response of stimulated cortex to deep stimulation | Partially reproduced |
 | Triphasic response of SM-TH | Partially reproduced |
-| LFP, CSD and spiking magnitudes by region (Figure 3, two claims) | Blocked: metadata insufficient (proposed after round 2: the example session partially reproduced, Figure 3D too large) |
+| LFP, CSD and spiking magnitudes decay with distance in the example session (Figure 3A to 3C) | Partially reproduced (ordering only) |
+| LFP, CSD and spiking magnitudes by region (Figure 3D) | Blocked: too large |
 | RS unit counts of Figure 4 | Not reproduced |
 | Modulated units at 2 to 25 ms | Not reproduced |
 | Modulated units at 25 to 150 ms | Not reproduced |
@@ -50,12 +51,13 @@ The paper does not say which of the three currents of each stage it analysed; ev
 and at the middle current, and several outcomes depend on the choice. The middle current with all awake trials gives
 the paper's example ERP (1.011 s and 11.133 SD.s against 1.01 and 11.13) and its p-values for Figures 1E and 1F,
 which points to it as the paper's choice. The files carry no cortical layers and no
-position or depth of the stimulating electrode. Six claims are blocked in the record: the stimulation depths, the
-sign flip of the first ERP peak, the CSD by layer (two claims) and the two Figure 3 claims. The RS unit counts of Figure 4 are three times the counts of units in
+position or depth of the stimulating electrode. Five claims are blocked: the stimulation depths, the
+sign flip of the first ERP peak and the CSD by layer (two claims) for lack of data or metadata, and Figure 3D
+because its LFP and CSD computation would take several hours. The RS unit counts of Figure 4 are three times the counts of units in
 the files; counting each unit once per current gives the legend's first three counts exactly and 9486 against
-9363. After the second verification round the LFP and CSD magnitudes of the example session were computed, with
-layer 1 approximated by the top 100 um of each area; they support a partial reproduction of Figure 3A to 3C,
-which the record proposes for a third round. The spiking magnitudes of Figure 3 come near the paper's, in the example and with deep
+9363. The LFP and CSD magnitudes of the example session were computed, with layer 1 approximated by the top
+100 um of each area; MO exceeds VIS for all three signals in 112 of 128 combinations of readings, but at most
+three of the six values are within tolerance, so Figure 3A to 3C is partially reproduced. The spiking magnitudes of Figure 3 come near the paper's, in the example and with deep
 stimulation, only when falls below baseline are counted (|z|). The attempt
 record, with the reasons and the differences from the paper's
 method, is [`attempts/000458-claar-2023-01.yaml`](../../attempts/000458-claar-2023-01.yaml).

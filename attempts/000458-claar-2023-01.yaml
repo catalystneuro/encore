@@ -173,12 +173,18 @@ outcomes:
     b); by reading (a) 1 to 3 of 4 have no rebound peak above z = 3.
     Requiring at least 10 ms below baseline gives the same counts of triphasic sites in every reading.
 - claim: fig3abc-decay-with-distance
-  outcome: blocked
-  blocked_by: metadata_insufficient
+  outcome: partially_reproduced
   notebook: claar_lfp.ipynb
   output: claim:fig3abc-decay-with-distance
+  measured:
+  - 60.83
+  - 21.75
+  - 48.77
+  - 5.21
+  - 28.75
+  - 2.76
   notes: The magnitudes average all channels of a region "except layer 1"; the channel locations are CCF
-    areas without layers (MOs, SSp-ll, ...). This is the verified outcome. After round 2 the LFP, CSD and
+    areas without layers (MOs, SSp-ll, ...). The LFP, CSD and
     shuffle pipeline was run for the example session (571619, deep MOs; MO on probe F, 119 valid channels;
     VIS on probe C, 87), with layer 1 approximated by the top 100 um of each area and also without the
     exclusion (claar_lfp.ipynb). Over 128 combinations of readings MO exceeds VIS for all three signals in
@@ -190,7 +196,8 @@ outcomes:
     the CSD values by up to 2.84. The spiking magnitude as the Methods describe it (signed z) is 0.31 to
     3.96 in MO; integrating |z| gives 28.31 to 31.37 with the 5 ms kernel and the -2 to 0 s baseline, so the
     signed integral, in which the suppression cancels the excitation, most likely explains the earlier
-    values far below 30.9 (verifier, round 2).
+    values far below 30.9 (verifier, round 2). Only the ordering is reproduced; the measured values are
+    those of the combination named above, one of two with three values within tolerance.
   deviations:
   - Layer 1 is not labelled in the files; it is approximated by the channels in the top 100 um of each area
     (an assumed thickness), and the result is shown with and without the exclusion.
@@ -201,21 +208,19 @@ outcomes:
   - The spiking magnitude is shown both as the signed integral of the Methods and as the integral of |z|
     (Results, Global ERPs..., paragraph 1, "our magnitude metric accounts for both reductions as well as
     increases").
-  proposed:
-    outcome: partially_reproduced
-    reason: With the LFP and CSD computed for the example session (claar_lfp.ipynb), MO exceeds VIS for all
-      three signals in 112 of 128 combinations of readings, but no combination puts all six values within
-      tolerance (at most three), which is the criterion's partial reproduction. The layer-1 exclusion rests
-      on an assumed thickness of 100 um, and the ordering holds with and without it.
 - claim: fig3d-magnitudes
   outcome: blocked
-  blocked_by: metadata_insufficient
+  blocked_by: too_large
   notebook: claar_lfp.ipynb
   output: claim:fig3d-magnitudes
-  notes: This is the verified outcome. After round 2 the size of the LFP and CSD computation was measured
-    (claar_lfp.ipynb). Figure 3D needs 86 probe areas over 24 stimulation sites; at the rate measured on the
-    example's two probes this takes about 265 min with all readings, and reading the LFP alone about 92 min
-    (76 min if the areas of one probe share a read), over the 30 min notebook limit. Layer 1 can be
+  notes: The size of the LFP and CSD computation was measured (claar_lfp.ipynb). Figure 3D needs 86 probe
+    areas over 24 stimulation sites; at the rate measured on the example's two probes, which varies from run
+    to run, this takes 234 to 265 min with all readings, and reading the LFP alone 86 to 92 min (71 to 76 min
+    if the areas of one probe share a read), over the runs made for this record, over the 30 min notebook
+    limit. The
+    estimate is rough (it scales the shuffles by samples, and counts the ACSF channels once per area), but
+    even the read-once figure is more than twice the limit. Split across notebooks of under 30 min it would
+    need about eight; that is left to a later attempt. Layer 1 can be
     approximated as in fig3abc-decay-with-distance, so the missing layers do not block
     the claim; its size does. The spiking part was computed for every site (claar_spikes.ipynb). With the
     signed z of the Methods no group median is near the paper's and no stimulated group is significantly
@@ -223,13 +228,6 @@ outcomes:
     shuffled rows, and with the 5 ms kernel and the -2 to 0 s baseline at the medium current the deep
     stimulated median is 27.96 to 29.18 (29.3 +/- 2.93) and the deep non-stimulated median 4.18 to 6.25
     (4.4 +/- 0.44), but the superficial stimulated median is 4.81 to 4.86 against 1.8.
-  proposed:
-    outcome: blocked
-    blocked_by: too_large
-    reason: The LFP and CSD magnitudes of the 86 probe areas would take about 265 min at the rate measured on
-      the example session (92 min to read the LFP alone), over the 30 min notebook limit; the layers are
-      approximated as in fig3abc-decay-with-distance, so the size, not the metadata, is what stops the test
-      (verifier, round 2).
 - claim: fig4-unit-counts
   outcome: not_reproduced
   notebook: claar_spikes.ipynb
@@ -1173,6 +1171,40 @@ verifications:
       which leaves the medium-current result unchanged. With the PCIst baseline ending 20 ms before the pulse
       the passing combination gives isoflurane 18.11, out of tolerance; the notes say so. The outcome stays on
       the criterion''s baseline.'
+- date: '2026-10-30'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The two outcome changes proposed after round 2 (fig3abc-decay-with-distance and fig3d-magnitudes)
+    and the analysis behind them in the executed claar_lfp.ipynb, with the helper module, the attempt record,
+    the claims file and the paper under paper/.
+  results:
+  - claim: fig3abc-decay-with-distance
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'LFP cell 9 prints 128 combinations of readings. MO exceeds VIS for all three signals in 112 of
+      them, all six values are within tolerance in none, and at most three are within tolerance in any one.
+      The criterion calls that a partial reproduction: the ordering holds but a value is out of tolerance.
+      The ordering holds for CSD in 32 of 32 readings and for spiking in 32 of 32, also with the signed
+      spiking integral and with or without the layer-1 exclusion, so the outcome rests on neither the |z|
+      variant nor the 100 um assumption. The LFP in MO is never within tolerance (7.57 to 77.16) and the
+      signed spiking magnitude in MO is about a tenth of 30.9; only the ordering is reproduced.'
+    response: 'Outcome set to partially_reproduced. The record, the notebook and the README now say that only
+      the ordering is reproduced. The verifier''s point that the claims file fixes the spiking magnitude as
+      the signed integral without naming the |z| reading is added to questions/000458.yaml for a reader.'
+  - claim: fig3d-magnitudes
+    agrees: true
+    outcome: blocked
+    reason: 'Yes, with reservations. Cell 13 prints 86 probe areas over 24 sites, 262 min with all readings
+      and 91 min just to read the LFP (76 min if each probe is read once); even the cheapest figure is over
+      30 min. Layer 1 can be approximated as in fig3abc, so missing metadata no longer stops the test; its
+      size does. The record''s 265 and 92 min come from an earlier run and should be updated to the printed
+      ones. The estimate is rough: it scales the shuffles by samples, and counts the ACSF channels once per
+      area. Splitting the analysis across several notebooks of under 30 min is not addressed.'
+    response: 'Outcome set to blocked as too_large. The record and the notebook now give the range printed over
+      the runs made for this record (234 to 265 min, 86 to 92 min, 71 to 76 min read once; the rate varies
+      with the network),
+      say that the estimate is rough and why, and say that split into notebooks of under 30 min the
+      computation would need about eight, which is left to a later attempt.'
 findings:
 - kind: data_missing
   statement: The depth of the stimulating electrode in mm and its position are not in the files; the trial
