@@ -1,0 +1,957 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000023",
+  "label": "DANDI:000023"
+ },
+ "page": "datasets/dandi/000023/",
+ "generated": "2026-10-30T02:44:06+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 4,
+  "partially_reproduced": 3,
+  "not_reproduced": 3,
+  "blocked": 1
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 3,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 10,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 7
+ },
+ "outcome_counts_links": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000023-berg-2020-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000023",
+    "version": "0.210914.1900",
+    "doi": "10.48324/dandi.000023/0.210914.1900"
+   },
+   "key": "dandi:000023",
+   "label": "DANDI:000023",
+   "dataset_version": "0.210914.1900",
+   "paper": "10.1101/2020.03.31.018820",
+   "paper_title": null,
+   "date": "2026-10-23",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-10"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/39885155400"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000023-berg-2020",
+   "entry_title": "Human supragranular glutamatergic neurons by Patch-seq (Berg et al. 2020)",
+   "description": "Tests the findings of Berg, Sorensen, Ting, Miller et al. (2020) on dandiset 000023, which holds the whole-cell recordings of 318 human L2/3 neurons from 56 neurosurgical donors. The 18 electrophysiological features are computed from the recordings with IPFX and linked to the paper's per-cell table of t-types and depths from its code, to test the cohort counts, the depth of each t-type, the differences between the homologous and deep L3 t-types, the depth dependence within FREM3, the classifier, the cross-species comparison and the pathology comparison. Claims on the code's morphology, pathology and NeuN section data are tested apart.",
+   "notebooks": [
+    {
+     "path": "reproduce_berg_2020.ipynb",
+     "title": "Reproducing Berg et al. (2020) from dandiset 000023",
+     "executed": "notebooks/000023-berg-2020/reproduce_berg_2020.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "features-and-labels-link",
+     "statement": "The dandiset's recordings can be matched to the paper's per-cell table (t-type and depth) by specimen ID, and the 18 features computed from them agree with the paper's feature table.",
+     "source": "Methods, Electrophysiology feature analysis; code data/human_IVSCC_excitatory_L23_consolidated_0131.csv and data/human_mouse_ephys_all_0127.csv at commit 3daf9f0",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "No file carries a SpecimenID. The answer to the question (questions/000023.yaml) found that the paper names no identifier and allows both readings, and the criterion names them and asks for both to be run and reported; the outcome is under M2, and under M1 it would be not reproduced. M1, a SpecimenID stored in the files, matches 0 files. M2, the SpecimenID recovered from the file as the next SpecimenID of the same donor above the file's session id (offsets 13 to 685, the next candidate at least 28 further), gives 318 distinct cells of the 385-cell table, including all 283 cells with features in the code. With the Methods' sweep QC, 261 of these have features on both sides; the median relative difference from the code's table is 0 for all 18 features, 128 cells agree on every shared feature and 248 on at least 80% of them, and a match on the features alone, within donor, picks the M2 cell for 261 of 261 files. With IPFX's sweep QC alone the agreement is closer (145 cells identical on every shared feature; 1 of the code's cells with no features here, against 22), and the match on features alone picks the M2 cell for 282 of 282 files, 21 of 21 among those with no features under the Methods' sweep QC; the remaining cell of the 283 (H18.03.322.11.11.01.02) gives features under neither QC, and its sample date matches. The 35 cells with no features in the code cannot be checked by features; for all 35 the date in the cell's sample_id equals the file's local recording date (279 of the 283 checked cells too, the other 4 started after midnight, the day after the sample's date), and in each of 71 rig-days with two or more files (253 files, 27 of the 35) tube numbers rise with recording time without exception. These checks support the 35 links without proving them, as the date separates only cells recorded on different days. The donor table agrees on sex for 55 of 56 donors and on age within a year for 55 of 56. The files hold no t-type or depth, so every label comes from the code's table. Every claim that needs a label uses M2 and says so.",
+     "deviations": [
+      "The SpecimenID of each file was recovered from its session id and donor, not read from the file; the code's per-cell features confirm the match for 261 of the 283 cells that have them under the Methods' sweep QC and for 282 under IPFX's sweep QC alone, and the sample dates and tube order support it for the 35 cells without features in the code.",
+      "Features computed with IPFX 2.1.2 (the paper gives no version), read from its output as the code's feature names imply (patchseq_l23.FEATURE_SOURCES); the code does not hold that step.",
+      "The sweep QC is the Methods'. IPFX 2.1.2 applies only the noise limits to sweeps, so the Methods' bias current (0 +/- 100 pA) and bridge balance (below 20 MOhm and 15% of input resistance) limits were added, with the input resistance of IPFX's cell QC for the 15% limit, which the Methods do not fix (asked in questions/000023.yaml). Long squares without a bias current value were kept."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "cohort-cells",
+     "statement": "385 Patch-seq neurons passing transcriptomic QC mapped to the five supragranular glutamatergic t-types, and 283 of them had recordings complete enough to compute electrophysiological features.",
+     "source": "Results, Patch-seq pipeline for human neurosurgical tissue analysis, paragraph 2",
+     "quote": "A total of 385 neurons that passed transcriptomic data QC mapped with higher confidence to the five supragranular human glutamatergic t-types than to any other neuron type. ... Most neurons (283) also had sufficiently complete recordings to calculate electrophysiological features.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "318 cells of the code's 385-cell table have a recording in the dandiset. Cells giving features are 280 under reading (a), 241 under (b) and 280 under (c), none 283; with IPFX's sweep QC alone they are 307, 256 and 307. The code's own table has features for exactly 283 human cells, all with a file here; 22 of them give no features here under the Methods' sweep QC, against 1 under IPFX's sweep QC alone (IPFX raises a ValueError, `ydata` must not be empty), and 19 cells give features here but have none in the code (2 of them fail IPFX cell QC). M2 gives every file a cell of the table, so no other cell can be found among the files. Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be tested.",
+     "deviations": [
+      "The cells with features are those for which IPFX 2.1.2 gives features after the Methods' sweep QC; the paper's rule for which recordings were complete enough is not given."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "cohort-donors",
+     "statement": "The neurons came from neurosurgical specimens of 90 tissue donors.",
+     "source": "Discussion, paragraph 2",
+     "quote": "across human neurosurgical specimens from 90 different tissue donors",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Both readings give 56 donors. The code's cell table has 82 donors (54 among its 283 cells with features) and its pathology table 89 distinct donors in 90 rows, 52 of which have a file here. Reading (b) uses reading M2 of features-and-labels-link; under M1 no cell is linked and only reading (a) could be tested.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "cohort-type-counts",
+     "statement": "The electrophysiology figures show 66 LTK, 25 GLP2R and 136 FREM3 neurons, and 21 deep FREM3, 17 CARM1P1 and 37 COL22A1 neurons.",
+     "source": "Figure 4a legend; Figure 6b legend",
+     "quote": "Bottom panels compare the intrinsic electrophysiological responses for 66 LTK, 25 GLP2R and 136 FREM3 neurons. ... Electrophysiological description of the intrinsic electrophysiology responses of 21 deep FREM3, 17 CARM1P1 and 37 COL22A1 neurons.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Measured values are reading (a). At most one of six counts matches under any reading; readings (a) and (c) give 71 LTK, 24 GLP2R, 136 FREM3, 24 deep FREM3, 16 CARM1P1 and 33 COL22A1 (FREM3 matches), reading (b) 62, 23, 112, 16, 12 and 32 (none). The code's 283 cells give 67, 25, 143, 25, 17 and 31 (two), and IPFX's sweep QC alone, reading (a), 75, 25, 156, 28, 18 and 33 (one). 13 FREM3 cells have no depth. Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be tested.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-depth-by-type",
+     "statement": "LTK neurons lie mainly in L2 and at the L2/L3 border, GLP2R mainly in upper L3, FREM3 span L2 and L3 and continue into L4, and CARM1P1 and COL22A1 lie almost entirely in deep L3 and along the L3/L4 border.",
+     "source": "Results, High-confidence Patch-seq neuron t-type mapping, paragraph 4; Figure 3d",
+     "quote": "Human LTK neurons were found primarily in L2 and in the border region of L2 and L3. GLP2R neurons were found primarily in upper L3, with some neurons found in L2. FREM3 neurons spanned L2 and L3, continuing into L4, consistent with their heterogeneous gene expression profile. CARM1P1 and COL22A1 were found almost entirely in deep L3 and along the L3/L4 border.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Over every cell of the code's table with a depth, as the criterion says, the LTK median (0.086) is below the GLP2R median (0.425), which is below 0.575; FREM3 has cells shallower than the LTK median; all 18 CARM1P1 and 96.7% of 30 COL22A1 cells are deeper than 0.575, so both readings of \"almost entirely\" hold. No FREM3 cell is deeper than 1 (deepest 0.992), so FREM3 does not continue into L4. The 288 cells with a recording here and a depth give the same (LTK median 0.082, all 29 COL22A1 deeper than 0.575). The judged cell set does not use the link; the variant uses reading M2.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4e-human-ephys-anova",
+     "statement": "Among the three human homologous t-types (LTK, GLP2R, FREM3), 3 of 18 electrophysiological features explain more than 10% of variance by t-type (input resistance, f-I slope and rheobase), at FDR below 1e-5, with a maximum R2 of 0.16.",
+     "source": "Results, Increased morpho-electric specialization in human L2-3 t-types, paragraph 5; Figure 4e",
+     "quote": "For electrophysiological features ( Fig. 4e ), 3/18 showed differences between t-types that explained >10% of feature variance ( R 2 >0.1) for both human and mouse (FDR<0.05 for mouse features, <10 \u22125 for human). ... while the human types showed distinct firing properties (f-I slope and rheobase) in addition to input resistance, with a maximum R 2 =0.16.",
+     "statistics": [
+      {
+       "test": "one-way ANOVA, heteroscedasticity-robust (HC3) F test",
+       "p": 1e-05,
+       "p_relation": "<",
+       "corrected": "FDR (Benjamini-Hochberg)",
+       "n": "66 LTK, 25 GLP2R and 136 FREM3 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Four features have R2 above 0.1 at BH p below 1e-5, input resistance (0.149), initial firing rate (0.137), adaptation (0.117) and rheobase (0.110); f-I slope has 0.099. The maximum R2 is within 0.16 +/- 0.016, but the features above 0.1 are not the three named; input resistance and rheobase meet the partial criterion. With superficial FREM3 only (the code's revision) the result is partial too. On the code's 283 cells six features exceed 0.1 (maximum 0.170), all three named among them, also partial; with IPFX's sweep QC alone on those cells the three named features are exactly the ones above 0.1 (maximum 0.161) and the claim is reproduced, and on all linked cells it is partial (maximum 0.141, f-I slope below 0.1). With cell QC applied it is partial. Over 200 donor resamples the R2 of f-I slope ranges from 0.036 to 0.191 (2.5 to 97.5%). Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be tested.",
+     "deviations": [
+      "The analysis cells include 19 cells with features here and none in the paper's table, and lack 22 of the paper's 283 that give no features here under the Methods' sweep QC."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4e-mouse-ephys-anova",
+     "statement": "Among the three mouse L2/3 t-types, 3 of 18 electrophysiological features explain more than 10% of variance (input resistance, AP width and AP downstroke rate), at FDR below 0.05, with a maximum R2 of 0.12, below the human maximum.",
+     "source": "Results, Increased morpho-electric specialization in human L2-3 t-types, paragraph 5; Figure 4e",
+     "quote": "However, the mouse types were distinct in input resistance and two related AP shape features (width and downstroke) with a maximum R 2 =0.12",
+     "statistics": [
+      {
+       "test": "one-way ANOVA, heteroscedasticity-robust (HC3) F test",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "FDR (Benjamini-Hochberg)",
+       "n": "9 Adamts2, 43 Rrad and 55 Agmat neurons (Figure 4b legend); 120 mouse neurons in the text"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Exactly downstroke (R2 0.123), input resistance (0.118) and AP width (0.116) have R2 above 0.1, at BH p 0.008 to 0.013; the maximum, 0.123, is within 0.12 +/- 0.012 and below the human maximum of 0.149 (0.140 to 0.170 under the other cell sets of the notebook). 120 mouse cells (60 Agmat, 51 Rrad, 9 Adamts2) from 72 mice. The test rests wholly on the code's mouse features; the mouse recordings are not in the dandiset.",
+     "deviations": [
+      "Mouse features and t-types from the code's tables (the paper's revision), not computed from recordings."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-glp2r-sag",
+     "statement": "GLP2R neurons, like LTK neurons, lack firing rate adaptation and have higher input resistance, but unlike LTK neurons (which have no sag) they have pronounced sag.",
+     "source": "Results, Increased morpho-electric specialization in human L2-3 t-types, paragraphs 1 and 2; Figure 4a",
+     "quote": "Electrophysiologically, GLP2R neurons exhibited LTK -like electrophysiology, lacking adaptation and higher input resistance, but differed from LTK neurons in that they had pronounced sag.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "GLP2R sag (median 0.054, 24 cells) is above LTK sag (0.025, 70 cells), BH p 0.046; adaptation does not differ (0.060 against 0.057, BH p 0.37). Input resistance, not judged, is 128 MOhm for GLP2R, 122 for LTK (BH p 0.38) and 90 for FREM3 (GLP2R above FREM3 at BH p 0.00001). The code's 283 cells give the same (sag BH p 0.049), as does IPFX's sweep QC alone (0.023). The sag result is close to the threshold; with cell QC applied its BH p is 0.060 and the claim would not be reproduced. Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be tested.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "edtable1-species-ephys",
+     "statement": "Between human and mouse homologous t-types, 17 of 18 electrophysiological features differ at FDR below 0.05.",
+     "source": "Extended Data Table 1 legend",
+     "quote": "For homologous t-types, results are shown for unpaired t-tests across species for each feature ... 17out of 18 features are significant at FDR<0.05.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Student's and Welch's t-tests each find 17 of 18 features different at BH p below 0.05; AP width is the exception (BH p 0.46 and 0.47, Cohen's d 0.08). The code's Mann-Whitney test, on 197 human and 108 mouse cells with all 18 features, also gives 17 with AP width the exception. The code's 283 cells give 17 and 17 too; with IPFX's sweep QC alone on the 283 cells, or with cell QC applied, Student's test gives 16 and the claim would be methods underspecified or not reproduced. Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be tested.",
+     "deviations": [
+      "Mouse features from the code's table."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "edfig6-classifier-human-ephys",
+     "statement": "A random forest predicts the homologous human t-type from electrophysiological features with 67% accuracy.",
+     "source": "Results, Increased morpho-electric specialization in human L2-3 t-types, paragraph 6; Extended Data Figure 6",
+     "quote": "Homologous human t-types were predicted with 67% accuracy using electrophysiological features, while mouse t-types were predicted with 54% accuracy.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "197 human cells with all 18 features (112 FREM3, 62 LTK, 23 GLP2R). Mean test accuracy over 1000 splits 0.622 (SD 0.056, 2.5 to 97.5% 0.517 to 0.733), against 0.441 with shuffled labels (100 splits) and 0.569 for always guessing FREM3; the paper states no chance level, and the margin over the largest class is small. The code's 283 cells give 0.630 (100 splits); over 50 splits, the 283 cells give 0.641, the cells passing cell QC 0.612 and IPFX's sweep QC alone 0.642. Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be tested.",
+     "deviations": [
+      "Shuffled labels were run on 100 splits only, as a reference."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "edfig6-classifier-mouse-ephys",
+     "statement": "The same classifier predicts mouse L2/3 t-types from electrophysiological features with 54% accuracy, lower than for human.",
+     "source": "Results, Increased morpho-electric specialization in human L2-3 t-types, paragraph 6; Extended Data Figure 6",
+     "quote": "Homologous human t-types were predicted with 67% accuracy using electrophysiological features, while mouse t-types were predicted with 54% accuracy.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "108 mouse cells with all 18 features. Mean accuracy over 1000 splits 0.571 (SD 0.071), below the human 0.622, against 0.421 with shuffled labels and 0.491 for always guessing Agmat.",
+     "deviations": [
+      "Mouse features from the code's table."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "edfig6-classifier-morphoelectric",
+     "statement": "Combining morphological and electrophysiological features raises accuracy slightly, to 69% for human and 60% for mouse neurons.",
+     "source": "Results, Increased morpho-electric specialization in human L2-3 t-types, paragraph 6; Extended Data Figure 6",
+     "quote": "Classifying based on morphological and electrophysiological features combined resulted in slightly improved performance of 69% for human neurons and 60% for mouse neurons",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "The answer to the question gave the method, the method of edfig6-classifier-human-ephys on the homologous cells with all 18 features and a reconstruction, the 18 and the 60 morphological features side by side, with no imputation needed. On the code's tables, 72 human cells (42 FREM3, 20 LTK, 10 GLP2R) give a mean test accuracy of 0.720 over 250 splits (SE 0.005) and 50 mouse cells (25 Agmat, 19 Rrad, 6 Adamts2) give 0.582 (SE 0.007), both within tolerance; no morphological value is missing. On the same cells the 18 electrophysiological features alone give 0.679 and 0.527 (100 splits), so the combined features raise accuracy, as the statement says. With the human features computed here from the dandiset (reading M2 of the link, 70 cells), the combined accuracy is 0.715 (100 splits).",
+     "deviations": [
+      "250 splits, not the 1000 of edfig6-classifier-human-ephys, to keep the notebook within the 30-minute limit; the standard error of each mean is 0.007 or less, against tolerances of 0.069 and 0.06.",
+      "The comparison with the electrophysiological features alone, and the variant on the features computed here, were run on 100 splits."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Morphological features in GitHub AllenInstitute/patchseq_human_L23 data/All_L23_Lockdown_all_raw_features.csv and data/All_Mouse_Cells_Lockdown_All_raw_features.csv at commit 3daf9f0803ea0c220a040ea523f23af5f93c56ac",
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-frem3-ephys-depth",
+     "statement": "In FREM3 neurons, 9 of 18 electrophysiological features correlate with normalized depth at FDR below 0.05 (7 at FDR below 0.01); the strongest are increasing sag, increasing AP upstroke/downstroke ratio and decreasing latency at rheobase.",
+     "source": "Results, Human FREM3 t-type exhibits depth-dependent morpho-electro-transcriptomic variation, paragraph 2; Figure 5c",
+     "quote": "Nine out of 18 physiological features were significantly correlated with depth (FDR<0.05, 7/18 FDR<0.01; Supplementary Data 1). The three strongest electrophysiology correlations with depth were the increase in sag and AP (Action Potential) upstroke / downstroke ratio and the decrease in AP latency at rheobase ( Fig. 5c ).",
+     "statistics": [
+      {
+       "about": "the three regressions shown in Figure 5c",
+       "test": "linear regression, HC3 F test",
+       "p": 1e-07,
+       "p_relation": "<",
+       "corrected": "FDR",
+       "n": "124 FREM3 neurons for sag; 141 for rheobase traces"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Over 146 FREM3 cells with a depth from 40 donors (125 with features), 8 features correlate with depth at BH p below 0.05 (outside 9 +/- 0.9) and 7 below 0.01. The largest R2 are sag (0.487, increasing), AP upstroke/downstroke ratio (0.252, increasing) and latency at rheobase (0.246, decreasing), as stated, with BH p 2.6e-15, 4.4e-07 and 1.8e-09; the ratio's is not below 1e-7. The code's 283 cells give 8 and 6, IPFX's sweep QC alone 10 and 7, and every cell set of the notebook gives partially reproduced. Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be tested.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-deep-ephys-anova",
+     "statement": "The three deep L3 types (deep FREM3, CARM1P1, COL22A1) differ in 15 of 18 electrophysiological features (FDR below 0.05), with R2 above 0.4 for 4 of them, while no feature reaches R2 0.4 among the three homologous types.",
+     "source": "Results, Deep L3 human glutamatergic t-types are morpho-electrically distinct, paragraph 4",
+     "quote": "ANOVA differences were seen in 15 out of 18 electrophysiological features and 24 out of 60 morphological features (FDR<0.05) (Supplementary Data 1). Many of these features showed very large effect sizes, with the variance explained by type surpassing 40% ( R 2 >0.4) for 4 electrophysiological and 20 morphological features, while no features met this threshold for the three homologous types (maximum R 2 =0.26).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Changed from partially reproduced after the first verification round, because the features now follow the Methods' sweep QC, as the link criterion asks. Over 24 deep FREM3, 16 CARM1P1 and 33 COL22A1 cells, 14 features differ at BH p below 0.05 (within 15 +/- 1.5) and 4 have R2 above 0.4 (input resistance 0.600, AP width 0.525, rheobase 0.478 and downstroke 0.474), within 4 +/- 0.4; no homologous-type feature reaches 0.4 (maximum 0.149). The code's 283 cells give 14 and 4 too. With IPFX's sweep QC alone (the first round) the counts are 15 and 5, and with cell QC applied 12 and 4, both partially reproduced; the count of 4 has a tolerance of 0.4, so one feature decides it. Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be tested.",
+     "deviations": [
+      "The analysis cells include cells with features here and none in the paper's table, and lack some of the paper's cells."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-carm1p1-upstroke-rin",
+     "statement": "CARM1P1 neurons have a faster AP upstroke than deep FREM3 and COL22A1 neurons, and a higher input resistance than deep FREM3 neurons.",
+     "source": "Results, Deep L3 human glutamatergic t-types are morpho-electrically distinct, paragraph 2; Figure 6c",
+     "quote": "Electrophysiologically, CARM1P1 neurons exhibited a faster action potential upstroke than the other deep types ( Fig. 6c ). This extensive dendritic branching did not predict a lower input resistance, which was higher than deep FREM3 neurons ( Fig. 6c ).",
+     "statistics": [
+      {
+       "test": "Mann-Whitney, pairwise",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "FDR"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "The two readings of \"faster upstroke\" give different outcomes. Under (a), upstroke rate, CARM1P1 (371 mV/ms) is above deep FREM3 (330, BH p 0.017) and COL22A1 (298, BH p 0.0001), and the claim is reproduced. Under (b), upstroke/downstroke ratio, CARM1P1 (4.63) is above deep FREM3 (3.76) but not above COL22A1 (4.83, BH p 0.054), so only the input resistance part holds (partially reproduced). CARM1P1 input resistance (123 MOhm) is above deep FREM3 (86, BH p 0.0017) under both. The readings differ under every cell set of the notebook. Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be tested.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-col22a1-rin-fi-sag",
+     "statement": "COL22A1 neurons have very high input resistance and a steeper f-I gain than the other deep L3 types, and less sag than CARM1P1 neurons.",
+     "source": "Results, Deep L3 human glutamatergic t-types are morpho-electrically distinct, paragraph 3; Figure 6b and 6c",
+     "quote": "COL22A1 neurons exhibited very high input resistance ( Fig. 6c ) and thus were the most responsive to current injection, displaying a steeper firing frequency to current input gain relative to the other deep L3 t-types. Interestingly, COL22A1 neurons showed a smaller amount of sag than CARM1P1 neurons ( Fig. 6b )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "COL22A1 input resistance (297 MOhm) and f-I slope (0.170 Hz/pA) are above deep FREM3 (86, 0.050) and CARM1P1 (123, 0.117) at BH p 0.005 or less, and COL22A1 sag (0.069) is below CARM1P1 (0.134, BH p 0.00003). All three parts hold under every cell set of the notebook. Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be tested.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2ef-pathology-ephys",
+     "statement": "Of 18 electrophysiological features compared between neurons from donors with low (0 to 1) and high (1 to 3) GFAP or IBA1 scores, only resting membrane potential under IBA1 differs, neurons from high-IBA1 donors being about 5 mV more hyperpolarized; the other 17 IBA1 and all 18 GFAP comparisons do not differ.",
+     "source": "Results, Detailed histological assessment of human surgical tissue, paragraph 3; Figure 2e and 2f",
+     "quote": "Among the 18 electrophysiological features analyzed for GFAP and IBA1, only one feature (resting membrane potential, RMP) related to IBA1 was significantly different between low versus high groups. Neurons in the high IBA1 group were approximately 5 mV more hyperpolarized at rest than neurons in the low IBA1 group ( Fig. 2f ). The remaining 17/18 features for IBA1 and all 18 features for GFAP were not statistically different between low and high groups",
+     "statistics": [
+      {
+       "about": "RMP, low against high IBA1",
+       "test": "Mann-Whitney (named in the code; the paper does not name the test)",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "Bonferroni",
+       "n": "GFAP low 60 and high 125 neurons; IBA1 low 170 and high 15 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Under reading (a), temporal cells with all 18 features (224), RMP under IBA1 is the only one of 36 comparisons below 0.05/18 (p 0.00089) and high-IBA1 cells are more hyperpolarized, by 4.28 mV (medians) and 4.16 mV (means), both outside 5 +/- 0.5, so the size part does not depend on the measure. Under reading (b), all regions (241 cells), latency and RMP under IBA1 are significant. Neither reading gives the paper's group sizes (60 and 125 GFAP, 170 and 15 IBA1). The two-sided test gives RMP alone under both readings. The updated notebook's procedure, temporal cells on the code's own features (221 cells), finds latency and RMP under IBA1, and so do the code's 283 cells here under reading (a), which would make the claim not reproduced; with IPFX's sweep QC alone, as in the first round, it is partially reproduced. The donor with two rows in the pathology table (H17.06.013, low in one row and high in the other) has no file here. Uses reading M2 of features-and-labels-link; under M1 no cell is linked and the claim could not be tested.",
+     "deviations": [
+      "Donor scores from the code's pathology table, matched on the first 10 characters of the donor id as the code does; one donor has two rows.",
+      "Group sizes differ from the paper's under both readings; the paper's cell selection (a table not in the repository) could not be repeated."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-pathology-scores",
+     "statement": "Average pathology scores over six markers ranged from 0.06 to 1.83 across donors, and most cases had averages below 1.0, a range not considered overtly pathological.",
+     "source": "Results, Detailed histological assessment of human surgical tissue, paragraph 2; Figure 2c and 2d",
+     "quote": "images from the case with the lowest average score (mean of 6 marker scores = 0.06) are contrasted with images from the case with the highest average score (mean of 6 marker scores = 1.83) ( Fig. 2c ). ... However, this was rare, and most cases had average scores <1.0 ( Fig. 2d )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Over the 86 donors with all six scores, the average ranges from 0.056 to 1.833, and 78 (86.7%) are below 1.0.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub AllenInstitute/patchseq_human_L23 data/pathology_scoring.csv at commit 3daf9f0803ea0c220a040ea523f23af5f93c56ac",
+     "proposed": null
+    },
+    {
+     "claim": "edfig1-marker-correlation",
+     "statement": "The six pathology markers are very weakly correlated with one another across donors, with only Ki-67 and Nissl (cellularity) modestly correlated.",
+     "source": "Results, Detailed histological assessment of human surgical tissue, paragraph 2; Extended Data Figure 1",
+     "quote": "we found very low correlation of the 6 cellular markers with each other, with only Ki-67 and Nissl (cellularity) being modestly correlated ( Extended Data Fig. 1 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Ki-67 and cellularity have the largest absolute Pearson correlation of the 15 pairs (r = 0.391, 90 donors); the next is GFAP and cellularity (0.254), and 11 pairs are below 0.2.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub AllenInstitute/patchseq_human_L23 data/pathology_scoring.csv at commit 3daf9f0803ea0c220a040ea523f23af5f93c56ac",
+     "proposed": null
+    },
+    {
+     "claim": "fig4f-morph-anova",
+     "statement": "16 of 60 morphological features have R2 above 0.15 between the human homologous t-types (FDR below 1e-3), against 12 of 60 for mouse (10 of them at FDR below 0.05).",
+     "source": "Results, Increased morpho-electric specialization in human L2-3 t-types, paragraph 5; Figure 4f",
+     "quote": "For morphological features ( Fig. 4f ), 16/60 features had R 2 >0.15 between the human t-types (FDR<10 \u22123 ), compared to 12/60 for the mouse t-types (with 10/12 significant at FDR<0.05).",
+     "statistics": [
+      {
+       "about": "human features with R2 above 0.15",
+       "test": "one-way ANOVA, heteroscedasticity-robust (HC3) F test",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "FDR (Benjamini-Hochberg)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Over 94 human reconstructions of the homologous types (25 LTK, 11 GLP2R, 58 FREM3), two features have no p-value and are dropped before the BH correction, as the criterion says; 16 of the 58 kept have R2 above 0.15, all at BH p below 1e-3. Over 60 mouse reconstructions one feature is dropped, and 12 of the 59 kept have R2 above 0.15, 10 of them at BH p below 0.05. With superficial FREM3 only, 10 human features exceed 0.15.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Reconstructions at the Allen Brain Map Human Patch-seq L2/3 project; morphological features in GitHub AllenInstitute/patchseq_human_L23 data/All_L23_Lockdown_all_raw_features.csv and data/All_Mouse_Cells_Lockdown_All_raw_features.csv at commit 3daf9f0803ea0c220a040ea523f23af5f93c56ac",
+     "proposed": null
+    },
+    {
+     "claim": "fig5b-frem3-morph-depth",
+     "statement": "In FREM3 neurons, 37 of 58 morphological features correlate with depth at FDR below 0.05 (28 at FDR below 0.01), including apical height, maximum basal dendrite length and soma radius.",
+     "source": "Results, Human FREM3 t-type exhibits depth-dependent morpho-electro-transcriptomic variation, paragraph 2; Figure 5b",
+     "quote": "37 out of 58 morphological features were correlated with depth (FDR<0.05, 28/58 FDR<0.01).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Over 56 FREM3 reconstructions with a depth, two of the 60 features are constant and have no p-value (apical_dendrite_pct_below_basal_dendrite_none, basal_dendrite_pct_above_apical_dendrite_none); over the 58 kept, 37 correlate with depth at BH p below 0.05 and 28 below 0.01, the paper's counts. Apical height (r 0.94), maximum basal path distance (0.74) and soma radius (0.49, BH p 0.018) are among them. The earlier reading without the two location features, shown for reference only, gives 35 and 26.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Morphological features in GitHub AllenInstitute/patchseq_human_L23 data/All_L23_Lockdown_all_raw_features.csv at commit 3daf9f0803ea0c220a040ea523f23af5f93c56ac",
+     "proposed": null
+    },
+    {
+     "claim": "fig6-deep-morph-anova",
+     "statement": "The deep L3 types differ in 24 of 60 morphological features (FDR below 0.05), with R2 above 0.4 for 20 of them.",
+     "source": "Results, Deep L3 human glutamatergic t-types are morpho-electrically distinct, paragraph 4; Figure 6d",
+     "quote": "ANOVA differences were seen in 15 out of 18 electrophysiological features and 24 out of 60 morphological features (FDR<0.05)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Over 8 deep FREM3, 5 CARM1P1 and 10 COL22A1 reconstructions, one feature has no p-value (basal_dendrite_pct_above_apical_dendrite_none) and is dropped before the BH correction; of the 59 kept, 24 differ at BH p below 0.05 and 20 have R2 above 0.4.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Morphological features in GitHub AllenInstitute/patchseq_human_L23 data/All_L23_Lockdown_all_raw_features.csv at commit 3daf9f0803ea0c220a040ea523f23af5f93c56ac",
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-deep-dendrites",
+     "statement": "CARM1P1 neurons have the largest total dendritic length of the L2 and L3 t-types, with extensive proximal oblique and basal branching, while COL22A1 neurons have very sparse branching.",
+     "source": "Results, Deep L3 human glutamatergic t-types are morpho-electrically distinct, paragraphs 2 and 3; Figure 6a",
+     "quote": "CARM1P1 neurons had the largest total dendritic length of all the L2 and L3 t-types, despite having a shorter apical dendrite length on average. ... COL22A1 had very sparse dendritic branching ( Fig. 6a ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "The answer found that the paper and the code give no measure, cell set or test, and the criterion names the readings and says the claim is methods underspecified when they differ; it was run under all of them, and they differ. With FREM3 whole (a), CARM1P1 has the largest total dendritic length (apical plus basal) by mean (12011 um) and median (10447 um). With FREM3 split at 0.575 (b), CARM1P1 is largest by mean (12011 um against 11566 for deep FREM3), but deep FREM3 is largest by median (12024 um against 10447). COL22A1 has the fewest apical and basal branches of the deep types by mean and median (24 and 19 by mean, against at least 56 and 59). The apical part of the sentence does not hold under either statistic, as CARM1P1's apical length (mean 6896, median 5864 um) is above that of deep FREM3 (5443, 5540 um). Groups are small (5 CARM1P1, 8 deep FREM3, 10 COL22A1 reconstructions), and 2 FREM3 reconstructions without a depth are left out of reading (b).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Morphological features in GitHub AllenInstitute/patchseq_human_L23 data/All_L23_Lockdown_all_raw_features.csv at commit 3daf9f0803ea0c220a040ea523f23af5f93c56ac",
+     "proposed": null
+    },
+    {
+     "claim": "fig5d-frem3-gene-depth",
+     "statement": "FREM3 gene expression varies with soma depth; 790 genes correlate with depth at FDR below 0.05, enriched for synaptic transmission, cell migration and neuron projection morphogenesis.",
+     "source": "Results, Human FREM3 t-type exhibits depth-dependent morpho-electro-transcriptomic variation, paragraphs 1 and 2; Figure 5a and 5d",
+     "quote": "790 genes were correlated with depth (FDR<0.05) and GO (gene ontology) enrichment analysis on this gene set revealed a variety of significantly enriched functional categories ( Fig. 5d , Supplementary Data 1)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "The only public per-gene results are the code's table from the paper's revision, which gives 4417 genes at FDR below 0.05 (against 790) and 1917 below 0.01, the count the code's gene_depth_analysis.ipynb gives. The preprint's results and the Patch-seq transcriptomes needed to recompute them are not in the repository, and the Allen Brain Map project page has no pinned version. The claims file marks the claim `elsewhere`, so data_missing is not used.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "Patch-seq transcriptomes at the Allen Brain Map Human Patch-seq L2/3 project; per-gene results in GitHub AllenInstitute/patchseq_human_L23 data/frem_genes_depth.csv at commit 3daf9f0803ea0c220a040ea523f23af5f93c56ac",
+     "proposed": null
+    },
+    {
+     "claim": "fig1a-thickness",
+     "statement": "Human L2 and L3 together (1.23 +/- 0.15 mm) are on average 1.16 times thicker than the whole mouse cortex (1.06 +/- 0.01 mm).",
+     "source": "Results, Human supragranular cortex is more diverse than in mouse, paragraph 1; Figure 1a",
+     "quote": "The combined thickness of the relatively thin L2 and very thick L3 in human cortex (1.23 \u00b1 0.15 mm) is on average 1.16 times greater than the thickness of the entire mouse cortex (1.06 \u00b1 0.01 mm; Fig. 1a ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "The answer found that the paper does not say where the mouse value comes from, and the criterion judges the human value alone. The human L2 plus L3 thickness is 1.231 +/- 0.155 mm over 5 sections (1058, 1293, 1387, 1073 and 1344 um, the values Code6 prints), within 1.23 +/- 0.15. The mouse whole-cortex thickness (1.06 mm) and the ratio of 1.16 are untested, as the criterion says; the mouse sections end at the L3/L4 border, with no white matter line. The mouse L2/3 thickness, reported only, is 281, 223 and 257 um, the values Code7 prints, now that the port reads the mouse files as Code7's printed values need (see fig1b-density). The measured value is the human value only.",
+     "deviations": [
+      "Code6 ported from R (RImageJROI) to Python (roifile); the port reproduces the five values Code6 prints."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "NeuN section measurements in GitHub AllenInstitute/patchseq_human_L23 data/cell_sizes at commit 3daf9f0803ea0c220a040ea523f23af5f93c56ac (Code6 and Code7)",
+     "proposed": null
+    },
+    {
+     "claim": "fig1b-density",
+     "statement": "Human supragranular neuron density is 27.7 +/- 4.5 thousand cells/mm3, highest in L2 and halving to a minimum in mid L3, while mouse VISp L2/3 has about 6 times that density (165 +/- 24.9 thousand cells/mm3), uniform with depth.",
+     "source": "Results, Human supragranular cortex is more diverse than in mouse, paragraph 1; Figure 1b",
+     "quote": "the average density of human neurons was 27.7 \u00b1 4.5 thousand cells/mm 3 ( Fig. 1b ; left). This distribution is not homogeneous, with higher density in L2 that decreases by half to reach a low point in mid L3 ( Fig. 1b ; right). In contrast, supragranular layers of mouse VISp show 6 times the neuronal density of human (165 \u00b1 24.9 thousand cells/mm 3 ) with a homogeneous distribution across cortical depth.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Changed from partially reproduced after the first verification round, which found the mouse port faulty. Code7 as committed names the four mouse lines L2, L4, L5 and L6 and sets 330 pixels per 100 um in every section; that gives none of the values it prints (L2/3 thickness 32, 133 and 90 um, density 349.8 +/- 338.5, every mouse soma below the lower L2/3 line). Reading the lines as L1 to L4, as Code6 reads the human ones, with case_set_1 at 165 pixels per 100 um (the scale Code7's own comment gives), gives every value it prints, and is now used. The human density is 27.70 +/- 4.46 thousand cells/mm3 and the mouse density 164.74 +/- 24.91, both within tolerance. Human density is highest just below the L1/L2 border (density 1.742) and lowest at scaled depth -0.575 (0.745), a ratio of 0.43. Mouse density varies less with depth (lowest bin 0.74 of the highest, coefficient of variation over bins 0.080 against 0.282 in human).",
+     "deviations": [
+      "Code6 and Code7 ported from R (RImageJROI) to Python (roifile). For mouse, the lines and the pixel scale of case_set_1 are read in the way that gives Code7's printed values, not as Code7's code is committed; both are printed."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "NeuN section measurements in GitHub AllenInstitute/patchseq_human_L23 data/cell_sizes at commit 3daf9f0803ea0c220a040ea523f23af5f93c56ac (Code6 and Code7)",
+     "proposed": null
+    },
+    {
+     "claim": "fig1c-soma-area",
+     "statement": "Mean soma area doubles from L2 to deep L3 in human but is uniform across mouse L2/3; the interquartile ranges are 44 to 96 um2 in mouse and 107 to 253 um2 in human, and the largest human somata exceed 850 um2.",
+     "source": "Results, Human supragranular cortex is more diverse than in mouse, paragraph 1; Figure 1c",
+     "quote": "the average cross-sectional area of neuron somata doubles from L2 to deep L3 in human supragranular cortex in a graded fashion but in mouse is remarkably uniform across the depth of supraganular cortex ( Fig. 1c , left). The interquartile range of mouse and human somata were 44 - 96\u03bcm 2 and 107 - 253\u03bcm 2 , respectively, with the largest human somata exceeding 850\u03bcm 2 .",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Changed from partially reproduced after the first verification round, as the mouse port now gives Code7's printed values (see fig1b-density). Pooled over all somata of a species, as the criterion says, the mouse quartiles are 44.7 and 96.5 um2 and the human quartiles 107.5 and 252.6 um2, all within tolerance, and the largest human soma is 886.4 um2. All eight pooled quantiles of each species and the six largest somata equal those Code7 prints (the notebook's table of the port against Code6's and Code7's printed values). Per section, reported only, the means of section quartiles are 110.8 and 254.1 (human) and 50.1 and 91.8 (mouse). In human the mean area rises from 127.0 um2 in the shallowest kept bin to 245.4 at its peak; in mouse it ranges from 59.3 to 81.5 um2.",
+     "deviations": [
+      "Code7's quartiles ported from R to Python, with the mouse reading of fig1b-density."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "NeuN ROI measurements in GitHub AllenInstitute/patchseq_human_L23 data/cell_sizes at commit 3daf9f0803ea0c220a040ea523f23af5f93c56ac (Code6 and Code7)",
+     "proposed": null
+    },
+    {
+     "claim": "fig1c-soma-variation",
+     "statement": "The variation of soma size in deep L3 is four times higher in human than in mouse.",
+     "source": "Results, Human supragranular cortex is more diverse than in mouse, paragraph 1; Figure 1c right",
+     "quote": "variation in deep L3 neuron soma size is four-fold higher in human compared to mouse ( Fig. 1c , right)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_berg_2020.ipynb",
+     "notes": "Earlier blocked because every mouse soma fell below the lower L2/3 line, which the first verification round traced to the port, not the data (see fig1b-density). With deep L3 as Code7's five bins (D1, as the criterion says), the mean SD of soma area is 117.6 um2 in human (948 somata) and 29.8 um2 in mouse (357 somata), a ratio of 3.94, within 4 +/- 0.4. The variant D2 gives 3.83. Code7 prints 4.0; 3.94 rounds to 3.9. Code6 never resets q9, so cbind repeats each human section's bins k + s times (section k of 5, s the sections' worth of q9 present when Code6 starts, unknown); with these repeated rows the ratio is 4.02, 4.00 and 3.99 for s = 0, 1 and 2, all within tolerance, and with s = 1 or 2 the port gives all four human/mouse ratios Code7 prints (2.1, 3.0, 2.4, 4.0), against two of four counting each section once. Binning the areas as the density is binned (right-closed) gives 3.94 again; the scripts bin them left-closed, which leaves 5 human somata at scaled depth exactly 0 in no area bin, none in deep L3.",
+     "deviations": [
+      "Code7's per-bin SD ported from R to Python, with the mouse reading of fig1b-density. Each section counts once in the mean over bins and sections, as the criterion says, not as Code6's repeated rows weight them."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "NeuN ROI measurements in GitHub AllenInstitute/patchseq_human_L23 data/cell_sizes at commit 3daf9f0803ea0c220a040ea523f23af5f93c56ac (Code6 and Code7)",
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-frem3-heterogeneity",
+     "statement": "The human FREM3 t-type has more within-type transcriptomic heterogeneity (variance explained by PC1 above permuted data) than any other human or mouse supragranular t-type, which are similar to one another.",
+     "source": "Results, Human supragranular cortex is more diverse than in mouse, paragraph 3; Figure 1f",
+     "quote": "This analysis confirms high heterogeneity in FREM3 , with lower, generally similar, values for all other human and mouse t-types ( Fig. 1f ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Needs the Allen Brain Map RNA-seq data (human MTG nuclei, mouse VISp cells), which have no DOI or versioned release that could be pinned, as the claims file notes. The analysis was not attempted. The claims file marks the claim `elsewhere`, so data_missing is not used.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "Allen Brain Map RNA-seq data (https://portal.brain-map.org/atlases-and-data/rnaseq), human MTG nuclei and mouse VISp cells, as the Methods name them; not pinned",
+     "proposed": null
+    },
+    {
+     "claim": "fig1g-deep-types-de-genes",
+     "statement": "The homologous types are similarly discrete from one another in mouse and in human, while CARM1P1 and COL22A1 have many more differentially expressed genes against the homologous types than the homologous types have against one another, in either species.",
+     "source": "Results, Human supragranular cortex is more diverse than in mouse, paragraph 3; Figure 1g",
+     "quote": "Homologous types are similarly discrete from one another in both mouse in human, whereas the deep L3 CARM1P1 and COL22A1 t-types had many more DE genes when compared to the homologous t-types ( Fig. 1g ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Needs the Allen Brain Map RNA-seq data, which cannot be pinned (see fig1f-frem3-heterogeneity).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "Allen Brain Map RNA-seq data (https://portal.brain-map.org/atlases-and-data/rnaseq), as the Methods name them; not pinned",
+     "proposed": null
+    },
+    {
+     "claim": "fig3a-platform-correlation",
+     "statement": "Human Patch-seq cells and dissociated nuclei of matched t-types are highly correlated in gene expression (R = 0.85), more than mouse cells and human nuclei (R = 0.57); 177 genes are enriched in nuclei and 2,670 at least four-fold in Patch-seq.",
+     "source": "Results, High-confidence Patch-seq neuron t-type mapping, paragraph 2; Figure 3a",
+     "quote": "Expression data from dissociated mouse whole cells and human nuclei were moderately correlated (R=0.57, p~0, Fig. 3a , left), ... dissociated nuclei and Patch-seq cells from matched human t-types were highly correlated (R=0.85, p~0, Fig. 3a , right). Relatively few genes (177 genome-wide) showed enriched expression in dissociated nuclei relative to Patch-seq cells ... we identified 2,670 genes with at least four-fold enrichment in Patch-seq",
+     "statistics": [
+      {
+       "about": "mouse cells against human nuclei, printed p~0",
+       "statistic": "R = 0.57",
+       "p": 0
+      },
+      {
+       "about": "human nuclei against human Patch-seq cells, printed p~0",
+       "statistic": "R = 0.85",
+       "p": 0
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Needs the Allen Brain Map RNA-seq data and the Patch-seq transcriptomes, neither pinned; the repository's input_patchseq_data_sets.RData was not used, since the claims file does not name it.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "Allen Brain Map RNA-seq data and the Human Patch-seq L2/3 project at the Allen Brain Map (https://knowledge.brain-map.org/data/0R94W5U07IHCMVJ4TVK/summary), as the code's README names them; not pinned",
+     "proposed": null
+    },
+    {
+     "claim": "fig6e-deep-de-genes",
+     "statement": "219 marker genes distinguish deep FREM3, CARM1P1 and COL22A1, 77 of them also found in Patch-seq cells, enriched for axon, synapse, calcium ion binding and extracellular matrix terms.",
+     "source": "Results, Deep L3 human glutamatergic t-types are morpho-electrically distinct, paragraphs 5 and 6; Figure 6e; Extended Data Figure 9",
+     "quote": "we used genesorteR 44 with slightly relaxed parameters (quant = 0.7) to identify DE genes selective for one or two of these three t-type sets, and found 219 such marker genes ( Extended Data Fig. 9 ). ... Furthermore, 77 of these 219 marker genes (including four genes shown in Fig. 6e ) were also defined as marker genes by Patch-seq",
+     "statistics": [
+      {
+       "about": "GO term axon",
+       "test": "ToppGene enrichment",
+       "p": 3.5e-06,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "GO term synapse",
+       "test": "ToppGene enrichment",
+       "p": 5.3e-05,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "GO term calcium ion binding",
+       "test": "ToppGene enrichment",
+       "p": 0.008,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "GO term extracellular matrix organization",
+       "test": "ToppGene enrichment",
+       "p": 2e-05,
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Needs the Allen Brain Map RNA-seq data, which cannot be pinned, and genesorteR and ToppGene.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "Allen Brain Map RNA-seq data (https://portal.brain-map.org/atlases-and-data/rnaseq), as the Methods name them; not pinned",
+     "proposed": null
+    },
+    {
+     "claim": "fig6f-smi32",
+     "statement": "Large FREM3 and CARM1P1 neurons in deep L3 are SMI-32 immunoreactive while COL22A1 neurons are not, and NEFH, the gene coding the SMI-32 epitope, is higher in deep FREM3 and CARM1P1 than in COL22A1 and the superficial types.",
+     "source": "Results, Deep L3 human glutamatergic t-types are morpho-electrically distinct, paragraph 7; Figure 6e and 6f",
+     "quote": "The large FREM3 and CARM1P1 neurons were SMI-32ir, while COL22A1 neurons were not SMI-32ir. Furthermore, the gene coding SMI-32, NEFH, also shows increased expression in deep FREM3 and CARM1P1 relative to COL22A1 and all the superficial glutamatergic t-types ( Fig. 6e ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "The SMI-32 and mFISH images are not public anywhere the paper or the code names, and NEFH expression needs the Allen Brain Map RNA-seq data, which cannot be pinned. The claims file marks the claim `elsewhere`, so data_missing is not used.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "The mFISH and SMI-32 images are not deposited in any archive the paper or the code names; NEFH expression from the Allen Brain Map RNA-seq data, not pinned",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "identifier_missing",
+     "statement": "The files carry no SpecimenID, the identifier by which the paper's code and tables name cells. Each file can be linked only by its donor and its ephys session id, which lies 13 to 685 below the cell's SpecimenID. The code's per-cell features confirm the link for 261 of the 283 cells that have them under the Methods' sweep QC and for 282 under IPFX's sweep QC alone (one gives no features under either); for the 35 cells without features in the code, the sample dates and tube order in the code's sample_id are consistent with it.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The files carry no t-type, soma depth, brain region or medical condition, on which every finding of the paper rests; they must be taken from the paper's code. session_description and the filtering field read PLACEHOLDER, and the archive summary gives the variable measured as ProcessingModule and the technique as \"analytical technique\".",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The dandiset holds 318 of the 385 cells of the paper's table, including all 283 cells with electrophysiological features in the paper's code; the other 67 are absent. Of the 35 cells without features in the code, 19 give features here under the Methods' sweep QC (2 of them fail cell QC) and 25 under IPFX's sweep QC alone, and which recordings were judged too incomplete, or why, is not said.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Donor H18.03.318 is female in the files and male in the paper's donor table and cell table; donor H18.06.005 is 56 years old in the files (P20440.0D) and 57 in both tables.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The code's feature table measures adaptation as the mean over all spiking long squares, initial firing rate on the hero sweep (about 50 pA above rheobase) and tau from long squares, where the Methods describe adaptation at about 50 pA above rheobase, initial rate at rheobase and tau from short pulses. The features recomputed here match the code's table, not the Methods.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The code's feature table is consistent with sweep QC on noise alone, as IPFX applies it, not with the Methods' sweep QC. With the Methods' bias current and bridge balance limits (input resistance from IPFX's cell QC for the 15% limit), 22 of its 283 cells have no features here, against 1 with IPFX's sweep QC alone, and fewer features equal the table's. 29 of its 283 cells fail the cell QC as IPFX computes it (seal, access resistance, electrode offset).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "Code7_cortical_depth_code_mouse.r as committed does not give the values its comments print. It names the four mouse boundary lines L2, L4, L5 and L6 and sets 100 um = 330 pixels for all three mouse sections, which gives mouse L2/3 thicknesses of 32, 133 and 90 um (printed 281, 223 and 257), a density of 350 thousand per mm3 (printed 165) and puts every mouse soma below the lower L2/3 line. Reading the lines as L1 to L4, as Code6 reads the human ones, with case_set_1 at 100 um = 165 pixels, the scale its own comment gives, reproduces its printed thicknesses, L2 fractions, densities (165 +/- 24.9 and 27.7 +/- 4.46), pooled area quantiles and six largest areas, and its two ratios of mean soma area; its two ratios of SD need the repeated rows of the next finding.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "Code6_cortical_depth_code_human.r never sets q9 to NULL (Code7 does, for each section), and run on its own stops at q9. When q9 is present, it grows from section to section, and cbind repeats each human section's 20 bins once per 20 values of q9, so the human bin table Code7 averages counts the five sections unequally. Counting each section once gives SD ratios of 2.33 (L2) and 3.94 (deep L3), against the 2.4 and 4.0 Code7 prints; with the repeated rows and one or two sections' worth of q9 at the start, the port gives all four printed ratios.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The code's gene-depth table (frem_genes_depth.csv) is from the revision (4417 genes at FDR below 0.05), not the preprint (790), and the Patch-seq transcriptomes behind either are not in the repository.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "Spike times computed here with IPFX equal the spike times stored in each file's processing/spikes for the rheobase sweep of all 280 cells with features, and no spike occurs in the second before any long-square step, so the stored spikes, responses and stimuli share one clock.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-23",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebook of the author-answers revision with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier queried the archive through the API and checked the helper functions by reading only (numpy, scipy and statsmodels were not installed for it). Its report gives its own outcome for 32 claims; it gives none for fig6-deep-morph-anova, which is left out below. Of the 32, its outcome matches the round-1 record's on 26 (on 22 of the current record's, since fig1b-density, fig1c-soma-area, fig1c-soma-variation and fig6-deep-ephys-anova changed after this round, so `agrees` on those four refers to the round-1 outcome); on six blocked claims it gives data_missing where the record gives other. It found the mouse section port faulty, which bears on fig1b-density, fig1c-soma-area and fig1c-soma-variation, and asked for checks of the 35 links the features cannot confirm and of the sweep QC.",
+     "agreed": 26,
+     "of": 32,
+     "disagreements": [
+      {
+       "claim": "fig1f-frem3-heterogeneity",
+       "outcome": "blocked",
+       "reason": "Not in the archive; it holds only 318 *_icephys.nwb files (checked through the API). The verifier gives data_missing."
+      },
+      {
+       "claim": "fig1g-deep-types-de-genes",
+       "outcome": "blocked",
+       "reason": "Same reason (not in the archive; data_missing)."
+      },
+      {
+       "claim": "fig3a-platform-correlation",
+       "outcome": "blocked",
+       "reason": "Same reason (not in the archive; data_missing)."
+      },
+      {
+       "claim": "fig5d-frem3-gene-depth",
+       "outcome": "blocked",
+       "reason": "The repository's table gives 4417 genes at FDR < 0.05. It is the revision's table; the preprint's results are not available anywhere. The verifier gives data_missing."
+      },
+      {
+       "claim": "fig6e-deep-de-genes",
+       "outcome": "blocked",
+       "reason": "Not in the archive (data_missing)."
+      },
+      {
+       "claim": "fig6f-smi32",
+       "outcome": "blocked",
+       "reason": "Not in the archive (data_missing)."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-23",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the author-revise-1 revision, the helper module, the claims file and the attempt record, with the paper. The verifier agreed with all 33 outcomes, four of them as fragile (fig4-glp2r-sag, edtable1-species-ephys, fig6-deep-ephys-anova, fig2ef-pathology-ephys). It found the run times stale (14 minutes stated, 21.0 printed), the link said to be confirmed by features for all 283 cells where 261 have features on both sides, the cohort-cells note naming the f-I fit for an error that does not name it, Code6's printed human L2 fractions misquoted (-0.179 to -0.199, while -0.1639 is among them), the comparison with Code7's printed quantiles and ratio not shown, and the round-1 count of agreeing outcomes true only of the round-1 record. Open points it lists as bearing on a conclusion are cell QC, the 35 links without features, which sweep QC to use and the exact tolerances on small counts. The revision corrected the text, added a table of the port against every value Code6 and Code7 print, and a match on features alone under IPFX's sweep QC. No outcome changed and none is proposed.",
+     "agreed": 33,
+     "of": 33,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000023-berg-2020",
+   "type": "reproduction",
+   "title": "Human supragranular glutamatergic neurons by Patch-seq (Berg et al. 2020)",
+   "description": "Tests the findings of Berg, Sorensen, Ting, Miller et al. (2020) on dandiset 000023, which holds the whole-cell recordings of 318 human L2/3 neurons from 56 neurosurgical donors. The 18 electrophysiological features are computed from the recordings with IPFX and linked to the paper's per-cell table of t-types and depths from its code, to test the cohort counts, the depth of each t-type, the differences between the homologous and deep L3 t-types, the depth dependence within FREM3, the classifier, the cross-species comparison and the pathology comparison. Claims on the code's morphology, pathology and NeuN section data are tested apart.",
+   "datasets": [
+    "dandi:000023"
+   ],
+   "papers": [
+    "10.1101/2020.03.31.018820"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_berg_2020.ipynb",
+     "title": "Reproducing Berg et al. (2020) from dandiset 000023",
+     "executed": "notebooks/000023-berg-2020/reproduce_berg_2020.html"
+    }
+   ]
+  }
+ ]
+}
