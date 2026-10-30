@@ -4260,6 +4260,7 @@
    "dandi:000289": 3,
    "dandi:000294": 2,
    "dandi:000336": 1,
+   "dandi:000404": 0,
    "dandi:000582": 0,
    "dandi:001754": 0,
    "dandi:001828": 0,
@@ -5611,6 +5612,17 @@
      "question": "The criterion takes onsets and offsets of both stimuli (Gabor sequences and visual flow), following the text and the code, and shows Gabor onsets alone as a variant. The Fig. 9 legends name the Gabor sequence onset (9a) and offset (9b) only. Should the claim be judged on Gabor events alone, as the figure shows them, or on both stimuli, as the text describes?",
      "passage": "we computed the mean \u0394F/F in the time windows surrounding the stimulus onsets (transition from gray screen to Gabor sequences or visual flow) and offsets (transition from Gabor sequences or visual flow to gray screen). These \u0394F/F traces show distinct transients that align with the stimulus onsets and offsets (Fig. 9) (Technical Validation, paragraph 6); Fig. 9 (a) Mean (\u00b1SEM) \u0394F/F response traces across ROI mean responses to stimulus onset (Gabor sequence) from grayscreen ... (b) Same as a., but for stimulus offset (Figure 9 legend).",
      "why": "The verifier of the first round raised it. With both stimuli, both readings find a transient at onset and offset in 12 of 12 groups (reproduced). With Gabor events alone, onsets hold in 12 of 12 groups, offsets in 7 of 12 under reading (i) and 9 of 12 under reading (ii), so both readings agree that some groups lack a transient, which the criterion calls partially reproduced."
+    }
+   ],
+   "dandi:000404": [
+    {
+     "claim": "fig5f-condition-specific-next-command",
+     "asked": "2026-10-30",
+     "question": "The criterion takes the error of the predicted condition-specific next command in the command's own units, as the paper does not state them. Are the expected values (3.956 for Monkey G, 7.324 for Monkey J, and the shuffle 5th percentiles 5.38 and 9.240 of Table S1) in those units, or in units ten times larger (commands computed from activity in Hz, counts per 100 ms bin times 10, as the code converts spike counts to rates)?",
+     "passage": "Table S1, row labelled 5E, gives the error and shuffle values without a unit; Methods, \"Predicting condition-specific next command\", defines the error as the L2-norm of the difference between the true and predicted average next command; Methods, \"Command definition\", gives the command as the decoder's update to cursor velocity (cm/sec for Monkey G).",
+     "why": "In the command's units the errors here are 0.397 (G) and 0.705 (J), a tenth of the expected values, while every test and the fraction of significant tuples hold; multiplied by 10 they are 3.973 and 7.052, within tolerance. Under the claims file as written the claim is partially reproduced; under the reading in units ten times larger it would be reproduced.",
+     "answer": "Ten times larger. The paper gives no unit (Table S1 row 5E; the Methods say only \"The L2-norm of the difference was computed\"), so the code settles it. The function that prints the 5E error and its shuffle 5th percentile, pred_fwd.frac_next_com_mov_sig (pred_fwd.py 326-330, 606, commit 416187366f84), takes the norm of K times activity loaded by DataExtract.load, which multiplies spike counts and predictions by 10 (\"mult = 10.\", generalization_plots.py 204-206, 256). The criterion of fig5f-condition-specific-next-command now says the error is computed this way, ten times the error in the command's own units; the expected values (3.956, 7.324) and the shuffle values (5.38, 9.240) are unchanged.",
+     "answered": "2026-10-30"
     }
    ],
    "dandi:000582": [
@@ -18449,7 +18461,7 @@
       "statement": "The dynamics model predicts the condition-specific average next command better than shuffle dynamics, aggregated over tuples, and for the majority of (command, condition) tuples.",
       "source": "Figure 5F legend; Results, Invariant dynamics align with the decoder, propagating neural activity to issue the next command, paragraph 3; Table S1 (row labelled 5E)",
       "quote": "The full dynamics model predicted condition-specific next command better than shuffle dynamics, aggregating over all (command, condition) tuples (Monkey G [J]: p-value < 0.001 for 9/9 [4/4] sessions, p-value < 0.001 for pooled sessions).",
-      "criterion": "Per tuple, the average of K (A x_{t-1} + b) over the tuple's bins against the average true next command; error the L2 norm; significant when below the 5th percentile of the shuffle models' errors (Methods, Predicting condition-specific next command; Table S1 gives 5.38 for G and 9.240 for J). The unit of the error is not given; the command's own units (those of the decoder's velocity update) are used. Session and pooled aggregates as in the shared method. Reproduced when the aggregate tests give p < 0.001 in at least 8 of 9 G and 3 of 4 J sessions and pooled, the mean of session fractions of significant tuples is above 0.5 in each monkey (\"majority\"), and both errors are within tolerance; partially reproduced when the tests hold and the error values or the fractions do not."
+      "criterion": "Per tuple, the average of K (A x_{t-1} + b) over the tuple's bins against the average true next command; error the L2 norm; significant when below the 5th percentile of the shuffle models' errors (Methods, Predicting condition-specific next command; Table S1 gives 5.38 for G and 9.240 for J). The paper gives no unit for the error; the code that prints these values (pred_fwd.py frac_next_com_mov_sig, 326-330 and 606) applies K to activity in Hz, spike counts per 100 ms bin times 10 (generalization_plots.py DataExtract.load, 204-206 and 256), so the error, its shuffle and the expected values are ten times the error in the command's own units (the decoder's velocity update per bin). Session and pooled aggregates as in the shared method. Reproduced when the aggregate tests give p < 0.001 in at least 8 of 9 G and 3 of 4 J sessions and pooled, the mean of session fractions of significant tuples is above 0.5 in each monkey (\"majority\"), and both errors are within tolerance; partially reproduced when the tests hold and the error values or the fractions do not."
      },
      {
       "id": "fig5h-turn-predicted",
@@ -58669,10 +58681,26 @@
    "claims.md"
   ],
   "dandi:000404": [
+   "answer-report.md",
+   "answer.md",
+   "author-answers-report.md",
+   "author-answers.md",
+   "author-report.md",
+   "author-revise-1-report.md",
+   "author-revise-1.md",
+   "author-revise-2-report.md",
+   "author-revise-2.md",
+   "author.md",
    "claims-check-report.md",
    "claims-check.md",
    "claims-report.md",
-   "claims.md"
+   "claims.md",
+   "recorder-report.md",
+   "recorder.md",
+   "verifier-1-report.md",
+   "verifier-1.md",
+   "verifier-2-report.md",
+   "verifier-2.md"
   ],
   "dandi:000409": [
    "author-report.md",
@@ -60350,7 +60378,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-30T03:14:24+00:00",
+ "generated": "2026-10-30T08:03:59+00:00",
  "queue_generated": "2026-10-29T13:01:18+00:00",
  "queue_counts": {
   "public_dandisets": 666,
@@ -105135,6 +105163,1131 @@
    ]
   },
   {
+   "id": "000404-athalye-2023-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000404",
+    "version": "0.230605.2024",
+    "doi": "10.48324/dandi.000404/0.230605.2024"
+   },
+   "key": "dandi:000404",
+   "label": "DANDI:000404",
+   "dataset_version": "0.230605.2024",
+   "paper": "10.1016/j.cub.2023.06.027",
+   "paper_title": null,
+   "date": "2026-10-30",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-12"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/40988949601"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000404-athalye-2023",
+   "entry_title": "Invariant neural dynamics in a monkey cursor BMI (Athalye et al. 2023)",
+   "description": "Tests the findings of Athalye, Khanna, Gowda, Orsborn, Costa and Carmena (2023) on dandiset 000404, which holds the binned spike counts, decoder state, cursor and trials of 9 sessions of Monkey G and 4 of Monkey J in a center-out and an obstacle-avoidance BMI task. It recovers the decoder from the files, compares activity issuing the same command across conditions with behavior-preserving shuffles, fits linear dynamics models that predict that activity and the next command, and simulates the optimal feedback control model of Figure 6 on the fitted dynamics. The rsLDS comparison was not run, as its package cannot be installed in a locked environment.",
+   "notebooks": [
+    {
+     "path": "reproduce_athalye_2023.ipynb",
+     "title": "Reproducing Athalye et al. (2023) from dandiset 000404",
+     "executed": null
+    },
+    {
+     "path": "ofc_simulations.ipynb",
+     "title": "Optimal feedback control simulations of Figure 6",
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "conditions-per-session",
+     "statement": "The two tasks elicited up to 24 movement conditions, with an average of 16 to 17 conditions per session.",
+     "source": "Results, BMI to study neural population control of movement, paragraph beginning \"To study control of diverse movements\"; Methods, Neuroprosthetic tasks",
+     "quote": "Our tasks elicited up to 24 conditions of movement (with an average of 16\u201317 conditions per session)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Reading (a), conditions with at least one rewarded trial, gives a mean of 17.46 over the 13 sessions (Monkey G 18.00, Monkey J 16.25, at most 20), inside 14.4 to 18.7. Reading (b), conditions with a tuple of 15 or more occurrences, gives 16.23. Monkey J's 31 obstacle trials of the code's types 0 and 1 are left out.",
+     "deviations": [
+      "Targets are read from the cursor position at reward, as the files' target series do not give the trial's target (see findings); obstacle trials are labelled clockwise or counterclockwise by the code's rule (util_fcns.CW_CCW_obs), with the code's fixed labels for Monkey J types 3, 4, 5, 8 and 9."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1b-conditions-per-command",
+     "statement": "Each analysed command was used regularly (15 or more times) in several conditions, about 7 on average, typically 5 to 10.",
+     "source": "Results, BMI to study neural population control of movement, paragraph beginning \"Importantly, the BMI enabled us\"; Figure S1B; Methods, Conditions that used a command regularly",
+     "quote": "Each individual command was used with regularity during multiple conditions (on average ~7 conditions, Figure S1B)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Over commands with at least two conditions of 15 or more occurrences, the mean number of such conditions is 7.06 pooled over commands (reading a) and 6.98 over session means (reading b); the median is 7 (25th to 75th percentile 5 to 9). With one or more conditions the mean is 6.69.",
+     "deviations": [
+      "The command is the decoder gain applied to the binned counts, with the gain recovered from the files by least squares (exact for Monkey G; for Monkey J the linear approximation the paper itself uses). The files hold no decoder matrices."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1d-command-subtrajectories-differ",
+     "statement": "The same command is used within command subtrajectories that differ between conditions more than expected from subsampling the condition-pooled subtrajectories (normalized distance 1.920 for Monkey G and 2.342 for Monkey J).",
+     "source": "Figure S1D legend",
+     "quote": "Condition-specific command subtrajectories are overall significantly different from the condition-pooled command subtrajectory: Monkey G [J]: p-value < 0.001 for 9/9 [4/4] sessions, p-value < 0.001 pooled over sessions (mean of command subtrajectory distances = 1.920 [2.342]",
+     "statistics": [
+      {
+       "about": "each session",
+       "test": "comparison with a bootstrapped distribution from the condition-pooled subtrajectories",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "9 sessions of Monkey G and 4 of Monkey J, all significant"
+      },
+      {
+       "about": "pooled over sessions, each monkey",
+       "test": "comparison with a bootstrapped distribution from the condition-pooled subtrajectories",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Mean normalized subtrajectory distance 1.953 (G) and 2.330 (J), within 10% of 1.920 and 2.342; p < 0.001 in 9 of 9 and 4 of 4 sessions and pooled (no bootstrap average reached the data). With commands of one or more conditions, 1.951 and 2.322. Counting a tuple only when 15 or more occurrences remain after the edge occurrences are removed gives 2.026 and 2.481, with the same tests.",
+     "deviations": [
+      "Commands from the recovered decoder gain (see figs1b-conditions-per-command)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1e-next-commands-differ",
+     "statement": "The same command is followed by next commands that differ between conditions more than expected from subsampling (normalized distance 1.676 for Monkey G and 2.178 for Monkey J).",
+     "source": "Figure S1E legend",
+     "quote": "Condition-specific next commands are overall significantly different from the condition-pooled next command: Monkey G [J]: p-value < 0.01 for 9/9 [4/4] sessions, p-value < 0.001 for 8/9 [4/4] sessions, p-value < 0.001 pooled over sessions (mean of next command distances = 1.676 [2.178]",
+     "statistics": [
+      {
+       "about": "each session",
+       "test": "comparison with a bootstrapped distribution from the condition-pooled next commands",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "9 of 9 sessions of Monkey G and 4 of 4 of Monkey J (p < 0.001 in 8 of 9 and 4 of 4)"
+      },
+      {
+       "about": "pooled over sessions, each monkey",
+       "test": "comparison with a bootstrapped distribution from the condition-pooled next commands",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Every session and both pooled tests give p < 0.001. Monkey J's mean normalized next-command distance, 2.218, is within 10% of 2.178; Monkey G's, 1.873, is above the upper bound of 1.844. Counting a tuple only when 15 or more occurrences remain after a trial's last bin is removed gives 1.870 (G, still outside) and 2.236 (J), with the same tests.",
+     "deviations": [
+      "Commands from the recovered decoder gain (see figs1b-conditions-per-command)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-population-distance",
+     "statement": "Neural population activity issuing a given command differs between conditions more than expected from shuffled data, by 10% to 200% on session averages (normalized distance 1.222 for Monkey G and 1.724 for Monkey J), in every session.",
+     "source": "Results, The same command is issued by different neural activity patterns in different movements, paragraph 2; Figure 3D; Table S1",
+     "quote": "Overall, neural activity issuing a given command significantly deviated across conditions relative to the shuffle distribution (Figure 3B\u2013E). Distances averaged within-session ranged from 10% to 200% larger than shuffle distance",
+     "statistics": [
+      {
+       "about": "each session",
+       "test": "comparison with behavior-preserving shuffle",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "9 of 9 sessions of Monkey G and 4 of 4 of Monkey J"
+      },
+      {
+       "about": "pooled over sessions, each monkey",
+       "test": "comparison with behavior-preserving shuffle",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Measured under the first readings (behavior-preserving shuffle; commands with two or more qualifying conditions). All four combinations of readings give 1.2366 to 1.2380 for Monkey G and 1.7651 to 1.7713 for Monkey J, session means 1.10 to 1.98, and p < 0.001 in every session and both pooled tests (1000 shuffles, none reaching the data). No tuple was dropped by the matching.",
+     "deviations": [
+      "Commands and the decoder-null space from the recovered decoder gain (see figs1b-conditions-per-command)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-single-neuron-distance",
+     "statement": "Single-neuron activity issuing a given command differs between conditions more than expected from shuffled data, aggregating over (command, condition, neuron) tuples, in every session.",
+     "source": "Figure 3B legend; Table S1 (row 3B)",
+     "quote": "Distance was significantly greater than shuffle distance aggregating over all (command, condition, neuron) tuples: Monkey G [J]: p-value < 0.001 for 9/9 [4/4] sessions, p-value < 0.001 pooled over sessions.",
+     "statistics": [
+      {
+       "about": "each session",
+       "test": "comparison with behavior-preserving shuffle",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "9 of 9 sessions of Monkey G and 4 of 4 of Monkey J"
+      },
+      {
+       "about": "pooled over sessions, each monkey",
+       "test": "comparison with behavior-preserving shuffle",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Mean single-neuron distance 1.166 to 1.167 Hz (G) and 1.221 to 1.222 Hz (J) under the readings, within 10% of 1.167 and 1.235; p < 0.001 in every session and pooled. The shuffle means, 1.002 to 1.004 Hz and 0.751 to 0.752 Hz, match the 1.004 and 0.745 the paper's code prints.",
+     "deviations": [
+      "Commands from the recovered decoder gain (see figs1b-conditions-per-command)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-fractions-significant",
+     "statement": "Distances exceed the shuffle for about 30% (Monkey G) and 70% (Monkey J) of individual (command, condition) tuples, about 65% and 90% of commands aggregated over conditions, and about 40% and 80% of neurons aggregated over tuples.",
+     "source": "Results, The same command is issued by different neural activity patterns in different movements, paragraph 2; Figure 3E",
+     "quote": "Distances were significantly larger than shuffle distances for a large fraction of individual (command, condition) tuples (~30% for Monkey G, ~70% for Monkey J), individual commands (~65% for G, ~90% for J) when aggregating over conditions, and individual neurons (~40% for G, ~80% for J)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Measured under the behavior-preserving shuffle, commands with two or more conditions, neurons over all tuples. Every combination of readings puts three or four of the six fractions within tolerance, none all six. Three with the shuffle null and neurons over significant tuples (Monkey G's neurons then 0.455 and 0.461), four under every other combination. Monkey G's fraction of significant tuples is 0.373 to 0.375 under every reading (claim 0.27 to 0.33). Monkey J's neurons are 0.890 or 0.903 over all tuples (claim 0.72 to 0.88), 0.878 over population-significant tuples with the subsampling null, where Monkey G's neurons are then 0.471 (claim 0.36 to 0.44). Commands are 0.672 to 0.700 (G) and 0.921 to 0.950 (J), tuples for J 0.707 to 0.710, neurons for G over all tuples 0.401 to 0.409, all within tolerance. All fractions are far above 0.05. The second reading, fractions pooled over all items of a monkey's sessions, also gives four of six within tolerance under every combination; Monkey G's tuples are 0.389 to 0.392 under it.",
+     "deviations": [
+      "Commands from the recovered decoder gain (see figs1b-conditions-per-command)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-dynamics-predict-activity-given-command",
+     "statement": "A linear dynamics model fit on all conditions predicts, on held-out data, the activity issuing a given command from the previous activity better than shuffle dynamics, and generalizes to left-out commands and left-out conditions.",
+     "source": "Figure 4C legend; Results, Invariant dynamics predict the different neural activity patterns used to issue the same command, paragraph beginning \"On the level of single time points\"; Table S1 (rows 4C)",
+     "quote": "Full dynamics, command left-out dynamics, and condition left-out dynamics all predicted neural activity significantly better than shuffle dynamics. For each model: Monkey G [J]: p-value < 0.001 for 9/9 [4/4] sessions, p-value < 0.001 for sessions pooled.",
+     "statistics": [
+      {
+       "about": "each model, each session",
+       "test": "R2 compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "9 of 9 sessions of Monkey G and 4 of 4 of Monkey J"
+      },
+      {
+       "about": "each model, pooled over sessions",
+       "test": "R2 compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Scored as the code scores it, R2 is 0.1655 and 0.2492 (full), 0.1624 and 0.2418 (command left out), 0.1631 and 0.2391 (condition left out), all within 10%, each beating the shuffle scored on the same pairs with p < 0.001 in 9 of 9 and 4 of 4 sessions and pooled. The shuffle's pooled 95th percentiles, 0.1282 and 0.1963, match Table S1's 0.130 and 0.196. On pairs whose command at t is analysed the tests are the same and the values within tolerance (full 0.1705 and 0.2574). On all pairs the tests are the same, the command left-out model beating the shuffle in 9 of 9 and 4 of 4 sessions, but the full and condition left-out R2 (0.1942 and 0.2913, 0.1916 and 0.2808) are outside tolerance. Reading (a) of the shuffle ridge parameter (chosen on one shuffled dataset, 200 shuffles) leaves every full-model test significant.",
+     "deviations": [
+      "The scored pairs are taken from the code: each model's test pairs whose commands at t and t-1 are both below the 95th percentile of magnitude (generalization_plots.check_ix_lo, lines 588-593, \"Remove mag command 4\"), with the full model and every shuffle model scored on exactly those pairs (generalization_plots.plot_loo_r2_overall, lines 2785-2867). The readings on pairs whose command at t (or t-1) is analysed and on all test pairs are shown, each with the shuffle on the same pairs.",
+      "Commands, the decoder-null space and the conditioning on the command use the recovered decoder gain (see figs1b-conditions-per-command).",
+      "The left-out command model leaves out pairs whose first or second bin issues the command (Figure S4A legend) and is tested on pairs whose second bin issues it.",
+      "Folds are random over pairs of bins, stratified by task, with a fixed seed; the shuffle models use the real data's ridge parameter (reading b) with 1000 shuffles, reading (a) is shown with 200. As in the code (generalization_plots.predict_shuffles_v2_with_cond, one session-wide shuffle index per shuffle passed with the fold test indices), each shuffle permutes the whole session before the folds are split."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4de-condition-specific-activity-predicted",
+     "statement": "The dynamics model predicts the condition-specific average activity for a command, of single neurons and of the population, with lower error than shuffle dynamics.",
+     "source": "Figure 4D and 4E legends; Table S1 (rows 4D, 4E)",
+     "quote": "The full dynamics model predicted individual neuron activity better than shuffle dynamics, aggregating over all (command, condition, neuron) tuples (Monkey G [J]: p-value < 0.001 for 9/9 [4/4] sessions, p-value < 0.001 for pooled sessions).",
+     "statistics": [
+      {
+       "about": "single neurons, each session",
+       "test": "error compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "9 of 9 sessions of Monkey G and 4 of 4 of Monkey J"
+      },
+      {
+       "about": "population, each session",
+       "test": "error compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "9 of 9 sessions of Monkey G and 4 of 4 of Monkey J"
+      },
+      {
+       "about": "single neurons and population, pooled over sessions",
+       "test": "error compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Over all tuples (reading a), single-neuron error 1.241 (G) and 1.198 Hz (J), population error over the shuffle mean 0.892 and 0.833, all within 10%; below the shuffle with p < 0.001 in every session and pooled. Reading (b), tuples significant in fig3d, gives 1.295, 1.200, 0.868 and 0.810.",
+     "deviations": [
+      "Tuple averages use the tuple's bins that have a previous bin in the trial (all tuples keep bins).",
+      "Recovered decoder gain (see figs1b-conditions-per-command)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4f-condition-specific-component",
+     "statement": "Invariant dynamics predict 20% to 40% of the condition-specific component of neural activity (the part not explained by the command alone), significantly more than shuffle dynamics.",
+     "source": "Results, Invariant dynamics predict the different neural activity patterns used to issue the same command, paragraph beginning \"The invariant dynamics model also predicted\"; Figure 4F; Table S1 (row 4F)",
+     "quote": "It predicted 20\u201340% of the condition-specific component of neural activity",
+     "statistics": [
+      {
+       "about": "each session",
+       "test": "variance explained compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "9 of 9 sessions of Monkey G and 4 of 4 of Monkey J"
+      },
+      {
+       "about": "pooled over sessions",
+       "test": "variance explained compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Reading (a) gives 0.215 (G) and 0.303 (J), reading (b) 0.243 and 0.333, all within 10% of 0.226 and 0.330, against shuffle means of -0.010 to 0.005, with p < 0.001 in every session and pooled. The criterion's per-session range fails. Under reading (a) Monkey G sessions 5, 6, 7 and 8 (0.121 to 0.160) and Monkey J session 3 (0.155) are below 0.18; under reading (b) Monkey G sessions 5 to 8 (0.130 to 0.168) are. The criterion has no partial clause; partially reproduced is a judgment, as the means and tests hold and only the per-session range fails.",
+     "deviations": [
+      "Recovered decoder gain (see figs1b-conditions-per-command)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4g-majority-predicted",
+     "statement": "The dynamics model predicts the condition-specific activity better than shuffle dynamics for the vast majority of (command, condition) tuples, commands and neurons.",
+     "source": "Results, Invariant dynamics predict the different neural activity patterns used to issue the same command, paragraph beginning \"The invariant dynamics model also predicted\"; Figure 4G",
+     "quote": "The model predicted neural activity for the vast majority of commands, conditions, and neurons (Figure 4G), revealing that dynamics were indeed invariant.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Mean of session fractions for tuples, commands and neurons, Monkey G then Monkey J; all above 0.5.",
+     "deviations": [
+      "Recovered decoder gain (see figs1b-conditions-per-command)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3-low-dimensional-decaying-dynamics",
+     "statement": "The fitted dynamics are low-dimensional, with 2 to 4 eigenvalues per session whose decay time exceeds the 0.1 s bin (2 to 5 for decoder-null dynamics), and decay to a fixed point with little rotation (mean frequency about 0.1 Hz for Monkey G and 0 Hz for Monkey J).",
+     "source": "Results, Invariant dynamics predict the different neural activity patterns used to issue the same command, paragraph beginning \"We found that the dynamics were low-dimensional\"; Figure S3B and S3C legends",
+     "quote": "The dimensionality of the full dynamics matrix (decoder-null dynamics matrix) ranged from 2-4 (2-5) when considering the eigenvalues that had timescales greater than the BMI update\u2019s timescale of 0.1 seconds.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Long-timescale eigenvalues number 2 to 5 for the full model in Monkey G (5 in session 4, outside 2 to 4) and 2 to 3 in Monkey J; for decoder-null dynamics 2 to 5 in G and 1 to 4 in J (1 in session 3, outside 2 to 5). Monkey G's mean frequencies are 0.083 Hz (full) and 0.068 Hz (decoder-null), outside 0.09 to 0.11 and 0.054 to 0.066. Monkey J's long-timescale eigenvalues are real except one pair in session 0 at 0.036 Hz. Decay times are at most 0.38 s. The 99% step changes no count. Fitting the full model on rates in Hz with the same ridge grid leaves every full-model count unchanged and Monkey G's mean frequency at 0.083 Hz; the ridge fit is invariant to the scale where the grid holds the scaled parameter. That variant refits only the full model, so the decoder-null counts are not tested under it.",
+     "deviations": [
+      "In-sample ridge fits on all pairs with the session's cross-validated parameter; decoder-null dynamics fit on activity projected with the recovered decoder's null space."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-next-activity",
+     "statement": "The full dynamics model, its command and condition left-out versions, and dynamics restricted to the decoder-null space all predict the next neural activity from the current activity better than shuffle dynamics.",
+     "source": "Figure 5C legend; Results, Invariant dynamics align with the decoder, propagating neural activity to issue the next command, paragraph 3; Table S1 (rows 5C)",
+     "quote": "All models predicted next neural activity significantly better than shuffle dynamics. For each model, Monkey G [J]: p-value < 0.001 for 9/9 [4/4] sessions, p-value < 0.001 for sessions pooled.",
+     "statistics": [
+      {
+       "about": "each model, each session",
+       "test": "R2 compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "9 of 9 sessions of Monkey G and 4 of 4 of Monkey J"
+      },
+      {
+       "about": "each model, pooled over sessions",
+       "test": "R2 compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Scored as the code scores it, all eight R2 values are within 10%. Every model beats the shuffle scored on the same pairs pooled with p < 0.001 and in every session with p < 0.001, except decoder-null dynamics in Monkey G session 1 (p = 0.007), 8 of 9 as the criterion needs. On pairs whose command at t-1 is analysed, and on all pairs, decoder-null dynamics beat the shuffle in 7 of 9 G sessions, and on all pairs the full model's R2 (0.1194 and 0.1399) is outside tolerance. The outcome therefore rests on the code's scored pairs, whose shuffle 95th percentiles (0.0543 and 0.0527) match Table S1's 0.055 and 0.053.",
+     "deviations": [
+      "Scored pairs from the code, as in fig4c-dynamics-predict-activity-given-command (the code removes pairs with a command above the 95th percentile at t or t-1 for next predictions too).",
+      "The command left-out model is tested on pairs whose first bin issues the left-out command.",
+      "Recovered decoder gain (see figs1b-conditions-per-command)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5d-four-dimensions",
+     "statement": "The full dynamics model predicts about 4 dimensions of neural activity (dynamics eigenvectors) more accurately than the rest.",
+     "source": "Results, Invariant dynamics align with the decoder, propagating neural activity to issue the next command, paragraph 3; Figure 5D",
+     "quote": "the full dynamics model was low-dimensional (Figure S3B) and predicted ~4 dimensions more accurately than the rest of neural activity (Figure 5D)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Under reading (a), dimensions with R2 above the session's pooled R2, the median over sessions is 4 (G) and 3 (J); under reading (b), above the shuffle's 95th percentile, 6 and 4.",
+     "deviations": [
+      "The pooled R2 of reading (a) is the full model's on all bins."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5e-next-command",
+     "statement": "The full dynamics model and its command and condition left-out versions predict the next command from the current activity better than shuffle dynamics, while decoder-null dynamics give no prediction of it.",
+     "source": "Figure 5E legend; Results, Invariant dynamics align with the decoder, propagating neural activity to issue the next command, paragraph 3; Table S1 (rows labelled 5D)",
+     "quote": "All models except decoder-null dynamics predicted next command significantly better than shuffle dynamics.",
+     "statistics": [
+      {
+       "about": "full and command left-out dynamics, each session",
+       "test": "R2 compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "9 of 9 sessions of Monkey G and 4 of 4 of Monkey J"
+      },
+      {
+       "about": "condition left-out dynamics, each session",
+       "test": "R2 compared with shuffle dynamics models",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "3 of 4 sessions of Monkey J (p < 0.001 in 2), 9 of 9 of Monkey G at p < 0.001"
+      },
+      {
+       "about": "full, command and condition left-out dynamics, pooled over sessions",
+       "test": "R2 compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Scored as the code scores it, every R2 is within tolerance. The full and command left-out models beat the shuffle with p < 0.001 in 9 of 9 and 4 of 4 sessions and pooled; decoder-null dynamics in no session. The condition left-out model beats it in 9 of 9 G sessions and pooled for G, but for Monkey J in 2 of 4 sessions (p = 0.560 and 1.000 in sessions 1 and 3) and pooled with p = 0.003, where the paper gives p < 0.001. On pairs whose command at t-1 is analysed the tests hold (pooled p < 0.001) but Monkey J's 0.2535, 0.2372 and 0.2326 are above the upper bounds 0.233, 0.232 and 0.212; on all pairs they are higher still. Every reading falls short in one part, so the outcome does not rest on the choice of pairs.",
+     "deviations": [
+      "Scored pairs from the code, as in fig5c-next-activity.",
+      "Recovered decoder gain (see figs1b-conditions-per-command)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5f-condition-specific-next-command",
+     "statement": "The dynamics model predicts the condition-specific average next command better than shuffle dynamics, aggregated over tuples, and for the majority of (command, condition) tuples.",
+     "source": "Figure 5F legend; Results, Invariant dynamics align with the decoder, propagating neural activity to issue the next command, paragraph 3; Table S1 (row labelled 5E)",
+     "quote": "The full dynamics model predicted condition-specific next command better than shuffle dynamics, aggregating over all (command, condition) tuples (Monkey G [J]: p-value < 0.001 for 9/9 [4/4] sessions, p-value < 0.001 for pooled sessions).",
+     "statistics": [
+      {
+       "about": "each session",
+       "test": "error compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "9 of 9 sessions of Monkey G and 4 of 4 of Monkey J"
+      },
+      {
+       "about": "pooled over sessions",
+       "test": "error compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "The prediction beats the shuffle with p < 0.001 in every session and pooled, and is significant for 0.805 (G) and 0.617 (J) of tuples on average. The errors, ten times the error in the command's own units as the amended criterion takes them, are 3.973 (G) and 7.052 (J), within tolerance of 3.956 and 7.324; in the command's own units they are 0.397 and 0.705. The pooled shuffle 5th percentiles are 5.011 (G) and 8.051 (J), against 5.38 and 9.240 in Table S1. The reader's answer in questions/000404.yaml settled the units (the code that prints Table S1 applies K to activity in Hz, counts per 100 ms bin times 10) and the claims file was amended to say so. Under the criterion as first written, in the command's own units, the outcome was partially reproduced; the tests and the fractions are unchanged, only the scale of the error and its shuffle.",
+     "deviations": [
+      "Monkey J's commands are in cm/s summed over 20 frames of 5 ms (Methods; the code converts m to cm).",
+      "Recovered decoder gain (see figs1b-conditions-per-command)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5h-turn-predicted",
+     "statement": "The dynamics model predicts whether the next command turns clockwise or counterclockwise relative to the condition-pooled next command, and the angle of the turn, better than shuffle dynamics.",
+     "source": "Results, Invariant dynamics align with the decoder, propagating neural activity to issue the next command, paragraph 4; Figure 5H; Table S1 (rows labelled 5G)",
+     "quote": "Specifically, the dynamics model predicted whether the turn would be clockwise or counter clockwise (Figure 5H left) and the angle of turn (Fig 5H right) better than shuffle dynamics.",
+     "statistics": [
+      {
+       "about": "sign of turn and angle error, each session",
+       "test": "compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "9 of 9 sessions of Monkey G and 4 of 4 of Monkey J"
+      },
+      {
+       "about": "sign of turn and angle error, pooled over sessions",
+       "test": "compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "All four values are within 10%. The angle error beats the shuffle in every session and pooled (p < 0.001). The sign beats it pooled and in 4 of 4 J sessions with p < 0.001, and in 7 of 9 G sessions (p = 0.005 and 0.001 in sessions 6 and 7), where the criterion needs 8. The partial clause covers values outside tolerance with the tests holding, not the reverse; partially reproduced here is a judgment, as one test falls one session short.",
+     "deviations": [
+      "The angle error is taken modulo 360 degrees (the smaller of the two differences).",
+      "Recovered decoder gain (see figs1b-conditions-per-command)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs5b-dynamics-beyond-behavior",
+     "statement": "Adding previous neural activity (invariant dynamics) to a model that encodes the command, cursor state, target and task significantly improves the held-out prediction of neural activity.",
+     "source": "Figure S5B legend; Results, Invariant dynamics predict the different neural activity patterns used to issue the same command, paragraph beginning \"On the level of single time points\"",
+     "quote": "Incorporating invariant neural dynamics (cyan) significantly improves upon predictions from the model with all task-relevant variables",
+     "statistics": [
+      {
+       "about": "Monkey G",
+       "test": "paired Student's t-test",
+       "statistic": "T = -7.182",
+       "p": 9.41e-05,
+       "n": "N = 18"
+      },
+      {
+       "about": "Monkey J",
+       "test": "paired Student's t-test",
+       "statistic": "T = -5.141",
+       "p": 0.0143,
+       "n": "N = 8"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Adding previous activity raises the held-out R2 in 9 of 9 G sessions (paired T = -8.852, p = 2.09e-05) and 4 of 4 J sessions (T = -5.634, p = 0.0111); the paper gives T = -7.182 and -5.141.",
+     "deviations": [
+      "Target position is the cursor at reward (inside the target); the categorical variable is the condition (target, task and direction around the obstacle) one-hot coded."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs5f-nonlinear-no-better",
+     "statement": "A recurrent switching linear dynamical system (rsLDS) does not predict neural activity better than the linear ridge dynamics model.",
+     "source": "Results, Invariant dynamics predict the different neural activity patterns used to issue the same command, paragraph beginning \"We found that the dynamics were low-dimensional\"; Figure S5F legend",
+     "quote": "Notably, a non-linear dynamics model (a recurrent switching linear dynamical system52) did not out-perform these simple linear dynamics",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "The rsLDS package the paper's code uses, ssm (github.com/lindermanlab/ssm at commit eb6c8aa33e5311d3564075807dec340759dd8081, or its only PyPI release, 0.0.1), cannot be installed in the entry's locked environment. Its setup.py imports numpy and Cython but declares no build dependencies, so `uv pip install`, which the registry uses to build the environment, fails with build isolation ('No module named Cython'). Outside the entry, with build isolation off, it installs. A timing run there, not part of the notebook, gave about 3 h of single-core compute for the criterion's design on the 4 Monkey J sessions (5 folds, K = 1 to 5, 10 Laplace-EM iterations). It gave about 35 h for Monkey G, most of it sessions 2 and 4 (110 to 115 units above 0.5 Hz). Monkey J alone would fit in two notebooks of about 20 minutes each on 4 cores if the package could be installed. Rechecked in the final revision with uv 0.13.6 at the code's commit, the build stops with 'No module named numpy'. The registry installs the lock file with a plain `uv pip install -r`, so the fix (no build isolation, or extra build dependencies in a uv configuration) is a change to the registry's tooling, not to the entry; the rsLDS comparison is left to a new attempt.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3f-residual-early-late",
+     "statement": "The residual of the dynamics model is larger early in the trial than late, consistent with large input at movement start.",
+     "source": "Figure S3F legend",
+     "quote": "The residual is larger in the early trial period than the late trial period.",
+     "statistics": [
+      {
+       "about": "Monkey G",
+       "test": "linear mixed effect model, session as random effect, early vs late as fixed effect",
+       "statistic": "slope = -0.242, t(4746) = -24.926",
+       "p": 3.87e-137
+      },
+      {
+       "about": "Monkey J",
+       "test": "linear mixed effect model, session as random effect, early vs late as fixed effect",
+       "statistic": "slope = -0.0625, t(1161) = -5.354",
+       "p": 8.58e-08
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "The held-out residual is smaller late than early, LME slope -0.0752 (z = -24.55, p = 3.97e-133, N = 2774) for Monkey G and -0.0261 (z = -4.63, p = 3.65e-06, N = 948) for Monkey J; the paper gives -0.242 and -0.0625. Every session's late mean is below its early mean except Monkey J session 1 (0.7656 against 0.7623).",
+     "deviations": [
+      "The residual is of the next-activity prediction on held-out folds, its norm over the square root of the number of neurons, in counts per bin."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs4b-generalize-command-sets",
+     "statement": "Dynamics models trained without all commands of one angle bin, or of one magnitude bin, still predict the left-out activity (given the command) better than shuffle dynamics.",
+     "source": "Figure S4B legend",
+     "quote": "All commands in a particular angular bin are left out and predicted significantly better than shuffle dynamics",
+     "statistics": [
+      {
+       "about": "angle bin left out, Monkey G and J sessions",
+       "test": "R2 compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "9 of 9 sessions of Monkey G and 3 of 4 of Monkey J (1 not significant)"
+      },
+      {
+       "about": "magnitude bin left out, each session",
+       "test": "R2 compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "9 of 9 sessions of Monkey G and 4 of 4 of Monkey J"
+      },
+      {
+       "about": "each, pooled over sessions",
+       "test": "R2 compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Scored as the code scores it, the angle left-out models give 0.1571 (G) and 0.2241 (J) and the magnitude left-out models 0.1589 and 0.2367, all within 10%. Against the shuffle on the same pairs the angle models beat it with p < 0.001 in 9 of 9 G and 3 of 4 J sessions (J session 3, p = 0.321), the magnitude models in 9 of 9 and 4 of 4, and both pooled. The other two readings give the same session counts and values within tolerance.",
+     "deviations": [
+      "Scored pairs from the code, as in fig4c-dynamics-predict-activity-given-command.",
+      "Recovered decoder gain (see figs1b-conditions-per-command)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs4g-generalize-condition-classes",
+     "statement": "Dynamics models trained without whole classes of conditions (vertical, horizontal or diagonal targets, both tasks) still predict the left-out activity better than shuffle dynamics.",
+     "source": "Figure S4G legend",
+     "quote": "All neural activity in a particular set of left-out conditions is left out and predicted significantly better than shuffle dynamics.",
+     "statistics": [
+      {
+       "about": "each class, each session",
+       "test": "R2 compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "9 of 9 sessions of Monkey G and 4 of 4 of Monkey J (diagonal 2, Monkey G only)"
+      },
+      {
+       "about": "each class, pooled over sessions",
+       "test": "R2 compared with shuffle dynamics models",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Scored as the code scores it, all seven R2 values are within 10% (vertical 0.1621 and 0.2458, horizontal 0.1556 and 0.2341, diagonal 1 0.1675 and 0.2053, diagonal 2 0.1593), and every class beats the shuffle scored on the same pairs with p < 0.001 in 9 of 9 G and 4 of 4 J sessions and pooled. The other two readings give the same tests; on all pairs five of the seven values are outside tolerance. The first run's failure of Monkey J's diagonal 1 class (2 of 4 sessions) came from comparing the class's R2 with the shuffle's R2 on all analysed pairs.",
+     "deviations": [
+      "Scored pairs from the code, as in fig4c-dynamics-predict-activity-given-command.",
+      "Classes as the code defines them; Monkey G's by target direction from the cursor at reward, Monkey J's by the code's center-out indices and obstacle trial types (Monkey J's center-out targets 3 and 7 and obstacle type 7 are in no class, as in the code)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs6cd-pairwise-distances-predicted",
+     "statement": "Across pairs of conditions issuing the same command, the dynamics-predicted distance between average activity correlates with the true distance, for single neurons and for the population.",
+     "source": "Figure S6C and S6D legends; Results, Invariant dynamics predict the different neural activity patterns used to issue the same command, paragraph beginning \"Finally, the dynamics model preserved structure\"",
+     "quote": "Dynamics-predicted distances across condition-pairs are significantly correlated with true distances",
+     "statistics": [
+      {
+       "about": "single neurons, Monkey G, pooled",
+       "test": "linear regression (Wald test)",
+       "statistic": "slope = 0.221, r = 0.584, N = 377489",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "single neurons, Monkey J, pooled",
+       "test": "linear regression (Wald test)",
+       "statistic": "slope = 0.317, r = 0.693, N = 34643",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "population, Monkey G, pooled",
+       "test": "linear regression (Wald test)",
+       "statistic": "slope = 0.350, r = 0.638, N = 5112",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "population, Monkey J, pooled",
+       "test": "linear regression (Wald test)",
+       "statistic": "slope = 0.449, r = 0.800, N = 1714",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "With the code's pairwise command matching (7310 of 7925 pairs of conditions keep 15 or more occurrences of each), pooled r of predicted on true distance is 0.586 and 0.655 (neurons) and 0.650 and 0.766 (population), with slopes 0.225, 0.301, 0.357 and 0.434 (paper 0.221, 0.317, 0.350, 0.449). Every session and both pooled regressions give a positive slope with p < 0.001. N is 399524 and 37627 neuron pairs, 5448 and 1862 population pairs (paper 377489, 34643, 5112, 1714). Without the matching r is 0.594, 0.680, 0.646 and 0.789.",
+     "deviations": [
+      "Recovered decoder gain (see figs1b-conditions-per-command). Each pair's means are over the matched bins that have a previous bin in the trial."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs6g-distance-tracks-behavior",
+     "statement": "Across pairs of conditions, the distance between activity patterns issuing the same command correlates with the distance between the command subtrajectories, and the dynamics model's predicted distances keep this relationship.",
+     "source": "Results, The same command is issued by different neural activity patterns in different movements, paragraph 2; Figure S6G legend",
+     "quote": "Over all commands, command subtrajectory distance across a condition-pair is significantly correlated with population activity distance",
+     "statistics": [
+      {
+       "about": "true distances, Monkey G, pooled",
+       "test": "linear mixed effect model, command identity and session as random effects",
+       "statistic": "N = 4674, z = 31.04",
+       "p": 1.36e-211
+      },
+      {
+       "about": "true distances, Monkey J, pooled",
+       "test": "linear mixed effect model, command identity and session as random effects",
+       "statistic": "N = 1629, z = 14.18",
+       "p": 1.22e-45
+      },
+      {
+       "about": "dynamics-predicted distances, Monkey G, pooled",
+       "test": "linear mixed effect model, command identity and session as random effects",
+       "statistic": "N = 4674, z = 33.1",
+       "p": 3.92e-240
+      },
+      {
+       "about": "dynamics-predicted distances, Monkey J, pooled",
+       "test": "linear mixed effect model, command identity and session as random effects",
+       "statistic": "N = 1629, z = 22.5",
+       "p": 5.93e-112
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Pooled LME slopes are positive with p < 0.001 for true distances (G slope 0.251, z = 38.69, N = 5509; J 0.129, z = 16.66, N = 1844) and predicted distances (z = 42.27 and 24.37); the paper gives z = 31.04 and 14.18 (true), 33.1 and 22.5 (predicted).",
+     "deviations": [
+      "Session as the grouping factor with command as a variance component nested in it (statsmodels mixedlm); no pairwise command matching."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs6k-next-command-pairs",
+     "statement": "Across pairs of conditions, the dynamics-predicted distance between the next commands that follow the same command correlates with the true distance.",
+     "source": "Figure S6K legend; Results, Invariant dynamics align with the decoder, propagating neural activity to issue the next command, paragraph 3",
+     "quote": "Dynamics-predicted distance between next commands across a condition-pair is significantly correlated with the true distance",
+     "statistics": [
+      {
+       "about": "Monkey G, pooled",
+       "test": "linear regression",
+       "statistic": "slope = 0.263, r = 0.76",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "significant in 8 of 9 sessions"
+      },
+      {
+       "about": "Monkey J, pooled",
+       "test": "linear regression",
+       "statistic": "slope = 0.178, r = 0.63",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "significant in 4 of 4 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "Pooled r is 0.774 (G) and 0.654 (J), slopes positive, p < 0.001; all 9 G sessions (session 7 at p = 0.046) and 4 of 4 J sessions are significant at p < 0.05.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-dynamics-reduce-input",
+     "statement": "In an optimal feedback control model that drives the recorded decoders, a neural population with the fitted invariant dynamics needs significantly less input to perform the tasks than one with no dynamics.",
+     "source": "Figure 6C legend; Results, An OFC model reveals that invariant dynamics reduce the input, paragraph 4; Table S2",
+     "quote": "These simulations revealed that the population required significantly less input in the Full Dynamics Model than in the No Dynamics Model (Figure 6C).",
+     "statistics": [
+      {
+       "about": "Monkey G, pooled over sessions",
+       "test": "linear mixed effect model, session as random effect",
+       "statistic": "z = 10.49, N = 432",
+       "p": 9.67e-26
+      },
+      {
+       "about": "Monkey J, pooled over sessions",
+       "test": "linear mixed effect model, session as random effect",
+       "statistic": "z = 5.20, N = 192",
+       "p": 1.92e-07
+      },
+      {
+       "about": "each session",
+       "test": "Wilcoxon signed-rank test with conditions paired",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "9 of 9 sessions of Monkey G and 4 of 4 of Monkey J"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "ofc_simulations.ipynb",
+     "notes": "The Full Dynamics Model needs less input than the No Dynamics Model in every session (ratio 0.44 to 0.91; Wilcoxon p < 0.05 in 9 of 9 and 4 of 4 sessions); LME z = -11.27 (p = 1.87e-29, N = 432) for G and -14.94 (p = 1.87e-50, N = 192) for J. Every simulated trial ends within 0.365 cm of its target. With Monkey J's velocity gain fixed to the summed 5 ms gain (sensitivity reading), the effect holds (LME z = -16.61, Wilcoxon p < 0.05 in 4 of 4 sessions).",
+     "deviations": [
+      "Assumption for Monkey J. The paper builds Monkey J's 100 ms decoder from the PPF's parameters, not in the files; here its 100 ms cursor update is the least-squares update of the decoder state over each 100 ms bin (variance accounted for above 99%). Monkey G's is recovered exactly. The notebook also shows Monkey J with the velocity gain fixed to the summed 5 ms gain and the velocity rows of the cursor dynamics refitted.",
+      "The terminal weight 100 is the code's (behavior_co_obs.py); the dynamics are in-sample ridge fits on counts per bin."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6d-decoder-null-dynamics-no-saving",
+     "statement": "When the model's invariant dynamics are restricted to the decoder-null space, the input needed is not different from a population with no dynamics.",
+     "source": "Figure 6D legend; Table S2",
+     "quote": "There was no significant difference in input magnitude between Decoder-null Dynamics (pink \u2018D\u2019) and No Dynamics (black \u2018ND\u2019) when pooling across sessions (Monkey G [J] p-value > 0.05) and on individual sessions",
+     "statistics": [
+      {
+       "about": "Monkey G, pooled over sessions",
+       "test": "linear mixed effect model, session as random effect",
+       "statistic": "z = 0.002, N = 432",
+       "p": 0.998
+      },
+      {
+       "about": "Monkey J, pooled over sessions",
+       "test": "linear mixed effect model, session as random effect",
+       "statistic": "z = -0.003, N = 192",
+       "p": 0.99
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "ofc_simulations.ipynb",
+     "notes": "Claim of absence, judged on the paper's tests. The LME finds no difference (G z = -0.00, p = 0.998; J z = 0.02, p = 0.988) and no session's Wilcoxon test does (smallest p 0.069); the input ratios are 0.998 to 1.003. With Monkey J's velocity gain fixed to the summed 5 ms gain (sensitivity reading), the LME still finds no difference (p = 0.995) but Monkey J session 1's Wilcoxon test does (p = 0.0016), so under that reading the criterion, which fails on any session's Wilcoxon p < 0.05, would give not reproduced. The outcome therefore rests on the decoder reading for Monkey J; the fitted 100 ms update, which accounts for more of the 100 ms velocity (0.995 to 0.998 against 0.984 to 0.994), stays the adopted reading.",
+     "deviations": [
+      "As fig6c-dynamics-reduce-input."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6g-ofc-uses-distinct-patterns",
+     "statement": "In the OFC simulations, activity issuing the same command differs between conditions more than shuffle with the fitted full dynamics, but not without dynamics or with decoder-null dynamics.",
+     "source": "Figure 6G and 6H legends; Results, An OFC model reveals that invariant dynamics reduce the input, paragraph 5; Table S2",
+     "quote": "The population activity distances for (command, condition) tuples were significantly larger than shuffle in the Full Dynamics Model but not in the No Dynamics Model (Figure 6FG).",
+     "statistics": [
+      {
+       "about": "Full Dynamics Model against shuffle, Monkey G, pooled",
+       "test": "linear mixed effect model, session as random effect",
+       "statistic": "z = -23.09, N = 4906",
+       "p": 6.37e-118
+      },
+      {
+       "about": "Full Dynamics Model against shuffle, Monkey J, pooled",
+       "test": "linear mixed effect model, session as random effect",
+       "statistic": "z = -16.68, N = 2408",
+       "p": 1.77e-62
+      },
+      {
+       "about": "No Dynamics Model against shuffle, Monkey G, pooled",
+       "test": "linear mixed effect model, session as random effect",
+       "statistic": "z = 0.168, N = 4334",
+       "p": 0.866
+      },
+      {
+       "about": "No Dynamics Model against shuffle, Monkey J, pooled",
+       "test": "linear mixed effect model, session as random effect",
+       "statistic": "z = 0.462, N = 2188",
+       "p": 0.644
+      },
+      {
+       "about": "Decoder-null Dynamics Model against shuffle, Monkey G, pooled",
+       "test": "linear mixed effect model, session as random effect",
+       "statistic": "z = 0.932, N = 4488",
+       "p": 0.351
+      },
+      {
+       "about": "Decoder-null Dynamics Model against shuffle, Monkey J, pooled",
+       "test": "linear mixed effect model, session as random effect",
+       "statistic": "z = -1.490, N = 2252",
+       "p": 0.136
+      },
+      {
+       "about": "No Dynamics Model of the decoder-null comparison against shuffle, Monkey G, pooled",
+       "test": "linear mixed effect model, session as random effect",
+       "statistic": "z = 0.611, N = 4482",
+       "p": 0.541
+      },
+      {
+       "about": "No Dynamics Model of the decoder-null comparison against shuffle, Monkey J, pooled",
+       "test": "linear mixed effect model, session as random effect",
+       "statistic": "z = 0.449, N = 2250",
+       "p": 0.654
+      },
+      {
+       "about": "Full Dynamics Model, each session",
+       "test": "Mann-Whitney U test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "9 of 9 sessions of Monkey G and 4 of 4 of Monkey J (none for the other models)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "ofc_simulations.ipynb",
+     "notes": "Under both nulls (1000 draws), the Full Dynamics Model's distances exceed the null (LME z = 25.4 to 26.0 for G, 15.5 to 15.7 for J; Mann-Whitney p < 0.05 in 9 of 9 and 4 of 4 sessions). Both No Dynamics models show no difference (LME p 0.83 to 0.999; no session significant). Decoder-null dynamics show none for Monkey G (p = 0.18) or in any session, but Monkey J's LME finds one (effect 0.016, z = 2.30 to 2.33, p = 0.020 to 0.021, mean normalized distance 1.09), so that absence is not reproduced. The LME here codes the simulation as 1 and the null as 0, so its z has the opposite sign to the paper's. With Monkey J's velocity gain fixed to the summed 5 ms gain, the result is the same: the decoder-null LME finds a difference (p = 0.0059 and 0.0051) and the other tests hold.",
+     "deviations": [
+      "As fig6c-dynamics-reduce-input. Commands of the simulations are discretized with the simulations' own magnitude percentiles."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "monkey-j-linear-command",
+     "statement": "For Monkey J, a time-invariant linear map of neural activity accounts for 99.6, 99.6, 99.5 and 99.8% of the variance of the point process filter's command in the four sessions.",
+     "source": "Methods, Command definition, Monkey J",
+     "quote": "for all four analyzed sessions, neural activity mapped through could account for 99.6, 99.6, 99.5, and 99.8 percent of the variance of the command respectively",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_athalye_2023.ipynb",
+     "notes": "The criterion needs the point process filter's velocity update or its parameters and says the claim is blocked when the dataset has neither; the files hold neither (see findings). The notebook shows estimates in which the cursor dynamics are fitted jointly with the map, which favours the fit, so none is the criterion's test. Over all frames with the offset column in the fitted dynamics the map accounts for 98.92, 98.89, 99.57 and 99.25%; over the frames of rewarded trials 99.63, 99.63, 99.57 and 99.80% with the offset column and 99.10, 99.09, 99.09 and 99.63% without it; with the update taken as the change in velocity, 87.05 to 93.89%. The paper gives 99.6, 99.6, 99.5 and 99.8%.",
+     "deviations": [
+      "Not tested. The estimated readings fit the cursor dynamics jointly with the map on the 5 ms decoder state, as the files hold no PPF parameters."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The files hold no decoder matrices (Kalman gain, steady-state cursor dynamics, the PPF's parameters), although the paper's Data availability lists decoder parameters among the deposited data. The code that wrote the files has these lines commented out (online_analysis/nwb_utils.py). Monkey G's steady-state gain and cursor update can be recovered exactly from the decoder state and spike counts (variance accounted for above 0.99999 on 99% of updates); Monkey J's PPF cannot, and its linear approximation must be refitted.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "format_error",
+     "statement": "Monkey J's target_state and obs_details series carry one target and obstacle for every trial of a session; the writer indexes frames with the position of each go event in the event list (nwb_utils.py, targets[(go_ - start_index_overall):] with go_ an index into strobed), so the last trial's values fill the file. In Monkey G's sessions 0 and 1, checked, target_state at reward is one value for all trials and does not hold the trial's target. Targets have to be read from the cursor position at reward.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The trials table has only start and stop times. Task, target, direction around the obstacle and Monkey J's obstacle trial type are not given; the task can be read from the obstacle series of each task entry, the target from the cursor at reward, and Monkey J's obstacle trial types (the paper analyses only partial and full obstruction) only by matching start and end positions to a target list in the paper's code.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Units differ within Monkey J's files. The cursor and decoder state are in m and m/s, while target_state, obstacle_position and obs_details are stated in cm; target_state holds center-out targets in m (0.1027, 0.1384) and obstacle-task targets in cm (-3.25, 8.13) under that one unit. Monkey G's files are in cm throughout.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. How was Monkey J's 100 ms decoder for the simulations built (the expression for F in Methods, \"BMI cursor dynamics\", does not survive in the text), and in what units are the next-command errors of Table S1 (row 5E)? Here the 100 ms cursor update was fitted to the decoder state, and the errors match the paper's only when multiplied by 10.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "Monkey G's decoder state does not follow the steady-state filter on 0.03 to 0.95% of updates per session, among them the first updates of each task entry, where the filter had not converged. The gain recovered on the other updates accounts for 0.928 to 1 of the variance of the velocity update over all updates, so the gain must be fitted on the updates the filter explains.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-30",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The handover of the first run: the executed notebooks with the conclusions and summary removed, the helper modules and the claims file, with the paper under paper/.",
+     "agreed": 28,
+     "of": 29,
+     "disagreements": [
+      {
+       "claim": "figs5f-nonlinear-no-better",
+       "outcome": "blocked",
+       "reason": "Blocked (too_large, contested). Not run. The data are present, and at least the J sessions and the code's own G subset look testable; it was not attempted even on the 4 J sessions (20-21 units, 5-9k bins) or on the code's subset of G sessions without G2 and G4."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-30",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebooks of the run after the first revision, with their conclusions and summaries, the helper modules, the attempt record, the README and the claims file, with the paper under paper/.",
+     "agreed": 28,
+     "of": 29,
+     "disagreements": [
+      {
+       "claim": "figs5f-nonlinear-no-better",
+       "outcome": "blocked",
+       "reason": "Agrees only conditionally; not run. The blocker is a build-isolation failure installing ssm, not missing data, and the verifier cannot verify that failure. By the record's own estimate the 4 J sessions take about 3 h on one core. A standard workaround (installing without build isolation, or with Cython and numpy pre-installed) would let at least J and the code's G subset be tested."
+      }
+     ]
+    }
+   ]
+  },
+  {
    "id": "000409-ibl-2025-01",
    "dataset": {
     "archive": "dandi",
@@ -147204,6 +148357,31 @@
    ]
   },
   {
+   "name": "000404-athalye-2023",
+   "type": "reproduction",
+   "title": "Invariant neural dynamics in a monkey cursor BMI (Athalye et al. 2023)",
+   "description": "Tests the findings of Athalye, Khanna, Gowda, Orsborn, Costa and Carmena (2023) on dandiset 000404, which holds the binned spike counts, decoder state, cursor and trials of 9 sessions of Monkey G and 4 of Monkey J in a center-out and an obstacle-avoidance BMI task. It recovers the decoder from the files, compares activity issuing the same command across conditions with behavior-preserving shuffles, fits linear dynamics models that predict that activity and the next command, and simulates the optimal feedback control model of Figure 6 on the fitted dynamics. The rsLDS comparison was not run, as its package cannot be installed in a locked environment.",
+   "datasets": [
+    "dandi:000404"
+   ],
+   "papers": [
+    "10.1016/j.cub.2023.06.027"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_athalye_2023.ipynb",
+     "title": "Reproducing Athalye et al. (2023) from dandiset 000404",
+     "executed": null
+    },
+    {
+     "path": "ofc_simulations.ipynb",
+     "title": "Optimal feedback control simulations of Figure 6",
+     "executed": null
+    }
+   ]
+  },
+  {
    "name": "000409-ibl-2025",
    "type": "reproduction",
    "title": "The IBL brain-wide map of neural activity (International Brain Laboratory et al. 2025)",
@@ -149820,7 +150998,7 @@
    "name": "Monkey 2D cursor BMI",
    "size_gb": 1.05,
    "files": 13,
-   "status": "open",
+   "status": "attempted",
    "paper": "10.1016/j.cub.2023.06.027",
    "paper_title": "Monkey 2D cursor BMI",
    "papers": [
@@ -154689,10 +155867,10 @@
  ],
  "demo": false,
  "outcome_counts": {
-  "reproduced": 818,
-  "partially_reproduced": 346,
-  "not_reproduced": 352,
-  "blocked": 833
+  "reproduced": 838,
+  "partially_reproduced": 352,
+  "not_reproduced": 353,
+  "blocked": 835
  },
  "outcome_counts_with_outside_data": {
   "reproduced": 25,
@@ -154717,10 +155895,6 @@
   "full": [
    "000232",
    "000727",
-   "000402",
-   "000404",
-   "000447",
-   "000458",
    "000462",
    "000463",
    "000467",
@@ -154874,7 +156048,10 @@
    "000055",
    "000165",
    "000230",
+   "000402",
+   "000447",
    "000448",
+   "000458",
    "000548",
    "000549",
    "000550",
@@ -154899,10 +156076,23 @@
    "claims": 1
   },
   "hours": {
-   "full": 3.8065277777777777,
+   "full": 3.838611111111111,
    "claims": 0.29944444444444446
   },
-  "running": {}
+  "running": {
+   "000458": {
+    "kind": "full",
+    "hours": 1.1942915883333334
+   },
+   "000402": {
+    "kind": "full",
+    "hours": 0.35609714388888886
+   },
+   "000447": {
+    "kind": "full",
+    "hours": 0.4795693661111112
+   }
+  }
  },
  "issues": {
   "DANDI:000055": "https://github.com/catalystneuro/encore/issues/219"
