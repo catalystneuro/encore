@@ -1,0 +1,266 @@
+schema_version: 2
+id: 000686-pakhomov-2023-01
+dataset:
+  archive: dandi
+  id: "000686"
+  version: 0.240515.1909
+  doi: 10.48324/dandi.000686/0.240515.1909
+paper: doi:10.1016/j.bioelechem.2023.108437
+date: 2026-10-31
+entry: 000686-pakhomov-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41190286652
+outcomes:
+- claim: fig3-field-simulation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The values are outputs of the paper's Sim4Life model. Dandiset 000686 holds only the 18
+    monolayer images of Fig. 5, and none of the four other dandisets that name the paper (000875,
+    001025, 001027, 001028) holds field maps; the paper names no deposit of the model. The criterion
+    rules out a model built by the author.
+- claim: fig4-sham-no-uptake
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the confocal time-lapse of single cells on coverslips (Methods 2.2). Not in dandiset
+    000686 (one stitched monolayer image per file), not in the four other dandisets that name the
+    paper (their descriptions are monolayer experiments of Figs. 6 to 9), and not found in a search
+    of DANDI for the lab's other dandisets (search terms CANCAN, Pakhomov, YO-PRO, electroporation);
+    the paper names no deposit.
+- claim: fig4-unipolar-uptake
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Single-cell time-lapse data not deposited; see fig4-sham-no-uptake.
+- claim: fig4-bipolar-weaker
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Single-cell time-lapse data not deposited; see fig4-sham-no-uptake.
+- claim: fig4-8phase-cancellation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig4-unipolar-uptake and fig4-bipolar-weaker, both blocked for missing data.
+- claim: fig5a-trains-stronger
+  outcome: partially_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig5a-trains-stronger
+  notes: Under all 8 readings (O1 centre ROI or LOESS at spans 0.1, 0.2, 0.3; O4 raw or minus the
+    footprint background), n = 4 and 4 dishes, trains exceed packets at the centre (p = 0.00355 to
+    0.0443) and the train e1-end value exceeds the train centre (unpaired p = 0.0244 to 0.034; paired
+    p = 0.0105 to 0.0302). Near e1 trains are higher in the mean (13565 against 6347 a.u.) but not
+    significantly with one-step ROIs (p = 0.059); with ROIs three steps wide p = 0.0042. At the e3 end
+    the groups do not differ under any reading (1099 against 1285 a.u., p = 0.52; 799 against 1053
+    after background, p = 0.35). So the criterion fails under every reading. The train profile falls
+    with distance from e1 (every 8th ROI, 13565 to 17262 a.u. over the 2 mm nearest e1, 831 to 1099
+    near e3). The statement's "much stronger electroporation throughout the array" holds in the
+    centre and, in the mean, near e1, not at the far end of the diagonal, so the outcome is partial.
+    In the train dishes the e3 footprint lies in the unlabelled dark half of the image, so its
+    position cannot be checked by eye; the e3-end values are near 1000 a.u. in every dish either way.
+  deviations:
+  - The paper's ROI measurements are not deposited. Profiles are measured here from the images with
+    automatically found electrode footprints and the ROI layout of Methods 2.4 (56 ROIs per half
+    diagonal, from 224 along both diagonals, plus one on the centre, ending at 3.65/4.2 of the
+    distance from the centre to the footprint's inner edge, from the +/- 3.65 mm of Methods 2.4 and
+    the 8.4-mm diagonal of Results 3.5). ROIs are squares one step (about 66 um) wide, a standard
+    choice, as the paper gives no ROI size; a three-step variant is shown, and it changes p-values
+    near 0.05.
+  - e1 is not labelled in the files. It is taken as the top-right footprint of the image, which is
+    both the electrode with the brightest outermost ROIs in all 8 non-rotated dishes and the mirror
+    image of the top-left electrode energized in Fig. 3 (an inverted microscope images the dish from
+    below). The two readings agree in every dish.
+  - Background for O4 (b) is the median inside the electrode footprints (unexposed monolayer under
+    the needle), an assumption; the paper names no background subtraction. No outcome changes with
+    it.
+- claim: fig5a-packet-center-enhanced
+  outcome: not_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig5a-packet-center-enhanced
+  notes: The e1-end value of the 40-packet e1 to e3 profile exceeds the centre in the mean (6347
+    against 2526 a.u., raw ROIs) and in all 4 dishes (ratios 1.35 to 3.60), but under none of the 16
+    readings (O1 x O4 x O6) is the difference significant (p = 0.105 to 0.162), and by the paper's
+    error-bar rule it is not either (gap 0.60 to 0.84 s.e.). The centre exceeds the trough between
+    the centre and e1 (found 1.60 to 1.74 mm from the centre) under 10 of 16 readings, every LOESS
+    reading unpaired and spans 0.1 and 0.2 paired (p = 0.0043 to 0.0371), but not with the centre ROI
+    (p = 0.17 to 0.24) or span 0.3 paired (p = 0.068). The criterion needs both comparisons; the
+    second fails under every reading, so all readings give the same outcome. With ROIs three steps
+    wide the centre exceeds the trough (p = 0.001) and the e1 end still does not exceed the centre
+    (p = 0.16). The direction of both effects is as the paper states; with n = 4 dishes and this
+    spread between dishes the e1 to centre difference is not significant.
+  deviations:
+  - Profiles measured from the images as in fig5a-trains-stronger (ROI layout, e1, background).
+  - The trough is the lowest point of the group's mean profile (ROI values, or the mean of the
+    dishes' LOESS fits under O1 b) strictly between the centre and the e1 end; each dish's value at
+    that ROI enters the test. The claims file says "the lowest value between the center and the e1
+    end" without saying whether per dish or on the mean; the mean profile avoids picking each dish's
+    noise minimum.
+- claim: fig5b-rotation-center-peak
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig5b-rotation-center-peak
+  notes: Profiles averaged over both diagonals by signed distance, n = 5 and 5. Under the LOESS
+    readings of the centre (O1 b, spans 0.1, 0.2, 0.3; 24 readings with O2, O4 and O6), the 1P x 40
+    centre exceeds its lowest value (2.44 to 2.65 mm from the centre) in all 24 (2142 to 2761 against
+    926 to 1204 a.u., p = 0.00452 to 0.031), and the 1T x 40 centre is below its most peripheral
+    value (5169 to 5770 against 10494 to 10943 a.u.) by the unpaired test in all 12 unpaired readings
+    (p = 0.0191 to 0.0287), not by the paired test (p = 0.0507 to 0.0797). With the centre ROI (O1 a)
+    the 1P x 40 peak is not significant (3550 against 1038 a.u., p = 0.073 unpaired, 0.125 paired,
+    error-bar gap 0.97 s.e.), while the 1T x 40 comparison holds paired and unpaired (p = 0.0111 to
+    0.0362). So the readings disagree, and the outcome rests on the LOESS centre and the unpaired
+    test (see deviations). With ROIs three steps wide and the centre ROI both comparisons hold (p =
+    0.003 and 0.017). The 1T x 40 centre is the lowest point of its ROI mean profile (4766 a.u.) but
+    not of its LOESS fits; the criterion reports this and does not require it.
+  deviations:
+  - Assumption on O1. The centre ROI and the LOESS fit at the centre give different outcomes for the
+    1P x 40 peak. The LOESS value is adopted because Methods 2.4 says the profiles were "fitted using
+    LOESS regression", the figures show the fits, and the centre ROI is a single 66-um square whose
+    test moves across p = 0.05 with the ROI width (p = 0.073 at one step, 0.003 at three). All three
+    spans give the same outcome. The question is put to the paper's authors (findings).
+  - Assumption on O6. Paired and unpaired tests disagree for 1T x 40 under the LOESS readings. The
+    unpaired test is adopted because Methods 2.4 judges significance from "the gap between the error
+    bars of the compared groups", a comparison of group means and their s.e., and that rule finds
+    the 1T x 40 difference under every reading (gap 1.53 to 2.15 s.e.). The question is put to the
+    paper's authors (findings).
+  - The positive end of the averaged profile joins the e1 end and the e2 end, e2 taken as the
+    footprint next to e1 clockwise in the image; with rotation every electrode starts the same number
+    of packets, so this labelling only affects reading O2 (b), which gives the same outcome.
+  - Profiles measured from the images as in fig5a-trains-stronger.
+- claim: fig5c-normalized-contrast
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig5c-normalized-contrast
+  notes: The 1P x 40 normalized centre is above 100% under all 32 readings (134 to 268%) and the
+    1T x 40 one is 42 to 63%. 1P x 40 exceeds 1T x 40 at p < 0.05 under 24 of 32 readings, 23 of the
+    24 LOESS readings (p = 0.00071 to 0.0429; the exception is span 0.3, background, e1 end, per-dish
+    normalization, p = 0.0515) and 1 of the 8 centre-ROI readings (p = 0.0476 to 0.0571). Under the
+    adopted readings (LOESS centre, periphery at both ends) all 12 hold (p = 0.00071 to 0.0248).
+    With ROIs three steps wide and the centre ROI, 175.2% against 57.8%, p = 0.0139.
+  deviations:
+  - Assumption on O1, as for fig5b-rotation-center-peak (LOESS centre).
+  - Assumption on O2. O2 (a), the mean of the outermost ROI at both ends, is adopted, because the
+    legends of Fig. 5B and 5C average both diagonals and normalize to the "measurements closest to
+    electrodes", in the plural, and with rotation no end is e1's alone.
+  - For O3 (b) the test uses each dish's centre divided by its group's mean periphery; the claims
+    file gives the reported value (mean profile over its own peripheral value) but not the per-dish
+    values for the test.
+  - Profiles measured from the images as in fig5a-trains-stronger.
+- claim: fig6a-more-packets-more-uptake
+  outcome: blocked
+  blocked_by: other
+  notes: The Fig. 6 images are not in dandiset 000686. They appear to be in DANDI:000875 (version
+    0.240515.1925, 9 files, "Influence of unipolar pulse packet quantity on centering the
+    electroporation effect within a quadrupole electrode array"), which names this paper as
+    IsPublishedIn. The claims file gives the claim the default data dataset, so outside data may
+    not be used (protocol, author, step 4); a question in questions/000686.yaml asks a reader
+    whether it should be data elsewhere. Not data_missing, as the data are public.
+- claim: fig6b-center-to-periphery
+  outcome: blocked
+  blocked_by: other
+  notes: Fig. 6 data are in DANDI:000875, not in 000686; see fig6a-more-packets-more-uptake.
+- claim: fig6-void-between
+  outcome: blocked
+  blocked_by: other
+  notes: Fig. 6 data are in DANDI:000875, not in 000686; see fig6a-more-packets-more-uptake.
+- claim: fig6-peak-narrower
+  outcome: blocked
+  blocked_by: other
+  notes: Fig. 6 data are in DANDI:000875, not in 000686; see fig6a-more-packets-more-uptake.
+- claim: fig7a-amplitude-scales-uniformly
+  outcome: blocked
+  blocked_by: other
+  notes: The Fig. 7 images are not in dandiset 000686. They appear to be in DANDI:001025 (version
+    0.240605.1826, 21 files, voltage and array size), which names this paper; see
+    fig6a-more-packets-more-uptake for why they are not used.
+- claim: fig7-amplitude-no-effect-on-distribution
+  outcome: blocked
+  blocked_by: other
+  notes: Fig. 7 data are in DANDI:001025, not in 000686; see fig7a-amplitude-scales-uniformly.
+- claim: fig8-center-equal-packets
+  outcome: blocked
+  blocked_by: other
+  notes: The Fig. 8 images are not in dandiset 000686. They appear to be in DANDI:001027 (version
+    0.240605.1859, 10 files, three protocols at 4 kV), which names this paper; see
+    fig6a-more-packets-more-uptake for why they are not used.
+- claim: fig8a-periphery-packets-1-3-higher
+  outcome: blocked
+  blocked_by: other
+  notes: Fig. 8 data are in DANDI:001027, not in 000686; see fig8-center-equal-packets.
+- claim: fig8b-normalized-center
+  outcome: blocked
+  blocked_by: other
+  notes: Fig. 8 data are in DANDI:001027, not in 000686; see fig8-center-equal-packets.
+- claim: fig9a-gap-reduces-periphery-more
+  outcome: blocked
+  blocked_by: other
+  notes: The Fig. 9 images are not in dandiset 000686. They appear to be in DANDI:001028 (version
+    0.240605.1954, 12 files, electrodes 0 to 3 mm above the monolayer), which names this paper; see
+    fig6a-more-packets-more-uptake for why they are not used.
+- claim: fig9b-gap-boosts-targeting
+  outcome: blocked
+  blocked_by: other
+  notes: Fig. 9 data are in DANDI:001028, not in 000686; see fig9a-gap-reduces-periphery-more.
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the 18 monolayer images of Fig. 5 (40 Packets and 40 Trains,
+    4 dishes each; 1P x 40 and 1T x 40, 5 dishes each). The single-cell time-lapse data of Fig. 4 and
+    the field simulations of Fig. 3 are not in it and were not found in any other dandiset.
+- kind: other
+  statement: The paper's monolayer data are split over five dandisets (000686 for Fig. 5, 000875,
+    001025, 001027 and 001028 for Figs. 6 to 9), each naming the paper, but none names the others
+    and the paper names none of them, so a reader of one cannot find the rest.
+- kind: other
+  statement: The files hold the stitched images only, not the ROI measurements (positions and
+    intensities) that the paper's profiles plot, so the figures can be rebuilt only by placing ROIs
+    anew.
+- kind: metadata_error
+  statement: The species is NCBITaxon_9913 (Bos taurus) in every file and in the dandiset summary,
+    where the paper used CHO-K1 cells (Chinese hamster, Cricetulus griseus); the strain field does say
+    "cellline CHO". The subject age is P1D, which has no meaning for a cell line.
+- kind: metadata_error
+  statement: The dandiset's assets summary gives 36 subjects, but the 18 files have 18 distinct
+    subject ids, one per dish.
+- kind: metadata_error
+  statement: The image description says the 144 tiles were captured "from a six-well plate", where
+    the paper (Methods 2.1) seeded the monolayers in 35-mm glass-bottom dishes, one dish per
+    experiment.
+- kind: metadata_insufficient
+  statement: The image has no pixel size (resolution -1, unit n.a.). The tile geometry (22323 pixels
+    from 12 tiles with about 10% overlap of 2048-pixel ORCA-Flash4 frames under a 10x objective) is
+    consistent with 0.65 um per pixel; at that scale the footprint centres are 9.7 to 10.1 mm apart
+    across the diagonal and their inner edges 8.4 to 8.8 mm, consistent with the paper's 8.4-mm
+    diagonal if that is measured between inner edges. The footprints are 1.15 to 1.44 mm across,
+    against the 1.5-mm needles of Methods 2.3.
+- kind: metadata_insufficient
+  statement: The electrode footprints are not labelled, so which one is e1 (needed for Fig. 5A) is
+    not stated. In all 8 non-rotated dishes the top-right footprint of the image has the brightest
+    outermost ROIs, consistent with e1 there.
+- kind: methods_unavailable
+  statement: The paper does not say how the centre value of a profile is taken, the ROI at distance
+    0 or the LOESS fit there. For Fig. 5B the 1P x 40 centre exceeds its trough with the LOESS value
+    (p = 0.0045 to 0.031) but not with the single centre ROI (p = 0.073); for Fig. 5C the
+    difference is significant in 23 of 24 LOESS readings and 1 of 8 centre-ROI readings. This attempt
+    assumed the LOESS value. Which was used, and with what span?
+- kind: methods_unavailable
+  statement: For comparisons inside the same dishes (centre against periphery, Fig. 5B), the paper
+    does not say whether its two-sided Student's t-test is paired or unpaired. For 1T x 40 under the
+    LOESS centre the unpaired test gives p = 0.019 to 0.029 and the paired one p = 0.051 to 0.080;
+    this attempt assumed unpaired, as the paper judges significance from the gap between group
+    error bars. Which test was used?
+- kind: methods_unavailable
+  statement: For normalized profiles averaged over both diagonals (Fig. 5C), the paper does not say
+    whether "the most peripheral ROI" is the mean of the outermost ROIs at both ends or one end, nor
+    whether each dish is normalized before averaging. This attempt assumed both ends. Which ROI is
+    taken as 100%, and is each dish normalized first?
+- kind: methods_unavailable
+  statement: The paper gives neither the ROI size nor any background subtraction for the monolayer
+    images. Background changes no outcome here; ROI width changes p-values near 0.05 (Fig. 5A
+    trains against packets near e1, p = 0.059 with one-step ROIs and 0.0042 with three-step ROIs).
+    What ROI size and background were used?
