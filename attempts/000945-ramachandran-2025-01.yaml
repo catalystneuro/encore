@@ -146,6 +146,15 @@ outcomes:
     highest means are 1500 and 30 Hz (106.7 and 106.6% Rep1), and 3000 Hz (102.3 to 103.3%) is
     below 30 Hz (corrected p < 1e-4); part (2) fails under both of its readings and every repeat
     reading. Part (3) needs the sham and was not tested.
+  proposed:
+    outcome: blocked
+    blocked_by: data_missing
+    reason: The criterion gives partially reproduced when (1) and (3) hold without (2). Part (1)
+      holds under every repeat reading and part (2) fails, but part (3), every PRF above sham,
+      cannot be tested, so the outcome is partial if a sham held and not reproduced otherwise. The
+      data present do not decide between the two, and a claim whose outcome depends on an
+      untested sham part is blocked as data missing, as fig4-rsu-time-locked-both-states is. The
+      second verifier found this.
 - claim: fig5f-fsu-delayed-prf-awake
   outcome: not_reproduced
   notebook: reproduce_ramachandran_2025.ipynb
@@ -177,13 +186,17 @@ outcomes:
     is lower in both (RSU 99.7 against 104.3 to 104.6%, FSU 99.7 against 101.2 to 101.3%). With
     every recording (Rep1) RSU holds (p = 3.6e-06 to 4.3e-06) but FSU gives p = 0.038 to 0.041,
     which misses the 0.01 bound; that reading gives partially reproduced. Leaving out the
-    recording filed under both BH498 and BH508 gives FSU p = 0.0016 to 0.0019 under Rep2 and Rep3.
+    recording filed under both BH498 and BH508 gives FSU p = 0.0016 to 0.0019 under Rep2 and Rep3,
+    and 0.048 to 0.052 under Rep1 (above 0.05 under W2), where the RSU part alone still holds and
+    the criterion gives partially reproduced ("when one cell type holds"). With every recording
+    the claim is thus partial at best, so the reproduced outcome rests on the assumption.
     The anesthetized units come from two rats, so the state effect may also be a rat effect. The
     question is recorded for the paper's authors.
   deviations:
-  - Assumed that the paper's analysis used one recording per rat and condition. Methods 2.3
-    describes one recording per parameter set per rat ("Recordings for a single rat for each set
-    of parameters were completed on the same day"), the paper mentions no repeats, and the
+  - Assumed that the paper's analysis used one recording per rat and condition. The paper
+    mentions no repeats, Methods 2.3 fits one recording per parameter set per rat without stating
+    it ("Recordings for a single rat for each set of parameters were completed on the same day"
+    says when a rat's recordings were made, so it supports the assumption only weakly), and the
     dandiset's description says "Some subjects have duplicate recordings taken a few months after
     the original ones". Which recording of a pair is the original is open, as three `_2`
     recordings are earlier than their pair; both choices (Rep2, Rep3) give the same outcome.
@@ -231,10 +244,20 @@ outcomes:
   notes: Part (2) does not need the 30% group and fails under every reading, as 6% is the highest
     group (180.8%; 60% 147.5%) and does not differ from 60% (corrected p = 1.0; 0.67 to 0.91
     without a 30% group). Parts (3) and (4) need the sham or the paper's 30% recordings and were
-    not tested; without a 30% group the Kruskal-Wallis is not significant, so the claim cannot be
-    reproduced whatever those parts would show. The substitute 30% groups are far below both
+    not tested, so the claim cannot be reproduced whatever those parts would show; whether it
+    would be partially reproduced depends on them (see proposed). The substitute 30% groups are far below both
     (90.4 to 98.7%). The 6% and 60% responses are largest in BH506 (249.0 and 209.9%); BH521 and
     BH526 give 113 to 121%.
+  proposed:
+    outcome: blocked
+    blocked_by: data_missing
+    reason: The criterion gives partially reproduced when (1) and at least one of (2) to (4) hold.
+      Part (2) fails, but part (1), the Kruskal-Wallis over 6, 30 and 60%, needs the 30% group
+      (p = 0.67 and 0.91 without it, 1.5e-22 or smaller with a substitute), part (4), 6% below 30%,
+      needs it too, and part (3) needs the sham. Partial is therefore reachable if (1) and (3) or
+      (4) held, and the data present do not decide it. A claim whose outcome depends on a part that
+      needs the 30% group is blocked as data missing, as fig7c-rsu-delayed-dc is. The second
+      verifier found this.
   deviations:
   - The dandiset has no 30% DC recording of its own. The substitutes (C1, the PRF series' 1500 Hz,
     200 us recordings of BH506 and BH526; C2, those of every rat, with each repeat reading) and C0,
@@ -271,8 +294,10 @@ outcomes:
     recording (C2) the effect is significant (p = 2.2e-04 Rep1, 3.7e-05 Rep2, 1.9e-04 Rep3) and
     30% is above 6% and 60%. Part (4), 6% against 60%, also depends on the 30% group through the
     Bonferroni family; 6% is below 60% at p = 0.024 alone and at corrected p = 0.071 over three
-    pairs. Part (3) needs the sham. The substitute recordings were made three to five months
-    before the DC recordings.
+    pairs. Part (3) needs the sham. The C1 substitutes (BH506, BH526) were made three to five
+    months before the same rats' DC recordings; C2 adds recordings from August 2023 to 6 March
+    2024, among them BH498's of 5 and 6 March, three to four days before the DC recordings of 9
+    March.
   deviations:
   - The 30% group is a substitute (C1 or C2) or absent (C0), as for fig7a.
 - claim: fig7d-fsu-delayed-dc
@@ -296,26 +321,31 @@ outcomes:
 findings:
 - kind: data_missing
   statement: The sham condition and the second batch of five rats (awake and anesthetized
-    recordings in the same week at a low PRF and 1500 Hz) are not in the dandiset. Four claims
-    cannot be tested, and every comparison with sham in the others is left out.
+    recordings in the same week at a low PRF and 1500 Hz) are not in the dandiset. Three claims
+    cannot be tested for this reason (fig4-rsu-time-locked-both-states, fig6ad-time-adjacent-batch,
+    and sham-no-auditory-response, which its criterion also blocks), and every comparison with
+    sham in the others is left out.
 - kind: data_missing
   statement: Only part of the first batch is here. The awake PRF series covers seven rats, the
     anesthetized PRF series three (BH498 at five PRFs, BH512 without 30 Hz, BH521 at three PRFs,
     unlabelled), and the awake DC series three rats at 6% and 60% only. The DC series' own 30%
-    recordings are missing; the only 1500 Hz, 200 us recordings are the PRF series', made three to
-    five months earlier, and the claim on 30% DC delayed responses cannot be tested without them.
+    recordings are missing; the only 1500 Hz, 200 us recordings are the PRF series', those of the
+    same rats made three to five months earlier and those of the other rats from August 2023 to 6
+    March 2024, three to four days before the DC recordings of 9 March, and the claim on 30% DC delayed responses cannot be tested without them.
     The paper describes ten rats for each series.
 - kind: data_missing
   statement: The files hold no waveforms, voltage traces or electrode positions, so the cell-type
     sorting (k-means on the initial phase and after-hyperpolarization durations) cannot be
     repeated or checked.
 - kind: metadata_error
-  statement: Twelve files are second copies of other recordings. The five anesthetized BH498
+  statement: Eleven files are second copies of other recordings. The five anesthetized BH498
     recordings are deposited under BH498 without labels and under subject folder BH497 with
     labels; four anesthetized BH512 recordings under BH512 without labels and under BH514 with
     labels; BH512_1500_200_anes2 is a third copy of the BH512 1500 Hz anesthetized recording,
-    sorted differently and dated two months later. Trial times, per-unit spike counts and first
-    spike times are identical within each pair. The identifiers name BH498 and BH512.
+    sorted differently and dated two months later; BH508_30_200_2 is the subject of the next
+    finding. Trial times, per-unit spike counts and first spike times are identical within each
+    of the nine pairs; the third BH512 copy shares the trial times and first spike times, but not
+    the spike counts (905,554 against 926,883). The identifiers name BH498 and BH512.
 - kind: metadata_error
   statement: BH498_30_200 (sub-BH498) and BH508_30_200_2 (sub-BH508) share all 203 trial times
     and 18,860 spike times; they are one recording sorted twice and filed under two rats, with
@@ -536,4 +566,163 @@ verifications:
     agrees: true
     outcome: blocked
     reason: The criterion blocks this claim, and the archive holds no sham recording.
+    response: Kept.
+- date: 2026-10-31
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The full executed notebook of the first revision, with its conclusions and summary, the
+    helper module, the claims file and the attempt record, with the paper under paper/.
+  results:
+  - claim: fig3-cell-type-sorting
+    agrees: true
+    outcome: blocked
+    reason: The blocked outcomes follow the header or are missing data. Every cell-type claim rests
+      on the labels being the paper's k-means output; the header provides K0 and the deviation
+      states the assumption.
+    response: Kept.
+  - claim: fig4-rsu-time-locked-both-states
+    agrees: true
+    outcome: blocked
+    reason: The blocked outcomes follow the header or are missing data.
+    response: Kept. The rule it follows, that a claim whose partial outcome depends on an untested
+      sham part is blocked as data missing, is now stated under Readings.
+  - claim: fig4hi-fsu-delayed-latency
+    agrees: true
+    outcome: not_reproduced
+    reason: It fails a part that does not need the sham or the 30% group, and cannot reach partial
+      whatever the missing parts show.
+    response: Kept.
+  - claim: fig4h-awake-latency-wider
+    agrees: true
+    outcome: blocked
+    reason: The blocked outcomes follow the header or are missing data.
+    response: Kept.
+  - claim: fig5a-rsu-time-locked-prf-awake
+    agrees: true
+    outcome: not_reproduced
+    reason: The notebook shows the partial threshold is out of reach whatever the sham shows.
+    response: Kept.
+  - claim: fig5c-rsu-time-locked-prf-anesth
+    agrees: true
+    outcome: not_reproduced
+    reason: The notebook shows the partial threshold is out of reach whatever the sham shows.
+    response: Kept.
+  - claim: rsu-time-locked-anesthesia-factor
+    agrees: true
+    outcome: not_reproduced
+    reason: It fails a part that does not need the sham or the 30% group, and cannot reach partial
+      whatever the missing parts show.
+    response: Kept.
+  - claim: fig5bd-fsu-time-locked-no-prf
+    agrees: true
+    outcome: not_reproduced
+    reason: It fails a part that does not need the sham or the 30% group, and cannot reach partial
+      whatever the missing parts show.
+    response: Kept.
+  - claim: fig5e-rsu-delayed-prf-awake
+    agrees: false
+    outcome: blocked
+    reason: The criterion gives partially reproduced when (1) and (3) hold without (2). Part (1)
+      holds, part (2) fails and part (3), every PRF above sham, is untested, so if a sham held the
+      outcome would be partial. Elsewhere the notebook settles a claim only when the missing parts
+      cannot change its outcome, and fig4-rsu, whose best outcome is also partial, is blocked as
+      data_missing. fig5e should be blocked as data_missing too, or the record should explain why
+      not. The verifier agreed with not reproduced in round 1, and calls that its error.
+    response: Agreed. The outcome stays not reproduced, as verified in round 1, and a change to
+      blocked (data_missing) is proposed with the reasoning in the notebook's conclusion. The rule
+      is now stated under Readings.
+  - claim: fig5f-fsu-delayed-prf-awake
+    agrees: true
+    outcome: not_reproduced
+    reason: The notebook shows the partial threshold is out of reach whatever the sham shows.
+    response: Kept.
+  - claim: fig5gh-delayed-prf-anesth
+    agrees: true
+    outcome: not_reproduced
+    reason: It fails a part that does not need the sham or the 30% group, and cannot reach partial
+      whatever the missing parts show.
+    response: Kept.
+  - claim: delayed-anesthesia-factor
+    agrees: true
+    outcome: reproduced
+    reason: The one-recording assumption is stated in the deviations and the Rep1 result (partial)
+      is given; it is reasonable, as the dandiset description calls the `_2` files repeats taken
+      months later and Rep2 and Rep3 give the same result. The Methods 2.3 sentence is about when
+      a rat's recordings were scheduled, not one recording per condition, so it supports the
+      assumption only weakly. The record does not say that under Rep1 without the doubly filed
+      recording FSU p rises to 0.048 to 0.052, which would make Rep1 not reproduced instead of
+      partial and shows how much the outcome rests on the assumption.
+    response: Kept. The deviation and the notebook now say that Methods 2.3 supports the assumption
+      only weakly. The Rep1 variant without the doubly filed recording (FSU p = 0.048 to 0.052) is
+      added to the notes and the conclusion. By the criterion that reading is still partially
+      reproduced, not not reproduced, as the RSU part alone holds ("or when one cell type holds");
+      with every recording the claim is partial at best, which the notes now say.
+  - claim: fig6ad-time-adjacent-batch
+    agrees: true
+    outcome: blocked
+    reason: The blocked outcomes follow the header or are missing data.
+    response: Kept.
+  - claim: fig6ef-rsu-ispta-rise-then-fall
+    agrees: true
+    outcome: blocked
+    reason: The blocked outcomes follow the header or are missing data.
+    response: Kept.
+  - claim: fig6fh-fsu-ispta
+    agrees: true
+    outcome: not_reproduced
+    reason: It fails a part that does not need the sham or the 30% group, and cannot reach partial
+      whatever the missing parts show.
+    response: Kept.
+  - claim: fig5a-1500-highest-time-locked-mean
+    agrees: true
+    outcome: not_reproduced
+    reason: It fails a part that does not need the sham or the 30% group, and cannot reach partial
+      whatever the missing parts show.
+    response: Kept.
+  - claim: fig7a-rsu-time-locked-dc
+    agrees: false
+    outcome: blocked
+    reason: Partial needs (1) and at least one of (2) to (4). Part (2) fails. Part (1), the
+      Kruskal-Wallis over 6, 30 and 60%, and part (4), 6% below 30%, need the missing 30% group,
+      and part (3) needs the sham, so all three are untested. The conclusion "whatever those parts
+      would show, the claim cannot be reproduced" rules out reproduced, not partial. Cell 13's own
+      rule, that a claim whose outcome depends on a 30% part is blocked as data_missing, applied
+      consistently blocks fig7a. The verifier agreed with not reproduced in round 1, and calls
+      that its error.
+    response: Agreed. The outcome stays not reproduced, as verified in round 1, and a change to
+      blocked (data_missing) is proposed, with the reasoning in the notebook's conclusion. The
+      Kruskal-Wallis p is now printed for every reading (0.67 and 0.91 without a 30% group, 1.5e-22
+      or smaller with a substitute).
+  - claim: fig7a-60-highest-time-locked-mean
+    agrees: true
+    outcome: not_reproduced
+    reason: It fails a part that does not need the sham or the 30% group, and cannot reach partial
+      whatever the missing parts show.
+    response: Kept.
+  - claim: fig7b-fsu-time-locked-dc
+    agrees: true
+    outcome: not_reproduced
+    reason: It fails a part that does not need the sham or the 30% group, and cannot reach partial
+      whatever the missing parts show.
+    response: Kept.
+  - claim: fig7c-rsu-delayed-dc
+    agrees: true
+    outcome: blocked
+    reason: The blocked outcomes follow the header or are missing data. The notes' "the substitute
+      recordings were made three to five months before the DC recordings" is true of C1 but not of
+      C2, which includes BH498's 1500 Hz recordings of 5 and 6 March 2024, three to four days
+      before the DC recordings of 9 March, and BH508's, five to seven months before.
+    response: Kept. The notes, the data_missing finding and the notebook now give the dates of C1
+      and C2 separately.
+  - claim: fig7d-fsu-delayed-dc
+    agrees: true
+    outcome: partially_reproduced
+    reason: It follows the criterion's own "without (3)" clause. Part (1) is strictly a three-group
+      test, but it holds under C0, C1 and C2.
+    response: Kept.
+  - claim: sham-no-auditory-response
+    agrees: true
+    outcome: blocked
+    reason: The blocked outcomes follow the header or are missing data.
     response: Kept.
