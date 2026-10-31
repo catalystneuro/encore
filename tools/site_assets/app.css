@@ -1,6 +1,7 @@
-/* Brand: plum, with grays tinted faintly violet toward it. Green, yellow, red and gray are kept for the outcomes. */
+/* Brand: plum, with grays tinted faintly violet toward it. Green, yellow, blue and gray are kept for the outcomes:
+   "not reproduced" is blue with a question mark, not red with a cross, as it may be the agent's failure, not the paper's. */
 :root{--surface:#faf9fb;--panel:#ffffff;--line:#e3dfe8;--text:#120e17;--text2:#4f4858;--muted:#8a8392;
---good:#0ca30c;--warning:#fab219;--critical:#d03b3b;--blocked:#898781;--link:#6a3d8f;--accent:#6a3d8f;--hover:#f3f0f6;
+--good:#0ca30c;--warning:#fab219;--critical:#d03b3b;--unresolved:#2b6cb0;--blocked:#898781;--link:#6a3d8f;--accent:#6a3d8f;--hover:#f3f0f6;
 --bar:#7d4fae;color-scheme:light}
 /* Dark: when the system asks for it and the reader has not chosen light, or when the reader chose dark. */
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]){--surface:#15121a;--panel:#1d1923;--line:#332c3d;--text:#f2eff6;
@@ -78,7 +79,7 @@ a.tile:hover{background:var(--hover)}
 .seg{border-radius:4px;min-width:5px;display:block}
 a.seg:hover{filter:brightness(1.12)}
 .seg.good,.swatch.good{background:var(--good)}.seg.warning,.swatch.warning{background:var(--warning)}
-.seg.critical,.swatch.critical{background:var(--critical)}.seg.blocked,.swatch.blocked{background:var(--blocked)}
+.seg.unresolved,.swatch.unresolved{background:var(--unresolved)}.seg.blocked,.swatch.blocked{background:var(--blocked)}
 .legend{list-style:none;display:flex;flex-wrap:wrap;gap:6px 18px;padding:0;margin:0;color:var(--text2);font-size:.9rem}
 .legend a{color:inherit;text-decoration:none}.legend a:hover{text-decoration:underline}
 .legend strong{color:var(--text);font-variant-numeric:tabular-nums}
@@ -111,11 +112,11 @@ padding:1px 10px 1px 4px;font-size:.8rem;font-weight:600;white-space:nowrap;colo
 a.chip:hover{background:var(--hover)}
 .chip .icon{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;color:#fff;font-size:.7rem}
 .chip.good .icon{background:var(--good)}.chip.warning .icon{background:var(--warning);color:#0b0b0b}
-.chip.critical .icon{background:var(--critical)}.chip.blocked .icon{background:var(--blocked)}
+.chip.unresolved .icon{background:var(--unresolved)}.chip.blocked .icon{background:var(--blocked)}
 /* An outcome chip is tinted in its colour, and a claim carries a stripe in its outcome's colour. */
 .chip.good{background:color-mix(in srgb,var(--good) 14%,var(--surface));border-color:color-mix(in srgb,var(--good) 50%,var(--surface))}
 .chip.warning{background:color-mix(in srgb,var(--warning) 18%,var(--surface));border-color:color-mix(in srgb,var(--warning) 60%,var(--surface))}
-.chip.critical{background:color-mix(in srgb,var(--critical) 13%,var(--surface));border-color:color-mix(in srgb,var(--critical) 50%,var(--surface))}
+.chip.unresolved{background:color-mix(in srgb,var(--unresolved) 13%,var(--surface));border-color:color-mix(in srgb,var(--unresolved) 50%,var(--surface))}
 .chip.blocked{background:color-mix(in srgb,var(--blocked) 16%,var(--surface));border-color:color-mix(in srgb,var(--blocked) 50%,var(--surface))}
 .tier{font-size:.78rem;font-weight:600;border-radius:3px;padding:1px 10px;white-space:nowrap;border:1px solid var(--line);
 color:var(--text);text-decoration:none;display:inline-block}
@@ -207,12 +208,12 @@ padding:10px 12px;cursor:pointer;white-space:nowrap}
 .claim[data-outcome]{border-left:4px solid transparent;padding-left:12px}
 .claim[data-outcome=reproduced]{border-left-color:var(--good)}
 .claim[data-outcome=partially_reproduced]{border-left-color:var(--warning)}
-.claim[data-outcome=not_reproduced]{border-left-color:var(--critical)}
+.claim[data-outcome=not_reproduced]{border-left-color:var(--unresolved)}
 .claim[data-outcome=blocked]{border-left-color:var(--blocked)}
 #claim-filter button[data-f]:not([data-f=all])::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:.05em}
 #claim-filter button[data-f=reproduced]::before{background:var(--good)}
 #claim-filter button[data-f=partially_reproduced]::before{background:var(--warning)}
-#claim-filter button[data-f=not_reproduced]::before{background:var(--critical)}
+#claim-filter button[data-f=not_reproduced]::before{background:var(--unresolved)}
 #claim-filter button[data-f=blocked]::before{background:var(--blocked)}
 .claims .claim:first-child{border-top:0}
 .outcome-group{margin-top:14px}
@@ -291,7 +292,7 @@ button.tile[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0
 .progress .cross{stroke:var(--muted);stroke-width:1}
 .progress .hit{fill:transparent;cursor:crosshair}
 .progress .seg-good{fill:var(--good)}.progress .seg-warning{fill:var(--warning)}
-.progress .seg-critical{fill:var(--critical)}.progress .seg-blocked{fill:var(--blocked)}
+.progress .seg-unresolved{fill:var(--unresolved)}.progress .seg-blocked{fill:var(--blocked)}
 .progress .seg-bar{fill:var(--bar)}
 .progress .tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:3px;
 padding:4px 8px;font-size:.82rem;color:var(--text);white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.08);z-index:2}

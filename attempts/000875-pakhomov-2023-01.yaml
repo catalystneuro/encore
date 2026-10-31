@@ -1,0 +1,497 @@
+schema_version: 2
+id: 000875-pakhomov-2023-01
+dataset:
+  archive: dandi
+  id: "000875"
+  version: 0.240515.1925
+  doi: 10.48324/dandi.000875/0.240515.1925
+paper: doi:10.1016/j.bioelechem.2023.108437
+date: 2026-10-31
+entry: 000875-pakhomov-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41222610418
+outcomes:
+- claim: fig4-bipolar-cancellation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The single-cell confocal time-lapse of Fig. 4 (Methods 2.2) is not in the dandiset, which
+    holds nine stitched monolayer images only. The paper names no other repository for it.
+- claim: fig4-twenty-fold-cancellation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig4-bipolar-cancellation, whose single-cell data are not in the dandiset.
+- claim: fig5a-packet-without-rotation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Fig. 5 dishes (40 packets or 40 trains from e1, 6.4 kV) are not in the dandiset; all
+    nine files are rotated Packet 2 at 3.2 kV.
+- claim: fig5bc-rotation-focuses-center
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Fig. 5 dishes (1Px40 and 1Tx40, 6.4 kV) are not in the dandiset.
+- claim: fig6a-more-packets-more-uptake
+  outcome: reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig6a-more-packets-more-uptake
+  notes: Under the primary reading (both diagonals, raw counts, the two central ROIs, the mean of
+    the two ends, the mean of the two side minima) the means for 4, 20 and 40 packets are 544, 3240
+    and 9712 counts at the periphery, 674, 2631 and 5172 at the center and 479, 1148 and 1880 at
+    the least affected area; 40 exceeds 4 at each place by a two-sided Student's t-test (3 dishes
+    each, p = 0.016, 0.00076 and 0.00079). The order holds in all 162 combinations of the claims
+    file's readings; all three tests pass in 72 and at least one in the other 90. Only the
+    periphery test fails (p up to 0.127), in the 54 combinations on diagonal A alone and the 36
+    that take the periphery from the negative end alone, so the full result needs diagonal B or
+    both diagonals with the periphery from both ends or the positive end, not from the negative end
+    alone. Saturation of up to 5% of an ROI near the 10Px4 electrodes
+    lowers the 10Px4 periphery and works against the order. With the ROI extent taken from the
+    footprints the primary reading gives p = 0.035, 0.0008 and 0.0008.
+  deviations:
+  - The paper's ROIs (MetaMorph) are not deposited; ROIs are placed by code along the diagonals of
+    the detected electrode footprints, over +/- 1.65 mm from the array center with 92 ROIs, the
+    small-array values of Methods 2.4 ("92 or 224 regions of interest (ROI), placed along one or
+    both diagonals, and covering a distance of +/- 1.65 mm or +/- 3.65 mm"). The array is taken
+    as the small one from the images, as the claims file asks.
+  - The files give no pixel size. 0.65 um per pixel (the ORCA-Flash4 camera's 6.5 um pixel through
+    the 10x objective, both named in the file's device description and Methods 2.4) is assumed.
+    With it the small array's ROI extent fits between the footprints and the large array's does
+    not, and the small array measures 3.73 to 4.05 mm between needle edges, against 3.80 mm from
+    the paper's large array (8.4 mm diagonal, Section 3.5) and its ROI extents. The scale of about
+    0.53 um that would make the footprints 1.5 mm across leaves 2.77 to 3.03 mm between them, too
+    short for the paper's 3.30 mm of ROIs. A variant that ends the ROIs 5% of the diagonal short
+    of the footprints, using no pixel size, gives the same outcome.
+  - 3 dishes per treatment, where the Fig. 6 legend gives n = 3 to 4.
+  - The ROI layout, background, center, periphery and least-affected-area readings of the claims
+    file header are all run; with an even number of ROIs two are equally near the center, and
+    their mean is taken for reading c1, a standard choice. The files hold no dark frame, so the
+    background reading b2 ("minus a cell-free or dark offset, where the data hold one") is run with
+    two estimates, the 1st percentile of each image's nonzero 8 x 8 block means (73.5 to 87.1
+    counts, from blocks more than twice the center-to-footprint distance from the array center;
+    the 1st percentile of the blocks away from the zero padding is within 1.4 counts of it) and the
+    darkest pixel near the array (110 to 200 counts), both standard choices.
+- claim: fig6b-peak-relative-to-periphery
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig6b-peak-relative-to-periphery
+  measured:
+  - 124.0
+  - 86.7
+  - 58.7
+  notes: Measured values are the primary reading (both diagonals, raw counts, the two central ROIs,
+    mean of the two ends, each dish normalized); per dish 107.2 to 151.6% for 1Px4, 73.2 to 106.2%
+    for 5Px4 and 34.5 to 77.4% for 10Px4. No combination of the 108 readings puts all three values
+    within tolerance. 1Px4 is within 180 to 220% and above both others in 13, which meets the
+    claims file's rule for a partial reproduction; all 13 subtract a dark offset (5 with b2-dark,
+    8 with b2-min, none with raw counts), use one diagonal and take the peak as the highest ROI
+    between the minima (c2). They are fragile. The center is one 36 um ROI, and across these rows
+    1Px4 per dish is 170.2 to 380.1% for dish 23, 75.2 to 145.0% for dish 24 and 126.1 to 279.5%
+    for dish 25. On diagonal A with c2, e1 and n2, 1Px4 passes 180% once a common offset of 50
+    counts is subtracted, less than either dark estimate; on both diagonals with c1 it stays below
+    155% for offsets up to 300 counts. 1Px4 is above both others in 96 of 108; 10Px4 is within 90
+    to 110% in 14 and below its periphery under the primary reading. With the ROI extent from the
+    footprints 1 of 108 combinations is partial and none reproduced (primary 116.1, 105.1 and
+    68.0%). The ranking holds; "almost twofold" for 1Px4 holds only on one diagonal with a dark
+    offset subtracted; the 40-packet center is mostly well below the periphery, not about the
+    same.
+  deviations:
+  - ROIs placed by code, pixel size assumed and 3 dishes per treatment, as for
+    fig6a-more-packets-more-uptake.
+  - The paper does not fix the layout, background, center, periphery or normalization order; the
+    claims file names readings for each and a claim holds under any combination. The partial
+    outcome rests on reading b2, a dark offset subtracted, which the Methods do not name. The files
+    hold no dark frame, so the offset is estimated (assumed) as the 1st percentile of each image's
+    nonzero block means, which lie far outside the array, or the darkest pixel near the array. A
+    sweep of a common offset over 1Px4 alone puts it above 180% from 50 counts on diagonal A with
+    c2, e1 and n2 (within 220% up to 175 counts, 222.3% at 200); it does not check the order
+    against 5Px4 and 10Px4. The first round used the
+    median inside the electrode footprints; full-resolution crops show a faint monolayer inside
+    them (median 0.74 to 0.94 of the monolayer outside the array, 3.1 to 5.0 times the dark
+    estimate), so it is not cell-free and is shown only as a variant outside the outcome (7 of 36
+    partial).
+- claim: fig6-trough-half-of-center
+  outcome: partially_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig6-trough-half-of-center
+  notes: Center over least affected area under the primary reading is 1.40 for 1Px4, 2.16 for
+    5Px4 and 2.80 for 10Px4 (no single measured value is given, as the expected value is one
+    number for all three treatments). Over 216 combinations it is 1.32 to 4.04 for 1Px4 (within
+    1.8 to 2.2 in 52), 1.86 to 4.37 for 5Px4 (in 29) and 2.66 to 10.11 for 10Px4 (in none). No
+    combination puts all three within tolerance; 79 put one or two within it with all above 1, 27
+    of them with raw counts. The central peak is discernible for all treatments (ratio above 1 in
+    all 216). The ratio grows with packet number, so the 2-fold for all treatments does not hold
+    at 40 packets (per dish 2.52 to 2.92 with raw counts). The ROI extent from the footprints
+    gives 69 partial and none reproduced.
+  deviations:
+  - ROIs placed by code, pixel size assumed, dark offsets estimated and 3 dishes per treatment, as
+    for fig6a-more-packets-more-uptake; all readings of the claims file are run.
+- claim: fig6-peak-narrower
+  outcome: reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig6-peak-narrower
+  notes: On the primary reading (both diagonals, raw counts, each dish normalized to the mean of
+    its two ends) the width at half height above the least affected area (w1) is 1.051, 0.545 and
+    0.488 mm for 4, 20 and 40 packets, and with LOESS spans 0.25 and 0.5 it is 0.800, 0.654, 0.560
+    and 0.992, 0.863, 0.817 mm. Unsmoothed, w1 depends on the center reading (0.591, 0.511 and
+    0.437 mm under c2, still in order). w1 decreases in 182 of 216 combinations, 40 is narrower
+    than 4 with 20 out of order in 28, and 6, all unsmoothed with c2, are out of order. The
+    distance between the side minima (w2), counted once as it does not depend on the center
+    reading, decreases in 71 of 108, is partial in 28 and out of order in 9, all unsmoothed; on
+    the primary reading it is 2.367, 1.650 and 1.435 mm with LOESS 0.5 and 1.363, 1.722 and 1.148
+    mm unsmoothed. Per dish, w2 on LOESS 0.5 is 1.722 to 2.367 mm for 1Px4, 1.435 to 1.650 for
+    5Px4 and 1.363 to 1.578 for 10Px4, so 5Px4 and 10Px4 overlap; the criterion asks for no
+    test. With the ROI extent from the footprints w1 keeps the order under all three smoothings.
+  deviations:
+  - ROIs placed by code, pixel size assumed, dark offsets estimated and 3 dishes per treatment, as
+    for fig6a-more-packets-more-uptake. Widths in mm rest on the assumed pixel size; their order
+    does not.
+  - LOESS is fitted with statsmodels lowess without robustness iterations, a standard choice; the
+    paper names LOESS (Methods 2.4) without a span or implementation, and the claims file names
+    spans 0.25 and 0.5.
+- claim: fig7ab-amplitude-scales-uptake
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs 1Px4 profiles at 2.4 and 5.6 kV in the small array (Fig. 7A). The dandiset holds
+    1Px4 only at 3.2 kV.
+- claim: fig7-targeting-independent-of-amplitude
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs several first-pulse voltages in each array (Fig. 7B and 7D). The dandiset holds one
+    voltage (3.2 kV) and the small array only.
+- claim: fig7-targeting-independent-of-array-size
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs large-array dishes (Fig. 7C and 7D), which are not in the dandiset; it also depends
+    on fig7-targeting-independent-of-amplitude, blocked for the same reason.
+- claim: fig8-packet2-best-targeting
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs Packets 1, 2 and 3 at 4 kV (Fig. 8); the dandiset holds Packet 2 at 3.2 kV only.
+- claim: fig8b-normalized-center
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs Packets 1, 2 and 3 at 4 kV (Fig. 8B); not in the dandiset.
+- claim: fig8-cancellation-predicts-targeting
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig4-twenty-fold-cancellation and fig8b-normalized-center, both blocked for
+    missing data.
+- claim: fig9-gap-fades-periphery
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs large-array dishes with the electrodes 0 to 3 mm above the monolayer (Fig. 9); not in
+    the dandiset.
+- claim: fig9b-six-fold-targeting
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig9-gap-fades-periphery; the Fig. 9 dishes are not in the dandiset.
+- claim: fig3-field-simulation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the Sim4Life model of the two arrays. The paper deposits none and says the
+    simulation follows reference 15 (doi:10.1016/j.bioelechem.2021.107876), which names no
+    public model either; the dandiset holds images only. No public model was found to pin.
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the experiment of Fig. 6 (nine dishes, 1Px4, 5Px4 and 10Px4 at
+    3.2 kV, three each, against n = 3 to 4 in the legend). The single-cell time-lapse of Fig. 4
+    and the monolayer experiments of Figs. 5, 7, 8 and 9 are not in it, so 13 of the paper's 17
+    claims cannot be tested.
+- kind: metadata_insufficient
+  statement: The files give no pixel size or field of view, no electrode positions, no ROIs or
+    measured profiles, no dark frame, and do not say which of the two arrays was used. At the
+    camera scale (0.65 um per pixel) the geometry fits the small array and the paper's ROI
+    extents; the dark electrode footprints are then 1.66 to 2.09 mm across, wider than the 1.5 mm
+    needles of Methods 2.3, and they hold a faint monolayer, so they give no cell-free background.
+- kind: metadata_error
+  statement: The subject species is NCBITaxon 9913 (Bos taurus, cattle) in every file and in the
+    archive's summary, while the strain field and the paper say CHO cells (Chinese hamster). The
+    age is "P1D", which has no meaning for a cell line, and the archive's summary counts 18
+    subjects for 9 files and 9 subject ids.
+- kind: metadata_error
+  statement: Two pairs of dishes share a session start time to the second (dishes 20 and 22 of
+    5Px4; dish 09 of 5Px4 and dish 25 of 1Px4). The images differ (no two identical, array
+    position different in each), so the start times are not per-dish acquisition times.
+- kind: metadata_insufficient
+  statement: The ImageSeries has unit "n.a." and a rate of 2 Hz for a single frame, and the "200ms"
+    in every file and session name is not explained; the description says packets were given at
+    1 Hz.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Methods 2.4 says the ROIs were "placed along one or
+    both diagonals" but not which for Fig. 6, nor the ROI size, whether a background was
+    subtracted, which ROI is the center, or whether dishes were normalized before averaging. The
+    Fig. 6B normalized center depends on these (1Px4 is 121.7 to 301.3% over the readings, near
+    200% only on one diagonal with a dark offset subtracted). Which layout, ROI size and background were used for Fig. 6?
+verifications:
+- date: 2026-10-31
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusions and summary
+    removed, the helper module and the claims file, with the paper. The verifier checked the
+    archive's assets and metadata itself for the blocked claims.
+  results:
+  - claim: fig6a-more-packets-more-uptake
+    agrees: true
+    outcome: reproduced
+    reason: In cell 15, the main reading (r2, b1, c1, e1, t1) gives means of 544/3240/9712 at the
+      periphery, 674/2631/5172 at the center and 479/1148/1880 at the trough. The 40-against-4
+      t-test gives p = 0.016, 0.0008 and 0.0008. The order holds in 108 of 108 combinations, and 48
+      of them are fully reproduced. The variant that sets the ROI extent from the footprints also
+      passes (periphery p = 0.035). In 60 of 108 combinations the periphery test fails (single
+      diagonals and one-end readings), with p up to 0.13; the verdict stands only because the
+      claims file accepts a claim that holds under any combination. Saturation of up to 5% in the
+      10Px4 periphery ROIs works against the order, so it is conservative here.
+    response: No change of outcome. The background readings now subtract dark offsets in place of
+      the footprint median (see fig6b), so the counts are over 162 combinations, 72 reproduced and
+      90 partial. The conclusion and the notes now say the periphery test fails in 90, on diagonal
+      A alone or from the negative end alone, and that saturation works against the order. On the
+      pixel scale (its problem 2), the data check now tests the scale against the paper's array
+      sizes. Read center to center, the large array's 8.4 mm leaves less room between its needles
+      than its own ROIs cover, so the diagonal is between needle edges, which gives about 3.8 mm
+      for the small array. At 0.65 um it measures 3.73 to 4.05 mm, and at 0.53 um the footprints
+      leave 2.77 to 3.03 mm, too short for the 3.30 mm of ROIs, so 0.65 um is kept.
+  - claim: fig6b-peak-relative-to-periphery
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced, fragile. No combination puts all three treatments within
+      tolerance; the main reading gives 124/87/59% against 200/100/100%. All 7 partial combinations
+      use b2, which subtracts the median inside the footprints, and with raw intensities 1Px4 never
+      falls in 180 to 220%. The partial rows have s.e. of 31 to 81 points, and only dish 23 is near
+      200%. Nothing shows the footprint is cell-free; the needles are blunt and hollow, Methods 2.4
+      calls the areas next to the electrodes mechanical damage, and the footprint median (239 to
+      403) is about the whole-image median and well above the image minima (110 to 200), so it
+      looks like the baseline of unexposed cells. A camera dark-offset reading was not run and
+      could also put r1-dA, c2, n2 into the partial range. The outcome is open between partial and
+      not reproduced. It asked for a full-resolution footprint crop, histograms of the footprint,
+      the unexposed monolayer and the darkest pixels, a b2 variant with a dark level, and per-dish
+      values for the partial rows.
+    response: Outcome kept, now resting on a dark offset. The notebook adds full-resolution crops of
+      a footprint per dish and 600-pixel patches of footprint and outside monolayer, intensity
+      histograms of footprint, monolayer outside the array and exposed area, and a map of where
+      the darkest blocks lie. The footprints hold a faint monolayer (median 0.74 to 0.94 of the
+      monolayer outside), so the footprint median is dropped from b2 and shown only as variant
+      b2-fp. b2 is now run with two dark offsets, the 1st percentile of the nonzero block means
+      (73.5 to 87.1 counts, off the glass bottom) and the darkest pixel near the array (110 to 200).
+      13 of 108 combinations are partial, 5 and 8 under them, all on one diagonal with c2, as the
+      verifier expected. A sweep of a common offset shows 1Px4 on r1-dA c2 e1 n2 passes 180% from
+      50 counts. Per-dish values are printed for every partial row (dish 23 170 to 380%, dish 24 75
+      to 145%). The outcome is marked assumed, with the dark offset stated as the assumption.
+  - claim: fig6-trough-half-of-center
+    agrees: true
+    outcome: partially_reproduced
+    reason: The main reading gives 1.40/2.16/2.80, so only 5Px4 is within 1.8 to 2.2. 10Px4 is never
+      within tolerance (2.66 to 12.06 across all 144 rows), and all ratios are above 1. That gives
+      41 partial and 0 reproduced, under b1 and b2 alike.
+    response: No change of outcome. With the dark-offset readings it is 79 partial of 216 and none
+      reproduced; 10Px4 is 2.66 to 10.11. Per-dish ratios are printed under every background.
+  - claim: fig6-peak-narrower
+    agrees: true
+    outcome: reproduced
+    reason: Under the main reading, w1 is 1.051, 0.545 and 0.488 mm, so width falls from 4 to 20 to
+      40 packets. It also falls under LOESS 0.25 and 0.5, and w2 falls under LOESS 0.5. It holds
+      in the variant that sets the ROI extent from the footprints too. The criterion asks for no
+      test; with n = 3 the per-dish w2 values overlap. w2 does not depend on the center reading,
+      yet every row appears twice, so counts such as 104 of 144 double-count, and rows with n2 are
+      not independent combinations. w1 without smoothing is 1.05 mm for 1Px4 under c1 and 0.59 mm
+      under c2, so it is sensitive to the center reading; the order holds under both.
+    response: No change of outcome. w2 is now counted once per combination (71 of 108 in order) and
+      the counts are given apart for n1 and n2. The primary reading is printed under c1 and c2, and
+      the conclusion states the dependence of unsmoothed w1 on the center reading and that the 5Px4
+      and 10Px4 per-dish w2 overlap.
+  - claim: fig4-bipolar-cancellation
+    agrees: true
+    outcome: blocked
+    reason: The archive holds 9 files, all monolayer images (Packet 2, 3.2 kV). There is no
+      single-cell time-lapse. Version 0.240515.1925 and the draft both have the same 9 assets.
+    response: No change.
+  - claim: fig4-twenty-fold-cancellation
+    agrees: true
+    outcome: blocked
+    reason: Same as fig4-bipolar-cancellation, no single-cell time-lapse.
+    response: No change.
+  - claim: fig5a-packet-without-rotation
+    agrees: true
+    outcome: blocked
+    reason: There are no 1Tx40 or unrotated Packet 2 dishes, and no large array.
+    response: No change.
+  - claim: fig5bc-rotation-focuses-center
+    agrees: true
+    outcome: blocked
+    reason: There are no 1Tx40 or unrotated Packet 2 dishes, and no large array.
+    response: No change.
+  - claim: fig7ab-amplitude-scales-uptake
+    agrees: true
+    outcome: blocked
+    reason: There is only one voltage (3.2 kV), and a ratio between voltages needs two.
+    response: No change.
+  - claim: fig7-targeting-independent-of-amplitude
+    agrees: true
+    outcome: blocked
+    reason: Only one voltage.
+    response: No change.
+  - claim: fig7-targeting-independent-of-array-size
+    agrees: true
+    outcome: blocked
+    reason: Only the small array is present; the center-to-center diagonal is 5.2 to 5.6 mm, against
+      8.4 mm for the large array.
+    response: No change.
+  - claim: fig8-packet2-best-targeting
+    agrees: true
+    outcome: blocked
+    reason: There are no Packet 1 or Packet 3 dishes and no 4 kV dishes.
+    response: No change.
+  - claim: fig8b-normalized-center
+    agrees: true
+    outcome: blocked
+    reason: There are no Packet 1 or Packet 3 dishes and no 4 kV dishes.
+    response: No change.
+  - claim: fig8-cancellation-predicts-targeting
+    agrees: true
+    outcome: blocked
+    reason: It needs both the Fig. 4 data and the Fig. 8 data, and neither is present.
+    response: No change.
+  - claim: fig9-gap-fades-periphery
+    agrees: true
+    outcome: blocked
+    reason: There are no dishes with the array lifted above the monolayer.
+    response: No change.
+  - claim: fig9b-six-fold-targeting
+    agrees: true
+    outcome: blocked
+    reason: There are no dishes with the array lifted above the monolayer.
+    response: No change.
+  - claim: fig3-field-simulation
+    agrees: true
+    outcome: blocked
+    reason: No Sim4Life model has been deposited.
+    response: No change.
+- date: 2026-10-31
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The full executed notebook of the second run with its conclusions and summary, the
+    helper module, the README, this attempt record and the claims file, with the paper (round 2).
+  results:
+  - claim: fig6a-more-packets-more-uptake
+    agrees: true
+    outcome: reproduced
+    reason: The primary reading gives p = 0.016, 0.00076 and 0.00079; the order holds in 162 of 162
+      combinations and 72 are fully reproduced, and the footprint-extent variant also passes (p =
+      0.035). No assumption is needed. The sentence "So the full result needs both ends" is not
+      supported, since the periphery test fails only for r1-dA and for e2-neg on r1-dB and r2, so
+      e2-pos (one end) also gives the full result; it should say "not the negative end alone".
+    response: No change of outcome. The sentence in the conclusion and in the notes now says the full
+      result needs diagonal B or both diagonals, with the periphery from both ends or the positive
+      end, not from the negative end alone.
+  - claim: fig6b-peak-relative-to-periphery
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, as fragile. All 13 partial rows subtract an estimated dark offset (b2-dark or
+      b2-min); raw counts give none, and so do the readings with the ROI extent from the
+      footprints. Treating b2 as a dark offset estimated from the image is stated and reasonable,
+      but the outcome depends on it. Dropping the footprint median is right. The deviation "any
+      common offset of 50 counts or more gives the same outcome" is not supported; the sweep covers
+      only 1Px4 in four combinations, never checks that 1Px4 stays above 5Px4 and 10Px4, and 1Px4
+      leaves the 180 to 220% band at 200 counts (222.3%). That the darkest blocks lie off the glass
+      bottom is an inference from the thumbnails, and no check excludes blocks that straddle the
+      zero padding.
+    response: No change of outcome. The deviation now says the sweep covers 1Px4 alone, puts it
+      above 180% from 50 counts, within 220% up to 175 counts and at 222.3% at 200, and does not
+      check the order. The glass-bottom wording is removed from the record, the notebook and the
+      helper; the darkest blocks are now described only by their distance from the array. The
+      notebook adds the requested check, the dark level from blocks whose 3 x 3 neighbourhood is
+      all nonzero, so they cannot straddle the padding; it is 74.2 to 88.5 counts, within 1.4
+      counts of b2-dark (73.5 to 87.1), and 6.2 to 8.9% of the darkest blocks touch a zero block.
+      No number in the outcome changes.
+  - claim: fig6-trough-half-of-center
+    agrees: true
+    outcome: partially_reproduced
+    reason: 79 of 216 combinations are partial, 27 of them with b1, so no assumption is needed. 10Px4
+      is never within tolerance (2.66 to 10.11).
+    response: No change.
+  - claim: fig6-peak-narrower
+    agrees: true
+    outcome: reproduced
+    reason: w1 is in order on the primary reading (1.051, 0.545 and 0.488 mm) and under both LOESS
+      spans, and keeps the order in the variant that sets the ROI extent from the footprints. The
+      margin sentence of the scale check ("1.5 to 5.6% of the diagonal left at each end, close to
+      the 5% the Methods exclude") is not supported, as 1.5% is well inside the excluded zone; it
+      changes no outcome, because the footprint-extent variant is run.
+    response: No change of outcome. The scale-check text now says that in the narrowest dishes the
+      outer ROIs reach into the 5% the Methods exclude, and that the footprint-extent variant
+      avoids this.
+  - claim: fig4-bipolar-cancellation
+    agrees: true
+    outcome: blocked
+    reason: Same reasons as in round 1; the archive holds only the Fig. 6 dishes. The README's
+      "Figs. 5, 7, 8 and 9 (nine claims)" should say ten.
+    response: The README now says ten claims.
+  - claim: fig4-twenty-fold-cancellation
+    agrees: true
+    outcome: blocked
+    reason: Same reasons as in round 1; the archive holds only the Fig. 6 dishes.
+    response: No change.
+  - claim: fig5a-packet-without-rotation
+    agrees: true
+    outcome: blocked
+    reason: Same reasons as in round 1; the archive holds only the Fig. 6 dishes.
+    response: No change.
+  - claim: fig5bc-rotation-focuses-center
+    agrees: true
+    outcome: blocked
+    reason: Same reasons as in round 1; the archive holds only the Fig. 6 dishes.
+    response: No change.
+  - claim: fig7ab-amplitude-scales-uptake
+    agrees: true
+    outcome: blocked
+    reason: Same reasons as in round 1; the archive holds only the Fig. 6 dishes.
+    response: No change.
+  - claim: fig7-targeting-independent-of-amplitude
+    agrees: true
+    outcome: blocked
+    reason: Same reasons as in round 1; the archive holds only the Fig. 6 dishes.
+    response: No change.
+  - claim: fig7-targeting-independent-of-array-size
+    agrees: true
+    outcome: blocked
+    reason: Same reasons as in round 1; the archive holds only the Fig. 6 dishes.
+    response: No change.
+  - claim: fig8-packet2-best-targeting
+    agrees: true
+    outcome: blocked
+    reason: Same reasons as in round 1; the archive holds only the Fig. 6 dishes.
+    response: No change.
+  - claim: fig8b-normalized-center
+    agrees: true
+    outcome: blocked
+    reason: Same reasons as in round 1; the archive holds only the Fig. 6 dishes.
+    response: No change.
+  - claim: fig8-cancellation-predicts-targeting
+    agrees: true
+    outcome: blocked
+    reason: Same reasons as in round 1; the archive holds only the Fig. 6 dishes.
+    response: No change.
+  - claim: fig9-gap-fades-periphery
+    agrees: true
+    outcome: blocked
+    reason: Same reasons as in round 1; the archive holds only the Fig. 6 dishes.
+    response: No change.
+  - claim: fig9b-six-fold-targeting
+    agrees: true
+    outcome: blocked
+    reason: Same reasons as in round 1; the archive holds only the Fig. 6 dishes.
+    response: No change.
+  - claim: fig3-field-simulation
+    agrees: true
+    outcome: blocked
+    reason: Same reasons as in round 1; no Sim4Life model is available.
+    response: No change.
