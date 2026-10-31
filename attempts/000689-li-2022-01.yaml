@@ -100,7 +100,7 @@ outcomes:
   blocked_by: data_missing
   notes: The sensor imaging in cultured neurons is not in the dandiset.
 - claim: fig3k-nt-sensor-sucrose-increase
-  outcome: partially_reproduced
+  outcome: not_reproduced
   assumed: true
   notebook: reproduce_li_2022.ipynb
   output: claim:fig3k-nt-sensor-sucrose-increase
@@ -120,18 +120,9 @@ outcomes:
     to +2.53, p >= 0.44), nor under the session-pooled z-score (AUC -2.92 to +0.16, p >= 0.16). The
     CS window does not change under any reading (p >= 0.25), as in the paper (P = 0.1483). The first
     run read the 470 nm channel of Mouse6's late sucrose session from the constant third frame type
-    (see deviations); with that corrected the all-trials readings pass. The outcome is kept as
-    reviewed in round 2, and not_reproduced is proposed (see proposed).
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion is "p < 0.05 with late higher under every reading", and p < 0.05 holds in 2
-      of its 4 readings (all trials, AUC and mean, which give the same t and p); with the first 16
-      trials p = 0.093. The criterion has no partial condition, so a failed criterion with the
-      direction right in every reading is not_reproduced, as the round-2 verifier says. The
-      significant reading also needs the per-trial z-score and the trial-averaged regression
-      together; the session z-score (p >= 0.16) and the pooled-bin regression (p >= 0.44) give no
-      reading with p < 0.05 (notebook, claim:fig3k-nt-sensor-sucrose-increase, which counts the
-      passing readings per z-score, 2 of 4 and 0 of 4).
+    (see deviations); with that corrected the all-trials readings pass. Round 2 kept the outcome as
+    partially_reproduced and proposed not_reproduced; round 3 agreed, since the criterion has no
+    partial condition.
   deviations:
   - The files mark one kind of cue, 2 s long, and no US. All cues are taken as CS-US trials with
     the US 2 s after CS onset (Methods, Head-fixed behavior, "The US ... was delivered 2 s after
@@ -216,13 +207,13 @@ outcomes:
   blocked_by: metadata_insufficient
   notes: Needs the CRISPR and control groups and the tagged BLA-NAc and BLA-CeA neurons; every file
     gives the genotype as "Wild type" and none names the group or the Cav2-Cre injection site. The
-    tagged neurons of fig4c-photoidentification are not known either (that claim is tested on the
-    total count only).
+    tagged neurons of fig4c-photoidentification are not known either (that claim is blocked, since
+    the light blocks and the projections are not labelled).
 - claim: fig4c-photoidentification
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: metadata_insufficient
   notebook: reproduce_li_2022.ipynb
   output: claim:fig4c-photoidentification
-  measured: 146
   notes: No file gives the projection of each mouse, so the BLA-NAc and BLA-CeA counts cannot be
     split, but both are within 10% of 39 and 32 only if their total is within 63.9 to 78.1. With the
     Methods' rule and the fake-session test, block 1 taken as the fake session as the Methods order
@@ -237,18 +228,9 @@ outcomes:
     cord disconnected should evoke none, so either neither block is that fake session or the
     responses are light artefacts on units that are not sorted single units (finding). The 91 to
     256 tagged units are then units that cross the threshold in one block and not the other, and
-    their count does not test the claim. The outcome is kept as reviewed in round 2, and blocked
-    (metadata_insufficient) is proposed (see proposed).
-  proposed:
-    outcome: blocked
-    blocked_by: metadata_insufficient
-    reason: The rule needs a fake session that evokes no light response, and neither block is one.
-      Block 1, the fake one in the Methods' order, evokes a short-latency response in 1353 of 1902
-      units, block 2 in 1243, and 88% of block-2 responders also respond to block 1 (notebook,
-      claim:fig4c-photoidentification). The files do not label the fake and real blocks, nor the
-      projection of each mouse, so the count the rule gives (91 to 256 over every reading) measures
-      differences between two similar blocks and does not test the claim, as the round-2 verifier
-      says. Every block order was run, so no other choice of the fake block is left to try.
+    their count does not test the claim. The files label neither the fake and real blocks nor the
+    projection of each mouse, so the claim is blocked. Round 2 kept the outcome as not_reproduced
+    and proposed blocked (metadata_insufficient); round 3 agreed.
   deviations:
   - Which light block is the fake session is not labelled. Block 1 is taken as the fake one (Methods,
     In vivo electrophysiology, "a phototagging session was conducted after a 'fake' phototagging
@@ -402,8 +384,8 @@ findings:
   statement: No file says which recorded mouse is in the CRISPR group and which in the control
     group, nor whether its Cav2-Cre was injected in the NAc or the CeA; every subject's genotype is
     "Wild type". The paper's electrophysiology findings compare the groups and the tagged
-    projectors, so 13 of its claims cannot be tested, and the phototagging count can be checked
-    only as a total. Neither the units table (spike times and a unit name), the electrodes table
+    projectors, so 13 of its claims cannot be tested, and the phototagging count cannot be split
+    by projection. Neither the units table (spike times and a unit name), the electrodes table
     (location "unknown"), any other text field of the files, nor the archive's subject metadata
     (age, sex, species, genotype) holds such a label.
 - kind: format_error
@@ -1109,3 +1091,46 @@ verifications:
     outcome: blocked
     reason: Agrees with the data_missing block (19 claims).
     response: No change.
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The two changes of outcome proposed after round 2, on fig3k-nt-sensor-sucrose-increase
+    and fig4c-photoidentification, and the notebook outputs behind them. Report in
+    transcripts/000689/verifier-3-report.md.
+  results:
+  - claim: fig3k-nt-sensor-sucrose-increase
+    agrees: true
+    outcome: not_reproduced
+    reason: The criterion says "Reproduced when the US comparison has p < 0.05 with late higher under
+      every reading". Cell 25 shows the US window under the adopted per-trial z-score, first 16 trials
+      AUC +2.94, t(4) = 2.20, p = 0.093, and all trials +3.53, t(4) = 5.74, p = 0.0046; AUC and mean
+      give the same t and p, and the cell prints "per-trial z-score 2 of 4". So the criterion fails as
+      written. Late is higher than early in all four readings, but the criterion has no partial
+      condition. Every number in the proposed reason matches the outputs (session z-score p >= 0.16,
+      pooled-bin fit p >= 0.44, CS window p >= 0.25; in cell 23 the trial-averaged fits have r = 0.563,
+      0.745, 0.480 and 0.614, the pooled fits r >= 0.938). The adopted per-trial z-score is the reading
+      most favourable to the claim, so it was not chosen to make the claim fail, and the outcome holds
+      even with it.
+    response: Set the outcome to not_reproduced and removed proposed. The notes, the conclusion cell, the
+      summary and the README now give not reproduced, with the direction holding in all four readings.
+  - claim: fig4c-photoidentification
+    agrees: true
+    outcome: blocked
+    reason: The Methods' rule needs a fake session (patch cord disconnected) that evokes no light response.
+      Cell 42 prints a short-latency response to block 1, the one taken as fake, in 1353 of 1902 units
+      under reading (a) and 1474 under (b); block 2 evokes one in 1243 and 1374, and 88% of block-2
+      responders also respond to block 1, a share the code computes correctly. The tagged totals of 91
+      to 256 therefore count units that cross the threshold in one of two similar blocks, not the units
+      the rule is meant to identify. Every block order was run, so no choice of the fake block was left
+      untried or picked to reach a result. The criterion also asks for separate BLA-NAc and BLA-CeA
+      counts, and no file gives each mouse's projection; that alone makes the claim untestable for lack
+      of metadata, so metadata_insufficient is right. Caveat, the outputs also fit a fake session that
+      is simply absent from the files (data_missing), or light artefacts on unsorted units; neither
+      would change the outcome. Notes, the ed8d-reduced-basal-firing note and fig4c's measured value
+      should be updated to match; a unit counts as responding to the fake block only if it meets the
+      full rule there, and a broader reading would not rescue the test.
+    response: Set the outcome to blocked with metadata_insufficient and removed proposed. Removed measured
+      (146), since a blocked claim has no measured value, and changed the ed8d-reduced-basal-firing note
+      and the group-label finding, which said the claim was tested on the total count. The notes, the
+      conclusion cell, the summary and the README now give blocked. The data_missing reading of the
+      caveat is left as the verifier says, since it does not change the outcome.
