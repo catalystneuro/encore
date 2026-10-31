@@ -19,18 +19,23 @@ behavioural model outputs in each file.
 | Choice commitment and strategy | Reproduced |
 | Cue-biased running is unrelated to performance | Partially reproduced |
 | RSC activity by trial epoch | Partially reproduced |
-| GLM encoding analyses (24 claims) | Blocked: too large |
-| Population decoders (5 claims) | Blocked: too large |
+| Cue decoding from populations follows the cue gradient | Partially reproduced, on a subsample of decoders |
+| Dynamic choice is decoded better than reported choice | Partially reproduced, on a subsample of decoders |
+| Reported-choice decoders relate more to dynamic choice | Partially reproduced, on a subsample of decoders |
+| Decoders are specific to maze position | Reproduced, on an assumption and a subsample of decoders |
+| GLM encoding analyses (24 claims, with figs5l) | Blocked: too large |
+| Shattering dimensionality | Blocked: too large |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The stored rule belief has the opposite sign to the paper's definition, and the paper's session
-counts cannot be recovered from the files. The attempt record, with the reasons and the differences
+The stored rule belief has the opposite sign to the paper's definition, the paper's session
+counts cannot be recovered from the files, and the activity timestamps of the single-plane sessions
+are on a different scale from the behaviour clock. The attempt record, with the reasons and the differences
 from the paper's method, is
 [`attempts/000579-tseng-2022-01.yaml`](../../attempts/000579-tseng-2022-01.yaml).
 
-- `reproduce_tseng_2022.ipynb`: the analysis. It takes about ten minutes, most of it streaming the
-  files and refitting the RL model.
-- `tseng.py`: streaming and reducing each session, the hierarchical bootstrap, the block sigmoid fit
-  and RL model 4. Other notebooks on this dandiset can import it.
+- `reproduce_tseng_2022.ipynb`: the analysis. It takes about 20 minutes on 4 cores, most of it
+  streaming the files, fitting the population decoders and refitting the RL model.
+- `tseng.py`: streaming and reducing each session, the hierarchical bootstrap, the block sigmoid fit,
+  RL model 4 and the population decoders. Other notebooks on this dandiset can import it.

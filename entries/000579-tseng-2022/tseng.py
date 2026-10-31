@@ -7,8 +7,10 @@ the velocity-LSTM outputs with their trial and position, and optionally the mean
 z-scored deconvolved activity of each neuron per epoch).
 
 Where parameters come from:
-- Session fraction correct excludes visually guided trials: Methods, Behavioral
-  training ("we excluded them from all analyses unless mentioned otherwise").
+- Session fraction correct: two readings are computed in the notebook, with visually
+  guided trials excluded (Methods, Behavioral training: "we excluded them from all
+  analyses unless mentioned otherwise") and over all trials. The second is adopted as an
+  assumption, as it is the one that gives the paper's neuron and session counts.
 - Session inclusion thresholds 0.5 and 0.65: Methods, Task performance analysis.
 - Maze geometry (stem 2.0 m, arm 0.5 m) and epoch lengths: read from each file's
   TaskParam metadata.
@@ -18,6 +20,11 @@ Where parameters come from:
   readings named in the claims file (fig2c-running-variability-after-switch).
 - Hierarchical bootstrap: Methods, Statistical procedures (mice, then the lower
   level; two-tailed p as twice the smaller tail).
+- Population decoders: Methods, Trial phase-specific logistic decoders (groups of ~100
+  neurons, PCA to 90% variance, elastic net 10% L1, 11 position bins, 5-fold CV); the
+  readings of the penalty and the grouping are the claims file's; the fold partition
+  (random frames, lassoglm's default, or whole trials) is run both ways; the penalty grid
+  and solver tolerances are standard choices (see the block above decode_session).
 - Sigmoid fit of block performance: Methods, Task performance analysis; the
   parameter constraints are a standard choice named in the claims file.
 """
@@ -179,6 +186,21 @@ def load_session(asset_id, nbins=(20, 11), activity=False):
             with np.errstate(invalid="ignore", divide="ignore"):
                 stem_vel[:, c] = s / cnt
 
+        # Checks of the epoch and onset definitions: frames of the feedback delay (0 to
+        # feedback_delay_sec after the choice point) that keep a maze position; frames before the
+        # choice point beyond the maze end; and, per trial, the first frame with a position minus
+        # the trial's start time.
+        intr = ~np.isnan(tn)
+        fd = intr & (tfc >= 0) & (tfc <= task["feedback_delay_sec"])
+        pre = intr & (tfc < 0)
+        diag = dict(fd_frames=int(fd.sum()), fd_with_pos=int((fd & ~np.isnan(posF)).sum()),
+                    pre_frames=int(pre.sum()), pre_no_pos=int((pre & np.isnan(posF)).sum()),
+                    pre_beyond_maze=int((pre & (posF > maze_len)).sum()),
+                    max_pos=float(np.nanmax(posF)))
+        hp = intr & ~np.isnan(posF)
+        first = pd.Series(ts[hp]).groupby(tn[hp].astype(int)).min()
+        trials["onset_lag"] = first.reindex(trials.index).values - trials["start_time"].values
+
         idx = np.searchsorted(ts, rts)
         idx = np.clip(idx, 0, len(ts) - 1)
         rnn = pd.DataFrame(dict(t=rts, trial=tn[idx], posF=posF[idx], tfc=tfc[idx],
@@ -186,7 +208,7 @@ def load_session(asset_id, nbins=(20, 11), activity=False):
                                 ts_match=np.abs(ts[idx] - rts) < 1e-6))
         out = dict(trials=trials, task=task, imaging=imaging, registration=reg,
                    neurons=neurons, velbin=velbin, stem_vel=stem_vel, rnn=rnn,
-                   n_frames=len(ts), stem=stem, maze_len=maze_len)
+                   n_frames=len(ts), stem=stem, maze_len=maze_len, diag=diag)
         if activity:
             out["act"] = _epoch_activity(f, ts, posF, tn, tfc, stem, maze_len, task)
         return out
@@ -198,14 +220,25 @@ def _epoch_activity(f, ts, posF, tn, tfc, stem, maze_len, task):
     """Per-neuron mean of deconvolved activity z-scored over the session, in the stem,
     arm and feedback/ITI epochs (epoch definitions from the files' frame-aligned
     position and time from choice point; z-scoring over the whole session is the
-    standard reading named in the claims file, fig4h-activity-by-epoch)."""
+    standard reading named in the claims file, fig4h-activity-by-epoch). Stem: in-trial
+    frames with position below the stem length; arm: in-trial frames with position at or
+    beyond it (positions run a little past the maze end before the choice point registers);
+    feedback/ITI: in-trial frames after the choice point, which have no position, so the 1 s
+    feedback delay falls in this epoch (load_session's diag counts this)."""
     o = f["processing/ophys"]
     res = []
     planes = sorted(k for k in o.keys() if k.startswith("deconvolved_activity_plane_"))
     for pn in planes:
         g = o[pn]
         pts = g["timestamps"][:]
-        idx = np.clip(np.searchsorted(ts, pts), 0, len(ts) - 1)
+        ratio = float(np.median(pts[1:100] / ts[1:100])) if len(pts) == len(ts) else np.nan
+        if len(pts) == len(ts) and ratio > 100:
+            # Single-plane sessions: the plane's timestamps are labelled seconds but run about 2000
+            # times the behaviour clock; the plane has one frame per behaviour frame, so frames are
+            # matched by index (reported in the notebook as ts_ratio).
+            idx = np.arange(len(ts))
+        else:
+            idx = np.clip(np.searchsorted(ts, pts), 0, len(ts) - 1)
         p, t, c = posF[idx], tn[idx], tfc[idx]
         X = g["data"][:].astype(np.float32)
         mu = X.mean(0)
@@ -214,12 +247,12 @@ def _epoch_activity(f, ts, posF, tn, tfc, stem, maze_len, task):
         Z = (X - mu) / sd
         intr = ~np.isnan(t)
         st = intr & (p >= 0) & (p < stem)
-        arm = intr & (p >= stem) & (p <= maze_len)
+        arm = intr & (p >= stem)        # position is NaN from the choice point on (checked in diag)
         fb = intr & np.isnan(p) & (c >= 0)
         pi = int(pn.split("_")[-1])
         res.append(pd.DataFrame(dict(plane=pi, stem=Z[st].mean(0), arm=Z[arm].mean(0),
                                      fb_iti=Z[fb].mean(0),
-                                     n_stem=st.sum(), n_arm=arm.sum(), n_fb=fb.sum())))
+                                     n_stem=st.sum(), n_arm=arm.sum(), n_fb=fb.sum(), ts_ratio=ratio)))
     return pd.concat(res, ignore_index=True)
 
 
@@ -420,17 +453,319 @@ def rl_arrays(trials_list):
     return cue, cho, rew, vis, start
 
 
-def rl_fit(arrs, x0s=None):
+def rl_fit(arrs, x0s=None, return_runs=False):
     """Minimise the negative log likelihood over the training sessions (L-BFGS-B in place of
-    Matlab's fminunc, with the bounds above). Starting points are a standard choice."""
+    Matlab's fminunc, with the bounds above). Starting points are a standard choice.
+    With return_runs, also the negative log likelihood, success flag and iterations of every start."""
     def nll(th):
         ll = rl_loglik(np.asarray(th, np.float64), *arrs)
         return -np.nansum(ll)
     x0s = x0s or [[0.1, 0.1, 0.9, 2, 0, 0, 0.5, 0.2], [0.3, 0.3, 0.95, 3, 0, 0.3, 0.3, 0.1],
                   [0.2, 0.05, 0.99, 1.5, 0, 0.5, 0.3, 0.05]]
-    best = None
+    best, runs = None, []
     for x0 in x0s:
         r = minimize(nll, np.array(x0, float), method="L-BFGS-B", bounds=RL_BOUNDS)
+        runs.append(dict(nll=float(r.fun), success=bool(r.success), nit=int(r.nit)))
         if best is None or r.fun < best.fun:
             best = r
+    if return_runs:
+        return best.x, runs
     return best.x
+
+
+# ---------------------------------------------------------------- population decoders
+# Methods, Trial phase-specific logistic decoders: simultaneously imaged layer 2/3 neurons split
+# into spatially adjacent, non-overlapping subpopulations of ~100 neurons (all neurons, no GLM
+# selection); PCA to the fewest components explaining > 90% of variance; logistic regression
+# (binomial, elastic net 10% L1 and 90% L2, Matlab lassoglm) on single imaging frames, one model
+# per each of 11 equal position bins of the maze; 5-fold cross-validation gives a held-out
+# prediction at every frame; performance as log likelihood (binary variables) or Spearman
+# correlation. The penalty-strength readings (minimum CV deviance, one-SE) and the grouping
+# readings (k-means on position, equal-count tiles) are the claims file's (fig3q-cue-decoding).
+DEC_ALPHA = 0.1          # Methods: 10% L1, 90% L2
+DEC_NBINS = 11           # Methods: 11 equally spaced position bins
+DEC_NLAM = 10            # standard choice: 10 log-spaced penalties from lambda_max down to
+                         # 1e-4 lambda_max (lassoglm's default range, with fewer values)
+DEC_ITERS = 150          # at most 150 FISTA iterations, stopping when no coefficient moves by
+DEC_TOL = 1e-5           # more than 1e-5 (standard choices, checked against sklearn's saga)
+
+
+def enet_logistic_path(Z, y, train_masks, nlam=DEC_NLAM, iters=DEC_ITERS):
+    """Elastic-net logistic regression (alpha = DEC_ALPHA, unpenalised intercept) fit by FISTA for
+    every fold and penalty at once. Minimises, per fold f and penalty lam,
+        mean over training rows of -[y log s + (1 - y) log(1 - s)]
+        + lam * ((1 - alpha) / 2 * |b|^2 + alpha * |b|_1),
+    which is lassoglm's objective up to a factor 2 on the deviance. y may be fractional
+    (binomial with a proportion, used for dynamic choice). Z: (n, p) standardised predictors;
+    train_masks: (F, n) booleans. Returns the penalties (nlam,) and held-out predictions
+    P (n, nlam) for the rows outside each fold's training mask (each row is held out once)."""
+    n, p = Z.shape
+    F = train_masks.shape[0]
+    a = DEC_ALPHA
+    Z1 = np.c_[np.ones(n), Z].astype(np.float32)
+    W = train_masks.astype(float) / train_masks.sum(1, keepdims=True)    # (F, n) row weights
+    lam_max = np.max(np.abs(Z.T @ (y - y.mean()))) / n / a
+    lams = lam_max * np.logspace(0, -4, nlam)
+    lam_c = np.tile(lams, F)                                              # column -> penalty
+    f_c = np.repeat(np.arange(F), nlam)                                   # column -> fold
+    Wc = W[f_c].T.astype(np.float32)                                      # (n, F*nlam)
+    y32 = y.astype(np.float32)[:, None]
+    Lip = 0.25 * np.linalg.norm(Z1, 2) ** 2 * W.max() + lam_c * (1 - a)
+    step = 1.0 / Lip
+    B = np.zeros((p + 1, F * nlam), np.float32)
+    ybar = np.clip((W @ y), 1e-4, 1 - 1e-4)
+    B[0] = np.log(ybar / (1 - ybar))[f_c]
+    Yk, tk = B.copy(), 1.0
+    pen = np.ones((p + 1, 1), np.float32); pen[0] = 0
+    lam_l2 = (pen * (lam_c * (1 - a))).astype(np.float32)
+    step = step.astype(np.float32)
+    thr = (step * lam_c * a).astype(np.float32)
+    for it in range(iters):
+        s = 1 / (1 + np.exp(-np.clip(Z1 @ Yk, -30, 30)))
+        g = Z1.T @ ((s - y32) * Wc) + lam_l2 * Yk
+        Bn = Yk - step * g
+        Bn[1:] = np.sign(Bn[1:]) * np.maximum(np.abs(Bn[1:]) - thr, 0)
+        tn = (1 + np.sqrt(1 + 4 * tk * tk)) / 2
+        Yk = Bn + np.float32((tk - 1) / tn) * (Bn - B)
+        done = it > 20 and np.max(np.abs(Bn - B)) < DEC_TOL
+        B, tk = Bn, tn
+        if done:
+            break
+    enet_logistic_path.last_iters = it + 1
+    S = 1 / (1 + np.exp(-np.clip(Z1 @ B, -30, 30)))                       # (n, F*nlam)
+    P = np.full((n, nlam), np.nan)
+    for f in range(F):
+        te = ~train_masks[f]
+        P[te] = S[te][:, f * nlam:(f + 1) * nlam]
+    return lams, P, B.reshape(p + 1, F, nlam)
+
+
+def _choose_lambda(y, P, folds):
+    """Mean held-out binomial deviance per penalty and its standard error over folds; returns the
+    index of the minimum (reading a) and the largest penalty within one SE of it (reading b)."""
+    eps = 1e-6
+    Pc = np.clip(P, eps, 1 - eps)
+    dev = -2 * (y[:, None] * np.log(Pc) + (1 - y[:, None]) * np.log(1 - Pc))
+    per = np.array([dev[folds == f].mean(0) for f in np.unique(folds)])  # (F, nlam)
+    m, se = per.mean(0), per.std(0, ddof=1) / np.sqrt(len(per))
+    i_min = int(np.argmin(m))
+    i_1se = int(np.where(m <= m[i_min] + se[i_min])[0].min())           # lams are descending
+    return i_min, i_1se
+
+
+def make_groups(xy, how, rng_seed=0):
+    """Split neurons into spatially adjacent, non-overlapping groups of ~100: 'kmeans' (k-means
+    on (ml, ap), k = round(n / 100)) or 'tiles' (equal-count tiles: round(sqrt(k)) rows by ap,
+    each row split by ml into equal-count columns). The two readings of the claims file."""
+    n = len(xy)
+    k = max(1, int(round(n / 100)))
+    if how == "kmeans":
+        from sklearn.cluster import KMeans
+        return KMeans(k, n_init=10, random_state=rng_seed).fit_predict(xy)
+    nr = max(1, int(round(np.sqrt(k))))
+    per_row = np.full(nr, k // nr); per_row[: k % nr] += 1
+    lab = np.empty(n, int)
+    order = np.argsort(xy[:, 1], kind="stable")
+    rows = np.array_split(order, np.cumsum(per_row)[:-1] * n // k)
+    g = 0
+    for r, nc in zip(rows, per_row):
+        o = r[np.argsort(xy[r, 0], kind="stable")]
+        for c in np.array_split(o, nc):
+            lab[c] = g
+            g += 1
+    return lab
+
+
+def decode_session(asset_id, groupings=("kmeans", "tiles"), fold_kinds=("frames", "trials"),
+                   variant_pairs=None, cross=True, seed=0):
+    """Population decoders of one multi-plane layer 2/3 session (see the block comment above).
+    Frames are imaging volumes (6 Hz); behaviour is read at the frame of the velocity-LSTM output
+    (the third plane's timestamp). Frames used: maze traversal (position 0 to the maze end) of
+    non-visually guided trials. Targets: cue (black = 1), reported choice (left = 1), dynamic choice
+    (stored velocity-LSTM P(left), fractional). Folds: 'frames' (random frames, lassoglm's default
+    partition) or 'trials' (whole trials per fold). variant_pairs limits the (grouping, folds) pairs
+    run. Cross-position tests (Figure 8C, 8D): the decoder trained on one bin at the minimum-CV
+    penalty, applied to every bin of the held-out trials (trial folds).
+    Returns a list of dicts, one per decoder and reading."""
+    from sklearn.decomposition import PCA
+    from scipy.stats import spearmanr, rankdata
+    rng = np.random.default_rng(seed)
+    f = open_h5(asset_id)
+    try:
+        tr = f["intervals/trials"]
+        T = pd.DataFrame({k: tr[k][:] for k in ("id", "is_vis", "is_cueB", "is_choL")}).set_index("id")
+        task = {k: (v.tolist() if isinstance(v, np.ndarray) else _s(v))
+                for k, v in f["general/harvey_lab_swac_metadata_session/TaskParam"].attrs.items()}
+        mpu = task["meter_per_virmen_unit"]
+        stem = task["maze_stem_length"] * mpu
+        maze_len = (task["maze_stem_length"] + task["maze_arm_length"]) * mpu
+        cue_off = (task["maze_stem_length"] + task["maze_arm_length"] - task["cue_delay_length"]) \
+            / (task["maze_stem_length"] + task["maze_arm_length"])
+        seg = f["processing/ophys/ImageSegmentation"]
+        o = f["processing/ophys"]
+        planes = sorted(k for k in o.keys() if k.startswith("deconvolved_activity_plane_"))
+        xs, nb = [], []
+        for pn in planes:
+            ps = seg["PlaneSegmentation_" + pn.split("_")[-1]] if ("PlaneSegmentation_" + pn.split("_")[-1]) in seg \
+                else seg[sorted(seg.keys())[int(pn.split("_")[-1])]]
+            nb.append(pd.DataFrame(dict(area=[_s(x) for x in ps["area"][:]], ml=ps["ml"][:], ap=ps["ap"][:])))
+            xs.append(o[pn]["data"])
+        nlen = min(x.shape[0] for x in xs)
+        b = f["processing/behavior"]
+        ts = b["frame_aligned_position/frame_aligned_forward_and_lateral_position/timestamps"][:]
+        posF = b["frame_aligned_position/frame_aligned_forward_and_lateral_position/data"][:, 0]
+        tn = b["frame_aligned_trial_number/data"][:]
+        rg = "velocity_RNN_prediction_for_choice_and_cue/velocity_RNN_prediction_for_choice_and_cue"
+        rts = b[rg + "/timestamps"][:]
+        dyn = b[rg + "/data"][:, 0]
+        nlen = min(nlen, len(rts))
+        idx = np.clip(np.searchsorted(ts, rts[:nlen]), 0, len(ts) - 1)
+        p, t = posF[idx], tn[idx]
+        ok = ~np.isnan(t) & ~np.isnan(p) & (p >= 0) & (p <= maze_len) & ~np.isnan(dyn[:nlen])
+        ti = np.where(ok, np.nan_to_num(t), -1).astype(int)
+        ok &= np.isin(ti, T.index.values)
+        ok[ok] &= ~T.is_vis.reindex(ti[ok]).values.astype(bool)
+        sel = np.where(ok)[0]
+        X = np.hstack([x[:nlen][sel] for x in xs]).astype(np.float64)
+    finally:
+        f.close()
+    neu = pd.concat(nb, ignore_index=True)
+    trial = ti[sel]
+    pos = p[sel]
+    bins = np.clip((pos / maze_len * DEC_NBINS).astype(int), 0, DEC_NBINS - 1)
+    targets = dict(cue=T.is_cueB.reindex(trial).values.astype(float),
+                   choice=T.is_choL.reindex(trial).values.astype(float),
+                   dyn=dyn[:nlen][sel].astype(float))
+    utr = np.unique(trial)
+    trial_fold = dict(zip(utr, rng.permutation(len(utr)) % 5))
+    tfold = np.array([trial_fold[x] for x in trial])
+    ffold = rng.permutation(len(trial)) % 5
+    xy = neu[["ml", "ap"]].values.astype(float)
+    out = []
+    pairs = variant_pairs or [(g, k) for g in groupings for k in fold_kinds]
+    for gname in sorted({g for g, _ in pairs}):
+        lab = make_groups(xy, gname)
+        for gi in np.unique(lab):
+            mem = np.where(lab == gi)[0]
+            cen = xy[mem].mean(0)
+            near = mem[np.argmin(((xy[mem] - cen) ** 2).sum(1))]
+            Xg = X[:, mem]
+            pca = PCA().fit(Xg)
+            npc = int(np.searchsorted(np.cumsum(pca.explained_variance_ratio_), 0.9) + 1)
+            Z = pca.transform(Xg)[:, :npc]
+            sd = Z.std(0); sd[sd == 0] = 1
+            Z = (Z - Z.mean(0)) / sd
+            for fk in [k for g, k in pairs if g == gname]:
+                folds = ffold if fk == "frames" else tfold
+                rec = dict(asset_id=asset_id, grouping=gname, folds=fk, group=int(gi), n_neurons=len(mem),
+                           npc=npc, ml=cen[0], ap=cen[1], area=neu.area.values[near],
+                           area_major=neu.area.iloc[mem].mode().iloc[0], cue_off=cue_off,
+                           n_frames=len(trial), n_trials=len(utr))
+                pred = {v: np.full((len(trial), 2), np.nan) for v in targets}
+                for bi in range(DEC_NBINS):
+                    m = bins == bi
+                    if m.sum() < 50:
+                        continue
+                    fb = folds[m]
+                    masks = np.array([fb != k for k in range(5)])
+                    for v, y in targets.items():
+                        yb = y[m]
+                        if v != "dyn" and (yb.min() == yb.max()):
+                            continue
+                        lams, P, _ = enet_logistic_path(Z[m], yb, masks)
+                        i_min, i_1se = _choose_lambda(yb, P, fb)
+                        pred[v][m, 0] = P[:, i_min]
+                        pred[v][m, 1] = P[:, i_1se]
+                for li, lname in enumerate(("min", "1se")):
+                    r = dict(rec, lam=lname)
+                    for v, y in targets.items():
+                        pv = np.clip(pred[v][:, li], 1e-6, 1 - 1e-6)
+                        ll = y * np.log2(pv) + (1 - y) * np.log2(1 - pv)
+                        for bi in range(DEC_NBINS):
+                            m = (bins == bi) & ~np.isnan(pred[v][:, li])
+                            r[f"{v}_ll_{bi}"] = ll[m].mean() if m.any() else np.nan
+                        st = (pos < stem) & ~np.isnan(pred[v][:, li])
+                        r[f"{v}_ll_stem"] = ll[st].mean()
+                        r[f"{v}_ll_all"] = ll[~np.isnan(pred[v][:, li])].mean()
+                        r[f"{v}_rho_stem"] = spearmanr(pred[v][st, li], y[st])[0]
+                    # partial Spearman of the reported-choice decoder's output (Figure 4D), stem frames
+                    st = (pos < stem) & ~np.isnan(pred["choice"][:, li])
+                    R = np.c_[rankdata(pred["choice"][st, li]), rankdata(targets["dyn"][st]),
+                              rankdata(targets["choice"][st])]
+                    C = np.corrcoef(R.T)
+                    pc = lambda a, b, c: (C[a, b] - C[a, c] * C[b, c]) / np.sqrt((1 - C[a, c] ** 2) * (1 - C[b, c] ** 2))
+                    r["pc_dyn"] = pc(0, 1, 2)
+                    r["pc_rep"] = pc(0, 2, 1)
+                    out.append(r)
+                if cross and fk == "trials":
+                    out.append(dict(rec, lam="cross", **_cross_position(Z, bins, targets, tfold, cue_off)))
+    return out
+
+
+def _cross_position(Z, bins, targets, tfold, cue_off):
+    """Figure 8C, 8D: per training bin, the decoder at its minimum-CV penalty (trial folds), applied
+    to every bin of the held-out trials. Cue is scored as log2 likelihood over bins with the cue
+    present (bin centre before the cue offset), dynamic choice as Spearman correlation."""
+    from scipy.stats import spearmanr
+    res = {}
+    cue_bins = [b for b in range(DEC_NBINS) if (b + 0.5) / DEC_NBINS < cue_off]
+    masks = np.array([tfold != k for k in range(5)])
+    for v in ("cue", "dyn"):
+        y = targets[v]
+        use = cue_bins if v == "cue" else list(range(DEC_NBINS))
+        M = np.full((DEC_NBINS, DEC_NBINS), np.nan)
+        for bi in use:
+            m = bins == bi
+            if m.sum() < 50 or (v == "cue" and y[m].min() == y[m].max()):
+                continue
+            lams, P, B = enet_logistic_path(Z[m], y[m], masks[:, m])
+            i_min, _ = _choose_lambda(y[m], P, tfold[m])
+            for bj in use:
+                mj = bins == bj
+                if mj.sum() < 50:
+                    continue
+                pj = np.empty(mj.sum())
+                for k in range(5):
+                    te = tfold[mj] == k
+                    zz = np.c_[np.ones(te.sum()), Z[mj][te]] @ B[:, k, i_min]
+                    pj[te] = 1 / (1 + np.exp(-np.clip(zz, -30, 30)))
+                yj = y[mj]
+                if v == "cue":
+                    pc = np.clip(pj, 1e-6, 1 - 1e-6)
+                    M[bi, bj] = np.mean(yj * np.log2(pc) + (1 - yj) * np.log2(1 - pc))
+                else:
+                    M[bi, bj] = spearmanr(pj, yj)[0]
+        res[f"x_{v}"] = M
+    return res
+
+
+def _decode_one(args):
+    import warnings
+    a, pairs = args
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            return a, decode_session(a, variant_pairs=pairs)
+    except Exception as e:  # recorded and reported by the caller
+        return a, e
+
+
+def decode_many(asset_ids, pairs, workers=4):
+    """decode_session for several sessions in parallel processes. Returns {asset_id: list or Exception}."""
+    from concurrent.futures import ProcessPoolExecutor
+    with ProcessPoolExecutor(workers) as ex:
+        return dict(ex.map(_decode_one, [(a, pairs) for a in asset_ids]))
+
+
+def _rl_job(args):
+    train, test = args
+    th, runs = rl_fit(train, return_runs=True)
+    return th, runs, float(np.nanmean(rl_loglik(th, *test)))
+
+
+def rl_loso_many(jobs, workers=4):
+    """rl_fit on each job's training arrays and the mean held-out log2 likelihood on its test
+    arrays, in parallel processes. jobs: list of (train_arrays, test_arrays)."""
+    from concurrent.futures import ProcessPoolExecutor
+    with ProcessPoolExecutor(workers) as ex:
+        return list(ex.map(_rl_job, jobs))

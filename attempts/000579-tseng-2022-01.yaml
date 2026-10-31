@@ -2,7 +2,7 @@ schema_version: 2
 id: 000579-tseng-2022-01
 dataset:
   archive: dandi
-  id: "000579"
+  id: 000579
   version: 0.230728.1727
   doi: 10.48324/dandi.000579/0.230728.1727
 paper: doi:10.1016/j.neuron.2022.05.012
@@ -20,8 +20,8 @@ provenance:
     platform: GitHub Actions
     url: https://github.com/catalystneuro/encore/actions/runs/41143720414
 inputs:
-- what: The dataset's tutorial notebook, read for the meaning of the stored variables (strategy columns, velocity
-    LSTM outputs, epoch definitions); no data or numbers are taken from it.
+- what: The dataset's tutorial notebook, read for the meaning of the stored variables (strategy columns, velocity LSTM outputs,
+    epoch definitions); no data or numbers are taken from it.
   source: https://github.com/sytseng/Notebook_for_Dandiset_000579 at commit 928f69c6127fc9718c62ed1202852d726a1fd495
 outcomes:
 - claim: neuron-counts
@@ -39,76 +39,77 @@ outcomes:
   - 23728
   - 22572
   assumed: true
-  notes: With session fraction correct over all trials, 150 layer 2/3 sessions above 0.65 hold 97,989 neurons from
-    8 mice (V1 15,497, PM 10,313, AM 15,225, MM 10,654, RSC 23,728, A 22,572), each within its tolerance; the area
-    shares are within 0.006 of the paper's. With visually guided trials excluded from fraction correct, 100 sessions
-    and 69,707 neurons remain and only the mouse count is within tolerance. The files hold 278,155 neurons in 300
-    sessions, the paper's total, so the stored sources are the paper's neurons; the paper's list of 141 sessions
-    cannot be recovered.
+  notes: With session fraction correct over all trials, 150 layer 2/3 sessions above 0.65 hold 97,989 neurons from 8 mice
+    (V1 15,497, PM 10,313, AM 15,225, MM 10,654, RSC 23,728, A 22,572), each within its tolerance; the area shares are within
+    0.006 of the paper's. With visually guided trials excluded from fraction correct, 100 sessions and 69,707 neurons remain
+    and only the mouse count is within tolerance. The files hold 278,155 neurons in 300 sessions, the paper's total, so
+    the stored sources are the paper's neurons; the paper's list of 141 sessions cannot be recovered.
   deviations:
-  - Sessions above 0.65 are selected on fraction correct over all trials, an assumption (Methods, Classification
-    of the sources, gives 141 layer 2/3 sessions above 65% correct; Behavioral training says visually guided trials
-    are excluded from all analyses). Only fraction correct over all trials gives counts near the paper's (150 layer
-    2/3 sessions, 97,989 neurons); with visually guided trials excluded there are 100 and 69,707. Both selections
-    are shown.
-  - The paper's cell-body classifier is not in the files; the stored sources are taken as the cell bodies, since
-    their total equals the paper's 278,155 neurons.
+  - Sessions above 0.65 are selected on fraction correct over all trials, an assumption (Methods, Classification of the
+    sources, gives 141 layer 2/3 sessions above 65% correct; Behavioral training says visually guided trials are excluded
+    from all analyses). Only fraction correct over all trials gives counts near the paper's (150 layer 2/3 sessions, 97,989
+    neurons); with visually guided trials excluded there are 100 and 69,707. Both selections are shown.
+  - The paper's cell-body classifier is not in the files; the stored sources are taken as the cell bodies, since their total
+    equals the paper's 278,155 neurons.
 - claim: fig1d-switch-performance
   outcome: reproduced
   notebook: reproduce_tseng_2022.ipynb
   output: claim:fig1d-switch-performance
-  notes: Over 601 switches in 297 sessions above 0.5 (fraction correct over all trials), the end of the block before
-    the switch is 0.807, the fitted initial performance after the switch 0.226 ± 0.016 (no bootstrap sample at or
-    above 0.5), the fitted end performance 0.727 ± 0.026, and end minus initial 0.501 ± 0.038 (p < 1e-4). With visually
-    guided trials excluded from the selection, 589 switches give 0.225 and 0.730. The end mean is above 0.7, but
-    15% of bootstrap samples are at or below it. With a free sigmoid midpoint the initial value is 0.317. The paper
-    reports 506 to 513 switches.
+  notes: 'Over 601 switches in 297 sessions above 0.5 (fraction correct over all trials), the end of the block before the
+    switch is 0.807, the fitted initial performance after the switch 0.226 ± 0.016 (no bootstrap sample at or above 0.5),
+    the fitted end performance 0.727 ± 0.026, and end minus initial 0.501 ± 0.038 (p < 0.0001). With visually guided trials
+    excluded from the selection, 589 switches give 0.225 and 0.730. The end mean is above 0.7 only just: 15% of bootstrap
+    samples (12% with the other selection) are at or below 0.7, and with the other selection two of the 8 mice end below
+    0.7 (0.613 and 0.666). With a free sigmoid midpoint the initial value is 0.317. The paper reports 506 to 513 switches.
+    The fit overestimates initial performance a little on synthetic blocks (verifier), which works against the below-0.5
+    test.'
   deviations:
-  - The sigmoid's t0 is fixed at the block's first trial, as the Methods state (Task performance analysis); a free
-    midpoint is shown as a variant. Rates are kept in (0, 1) by the fit's parametrisation, the claims file's standard
-    choice.
-  - The session selection above 0.5 matches no reading of the paper's 253 sessions (291 or 297 here); both readings
-    are shown and agree.
+  - The sigmoid's t0 is fixed at the block's first trial, as the Methods state (Task performance analysis); a free midpoint
+    is shown as a variant. Rates are kept in (0, 1) by the fit's parametrisation, the claims file's standard choice.
+  - The session selection above 0.5 matches no reading of the paper's 253 sessions (291 or 297 here); both readings are
+    shown and agree.
 - claim: lstm-choice-accuracy
   outcome: reproduced
   notebook: reproduce_tseng_2022.ipynb
   output: claim:lstm-choice-accuracy
   measured: 0.772
   assumed: true
-  notes: Accuracy of the stored predictions is 0.772 over all 300 sessions (SD 0.064 over sessions; 0.771, SD 0.043
-    over mice). Above 0.65 it is 0.792 (visually guided excluded from the selection, 154 sessions) and 0.769 (all
-    trials, 238 sessions). Every reading is within 0.051 of 0.802. Per mouse 0.705 to 0.826.
+  notes: Accuracy of the stored predictions is 0.772 over all 300 sessions (SD 0.064 over sessions; 0.771, SD 0.043 over
+    mice). Above 0.65 it is 0.792 (visually guided excluded from the selection, 154 sessions) and 0.769 (all trials, 238
+    sessions). Every reading is within 0.051 of 0.802. Per mouse 0.705 to 0.826.
   deviations:
-  - The LSTM was not refit. The association matrices stored in the trial tables are taken as the paper's held-out
-    (leave-one-session-out) predictions, an assumption, as the files do not say how they were produced; the Methods
-    (LSTM model) describe only held-out predictions being used for analysis.
+  - The LSTM was not refit. The association matrices stored in the trial tables are taken as the paper's held-out (leave-one-session-out)
+    predictions, an assumption, as the files do not say how they were produced; the Methods (LSTM model) describe only held-out
+    predictions being used for analysis.
 - claim: figs1h-lstm-beats-rl
   outcome: reproduced
   notebook: reproduce_tseng_2022.ipynb
   output: claim:figs1h-lstm-beats-rl
-  notes: On the 238 sessions above 0.65 (all trials), held-out log2 likelihood per trial is -0.710 for the LSTM
-    and -0.732 for RL model 4; the LSTM is higher in 185 sessions, Wilcoxon p = 4.65e-22 (paper 5.95e-22, 216 sessions).
-    On the 154 sessions of the other selection, -0.667 against -0.691, p = 1.42e-17. The LSTM is ahead in all 8
-    mice.
+  notes: On the 238 sessions above 0.65 (all trials), held-out log2 likelihood per trial is -0.710 for the LSTM and -0.732
+    for RL model 4; the LSTM is higher in 185 sessions, Wilcoxon p = 4.65e-22 (paper 5.95e-22, 216 sessions). On the 154
+    sessions of the other selection, -0.667 against -0.691, p = 1.42e-17. The LSTM is ahead in all 8 mice. The optimiser
+    reported convergence for the best of three starts in all 238 folds, and the starts reach the same likelihood in the
+    median fold (spread 0.000, at most 480 of a median 8,262). The learning rate for unrewarded trials is at its lower bound
+    of 0 in 198 folds and the inverse temperature at its upper bound of 50 in 50 folds.
   deviations:
   - RL model 4 was refit in Python (L-BFGS-B with bounds, three starting points) in place of Matlab's fminunc, leave-one-session-out
-    over all sessions of each mouse (Methods, Reinforcement learning model). The lapse is the mixture (1 - lambda)
-    P + lambda/2 (claims file), the bias inside the inverse temperature as printed, and visually guided trials update
-    the model but are left out of the likelihood, as for the LSTM.
+    over all sessions of each mouse (Methods, Reinforcement learning model). The lapse is the mixture (1 - lambda) P + lambda/2
+    (claims file), the bias inside the inverse temperature as printed, and visually guided trials update the model but are
+    left out of the likelihood, as for the LSTM.
   - The LSTM side uses the stored predictions (see lstm-choice-accuracy).
 - claim: fig1i-strategy-after-switch
   outcome: reproduced
   notebook: reproduce_tseng_2022.ipynb
   output: claim:fig1i-strategy-after-switch
-  notes: Under both windows (10 and 20 trials) and both session selections, rule-following before the switch is
-    0.23 to 0.26 (p < 1e-4 against zero) with choice bias 0.13 to 0.16; the probability of the actual choice drops
-    by 0.14 to 0.17 (p < 1e-4) with a switch-aligned minimum of 0.570 to 0.578; bias-following rises by 0.029 to
-    0.045 (p <= 4e-4); rule-following rises from 0.04 to 0.07 in the first window to 0.21 to 0.22 at the end of
-    the block (p < 1e-4). Recovered switches number 320 (all-trial selection) and 251, against the paper's 265.
+  notes: Under both windows (10 and 20 trials) and both session selections, rule-following before the switch is 0.23 to
+    0.26 (p < 1e-4 against zero) with choice bias 0.13 to 0.16; the probability of the actual choice drops by 0.14 to 0.17
+    (p < 1e-4) with a switch-aligned minimum of 0.570 to 0.578; bias-following rises by 0.029 to 0.045 (p <= 4e-4); rule-following
+    rises from 0.04 to 0.07 in the first window to 0.21 to 0.22 at the end of the block (p < 1e-4). Recovered switches number
+    320 (all-trial selection) and 251, against the paper's 265.
   deviations:
   - Strategy variables are those stored in the files, not refit.
-  - The end of the block is taken as its last W non-visually guided trials; the claims file says only 'by the end
-    of the block'.
+  - The end of the block is taken as its last W non-visually guided trials; the claims file says only 'by the end of the
+    block'.
 - claim: visually-guided-rule-update
   outcome: not_reproduced
   notebook: reproduce_tseng_2022.ipynb
@@ -117,55 +118,57 @@ outcomes:
   - 0.0545
   - 0.0215
   assumed: true
-  notes: With the update of trial t taken as rule belief on t + 1 minus that on t, visually guided trials update
-    more than normal trials over the 30 trials after a switch, 0.0545 ± 0.0075 against 0.0215 ± 0.0029, difference
-    0.0329, p < 0.001 (302 switches; the other selection gives 0.0591 against 0.0236, p = 0.002). On correct trials
-    only there is no difference (0.068 against 0.076, p = 0.22; paper p = 0.89). With the update taken as t minus
-    t - 1, no difference is found (0.0295 against 0.0267, p = 0.48). Both values are 2 to 5 times the paper's 0.013
-    and 0.0080 under every reading, outside the tolerances. The question of how the update was defined is put to
-    the paper's authors (findings).
+  notes: With the update of trial t taken as rule belief on t + 1 minus that on t (the adopted reading), visually guided
+    trials update more than normal trials over the 30 trials after a switch, 0.0545 ± 0.0075 against 0.0215 ± 0.0029, difference
+    0.0329, p < 0.0001 (302 switches; the other selection gives 0.0591 against 0.0236, p = 0.0022), so the paper's test
+    finds the effect the claim says is absent. On correct trials only there is no difference (0.068 against 0.076, p = 0.22;
+    paper p = 0.89). The change from t - 1 to t gives no difference (0.0295 against 0.0267, p = 0.48), but it is not the
+    adopted reading and is not taken as support. Correct trials move belief toward the new rule (0.0765 normal, 0.0690 visually
+    guided) and incorrect trials away from it (-0.0243, -0.0129); 80% of visually guided trials are correct against 46%
+    of normal trials, which accounts for the forward difference. Both values are 2 to 5 times the paper's 0.013 and 0.0080
+    under every reading, outside the tolerances; the stored switch-aligned rule belief itself rises by 0.028 per trial over
+    the 30 trials (from -0.619 to 0.195). The question of how the update was defined is put to the paper's authors (findings).
   deviations:
-  - Assumed. The Methods (Decision-making strategy variables) do not say which difference of rule belief is a trial's
-    update. The LSTM's belief on trial t is conditioned on trials 1 to t - 1 (Methods, LSTM model), so the change
-    from t to t + 1 is the one trial t causes; this reading is adopted. The change from t - 1 to t is shown.
-  - Rule belief is recomputed from the stored association matrix with the Methods' sign, as the stored column has
-    the opposite sign (findings).
-  - Sessions above 0.65 are selected on fraction correct over all trials, an assumption (Methods, Classification
-    of the sources, gives 141 layer 2/3 sessions above 65% correct; Behavioral training says visually guided trials
-    are excluded from all analyses). Only fraction correct over all trials gives counts near the paper's (150 layer
-    2/3 sessions, 97,989 neurons); with visually guided trials excluded there are 100 and 69,707. Both selections
-    are shown.
+  - Assumed. The Methods (Decision-making strategy variables) do not say which difference of rule belief is a trial's update.
+    The LSTM's belief on trial t is conditioned on trials 1 to t - 1 (Methods, LSTM model), so the change from t to t +
+    1 is the one trial t causes; this reading is adopted. The change from t - 1 to t is shown.
+  - Rule belief is recomputed from the stored association matrix with the Methods' sign, as the stored column has the opposite
+    sign (findings).
+  - Sessions above 0.65 are selected on fraction correct over all trials, an assumption (Methods, Classification of the
+    sources, gives 141 layer 2/3 sessions above 65% correct; Behavioral training says visually guided trials are excluded
+    from all analyses). Only fraction correct over all trials gives counts near the paper's (150 layer 2/3 sessions, 97,989
+    neurons); with visually guided trials excluded there are 100 and 69,707. Both selections are shown.
 - claim: fig1l-photoinhibition-performance
   outcome: blocked
   blocked_by: data_missing
   notebook: reproduce_tseng_2022.ipynb
   output: claim:fig1l-photoinhibition-performance
   notes: Needs task performance under photoinhibition. The dandiset's 308 files are 300 imaging sessions and 8 widefield
-    retinotopy files; none is a photoinhibition session of the 7 VGAT-ChR2 mice, no path names inhibition, and no
-    trial table has an inhibition column. The paper names no other archive for these data.
+    retinotopy files; none is a photoinhibition session of the 7 VGAT-ChR2 mice, no path names inhibition, and no trial
+    table has an inhibition column. The paper names no other archive for these data.
 - claim: fig1m-rule-following-decrease
   outcome: blocked
   blocked_by: data_missing
   notebook: reproduce_tseng_2022.ipynb
   output: claim:fig1m-rule-following-decrease
-  notes: Needs strategy variables under photoinhibition. The dandiset's 308 files are 300 imaging sessions and 8
-    widefield retinotopy files; none is a photoinhibition session of the 7 VGAT-ChR2 mice, no path names inhibition,
-    and no trial table has an inhibition column. The paper names no other archive for these data.
+  notes: Needs strategy variables under photoinhibition. The dandiset's 308 files are 300 imaging sessions and 8 widefield
+    retinotopy files; none is a photoinhibition session of the 7 VGAT-ChR2 mice, no path names inhibition, and no trial
+    table has an inhibition column. The paper names no other archive for these data.
 - claim: figs1m-rule-bias-uncorrelated
   outcome: blocked
   blocked_by: data_missing
   notebook: reproduce_tseng_2022.ipynb
   output: claim:figs1m-rule-bias-uncorrelated
-  notes: Needs per-session changes under photoinhibition. The dandiset's 308 files are 300 imaging sessions and
-    8 widefield retinotopy files; none is a photoinhibition session of the 7 VGAT-ChR2 mice, no path names inhibition,
-    and no trial table has an inhibition column. The paper names no other archive for these data.
+  notes: Needs per-session changes under photoinhibition. The dandiset's 308 files are 300 imaging sessions and 8 widefield
+    retinotopy files; none is a photoinhibition session of the 7 VGAT-ChR2 mice, no path names inhibition, and no trial
+    table has an inhibition column. The paper names no other archive for these data.
 - claim: fig2c-running-variability-after-switch
   outcome: reproduced
   notebook: reproduce_tseng_2022.ipynb
   output: claim:fig2c-running-variability-after-switch
-  notes: Δ trajectory correlation after minus before the switch is -0.077 ± 0.013 (11 bins) and -0.074 ± 0.012 (20
-    bins) with the all-trial selection (320 and 317 switches), -0.090 and -0.087 with the other (251 and 248), p
-    < 1e-4 in each, and negative in all 8 mice. Trials with an empty position bin are dropped (1,066 to 2,556 trials).
+  notes: Δ trajectory correlation after minus before the switch is -0.077 ± 0.013 (11 bins) and -0.074 ± 0.012 (20 bins)
+    with the all-trial selection (320 and 317 switches), -0.090 and -0.087 with the other (251 and 248), p < 1e-4 in each,
+    and negative in all 8 mice. Trials with an empty position bin are dropped (1,066 to 2,556 trials).
   deviations:
   - Trials with an empty position bin are dropped; the Methods do not say how such trials are handled.
 - claim: fig2f-latency-strategy
@@ -174,382 +177,795 @@ outcomes:
   output: claim:fig2f-latency-strategy
   measured: 9.31
   assumed: true
-  notes: The maze epoch matches the legend's trial duration (9.31 ± 2.14 s, all-trial selection; 8.98 ± 1.93 s,
-    the other; expected 8.95 ± 2.04). With the all-trial selection (70,410 trials crossing threshold, paper 85,463),
-    latency falls with rule-following (Spearman rho -0.113; highest against lowest bin p = 0.0045 with 5 bins and
-    p < 1e-4 with 10) and with bias-following (rho -0.102; p = 0.0011 and p < 1e-4). With the other selection every
-    test holds except bias-following with 5 bins (0.587 against 0.656, p = 0.058), so the outcome rests on the session
-    selection. One mouse has a positive rho for rule-following.
+  notes: The maze epoch matches the legend's trial duration (9.31 ± 2.14 s, all-trial selection; 8.98 ± 1.93 s, the other;
+    expected 8.95 ± 2.04), and trial start_time is maze onset (first frame with a position at median -0.004 s). With the
+    all-trial selection (70,410 trials crossing threshold, paper 85,463), latency falls with rule-following (Spearman rho
+    -0.113; highest against lowest bin p = 0.0045 with 5 bins and p < 0.0001 with 10) and with bias-following (rho -0.102;
+    p = 0.0011 and p < 0.0001). With the other selection every test holds except bias-following with 5 bins (0.587 against
+    0.656, p = 0.058), so the outcome rests on the session selection; the hierarchical bootstrap with 8 mice is liberal
+    near 0.05 (verifier), so p values near it are fragile. One mouse has a positive rho for rule-following.
   deviations:
   - Dynamic choice is the stored velocity LSTM output, not refit.
   - Trial duration is the maze epoch, the duration that matches the legend's 8.95 s (the whole trial is 14.9 s).
   - Trials whose dynamic choice never crosses threshold are left out (4,015 of 74,425).
-  - Sessions above 0.65 are selected on fraction correct over all trials, an assumption (Methods, Classification
-    of the sources, gives 141 layer 2/3 sessions above 65% correct; Behavioral training says visually guided trials
-    are excluded from all analyses). Only fraction correct over all trials gives counts near the paper's (150 layer
-    2/3 sessions, 97,989 neurons); with visually guided trials excluded there are 100 and 69,707. Both selections
-    are shown.
+  - Sessions above 0.65 are selected on fraction correct over all trials, an assumption (Methods, Classification of the
+    sources, gives 141 layer 2/3 sessions above 65% correct; Behavioral training says visually guided trials are excluded
+    from all analyses). Only fraction correct over all trials gives counts near the paper's (150 layer 2/3 sessions, 97,989
+    neurons); with visually guided trials excluded there are 100 and 69,707. Both selections are shown.
 - claim: fig2g-choice-commitment
   outcome: reproduced
   notebook: reproduce_tseng_2022.ipynb
   output: claim:fig2g-choice-commitment
-  notes: In the first position bin the bias-following coefficient is 0.28 to 0.41 (p <= 0.0008) and the rule-following
-    coefficient -0.014 to 0.001 (p >= 0.36, at most 0.05 of the bias coefficient); in the last stem bin the rule-following
-    coefficient is 0.85 to 0.90 (p < 1e-4), above its first-bin value (p < 1e-4). Holds for 11 and 20 bins and both
-    session selections.
+  notes: In the first position bin the bias-following coefficient is 0.28 to 0.42 (p <= 0.001) and the rule-following coefficient
+    -0.016 to 0.000 (p >= 0.36, at most 0.05 of the bias coefficient); in the last stem bin the rule-following coefficient
+    is 0.85 to 0.90 (p < 0.0001), above its first-bin value (p < 0.0001). Holds for 11 and 20 bins, both session selections,
+    and the local reward rate with or without the current trial.
   deviations:
   - Choice commitment uses the stored dynamic choice.
-  - Local reward rate is the fraction correct over the 9 non-visually guided trials centred on the trial (Figure
-    S2L legend says 'adjacent 9 trials').
+  - Local reward rate is the fraction correct over the 9 non-visually guided trials centred on the trial (Figure S2L legend
+    says 'adjacent 9 trials'); the 8 neighbours without the trial itself are run as a variant and give the same result.
 - claim: cue-biased-running-uncorrelated
   outcome: partially_reproduced
   notebook: reproduce_tseng_2022.ipynb
   output: claim:cue-biased-running-uncorrelated
-  notes: Cue-biased running varies across mice (mean cue log likelihood by mouse -0.92 to -0.36) and in direction
-    across and within mice (roll coefficient positive in 79 of 238 sessions; all 30 negative in mouse 5; 27 positive
-    and 11 negative in mouse 10). Per-mouse slopes of performance on cue decoding are not different from zero (mean
-    0.024, bootstrap p = 0.35; other selection -0.048, p = 0.35), but the pooled correlation over sessions is positive
-    (r = 0.224, p = 0.0005; other selection r = 0.207, p = 0.010). The criterion's two readings disagree, so the
-    claim holds in part. The Figure S2G part was reported, not judged; choice decoding rises with cue decoding in
-    the third quadrant of the maze by 0.17.
+  notes: Cue-biased running varies across mice (mean cue log likelihood by mouse -0.92 to -0.36) and in direction across
+    and within mice (roll coefficient positive in 79 of 238 sessions; all 30 negative in mouse 5; 27 positive and 11 negative
+    in mouse 10). Per-mouse slopes of performance on cue decoding are not different from zero (mean 0.024, bootstrap p =
+    0.35; other selection -0.048, p = 0.35), but the pooled correlation over sessions is positive (r = 0.224, p = 0.0005;
+    other selection r = 0.207, p = 0.010). The criterion's two readings disagree, so the claim holds in part. The Figure
+    S2G part was reported, not judged; choice decoding rises with cue decoding in the third quadrant of the maze by 0.17.
   deviations:
-  - Cue decoding uses the stored cue-biased running. The pooled-correlation and per-mouse readings are the claims
-    file's; the per-mouse test is a bootstrap over mice (the Methods' default), with a t-test shown.
-  - The logistic decoder is fit with scikit-learn (unpenalised in effect, C = 1e6) on z-scored velocities in place
-    of Matlab's fitglm.
+  - Cue decoding uses the stored cue-biased running. The pooled-correlation and per-mouse readings are the claims file's;
+    the per-mouse test is a bootstrap over mice (the Methods' default), with a t-test shown.
+  - The logistic decoder is fit with scikit-learn (unpenalised in effect, C = 1e6) on z-scored velocities in place of Matlab's
+    fitglm.
 - claim: fig4h-activity-by-epoch
   outcome: partially_reproduced
   notebook: reproduce_tseng_2022.ipynb
   output: claim:fig4h-activity-by-epoch
-  notes: 'In the feedback period/ITI RSC is the least active area (-0.041) and A the most (0.023), A above RSC (p
-    < 0.001) in both selections and in all 8 mice; within RSC the feedback period/ITI is the lowest epoch (p < 0.001).
-    RSC is not most active in the stem: within RSC the arm mean exceeds the stem mean (0.043 against 0.023, p =
-    0.048; other selection p = 0.17), and between areas RSC''s stem mean is above V1, PM, MM and A (p <= 0.021)
-    but not AM (p = 0.28); with the other selection only PM and A differ.'
+  notes: 'Two parts of the claim hold and one does not. In the feedback period/ITI RSC is the least active area (-0.042)
+    and A the most (0.023), A above RSC (p < 0.001) in both selections and in all 8 mice; within RSC the feedback period/ITI
+    is the lowest epoch (p < 0.001). RSC is not shown to be most active in the stem: within RSC the arm mean exceeds the
+    stem mean (0.042 against 0.023, p = 0.07; other selection p = 0.18; arm higher in 7 of 8 mice), and between areas RSC''s
+    stem mean is the highest and above V1, PM, MM and A (p <= 0.016) but not AM (p = 0.29); with the other selection only
+    PM and A differ. The criterion asks for every comparison under every reading, and the well-fit reading was not run.
+    The verifier would call this not reproduced; it is kept as partially reproduced because two of the claim''s three parts
+    hold (see verifications).'
   deviations:
   - Only the all-neuron reading was run; the well-fit reading of the claims file needs the GLM fits (blocked).
-  - 'Epochs are taken from the frame-aligned position and time from the choice point in the files: stem below the
-    stem length, arm from there to the maze end, feedback/ITI after the choice point.'
-  - Sessions above 0.65 are selected on fraction correct over all trials, an assumption (Methods, Classification
-    of the sources, gives 141 layer 2/3 sessions above 65% correct; Behavioral training says visually guided trials
-    are excluded from all analyses). Only fraction correct over all trials gives counts near the paper's (150 layer
-    2/3 sessions, 97,989 neurons); with visually guided trials excluded there are 100 and 69,707. Both selections
-    are shown.
+  - 'Epochs are taken from the frame-aligned position and time from the choice point in the files: stem below the stem length,
+    arm from there to the choice point (including 913,421 frames just past the 2.5 m maze end), feedback/ITI after the choice
+    point. Frames of the 1 s feedback delay have no position (0 of 3,673,732), so they fall in feedback/ITI.'
+  - Sessions above 0.65 are selected on fraction correct over all trials, an assumption (Methods, Classification of the
+    sources, gives 141 layer 2/3 sessions above 65% correct; Behavioral training says visually guided trials are excluded
+    from all analyses). Only fraction correct over all trials gives counts near the paper's (150 layer 2/3 sessions, 97,989
+    neurons); with visually guided trials excluded there are 100 and 69,707. Both selections are shown.
+  - In the 12 single-plane sessions the deconvolved activity timestamps run 2000 times the behaviour clock (findings); their
+    frames are matched to behaviour by index, one frame per behaviour frame.
 - claim: fig3i-glm-fit
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: well-fit-neurons
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: glm-cv-vs-test
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: fig3m-movement-task-gradient
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: fig3o-cue-gradient
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: figs4l-strategy-distributed
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: figs4p-previous-outcome
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: fig4b-dynamic-choice-stem
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: fig4c-reported-choice-feedback
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: figs5i-dynamic-choice-over-roll
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: figs5m-movement-history-control
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: fig4g-position-rsc
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: fig5e-cue-movement-distributed
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: fig5e-position-choice-strategy-distributed
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: fig6b-location-from-profiles
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: fig6d-three-gradients
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: figs6g-factor-profiles
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: encoding-dimensionality
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: fig7def-encoding-correlations
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: fig7g-area-decoding-strength-vs-correlation
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: figs8d-l2-vs-group-lasso
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: figs8k-robust-to-threshold
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: fig6h-embedding-overlap
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run.
+  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties plus
+    a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths. The notebook
+    times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.3 s, which puts the
+    97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons at 15 CPU hours (3.7 h on the run's 4 cores)
+    and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods' group lasso is slower; even the smallest
+    is over the 30-minute notebook limit on top of the 19-minute notebook. The design matrix (27 task variables on raised-cosine
+    bases, 336 movement predictors, drift terms) and the predictor grouping are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: figs5l-dynamic-choice-over-cue-biased-running
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron (5-fold cross-validation over 21 penalties
-    plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients, deviances or encoding strengths.
-    The notebook times one L2 Poisson fit of the median session's training frames by 1,310 predictors at about 0.2
-    s, which puts the 97,989 neurons at about 550 CPU hours (the printed estimate varies a little between runs),
-    a lower bound since the Methods' group lasso is slower; far beyond the 30-minute notebook limit and the run.
-    Not run. It also needs the population decoders (see fig3q-cue-decoding).
+  notes: Depends on well-fit-neurons, which needs the GLM (blocked, too large), and so is blocked with it, as a claim that
+    depends on a blocked claim. Its decoder half could be run with the decoders of fig3q-cue-decoding but the criterion
+    judges the single-neuron and decoder halves together. Needs the Poisson GLM of the Methods fit to every layer 2/3 neuron
+    (5-fold cross-validation over 21 penalties plus a final fit, 106 fits per neuron). The dandiset holds no fitted coefficients,
+    deviances or encoding strengths. The notebook times one L2 Poisson fit of the median session's training frames by 1,310
+    predictors at about 0.3 s, which puts the 97,989 neurons at about 730 CPU hours, a random subsample of 2,000 neurons
+    at 15 CPU hours (3.7 h on the run's 4 cores) and one of 200 at 1.5 CPU hours (0.4 h), each a lower bound since the Methods'
+    group lasso is slower; even the smallest is over the 30-minute notebook limit on top of the 19-minute notebook. The
+    design matrix (27 task variables on raised-cosine bases, 336 movement predictors, drift terms) and the predictor grouping
+    are not in the paper's public code. Not run.
   notebook: reproduce_tseng_2022.ipynb
 - claim: fig3q-cue-decoding
-  outcome: blocked
-  blocked_by: too_large
-  notes: Needs 974 population decoders, each with 11 position bins, PCA and an elastic-net logistic regression whose
-    penalty is chosen by 5-fold cross-validation, under the claims file's 8 combinations of readings. The dandiset
-    holds no decoders. The notebook times one decoder position bin at about 0.4 s, so all decoders and readings
-    take about 9 CPU hours (a lower bound; reading every session's activity per trial and bin adds to it), and one
-    reading alone about 70 minutes, over the 30-minute notebook limit. Not run.
+  outcome: partially_reproduced
   notebook: reproduce_tseng_2022.ipynb
+  output: claim:fig3q-cue-decoding
+  notes: 'On 116 decoders from 18 sessions, cue decoding (held-out log2 likelihood, chance -1) falls from V1 and PM through
+    AM, MM and RSC to A under every reading: A is the lowest area in all 12 readings and V1 is above A by 0.355 to 0.409
+    (p < 0.001). V1 is the highest area in only 2 of 12 readings (tile groups, all bins); in the other 10 PM is above V1
+    by 0.001 to 0.027, with 12 to 14 PM decoders. The criterion asks for V1 highest under every reading, so the claim holds
+    in part. Frame folds and trial folds give the same ranking.'
+  deviations: &id001
+  - The decoders were fit on a random subsample of 18 of the 142 multi-plane layer 2/3 sessions of the all-trial selection
+    (3 per imaged field's area, seeded), 116 decoders against the paper's 974, as all of them under the readings take about
+    2.7 CPU hours, over the 30-minute notebook limit. The 12 single-plane sessions were left out.
+  - 'Decoders follow the Methods (Trial phase-specific logistic decoders): groups of about 100 neurons, PCA to more than
+    90% of variance, logistic regression with elastic net (10% L1) per each of 11 position bins on single frames (6 Hz volumes),
+    5-fold cross-validation. The solver is FISTA written here in place of Matlab''s lassoglm (checked against scikit-learn''s
+    saga to 2e-5), with 10 penalties from the largest useful one down to 1e-4 of it (lassoglm''s range, fewer values), a
+    standard choice. Dynamic choice is fit as a binomial proportion.'
+  - 'Readings: penalty at the minimum CV deviance and one-SE; groups by k-means and by equal-count tiles (claims file).
+    The Methods do not say how folds are formed; lassoglm''s default (random frames) and folds of whole trials are both
+    run, the latter with k-means groups only. Areas are the label of the neuron nearest each group''s centroid (97% agree
+    with the members'' majority area).'
+  - Frames are maze traversal of non-visually guided trials; stem frames are those below each session's stem length.
 - claim: fig4d-partial-correlation
-  outcome: blocked
-  blocked_by: too_large
-  notes: Needs 974 population decoders, each with 11 position bins, PCA and an elastic-net logistic regression whose
-    penalty is chosen by 5-fold cross-validation, under the claims file's 8 combinations of readings. The dandiset
-    holds no decoders. The notebook times one decoder position bin at about 0.4 s, so all decoders and readings
-    take about 9 CPU hours (a lower bound; reading every session's activity per trial and bin adds to it), and one
-    reading alone about 70 minutes, over the 30-minute notebook limit. Not run.
+  outcome: partially_reproduced
   notebook: reproduce_tseng_2022.ipynb
+  output: claim:fig4d-partial-correlation
+  measured:
+  - 0.431
+  - 0.215
+  - 0.217
+  notes: Under every reading the reported-choice decoders' output is more related to dynamic choice than to reported choice
+    (difference 0.217 to 0.326, p < 0.001, positive in 97% to 100% of decoders). The partial correlation with dynamic choice
+    is 0.428 to 0.444, above 0.35 ± 0.02 under every reading; with reported choice 0.101 to 0.217, within 0.14 ± 0.02 only
+    for trial folds at the minimum-CV penalty (0.130); the difference is within 0.21 ± 0.02 for three of the four frame-fold
+    readings. No reading has all three within tolerance, so only the sign and test hold. Measured values are k-means groups,
+    frame folds, minimum-CV penalty.
+  deviations: *id001
 - claim: figs5f-dynamic-choice-decoding
-  outcome: blocked
-  blocked_by: too_large
-  notes: Needs 974 population decoders, each with 11 position bins, PCA and an elastic-net logistic regression whose
-    penalty is chosen by 5-fold cross-validation, under the claims file's 8 combinations of readings. The dandiset
-    holds no decoders. The notebook times one decoder position bin at about 0.4 s, so all decoders and readings
-    take about 9 CPU hours (a lower bound; reading every session's activity per trial and bin adds to it), and one
-    reading alone about 70 minutes, over the 30-minute notebook limit. Not run.
+  outcome: partially_reproduced
   notebook: reproduce_tseng_2022.ipynb
+  output: claim:figs5f-dynamic-choice-decoding
+  measured:
+  - 0.675
+  - 0.438
+  - 0.238
+  notes: 'Under every reading both decoders are above chance (p < 0.001) and dynamic choice is decoded better than reported
+    choice (difference 0.238 to 0.297, p < 0.001, within 0.33 ± 0.13). Both values are above the paper''s: dynamic choice
+    0.636 to 0.683 against 0.59 ± 0.02 and reported choice 0.343 to 0.444 against 0.26 ± 0.02, under no reading within tolerance.
+    Trial folds give lower reported-choice values (0.343 to 0.373) than frame folds (0.431 to 0.444). Measured values are
+    k-means groups, frame folds, minimum-CV penalty.'
+  deviations: *id001
 - claim: fig8cd-position-specific-decoders
-  outcome: blocked
-  blocked_by: too_large
-  notes: Needs 974 population decoders, each with 11 position bins, PCA and an elastic-net logistic regression whose
-    penalty is chosen by 5-fold cross-validation, under the claims file's 8 combinations of readings. The dandiset
-    holds no decoders. The notebook times one decoder position bin at about 0.4 s, so all decoders and readings
-    take about 9 CPU hours (a lower bound; reading every session's activity per trial and bin adds to it), and one
-    reading alone about 70 minutes, over the 30-minute notebook limit. Not run.
+  outcome: reproduced
   notebook: reproduce_tseng_2022.ipynb
+  output: claim:fig8cd-position-specific-decoders
+  assumed: true
+  notes: 'Decoders trained in one position bin and tested on held-out trials at every bin lose accuracy with distance for
+    both variables in every area: cue log2 likelihood falls from -0.438 at zero distance to -1.663 at ten bins (largest
+    minus zero distance -0.71 to -1.88 by area, p < 0.001 in each), dynamic choice Spearman correlation from 0.599 to 0.146
+    (-0.415 to -0.483 by area, p < 0.001 in each); every decoder drops. 116 decoders from 18 sessions, k-means groups, trial
+    folds, minimum-CV penalty.'
+  deviations:
+  - The decoders were fit on a random subsample of 18 of the 142 multi-plane layer 2/3 sessions of the all-trial selection
+    (3 per imaged field's area, seeded), 116 decoders against the paper's 974, as all of them under the readings take about
+    2.7 CPU hours, over the 30-minute notebook limit. The 12 single-plane sessions were left out.
+  - 'Decoders follow the Methods (Trial phase-specific logistic decoders): groups of about 100 neurons, PCA to more than
+    90% of variance, logistic regression with elastic net (10% L1) per each of 11 position bins on single frames (6 Hz volumes),
+    5-fold cross-validation. The solver is FISTA written here in place of Matlab''s lassoglm (checked against scikit-learn''s
+    saga to 2e-5), with 10 penalties from the largest useful one down to 1e-4 of it (lassoglm''s range, fewer values), a
+    standard choice. Dynamic choice is fit as a binomial proportion.'
+  - 'Readings: penalty at the minimum CV deviance and one-SE; groups by k-means and by equal-count tiles (claims file).
+    The Methods do not say how folds are formed; lassoglm''s default (random frames) and folds of whole trials are both
+    run, the latter with k-means groups only. Areas are the label of the neuron nearest each group''s centroid (97% agree
+    with the members'' majority area).'
+  - Frames are maze traversal of non-visually guided trials; stem frames are those below each session's stem length.
+  - Assumed. The Figure 8C legend uses only sessions with the cue offset at 0.76 of the maze. The files' cue delay length
+    gives that offset for 6 of the 142 sessions in the pool and none of the 18 decoder sessions (offsets 0.96 and 1.0),
+    and none with a field in V1 or AM (findings), so the cue test uses every decoder session, with the cue-present bins
+    set by each session's own offset.
+  - Cross-position tests use folds of whole trials, so that a test frame never comes from a training trial.
 - claim: fig8g-shattering-dimensionality
   outcome: blocked
   blocked_by: too_large
-  notes: Needs pseudo-populations of 1,000 neurons per area resampled 1,000 times, with linear SVCs on every balanced
-    dichotomy of each conjunction, 10 splits each, on stem frames of all layer 2/3 neurons; at the decoder timing
-    in the notebook (about 0.4 s per penalty path of a 100-neuron decoder) this is many CPU hours. Not run.
+  notes: Needs pseudo-populations of 1,000 neurons per area resampled 1,000 times, with linear SVCs on every marginally
+    balanced dichotomy of each conjunction, 10 splits each, on stem frames of all layer 2/3 neurons, under two readings
+    of choice. The notebook counts 126 marginally balanced dichotomies for cue by 10 positions alone and times one SVC on
+    20 conditions by 1,000 neurons at about 1 ms, which puts that one conjunction at 17,640,000 fits and about 5 CPU hours
+    (1.3 h on 4 cores), a lower bound without building the trial samples and without the other conjunctions of Figure 8G.
+    Not run.
   notebook: reproduce_tseng_2022.ipynb
 findings:
 - kind: metadata_error
-  statement: The trial-table column rule_belief equals P(rule A) - P(rule B) in all 300 sessions, recomputed from
-    the stored association matrix, and correlates negatively with the current rule being B (median r -0.73). The
-    paper's Methods and the dataset's tutorial notebook both define it as positive for rule B. The other strategy
-    columns match the Methods' formulas exactly.
+  statement: The trial-table column rule_belief equals P(rule A) - P(rule B) in all 300 sessions, recomputed from the stored
+    association matrix, and correlates negatively with the current rule being B (median r -0.73). The paper's Methods and
+    the dataset's tutorial notebook both define it as positive for rule B. The other strategy columns match the Methods'
+    formulas exactly.
+- kind: metadata_error
+  statement: In the single-plane sessions the timestamps of the deconvolved activity, labelled seconds, are 2000 times the
+    behaviour clock (for example 25356 against 12.678 s at the first frame), while the planes have exactly one frame per
+    behaviour frame. Matching activity to behaviour by these timestamps puts every frame at the end of the session.
 - kind: selection_undocumented
-  statement: The paper's session counts cannot be recovered from the files. With session fraction correct excluding
-    visually guided trials (the Methods' rule for all analyses) there are 291 sessions above 0.5, 154 above 0.65
-    and 100 layer 2/3 sessions above 0.65 (69,707 neurons), against the paper's 253, 216 and 141 (93,881 neurons).
-    With all trials there are 297, 238 and 150 (97,989 neurons). Only the last matches the neuron counts within
-    10%. No file marks which sessions the paper analysed.
+  statement: The paper's session counts cannot be recovered from the files. With session fraction correct excluding visually
+    guided trials (the Methods' rule for all analyses) there are 291 sessions above 0.5, 154 above 0.65 and 100 layer 2/3
+    sessions above 0.65 (69,707 neurons), against the paper's 253, 216 and 141 (93,881 neurons). With all trials there are
+    297, 238 and 150 (97,989 neurons). Only the last matches the neuron counts within 10%. No file marks which sessions
+    the paper analysed.
 - kind: paper_inconsistency
-  statement: The paper says the fraction of visually guided trials typically varied from 0 to 20%; in the files
-    the median session has 23% and 222 of 300 sessions have more than 20% (up to 78%).
+  statement: The paper says the fraction of visually guided trials typically varied from 0 to 20%; in the files the median
+    session has 23% and 222 of 300 sessions have more than 20% (up to 78%).
 - kind: data_missing
-  statement: The photoinhibition experiments (7 VGAT-ChR2 mice, 164 sessions; Figures 1J to 1M, S1K to S1M, S2M)
-    are not in the dandiset, and the paper names no other archive for them. Three of the paper's findings cannot
-    be tested.
+  statement: The photoinhibition experiments (7 VGAT-ChR2 mice, 164 sessions; Figures 1J to 1M, S1K to S1M, S2M) are not
+    in the dandiset, and the paper names no other archive for them. Three of the paper's findings cannot be tested.
 - kind: other
-  statement: The dandiset holds no GLM fits, encoding strengths or population decoders, on which 29 of the 43 claims
-    rest. Refitting them is estimated at several hundred CPU hours, so these findings cannot be checked against
-    the deposit without the derived results or far more compute.
+  statement: The dandiset holds no GLM fits, encoding strengths or population decoders, on which 29 of the 43 claims rest.
+    Refitting the GLM is estimated at about 730 CPU hours, so the 24 GLM claims cannot be checked against the deposit without
+    the derived results or far more compute; the decoders were refit here on a subsample of sessions.
 - kind: other
-  statement: 7 of 300 sessions have a 150-unit (1.5 m) maze stem where the paper describes a 200-unit stem; the
-    TaskParam metadata records it. The analyses here use each session's own stem length.
+  statement: 7 of 300 sessions have a 150-unit (1.5 m) maze stem where the paper describes a 200-unit stem; the TaskParam
+    metadata records it. The analyses here use each session's own stem length.
 - kind: methods_unavailable
-  statement: Question for the paper's authors. How was the rule update per trial (Δ rule belief) of visually guided
-    and normal trials computed (STAR Methods, Decision-making strategy variables)? Taking it as the change from
-    trial t to t + 1 gives a larger update for visually guided trials (0.055 against 0.022, p < 0.001); from t -
-    1 to t gives none (0.030 against 0.027, p = 0.48); both give values 2 to 5 times the reported 0.013 and 0.0080.
+  statement: Question for the paper's authors. How was the rule update per trial (Δ rule belief) of visually guided and
+    normal trials computed (STAR Methods, Decision-making strategy variables)? Taking it as the change from trial t to t
+    + 1 gives a larger update for visually guided trials (0.055 against 0.022, p < 0.001); from t - 1 to t gives none (0.030
+    against 0.027, p = 0.48); both give values 2 to 5 times the reported 0.013 and 0.0080.
 - kind: methods_unavailable
-  statement: Question for the paper's authors. Was the 65% session threshold applied to fraction correct over all
-    trials, including visually guided ones? Only that reading comes near the 141 sessions and 93,881 neurons, but
-    it gives 238 sessions where the supplement reports 216, and no reading gives the 253 sessions above 0.5.
+  statement: Question for the paper's authors. Was the 65% session threshold applied to fraction correct over all trials,
+    including visually guided ones? Only that reading comes near the 141 sessions and 93,881 neurons, but it gives 238 sessions
+    where the supplement reports 216, and no reading gives the 253 sessions above 0.5.
+- kind: metadata_insufficient
+  statement: The Figure 8C legend has 698 decoders (100 in V1) from sessions with the cue offset at 0.76 of the maze, but
+    the TaskParam cue delay length gives that offset (60 of 250 maze units) for only 8 of the 184 layer 2/3 sessions, none
+    with a field in V1 or AM; most sessions have a delay of 10 units (offset 0.96) or none. Which variable marks the paper's
+    cue offset is not described.
+verifications:
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook with the conclusion cells and the summary removed, the helper module and the
+    claims file, with the paper. The verifier checked the archive's asset list for the blocked claims and tested hboot and
+    fit_block_sigmoid on synthetic inputs. 38 of its 43 outcomes agree with the record; it disagreed with the too_large
+    block of fig3q-cue-decoding, fig4d-partial-correlation, figs5f-dynamic-choice-decoding and fig8cd-position-specific-decoders,
+    and gave fig4h-activity-by-epoch as not reproduced.
+  results:
+  - claim: neuron-counts
+    agrees: true
+    outcome: reproduced
+    reason: 'Under selection (b), session fraction correct over all trials, all 9 quantities are within tolerance: 97,989
+      neurons, 150 sessions, 8 mice, and all six area counts. Under (a) everything except mice fails. The file total of
+      278,155 equals the paper''s, so no cell-body filter is missing. Neither fraction-correct definition reproduces the
+      paper''s session counts, the neuron counts support (b), yet the notebook treats (a) as the main reading.'
+    response: No change of outcome. Reading b is now stated as the adopted reading in the session-selection section, the
+      helper's docstring and the summary, with reading a shown throughout.
+  - claim: fig1d-switch-performance
+    agrees: true
+    outcome: reproduced
+    reason: Initial 0.225 (< 0.5). End 0.730 (> 0.7). End minus initial 0.50, p < 1e-4. The end value is only just above
+      0.7 (12 to 15% of bootstrap samples at or below 0.7, and 2 of 8 mice below 0.7). Switch count is 589 against the paper's
+      506/513. The sigmoid fit overestimates initial performance on synthetic blocks, a conservative bias.
+    response: No change of outcome. The conclusion and notes now state how close the end value is to 0.7, the two mice below
+      it, and the fit's bias.
+  - claim: lstm-choice-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Mean accuracy is 0.772 to 0.792 under every reading, within 0.802 ± 0.051. This scores the authors' stored LSTM
+      outputs, assumed to be held-out predictions; that is plausible but unverified, and accuracy would be inflated if the
+      outputs were in-sample.
+    response: No change. The assumption stays stated on the outcome; the files give no way to check it.
+  - claim: figs1h-lstm-beats-rl
+    agrees: true
+    outcome: reproduced
+    reason: LSTM -0.667 against RL -0.691 log2 likelihood; Wilcoxon p = 1.4e-17 and 4.65e-22. Whether the RL fits converged
+      could not be checked (a_unrew sits at its bound of 0 in the median); it asked for per-fold optimiser status and the
+      spread of negative log likelihood across the three starts.
+    response: 'Added the optimiser output: the best start converged in all 238 folds, the starts agree in the median fold
+      (spread 0.000, at most 480 of a median 8,262), a_unrew is at 0 in 198 folds and beta at its bound of 50 in 50 folds.
+      The RL fits now run in parallel processes. No change of outcome.'
+  - claim: fig1i-strategy-after-switch
+    agrees: true
+    outcome: reproduced
+    reason: All four conditions hold under both windows and both selections with p <= 4e-4. The post-switch minimum of P(actual
+      choice) is 0.570 to 0.578, within 0.1 of 0.5. 251/320 switches against the paper's 265. Whether is_switch marks the
+      first trial of the new rule could not be checked.
+    response: 'Added a check: is_ruleA changes exactly at the is_switch trials and nowhere else in all 300 sessions (607
+      switches). No change of outcome.'
+  - claim: visually-guided-rule-update
+    agrees: true
+    outcome: not_reproduced
+    reason: Under the forward Δ (t to t+1), visually guided trials update more than normal ones (p = 0.002; under (b) p
+      < 0.001). Under the backward reading p = 0.68, but no reading gets the magnitudes (about 3 to 4 times larger). The
+      forward reading's p should decide the outcome; the backward reading should not be read as support. It asked for the
+      switch-aligned rule-belief curve and Δ split by visually guided / normal × correct / incorrect.
+    response: No change of outcome. The conclusion and notes no longer present the backward reading as support. Added the
+      split by trial type and outcome (correct trials move belief toward the new rule, incorrect away; 80% of visually guided
+      trials are correct against 46% of normal ones) and the switch-aligned curve (0.028 per trial over 30 trials, so the
+      magnitude gap is in the stored belief).
+  - claim: fig1l-photoinhibition-performance
+    agrees: true
+    outcome: blocked
+    reason: 'Checked the archive API: 308 assets, 300 imaging sessions plus 8 widefield files, no VGAT/inhibition sessions.
+      The trial tables have no inhibition column.'
+    response: No change needed.
+  - claim: fig1m-rule-following-decrease
+    agrees: true
+    outcome: blocked
+    reason: 'Checked the archive API: 308 assets, 300 imaging sessions plus 8 widefield files, no VGAT/inhibition sessions.
+      The trial tables have no inhibition column.'
+    response: No change needed.
+  - claim: figs1m-rule-bias-uncorrelated
+    agrees: true
+    outcome: blocked
+    reason: 'Checked the archive API: 308 assets, 300 imaging sessions plus 8 widefield files, no VGAT/inhibition sessions.
+      The trial tables have no inhibition column.'
+    response: No change needed.
+  - claim: fig2c-running-variability-after-switch
+    agrees: true
+    outcome: reproduced
+    reason: After minus before is -0.074 to -0.090, p < 1e-4, with 20 and 11 bins under both selections. The drop is in
+      8 of 8 mice.
+    response: No change needed.
+  - claim: fig2f-latency-strategy
+    agrees: true
+    outcome: reproduced
+    reason: Rho is below 0 for rule- and bias-following. Under (b) every bin test passes (p <= 0.0045). Under (a) the 5-bin
+      bias-following test gives p = 0.058. The normaliser matches 8.95 ± 2.04. Trials 46,708/70,410 against 85,463. hboot's
+      false-positive rate is 0.115 at alpha 0.05 on synthetic data, so p values near 0.05 are fragile. Whether start_time
+      is maze onset could not be checked.
+    response: Added a check that start_time is maze onset (first frame with a position at median -0.004 s, 183 of 122,763
+      trials more than 0.1 s apart). Reading b is the adopted selection, stated as an assumption. The fragility of p near
+      0.05 is now said in the conclusion. No change of outcome.
+  - claim: fig2g-choice-commitment
+    agrees: true
+    outcome: reproduced
+    reason: 'First bin: bias coefficient 0.28 to 0.41 (p <= 0.0008); rule coefficient near 0 (p >= 0.36). Last stem bin:
+      rule coefficient 0.85 to 0.90, above the first bin (p < 1e-4), for 11 and 20 bins and both selections. The local reward
+      rate includes the current trial''s outcome; ''adjacent 9 trials'' is ambiguous and only one reading was run.'
+    response: Added the variant with the 8 neighbouring trials, without the current one; it gives the same result (first-bin
+      bias 0.34 to 0.42, rule p >= 0.48; last stem rule 0.86 to 0.90). No change of outcome.
+  - claim: cue-biased-running-uncorrelated
+    agrees: true
+    outcome: partially_reproduced
+    reason: Readings disagree. Pooled Pearson r = 0.21 (p = 0.010) under (a) and 0.22 (p = 0.0005) under (b). Per-mouse
+      slopes are not different from 0 (p about 0.35). The criterion says mixed results are to be reported as mixed. Roll-coefficient
+      sign varies by mouse.
+    response: No change needed.
+  - claim: fig4h-activity-by-epoch
+    agrees: false
+    outcome: not_reproduced
+    reason: 'RSC has the highest stem mean of all areas, but it is not significantly above AM (p = 0.28/0.45), nor above
+      V1 or MM under (a). Within RSC, activity is higher in the arm than in the stem (arm higher in 7 of 8 mice). The part
+      that holds: A is above RSC in the feedback period/ITI (p < 1e-3). Only the all-neuron reading was run. It was never
+      checked whether the 1 s feedback delay keeps a position and so falls into the arm, and the frame counts per epoch
+      were not printed.'
+    response: 'Checked and printed: no frame of the feedback delay has a position (0 of 3,673,732), so the delay falls in
+      feedback/ITI; frames per plane and epoch are printed. The arm now runs to the choice point (913,421 frames just past
+      2.5 m were left out before), and the single-plane sessions, whose activity timestamps are 2000 times the behaviour
+      clock, are now matched by frame index. The results move little (stem minus arm in RSC -0.019, p = 0.07). The outcome
+      is kept as partially reproduced, and the disagreement recorded: two of the claim''s three parts hold (RSC lowest in
+      feedback/ITI, both within RSC and against A, and A more active then), which the protocol calls holding in part; the
+      stem part fails.'
+  - claim: fig3i-glm-fit
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large. But fig3i, glm-cv-vs-test and the well-fit fraction
+      are statistics over neurons that a random subsample of a few thousand neurons would estimate; at the notebook's 0.3
+      s per fit, 2,000 neurons is about 18 CPU-h.
+    response: 'Not changed. The notebook now prints the subsample estimates on the run''s 4 cores: 2,000 neurons at >= 14.9
+      CPU-h (3.7 h) and 200 at >= 1.5 CPU-h (0.4 h), lower bounds with an L2 penalty, each over the 30-minute notebook limit
+      on top of a 19-minute notebook. The GLM also needs a design matrix (27 task variables on raised-cosine bases, 336
+      movement predictors, drift) and predictor grouping that are not in the paper''s public code, so the time went to the
+      decoders.'
+  - claim: well-fit-neurons
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large. But fig3i, glm-cv-vs-test and the well-fit fraction
+      are statistics over neurons that a random subsample of a few thousand neurons would estimate; at the notebook's 0.3
+      s per fit, 2,000 neurons is about 18 CPU-h.
+    response: 'Not changed. The notebook now prints the subsample estimates on the run''s 4 cores: 2,000 neurons at >= 14.9
+      CPU-h (3.7 h) and 200 at >= 1.5 CPU-h (0.4 h), lower bounds with an L2 penalty, each over the 30-minute notebook limit
+      on top of a 19-minute notebook. The GLM also needs a design matrix (27 task variables on raised-cosine bases, 336
+      movement predictors, drift) and predictor grouping that are not in the paper''s public code, so the time went to the
+      decoders.'
+  - claim: glm-cv-vs-test
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large. But fig3i, glm-cv-vs-test and the well-fit fraction
+      are statistics over neurons that a random subsample of a few thousand neurons would estimate; at the notebook's 0.3
+      s per fit, 2,000 neurons is about 18 CPU-h.
+    response: 'Not changed. The notebook now prints the subsample estimates on the run''s 4 cores: 2,000 neurons at >= 14.9
+      CPU-h (3.7 h) and 200 at >= 1.5 CPU-h (0.4 h), lower bounds with an L2 penalty, each over the 30-minute notebook limit
+      on top of a 19-minute notebook. The GLM also needs a design matrix (27 task variables on raised-cosine bases, 336
+      movement predictors, drift) and predictor grouping that are not in the paper''s public code, so the time went to the
+      decoders.'
+  - claim: fig3m-movement-task-gradient
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: fig3o-cue-gradient
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: figs4l-strategy-distributed
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: figs4p-previous-outcome
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: fig4b-dynamic-choice-stem
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: fig4c-reported-choice-feedback
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: figs5i-dynamic-choice-over-roll
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: figs5m-movement-history-control
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: fig4g-position-rsc
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: fig5e-cue-movement-distributed
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: fig5e-position-choice-strategy-distributed
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: fig6b-location-from-profiles
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: fig6d-three-gradients
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: figs6g-factor-profiles
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: encoding-dimensionality
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: fig7def-encoding-correlations
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: fig7g-area-decoding-strength-vs-correlation
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: figs8d-l2-vs-group-lasso
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: figs8k-robust-to-threshold
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: fig6h-embedding-overlap
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no GLM output; the assets are only NWB sessions and widefield files. The cost estimate is
+      >= 739 CPU-h. The full-population claims are reasonably too_large.
+    response: No change of outcome; the cost estimate is updated (about 730 CPU hours).
+  - claim: figs5l-dynamic-choice-over-cue-biased-running
+    agrees: true
+    outcome: blocked
+    reason: Its single-neuron half needs the GLM. Its decoder half was testable, as for fig3q.
+    response: 'Not changed: the claim depends on well-fit-neurons, which is blocked, so it is blocked with it (protocol,
+      author step 1.5), and its criterion judges both halves together. The notes say so.'
+  - claim: fig3q-cue-decoding
+    agrees: false
+    reason: 'The notebook''s own estimate is 16.5 CPU-h for all 974 decoders x 11 bins x 8 readings, about 1.4 h on the
+      12 workers it used. All the inputs are in the files: activity, positions, cue, choice and dynamic choice. These were
+      testable; too_large is not supported.'
+    response: Changed from blocked to partially reproduced. The decoders are now fit in the notebook (FISTA elastic net,
+      Methods' design) on a random subsample of 18 sessions, 116 decoders, under both grouping readings, both penalty readings,
+      both bin readings and two fold partitions; all decoders take about 2.7 CPU hours on the run's 4 cores, over the notebook
+      limit. A is lowest and V1 above A in every reading, but V1 is highest in only 2 of 12.
+  - claim: fig4d-partial-correlation
+    agrees: false
+    reason: 'The notebook''s own estimate is 16.5 CPU-h for all 974 decoders x 11 bins x 8 readings, about 1.4 h on the
+      12 workers it used. All the inputs are in the files: activity, positions, cue, choice and dynamic choice. These were
+      testable; too_large is not supported.'
+    response: 'Changed from blocked to partially reproduced, on the same subsample of decoders: the difference is positive
+      (p < 0.001) under every reading, but no reading has all three values within tolerance.'
+  - claim: figs5f-dynamic-choice-decoding
+    agrees: false
+    reason: 'The notebook''s own estimate is 16.5 CPU-h for all 974 decoders x 11 bins x 8 readings, about 1.4 h on the
+      12 workers it used. All the inputs are in the files: activity, positions, cue, choice and dynamic choice. These were
+      testable; too_large is not supported.'
+    response: 'Changed from blocked to partially reproduced, on the same subsample of decoders: both above chance and dynamic
+      above reported (p < 0.001), but both values are above the paper''s tolerances.'
+  - claim: fig8cd-position-specific-decoders
+    agrees: false
+    reason: 'The notebook''s own estimate is 16.5 CPU-h for all 974 decoders x 11 bins x 8 readings, about 1.4 h on the
+      12 workers it used. All the inputs are in the files: activity, positions, cue, choice and dynamic choice. These were
+      testable; too_large is not supported.'
+    response: 'Changed from blocked to reproduced, on an assumption and the same subsample of decoders: performance falls
+      with train-test distance in every area for cue and dynamic choice (p < 0.001). No decoder session has the 0.76 cue
+      offset of the legend (findings), so all sessions are used for cue.'
+  - claim: fig8g-shattering-dimensionality
+    agrees: true
+    outcome: blocked
+    reason: Plausibly too large (1,000 bootstrap populations x all balanced dichotomies), but the notebook gives no estimate
+      for it.
+    response: 'Added an estimate: 126 marginally balanced dichotomies for cue by position alone, 17,640,000 SVC fits at
+      about 1 ms, about 5 CPU hours for that one conjunction (a lower bound). No change of outcome.'
