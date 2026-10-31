@@ -11,7 +11,7 @@ come from the paper's cell table, which links to the files through the LIMS numb
 | The files match the paper's cell table one to one (link) | Reproduced |
 | Cell counts by subclass (Table S2) | Reproduced |
 | Subclasses differ in sag and initial firing rate (FDR p < 1e-7) | Partially reproduced |
-| Subclass profiles (PAX6 highest initial firing rate) | Not reproduced |
+| Subclass profiles (PAX6 low sag and high initial firing rate) | Reproduced |
 | Upstroke adaptation against sag, R2 = 0.74 | Not reproduced |
 | Sag and firing rate gradient within LAMP5 t-types | Partially reproduced |
 | No effect of donor condition, sex or age | Reproduced |
