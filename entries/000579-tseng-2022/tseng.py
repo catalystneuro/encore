@@ -267,6 +267,34 @@ def _load_one(args):
         return a, e
 
 
+def session_summary(asset_id):
+    """What selecting a session for the decoders needs, read without the imaging data: fraction
+    correct with and without the visually guided trials, the cue offset as a fraction of the maze
+    (1 - cue delay / maze length, from TaskParam) and the number of neurons. Returns a dict."""
+    f = open_h5(asset_id)
+    try:
+        tr = f["intervals/trials"]
+        vis = tr["is_vis"][:].astype(bool)
+        cor = tr["is_correct"][:].astype(bool)
+        task = {k: (v.tolist() if isinstance(v, np.ndarray) else _s(v))
+                for k, v in f["general/harvey_lab_swac_metadata_session/TaskParam"].attrs.items()}
+        seg = f["processing/ophys/ImageSegmentation"]
+        n_neurons = sum(seg[k]["area"].shape[0] for k in seg.keys())
+    finally:
+        f.close()
+    maze = task["maze_stem_length"] + task["maze_arm_length"]
+    return dict(asset_id=asset_id, fc=cor[~vis].mean(), fc_all=cor.mean(), n_neurons=n_neurons,
+                cue_off=1 - task["cue_delay_length"] / maze, stem_frac=task["maze_stem_length"] / maze)
+
+
+def summaries(asset_ids, workers=12):
+    """session_summary for several sessions in parallel processes (h5py serialises reads within a
+    process). Returns a DataFrame."""
+    from concurrent.futures import ProcessPoolExecutor
+    with ProcessPoolExecutor(workers) as ex:
+        return pd.DataFrame(list(ex.map(session_summary, asset_ids)))
+
+
 def load_many(asset_ids, activity_ids=(), workers=12):
     """Load sessions in parallel processes (h5py serialises reads within a process);
     the mean epoch activity is read only for the sessions in activity_ids. Returns
