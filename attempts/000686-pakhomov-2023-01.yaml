@@ -1,0 +1,632 @@
+schema_version: 2
+id: 000686-pakhomov-2023-01
+dataset:
+  archive: dandi
+  id: "000686"
+  version: 0.240515.1909
+  doi: 10.48324/dandi.000686/0.240515.1909
+paper: doi:10.1016/j.bioelechem.2023.108437
+date: 2026-10-31
+entry: 000686-pakhomov-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41190286652
+outcomes:
+- claim: fig3-field-simulation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The values are outputs of the paper's Sim4Life model. Dandiset 000686 holds only the 18
+    monolayer images of Fig. 5, and none of the four other dandisets that name the paper (000875,
+    001025, 001027, 001028) holds field maps; the paper names no deposit of the model. The criterion
+    rules out a model built by the author.
+- claim: fig4-sham-no-uptake
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the confocal time-lapse of single cells on coverslips (Methods 2.2). Not in dandiset
+    000686 (one stitched monolayer image per file), not in the four other dandisets that name the
+    paper (their descriptions are monolayer experiments of Figs. 6 to 9), and not found in a search
+    of DANDI for the lab's other dandisets (search terms CANCAN, Pakhomov, YO-PRO, electroporation);
+    the paper names no deposit.
+- claim: fig4-unipolar-uptake
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Single-cell time-lapse data not deposited; see fig4-sham-no-uptake.
+- claim: fig4-bipolar-weaker
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Single-cell time-lapse data not deposited; see fig4-sham-no-uptake.
+- claim: fig4-8phase-cancellation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig4-unipolar-uptake and fig4-bipolar-weaker, both blocked for missing data.
+- claim: fig5a-trains-stronger
+  outcome: not_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig5a-trains-stronger
+  notes: Under all 8 readings (O1 centre ROI or LOESS at spans 0.1, 0.2, 0.3; O4 raw or minus the
+    footprint background), n = 4 and 4 dishes, and under each of the six ROI geometries, the
+    criterion fails, because at the e3 end the trains do not exceed the packets (main geometry 1138
+    against 1299 a.u., p = 0.558; 839 against 1068 after background, p = 0.373; other geometries p =
+    0.268 to 0.858). In the main geometry (ROIs one step wide, ending at the measured footprint) the
+    trains exceed the packets in the centre under the 6 LOESS readings (p = 0.00332 to 0.0156), not
+    with the centre ROI (p = 0.0657 and 0.069), and near e1 only in the mean (13282 against 6339
+    a.u., p = 0.0831); with ROIs 3 or 5 steps wide or the needle reading of the ROI end the e1-end
+    difference holds in all 8 readings (p = 0.000246 to 0.0247 over those five geometries). The train e1-end value exceeds
+    the train centre under all 8 main readings (unpaired p = 0.0344 to 0.0428) and in every geometry,
+    and the train mean profile falls from 13282 to 17953 a.u. over the 2 mm nearest e1 to 789 to 1138
+    a.u. near e3. So the statement's second sentence holds, and its first holds in the centre and
+    near e1, not at the far end of the diagonal. In the train dishes the e3 footprint lies in the
+    dark half of the image, where a faint dark disc is visible under the e3 circle in all four dishes
+    (image figure of the data check); the e3-end values are 764 to 1391 a.u. per dish at widths 1, 3
+    and 5.
+  deviations:
+  - The paper's ROI measurements are not deposited. Profiles are measured here from the images with
+    automatically found electrode footprints and the ROI layout of Methods 2.4 (56 ROIs per half
+    diagonal, from 224 along both diagonals, plus one on the centre, ending at 3.65/4.2 of the
+    distance from the centre to the electrode's inner edge, from the +/- 3.65 mm of Methods 2.4 and
+    the 8.4-mm diagonal of Results 3.5). Each ROI is one step (about 65 um) long along the diagonal,
+    so that the ROIs tile it. The paper gives neither the ROI width across the diagonal nor how the
+    inner edge was placed, so six geometries are run, widths of 1, 3 and 5 steps, and the inner edge
+    at the footprint edge measured in the image or at 4.2/(4.2 + 0.75) of the centre-to-centre
+    distance (1.5-mm needles, Methods 2.3). The main tables use width 1 and the measured footprint.
+    The outcome is the same under all six.
+  - e1 is not labelled in the files. It is taken as the top-right footprint of the image, which is
+    both the electrode with the brightest outermost ROIs in all 8 non-rotated dishes and the mirror
+    image of the top-left electrode energized in Fig. 3 (an inverted microscope images the dish from
+    below). The two readings agree in every dish.
+  - Background for O4 (b) is the median inside the electrode footprints (unexposed monolayer under
+    the needle), an assumption; the paper names no background subtraction. No outcome changes with
+    it.
+- claim: fig5a-packet-center-enhanced
+  outcome: not_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig5a-packet-center-enhanced
+  notes: The e1-end value of the 40-packet e1 to e3 profile exceeds the centre in the mean (6339
+    against 2576 a.u., raw ROIs, main geometry) and in all 4 dishes (ratios 1.17 to 4.22), but under
+    none of the 16 readings (O1 x O4 x O6) is the difference significant (p = 0.137 to 0.195 in the
+    main geometry, 0.0533 to 0.231 over all six ROI geometries), and by the paper's error-bar rule it
+    is not either (gap 0.37 to 0.66 s.e.). The centre exceeds the trough between the centre and e1
+    (found 1.60 to 1.80 mm from the centre) under 10 of 16 main readings, every LOESS reading
+    unpaired and spans 0.1 and 0.2 paired (p = 0.00428 to 0.0357), but not with the centre ROI (p =
+    0.255 to 0.325) or span 0.3 paired (p = 0.0598); over the six geometries under 10 to 14 of 16,
+    and under 10 to 14 with the trough found leave one out. The criterion needs both comparisons; the
+    second fails under every reading and geometry, so all of them give the same outcome. The
+    direction of both effects is as the paper states; with n = 4 dishes and this spread between
+    dishes the e1 to centre difference is not significant.
+  deviations:
+  - Profiles measured from the images as in fig5a-trains-stronger (ROI layout and the six
+    geometries, e1, background).
+  - The trough is the lowest point of the group's mean profile (ROI values, or the mean of the
+    dishes' LOESS fits under O1 b) strictly between the centre and the e1 end; each dish's value at
+    that ROI enters the test. The claims file says "the lowest value between the center and the e1
+    end" without saying whether per dish or on the mean; the mean profile avoids picking each dish's
+    noise minimum. Choosing it on the dishes it is tested on favours centre > trough, so a variant
+    finds each dish's trough on the mean of the other dishes (leave one out).
+- claim: fig5b-rotation-center-peak
+  outcome: not_reproduced
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig5b-rotation-center-peak
+  notes: Profiles averaged over both diagonals by signed distance, n = 5 and 5. No ROI geometry gives
+    both comparisons under every reading of O1, O2, O4 and O6. In the main geometry the 1P x 40 centre
+    exceeds its lowest value (2.44 to 2.71 mm from the centre) in 24 of 32 readings, every LOESS
+    reading (p = 0.00494 to 0.0327), not with the centre ROI (3581 against 1032 a.u., p = 0.0647
+    unpaired, 0.114 paired); the 1T x 40 centre is below its most peripheral value (centre 4884 to 5781
+    a.u. raw and 4570 to 5467 after background, against 10910 to 10989 and 10596 to 10675) in 20 of 32, every unpaired test (p = 0.0145 to 0.0347) and the
+    paired centre-ROI tests (p = 0.0454 and 0.0482), not the paired LOESS tests (p = 0.0582 to
+    0.0879). Both hold in 12 of 32. With ROIs 3 or 5 steps wide both comparisons hold under all 16
+    unpaired readings (largest p 0.0329 for 1T x 40 and 0.0148 for 1P x 40), but the paired 1T x 40
+    test holds in 0 to 10 of 16 (largest p 0.0655 to 0.0904). Both differences go the way the paper
+    says under every reading and geometry. The 1P x 40 centre-ROI mean rests mostly on dish2 (centre
+    7941 against ends 1575 a.u.; the other four dishes 1827 to 4280); in a full-resolution crop its
+    centre ROI has a mean of 8151 a.u. with no saturated pixel, and pixels above 3 times the crop
+    median cover 44.6% of it in two connected regions, the larger 49 um across (1.4 to 8.2% in the
+    other dishes); by eye these are clusters of round cell-sized spots, consistent with labelled
+    cells, though the measure does not exclude debris. The 1T x 40 centre is the lowest point of its
+    ROI mean profile (4884 a.u.) but not of its LOESS fits; the criterion reports this and does not
+    require it. This outcome reads the criterion as requiring both the paired and the unpaired test
+    of O6 (the criterion cites O6, which runs both for comparisons inside the same dishes, and the
+    fig5a-packet-center-enhanced criterion names both outright). Under the reading in which only the
+    unpaired test counts, the outcome is the same with ROIs one step wide (12 of 16 unpaired readings;
+    the 1P x 40 centre ROI fails, p = 0.0643 to 0.0693 under either ROI end), and both comparisons
+    hold with ROIs 3 or 5 steps wide. ROIs one step wide are the most direct reading of the layout of
+    Methods 2.4 (see fig5c-normalized-contrast), so under that width the outcome does not depend on
+    the reading of O6. A question on the reading of O6 is in questions/000686.yaml.
+  deviations:
+  - Reading of the criterion. Both the paired and the unpaired test of O6 must hold; see the notes
+    for the outcome under the other reading.
+  - The positive end of the averaged profile joins the e1 end and the e2 end, e2 taken as the
+    footprint next to e1 clockwise in the image; with rotation every electrode starts the same number
+    of packets, so O2 (b) is read here as the outermost ROI at that joined end (e1 and e2), a
+    labelling choice. It gives the same outcome as O2 (a).
+  - Trough as in fig5a-packet-center-enhanced (group mean profile, with a leave-one-out variant).
+  - Profiles measured from the images as in fig5a-trains-stronger (six ROI geometries).
+- claim: fig5c-normalized-contrast
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_pakhomov_2023.ipynb
+  output: claim:fig5c-normalized-contrast
+  notes: The 1P x 40 normalized centre is above 100% under all 32 readings in every ROI geometry
+    (128 to 267% in the main one) and the 1T x 40 one below (43 to 64%), so the direction holds
+    everywhere. The criterion requires 1P x 40 to exceed 1T x 40 at p < 0.05 under every reading.
+    With ROIs one step wide, the assumed width, the difference is significant in 27 of 32 readings
+    under either reading of the ROI end; the 5 that fail use the centre ROI (p = 0.0529 to 0.0601
+    with the measured footprint, 0.0512 to 0.0824 with the needle reading), so the claim is not
+    reproduced, a near miss. The width decides the outcome. With ROIs three steps wide the test holds
+    in all 32 readings under both ROI ends (largest p 0.0376 and 0.0489); with five steps in 31 of 32
+    (one at p = 0.0505, measured footprint) or all 32 (largest p 0.0331, needle reading). The
+    question of the width is put to the paper's authors (findings). The claim depends on
+    fig5b-rotation-center-peak, which is not reproduced.
+  deviations:
+  - Assumption. ROIs one step wide. Methods 2.4 says only that the measurements used "92 or 224
+    regions of interest (ROI), placed along one or both diagonals", which fixes the ROI length along
+    the diagonal (2 x 3.65 mm / 112, about 65 um) but not its width. Square ROIs that tile the
+    diagonal at that spacing without gaps or overlap are the most direct reading of that layout, and
+    the main geometry of the notebook since its first version. ROIs 3 and 5 steps wide are shown as
+    variants.
+  - O2 (a) and (b) as in fig5b-rotation-center-peak (O2 b is the joined e1 and e2 end).
+  - Assumption. For the test under O3 (b) each dish's centre is divided by its group's mean
+    periphery; the claims file gives the reported value (mean profile over its own peripheral value)
+    but not the per-dish values a test needs.
+  - Profiles measured from the images as in fig5a-trains-stronger (six ROI geometries).
+- claim: fig6a-more-packets-more-uptake
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Fig. 6 images (1Px4, 5Px4 and 10Px4) are not in dandiset 000686, the dataset the claims
+    file names for this claim (data dataset), so outside data may not be used (protocol, author, step
+    4). They appear to be in DANDI:000875 (version 0.240515.1925, 9 files, "Influence of unipolar
+    pulse packet quantity on centering the electroporation effect within a quadrupole electrode
+    array"), which names this paper as IsPublishedIn; that dandiset was not opened. A question in
+    questions/000686.yaml asks a reader whether the claim should be data elsewhere.
+- claim: fig6b-center-to-periphery
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Fig. 6 data are not in 000686 (apparently in DANDI:000875); see fig6a-more-packets-more-uptake.
+- claim: fig6-void-between
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Fig. 6 data are not in 000686 (apparently in DANDI:000875); see fig6a-more-packets-more-uptake.
+- claim: fig6-peak-narrower
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Fig. 6 data are not in 000686 (apparently in DANDI:000875); see fig6a-more-packets-more-uptake.
+- claim: fig7a-amplitude-scales-uniformly
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Fig. 7 images are not in dandiset 000686, which holds only 6.4-kV dishes. They appear
+    to be in DANDI:001025 (version 0.240605.1826, 21 files, voltage and array size), which names this
+    paper; see fig6a-more-packets-more-uptake for why they are not used.
+- claim: fig7-amplitude-no-effect-on-distribution
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Fig. 7 data are not in 000686 (apparently in DANDI:001025); see
+    fig7a-amplitude-scales-uniformly.
+- claim: fig8-center-equal-packets
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Fig. 8 images are not in dandiset 000686, which holds only Packet 2 and its train. They
+    appear to be in DANDI:001027 (version 0.240605.1859, 10 files, three protocols at 4 kV), which
+    names this paper; see fig6a-more-packets-more-uptake for why they are not used.
+- claim: fig8a-periphery-packets-1-3-higher
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Fig. 8 data are not in 000686 (apparently in DANDI:001027); see fig8-center-equal-packets.
+- claim: fig8b-normalized-center
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Fig. 8 data are not in 000686 (apparently in DANDI:001027); see fig8-center-equal-packets.
+- claim: fig9a-gap-reduces-periphery-more
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Fig. 9 images are not in dandiset 000686, which has no electrode-gap conditions. They
+    appear to be in DANDI:001028 (version 0.240605.1954, 12 files, electrodes 0 to 3 mm above the
+    monolayer), which names this paper; see fig6a-more-packets-more-uptake for why they are not used.
+- claim: fig9b-gap-boosts-targeting
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Fig. 9 data are not in 000686 (apparently in DANDI:001028); see
+    fig9a-gap-reduces-periphery-more.
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the 18 monolayer images of Fig. 5 (40 Packets and 40 Trains,
+    4 dishes each; 1P x 40 and 1T x 40, 5 dishes each). The single-cell time-lapse data of Fig. 4 and
+    the field simulations of Fig. 3 are not in it and were not found in any other dandiset.
+- kind: other
+  statement: The paper's monolayer data are split over five dandisets (000686 for Fig. 5, 000875,
+    001025, 001027 and 001028 for Figs. 6 to 9), each naming the paper, but none names the others
+    and the paper names none of them, so a reader of one cannot find the rest.
+- kind: other
+  statement: The files hold the stitched images only, not the ROI measurements (positions and
+    intensities) that the paper's profiles plot, so the figures can be rebuilt only by placing ROIs
+    anew.
+- kind: metadata_error
+  statement: The species is NCBITaxon_9913 (Bos taurus) in every file and in the dandiset summary,
+    where the paper used CHO-K1 cells (Chinese hamster, Cricetulus griseus); the strain field does say
+    "cellline CHO". The subject age is P1D, which has no meaning for a cell line.
+- kind: metadata_error
+  statement: The dandiset's assets summary gives 36 subjects, but the 18 files have 18 distinct
+    subject ids, one per dish.
+- kind: metadata_error
+  statement: The image description says the 144 tiles were captured "from a six-well plate", where
+    the paper (Methods 2.1) seeded the monolayers in 35-mm glass-bottom dishes, one dish per
+    experiment.
+- kind: metadata_insufficient
+  statement: The image has no pixel size (resolution -1, unit n.a.). The tile geometry (22323 pixels
+    from 12 tiles with about 10% overlap of 2048-pixel ORCA-Flash4 frames under a 10x objective) is
+    consistent with 0.65 um per pixel; at that scale the footprint centres are 9.7 to 10.1 mm apart
+    across the diagonal and their inner edges 8.4 to 8.8 mm, consistent with the paper's 8.4-mm
+    diagonal if that is measured between inner edges. The footprints are 1.15 to 1.44 mm across,
+    against the 1.5-mm needles of Methods 2.3.
+- kind: metadata_insufficient
+  statement: The electrode footprints are not labelled, so which one is e1 (needed for Fig. 5A) is
+    not stated. In all 8 non-rotated dishes the top-right footprint of the image has the brightest
+    outermost ROIs, consistent with e1 there.
+- kind: methods_unavailable
+  statement: The paper does not say how the centre value of a profile is taken, the ROI at distance
+    0 or the LOESS fit there. With ROIs one step wide, the 1P x 40 centre exceeds its trough (Fig. 5B)
+    with the LOESS value (p = 0.0049 to 0.033) but not with the single centre ROI (p = 0.064 to
+    0.114). Which was used, and with what span?
+- kind: methods_unavailable
+  statement: For comparisons inside the same dishes (centre against periphery, Fig. 5B), the paper
+    does not say whether its two-sided Student's t-test is paired or unpaired. For 1T x 40 the
+    unpaired test gives p = 0.015 to 0.035 under every reading and the paired one up to p = 0.09.
+    Which test was used?
+- kind: methods_unavailable
+  statement: For normalized profiles averaged over both diagonals (Fig. 5C), the paper does not say
+    whether "the most peripheral ROI" is the mean of the outermost ROIs at both ends or one end, nor
+    whether each dish is normalized before averaging. Which ROI is taken as 100%, and is each dish
+    normalized first?
+- kind: methods_unavailable
+  statement: The paper gives neither the size of its ROIs across the diagonal, nor how close to the
+    electrode the outermost ROI sits, nor any background subtraction for the monolayer images.
+    Background changes no outcome here. ROI width decides fig5c-normalized-contrast, whose test
+    holds under every reading with ROIs 3 steps (about 195 um) wide and fails in 5 of 32 readings
+    (p = 0.051 to 0.082) with ROIs 1 step (about 65 um) wide; it also moves the Fig. 5A trains
+    against packets comparison near e1 from p = 0.083 (1 step) to 0.015 to 0.024 (3 and 5 steps).
+    What ROI size, placement and background were used?
+verifications:
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier queried the archive's asset list
+    and read the helpers without running them (no numpy or scipy in its environment). It agreed with
+    the 5 Fig. 3 and 4 blocks and with fig5a-packet-center-enhanced, gave not_reproduced for the other
+    three Fig. 5 claims, and gave data_missing for the 11 Fig. 6 to 9 blocks.
+  results:
+  - claim: fig3-field-simulation
+    agrees: true
+    outcome: blocked
+    reason: No simulated field maps are in the asset list, and the criterion forbids a field model
+      built by the author.
+    response: No change needed.
+  - claim: fig4-sham-no-uptake
+    agrees: true
+    outcome: blocked
+    reason: No confocal time-lapse of single cells in the dataset; all 18 assets are monolayer images.
+    response: No change needed.
+  - claim: fig4-unipolar-uptake
+    agrees: true
+    outcome: blocked
+    reason: No confocal time-lapse of single cells in the dataset; all 18 assets are monolayer images.
+    response: No change needed.
+  - claim: fig4-bipolar-weaker
+    agrees: true
+    outcome: blocked
+    reason: No confocal time-lapse of single cells in the dataset; all 18 assets are monolayer images.
+    response: No change needed.
+  - claim: fig4-8phase-cancellation
+    agrees: true
+    outcome: blocked
+    reason: No single-cell time-lapse in the dataset; it also depends on fig4-unipolar-uptake and
+      fig4-bipolar-weaker.
+    response: No change needed.
+  - claim: fig5a-trains-stronger
+    agrees: false
+    outcome: not_reproduced
+    reason: Fails under all 8 readings. At the e3 end trains are not above packets (1099 vs 1285 a.u.,
+      p=0.52). At the e1 end the difference misses p<0.05 (13565 vs 6347, p=0.059). Centre (p 0.004 to
+      0.044) and train e1 > centre (p about 0.03) hold. All readings agree, so it is not
+      methods_underspecified. It asked for the per-dish values at width 3 (C).
+    response: Outcome changed from partially_reproduced to not_reproduced, as the verifier gives. The
+      criterion requires trains above packets at all three places, and the e3 end fails under every
+      reading and under all six ROI geometries now run (p = 0.268 to 0.858). ROIs are now one step
+      long along the diagonal and 1, 3 or 5 steps wide, aligned with it, ending at the measured
+      footprint or at a fixed fraction of the electrode distance (B2, B4), so the main numbers moved
+      (e3 end 1138 against 1299 a.u., p = 0.558; e1 end p = 0.0831). Per-dish values at widths 1, 3
+      and 5 are printed. Trains against packets compare different dishes, so no paired test applies
+      (claims file, O6).
+  - claim: fig5a-packet-center-enhanced
+    agrees: true
+    outcome: not_reproduced
+    reason: '"e1 end > centre" fails in all 16 readings (p 0.10 to 0.16), although every dish has e1 >
+      centre (ratios 1.35 to 3.6, n=4). It also fails with 3-step ROIs (p=0.163). Centre > trough holds
+      in 10 of 16 readings. Since one required part fails under every reading, the readings do not
+      split the outcome. The trough is chosen and tested on the same dishes, which biases centre >
+      trough toward significance (B3).'
+    response: Outcome kept. e1 end > centre now fails under every reading in all six ROI geometries (p
+      = 0.0533 to 0.231). Added a leave-one-out trough (each dish's trough found on the mean of the
+      other dishes), under which centre > trough holds in 10 to 14 of 16 readings, as with the trough
+      on the group mean.
+  - claim: fig5b-rotation-center-peak
+    agrees: false
+    outcome: not_reproduced
+    reason: Both parts hold in only 12 of 32 readings. Under the centre-ROI reading, 1P x 40 centre >
+      trough has p=0.073 unpaired and 0.125 paired. Under the paired LOESS readings, 1T x 40 periphery
+      > centre has p=0.05 to 0.08. All directions are as claimed, and the criterion requires every
+      reading. ROI width is open in the paper, changes outcomes, and was run only for the main reading
+      with overlapping squares; a band one step long and wider across the diagonal would be the
+      consistent variant (B2). The ROI end depends on a footprint radius estimated from intensity
+      (B4). Whether the 1P x 40 dish2 centre (8148) is cells or debris was not checked (C).
+    response: Outcome changed from reproduced (assumed) to not_reproduced, as the verifier gives. The
+      criterion requires both comparisons under all readings of O1, O2 and O4 with the O6 tests, and
+      the assumptions that picked the LOESS centre and the unpaired test are withdrawn. All readings
+      are now run under six ROI geometries (bands one step long and 1, 3 or 5 steps wide, ending at
+      the measured footprint or at a fixed fraction of the electrode distance). None gives both
+      comparisons under every reading; with bands 3 or 5 steps wide all unpaired readings hold, and
+      the paired 1T x 40 test holds in 0 to 10 of 16 (p up to 0.09). Added a leave-one-out trough and
+      a full-resolution crop of the centre of each 1P x 40 dish; in dish2 bright pixels cover 44.6% of
+      the centre ROI in clusters of cell-sized spots by eye.
+  - claim: fig5c-normalized-contrast
+    agrees: false
+    outcome: not_reproduced
+    reason: Holds in 24 of 32 readings. 7 of 8 centre-ROI readings have p=0.051 to 0.057, and one LOESS
+      0.3 reading has p=0.0515. 1P x 40 is above 100% in every reading (134 to 268%), against 42 to 63%
+      for 1T x 40. A near miss in a consistent direction. With 3-step ROIs the contrast has p=0.014,
+      so ROI width changes the outcome (B2). The O3 (b) test is the author's construction and is not
+      labelled as an assumption (B6).
+    response: Outcome changed from reproduced (assumed) to blocked, methods_underspecified, which
+      differs from the verifier's not_reproduced. With the consistent band ROIs run under all
+      readings, as the verifier asked, the test holds under every reading with bands 3 steps wide
+      (both ROI ends) and 5 steps wide with the needle end, and fails in 5 of 32 readings (p = 0.0512
+      to 0.0824) with bands 1 step wide. The paper fixes the ROI length along the diagonal but not
+      its width, and no width has a better basis, so the outcome rests on a detail the paper leaves
+      open (protocol, author, step 1.6). The O3 (b) test is now labelled as an assumption in the
+      notebook and the record.
+  - claim: fig6a-more-packets-more-uptake
+    agrees: true
+    outcome: blocked
+    reason: No 1Px4, 5Px4 or 10Px4 dishes in 000686. The claims file sets the data to dataset 000686,
+      and those conditions are not in it, so the reason is data_missing, not other (B1).
+    response: blocked_by changed from other to data_missing, in the record and the notebook. The
+      question to a reader on data elsewhere stays in questions/000686.yaml.
+  - claim: fig6b-center-to-periphery
+    agrees: true
+    outcome: blocked
+    reason: No Fig. 6 dishes in 000686; the reason is data_missing, not other (B1).
+    response: blocked_by changed from other to data_missing.
+  - claim: fig6-void-between
+    agrees: true
+    outcome: blocked
+    reason: No Fig. 6 dishes in 000686; the reason is data_missing, not other (B1).
+    response: blocked_by changed from other to data_missing.
+  - claim: fig6-peak-narrower
+    agrees: true
+    outcome: blocked
+    reason: No Fig. 6 dishes in 000686; the reason is data_missing, not other (B1).
+    response: blocked_by changed from other to data_missing.
+  - claim: fig7a-amplitude-scales-uniformly
+    agrees: true
+    outcome: blocked
+    reason: Only 6.4 kV dishes are in the dataset (session descriptions); the reason is data_missing,
+      not other (B1).
+    response: blocked_by changed from other to data_missing.
+  - claim: fig7-amplitude-no-effect-on-distribution
+    agrees: true
+    outcome: blocked
+    reason: Only 6.4 kV dishes are in the dataset; the reason is data_missing, not other (B1).
+    response: blocked_by changed from other to data_missing.
+  - claim: fig8-center-equal-packets
+    agrees: true
+    outcome: blocked
+    reason: Only Packet 2 and its train are in the dataset; the reason is data_missing, not other (B1).
+    response: blocked_by changed from other to data_missing.
+  - claim: fig8a-periphery-packets-1-3-higher
+    agrees: true
+    outcome: blocked
+    reason: Only Packet 2 and its train are in the dataset; the reason is data_missing, not other (B1).
+    response: blocked_by changed from other to data_missing.
+  - claim: fig8b-normalized-center
+    agrees: true
+    outcome: blocked
+    reason: Only Packet 2 and its train are in the dataset; the reason is data_missing, not other (B1).
+    response: blocked_by changed from other to data_missing.
+  - claim: fig9a-gap-reduces-periphery-more
+    agrees: true
+    outcome: blocked
+    reason: No electrode-gap conditions in the dataset; the reason is data_missing, not other (B1).
+    response: blocked_by changed from other to data_missing.
+  - claim: fig9b-gap-boosts-targeting
+    agrees: true
+    outcome: blocked
+    reason: No electrode-gap conditions in the dataset; the reason is data_missing, not other (B1).
+    response: blocked_by changed from other to data_missing.
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the round-1 revision, with its conclusions and
+    summary, the helper module, the claims file, the README and the attempt record, with the paper.
+    The verifier agreed with all 20 outcomes, with caveats on fig5b-rotation-center-peak and
+    fig5c-normalized-contrast, and quoted sentences the printed outputs did not support. In reply to
+    points not tied to one claim, the data check now prints the subject age (P1D) and the dandiset's
+    assets summary (numberOfSubjects 36, 18 files, 18 distinct subject ids), which the summary and
+    the findings cite; the README says the Figs. 6 to 9 data appear to be in four other dandisets,
+    not opened here; the finding on the centre ROI gives p = 0.064 (the lowest printed, 0.0643); and
+    a new notebook section checks the helpers on a synthetic image (footprints found within 14
+    blocks of the true centres, radius 99 against 100, background 200 against 200, ROI means within
+    2 a.u. of a known ramp, LOESS, t-tests and the error-bar rule against values computed by hand).
+  results:
+  - claim: fig3-field-simulation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing.
+    response: No change needed.
+  - claim: fig4-sham-no-uptake
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing.
+    response: No change needed.
+  - claim: fig4-unipolar-uptake
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing.
+    response: No change needed.
+  - claim: fig4-bipolar-weaker
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing.
+    response: No change needed.
+  - claim: fig4-8phase-cancellation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing.
+    response: No change needed.
+  - claim: fig5a-trains-stronger
+    agrees: true
+    outcome: not_reproduced
+    reason: The e3 end fails in all 8 readings under all 6 ROI geometries (p 0.268 to 0.858), so the
+      rule that the outcome is the one all readings give is met. It quoted two sentences the outputs
+      did not support. The e1-end p range "0.000252 to 0.0244" in the conclusion was printed for the
+      raw reading only, and the record said the e3 footprint "cannot be checked by eye" where a faint
+      dark disc is visible under the e3 circle in all four train dishes.
+    response: Outcome kept. The test now prints the p range over all 8 readings for each geometry, and the
+      conclusion and the record give it (e1 end p = 0.000246 to 0.0247 over the five other
+      geometries). The record now says the faint dark disc is visible under the e3 circle in all
+      four dishes, and gives the per-dish e3-end values (764 to 1391 a.u.).
+  - claim: fig5a-packet-center-enhanced
+    agrees: true
+    outcome: not_reproduced
+    reason: The comparison "e1 end > centre" fails in 16 of 16 readings in every geometry (p 0.0533 to 0.231), even
+      though all 4 dishes go the claimed way.
+    response: No change needed.
+  - claim: fig5b-rotation-center-peak
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees on condition that the paired test (O6) counts as a reading that must hold. The
+      criterion says "under all readings of O1, O2 and O4" and cites O6 only for the test, where the
+      fig5a-packet criterion names "paired and unpaired" outright. With 3- or 5-step bands every
+      unpaired reading holds and only the paired 1T x 40 test fails (p up to 0.0655 to 0.0904), so
+      with wider ROIs the outcome rests on an open detail, the test type, as fig5c rests on the ROI
+      width. The record should say this is its reading of the criterion; under the other reading
+      fig5b should also be methods_underspecified. It also noted that the 1T x 40 centre range "4884
+      to 5781" covers raw values only, while the periphery range includes background-subtracted
+      values (with background the centre goes down to 4570).
+    response: Outcome kept. The notes, a deviation and the conclusion now state the reading, that both
+      the paired and the unpaired test must hold, and give the outcome under the other reading. With
+      ROIs one step wide, the most direct reading of the layout (the verifier's point on fig5c), the
+      outcome is not_reproduced under either reading, because the 1P x 40 centre ROI fails with the
+      unpaired test too (12 of 16 unpaired readings hold; p = 0.0643 to 0.0693 under either ROI end),
+      a new output in the section "Proposed change, the ROI width of Methods 2.4". So no change of
+      outcome is proposed. A question on the reading of O6 is added to questions/000686.yaml. The
+      1T x 40 ranges are now printed and given raw and after background (centre 4884 to 5781 and
+      4570 to 5467 a.u., periphery 10910 to 10989 and 10596 to 10675).
+  - claim: fig5c-normalized-contrast
+    agrees: true
+    outcome: blocked
+    reason: Accepts the block, with a caveat. ROI width is not one of the claims file's readings, and the
+      5C criterion has no methods_underspecified clause, yet the outcome flips with it (27/32 with
+      1-step ROIs, 32/32 with 3-step, 31/32 or 32/32 with 5-step). The record's "no width has a
+      better basis than another" is arguable. 224 ROIs over +/- 3.65 mm on two diagonals gives
+      contiguous squares of about 65 um, which is the 1-step geometry and gives not_reproduced; the
+      record should state that this is the most direct reading, and note that fig5c depends_on
+      fig5b, which is now not_reproduced.
+    response: Outcome kept as verified (blocked, methods_underspecified). The record and the conclusion
+      now say that one-step square ROIs are the most direct reading of Methods 2.4 and that the claim
+      depends on fig5b, which is not reproduced. As that reading gives not_reproduced (5 of 32
+      readings fail under either ROI end, all with the centre ROI, p = 0.0512 to 0.0824), a change
+      to not_reproduced, resting on that width as an assumption, is proposed under proposed, with
+      the analysis in the notebook section "Proposed change, the ROI width of Methods 2.4", for a
+      third round.
+  - claim: fig6a-more-packets-more-uptake
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing (was other in round 1).
+    response: No change needed.
+  - claim: fig6b-center-to-periphery
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing (was other in round 1).
+    response: No change needed.
+  - claim: fig6-void-between
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing (was other in round 1).
+    response: No change needed.
+  - claim: fig6-peak-narrower
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing (was other in round 1).
+    response: No change needed.
+  - claim: fig7a-amplitude-scales-uniformly
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing (was other in round 1).
+    response: No change needed.
+  - claim: fig7-amplitude-no-effect-on-distribution
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing (was other in round 1).
+    response: No change needed.
+  - claim: fig8-center-equal-packets
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing (was other in round 1).
+    response: No change needed.
+  - claim: fig8a-periphery-packets-1-3-higher
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing (was other in round 1).
+    response: No change needed.
+  - claim: fig8b-normalized-center
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing (was other in round 1).
+    response: No change needed.
+  - claim: fig9a-gap-reduces-periphery-more
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing (was other in round 1).
+    response: No change needed.
+  - claim: fig9b-gap-boosts-targeting
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing (was other in round 1).
+    response: No change needed.
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome, on fig5c-normalized-contrast, and the
+    analysis behind it in the full executed notebook (the section "Proposed change, the ROI width of
+    Methods 2.4", cells 21 and 24), with the helper module, the claims file and the paper. Nothing
+    else was reviewed.
+  results:
+  - claim: fig5c-normalized-contrast
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with not_reproduced, assumed for ROIs one step wide. The numbers come from the data.
+      With ROIs one step wide the test holds in 27 of 32 readings under both ROI ends, and the 5
+      failures all use the centre ROI (O1 a), p = 0.0529, 0.0543, 0.056, 0.0562, 0.0601 with the
+      measured-footprint end and 0.0512 to 0.0824 with the needle end. The test is an unpaired,
+      two-sided Student's t-test, as Methods 2.4 says. The width was not chosen to reach the result,
+      as the 1-step square was the main geometry in round 1, before any width variant existed, and
+      a square at the 65-um spacing is the plainest reading of the layout. ROI width is not one of
+      the claims file's readings and the criterion requires all readings with no
+      methods_underspecified clause, so five failing readings make the claim not_reproduced. The
+      record discloses the 3- and 5-step variants and the assumption correctly. Caveats that do not
+      change this; it is a near miss (every failing p between 0.051 and 0.083, direction holding in
+      all readings), the 1P x 40 centre value rests largely on one dish (dish2), and O1 in the claims
+      file says "The paper gives no ROI size" where the ROI count and range fix the length along the
+      diagonal and only the width is open.
+    response: Outcome changed from blocked, methods_underspecified, to not_reproduced with assumed
+      true, and the proposed block removed. A deviation states the width assumption and the notes
+      call the result a near miss. The notebook's conclusion and summary, and the README, are
+      updated to match. The wording of O1 in the claims file is left as it is, since the revision
+      does not change the claims file; the record already says that the paper fixes the ROI length
+      along the diagonal and leaves the width open.
