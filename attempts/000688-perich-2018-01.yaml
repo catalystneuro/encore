@@ -52,38 +52,29 @@ outcomes:
         are shown as a variant. The paper's rate is over the whole session (claims file criterion).
       - The paper excluded cells with high coincidence across channels; the units are counted as deposited.
   - claim: fig3b-pmd-higher-dimensional
-    outcome: reproduced
+    outcome: partially_reproduced
     notebook: reproduce_perich_2018.ipynb
     output: claim:fig3b-pmd-higher-dimensional
     assumed: true
-    proposed:
-      outcome: partially_reproduced
-      reason: The verified outcome uses a kernel of 100 ms full width at half maximum, while fig6c-null-leads-potent uses
-        a standard deviation of 100 ms; no one reading gives both verified outcomes (verifier, round 2). One reading is
-        adopted for every claim, the standard deviation, as it is the usual way a Gaussian smoothing kernel's width is
-        stated and the same group's later paper on Monkey C recordings (Gallego, Perich et al. 2020, Nat. Neurosci.)
-        gives its kernel as "s.d. 50 ms". Under it, with rule (b), the noise of the trial average and window (a), the
-        medians are 7 (M1) and 10 (PMd) over 21 sessions, outside the tolerance of 8.5 and 14, and outside it in all
-        2002 sets of 16 sessions, with PMd above M1 in every session (21 of 21, and in all 2002 sets). The criterion
-        counts this as partially reproduced. The notebook shows it in "One kernel reading for every claim" and the fig3b
-        cells.
     measured:
-      - 9
-      - 13
-    notes: Over all 21 sessions, under rule (b), window (a) and a kernel of 100 ms full width at half maximum, the medians
-      are 9 (M1) and 13 (PMd), within tolerance of 8.5 and 14, and PMd exceeds M1 in 21 of 21 sessions (19 of 19 in the
-      second set). Over the 2002 choices of 16 sessions (9 of the 14 Monkey C candidates with the 7 Monkey M sessions)
-      this reading gives medians of 8 to 9 and 12 to 13, within tolerance in 910 choices, with PMd above M1 in every
-      session in all 2002. With a 100 ms standard-deviation kernel the medians are 7 and 10 over 21 sessions and outside
-      tolerance in all 2002 choices, with PMd above M1 in 21 of 21, which would be partially reproduced. Window (b) gives
-      medians of 6 to 8 with PMd above M1 in 20 of 21. Rule (a) gives medians of 26 to 47 (M1) and 46 to 78 (PMd); on
-      synthetic rank-5 data rule (b) with the adopted noise scale returns 5 in 9 of 9 runs and rule (a) 16 to 45. Raw
-      or root-two noise gives 0 dimensions in every session. By monkey (window a, standard-deviation kernel) C has medians
-      7 and 10, M 7 and 11, PMd above M1 in every session of both.
+      - 7
+      - 10
+    notes: Over all 21 sessions, under rule (b), window (a), the noise of the trial average and a kernel of 100 ms standard
+      deviation, the medians are 7 (M1) and 10 (PMd), outside the tolerance of 8.5 and 14, and PMd exceeds M1 in 21 of
+      21 sessions (19 of 19 in the second set, medians 7 and 11). Over the 2002 choices of 16 sessions (9 of the 14 Monkey
+      C candidates with the 7 Monkey M sessions) the medians are 7 to 7.5 and 10 to 11, outside tolerance in every choice,
+      with PMd above M1 in every session in all 2002; the closest session is M 2014-03-03 (PMd 9, M1 8). By monkey C has
+      medians 7 and 10, M 7 and 11. Under this kernel no reading meets the criterion in full; window (b) gives PMd above
+      M1 in 20 of 21, rule (a) in 19 and 18 of 21 with medians of 26 to 47 (M1) and 46 to 78 (PMd). With a kernel of
+      100 ms full width at half maximum the medians are 9 and 13 over 21 sessions, within tolerance in 910 of the 2002
+      choices, which would be reproduced. On synthetic rank-5 data rule (b) with the adopted noise scale returns 5 in
+      9 of 9 runs and rule (a) 16 to 45. Raw or root-two noise gives 0 dimensions in every session. The outcome was reproduced
+      (full-width reading) through round 2 and changed in round 3, when the verifier agreed with the proposed change.
     deviations:
       - The paper's 16 sessions cannot be identified. All 21 dual-array center-out sessions of Monkeys C (2016-09-09
         to 2016-10-21) and M (2014-02-03 to 2014-03-07) are used, and the 19 whose reward counts fit the paper's Baseline
-        range (154 to 225) are shown as a second set. All reward trials of each file are taken as Baseline.
+        range (154 to 225) are shown as a second set, with every choice of 16 sessions. All reward trials of each file
+        are taken as Baseline.
       - Target acquisition (window a, the claims file's O3) is the trial's stop time minus the 0.5 s target hold, from
         STAR Methods, Behavioral task ("required to hold there for 0.5 s"); the cursor cannot be used, as in several
         sessions it never enters the stored target square.
@@ -95,16 +86,15 @@ outcomes:
         0; a synthetic check of known rank (notebook) shows rule (b) with this scale recovers the rank, but the raw
         and root-two scales also recover it there, so the check does not choose between the scales; the choice rests
         on the other scales giving 0 on the real data.
-      - The outcome depends on the kernel width, which the claims file expected not to matter (O4). The medians are within
-        tolerance with a full width at half maximum of 100 ms and outside it with a standard deviation of 100 ms; the
-        criterion accepts one reading, and the full-width reading is the one that meets it. O4 is not among the readings
-        the criterion names, and the claims file's header says a claim whose open-detail readings disagree is blocked
-        as methods_underspecified; the protocol (author, step 1.6) instead lets the author adopt the best-supported reading
-        as an assumption, and that rule is followed. No single kernel reading gives the verified outcomes of both this
-        claim and fig6c-null-leads-potent (full width, this claim reproduced and fig6c not reproduced; standard deviation,
-        both partially reproduced). The standard deviation is adopted for every claim (proposed change below).
-      - The outcome rests on all 21 candidate sessions. Over the 2002 possible sets of 16 sessions the full-width medians
-        are within tolerance in 910; the others would give partially reproduced.
+      - The outcome depends on the kernel width, which the claims file expected not to matter (O4). Assumed a standard
+        deviation of 100 ms for every claim, as the usual way a Gaussian smoothing kernel's width is stated and the way
+        the same group states it in a later paper on Monkey C recordings ("a Gaussian kernel (s.d. 50 ms)", Gallego,
+        Perich et al. 2020, Nat. Neurosci.). STAR Methods, Dimensionality reduction, says only "a non-causal Gaussian kernel
+        of width 100 ms". With a full width at half maximum of 100 ms the medians are within tolerance and the claim would
+        be reproduced, while fig6c-null-leads-potent would be not reproduced; neither reading favours every claim. The
+        claims file's header says a claim whose open-detail readings disagree is blocked as methods_underspecified; the
+        protocol (author, step 1.6) instead lets the author adopt the best-supported reading as an assumption, and that
+        rule is followed.
       - Trials of unequal length are aligned on the window start and cut to the session's shortest window before averaging
         per target; the paper does not say how they were averaged (a standard choice).
       - All units of each area are used; the paper does not say whether a rate threshold applies here.
@@ -195,8 +185,7 @@ outcomes:
         as methods_underspecified; the protocol (author, step 1.6) lets the author adopt the best-supported reading as
         an assumption, and that rule is followed. The standard deviation is adopted for every claim, as the usual way
         a Gaussian kernel's width is stated and the form the same group used later on Monkey C recordings ("s.d. 50 ms",
-        Gallego, Perich et al. 2020). The verified fig3b outcome used the other reading; its change is proposed on that
-        claim.
+        Gallego, Perich et al. 2020). Under it fig3b-pmd-higher-dimensional is partially reproduced.
       - The lag sign follows the Figure 6B legend (a peak left of zero means output-null leads).
       - A maximum within one step of the edge of the lag search (340 or 350 ms) is flagged and the test is shown with
         such sessions kept and dropped; the paper does not say how edge maxima were treated.
@@ -393,7 +382,8 @@ findings:
     statement: Question for the authors. How was the noise scaled in the dimensionality estimate adapted from Machens
       et al. (2010)? The Methods subtract random pairs of trials; taken as it is, that noise exceeds every component
       of the trial-averaged rates and gives 0 dimensions. This attempt assumed the noise of the trial average (difference
-      over the square root of 2K) and the 95% rule, which gives medians of 9 and 13.
+      over the square root of 2K) and the 95% rule, which gives medians of 7 and 10 with a kernel of 100 ms standard
+      deviation (9 and 13 with a full width at half maximum of 100 ms).
   - kind: methods_unavailable
     statement: Question for the authors. Is the 100 ms width of the Gaussian kernel its standard deviation or its full
       width at half maximum, and how were trials of unequal length averaged? With the full width the dimensionality medians
@@ -814,3 +804,29 @@ verifications:
       outcome: blocked
       reason: No Force, Rotation or Washout trials (cells 3 to 8).
       response: No change.
+  - date: '2026-10-31'
+    kind: agent
+    by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+    reviewed: Round 3. The one proposed change of outcome (fig3b-pmd-higher-dimensional, reproduced to partially reproduced)
+      and the analysis behind it in the executed notebook of the second revision (cells 16, 17, 19, 33 and 34), with the
+      helper module, the claims file and the paper. Nothing else was reviewed. Report in transcripts/000688/verifier-3-report.md.
+    results:
+    - claim: fig3b-pmd-higher-dimensional
+      agrees: true
+      outcome: partially_reproduced
+      reason: With rule (b), noise of the trial average, window (a) and the standard-deviation kernel, M1 is 7.0 and PMd
+        10.0, with PMd > M1 in 21 of 21 sessions (19 of 19 in the 19-session set, medians 7.0 and 11.0). Over all 2002 sets
+        of 16 sessions the medians range from 7.0 to 7.5 and 10.0 to 11.0, none within tolerance, and PMd > M1 in every
+        session in all 2002. Under the SD reading no combination of window and threshold rule meets reproduced (window b
+        20 of 21, rule a 19 and 18 of 21), so partially reproduced is the best outcome it allows, and it does not depend
+        on which 16 sessions are the paper's. The choice of kernel was not made to reach the result, as either single reading
+        costs one claim a step (under FWHM fig3b is reproduced and no fig6c reading is significant), and SD is the reading
+        under which every other recorded outcome stands. Cell 34 overstates the Gallego support slightly; that paper used
+        30 ms bins of multiunit threshold crossings, not the same rates. Points left open are that the claims file header
+        would block the claim as methods_underspecified, that measured, the notes and the cell 19 conclusion are still
+        written around the FWHM reading, and that the outcome still rests on the noise scale chosen in rounds 1 and 2.
+      response: Outcome changed to partially reproduced and the proposal removed. Measured is now 7 and 10, and the notes,
+        the kernel deviation, the noise-scale finding, the cell 19 conclusion, the Summary and the README are written around
+        the standard-deviation reading. Cell 34 now says the 2020 paper states its width the same way, for multiunit threshold
+        crossings in 30 ms bins. The header conflict and the noise-scale assumption stay recorded in the deviations; the
+        outcome remains assumed.

@@ -9,7 +9,7 @@ which sessions are the paper's.
 | Claim | Outcome |
 |---|---|
 | Units per session and units above 5 Hz | Partially reproduced (assumed) |
-| PMd has more dimensions than M1 (medians 14 and 8.5) | Reproduced (assumed); partially reproduced proposed under one kernel reading for all claims |
+| PMd has more dimensions than M1 (medians 14 and 8.5) | Partially reproduced (assumed) |
 | PMd stays higher-dimensional in subsamples of equal size | Reproduced (assumed) |
 | The null/potent index is centered on zero | Reproduced (assumed) |
 | Output-null activity leads output-potent by 35 ms in Baseline | Partially reproduced (assumed) |
