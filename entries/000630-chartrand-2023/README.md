@@ -8,7 +8,7 @@ come from the paper's cell table, which links to the files through the LIMS numb
 
 | Claim | Outcome |
 |---|---|
-| The files match the paper's cell table one to one (link) | Reproduced |
+| The files match the paper's cell table one to one (link) | Partially reproduced |
 | Cell counts by subclass (Table S2) | Reproduced |
 | Subclasses differ in sag and initial firing rate (FDR p < 1e-7) | Partially reproduced |
 | Subclass profiles (PAX6 low sag and high initial firing rate) | Reproduced |
@@ -17,14 +17,16 @@ come from the paper's cell table, which links to the files through the LIMS numb
 | No effect of donor condition, sex or age | Reproduced |
 | Input resistance varies with region | Reproduced |
 | MC4R cells: strong sag and irregular firing | Reproduced |
-| ADARB2 MC4R against SST CHRNA4 | Partially reproduced |
+| ADARB2 MC4R against SST CHRNA4 | Not reproduced |
 | PAX6 TNFAIP8L3: initial firing rate and ADP | Reproduced |
-| Electrophysiological d' is smaller within subclasses | Reproduced (assumption) |
+| Electrophysiological d' is smaller within subclasses | Partially reproduced |
 | Gaussian mixture F1 per subclass | Reproduced |
 | Subclass classifier, 82% accuracy | Reproduced |
 | Held-out classifier on Amsterdam and Szeged cells | Blocked: data missing |
-| Mouse comparison (DANDI 000020): link, variability dimensions, mouse MC4R and PAX6 cells | Partially reproduced or reproduced |
-| Human against mouse sag, AP height and rheobase | Blocked: methods underspecified |
+| Mouse comparison (DANDI 000020): link | Partially reproduced |
+| Human and mouse vary along different features | Reproduced |
+| Mouse MC4R and PAX6 cells (irregular firing, doublets) | Not reproduced |
+| Human against mouse sag, AP height and rheobase | Partially reproduced |
 | Four morphology claims on the paper's deposited features | Three partially reproduced, one blocked |
 | Transcriptomic, cytoarchitecture and other morphology claims | Blocked |
 
@@ -34,10 +36,10 @@ reasoning and the differences from the paper's method.
 The record, with the reasons and the differences from the paper's method, is
 [`attempts/000630-chartrand-2023-01.yaml`](../../attempts/000630-chartrand-2023-01.yaml).
 
-- `reproduce_chartrand_2023.ipynb`: the claims on the dandiset. It takes about 15 minutes, of
-  which about 4 are streaming the files and 6 the Gaussian mixture search.
+- `reproduce_chartrand_2023.ipynb`: the claims on the dandiset. It takes about 11 minutes, of
+  which about 2 are streaming the files and 6 the Gaussian mixture search.
 - `mouse_comparison.ipynb`: the claims that compare the human cells with the paper's mouse cells
-  from DANDI:000020 (about 7 minutes).
+  from DANDI:000020 (about 4 minutes).
 - `morphology_tables.ipynb`: four morphology claims on the paper's deposited morphology features
   (under a minute).
 - `l1ephys.py`: loading the files, the IPFX feature extraction with the Methods' sweep QC, the

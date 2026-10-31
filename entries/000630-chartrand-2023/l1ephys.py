@@ -33,6 +33,9 @@ Where the parameters come from:
   (leak) current within 0 +/- 100 pA, and the rms noise of the pre-stimulus baseline below
   0.2 mV over 1.5 ms and below 0.5 mV over 500 ms. The criterion "within 2 mV of target" needs
   the target potential, which the files do not state; it is not applied (a deviation).
+- Which computed features enter reading (a) (`hybrid_table`) is chosen in the notebook: those
+  within 1% of the paper's value for at least half of the cells. This is an assumption; the
+  claims file's O1 does not say when a recomputed feature counts as computed.
 - The code's filters (l1_load.py) set first_isi_inv_rheo and first_isi_inv_hero above 1000 Hz,
   and input_resistance above 1000 MOhm, to missing; `apply_code_filters` does the same.
 """
@@ -415,6 +418,7 @@ def extract_features(rec: dict) -> dict:
             continue
         idx = row.name
         sp = spikes[idx]
+        out[f"stim_amp_{label}"] = float(amps[idx])
         out.update(_first_spike_features(sp, label))
         for name in ["latency", "avg_rate", "mean_isi", "median_isi", "isi_cv", "adapt"]:
             val = row.get(name, np.nan)
@@ -422,6 +426,11 @@ def extract_features(rec: dict) -> dict:
         isis = _isis(sp)
         out[f"first_isi_inv_{label}"] = 1.0 / isis[0] if len(isis) else np.nan
         out[f"n_spikes_{label}"] = len(sp)
+    # every spiking sweep as amplitude:spike count:inverse first ISI, to find which sweep a
+    # value of the paper's table comes from
+    out["spiking_sweeps"] = ";".join(
+        f"{amps[k]:.1f}:{len(spikes[k])}:{(1.0 / _isis(spikes[k])[0]) if len(spikes[k]) > 1 else np.nan:.4f}"
+        for k in np.argsort(amps) if len(spikes[k]) > 0)
     # f-I slope over spiking sweeps up to rheobase + 80 pA (Methods); IPFX's own fit over
     # all spiking sweeps is kept as fi_fit_slope_all
     out["fi_fit_slope_all"] = out["fi_fit_slope"]
