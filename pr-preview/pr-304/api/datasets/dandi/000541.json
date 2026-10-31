@@ -1,0 +1,843 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000541",
+  "label": "DANDI:000541"
+ },
+ "page": "datasets/dandi/000541/",
+ "generated": "2026-10-31T17:23:19+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 6,
+  "partially_reproduced": 3,
+  "not_reproduced": 3,
+  "blocked": 10
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 1,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 3
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 1,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000541-yemini-2021-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000541",
+    "version": "0.241009.1457",
+    "doi": "10.48324/dandi.000541/0.241009.1457"
+   },
+   "key": "dandi:000541",
+   "label": "DANDI:000541",
+   "dataset_version": "0.241009.1457",
+   "paper": "10.1016/j.cell.2020.12.012",
+   "paper_title": "NeuroPAL: A Multicolor Atlas for Whole-Brain Neuronal Identification in C. elegans",
+   "date": "2026-10-30",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-12"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41085956371"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000541-yemini-2021",
+   "entry_title": "Whole-brain chemosensory responses in NeuroPAL worms (Yemini et al. 2021)",
+   "description": "Tests the whole-brain imaging findings of Yemini, Lin, Nejatbakhsh et al. (2021) on dandiset 000541, which holds the 21 OH16230 head recordings of Figure 6 with NeuroPAL neuron identities. It computes dF/F0 from the dandiset's traces, tests the responses of identified neuron classes to NaCl and two odors, the AVF rhythm, the stimulus-specific correlations and their relation to the connectome, and checks the traces against the paper's Zenodo deposit. The tail recordings and the imaging behind Figures 1 to 5 and 7 are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_yemini_2021.ipynb",
+     "title": "Reproducing Yemini et al. (2021) from dandiset 000541",
+     "executed": "notebooks/000541-yemini-2021/reproduce_yemini_2021.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "link-zenodo-traces",
+     "statement": "The dandiset's head recordings are the 21 OH16230 heads of the paper's Zenodo deposit; files match by identifier, stimulus orders agree, and the dF/F0 computed from the dandiset's traces by the STAR Methods matches the deposit's traces.",
+     "source": "STAR Methods, Brainwide imaging of neuronal activity traces; Zenodo doi:10.5281/zenodo.3906530, Whole-Brain Calcium Activity/Young Adults/Head_Activity_OH16230.mat",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_yemini_2021.ipynb",
+     "notes": "All 21 files match a deposit file by identifier, in the same order, and the stimulus order agrees in all 21. Of 3,663 named dandiset traces, 3,550 have a counterpart in the deposit. The dF/F0 computed from the dandiset correlates with the deposit's trace at a median r of 0.972 (5th percentile 0.758), median slope 0.985; 81.7% of traces reach r of 0.9, below the criterion's 90%. The deposit is one frame (0.25 s) later than the dandiset in all 21 files; with that offset the median r is 0.980 and 85.8% reach 0.9, still below 90%. 101 dandiset traces have an empty slot in the deposit (AVL in 11 heads, I5 in 8), and 4 names (AMSOL, AMSOR, HMC, DD6) are not in the deposit. The deposit's traces have the first 1 s empty, as the STAR Methods say. The measured value is the fraction of traces at r of 0.9 or more, frames aligned by index.",
+     "deviations": [
+      "The criterion was written by the author of the attempt, as link claims are, after the deposit's layout had been read and with the dandiset loaded; the 0.9 and 90% thresholds are the author's."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "link-connectome-names",
+     "statement": "The dandiset's neuron names can be matched to the cell names of the Cook et al. (2019) hermaphrodite connectome.",
+     "source": "Results, Whole-Brain Neuronal Dynamics and Connectivity, paragraph 2; Cook et al. 2019, doi:10.1038/s41586-019-1352-7, Supplementary Information 2 (synapse counts) and 5 (adjacency)",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_yemini_2021.ipynb",
+     "notes": "190 of 193 dandiset names match cells of both Cook et al. matrices after removing the zero padding of motor neuron numbers. AMSOL, AMSOR (amphid sheath glia) and HMC (head mesodermal cell) do not match; they are not neurons.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-sample-sizes",
+     "statement": "Whole-brain activity was recorded in 21 heads (189 identified neurons) and, separately, 21 tails (42 neurons), with a median of 18 animals per neuron type.",
+     "source": "Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 1",
+     "quote": "We recorded 21 worm heads (189 neurons) and, separately, 21 worm tails (42 neurons), with a median representation of 18 animals per neuron type",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_yemini_2021.ipynb",
+     "notes": "The head values match and the tail values are missing. 21 heads; 193 names identified in at least one head (190 neurons; 184 after the removals), within 170.1 to 207.9; median animals per name 19 under the main reading (one member of a near-duplicate pair removed), 17 with both removed, 21 with none removed or under the deposit's selection; per class 20, 19.5 and 21. The paper's deposit has 189 names, the paper's number, with a median of 21 animals per name and per class. The dandiset holds no tails, so 21 tails and 42 tail neurons are measured as 0. The measured values are, in order, heads, names in any head (reading a), tails, tail neurons, and the median per name under the main reading. Whether the paper's median of 18 covers heads and tails together is asked of a reader (questions/000541.yaml).",
+     "deviations": [
+      "The tail recordings are not in the dandiset; they are in the paper's Zenodo deposit, which this claim, marked as using the dataset, was not tested on.",
+      "Which member of a near-duplicate pair the paper removed is not stated; one member is removed as an assumption (see fig6-asj-ric). All four readings are shown, and the median is within tolerance under one and both removed, not under none or the deposit's selection (median 21). The outcome would stay partially reproduced under every reading, as the tails are missing."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-all-heads-responsive",
+     "statement": "21 head recordings showed the published responses of the primary sensory neurons, ASE excitation to NaCl and AWC inhibition to both odors, in the left or the right neuron, and were kept for analysis.",
+     "source": "STAR Methods, Analysis of brainwide imaging data",
+     "quote": "Worms were marked as stimulus responsive if either their left or right neuron showed the published response to their corresponding stimuli (ASE excitation for NaCl and AWC inhibition for odors) ... 21 heads responded to all three stimuli",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_yemini_2021.ipynb",
+     "notes": "Under reading (a), 19 of 21 heads pass all three checks with no neuron removed (ASE to NaCl 21, AWC to 2-butanone 20, AWC to 2,3-pentanedione 19); under reading (b) 16. The main and deposit readings give the same; with both members of near-duplicate pairs removed, 18 and 15. Head 20191030_07 fails on 2,3-pentanedione and 20191104_10 on both odors. The dandiset holds exactly the 21 heads the paper kept, so the paper's review, which it does not describe (\"we reviewed ASE responses to salt and AWC responses to the odors\"), passed two heads that the claims file's rules do not. AWC falls about as much in the other stimulus windows as at the odor times (see the clock check), so the sign test is not specific to odors.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6d-ase-nacl",
+     "statement": "NaCl evokes left/right asymmetric responses in the two ASE neurons, and ASER shows an increase in calcium upon NaCl presentation.",
+     "source": "Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2; Figure 6D",
+     "quote": "NaCl evoked stereotyped left/right (L/R) asymmetric responses in the two ASE neurons. However, ASER exhibited an increase in [Ca 2+ ] upon NaCl presentation",
+     "statistics": [
+      {
+       "about": "ASER response to NaCl, stimulus against prior period",
+       "test": "two-tailed paired t test",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "FDR (Storey q values)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_yemini_2021.ipynb",
+     "notes": "Under the main reading (one removed, z-scored traces) ASER rises during NaCl in 14 of 21 heads (+1.34, p = 0.0028), q = 0.0036 over all tests (reading a) and 0.0031 over the NaCl tests (reading b). Every selection reading gives p of 0.016 or less and q of 0.028 or less; dF/F0 gives p = 0.0055 and q(a) = 0.018. ASEL against ASER, unpaired t-test, p = 4.8e-05 on the responses and 1.5e-05 on the means during the pulse, 3.1e-04 or less under every reading. ASEL responds more strongly (+3.45, 19 of 19 heads), which the paper's \"However, ASER exhibited an increase\" does not contradict.",
+     "deviations": [
+      "The ASER test is a single-side test; its p is added to the family of class tests for the q value, a choice made here, as the paper's family pools left and right.",
+      "Each trace is z-scored before the response tests, an assumption. The STAR Methods say \"When comparing neuronal activity across animals, we used dNMF to normalize activity traces per neuron class\" (Brainwide imaging of neuronal activity traces) and do not say how. Tests on traces scaled one by one match the p values of the paper's Table S6 far better than tests on dF/F0 (rank correlation of log p 0.90 to 0.96 against 0.62 to 0.73; p of 0.05 agrees in 84 to 89 of 94 classes against 74 to 80); min-max scaling is close behind and matches the scale of the paper's confidence intervals. dF/F0 and min-max scaling are shown as variants."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-nacl-unknown-interneurons",
+     "statement": "NaCl evokes significant responses in six interneurons with no previously known function, AIN, AVF, AVH, AVJ, I2 and MI.",
+     "source": "Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2; Figures 6C to 6F",
+     "quote": "In particular, we detected significant NaCl responses in six interneurons with no previously known function ... AIN, AVF, AVH, AVJ, I2, and MI",
+     "statistics": [
+      {
+       "test": "two-tailed paired t test, stimulus against prior period",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "FDR (Storey q values)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_yemini_2021.ipynb",
+     "notes": "Under the main reading all six classes respond significantly to NaCl under every FDR reading, with positive means: AVH (q over all tests 4e-05), AIN (0.0034), I2 (0.0007), MI (0.0019), AVJ (0.016) and AVF (0.021). The deposit and both readings give six of six; none removed gives five under reading (a) and six under (b) and (c). On dF/F0 four of six (AIN, AVH, I2, MI) under every reading, AVJ (p = 0.094 in the first round) and AVF not, the outcome of the first round. Benjamini-Hochberg over all tests gives four of six. The outcome rests on the per-trace normalisation; the criterion as written, on the mean dF/F0, gives four of six, a partial reproduction. The claims file leaves out the paper's normalisation sentence, which is asked of a reader (questions/000541.yaml).",
+     "deviations": [
+      "Each trace is z-scored before the response tests, an assumption. The STAR Methods say \"When comparing neuronal activity across animals, we used dNMF to normalize activity traces per neuron class\" (Brainwide imaging of neuronal activity traces) and do not say how. Tests on traces scaled one by one match the p values of the paper's Table S6 far better than tests on dF/F0 (rank correlation of log p 0.90 to 0.96 against 0.62 to 0.73; p of 0.05 agrees in 84 to 89 of 94 classes against 74 to 80); min-max scaling is close behind and matches the scale of the paper's confidence intervals. dF/F0 and min-max scaling are shown as variants.",
+      "One member of each near-duplicate pair is removed (the later in the file), an assumption. The STAR Methods say \"Neurons within 5 um distance of each other, whose traces showed at least 95% correlation, were deemed too similar and removed\" without saying which; of the four readings run (one, both, none, the traces in the paper's deposit), \"one\" comes closest to the per-class sample counts of Table S6 (median difference 0, mean +0.6 traces per class; deposit +2.9, none +3.8, both -2.3). Distances use 0.533 um in x and y, the spacing the coordinates show (see findings).",
+      "Table S6's legend says \"FDR was used to correct the p-values of all NaCl, 2-butanone, and 2,3-pentanedione stimulus responses together\", which is reading (a) of the claims file; all readings are still shown."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-odors-more-inhibitory",
+     "statement": "Both odors evoke responses in many sensory and interneurons throughout the brain, with more inhibitory (decreasing calcium) activity than NaCl.",
+     "source": "Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2; Figure 6C",
+     "quote": "We found that odors also evoked responses in a large set of both sensory and interneurons, throughout the brain, but exhibited more inhibitory activity (decreasing [Ca 2+ ]) than seen for NaCl",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_yemini_2021.ipynb",
+     "notes": "Main reading: reading (b), the fraction of classes with a negative mean response, 0.234 for NaCl, 0.245 for 2-butanone and 0.362 for 2,3-pentanedione; reading (a), significant decreases with q over all tests, ties for 2-butanone (6, as NaCl; 2,3-pentanedione 17). Every other reading holds under (a) or (b) (deposit (a) 2, 5, 14; both (a) 2, 4, 8; none (a) 2, 5, 14; dF/F0 (a) 3, 5, 10). The 2-butanone margin is thin throughout. The odors evoke significant responses in 40 and 47 classes (NaCl 54) under the main reading, which supports \"many\".",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6d-awc-asymmetric",
+     "statement": "2-butanone and 2,3-pentanedione evoke stochastically asymmetric responses in the AWC ON and AWC OFF neurons, AWC OFF being the one srsx-3 colors in NeuroPAL.",
+     "source": "Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2; Figure 6D",
+     "quote": "2-butanone and 2,3-pentanedione evoked stochastically asymmetric responses in the AWC ON/OFF neuron pair ( Figure 6D ); srsx-3 distinguishably colors AWC OFF in NeuroPAL",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "The files name AWCL and AWCR only and do not say which is AWC ON or OFF, which the criterion requires; no trace label, NeuroPAL label or description in the 21 files names ON or OFF. The NeuroPAL image carries the side: CyOFP1, the fluorophore of srsx-3 in the paper's Table S1, is brighter relative to TagRFP-T in the AWC the paper's deposit marks as OFF (is_AWCL_OFF) in 19 of 21 heads (binomial p = 0.0002). As variants only, ON and OFF responses do not differ significantly by the criterion's unpaired t-test with either label: deposit labels, main reading, p = 0.62 (2-butanone) and 0.14 (2,3-pentanedione), on dF/F0 0.56 and 0.087; image-derived labels 0.68 and 0.060; no variant shown goes below 0.056.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-asj-ric",
+     "statement": "The ASJ sensory neurons are excited by NaCl but inhibited by both odors, whereas the RIC interneurons are excited only by 2,3-pentanedione.",
+     "source": "Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2; Figures 6C to 6E",
+     "quote": "For example, the ASJ sensory neurons were excited by NaCl but inhibited by both odors, whereas the RIC interneurons were excited solely by 2,3-pentanedione",
+     "statistics": [
+      {
+       "test": "two-tailed paired t test, stimulus against prior period",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "FDR (Storey q values)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_yemini_2021.ipynb",
+     "notes": "Under the main reading 5 of 6 parts hold with q over all tests (reading a): ASJ is excited by NaCl (+0.80, q = 0.0004) and inhibited by 2-butanone (-0.52, q = 0.0004) and 2,3-pentanedione (-0.25, q = 0.040, p = 0.082); RIC is excited by 2,3-pentanedione (+0.29, q = 0.0056) and not by 2-butanone, but is also significantly excited by NaCl (+0.17, p = 0.033). Readings (b) and (c) give 4 of 6. With the deposit's selection or none removed all six hold under every FDR reading (RIC's NaCl p = 0.056); with both removed 4 of 6; on dF/F0 3 of 6, which would be not reproduced. Benjamini-Hochberg gives 5 of 6 under the main reading. Under reading (a) the ASJ inhibition by 2,3-pentanedione passes only because Storey's pi0 here is 0.222, against 0.42 to 0.48 on the paper's own p values, so q falls below p; it decides that part, not the outcome.",
+     "deviations": [
+      "One member of each near-duplicate pair is removed (the later in the file), an assumption. The STAR Methods say \"Neurons within 5 um distance of each other, whose traces showed at least 95% correlation, were deemed too similar and removed\" without saying which; of the four readings run (one, both, none, the traces in the paper's deposit), \"one\" comes closest to the per-class sample counts of Table S6 (median difference 0, mean +0.6 traces per class; deposit +2.9, none +3.8, both -2.3). Distances use 0.533 um in x and y, the spacing the coordinates show (see findings).",
+      "Each trace is z-scored before the response tests, an assumption. The STAR Methods say \"When comparing neuronal activity across animals, we used dNMF to normalize activity traces per neuron class\" (Brainwide imaging of neuronal activity traces) and do not say how. Tests on traces scaled one by one match the p values of the paper's Table S6 far better than tests on dF/F0 (rank correlation of log p 0.90 to 0.96 against 0.62 to 0.73; p of 0.05 agrees in 84 to 89 of 94 classes against 74 to 80); min-max scaling is close behind and matches the scale of the paper's confidence intervals. dF/F0 and min-max scaling are shown as variants.",
+      "Table S6's legend says \"FDR was used to correct the p-values of all NaCl, 2-butanone, and 2,3-pentanedione stimulus responses together\", which is reading (a) of the claims file; all readings are still shown."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-interneurons-downstream",
+     "statement": "Downstream of the sensory neurons many interneurons respond significantly, many with no previously known function, for example AIN, AVH, RIF, RIG and RIR.",
+     "source": "Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2; Figures 6E and 6F",
+     "quote": "Downstream of sensory neurons, we observed significant responses in many interneurons, many with no previously known function (e.g., AIN, AVH, RIF, RIG, and RIR)",
+     "statistics": [
+      {
+       "test": "two-tailed paired t test, stimulus against prior period",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "FDR (Storey q values)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_yemini_2021.ipynb",
+     "notes": "All five classes respond significantly to at least one stimulus under every selection and FDR reading: under the main reading AIN to NaCl and 2-butanone, AVH to all three, RIF and RIG to 2,3-pentanedione (decreases), RIR to both odors. dF/F0 gives five of five. Benjamini-Hochberg gives four of five (RIG misses), three on dF/F0.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-tail-responses",
+     "statement": "In the tail, PVQ is significantly excited by 2,3-pentanedione, and a mix of sensory and interneurons show significant post-stimulus responses to all three stimuli, including LUA, PVN, PVQ, PVR and PVW.",
+     "source": "Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2; Table S6",
+     "quote": "In the tail, the PVQ interneurons were significantly excited upon presentation of 2,3-pentanedione, while a mix of sensory and interneurons exhibited significant post-stimulus responses ... to all three stimuli ... Many of these post-stimulus responses were observed in interneurons with no previously known behavioral function (LUA, PVN, PVQ, PVR, and PVW)",
+     "statistics": [
+      {
+       "about": "PVQ excitation by 2,3-pentanedione",
+       "test": "two-tailed paired t test, stimulus against prior period",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "FDR (Storey q values)"
+      },
+      {
+       "about": "post-stimulus responses",
+       "test": "one-tailed paired t test, post-stimulus mean against stimulus mean",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "FDR"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The dandiset holds no tail recordings; every file is a head (\"C. elegans head NeuroPAL and Calcium imaging\") and no tail neuron (LUA, PVN, PVQ, PVR, PVW) is named in it. The 21 tails are in the paper's Zenodo deposit (doi:10.5281/zenodo.3906530, Tail_Activity_OH16230.mat); the claims file marks this claim as using the dataset, so it was not tested on the deposit.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6f-pharyngeal",
+     "statement": "Both salt and odors elicit responses across the pharyngeal nervous system.",
+     "source": "Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2; Figure 6F",
+     "quote": "Surprisingly, both salt and odors elicited responses across the pharyngeal nervous system",
+     "statistics": [
+      {
+       "test": "two-tailed paired t test, stimulus against prior period",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "FDR (Storey q values)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_yemini_2021.ipynb",
+     "notes": "All 14 pharyngeal classes are tested. Under the main reading with q over all tests, NaCl 8 classes, 2-butanone 11, 2,3-pentanedione 4. Every reading gives at least two for NaCl and for an odor, including dF/F0 (3, 4 and 2) and Benjamini-Hochberg.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-stimulus-sets-distinct",
+     "statement": "The sets of neurons activated by the three stimuli are partly overlapping but distinct for each stimulus.",
+     "source": "Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 2; Figures 6C to 6F",
+     "quote": "The set of neurons activated by all three stimuli was partly overlapping but distinct for each stimulus",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_yemini_2021.ipynb",
+     "notes": "Main reading, q over all tests, 54 classes for NaCl, 40 for 2-butanone, 47 for 2,3-pentanedione; pairs share 25, 28 and 26; 18 in all three; no two sets equal. Every reading gives the same pattern (dF/F0 18, 19 and 24 classes, sharing 9 to 12). With sets this large the test is weak.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1h-avf-cyclic",
+     "statement": "In many animals the AVF interneurons show robust cyclical activity of about 0.3 Hz for the whole 4 min recording, whatever the stimulus, similar to the crawling frequency of freely moving worms of this strain.",
+     "source": "Results, Whole-Brain Activity Imaging of Gustatory and Olfactory Responses, paragraph 3; Figure S1H",
+     "quote": "in many animals, the pair of AVF interneurons displayed robust cyclical activity for the entire 4-min recording, irrespective of delivery of gustatory or olfactory stimuli. The frequency of this activity was ~0.3 Hz",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_yemini_2021.ipynb",
+     "notes": "Main reading, 32 AVF traces from 19 heads. Peaks at 1 SD of prominence give a median of 0.121 Hz (0.046 to 0.268), at 0.5 SD 0.199 Hz (0.104 to 0.301), against 0.27 to 0.33 Hz. Only 3 traces have their largest spectral peak between 0.1 and 1 Hz (median 0.172 and 0.180 Hz); the median spectral peak is 0.016 Hz, the lowest resolved frequency. The other selection readings give 0.121 to 0.125 and 0.192 to 0.205 Hz. The measured value is the first pair of readings.",
+     "deviations": [
+      "The 0.5 s median filter is 2 frames at 4 Hz, applied as MATLAB's medfilt1 does for an even length, since the paper ran its analysis in MATLAB (STAR Methods, Statistical analysis software)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6gi-stimulus-specific-correlations",
+     "statement": "Pairwise correlations between neurons are similar across individuals for a stimulus, but each stimulus generates its own brainwide correlation pattern, even the two attractive odors.",
+     "source": "Results, Whole-Brain Neuronal Dynamics and Connectivity, paragraph 1; Figures 6G to 6I and S2C to S2E",
+     "quote": "We found similar stimulus-specific neuronal correlations across individuals, but each stimulus generated its own brainwide correlation pattern ... Even the two attractive odors produced distinct sets of neuronal correlations among and between sensory and interneurons",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_yemini_2021.ipynb",
+     "notes": "Under the main reading, reading (a) gives NaCl against 2-butanone p = 6.3e-04 and against 2,3-pentanedione p = 1.4e-04, but not the two odors (p = 0.17); reading (b) gives 91, 96 and 95 of 100 splits, short of 95 for NaCl against 2-butanone. The deposit and none readings give the partial outcome through reading (a) (odors p = 0.27 and 0.20), with reading (b) at 50, 71, 16 and 56, 82, 71 splits. Only with both members of near-duplicates removed does reading (b) pass all three pairs (98, 98, 99), the outcome of the first round. A null window 30 s after each onset, with no stimulus, gives 100 of 100 splits for NaCl against 2,3-pentanedione and for the two odors under reading (b), and Wilcoxon p = 7.5e-06 and 0.013 under reading (a), so differences between the three periods of the recording may drive part of the effect. The null window runs 20 to 50 s after each pulse ends, when the paper reports post-stimulus responses, so lingering stimulus effects may also explain it. Similarities between animals are small (mean 0.043 to 0.057).",
+     "deviations": [
+      "One member of each near-duplicate pair is removed (the later in the file), an assumption. The STAR Methods say \"Neurons within 5 um distance of each other, whose traces showed at least 95% correlation, were deemed too similar and removed\" without saying which; of the four readings run (one, both, none, the traces in the paper's deposit), \"one\" comes closest to the per-class sample counts of Table S6 (median difference 0, mean +0.6 traces per class; deposit +2.9, none +3.8, both -2.3). Distances use 0.533 um in x and y, the spacing the coordinates show (see findings). Under removing both members the outcome would be reproduced."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs2a-pca-trajectories",
+     "statement": "The average trajectories of whole-brain activity in the space of its first three principal components, over the 10 s stimulus and 20 s after, show similarities but remain distinguishable between the three stimuli.",
+     "source": "Figure S2A and S2B; Results, Whole-Brain Neuronal Dynamics and Connectivity, paragraph 1",
+     "quote": "Average phase trajectories (N = 21 animal heads) of whole-brain neuronal activity in response to stimuli (10 s of stimulus application and 20 s thereafter) ... The average stimulus trajectories exhibit similarities but remain distinguishable",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_yemini_2021.ipynb",
+     "notes": "Main reading, 48 classes present in all 21 heads, z-scored traces: both PCA readings separate only NaCl from 2,3-pentanedione (1.70 against 1.33 under reading a); NaCl and 2-butanone (1.05 against 1.48) and the two odors (1.34 against 1.45) are not separated. The deposit and none readings separate one or two pairs, never NaCl from 2-butanone; dF/F0, where a few classes dominate PC1 (0.76 of the variance under the main reading), separates at most one pair, and dF/F0 scaled per class at most two. No reading separates all three pairs.",
+     "deviations": [
+      "The paper's normalisation per neuron class is not described; z-scored traces are the main reading here, with dF/F0 and dF/F0 scaled per class as variants (see fig6-nacl-unknown-interneurons). The outcome is the same under all of them."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6jk-connectome-correlation",
+     "statement": "Functional correlations correspond little to the anatomical connectome; the R2 of the Pearson correlation between absolute functional correlations and synapse counts is 2.8% (head) and 1.7% (tail) for electrical synapses, and 0.5% (head) and 1.5% (tail) for chemical synapses.",
+     "source": "Results, Whole-Brain Neuronal Dynamics and Connectivity, paragraph 2; Figures 6J and 6K",
+     "quote": "We found low Pearson correlation between these functional and structural matrices. For electrical connectivity, R 2 = 2.8% in the head and R 2 = 1.7% in the tail, and for chemical connectivity, R 2 = 0.5% in the head and R 2 = 1.5% in the tail",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_yemini_2021.ipynb",
+     "notes": "Head values only; all head R2 values are below 5%, none within tolerance. Electrical 1.28% under readings (a, a), 3.47% over pairs with a synapse (a, b), against 2.52 to 3.08%; chemical 0.04 to 0.23% against 0.45 to 0.55%. The other selection readings and the SI 5 weighted matrices give electrical 0.31 to 3.68% and chemical at most 0.31%. Per-trace scaling does not change Pearson correlations. Tails are not in the dandiset. The finding that functional correlation corresponds little to the connectome holds in the heads. The claim depends on the name link (link-connectome-names), which holds.",
+     "deviations": [
+      "Heads only; the tail recordings are not in the dandiset.",
+      "The paper does not say which Cook et al. matrices it used; the synapse counts (SI 2) are the main reading, as the Results speak of \"synaptic counts\", and SI 5 is a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-connectome-variations",
+     "statement": "Variations of the comparison (thresholding for low sampling, ranked correlation, log-scaled synapse counts, stimulus or non-stimulus periods only) do not noticeably improve the correlation between functional activity and the connectome.",
+     "source": "Results, Whole-Brain Neuronal Dynamics and Connectivity, paragraph 2",
+     "quote": "We tried multiple variations in our calculations (e.g., thresholding for low sampling, using ranked correlation metrics, log-scaling synaptic counts, and limiting functional activity to only stimulus or non-stimulus delivery periods) but these did not noticeably improve correlation between functional activity and the structural connectome",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_yemini_2021.ipynb",
+     "notes": "On the first-listed readings, which the criterion uses as no reading matched in fig6jk-connectome-correlation, the largest R2 over the seven variations is 1.51% (electrical, pairs seen in more than 10 animals), below 3.1%. Over all readings the variations reach at most 3.74% (electrical, pairs with a synapse, log-scaled counts), against 3.47% for the same reading without the variation. Heads only.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1-neuropal-color-map",
+     "statement": "The NeuroPAL transgene of 41 reporter-fluorophore fusions gives a stereotyped color map that lets every neuron of the hermaphrodite be identified by color and position.",
+     "source": "Results, Empirical Assembly of NeuroPAL, paragraph 2; Figure 1E",
+     "quote": "The final transgene, composed of 41 different reporter-fluorophore fusions, allowed us to unambiguously assign identities to every neuron in C. elegans based on a stereotyped color map",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Rests on the NeuroPAL color maps of many strains and animals imaged for the reagent's design; the dandiset holds only the 21 OH16230 head recordings.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1-neuropal-stable-variable-classes",
+     "statement": "The NeuroPAL color pattern was stable across hundreds of scored animals, except for variable brightness in four neuron classes, AVL, RIM, RIS and PVW.",
+     "source": "Results, Neuronal Color Verification and Phenotypic Assessment of NeuroPAL Strains, paragraph 1",
+     "quote": "We found that the NeuroPAL expression pattern was stable, robust, and stereotyped throughout the nervous system over hundreds of scored animals ... A minor exception was four neuron classes that exhibited variable brightness (AVL, RIM, RIS, and PVW)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the scoring of hundreds of NeuroPAL animals; not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1-integrant-health",
+     "statement": "All NeuroPAL integrants can be revived and give progeny; otIs669 (OH15262) is the brightest and otIs670 (OH15263) has locomotion and chemotaxis closest to wild type.",
+     "source": "Results, Neuronal Color Verification and Phenotypic Assessment of NeuroPAL Strains, paragraph 2; Figures S1A to S1G; Table S2",
+     "quote": "The brightest integrant was otls669 (strain OH15262). The integrant with locomotion and chemotactic behavior closest to wild-type, otls670 (strain OH15263), is less bright",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs brood size, locomotion and chemotaxis assays of the integrants; not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-positional-variability",
+     "statement": "Neuron positions within a ganglion vary between animals, with different variability across neuron types; OLLR has over twice the anterior-posterior positional variability of OLLL.",
+     "source": "Results, Variability in Neuronal Cell Body Positions, paragraph 1; Figure 2 legend, panels C and D",
+     "quote": "This map revealed different positional variability across neuron types ... OLLR exhibits over twice the positional variability of OLLL in its anterior-posterior axis",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the positional atlas worms imaged on the Zeiss LSM880; not in the dandiset. Ten such young-adult otIs669 worms are in the paper's Zenodo deposit, which this claim, marked as using the dataset, was not tested on.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-receptor-coverage",
+     "statement": "Metabotropic acetylcholine, glutamate and GABA receptors are expressed in 97% of all neurons; 70% express GARs, 54% MGLs and 89% GBBs.",
+     "source": "Results, Expression Maps for All Metabotropic Neurotransmitter Receptors, paragraph 2; Figure 4C",
+     "quote": "these receptors are expressed in 97% of all neurons ... 70% express GARs, 54% express MGLs, and 89% express GBBs",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the metabotropic receptor reporter expression maps; not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4bd-gaba-network",
+     "statement": "Every postsynaptic partner of every GABA-releasing neuron expresses a GABA-B receptor, against 60% that express a GABA-A receptor; 76% of postsynaptic partners of cholinergic neurons express GARs and 66% of those of glutamatergic neurons express MGLs.",
+     "source": "Results, Expression Maps for All Metabotropic Neurotransmitter Receptors, paragraph 2; Figures 4B, 4D and 4G",
+     "quote": "We found that every postsynaptic partner of every GABA-releasing neuron expresses one of the two GABA B receptors. In contrast, only 60% of postsynaptic partners of GABAergic neurons express any of the seven GABA A receptors ... 76% of the postsynaptic partners of cholinergic neurons express GAR receptors, and 66% of the postsynaptic partners of glutamatergic neurons express MGL receptors",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "A data: with_inputs claim; no dandiset data enter it. It needs the receptor expression map (the paper's Table S4, mmc6.xlsx at https://ars.els-cdn.com/content/image/1-s2.0-S0092867420316822-mmc6.xlsx, public, found during the revision after the first round had looked on PMC, Europe PMC and cell.com without success), the neurotransmitter maps the paper cites (Gendrel et al., 2016; Pereira et al., 2015; Serrano-Saiz et al., 2013, with the GABA-A receptor map from Gendrel et al., 2016) and the Cook et al. (2019) connectome, whose synapse counts the notebook already loads for the Figure 6 claims. The paper names these in the same paragraph as the claim (Results, Expression Maps for All Metabotropic Neurotransmitter Receptors, paragraph 2), and the Figure 4D legend gives the synapse thresholds (at least 1, 5 or 10). Earlier revisions said the paper names neither the transmitter map nor the connectome; that was wrong, as the round-3 verifier found. The inputs are named and public, but this attempt did not build the analysis, so the claim is untested here and a later attempt can test it.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": {
+      "outcome": "blocked",
+      "blocked_by": "methods_underspecified",
+      "reason": "The block is that the paper does not name the transmitter map or the connectome behind Figure 4, as the round-2 verifier says; that is a method the paper leaves unstated, which methods_underspecified names more exactly than other. The round-3 verifier does not agree. The paper names the transmitter maps (Gendrel et al., 2016; Pereira et al., 2015; Serrano-Saiz et al., 2013) and the connectome (Cook et al., 2019) in the same paragraph as the claim, and the Figure 4D legend gives the synapse thresholds, so every input is named and public and the claim should be tested; with no analysis behind it, no outcome can be given."
+     }
+    },
+    {
+     "claim": "fig4e-extrasynaptic",
+     "statement": "Many receptor-expressing neurons have no presynaptic partner releasing the cognate transmitter (31% of GABA-A and 37% of GABA-B expressing neurons; 3% of GAR and 10% of MGL expressing neurons), and 92% of neurons express GABA receptors while only 10% release GABA, suggesting widespread extrasynaptic signaling, most prominently onto sensory neurons.",
+     "source": "Results, Expression Maps for All Metabotropic Neurotransmitter Receptors, paragraph 2; Figures 4E and 4F",
+     "quote": "31% of GABA A and 37% of GABA B receptor-expressing neurons have no presynaptic GABAergic partner. Moreover, we found 92% of all neurons express GABA receptors, and yet only 10% of neurons release GABA ... Notably, sensory neurons appear to be the most prominent recipients of extrasynaptic communication",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "A data: with_inputs claim; no dandiset data enter it. It needs the same inputs as fig4bd-gaba-network (Table S4, public at the publisher, the neurotransmitter maps the paper cites and the Cook et al. (2019) connectome, all named in the same paragraph as the claim). The Figure 4E legend defines the quantity, the percentage of receptor-expressing neurons with no presynaptic partner that releases the cognate transmitter, and the claims file's criterion gives two readings for the reversed GAR/MGL pairing in the Results. Earlier revisions said the paper names neither the transmitter map nor the connectome; that was wrong, as the round-3 verifier found. This attempt did not build the analysis, so the claim is untested here and a later attempt can test it under both readings.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": {
+      "outcome": "blocked",
+      "blocked_by": "methods_underspecified",
+      "reason": "As for fig4bd-gaba-network, the block is the unnamed transmitter map and connectome, a method the paper leaves unstated. The round-3 verifier does not agree, for the same reason as for fig4bd-gaba-network. The Figure 4E legend defines the quantity, and the claims file's criterion handles the reversed GAR/MGL pairing with two readings, so this is not an unstated method and the claim should be tested under readings (a) and (b)."
+     }
+    },
+    {
+     "claim": "fig5ab-pag3-fate",
+     "statement": "In pag-3 null mutants the NeuroPAL color codes of the VA and VB motor neurons are absent, and the AVE and PVR interneurons change color; a pag-3 fosmid reporter is expressed in previously unidentified neurons including AVE and PVR.",
+     "source": "Results, Uncovering Determinants of Cell Fate, paragraph 1; Figures 5A to 5C; Table S5",
+     "quote": "As predicted, the color codes that identify the VA and VB cell types in NeuroPAL are absent in pag-3 mutants ... Unexpectedly, we also found color changes in the AVE and PVR interneurons caused by pag-3 mutation",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the pag-3 mutant scoring (Table S5); not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5ef-eor1-rme",
+     "statement": "In eor-1 null mutants the dorsal and ventral RME neurons (RMED/V) lose all their blue NeuroPAL coloring but keep the panneuronal label, while RMEL/R are unchanged; an unc-25/GAD reporter confirms the loss, with no defect in UNC-47/VGAT expression.",
+     "source": "Results, Uncovering Determinants of Cell Fate, paragraph 2; Figures 5E to 5G; Table S5",
+     "quote": "The dorsal and ventral RME neurons (RMED/V) lost all their blue coloring but retained their panneuronal label ... In contrast, the left and right RME neurons (RMEL/R) exhibited no changes in their color codes ... but at the same time found no defects in UNC-47/VGAT expression",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the eor-1 mutant and reporter scoring (Table S5); not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7bc-id-accuracy",
+     "statement": "The semi-automated identification pipeline identifies 86% of head and 94% of tail neurons correctly; eight manual annotations on average bring head accuracy above 90%; with position alone accuracy drops to 50% (head) and 68% (tail).",
+     "source": "Results, Semi-automated Neuronal Identification, paragraph 2; Figures 7B and 7C; Methods S1, section 6.3",
+     "quote": "Accuracy was 86% for the head and 94% for the tail ... Adding eight manual annotations, on average, brings the head accuracy above 90% ... automated accuracy dropped to 50% for the head and 68% for the tail",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the 10 atlas worms and the identification software (MATLAB). The worms are not in the dandiset; they are in the paper's Zenodo deposit, which this claim, marked as using the dataset, was not tested on. The dandiset's NeuroPAL volumes are from the microfluidic chip, not the atlas worms.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7de-optimal-coloring",
+     "statement": "Simulated optimal-coloring alternatives to NeuroPAL from WormBase reporters give 1.7% color violations with 39 reporters and 10.5% with only 3 reporters.",
+     "source": "Results, An Optimal-Coloring Algorithm for Other Tissues and Model Organisms, paragraph 2; Figures 7D and 7E; Methods S2",
+     "quote": "In our simulations, we achieve color violations of 1.7% when using 39 reporters and 10.5% when restricting the solution to only 3 reporters",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "A data: with_inputs claim; no dandiset data enter it. The solver and its reporter data are public (https://github.com/Eviatar/Optimal_Coloring at f01284f: optimal_color_solver.m, find_optimal_colors.m and data.mat), but the code \"requires MATLAB\" (README), which cannot be installed in the entry's locked Python environment, and the solver is randomised (\"Each time the algorithm is run, it chooses a different approximately optimal set\"). A port was not attempted.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds the 21 OH16230 head recordings of Figure 6 only. The 21 OH16230 tail recordings, the 7 OH15500 heads (Table S6), and the imaging behind Figures 1 to 5 and 7 are not in it. The tails, the OH15500 heads and 10 atlas worms are in the paper's Zenodo deposit (doi:10.5281/zenodo.3906530).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The files do not say which AWC neuron is ON and which is OFF in each head, which the paper's AWC asymmetry result needs. The NeuroPAL image holds it: CyOFP1, the srsx-3 fluorophore (Table S1), is brighter relative to TagRFP-T in the AWC that the paper's Zenodo deposit marks as OFF (is_AWCL_OFF) in 19 of 21 heads.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The calcium imaging volume (CalciumImVol) states a grid spacing of 0.267, 0.267 and 1.5 um, the same as the NeuroPAL volume, but in all 21 files the calcium segmentation's x and y coordinates are half those of the same neurons in the NeuroPAL segmentation (fitted ratio 1.94 to 2.09; z 0.97 to 1.07), and the movie is 256 x 128 pixels against 512 x 256. The movie is binned 2 x 2, and its x and y spacing is 0.533 um.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The two trace series in each file, SignalRawFluor (\"Raw fluorescence activity\") and SignalRawFluordNMF (\"Raw fluorescence activity data computed using dNMF\"), hold the same numbers in all 21 files.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "NeuronIDs, described as neuron labels, include three cells that are not neurons (AMSOL, AMSOR, amphid sheath glia; HMC, the head mesodermal cell) and, in head 20190929_06, DD6, a motor neuron of the posterior ventral cord that cannot be in a head volume. None of these four names is in the paper's deposit.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "126 named traces in the dandiset have no trace in the paper's deposit (AVL in 11 heads, I5 in 8, and others), 113 of them with finite values and 13 all NaN; 101 of them have an empty slot in the deposit. The dandiset does not mark which traces the paper excluded (near duplicates, empty traces).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The stimulus table's description gives 2-butanone as \"10^-4mM\" (2,3-pentanedione as \"10^-4\") and the order as random; the paper gives both odors as 10^-4 dilutions and the order as rotated, and the files show three orders, seven heads each.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The dandiset's traces are one frame (0.25 s) earlier than the paper's deposited traces in all 21 files: deposit frame k + 1 correlates best with dandiset frame k. Each dandiset trace has one frame fewer than its movie. Which of the two is aligned with the stimulus table is not stated.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors. Of two neurons within 5 um whose traces correlate at 0.95 or more, were both removed, or one (and which), and on which traces was the correlation computed? The STAR Methods say they \"were deemed too similar and removed\". Run on the dandiset (with the corrected spacing), the rule removes 338 named traces keeping one member and 651 removing both, while the paper's deposit lacks 126, and only 20 and 27 of those are among the removed. Keeping one member comes closest to the per-class sample counts of Table S6, though agreement with its p values is about the same under every reading. Three results here depend on the choice (fig6-asj-ric, fig6gi-stimulus-specific-correlations and the head median of fig6-sample-sizes); one member is removed in this attempt, as an assumption.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors. How were traces normalised for the response tests (\"When comparing neuronal activity across animals, we used dNMF to normalize activity traces per neuron class\")? The p values of Table S6 cannot be recomputed from the deposited dF/F0 traces with the test the STAR Methods describe (rank correlation of log p 0.57 to 0.75); tests on traces scaled one by one come much closer (0.87 to 0.96 with z-scores) and min-max scaling matches the size of the paper's confidence intervals, but none reproduces the table. Two outcomes here depend on the choice (fig6-nacl-unknown-interneurons, fig6-asj-ric); z-scores are used, as an assumption. How a head was judged to show the published ASE and AWC responses is also not described: under the claims file's rules 19 of the 21 deposited heads pass, not 21.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-30",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The handover of the first run (executed notebook with the conclusions and summary removed, the helper module and the claims file) and the paper under paper/. Report: transcripts/000541/verifier-1-report.md.",
+     "agreed": 28,
+     "of": 29,
+     "disagreements": [
+      {
+       "claim": "fig6gi-stimulus-specific-correlations",
+       "outcome": "partially_reproduced",
+       "reason": "Under reading (a), NaCl against each odor gives p of 0.008 or less in every mode, but butanone against pentanedione gives p = 0.18 to 0.34. Reading (b) passes all three pairs only under \"both\", and the non-stimulus control window passes too. That pass reflects the timing of the window, not the stimulus, so it is not counted as a full reproduction."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-30",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the revision after round 1, with its conclusions and summary, the helper module, the claims file, the attempt record and the paper under paper/. Report: transcripts/000541/verifier-2-report.md.",
+     "agreed": 29,
+     "of": 29,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-30",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The changes of outcome proposed after round 2 (fig4bd-gaba-network and fig4e-extrasynaptic) and the analysis behind them, with the paper under paper/. Report: transcripts/000541/verifier-3-report.md.",
+     "agreed": 0,
+     "of": 2,
+     "disagreements": [
+      {
+       "claim": "fig4bd-gaba-network",
+       "outcome": null,
+       "reason": "No analysis sits behind this outcome. Cell 77 is prose only. Its reason is that \"the paper names neither the transmitter map nor the connectome\", and the paper does name both, in the same paragraph as the claim (Results, Expression Maps for All Metabotropic Neurotransmitter Receptors, paragraph 2). The transmitter maps are \"Gendrel et al., 2016; Pereira et al., 2015; Serrano-Saiz et al., 2013\". The connectome is the wiring diagram \"(Figures 4B and 4G; Cook et al., 2019)\". The GABA-A receptor map is credited to Gendrel et al. (2016). The notebook already loads the Cook et al. (2019) chemical and gap-junction synapse-count matrices (cell 69). The Figure 4D legend gives the synapse thresholds, at least 1, 5 or 10. Table S4 is public at the publisher, as the record says. Every input is named and public. Neither other nor methods_underspecified describes a real block, because both rest on the same mistaken premise. In round 2 I accepted that premise without checking it against the paper, and that was my mistake. Not blocked; it should be tested, and with no analysis yet no outcome can be given."
+      },
+      {
+       "claim": "fig4e-extrasynaptic",
+       "outcome": null,
+       "reason": "The reason is the same as for fig4bd-gaba-network: the same paragraph and the same named sources (cell 77; Cook matrices already loaded in cell 69). The Figure 4E legend defines the quantity: the percentage of receptor-expressing neurons with no presynaptic partner that releases the cognate transmitter. The claims file's criterion already handles the reversed GAR/MGL pairing in the Results with two readings. A reader who wants to choose a reading has a path, so this is not an unstated method. Not blocked; it should be tested under readings (a) and (b) of the claims file's criterion."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000541-yemini-2021",
+   "type": "reproduction",
+   "title": "Whole-brain chemosensory responses in NeuroPAL worms (Yemini et al. 2021)",
+   "description": "Tests the whole-brain imaging findings of Yemini, Lin, Nejatbakhsh et al. (2021) on dandiset 000541, which holds the 21 OH16230 head recordings of Figure 6 with NeuroPAL neuron identities. It computes dF/F0 from the dandiset's traces, tests the responses of identified neuron classes to NaCl and two odors, the AVF rhythm, the stimulus-specific correlations and their relation to the connectome, and checks the traces against the paper's Zenodo deposit. The tail recordings and the imaging behind Figures 1 to 5 and 7 are not in the dandiset.",
+   "datasets": [
+    "dandi:000541"
+   ],
+   "papers": [
+    "10.1016/j.cell.2020.12.012"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_yemini_2021.ipynb",
+     "title": "Reproducing Yemini et al. (2021) from dandiset 000541",
+     "executed": "notebooks/000541-yemini-2021/reproduce_yemini_2021.html"
+    }
+   ]
+  }
+ ]
+}
