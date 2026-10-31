@@ -1,0 +1,201 @@
+schema_version: 2
+id: 000633-kim-2023-01
+dataset:
+  archive: dandi
+  id: "000633"
+  version: 0.231013.2226
+  doi: 10.48324/dandi.000633/0.231013.2226
+paper: doi:10.3390/ijms241310921
+date: 2026-10-31
+entry: 000633-kim-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41173956226
+inputs:
+- what: Geometry and conductivity of the field model (three 1.5 mm needles, a 35 mm dish filled
+    with a 1.6 S/m solution 3.5 mm deep, the energized and grounded electrodes), from Methods 4.2
+    and 4.3 of the paper. The field map itself is computed in the notebook, with electrode positions
+    measured in the images; the paper's Sim4Life map is not deposited.
+  source: doi:10.3390/ijms241310921
+outcomes:
+- claim: fig2-cancellation-at-180
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_kim_2023.ipynb
+  notes: The 32-ROI measurements of Figure 2 (n = 3 at each of 1 Hz and 833 kHz) are not in the
+    dandiset, which holds only the two images of Figure 4; there are no 1 Hz data at all. The
+    per-ROI angles of the Sim4Life simulation are not deposited either. For information only, the
+    notebook computes an 833 kHz curve from the two Figure 4 images (one dish each, angles from a
+    field map computed here). The ROI nearest the base (168.7 degrees) gives 17.2% of the
+    single-pulse uptake, 5.8-fold weaker, and a quadratic fit over angles above 140 degrees gives
+    25.6% at 180 degrees, against the paper's 20-fold. These images are not the paper's Figure 2
+    data and decide nothing.
+- claim: fig2-crossover-angle
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_kim_2023.ipynb
+  notes: Depends on fig2-cancellation-at-180 and needs the Figure 2 data, which are not deposited
+    (no 1 Hz data at all). For information only, the 833 kHz curve from the Figure 4 images
+    crosses 100% at 128.4 degrees by linear interpolation, and again at 123.7 and 120.4 degrees, as
+    the single-pulse uptake falls near background toward the apex.
+- claim: fig2-facilitation-plateau
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_kim_2023.ipynb
+  notes: Depends on fig2-cancellation-at-180 and needs the Figure 2 data, which are not deposited.
+    For information only, the 833 kHz curve from the Figure 4 images has one ROI in 90 to 100
+    degrees, at 378%, and the 11 ROIs below 90 degrees have a mean of 1460% and a median of 741%;
+    single-pulse uptake there is 4.3 to 169.5 above background, so the ratio is unstable.
+- claim: fig2-60-fold-co-counter
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_kim_2023.ipynb
+  notes: Depends on fig2-cancellation-at-180 and fig2-facilitation-plateau, both blocked, and needs
+    the Figure 2 data at 833 kHz, which are not deposited. For information only, the Figure 4 images
+    give a ratio of 85 (plateau mean over the 180 degree value) or 56 (ROI nearest 0 degrees, at
+    11.4 degrees), resting on single-pulse values near background.
+- claim: fig3-1hz-co-cross-same
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No image from the square four-electrode array of Figure 3 is in the dandiset; both images
+    show three footprints in a triangle. The single-pulse file's session description gives the
+    settings of a Figure 3 experiment (co-directional pairs, 770 kHz, 10 kV/cm), but its image is a
+    triangular array with the pattern of Figure 4A.
+- claim: fig3-770khz-co-enhanced
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Figure 3 data (n = 6 per group, square array) are not in the dandiset.
+- claim: fig3-770khz-cross-same-as-1hz
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Figure 3 data (n = 6 per group, square array) are not in the dandiset.
+- claim: fig4a-single-pulse-follows-field
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2023.ipynb
+  output: claim:fig4a-single-pulse-follows-field
+  notes: Over 2627 ROIs of 200 um within 6 mm of the image centre, with E1 taken as the right-hand
+    base electrode (base_a), background-subtracted YP and the computed field have Spearman rho =
+    0.666 (p printed as 0, below floating-point range), and the order of the three electrode neighbourhoods (0 to 500 um from the
+    footprint edge) is the same by YP (base_a 649.8, base_b 262.6, apex 82.2) and by field (12.88,
+    7.38, 5.31 kV/cm). Across grid radii of 5 and 6 mm, margins of 150 and 400 um and
+    neighbourhoods of 500 and 1000 um, rho is 0.640 to 0.746 and the order always matches. With E1
+    taken as the other base electrode, rho is 0.424 to 0.510 (all p below 1e-95) and the order never
+    matches, so the criterion's two readings would disagree. What holds without the assumption is a
+    positive rank correlation under either assignment and a match of the order for one of the two.
+    The question of which electrode was E1 is put to the paper's authors (findings).
+  deviations:
+  - The field map is computed here by a two-dimensional finite-difference solve (40 um grid,
+    electrodes as 1.5 mm discs of fixed potential, insulating wall of a 35 mm dish), in place of
+    the paper's Sim4Life model (Methods 4.3, "1.6 S/m solution to a depth of 3.5 mm", field "in the
+    plane 1 um above the glass"). The needles span the solution from the glass up (Methods 4.2,
+    "lowered ... until the tips touched the glass bottom"), so the field does not vary with height.
+    Electrode positions are measured in the image, and the scale is set from the 1.5 mm needle
+    diameter (Methods 4.2); it gives 0.654 um per pixel, the camera's 0.65.
+  - Assumed that E1, the electrode pulsed in Figure 4A, is the right-hand base electrode of the
+    file's image (base_a). The file does not record it, and the figure, which labels it, was not
+    readable here. The assumption is taken from the uptake pattern itself, so the test is partly
+    circular; the notebook shows both assignments.
+  - The ROI grid (within 6 mm of the image centre, leaving out ROIs within 150 um of a footprint
+    edge) and the neighbourhood (0 to 500 um from the footprint edge) are choices the claims file
+    does not fix; the notebook shows 5 and 6 mm, 150 and 400 um, and 500 and 1000 um, and the outcome
+    is the same under all of them.
+  - The amplitude is taken as 4 kV (Section 2.3); the file's description says 2 kV. A rank
+    correlation and an order do not depend on the amplitude.
+- claim: fig4bc-paired-pulse-focal-apex
+  outcome: reproduced
+  notebook: reproduce_kim_2023.ipynb
+  output: claim:fig4bc-paired-pulse-focal-apex
+  notes: In the paired-pulse image, background-subtracted YP in the ROI 100 um outside the footprint
+    edge is 843.9 at the apex against 255.3 and 104.1 at the base electrodes (apex/base 3.31 and
+    8.11), and 500 um outside it is 725.7 against 269.6 and 119.0 (2.69 and 6.10). In the
+    single-pulse image the apex/base ratios are 0.051 and 0.096 at 100 um and 0.156 and 0.200 at 500
+    um, so the ratio is higher in the paired-pulse image under both readings. Without background
+    subtraction the order is the same (apex 1035.8 against 447.2 and 296.0 at 100 um). The computed
+    field near each base electrode during its own pulse (19.6 and 20.0 kV/cm at 100 um, at 4 kV) is
+    more than twice that near the apex (8.4 to 9.0), which is the "despite the strong field there"
+    of the statement.
+  deviations:
+  - The array centre, toward which the ROIs are placed, is taken as the centroid of the three
+    electrode centres; the claims file says "toward the array center" without defining it.
+  - The footprint edge is placed 750 um from the fitted footprint centre (the needle radius,
+    Methods 4.2) in both images; the single-image footprints have less sharp edges and fit to a
+    mean diameter of 1.22 mm.
+- claim: fig4-comet-shape
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2023.ipynb
+  output: claim:fig4-comet-shape
+  notes: With the maximum taken as the 99.5th percentile of the 200 um mean (730), the region above
+    half the maximum touches the apex footprint and reaches 2935 um toward the base against 1608 um
+    across the line (1235 um away from the base); above a quarter, 4136 against 2270 um (1538 away).
+    With the maximum of a 200 um median filter (632) the same holds (half, 2603 against 1248 um;
+    quarter, 4002 against 2064 um). The region touches neither base footprint. With the literal
+    maximum of the 200 um mean (3999, on one bright object 2468 um from the apex centre whose binned
+    YP reaches 26996, against a 99.9th percentile of 2953 in the dish), the half-maximum region is
+    empty and the quarter-maximum region is 0.01 mm2 on the far side of the apex footprint, so that
+    reading gives no region to judge.
+  deviations:
+  - Assumed that the maximum of the criterion is a maximum robust to isolated bright objects (the
+    99.5th percentile of the 200 um mean, or the maximum of a 200 um median filter). The literal
+    maximum lies on one object about nine times brighter than the dish's 99.9th percentile, likely
+    debris or a dead cell, and makes the region vanish. The paper gives no measure for this finding.
+  - The criterion's further toward the base than across is measured from the apex centre, as the reach along the
+    bisecting line toward the base against the largest distance across it; the extents along and
+    across the line are shown too, and agree.
+- claim: fig5-base-sawtooth
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The strobe images of FluoVolt-loaded CHO cells (220 photos per plot, 5 cells, Figure 5) are
+    not in the dandiset, which holds only BPAE monolayer images.
+- claim: fig5-apex-larger-polarization
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig5-base-sawtooth; the strobe imaging data of Figure 5 are not in the dandiset.
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the two whole-dish images of Figure 4. The ROI measurements of
+    Figure 2 (n = 3 at 1 Hz and at 833 kHz), the square-array experiments of Figure 3 (n = 6 per
+    group) and the strobe imaging of Figure 5, on which the paper's quantitative findings rest, are
+    not deposited, nor is the field simulation of Methods 4.3 that gives each ROI its angle. Nine of
+    the twelve claims cannot be tested.
+- kind: format_error
+  statement: Each image is stored as an ImageSeries with data of shape (22323, 22323, 2) and a rate
+    of 2 Hz. NWB reads the first axis of an ImageSeries as time, so a standard reader sees 22323
+    frames of 22323 x 2 pixels; the data are one stitched image of 22323 x 22323 pixels in two
+    channels.
+- kind: metadata_insufficient
+  statement: No pixel size, channel names or intensity unit (unit "n.a.") are stored. The channel
+    order comes only from the free-text description, and the scale only from the needle diameter
+    in the paper (0.654 um per pixel, which matches the camera and objective named in the
+    description). The file does not say which base electrode was pulsed in the single-pulse image
+    (E1 in Figure 4A).
+- kind: metadata_error
+  statement: The session description of Single-pulse_trains describes another experiment ("4
+    co-directional paired-pulse (600 + 600 ns) trains ... 770 kHz, amplitude 10 kV/cm"), the
+    settings of Figure 3, while its image shows a triangular array with the single-pulse pattern of
+    Figure 4A.
+- kind: metadata_error
+  statement: The session description of Paired-pulse_trains gives an amplitude of 2 kV; the paper
+    gives 4 kV for both Figure 4 images (Section 2.3). With the array measured in the image, a field
+    model gives 4.2 to 9.7 kV/cm on the bisecting line at 4 kV, close to the 5 to 10 kV/cm of
+    Section 2.1, and half that at 2 kV.
+- kind: metadata_error
+  statement: The image description says the tiles came from a six-well plate, where the paper used
+    35 mm glass-bottom dishes; the subject age is P1D for a cell line, and each subject is a
+    condition (Single-pulse_trains, Paired-pulse_trains), not an animal or culture.
+- kind: methods_unavailable
+  statement: Questions for the paper's authors. (1) Which base electrode of the deposited
+    single-pulse image is E1, the one pulsed in Figure 4A? This attempt assumed the right-hand one
+    (base_a), with the most uptake nearby. (2) How was the agreement of uptake with the field map
+    (Figure 4A) and the comet-shaped region (Figure 4B,C) judged? The paper gives no measure; this
+    attempt used rank correlation, the order of electrode neighbourhoods, and thresholds of half
+    and a quarter of a robust maximum.
