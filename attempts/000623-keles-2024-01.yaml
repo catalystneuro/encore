@@ -1,0 +1,480 @@
+schema_version: 2
+id: 000623-keles-2024-01
+dataset:
+  archive: dandi
+  id: '000623'
+  version: 0.240130.2108
+  doi: 10.48324/dandi.000623/0.240130.2108
+paper: doi:10.1038/s41597-024-03029-1
+date: '2026-10-31'
+entry: 000623-keles-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41151742895
+inputs:
+- what: Scene-cut annotations (scenecut_info.csv, 93 cuts with scene_id and shot_start_fr), used as labels
+    for the scene-change and continuity-cut claims.
+  source: https://github.com/rutishauserlab/bmovie-release-NWB-BIDS at commit 8c35290b74a9522bf27cbcae44dcb88ff2a1d58f
+- what: In-scanner question answers (scanner_questionnaire.csv), for scanner-questions.
+  source: https://github.com/rutishauserlab/bmovie-release-NWB-BIDS at commit 8c35290b74a9522bf27cbcae44dcb88ff2a1d58f
+- what: Age, sex and diagnosis of the four fMRI-only participants, from Table 1 of the paper (also entered
+    in gen_table1_subj_info.py).
+  source: doi:10.1038/s41597-024-03029-1
+outcomes:
+- claim: cohort-emu-sessions
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:cohort-emu-sessions
+  measured:
+  - 29
+  - 16
+  - 13
+  notes: 29 NWB files from 16 participants, 13 with two runs and P44CS, P58CS and P60CS with one, each
+    as in Table 1.
+- claim: table1-demographics
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:table1-demographics
+  measured:
+  - 37.75
+  - 13.86
+  - 11
+  notes: The age, sex and diagnosis stored for each of the 16 EMU participants match Table 1, and both
+    runs of a participant agree. With the four fMRI-only participants taken from Table 1, the 20 have
+    11 women and a mean age of 37.75 years, SD 13.86 (ddof 0; 14.22 with ddof 1). The 16 EMU participants
+    alone have a mean age of 39.12.
+  deviations:
+  - The four fMRI-only participants (P45CS, P46CS, P50CS, P59CS) are not in the dandiset; their values
+    are those of Table 1, as gen_table1_subj_info.py enters them.
+- claim: neurons-total-and-areas
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:neurons-total-and-areas
+  measured:
+  - 1450
+  - 479
+  - 261
+  - 236
+  - 299
+  - 175
+  notes: 1450 units have a spike in the movie (set U); by area amygdala 479, hippocampus 261, ACC 236,
+    preSMA 299 and vmPFC 175, all exact. The files hold 1457 units; the 7 without a spike in the movie
+    are 3 amygdala, 3 hippocampus and 1 preSMA unit. Area lookup by row position and by index agree.
+- claim: units-per-wire
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:units-per-wire
+  measured: 1.99
+  notes: 1.990 units per wire over 732 session and wire pairs with at least one unit (all 1457 units,
+    as the code counts); 1.981 with the units of U.
+- claim: firing-rate
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:firing-rate
+  measured:
+  - 2.471
+  - 3.326
+  notes: Mean 2.471 and s.d. 3.326 spikes/s (ddof 0; 3.327 with ddof 1) over the 1450 units of U; range
+    0.002 to 37.86.
+- claim: isi-violations
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:isi-violations
+  measured:
+  - 0.404
+  - 0.529
+  notes: Reading (b), the 1426 units of U with isibelow below 3 (the set of Fig. 2c), gives 0.404% and
+    s.d. 0.529%, both within tolerance. Reading (a), all 1450 units, gives 0.462% and 0.727%, both outside.
+    22 units are at or above 3%, up to 10.35%.
+  deviations:
+  - The claims file names two readings of the units averaged (open detail 1); the result matches under
+    reading (b) only, which the criterion accepts.
+- claim: waveform-snr
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:waveform-snr
+  measured:
+  - 5.948
+  - 3.477
+  - 2.066
+  - 1.128
+  notes: Peak SNR 5.948 (s.d. 3.477) and mean SNR 2.066 (s.d. 1.128) over the 1450 units of U, ddof 0;
+    ddof 1 changes the third decimal.
+- claim: projection-distance
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:projection-distance
+  measured:
+  - 11.982
+  - 8.933
+  notes: 11.982, s.d. 8.933, over 1242 pairs from 403 wire entries of all sessions. The units per wire
+    imply 1266 pairs.
+- claim: isolation-distance
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:isolation-distance
+  measured: 24.904
+  notes: Median 24.904 over 1001 units of U; 448 have no value (NaN) and one has 3.4e27, removed as the
+    code does.
+- claim: gaze-missing-p53cs
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:gaze-missing-p53cs
+  measured:
+  - 73.6
+  - 83.6
+  notes: Missing gaze is 73.6% in P53CS run 1 and 83.6% in run 2, and these are the only sessions at or
+    above 50%; the next highest is far below.
+- claim: gaze-similarity
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:gaze-similarity
+  measured:
+  - 0.751
+  - 0.122
+  - 6.63
+  - 8.4
+  notes: Over the 27 sessions left, the correlation with the leave-participant-out reference is 0.751
+    with s.d. 0.122 (tanh of the mean and s.d. of the session z means, ddof 0). Missing gaze is 6.63%
+    (s.d. 8.40%) over the 27 sessions, reading (a), within tolerance; over all 29, reading (b), 11.59%
+    (s.d. 20.01%), outside. Per participant the correlation is 0.751, s.d. 0.099. Lagging gaze by 5 s
+    lowers the correlation of the first six sessions from 0.737 to 0.834 to 0.290 to 0.317.
+  deviations:
+  - The claims file names two readings of the sessions over which missing gaze is averaged (open detail
+    3); the result matches under reading (a) only.
+- claim: recognition-auc
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:recognition-auc
+  measured:
+  - 0.789
+  - 0.189
+  notes: Over the 29 sessions (reading a) the AUC is 0.789 with s.d. 0.189 (ddof 0; 0.192 with ddof 1).
+    Over the 16 participants after averaging runs (reading b) it is 0.787 with s.d. 0.134, the s.d. outside
+    tolerance.
+  deviations:
+  - The claims file names two readings (open detail 4); the result matches under reading (a), the "all
+    sessions" of the Fig. 3b legend.
+- claim: auc-run1-vs-run2
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:auc-run1-vs-run2
+  measured:
+  - 0.788
+  - 0.138
+  - 0.792
+  - 0.245
+  notes: 13 participants; run 1 AUC 0.788 (s.d. 0.138) and run 2 0.792 (s.d. 0.245), ddof 0, all within
+    tolerance; paired t-test t = -0.054, p = 0.958, mean difference -0.004. The test does not find a difference.
+  deviations:
+  - The paper names a paired t-test; two-sided is the default (open detail 7 of the claims file).
+- claim: confidence-accuracy
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:confidence-accuracy
+  notes: 22 sessions pass check_inclusion, all with split 1. Accuracy is 89.9% for high and 72.0% for
+    low confidence, higher in 18 of 22 sessions; paired t-test t = 4.364, p = 0.00027.
+- claim: memory-sessions-included
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:memory-sessions-included
+  measured: 1266
+  notes: Rule R, the five listed runs and the text two criteria all remove the same runs, P44CS run 1,
+    P51CS run 2, P56CS run 2 and P57CS runs 1 and 2, and keep 1266 units. P44CS run 1 is removed for having
+    no correct novel trial although its AUC is 0.726; P51CS run 2 has AUC 0.101.
+- claim: memory-cells-significant
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:memory-cells-significant
+  measured:
+  - 32
+  - 436
+  - 21
+  - 186
+  - 14
+  - 150
+  notes: Amygdala 32/436 (permutation p = 0.0065), ACC 21/186 (p = 0.0005) and vmPFC 14/150 (p = 0.0140),
+    each below 0.05; counts within tolerance (ACC 21 against 22) and denominators exact. 98 of 1266 cells
+    are selective, 35 with novel above familiar.
+  deviations:
+  - The permutation test is seeded, and within each shuffle one set of bootstrap resamples is drawn per
+    session (per design) and applied to all its cells or channels, where the code draws one per cell,
+    unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The permutation
+    of trials is per cell, as in the code.
+  - Selectivity of cells is computed on spike counts in the window, which have the same sign and ties
+    as the code's rates (count divided by the window length).
+- claim: memory-cells-not-significant
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:memory-cells-not-significant
+  measured:
+  - 14
+  - 238
+  - 17
+  - 256
+  notes: Hippocampus 14/238 (p = 0.227) and preSMA 17/256 (p = 0.135), neither below 0.05, with the paper
+    counts; Monte Carlo s.e. 0.009 and 0.008.
+  deviations:
+  - The permutation test is seeded, and within each shuffle one set of bootstrap resamples is drawn per
+    session (per design) and applied to all its cells or channels, where the code draws one per cell,
+    unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The permutation
+    of trials is per cell, as in the code.
+  - Selectivity of cells is computed on spike counts in the window, which have the same sign and ties
+    as the code's rates (count divided by the window length).
+- claim: memory-lfp
+  outcome: reproduced
+  notebook: hfb_keles_2024.ipynb
+  output: claim:memory-lfp
+  measured:
+  - 37
+  - 32
+  - 40
+  - 17
+  - 28
+  - 368
+  - 336
+  notes: Amygdala 37/368 (p = 0.0030), ACC 32/368 (p = 0.0355) and preSMA 40/368 (p = 0.0005) below 0.05;
+    hippocampus 17/368 (p = 0.898) and vmPFC 28/336 (p = 0.065, Monte Carlo s.e. 0.006) not. All counts
+    within tolerance (four exact), denominators exact.
+  deviations:
+  - HFB follows prep_filterLFP.py (notch, 0.1 Hz high-pass, common average, Morlet 70 to 170 Hz, z-score,
+    mean over frequencies, 500 Hz) but is reduced at once to the window means used, without the code's
+    intermediate files.
+  - The permutation test is seeded, and within each shuffle one set of bootstrap resamples is drawn per
+    session (per design) and applied to all its cells or channels, where the code draws one per cell,
+    unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The permutation
+    of trials is per cell, as in the code.
+- claim: memory-ieeg
+  outcome: reproduced
+  notebook: hfb_keles_2024.ipynb
+  output: claim:memory-ieeg
+  measured:
+  - 41
+  - 34
+  - 45
+  - 25
+  - 31
+  - 368
+  notes: ACC 41/368 (p = 0.0010), vmPFC 34/368 (p = 0.0160) and preSMA 45/368 (p = 0.0005) below 0.05;
+    amygdala 25/368 (p = 0.468) and hippocampus 31/368 (p = 0.109) not. Counts exact except hippocampus
+    (31 against 32).
+  deviations:
+  - HFB follows prep_filterLFP.py (notch, 0.1 Hz high-pass, common average, Morlet 70 to 170 Hz, z-score,
+    mean over frequencies, 500 Hz) but is reduced at once to the window means used, without the code's
+    intermediate files.
+  - The permutation test is seeded, and within each shuffle one set of bootstrap resamples is drawn per
+    session (per design) and applied to all its cells or channels, where the code draws one per cell,
+    unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The permutation
+    of trials is per cell, as in the code.
+- claim: memory-modalities-differ
+  outcome: reproduced
+  notebook: hfb_keles_2024.ipynb
+  output: claim:memory-modalities-differ
+  notes: ACC is below 0.05 in cells (0.0005), LFP (0.0355) and iEEG (0.0010); hippocampus in none (0.227,
+    0.898, 0.109); amygdala in cells (0.0065) and LFP (0.0030) but not iEEG (0.468).
+  deviations:
+  - HFB follows prep_filterLFP.py (notch, 0.1 Hz high-pass, common average, Morlet 70 to 170 Hz, z-score,
+    mean over frequencies, 500 Hz) but is reduced at once to the window means used, without the code's
+    intermediate files.
+  - The permutation test is seeded, and within each shuffle one set of bootstrap resamples is drawn per
+    session (per design) and applied to all its cells or channels, where the code draws one per cell,
+    unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The permutation
+    of trials is per cell, as in the code.
+- claim: fig6-examples
+  outcome: reproduced
+  notebook: hfb_keles_2024.ipynb
+  output: claim:fig6-examples
+  measured: 0.003
+  notes: P53CS_R1_11_1_3077 is a preSMA cell firing more to familiar images (-3.13 spikes/s, p = 0.0030);
+    P58CS_R1_34_2_3239 an ACC cell firing more to novel images (1.69 spikes/s, p = 0.0002); macro channel
+    P42CS_R2_RSMA3 (preSMA) and micro channel P58CS_R1_RACC2 (ACC) have higher HFB to novel images, p
+    = 0.0002 each.
+  deviations:
+  - HFB follows prep_filterLFP.py (notch, 0.1 Hz high-pass, common average, Morlet 70 to 170 Hz, z-score,
+    mean over frequencies, 500 Hz) but is reduced at once to the window means used, without the code's
+    intermediate files.
+- claim: scenecut-labels
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:scenecut-labels
+  measured:
+  - 80
+  - 13
+  notes: 80 continuity cuts and 13 scene changes by rule S; every cut onset falls in the movie window
+    in all 29 sessions, and the onsets from the frame times are 0 to 20 ms from the annotation file shot_start_t.
+    Matched by frame number, with all 93 cuts placed (100%).
+- claim: event-cells
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:event-cells
+  measured:
+  - 10
+  - 20
+  - 15
+  - 7
+  - 8
+  notes: vmPFC 10/175 (p = 0.0040) and preSMA 20/299 (p = 0.0005) below 0.05; amygdala 15/479 (p = 0.0885),
+    ACC 7/236 (p = 0.226) and hippocampus 8/261 (p = 0.207) not. Every count is the paper. In either direction
+    23 to 72 cells per area are selective, most with weaker responses to scene changes.
+  deviations:
+  - The permutation test is seeded, and within each shuffle one set of bootstrap resamples is drawn per
+    session (per design) and applied to all its cells or channels, where the code draws one per cell,
+    unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The permutation
+    of trials is per cell, as in the code.
+  - Selectivity of cells is computed on spike counts in the window, which have the same sign and ties
+    as the code's rates (count divided by the window length).
+  - The code counts only scene change above continuity cut (open detail 6 of the claims file); the count
+    in either direction is shown as a variant.
+- claim: event-lfp
+  outcome: reproduced
+  notebook: hfb_keles_2024.ipynb
+  output: claim:event-lfp
+  measured:
+  - 20
+  - 40
+  - 33
+  - 15
+  - 22
+  - 448
+  - 400
+  notes: Amygdala 20/448 (p = 0.0030), hippocampus 40/448 (p = 0.0005), ACC 33/448 (p = 0.0005), vmPFC
+    15/400 (p = 0.0165) and preSMA 22/448 (p = 0.0020), all counts exact and all below 0.05.
+  deviations:
+  - HFB follows prep_filterLFP.py (notch, 0.1 Hz high-pass, common average, Morlet 70 to 170 Hz, z-score,
+    mean over frequencies, 500 Hz) but is reduced at once to the window means used, without the code's
+    intermediate files.
+  - The permutation test is seeded, and within each shuffle one set of bootstrap resamples is drawn per
+    session (per design) and applied to all its cells or channels, where the code draws one per cell,
+    unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The permutation
+    of trials is per cell, as in the code.
+  - Scene change above continuity cut only, as the code; either direction shown as a variant (46 to 77
+    channels per area).
+- claim: event-ieeg
+  outcome: reproduced
+  notebook: hfb_keles_2024.ipynb
+  output: claim:event-ieeg
+  measured:
+  - 66
+  - 41
+  - 25
+  - 33
+  - 21
+  - 448
+  - 448
+  notes: Amygdala 66/448, hippocampus 41/448, ACC 25/448 and vmPFC 33/448 (each p = 0.0005) and preSMA
+    21/448 (p = 0.0020), all below 0.05; counts exact except amygdala (66 against 67). The vmPFC denominator
+    is 448, where the paper prints 449; the criterion anticipates this misprint and reports the count
+    found.
+  deviations:
+  - HFB follows prep_filterLFP.py (notch, 0.1 Hz high-pass, common average, Morlet 70 to 170 Hz, z-score,
+    mean over frequencies, 500 Hz) but is reduced at once to the window means used, without the code's
+    intermediate files.
+  - The permutation test is seeded, and within each shuffle one set of bootstrap resamples is drawn per
+    session (per design) and applied to all its cells or channels, where the code draws one per cell,
+    unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The permutation
+    of trials is per cell, as in the code.
+  - Scene change above continuity cut only, as the code; either direction shown as a variant.
+- claim: fig7-examples
+  outcome: reproduced
+  notebook: hfb_keles_2024.ipynb
+  output: claim:fig7-examples
+  measured:
+  - 0.0244
+  - 0.0298
+  - 0.0258
+  notes: P42CS_R1_47_2_1347 (preSMA, p = 0.0244) and P47CS_R1_78_1_2233 (vmPFC, p = 0.0298), macro channel
+    P62CS_R2_RHIP6 (hippocampus, p = 0.0258) and micro channel P51CS_R2_RSMA8 (preSMA, p = 0.0002), all
+    with scene change above continuity cut.
+  deviations:
+  - HFB follows prep_filterLFP.py (notch, 0.1 Hz high-pass, common average, Morlet 70 to 170 Hz, z-score,
+    mean over frequencies, 500 Hz) but is reduced at once to the window means used, without the code's
+    intermediate files.
+- claim: nwb-contents
+  outcome: reproduced
+  notebook: hfb_keles_2024.ipynb
+  output: claim:nwb-contents
+  notes: All 29 files have units with spike times, electrode ids and the four metrics, LFP_micro and LFP_macro
+    at 1000 Hz, the trials table, electrode locations, pairwise distances, gaze and 11971 frame times,
+    and the movie starts at 0 s. The LFP samples begin 10 s before the movie, but all 58 LFP series store
+    a starting time near 0 s; on the code clock (stored time minus 10 s) 650 of 2192 micro and 683 of
+    2240 macro channels respond to recognition images, on the stored clock 18 and 20.
+  deviations:
+  - The 10-s offset of the LFP is applied as the code does (prep_filterLFP.py, LFP_PAD_us); the stored
+    starting times do not give it.
+- claim: scanner-questions
+  outcome: reproduced
+  notebook: reproduce_keles_2024.ipynb
+  output: claim:scanner-questions
+  measured:
+  - 5.967
+  - 0.983
+  notes: From the code repository copy of the in-scanner answers, 15 participants and 30 runs, 5.967 correct
+    answers with s.d. 0.983 (ddof 0); the per-question answers sum to the totals.
+  deviations:
+  - Read from assets/annotations/scanner_questionnaire.csv of the code repository at commit 8c35290, one
+    of the two copies the claims file names; the Figshare copy was not read.
+- claim: fmri-motion
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: 'The fMRI data are on OpenNeuro, ds004798, as raw BIDS only: its top level holds sub-* folders
+    and no derivatives folder. The claim rests on fMRIPrep 23.1.3 outputs, and running fMRIPrep on 15
+    participants and 30 runs needs its container and many CPU hours, beyond the 30-minute notebook limit
+    and the run.'
+- claim: fmri-tsnr
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: 'The fMRI data are on OpenNeuro, ds004798, as raw BIDS only: its top level holds sub-* folders
+    and no derivatives folder. The claim rests on fMRIPrep 23.1.3 outputs, and running fMRIPrep on 15
+    participants and 30 runs needs its container and many CPU hours, beyond the 30-minute notebook limit
+    and the run.'
+- claim: fmri-isc
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: 'The fMRI data are on OpenNeuro, ds004798, as raw BIDS only: its top level holds sub-* folders
+    and no derivatives folder. The claim rests on fMRIPrep 23.1.3 outputs, and running fMRIPrep on 15
+    participants and 30 runs needs its container and many CPU hours, beyond the 30-minute notebook limit
+    and the run.'
+findings:
+- kind: metadata_insufficient
+  statement: The files hold the movie frame times but no scene cuts or cut types; the 93 cuts (80 continuity
+    cuts, 13 scene changes) used by the event analyses come from the annotation file of the paper code
+    repository (also on Figshare), linked by frame number.
+- kind: metadata_error
+  statement: Every LFP_micro and LFP_macro ElectricalSeries stores a starting time near 0 s on the trials
+    clock, but its samples begin 10 s before the movie (the Usage Notes; the paper code subtracts 10 s).
+    On the stored clock 18 of 2192 micro and 20 of 2240 macro channels respond to recognition images;
+    with the 10-s correction 650 and 683 do.
+- kind: metadata_error
+  statement: The units column isibelow is described as the proportion of inter-spike intervals below 3
+    ms, but its values are percentages (median 0.24, up to 10.35), as the paper reports them.
+- kind: other
+  statement: 448 of the 1450 units of the paper (455 of the 1457 in the files) have no isolation distance
+    (NaN), and one has 3.4e27; the paper code removes both before the median.
+- kind: other
+  statement: The electrodes column pairwise_distances holds 1242 distances in all, where the units on
+    each wire imply 1266 pairs; 24 pairs have no entry.
+- kind: selection_undocumented
+  statement: The files hold 1457 units; the paper 1450 are those with at least one spike during the movie,
+    a rule found only in the code. The 7 others are in P47CS, P48CS, P51CS, P54CS and P55CS.
+- kind: code_mismatch
+  statement: The text excludes runs by a behavioral AUC criterion and by fewer than 10 correct trials
+    per condition; the code applies only the trial count. Here both remove the same five runs (P44CS run
+    1 is removed with AUC 0.726, for having no correct novel trial).
+- kind: paper_inconsistency
+  statement: The paper gives 449 vmPFC macro channels for the event analysis; the data give 448, the count
+    of every other area.
+- kind: other
+  statement: P53CS run 2 has 34 recognition trials (17 novel, 17 familiar), where the Methods describe
+    40.
+- kind: other
+  statement: The dandiset holds the EMU data only. The fMRI data are on OpenNeuro ds004798 as raw BIDS,
+    without the fMRIPrep derivatives the paper fMRI checks use, and the demographics of the four fMRI-only
+    participants are only in the paper Table 1 and its code.
