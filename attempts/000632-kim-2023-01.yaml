@@ -24,6 +24,7 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_kim_2023.ipynb
   output: claim:fig3-1hz-co-equals-cross
+  assumed: true
   notes: Under background reading (b) the co-directional dishes at 1 Hz (mean 665, n = 5) average 0.68
     of the cross-directional ones (972, n = 6); two-tailed Student's t-test p = 0.32, so the test does
     not find a difference. Reading (a) gives ratio 0.75, p = 0.31; Welch's test and the variants (whole-disc
@@ -33,26 +34,28 @@ outcomes:
     1.43 on 2022-12-04 (p = 0.49, n = 2 and 3). The test has little power, so p >= 0.05 shows that no
     difference was found, not that the groups are equal. The 95% interval of the difference is -968
     to 356 counts (co/cross 0.00 to 1.37), and the test would detect with 80% power only a difference
-    of 922 counts, 95% of the cross-directional mean. With the ROIs at the refined footprint centers
+    of 922 counts, 95% of the cross-directional mean; at the observed difference (-306 counts, s.e.
+    293) its power is 16%. With the ROIs at the refined footprint centers
     the ratio is 0.72, p = 0.40.
   deviations: &id001
   - The center ROI is placed automatically at the mean of the four electrode footprint centers, located
     by template matching on a reduced YP image (epimg.find_footprints); the paper placed it by hand in
     MetaMorph (Methods 4.4). The located footprints and ROI are shown for every dish. As a check the
-    footprints are located again on a finer image (5.2 um blocks, epimg.refine_footprints); the refined
-    array center lies a median 54 um (6 to 193 um) from the one used, and placing the ROIs there is run
+    footprints are located again on a finer image (5.2 um blocks, epimg.refine_footprints); over the
+    23 distinct dishes the refined array center lies a median 55 um (6 to 193 um) from the one used, and placing the ROIs there is run
     as a variant with the same outcomes.
-  - The files give no pixel size. 0.65 um per pixel is assumed (the 6.5 um ORCA-Flash4 pixel behind the
-    10x objective named in Methods 4.4); under it the footprints measure a median 1.59 mm across against
-    the 1.5 mm needles (Methods 4.2), and on the finer image a median 1.66 mm, so the 200 um ROI may be
-    up to about 10% larger than the paper's. The 0.5 mm lumen cannot be seen in the images (YP inside
+  - Assumption. The files give no pixel size. 0.65 um per pixel is assumed (the 6.5 um ORCA-Flash4 pixel
+    behind the 10x objective named in Methods 4.4); under it the footprints measure a median 1.59 mm
+    across against the 1.5 mm needles (Methods 4.2), and on the finer image a median 1.66 mm. If the
+    footprints are 1.5 mm across, the true pixel is about 0.59 to 0.61 um and the 308-pixel center ROI
+    covers about 180 to 190 um, smaller than the paper's 200 um. The 0.5 mm lumen cannot be seen in the images (YP inside
     it is 0.97 to 1.13 times the YP around it), so it gives no second check. Center
     ROIs of 150 and 250 um sides are run as variants and give the same outcomes.
   - Background reading (b) subtracts the mean YP of a 200 x 200 um ROI at the center of each of the four
     footprints. Methods 4.4 says only that measurements were made within the footprints 'to account for
     spontaneous YP uptake'; the ROI size is the paper's, its place a stated choice, and a variant over
     the whole disc inside 0.6 of the footprint radius gives the same outcome.
-  - The dataset holds 23 distinct dishes, not 24. The file labelled co-directional 1 Hz, sub-BPAE-8unipolar-1Hz-04,
+  - Assumption. The dataset holds 23 distinct dishes, not 24. The file labelled co-directional 1 Hz, sub-BPAE-8unipolar-1Hz-04,
     is a copy of the cross-directional 1 Hz file sub-BPAE-8bipolar-1Hz-600ns-04 and is counted once, as
     cross-directional (its start time is in the 2022-11-29 series, where number 04 is otherwise missing,
     and its anisotropy index is in the cross-directional range). The groups then have 5, 6, 5 and 7 dishes
@@ -62,26 +65,29 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_kim_2023.ipynb
   output: claim:fig3-770khz-co-enhanced
+  assumed: true
   notes: The co-directional mean at 770 kHz is higher than at 1 Hz, 1.67-fold under reading (a) and 1.96-fold
     under reading (b) (1301 against 665, n = 5 and 5), but the two-tailed Student's t-test does not find
     the difference (p = 0.15 and 0.16). No variant reaches p < 0.05; the smallest p is 0.087 (YP over
     MemBrite). The two background readings agree, so the claim is not blocked. On 2022-11-29 the 770 kHz
     mean is 2.74 times the 1 Hz one (p = 0.060, n = 3 and 3), on 2022-12-04 0.76 times it (p = 0.47, n
     = 2 and 2). The 95% interval of the difference is -315 to 1586 counts (ratio 0.53 to 3.38), and the
-    test would detect with 80% power only a difference of 1321 counts, 199% of the 1 Hz mean, so with
-    these dishes it could not have found the observed 1.96-fold ratio. With the ROIs at the refined
+    test would detect with 80% power only a difference of 1321 counts, 199% of the 1 Hz mean. If the
+    observed difference (636 counts, s.e. 412) were the true one, the test would find it with a power
+    of 27%. With the ROIs at the refined
     footprint centers the ratio is 1.66, p = 0.20. The temporal summation explanation is not tested.
   deviations: *id001
 - claim: fig3-770khz-cross-same-as-1hz
   outcome: reproduced
   notebook: reproduce_kim_2023.ipynb
   output: claim:fig3-770khz-cross-same-as-1hz
+  assumed: true
   notes: Under reading (b) the cross-directional dishes at 770 kHz (mean 819, n = 7) average 0.84 of those
     at 1 Hz (972, n = 6); Student's p = 0.56, so the test does not find a difference. Reading (a) gives
     0.87, p = 0.53, and no variant finds one (p from 0.37 to 0.82). By day the ratio is 0.71 on 2022-11-29
     (p = 0.073) and 1.40 on 2022-12-04 (p = 0.36). The 95% interval of the difference is -715 to 409
     counts (ratio 0.26 to 1.42); the test would detect with 80% power only a difference of 786 counts,
-    81% of the 1 Hz mean, so p >= 0.05 shows that no difference was found, not that the groups are
+    81% of the 1 Hz mean (power 9% at the observed difference), so p >= 0.05 shows that no difference was found, not that the groups are
     equal. With the ROIs at the refined footprint centers the ratio is 0.78, p = 0.46. The statement's interpretation, that charging two membrane
     regions does not sum, is not tested.
   deviations: *id001
@@ -89,18 +95,21 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_kim_2023.ipynb
   output: claim:fig3-770khz-co-above-cross
+  assumed: true
   notes: At 770 kHz the co-directional mean is the higher, 1.45-fold under reading (a) and 1.59-fold under
     reading (b) (1301 against 819, n = 5 and 7), but the Student's t-test does not find the difference
     (p = 0.19 and 0.20), nor does any variant (p from 0.19 to 0.52). The two background readings agree.
     By day the ratio is 1.75 on 2022-11-29 (p = 0.14) and 0.78 on 2022-12-04 (p = 0.38). The 95% interval
     of the difference is -302 to 1267 counts (ratio 0.63 to 2.55), and the test would detect with 80%
-    power only a difference of 1094 counts, 134% of the cross-directional mean. With the ROIs at the
+    power only a difference of 1094 counts, 134% of the cross-directional mean, and at the observed
+    difference (482 counts, s.e. 352) its power is 24%. With the ROIs at the
     refined footprint centers the ratio is 1.52, p = 0.20.
   deviations: *id001
 - claim: fig3-no-area-dependence
   outcome: reproduced
   notebook: reproduce_kim_2023.ipynb
   output: claim:fig3-no-area-dependence
+  assumed: true
   notes: Judged by fig3-1hz-co-equals-cross, which is reproduced (co over cross at 1 Hz 0.68, p = 0.32).
     It carries the same limit, as that test would detect with 80% power only a difference of 95% of
     the cross-directional mean. The Figure 2 evidence the Discussion also cites (fig2-facilitation-plateau)
@@ -325,3 +334,102 @@ verifications:
     outcome: blocked
     reason: Same as fig5-base-sawtooth.
     response: As for fig5-base-sawtooth.
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the round-1 revision with its conclusions and summary,
+    the README, the attempt record, the helper module and the claims file, with the paper. The verifier
+    agreed with all 12 outcomes and found no misreading of the paper in the claims file. It found that
+    every number in the conclusions, summary, README and notes matches the outputs, but that three sentences
+    are not supported. The sentence that the co-directional 770 kHz test could not have found the observed
+    ratio is wrong, as the test had less than 80% power, not zero (about 25 to 30%). The summary's statement
+    that the two not reproduced differences were smaller than the tests could detect is circular. The
+    deviation saying the ROI may be up to 10% larger than the paper's has the direction reversed. It also
+    noted that the median offset and diameter counted the duplicated dish twice, that two statements
+    (the draft listing the same assets, and the other dandisets being by the same group) were not shown
+    by any output, and that the pixel-size and duplicate-assignment assumptions should carry assumed
+    true. In reply the revision prints, for each test, the power at the observed difference (16%, 27%,
+    9% and 24%) and rewrites the two power sentences with it, corrects the direction of the ROI-size
+    deviation, computes the medians over the 23 distinct dishes (offset 55 um, diameter 1663 um), prints
+    the dandiset's listed versions with asset counts and sizes and the contributors of all four dandisets,
+    and sets assumed true on the five Figure 3 outcomes, whose deviations now name the two assumptions.
+    The pixel size still has no independent check and the paper gives no Figure 3 p-values to compare;
+    neither changes an outcome. No outcome is changed or proposed.
+  results:
+  - claim: fig3-1hz-co-equals-cross
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 20: reading (b) p = 0.3225, ratio 0.68. Every variant, Student or Welch, has p >= 0.28.
+      The outcome rests on the pixel size of 0.65 um/px and the assignment of the duplicated file to cross-directional
+      1 Hz, which appear only as deviations and should be flagged as assumptions; both are stated and reasonable,
+      and the variants give the same outcomes.'
+    response: Outcome kept. Set assumed true and labelled the two deviations as assumptions. Added the power
+      at the observed difference (16%) to the conclusion and notes. Corrected the direction of the ROI-size
+      deviation (under a smaller true pixel the ROI covers about 180 to 190 um).
+  - claim: fig3-770khz-co-enhanced
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 23: p = 0.1517 (a) and 0.1615 (b). The lowest p is 0.087 (YP/MemBrite). The two readings
+      agree, so this is not a block. The sentence "so with these dishes it could not have found the 1.96-fold
+      mean ratio observed" is not supported: the test had less than 80% power for this ratio, not zero
+      power; with the observed difference (636 counts) taken as true, se about 412 and df = 8, the power
+      is roughly 25 to 30%.'
+    response: Outcome kept, assumed true set. The notebook now prints the power at the observed difference
+      (27%), and the conclusion, notes and summary state it in place of the unsupported sentence.
+  - claim: fig3-770khz-cross-same-as-1hz
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 26: p = 0.5613. All variants have p >= 0.37.'
+    response: Outcome kept, assumed true set. Added the power at the observed difference (9%).
+  - claim: fig3-770khz-co-above-cross
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 29: p = 0.1859 (a) and 0.2004 (b). All variants have p >= 0.19. The summary sentence
+      that the two not reproduced differences were smaller than the tests could detect is circular: whenever
+      p >= 0.05 the observed difference is below the difference detectable with 80% power, and as worded
+      it implies the tests could not detect these differences, which is wrong.'
+    response: Outcome kept, assumed true set. Added the power at the observed difference (24%); the summary
+      now gives the power at the observed differences (27% and 24%) in place of the circular sentence.
+  - claim: fig3-no-area-dependence
+    agrees: true
+    outcome: reproduced
+    reason: It follows fig3-1hz under its criterion (cell 32).
+    response: Outcome kept, assumed true set as for fig3-1hz-co-equals-cross.
+  - claim: fig2-180-cancellation
+    agrees: true
+    outcome: blocked
+    reason: The reason changed from data_missing to other, which is accepted, because the claims file scopes
+      every claim to 000632 while the data are public in 000631, 000633 and 000634. Whether to rescope
+      is a decision for the reader, and the record asks for it. The scoping is a choice, not a misreading.
+    response: Outcome kept. The question to the reader in questions/000632.yaml stands. Cell 35 now prints
+      the contributors of the four dandisets, which supports the statement that they share contributors.
+  - claim: fig2-crossover-angle
+    agrees: true
+    outcome: blocked
+    reason: As for fig2-180-cancellation.
+    response: As for fig2-180-cancellation.
+  - claim: fig2-facilitation-plateau
+    agrees: true
+    outcome: blocked
+    reason: As for fig2-180-cancellation.
+    response: As for fig2-180-cancellation.
+  - claim: fig2-60-fold-co-counter
+    agrees: true
+    outcome: blocked
+    reason: As for fig2-180-cancellation.
+    response: As for fig2-180-cancellation.
+  - claim: fig4-unipolar-pattern
+    agrees: true
+    outcome: blocked
+    reason: As for fig2-180-cancellation.
+    response: As for fig2-180-cancellation.
+  - claim: fig5-base-sawtooth
+    agrees: true
+    outcome: blocked
+    reason: As for fig2-180-cancellation.
+    response: As for fig2-180-cancellation.
+  - claim: fig5-apex-larger-polarization
+    agrees: true
+    outcome: blocked
+    reason: As for fig2-180-cancellation.
+    response: As for fig2-180-cancellation.
