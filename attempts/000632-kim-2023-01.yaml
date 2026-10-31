@@ -1,0 +1,181 @@
+schema_version: 2
+id: 000632-kim-2023-01
+dataset:
+  archive: dandi
+  id: '000632'
+  version: 0.231012.1930
+  doi: 10.48324/dandi.000632/0.231012.1930
+paper: doi:10.3390/ijms241310921
+date: '2026-10-31'
+entry: 000632-kim-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41168492428
+outcomes:
+- claim: fig3-1hz-co-equals-cross
+  outcome: reproduced
+  notebook: reproduce_kim_2023.ipynb
+  output: claim:fig3-1hz-co-equals-cross
+  notes: Under background reading (b) the co-directional dishes at 1 Hz (mean 665, n = 5) average 0.68
+    of the cross-directional ones (972, n = 6); two-tailed Student's t-test p = 0.32, so the test does
+    not find a difference. Reading (a) gives ratio 0.75, p = 0.31; Welch's test and the variants (whole-disc
+    footprint background, YP over MemBrite, center ROIs of 150 and 250 um, without dishes whose footprint
+    centers are more than 400 um from a parallelogram, the deposit as labelled) give p from 0.28 to 0.68.
+    By experiment day the comparison goes opposite ways, 0.45 on 2022-11-29 (p = 0.023, n = 3 and 3) and
+    1.43 on 2022-12-04 (p = 0.49, n = 2 and 3).
+  deviations: &id001
+  - The center ROI is placed automatically at the mean of the four electrode footprint centers, located
+    by template matching on a reduced YP image (epimg.find_footprints); the paper placed it by hand in
+    MetaMorph (Methods 4.4). The located footprints and ROI are shown for every dish.
+  - The files give no pixel size. 0.65 um per pixel is assumed (the 6.5 um ORCA-Flash4 pixel behind the
+    10x objective named in Methods 4.4); under it the footprints measure a median 1.59 mm across against
+    the 1.5 mm needles (Methods 4.2), so the 200 um ROI may be about 6% larger than the paper's. Center
+    ROIs of 150 and 250 um sides are run as variants and give the same outcomes.
+  - Background reading (b) subtracts the mean YP of a 200 x 200 um ROI at the center of each of the four
+    footprints. Methods 4.4 says only that measurements were made within the footprints 'to account for
+    spontaneous YP uptake'; the ROI size is the paper's, its place a stated choice, and a variant over
+    the whole disc inside 0.6 of the footprint radius gives the same outcome.
+  - The dataset holds 23 distinct dishes, not 24. The file labelled co-directional 1 Hz, sub-BPAE-8unipolar-1Hz-04,
+    is a copy of the cross-directional 1 Hz file sub-BPAE-8bipolar-1Hz-600ns-04 and is counted once, as
+    cross-directional (its start time is in the 2022-11-29 series, where number 04 is otherwise missing,
+    and its anisotropy index is in the cross-directional range). The groups then have 5, 6, 5 and 7 dishes
+    (co 1 Hz, cross 1 Hz, co 770 kHz, cross 770 kHz) against the paper's n = 6 each. The deposit as labelled
+    is shown as a variant and gives the same outcome.
+- claim: fig3-770khz-co-enhanced
+  outcome: not_reproduced
+  notebook: reproduce_kim_2023.ipynb
+  output: claim:fig3-770khz-co-enhanced
+  notes: The co-directional mean at 770 kHz is higher than at 1 Hz, 1.67-fold under reading (a) and 1.96-fold
+    under reading (b) (1301 against 665, n = 5 and 5), but the two-tailed Student's t-test does not find
+    the difference (p = 0.15 and 0.16). No variant reaches p < 0.05; the smallest p is 0.087 (YP over
+    MemBrite). The two background readings agree, so the claim is not blocked. On 2022-11-29 the 770 kHz
+    mean is 2.74 times the 1 Hz one (p = 0.060, n = 3 and 3), on 2022-12-04 0.76 times it (p = 0.47, n
+    = 2 and 2). The temporal summation explanation is not tested.
+  deviations: *id001
+- claim: fig3-770khz-cross-same-as-1hz
+  outcome: reproduced
+  notebook: reproduce_kim_2023.ipynb
+  output: claim:fig3-770khz-cross-same-as-1hz
+  notes: Under reading (b) the cross-directional dishes at 770 kHz (mean 819, n = 7) average 0.84 of those
+    at 1 Hz (972, n = 6); Student's p = 0.56, so the test does not find a difference. Reading (a) gives
+    0.87, p = 0.53, and no variant finds one (p from 0.37 to 0.82). By day the ratio is 0.71 on 2022-11-29
+    (p = 0.073) and 1.40 on 2022-12-04 (p = 0.36). The statement's interpretation, that charging two membrane
+    regions does not sum, is not tested.
+  deviations: *id001
+- claim: fig3-770khz-co-above-cross
+  outcome: not_reproduced
+  notebook: reproduce_kim_2023.ipynb
+  output: claim:fig3-770khz-co-above-cross
+  notes: At 770 kHz the co-directional mean is the higher, 1.45-fold under reading (a) and 1.59-fold under
+    reading (b) (1301 against 819, n = 5 and 7), but the Student's t-test does not find the difference
+    (p = 0.19 and 0.20), nor does any variant (p from 0.19 to 0.52). The two background readings agree.
+    By day the ratio is 1.75 on 2022-11-29 (p = 0.14) and 0.78 on 2022-12-04 (p = 0.38).
+  deviations: *id001
+- claim: fig3-no-area-dependence
+  outcome: reproduced
+  notebook: reproduce_kim_2023.ipynb
+  output: claim:fig3-no-area-dependence
+  notes: Judged by fig3-1hz-co-equals-cross, which is reproduced (co over cross at 1 Hz 0.68, p = 0.32).
+    The Figure 2 evidence the Discussion also cites (fig2-facilitation-plateau) is blocked, as its data
+    are not in the dataset.
+  deviations: *id001
+- claim: fig2-180-cancellation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds only the square-array experiment of Figure 3 (24 files, all labelled co- or
+    cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The triangular-array
+    experiments of Figure 2 (32 ROIs along the bisecting line, single and paired pulses at 1 Hz and 833
+    kHz) are not in it. The paper's Data Availability Statement says the data are available on request,
+    and no other public deposit is named in the paper or in the dandiset's metadata.
+- claim: fig2-crossover-angle
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds only the square-array experiment of Figure 3 (24 files, all labelled co- or
+    cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The triangular-array
+    experiments of Figure 2 (32 ROIs along the bisecting line, single and paired pulses at 1 Hz and 833
+    kHz) are not in it. The paper's Data Availability Statement says the data are available on request,
+    and no other public deposit is named in the paper or in the dandiset's metadata.
+- claim: fig2-facilitation-plateau
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds only the square-array experiment of Figure 3 (24 files, all labelled co- or
+    cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The triangular-array
+    experiments of Figure 2 (32 ROIs along the bisecting line, single and paired pulses at 1 Hz and 833
+    kHz) are not in it. The paper's Data Availability Statement says the data are available on request,
+    and no other public deposit is named in the paper or in the dandiset's metadata.
+- claim: fig2-60-fold-co-counter
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds only the square-array experiment of Figure 3 (24 files, all labelled co- or
+    cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The triangular-array
+    experiments of Figure 2 (32 ROIs along the bisecting line, single and paired pulses at 1 Hz and 833
+    kHz) are not in it. The paper's Data Availability Statement says the data are available on request,
+    and no other public deposit is named in the paper or in the dandiset's metadata. It also depends on
+    fig2-180-cancellation and fig2-facilitation-plateau, which are blocked for the same reason.
+- claim: fig4-unipolar-pattern
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds only the square-array experiment of Figure 3 (24 files, all labelled co- or
+    cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The triangular-array
+    images of Figure 4 (single against paired pulses at 833 kHz, 4 kV) are not in it. The paper's Data
+    Availability Statement says the data are available on request, and no other public deposit is named
+    in the paper or in the dandiset's metadata.
+- claim: fig5-base-sawtooth
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds only the square-array experiment of Figure 3 (24 files, all labelled co- or
+    cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The FluoVolt strobe
+    images of CHO-K1 cells of Figure 5 are not in it. The paper's Data Availability Statement says the
+    data are available on request, and no other public deposit is named in the paper or in the dandiset's
+    metadata.
+- claim: fig5-apex-larger-polarization
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds only the square-array experiment of Figure 3 (24 files, all labelled co- or
+    cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The FluoVolt strobe
+    images of CHO-K1 cells of Figure 5 are not in it. The paper's Data Availability Statement says the
+    data are available on request, and no other public deposit is named in the paper or in the dandiset's
+    metadata. It also depends on fig5-base-sawtooth, blocked for the same reason.
+findings:
+- kind: other
+  statement: One recording is deposited twice under two conditions. sub-BPAE-8unipolar-1Hz-04 (session
+    Co-directional_1Hz) and sub-BPAE-8bipolar-1Hz-600ns-04 (session Cross-directional_1Hz) have identical
+    chunk indexes, identical images and the same start time (2022-11-29 16:57). The start time and the
+    image's pattern of uptake point to the cross-directional label, so the co-directional 1 Hz group holds
+    5 distinct dishes.
+- kind: metadata_error
+  statement: The group sizes do not match the paper. By label the files are 6 co-directional 1 Hz, 6 cross-directional
+    1 Hz, 5 co-directional 770 kHz and 7 cross-directional 770 kHz (5, 6, 5 and 7 with the copy counted
+    once), where the paper's Figure 3 reports n = 6 for each group. The 2022-12-04 series has four cross-directional
+    and two co-directional dishes at 770 kHz, and lacks a number 04.
+- kind: metadata_error
+  statement: The dandiset description and every session description say the electrodes were arranged in
+    a triangular array. The images show four electrode footprints in a square, as the paper describes
+    for this experiment (Methods 4.2, a 4-electrode square array).
+- kind: metadata_insufficient
+  statement: The files give no pixel size (the ImageSeries has no resolution or field of view) and name
+    the channels only in a free-text description. A scale of 0.65 um per pixel had to be inferred from
+    the camera and objective; under it the electrode footprints measure 1.59 mm against the 1.5 mm needles.
+- kind: metadata_insufficient
+  statement: The subject names carry undocumented tokens ('8bipolar', '8unipolar', '600ns'). 'bipolar'
+    and 'unipolar' match the cross- and co-directional sessions, and '600ns' marks the files of 2022-11-29;
+    the trailing numbers run 01 to 12 in order of start time within each day. None of this is described.
+- kind: data_missing
+  statement: The dataset holds only the Figure 3 experiment. The triangular-array experiments of Figures
+    2 and 4 and the strobe imaging of Figure 5 are not in it, and the paper says its data are available
+    on request.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Methods 4.4 says spontaneous YP uptake was measured within
+    the electrode footprints but not where in the footprint, over what area, or how it entered the Figure
+    3 values (subtracted from the center ROI, or not). This attempt subtracts the mean of a 200 x 200
+    um ROI at the center of each footprint, and shows the raw values and a whole-disc variant; all give
+    the same outcomes. Which pairs of groups the p-values printed in Figure 3 compare is also not stated
+    in the text.
