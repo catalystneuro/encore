@@ -156,6 +156,7 @@ def load_session(asset: dict) -> dict:
         "age": _str(subj["age"][()]) if "age" in subj else None, "sex": _str(subj["sex"][()]),
         "trials": trials, "units": units, "spikes": spikes, "electrodes": electrodes,
         "unsorted_units": unsorted, "lfp_electrodes": lfp_el, "lfp_info": lfp_info, "events": events,
+        "units_columns": {k: tuple(u[k].shape) for k in u.keys() if isinstance(u[k], h5py.Dataset)},
     }
     f.close()
     out["trials"] = add_trial_columns(out["trials"])
@@ -643,19 +644,111 @@ def nesting(raw: np.ndarray, theta_phase: np.ndarray, gamma: np.ndarray) -> dict
             out[name] = {"nested": False, "n_maxima": 0, "n_windows": 0}
             continue
         avg = np.mean(windows, 0)
-        c, w = half, 9                                 # 22.5 ms each side (45 ms window)
-        seg = avg[c - w - 1:c + w + 2]
-        n_max = int(((seg[1:-1] > seg[:-2]) & (seg[1:-1] > seg[2:])).sum())
-        out[name] = {"nested": n_max >= 3, "n_maxima": n_max, "n_windows": len(windows)}
+        n_max = local_maxima(avg)
+        out[name] = {"nested": n_max >= 3, "n_maxima": n_max, "n_windows": len(windows), "avg": avg.astype(np.float32)}
     return out
 
 
-def process_session_lfp(s: dict, seed: int, si: int) -> dict:
+def local_maxima(avg: np.ndarray, w: int = 9) -> int:
+    """Local maxima (samples larger than both neighbours) of an averaged 201-sample window within
+    w samples of its centre; w = 9 is 22.5 ms each side, the 45 ms of the Methods."""
+    c = (len(avg) - 1) // 2
+    seg = avg[c - w - 1:c + w + 2]
+    return int(((seg[1:-1] > seg[:-2]) & (seg[1:-1] > seg[2:])).sum())
+
+
+# Extended Data Fig. 3 controls (edf3-hippocampus-pac-controls)
+FINE_PHASE = np.arange(3.0, 7.01, 0.5)       # Extended Data Fig. 3h: phase steps of 0.5 Hz, theta band
+FINE_AMPS = AMP_CENTRES[(AMP_CENTRES >= HIGH_GAMMA[0]) & (AMP_CENTRES <= HIGH_GAMMA[1])]
+
+
+def _patch_bycycle():
+    """bycycle 1.2 writes into a read-only array under pandas 3 (copy-on-write); this replaces its
+    detect_bursts_cycles by the same rule on a writable copy (defaults unchanged)."""
+    import bycycle.burst.cycle as bc
+    import bycycle.features.features as bf
+
+    def detect(df, amp_fraction_threshold=0.0, amp_consistency_threshold=0.5,
+               period_consistency_threshold=0.5, monotonicity_threshold=0.8, min_n_cycles=3):
+        ok = ((df["amp_fraction"] > amp_fraction_threshold) & (df["amp_consistency"] > amp_consistency_threshold)
+              & (df["period_consistency"] > period_consistency_threshold)
+              & (df["monotonicity"] > monotonicity_threshold)).to_numpy().copy()
+        ok[0] = ok[-1] = False
+        df["is_burst"] = bc.check_min_burst_cycles(ok, min_n_cycles=min_n_cycles)
+        return df
+    bf.detect_bursts_cycles = detect
+    return bf.compute_features
+
+
+def theta_cycle_features(data: np.ndarray, srate: float = FS_LFP) -> np.ndarray:
+    """Per trial (rows of the -0.5 to 3 s epochs): sums and counts of bycycle's rise-decay
+    (time_rdsym) and peak-trough (time_ptsym) symmetry over cycles with their peak in 0 to 2.5 s,
+    for burst cycles (default thresholds) and for all cycles. Columns: rd_burst, pt_burst,
+    n_burst, rd_all, pt_all, n_all. bycycle with f_range 3-7 Hz and its default settings
+    (criterion of edf3-hippocampus-pac-controls)."""
+    import warnings
+    compute_features = _patch_bycycle()
+    out = np.zeros((data.shape[0], 6))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        for t in range(data.shape[0]):
+            try:
+                df = compute_features(data[t], srate, (3, 7))
+            except Exception:
+                continue
+            inw = (df.sample_peak >= CUT) & (df.sample_peak < EPOCH_N - CUT)
+            b = inw & df.is_burst.astype(bool)
+            out[t] = [df.time_rdsym[b].sum(), df.time_ptsym[b].sum(), b.sum(),
+                      df.time_rdsym[inw].sum(), df.time_ptsym[inw].sum(), inw.sum()]
+    return out
+
+
+def fine_bin_sums(tf, data_n: int) -> tuple[np.ndarray, np.ndarray]:
+    """Per-trial bin sums of high-gamma amplitude over theta phase for the phase centres of
+    FINE_PHASE (2 Hz bandwidth) and the amplitude centres of FINE_AMPS (bandwidth twice the phase
+    centre), as the comodulogram (Extended Data Fig. 3h). Returns sums (trials x phases x bins x
+    amps) and counts (trials x phases x bins)."""
+    T = data_n
+    sums = np.zeros((T, len(FINE_PHASE), N_BINS, len(FINE_AMPS)), np.float32)
+    counts = np.zeros((T, len(FINE_PHASE), N_BINS), np.float32)
+    for i, p in enumerate(FINE_PHASE):
+        ph = np.angle(tf.analytic(p - 1, p + 1))[:, CUT:EPOCH_N - CUT]
+        bins = np.clip(np.digitize(np.degrees(ph), np.linspace(-180, 180, N_BINS + 1)) - 1, 0, N_BINS - 1)
+        oh = (bins[:, :, None] == np.arange(N_BINS)[None, None, :]).astype(np.float32)
+        counts[:, i] = oh.sum(1)
+        for j, a in enumerate(FINE_AMPS):
+            am = np.abs(tf.analytic(a - p, a + p))[:, CUT:EPOCH_N - CUT].astype(np.float32)
+            sums[:, i, :, j] = np.einsum("tsb,ts->tb", oh, am)
+    return sums, counts
+
+
+PPC_PAIRS = [(p, a) for p in THETA for a in FINE_AMPS]
+
+
+def ppc_pair_sums(tf) -> np.ndarray:
+    """Per trial, the sum over 0 to 2.5 s of exp(i (n theta_p - phi_a)) for each phase centre p of
+    THETA and amplitude centre a of 70 to 140 Hz, n = round(a / p) (the second reading of the
+    phase-phase coupling ratio: each phase and amplitude centre pair of O3). Trials x pairs."""
+    out, th_of = [], {}
+    for p, a in PPC_PAIRS:
+        if p not in th_of:
+            th_of[p] = np.angle(tf.analytic(p - 1, p + 1))[:, CUT:EPOCH_N - CUT]
+        th = th_of[p]
+        ga = np.angle(tf.analytic(a - p, a + p))[:, CUT:EPOCH_N - CUT]
+        out.append(np.exp(1j * (int(round(a / p)) * th - ga)).sum(1))
+    return np.array(out).T.astype(np.complex64)
+
+
+def process_session_lfp(s: dict, seed: int, si: int, controls: bool = False, areas=None) -> dict:
     """Everything the LFP claims need from one session, channel by channel.
 
     Readings of the artefact rejection (O1): 'a' on the -0.5 to 3 s epochs, 'b' on whole trials.
     For each reading, correct clean trials are subsampled to equal counts in load 1 and load 3
-    (O2), and MI is computed for both loads together ('all') and each load.
+    (O2), and MI is computed for both loads together ('all') and each load. Each channel's random
+    draws are seeded by (seed, session, channel, reading), so a channel gives the same result
+    whichever other channels are processed. `areas` restricts the channels; `controls` adds the
+    Extended Data Fig. 3 controls of hippocampal channels (theta cycles, phase-phase coupling of
+    each centre pair, the 0.5 Hz phase grid).
     """
     import os
     from scipy.signal import welch
@@ -685,6 +778,8 @@ def process_session_lfp(s: dict, seed: int, si: int) -> dict:
     lg_idx = np.where((AMP_CENTRES >= LOW_GAMMA[0]) & (AMP_CENTRES <= LOW_GAMMA[1]))[0]
     freqs = None
     for ch in range(E.shape[2]):
+        if areas is not None and el.area[ch] not in areas:
+            continue
         data = E[:, :, ch].astype(np.float64)
         masks = {"a": artefact_mask([data[t] for t in range(T)]),
                  "b": artefact_mask([x[fix[t]:resp[t] + 1, ch].astype(np.float64) for t in range(T)])}
@@ -710,6 +805,11 @@ def process_session_lfp(s: dict, seed: int, si: int) -> dict:
                 "theta_power": np.mean([res[p]["phase_power"] for p in THETA], 0),
                 "hg_power": np.mean([res[p]["amp_power"][:, hg_idx].mean(1) for p in THETA], 0),
                 "masks": masks, "readings": {}}
+        if controls and el.area[ch] == "hippocampus":
+            # Extended Data Fig. 3 controls, per correct trial (no random draws)
+            info["cycles"] = theta_cycle_features(data[cidx])
+            info["ppc_pairs"] = ppc_pair_sums(tfc)
+            fine_sums, fine_counts = fine_bin_sums(tfc, len(cidx))
         for reading in ["a", "b"]:
             rng = np.random.default_rng([seed, si, ch, ord(reading)])
             ok = masks[reading] & correct
@@ -759,6 +859,9 @@ def process_session_lfp(s: dict, seed: int, si: int) -> dict:
                 gph = np.angle(ga)
                 for name, trs in [("l1", l1s), ("l3", l3s)]:
                     out[f"ppc_{name}"] = float(np.abs(np.mean(np.exp(1j * (21 * th[trs] - gph[trs])))))
+                    # raw MI over the fine phase grid (Extended Data Fig. 3h), phases x amplitudes
+                    if controls:
+                        out[f"fine_mi_{name}"] = mi_from_bins(fine_sums[trs].sum(0), fine_counts[trs].sum(0))
             info["readings"][reading] = out
         chans.append(info)
     return {"path": s["path"], "subject": s["subject"], "session": si, "channels": chans, "freqs": freqs,
@@ -766,14 +869,16 @@ def process_session_lfp(s: dict, seed: int, si: int) -> dict:
 
 
 def _lfp_job(args):
-    s, seed, si = args
-    return process_session_lfp(s, seed, si)
+    s, seed, si, controls, areas = args
+    return process_session_lfp(s, seed, si, controls, areas)
 
 
-def run_all_lfp(sessions: list[dict], seed: int, workers: int = 6) -> list[dict]:
-    """process_session_lfp on every session with LFP, in parallel processes (largest first)."""
+def run_all_lfp(sessions: list[dict], seed: int, workers: int = 6, controls: bool = False, areas=None) -> list[dict]:
+    """process_session_lfp on every session with LFP (in `areas`, if given), in parallel processes
+    (largest first)."""
     from concurrent.futures import ProcessPoolExecutor
-    jobs = [(s, seed, si) for si, s in enumerate(sessions) if len(s["lfp_electrodes"])]
+    jobs = [(s, seed, si, controls, areas) for si, s in enumerate(sessions) if len(s["lfp_electrodes"])
+            and (areas is None or s["electrodes"].area.iloc[s["lfp_electrodes"]].isin(areas).any())]
     jobs.sort(key=lambda j: -len(j[0]["lfp_electrodes"]) * j[0]["lfp_info"]["shape"][0])
     with ProcessPoolExecutor(workers) as ex:
         out = list(ex.map(_lfp_job, jobs))
@@ -857,6 +962,11 @@ def pac_neuron_tests(Y: np.ndarray) -> dict:
     return {"p12": p12, "p13": p13, "r2": r2}
 
 
+def bundle_keys(el: pd.DataFrame) -> pd.Series:
+    """Bundle of each electrode: its location and coordinates (the files name no bundle)."""
+    return el.location.astype(str) + "|" + el.x.round(2).astype(str) + "|" + el.y.round(2).astype(str) + "|" + el.z.round(2).astype(str)
+
+
 def process_session_pac_neurons(s: dict, seed: int, si: int, n_shuffles: int = 200) -> dict:
     """Spike counts in the 20 theta-gamma bins for every MTL neuron and LFP channel of its bundle.
 
@@ -876,7 +986,7 @@ def process_session_pac_neurons(s: dict, seed: int, si: int, n_shuffles: int = 2
     correct, load = tr.correct.to_numpy(), tr.load.to_numpy()
     T = len(tr)
     rng = np.random.default_rng([seed, si])
-    key = el.location.astype(str) + "|" + el.x.round(2).astype(str) + "|" + el.y.round(2).astype(str) + "|" + el.z.round(2).astype(str)
+    key = bundle_keys(el)
     rows, counts = [], []
     mtl_units = np.where(units.area.isin(MTL))[0]
     lfp_cache = {}

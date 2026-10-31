@@ -86,6 +86,8 @@ outcomes:
     amygdala and vmPFC exceed the 99th percentile (p = 0.002 each) and the dACC does not (p = 0.088),
     but the pre-SMA's 18 also exceeds its 99th percentile of 17 (p = 0.010), where the paper reports
     no excess. With a post hoc threshold of two-sided p < 0.05 the counts are 87, 174, 41, 18 and 14.
+    The pre-SMA sits at the boundary - 18 is one above the 99th percentile and p = 0.010 equals the
+    threshold - so with 500 shuffles neither form of the rule separates it clearly from chance.
   deviations:
   - The shuffle permutes the category labels of all presentations of a session together, one
     shuffle for all its units; the Methods say only that labels were shuffled across presentations.
@@ -100,6 +102,7 @@ outcomes:
     in % of baseline (32.0 against 20.5%, t = 2.26, p = 0.0013; paper t269 = 2.93, p = 0.001) but not
     in Hz (2.81 against 2.76 Hz, t = 1.74, p = 0.072). The criterion asks for all three tests under
     both readings, so the claim holds in part. In 24 of 34 patients the preferred rate is higher.
+    Under reading (b) alone, adopted for fig3c and fig3d, all three tests hold.
   deviations:
   - Rates are compared in Hz and in % of each neuron's baseline (O6); the paper does not say which
     its tests use.
@@ -129,7 +132,9 @@ outcomes:
     outcomes. The Fig. 3 and Fig. 4 legends say "FRs are shown as the percentage change compared
     with the baseline" and print the P values with those panels (Fig. 4f gives "correct, P = 0.0001;
     incorrect, P = 0.0001" against baseline for the plotted values), so the tests are taken to be on
-    the plotted values.
+    the plotted values. The data support this - with at least one incorrect trial, the % of baseline
+    reading gives exactly the paper's n for the frontal areas in Extended Data Fig. 8h (201, 180 and
+    201; neurons with no baseline spike drop out), and the Hz reading does not (204, 183, 202).
 - claim: fig3d-category-correct-incorrect
   outcome: reproduced
   assumed: true
@@ -160,26 +165,29 @@ outcomes:
   blocked_by: too_large
   notebook: reproduce_daume_2024.ipynb
   output: claim:edf8fgh-frontal-controls
-  notes: Panels f and g need spike-field coherence (40 wavelets, 500 spike subsamples and 500
-    jittered surrogates per neuron-channel pair and load), which this run did not start for lack of
-    time; no subset was timed. Panel h was run - with at least one incorrect trial, pre-SMA (204
+  notes: Panels f and g need spike-field coherence, which was not run (timing under
+    fig3f-gamma-sfc-preferred). Panel h was run - with at least one incorrect trial, pre-SMA (204
     neurons in Hz, 201 in % of baseline; paper 201) correct 2.91 against incorrect 3.07 Hz, p =
     0.039, and in % of baseline p = 0.54; dACC (183 and 180; paper 180) p = 0.83 and 0.71; vmPFC
-    (202 and 201; paper 201) p = 0.60 and 0.97. So panel h shows one difference in Hz in the pre-SMA
-    and none in % of baseline.
+    (202 and 201; paper 201) p = 0.60 and 0.97. In % of baseline, the reading adopted for the
+    firing rate tests (fig3c-category-load), panel h holds and its n equal the paper's in all three
+    areas; in Hz the pre-SMA differs with one incorrect trial and not with two or three (p = 0.089,
+    0.11).
 - claim: fig2a-theta-gamma-pac
   outcome: reproduced
-  assumed: true
   notebook: reproduce_daume_2024_lfp.ipynb
   output: claim:fig2a-theta-gamma-pac
-  notes: Mean z-scored MI over 1,922 channels (paper 1,917) is largest (2.16) at phase 4 Hz and
-    amplitude 80 Hz; at phase 4 Hz the amplitude profile has local maxima at 50 Hz (within 30-55) and
-    80 Hz (within 70-140), and at 6 Hz at 40 and 80 Hz. Per area the maximum is at phase 4 Hz in the
-    hippocampus (75 Hz) and amygdala (50 Hz) and at 2 Hz in the frontal areas.
+  notes: Under artefact reading (a), the mean z-scored MI over 1,922 channels (paper 1,917) is
+    largest (2.16) at phase 4 Hz and amplitude 80 Hz; at phase 4 Hz the amplitude profile has local
+    maxima at 50 Hz (within 30-55) and 80 Hz (within 70-140), and at 6 Hz at 40 and 80 Hz. Under
+    reading (b), computed for phase centres 2 to 8 Hz, the mean over 1,918 channels is largest (1.73)
+    at 4 Hz and 80 Hz, with local maxima at 45 and 80 Hz. Both readings meet the criterion. Per area
+    the maximum is at phase 4 Hz in the hippocampus (75 Hz) and amygdala (50 Hz under a, 45 Hz under
+    b) and at 2 Hz in the frontal areas.
   deviations:
-  - The comodulogram was computed under artefact reading (a) of O1 only (automated rejection on the
-    -0.5 to 3 s epochs), to keep the notebook within its time limit; reading (b) was run for the
-    claims that select channels. The visual inspection of the Methods cannot be repeated.
+  - The visual inspection of the artefact rejection cannot be repeated (O1); both automated readings
+    were run. Under reading (b) the notebook computes phase centres 2 to 8 Hz only, the ones its
+    other claims use.
   - Filters follow pop_eegfiltnew's default design (windowed sinc, Hamming) and firfilt's edge
     padding, reimplemented in Python (sbcat.py); the 200 surrogates draw a random permutation of the
     trials, as cfc_tort_comodulogram.m does.
@@ -201,7 +209,8 @@ outcomes:
     vmPFC, pre-SMA and dACC out of tolerance; the proportions again exceed the null.
   deviations:
   - Artefact rejection without the visual inspection (O1), under two readings of the span it is
-    computed on.
+    computed on. The counts are judged under reading (a), adopted for the claims where the readings
+    disagree. On the one channel whose rejected trials the paper's code ships (artif_trials.mat with NWB_samplePAC_SU.m, sub-26 session 1, LFP channel 33), the paper removes 17 trials; reading (a) removes 4, all among them, and reading (b) removes 9, 5 of which the paper kept.
 - claim: fig2c-hippocampus-load
   outcome: reproduced
   notebook: reproduce_daume_2024_lfp.ipynb
@@ -223,6 +232,10 @@ outcomes:
     (0.93) do not. Under reading (b) the pre-SMA (12 channels, FDR p = 0.014) and dACC (8 channels,
     load 1 higher, FDR p = 0.014) differ and the amygdala does not (FDR p = 0.086). The pre-SMA has
     17 or 12 significant channels where the paper has 5, and load 1 is higher in only 3 of the 17.
+    The 17 channels come from six patients; four of sub-4 (session 37) have z values of 19 to 25 in
+    load 3 against 3.5 to 6.8 in load 1, and seven of sub-11 (session 3) are also higher in load 3.
+    The effect does not rest on a few outliers alone - Wilcoxon p = 0.0011, and without the three
+    channels of largest load 3 excess p = 0.0045 (reading a; under b, p = 0.059).
   deviations:
   - Artefact rejection without the visual inspection (O1). The channels that decide the pre-SMA
     result are channels that the paper's visual inspection may have removed; the files do not say.
@@ -240,6 +253,7 @@ outcomes:
     give different outcomes. Reading (a) removes 16.0 +/- 12.0 trials per channel (11.4%), below the
     paper's 20.4 +/- 13.9 (14.6%) that also include the trials removed by visual inspection;
     reading (b), on whole trials, removes 36.2 +/- 22.8 (25.9%), more than the paper's total.
+    On the one channel whose rejected trials the paper's code ships (artif_trials.mat with NWB_samplePAC_SU.m, sub-26 session 1, LFP channel 33), the paper removes 17 trials; reading (a) removes 4, all among them, and reading (b) removes 9, 5 of which the paper kept.
 - claim: edf2c-low-gamma-no-load-effect
   outcome: not_reproduced
   notebook: reproduce_daume_2024_lfp.ipynb
@@ -271,26 +285,53 @@ outcomes:
     PAC term significant - (a, O5 a) estimate +23.8 (RT in s per unit MI), t = 1.15, p = 0.25; (a, O5
     b) p = 0.64; (b, O5 a) -18.5, p = 0.19; (b, O5 b) p = 0.20; paper estimate -49.07, t = -4.01, p =
     6e-5. The amygdala term reaches p = 0.046 under (a, O5 b); the vmPFC term is never significant.
-    Correct, clean trials of 144 hippocampal channels (16,103 trials) under (a).
+    Correct, clean trials of 144 hippocampal channels (16,103 trials) under (a). Variants under
+    reading (a) - with RTs below 10 s the hippocampal term is negative and not significant (O5 a, p =
+    0.16; O5 b, p = 0.094); with log10 RT it is negative under O5 (b) (t = -2.72, p = 0.0066) and not
+    under O5 (a) (p = 0.13). The claim's test is on RT itself (Table S2 gives the estimate in ms), so
+    the variants do not change the outcome.
   deviations:
   - The single-trial PAC is not described (O5); both readings of the claims file were run. Mixed
     model fitted with statsmodels MixedLM (REML), random intercepts for patient and for channel
     within patient, in place of MATLAB's fitglme. RTs are not trimmed (up to 16.8 s among these
     trials), as the paper says nothing of trimming.
 - claim: edf3-hippocampus-pac-controls
-  outcome: blocked
-  blocked_by: too_large
-  notebook: reproduce_daume_2024_lfp.ipynb
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_daume_2024_lfp_controls.ipynb
   output: claim:edf3-hippocampus-pac-controls
-  notes: Not run for lack of time - theta waveform asymmetry (bycycle) and PAC peak frequency (a
-    comodulogram in 0.5 Hz phase steps); no subset was timed. Run, over 144 channels (reading a) -
-    theta power does not differ (Hilbert p = 0.23, Welch p = 0.16); high-gamma power is higher in
-    load 3 (Hilbert t = 2.09, p = 0.035; Welch t = 2.69, p = 0.006); 1-to-21 theta-gamma phase
-    locking does not differ (p = 0.90); the preferred phase difference is not different from 0 by
-    the permutation t-test (p = 0.71), and the V test of the differences against 0 gives p < 0.0001,
-    which indicates differences concentrated at 0. Under reading (b) no power test is significant
-    (p >= 0.058). At least one test (high-gamma power) gives p < 0.05 under reading (a), so the claim
-    could at best be partially reproduced; the outcome depends on the parts not run.
+  notes: Under artefact reading (a), over 144 PAC channels, two load tests give p < 0.05 -
+    high-gamma power is higher in load 3 (Hilbert t = 2.09, p = 0.035; Welch t = 2.69, p = 0.006)
+    and the gamma peak frequency is higher in load 3 (93.0 against 86.8 Hz, t = 3.04, p = 0.003;
+    as the coordinate of the single largest bin, p = 0.34). Theta power (p = 0.23, 0.16), rise-decay
+    and peak-trough symmetry (all cycles p = 0.34 and 0.50; burst cycles, present in both loads in
+    only 8 channels, p = 0.17 and 0.79), phase-phase locking (1 to 21, p = 0.90; each centre pair, p
+    = 0.82), the theta peak frequency (p = 0.49; largest bin p = 0.080) and the preferred phase
+    t-test (p = 0.71) do not differ. The V test of the phase differences against 0 gives p < 0.0001
+    (mean resultant length 0.94, circular mean -1.6 degrees), which shows differences concentrated
+    at 0; the criterion's rule would count it as a test with p < 0.05, which is asked of a reader
+    (questions/000673.yaml). No asymmetry differs from 0.5 (p >= 0.072). With two load tests
+    significant the criterion gives not reproduced. Under artefact reading (b) (125 channels) no
+    load test gives p < 0.05 (high-gamma power p = 0.13 and 0.058, gamma peak frequency p = 0.17).
+  deviations:
+  - Assumed artefact reading (a), as for edf2b-hippocampus-load-patients; the readings give
+    different outcomes.
+  - Theta waveform asymmetry from bycycle 1.2 with f_range 3-7 Hz and its default settings on each
+    trial's -0.5 to 3 s epoch, cycles with their peak in 0 to 2.5 s, averaged per load over the
+    trials of the PAC analysis (Methods, PAC - "We averaged estimates for peak-to-trough as well as
+    rise-to-decay asymmetries across cycles during the maintenance period from the same trials used
+    for our PAC analysis within each load"). Its burst detection fails under pandas 3 and is
+    replaced by the same default thresholds applied to a writable copy. Whether only burst cycles
+    count is not stated; both are shown. With the default thresholds 99.9% of trial windows have no
+    burst cycle.
+  - PAC peak frequency (Extended Data Fig. 3h legend - "recomputed PAC using a finer resolution for
+    phase frequencies (i.e., a step size of 0.5 instead of 2 Hz) and determined the frequency bin
+    for which PAC was maximal for the theta and the gamma band separately") from raw MI per load,
+    phase centres 3 to 7 Hz in 0.5 Hz steps and amplitude centres 70 to 140 Hz; read as the maximum
+    of the mean over the other axis, with the coordinates of the largest bin as a variant. Raw MI
+    is used as no surrogates are described for this panel.
+  - Phase-phase coupling under both readings of the criterion; for the second, n is the ratio of
+    each amplitude centre to the phase centre, rounded to an integer.
 - claim: edf3a-kappa-load
   outcome: reproduced
   notebook: reproduce_daume_2024_lfp.ipynb
@@ -312,7 +353,9 @@ outcomes:
     110, and PAC is lower in load 3 in them (4.29 against 3.48, t = -3.61, p = 0.0002; paper t109 =
     -4.10, p = 0.0001); under (b) 94 of 125 (75.20%), p = 0.0051. Aligning on the maximum of gamma
     amplitude, as the Methods' words read, only 9 of 144 (6.25%) are nested and the load test fails
-    (p = 0.77).
+    (p = 0.77). The count depends on the alignment and not on the window - with local maxima counted
+    within 35 to 85 ms the peak alignment gives 104 to 114 nested channels (30 within 25 ms), and
+    the amplitude alignment 4 to 15 for every window.
   deviations:
   - Assumed that the windows are aligned on the peak of the gamma-filtered signal. The Methods
     say "the precise timepoint at which the concurrent instantaneous gamma amplitude (70-140 Hz) was
@@ -329,7 +372,7 @@ outcomes:
     reading (b) p = 0.066 (125 channels).
   deviations:
   - Assumed artefact reading (a), as for edf2b-hippocampus-load-patients; the readings give
-    different outcomes.
+    different outcomes. On the one channel whose rejected trials the paper's code ships (artif_trials.mat with NWB_samplePAC_SU.m, sub-26 session 1, LFP channel 33), the paper removes 17 trials; reading (a) removes 4, all among them, and reading (b) removes 9, 5 of which the paper kept.
 - claim: methods-spectral-slope
   outcome: not_reproduced
   assumed: true
@@ -352,9 +395,9 @@ outcomes:
   outcome: blocked
   blocked_by: too_large
   notes: Spike-field coherence (40 Morlet wavelets, 500 spike subsamples and 500 jittered surrogates
-    per neuron-channel pair and condition, cluster tests with 10,000 permutations) was not started
-    for lack of time in this run; no subset was timed. The data it needs (spikes, LFP, bundles
-    inferred from location and coordinates) are in the dataset.
+    per neuron-channel pair and condition, cluster tests with 10,000 permutations) was not run. Timed on sub-26 session 1 while preparing (not run in a notebook) - the 40 wavelets take 0.27 s per channel, and for one neuron-channel pair, condition and load 500 spike subsamples take 0.016 s and 500 jittered surrogates with one subsample each 0.29 s, or about 8 s if each surrogate is averaged over 500 subsamples as the observed value is. With about 1,000 MTL pairs, two conditions, two loads and two readings of O8, the second form is about 18 CPU hours (over 4 hours on the 4 cores of the runner), beyond the 30-minute notebook limit; the first form (about 45 CPU minutes) would fit, but its cluster tests and ANOVAs were not written in this run for lack of time.
+    The data it needs (spikes, LFP, bundles inferred from location and coordinates) are in the
+    dataset.
 - claim: fig3g-gamma-sfc-anova
   outcome: blocked
   blocked_by: too_large
@@ -372,9 +415,27 @@ outcomes:
   blocked_by: too_large
   notes: Depends on fig3f-gamma-sfc-preferred, which was not run.
 - claim: fig3h-pac-category-firing
-  outcome: blocked
-  blocked_by: too_large
-  notes: Depends on fig3f-gamma-sfc-preferred (its neuron-channel pairs), which was not run.
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_daume_2024_lfp.ipynb
+  output: claim:fig3h-pac-category-firing
+  notes: Under artefact reading (a), 166 hippocampal pairs of a category neuron and a significant PAC
+    channel of its bundle (52 neurons, 15 patients; paper 151) and 450 amygdala pairs (paper 423).
+    The hippocampal spike count term is not positive with p < 0.05 under any reading - all correct
+    trials, O5 (a) estimate 1.6e-6, p = 0.15, O5 (b) -3.8e-4, p = 0.77; preferred trials, O5 (a)
+    -3.1e-6, p = 0.15, O5 (b) -0.0045, t = -2.44, p = 0.015, negative where the paper's is positive
+    (0.002, t = 2.40, p = 0.017). The amygdala term has p >= 0.21 under every reading, as in the
+    paper. Under artefact reading (b) (145 and 410 pairs) the hippocampal term is positive with p =
+    0.090 and 0.65 or negative (p = 0.70; preferred O5 b, p = 0.024). The SC x load interaction is
+    significant in the hippocampus under every reading (p <= 0.0025). The readings agree that the
+    claimed positive relation is absent, so the outcome is not reproduced.
+  deviations:
+  - Pairs as in the criterion; the claim's depends_on (fig3f-gamma-sfc-preferred) names the SFC
+    pairs, which are the same category neuron and PAC channel pairs, so the claim was run without
+    the SFC. Bundles are the electrodes of a session with the same location and coordinates.
+  - Mixed model fitted with statsmodels MixedLM (REML), random intercepts for patient and for pair
+    within patient, in place of fitglme. Artefact reading (a) assumed, as for
+    edf2b-hippocampus-load-patients; reading (b) gives the same outcome.
 - claim: pac-neuron-counts
   outcome: partially_reproduced
   notebook: reproduce_daume_2024_pac_neurons.ipynb
@@ -388,7 +449,12 @@ outcomes:
     count (shuffle maxima 1 and 1 under a, 5 and 4 under b), p = 0.005 in both areas under both
     readings, so the shuffle test holds and the counts are far out of tolerance. Without FDR, 1.8%
     of neuron-channel-load combinations pass both tests at p < 0.01, against 0.1% in the shuffles.
-    269 and 422 MTL neurons have LFP in their bundle, against the paper's 212 and 358.
+    269 and 422 MTL neurons have LFP in their bundle, against the paper's 212 and 358. Without any
+    correction, 41 hippocampal and 66 amygdala neurons have a combination passing both tests at p <
+    0.01 (shuffles at most 13 and 14), still fewer than the paper's counts after FDR. The paper's
+    plot_PAC_neuron.m fits the three GLMs to the 20 aggregated bin counts of one neuron-channel pair
+    with fixed effects only, as sbcat.py does, so neither a per-trial layout nor a random effect
+    explains the difference.
   deviations:
   - Selection as in plot_PAC_neuron.m (20 theta-gamma bins, three Poisson GLMs, likelihood-ratio
     tests), fitted by IRLS in Python in place of fitglme (deviances checked against statsmodels).
@@ -472,7 +538,8 @@ outcomes:
   outcome: blocked
   blocked_by: other
   notes: Depends on fig5b-hippocampus-vmpfc-theta-sfc-load and fig5f-theta-sfc-rt, which are
-    blocked. The mean waveforms needed for the trough-to-peak time are in the files.
+    blocked. The mean waveforms needed for the trough-to-peak time are in the files (waveform_mean,
+    256 samples, in 43 of the 44 files; waveforms in all 44).
 - claim: fig6a-noise-correlations
   outcome: blocked
   blocked_by: other
@@ -537,7 +604,9 @@ findings:
     channels with significant theta-high-gamma PAC where the paper has 5, and they decide three
     claims of absence. 269 hippocampal and 422 amygdala neurons have LFP in their bundle, where the
     paper analysed 212 and 358 ("pre-processing steps removed broadband LFPs for some of the
-    neurons").
+    neurons"). The paper's code ships the rejected trials of one example channel (artif_trials.mat,
+    sub-26 session 1, channel 33, 17 trials), which shows the information exists for the paper's
+    own analysis.
 - kind: metadata_insufficient
   statement: The files do not identify the microwire bundles that the analyses pair neurons and LFPs
     within. Every wire is its own ElectrodeGroup, and the location names only area and hemisphere;
@@ -560,7 +629,7 @@ findings:
   statement: Question for the authors - in the automated LFP artefact rejection, over what span are
     the channel's samples z-scored and tested (the -0.5 to 3 s maintenance epochs, or whole trials)?
     The two give different outcomes for Extended Data Fig. 2b and 3f; this attempt assumed the
-    epochs.
+    epochs, which agree with the paper's rejected trials on the one channel its code ships.
 - kind: methods_unavailable
   statement: Question for the authors - for theta-gamma nesting (Extended Data Fig. 3e), are the 500
     ms windows centred on the maximum of gamma amplitude or on a peak of the gamma-filtered signal?
@@ -580,3 +649,454 @@ findings:
     selection taken over, and what else differs from plot_PAC_neuron.m? Run as in that function on
     the dandiset, 8 of 269 hippocampal and 5 of 422 amygdala neurons qualify (12 and 24 with FDR
     over each neuron's channels), against 79 of 212 and 163 of 358.
+verifications:
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 1. The executed notebooks of the author run with the conclusion cells and the summary
+    removed, the helper module and the claims file, with the paper. The verifier queried the archive
+    metadata and tested helper functions on synthetic inputs. Its report gave its own outcome for each
+    claim; it disagreed with 16 recorded outcomes - fig3c-category-load, and 15 claims the record
+    blocked, 6 of which it judged from results printed in the notebooks and 9 it found testable from
+    the archive.
+  results:
+  - claim: cohort-counts
+    agrees: true
+    outcome: reproduced
+    reason: All counts match exactly - 44 sessions, 36 patients, 1,454 units, 1,922 LFP channels, and
+      every per-area count.
+    response: No change to the outcome.
+  - claim: fig1d-rt-load
+    agrees: true
+    outcome: reproduced
+    reason: Median RT is 1.233 s (load 1) and 1.360 s (load 3), both within tolerance; t43 = 5.33, p =
+      0.0001. The mean-RT variant gives no effect (t = -0.48), because RTs up to 74 s pull the means.
+    response: No change to the outcome.
+  - claim: fig1d-accuracy-load
+    agrees: true
+    outcome: reproduced
+    reason: 95.10% against 91.02%; t43 = -5.24, p = 0.0001.
+    response: No change to the outcome.
+  - claim: behaviour-overall-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: 93.05 +/- 7.22%; false negatives 76.08 +/- 20.11% of errors; both within tolerance.
+    response: No change to the outcome.
+  - claim: fig2a-theta-gamma-pac
+    agrees: true
+    outcome: reproduced
+    reason: The largest mean z is at 4 Hz phase, 80 Hz amplitude; at 4 and 6 Hz there are local maxima
+      at 50/40 Hz and 80 Hz. Only artefact reading (a) is shown (problem 8 - the claims file asks for
+      both).
+    response: Added the reading (b) comodulogram (phase centres 2 to 8 Hz, the ones computed under b)
+      - largest mean z at 4 Hz and 80 Hz, local maxima at 45 and 80 Hz, so both readings meet the criterion.
+      The outcome no longer rests on an assumption (assumed removed).
+  - claim: fig2b-pac-channel-proportions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Reading (a) - hippocampus 144, amygdala 130, vmPFC 41 and dACC 14 are within tolerance and
+      all far above the null (p = 0.005). pre-SMA is 17 against 5, out of tolerance. Reading (b) puts
+      four counts out of tolerance.
+    response: No change to the outcome. The counts are judged under reading (a), now supported by the
+      paper's own rejected trials on one channel (problem 6).
+  - claim: fig2c-hippocampus-load
+    agrees: true
+    outcome: reproduced
+    reason: Load 1 is higher under both readings - n = 144, t = -4.16, FDR p = 0.001; reading (b) FDR
+      p = 0.014.
+    response: No change to the outcome.
+  - claim: fig2c-no-load-effect-other-areas
+    agrees: true
+    outcome: not_reproduced
+    reason: Reading (a) - amygdala FDR p = 0.0475 and pre-SMA 0.0017, both with load 3 higher. Reading
+      (b) - pre-SMA and dACC FDR p = 0.014. In pre-SMA only 3 of 17 channels have load 1 higher, yet the
+      load 3 mean is 6.9 against 1.8; a few outlier channels probably drive the effect; this was not inspected
+      (problem 9).
+    response: Added the per-channel pre-SMA z values by load under both readings, a Wilcoxon test and
+      the test without the three channels of largest load 3 excess. The channels come from six patients;
+      four of sub-4 have z of 19 to 25 in load 3, but load 3 is higher in 14 of 17 channels (Wilcoxon
+      p = 0.0011) and the test holds without the three largest (p = 0.0045; under b, p = 0.059). Outcome
+      kept.
+  - claim: edf2b-hippocampus-load-patients
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a) - hippocampus, 23 patients, p = 0.0095, load 1 higher; no other area p < 0.05.
+      This depends on O1; under (b) the hippocampus gives p = 0.11. O1 has no tie-break; reading (a) removes
+      11.4% of trials and (b) 25.9%, against the paper's 14.6% with visual inspection, which favours (a)
+      (problem 6).
+    response: Found a tie-break in the paper's code - artif_trials.mat, shipped with NWB_samplePAC_SU.m,
+      lists the 17 trials the paper rejected on its example channel (sub-26 session 1, channel 33). Reading
+      (a) removes 4 trials there, all among the 17; reading (b) removes 9, 5 of which the paper kept.
+      Added this comparison and the distribution of removed trials per channel to the data check, and
+      the reason to the deviation. Outcome kept, still marked as resting on reading (a).
+  - claim: edf2c-low-gamma-no-load-effect
+    agrees: true
+    outcome: not_reproduced
+    reason: pre-SMA p = 0.003 uncorrected and 0.015 FDR, under both readings.
+    response: No change to the outcome.
+  - claim: tables1-slow-fast-theta
+    agrees: true
+    outcome: not_reproduced
+    reason: Under every reading, pre-SMA tests (and under one reading hippocampal slow theta-low gamma)
+      also give p < 0.05, not just the two hippocampal high-gamma tests. The notebook counts 20 tests
+      against the claims file's 19, because pre-SMA has fast-theta channels here (problem 11).
+    response: No change to the outcome. The 20th test is the pre-SMA fast theta to high gamma test, which
+      the paper's table leaves out because its pre-SMA had too few channels; the notes already say so.
+  - claim: fig2f-rt-single-trial-pac
+    agrees: true
+    outcome: not_reproduced
+    reason: The hippocampal PAC term is not significant under any reading (p 0.19-0.64; the estimate is
+      positive under artefact (a)). The amygdala gives p = 0.046 under O5(b). The RTs used are untrimmed
+      (up to 16.8 s); outliers can reverse a mean-based effect, and this was not tested (problem 7).
+    response: Added variants under reading (a) - RTs below 10 s (hippocampal term negative, p = 0.16 and
+      0.094) and log10 RT (negative, p = 0.0066 under O5 b, 0.13 under O5 a). The claim's test is on RT
+      itself (Table S2 in ms), so the outcome is kept; the variants are in the notes.
+  - claim: edf3-hippocampus-pac-controls
+    agrees: false
+    outcome: partially_reproduced
+    reason: Under artefact (a), gamma power is higher in load 3 by both estimates (p = 0.035 and 0.006);
+      theta power, phase-phase coupling and the preferred-phase t-test show no difference. Waveform asymmetry,
+      peak frequency and the second phase-phase-coupling ratio were not run. A V test of the load differences
+      against 0 tests concentration around 0, so a significant V test supports no phase shift; the claims
+      file's reading (a), with its rule that no test gives p < 0.05, misreads the test (problem 5).
+    response: Ran the missing parts in a new notebook, reproduce_daume_2024_lfp_controls.ipynb - bycycle
+      rise-decay and peak-trough symmetry (no load difference), phase-phase locking for each centre pair
+      (p = 0.82), and the PAC peak frequency on a 0.5 Hz phase grid (theta peak p = 0.49; gamma peak higher
+      in load 3, p = 0.003, with the largest-bin variant p = 0.34). With high-gamma power and gamma peak
+      frequency both differing under the adopted reading (a), the criterion gives not reproduced; the
+      outcome changes from blocked to not_reproduced, resting on reading (a) (under b no load test gives
+      p < 0.05). The V test misreading is added to questions/000673.yaml; the claim is tested as written.
+  - claim: edf3a-kappa-load
+    agrees: true
+    outcome: reproduced
+    reason: t = -4.54, p = 0.0001 (a); p = 0.0024 (b).
+    response: No change to the outcome.
+  - claim: edf3e-nesting
+    agrees: true
+    outcome: reproduced
+    reason: Holds only under the notebook's own 'peak' alignment - 105 of 144 nested (in tolerance), load
+      test p = 0.0002. Under the Methods' literal 'amplitude maximum' alignment only 9 of 144 are nested.
+      The assumption is stated and plausible (aligning on the envelope maximum averages out gamma cycles),
+      but edf3e rests entirely on it (problem 4).
+    response: Added the nesting count under windows of 25 to 85 ms for both alignments - 104 to 114 under
+      the peak alignment for 35 to 85 ms, 4 to 15 under the amplitude alignment for every window. The
+      outcome rests on the alignment, not the window; assumption and question for the authors kept.
+  - claim: edf3f-raw-mi-load
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a) - t = -4.03, p = 0.0002. Reading (b) - p = 0.066.
+    response: No change to the outcome; the deviation now cites the paper's own rejected trials as the
+      support for reading (a).
+  - claim: methods-spectral-slope
+    agrees: true
+    outcome: not_reproduced
+    reason: Over 2-150 Hz the slope differs between loads (p = 0.007 and 0.002). Over 30-150 Hz it does
+      not (p = 0.12 and 0.28). The 2-150 Hz values match the paper's -1.753 +/- 0.39 far better than 30-150
+      Hz, so that range is the likelier reading. The difference itself is tiny (0.004).
+    response: No change to the outcome.
+  - claim: category-cell-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: All counts are within tolerance (94, 181, 40, 18, 13). pre-SMA sits at the threshold - 18
+      exceeds the 99th percentile of 17, but p = 0.010; above the 99th percentile and p < 0.01 disagree
+      at the boundary (problem 10).
+    response: No change to the outcome; the conclusion and notes now say the pre-SMA is at the boundary
+      of both forms of the rule.
+  - claim: fig3b-persistent-activity
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both baseline tests give p = 0.0001 under both readings. Preferred against non-preferred gives
+      p = 0.072 in Hz (a) and p = 0.0013 in % change (b); the criterion needs both readings. Under O6
+      (b), which the frontal n support (problem 3), fig3b reproduces in full.
+    response: Outcome kept, as the criterion asks for both readings; the notes say that under reading
+      (b) alone all three tests hold.
+  - claim: edf4b-persistent-activity-by-area
+    agrees: true
+    outcome: partially_reproduced
+    reason: The vmPFC part holds (all p >= 0.06). The hippocampal and amygdala preference tests fail in
+      Hz (p = 0.24, 0.18) and hold in % (p = 0.019, 0.039). Under O6 (b) edf4b reproduces in full (problem
+      3).
+    response: Outcome kept, as the criterion (through fig3b) asks for both readings.
+  - claim: fig3c-category-load
+    agrees: false
+    outcome: partially_reproduced
+    reason: In Hz - preferred trials p = 0.022 (load 1 higher), non-preferred p = 0.20. In % - preferred
+      p = 0.77. Under O6 (b), which % change with at least 1 incorrect trial supports by reproducing the
+      paper's frontal n exactly (201, 180, 201), fig3c fails (problem 3).
+    response: Outcome kept as not_reproduced, resting on reading (b) of O6, the reading the verifier's
+      problem 3 supports; the deviation now gives that evidence. Under (a) the claim would be reproduced,
+      which the notes show.
+  - claim: fig3d-category-correct-incorrect
+    agrees: true
+    outcome: reproduced
+    reason: All trials, % change, at least 1 or 2 incorrect trials - p = 0.0035 and 0.010, n = 251 and
+      229 (paper 246). This is fragile - in Hz p = 0.12-0.40, and every preferred-trial reading fails.
+    response: No change to the outcome.
+  - claim: category-no-rt-effect
+    agrees: true
+    outcome: reproduced
+    reason: All p >= 0.05 (lowest 0.098).
+    response: No change to the outcome.
+  - claim: pac-neuron-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: The shuffle test holds (p = 0.005), but only 8 of 269 hippocampal and 5 of 422 amygdala neurons
+      qualify (12 and 24 under FDR reading b), against 79 and 163. No code bug found; the gap lies in
+      a method detail never probed - per-trial observations or random effects in fitglme, or which FDR
+      family. Uncorrected, 1.8% of combinations pass against 0.1% in shuffles (problem 1).
+    response: Read plot_PAC_neuron.m at the pinned commit - it fits the three fitglme models to the 20
+      aggregated bin counts with fixed effects only, as sbcat.py does, so neither a per-trial layout nor
+      a random effect is the difference. Added the uncorrected counts per area (41 of 269 and 66 of 422,
+      shuffles at most 13 and 14), still below the paper's counts after FDR. Outcome kept; the question
+      for the authors stays.
+  - claim: pac-category-overlap
+    agrees: false
+    outcome: partially_reproduced
+    reason: The overlap does not exceed chance (p = 0.13 and 0.57), but the counts (4 and 2) are far out
+      of tolerance and rest on n = 8 and 5. Every claim built on PAC neurons is run at n = 8 and 5 and
+      cannot test the paper (problem 1).
+    response: Kept blocked (other) and recorded the disagreement - the verifier's own problem 1 says these
+      tests, on 8 and 5 neurons against 79 and 163, cannot test the paper's populations; the results are
+      kept in the notes for the record.
+  - claim: fig4c-pac-neuron-firing-single-trial-pac
+    agrees: false
+    outcome: not_reproduced
+    reason: Hippocampal SC term p = 0.85 and 0.18; amygdala p = 0.050 and 0.041. Only 8 and 5 pairs, so
+      this is not an informative test. Every claim built on PAC neurons is run at n = 8 and 5 and cannot
+      test the paper (problem 1).
+    response: Kept blocked (other) and recorded the disagreement - the verifier's own problem 1 says these
+      tests, on 8 and 5 neurons against 79 and 163, cannot test the paper's populations; the results are
+      kept in the notes for the record.
+  - claim: fig4e-hippocampus-pac-neurons-accuracy
+    agrees: false
+    outcome: partially_reproduced
+    reason: Correct > incorrect holds (p = 0.02-0.03); maintenance against baseline fails (p = 0.51);
+      n = 8 against 63. Every claim built on PAC neurons is run at n = 8 and 5 and cannot test the paper
+      (problem 1).
+    response: Kept blocked (other) and recorded the disagreement - the verifier's own problem 1 says these
+      tests, on 8 and 5 neurons against 79 and 163, cannot test the paper's populations; the results are
+      kept in the notes for the record.
+  - claim: fig4g-hippocampus-pac-neurons-load
+    agrees: false
+    outcome: not_reproduced
+    reason: Both baseline tests fail, and load 3 < load 1 is significant (p = 0.009); n = 8. Every claim
+      built on PAC neurons is run at n = 8 and 5 and cannot test the paper (problem 1).
+    response: Kept blocked (other) and recorded the disagreement - the verifier's own problem 1 says these
+      tests, on 8 and 5 neurons against 79 and 163, cannot test the paper's populations; the results are
+      kept in the notes for the record.
+  - claim: fig4-amygdala-pac-neurons
+    agrees: false
+    outcome: partially_reproduced
+    reason: Baseline test p = 0.12 fails; the other three tests are null as claimed; n = 5. Every claim
+      built on PAC neurons is run at n = 8 and 5 and cannot test the paper (problem 1).
+    response: Kept blocked (other) and recorded the disagreement - the verifier's own problem 1 says these
+      tests, on 8 and 5 neurons against 79 and 163, cannot test the paper's populations; the results are
+      kept in the notes for the record.
+  - claim: edf8fgh-frontal-controls
+    agrees: true
+    outcome: blocked
+    reason: Panels f and g (SFC) were not run, though the data are present. Panel h - pre-SMA p = 0.039
+      in Hz with at least 1 incorrect trial. In % with at least 1 incorrect trial, the n are exactly the
+      paper's 201/180/201 and all p > 0.5.
+    response: Kept blocked (too_large) for panels f and g, with the timing of the SFC now given (see fig3f-gamma-sfc-preferred).
+      The notes now say panel h holds in % of baseline, the adopted reading, with the paper's n exactly.
+  - claim: fig3h-pac-category-firing
+    agrees: false
+    outcome: blocked
+    reason: fig3h appears nowhere - it is not in any notebook's table and not covered by the blocked line,
+      yet every input it needs (category neurons x PAC channels) is already computed (problem 2).
+    response: Tested in reproduce_daume_2024_lfp.ipynb - 166 hippocampal and 450 amygdala pairs (paper
+      151 and 423); no reading gives a positive hippocampal spike count term with p < 0.05 (on preferred
+      trials under O5 b it is negative, p = 0.015), and the amygdala term is null. Outcome changed from
+      blocked to not_reproduced.
+  - claim: fig3f-gamma-sfc-preferred
+    agrees: false
+    outcome: blocked
+    reason: Nothing in the archive blocks these; the archive lists all 44 files, with LFP in 43 sessions
+      and units in all, and the notebooks load spikes, trials and LFP for every area. Testable now with
+      no PAC-neuron selection.
+    response: Kept blocked (too_large). The SFC core was timed on one session while preparing - with each
+      of the 500 surrogates averaged over 500 spike subsamples as the observed value is, about 18 CPU
+      hours for the MTL pairs, beyond the notebook limit; with one subsample per surrogate it would fit,
+      but its cluster tests and ANOVAs were not written in this run for lack of time. The notes give the
+      timing.
+  - claim: fig3g-gamma-sfc-anova
+    agrees: false
+    outcome: blocked
+    reason: Nothing in the archive blocks these; the archive lists all 44 files, with LFP in 43 sessions
+      and units in all, and the notebooks load spikes, trials and LFP for every area. Testable now with
+      no PAC-neuron selection.
+    response: Kept blocked (too_large). The SFC core was timed on one session while preparing - with each
+      of the 500 surrogates averaged over 500 spike subsamples as the observed value is, about 18 CPU
+      hours for the MTL pairs, beyond the notebook limit; with one subsample per surrogate it would fit,
+      but its cluster tests and ANOVAs were not written in this run for lack of time. The notes give the
+      timing.
+  - claim: edf5d-sfc-high-gamma-power
+    agrees: false
+    outcome: blocked
+    reason: Nothing in the archive blocks these; the archive lists all 44 files, with LFP in 43 sessions
+      and units in all, and the notebooks load spikes, trials and LFP for every area. Testable now with
+      no PAC-neuron selection.
+    response: Kept blocked (too_large). The SFC core was timed on one session while preparing - with each
+      of the 500 surrogates averaged over 500 spike subsamples as the observed value is, about 18 CPU
+      hours for the MTL pairs, beyond the notebook limit; with one subsample per surrogate it would fit,
+      but its cluster tests and ANOVAs were not written in this run for lack of time. The notes give the
+      timing.
+  - claim: edf5c-theta-sfc-null
+    agrees: false
+    outcome: blocked
+    reason: Nothing in the archive blocks these; the archive lists all 44 files, with LFP in 43 sessions
+      and units in all, and the notebooks load spikes, trials and LFP for every area. Testable now with
+      no PAC-neuron selection.
+    response: Kept blocked (too_large). The SFC core was timed on one session while preparing - with each
+      of the 500 surrogates averaged over 500 spike subsamples as the observed value is, about 18 CPU
+      hours for the MTL pairs, beyond the notebook limit; with one subsample per surrogate it would fit,
+      but its cluster tests and ANOVAs were not written in this run for lack of time. The notes give the
+      timing.
+  - claim: edf5fg-gamma-sfc-all-channels-patients
+    agrees: false
+    outcome: blocked
+    reason: Nothing in the archive blocks these; the archive lists all 44 files, with LFP in 43 sessions
+      and units in all, and the notebooks load spikes, trials and LFP for every area. Testable now with
+      no PAC-neuron selection.
+    response: Kept blocked (too_large). The SFC core was timed on one session while preparing - with each
+      of the 500 surrogates averaged over 500 spike subsamples as the observed value is, about 18 CPU
+      hours for the MTL pairs, beyond the notebook limit; with one subsample per surrogate it would fit,
+      but its cluster tests and ANOVAs were not written in this run for lack of time. The notes give the
+      timing.
+  - claim: edf7a-pac-neurons-no-category-decoding
+    agrees: false
+    outcome: blocked
+    reason: Nothing in the archive blocks these; the archive lists all 44 files, with LFP in 43 sessions
+      and units in all, and the notebooks load spikes, trials and LFP for every area. Testable now with
+      no PAC-neuron selection. (the category-neuron part, chance 20%)
+    response: Kept blocked (other). The claim compares PAC neurons that are not category neurons with
+      category neurons; with 4 and 3 such PAC neurons the comparison cannot be made, and the decoding
+      of category neurons alone was not written in this run for lack of time.
+  - claim: fig5cd-no-effect-category-amygdala
+    agrees: false
+    outcome: blocked
+    reason: Nothing in the archive blocks these; the archive lists all 44 files, with LFP in 43 sessions
+      and units in all, and the notebooks load spikes, trials and LFP for every area. Testable now with
+      no PAC-neuron selection. (the category-neuron part)
+    response: Kept blocked (other). Its category-neuron part needs the cross-regional SFC, which was not
+      run (timing under fig3f-gamma-sfc-preferred), and its comparison is with the PAC neurons of fig5b.
+  - claim: fig6g-signal-noise-angle
+    agrees: false
+    outcome: blocked
+    reason: Nothing in the archive blocks these; the archive lists all 44 files, with LFP in 43 sessions
+      and units in all, and the notebooks load spikes, trials and LFP for every area. Testable now with
+      no PAC-neuron selection.
+    response: Kept blocked (other). It compares the signal and noise axes of sessions with and without
+      PAC neurons, from the decoding of fig6c, so it rests on the PAC neuron selection (8 and 5 neurons);
+      not run.
+  - claim: edf7bc-pac-neuron-local-sfc
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: fig5b-hippocampus-vmpfc-theta-sfc-load
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: fig5e-random-subsets
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: fig5f-theta-sfc-rt
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: edf8b-vmpfc-sfc-patients
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: edf8c-pac-against-category
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: fig6a-noise-correlations
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: edf9ef-non-category-pac-pairs
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: fig6c-adding-pac-neurons
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: fig6d-removing-pac-neurons
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: fig6e-decoding-difference
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: edf9g-non-category-pac-decoding
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: edf9jk-amygdala-decoding
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: fig6h-projection-variance
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: fig6i-noise-correlations-rt
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: edf9hil-noise-correlations-rt-controls
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: fig6j-specific-to-pac-pairs
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons.
+    response: Kept blocked (other), as the selection gives 8 and 5 PAC neurons against 79 and 163.
+  - claim: edf8de-narrow-spiking
+    agrees: true
+    outcome: blocked
+    reason: Testable but on the failed selection - these could run only on the notebook's 8 and 5 PAC
+      neurons. It also needs waveforms; the helper's docstring implies the files hold them, but this could
+      not be confirmed from the API metadata.
+    response: Kept blocked (other). Added a print of every file's units-table columns - waveform_mean
+      (256 samples) is in 43 of the 44 files and waveforms in all 44.
