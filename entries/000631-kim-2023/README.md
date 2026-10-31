@@ -12,7 +12,7 @@ and the strobe imaging of Figure 5 are not in it.
 | Paired and single trains are equal at about 160 (1 Hz) and 130 degrees (833 kHz) | Reproduced |
 | Three-fold facilitation at 90 to 100 degrees, then a plateau to 0 degrees | Partially reproduced |
 | Enhancement at small angles and inhibition at large angles depend on frequency | Reproduced |
-| 60-fold difference between co- and counter-directional pairs at 833 kHz | Blocked: methods underspecified |
+| 60-fold difference between co- and counter-directional pairs at 833 kHz | Reproduced |
 | Paired pulses at 833 kHz electroporate near the apex, single pulses follow the field | Reproduced |
 | Figure 3: square array, co- and cross-directional pulses (four claims) | Blocked: data missing |
 | Figure 5: FluoVolt strobe imaging (two claims) | Blocked: data missing |
