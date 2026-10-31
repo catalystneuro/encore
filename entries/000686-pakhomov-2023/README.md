@@ -11,7 +11,7 @@ measurements are deposited, so the profiles along the array diagonals are measur
 | 40 trains give much stronger uptake than 40 packets throughout the array (Fig. 5A) | Not reproduced |
 | Packets enhance the centre; uptake near e1 stays stronger than in the centre (Fig. 5A) | Not reproduced |
 | With rotation, packets peak in the centre and trains leave a central void (Fig. 5B) | Not reproduced |
-| Normalized, the rotated packet centre is high and the train centre low (Fig. 5C) | Blocked: methods underspecified (depends on the ROI width, which the paper does not give); not reproduced is proposed, with ROIs one step wide as the most direct reading of the paper's layout |
+| Normalized, the rotated packet centre is high and the train centre low (Fig. 5C) | Not reproduced, assuming ROIs one step wide, the most direct reading of the paper's layout (a near miss; with ROIs three steps wide it holds) |
 | Field simulations (Fig. 3) | Blocked: data missing |
 | Single-cell uptake and bipolar cancellation (Fig. 4, four claims) | Blocked: data missing |
 | Packet number, voltage, packet type and electrode height (Figs. 6 to 9, eleven claims) | Blocked: data missing (not in this dandiset; apparently in DANDI:000875, 001025, 001027, 001028) |
