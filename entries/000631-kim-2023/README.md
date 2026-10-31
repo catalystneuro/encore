@@ -20,6 +20,10 @@ and the strobe imaging of Figure 5 are not in it.
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
+Three of the Figure 2 results rest on fragile values, shown in the notebook: the 1 Hz crossover
+angle rests on one ROI, the 833 kHz 20-fold value and the 60-fold ratio rest on the lowest of 32
+ROIs, and the 60-fold ratio is not met when the background is taken from the needle lumen alone.
+
 The files hold only the images: no pixel size, electrode positions, ROIs or angles. The helper
 `swing.py` finds the electrode footprints in each image, places the ROIs and computes the angle
 of field direction change from field models. The attempt record, with the reasons and the

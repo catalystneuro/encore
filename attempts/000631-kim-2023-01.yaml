@@ -33,13 +33,18 @@ outcomes:
       at 833 kHz, but the two fold values are never both within tolerance. With background (b), L2 gives
       2.42 to 2.51 fold at 1 Hz (expected 2 +- 0.2) and 11.77 to 21.98 at 833 kHz, the ROI of lowest value
       giving 18.52 to 21.98 (within 20 +- 2); L1 gives 1.92 to 2.48 at 1 Hz (1.92 and 2.19 within tolerance)
-      and 11.22 to 11.48 at 833 kHz. Without subtraction (a) the values are 1.26 to 1.55 and 2.66 to 3.38
-      fold, a variant that decides nothing. Per paired dish at 833 kHz, the ROI of largest angle is 5.8
-      to 9.0% of the mean control. With the 1 Hz controls of 8-9-21 only, 1 Hz gives 2.26 to 2.27 fold
-      under (b). What the reader's answer changed (questions/000631.yaml) is that reading (a), no correction
-      for spontaneous uptake, is not one the paper allows. The criterion is now judged under background
-      (b) alone, with (a) as a variant. The outcome is unchanged (partially reproduced before and after),
-      as (a) and (b) both failed the criterion.
+      and 11.22 to 11.48 at 833 kHz. The same pattern holds when the background is the lumen alone, the
+      wall ring alone or a 0.6 mm disk (L2, 1 Hz 2.40 to 2.54, 833 kHz at the lowest ROI 16.44 to 22.80).
+      The 833 kHz match on L2 rests on the lowest of 32 ROIs, which is biased toward a larger fold; the
+      lowest ROI and its two neighbours give 16.42 to 18.77 fold, the mean of all ROIs above 160 degrees
+      13.10 to 13.93, and the lowest ROI with the bootstrap bias removed 16.22 to 20.14. Per paired dish
+      at 833 kHz, ROIs 0 to 7 are 3.5 to 10.0% of the mean control, so no one dish sets the value. Without
+      subtraction (a) the values are 1.26 to 1.55 and 2.66 to 3.38 fold, a variant that decides nothing.
+      With the 1 Hz controls of 8-9-21 only, 1 Hz gives 2.26 to 2.27 fold under (b). What the reader's
+      answer changed (questions/000631.yaml) is that reading (a), no correction for spontaneous uptake,
+      is not one the paper allows. The criterion is now judged under background (b) alone, with (a) as
+      a variant. The outcome is unchanged (partially reproduced before and after), as (a) and (b) both
+      failed the criterion.
     deviations: &id001
       - The files give no pixel size. 0.65 um per pixel is assumed, from the ORCA-Flash4 camera and the
         10x objective of Methods 4.4 (6.5 um camera pixels). It is consistent with the needle footprints
@@ -53,12 +58,15 @@ outcomes:
       - ROI layout, left open by the paper (claims file, opening comment). The claims file's standard
         choice, 32 contiguous ROIs from the base midpoint toward the apex outside the footprints, does
         not fit (5.37 mm from the base midpoint to the apex footprint against 6.4 mm for 32 ROIs of 200
-        um). Two layouts were run. L1 has 32 ROIs evenly spaced from the base midpoint to the apex footprint,
-        overlapping by about 20%; L2 has 32 contiguous ROIs from the apex footprint back along the bisector
-        past the base midpoint. L2 is adopted where they differ, as an assumption, because its angles
-        run from 180 degrees at the base to near 0 at the apex, as Results 2.1 says ("the electric field
-        vector angle gradually changed from 180° at the base to nearly 0° at the apex electrode"), and
-        its ROIs are 200 um and side by side (Methods 4.4); L1 starts at 168 to 170 degrees.
+        um), so this is a deviation from the claims file. Two layouts were run. L1 has 32 ROIs evenly
+        spaced from the base midpoint to the apex footprint, overlapping by about 15%; L2 has 32 contiguous
+        ROIs from the apex footprint back along the bisector past the base midpoint. L2 decides and L1
+        is a variant, as an assumption. L2 keeps the ROIs 200 um and side by side (Methods 4.4) and outside
+        the footprints, and its first ROI lies at the point where the angle is 180 degrees (0.84 to 1.03
+        mm beyond the base midpoint, against 0.85 to 1.00 mm for that ROI), so its angles run from 180
+        degrees at the base to near 0 at the apex, as Results 2.1 says ("the electric field vector angle
+        gradually changed from 180° at the base to nearly 0° at the apex electrode"). L1 starts at the
+        base midpoint, where the angle is 168 to 170 degrees, and never reaches 180.
       - The angle of each ROI is computed with the claims file's readings B (2D conduction on a 0.1 mm
         grid, equipotential disks of 1.5 mm, insulating wall of 17.5 mm radius centred on the image) and
         C (line sources at the electrode centres), as the paper does not say how the angles were obtained.
@@ -69,8 +77,11 @@ outcomes:
         Hz and 833 kHz were taken as 100%"); normalisation (i) averages the ratio over every pairing of
         a paired and a control dish. Control subsets are shown as variants.
       - Background reading (b) subtracts the mean YP within 0.5 mm of the three electrode centres of the
-        same dish (Methods 4.4, footprint measurements made "to account for 'spontaneous' YP uptake");
-        the radius is a standard choice inside the dark footprint.
+        same dish (Methods 4.4, footprint measurements made "to account for 'spontaneous' YP uptake").
+        The radius is a choice; the disk covers the needle lumen (0.25 mm radius, Methods 4.2) and the
+        inner wall, where the YP profile is flat (to about 0.55 mm, apart from bright material in the
+        lumen of the three 833 kHz controls). The lumen alone, the wall ring (0.25 to 0.5 mm) alone and
+        a 0.6 mm disk are run as sensitivity checks.
       - BPAE-18 of 7-31-21 is left out as the same recording as BPAE-03; BPAE-13 of 8-24-21, whose session
         description is of another experiment, is used as a paired dish from its image, and the values
         without it are shown as a variant.
@@ -82,15 +93,19 @@ outcomes:
     measured:
       - 149.6
       - 125.9
-    notes: Measured values are on layout L2, model B, background (b), normalisation (i). Under all 16
+    notes: 'Measured values are on layout L2, model B, background (b), normalisation (i). Under all 16
       readings the crossover is 145.3 to 149.6 degrees at 1 Hz (160 +- 16) and 124.1 to 125.9 at 833 kHz
-      (130 +- 13). The 1 Hz angle is 1.3 to 5.6 degrees above the lower bound. It depends on the controls;
-      with the two 1 Hz controls of 8-9-21 only it is 130.5 to 161.4 degrees, with the three of 7-31-21
-      149.3 to 149.8. Every ROI above the crossover is below 100%; below it most are above, with a dip
-      at 1 Hz between 132 and 143 degrees (79 to 97%, normalisation ii). What the reader's answer changed
-      (questions/000631.yaml) is that the criterion is now judged under background (b) alone, with (a)
-      a variant. The 8 readings under (b) all meet it, so the outcome is unchanged (reproduced before
-      and after).
+      (130 +- 13), and under every footprint region of the background 146.9 to 149.6 and 125.0 to 128.6.
+      The 1 Hz angle is 1.3 to 5.6 degrees above the lower bound and rests on one ROI: on L2, ROI 11 (147.8
+      degrees) is above 100% while ROIs 12 to 14 are 79 to 93%. Without ROI 11 the 1 Hz crossover is 143.3
+      or 131.4 degrees (normalisations i and ii), and on a running mean of three ROIs 135.6 or 132.8,
+      all below the tolerance; the 833 kHz crossover moves by at most 4.2 degrees under the same checks.
+      It also depends on the controls; with the two 1 Hz controls of 8-9-21 only it is 130.5 to 161.4
+      degrees, with the three of 7-31-21 149.3 to 149.8. The criterion as written (interpolation between
+      neighbouring ROIs) is met, so the outcome is reproduced, with low confidence at 1 Hz. What the reader''s
+      answer changed (questions/000631.yaml) is that the criterion is now judged under background (b)
+      alone, with (a) a variant. The 8 readings under (b) all meet it, so the outcome is unchanged (reproduced
+      before and after).'
     deviations: *id001
   - claim: fig2-facilitation-plateau
     outcome: partially_reproduced
@@ -106,15 +121,17 @@ outcomes:
       at both frequencies; the three-fold plateau from 90 to 100 degrees holds only at 833 kHz. At 833
       kHz with background (b) the level at 90 to 100 degrees is 2.29 to 2.78 fold and the mean from 100
       degrees down 2.80 to 2.96; on L2 it is reached at 94.6 to 96.1 degrees and the slope over 0 to 90
-      degrees has a 95% CI that includes zero (P1). At 1 Hz the value keeps rising as the angle falls
-      (slope -1.35 to -3.41 % per degree, CI excluding zero under every reading); the level at 90 to 100
-      degrees is 1.15 to 1.36 fold and the mean from 100 degrees down 2.07 to 2.36. Without background
-      subtraction no level is within 2.7 to 3.3 (1.08 to 1.74). P2 has no ROI below 10 degrees under model
-      C. Under background (b) the criterion is not met under either plateau reading, so it is not blocked.
-      What the reader's answer changed (questions/000631.yaml) is that the criterion is now judged under
-      (b) alone, with (a) a variant that no longer could block it; the outcome is unchanged (partially
-      reproduced before and after). The statement's "as efficient as co-directional pulses" holds at 833 kHz with
-      background (b) and not at 1 Hz.
+      degrees has a 95% CI that includes zero (P1). Level reading (1) is a single ROI on L2 (94.3 or 94.5
+      degrees), one or two on L1. At 1 Hz the value keeps rising as the angle falls (slope -2.00 to -3.41
+      % per degree under (b), CI excluding zero under every reading); the level at 90 to 100 degrees is
+      1.15 to 1.36 fold and the mean from 100 degrees down 2.07 to 2.36, and 1.14 to 1.25 and 2.08 to
+      2.37 on L2 under every footprint region. Without background subtraction no level is within 2.7 to
+      3.3 (1.08 to 1.74). P2 needs ROIs below 10 degrees and is untestable under model C, which has none
+      (smallest angle about 22 degrees), so model B decides it. Under background (b) the criterion is
+      not met under either plateau reading, so it is not blocked. What the reader's answer changed (questions/000631.yaml)
+      is that the criterion is now judged under (b) alone, with (a) a variant that no longer could block
+      it; the outcome is unchanged (partially reproduced before and after). The statement's "as efficient
+      as co-directional pulses" holds at 833 kHz with background (b) and not at 1 Hz.
     deviations:
       - The files give no pixel size. 0.65 um per pixel is assumed, from the ORCA-Flash4 camera and the
         10x objective of Methods 4.4 (6.5 um camera pixels). It is consistent with the needle footprints
@@ -128,12 +145,15 @@ outcomes:
       - ROI layout, left open by the paper (claims file, opening comment). The claims file's standard
         choice, 32 contiguous ROIs from the base midpoint toward the apex outside the footprints, does
         not fit (5.37 mm from the base midpoint to the apex footprint against 6.4 mm for 32 ROIs of 200
-        um). Two layouts were run. L1 has 32 ROIs evenly spaced from the base midpoint to the apex footprint,
-        overlapping by about 20%; L2 has 32 contiguous ROIs from the apex footprint back along the bisector
-        past the base midpoint. L2 is adopted where they differ, as an assumption, because its angles
-        run from 180 degrees at the base to near 0 at the apex, as Results 2.1 says ("the electric field
-        vector angle gradually changed from 180° at the base to nearly 0° at the apex electrode"), and
-        its ROIs are 200 um and side by side (Methods 4.4); L1 starts at 168 to 170 degrees.
+        um), so this is a deviation from the claims file. Two layouts were run. L1 has 32 ROIs evenly
+        spaced from the base midpoint to the apex footprint, overlapping by about 15%; L2 has 32 contiguous
+        ROIs from the apex footprint back along the bisector past the base midpoint. L2 decides and L1
+        is a variant, as an assumption. L2 keeps the ROIs 200 um and side by side (Methods 4.4) and outside
+        the footprints, and its first ROI lies at the point where the angle is 180 degrees (0.84 to 1.03
+        mm beyond the base midpoint, against 0.85 to 1.00 mm for that ROI), so its angles run from 180
+        degrees at the base to near 0 at the apex, as Results 2.1 says ("the electric field vector angle
+        gradually changed from 180° at the base to nearly 0° at the apex electrode"). L1 starts at the
+        base midpoint, where the angle is 168 to 170 degrees, and never reaches 180.
       - The angle of each ROI is computed with the claims file's readings B (2D conduction on a 0.1 mm
         grid, equipotential disks of 1.5 mm, insulating wall of 17.5 mm radius centred on the image) and
         C (line sources at the electrode centres), as the paper does not say how the angles were obtained.
@@ -144,8 +164,11 @@ outcomes:
         Hz and 833 kHz were taken as 100%"); normalisation (i) averages the ratio over every pairing of
         a paired and a control dish. Control subsets are shown as variants.
       - Background reading (b) subtracts the mean YP within 0.5 mm of the three electrode centres of the
-        same dish (Methods 4.4, footprint measurements made "to account for 'spontaneous' YP uptake");
-        the radius is a standard choice inside the dark footprint.
+        same dish (Methods 4.4, footprint measurements made "to account for 'spontaneous' YP uptake").
+        The radius is a choice; the disk covers the needle lumen (0.25 mm radius, Methods 4.2) and the
+        inner wall, where the YP profile is flat (to about 0.55 mm, apart from bright material in the
+        lumen of the three 833 kHz controls). The lumen alone, the wall ring (0.25 to 0.5 mm) alone and
+        a 0.6 mm disk are run as sensitivity checks.
       - BPAE-18 of 7-31-21 is left out as the same recording as BPAE-03; BPAE-13 of 8-24-21, whose session
         description is of another experiment, is used as a paired dish from its image, and the values
         without it are shown as a variant.
@@ -159,9 +182,11 @@ outcomes:
       (L2, background b, 8.5 against 41.3%; background a, 37.6 against 79.3%), the crossover is smaller
       at 833 kHz (124.1 to 125.9 against 145.3 to 149.6 degrees), and at both frequencies the value is
       above 100% at the smallest angle (195.9 to 323.4%) and below 100% at the largest (7.9 to 79.3%).
-      What the reader's answer changed (questions/000631.yaml) is that the criterion is now judged under
-      background (b) alone, with (a) a variant. Background (b) decides and the variant (a) agrees, so
-      the outcome is unchanged (reproduced before and after).
+      The order of the crossovers holds under every footprint region and with the 1 Hz crossover from
+      a running mean of three ROIs (132.8 to 135.6 against 128.7 to 128.9 degrees). What the reader's
+      answer changed (questions/000631.yaml) is that the criterion is now judged under background (b)
+      alone, with (a) a variant. Background (b) decides and the variant (a) agrees, so the outcome is
+      unchanged (reproduced before and after).
     deviations: *id001
   - claim: fig2-60-fold-co-counter
     outcome: reproduced
@@ -169,18 +194,25 @@ outcomes:
     notebook: reproduce_kim_2023.ipynb
     output: claim:fig2-60-fold-co-counter
     measured: 56.8
-    notes: The measured value is on L2, model B, background (b), ratio (b), plateau level reading (1)
-      over the ROI of lowest value, normalisation (ii); the ratio (a) and the plateau level over the ROI
-      of largest angle are not within tolerance. On L2 with background (b), the plateau level over the
-      ROI of lowest value is 51.5 to 61.6 fold under both angle models (three of four values within 60
-      +- 6, namely 56.8, 54.8 and 61.6) and the other ratios 32.7 to 36.2. On L1 the ratios under (b)
-      are 25.8 to 34.5, not meeting the criterion, so the outcome rests on layout L2, adopted as an assumption
-      (deviations). The variant without correction (a) gives 3.6 to 5.8 on both layouts; it includes
-      200 to 270 counts of offset and spontaneous uptake in every ROI. Paired uptake alone is 25.0 times
-      higher at the apex end than at the base end on L2 with (b), 4.5 with (a). What the reader's answer
-      changed (questions/000631.yaml) is that reading (a) is not one the paper allows, and the criterion
-      is now judged under background (b) alone. The claim was blocked (methods_underspecified) before
-      the answer only because (a) and (b) gave different outcomes; it is now reproduced, on layout L2.
+    notes: 'Reproduced with low confidence. The measured value is on L2, model B, background (b), ratio
+      (b), plateau level reading (1) over the ROI of lowest value, normalisation (ii); the ratio (a) and
+      the plateau level over the ROI of largest angle are not within tolerance. On L2 with background
+      (b), the plateau level over the ROI of lowest value is 51.5 to 61.6 fold under both angle models
+      (three of four values within 60 +- 6, namely 56.8, 54.8 and 61.6) and the other ratios 32.7 to 36.2.
+      Three things the outcome rests on are checked in the notebook. (1) Layout: on L1 the ratios under
+      (b) are 25.8 to 34.5, not meeting the criterion; L2 decides as an assumption (deviations). (2) The
+      lowest of 32 ROIs is biased toward a larger fold; with the bias estimated by a bootstrap over dishes
+      removed, level 2 over it is 56.9 (normalisation ii, within tolerance) and 48.2 (i). (3) Footprint
+      region of the background: the criterion is met with the 0.5 mm disk, the 0.6 mm disk and the wall
+      ring alone, and not with the lumen alone (33.3 to 218.9, scattered), because the lumen of the three
+      833 kHz controls holds bright material that puts their lumen mean up to 66 counts above the wall
+      ring. The 833 kHz paired dishes and controls were imaged on different days with different MemBrite
+      levels, and the files give no exposure or gain. The variant without correction (a) gives 3.6 to
+      5.8 on both layouts. Paired uptake alone is 25.0 times higher at the apex end than at the base end
+      on L2 with (b), 4.5 with (a). What the reader''s answer changed (questions/000631.yaml) is that
+      reading (a) is not one the paper allows, and the criterion is now judged under background (b) alone.
+      The claim was blocked (methods_underspecified) before the answer only because (a) and (b) gave different
+      outcomes; it is now reproduced, on layout L2.'
     deviations: *id001
   - claim: fig3-1hz-co-equals-cross
     outcome: blocked
@@ -242,8 +274,11 @@ outcomes:
       - The field map is computed with the claims file's models B and C over a grid of 200 um ROIs within
         4 mm of the triangle's centroid; the paper's map is a Sim4Life simulation (Methods 4.3).
       - Background reading (b) subtracts the mean YP within 0.5 mm of the three electrode centres of the
-        same dish (Methods 4.4, footprint measurements made "to account for 'spontaneous' YP uptake");
-        the radius is a standard choice inside the dark footprint.
+        same dish (Methods 4.4, footprint measurements made "to account for 'spontaneous' YP uptake").
+        The radius is a choice; the disk covers the needle lumen (0.25 mm radius, Methods 4.2) and the
+        inner wall, where the YP profile is flat (to about 0.55 mm, apart from bright material in the
+        lumen of the three 833 kHz controls). The lumen alone, the wall ring (0.25 to 0.5 mm) alone and
+        a 0.6 mm disk are run as sensitivity checks.
   - claim: fig5-base-sawtooth
     outcome: blocked
     blocked_by: data_missing
@@ -267,11 +302,13 @@ findings:
       pulses between two parallel cylinders 3 mm apart); its image shows the three footprints of the triangular
       array and the paired-pulse uptake pattern of the other two 833 kHz paired dishes.
   - kind: metadata_insufficient
-    statement: The images carry no pixel size (resolution -1, unit n.a.), and the files hold no electrode
-      positions, ROIs, angles of field direction change or measured values, so the paper's Figure 2 values
-      cannot be recomputed without placing ROIs and modelling the field anew. The channel order is stated
-      only in the ImageSeries description text, and which base electrode was energised in the single-pulse
-      dishes is not stated.
+    statement: The images carry no pixel size (resolution -1, unit n.a.) and no exposure or gain, and
+      the files hold no electrode positions, ROIs, angles of field direction change or measured values,
+      so the paper's Figure 2 values cannot be recomputed without placing ROIs and modelling the field
+      anew. The channel order is stated only in the ImageSeries description text, and which base electrode
+      was energised in the single-pulse dishes is not stated. The 833 kHz controls (10-5-21) read about
+      431 counts of MemBrite away from the array against about 295 in the 833 kHz paired dishes (8-24-21),
+      so without the exposure and gain it cannot be checked whether their YP values compare.
   - kind: metadata_error
     statement: The ImageSeries description of every file says "144 images captured in a 12x12 grid from
       a six-well plate" and "216 additional images"; the paper's dishes are 35 mm glass-bottom dishes
@@ -289,6 +326,130 @@ findings:
       the dashed line of Figure 7B; contiguous from the apex footprint back past the base midpoint (assumed
       here), or between the base midpoint and the apex? The two layouts give different outcomes for the
       60-fold ratio. (2) How was the angle of each ROI obtained? (3) How were the footprint measurements
-      used to account for spontaneous uptake; subtracted from each ROI (assumed here)? Without it no ratio
-      approaches 20- or 60-fold. (4) Which control dishes formed the 100% of Figure 2, and were ratios
-      taken per dish? (5) What is the pixel size of the stitched images (0.65 um assumed)?
+      used to account for spontaneous uptake; subtracted from each ROI (assumed here), and from which
+      part of the footprint, the lumen or the whole dark disk? Without it no ratio approaches 20- or 60-fold.
+      (4) Which control dishes formed the 100% of Figure 2, and were ratios taken per dish? (5) What is
+      the pixel size of the stitched images (0.65 um assumed)?
+verifications:
+  - date: '2026-10-31'
+    kind: agent
+    by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+    reviewed: 'Round 1. The handover of the run after the reader''s answer: the executed notebook with
+      the conclusions and summary removed, the helper module and the claims file. The verifier also read
+      the paper and listed the archive''s assets. Its other points, answered in the notebook: saturation
+      inside the ROIs (at most 0.03% of the pixels of any bisector ROI, none at 833 kHz); cross-day comparability
+      (YP footprint levels close on every day, MemBrite about 431 counts in the 833 kHz controls against
+      295 in the paired dishes, exposure and gain not in the files); the choice of 1 Hz controls (all
+      five unique dishes, subsets as variants, unchanged).'
+    results:
+      - claim: fig2-180-cancellation
+        agrees: true
+        outcome: partially_reproduced
+        reason: Under background (b), no ROI layout gives both values (cell 21). Layout L2 gives 18.5
+          / 22.0-fold at 833 kHz (holds), but 2.42 to 2.51-fold at 1 Hz, outside 2 +- 0.2. Layout L1 gives
+          1.92 / 2.19-fold at 1 Hz (holds), but only about 11-fold at 833 kHz. Cancellation at 180 degrees,
+          and stronger cancellation at 833 kHz, are clear under every reading. The fold values are extremely
+          sensitive to the background estimate, and reading (2), the ROI of lowest mean, takes a minimum
+          over 32 noisy ROIs, which biases the fold upward and is the only route by which 833 kHz reaches
+          20 +- 2.
+        response: No change of outcome. The notebook now prints the YP profile inside the footprints and
+          the folds with the background from the lumen alone, the wall ring alone and a 0.6 mm disk (same
+          outcome under each); the size of the bias of the minimum (lowest ROI with its neighbours, mean
+          of ROIs above 160 degrees, a bootstrap over dishes); and a per-dish table of ROIs 0 to 7 for
+          paired and control dishes. The notes and the result text state that the 833 kHz match rests
+          on the minimum.
+      - claim: fig2-crossover-angle
+        agrees: true
+        outcome: reproduced
+        reason: '1 Hz crosses at 145.3 to 149.6 degrees (tolerance 144 to 176) and 833 kHz at 125.3 to
+          125.9 (117 to 143), under every layout, angle model and normalisation. The 1 Hz value is fragile:
+          on L2, ROI 11 at 147.8 degrees is 108% while ROIs 12 to 14 fall back to 79 to 93%; without that
+          ROI the crossover would be about 128 degrees, outside the tolerance, and the 8-9-21-only controls
+          give 130.5 degrees under normalisation (ii). The criterion is still met as written.'
+        response: No change of outcome. Added the crossover with each ROI near it left out and on a running
+          mean of three ROIs (1 Hz 131.4 to 143.3 without ROI 11, 132.8 to 135.6 smoothed; 833 kHz moves
+          by at most 4.2 degrees), and its sensitivity to the footprint region. The notes and result text
+          say the 1 Hz angle rests on one ROI and the outcome has low confidence at 1 Hz.
+      - claim: fig2-facilitation-plateau
+        agrees: true
+        outcome: partially_reproduced
+        reason: At 833 kHz with layout L2, the level is 2.58 to 2.96, reached at 94.5 to 96 degrees, and
+          the plateau holds. At 1 Hz the 90 to 100 degree level is only 1.15 to 1.36-fold; the slope below
+          90 degrees is significantly non-zero under every reading and uptake keeps rising to about 3-fold
+          near 0 degrees, so there is no plateau. The criterion needs both frequencies. P2 needs ROIs
+          below 10 degrees and model C has none, so P2 is automatically False there, a spurious disagreement
+          between the angle models that should be reported as untestable. Level reading (1) contains a
+          single ROI under L2.
+        response: No change of outcome. P2 is now reported as untestable when no ROI lies below 10 degrees,
+          and the other angle model then decides it. The number of ROIs in level reading (1) is printed
+          and the text says it is one ROI on L2. The levels are shown under each footprint region.
+      - claim: fig2-frequency-dependence
+        agrees: true
+        outcome: reproduced
+        reason: All conditions met in all 16 readings. The 180 degree value is lower at 833 kHz (4.5 to
+          8.9% against 40 to 52% at 1 Hz), the crossover angle is smaller (125 against 145 to 150 degrees),
+          and the curves are above 100% at the smallest angle and below 100% at the largest.
+        response: No change. The text adds that the order of the crossovers holds under every footprint
+          region and with the 1 Hz crossover from a running mean of three ROIs.
+      - claim: fig2-60-fold-co-counter
+        agrees: true
+        outcome: reproduced
+        reason: Reproduced with low confidence. Under background (b) with layout L2, plateau level over
+          lowest-ROI value gives 54.8 / 61.6 (level2) and 56.8 (level1, norm ii), inside 60 +- 6. Layout
+          L1 gives at most 34.5 and fails. L2 is the reading that decides, because L1 never reaches 180
+          degrees (its largest angle is about 170 degrees) while the paper puts 180 degrees at the base.
+          The ratio rests on a denominator of about 5% of control and is very sensitive to the background
+          estimate; the 0.5 mm disk is about 75% steel-wall annulus, not clearly the shielded cells, and
+          no lumen-only or other-radius run was done. The claims-file layout does not fit and this is
+          not stated as a deviation; no printed rule says which layout decides. Reading (2) takes a minimum
+          over 32 noisy ROIs and biases the ratio upward.
+        response: 'No change of outcome; recorded as low confidence. The ROI layout is now stated as a
+          deviation from the claims file, and the notebook prints the rule (L2 decides, L1 a variant)
+          with the angle at the base midpoint (168 to 170 degrees) and the point of 180 degrees (0.84
+          to 1.03 mm beyond the base midpoint, where L2 starts). The background is kept as the 0.5 mm
+          disk: the YP profile inside the footprints is flat to about 0.55 mm, and lumen and wall ring
+          agree to within 8 counts in 11 of 14 dishes. The ratio is shown with the lumen alone (not met,
+          33.3 to 218.9, because of bright material in the lumen of the three 833 kHz controls), the wall
+          ring alone and a 0.6 mm disk (met), and with the bias of the minimum removed (56.9 under normalisation
+          ii, met). The notes give all three dependencies.'
+      - claim: fig3-1hz-co-equals-cross
+        agrees: true
+        outcome: blocked
+        reason: All 15 assets in the archive are triangular-array YP/MemBrite images from the Figure 2
+          experiment (1 Hz / 833 kHz, BP/UP). There is no square-array data.
+        response: No change.
+      - claim: fig3-770khz-co-enhanced
+        agrees: true
+        outcome: blocked
+        reason: Same as fig3-1hz-co-equals-cross; no 770 kHz files.
+        response: No change.
+      - claim: fig3-770khz-cross-same-as-1hz
+        agrees: true
+        outcome: blocked
+        reason: Same as fig3-1hz-co-equals-cross.
+        response: No change.
+      - claim: fig3-no-area-dependence
+        agrees: true
+        outcome: blocked
+        reason: The claims file judges it by fig3-1hz-co-equals-cross, which is blocked. The Figure 2
+          plateau result does not decide it.
+        response: No change.
+      - claim: fig4-unipolar-pattern
+        agrees: true
+        outcome: reproduced
+        reason: All 8 readings agree. In 3 of 3 paired dishes the apex is above both bases, and in 3 of
+          3 single dishes the energised base is above the apex. In the single dishes both bases exceed
+          the apex, so which base is taken as energised does not matter. Field-map Spearman rho is 0.50,
+          0.96 and 0.93 for single dishes, and negative for paired dishes.
+        response: No change.
+      - claim: fig5-base-sawtooth
+        agrees: true
+        outcome: blocked
+        reason: No FluoVolt strobe or CHO-K1 files in the archive. All 15 assets are single stitched 2-channel
+          images with no time series.
+        response: No change.
+      - claim: fig5-apex-larger-polarization
+        agrees: true
+        outcome: blocked
+        reason: Same as fig5-base-sawtooth.
+        response: No change.

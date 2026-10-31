@@ -25,7 +25,10 @@ Where the parameters come from:
 - `FOOTPRINT_BG_MM = 0.5`: radius of the disk inside each footprint whose mean YP is the
   "spontaneous" uptake of background reading (b) (Methods 4.4: "measurements were also
   performed within the hollow electrodes' footprints"). A standard choice, inside the dark
-  footprint seen in the images (radius about 0.65 mm).
+  footprint seen in the images (radius about 0.65 mm). It covers the lumen of the needle (0.25
+  mm radius, Methods 4.2) and the inner part of its wall; the notebook prints the YP profile
+  inside the footprints (flat to about 0.55 mm) and the results with the lumen alone, the wall
+  ring alone and a 0.6 mm disk.
 - ROI layouts L1 and L2 (the claims file's "ROI layout" detail, left open by the paper): L1, 32
   ROIs evenly spaced from the base midpoint to the edge of the apex footprint; L2, 32 contiguous
   ROIs from the edge of the apex footprint back along the bisector through the base midpoint.
@@ -141,6 +144,9 @@ def load(asset: dict, block: int = BLOCK) -> dict:
     nb_r, nb_c = N // block, M // block
     img = full[:, :nb_r * block, :nb_c * block].reshape(C, nb_r, block, nb_c, block).mean(
         (2, 4), dtype=np.float64).astype(np.float32)
+    # fraction of YP pixels at or above SATURATED in each block, counted before block averaging
+    sat = (full[1, :nb_r * block, :nb_c * block] >= SATURATED).reshape(nb_r, block, nb_c, block).mean(
+        (1, 3), dtype=np.float64).astype(np.float32)
     meta = {
         "path": asset["path"], "asset_id": asset["asset_id"], "size": asset["size"],
         "shape": (N, M, C), "chunks": d.chunks,
@@ -161,7 +167,7 @@ def load(asset: dict, block: int = BLOCK) -> dict:
     }
     meta.update(condition_of(asset["path"]))
     del full, buf
-    return {"meta": meta, "img": img, "block": block}
+    return {"meta": meta, "img": img, "sat": sat, "block": block}
 
 
 def mm_per_block(block: int = BLOCK) -> float:
@@ -415,20 +421,23 @@ def square_mean(img: np.ndarray, centre: np.ndarray, u: np.ndarray, side_mm: flo
     return float(win[m].mean())
 
 
-def disk_mean(img: np.ndarray, centre: np.ndarray, r_mm: float) -> float:
-    r = r_mm / mm_per_block()
+def disk_mean(img: np.ndarray, centre: np.ndarray, r_mm: float, r_in_mm: float = 0.0) -> float:
+    """Mean of the blocks whose centres lie within r_mm of centre (blocks) and, if r_in_mm > 0,
+    at r_in_mm or more from it (a ring)."""
+    r, r_in = r_mm / mm_per_block(), r_in_mm / mm_per_block()
     R = int(np.ceil(r)) + 1
     cy, cx = int(round(centre[0])), int(round(centre[1]))
     y0, x0 = max(cy - R, 0), max(cx - R, 0)
     win = img[y0:cy + R + 1, x0:cx + R + 1]
     yy, xx = np.mgrid[y0:y0 + win.shape[0], x0:x0 + win.shape[1]] + 0.5
-    return float(win[(yy - centre[0]) ** 2 + (xx - centre[1]) ** 2 <= r * r].mean())
+    d2 = (yy - centre[0]) ** 2 + (xx - centre[1]) ** 2
+    return float(win[(d2 <= r * r) & (d2 >= r_in * r_in)].mean())
 
 
-def footprint_background(yp: np.ndarray, geom: dict) -> float:
-    """Background reading (b): mean YP within FOOTPRINT_BG_MM of each electrode centre, averaged
-    over the three electrodes."""
-    return float(np.mean([disk_mean(yp, geom[k], FOOTPRINT_BG_MM) for k in ("apex", "base1", "base2")]))
+def footprint_background(yp: np.ndarray, geom: dict, r_mm: float = FOOTPRINT_BG_MM, r_in_mm: float = 0.0) -> float:
+    """Background reading (b): mean YP within r_mm of each electrode centre (a ring from r_in_mm
+    when it is above 0), averaged over the three electrodes."""
+    return float(np.mean([disk_mean(yp, geom[k], r_mm, r_in_mm) for k in ("apex", "base1", "base2")]))
 
 
 def bisector_profile(img: np.ndarray, geom: dict, layout: str) -> np.ndarray:
