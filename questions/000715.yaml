@@ -17,3 +17,18 @@ questions:
     atlas they are 21.50% and 3.64%. Under the criterion as written the claim is not reproduced;
     with the code's measure as the main result it is reproduced. The same question bears on
     fig7de-optimal-coloring-violations, which uses the same measure.
+  answer: Changed. The claims file followed the Methods wording ("the percentage of their color
+    violations, defined as neighboring neuron pairs which fall below the discrimination margin",
+    Methods S2 section 4.3) as the main measure, but the 3.5% the paper reports is the code's
+    measure. find_optimal_colors.m (Optimal_Coloring 990c597) computes sum(max(margin*A - D.*A,
+    0)) / sum(A) and prints it as "NeuroPAL color margin violation", and the share of neighboring
+    pairs below the margin, computed on the same repository's data.mat (its stored 235-neuron
+    adjacency and NeuroPAL colors), is about 19%, so it cannot be the measure behind the reported
+    number. The criterion of ms2-neuropal-color-violations now takes the code's mean shortfall as
+    the measure that decides the claim and reports the Methods share as a variant; its statement
+    now says "theoretical color margin violation of 3.5%" in place of "3.5% of neighboring pairs".
+    The text is not fully consistent (its 0.3% lower bound from eight left-right pairs and its
+    all-same-color example of 100% follow the share), which is why the share is kept as a variant.
+    fig7de-optimal-coloring-violations, whose numbers come from the same code, now refers to the
+    same measure. Expected values and tolerances are unchanged.
+  answered: 2026-10-31
