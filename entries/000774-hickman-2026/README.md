@@ -38,8 +38,12 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 and the differences from the paper's method.
 
 The stimulation contact coordinates of two recordings (jlh31, jlh32) in the dandiset differ from those
-in the paper's code by 206 and 373 um; with the code's coordinates the distance results match the
-paper exactly, and the one claim not reproduced on distances (5 against 100 uA) is reproduced. The
+in the paper's code by 206 and 373 um; with the code's coordinates the distance results give the
+paper's statistics and most of its values (not the 50 uA extent, 868 against 965 um, or the 50 against
+100 uA KS p, 0.8245 against 0.083), and the one claim not reproduced on distances (5 against 100 uA)
+is reproduced. Four outcomes recorded as partially reproduced (responders within the evoked potential,
+FS responders within it, broader windows, cortical modulation) have criteria without a partial clause;
+a change to not reproduced is proposed for a third verification round. The
 FS/RS claims rest on the classes the paper's code computes (a 0.4 ms duration threshold), where the
 Methods describe k-means, whose classes change with its initialisation here. The no-propagating-wave
 claim rests on the code's peak rule, which skips the 4 ms minimum width its configuration sets. The attempt record, with the reasons and the differences from the paper's

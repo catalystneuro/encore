@@ -33,6 +33,10 @@ inputs:
     fig5i-fs-within-ep and reading (b) of fig5-fsrs-proportion, whose criteria name it. The units' signed
     distances and responses come from the dataset.
   source: https://github.com/denmanlab/estim_populations at commit c4aaa608314c8e8e91aee422baa69cd1b443a682
+- what: The code's intermediate table of units and conditions (intermediates/direct_df.csv), used only
+    as a check of the number of good stable units per condition and of the sign the code gives its raw
+    distance (reading c of fig4i-proportion-within-ep). No outcome rests on it.
+  source: https://github.com/denmanlab/estim_populations at commit c4aaa608314c8e8e91aee422baa69cd1b443a682
 outcomes:
 - claim: fig1l-saturation-amplitude
   outcome: blocked
@@ -122,6 +126,13 @@ outcomes:
 - claim: fig4f-responders-within-ep
   outcome: partially_reproduced
   assumed: true
+  proposed:
+    outcome: not_reproduced
+    reason: Reproduced needs the four fractions within tolerance under one
+      reading; the 5 uA fraction is 0.400 (RS, reading b) and 0.552 (all responders, reading a) against
+      0.333 +- 0.033, and 0.520 under the k-means classes. The criterion has no partial clause, and fig5-fsrs-proportion was changed to not
+      reproduced for that reason; the verifier (round 2) asks for one rule throughout, and under it
+      this claim is not reproduced.
   notebook: reproduce_hickman_2026.ipynb
   output: claim:fig4f-responders-within-ep
   measured:
@@ -156,7 +167,8 @@ outcomes:
   notes: The per-recording extent of cathodal responders does not change with amplitude (one-way ANOVA
     F = 1.250, p = 0.317, 6, 6, 6 and 7 recordings). The means are 1121, 825, 813 and 452 um; those at
     50 and 100 uA are outside 10% of 965 and 522 um. With the code's coordinates the means are 1179, 884,
-    868 and 522 um and F = 1.265, p = 0.312, the paper's values (its code also prints 868 at 50 uA).
+    868 and 522 um and F = 1.265, p = 0.312, the paper's F and p and its means at 5, 25 and 100 uA;
+    868 um at 50 uA (which the code also prints) is just outside 10% of the paper's 965 um.
   deviations:
   - The signed distance needs CCF coordinates of every channel, which the dandiset does not give; they
     are fitted per probe by a straight line through the units' coordinates on their channel number. The
@@ -186,7 +198,8 @@ outcomes:
     = 0.1105, so the two populations do not differ after correction; 5-25, 25-50, 25-100 and 50-100 do
     not differ (adjusted p 0.5255, 0.8290, 0.7439, 0.8290), and 5-50 has adjusted p 0.1309 (not judged).
     With the code's coordinates the adjusted p are 0.5662, 0.0164, 0.5662, 0.3625 and 0.8245 for 5-25,
-    5-100, 25-50, 25-100 and 50-100, which reproduce the claim (the paper prints 0.083 for 50-100). The
+    5-100, 25-50, 25-100 and 50-100, which reproduce the claim (for 50-100 the paper prints 0.083,
+    against 0.8245 here). The
     outcome turns on the stimulation contact coordinates of jlh31 and jlh32, which in the dataset differ
     from those the paper used.
   deviations:
@@ -205,8 +218,12 @@ outcomes:
     1427 units), all within 10% and below 0.05, rising with amplitude (OLS F = 4.99, p = 0.0256). With
     the code's coordinates reading (c) gives F = 5.41, p = 0.0201, the paper's values. Readings (a) and
     (b) give the trend (p = 0.0154 and 0.0015) with values below the paper's at 50 and 100 uA (0.0242
-    and 0.0254 under a). The boundaries are the code's (outside input); the claim depends on fig2g-extent-increases,
-    which is blocked.
+    and 0.0254 under a). Reading (c) signs the raw distance as the code does (figure4_figure5_figure6.ipynb
+    cell 7 makes it negative from the channel closest to the contact on); in the code's direct_df.csv
+    distance <= 0 exactly where norm_distance <= 0 (all rows). The unsigned raw distance gives 0.0129,
+    0.0221, 0.0312 and 0.0293 (F = 4.55, p = 0.0330), with 0.0221 just outside 0.020 +- 0.002, so the
+    outcome rests on the code's sign. The boundaries are the code's (outside input); the claim depends
+    on fig2g-extent-increases, which is blocked.
   deviations:
   - The evoked-potential boundaries are the code's EP_distances.pkl (outside input).
 - claim: fig4j-drp-increases
@@ -224,16 +241,22 @@ outcomes:
     on numeric amplitude, gives F = 12.779, p = 0.00039 (paper F = 12.78, p = 0.0004); (b) a one-way ANOVA
     with amplitude categorical gives F = 4.44, p = 0.0044 and (c) a repeated-measures ANOVA F = 4.66,
     p = 0.0034. The number of good stable units per cathodal condition (2056, 2068, 2070, 2071) equals
-    that of the code's intermediate table direct_df.csv. jlh31 and jlh34 ran most cathodal conditions
+    that of the code's intermediate table direct_df.csv (outside input, printed as a check). jlh31 and jlh34 ran most cathodal conditions
     twice at the one cathodal contact; the first run is used. With the second run, 91 units respond with
     values at all four amplitudes, mean nDRP 0.125, 0.092, 0.157 and 0.223, F = 12.41, p = 0.00048.
   deviations:
   - The stability filter is recomputed from the Methods (the paper's flags are not in the dataset); the
     time origin of the fit and the set of units the quartiles are taken over are not stated and were chosen
-    as the first spike of the recording and all units (a standard choice). The unit counts per condition
-    match the code's.
+    as the first spike of the recording and all units (a standard choice). The unit counts per cathodal
+    and anodal condition match the code's; bipolar ones differ by 1 to 5 units.
 - claim: figs3e-early-windows
   outcome: partially_reproduced
+  proposed:
+    outcome: not_reproduced
+    reason: The 100 uA proportions are 0.058 and 0.106 (reading
+      a) and 0.057 and 0.091 (reading b), against 0.092 and 0.175 +- 10%. The criterion has no partial clause, and fig5-fsrs-proportion was changed to not
+      reproduced for that reason; the verifier (round 2) asks for one rule throughout, and under it
+      this claim is not reproduced.
   notebook: reproduce_hickman_2026.ipynb
   output: claim:figs3e-early-windows
   measured:
@@ -304,11 +327,11 @@ outcomes:
     the code's classes (616 FS and 1352 RS units), FS 0.0196 and 0.0227 and RS 0.0111 and 0.0221 at 5
     and 100 uA. Within the evoked potential (reading b, the code's boundaries as outside input) the closest
     is reading (c) of fig4i, FS 0.0275 and 0.0324 and RS 0.0069 and 0.0299. Responders are sparse in both
-    classes, and class and interaction have no effect under the code's classes (class p 0.437 over all
-    units, 0.821 within). The amplitude term, which the paper's F = 3.04 with p = 0.028 implies is categorical,
+    classes, and class and interaction have no effect under the code's classes (class p 0.437 over all units;
+    0.983, 0.608 and 0.821 within, under readings a, b and c of fig4i). The amplitude term, which the paper's F = 3.04 with p = 0.028 implies is categorical,
     has p = 0.123 over all units and 0.039, 0.005 and 0.051 within under the three readings; with amplitude
     numeric p is 0.037 or less. Under the Methods' k-means (one run) the class effect is significant (F
-    = 4.85, p = 0.028), and in 4 of 20 k-means runs from other seeds and initialisations.
+    = 4.85, p = 0.028), and in 4 of 20 k-means runs (that run and 19 from other seeds and initialisations).
   deviations:
   - FS and RS classes shown under the code's 0.4 ms duration threshold and the Methods' k-means; the outcome
     is the same under both.
@@ -326,8 +349,8 @@ outcomes:
     111 against 267 um; waveform F = 7.02, p = 0.0090) and amplitude has an effect (F = 3.95, p = 0.0097);
     FS 205 um at 5 uA and RS 556 and 183 um at 5 and 100 uA are within 10%. With the code's coordinates
     F = 8.04, p = 0.0052 and F = 4.10, p = 0.0080, the paper's values. Under the Methods' k-means classes
-    the waveform effect is not significant (F = 2.96, p = 0.0874). Over 20 k-means runs from other seeds
-    and initialisations (296 to 470 FS units) the waveform effect is never significant (p 0.087 to 0.401);
+    the waveform effect is not significant (F = 2.96, p = 0.0874). Over 20 k-means runs (that run and 19 from
+    other seeds and initialisations; 296 to 470 FS units) the waveform effect is never significant (p 0.087 to 0.401);
     the run of lowest within-cluster sum of squares gives p = 0.127.
   deviations:
   - Assumed the code's FS and RS classes (a 0.4 ms duration threshold), where the Methods describe k-means.
@@ -338,6 +361,13 @@ outcomes:
 - claim: fig5i-fs-within-ep
   outcome: partially_reproduced
   assumed: true
+  proposed:
+    outcome: not_reproduced
+    reason: The RS fraction at 5 uA is 0.400 against 0.33 +- 0.033 under the
+      code's classes, and under the k-means classes the FS fractions (1.000 from 2 units) are outside
+      tolerance. The criterion has no partial clause, and fig5-fsrs-proportion was changed to not
+      reproduced for that reason; the verifier (round 2) asks for one rule throughout, and under it
+      this claim is not reproduced.
   notebook: reproduce_hickman_2026.ipynb
   output: claim:fig5i-fs-within-ep
   measured:
@@ -364,13 +394,20 @@ outcomes:
   notes: With the code's classes and 1 ms bins (the code's), FS and RS early firing differ at every amplitude
     (Holm-Sidak adjusted p 0.0056, 0.0038, 0.0127, 0.0127; 70 bins per class). With the legend's 2 ms
     bins no adjusted p is below 0.05 (0.0598 to 0.1151). Under the Methods' k-means classes only 100 uA
-    differs (1 ms bins, adjusted p 0.0139). Over 20 k-means runs from other seeds and initialisations
-    all four amplitudes differ in 9 and one in 11.
+    differs (1 ms bins, adjusted p 0.0139). Over 20 k-means runs (that run and 19 from other seeds
+    and initialisations) all four amplitudes differ in 9 and one in 11.
   deviations:
   - Assumed the code's FS and RS classes (see fig5j-fs-closer).
   - Seven recordings with cathodal pulses, where the legend gives nine.
 - claim: fig6c-modulation-cortex
   outcome: partially_reproduced
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion asks that the region, amplitude and
+      interaction terms have p < 0.001 under every reading; under reading c the region term has p =
+      0.457 and no amplitude comparison has p < 0.001. The criterion has no partial clause, and fig5-fsrs-proportion was changed to not
+      reproduced for that reason; the verifier (round 2) asks for one rule throughout, and under it
+      this claim is not reproduced.
   notebook: reproduce_hickman_2026.ipynb
   output: claim:fig6c-modulation-cortex
   measured:
@@ -396,11 +433,12 @@ outcomes:
   - 13.91
   - 13.48
   notes: With the legend's groups (HVA LM, AM and PM, 120 units; subcortical CA1, subiculum, dentate gyrus
-    and superior colliculus, 460 units, 273 of them CA1 units that the code's list leaves out) HVA units
+    and superior colliculus, 460 units in the seven recordings with cathodal pulses, 273 of them CA1
+    units that the code's list leaves out) HVA units
     have a magnitude of 13.91 at 100 uA and subcortical units 13.26, Tukey p = 0.784; the distances do
     not differ (Mann-Whitney p = 0.54), as in the paper. With the code's subcortical list (351 units)
     the values are 13.91 and 13.48, Tukey p = 0.902. With the code's broader HVA group (any layered name
-    outside V1, 349 units, of which 151 are superior colliculus or dentate gyrus units) the values are
+    outside V1, 349 units, of which 91 are superior colliculus or dentate gyrus units) the values are
     15.82 and 13.68 and Tukey p = 0.0202, but the distances then differ (p = 5.92e-08). The paper's 15.82
     is the code's group; the legend's groups show no difference.
   deviations:
@@ -420,8 +458,8 @@ outcomes:
   notes: With zetapy 2.7.2 getZeta (the function the code calls) the proportion of cortical circuit responders
     is 0.125, 0.209, 0.520 and 0.785 and of subcortical ones 0.089, 0.094, 0.164 and 0.360 (7 recordings),
     above one half for cortex at 50 and 100 uA. The cathodal model gives amplitude F = 89.48 (p = 6.84e-13),
-    region F = 36.59 (p = 1.61e-07) and interaction F = 15.26 (p = 2.72e-04); the Results' cathodal values
-    are F region 40.14 and interaction 15.61. Two values are just outside 10% (cortical 0.125 against
+    region F = 36.59 (p = 1.61e-07) and interaction F = 15.26 (p = 2.72e-04); the Results print F region 40.14
+    and interaction 15.61 next to F amplitude 175.18, without naming the model. Two values are just outside 10% (cortical 0.125 against
     0.14, subcortical 0.089 against 0.08 at 5 uA). The recomputed p-values agree with the paper's cached
     ones (Pearson r = 0.992, same decision for 0.970 of 7980 tests), and the cached ones give 0.14, 0.21,
     0.52, 0.79 and 0.08, 0.09, 0.17, 0.35 on the dataset's units, the paper's values, and amplitude F
@@ -469,8 +507,8 @@ outcomes:
   notes: Under readings (a, i, x), all good stable units, the whole population and DRP, DRP is higher
     on high-state trials at every amplitude (0.0124 against 0.0120 at 5 uA, 0.0143 against 0.0126, 0.0159
     against 0.0150, 0.0165 against 0.0159 at 100 uA; FDR p 0.0016 or less); the cortical population gives
-    the same (FDR p up to 0.0156). The values are about a quarter of the paper's (0.051 and 0.056 at 5
-    uA, 0.104 and 0.107 at 100 uA), and no reading reaches them; among the 99 direct responders the values
+    the same (FDR p up to 0.0156). The values are about a quarter of the paper's at 5 uA (0.051 and
+    0.056) and a sixth at 100 uA (0.104 and 0.107), and no reading reaches them; among the 99 direct responders the values
     are 0.12 to 0.25 and no difference is significant (FDR p 0.3008 to 0.9463). With nDRP over all units
     the low state is higher at every amplitude (FDR p 0.0336 or less).
 - claim: fig6g-dimensionality-collapse
@@ -543,8 +581,9 @@ findings:
 - kind: code_mismatch
   statement: The stimulation contact coordinates of jlh31 and jlh32 in the trials table differ from those
     in the paper's code repository by 206 um (100, 150, -100) and 373 um (370, 0, -50); the other seven
-    recordings agree exactly. With the code's coordinates the distance results of Figure 4H match the
-    paper exactly; with the dataset's, the 5 against 100 uA KS test is no longer significant after correction.
+    recordings agree exactly. With the code's coordinates the distance results of Figure 4H give the
+    paper's statistics and most of its values (not the 50 uA extent, 868 against 965 um, or the 50 against
+    100 uA KS p, 0.8245 against 0.083); with the dataset's, the 5 against 100 uA KS test is no longer significant after correction.
 - kind: metadata_error
   statement: The file of session jlh49v1, which the paper and its code treat as a separate recording and
     mouse, is filed under subject jlh48. Its subject age (P381D) is one day more than that of the jlh48
@@ -557,7 +596,8 @@ findings:
 - kind: metadata_insufficient
   statement: The units table holds neither the waveform classes (FS, RS, up, axon) nor the stability flags
     the paper uses to select units; both are recomputed here (the stability filter gives the same number
-    of units per condition as the code's intermediate table).
+    of units per cathodal and anodal condition as the code's intermediate table direct_df.csv, and 1 to
+    5 more or fewer per bipolar condition).
 - kind: selection_undocumented
   statement: The dandiset holds ten recordings; the paper analyses nine. The tenth, jlh41 ("lots of noise
     issues ... not much analyzed yet here"), has no CCF coordinates or regions, and the dandiset does
@@ -579,7 +619,8 @@ findings:
     responders significantly closer than RS responders (p 0.087 to 0.401).
 - kind: code_mismatch
   statement: For Figure 6D the code's HVA group takes any CCF name with "layer" outside V1, which adds
-    151 superior colliculus and dentate gyrus units to LM, AM, PM and other areas, and its subcortical
+    superior colliculus and dentate gyrus units to LM, AM, PM and other areas (151 good stable units in
+    the nine recordings, 91 in the seven with cathodal pulses), and its subcortical
     list has no CA1 (315 good stable units); the legend names LM, AM and PM, and CA1, subiculum, dentate
     gyrus and superior colliculus. The paper's 15.82 comes from the code's groups; with the legend's groups
     HVA and subcortical modulation do not differ (13.91 against 13.26, Tukey p = 0.784).
@@ -944,4 +985,291 @@ verifications:
     outcome: blocked
     reason: The archive holds only the 10 files of the acute recordings; there are no behaviour files.
       Nothing in these claims can be tested.
+    response: No change.
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-2; same harness, separate context, did not write
+    the notebook)
+  reviewed: 'Round 2. The full executed notebook of the author-revise-1 run (commit b357179b9) with its
+    conclusions and summary, the README, the attempt record, the helper module and the claims file, with
+    the paper. The verifier disagrees with four outcomes (fig4f, fig5i, figs3e, fig6c: partially reproduced
+    where the criteria have no partial clause) and quoted sentences of the conclusions and the record
+    that the outputs do not support.'
+  results:
+  - claim: fig1l-saturation-amplitude
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: figs1b-saturation-polarity
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig2g-extent-increases
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig2g-extent-sublinear
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig2-extent-polarity
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig2h-probe-identity
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: figs2gh-magnitude-linear
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig3c-volume
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig3e-ventral-compression
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig3fg-anisotropy-strength
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig3h-com-displacement
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig4d-latency-trough
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Its earlier point B7 ("across parameters") is a claims-file question that does not
+      bear on a conclusion; the record asks it of a reader.
+    response: No change.
+  - claim: figs3cd-gmm-window
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig4f-responders-within-ep
+    agrees: false
+    outcome: not_reproduced
+    reason: 'N1. The criterion has no partial clause; RS at 5 uA is 0.400 against 0.333 +- 0.033 (cell
+      16), so by the rule used for fig5-fsrs this is not reproduced. The FS/RS assumption is stated but
+      the outcome does not depend on it: k-means RS fractions also fail at 5 uA (0.520). The outcome turns
+      on the contact coordinates.'
+    response: Outcome kept as partially_reproduced, the verified outcome cannot change in round 2; not_reproduced
+      written under proposed, for a third round, with a note in the Result cell and the Summary.
+  - claim: fig4h-extent-constant
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The sentence that with the code's coordinates the distance results match the paper
+      exactly is contradicted by the 50 uA extent of 868 against the paper's 965 +- 96.5 (cell 19), and
+      cell 20 calls 1179, 884, 868 and 522 the paper's values. B5 (the coordinates of jlh31 and jlh32)
+      only the authors can settle.
+    response: 'Corrected the notes, the Result cell, the README, the Summary and the coordinate finding:
+      with the code''s coordinates the F and p and the means at 5, 25 and 100 uA match, and 868 um at
+      50 uA is just outside 10% of 965 um.'
+  - claim: fig4h-distance-decreases
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the criterion has a partial clause. The 25 uA mean turns on the contact coordinates
+      of jlh31 and jlh32 (B5), which only the authors can settle.
+    response: No change; the code_mismatch finding asks the authors.
+  - claim: fig4h-ks-distinct
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The outcome turns on the contact coordinates of jlh31 and jlh32 (B5). With the code's
+      coordinates the 50-100 uA adjusted KS p is 0.8245 against the paper's 0.083 (cell 25), so they do
+      not match the paper exactly.
+    response: Notes, README, Summary and finding now give 0.8245 against 0.083 and no longer say the code's
+      coordinates match the paper exactly.
+  - claim: fig4i-proportion-within-ep
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (N2). The outcome rests on reading (c), the raw CCF distance signed like norm_distance
+      (cell 2); the criterion says raw CCF distance without a sign, the claim that the code's distance
+      column is signed this way is shown in no output, and the unsigned version was not run. Readings
+      (a) and (b) fail at 50 and 100 uA; the near-exact match with the code's coordinates (F = 5.41, p
+      = 0.0201) supports reading (c).
+    response: 'Cited the code''s passage (figure4_figure5_figure6.ipynb cell 7, dists[cross_index:] =
+      -np.abs(...)) and added a check on the code''s direct_df.csv, which has distance <= 0 exactly where
+      norm_distance <= 0 in all rows. Ran the unsigned distance as a variant: 0.0129, 0.0221, 0.0312,
+      0.0293 (F = 4.55, p = 0.0330), 0.0221 just outside 0.020 +- 0.002. Outcome kept; it rests on the
+      code''s sign, which the code applies, and the notes say so.'
+  - claim: fig4j-drp-increases
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The sentence that the number of good stable units per condition equals that of the
+      code''s direct_df.csv is not backed by any output: cell 8 prints the counts, but nothing compares
+      them with direct_df.csv.'
+    response: 'Added a cell that loads direct_df.csv (listed under inputs as a check) and prints both
+      counts: the four cathodal and four anodal conditions are equal, the bipolar ones differ by 1 to
+      5 units. Notes, deviation, finding and Summary corrected to say so.'
+  - claim: figs3e-early-windows
+    agrees: false
+    outcome: not_reproduced
+    reason: N1. The criterion has no partial clause; the 100 uA proportions are 0.058 and 0.106 against
+      0.092 and 0.175 (cell 34). The rule the record used to change fig5-fsrs makes this not reproduced;
+      in round 1 it accepted partial and revises that so one rule is applied throughout.
+    response: Outcome kept as verified in round 1; not_reproduced written under proposed, for a third
+      round, with a note in the Result cell and the Summary.
+  - claim: fig5bc-amplitude-clusters
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Its earlier point B8 (the lax "some assignment" clause) is a claims-file question
+      asked of a reader.
+    response: No change.
+  - claim: fig5ef-polarity-clusters
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the assignment search was added (B1 resolved).
+    response: No change.
+  - claim: fig5-fsrs-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees: no reading gets the four proportions within tolerance (cell 43) and the criterion
+      has no partial clause. The FS/RS assumption is stated, and the outcome does not depend on it. "20
+      k-means runs from other seeds" is wrong, as one of the 20 (points 0) is the original run. "class
+      p ... 0.821 within the evoked potential" holds only under reading (c); readings (a) and (b) give
+      0.983 and 0.608.'
+    response: The notes, Result cell and stability table now say the 20 runs are the original run and
+      19 others, and give class p 0.983, 0.608 and 0.821 under the three readings.
+  - claim: fig5j-fs-closer
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The assumption of the code''s 0.4 ms threshold classes is stated and reasonable:
+      with the code''s coordinates they give the paper''s F = 8.04 and 4.10 exactly (cell 46). Under k-means
+      the waveform term is never significant over 20 runs (cell 55), so the outcome rests on the assumption.
+      "20 k-means runs from other seeds" is wrong: one is the original run.'
+    response: Corrected to the original run and 19 others in the notes and the Result cell; the table
+      now says which run is the original.
+  - claim: fig5i-fs-within-ep
+    agrees: false
+    outcome: not_reproduced
+    reason: 'N1. The criterion has no partial clause; RS at 5 uA is 0.400 (cell 49). The FS/RS assumption
+      is stated but the outcome does not depend on it: under k-means FS is 1.000 at 5 uA from n = 2. The
+      outcome turns on the contact coordinates.'
+    response: Outcome kept as partially_reproduced; not_reproduced written under proposed, for a third
+      round, with a note in the Result cell and the Summary.
+  - claim: figs6b-fsrs-early-firing
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The threshold-class assumption is reasonable; the claim holds at all four amplitudes
+      in 9 of 20 k-means runs and in the lowest-WCSS run, so it depends on the assumption less. "20 k-means
+      runs from other seeds" is wrong: one is the original run.'
+    response: Corrected to the original run and 19 others in the notes and the Result cell.
+  - claim: fig6c-modulation-cortex
+    agrees: false
+    outcome: not_reproduced
+    reason: N1. The criterion has no partial clause and requires every reading to hold; under reading
+      (c) the region term has p = 0.457 (cell 57). In round 1 it accepted partial and revises that so
+      one rule is applied throughout.
+    response: Outcome kept as verified in round 1; not_reproduced written under proposed, for a third
+      round, with a note in the Result cell and the Summary.
+  - claim: fig6d-hva-subcortical
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. "460 units, of which 273 are CA1": 273 is printed nowhere; cell 60 prints 315 Field
+      CA1 units over all nine recordings, while the 460 come from the seven cathodal recordings. "349
+      units, of which 151 are superior colliculus or dentate gyrus units": 151 is the nine-recording count,
+      and the 349 are from seven recordings.'
+    response: 'The cell now prints, per grouping, the Field CA1 units among the subcortical and the superior
+      colliculus and dentate gyrus units among the HVA, in the seven recordings: 273 of 460, and 91 of
+      349. The notes say 91, and the code_mismatch finding gives 151 over nine recordings and 91 over
+      seven.'
+  - claim: fig6e-circuit-responders
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees; the criterion has a partial clause. The full Amplitude x Polarity x Region model
+      is fitted only on the cached p-values (B11 remainder); the outcome is partial either way. "The Results''
+      cathodal values are F region 40.14 and interaction 15.61": the Results print these next to F amplitude
+      = 175.18 and do not call them cathodal.'
+    response: 'Notes corrected: the Results print F region 40.14 and interaction 15.61 next to F amplitude
+      175.18 without naming the model. The full model on recomputed p-values was not run (about 20 more
+      minutes of ZETA); the outcome does not turn on it.'
+  - claim: fig6f-no-propagating-wave
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The assumption of the code''s peak rule without the 4 ms width filter is stated and
+      reasonable: the criterion says its peaks come from the code, which applies no width filter, and
+      the paper''s r (-0.03, 0.09) fit the code''s rule (-0.001, 0.047) better than the width-filtered
+      one (0.131, -0.115; cell 66). It contradicts the criterion''s literal "width at least 4 ms", under
+      which the outcome is not reproduced; the claims file probably mis-transcribed the code. Its round-1
+      statement that the width filter does not affect the conclusion was wrong.'
+    response: No change; the question is already in questions/000774.yaml and in a methods_unavailable
+      finding.
+  - claim: figs9-state-drp
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees; the criterion has a partial clause. "about a quarter of the paper''s ... 0.104 and
+      0.107 at 100 uA": at 100 uA, 0.0159 against 0.104 is about one sixth (cell 69).'
+    response: Notes and Result cell now say about a quarter at 5 uA and a sixth at 100 uA.
+  - claim: fig6g-dimensionality-collapse
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. At 5 uA the 0-20 ms rise (1.024) does not exceed the pre-stimulus maximum (1.079),
+      so the rise stands out from baseline only at 25 and 50 uA; the criterion does not ask for this comparison,
+      so the outcome stands, and the notes now say so (B10).
+    response: No change.
+  - claim: fig7d-learning
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig7e-generalization
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig7g-no-amplitude-effect
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig7h-pulses-detected
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: figs10c-anodal-cathodal
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig7h-trains-better
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig7i-contrast-and-equivalence
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: fig7j-habituation
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: no-learning-across-sessions
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
+    response: No change.
+  - claim: figs10e-reaction-times
+    agrees: true
+    outcome: blocked
+    reason: Listed among the 21 blocked claims the verifier agrees with; no further point.
     response: No change.

@@ -343,6 +343,17 @@ def code_ep_bounds():
     return out
 
 
+def code_direct_df():
+    """The code's intermediate table of units and conditions (intermediates/direct_df.csv at
+    commit c4aaa608: one row per good stable unit and condition, with its distance,
+    norm_distance and norm_prob). An outside input, used only as a check: the number of units
+    per condition, and the sign the code gives its raw `distance` (negative from the channel
+    closest to the contact on, as norm_distance; figure4_figure5_figure6.ipynb cell 7)."""
+    import io
+    url = CODE_REPO.replace("/recordings", "/intermediates/direct_df.csv")
+    return pd.read_csv(io.BytesIO(requests.get(url, timeout=120).content))
+
+
 def spike_prob(train, stims, win=0.002, base=(0.007, 0.005)):
     """DRP, baseline probability and nDRP (base = (start, end) before onset, in s)."""
     stims = np.asarray(stims)
