@@ -1,0 +1,518 @@
+schema_version: 2
+id: 000774-hickman-2026-01
+dataset:
+  archive: dandi
+  id: "000774"
+  version: 0.260520.1753
+  doi: 10.48324/dandi.000774/0.260520.1753
+paper: doi:10.1016/j.celrep.2026.117420
+date: 2026-10-31
+entry: 000774-hickman-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41222527911
+inputs:
+- what: Per-channel CCF coordinates of each probe and of the 16 stimulation contacts
+    (recordings/*/final_coords/probe_coords_adj.pkl), used to check the dataset's coordinates and
+    as a variant of the distances in fig4h-extent-constant, fig4h-distance-decreases,
+    fig4h-ks-distinct and fig5j-fs-closer. No outcome rests on them.
+  source: https://github.com/denmanlab/estim_populations at commit c4aaa608314c8e8e91aee422baa69cd1b443a682
+- what: The paper's cached ZETA p-values (recordings/*/zetascores300ms.pkl), compared with the
+    p-values recomputed from the dataset in fig6e-circuit-responders. No outcome rests on them.
+  source: https://github.com/denmanlab/estim_populations at commit c4aaa608314c8e8e91aee422baa69cd1b443a682
+outcomes:
+- claim: fig1l-saturation-amplitude
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Saturation is measured on the raw AP band, which the dandiset does not hold (its NWB files
+    have units and trials only, no acquisition). The paper says the raw AP, LFP and NI-DAQ binaries
+    are available on request; no public copy was found on DANDI (searches for Denman and Hickman
+    return only this dandiset) or in the code repository.
+- claim: figs1b-saturation-polarity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw AP band (see fig1l-saturation-amplitude), and depends on that claim.
+- claim: fig2g-extent-increases
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The evoked-potential extents are computed from the raw AP band, which is not in the
+    dandiset (see fig1l-saturation-amplitude). The code repository holds the extents it computed
+    (EP_boundaries_w_array_distances_curated.pkl, EP_distances.pkl), but these are results derived
+    from the missing data, not data, so the claim was not tested on them.
+- claim: fig2g-extent-sublinear
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw AP band; depends on fig2g-extent-increases.
+- claim: fig2-extent-polarity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw AP band; depends on fig2g-extent-increases.
+- claim: fig2h-probe-identity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw AP band; depends on fig2g-extent-increases.
+- claim: figs2gh-magnitude-linear
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw AP band; depends on fig2g-extent-increases.
+- claim: fig3c-volume
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The volumes are built from the six evoked-potential extents, which need the raw AP band;
+    depends on fig2g-extent-increases.
+- claim: fig3e-ventral-compression
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw AP band; depends on fig3c-volume.
+- claim: fig3fg-anisotropy-strength
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw AP band; depends on fig3c-volume.
+- claim: fig3h-com-displacement
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the raw AP band; depends on fig3c-volume.
+- claim: fig4d-latency-trough
+  outcome: reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig4d-latency-trough
+  measured: 1.95
+  notes: The trough of the first-spike latency histogram (0.1 ms bins, centre in 0.5 to 5 ms) lies
+    at 1.95, 1.75, 1.95 and 1.95 ms for 5 to 100 uA cathodal pulses, median 1.95 ms, with a higher
+    bin before and after it in all 12 conditions. Over all 12 polarity and amplitude conditions the
+    median is 1.45 ms (anodal and bipolar troughs 1.05 to 1.45 ms); the criterion takes the four
+    cathodal amplitudes, as the code does. The later cathodal peaks are at 3.75 to 11.85 ms. With the
+    first 75 trials and stable units only, the cathodal median is 1.85 ms.
+  deviations:
+  - Latencies come from all trials of the condition's contact and all good units, as the code
+    (figure4_figure5_figure6.ipynb cell 20), from the seven recordings that hold cathodal pulses.
+- claim: figs3cd-gmm-window
+  outcome: reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:figs3cd-gmm-window
+  measured:
+  - 0.683
+  - 1.139
+  - 1.221
+  - 1.47
+  notes: Four-component mixtures give windows of 0.683, 1.139, 1.221 and 1.470 ms, and BIC chooses
+    four components at every amplitude, so readings (a) and (b) agree. Over the seven recordings
+    with cathodal pulses the responder proportion with the GMM windows does not differ from the 2 ms
+    window at any amplitude (Wilcoxon, FDR-adjusted p 1.0, 0.667, 0.25 and 0.25) under both
+    baseline readings. Pooled over amplitudes, the GMM windows give fewer responders (Wilcoxon p =
+    0.0022), a test the legend does not name.
+  deviations:
+  - Seven recordings, where the S3D legend implies nine; two recordings hold no cathodal pulses.
+  - The crossover is taken as the first latency after the earliest component's mean where the
+    second component's posterior reaches the first's; the Methods say only "crossover points where
+    adjacent component responsibilities were equal" (STAR Methods, Gaussian mixture models).
+- claim: fig4f-responders-within-ep
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the evoked-potential boundaries of fig2g-extent-increases, which need the raw AP
+    band. The rest of the test (cathodal responders and their signed distances) runs on the dataset
+    (see fig4h-distance-decreases).
+- claim: fig4h-extent-constant
+  outcome: reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig4h-extent-constant
+  measured:
+  - 1121
+  - 825
+  - 813
+  - 452
+  notes: The per-recording extent of cathodal responders does not change with amplitude (one-way
+    ANOVA F = 1.250, p = 0.317, 6, 6, 6 and 7 recordings). The means are 1121, 825, 813 and 452 um;
+    those at 50 and 100 uA are outside 10% of 965 and 522 um. With the code's coordinates the
+    means are 1179, 884, 868 and 522 um and F = 1.265, p = 0.312, the paper's values (its code also
+    prints 868 at 50 uA).
+  deviations:
+  - The signed distance needs CCF coordinates of every channel, which the dandiset does not give;
+    they are fitted per probe by a straight line through the units' coordinates on their channel
+    number. The distances use the dataset's stimulation contact coordinates, which differ from the
+    code's for jlh31 and jlh32.
+- claim: fig4h-distance-decreases
+  outcome: partially_reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig4h-distance-decreases
+  measured:
+  - 414
+  - 264
+  - 129
+  - 142
+  notes: Mean signed distances of cathodal responders are 414, 264, 129 and 142 um (29, 34, 45 and
+    45 responders). The tests hold (ANOVA F = 3.97, p = 0.0094; Tukey 5 against 50 uA p = 0.0134, 5
+    against 100 uA p = 0.0199, other pairs above 0.42). The 25 uA mean is outside 10% of 300 um. With
+    the code's coordinates the means are 426, 300, 137 and 146 um and F = 4.15, p = 0.0074, the
+    paper's values; the difference is the dataset's contact coordinates for jlh31 and jlh32.
+  deviations:
+  - Signed distances as in fig4h-extent-constant (fitted channel coordinates, the dataset's contact
+    coordinates).
+- claim: fig4h-ks-distinct
+  outcome: not_reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig4h-ks-distinct
+  notes: With the dataset's coordinates, 5 against 100 uA has KS p = 0.0193 and Holm-Sidak adjusted
+    p = 0.1105, so the two populations do not differ after correction; 5-25, 25-50, 25-100 and 50-100
+    do not differ (adjusted p 0.5255, 0.8290, 0.7439, 0.8290), and 5-50 has adjusted p 0.1309 (not
+    judged). With the code's coordinates the adjusted p are 0.5662, 0.0164, 0.5662, 0.3625 and 0.8245
+    for 5-25, 5-100, 25-50, 25-100 and 50-100, which reproduce the claim (the paper prints 0.083 for
+    50-100). The outcome turns on the stimulation contact coordinates of jlh31 and jlh32, which in the
+    dataset differ from those the paper used.
+  deviations:
+  - Signed distances as in fig4h-extent-constant.
+- claim: fig4i-proportion-within-ep
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the evoked-potential boundaries of fig2g-extent-increases, which need the raw AP band.
+- claim: fig4j-drp-increases
+  outcome: reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig4j-drp-increases
+  measured:
+  - 99
+  - 0.116
+  - 0.142
+  - 0.194
+  - 0.233
+  notes: 103 units respond (nDRP > 0.15) at some cathodal amplitude and 99 have a value at all four
+    (from 7 recordings, 2 to 28 each). Mean nDRP is 0.116, 0.142, 0.194 and 0.233. Reading (a), the
+    code's regression on numeric amplitude, gives F = 12.779, p = 0.00039 (paper F = 12.78, p =
+    0.0004); (b) a one-way ANOVA with amplitude categorical gives F = 4.44, p = 0.0044 and (c) a
+    repeated-measures ANOVA F = 4.66, p = 0.0034. The number of good stable units per cathodal
+    condition (2056, 2068, 2070, 2071) equals that of the code's intermediate table direct_df.csv.
+  deviations:
+  - The stability filter is recomputed from the Methods (the paper's flags are not in the dataset);
+    the time origin of the fit and the set of units the quartiles are taken over are not stated and
+    were chosen as the first spike of the recording and all units (a standard choice). The unit
+    counts per condition match the code's.
+- claim: figs3e-early-windows
+  outcome: partially_reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:figs3e-early-windows
+  measured:
+  - 0.058
+  - 0.106
+  notes: Broader windows give more responders and a stronger amplitude dependence. Under reading (a)
+    the mean proportions at 100 uA are 0.021 (2 ms), 0.058 (5 ms) and 0.106 (10 ms), and both broader
+    windows exceed 2 ms (FDR p = 0.0208; 0.0417 under reading b); from 5 to 100 uA the proportion
+    rises by 0.005, 0.041 and 0.073. The 100 uA proportions are below the paper's 0.092 and 0.175 under
+    both readings (b gives 0.057 and 0.091). With seven recordings the smallest exact Wilcoxon p is
+    0.0156.
+  deviations:
+  - Seven recordings in place of nine.
+- claim: fig5bc-amplitude-clusters
+  outcome: reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig5bc-amplitude-clusters
+  measured:
+  - 0.702
+  - 0.352
+  - 0.586
+  - 0.192
+  - 0.152
+  - 0.071
+  notes: Under reading (a), the code's unscaled nDRP, Ward clustering of the 99 responders gives CCC
+    = 0.702, silhouette = 0.352 and clusters of 15, 19, 40, 13, 7 and 5 units. Labelling them 25 uA,
+    5 uA, dose, dose, 100 uA and dose gives 15.2%, 19.2%, 58.6% and 7.1%, the paper's fractions, the
+    assignment the criterion allows. By the claims file's half-peak rule the 7-unit cluster peaks at
+    50 uA (mean nDRP 0.651 against 0.343 at 100 uA) and the 13-unit cluster is the one selective for
+    100 uA, so no assignment that follows the clusters' peaks matches; the paper's "100 uA" cluster
+    is better described as selective for 50 uA. Reading (b), vectors divided by their maximum, gives
+    CCC 0.840, silhouette 0.501 and no matching assignment.
+- claim: fig5ef-polarity-clusters
+  outcome: partially_reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig5ef-polarity-clusters
+  measured:
+  - 0.773
+  - 0.538
+  - 0.623
+  - 0.205
+  - 0.232
+  - 0.186
+  notes: Under reading (a), the code's population of units responsive to any polarity (220 units, as
+    the code), CCC = 0.773 and silhouette = 0.538 are within 10% and three clusters prefer one
+    polarity; anodal (0.232) and cathodal (0.186) match, bipolar (0.205) is below 0.277, and the
+    polarity-specific total is 0.623 against 0.691. With the bipolar pair whose cathodal contact lies
+    nearest layer 5 units (Methods, "in or near Layer 5"; changes jlh34 only), 235 units give 0.260,
+    0.213 and 0.196, cathodal just outside 0.177 +- 0.018. Among the 99 cathodal responders (reading
+    b) no cluster prefers bipolar or anodal pulses. A polarity bias is present; the fractions do not
+    all match under one reading.
+  deviations:
+  - The contact nearest layer 5 is judged from the region of the nearest unit, as the dataset gives
+    no region for the contacts.
+- claim: fig5-fsrs-proportion
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig5-fsrs-proportion
+  measured:
+  - 0.0196
+  - 0.0227
+  - 0.0111
+  - 0.0221
+  notes: Under the code's classes (616 FS and 1352 RS units), responders are sparse in both classes
+    (FS 0.0196, 0.0097, 0.0162, 0.0227; RS 0.0111, 0.0200, 0.0251, 0.0221 at 5 to 100 uA). Amplitude
+    has an effect when numeric (F = 4.33, p = 0.037) and not when categorical (F = 1.93, p = 0.123);
+    class (p = 0.437) and interaction (p = 0.150) have none. Under the Methods' k-means (332 FS) the
+    class effect is significant (F = 4.85, p = 0.028). The four proportions the criterion compares are
+    outside 10% of 0.032, 0.040, 0.013 and 0.037. Reading (b), units within the evoked potential,
+    which may be what the paper's values describe, needs the evoked-potential boundaries and was not
+    run.
+  deviations:
+  - Assumed the FS and RS classes of the paper's code (dlab utils.classify_waveform_shape called with
+    kmeans=0, a 0.4 ms duration threshold), where the Methods describe k-means on normalised duration,
+    peak-to-trough ratio and repolarisation slope. The code is what the paper ran, its classes give
+    the paper's statistics exactly in fig5j-fs-closer, and the Methods leave the k-means normalisation
+    and initialisation open; the k-means reading (dlab's k-means branch) is shown. Asked of the
+    authors (see findings).
+  - Reading (b) of the criterion was not run (no evoked-potential boundaries).
+- claim: fig5j-fs-closer
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig5j-fs-closer
+  measured:
+  - 205
+  - 556
+  - 183
+  notes: With the code's classes and the dataset's coordinates FS responders lie closer than RS (mean
+    111 against 267 um; waveform F = 7.02, p = 0.0090) and amplitude has an effect (F = 3.95, p =
+    0.0097); FS 205 um at 5 uA and RS 556 and 183 um at 5 and 100 uA are within 10%. With the code's
+    coordinates F = 8.04, p = 0.0052 and F = 4.10, p = 0.0080, the paper's values. Under the Methods'
+    k-means classes the waveform effect is not significant (F = 2.96, p = 0.0874).
+  deviations:
+  - Assumed the code's FS and RS classes (see fig5-fsrs-proportion).
+  - Signed distances as in fig4h-extent-constant.
+- claim: fig5i-fs-within-ep
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig4f-responders-within-ep, which needs the evoked-potential boundaries (raw AP
+    band).
+- claim: figs6b-fsrs-early-firing
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:figs6b-fsrs-early-firing
+  notes: With the code's classes and 1 ms bins (the code's), FS and RS early firing differ at every
+    amplitude (Holm-Sidak adjusted p 0.0056, 0.0038, 0.0127, 0.0127; 70 bins per class). With the
+    legend's 2 ms bins no adjusted p is below 0.05 (0.0598 to 0.1151). Under the Methods' k-means
+    classes only 100 uA differs (1 ms bins, adjusted p 0.0139).
+  deviations:
+  - Assumed the code's FS and RS classes (see fig5-fsrs-proportion).
+  - Seven recordings with cathodal pulses, where the legend gives nine.
+- claim: fig6c-modulation-cortex
+  outcome: partially_reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig6c-modulation-cortex
+  measured:
+  - 12.6
+  - 20.21
+  - 12.27
+  - 13.48
+  notes: Under reading (a), the code's (0 to 500 ms, 10 ms bins), the magnitudes are 12.60, 13.37,
+    15.11, 20.21 (cortical, 1287 units) and 12.27, 12.60, 12.08, 13.48 (subcortical, 351 units), the
+    paper's values, with region F = 106.27, amplitude F = 487.36 and interaction F = 90.88 (all p <
+    1e-20), and cortical against subcortical Student p = 4.65e-09 at 50 uA and 5.50e-29 at 100 uA.
+    Under the legend's 5 ms bins (b) the three terms hold (p 4.76e-05 or less) but the 50 uA
+    comparison has p = 1.10e-02. Under the Methods' window (c, 500 to 1000 ms) there is no region
+    effect (p = 0.457), the amplitude term has p = 1.06e-03, and no amplitude comparison has p <
+    0.001. The criterion asks for every reading, so the claim holds only in part.
+  deviations:
+  - Seven recordings with cathodal pulses, where the legend gives nine.
+- claim: fig6d-hva-subcortical
+  outcome: not_reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig6d-hva-subcortical
+  measured:
+  - 13.91
+  - 13.48
+  notes: With the legend's groups (LM, AM and PM, 120 units) HVA units have a magnitude of 13.91 at 100
+    uA and subcortical units 13.48 (351 units), Tukey p = 0.902; the distances of HVA and subcortical
+    units do not differ (Mann-Whitney p = 0.577), as in the paper. With the code's broader HVA group
+    (any layered name outside V1, 349 units, of which 151 are superior colliculus or dentate gyrus
+    units) the values are 15.82 and 13.68 and Tukey p = 0.0202, but the distances then differ (p =
+    5.92e-08). The paper's 15.82 is the code's group; the legend's group shows no difference.
+  deviations:
+  - In the code's variant each unit is put in one group (V1, then HVA, then subcortical); the code
+    lets superior colliculus units fall in both its HVA and subcortical groups.
+- claim: fig6e-circuit-responders
+  outcome: partially_reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig6e-circuit-responders
+  measured:
+  - 0.125
+  - 0.209
+  - 0.52
+  - 0.785
+  - 0.089
+  - 0.36
+  notes: With zetapy 2.7.2 getZeta (the function the code calls) the proportion of cortical circuit
+    responders is 0.125, 0.209, 0.520 and 0.785 and of subcortical ones 0.089, 0.094, 0.164 and 0.360
+    (7 recordings), above one half for cortex at 50 and 100 uA. The cathodal model gives amplitude F =
+    89.48 (p = 6.84e-13), region F = 36.59 (p = 1.61e-07) and interaction F = 15.26 (p = 2.72e-04);
+    the Results' cathodal values are F region 40.14 and interaction 15.61. Two values are just outside
+    10% (cortical 0.125 against 0.14, subcortical 0.089 against 0.08 at 5 uA). The recomputed p-values
+    agree with the paper's cached ones (Pearson r = 0.992, same decision for 0.970 of 7980 tests), and
+    the cached ones give 0.14, 0.21, 0.52, 0.79 and 0.08, 0.09, 0.17, 0.35 on the dataset's units, the
+    paper's values, and amplitude F = 172.99 and region F = 85.99 in the code's full model (paper
+    175.18 and 81.50). The difference is the resampling of the ZETA test.
+  deviations:
+  - Only the cathodal conditions were tested with ZETA (7980 tests, 9 minutes); the code's full model
+    over three polarities would take about 20 minutes more and is shown with the cached p-values.
+  - zetapy 2.7.2 imports scipy.signal.gaussian, which current scipy keeps under scipy.signal.windows;
+    the helper adds it before importing zetapy.
+  - Trials are those of the condition's first run of single 100 us pulses (the code takes the first
+    run of the amplitude and polarity, without a pulse-width filter).
+- claim: fig6f-no-propagating-wave
+  outcome: reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig6f-no-propagating-wave
+  notes: Among 614 cortical circuit responders at 50 uA cathodal, time to peak excitation (median 205
+    ms) and to peak inhibition (median 70 ms) do not correlate with signed distance (Pearson r =
+    -0.001, p = 0.987; r = 0.047, p = 0.244). Using the cathodal contact for jlh32 too gives r = 0.004
+    and 0.047 (p = 0.918 and 0.240). jlh39 and jlh49v1 hold no cathodal pulses, so the readings with
+    and without them are the same.
+- claim: figs9-state-drp
+  outcome: partially_reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:figs9-state-drp
+  measured:
+  - 0.012
+  - 0.0124
+  - 0.0159
+  - 0.0165
+  notes: Under readings (a, i, x), all good stable units, the whole population and DRP, DRP is higher
+    on high-state trials at every amplitude (0.0124 against 0.0120 at 5 uA, 0.0143 against 0.0126,
+    0.0159 against 0.0150, 0.0165 against 0.0159 at 100 uA; FDR p 0.0016 or less); the cortical
+    population gives the same (FDR p up to 0.0156). The values are about a quarter of the paper's
+    (0.051 and 0.056 at 5 uA, 0.104 and 0.107 at 100 uA), and no reading reaches them; among the 99
+    direct responders the values are 0.12 to 0.25 and no difference is significant (FDR p 0.3008 to
+    0.9463). With nDRP over all units the low state is higher at every amplitude (FDR p 0.0336 or
+    less).
+- claim: fig6g-dimensionality-collapse
+  outcome: reproduced
+  notebook: reproduce_hickman_2026.ipynb
+  output: claim:fig6g-dimensionality-collapse
+  notes: With 2 ms bins the normalised participation ratio in 12 to 150 ms is 0.982, 0.951, 0.765 and
+    0.459 and the effective dimensionality 0.986, 0.961, 0.778 and 0.476 at 5 to 100 uA, all below 1.
+    Within 0 to 20 ms the largest bin of effective dimensionality is 1.024, 1.087 and 1.094 at 5, 25
+    and 50 uA (reading b; 1.043 at 100 uA as well), while its mean over the window is 0.929, 0.994 and
+    0.960 (reading a). With 5 ms bins the largest bin exceeds 1 only at 25 and 50 uA. The code's
+    "layer" unit filter gives the same pattern.
+  deviations:
+  - Seven recordings with cathodal pulses, where the legend gives nine.
+- claim: fig7d-learning
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The behaviour of the four trained mice is not in the dandiset, which holds only the acute
+    recordings; the paper names only these NWB files as deposited, and its code reads the behaviour
+    from local CSV files. No other dandiset of the lab holds it (DANDI search for Denman and
+    Hickman).
+- claim: fig7e-generalization
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+- claim: fig7g-no-amplitude-effect
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+- claim: fig7h-pulses-detected
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+- claim: figs10c-anodal-cathodal
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+- claim: fig7h-trains-better
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+- claim: fig7i-contrast-and-equivalence
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+- claim: fig7j-habituation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+- claim: no-learning-across-sessions
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+- claim: figs10e-reaction-times
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Behaviour not deposited (see fig7d-learning).
+findings:
+- kind: data_missing
+  statement: The raw AP band, LFP band and NI-DAQ files are not deposited (the paper says they are
+    available on request), so the evoked-potential analyses of Figures 1 to 3, S1 and S2 cannot be
+    repeated, nor the comparisons of units with the evoked-potential boundaries (Figures 4F, 4I and
+    5I). 14 of the 42 claims are blocked for this reason.
+- kind: data_missing
+  statement: The behaviour of the four trained mice (Figure 7 and S10) is not deposited on DANDI or
+    elsewhere that the paper names; the paper's code reads it from local CSV files. 10 claims are
+    blocked for this reason.
+- kind: code_mismatch
+  statement: The stimulation contact coordinates of jlh31 and jlh32 in the trials table differ from
+    those in the paper's code repository by 206 um (100, 150, -100) and 373 um (370, 0, -50); the other
+    seven recordings agree exactly. With the code's coordinates the distance results of Figure 4H
+    match the paper exactly; with the dataset's, the 5 against 100 uA KS test is no longer significant
+    after correction.
+- kind: metadata_error
+  statement: The file of session jlh49v1, which the paper and its code treat as a separate recording
+    and mouse, is filed under subject jlh48. Its subject age (P381D) is one day more than that of the
+    jlh48 file, which was recorded four months later.
+- kind: metadata_insufficient
+  statement: The electrodes table holds placeholders (location "none" for all 1152 channels, x 5 to
+    53, y 0, z 3820, impedance 0), so channel CCF coordinates and regions are not given; the paper's
+    signed distances need them and here they are fitted from the units' coordinates. The stimulation
+    contacts have coordinates but no region.
+- kind: metadata_insufficient
+  statement: The units table holds neither the waveform classes (FS, RS, up, axon) nor the stability
+    flags the paper uses to select units; both are recomputed here (the stability filter gives the
+    same number of units per condition as the code's intermediate table).
+- kind: selection_undocumented
+  statement: The dandiset holds ten recordings; the paper analyses nine. The tenth, jlh41 ("lots of
+    noise issues ... not much analyzed yet here"), has no CCF coordinates or regions, and the dandiset
+    does not say it was left out.
+- kind: other
+  statement: Cathodal single pulses are in seven of the nine recordings (jlh39 and jlh49v1 hold only
+    bipolar pulses, jlh40 no bipolar), while the legends of the cathodal analyses give n = 9
+    recordings. jlh33 has 60 trials per condition, where the Methods state 75, and no anodal 50 uA
+    single pulse. Trial and spike times of jlh40 and jlh53concat are negative in part.
+- kind: code_mismatch
+  statement: The FS and RS classes of the paper's code are a 0.4 ms threshold on waveform duration
+    (dlab classify_waveform_shape called with kmeans=0), where the Methods describe k-means on three
+    normalised features. The two give 616 and 332 FS units and different outcomes for fig5j-fs-closer
+    and figs6b-fsrs-early-firing.
+- kind: methods_unavailable
+  statement: Question for the authors. Were the FS and RS classes of Figures 5G to 5J and S6 assigned
+    by k-means (Methods) or by the 0.4 ms duration threshold the code runs? This attempt assumed the
+    threshold, whose classes give the paper's statistics exactly; under k-means FS responders are not
+    significantly closer than RS responders (p = 0.087).
+- kind: code_mismatch
+  statement: For Figure 6D the code's HVA group takes any CCF name with "layer" outside V1, which adds
+    151 superior colliculus and dentate gyrus units to LM, AM, PM and other areas; the legend names
+    LM, AM and PM. The paper's 15.82 comes from the code's group; with the legend's group HVA and
+    subcortical modulation do not differ (13.91 against 13.48, Tukey p = 0.902).
+- kind: code_mismatch
+  statement: The code's map_region_to_group looks for "posteromedial area", which matches no CCF name
+    in the files ("posteromedial visual area"), so 16 PM units are left out of the cortical circuit
+    responders of Figure 6E.
+- kind: methods_unavailable
+  statement: Question for the authors. The Methods compute the modulation index over 500 to 1000 ms
+    with 5 ms bins, the Figure 6C legend over a 500 ms window from onset with 5 ms bins, and the code
+    over 0 to 500 ms with 10 ms bins; the printed magnitudes are the code's. Which is meant? Over 500
+    to 1000 ms there is no cortical against subcortical difference (p = 0.457).
