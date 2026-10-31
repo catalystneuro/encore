@@ -82,28 +82,58 @@ outcomes:
     0.0005).
   deviations:
   - 37 sessions and 1487 units, where the paper has 36 sessions and 1526 units.
+- claim: electrode-labels-gin
+  outcome: reproduced
+  notebook: reproduce_boran_2019.ipynb
+  output: claim:electrode-labels-gin
+  notes: >-
+    A link claim added by this attempt after the answer to the question on neurons-recorded, whose amended
+    criterion separates the tip-contact label updated after visual inspection of MRI (a) from the Brainnetome
+    label (b). All 502 iEEG contacts of the dandiset match a contact of the G-Node deposit by subject
+    and label, with none left over on either side; all 502 have the same anatomical label (167 "no_label_found"
+    in G-Node are "unspecific" in the dandiset) and the same coordinates (largest difference 0 mm after
+    the axis change of the dandiset's column descriptions). The deposit flags four labels as entered by
+    hand, all on contact 1 (PHL of subjects 1, 7 and 9, PHR of subject 5), each hippocampal in both deposits;
+    19 and 6 units lie on the bundles of subjects 7 and 9. So the dandiset's location is the updated label,
+    and the Brainnetome label of those four contacts is in neither deposit.
+  deviations:
+  - >-
+    The G-Node server does not serve byte ranges, so the smallest session file of each subject (260 to
+    580 MB) is read whole into memory; the dandiset's electrodes are the same in all sessions of a subject
+    (checked).
 - claim: neurons-recorded
   outcome: not_reproduced
   notebook: reproduce_boran_2019.ipynb
   output: claim:neurons-recorded
   measured:
   - 1487
-  - 446
-  - 456
-  - 585
+  - 640
+  - 421
+  - 398
   - 51.3
   notes: >-
-    The dataset holds 1487 units (paper 1526). By bundle name, as the criterion defines the regions, 446
-    are hippocampal (paper 676), 456 entorhinal (449) and 585 amygdalar (401). By the atlas label of each
-    bundle's deepest contact the counts are 640, 421 and 398 (28 under fusiform gyrus), closer to the
-    paper. Per session, 51.3 +/- 35.6 over the 29 sessions with units matches the paper's 51 +/- 35; 8
-    of the 37 sessions hold no units. A question to a reader asks whether the paper assigns regions by
-    electrode name or by atlas location (questions/000574.yaml); with the atlas reading the counts would
-    still differ from the exact expected values.
+    The dataset holds 1487 units (paper 1526, 39 fewer). The answer of 2026-10-30 changed the regions
+    from the electrode name to the label of the electrode's tip contact, with two readings. By reading
+    (a), the updated anatomical label of contact 1, 640 units are hippocampal (paper 676), 421 entorhinal
+    (449) and 398 amygdalar (401), and 28 lie under fusiform gyrus. By reading (b), the Brainnetome label,
+    615 are hippocampal and the 25 units of the two manually labelled tip contacts that carry units (subject
+    7 PHL, 19; subject 9 PHL, 6) have no deposited Brainnetome label; the other counts are unchanged. Neither
+    reading gives the exact counts, so the outcome stays not reproduced, as it was under the electrode-name
+    reading (446, 456 and 585, now a variant). The measured region counts are now those of reading (a);
+    before the answer they were the electrode-name counts. Per session, 51.3 +/- 35.6 over the 29 sessions
+    with units matches the paper's 51 +/- 35 (40.2 over all 37 sessions); 8 of the 37 sessions hold no
+    units.
   deviations:
   - 37 sessions and 1487 units, where the paper has 36 sessions and 1526 units.
   - >-
-    Per-session mean recorded under reading (b), sessions with at least one unit, the reading that matches.
+    Per-session mean recorded under reading (b) of the sessions, sessions with at least one unit, the reading
+    that matches.
+  - >-
+    The tip contact is contact 1 of each bundle, read from the coordinates (nearest the midline in every
+    bundle); the claims file leaves which deposited contact is the tip to the author.
+  - >-
+    Reading (b) uses the G-Node deposit's manual-entry flags (electrode-labels-gin); the Brainnetome label
+    of a flagged contact is not deposited, so its units are left out under (b).
 - claim: spike-sorting-quality
   outcome: partially_reproduced
   notebook: reproduce_boran_2019.ipynb
@@ -130,17 +160,20 @@ outcomes:
   - 20.0
   - 45.55
   notes: >-
-    With atlas regions and the paired test, 128 of 640 hippocampal neurons (20.0%, paper 20.6 +/- 2.06)
-    are maintenance neurons, against 9.98% in entorhinal cortex and 5.78% in amygdala; chi-square 45.55
-    (paper 47.30 +/- 4.73), P = 1.5e-11; each area exceeds its scrambled null (P = 0.001 with 1000 repetitions,
-    0.002 with 499). The unpaired test and the bundle regions give the same pattern (19.2 to 22.2% in
-    hippocampus, chi-square 41.8 to 45.6).
+    With reading (a) of the regions and the paired test, 128 of 640 hippocampal neurons (20.0%, paper 20.6
+    +/- 2.06) are maintenance neurons, against 9.98% in entorhinal cortex and 5.78% in amygdala; chi-square
+    45.55 (paper 47.30 +/- 4.73), P = 1.5e-11; each area exceeds its scrambled null (P = 0.001 with 1000
+    repetitions, 0.002 with 499). The unpaired test and the electrode-name regions give 19.2 to 22.2% in
+    hippocampus and chi-square 41.8 to 45.0. The answer of 2026-10-30 on neurons-recorded made the regions those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used before, so its numbers are unchanged. Reading (b) gives 126 of 615 (20.5%) and chi-square
+    47.93, also within both tolerances; the outcome is the same (reproduced before and after).
   deviations:
   - >-
-    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
-    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
-    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
-    from the tip). The bundle-name reading is shown as a variant.
+    Regions of units from the tip contact of each unit's electrode, as the amended neurons-recorded criterion
+    says for every claim that groups neurons by region; reading (a) is the dandiset's location of contact
+    1, which is the updated anatomical label (electrode-labels-gin), and reading (b) the Brainnetome label,
+    which leaves out the 25 units of the four tip contacts labelled by hand. Contact 1 is taken as the
+    tip because it lies nearest the midline in every bundle (data check). The electrode-name reading is
+    a variant.
   - 37 sessions and 1487 units, where the paper has 36 sessions and 1526 units.
   - >-
     Permutation reference distributions are computed once per unit and reused for the scrambled repetitions;
@@ -158,14 +191,19 @@ outcomes:
     (P = 0.12) is significant; their percentage, 17.9% of 123, is outside the 15 +/- 1.5% tolerance, which
     the criterion does not judge. With the paired selection, 20 of 128 (15.6%) are within both tolerances
     but amygdala is also significant (3 of 23, P = 0.031), which is partial under the criterion. Under
-    reading (b), cluster test, 19 to 22 hippocampal neurons are load dependent and amygdala is significant
-    in some readings (P = 0.011 to 0.045).
+    test reading (b), the cluster test, 19 to 22 hippocampal neurons are load dependent and amygdala is
+    significant in some readings (P = 0.011 to 0.045). The answer of 2026-10-30 on neurons-recorded made the regions those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used before, so its numbers are unchanged. Region reading (b) changes only the hippocampal
+    maintenance neurons: 22 of 122 are load dependent with the unpaired selection (P = 0.001) and 20 of
+    126 with the paired one, the other areas unchanged; the outcome is the same (reproduced before and
+    after).
   deviations:
   - >-
-    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
-    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
-    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
-    from the tip). The bundle-name reading is shown as a variant.
+    Regions of units from the tip contact of each unit's electrode, as the amended neurons-recorded criterion
+    says for every claim that groups neurons by region; reading (a) is the dandiset's location of contact
+    1, which is the updated anatomical label (electrode-labels-gin), and reading (b) the Brainnetome label,
+    which leaves out the 25 units of the four tip contacts labelled by hand. Contact 1 is taken as the
+    tip because it lies nearest the midline in every bundle (data check). The electrode-name reading is
+    a variant.
   - >-
     The percentage expected value (15 +/- 1.5%) is outside under the reading that meets the criterion;
     the criterion judges the count only.
@@ -177,16 +215,21 @@ outcomes:
   - 44
   - 13.79
   notes: >-
-    5%; paper 41 +/- 4.1), the chi-square against the other areas is 13.79 (P = 0.0002) and every area
-    exceeds its null (P = 0.002). The chi-square value is outside its tolerance (23.16 +/- 2.32), which
-    the criterion does not judge. Window (a) gives 46 to 48 entorhinal probe neurons with chi-square 20.55
-    to 21.54; window (c) puts entorhinal cortex below amygdala.
+    With window (b), the probe to the press, and the unpaired test, entorhinal cortex has the highest
+    percentage (44 of 421, 10.5%; paper 41 +/- 4.1), the chi-square against the other areas is 13.79 (P
+    = 0.0002) and every area exceeds its null (P = 0.002). The chi-square value is outside its tolerance
+    (23.16 +/- 2.32), which the criterion does not judge. Window (a) gives 46 to 48 entorhinal probe neurons
+    with chi-square 20.55 to 21.54; window (c) puts entorhinal cortex below amygdala. The answer of 2026-10-30 on neurons-recorded made the regions those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used before, so its numbers are unchanged. Region reading
+    (b) changes only the hippocampal counts (615 neurons); with window (b) and the unpaired test the chi-square
+    is 14.11 (P = 0.00017); the outcome is the same (reproduced before and after).
   deviations:
   - >-
-    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
-    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
-    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
-    from the tip). The bundle-name reading is shown as a variant.
+    Regions of units from the tip contact of each unit's electrode, as the amended neurons-recorded criterion
+    says for every claim that groups neurons by region; reading (a) is the dandiset's location of contact
+    1, which is the updated anatomical label (electrode-labels-gin), and reading (b) the Brainnetome label,
+    which leaves out the 25 units of the four tip contacts labelled by hand. Contact 1 is taken as the
+    tip because it lies nearest the midline in every bundle (data check). The electrode-name reading is
+    a variant.
   - >-
     The files end 2 s after probe onset, so window (b) is cut at 2 s and window (c) uses presses within
     2 s.
@@ -207,16 +250,20 @@ outcomes:
     that met its criterion (window (b), unpaired), the difference is not significant (7.26 against 6.76
     Hz, P = 0.33), and with -1 to +1 s windows the button-aligned peak is the higher in four of the six
     readings. The outcome rests on the probe neurons of fig3e window (a), which put 46 to 48 neurons in
-    entorhinal cortex (outside the fig3e tolerance).
+    entorhinal cortex (outside the fig3e tolerance). The answer of 2026-10-30 on neurons-recorded made the regions those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used before, so its numbers are unchanged. Region reading (b) leaves out at most five
+    probe neurons: window (a), paired, 7.72 against 6.04 Hz (P = 0.0005); window (b), unpaired, 7.22 against
+    6.66 Hz (P = 0.26); the outcome is the same (reproduced before and after).
   deviations:
   - >-
     Button-aligned windows that fall outside the stored 8 s of a trial are left out of that trial's average
     (55 to 78% of windows covered).
   - >-
-    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
-    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
-    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
-    from the tip). The bundle-name reading is shown as a variant.
+    Regions of units from the tip contact of each unit's electrode, as the amended neurons-recorded criterion
+    says for every claim that groups neurons by region; reading (a) is the dandiset's location of contact
+    1, which is the updated anatomical label (electrode-labels-gin), and reading (b) the Brainnetome label,
+    which leaves out the 25 units of the four tip contacts labelled by hand. Contact 1 is taken as the
+    tip because it lies nearest the midline in every bundle (data check). The electrode-name reading is
+    a variant.
 - claim: fig3-probe-neurons-few-task-specific
   outcome: partially_reproduced
   notebook: reproduce_boran_2019.ipynb
@@ -229,13 +276,17 @@ outcomes:
     With the probe neurons of fig3e window (b), paired test (107), 8 (7.5%) differ between IN and OUT
     over 0 to 2 s (paper 8 +/- 0.8, within; 10.5% +/- 1.05, outside), but 7 differ with workload where
     the paper has one (0 to 2 accepted). Across all readings 2 to 13 probe neurons differ between IN and
-    OUT and 5 to 8 with workload, so the workload count never holds.
+    OUT and 5 to 8 with workload, so the workload count never holds. The answer of 2026-10-30 on neurons-recorded made the regions those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used before, so its numbers are unchanged. Region reading (b) gives the
+    same counts for window (b) and the paired test (8 of 106 IN/OUT, 7 workload) and at most one fewer
+    elsewhere (4 to 8 with workload); the outcome is the same (partially reproduced before and after).
   deviations:
   - >-
-    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
-    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
-    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
-    from the tip). The bundle-name reading is shown as a variant.
+    Regions of units from the tip contact of each unit's electrode, as the amended neurons-recorded criterion
+    says for every claim that groups neurons by region; reading (a) is the dandiset's location of contact
+    1, which is the updated anatomical label (electrode-labels-gin), and reading (b) the Brainnetome label,
+    which leaves out the 25 units of the four tip contacts labelled by hand. Contact 1 is taken as the
+    tip because it lies nearest the midline in every bundle (data check). The electrode-name reading is
+    a variant.
 - claim: fig4a-dpca-workload-separation
   outcome: not_reproduced
   notebook: reproduce_boran_2019.ipynb
@@ -250,7 +301,9 @@ outcomes:
     the three set sizes lie on a line in the dPC2-dPC3 plane (angles 0, 180, 180 degrees, not 120). In
     the first 15 dPCs, set size 4 is farther from 6 and from 8 during maintenance than in 40 label-shuffled
     runs (P = 0.024), but 6 and 8 are not (P = 0.68), so the partial criterion is not met either. The
-    angles are 0, 180 and 180 degrees; the largest is recorded as measured.
+    angles are 0, 180 and 180 degrees; the largest is recorded as measured. The answer of 2026-10-30 on neurons-recorded made the regions those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used before, so its numbers are unchanged. Region reading (b),
+    in reproduce_boran_2019_regions_b.ipynb, gives 32.7% and 64.2%, the same angles, and no separation
+    of 6 and 8 (P = 0.73); the outcome is the same (not reproduced before and after).
   deviations:
   - 20 ms bins in place of 2 ms, Gaussian SD 1000/6 ms (standard choices).
   - >-
@@ -258,10 +311,12 @@ outcomes:
     regularization and a fixed lambda of 1e-2 are shown.
   - 40 label-shuffled dPCA runs for the separation test (runtime).
   - >-
-    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
-    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
-    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
-    from the tip). The bundle-name reading is shown as a variant.
+    Regions of units from the tip contact of each unit's electrode, as the amended neurons-recorded criterion
+    says for every claim that groups neurons by region; reading (a) is the dandiset's location of contact
+    1, which is the updated anatomical label (electrode-labels-gin), and reading (b) the Brainnetome label,
+    which leaves out the 25 units of the four tip contacts labelled by hand. Contact 1 is taken as the
+    tip because it lies nearest the midline in every bundle (data check). The electrode-name reading is
+    a variant. Reading (b) of this claim runs in reproduce_boran_2019_regions_b.ipynb.
 - claim: fig4b-speed-lowest-maintenance
   outcome: partially_reproduced
   notebook: reproduce_boran_2019.ipynb
@@ -269,19 +324,26 @@ outcomes:
   notes: >-
     Speed is lowest during maintenance (0.74 z/s over 200 runs, below fixation 1.07, encoding 0.95 and
     retrieval 1.41 or 1.29; P = 0.0005 for each), but it is highest during retrieval, not encoding, under
-    both retrieval windows and both run counts.
+    both retrieval windows and both run counts. The answer of 2026-10-30 on neurons-recorded made the regions those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used before, so its numbers are unchanged. Region reading (b), in reproduce_boran_2019_regions_b.ipynb,
+    gives the same pattern (maintenance 0.75 z/s, lowest; retrieval highest); the outcome is the same (partially
+    reproduced before and after).
   deviations:
   - The dPCA of fig4a (z-score a, no regularization), 20 ms steps.
+  - Regions as in fig4a; reading (b) runs in reproduce_boran_2019_regions_b.ipynb.
 - claim: fig4c-distance-largest-maintenance
   outcome: reproduced
   notebook: reproduce_boran_2019.ipynb
   output: claim:fig4c-distance-largest-maintenance
   notes: >-
-    67) and larger than during encoding (7.49), t = 4.96, P = 0.0005. With 200 runs maintenance is still
-    the largest, but its excess over encoding is not significant (7.52 against 7.48, P = 0.74), which
-    is partial under the criterion.
+    With 2000 runs the distance between set-size trajectories is largest during maintenance (7.67) and
+    larger than during encoding (7.49), t = 4.96, P = 0.0005. With 200 runs maintenance is still the largest,
+    but its excess over encoding is not significant (7.52 against 7.48, P = 0.74), which is partial under
+    the criterion. The answer of 2026-10-30 on neurons-recorded made the regions those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used before, so its numbers are unchanged. Region reading (b), in reproduce_boran_2019_regions_b.ipynb, gives maintenance
+    above encoding with 2000 runs (7.61 against 7.41, P = 0.0005) and with 200 runs (7.62 against 7.38,
+    P = 0.04); the outcome is the same (reproduced before and after).
   deviations:
   - The dPCA of fig4a (z-score a, no regularization).
+  - Regions as in fig4a; reading (b) runs in reproduce_boran_2019_regions_b.ipynb.
 - claim: fig4d-encoding-decodes-correct
   outcome: not_reproduced
   notebook: reproduce_boran_2019.ipynb
@@ -290,7 +352,8 @@ outcomes:
   notes: >-
     During encoding of set size 6 and 8 trials, hippocampal neurons (201 from the 10 sessions with at
     least five errors) decode later correctness at 51.4% (paper 80 +/- 8), at the level of the scrambled
-    null (P = 0.47); no area and no variant is above chance.
+    null (P = 0.47); no area and no variant is above chance. The answer of 2026-10-30 on neurons-recorded made the regions those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used before, so its numbers are unchanged. Region reading (b) gives 51.4% from
+    the same 201 hippocampal neurons (P = 0.46); the outcome is the same (not reproduced before and after).
   deviations:
   - >-
     100 resampling runs and 250 null runs, where the Methods use 500 and 500 (runtime).
@@ -298,10 +361,12 @@ outcomes:
     NDT details the Methods leave open take the toolbox defaults (linear SVM, C = 1, one trial per class
     per split, z-scoring on training data).
   - >-
-    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
-    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
-    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
-    from the tip). The bundle-name reading is shown as a variant.
+    Regions of units from the tip contact of each unit's electrode, as the amended neurons-recorded criterion
+    says for every claim that groups neurons by region; reading (a) is the dandiset's location of contact
+    1, which is the updated anatomical label (electrode-labels-gin), and reading (b) the Brainnetome label,
+    which leaves out the 25 units of the four tip contacts labelled by hand. Contact 1 is taken as the
+    tip because it lies nearest the midline in every bundle (data check). The electrode-name reading is
+    a variant. Reading (b) of this claim runs in reproduce_boran_2019_regions_b.ipynb.
 - claim: fig4e-maintenance-decodes-workload
   outcome: reproduced
   notebook: reproduce_boran_2019.ipynb
@@ -311,17 +376,21 @@ outcomes:
     Hippocampal neurons decode workload during maintenance at a median of 81.4% (paper 80 +/- 8), above
     the scrambled null (P = 0.004, Bonferroni 0.048, the smallest this run allows); entorhinal (62.5%)
     and amygdala (59.5%) are not significant after correction. The bundle regions give 81.6% for hippocampus;
-    the variants give 70.0% (Gaussian window), 81.4% (no normalization) and 78.9% (1:2 classes).
+    the variants give 70.0% (Gaussian window), 81.4% (no normalization) and 78.9% (1:2 classes). The answer of 2026-10-30 on neurons-recorded made the regions those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used before, so its numbers are unchanged.
+    Region reading (b) gives 81.4% from 615 hippocampal neurons (P = 0.004, Bonferroni 0.048), with the
+    same entorhinal and amygdala neurons; the outcome is the same (reproduced before and after).
   deviations:
   - >-
     100 resampling runs and 250 null runs, where the Methods use 500 and 500 (runtime); the smallest corrected
     P is 0.048.
   - NDT details the Methods leave open take the toolbox defaults.
   - >-
-    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
-    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
-    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
-    from the tip). The bundle-name reading is shown as a variant.
+    Regions of units from the tip contact of each unit's electrode, as the amended neurons-recorded criterion
+    says for every claim that groups neurons by region; reading (a) is the dandiset's location of contact
+    1, which is the updated anatomical label (electrode-labels-gin), and reading (b) the Brainnetome label,
+    which leaves out the 25 units of the four tip contacts labelled by hand. Contact 1 is taken as the
+    tip because it lies nearest the midline in every bundle (data check). The electrode-name reading is
+    a variant. Reading (b) of this claim runs in reproduce_boran_2019_regions_b.ipynb.
 - claim: fig4e-workload-decoding-leave-one-subject-out
   outcome: reproduced
   notebook: reproduce_boran_2019.ipynb
@@ -331,9 +400,11 @@ outcomes:
   - 81.4
   notes: >-
     Leaving out the hippocampal units of one subject gives medians from 71.6% (without subject 1) to 81.4%,
-    inside the widened range 63.9 to 89.1%.
+    inside the widened range 63.9 to 89.1%. The answer of 2026-10-30 on neurons-recorded made the regions those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used before, so its numbers are unchanged. Region reading (b), in reproduce_boran_2019_regions_b.ipynb,
+    gives 71.4 to 81.8%; the outcome is the same (reproduced before and after).
   deviations:
   - 100 resampling runs per subject left out.
+  - Regions as in fig4e-maintenance-decodes-workload; reading (b) runs in reproduce_boran_2019_regions_b.ipynb.
 - claim: fig4e-maintenance-neurons-carry-workload
   outcome: reproduced
   notebook: reproduce_boran_2019.ipynb
@@ -342,18 +413,24 @@ outcomes:
   notes: >-
     The 128 hippocampal maintenance neurons alone decode workload at 81.8%, 0.5 points from all hippocampal
     neurons (81.4%) and above their null (P = 0.004); the other 512 hippocampal neurons give 71.6% (paper
-    71 +/- 7.1), below all neurons. The unpaired selection gives 82.3% and 71.6%.
+    71 +/- 7.1), below all neurons. The unpaired selection gives 82.3% and 71.6%. The answer of 2026-10-30 on neurons-recorded made the regions those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used before, so its numbers are unchanged. Region reading
+    (b), in reproduce_boran_2019_regions_b.ipynb, gives 80.9% for the 126 maintenance neurons against 81.4%
+    for all 615, and 72.3% for the other 489 (unpaired, 84.1% and 70.2%); the outcome is the same (reproduced
+    before and after).
   deviations:
   - 100 resampling runs and 250 null runs.
+  - Regions as in fig4e-maintenance-decodes-workload; reading (b) runs in reproduce_boran_2019_regions_b.ipynb.
 - claim: fig4e-no-decoding-6-vs-8
   outcome: reproduced
   notebook: reproduce_boran_2019.ipynb
   output: claim:fig4e-no-decoding-6-vs-8
   notes: >-
     Set size 6 against 8 is decoded from hippocampal neurons at 57.7%, not above the scrambled null (P
-    = 0.16).
+    = 0.16). The answer of 2026-10-30 on neurons-recorded made the regions those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used before, so its numbers are unchanged. Region reading (b), in reproduce_boran_2019_regions_b.ipynb, gives 56.8% (P = 0.18);
+    the outcome is the same (reproduced before and after).
   deviations:
   - 100 resampling runs and 250 null runs.
+  - Regions as in fig4e-maintenance-decodes-workload; reading (b) runs in reproduce_boran_2019_regions_b.ipynb.
 - claim: fig4f-retrieval-decodes-response
   outcome: not_reproduced
   notebook: reproduce_boran_2019.ipynb
@@ -362,17 +439,30 @@ outcomes:
   notes: >-
     In the 500 ms before the press, all neurons decode IN against OUT at 80% (paper 90 +/- 9), with uncorrected
     P = 0.02 and corrected P = 0.24; no single area is significant (hippocampus 70%, entorhinal 65%, amygdala
-    65%). Only trials whose press falls within the 2 s stored after the probe can be used.
+    65%). Only trials whose press falls within the 2 s stored after the probe can be used. The answer of 2026-10-30 on neurons-recorded made the regions those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used before, so its numbers are unchanged. Under
+    region reading (b), in reproduce_boran_2019_regions_b.ipynb, hippocampus gives 70% (P = 0.096, not
+    significant) and all 1434 neurons 80% with corrected P = 0.048, the smallest 250 null runs allow, which
+    alone would make the all-neuron population significant. Rerun with three other generators, the all-neuron
+    corrected P is 0.10 to 0.38 under (b) and 0.10 to 0.62 under (a), so that significance is resampling
+    noise of the reduced run count, not an effect of the reading; the all-neuron median (80%) is outside
+    the tolerance under both. The outcome is the same (not reproduced before and after).
   deviations:
   - >-
     Only correct trials with the press within 2 s of the probe; later presses fall outside the stored
     data.
   - 100 resampling runs and 250 null runs.
   - >-
-    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
-    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
-    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
-    from the tip). The bundle-name reading is shown as a variant.
+    Regions of units from the tip contact of each unit's electrode, as the amended neurons-recorded criterion
+    says for every claim that groups neurons by region; reading (a) is the dandiset's location of contact
+    1, which is the updated anatomical label (electrode-labels-gin), and reading (b) the Brainnetome label,
+    which leaves out the 25 units of the four tip contacts labelled by hand. Contact 1 is taken as the
+    tip because it lies nearest the midline in every bundle (data check). The electrode-name reading is
+    a variant. Reading (b) of this claim runs in reproduce_boran_2019_regions_b.ipynb.
+  - >-
+    Under region reading (b) the main run reaches the smallest corrected P for all neurons (0.048), which
+    the criterion would count as one significant population; the same decoder rerun with three other
+    generators gives corrected P of 0.10 to 0.38 under (b) and 0.10 to 0.62 under (a), so that single
+    run is not taken to show a significant population.
 - claim: figs3d-hippocampus-loadings
   outcome: reproduced
   notebook: reproduce_boran_2019.ipynb
@@ -381,14 +471,18 @@ outcomes:
     Under every component and loading reading, the hippocampal top-200 loadings exceed the entorhinal
     and the amygdalar ones at all 200 ranks (Wilcoxon P = 1.4e-34 against entorhinal cortex). The exception
     the statement mentions, entorhinal neurons highest at the first three ranks, does not appear in any
-    reading; the criterion does not judge it.
+    reading; the criterion does not judge it. The answer of 2026-10-30 on neurons-recorded made the regions those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used before, so its numbers are unchanged. Region reading (b), in reproduce_boran_2019_regions_b.ipynb,
+    gives hippocampus above entorhinal cortex at 200 of 200 ranks for dPC2 (Wilcoxon P = 1.4e-34) and at
+    197 or 200 for dPC3; the outcome is the same (reproduced before and after).
   deviations:
   - The dPCA of fig4a (z-score a, no regularization).
   - >-
-    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
-    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
-    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
-    from the tip). The bundle-name reading is shown as a variant.
+    Regions of units from the tip contact of each unit's electrode, as the amended neurons-recorded criterion
+    says for every claim that groups neurons by region; reading (a) is the dandiset's location of contact
+    1, which is the updated anatomical label (electrode-labels-gin), and reading (b) the Brainnetome label,
+    which leaves out the 25 units of the four tip contacts labelled by hand. Contact 1 is taken as the
+    tip because it lies nearest the midline in every bundle (data check). The electrode-name reading is
+    a variant. Reading (b) of this claim runs in reproduce_boran_2019_regions_b.ipynb.
 - claim: fig5-subject1-eeg-power-workload
   outcome: partially_reproduced
   notebook: reproduce_boran_2019.ipynb
@@ -431,14 +525,18 @@ outcomes:
   notes: >-
     Subject 1 has 14 hippocampal maintenance neurons with more than 100 spikes in both periods (paper
     5, tolerance 0). Their rate is higher for set size 8 in a cluster from -4.67 to -1.57 s, which spans
-    encoding and maintenance (P = 0.001), under every reading.
+    encoding and maintenance (P = 0.001), under every reading. The answer of 2026-10-30 on neurons-recorded made the regions those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used before, so its numbers are unchanged. Region reading (b) selects the
+    same neurons, since subject 1 has no units on its manually labelled tip contact; the outcome is the
+    same (partially reproduced before and after).
   deviations:
   - More than 100 spikes summed over correct trials in each period.
   - >-
-    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
-    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
-    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
-    from the tip). The bundle-name reading is shown as a variant.
+    Regions of units from the tip contact of each unit's electrode, as the amended neurons-recorded criterion
+    says for every claim that groups neurons by region; reading (a) is the dandiset's location of contact
+    1, which is the updated anatomical label (electrode-labels-gin), and reading (b) the Brainnetome label,
+    which leaves out the 25 units of the four tip contacts labelled by hand. Contact 1 is taken as the
+    tip because it lies nearest the midline in every bundle (data check). The electrode-name reading is
+    a variant.
 - claim: fig5-subject1-plv-hippocampus-pz
   outcome: partially_reproduced
   notebook: reproduce_boran_2019.ipynb
@@ -652,14 +750,17 @@ outcomes:
   measured: 73
   assumed: true
   notes: >-
-    73 hippocampal maintenance neurons (atlas regions, paired selection) have at least 100 spikes in the
+    73 hippocampal maintenance neurons (region reading (a), paired selection) have at least 100 spikes in the
     last 2 s of maintenance and in encoding (paper 94 +/- 9.4), on 47 microwires. With 3-cycle windows
     over 4 to 30 Hz the percentage of neurons with significant PPC to the LFP of their own wire is higher
     in maintenance than in encoding in all 27 bins (means 58.4% against 42.1%), and in 39 of 40 bins over
     1 to 40 Hz; with 5-cycle windows in 26 of 27 and 38 of 40. Coupling to the bundle's bipolar iEEG is
     well above the 5% chance level (maintenance means 29.6% and 21.0% over 4 to 30 Hz), and to scalp EEG
     near chance on average (5.3% and 5.0%) with single bins up to 16.4%, so the statement's 'not to the
-    iEEG or the scalp EEG' does not hold.
+    iEEG or the scalp EEG' does not hold. The answer of 2026-10-30 on neurons-recorded made the regions
+    those of the electrode's tip contact, with two readings; reading (a) is the labelling this claim used
+    before, and reading (b) selects the same 73 neurons (none is on a manually labelled tip contact), so
+    the results and the outcome are the same (partially reproduced before and after).
   deviations:
   - >-
     Tested in the second notebook, which streams the LFP of the selected wires (360 s).
@@ -673,10 +774,12 @@ outcomes:
     iEEG is the bipolar pair of contacts 1 and 2 of the neuron's own bundle; scalp EEG is Pz, or O1 where
     Pz was not recorded (assumption; the paper does not say which channels).
   - >-
-    Regions of units by the Brainnetome label of each bundle's deepest contact (Methods, Depth electrode
-    localization, "assigned to a brain region using the Brainnetome Atlas"); the claims file does not
-    say for this claim. Taking contact 1 as the site of the microwires is an assumption (they protrude
-    from the tip). The bundle-name reading is shown as a variant.
+    Regions of units from the tip contact of each unit's electrode, as the amended neurons-recorded criterion
+    says for every claim that groups neurons by region; reading (a) is the dandiset's location of contact
+    1, which is the updated anatomical label (electrode-labels-gin), and reading (b) the Brainnetome label,
+    which leaves out the 25 units of the four tip contacts labelled by hand. Contact 1 is taken as the
+    tip because it lies nearest the midline in every bundle (data check). The electrode-name reading is
+    a variant.
 findings:
 - kind: data_missing
   statement: >-
@@ -689,13 +792,20 @@ findings:
     Units point at macroelectrode rows of the electrodes table (microwire k of a bundle at contact k),
     and the microwire LFP channels reuse the same rows. Microwires have no rows, coordinates or atlas
     labels of their own, so the region of a unit has to be inferred from the bundle name or from a macro
-    contact.
+    contact (here contact 1, the tip, as the amended claims file asks).
+- kind: metadata_insufficient
+  statement: >-
+    The dandiset does not say that four tip-contact labels (PHL1 of subjects 1, 7 and 9, PHR1 of subject
+    5) were entered by hand after visual inspection of MRI; the G-Node deposit flags them (iEEG_Electrode_Manual_Entry),
+    and the conversion did not carry the flag over. The Brainnetome label those contacts had before is
+    in neither deposit, so the regions of 25 units cannot be given under the paper's atlas reading.
 - kind: metadata_error
   statement: >-
     Electrode names and atlas labels disagree for several bundles: AR of subject 8 (186 units) and ECL
     of subject 6 have their deepest contact labelled hippocampus, AHR of subject 2 fusiform gyrus, and
     ECL of subject 1 amygdala. Counting units by bundle name gives 446, 456 and 585 in hippocampus, entorhinal
-    cortex and amygdala; by the deepest contact's label 640, 421 and 398 (paper 676, 449, 401).
+    cortex and amygdala; by the label of the tip contact 640, 421 and 398 (paper 676, 449, 401). The labels
+    are the same in the G-Node deposit, so the disagreement comes from the source data, not the conversion.
 - kind: format_error
   statement: >-
     Spike times are stored unsorted in 43 units of five sessions (subject 1 sessions 1 and 2, subject
@@ -738,8 +848,10 @@ findings:
     than 2 s after the probe, and the activity after them, are not in the files.
 - kind: methods_unavailable
   statement: >-
-    For the authors: how were microwire units assigned to hippocampus, entorhinal cortex and amygdala,
-    by electrode name or by the atlas label of a contact (which)? The two give very different counts here.
+    For the authors: the claims file now assigns microwire units to the region of the electrode's tip
+    contact, and this attempt takes contact 1 as the tip. Was that the contact used, and was its label
+    the one updated by hand or the Brainnetome label? Neither gives the paper's counts here (640, 421 and
+    398, or 615 hippocampal, against 676, 449 and 401).
 - kind: methods_unavailable
   statement: >-
     For the authors: how were the seven tapers combined in the PLV (cross-spectra averaged over tapers
@@ -750,3 +862,11 @@ findings:
   statement: >-
     For the authors: which window defined the probe response of probe neurons (a fixed window after the
     probe, or up to the press), and in which coordinate frame are the electrode positions of Fig. 6I given?
+inputs:
+- what: >-
+    The G-Node deposit of the data descriptor, read for the anatomical labels, MNI coordinates and manual-entry
+    flags of the iEEG contacts (iEEG electrode information of the smallest session file of each subject),
+    used for the link claim electrode-labels-gin and reading (b) of the unit regions
+  source: >-
+    doi:10.12751/g-node.d76994, https://gin.g-node.org/USZ_NCH/Human_MTL_units_scalp_EEG_and_iEEG_verbal_WM
+    at commit 0b27b34ecd0da217e4403bdd080b4a0d78f155fd

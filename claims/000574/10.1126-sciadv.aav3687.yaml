@@ -210,6 +210,30 @@ claims:
     one error. The permutation t test as in Methods, Statistics (2000 permutations; the
     printed P implies more, which only moves the minimum P). Reproduced when, under one
     reading, both means are within tolerance and correct RT is shorter with P < 0.05.
+- id: electrode-labels-gin
+  kind: link
+  statement: >-
+    The electrodes of the dandiset are those of the G-Node deposit the data descriptor names, with
+    the same anatomical labels and coordinates, and the deposit marks which labels were entered by
+    hand after visual inspection of MRI.
+  source: >-
+    Data descriptor (doi:10.1038/s41597-020-0364-3), Methods, Depth electrode localization, and
+    Data Records, the table of deposited data; G-Node deposit doi:10.12751/g-node.d76994 at
+    commit 0b27b34ecd0da217e4403bdd080b4a0d78f155fd
+  quote: >-
+    Anatomical label updated after visual inspection of MRI
+  data: with_labels
+  criterion: >-
+    Added by the author of attempt 000574-boran-2019-01 for the amended neurons-recorded criterion,
+    whose readings (a) and (b) need to know which tip-contact labels were updated by hand; the
+    dandiset holds one label per contact. Contacts of the G-Node NIX files (iEEG_Electrode_Map,
+    iEEG_Electrode_MNI_Coordinates, iEEG_Electrode_Manual_Entry) are matched to the dandiset's
+    iEEG electrodes by subject and contact label (the NIX names carry a leading "m"). Reproduced
+    when every contact matches in both directions and matched contacts have the same anatomical
+    label (the NIX "no_label_found" read as the dandiset's "unspecific") and the same coordinates
+    within 0.01 mm under the axis change the dandiset's column descriptions give; partially
+    reproduced when some contacts do not match or differ, naming them. The contacts flagged as
+    manually entered then define reading (b) of the unit regions.
 - id: neurons-recorded
   statement: >-
     1526 neurons were recorded (51 +/- 35 per session), 676 in hippocampus, 449 in entorhinal
@@ -234,6 +258,9 @@ claims:
   - quantity: neurons per session, mean
     value: 51
     tolerance: 5.1
+  data: with_labels
+  depends_on:
+  - electrode-labels-gin
   criterion: >-
     Counts of sorted units over all sessions, a unit seen in several sessions counted once per
     session (Results, same paragraph). The counts are exact, since they describe the deposited
@@ -305,6 +332,9 @@ claims:
   - quantity: chi-square value
     value: 47.30
     tolerance: 4.73
+  data: with_labels
+  depends_on:
+  - electrode-labels-gin
   criterion: >-
     Correct trials. A maintenance neuron has a higher firing rate in maintenance (-3 to 0 s)
     than in fixation (-6 to -5 s) (fig. S2 legend) by a permutation t test (Results; Methods,
@@ -349,6 +379,7 @@ claims:
     unit: '%'
   depends_on:
   - fig2b-maintenance-neurons-hippocampus
+  data: with_labels
   criterion: >-
     Maintenance neurons from fig2b-maintenance-neurons-hippocampus, correct trials, maintenance
     -3 to 0 s. The test of load dependence is not named; readings (a) a permutation t test of
@@ -386,6 +417,9 @@ claims:
   - quantity: chi-square value
     value: 23.16
     tolerance: 2.32
+  data: with_labels
+  depends_on:
+  - electrode-labels-gin
   criterion: >-
     Correct trials. A probe neuron has a higher firing rate after the probe than in encoding
     (-5 to -3 s) and than in maintenance (-3 to 0 s), each by a permutation t test at P < 0.05
@@ -423,6 +457,7 @@ claims:
     unit: Hz
   depends_on:
   - fig3e-probe-neurons-entorhinal
+  data: with_labels
   criterion: >-
     All probe neurons of fig3e-probe-neurons-entorhinal (76 by the reported degrees of freedom
     and by 8 neurons being 10.5%). Per neuron, the maximum of the trial-averaged rate in 200 ms
@@ -454,6 +489,7 @@ claims:
     tolerance: 1
   depends_on:
   - fig3e-probe-neurons-entorhinal
+  data: with_labels
   criterion: >-
     Probe neurons from fig3e-probe-neurons-entorhinal. IN against OUT, and set size 4 against 6
     and 8, by a cluster-based nonparametric permutation test at P < 0.05 on the rate in 200 ms
@@ -484,6 +520,9 @@ claims:
     value: 120
     tolerance: 12
     unit: degrees
+  data: with_labels
+  depends_on:
+  - electrode-labels-gin
   criterion: >-
     dPCA (Kobak et al. 2016) of all neurons, correct trials, trial-averaged per set size, from
     spikes in 2 ms bins smoothed with a 1000 ms Gaussian kernel and z-scored to the fixation
@@ -512,6 +551,7 @@ claims:
     n: 200 dPCA runs on 20% subsamples (Methods); 2000 permutations (table S2)
   depends_on:
   - fig4a-dpca-workload-separation
+  data: with_labels
   criterion: >-
     The dPCA of fig4a-dpca-workload-separation, first 15 dPCs (Fig. 4 legend). Speed V(t) as
     Methods equation 2 with step 20 ms, averaged over set sizes and over each period; 200 runs
@@ -537,6 +577,7 @@ claims:
     p: 0.0005
   depends_on:
   - fig4a-dpca-workload-separation
+  data: with_labels
   criterion: >-
     As fig4b-speed-lowest-maintenance, with distance from Methods equation 1 between each of
     the three pairs of set-size trajectories, averaged over pairs and over each period, 200
@@ -564,6 +605,9 @@ claims:
     value: 80
     tolerance: 8
     unit: '%'
+  data: with_labels
+  depends_on:
+  - electrode-labels-gin
   criterion: >-
     Pseudopopulation decoding with a support vector machine as in the NDT toolbox (Methods,
     Neural decoding): spikes in 1 ms bins smoothed in a 1500 ms window, classified at 250 ms
@@ -599,6 +643,9 @@ claims:
     value: 80
     tolerance: 8
     unit: '%'
+  data: with_labels
+  depends_on:
+  - electrode-labels-gin
   criterion: >-
     As fig4d-encoding-decodes-correct, with correct trials, labels set size 4 against 6 and 8,
     all units, ten cross-validation splits, and the maintenance period -3 to 0 s. Open, class
@@ -627,6 +674,7 @@ claims:
     unit: '%'
   depends_on:
   - fig4e-maintenance-decodes-workload
+  data: with_labels
   criterion: >-
     The decoder of fig4e-maintenance-decodes-workload rerun nine times, each without the
     hippocampal units of one subject. Reproduced when all nine accuracies lie in 71 to 81%
@@ -650,6 +698,7 @@ claims:
   depends_on:
   - fig2b-maintenance-neurons-hippocampus
   - fig4e-maintenance-decodes-workload
+  data: with_labels
   criterion: >-
     The decoder of fig4e-maintenance-decodes-workload on (i) hippocampal maintenance neurons
     only and (ii) hippocampal neurons other than maintenance neurons. "Little difference" is not
@@ -666,6 +715,7 @@ claims:
     ceiling effect
   depends_on:
   - fig4e-maintenance-decodes-workload
+  data: with_labels
   criterion: >-
     A claim of absence. The paper reports no separate test; the decoding test of the Methods is
     used, as in fig4e-maintenance-decodes-workload, with labels set size 6 against 8,
@@ -692,6 +742,9 @@ claims:
     value: 90
     tolerance: 9
     unit: '%'
+  data: with_labels
+  depends_on:
+  - electrode-labels-gin
   criterion: >-
     As fig4d-encoding-decodes-correct, with correct trials, labels IN against OUT, a 500 ms
     window ending at the button press (Fig. 4F legend, -500 to 0 ms; Methods, a narrow 500 ms
@@ -716,6 +769,7 @@ claims:
     n: 400 neurons (table S2)
   depends_on:
   - fig4a-dpca-workload-separation
+  data: with_labels
   criterion: >-
     The dPCA of fig4a-dpca-workload-separation. The legend names both dPC3 (title) and dPC2
     (text); readings (a) dPC2, (b) dPC3. Open, the loading; readings (i) the absolute decoder
@@ -792,6 +846,7 @@ claims:
     tolerance: 0
   depends_on:
   - fig2b-maintenance-neurons-hippocampus
+  data: with_labels
   criterion: >-
     Subject 1, hippocampal maintenance neurons from fig2b-maintenance-neurons-hippocampus with
     more than 100 spikes in encoding and in maintenance. Their average rate over time, set size
@@ -1101,6 +1156,7 @@ claims:
     tolerance: 9.4
   depends_on:
   - fig2b-maintenance-neurons-hippocampus
+  data: with_labels
   criterion: >-
     Maintenance neurons of fig2b-maintenance-neurons-hippocampus with at least 100 spikes in
     both periods (fig. S6b legend gives N = 94). Pairwise phase consistency, the P-hat-2

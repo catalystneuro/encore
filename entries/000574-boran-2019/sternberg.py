@@ -14,9 +14,18 @@ Where the parameters come from:
 
 - Regions of units: the units' `electrodes` column points at macroelectrode rows of the
   electrodes table; the microwire bundle is named by that row's label without its contact
-  number (AHL, PHR, ECL, AL...). Hippocampus is AH and PH (hippocampal head and body),
-  entorhinal cortex EC, amygdala A (claims file, neurons-recorded criterion, from Table 1 of
-  the data descriptor).
+  number (AHL, PHR, ECL, AL...). The claims file (neurons-recorded criterion, as amended after
+  the question of 2026-10-30) takes the region of a unit from the tip contact of its
+  electrode, where the microwires protrude: (a) its anatomical label as updated after visual
+  inspection of MRI, (b) its Brainnetome label. That contact 1 is the tip is established from
+  the coordinates (contact 1 is nearest the midline, checked in the notebook). The dandiset's
+  `location` of a contact is the label of the G-Node deposit (doi:10.12751/g-node.d76994),
+  where the four tip contacts flagged as manually entered carry the updated label, so
+  `location` is reading (a); for reading (b) the units of a flagged tip contact have no
+  Brainnetome label in either deposit and are left out (`gin_electrodes`, `tip_regions`).
+  Hipp is hippocampus, PhG entorhinal cortex, Amyg amygdala. `region_of` gives the variant by
+  electrode name: AH and PH hippocampus, EC entorhinal cortex, A amygdala (Table 1 of the
+  data descriptor).
 - IN/OUT: `response_type` holds 51 (IN) and 52 (OUT) on correct trials and 1 (IN) and 2 (OUT)
   on incorrect ones. The meaning is read from the data: with `solution`, every correct trial
   has 51 when the probe was in the set, and every incorrect trial has 1 when it was not
@@ -98,6 +107,75 @@ def region_of(bundle):
     if bundle.startswith("A"):
         return "amygdala"
     return "other"
+
+
+ATLAS_REGION = {"Hipp": "hippocampus", "PhG": "entorhinal", "Amyg": "amygdala"}
+
+# The G-Node deposit the data descriptor names (Data Records), pinned at a commit. Its NIX
+# files hold, per contact, the anatomical label (the source of the dandiset's `location`) and
+# a flag `iEEG_Electrode_Manual_Entry` marking labels entered by hand ("Anatomical label
+# updated after visual inspection of MRI", data descriptor, Data Records). The server does not
+# serve byte ranges, so a whole file is read into memory; the smallest session of each subject
+# is used, since the electrodes of a subject are the same in all its sessions.
+GIN = ("https://gin.g-node.org/USZ_NCH/Human_MTL_units_scalp_EEG_and_iEEG_verbal_WM/raw/"
+       "0b27b34ecd0da217e4403bdd080b4a0d78f155fd/data_nix/")
+GIN_SESSIONS = {1: 4, 2: 7, 3: 3, 4: 2, 5: 3, 6: 7, 7: 4, 8: 5, 9: 2}
+
+
+def _gin_request(method, url, timeout):
+    """A request to the G-Node server, retried on server errors (it returns 500 now and then)."""
+    import time
+    for attempt in range(5):
+        r = requests.request(method, url, timeout=timeout, allow_redirects=True)
+        if r.status_code < 500:
+            break
+        time.sleep(10 * (attempt + 1))
+    r.raise_for_status()
+    return r
+
+
+def _gin_subject(s):
+    import io
+    sizes = {}
+    for k in range(1, GIN_SESSIONS[s] + 1):
+        r = _gin_request("HEAD", GIN + f"Data_Subject_{s:02d}_Session_{k:02d}.h5", 60)
+        sizes[k] = int(r.headers["content-length"])
+    k = min(sizes, key=sizes.get)
+    r = _gin_request("GET", GIN + f"Data_Subject_{s:02d}_Session_{k:02d}.h5", 1800)
+    with h5py.File(io.BytesIO(r.content), "r") as f:
+        da = f[f"data/Data_Subject_{s:02d}_Session_{k:02d}/data_arrays"]
+        me = da["iEEG_Electrode_Manual_Entry"]
+        names = list(_str(me["dimensions/1/labels"][:]))
+        manual = me["data"][:, 0].astype(bool)
+        mp = da["iEEG_Electrode_Map/sources"]
+        label_of = {}
+        for g in mp.values():
+            sub = [g["sources"][x].attrs["name"] for x in g["sources"]]
+            sub = [x.decode() if isinstance(x, bytes) else x for x in sub]
+            name = [x for x in sub if x in names][0]
+            label_of[name] = [x for x in sub if x != name][0]
+        mni = da["iEEG_Electrode_MNI_Coordinates/data"][:]
+    return pd.DataFrame({"subject": f"{s:02d}", "session_read": f"{k:02d}", "label": [n[1:] for n in names],
+                         "gin_location": [label_of[n] for n in names], "manual_entry": manual,
+                         "mni_x": mni[:, 0], "mni_y": mni[:, 1], "mni_z": mni[:, 2]})
+
+
+def gin_electrodes(workers=3):
+    """Contacts of the G-Node deposit, one row per subject and contact: the contact label
+    without the deposit's leading "m", the anatomical label, the manual-entry flag and the MNI
+    coordinates."""
+    with ThreadPoolExecutor(workers) as ex:
+        return pd.concat(ex.map(_gin_subject, sorted(GIN_SESSIONS)), ignore_index=True)
+
+
+def tip_regions(subject, bundle, location_of, manual_tips):
+    """Region of a unit on `bundle` under readings (a) and (b) of the claims file: the label of
+    the bundle's contact 1 (`location_of`, label -> dandiset location), and the same with the
+    manually entered tip contacts (`manual_tips`, a set of (subject, label)) left out."""
+    loc1 = location_of.get(bundle + "1", "?").split(",")[0]
+    a = ATLAS_REGION.get(loc1, "other")
+    b = "no Brainnetome label" if (subject, bundle + "1") in manual_tips else a
+    return a, b, loc1
 
 
 def load_session(path, asset_id):
