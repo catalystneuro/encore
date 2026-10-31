@@ -11,9 +11,10 @@ holds the raw tetrode signal and the position series of 734 open arena and virtu
 
 Every claim rests on single units, and the dandiset holds none: no file has a units table or any
 processed data. The paper sorted its units from the raw signal with MountainSort. Streaming the raw
-signal of the sessions the paper used (638 GB) takes about 2.4 h at the rate measured here, more than
-the 60-minute limit for a notebook, before any sorting, so no claim could be tested. The paper's sorted
-units are deposited at Edinburgh DataShare (doi:10.7488/ds/7684) in a single 26.5 GB pickle.
+signal of the recording days of the 239 usable, paired 200 cm sessions of the paper's nine mice (638 GB,
+a superset of the paper's 215 sessions) takes about 2.3 h at the rate measured here, and about 2.1 h
+when scaled to 215 sessions, more than the 60-minute limit for a notebook, before any sorting, so no
+claim could be tested. The paper's data are deposited at Edinburgh DataShare.
 
 The notebook surveys every file, checks the description against the values (session and trial counts
 against the paper's summary table, the position series, duplicate recordings, and whether the raw signal
