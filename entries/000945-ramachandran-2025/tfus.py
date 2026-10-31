@@ -93,8 +93,16 @@ def asset_list() -> list[dict]:
                        for a in ds.get_assets() if a.path.endswith(".nwb")), key=lambda r: r["path"])
 
 
+def dandiset_description() -> str:
+    """The dandiset's description at the pinned version (it describes the `_2` repeats)."""
+    with DandiAPIClient() as client:
+        return client.get_dandiset(DANDISET_ID, DANDISET_VERSION).get_raw_metadata()["description"]
+
+
 def _str(v) -> str:
     v = v[()] if hasattr(v, "shape") else v
+    if isinstance(v, np.ndarray):        # the unlabelled anesthetized files store session_start_time as an array
+        v = v.ravel()[0]
     return v.decode() if isinstance(v, bytes) else str(v)
 
 

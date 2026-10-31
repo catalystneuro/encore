@@ -8,10 +8,10 @@ duty cycles (DC), with a cell-type label (RSU or FSU) in most files.
 
 | Claim | Outcome |
 |---|---|
-| Units sort into 28 FSU and 32 RSU in one animal (Figure 3B) | Partially reproduced |
+| Units sort into 28 FSU and 32 RSU in one animal (Figure 3B) | Blocked: data missing (no waveforms) |
 | RSU respond during stimulation in both states, against sham (Figure 4) | Blocked: data missing |
 | FSU delayed onsets are later awake than anesthetized (Figure 4H, 4I) | Not reproduced |
-| Awake onset latencies are more spread (Figure 4H) | Not reproduced |
+| Awake onset latencies are more spread (Figure 4H) | Blocked: methods underspecified |
 | Awake RSU time-locked responses by PRF (Figure 5A) | Not reproduced |
 | Anesthetized RSU time-locked responses by PRF (Figure 5C) | Not reproduced |
 | Anesthesia lowers RSU time-locked responses (two-way ANOVA) | Not reproduced |
@@ -21,14 +21,14 @@ duty cycles (DC), with a cell-type label (RSU or FSU) in most files.
 | Anesthetized delayed responses depend on PRF (Figure 5G, 5H) | Not reproduced |
 | Anesthesia lowers delayed responses (two-way ANOVA) | Reproduced, on an assumption |
 | Time-adjacent second batch (Figure 6A to 6D) | Blocked: data missing |
-| RSU responses rise with ISPTA, then fall (Figure 6E, 6G) | Partially reproduced, on an assumption |
+| RSU responses rise with ISPTA, then fall (Figure 6E, 6G) | Blocked: methods underspecified |
 | FSU delayed responses rise linearly with ISPTA (Figure 6F, 6H) | Not reproduced |
 | 1500 Hz gives the highest RSU time-locked mean (Figure 5A) | Not reproduced |
 | RSU time-locked responses by DC (Figure 7A) | Not reproduced |
 | 60% DC gives the highest RSU time-locked mean (Figure 7A) | Not reproduced |
 | FSU show no time-locked response across DC (Figure 7B) | Not reproduced |
-| RSU delayed responses prefer 30% DC (Figure 7C) | Not reproduced, on an assumption |
-| FSU delayed responses higher at 60% than 6% DC (Figure 7D) | Reproduced |
+| RSU delayed responses prefer 30% DC (Figure 7C) | Blocked: data missing (no 30% DC recordings) |
+| FSU delayed responses higher at 60% than 6% DC (Figure 7D) | Partially reproduced (sham part untested) |
 | The off-target sham gives no response | Blocked: methods underspecified |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -36,7 +36,8 @@ reasoning and the differences from the paper's method.
 
 The dandiset holds part of the paper's data: the awake PRF series of seven rats, labelled
 anesthetized recordings of two, and 6% and 60% DC recordings of three; no sham, no second batch
-and no waveforms. Twelve files are second copies of other recordings. The attempt record, with the
+no 30% DC recordings and no waveforms. Twelve files are second copies of other recordings, and
+the `_2` suffix of the repeat recordings does not always mark the later one. The attempt record, with the
 reasons and the differences from the paper's method, is
 [`attempts/000945-ramachandran-2025-01.yaml`](../../attempts/000945-ramachandran-2025-01.yaml).
 
