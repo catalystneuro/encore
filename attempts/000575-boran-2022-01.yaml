@@ -120,8 +120,11 @@ outcomes:
     label. Assumption (a2), for the 133 units whose tip contact is labelled unspecific or FuG (all
     on hippocampal electrodes), the label of the contact nearest the tip with an MTL label, and the
     electrode name where no contact has one (60 units). It is preferred to the electrode name (a1)
-    because it keeps reading (a) anatomical, using the bundle's own atlas labels before its target
-    name; both are shown, and Figure 1d colours every site as one of the three regions.
+    because it uses the bundle's own atlas labels before its target name; both are shown, and
+    Figure 1d colours every site as one of the three regions. The grounding is weak: (a2) differs
+    from (a1) only for the 28 units on PHR of participant 8, and it places them by contacts 2 and
+    3, which lie further from the protruding wire tips than contact 1. Under (a1) the entorhinal
+    count is 168, below the tolerance floor of 188.1.
 - claim: spike-sorting-quality
   outcome: not_reproduced
   notebook: reproduce_boran_2022.ipynb
@@ -196,8 +199,8 @@ outcomes:
     both region readings. With every session's spikes moved by three trials (variant, electrode
     name) the counts are 1, 1, 1, 1 and 0. The expected count under shuffled labels is 0 to 1. None
     of the three named counts is near 10, 5 or 6 or significant, under any region reading. The
-    data check finds the spikes misaligned with the trial labels, so this failure may come from the
-    deposited data.
+    data check suggests the spikes may be misaligned with the trial labels, so this failure may come
+    from the deposited data; moving every session by three trials does not recover the counts.
   deviations:
   - >-
     Reading (b), the cluster-based test, uses rates in 500 ms windows stepped by 50 ms (the
@@ -220,7 +223,7 @@ outcomes:
     count averages 15.7 (a2), 16.9 (a1) and 12.6 by electrode name, close to the incorrect counts.
     The correct-trial counts here differ by one or more from fig2c because the per-neuron
     permutations are drawn anew. The test compares labels across trials, which the data check
-    finds misaligned with the spikes.
+    suggests may be misaligned with the spikes.
 - claim: fig3b-test-neurons
   outcome: partially_reproduced
   notebook: reproduce_boran_2022.ipynb
@@ -253,7 +256,7 @@ outcomes:
   notes: >-
     With no regularisation (reading c) and kernel (a), dPCs 2 to 4 explain 32.88% and the first 15
     dPCs 81.41%, both within tolerance (kernel b, 30.97% and 77.74%; the cross-validated lambda of
-    reading d, 48.20% and 22.21% for kernel a). dPCs 2 to 4 are time components. With set-size
+    reading d, 22.21% and 48.20% for kernel a). dPCs 2 to 4 are time components. With set-size
     labels shuffled within sessions and dPCA refit (99 times), the set-size variance in the first
     15 dPCs is 19.23% (median) against 19.50% observed, p = 0.35; dPCs 2 to 4 give p = 0.27 and the
     mean distance between set-size trajectories during maintenance p = 0.53. So the variance values
@@ -314,8 +317,8 @@ outcomes:
     split under reading (c) and 190 under reading (d), where the paper gives 145 to 169 (95% of
     each session's 153 to 178 correct trials); neither reading uses each session's whole
     correct-trial set. Accuracy as deposited is below the scrambled runs (0.50), which fits the
-    misalignment of spikes and labels found in the data check, so this failure may come from the
-    deposited data.
+    misalignment of spikes and labels suggested by the data check, so this failure may come from the
+    deposited data; moving every session by three trials gives 0.585, far from 87.5%.
   deviations:
   - >-
     100 resampling runs and 200 scrambled runs for readings (c) and (e), 50 and 100 for the other
@@ -367,15 +370,18 @@ outcomes:
 findings:
 - kind: other
   statement: >-
-    The spikes appear to be misaligned with the trial table. Workload information in the spikes
+    The spikes may be misaligned with the trial table. Workload information in the spikes
     (squared t of low against high workload, summed over units) is at chance in every session when
     the spikes of trial window i are paired with the label of trial i (p = 0.12 to 0.94 against
     shuffled labels). Pooled over the 7 sessions with all 192 trials it peaks when they are paired
     with the label of trial i + 3 (corrected p = 0.005), and decoding workload from all neurons
     gives 0.46 as deposited, below scrambled labels, against 0.60 with every session moved by three
-    trials. In the 9 sessions with fewer trials no single shift carries the information, and the
-    trial table holds no source numbering that would show where trials were left out. Within
-    trials, the spikes are consistent with the epochs.
+    trials. Session by session the shift is supported less: of the 7 complete sessions only P03S1
+    and P06S1 have p < .05 at a shift of three trials, P02S1 has p = 0.95 there and four others peak
+    at other shifts, and the pooled peak is weighted toward P03S1 and P06S1 (52 and 96 units). In
+    the 9 sessions with fewer trials no single shift carries the information, and the trial table
+    holds no source numbering that would show where trials were left out. A single offset is
+    therefore not established. Within trials, the spikes are consistent with the epochs.
 - kind: metadata_error
   statement: >-
     The location of each unit is the atlas label of the macro contact whose number equals the
@@ -615,3 +621,161 @@ verifications:
     response: >-
       Outcome kept; the conclusion and the notes now say it carries little weight, and the (a2)
       regions were added.
+- date: 2026-10-30
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    The full executed notebook of the run after author-revise-1, with the conclusion cells and the
+    summary, the helper module, the claims file, the attempt record and the README, with the
+    paper's full text. The plotted images were not viewed. Report in
+    transcripts/000575/verifier-2-report.md.
+  results:
+  - claim: behavior-accuracy-by-set-size
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees with the stated outcome. The Summary's "F = 89.79 for accuracy" is not supported; cell
+      18 prints 89.78, and 89.79 is the paper's value.
+    response: Outcome kept. The Summary now gives F = 89.78 (paper 89.79).
+  - claim: behavior-capacity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: table1-capacity-and-neurons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: behavior-rt-set-size
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agrees with the stated outcome. The README's "The behavior matches the paper exactly" is not
+      supported, as the RT slope is 69 to 76 against 118 ms/item (cell 27) and accuracy at set size 2
+      is 97.9 against 99 (cell 18). The round-1 misreading in the claims file stays open as a
+      question for a reader.
+    response: >-
+      Outcome kept. The README now says the behavior is within the tolerances of the claims for
+      accuracy, capacity and the response-time F, and that the slope is 69 to 76 against 118 ms/item.
+  - claim: neurons-recorded
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Assumption (a2) is stated, marked as chosen after seeing the counts, and the alternatives are
+      shown; acceptable but weakly grounded. Reading (a) is well supported, as the tip-contact
+      labels give exactly 146 amygdala units. (a2) changes the count only through 28 units on P08
+      PHR, moved by the labels of contacts 2 and 3, which lie further from the protruding wire tips
+      than contact 1, so the "keeps reading (a) anatomical" justification is thin. Under (a1)
+      entorhinal is 168, about 20 below the tolerance floor of 188.1, and the outcome would be
+      partially reproduced. The README's "so do the counts of units" is not supported, as region
+      counts are 467/196 against 454/209. The Summary's methods paragraph describes the region
+      reading as (a1), while the outcomes rest on (a2), and three readings are run, not "both".
+    response: >-
+      Outcome kept, as the verifier agrees with it. The "keeps reading (a) anatomical"
+      justification was removed from the deviation, the data-check cell and the conclusion; they
+      now say the grounding is weak, that (a2) moves only the 28 PHR units by contacts further from
+      the wire tips than contact 1, and that under (a1) the entorhinal count is 168, below 188.1.
+      The Summary's methods paragraph now describes (a2), (a1) and (b) and says the outcomes rest on
+      (a2). The README gives the region counts against the paper's and says the choice was made
+      after seeing them.
+  - claim: spike-sorting-quality
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: firing-rates-by-period
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees with the stated outcome. The README's "so do ... the firing rates" overstates it;
+      rates are within 10%, not equal.
+    response: Outcome kept. The README now says the firing rates are within tolerance.
+  - claim: fig2c-maintenance-neurons
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      The same-region assumption is stated and reasonable. The outcome takes the 5000-permutation
+      counts, where the claims file calls 1000 the standard choice and 5000 a check; the departure
+      is supported by cell 39, where the median of 10 draws at 1000 permutations (58/21/15 under
+      a2) is also within tolerance. The outcome also holds under (a1) at 5000 permutations
+      (59/20/15), so it depends on reading (a), not on (a2) specifically. Round-1 problem 8
+      (welch_t uses unequal variances) is not recorded; it affected no conclusion.
+    response: >-
+      Outcome kept. Round-1 problem 8 is recorded here. welch_t is kept, as it enters only the
+      unpaired variants, and in a permutation test the choice of variance estimate changes little;
+      the verifier's synthetic test gave false-positive rates of 0.03 to 0.08.
+  - claim: fig2d-workload-modulated-maintenance-neurons
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Agrees with the stated outcome. The attribution of the label-dependent failures to a
+      three-trial misalignment is overstated: the k = 3 variant gives counts of 1/1/1 (cell 44), and
+      cell 15 supports a shift only for the pooled complete sessions. A variant shifting only the
+      sessions with evidence for k = 3 was not run. The outcome is unaffected; only its explanation
+      is.
+    response: >-
+      Outcome kept. The notes now say the data check suggests a misalignment and that moving every
+      session by three trials does not recover the counts. The variant shifting only the sessions
+      with evidence for k = 3 was not run: two sessions (P03S1, P06S1) support it, too few to change
+      counts near zero, and it would not change the outcome.
+  - claim: maintenance-neurons-correct-vs-incorrect
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Agrees with the stated outcome. The attribution of the label-dependent failures to a
+      three-trial misalignment is overstated (cells 16 and 75, README, first finding).
+    response: Outcome kept. The notes now say the data check suggests the labels may be misaligned.
+  - claim: fig3b-test-neurons
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig4a-dpca-separates-set-sizes
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Agrees with the stated outcome. The notes' "the cross-validated lambda of reading d, 48.20%
+      and 22.21%" reverses the order of the preceding pairs; cell 54 gives 22.21% for dPCs 2 to 4.
+      The k = 3 variant gives a set-size variance of 19.22% against a null median of 19.23% (cells
+      55 and 56).
+    response: >-
+      Outcome kept. The notes now give 22.21% and 48.20%, in the order of the other pairs. The
+      Summary says the k = 3 variant puts the set-size variance at the null median.
+  - claim: fig4b-speed-lowest-in-maintenance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig4c-distance-largest-in-maintenance
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig4d-decode-workload-all
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Agrees with the stated outcome. The Summary's "median accuracy 44 to 47%" is not supported;
+      cell 66 gives 0.440 to 0.487. "The spikes and the trial table appear to be misaligned, by
+      three trials in the complete sessions" is not supported session by session: only P03S1 and
+      P06S1 have p < .05 at k = 3 among the 7 complete sessions, P02S1 is at p = .95, P05S1, P11S1,
+      P12S2 and P13S1 peak at k = -4, -9, 9 and 9, and the pooled peak is weighted toward P06S1 (96
+      units) and P03S1 (52). The k = 3 variant reaches 0.585, p = .04, against the paper's 87.5%.
+    response: >-
+      Outcome kept. The Summary gives 44 to 49%. Cell 16, the Summary, the README and the first
+      finding now give the per-session evidence, say the pooled peak is weighted toward P03S1 and
+      P06S1, and say a single offset is not established and that the k = 3 variants recover little.
+      The notes add that the variant gives 0.585.
+  - claim: fig4d-decode-workload-regions
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Agrees with the stated outcome. The regional k = 3 variant now has 100 nulls, so its
+      smallest possible p (.0099) is below .0125.
+    response: No change.
+  - claim: decode-performance-not-significant
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; it carries little weight, and the record now says so.
+    response: No change.
