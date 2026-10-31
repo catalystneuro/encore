@@ -16,7 +16,7 @@ duty cycles (DC), with a cell-type label (RSU or FSU) in most files.
 | Anesthetized RSU time-locked responses by PRF (Figure 5C) | Not reproduced |
 | Anesthesia lowers RSU time-locked responses (two-way ANOVA) | Not reproduced |
 | FSU time-locked responses do not depend on PRF (Figure 5B, 5D) | Not reproduced |
-| Awake RSU delayed responses peak at 1500 and 3000 Hz (Figure 5E) | Not reproduced (change to blocked, data missing, proposed) |
+| Awake RSU delayed responses peak at 1500 and 3000 Hz (Figure 5E) | Blocked: data missing (no sham) |
 | Awake FSU delayed responses peak at 4500 Hz (Figure 5F) | Not reproduced |
 | Anesthetized delayed responses depend on PRF (Figure 5G, 5H) | Not reproduced |
 | Anesthesia lowers delayed responses (two-way ANOVA) | Reproduced, on an assumption |
@@ -24,7 +24,7 @@ duty cycles (DC), with a cell-type label (RSU or FSU) in most files.
 | RSU responses rise with ISPTA, then fall (Figure 6E, 6G) | Blocked: methods underspecified |
 | FSU delayed responses rise linearly with ISPTA (Figure 6F, 6H) | Not reproduced |
 | 1500 Hz gives the highest RSU time-locked mean (Figure 5A) | Not reproduced |
-| RSU time-locked responses by DC (Figure 7A) | Not reproduced (change to blocked, data missing, proposed) |
+| RSU time-locked responses by DC (Figure 7A) | Blocked: data missing (no 30% DC recordings, no sham) |
 | 60% DC gives the highest RSU time-locked mean (Figure 7A) | Not reproduced |
 | FSU show no time-locked response across DC (Figure 7B) | Not reproduced |
 | RSU delayed responses prefer 30% DC (Figure 7C) | Blocked: data missing (no 30% DC recordings) |
