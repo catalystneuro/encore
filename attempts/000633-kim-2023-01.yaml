@@ -93,10 +93,19 @@ outcomes:
     1 mm spacing is 2.7e-8 or less, and at 2 mm spacing below 0.05 in 8 of 10 variants (0.095 in
     the two with a 5 mm grid and a 400 um margin, 12 ROIs). With E1 taken as the other base
     electrode, rho is 0.424 to 0.510 (0.397 to 0.643 at 2 mm spacing, p up to 0.054) and the order
-    never matches, so the criterion's two readings would disagree. The assignment comes from the
-    paper's figure, not from the uptake; it assumes the deposited image is not mirrored, and that
-    this file is the image of Figure 4A, which its session description contradicts (findings). The
-    question of which electrode was E1 is put to the paper's authors (findings).
+    never matches, so the criterion's two readings would disagree. Where Figure 4A places E1 is not
+    shown in the notebook, so the assignment rests on the uptake (base_a has the most); the
+    outcome also rests on this file being the image of Figure 4A, which its session description
+    contradicts (findings). The question of which electrode was E1 is put to the paper's authors
+    (findings). Outside the entry, the author of this revision mapped the deposited images onto the
+    published Figure 4 image (PMC10341945) through the three electrode centres; the registry's
+    checks keep a published figure out of the notebook, so this is not shown there and is not
+    verified. The paired-pulse file matched Figure 4B in fine detail, turned by 180 degrees and
+    not mirrored (correlation of fine detail 0.18, 0.34 after a one-pixel shift); the single-pulse
+    file did not match Figure 4A in either orientation (at most 0.03 over shifts, rotations and
+    scalings of the map, the level of mismatched pairs). If that holds, the image of Figure
+    4A is not deposited and the claim would be blocked (data missing); no change is proposed, as
+    the analysis cannot be in the notebook.
   deviations:
   - The field map is computed here by a two-dimensional finite-difference solve (40 um grid,
     electrodes as 1.5 mm discs of fixed potential, insulating wall of a 35 mm dish centred on the
@@ -106,15 +115,20 @@ outcomes:
     does not vary with height. Electrode positions are measured in the image, and the scale is set
     from the 1.5 mm needle diameter (Methods 4.2); it gives 0.654 um per pixel, the camera's 0.65.
   - Assumed that E1, the electrode pulsed in Figure 4A, is the lower-right base electrode of the
-    file's image (base_a). The file does not record it. Figure 4A of the paper ("with electrode
-    positions labeled", Figure 4 legend) shows the apex at the top and E1 at the lower right; the
-    deposited image also has the apex at the top, so E1 is taken as base_a. A mirrored image cannot
-    be ruled out from the file, so the notebook shows both assignments.
+    file's image (base_a). The file does not record it, and the paper's text does not place it
+    (the Figure 4 legend says only that the panels are shown "with electrode positions labeled").
+    The published panel A has the apex at the top and E1 at the lower right, as the deposited image
+    has the apex at the top, but that is not shown in the notebook, and the deposited images do not
+    keep one orientation (the paired-pulse image has its apex at the bottom). base_a is also the
+    base electrode with the most uptake (with E1 = base_b the grounded electrode would show 2.5
+    times the uptake of the pulsed one), so the assignment rests on the uptake. The notebook shows
+    both assignments.
   - The single-pulse file is taken as the image of Figure 4A from its name, the dandiset's title
     (the Figure 4 legend) and its layout (three electrodes in a triangle, uptake around one base
     electrode). Its session description gives another exposure (four co-directional paired-pulse
-    trains at 770 kHz, 10 kV/cm); under it the field would still have one direction, from one base
-    electrode.
+    trains at 770 kHz, 10 kV/cm, "the electric field direction stayed the same in each pair"). It
+    does not say which electrodes were energized; that the field came from one base electrode is
+    an inference from the uptake around one of them.
   - The ROI grid (within 6 mm of the image centre, leaving out ROIs within 150 um of a footprint
     edge) and the neighbourhood (0 to 500 um from the footprint edge) are choices the claims file
     does not fix; the notebook shows 5 and 6 mm, 150 and 400 um, and 250, 500 and 1000 um, and the
@@ -124,6 +138,7 @@ outcomes:
     correlation and an order do not depend on the amplitude.
 - claim: fig4bc-paired-pulse-focal-apex
   outcome: reproduced
+  assumed: true
   notebook: reproduce_kim_2023.ipynb
   output: claim:fig4bc-paired-pulse-focal-apex
   notes: In the paired-pulse image, background-subtracted YP in the ROI 100 um outside the footprint
@@ -135,7 +150,16 @@ outcomes:
     field near each base electrode during its own pulse (19.6 and 20.0 kV/cm at 100 um, at 4 kV) is
     more than twice that near the apex (8.4 to 9.0), which is the "despite the strong field there"
     of the statement. The single-pulse half of the contrast rests on that file being the image of
-    Figure 4A, which its session description contradicts (findings).
+    Figure 4A, which its session description contradicts (findings); the outcome is flagged as
+    resting on that assumption. Outside the entry, the author of this revision mapped the deposited images onto the
+    published Figure 4 image (PMC10341945) through the three electrode centres; the registry's
+    checks keep a published figure out of the notebook, so this is not shown there and is not
+    verified. The paired-pulse file matched Figure 4B in fine detail, turned by 180 degrees and
+    not mirrored (correlation of fine detail 0.18, 0.34 after a one-pixel shift); the single-pulse
+    file did not match Figure 4A in either orientation (at most 0.03 over shifts, rotations and
+    scalings of the map, the level of mismatched pairs). If that holds, the image of Figure
+    4A is not deposited and the claim, whose criterion needs the single-pulse image of Figure 4A, would be blocked (data missing); no change is proposed, as
+    the analysis cannot be in the notebook.
   deviations:
   - The array centre, toward which the ROIs are placed, is taken as the centroid of the three
     electrode centres; the claims file says "toward the array center" without defining it.
@@ -143,7 +167,9 @@ outcomes:
     Methods 4.2) in both images. The single-image footprints have soft edges and fit to diameters
     of 1.03 to 1.40 mm (edge s.d. 128 to 144 um, against 33 to 99 um in the paired-pulse image);
     only their centres are used, and the notebook shows the fits up close.
-  - The single-pulse file is taken as the image of Figure 4A, as for fig4a-single-pulse-follows-field.
+  - Assumed that the single-pulse file is the image of Figure 4A, as for
+    fig4a-single-pulse-follows-field. The criterion compares the paired-pulse image with "the
+    single-pulse image of Figure 4A", and the file's session description gives another exposure.
 - claim: fig4-comet-shape
   outcome: reproduced
   assumed: true
@@ -157,13 +183,16 @@ outcomes:
     exceeds 10 times the dish median left out (0.54% of the region), the literal maximum is 1063,
     1063 um from the apex, and the region touches the apex footprint and reaches further toward the
     base than across the bisecting line at half (1755 against 1315 um) and at a quarter (3929 against
-    1749 um); thresholds of 5 and 20 times give the same. The 99.5th percentile of the 200 um mean
+    1749 um); thresholds of 5 and 20 times give the same. At half maximum the full extent of these
+    regions along the line is smaller than across it (2446 against 2592 um at 10 and 20 times, 2446
+    against 2473 um at 5 times); at a quarter maximum it is larger (5218 against 3368 um). The 99.5th percentile of the 200 um mean
     (737; half 2935 against 1607 um, quarter 4127 against 2269 um) and the maximum of a 200 um median
     filter (632; half 2603 against 1248 um, quarter 4002 against 2064 um) agree. No region touches a
     base footprint.
   deviations:
-  - Assumed that an object bright in the MemBrite channel is not part of the electroporated
-    monolayer and is left out before the maximum is taken. MemBrite stains all cell membranes about
+  - Assumed that objects bright in the MemBrite channel are not part of the electroporated
+    monolayer, and their pixels are left out before the maximum is taken (0.54% of the region at
+    10 times the dish median, several objects). MemBrite stains all cell membranes about
     evenly (dish median 257); the object under the literal maximum is about 20 times brighter in
     it, larger than a cell and out of focus. The rule (MemBrite above 10 times the dish median,
     grown by 30 um) is a choice; 5 and 20 times are shown and give the same, as do two maxima robust
@@ -173,8 +202,13 @@ outcomes:
     only (normalised convolution), so that the dark footprints and image corners do not enter it.
     The median filter is not masked.
   - The criterion's further toward the base than across is measured from the apex centre, as the
-    reach along the bisecting line toward the base against the largest distance across it; the
-    extents along and across the line are shown too, and agree.
+    reach along the bisecting line toward the base against the largest distance across it. The
+    extents along and across the line are shown too. They agree with it at a quarter maximum and in
+    the 99.5th-percentile and median-filter versions, but not at half maximum in the versions
+    without bright objects, on which the outcome rests. There the extent along the line is smaller
+    than across it (2446 against 2592 um at 10 and 20 times, 2446 against 2473 um at 5 times), and
+    the region is a blob around the apex footprint about as wide as it is long. The pass at half
+    maximum depends on the reach measure.
 - claim: fig5-base-sawtooth
   outcome: blocked
   blocked_by: data_missing
@@ -217,13 +251,16 @@ findings:
     35 mm glass-bottom dishes; the subject age is P1D for a cell line, and each subject is a
     condition (Single-pulse_trains, Paired-pulse_trains), not an animal or culture.
 - kind: methods_unavailable
-  statement: Questions for the paper's authors. (1) Which base electrode of the deposited
-    single-pulse image is E1, the one pulsed in Figure 4A, and is that file the image of Figure 4A
-    despite its session description? This attempt took the lower-right one (base_a), as Figure 4A
-    labels it with the apex at the top, assuming the deposited image is not mirrored. (2) How was the agreement of uptake with the field map
-    (Figure 4A) and the comet-shaped region (Figure 4B,C) judged? The paper gives no measure; this
-    attempt used rank correlation, the order of electrode neighbourhoods, and thresholds of half
-    and a quarter of a maximum taken after leaving out one bright object, likely debris.
+  statement: Questions for the paper's authors. (1) Is the deposited file Single-pulse_trains the
+    image of Figure 4A, despite its session description (four co-directional pairs at 770 kHz),
+    and which of its base electrodes is E1, the one pulsed? This attempt took it as Figure 4A and
+    E1 as the lower-right base electrode (base_a), which has the most uptake. Compared outside the
+    entry with the published figure, the file did not match Figure 4A in fine detail, while the
+    paired-pulse file matched Figure 4B turned by 180 degrees. If Figure 4A's image is another
+    file, can it be deposited? (2) How was the agreement of uptake with the field map (Figure 4A)
+    and the comet-shaped region (Figure 4B,C) judged? The paper gives no measure; this attempt used
+    rank correlation, the order of electrode neighbourhoods, and thresholds of half and a quarter
+    of a maximum taken after leaving out objects bright in the membrane stain, likely debris.
 - kind: other
   statement: The brightest YP in the paired-pulse image lies on one object about 105 um across,
     2.5 mm from the apex electrode, bright in both channels (median 14577 in YO-PRO-1 and 5266 in
@@ -339,4 +376,112 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Same reason.
+    response: No change.
+- date: 2026-10-31
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the second run, with its conclusions and summary, the
+    helper module, the attempt record, the README and the claims file, with the paper's full text.
+    Report in transcripts/000633/verifier-2-report.md.
+  results:
+  - claim: fig2-cancellation-at-180
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The numbers given for information only match cell 25.
+    response: No change.
+  - claim: fig2-crossover-angle
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The numbers given for information only match cell 25.
+    response: No change.
+  - claim: fig2-facilitation-plateau
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The numbers given for information only match cell 25.
+    response: No change.
+  - claim: fig2-60-fold-co-counter
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The numbers given for information only match cell 25.
+    response: No change.
+  - claim: fig3-1hz-co-cross-same
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig3-770khz-co-enhanced
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig3-770khz-cross-same-as-1hz
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig4a-single-pulse-follows-field
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption that E1 is base_a, the image is not mirrored and the file is
+      Figure 4A is stated and reasonable; the data point the same way on their own, as with E1 =
+      base_b the grounded electrode would show 2.5 times the uptake of the pulsed one (649.8
+      against 262.6). Where Figure 4A places E1 cannot be checked, as the paper text says only that
+      the panels are shown "with electrode positions labeled" and the notebook does not reproduce
+      the figure, so the sentence of cell 15 that the assignment is taken from the figure and the
+      test is no longer circular rests on something not shown. The deposited paired image has its
+      apex at the bottom, so the deposit does not keep a fixed orientation, which weakens "same
+      orientation as the figure" as evidence, though a 180 degree rotation does not mirror the
+      image. "Co-directional pairs from one electrode" (cell 18, deviation 3) is an inference; the
+      session description says co-directional pairs in a triangular array, not that they came from
+      one electrode.
+    response: Outcome unchanged. The sentence of cell 15 is withdrawn; the notebook, notes and
+      deviation now say that where Figure 4A places E1 is not shown, that the deposit does not keep
+      one orientation, and that the assignment rests on the uptake (base_a has the most), so the
+      order reading is not an independent check of it. The co-directional exposure is worded as
+      the description gives it, with the one-electrode field marked as an inference. To check the
+      figure, I mapped the deposited images onto the published Figure 4 image outside the entry.
+      The paired-pulse file matched Figure 4B turned by 180 degrees, but the single-pulse file did
+      not match Figure 4A in either orientation. The registry's check refuses code that reads a
+      figure, so this cannot be in the notebook; it is disclosed in the notes as not shown and not
+      verified, put to the paper's authors (findings), and no change of outcome is proposed, as
+      a proposed change needs its analysis in the notebook.
+  - claim: fig4bc-paired-pulse-focal-apex
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, but it should probably carry assumed true. Its criterion needs the single-pulse
+      image of Figure 4A, and that half rests on the same identification of the single-pulse file
+      that its metadata contradict. The notes and deviations state this, but the outcome is not
+      flagged; either flag it or say why it is not flagged.
+    response: Flagged assumed true, with the assumption stated as a deviation, in the result cell
+      and in the summary. Outcome unchanged. The outside comparison with the published figure (see
+      fig4a-single-pulse-follows-field) bears on this assumption and is disclosed in the notes in
+      the same way.
+  - claim: fig4-comet-shape
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, which changes the round-1 view (partially_reproduced). The assumption that a
+      MemBrite-bright object is debris is stated and reasonable, the rule is varied at 5, 10 and 20
+      times with the same result, and the two robust maxima agree. Deviation 3 is wrong that the
+      extents along and across the line agree; at half maximum, for the debris-excluded versions
+      the outcome rests on, the extent along the line is smaller than across it (2446 against 2592
+      um at 10 and 20 times, 2446 against 2473 um at 5 times), and they agree only at a quarter
+      maximum and for the 99.5th-percentile and median-filter versions. The reach measure is a
+      defensible reading of the criterion, but the half-maximum pass depends on it. "One object is
+      left out" in the README, the summary and the heading of cell 23 is wrong; the rule leaves out
+      every pixel above the MemBrite threshold, 0.54% of the region (1.50% at 5 times), many
+      objects.
+    response: Deviation 3 is corrected, and the notes, the result cell and the summary now give the
+      extents and say that the half-maximum pass depends on the reach measure. The README, the
+      summary, the result heading, the deviation and the question to the authors now say that the
+      pixels on objects bright in MemBrite (0.54% of the region, several objects) are left out.
+      Outcome unchanged.
+  - claim: fig5-base-sawtooth
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig5-apex-larger-polarization
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
     response: No change.

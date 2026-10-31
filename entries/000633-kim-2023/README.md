@@ -9,19 +9,19 @@ electrodes in alternation. The data of Figures 2, 3 and 5 are not in it.
 | Claim | Outcome |
 |---|---|
 | Under single pulses, uptake follows the field map (Figure 4A) | Reproduced, resting on an assumption |
-| Under paired pulses, uptake is strong at the apex and weak at the base electrodes (Figure 4B,C) | Reproduced |
+| Under paired pulses, uptake is strong at the apex and weak at the base electrodes (Figure 4B,C) | Reproduced, resting on an assumption |
 | The electroporated region is a comet pointing from the apex to the base (Figure 4B,C) | Reproduced, resting on an assumption |
 | Figure 2: cancellation and facilitation by the angle of the field vector (four claims) | Blocked: data missing |
 | Figure 3: co- and cross-directional pairs in a square array (three claims) | Blocked: data missing |
 | Figure 5: membrane charging by strobe imaging (two claims) | Blocked: data missing |
 
 The field map of the paper's simulation is not deposited; it is computed here from the geometry
-the paper states and the electrode positions measured in the images. The file does not say which
-base electrode was pulsed in the single-pulse image; it is taken from the labels of the paper's
-Figure 4A, assuming the image is not mirrored. The single-pulse file's description gives the
-settings of another exposure, and the file is taken as Figure 4A from its name and its image. For
-the comet shape, one bright object in both channels, likely debris, is left out before the
-maximum is taken; with it the region is empty. The attempt record, with the reasons and the
+the paper states and the electrode positions measured in the images. The single-pulse file's
+description gives the settings of another exposure; the file is taken as Figure 4A from its name
+and its image, and both of the first two outcomes rest on that. The file does not say which base
+electrode was pulsed; it is taken as the lower-right one, which has the most uptake. For the
+comet shape, the pixels on objects bright in the membrane stain (0.54% of the region, likely
+debris) are left out before the maximum is taken; with them the region is empty. The attempt record, with the reasons and the
 differences from the paper's method, is
 [`attempts/000633-kim-2023-01.yaml`](../../attempts/000633-kim-2023-01.yaml).
 
