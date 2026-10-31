@@ -243,46 +243,72 @@ N_HALF = 56                  # Methods 2.4: 224 ROIs along both diagonals, 112 p
                              # 56 per half; here one more ROI is centred on the array centre
 
 
-def roi_positions(el: dict, electrode: int) -> tuple[np.ndarray, float]:
+NEEDLE_RADIUS_MM = 0.75      # Methods 2.3: hollow needles 1.5 mm in diameter
+ROI_ENDS = ("footprint", "needle")
+ROI_WIDTHS = (1, 3, 5)       # ROI width across the diagonal, in ROI steps (see `band_means`)
+
+
+def roi_positions(el: dict, electrode: int, end: str = "footprint") -> tuple[np.ndarray, float]:
     """Centres (row, col) of the ROIs from the array centre (k = 0) toward one electrode (k = 56).
 
     The ROIs end at the fraction 3.65/4.2 of the distance from the centre to the inner edge of the
-    footprint, which is the paper's +/- 3.65 mm when the 8.4-mm diagonal of Results 3.5 is the
-    distance between inner edges (the files give 9.4 mm between centres and 8.4 mm between
-    inner edges at 0.65 um per pixel). This keeps out more than the 5% of the diagonal next to
-    each electrode that Methods 2.4 excludes. Returns the centres and the ROI step in pixels.
+    electrode, which is the paper's +/- 3.65 mm (Methods 2.4) when the 8.4-mm diagonal of Results
+    3.5 is the distance between inner edges (the files give 9.7 to 10.1 mm between footprint
+    centres at 0.65 um per pixel, consistent with 8.4 mm plus one 1.5-mm needle). This keeps out
+    more than the 5% of the diagonal next to each electrode that Methods 2.4 excludes. Two
+    readings of where the inner edge is, an assumption either way (the paper places the ROIs by eye):
+    - "footprint": the edge of the dark footprint measured in the image (`footprint_radius`);
+    - "needle": a fixed fraction of the centre-to-centre distance, 4.2 / (4.2 + 0.75), from the
+      8.4-mm diagonal and the 1.5-mm needles of Methods 2.3. It does not use the intensity, so the
+      ROI end does not move with the uptake around the electrode.
+    Returns the centres and the ROI step in pixels.
     """
     c = el["centre"]
     e = el["centres"][electrode]
     v = e - c
     dist = np.linalg.norm(v)
-    end = PAPER_RANGE_MM / PAPER_HALF_DIAGONAL_MM * (dist - el["radius"])
-    step = end / N_HALF
+    if end == "footprint":
+        inner = dist - el["radius"]
+    elif end == "needle":
+        inner = dist * PAPER_HALF_DIAGONAL_MM / (PAPER_HALF_DIAGONAL_MM + NEEDLE_RADIUS_MM)
+    else:
+        raise ValueError(end)
+    stop = PAPER_RANGE_MM / PAPER_HALF_DIAGONAL_MM * inner
+    step = stop / N_HALF
     k = np.arange(N_HALF + 1)
     return c + np.outer(k * step, v / dist), step
 
 
-def roi_means(img: np.ndarray, pts: np.ndarray, side: float) -> np.ndarray:
-    """Mean intensity in axis-aligned square ROIs of the given side (pixels) at each point.
-    The ROI shape and size are not given by the paper; contiguous squares one step wide are a
-    standard choice (wider bands are shown as a variant in the notebook)."""
-    h = max(int(round(side / 2)), 1)
+def band_means(img: np.ndarray, pts: np.ndarray, direction: np.ndarray, step: float,
+               across: float = 1) -> np.ndarray:
+    """Mean intensity in rectangular ROIs centred on `pts`, aligned with the diagonal: one step long
+    along it (so that the ROIs tile the diagonal, as 224 ROIs over +/- 3.65 mm do, about 65 um each,
+    Methods 2.4) and `across` steps wide across it. The paper gives no ROI width across the
+    diagonal; widths of 1, 3 and 5 steps are run as readings (an assumption, see the notebook).
+    The image is sampled at every block inside the rectangle (nearest block)."""
+    u = np.asarray(direction, float) / np.linalg.norm(direction)
+    n = np.array([-u[1], u[0]])
+    a = np.arange(-(step - 1) / 2, step / 2, 1.0)
+    b = np.arange(-(across * step - 1) / 2, across * step / 2, 1.0)
+    A, B = np.meshgrid(a, b, indexing="ij")
+    off = A.ravel()[:, None] * u + B.ravel()[:, None] * n
     out = []
-    for r, c in pts:
-        r, c = int(round(r)), int(round(c))
-        out.append(np.nanmean(img[r - h:r + h + 1, c - h:c + h + 1]))
+    for p in pts:
+        q = np.rint(p + off).astype(int)
+        ok = (q[:, 0] >= 0) & (q[:, 0] < img.shape[0]) & (q[:, 1] >= 0) & (q[:, 1] < img.shape[1])
+        out.append(np.nanmean(img[q[ok, 0], q[ok, 1]]))
     return np.array(out)
 
 
-def diagonal_profiles(img: np.ndarray, el: dict, width: float = 1.0) -> dict:
+def diagonal_profiles(img: np.ndarray, el: dict, across: float = 1, end: str = "footprint") -> dict:
     """Intensity profiles along both diagonals: for each electrode (0 to 3, clockwise from the
-    image's top left) the 57 ROI means from the centre (index 0) outward, ROI side `width` steps.
-    Also the distance of each ROI from the centre in fractions of the measured range (0 to 1)
-    and in mm at `UM_PER_PIXEL`."""
+    image's top left) the 57 ROI means from the centre (index 0) outward, ROIs one step long and
+    `across` steps wide, ending as `end` says (`roi_positions`). Also the distance of each ROI from
+    the centre in fractions of the measured range (0 to 1) and in mm at `UM_PER_PIXEL`."""
     halves, mm = [], []
     for i in range(4):
-        pts, step = roi_positions(el, i)
-        halves.append(roi_means(img, pts, step * width))
+        pts, step = roi_positions(el, i, end)
+        halves.append(band_means(img, pts, el["centres"][i] - el["centre"], step, across))
         mm.append(np.arange(N_HALF + 1) * step * BLOCK * UM_PER_PIXEL / 1000)
     return dict(halves=np.array(halves), frac=np.arange(N_HALF + 1) / N_HALF, mm=np.array(mm))
 
@@ -337,3 +363,12 @@ def errorbar_gap(a, b) -> tuple[float, bool]:
     gap = abs(a.mean() - b.mean()) - sa - sb
     g = gap / max(sa, sb)
     return float(g), bool(g > 1)
+
+
+def load_crop(url: str, centre, half: int) -> np.ndarray:
+    """Full-resolution crop (uint16) of `2 * half + 1` pixels on a side around `centre` (row, col in
+    full-resolution pixels), read from the archive by HDF5 slicing. For looking at a few cells."""
+    r0, c0 = int(round(centre[0])), int(round(centre[1]))
+    with h5py.File(remfile.File(url), "r") as f:
+        d = f[DATA_PATH]
+        return d[0, max(r0 - half, 0):r0 + half + 1, max(c0 - half, 0):c0 + half + 1]
