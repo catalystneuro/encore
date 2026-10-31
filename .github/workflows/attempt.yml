@@ -101,7 +101,9 @@ jobs:
   run:
     runs-on: ubuntu-latest
     environment: papers
-    timeout-minutes: 340
+    # GitHub's most for a job. The agent step has 300 of it; a verifier's notebooks run before it (up to
+    # 60 minutes each, tools/entry.py), so an entry with long notebooks leaves its verifier less time.
+    timeout-minutes: 360
     outputs:
       started: ${{ steps.agent.outputs.started }}
       folder: ${{ steps.start.outputs.folder }}
