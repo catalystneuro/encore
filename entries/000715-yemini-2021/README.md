@@ -16,8 +16,9 @@ of the same worms, and the whole-brain activity recordings, are on the paper's Z
 | Eight guided annotations bring head accuracy above 90% | Not reproduced |
 | Guided annotation beats random annotation (head) | Reproduced |
 | Confidence is calibrated | Blocked: the criterion's two readings disagree |
-| NeuroPAL leaves 3.5% color violations (with the paper's NeuroPAL colors) | Not reproduced by the Methods measure; the code's measure matches |
-| Ventral ganglion least accurate; optimal coloring alternatives | Blocked |
+| NeuroPAL leaves 3.5% color violations (with the paper's NeuroPAL colors) | Reproduced |
+| Optimal coloring finds 1.7% with 39 reporters and 10.5% with 3 (with the paper's reporter table) | Partially reproduced |
+| Ventral ganglion least accurate | Blocked |
 | Whole-brain activity, five claims on the Zenodo record (counted apart) | 2 reproduced, 1 partially, 2 not reproduced |
 | Reporter expression, mutants, phenotypes and other activity claims | Blocked |
 
@@ -37,6 +38,9 @@ The attempt record, with the reasons and the differences from the paper's method
   for the neuron detection.
 - `wholebrain_zenodo.ipynb`: five whole-brain activity claims on the Zenodo record, about 4
   minutes, most of it reading the record.
+- `optimal_coloring.ipynb`: the optimal-coloring claim, a Python port of the paper's solver run
+  on the dandiset's head atlas, about 20 minutes.
 - `neuropal.py`: loading, color readout, the statistical atlas, identification, guided
-  annotation, detection and color violations, with the source of each parameter.
+  annotation, detection, color violations and the optimal-coloring solver, with the source of
+  each parameter.
 - `wholebrain.py`: reading the Zenodo activity files and the response tests of the STAR Methods.

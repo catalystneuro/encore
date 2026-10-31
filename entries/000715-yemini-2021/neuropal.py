@@ -47,6 +47,11 @@ Where the parameters come from:
   from its positional Gaussian, the 95% closest by Mahalanobis distance kept; neurons i and j
   are adjacent when one of i's points is closer to j's centre (in j's metric) than to i's in
   i's metric. The seed is fixed (numpy cannot reproduce MATLAB's rng(1)).
+- Optimal coloring (MS2 Algorithm 1 as coded in optimal_color_solver.m and find_optimal_colors.m):
+  the reporter matrix of getReporterInfo.m, the solver's own lambda of 128, and the code's Otsu
+  threshold (graythresh) on X to keep reporters. The number of colors, the margin, the sparsity
+  and the number of runs are set in the notebook from the claim's criterion; 300 iterations are
+  optimal_color_parameters.m's value (MS2 section 4.2, "300 iterations in total").
 """
 
 from __future__ import annotations
@@ -57,6 +62,7 @@ import h5py
 import numpy as np
 import remfile
 import requests
+from scipy import sparse
 from scipy.optimize import linear_sum_assignment
 from scipy.special import logsumexp
 
@@ -462,6 +468,103 @@ def color_violations(colors, A, margin=1 / 3):
     share = float(((D < margin) * A).sum() / A.sum())
     shortfall = float(np.maximum(margin * A - D * A, 0).sum() / A.sum())
     return share, shortfall, int(A.sum())
+
+
+OC_DATA_URL = ("https://raw.githubusercontent.com/Eviatar/Optimal_Coloring/"
+               "990c597d1a7b0c38c4e7e99f8e8b60da411b3493/data.mat")
+
+
+def load_optimal_coloring() -> dict:
+    """data.mat of the Optimal_Coloring code at the pinned commit, read with mat-io, which reads the
+    MATLAB table objects (BrainAtlas, NeuroPAL) that scipy cannot. mat-io reads only from a path,
+    so the file is held in a temporary directory that is removed once it is read."""
+    import tempfile
+    from pathlib import Path
+
+    from matio import load_from_mat
+
+    content = requests.get(OC_DATA_URL, timeout=120).content
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "data.mat"
+        path.write_bytes(content)
+        d = load_from_mat(str(path))
+    d["neurons"] = [str(np.ravel(x)[0]) for x in np.ravel(d["neurons"])]
+    return d
+
+
+def reporter_matrix(table, neurons):
+    """Optimal_Coloring getReporterInfo.m: the table's rows for the given neurons (expression from
+    the fourth column on), reporters expressed in all or none of them dropped, and reporters with
+    the same expression pattern dropped except the first (unique 'rows', 'stable')."""
+    t = table.astype({"Neuron": str}).set_index("Neuron").loc[list(neurons)]
+    names = np.array(table.columns[3:])
+    R = t.iloc[:, 2:].to_numpy(float)
+    keep = ~(R == 1).all(0) & ~(R == 0).all(0)
+    R, names = R[:, keep], names[keep]
+    _, first = np.unique((R > 0).T, axis=0, return_index=True)
+    first = np.sort(first)
+    return R[:, first], list(names[first])
+
+
+def optimal_color_solver(A, R, k, margin, sparsity, iters, runs, rng, lam=128.0):
+    """Optimal_Coloring optimal_color_solver.m (MS2 Algorithm 1), `runs` random starts at once.
+
+    The updates, lambda = 128 and the column rescaling of X are the code's. The loop over
+    neighbors is done over the nonzero entries of A, and the distance test is on squared
+    distances; both give the code's updates up to rounding. Starts are drawn from `rng` (numpy
+    cannot reproduce MATLAB's rand), a standard choice for a detail that changes single runs,
+    not the distribution of runs. Returns X, shape (runs, reporters, k).
+    """
+    n, r = R.shape
+    eps = np.finfo(float).eps
+    I, J = np.nonzero(A)
+    a2 = 2 * A[I, J].astype(float)
+    S = sparse.csr_matrix((np.ones(len(I)), (I, np.arange(len(I)))), shape=(n, len(I)))
+    RtR = R.T @ R
+    X = rng.random((runs, r, k))
+    Z = rng.random((runs, n, k))
+    flat = lambda M: M.transpose(1, 0, 2).reshape(M.shape[1], -1)        # (runs, m, k) -> (m, runs * k)
+    unflat = lambda M: M.reshape(M.shape[0], runs, k).transpose(1, 0, 2)
+    for _ in range(iters):
+        Zj = Z[:, J]
+        w = a2 * (((Z[:, I] - Zj) ** 2).sum(-1) < margin ** 2)          # neighbors closer than the margin
+        dxp = (S @ w.T).T[..., None] * Z
+        dxn = unflat(S @ flat(w[..., None] * Zj))
+        Z = (Z / (dxn + unflat(R @ flat(X)) + eps)) * (dxp + lam * Z)
+        Z += eps
+        Z /= Z.sum(-1, keepdims=True)
+        X = (X / (2 * lam * unflat(RtR @ flat(X)) + sparsity)) * (2 * lam * unflat(R.T @ flat(Z)))
+        cs = X.sum(1, keepdims=True)
+        X = X / cs * cs.max(-1, keepdims=True)
+        Z = unflat(R @ flat(X))
+    return X
+
+
+def graythresh(x):
+    """MATLAB graythresh (R2019b): Otsu's threshold on a 256-bin histogram of im2uint8(x)."""
+    counts = np.bincount(np.clip(np.round(np.ravel(x) * 255), 0, 255).astype(int), minlength=256)
+    p = counts / counts.sum()
+    omega, mu = np.cumsum(p), np.cumsum(p * np.arange(1, 257))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        sb = (mu[-1] * omega - mu) ** 2 / (omega * (1 - omega))
+    idx = np.mean(np.flatnonzero(sb == np.nanmax(sb))) + 1
+    return (idx - 1) / 255
+
+
+def solution_violations(X, R, A, margin=1 / 3):
+    """find_optimal_colors.m: reporters whose summed weight exceeds graythresh(X) are kept, the
+    colors R(:, kept) * X(kept, :) are scaled by each channel's maximum, and the violations are
+    measured as in `color_violations`. Returns one row per run: reporters kept, the Methods share,
+    the code's mean shortfall."""
+    out = []
+    for Xb in X:
+        keep = Xb.sum(1) > graythresh(Xb)
+        C = R[:, keep] @ Xb[keep]
+        with np.errstate(divide="ignore", invalid="ignore"):
+            C = np.nan_to_num(C / C.max(0))
+        share, shortfall, _ = color_violations(C, A, margin)
+        out.append((int(keep.sum()), share, shortfall))
+    return np.array(out)
 
 
 # ---------------------------------------------------------------- leave-one-out

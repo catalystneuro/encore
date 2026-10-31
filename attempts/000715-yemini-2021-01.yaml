@@ -21,8 +21,9 @@ provenance:
     url: https://github.com/catalystneuro/encore/actions/runs/41214704202
 inputs:
 - what: NeuroPAL colors of 235 head and tail neurons (NeuroPAL_colors in data.mat), the outside input
-    of ms2-neuropal-color-violations; the paper's own atlas positions, covariances and adjacency
-    matrix in the same file, used only as a reference for the color violation measures.
+    of ms2-neuropal-color-violations; the Brain Atlas reporter table (BrainAtlas in the same file,
+    read with mat-io), the outside input of fig7de-optimal-coloring-violations; the paper's own atlas
+    positions, covariances and adjacency matrix in the same file, used only as a reference.
   source: https://github.com/Eviatar/Optimal_Coloring at commit 990c597d1a7b0c38c4e7e99f8e8b60da411b3493
 - what: Parameters of the color readout, the alignment search, the Sinkhorn iterations, the guided
     annotation and the neuron detection, read from the paper's code (no data used).
@@ -187,32 +188,69 @@ outcomes:
     fig7bc-identification-accuracy. The paper gives no measure of agreement; the question is
     recorded as a finding for its authors. Head only.
 - claim: ms2-neuropal-color-violations
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_yemini_2021.ipynb
   output: claim:ms2-neuropal-color-violations
-  measured: 21.5
+  measured: 3.64
   notes: With neighbors from the dandiset's head atlas (192 neurons with a NeuroPAL color, 4065
-    adjacent ordered pairs), 21.50% of neighboring pairs are closer in color than 1/3 (the Methods
-    measure, the criterion's main result). The code's measure, the mean shortfall below the margin,
-    is 3.64%, inside 3.5 +/- 0.35, and 3.62 to 3.66% under the atlas variants. The paper's own
-    inputs in data.mat give the same split, 21.50% by the Methods measure and 3.47% by the code's
-    (this port of computeProbAdjacency agrees with data.mat's adjacency on 98.9% of entries), so
-    the paper's 3.5% is the code's measure. The dandiset's head atlas reproduces the paper's own
-    numbers under both measures. A question is recorded for a reader on whether the claims file
-    should take the code's measure as the main result. Pooled head and tail cannot be tested; the
-    head-only reading is one the criterion names.
+    adjacent ordered pairs), the code's measure, the mean shortfall below the margin over
+    neighboring pairs, is 3.64%, inside 3.5 +/- 0.35, and 3.62 to 3.66% under the atlas variants.
+    The paper's own inputs in data.mat give 3.47% (this port of computeProbAdjacency agrees with
+    data.mat's adjacency on 98.9% of entries). The Methods share of neighboring pairs closer in
+    color than 1/3, now a variant, is 21.50% on the head atlas and on data.mat alike. What the
+    answer changed. The first run tested the claims file's earlier criterion, which took the
+    Methods share as the main result, and recorded not_reproduced (21.50%) with a question to a
+    reader. The reader amended the claim (questions/000715.yaml), so that the code's mean
+    shortfall decides it and the share is a variant, and the statement now reads "theoretical
+    color margin violation of 3.5%". Under the amended claim the same numbers give reproduced.
+    Pooled head and tail cannot be tested; the head-only reading is one the criterion names.
   deviations:
   - Head atlas only; the tails are not in the dandiset.
   - Six atlas neurons (AMSOL, AMSOR, DA2, DB3, HMC, VD3) have no NeuroPAL color in data.mat and are
     left out.
   - The random samples of computeProbAdjacency use numpy with seed 1, not MATLAB's rng(1).
 - claim: fig7de-optimal-coloring-violations
-  outcome: blocked
-  blocked_by: not_runnable
-  notes: The reporter table the solver needs (BrainAtlas in Optimal_Coloring data.mat) is stored as
-    a MATLAB table object, which scipy reads only as an opaque object; it cannot be read without
-    MATLAB, which cannot be installed in the entry's environment. The criterion also asks for
-    10,000 and 7,500 runs of the solver. Not attempted further.
+  outcome: partially_reproduced
+  notebook: optimal_coloring.ipynb
+  output: claim:fig7de-optimal-coloring-violations
+  measured:
+  - 1.72
+  - 6.95
+  notes: On the neighbors of ms2-neuropal-color-violations (dandiset head atlas, 192 neurons, 543
+    Brain Atlas reporters with distinct patterns over them), the best of 10,000 runs at sparsity
+    100 has a mean shortfall of 1.72% (27 reporters kept), inside 1.7 +/- 0.17; the best run
+    keeping exactly 39 reporters (205 runs) has 1.86%, also inside. The sparsity scan put 3
+    reporters most often at sparsity 1500 (95 of 100 runs); the best of 7,500 runs there that keep
+    3 reporters (7,106 runs) has 6.95%, below 9.45 to 11.55, a better coloring than the paper
+    reports. The 3-reporter solutions take few values (5th percentile 9.90%, 30 runs or 0.4% below
+    9.45%), so the best of fewer runs lands in the tolerance, in 95% of random subsets of 10 runs,
+    66% of 100 and 1% of 1,000. On the paper's own adjacency in data.mat (235 neurons, 654 unique
+    reporters as the paper states, 2,000 runs each) the best is 1.74% at sparsity 100 and 8.71% for
+    3 reporters. The Methods share, a variant, is 12.96% and 20.84% for the two best head-atlas
+    solutions. The first value is reproduced and the second is not, so the claim holds in part.
+    What the answer changed. The amended criterion takes the code's mean shortfall as the measure,
+    in place of the Methods share. The first run had blocked this claim (not_runnable) because
+    scipy cannot read the MATLAB table holding the reporters; this run read it with mat-io and
+    ported the solver, so the claim is tested for the first time here. A question is recorded for
+    a reader on whether the 3-reporter value is the best of 7,500 runs of this one setting, as the
+    criterion reads it, or of the part of the paper's 7,500 simulations that had this setting
+    (Methods S2 Figure 6 legend), since with fewer runs the best falls in the tolerance.
+  deviations:
+  - Head atlas only (192 neurons); the paper used 235 head and tail neurons. The paper's own
+    adjacency is run as a reference with 2,000 runs per setting, not 10,000 and 7,500.
+  - optimal_color_solver.m ported to Python and run on many random starts at once; starts are drawn
+    with numpy, not MATLAB's rand, and the loop over neighbors uses squared distances over the
+    nonzero entries of A, which gives the code's updates up to rounding.
+  - Three intensities taken as the margin of 1/3, from Methods S2 section 4.2 ("1/3 as our minimum
+    color margin (corresponding to discriminating 3 levels of color intensity)"); 300 iterations
+    from optimal_color_parameters.m and Methods S2 section 4.2 ("300 iterations in total").
+  - The solution kept from a set of runs is the one with the fewest violations, from the Methods S2
+    Figure 1 legend ("chosen as those with the minimal color violations, among 10,000
+    simulations"); each solution's colors and kept reporters follow find_optimal_colors.m (Otsu
+    threshold on X, colors scaled by each channel's maximum).
+  - The sparsity for 3 reporters is not given by the paper; it was chosen as the value of a scan
+    (250, 500, 1000, 1500, 2000, 3000; 100 runs each) whose runs most often keep 3 reporters, as
+    the criterion reads it.
 - claim: fig1e-stereotyped-color-map
   outcome: blocked
   blocked_by: other
@@ -414,6 +452,12 @@ findings:
     neighboring pairs below the discrimination margin, but the reported 3.5% for NeuroPAL is the
     mean shortfall below the margin computed by find_optimal_colors.m. On the paper's own data.mat
     the share is 21.5% and the mean shortfall 3.47%.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which sparsity, and how many runs of the 3-color,
+    3-intensity, 3-reporter setting, gave the 10.5% solution of Figure 7E and Methods S2 Figure 1?
+    The 7,500 simulations of Methods S2 Figure 6 span 2 to 6 colors, 1 to 3 intensities and 2 to 71
+    reporters. A Python port of the code finds 6.95% as the best of 7,500 runs of that setting on
+    the dandiset's head atlas, and values within 10% of 10.5% as the best of 10 to 100 runs.
 - kind: methods_unavailable
   statement: Question for the paper's authors. Methods S1 section 6.4 says confidence and accuracy
     are "largely in good agreement" without a measure. Which measure of agreement was meant, and
