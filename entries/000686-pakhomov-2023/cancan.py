@@ -75,6 +75,7 @@ def load_image(url: str, block: int = BLOCK, threads: int = 16) -> tuple[np.ndar
                     conversion=float(d.attrs.get("conversion")),
                     subject_id=f["general/subject/subject_id"][()].decode(),
                     species=f["general/subject/species"][()].decode(),
+                    age=(f["general/subject/age"][()].decode() if "general/subject/age" in f else None),
                     session_start=f["session_start_time"][()].decode(),
                     session_description=f["session_description"][()].decode(),
                     image_description=str(f["acquisition/ScanningImaging"].attrs.get("description")))
