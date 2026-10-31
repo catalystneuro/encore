@@ -21,7 +21,7 @@ and the differences from the paper's method.
 The record, with the assumptions, the differences from the paper's method and the findings about the
 dataset, is [`attempts/000688-perich-2018-01.yaml`](../../attempts/000688-perich-2018-01.yaml).
 
-- `reproduce_perich_2018.ipynb`: the analysis. It takes about nine minutes, two of them reading the
+- `reproduce_perich_2018.ipynb`: the analysis. It takes about 20 minutes, two of them reading the
   metadata of all 111 files.
 - `perich.py`: loading the sessions, binning and smoothing, PCA, the output-potent and output-null
   subspaces, the dimensionality estimate, the null/potent index and the lag. Other notebooks on this

@@ -14,7 +14,9 @@ to O10 are those of claims/000688/10.1016-j.neuron.2018.09.030.yaml):
 
 - `BIN_S` = 50 ms bins, square root of counts, non-causal Gaussian kernel of "width 100 ms":
   STAR Methods, Dimensionality reduction (M2). `KERNEL_SD_S` holds both readings of the width
-  (O4): a standard deviation of 100 ms, or a full width at half maximum of 100 ms.
+  (O4): a standard deviation of 100 ms, or a full width at half maximum of 100 ms. The claims
+  file expected this not to change an outcome; it changes the fig3b medians and the fig6c
+  significance, so both readings are run throughout.
 - PCA per area per session on Baseline reward trials only, 8 M1 and 16 PMd components: STAR
   Methods, Output-potent and output-null subspaces ("We used only trials from the Baseline period
   of each session to find the axes for PCA") and Results ("for M1 we used the first eight").
@@ -35,7 +37,8 @@ to O10 are those of claims/000688/10.1016-j.neuron.2018.09.030.yaml):
   are computed: the raw differences (the text's wording), the difference over the square root of
   two (single-trial noise), and the difference over the square root of 2K (the noise of an average
   of K trials). The first two give 0 dimensions everywhere, so the third is adopted as an
-  assumption (notebook, fig3b-pmd-higher-dimensional).
+  assumption (notebook, fig3b-pmd-higher-dimensional, which also checks it on synthetic data of
+  known rank: rule (b) recovers the rank, rule (a) overestimates it).
 - Null/potent index (`null_potent_index`): STAR Methods, Output-potent and output-null
   subspaces, last paragraph: the PCA loading matrix times V, (|potent| - |null|) / (|potent| +
   |null|) summed over dimensions; "magnitude" as the sum of absolute values or of squares.
@@ -103,7 +106,7 @@ def _text(x):
 
 
 def read_metadata(url: str) -> dict:
-    """Trial counts, unit areas and description of one file, without spikes or kinematics."""
+    """Trial counts, unit areas and descriptions of one file, without spikes or kinematics."""
     with h5py.File(remfile.File(url), "r") as f:
         tr = f["intervals/trials"]
         loc = f["general/extracellular_ephys/electrodes/location"][:]
@@ -114,6 +117,7 @@ def read_metadata(url: str) -> dict:
         res = [_text(x) for x in tr["result"][:]]
         return {
             "experiment": _text(f["general/experiment_description"][()]),
+            "session_description": _text(f["session_description"][()]),
             "trial_columns": sorted(k for k in tr.keys() if k != "id"),
             "n_trials": len(res),
             "results": pd.Series(res).value_counts().to_dict(),
