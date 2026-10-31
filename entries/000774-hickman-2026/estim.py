@@ -18,7 +18,10 @@ Where each parameter comes from:
   "bipolar" bipolar with a negative amplitude (STAR Methods, Electrophysiological recordings:
   "Negative amplitudes indicate cathodal-leading pulses"). The trials are chosen as the code's
   choose_stim_parameter does: when the matching trials use more than one contact pair, those of
-  the first cathodal contact in time; then the first 75 (claims file header).
+  the first cathodal contact in time; then the first 75 (claims file header). Each recording
+  has one cathodal contact for monopolar pulses; where a cathodal condition was run twice
+  (jlh31, jlh34), both runs use that contact, so the first 75 trials are the first run and the
+  claims file's "layer 5" reading is the same trials.
 - Units: Kilosort/phy group "good" and stable (claims file header). Stability follows the STAR
   Methods ("Single unit stability metric"): 60 s bins over the session, ordinary least squares
   of rate on time, y-intercept over mean rate, units beyond 1.5 IQR of the recording's quartiles
@@ -46,9 +49,14 @@ Where each parameter comes from:
   min-max normalised duration, peak-to-trough ratio and repolarisation slope, as dlab's k-means
   branch); "threshold", what the paper's code runs (kmeans=0: FS when duration < 0.4 ms).
   Units with peak-to-trough ratio >= 1 are "up", and narrow up units "axon" (Methods).
+- Evoked-potential boundaries (claims fig4f, fig4i, fig5i, reading b of fig5-fsrs): the means
+  over probes of the code's per-probe boundaries (code_ep_bounds), an outside input named by the
+  claims' criteria; the units' signed distances come from the dataset.
 - Regions: cortical when the CCF name contains "area" (code classify_region,
   figure7.ipynb cell 29), with the code's curated subcortical list; the code's
-  map_region_to_group (figure7.ipynb cell 5) for the circuit responders.
+  map_region_to_group (figure7.ipynb cell 5) for the circuit responders. For Figure 6D, the
+  legend's groups: HVA is LM, AM and PM, subcortical is CA1, subiculum, dentate gyrus and
+  superior colliculus.
 """
 
 import numpy as np
@@ -127,25 +135,37 @@ def waveform_features(w, fs=30000.0):
     return dur, ratio, slope
 
 
-def classify_waveforms(dur, ratio, slope, rng_seed=0):
-    """FS/RS/up/axon labels under the two readings (see the module docstring)."""
+def kmeans_fs_rs(dur, ratio, slope, seed=0, minit="points"):
+    """FS/RS by k-means (2 clusters) on min-max normalised duration, peak-to-trough ratio and
+    repolarisation slope of one recording, as dlab's k-means branch; the cluster of shorter mean
+    duration is FS. Returns the labels and the within-cluster sum of squares. One run of
+    scipy's kmeans2 from the given seed and initialisation; the Methods do not state either."""
     dur, ratio, slope = map(np.asarray, (dur, ratio, slope))
-    out = {}
     feats = []
     for v in (dur, ratio, np.nan_to_num(slope)):
         v0 = v - np.min(v)
         feats.append(v0 / np.max(v0))
     X = np.vstack(feats).T
-    np.random.seed(rng_seed)  # kmeans2 with minit='points' draws from numpy's global generator
-    _, lab = kmeans2(X, 2, iter=300, thresh=5e-6, minit="points", seed=rng_seed)
+    np.random.seed(seed)  # kmeans2 with minit='points' draws from numpy's global generator
+    cent, lab = kmeans2(X, 2, iter=300, thresh=5e-6, minit=minit, seed=seed)
     fs_k = 0 if dur[lab == 0].mean() < dur[lab == 1].mean() else 1
-    km = np.where(lab == fs_k, "fs", "rs")
+    wcss = float(((X - cent[lab]) ** 2).sum())
+    return np.where(lab == fs_k, "fs", "rs"), wcss
+
+
+def label_up_axon(cls, dur, ratio):
+    """Units with peak-to-trough ratio >= 1 are "up", narrow up units (< 0.4 ms) "axon" (Methods)."""
+    c = np.where(np.asarray(ratio) < 1.0, cls, "up").astype(object)
+    c[(c == "up") & (np.asarray(dur) < 0.0004)] = "axon"
+    return c
+
+
+def classify_waveforms(dur, ratio, slope, rng_seed=0):
+    """FS/RS/up/axon labels under the two readings (see the module docstring)."""
+    dur, ratio, slope = map(np.asarray, (dur, ratio, slope))
+    km, _ = kmeans_fs_rs(dur, ratio, slope, seed=rng_seed)
     th = np.where(dur < 0.0004, "fs", "rs")
-    for name, cls in [("kmeans", km), ("threshold", th)]:
-        c = np.where(ratio < 1.0, cls, "up").astype(object)
-        c[(c == "up") & (dur < 0.0004)] = "axon"
-        out[name] = c
-    return out
+    return {"kmeans": label_up_axon(km, dur, ratio), "threshold": label_up_axon(th, dur, ratio)}
 
 
 def stability_outliers(spike_trains, bin_size=60.0):
@@ -304,6 +324,25 @@ def code_distances(units, coords, contact_label):
     return dist, norm
 
 
+def code_ep_bounds():
+    """Mean superficial and deep evoked-potential boundaries per polarity and amplitude, from the
+    paper's code repository at commit c4aaa608 (intermediates/EP_distances.pkl: per polarity
+    and signed amplitude, the per-probe superficial and deep boundaries in um). As the code
+    (figure4_figure5_figure6.ipynb cell 25), the bounds are the means over probes; cathodal is
+    "monopolar" with a negative amplitude. An outside input: the boundaries need the raw AP band,
+    which the dandiset does not hold (claims fig4f, fig4i and fig5i name it for the author to judge).
+    Returns {polarity: {amp: (superficial, deep, n probes)}}."""
+    import pickle
+    url = CODE_REPO.replace("/recordings", "/intermediates/EP_distances.pkl")
+    d = pickle.loads(requests.get(url, timeout=60).content)
+    out = {}
+    for pol, key, sign in [("cathodal", "monopolar", -1), ("anodal", "monopolar", 1),
+                           ("bipolar", "bipolar", -1)]:
+        out[pol] = {a: (float(np.mean(d[key][sign * a][0])), float(np.mean(d[key][sign * a][1])),
+                        len(d[key][sign * a][0])) for a in AMPS if sign * a in d[key]}
+    return out
+
+
 def spike_prob(train, stims, win=0.002, base=(0.007, 0.005)):
     """DRP, baseline probability and nDRP (base = (start, end) before onset, in s)."""
     stims = np.asarray(stims)
@@ -362,6 +401,19 @@ def classify_region(region):
     if region in SUBCORTICAL:
         return "Subcortical"
     return None
+
+
+def legend_subcortical(region):
+    """Subcortical units by the Figure 6 legend ("hippocampus (CA1, subiculum, and dentate gyrus)
+    and superior colliculus"), on the CCF names in the files."""
+    return (region == "Field CA1" or "subiculum" in region.lower()
+            or region.startswith("Dentate gyrus") or region.startswith("Superior colliculus"))
+
+
+def legend_hva(region):
+    """Higher visual areas by the Figure 6 legend: LM, AM and PM."""
+    return any(k in region for k in ["Lateral visual area", "Anteromedial visual area",
+                                     "posteromedial visual area"])
 
 
 def map_region_to_group(region):
