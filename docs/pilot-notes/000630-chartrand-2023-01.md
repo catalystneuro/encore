@@ -1,0 +1,123 @@
+# 000630, Chartrand et al. 2023
+
+Nine claims reproduced, none partially, four not reproduced and one blocked on
+the dataset, with one more reproduced, one partially, two not reproduced and
+three blocked that also need outside data. The first verification round agreed
+with 36 of the 41 outcomes and the second with 39, and a third round, held on
+the three changes of outcome proposed after the second, agreed with all three.
+It pins version 0.230915.2257, the version the paper cites and the only
+published one. The paper, Chartrand et al. in Science, compares layer 1 (L1)
+interneurons of human and mouse neocortex by patch-seq: it groups ten human L1
+t-types into four homology subclasses (LAMP5, MC4R, PAX6 and L1 VIP), compares
+their electrophysiology, morphology and transcriptomes, and sets them against
+mouse L1 cells, whose electrophysiology is in DANDI 000020. The claims were
+written from the author manuscript in PubMed Central (PMC11864503) and its
+supplement, without the Data S1 to S4 tables, and from the paper's code at
+commit 7777857, whose per-cell tables give the t-type, subclass, layer, region
+and donor of each cell. The human electrophysiology claims were tested on
+features recomputed with IPFX 2.1.2 where they agree with the paper's values
+within 1% for at least half the cells (39 features), an assumption, and on the
+paper's values for the others; the mouse claims on the 250 of the paper's 272
+strict mouse L1 cells that have a file in DANDI 000020; and the three
+morphology claims, all partially reproduced, on the paper's deposited
+morphology features. `figs8b-classifier-holdout`, `fig3e-tea-validation` and
+`fig3f-a-type-conductance` are blocked as `data_missing`, three claims as
+`metadata_insufficient`, and 14 claims that need transcriptomes, reference
+data or morphology were not attempted, as the run gave its time to
+the claims on the dandiset. `fig2c-subclass-ephys-differences` reproduces on
+an assumption: with the Methods' 500 ms rms noise criterion as IPFX measures
+it, the initial firing rate has FDR p 4.7e-7, above the claim's 1e-7, and
+without it 3.9e-9. `figs3a-sag-adaptation` is not reproduced (R2 = 0.334
+against 0.74 +/- 0.074), and `fig2c-lamp5-gradient`,
+`fig4b-adarb2-irregular-firing`, `fig6a-ephys-dprime-subclass-structure`,
+`fig4d-mouse-no-rosehip-ephys` and `fig5d-mouse-pax6-doublets` are not
+reproduced because one part of their criteria fails and the criteria name no
+partial level. The author's first run gave 10 reproduced, 9 partially, 2 not
+reproduced and 20 blocked. The author asked a reader whether part (iii) of
+`fig2b-subclass-ephys-profiles`, PAX6 having the highest median initial firing
+rate of the four subclasses, read too much into the paper; the answer amended
+it to PAX6 above LAMP5 and MC4R, and the following author run moved the claim
+from not reproduced to reproduced. Round 1 disagreed with five outcomes, and
+in reply `dandiset-cell-link` became partial, as not every record agrees,
+fig4b-adarb2, fig4d and fig5d became not reproduced, and fig6a moved from
+reproduced on an assumption to partial; fig3d moved from blocked as
+`methods_underspecified` to partial when run on mouse VISp, as the claims file
+says, and both layer rules of the code, all 272 mouse cells and the counts of
+nucleated-patch sweeps were added. Round 2 gave fig2c-lamp5-gradient and fig6a
+as not reproduced on the rule applied to the other three, asked for the sweep
+at rheobase + 40 pA to be checked and found figures the outputs did not
+support (the 39 features agree for 53 to 98% of cells, not 71 to 98%, and 50
+Amsterdam and Szeged cells are missing, not 62), which were corrected. The six
+cells it flagged are IPFX's fallback to a lower sweep, and in 7 of the 9
+fallback cells that disagree with the paper the paper's value comes from a
+sweep that fails here only the 500 ms noise criterion, which led to the
+variant without it and the proposal for fig2c. Round 3 agreed with fig2c on
+the condition that the assumption be recorded as a field, which was done.
+Questions on figs3a, fig5d, figs8b and the two points round 3 raised were
+added for a reader. The author's run took about 2 h 25 min (01:28 to 03:54
+UTC), and the notebooks ran in 14.8 min, 7.6 min and 6 s at first. In the
+last run `entry.py all` failed twice on the 30-minute limit, as
+`reproduce_chartrand_2023.ipynb` took 2144 s and 2134 s against 1185 s in
+round 2 with no change of code, the Gaussian mixture cell alone taking 21
+minutes.
+
+The files carry no t-type, subclass, cortical layer, brain region or donor
+medical condition, and no specimen id of the paper's cell table; they can be
+linked to the table only through the LIMS number in session_id, which equals
+the Ephys_Roi_Result number inside the table's internal nwb_path column, and
+the dandiset's description does not say how to link. In 145 of 210 files,
+2586 long square sweeps that stopped early hold zeros for the samples that
+were not acquired, where readers such as IPFX expect missing values; IPFX's
+integrity check passes them and reads the step to 0 mV as a spike, which
+changes rheobase and spike features unless the sweeps are left out. The
+dandiset holds exactly the paper's primary set, the 210 Seattle cells of the
+strict L1 set whose long square features were extracted, and its description
+does not say how the cells were selected. The 50 Amsterdam (22) and Szeged
+(28) cells the paper uses as held-out validation and in its LAMP5 t-type
+analysis are not in it, and the paper names no other deposit; DANDI 000228
+holds 91 Szeged files from 32 donors, including the donors of 15 of the 17
+held-out Szeged cells, but its paths carry no session id, and no file of
+DANDI 000337 has the LIMS id of a held-out Amsterdam cell, 8 of its 21 paths
+carrying the session id PLACEHOLDER. bias_current is stored in pA, where the
+NWB schema fixes amperes. Six files carry a time stamp in place of the cell
+name, the two files of donor 922967568 state an age of P0.0D where the table
+gives none, one file states sex unknown where the table gives M, ages are
+stated as whole years times 365 days, and the species is written as Homo
+Sapiens in 192 files and Homo sapiens in 18. The public cell table gives a
+medical condition for only 86 of the 194 cells of the primary set in L1
+t-types and 20 of the 71 reconstructed strict-set cells with an L1 t-type, so
+the claims on medical condition cannot be repeated on the paper's cells.
+Several features the claims rest on (irregularity ratio, depolarizing sag,
+ADP slope and voltage, sag time to peak and time constant, the ramp, short
+square and chirp features) come from code the Methods say will be released in
+a future IPFX version, and the adaptation ratios computed from the Methods'
+definition agree with the paper's values within 1% for only 4 to 53% of cells.
+The Fig. S3A legend gives R2 = 0.74, while the code's regression on the
+paper's own per-cell values gives 0.36 (192 cells), and the code's
+cross-species notebook takes mouse cells from every visual area (185 cells
+against 150 in VISp) where the paper compares with VISp. Nucleated-patch
+voltage clamp sweeps are in 38 human files and 25 strict mouse L1 files of
+DANDI 000020, but the patch surface areas the conductance densities of Fig. 3F
+need are not deposited. In DANDI 000020, 22 of the paper's 272 strict mouse L1
+cells, 20 of them in VISp layer 1, have no file, and none of the paper's 15
+mouse TEa cells does. Questions are put to the paper's authors: whether the
+feature code can be released, how the 500 ms rms noise criterion was
+measured, what d' counts as high in Fig. 6A, and which ANOVA Fig. 3D used,
+as the AP height species effect with every visual area is FDR p 2.6e-38 under
+one reading and 1.4e-43 under the other, on either side of the legend's 1e-38.
+
+The author's points on the protocol: the protocol says outside data supply
+only labels while the claims file allows judging on the paper's per-cell
+features, and both were run with the difference recorded as a deviation;
+nothing says when recomputed features count as agreeing, and a feature was
+used if within 1% for at least half the cells; the fig3d criterion forces
+`methods_underspecified` when its readings disagree while step 1.6 allows
+adopting the best-supported reading, and the criterion was followed; there is
+no `blocked_by` reason for claims not attempted because time went to the
+dataset claims, and `other` was used; the protocol says only reader runs write
+the claims file, yet authors add link claims there, and they were added; some
+`elsewhere` claims have no criterion, and thresholds were taken from the
+figure legends; there is no place for findings about an outside input, such
+as the 22 mouse cells missing from DANDI 000020, and `other` was used; and the
+clock check is written for trial tables, and a stimulus-onset contrast was
+used instead (-24 mV at the true onset, about 0 with the onset shifted).
