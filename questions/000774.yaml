@@ -1,0 +1,74 @@
+dandiset: "000774"
+paper: doi:10.1016/j.celrep.2026.117420
+questions:
+- claim: fig4d-latency-trough
+  asked: 2026-10-31
+  question: The criterion takes the median trough over the four cathodal amplitudes, as the code
+    does. The Results say "a median value of 1.95 ms across parameters". Does "across parameters"
+    mean the cathodal amplitudes only, or all polarity and amplitude conditions?
+  passage: an early peak immediately after stimulation, followed by a brief pause occurring at a
+    median value of 1.95 ms across parameters and a broader, and sustained peak beginning around 2.5
+    ms (Figures 4D and S3B) (Results, Evoked spiking is sparse and increases in density with
+    amplitude, paragraph 3)
+  why: Over the four cathodal amplitudes the median trough is 1.95 ms (reproduced); over all 12
+    polarity and amplitude conditions it is 1.45 ms, outside the 0.195 ms tolerance. The verifier
+    reported that the claims file may misread the paper here.
+- claim: fig5bc-amplitude-clusters
+  asked: 2026-10-31
+  question: The criterion passes the claim when the fractions match "in some assignment of clusters
+    to the labels", with no condition that a cluster labelled selective for an amplitude responds
+    almost only at it. Is that what the paper's statement, clusters "responding almost only at one
+    amplitude", allows? The same clause is in fig5ef-polarity-clusters.
+  passage: we observed a subset of single units demonstrating amplitude selectivity, responding
+    maximally, and almost exclusively, at specific intermediate amplitudes ... (19.2% for 5 uA, 15.2% for 25 uA, and 7.1% for 100 uA; Figures 5A-5C,
+    iv-vi) (Results, Stimulation amplitude and polarity tune unit-specific recruitment, paragraph 1)
+  why: The only matching assignment for fig5bc labels as 100 uA-selective a cluster whose mean nDRP
+    peaks at 50 uA (0.651 against 0.343 at 100 uA) and as 25 uA-selective one with 0.27 at 5 uA and
+    0.47 at 25 uA; with labels required to follow the clusters' peaks, no assignment matches and the
+    claim would not be reproduced. For fig5ef the matching assignment labels as bipolar a cluster
+    whose anodal response is 0.79 of its bipolar one; by the half-maximum rule bipolar is 0.205
+    against 0.277.
+- claim: fig6f-no-propagating-wave
+  asked: 2026-10-31
+  question: The criterion lists peaks "with prominence 0.2, width at least 4 ms" and the centre of
+    mass over +-6 ms. These are the values in the code's configuration, but the code converts them to
+    5 ms bins with round(), so the width becomes one bin and is then not applied (the code applies
+    it only above one bin). Is the width filter part of the method to test, or should the criterion
+    follow what the code does?
+  passage: This was confirmed statistically by the absence of a relationship between distance from
+    stimulation and time to peak inhibition (Figure 6F, ii; Pearson r = 0.09) or time to peak rebound
+    excitation (Figure 6F, iii; Pearson r = -0.03) (Results, Single pulse electrical stimulation
+    leads to extensive circuit response, paragraph 3); the Methods give no peak rule.
+  why: With the code's rule neither correlation is significant (r = -0.001, p = 0.987; r = 0.047,
+    p = 0.244), the outcome recorded. With a 4 ms (0.8 bin) minimum width both are (r = 0.131,
+    p = 0.001; r = -0.115, p = 0.004), which would make the claim not reproduced.
+- claim: fig4f-responders-within-ep
+  asked: 2026-10-31
+  question: The criteria of fig4f-responders-within-ep, fig4i-proportion-within-ep and
+    fig5i-fs-within-ep name the code's EP_distances.pkl (evoked-potential boundaries computed from
+    the raw AP band, which the dandiset does not hold) as an outside input for the author to judge,
+    and the claims depend on fig2g-extent-increases, which is blocked. They are tested here with that
+    file. Should these claims be marked as using outside inputs (`with_inputs`), so that they are counted apart from the
+    claims on the dataset?
+  passage: a responder is within when its signed distance (norm_distance) lies between the mean
+    superficial and mean deep extents of the evoked potential at that amplitude
+    (fig2g-extent-increases; the code reads them from EP_distances.pkl, an outside input for the
+    author to judge) (claims file, criterion of fig4f-responders-within-ep)
+  why: The three outcomes (not reproduced, reproduced, not reproduced) rest on boundaries
+    from the paper's code, not the dandiset. As the claims file stands they are counted with the
+    claims on the dataset.
+- claim: fig6c-modulation-cortex
+  asked: 2026-10-31
+  question: The criterion asks that the region, amplitude and interaction terms have p < 0.001 under
+    every reading, including reading (c), the Methods' 500 to 1000 ms window. The claims file also
+    says the paper's printed values are reached only with the code's 0 to 500 ms window. Is the test
+    under every reading what the claim intends, or did the Methods mis-state the window, so that the
+    claim should be tested under the code's window alone?
+  passage: the response firing rate was computed from binned spike counts in a 500–1000 ms
+    post-stimulus window using 5 ms bins (STAR Methods, Modulation index calculation); the criterion of fig6c-modulation-cortex reads (a) code, 0 to 500 ms, 10 ms
+    bins, (b) legend, 0 to 500 ms, 5 ms bins, (c) Methods, 500 to 1000 ms, 5 ms bins, and asks for
+    p < 0.001 "under every reading" (claims file).
+  why: Under reading (a) the values and statistics match the paper exactly. Under reading (c) the region
+    term has p = 0.457 and the amplitude term p = 1.06e-03, so the claim is not reproduced as the
+    criterion stands. The verifier (round 3) reported that the outcome turns on a window that does not
+    produce the printed numbers.
