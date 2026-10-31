@@ -55,14 +55,14 @@ def parse_identifier(ident: str) -> dict:
     """Condition fields coded in a file's identifier."""
     if ident.endswith("_BASELINE"):
         return dict(subject=ident.split("_")[0], prf=np.nan, pd_us=np.nan, ud_ms=np.nan,
-                    volt=np.nan, repeat=1, baseline=True)
+                    volt=np.nan, volt_field=None, repeat=1, baseline=True)
     m = _IDENT.match(ident)
     if m is None:
         raise ValueError(f"unparsed identifier {ident!r}")
     subj, prf, pd_us, ud, volt, rep = m.groups()
     # "55" and "35" are 5.5 V and 3.5 V; "5" and "7" are whole volts.
     v = float(volt) / 10 if len(volt) == 2 else float(volt)
-    return dict(subject=subj, prf=int(prf), pd_us=int(pd_us), ud_ms=int(ud), volt=v,
+    return dict(subject=subj, prf=int(prf), pd_us=int(pd_us), ud_ms=int(ud), volt=v, volt_field=volt,
                 repeat=int(rep) if rep else 1, baseline=False)
 
 
@@ -77,6 +77,22 @@ def asset_urls() -> list[tuple[str, str]]:
 def _str(x) -> str:
     x = x[()] if hasattr(x, "shape") else x
     return x.decode() if isinstance(x, bytes) else str(x)
+
+
+def _tree(f) -> list[str]:
+    """Every group and dataset path in the file."""
+    out = []
+    f.visit(out.append)
+    return sorted(out)
+
+
+def _texts(g) -> dict:
+    """The scalar text datasets directly under group `g` (for example experiment_description, notes)."""
+    out = {}
+    for k, v in g.items():
+        if isinstance(v, h5py.Dataset) and v.shape == () and v.dtype.kind in "OSU":
+            out[k] = _str(v)
+    return out
 
 
 def load_session(path: str, url: str) -> dict:
@@ -98,7 +114,15 @@ def load_session(path: str, url: str) -> dict:
                     n_electrodes=len(f["general/extracellular_ephys/electrodes/id"]),
                     device=[_str(f["general/devices"][k].attrs.get("description", ""))
                             for k in f["general/devices"]],
-                    acquisition=list(f["acquisition"]), processing=list(f["processing"]))
+                    acquisition=list(f["acquisition"]), processing=list(f["processing"]),
+                    h5_paths=_tree(f), general_text=_texts(f["general"]),
+                    subject_text=_texts(f["general/subject"]),
+                    units_description=_str(f["units"].attrs.get("description", "")),
+                    electrode_z=sorted(set(f["general/extracellular_ephys/electrodes/z"][:].tolist())),
+                    electrode_columns=list(f["general/extracellular_ephys/electrodes"].attrs["colnames"]),
+                    electrode_groups={k: {a: _str(g.attrs[a]) for a in ("location", "description") if a in g.attrs}
+                                      for k, g in f["general/extracellular_ephys"].items()
+                                      if isinstance(g, h5py.Group) and k != "electrodes"})
     units = np.split(st, idx[:-1].astype(int))
     meta.update(parse_identifier(ident))
     meta.update(trial_start=starts, trial_stop=stops, units=units)
@@ -145,6 +169,20 @@ def unit_table(sessions: list[dict], shift_s: float = 0.0) -> pd.DataFrame:
                 row[f"n2_{w}"] = 100.0 * np.mean(c[ok, j] / pre[ok]) if ok.any() else np.nan
             rows.append(row)
     return pd.DataFrame(rows)
+
+
+def population_psth(sessions: list[dict], edges_s: np.ndarray) -> np.ndarray:
+    """Per unit with more than `MIN_SPIKES` spikes (rows), the spike rate in Hz in each bin of
+    `edges_s` (seconds from trial start), averaged over trials."""
+    rows = []
+    for s in sessions:
+        on = s["trial_start"]
+        for sp in s["units"]:
+            if len(sp) <= MIN_SPIKES:
+                continue
+            idx = np.searchsorted(sp, on[:, None] + edges_s[None, :], side="left")
+            rows.append(np.diff(idx, axis=1).sum(0) / (len(on) * np.diff(edges_s)))
+    return np.array(rows)
 
 
 def duty_cycle(prf, pd_us):

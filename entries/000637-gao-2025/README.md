@@ -7,7 +7,7 @@ durations of 100 to 600 us, with trial start and stop times.
 
 | Claims | Outcome |
 |---|---|
-| All 30 claims (unit counts, Figures 4 to 11) | Blocked: data missing |
+| All 31 claims (unit counts, Figures 4 to 11) | Blocked: data missing |
 
 Every claim is about units classified as RSUs or FSUs from their waveforms, and the dandiset has spike
 times only. Most claims also need POm or auditory cortex units, sham or CG1-targeted recordings, or duty

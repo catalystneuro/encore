@@ -33,7 +33,11 @@ outcomes:
     names only S1). As a variant, S1 units with more than 2,000 spikes, all cell types together, number
     4,642 in the PRF series at 200 us (4,023 at 5 V), 1,088 at 3000 Hz and 862 at 30 Hz, against the paper's
     S1 RSU plus FSU sums of 1,297, 366 and 209, about 3.6 times as many; so the dataset's units are not,
-    or not only, the units the paper counted.
+    or not only, the units the paper counted. The S1 totals already rule out reproduced whatever classification
+    were applied. Each S1 RSU plus FSU pair would sum to the dataset's total (4,642, 1,088, 862) against
+    the paper's 1,297, 366 and 209, so at most one count of each S1 pair could match, at most 9 of the 12 counts
+    in all, below the criterion's 10. The outcome stays blocked because the six POm counts cannot be computed.
+    The paper's two groups total 28 rats (16 and 12, Methods), the dataset 25.
   output: claim:unit-counts
 - claim: fig4-s1-rsu-timelocked-3000
   outcome: blocked
@@ -124,7 +128,10 @@ outcomes:
     BH461; 500 trials each) with no description of whether tFUS was off or how their trial times were
     made. Pooled over all their units (119 units), the rate rises over the pre-trial window at 134 to
     201 and 201 to 268 ms under the signed-rank test (corrected p 6.0e-09 and 1.2e-05) and not under the
-    rank-sum test; this decides nothing (variant:baseline).
+    rank-sum test, with mean N1 of 106%; this decides nothing (variant:baseline). If these were the paper's
+    sham sessions this W2 result would weigh against the claim, which tests 201 to 268 ms in both tails.
+    Their 119 units do not match the paper's 84 S1 units in sham (31 RSUs, 53 FSUs), and no field in any
+    file describes them (full HDF5 tree listed in the data check).
 - claim: fig5-cg1-control-no-response
   outcome: blocked
   blocked_by: data_missing
@@ -413,5 +420,191 @@ findings:
 - kind: metadata_insufficient
   statement: The stimulation condition is coded only in each file's identifier (PRF, pulse duration, ultrasound
     duration, voltage, repeat); the trials tables have start and stop times only, the electrode locations
-    are all 'unknown', and three recordings named BASELINE are not described (whether tFUS was off, how
+    are all 'unknown' (the one electrode group's location is 'brain area', every electrode has z = 0, and no
+    file has experiment_description, notes, stimulus or protocol fields), and three recordings named BASELINE are not described (whether tFUS was off, how
     their trial times were made).
+verifications:
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusions and summary removed,
+    the helper module and the claims file. The verifier also queried the archive's asset list and metadata
+    for version 0.250829.1249 and read the paper.
+  results:
+  - claim: unit-counts
+    agrees: true
+    outcome: blocked
+    reason: Every count is split into RSUs and FSUs, which needs waveforms. Every Units table has only spike_times
+      (cell 7), and the archive lists only Units and ElectrodeGroup as measured for all 292 assets. There are
+      no POm units. Reproduced can be ruled out anyway, as cell 16 finds 4,642 / 1,088 / 862 S1 units against
+      the paper's RSU+FSU sums of 1,297 / 366 / 209; a two-cluster split puts every unit in one class, so at
+      most one count of each S1 pair can match.
+    response: Outcome kept. The count of claims in the notebook and README is corrected to 31 (B1). A result
+      cell after the unit-counts cell and the notes now say the S1 totals rule out reproduced, at most 9 of
+      12 counts, and that the outcome stays blocked for the POm counts (B3). The same cell discusses whether
+      000637 holds the paper's recordings at all, citing the 000946 data statement, the 25 rats against the
+      paper's 16 + 12, and the 3.6 (3.1 at 5 V) ratio (B2). The data check now lists the full HDF5 tree of
+      every file, the text fields under general and general/subject, the electrode columns, depths and group
+      descriptions, and the units table description; no waveform or other dataset exists outside spike times
+      (C). The voltage field's values are printed and asserted to be 5, 7, 35 or 55 (B7).
+  - claim: fig4-s1-rsu-timelocked-3000
+    agrees: true
+    outcome: blocked
+    reason: There are no waveforms, so there are no S1 RSUs to select.
+    response: No change of outcome. Added a population time course over the whole trial (variant:clock-psth)
+      and a result cell; the elevation after onset lasts about 1 s, which is why the 1.2 s shifted windows
+      sit below their shifted pre-window, so the shift is described as a contrast, not a null (B5). Added a
+      check of readings N1 and N2 on simulated Poisson units with no response (variant:n2-null); N2 gives 19%
+      at 3 Hz and 116% at 30 Hz, and the bias is put to a reader in questions/000637.yaml (B4).
+  - claim: fig4-pom-rsu-timelocked-3000
+    agrees: true
+    outcome: blocked
+    reason: There are no POm units (one probe per file, location unknown, and the description says S1 only).
+    response: No change of outcome.
+  - claim: fig4-post-3000
+    agrees: true
+    outcome: blocked
+    reason: Needs POm RSUs and S1 cell types.
+    response: No change of outcome.
+  - claim: fig4-30hz-s1-rsu-inhibition
+    agrees: true
+    outcome: blocked
+    reason: No cell types. The recordings exist, 26 at 30 Hz / 200 us (cell 14).
+    response: No change of outcome.
+  - claim: fig4-30hz-pom-rsu-delayed
+    agrees: true
+    outcome: blocked
+    reason: No POm units.
+    response: No change of outcome.
+  - claim: fig4-fsu-no-change
+    agrees: true
+    outcome: blocked
+    reason: No FSUs and no POm units.
+    response: No change of outcome.
+  - claim: fig5-sham-no-response
+    agrees: true
+    outcome: blocked
+    reason: No cell types and no POm units. Three files are named BASELINE, but nothing in them says they are
+      sham sessions.
+    response: Outcome kept. A result cell after the BASELINE variant now discusses the W2 increase at 134 to
+      268 ms, its size in the time course against fluctuations at times with no event, and the 119 BASELINE
+      units against the paper's 84 S1 sham units; the notes say so (B6). The full metadata of every file, now
+      printed, has no field that describes these recordings (C).
+  - claim: fig5-cg1-control-no-response
+    agrees: true
+    outcome: blocked
+    reason: No identifier or metadata names a CG1 target. All 292 files have the same session_description,
+      Neural Spikes for S1 tFUS.
+    response: Outcome kept. The data check now prints the full HDF5 tree and every text field of every file
+      (general, subject, electrode groups); none names a target, CG1 or otherwise (C).
+  - claim: fig6a-s1-rsu-timelocked-high-prf
+    agrees: true
+    outcome: blocked
+    reason: The conditions are present (PRF series at 200 us), but there are no cell types.
+    response: No change of outcome.
+  - claim: fig6a-s1-rsu-delayed
+    agrees: true
+    outcome: blocked
+    reason: Same as fig6a-s1-rsu-timelocked-high-prf.
+    response: No change of outcome.
+  - claim: fig6b-s1-fsu
+    agrees: true
+    outcome: blocked
+    reason: No FSUs.
+    response: No change of outcome.
+  - claim: fig6c-pom-rsu-timelocked
+    agrees: true
+    outcome: blocked
+    reason: No POm units.
+    response: No change of outcome.
+  - claim: fig6c-pom-rsu-delayed
+    agrees: true
+    outcome: blocked
+    reason: No POm units.
+    response: No change of outcome.
+  - claim: fig6d-pom-fsu
+    agrees: true
+    outcome: blocked
+    reason: No POm units.
+    response: No change of outcome.
+  - claim: fig7a-s1-rsu-dc-3000
+    agrees: true
+    outcome: blocked
+    reason: At 3000 Hz only 30% and 60% DC exist (100 and 200 us). The 0.6, 6 and 90% DCs are missing, and
+      there are no cell types.
+    response: No change of outcome.
+  - claim: fig7b-s1-fsu-dc-3000
+    agrees: true
+    outcome: blocked
+    reason: Same as fig7a.
+    response: No change of outcome.
+  - claim: fig7c-pom-rsu-dc-3000
+    agrees: true
+    outcome: blocked
+    reason: No POm units, and DCs are missing.
+    response: No change of outcome.
+  - claim: fig7d-pom-fsu-dc-3000
+    agrees: true
+    outcome: blocked
+    reason: No POm units, and DCs are missing.
+    response: No change of outcome.
+  - claim: fig8a-s1-rsu-dc-30
+    agrees: true
+    outcome: blocked
+    reason: At 30 Hz only 0.6% DC exists (cell 14), and there are no cell types.
+    response: No change of outcome.
+  - claim: fig8b-s1-fsu-dc-30
+    agrees: true
+    outcome: blocked
+    reason: Same as fig8a.
+    response: No change of outcome.
+  - claim: fig9a-s1-rsu-60dc
+    agrees: true
+    outcome: blocked
+    reason: Only 1500 Hz and 3000 Hz at 60% DC exist, and there are no cell types.
+    response: No change of outcome.
+  - claim: fig9b-s1-fsu-60dc
+    agrees: true
+    outcome: blocked
+    reason: Same as fig9a.
+    response: No change of outcome.
+  - claim: fig10a-dsttc-3000
+    agrees: true
+    outcome: blocked
+    reason: Needs S1-POm pairs.
+    response: No change of outcome.
+  - claim: fig10b-dsttc-30
+    agrees: true
+    outcome: blocked
+    reason: Needs S1-POm pairs.
+    response: No change of outcome.
+  - claim: fig10c-sttc-constant-pd
+    agrees: true
+    outcome: blocked
+    reason: Needs S1-POm RSU pairs.
+    response: No change of outcome.
+  - claim: fig10d-sttc-60dc
+    agrees: true
+    outcome: blocked
+    reason: Needs S1-POm RSU pairs; DCs are also missing.
+    response: No change of outcome.
+  - claim: fig10ef-sttc-dc
+    agrees: true
+    outcome: blocked
+    reason: Needs S1-POm RSU pairs; DCs are also missing.
+    response: No change of outcome.
+  - claim: fig11b-ac-responses
+    agrees: true
+    outcome: blocked
+    reason: No auditory-cortex units. This claim does not need cell types, but no file holds AC data.
+    response: No change of outcome.
+  - claim: fig11c-ac-s1-dsttc-30
+    agrees: true
+    outcome: blocked
+    reason: No AC units.
+    response: No change of outcome.
+  - claim: fig11d-ac-s1-dsttc-3000
+    agrees: true
+    outcome: blocked
+    reason: No AC units.
+    response: No change of outcome.
