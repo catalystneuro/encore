@@ -12,7 +12,7 @@ rotated Packet 2 packets at 3.2 kV in the small quadrupole array (Fig. 6).
 | Least affected area about half the center for all packet numbers | Partially reproduced |
 | Central peak narrower with more packets | Reproduced |
 | Single-cell bipolar cancellation (Fig. 4, two claims) | Blocked: data missing |
-| Figs. 5, 7, 8 and 9 (nine claims) | Blocked: data missing |
+| Figs. 5, 7, 8 and 9 (ten claims) | Blocked: data missing |
 | Field simulation (Fig. 3) | Blocked: data missing (model not public) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the

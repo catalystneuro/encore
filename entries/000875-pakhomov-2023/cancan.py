@@ -23,11 +23,12 @@ Where each parameter comes from:
   "distance from the geometrical center of the electrode array").
 - Background readings b1 (raw) and b2 (minus "a cell-free or dark offset, where the data hold
   one"): the claims file header. The files hold no dark frame. b2-dark subtracts the 1st
-  percentile of the image's nonzero block means, which lie off the glass bottom of the dish with
-  no monolayer in focus; b2-min subtracts the darkest pixel of the full-resolution region around
-  the array. Both are standard choices for a dark offset. The median inside the electrode
-  footprints (b2-fp) was the b2 of the first round; the footprints hold a faint monolayer, so it
-  is not cell-free and is kept only as a variant outside the outcome.
+  percentile of the image's nonzero block means, which lie far outside the array (the notebook
+  maps them and checks that the zero padding does not set the level); b2-min subtracts the
+  darkest pixel of the full-resolution region around the array. Both are standard choices for a
+  dark offset. The median inside the electrode footprints (b2-fp) was the b2 of the first round;
+  the footprints hold a faint monolayer, so it is not cell-free and is kept only as a variant
+  outside the outcome.
 - Center readings c1 (the ROI nearest the center; with an even number of ROIs two are equally
   near, and their mean is taken, a standard choice) and c2 (the highest ROI between the minima on
   either side): the claims file header.
@@ -268,9 +269,10 @@ def footprint_level(overview, electrodes, block=BLOCK, frac=0.7):
 def dark_level(overview, q=1.0):
     """The ``q``-th percentile of the nonzero block means of the whole image (reading b2-dark).
 
-    The darkest blocks lie outside the glass bottom of the dish, where there is no monolayer in
-    focus (the notebook maps them). The files hold no dark frame, so this is the closest thing to
-    a dark offset the data hold; 1% is a standard choice, and the notebook prints 0.1% and 5% too.
+    The darkest blocks lie far outside the array, more than twice the center-to-footprint distance
+    from its center (the notebook maps them). The files hold no dark frame, so this is the
+    closest thing to a dark offset the data hold; 1% is a standard choice, and the notebook prints
+    0.1% and 5% too.
     """
     return float(np.percentile(overview[overview > 0], q))
 
