@@ -60,17 +60,20 @@ outcomes:
   output: claim:figs2-n-states
   measured:
   - 3
-  - 5
-  notes: Under both readings of O1 the counts are 3 states in five mice, 4 in seven and 5 in one
-    (BW048); the MAP plateau is never larger than the MLE plateau. 16 of the 2,730 cross-validation
-    fits stopped at 1,000 iterations.
+  - 4
+  notes: With 10 random initialisations per fold, as the paper, both readings of O1 give 3 states in
+    five mice and 4 in eight, inside the claimed 3 to 5 as the criterion requires; no mouse has 5
+    states, so the largest count is 4 against the paper's 5. The MAP plateau is never larger than the
+    MLE plateau. 38 of the 9,100 cross-validation fits stopped at 1,000 iterations.
   deviations:
   - The GLM-HMM of the paper's ssm fork is reimplemented (hulsey.py) with the same model, priors,
     initialisation scheme, EM updates and stopping rule; its random initial values differ from
     ssm's. The test log probability includes the log prior, as ssm's log_probability does.
-  - 3 random initialisations per fold and number of states in place of the paper's 10, to fit the
-    notebook's time limit; with fewer initialisations the best test log likelihood of larger models
-    may be lower, which would favour fewer states.
+  - The visual stimulus values follow loadbehavior.get_stim_vals of the paper's code (uobrainflex at
+    ef48985), which for a file with a visual_gabor_angle column maps the difficulty codes 0, 1 and 2
+    to the session's distinct values of abs(angle - 45) / 45, largest first, and otherwise to 1, 0.8
+    and 0.6. 118 of the 141 visual-task sessions get 1, 0.6 and 0.2 and the other 23 get 1, 0.8 and
+    0.6. The first version of this attempt used 1, 0.8 and 0.6 for every session.
   - Fit on the 376 sessions that pass the inclusion criteria (see cohort-inclusion).
 - claim: fig1g-example-mouse-prediction
   outcome: reproduced
@@ -78,10 +81,10 @@ outcomes:
   output: claim:fig1g-example-mouse-prediction
   measured:
   - 70.2
-  - 78.3
+  - 78.1
   - 4
   notes: BW046 gets 4 states under both readings of O1; one-state accuracy 70.2%, 4-state accuracy
-    78.3%, computed as in fig2d-prediction-accuracy.
+    78.1%, computed as in fig2d-prediction-accuracy.
   deviations:
   - As for figs2-n-states and fig2d-prediction-accuracy.
 - claim: fig2a-state-types
@@ -89,30 +92,30 @@ outcomes:
   assumed: true
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig2a-state-types
-  notes: All 13 mice have an optimal, a disengaged and at least one other state, and each of the 22
-    other states is matched to a sub-optimal template. Mice per type are bias left 6, avoid right 6,
-    bias right 6 and avoid left 4 (Figure 2A gives 6, 4, 5 and 5; not deciding). For BW061 the state
-    that flex_hmm.permute_hmm puts first (the one nearest a perfect psychometric) is nearer the bias
-    right template than the optimal one when all six templates are compared; under M3 it is the
-    optimal state. In BW059 one state has no trial with a posterior of at least 0.8 in the sessions
-    where the optimal state occurs, so its psychometric is all missing; Figure2.py's nansum would
-    score it 0 against every template and mislabel the mouse's optimal state. That state (432 trials
-    over all sessions) is typed on all sessions, as avoid right. The question is asked of the paper's
-    authors (findings).
+  notes: All 13 mice have an optimal, a disengaged and at least one other state, and each of the 21
+    other states is matched to a sub-optimal template. Mice per type are bias left 6, avoid right 5,
+    bias right 6 and avoid left 4 (Figure 2A gives 6, 4, 5 and 5; not deciding). Under M3 the other
+    states are matched only to the four sub-optimal templates, so that part of the criterion cannot
+    fail; the distances to all six templates, printed for BW061 and BW048, put each of their states
+    nearest the template of its label. In BW059 one state has no trial with a posterior of at least
+    0.8 in the sessions where the optimal state occurs, so its psychometric is all missing;
+    Figure2.py's nansum would score it 0 against every template and mislabel the mouse's optimal
+    state. That state (432 trials over all sessions) is typed on all sessions, as avoid right. The
+    question is asked of the paper's authors (findings).
   deviations:
   - Assumption. A state with no discrete-state trial in the sessions where the optimal state occurs
     is typed on all of the mouse's sessions; Figure2.py has no rule for it (it would score the state
     as equal to every template). Affects one state of BW059.
   - As for figs2-n-states.
 - claim: fig2b-optimal-occupancy
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig2b-optimal-occupancy
-  measured: 14.8
-  notes: On sessions in which the optimal state occurs, the optimal state holds 48.6% +/- 3.6% of
-    trials, disengaged 12.9%, sub-optimal 23.7% and indeterminate 14.8% +/- 2.2%. The optimal share
-    is larger than each other share by Wilcoxon signed-rank tests (p = 0.00024, 0.0024, 0.0012). The
-    indeterminate share is just above the expected 13.1 +/- 1.6 (upper bound 14.7).
+  measured: 13.1
+  notes: On sessions in which the optimal state occurs, the optimal state holds 50.5% +/- 3.3% of
+    trials, disengaged 12.7%, sub-optimal 23.7% and indeterminate 13.1% +/- 1.6%, within the
+    expected 13.1 +/- 1.6. The optimal share is larger than each other share in 13 of 13 mice
+    (Wilcoxon signed-rank p = 0.00024 for each).
   deviations:
   - As for figs2-n-states.
 - claim: fig2c-dwell-times
@@ -120,27 +123,31 @@ outcomes:
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig2c-dwell-times
   measured:
-  - 3.0
-  - 39.5
-  - 11.9
-  notes: Optimal epochs are longer than disengaged and sub-optimal epochs in 12 or 13 of 13 mice under
-    every reading (p from 0.00024 to 0.00073). The median indeterminate dwell is 3.00 +/- 0.32 trials,
-    outside 3.4 +/- 0.3. Under reading (a) with the code's dwell (y), the optimal dwell is 39.5 trials
-    (within 37 +/- 3.7), the sub-optimal 13.8 (within 15 +/- 1.5) and the disengaged 11.9 (outside);
-    with the run length (x), 38.5, 12.8 and 11.4. Readings (b) and (c) give optimal dwells of 69.6 to
-    70.6 and 45.2 to 46.1. The measured values are the indeterminate dwell, the optimal and the
-    disengaged dwell under (a) and (y).
+  - 3.31
+  - 43.8
+  - 14.0
+  notes: Optimal epochs are longer than disengaged and sub-optimal epochs in 13 of 13 mice under
+    every reading (p = 0.00024). The median indeterminate dwell is 3.31 +/- 0.35 trials, within 3.4
+    +/- 0.3. The 37 is not matched under any reading. Under reading (a) the optimal dwell is 43.8
+    trials with the code's dwell (y) and 42.8 as run length (x), above 40.7; the disengaged dwell is
+    14.0 (13.8), within 15 +/- 1.5, and the sub-optimal 19.1 (18.1), above it. Readings (b) and (c)
+    give optimal dwells of 73.2 to 74.1 and 49.3 to 50.3. The measured values are the indeterminate
+    dwell and the optimal and disengaged dwells under (a) and (y).
   deviations:
+  - flex_hmm.get_dwell_times adds a last epoch of dwell 0 when a session's last trial differs from
+    the one before it, which also adds a zero indeterminate dwell. The code's output is used, as the
+    claims file reads it; without the 3 such epochs the indeterminate dwell and the medians are
+    unchanged (shown in the notebook).
   - As for figs2-n-states.
 - claim: fig2d-prediction-accuracy
   outcome: reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig2d-prediction-accuracy
   measured:
-  - 76.0
-  - 10.9
-  notes: Best model 76.0% +/- 1.7%, one state 65.0% +/- 2.2%, gain 10.9 +/- 1.2 points under reading
-    (a) (17.6% +/- 2.4% relative under (b), outside). Better in 13 of 13 mice, Wilcoxon signed-rank
+  - 76.2
+  - 11.0
+  notes: Best model 76.2% +/- 1.6%, one state 65.1% +/- 2.2%, gain 11.0 +/- 1.3 points under reading
+    (a) (17.8% +/- 2.5% relative under (b), outside). Better in 13 of 13 mice, Wilcoxon signed-rank
     p = 0.00024 (rank-sum p = 0.00025).
   deviations:
   - The paper's code computes the filtered posterior of the preceding test trials by re-running
@@ -150,58 +157,69 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig3c-inverted-u-pupil
-  measured: 12
-  notes: Reading (i) holds in 12 of 13 mice (BW061's fit is highest at its lowest pupil bin) and
-    reading (ii) in 13 of 13, so "nearly all" holds under (a) and (b). Polynomial degrees 2 to 6 were
-    selected by the elbow rule.
+  measured: 13
+  notes: Reading (i) holds in 13 of 13 mice and reading (ii) in 13 of 13, so "nearly all" holds
+    under (a) and (b). Polynomial degrees 2 to 6 were selected by the elbow rule.
   deviations:
   - As Figure3.py, a state absent from a bin with more than 5 trials leaves that bin missing, so a
     bin with no optimal trial is not a zero; this follows the code.
+  - As for figs2-n-states.
 - claim: fig3d-optimal-pupil-modality
   outcome: reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig3d-optimal-pupil-modality
-  measured: 0.034
-  notes: Median optimal pupil 0.627 of the session maximum for the 8 auditory mice and 0.698 for the 5
-    visual mice; Wilcoxon rank-sum p = 0.034 (paper 0.008).
+  measured: 0.013
+  notes: Median optimal pupil 0.649 of the session maximum for the 8 auditory mice and 0.739 for the 5
+    visual mice; Wilcoxon rank-sum p = 0.013 (exact Mann-Whitney p = 0.011; paper 0.008).
 - claim: fig3e-u-disengaged-pupil
   outcome: reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig3e-u-disengaged-pupil
-  notes: On all trials, over 22 bins with at least 7 mice, the second-order fit to mean P(optimal) has
-    a negative quadratic term (vertex 0.1% from the optimal pupil) and to P(disengaged) a positive one
-    (vertex 0.5%). On stationary trials under reading (b), below 0.02 m/s (32,648 trials, 20 bins),
-    both hold (vertices -0.7 and -3.4). Reading (a), speed exactly 0, leaves 1,881 trials and at most
-    one bin with 7 mice, so it cannot be tested.
+  notes: On all trials, over 23 bins with at least 7 mice, the second-order fit to mean P(optimal) has
+    a negative quadratic term (vertex -0.9% from the optimal pupil) and to P(disengaged) a positive
+    one (vertex -1.6%). On stationary trials under reading (b), absolute speed below 0.02 m/s (32,495
+    trials, 21 bins), both hold (vertices -3.3 and -6.1). Counting the 214 trials at or below -0.02
+    m/s as stationary, as the first version did, changes the vertices by at most 0.1. Reading (a),
+    speed exactly 0, leaves 1,821 trials and no bin with 7 mice, so it cannot be tested.
+  deviations:
+  - Stationary under reading (b) is taken as absolute speed below 0.02 m/s, so that backward
+    movement is not counted as stationary.
 - claim: figs4-r2-individual-movement
   outcome: partially_reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:figs4-r2-individual-movement
   measured:
-  - 0.647
-  - 0.486
-  - 0.564
-  notes: Pupil r2 0.647 +/- 0.060 (outside 0.72 +/- 0.03). Face 0.486 +/- 0.083 with plotting bins
-    (a) and 0.432 with 50 bins (b), within tolerance under (a). Locomotion 0.564 (a), outside, and
-    0.392 (b), within. Both are lower than pupil on average under both readings (by 0.08 to 0.25),
-    but by Wilcoxon only locomotion under (b) is lower at p < 0.05 (p = 0.048); face p = 0.24 and
-    0.15. One mouse, BW051, has a pupil r2 of 0.086. The measured values are pupil, face (a) and
-    locomotion (a).
+  - 0.690
+  - 0.428
+  - 0.567
+  notes: Pupil r2 0.690 +/- 0.039 (within 0.72 +/- 0.03). Face 0.428 +/- 0.092 with plotting bins
+    (a), within, and 0.409 with 50 bins (b), just outside. Locomotion 0.567 (a), outside, and 0.413
+    (b), within. No bin reading puts all three in tolerance. Both are lower than pupil on average (by
+    0.12 to 0.28), but by Wilcoxon only locomotion under (b) is lower at p < 0.05 (p = 0.011); face p
+    = 0.11 and 0.057, locomotion (a) p = 0.41. The criterion's r2 comes from one shuffled split per
+    mouse, as 4_optimal_pupils.py; the mean over 10 splits gives pupil 0.682 +/- 0.043 (BW051 from
+    0.001 to 0.562 over the splits) and the same test results (face p = 0.15 and 0.068, locomotion p
+    = 0.34 and 0.013). The measured values are pupil, face (a) and locomotion (a).
+  deviations:
+  - As for figs2-n-states.
 - claim: fig3f-movement-index-inverted-u
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig3f-movement-index-inverted-u
-  measured: 0.567
+  measured: 0.574
   notes: The mean P(optimal) over the 0.25 movement-index bins with at least 7 mice has a negative
-    quadratic term with its vertex at 0.23, inside -4.25 to 3.75. Its r2 does not differ from pupil's
-    (difference -0.08, p = 0.34 under both bin readings, the paper's p). The r2 is 0.567 +/- 0.062
-    under (a) and 0.554 under (b), just below the expected range 0.57 to 0.69.
+    quadratic term with its vertex at 0.28, inside -4.25 to 3.75. The r2 is 0.574 +/- 0.057 under (a),
+    within 0.63 +/- 0.06 and close to its lower bound, and 0.533 under (b), outside. It does not
+    differ from pupil's (difference -0.12, p = 0.22 under (a); p = 0.17 under (b)). Over 10 shuffled
+    splits per mouse the r2 is 0.573 (a) and 0.522 (b).
+  deviations:
+  - As for figs2-n-states.
 - claim: fig3f-movement-index-u-disengaged
   outcome: reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig3f-movement-index-u-disengaged
-  notes: The mean P(disengaged) over 33 movement-index bins with at least 7 mice has a positive
-    quadratic term (0.026) with its vertex at 0.0, inside -4.25 to 3.75.
+  notes: The mean P(disengaged) over 34 movement-index bins with at least 7 mice has a positive
+    quadratic term (0.0225) with its vertex at 0.08, inside -4.25 to 4.0.
 - claim: figs5-movement-index-correlations
   outcome: reproduced
   notebook: reproduce_hulsey_2024.ipynb
@@ -214,14 +232,14 @@ outcomes:
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig3-distance-from-optimal-pupil
   measured:
-  - 10.7
-  - 18.0
-  - 13.0
-  notes: Under reading (a) of O3 the absolute distance is 10.7% +/- 2.3% in the optimal state, 18.0%
-    in the disengaged and 13.0% in the sub-optimal states, lower in the optimal state than in the
-    disengaged (13 of 13, p = 0.00024) and sub-optimal states (12 of 13, p = 0.021); reading (b) gives
-    10.7, 17.9 and 13.1 (p = 0.00024 and 0.017). The order and the tests hold; all three values are
-    larger than the paper's 7, 12.6 and 9.
+  - 8.8
+  - 16.0
+  - 11.8
+  notes: Under reading (a) of O3 the absolute distance is 8.8% +/- 1.0% in the optimal state, 16.0%
+    in the disengaged and 11.8% in the sub-optimal states, lower in the optimal state than in the
+    disengaged (13 of 13, p = 0.00024) and sub-optimal states (13 of 13, p = 0.00024); reading (b)
+    gives 8.8, 15.8 and 11.5 (p = 0.00024 and 0.0012). The order and the tests hold; all three values
+    are larger than the paper's 7, 12.6 and 9.
   deviations:
   - Rests on the optimal pupils of fig3c-inverted-u-pupil, from this attempt's state fits.
 - claim: fig3-raw-face-energy-trend
@@ -229,63 +247,63 @@ outcomes:
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig3-raw-face-energy-trend
   measured:
-  - 0.487
-  - 0.443
-  - 0.442
-  notes: Reading (a) of O3 gives 0.487, 0.443 and 0.442 a.u., all within tolerance; optimal is the
-    largest, above sub-optimal with p = 0.00049 and above disengaged with p = 0.068 (paper 0.06).
-    Reading (b) gives 0.489, 0.439 and 0.453 (p = 0.04 and 0.0046).
+  - 0.482
+  - 0.441
+  - 0.448
+  notes: Reading (a) of O3 gives 0.482, 0.441 and 0.448 a.u., all within tolerance; optimal is the
+    largest, above sub-optimal with p = 0.017 and above disengaged with p = 0.19 (paper 0.06).
+    Reading (b) gives 0.485, 0.435 and 0.453 (p = 0.048 and 0.08).
 - claim: fig3-raw-locomotion-no-difference
   outcome: reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig3-raw-locomotion-no-difference
   measured:
   - 0.136
-  - 0.135
-  - 0.134
-  notes: Optimal 0.136, disengaged 0.135, sub-optimal 0.134 m/s under reading (a), differences of
-    0.002 m/s, p = 0.74 and 0.68; reading (b) 0.138, 0.132 and 0.139 m/s, p = 0.54 and 1. Speeds are
-    read as m/s although the file labels them cm/s (findings).
+  - 0.137
+  - 0.136
+  notes: Optimal 0.136, disengaged 0.137, sub-optimal 0.136 m/s under reading (a), differences of at
+    most 0.002 m/s, p = 0.84 and 0.89; reading (b) 0.137, 0.132 and 0.139 m/s, p = 0.68 and 0.95.
+    Speeds are read as m/s although the file labels them cm/s (findings).
 - claim: fig4a-lower-variability
   outcome: partially_reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig4a-lower-variability
   notes: All six differences have the stated sign. Pupil, optimal against disengaged p = 0.00024 and
-    against sub-optimal p = 0.01; face p = 0.0024 and 0.08; locomotion p = 0.0012 and 0.033. Five of
-    six tests pass.
+    against sub-optimal p = 0.0012; face p = 0.0024 and 0.017; locomotion p = 0.0012 and 0.057. Five
+    of six tests pass.
 - claim: fig4b-variability-at-transitions
   outcome: partially_reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig4b-variability-at-transitions
-  notes: All six changes have the stated sign on average over mice (entry, pupil 0.0316 to 0.0289,
-    face 0.0750 to 0.0715, locomotion 0.0582 to 0.0540; exit, 0.0298 to 0.0337, 0.0716 to 0.0780,
-    0.0551 to 0.0626). Of the four comparisons the figure marks, pupil exit (p = 0.0012) and
-    locomotion exit (p = 0.0024) pass, face entry (p = 0.15) and locomotion entry (p = 0.24) do not.
-    15 to 85 entries and 22 to 125 exits per mouse.
+  notes: All six changes have the stated sign on average over mice (entry, pupil 0.0319 to 0.0283,
+    face 0.0750 to 0.0680, locomotion 0.0620 to 0.0545; exit, 0.0301 to 0.0346, 0.0713 to 0.0780,
+    0.0553 to 0.0640). Of the four comparisons the figure marks, pupil exit (p = 0.0012), locomotion
+    entry (p = 0.04) and locomotion exit (p = 0.0012) pass, face entry (p = 0.11) does not. 9 to 85
+    entries and 18 to 125 exits per mouse.
 - claim: fig4d-pupil-movement-decoupling
   outcome: reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig4d-pupil-movement-decoupling
-  notes: Mean r 0.104 (optimal), 0.438 (disengaged), 0.257 (sub-optimal); optimal lower than
-    disengaged in 13 of 13 (p = 0.00024) and than sub-optimal in 10 of 13 (p = 0.0081). Disengaged is
-    higher than sub-optimal (p = 0.0046), as the figure marks.
+  notes: Mean r 0.077 (optimal), 0.439 (disengaged), 0.267 (sub-optimal); optimal lower than
+    disengaged in 13 of 13 (p = 0.00024) and than sub-optimal in 12 of 13 (p = 0.00049). Disengaged
+    is higher than sub-optimal (p = 0.0081), as the figure marks.
 - claim: figs6-individual-measure-decoupling
   outcome: reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:figs6-individual-measure-decoupling
-  notes: Pupil with face, optimal lower than disengaged (p = 0.0046) and sub-optimal (p = 0.033).
-    Pupil with locomotion, lower than disengaged (p = 0.0046), not significantly lower than
-    sub-optimal (p = 0.08). The face with locomotion correlation is also lower in the optimal state
-    (p = 0.00049 and 0.00073).
+  notes: Pupil with face, optimal lower than disengaged (p = 0.0024) and sub-optimal (p = 0.00049).
+    Pupil with locomotion, lower than disengaged (p = 0.0017), not significantly lower than
+    sub-optimal (p = 0.068). The face with locomotion correlation is also lower in the optimal state
+    (p = 0.00049 and 0.01).
 - claim: figs1-iti-independence
   outcome: reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:figs1-iti-independence
-  measured: 0.23
+  measured: 0.22
   notes: Median r with the preceding ITI, pupil -0.044, locomotion -0.007, face -0.044, none different
     from zero (p = 0.13, 0.89, 0.27), so the ITI part holds under readings (a) and (b). The
     Kruskal-Wallis test of the per-mouse median evoked pupil response over the four groups gives
-    H = 4.32, p = 0.23 (three discrete states, p = 0.15); group means -1.1, 1.57, 0.04 and -0.6% of
+    H = 4.38, p = 0.22 (three discrete states, p = 0.15); group means -1.19, 1.57, 0.2 and -0.51% of
     the maximum.
   deviations:
   - The pupil at onset is the filtered value at the stimulus sample; FigureS1.py takes it from the
@@ -295,32 +313,32 @@ outcomes:
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:figs8a-regression-weights
   notes: Optimal fits, pupil squared, locomotion squared, pupil SD and locomotion SD weights negative
-    (medians -1.13, -1.07, -0.30, -0.35; Wilcoxon against zero p = 0.001, below 0.001, 0.008, 0.027).
-    Disengaged fits, the same weights positive (1.11, 0.64, 0.19, 0.19; p below 0.001, below 0.001,
-    0.013, 0.008). Face squared and face SD weights do not differ from zero (p 0.13 to 0.50). Reading
+    (medians -1.11, -1.10, -0.26, -0.33; Wilcoxon against zero p below 0.001, 0.001, 0.008, 0.027).
+    Disengaged fits, the same weights positive (0.56, 0.64, 0.19, 0.20; p below 0.001, below 0.001,
+    0.033, 0.008). Face squared and face SD weights do not differ from zero (p 0.19 to 0.84). Reading
     (a) holds, and so does (b).
 - claim: figs8b-pupil-movement-interaction
   outcome: reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:figs8b-pupil-movement-interaction
   measured:
-  - 0.34
-  - -0.82
-  notes: Pupil-by-movement weight 0.34 +/- 0.11 over 22 sub-optimal fits and -0.82 +/- 0.23 over 13
-    optimal fits, rank-sum p = 5.6e-05; quadratic movement weight of the optimal fits -1.52. Among the
-    sub-optimal weights only the interaction differs from zero (p = 0.005).
+  - 0.41
+  - -0.95
+  notes: Pupil-by-movement weight 0.41 +/- 0.10 over 21 sub-optimal fits and -0.95 +/- 0.21 over 13
+    optimal fits, rank-sum p = 3.8e-06; quadratic movement weight of the optimal fits -1.30. Among
+    the sub-optimal weights only the interaction differs from zero (p below 0.001).
 - claim: fig5c-state-classification
   outcome: reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig5c-state-classification
   measured:
-  - 88.5
-  - 77.2
-  notes: Eight features unshuffled (condition 13), 88.5% +/- 1.7% over 13 optimal against disengaged
-    classifications and 77.2% +/- 1.6% over 21 optimal against sub-optimal classifications; the
-    "All measures" condition 0 gives 88.2% and 76.4%. All 34 classifications are significant under
-    readings (a), (b) and (c), with z from 4.98 to 11.16. The paper has 19 sub-optimal
-    classifications; this attempt's fits give 22 sub-optimal states, 21 with enough trials.
+  - 88.9
+  - 78.4
+  notes: Eight features unshuffled (condition 13), 88.9% +/- 1.7% over 13 optimal against disengaged
+    classifications and 78.4% +/- 1.8% over 20 optimal against sub-optimal classifications; the
+    "All measures" condition 0 gives 88.5% and 77.7%. All 33 classifications are significant under
+    readings (a), (b) and (c). The paper has 19 sub-optimal classifications; this attempt's fits
+    give 21 sub-optimal states, 20 with enough trials.
   deviations:
   - 3 runs per shuffled condition and 20 null runs, in place of 1000, to fit the time limit. The
     unshuffled condition does not vary between runs. With 20 null runs the null SD and its 95th
@@ -330,22 +348,23 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:figs7-pupil-best-raw-measure
-  notes: Reading (a), accuracy, pupil 71.1%, face 65.7%, locomotion 67.7%; pupil above face in 23 of
-    34 (p = 0.00046) and above locomotion on average (p = 0.034). The z-scores and reading (b) agree
-    for face (p from 0.00018 to 0.00046); under (b) pupil is above locomotion on average (p = 0.059
-    and 0.064).
+  notes: Reading (a), accuracy, pupil 71.5%, face 66.1%, locomotion 68.1%; pupil above face in 24 of
+    33 (p = 0.0011) and above locomotion on average (p = 0.053). The z-scores and reading (b) agree
+    for face (p from 0.00029 to 0.0013); under (b) pupil is also above locomotion (p = 0.029 and
+    0.022).
   deviations:
   - As for fig5c-state-classification.
 - claim: fig5c-movement-index-best
   outcome: not_reproduced
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:fig5c-movement-index-best
-  notes: Main reading (movement index value and SD kept, all else shuffled) gives 67.7% against 71.1%
-    for pupil alone, movement higher in 13 of 34 (p = 0.017, the other way); z 4.42 against 5.29
-    (p = 0.033). The code's conditions shown as variants make the movement index better than pupil,
-    condition 5 (movement index kept with the pupil value) 74.5% (p = 7.4e-05) and condition 1 (face
-    and locomotion shuffled) 76.7% (p = 2.3e-10); both keep pupil information in the movement-index
-    classifier.
+  notes: Main reading (movement index value and SD kept, all else shuffled) gives 68.6% against 71.5%
+    for pupil alone, movement higher in 14 of 33 (p = 0.086); z 4.51 against 5.21 (p = 0.068). The
+    movement index is not better than pupil. The code's conditions shown as variants give higher
+    accuracy for the movement-index classifier, condition 5 (movement index kept with the pupil
+    value) 75.7% (p = 1.3e-05) and condition 1 (face and locomotion shuffled) 77.9% (p = 2.3e-10),
+    but both keep pupil information, so they compare pupil and movement together against pupil
+    alone and do not test the claim.
   deviations:
   - As for fig5c-state-classification.
 findings:
@@ -372,3 +391,220 @@ findings:
     state occurs scores 0 against every template and displaces the optimal label. In this attempt's
     fits one state of BW059 is such a state; it was typed on all sessions. How were such states
     handled, and which 381 sessions were analysed?
+verifications:
+- date: 2026-10-31
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusions and summary
+    removed, the helper module and the claims file. The verifier also fetched the paper's code at the
+    linked commit.
+  results:
+  - claim: cohort-inclusion
+    agrees: true
+    outcome: partially_reproduced
+    reason: 13 mice, 8 auditory and 5 visual, all match. The archive has 391 sessions and 376 pass the
+      criterion, against 381 in the paper (375 counted by hits). Reward-series counts and hit counts
+      disagree for some sessions (BW071 150 against 79, BW059 102 against 97); both are shown, and
+      neither gives 381.
+    response: No change.
+  - claim: training-duration
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive, version metadata gives 391 sessions from 13 subjects, and
+      every file has stage S5 or S6. No part can be tested.
+    response: No change.
+  - claim: distractor-response-rate
+    agrees: true
+    outcome: reproduced
+    reason: Reading (c), pooled over all mice, gives 0.052. Under (a) and (b) only 7 of 8 mice are
+      below 0.10 (BW053 is at 0.16 to 0.17).
+    response: No change.
+  - claim: figs2-n-states
+    agrees: true
+    outcome: reproduced
+    reason: Both O1 readings give 3 to 5 states per mouse. The cross-validation used 3 initialisations
+      instead of 10; on synthetic data 2 of 3 random starts of the helper's EM ended in a worse local
+      optimum, so with 3 starts the test curves for larger state counts can be understated and
+      per-mouse counts could shift, which feeds the narrow misses in fig2b and fig3f.
+    response: The cross-validation now runs 10 initialisations per fold, as the paper. In the same
+      revision the visual stimulus values were corrected to follow get_stim_vals, which takes them
+      from the visual_gabor_angle column where a file has one (a point the verifier could not check).
+      Both readings now give 3 states in five mice and 4 in eight; the outcome stays reproduced by
+      the criterion, and the notes say that no mouse has 5 states. All later claims were re-run on
+      the new fits.
+  - claim: fig1g-example-mouse-prediction
+    agrees: true
+    outcome: reproduced
+    reason: BW046, 4 states, 70.2% one-state, 78.3% best model.
+    response: No change of outcome; after the re-fit BW046 still has 4 states, 70.2% and 78.1%.
+  - claim: fig2a-state-types
+    agrees: true
+    outcome: reproduced
+    reason: 13 of 13 mice have an optimal, a disengaged and at least one other state. The template
+      check is weak, every state other than optimal and disengaged is forced onto one of the four
+      sub-optimal templates, so each other state matches cannot fail. The six-template check shows
+      for BW061 state 2 nearest the optimal template and the state labelled optimal nearest bias
+      right, and for BW048 two states nearest bias left.
+    response: No change of outcome. The notebook now prints, for BW061 and BW048, each state's
+      psychometric and its distance to all six templates; with the re-fit models every state of both
+      mice is nearest the template of its label. The conclusion and notes now say that under M3 the
+      matching itself cannot fail.
+  - claim: fig2b-optimal-occupancy
+    agrees: true
+    outcome: partially_reproduced
+    reason: Indeterminate is 14.8 +/- 2.2%, just outside 13.1 +/- 1.6. Optimal beats each other state
+      at p = 0.00024, 0.0024 and 0.0012.
+    response: Changed to reproduced. With 10 cross-validation initialisations and the corrected
+      visual inputs, the indeterminate share is 13.1% +/- 1.6% and the optimal share is larger than
+      each other share at p = 0.00024.
+  - claim: fig2c-dwell-times
+    agrees: true
+    outcome: partially_reproduced
+    reason: Optimal dwells are longer, all four tests p < 0.001. The indeterminate median is 3.00 +/-
+      0.32 against 3.4 +/- 0.3 (out). No reading puts 37 and 15 both in tolerance. dwell_table copies
+      flex_hmm.get_dwell_times, which adds a spurious last epoch (dwell 0, run 1) when a session's
+      last trial differs from the one before it; each adds a zero gap to the indeterminate dwells, so
+      reading (x) is not a clean run length.
+    response: No change of outcome. The quirk is now described in the notebook and a variant without
+      these epochs is shown (3 epochs; no number changes). After the re-fit the indeterminate dwell
+      is 3.31 +/- 0.35, within tolerance, and the optimal dwell, 42.8 to 43.8 under reading (a), is
+      above the tolerance of 37 under every reading.
+  - claim: fig2d-prediction-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: 76.0 +/- 1.7%; gain 10.9 +/- 1.2 percentage points; signed-rank p = 0.00024.
+    response: No change of outcome; after the re-fit 76.2% and 11.0 points.
+  - claim: fig3c-inverted-u-pupil
+    agrees: true
+    outcome: reproduced
+    reason: Reading (i) 12 of 13 mice, (ii) 13 of 13.
+    response: No change of outcome; after the re-fit 13 of 13 under both.
+  - claim: fig3d-optimal-pupil-modality
+    agrees: true
+    outcome: reproduced
+    reason: Auditory median 0.627 against visual 0.698; rank-sum p = 0.034, exact p = 0.040.
+    response: No change of outcome; after the re-fit 0.649 against 0.739, p = 0.013.
+  - claim: fig3e-u-disengaged-pupil
+    agrees: true
+    outcome: reproduced
+    reason: The shape holds on all trials and on the stationary subset under reading (b); reading (a)
+      has no usable bins. Stationary reading (b) uses running_speed < 0.02, and speeds go down to
+      -0.169 m/s, so backward-moving trials are also counted as stationary; it should be abs(speed) <
+      0.02.
+    response: No change of outcome. Reading (b) now uses absolute speed below 0.02 m/s; the old rule
+      is shown as a variant, with the 214 backward trials it adds, and the shapes and vertices are the
+      same under both.
+  - claim: figs4-r2-individual-movement
+    agrees: true
+    outcome: partially_reproduced
+    reason: Pupil r2 is 0.647 +/- 0.060 (out of 0.72 +/- 0.03). Face is in tolerance but face against
+      pupil is not significant (p = 0.24 and 0.15). Locomotion is in tolerance and significant only
+      under O5 (b). Pupil r2 comes from a single shuffled 5-fold split; BW051's 0.086 is an outlier
+      that pulls the mean out of tolerance and makes the movement-index test easier to pass.
+    response: No change of outcome. The criterion fixes the single split of 4_optimal_pupils.py,
+      which is kept; a variant now gives the mean over 10 shuffled splits per mouse for every
+      measure. After the re-fit pupil is 0.690 (in tolerance) with one split and 0.682 over 10, BW051
+      ranges from 0.001 to 0.562 over the splits, and the face test still fails under both bin
+      readings with either.
+  - claim: fig3f-movement-index-inverted-u
+    agrees: true
+    outcome: partially_reproduced
+    reason: The inverted U holds and the test against pupil gives p = 0.34 as the claim needs, but r2
+      is 0.567 under (a) and 0.554 under (b), both just below the 0.57 lower bound.
+    response: Changed to reproduced. After the re-fit with 10 cross-validation initialisations and the
+      corrected visual inputs, r2 is 0.574 under (a), within tolerance, the shape holds and the test
+      against pupil gives p = 0.22. The value is close to the bound; over 10 splits it is 0.573.
+  - claim: fig3f-movement-index-u-disengaged
+    agrees: true
+    outcome: reproduced
+    reason: Quadratic term +0.026, vertex at 0.0, inside the range.
+    response: No change of outcome.
+  - claim: figs5-movement-index-correlations
+    agrees: true
+    outcome: reproduced
+    reason: The two r are identical, as they must be by construction. Minimum r is 0.674, so reading
+      (b) holds and (a) does not.
+    response: No change.
+  - claim: fig3-distance-from-optimal-pupil
+    agrees: true
+    outcome: partially_reproduced
+    reason: Order and tests hold (p = 0.00024 and 0.021). All three values are about 1.5 times the
+      paper's, 10.7, 18.0 and 13.0 against 7, 12.6 and 9.
+    response: No change of outcome; after the re-fit 8.8, 16.0 and 11.8, still above the paper's.
+  - claim: fig3-raw-face-energy-trend
+    agrees: true
+    outcome: reproduced
+    reason: 0.487, 0.443 and 0.442, all in tolerance; optimal against sub-optimal p = 0.00049, against
+      disengaged p = 0.068.
+    response: No change of outcome; after the re-fit 0.482, 0.441 and 0.448, p = 0.017.
+  - claim: fig3-raw-locomotion-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.74 and 0.68 under (a), 0.54 and 1 under (b); values 0.134 to 0.136.
+    response: No change of outcome; after the re-fit p = 0.84 and 0.89 under (a).
+  - claim: fig4a-lower-variability
+    agrees: true
+    outcome: partially_reproduced
+    reason: All six differences are negative and 5 of 6 tests pass; face optimal against sub-optimal
+      p = 0.08.
+    response: No change of outcome; after the re-fit still 5 of 6, the failing test is now locomotion
+      against sub-optimal (p = 0.057).
+  - claim: fig4b-variability-at-transitions
+    agrees: true
+    outcome: partially_reproduced
+    reason: All six signs are right. Of the four marked tests, pupil exit and locomotion exit pass;
+      face entry (p = 0.15) and locomotion entry (p = 0.24) do not.
+    response: No change of outcome; after the re-fit 3 of the 4 pass (locomotion entry p = 0.04), and
+      face entry does not (p = 0.11).
+  - claim: fig4d-pupil-movement-decoupling
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.00024 and 0.0081.
+    response: No change of outcome.
+  - claim: figs6-individual-measure-decoupling
+    agrees: true
+    outcome: reproduced
+    reason: Optimal against disengaged p = 0.0046 for both pupil-face and pupil-locomotion.
+    response: No change of outcome.
+  - claim: fig5c-state-classification
+    agrees: true
+    outcome: reproduced
+    reason: 88.5/88.2% and 77.2/76.4%, all in tolerance; 34 of 34 classifications significant under
+      every reading. There are 21 sub-optimal classifications against the paper's 19. Decoding uses 3
+      runs per condition and 20 null runs; all z >= 4.9, so significance does not depend on this.
+    response: No change of outcome; after the re-fit 88.9% and 78.4%, 33 of 33 significant, 20
+      sub-optimal classifications.
+  - claim: figs7-pupil-best-raw-measure
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a), accuracy, pupil 71.1 > face 65.7 (p = 0.00043) and > locomotion 67.7.
+    response: No change of outcome.
+  - claim: fig5c-movement-index-best
+    agrees: true
+    outcome: not_reproduced
+    reason: Under the Figure 5C legend reading the movement index is significantly worse than pupil,
+      67.7 against 71.1%, p = 0.017. The two variants that reproduce the claim cannot test it,
+      condition 5 keeps the pupil value and condition 1 keeps the pupil value and SD alongside the
+      movement index, so they compare pupil plus movement against pupil alone.
+    response: No change of outcome. The notebook and notes now say that the variants keep pupil
+      information and do not test the claim. After the re-fit the movement index is lower than pupil
+      but not significantly (68.6 against 71.5%, p = 0.086).
+  - claim: figs8a-regression-weights
+    agrees: true
+    outcome: reproduced
+    reason: Pupil and locomotion squared and SD terms have the stated signs (p <= 0.027); face terms
+      p >= 0.13.
+    response: No change of outcome.
+  - claim: figs8b-pupil-movement-interaction
+    agrees: true
+    outcome: reproduced
+    reason: P x M is 0.34 +/- 0.11 for sub-optimal fits and -0.82 +/- 0.23 for optimal fits; rank-sum p
+      = 5.6e-5; optimal M x M is -1.52.
+    response: No change of outcome; after the re-fit 0.41 and -0.95, p = 3.8e-06.
+  - claim: figs1-iti-independence
+    agrees: true
+    outcome: reproduced
+    reason: Median ITI r between -0.044 and -0.007, all Wilcoxon p >= 0.13; four-group Kruskal-Wallis
+      p = 0.23.
+    response: No change.

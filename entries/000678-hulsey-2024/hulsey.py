@@ -6,7 +6,9 @@ predicted by arousal and uninstructed movements", Cell Reports 43(1), 113709.
 Where each parameter comes from:
 
 - Trial inputs and choices: the paper's code, uobrainflex at commit ef48985 (the claims file,
-  M1): ``loadbehavior.get_stim_vals`` for the stimulus value, and
+  M1): ``loadbehavior.get_stim_vals`` for the stimulus value (for a file with a
+  ``visual_gabor_angle`` column the code takes the visual values from the grating angles, not
+  the fixed 1, 0.8 and 0.6 it uses otherwise), and
   ``flex_hmm.format_choice_behavior_hmm`` for the choice (left, right, none) and the removal of
   distractor trials.
 - Measures at stimulus onset: ``loadbehavior.read_behavior_measures`` and
@@ -167,9 +169,18 @@ def load_session(asset_id, path):
                                       maps["visual_stim_id"]["right"]: 1.0}).astype(float)
     v_val = tr["visual_stim_difficulty"].values
     v_id = np.zeros(len(tr))
-    v_id[v_val == 1] = 0.8
-    v_id[v_val == 2] = 0.6
-    v_id[v_val == 0] = 1
+    if "visual_gabor_angle" in tr.columns:
+        # the code's branch for files with the grating angle: the session's distinct values of
+        # |angle - 45| / 45, largest first, indexed by the difficulty code
+        ang = tr["visual_gabor_angle"].values
+        sv = np.flip(np.unique(np.abs((ang[~np.isnan(ang)] - 45) / 45)))
+        if len(sv) > 0:
+            for diff in np.flip(np.unique(v_val[np.isfinite(v_val)])):
+                v_id[v_val == diff] = sv[int(diff)]
+    else:
+        v_id[v_val == 1] = 0.8
+        v_id[v_val == 2] = 0.6
+        v_id[v_val == 0] = 1
     vis = v_dir.values * v_id
     tr["aud_stim"], tr["vis_stim"] = aud, vis
     tr["stage"] = meta.get("training_stage")

@@ -14,14 +14,14 @@ and relates them to the arousal and movement measures.
 | 3 to 5 GLM-HMM states per mouse | Reproduced |
 | Example mouse: 4 states, 78% against 70% of choices predicted | Reproduced |
 | Every mouse has optimal, disengaged and sub-optimal states | Reproduced (one assumption) |
-| Optimal state most occupied; 13.1% indeterminate | Partially reproduced |
+| Optimal state most occupied; 13.1% indeterminate | Reproduced |
 | Optimal epochs longer; 3.4-trial transitions | Partially reproduced |
 | GLM-HMM predicts 75.7% of choices, 10.8% better than one state | Reproduced |
 | Inverted U of optimal state on pupil diameter | Reproduced |
 | Smaller optimal pupil in the auditory task | Reproduced |
 | Inverted U (optimal) and U (disengaged) aligned to the optimal pupil | Reproduced |
 | Face and locomotion r2 below pupil's | Partially reproduced |
-| Inverted U on the movement index, r2 like pupil's | Partially reproduced |
+| Inverted U on the movement index, r2 like pupil's | Reproduced |
 | U of the disengaged state on the movement index | Reproduced |
 | Movement index equally correlated with face and locomotion | Reproduced |
 | Pupil closest to optimal in the optimal state | Partially reproduced |
@@ -41,9 +41,8 @@ and relates them to the arousal and movement measures.
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The GLM-HMM of the paper's ssm fork is reimplemented in `hulsey.py`; the cross-validation runs 3
-random initialisations per fold, not 10, and the decoders fewer shuffle runs, to keep the notebook
-near 15 minutes on 4 cores. The attempt record, with the reasons and the differences from the paper's
+The GLM-HMM of the paper's ssm fork is reimplemented in `hulsey.py`, and the decoders use fewer
+shuffle runs than the paper, to keep the notebook near 26 minutes on 4 cores. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/000678-hulsey-2024-01.yaml`](../../attempts/000678-hulsey-2024-01.yaml).
 
 - `reproduce_hulsey_2024.ipynb`: the analysis.
