@@ -16,7 +16,8 @@ to O10 are those of claims/000688/10.1016-j.neuron.2018.09.030.yaml):
   STAR Methods, Dimensionality reduction (M2). `KERNEL_SD_S` holds both readings of the width
   (O4): a standard deviation of 100 ms, or a full width at half maximum of 100 ms. The claims
   file expected this not to change an outcome; it changes the fig3b medians and the fig6c
-  significance, so both readings are run throughout.
+  significance, so both readings are run throughout. The notebook adopts the standard deviation
+  for every claim.
 - PCA per area per session on Baseline reward trials only, 8 M1 and 16 PMd components: STAR
   Methods, Output-potent and output-null subspaces ("We used only trials from the Baseline period
   of each session to find the axes for PCA") and Results ("for M1 we used the first eight").

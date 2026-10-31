@@ -56,6 +56,17 @@ outcomes:
     notebook: reproduce_perich_2018.ipynb
     output: claim:fig3b-pmd-higher-dimensional
     assumed: true
+    proposed:
+      outcome: partially_reproduced
+      reason: The verified outcome uses a kernel of 100 ms full width at half maximum, while fig6c-null-leads-potent uses
+        a standard deviation of 100 ms; no one reading gives both verified outcomes (verifier, round 2). One reading is
+        adopted for every claim, the standard deviation, as it is the usual way a Gaussian smoothing kernel's width is
+        stated and the same group's later paper on Monkey C recordings (Gallego, Perich et al. 2020, Nat. Neurosci.)
+        gives its kernel as "s.d. 50 ms". Under it, with rule (b), the noise of the trial average and window (a), the
+        medians are 7 (M1) and 10 (PMd) over 21 sessions, outside the tolerance of 8.5 and 14, and outside it in all
+        2002 sets of 16 sessions, with PMd above M1 in every session (21 of 21, and in all 2002 sets). The criterion
+        counts this as partially reproduced. The notebook shows it in "One kernel reading for every claim" and the fig3b
+        cells.
     measured:
       - 9
       - 13
@@ -81,10 +92,19 @@ outcomes:
         only that the activity of random pairs of trials was subtracted; taken as it is, or divided by the square root
         of two, the noise exceeds every component of the trial-averaged data and every estimate is 0, which cannot give
         the paper's medians. All three scalings are shown. The choice was made after the raw and root-two scales gave
-        0; a synthetic check of known rank (notebook) shows rule (b) with this scale recovers the rank.
+        0; a synthetic check of known rank (notebook) shows rule (b) with this scale recovers the rank, but the raw
+        and root-two scales also recover it there, so the check does not choose between the scales; the choice rests
+        on the other scales giving 0 on the real data.
       - The outcome depends on the kernel width, which the claims file expected not to matter (O4). The medians are within
         tolerance with a full width at half maximum of 100 ms and outside it with a standard deviation of 100 ms; the
-        criterion accepts one reading, and the full-width reading is the one that meets it.
+        criterion accepts one reading, and the full-width reading is the one that meets it. O4 is not among the readings
+        the criterion names, and the claims file's header says a claim whose open-detail readings disagree is blocked
+        as methods_underspecified; the protocol (author, step 1.6) instead lets the author adopt the best-supported reading
+        as an assumption, and that rule is followed. No single kernel reading gives the verified outcomes of both this
+        claim and fig6c-null-leads-potent (full width, this claim reproduced and fig6c not reproduced; standard deviation,
+        both partially reproduced). The standard deviation is adopted for every claim (proposed change below).
+      - The outcome rests on all 21 candidate sessions. Over the 2002 possible sets of 16 sessions the full-width medians
+        are within tolerance in 910; the others would give partially reproduced.
       - Trials of unequal length are aligned on the window start and cut to the session's shortest window before averaging
         per target; the paper does not say how they were averaged (a standard choice).
       - All units of each area are used; the paper does not say whether a rate threshold applies here.
@@ -98,9 +118,11 @@ outcomes:
       with all neurons; standard-deviation kernel, window a, 1.62 and 3.48). Paired by session, PMd is higher in every
       session at every size except one session with all neurons in window (b) under both kernels (20 of 21) and one at
       40 neurons with the full-width kernel in window (b) (16 of 17). Rule (a) gives PMd above M1 at every size except
-      40 neurons with the full-width kernel in window (b) (-0.13 and -0.30). In window (a) both areas fall at small sizes
-      (full-width kernel PMd 13.05 to 9.90, M1 8.52 to 8.03); in window (b) with the standard-deviation kernel the M1
-      mean barely changes (5.90 with all, 5.82 at 40). M1 sizes of 50 to 70 rest on 11 to 15 sessions, as Monkey M has
+      40 neurons with the full-width kernel in window (b) (-0.13 and -0.30). The PMd mean falls at small sizes (window
+      a, full-width kernel, 13.05 with all neurons and 9.90 at 40). The M1 mean does not fall consistently (window a,
+      full-width kernel, 8.52 with all, 8.53 and 8.65 at 60 and 70, 8.03 at 40; window b, full-width kernel, 6.52 with
+      all and 6.74 at 40), so the statement's fall is shown for PMd only, outside the criterion. The M1 means at 40
+      neurons cover 17 sessions, against 21 for all neurons. M1 sizes of 50 to 70 rest on 11 to 15 sessions, as Monkey M has
       26 to 52 M1 units.
     deviations:
       - The paper's 16 sessions cannot be identified. All 21 dual-array center-out sessions of Monkeys C (2016-09-09
@@ -137,6 +159,8 @@ outcomes:
       - The readings of magnitude disagree in one of eight cases; the sum of absolute values, the claims file's first
         reading of "the magnitude ... summed across all dimensions" (STAR Methods, Output-potent and output-null subspaces),
         is adopted.
+      - The one failing reading (sums of squares, window a) uses the full-width kernel. Under the standard-deviation kernel,
+        the reading adopted for every claim, all four window and magnitude readings meet the criterion.
   - claim: fig6c-null-leads-potent
     outcome: partially_reproduced
     notebook: reproduce_perich_2018.ipynb
@@ -166,7 +190,13 @@ outcomes:
         STAR Methods, Behavioral task ("required to hold there for 0.5 s"); the cursor cannot be used, as in several
         sessions it never enters the stored target square.
       - The outcome depends on the kernel width, which the claims file expected not to matter (O4). Significance holds
-        with a standard deviation of 100 ms and not with a full width at half maximum of 100 ms.
+        with a standard deviation of 100 ms and not with a full width at half maximum of 100 ms (p 0.18 to 0.38), which
+        would make it not reproduced. The claims file's header says a claim whose open-detail readings disagree is blocked
+        as methods_underspecified; the protocol (author, step 1.6) lets the author adopt the best-supported reading as
+        an assumption, and that rule is followed. The standard deviation is adopted for every claim, as the usual way
+        a Gaussian kernel's width is stated and the form the same group used later on Monkey C recordings ("s.d. 50 ms",
+        Gallego, Perich et al. 2020). The verified fig3b outcome used the other reading; its change is proposed on that
+        claim.
       - The lag sign follows the Figure 6B legend (a peak left of zero means output-null leads).
       - A maximum within one step of the edge of the lag search (340 or 350 ms) is flagged and the test is shown with
         such sessions kept and dropped; the paper does not say how edge maxima were treated.
@@ -351,8 +381,8 @@ findings:
       warning ("Warning: This session with Monkey"), in the files and in the archive''s metadata, so what it warns of
       is lost. These are the sessions whose cursor positions do not match the stored targets.'
   - kind: metadata_error
-    statement: In several sessions (for example all seven early Monkey C sessions and Monkey M 2014-02-03 and 2014-02-18)
-      the cursor never enters the square given by target_corners on rewarded trials.
+    statement: In all seven early Monkey C sessions the cursor never enters the square given by target_corners on rewarded
+      trials, and in Monkey M 2014-02-03 and 2014-02-18 it enters it on 1% of them.
   - kind: format_error
     statement: The cursor timestamps repeat 8531 times in C 2016-09-23 and 5014 times in C 2016-10-11, so velocities
       computed from them are undefined on many samples.
@@ -368,7 +398,8 @@ findings:
     statement: Question for the authors. Is the 100 ms width of the Gaussian kernel its standard deviation or its full
       width at half maximum, and how were trials of unequal length averaged? With the full width the dimensionality medians
       are 9 and 13 (paper 8.5 and 14) and the Baseline lag is not significant; with the standard deviation the medians
-      are 7 and 10 and the lag is significantly negative over 21 sessions.
+      are 7 and 10 and the lag is significantly negative over 21 sessions. This attempt assumed the standard deviation
+      for every claim.
   - kind: selection_undocumented
     statement: The dandiset holds 14 dual-array Monkey C sessions where the paper used 9, and does not say how they relate
       to the paper's sessions or why the perturbation epochs were left out.
@@ -408,8 +439,8 @@ verifications:
         outcome: reproduced
         reason: The PMd mean exceeds the M1 mean at every size, both rules and both windows, and paired sessions show
           PMd > M1 in every session at sizes 40-70. The markdown wrongly justified the readings as those whose fig3b
-          medians match (the SD kernel does not), FWHM was not run, and 25 subsamples with 100 noise repetitions were
-          used instead of 100 (points 5 and 6); a sign change is unlikely.
+          medians match (the SD kernel does not), FWHM was not run, and 25 subsamples were used instead of 100, with 100
+          noise repetitions instead of 1000 (points 5 and 6); a sign change is unlikely.
         response: No change of outcome. Now run with both kernels and 100 subsamples per size (100 noise repetitions
           each); the markdown justifies the readings correctly. Under rule (b) PMd exceeds M1 at every size under every
           reading, by 1.30 to 4.63. Rule (a) now has one exception (40 neurons, FWHM kernel, window b, -0.13), stated
@@ -600,3 +631,186 @@ verifications:
           or random target reaching with no epoch or perturbation fields, and the candidate files hold 155-286 reward
           trials over 13-23 minutes, one Baseline epoch; no blocked claim could be partly tested under the claims' criteria.
         response: No change.
+  - date: '2026-10-31'
+    kind: agent
+    by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+    reviewed: The full executed notebook of the first revision (with conclusions and summary), the helper module, the claims
+      file and the attempt record.
+    results:
+    - claim: methods-neuron-counts
+      agrees: true
+      outcome: partially_reproduced
+      reason: The per-session ranges hold only if C 2016-09-29 (PMd 114) is not one of the paper's sessions, which is true for
+        715 of 2002 choices. The pooled >5 Hz counts fail under every choice. Cell 0 says these sessions have unit counts that
+        match the paper's ranges; C 2016-09-29 does not (cell 12). Cell 4 says four later Monkey M sessions do not fit, where
+        cell 3 lists 13 later dual-array sessions with rewards from 174, and M 2014-09-29 (PMd 124) and M 2015-05-12 (PMd 60,
+        M1 30) are inside the widened ranges; 2015-05-12 is excluded only by its 443 rewards while C 2016-10-13 and 2016-10-21
+        are kept. Whether the units are the paper's sort is still open.
+      response: No change of outcome. Cell 0 now names the one session outside the ranges. Cell 4 now lists the 13 later Monkey
+        M sessions with their unit and reward counts, says only 2015-05-12 is inside the widened unit ranges (2014-09-29 has
+        21 M1 units, below 23.4), and says the February to March block is taken because it matches the paper's count and bounds
+        as a block, not by a per-session rule, noting that C 2016-10-13 and 2016-10-21 are kept although outside the reward
+        range. Whether the units are the paper's sort cannot be told from the files and stays under the selection_undocumented
+        finding.
+    - claim: fig3b-pmd-higher-dimensional
+      agrees: true
+      outcome: reproduced
+      reason: Agrees, but fragile. The noise scale is stated, along with the fact that it was chosen after the other scales
+        gave 0, and is a reasonable assumption, but the synthetic check does not tell the scales apart, since raw and root-two
+        also return 5 there. Over 16-session choices the medians are within tolerance in only 910 of 2002 (cell 17), and the
+        21-session set is not named as something the outcome rests on. The claims file header says a claim whose readings of
+        an open detail disagree is blocked as methods_underspecified, and O4 is named in neither the fig3b nor the fig6c criterion;
+        no single kernel reading supports both outcomes (FWHM gives fig3b reproduced and fig6c not reproduced, SD gives both
+        partial), and the record picks the favourable kernel for each claim. The record should say which rule governs O4 and
+        state the inconsistency.
+      response: Outcome kept as verified; a change to partially_reproduced is proposed. The record and notebook now say that
+        the protocol's rule (author, step 1.6, adopt the best-supported reading as an assumption) is followed over the header's,
+        and state the inconsistency. One kernel reading, the standard deviation, is adopted for every claim, with the reasons
+        given; a new notebook section, One kernel reading for every claim, prints each claim's deciding numbers under each reading.
+        Under it the fig3b medians are 7 and 10, outside tolerance in all 2002 sets of 16, with PMd above M1 in every session.
+        The dependence on all 21 sessions (910 of 2002) is now a deviation and in the conclusion, and the noise-scale deviation
+        now says the synthetic check does not choose between scales.
+    - claim: figs4d-dimensionality-robust-to-size
+      agrees: true
+      outcome: reproduced
+      reason: 'It rests on the same noise scale, but PMd > M1 holds under rule (b) at every size, under both kernels, both windows
+        and both session sets (cell 21). The sentence that both areas fall at small sizes (M1 8.52 to 8.03) is not supported;
+        the M1 means at 60 and 70 neurons (8.53 and 8.65) equal or exceed the all-neuron mean, the 40-neuron mean covers 17
+        sessions against 21 for all, and in window (b) with the FWHM kernel M1 at 40 (6.74) exceeds all (6.52). A fall in M1
+        is not shown; this is outside the criterion. The record''s restatement of the round-1 reason was wrong, as it was 25 subsamples
+        instead of 100, and 100 noise repetitions instead of 1000.'
+      response: No change of outcome. The conclusion and notes now say the PMd mean falls at small sizes and the M1 mean does
+        not fall consistently, with the numbers, and that the 40-neuron M1 mean covers 17 sessions. The round-1 reason is corrected.
+    - claim: figs4c-null-potent-index-centered
+      agrees: true
+      outcome: reproduced
+      reason: The adopted reading (absolute values) is the claims file's first reading. One of eight readings fails at 0.100085
+        (cell 25). Judged alone, Monkey M would fail (0.109). Both points are stated. The kernel width bears on it through its
+        one failing reading.
+      response: 'No change of outcome. A deviation now says the failing reading uses the full-width kernel and that under the
+        standard-deviation kernel, adopted for every claim, all four readings meet the criterion (4 of 4 in the new kernel cell).'
+    - claim: fig6c-null-leads-potent
+      agrees: true
+      outcome: partially_reproduced
+      reason: 'Agrees, as the criterion applies on 21 sessions; weak. Both assumptions are stated, all 21 sessions and the SD
+        kernel. Under the main reading only 763 of 2002 (38%) 16-session choices are significant (51% for any of the 8 readings).
+        With the FWHM kernel no reading is significant (p >= 0.18, cell 28), which would make it not reproduced. No single kernel
+        reading supports both this outcome and fig3b''s, and the record should say which rule governs O4.'
+      response: No change of outcome. The kernel deviation now says which rule governs O4 (the protocol's, adopting the best-supported
+        reading), that the standard deviation is adopted for every claim and why, and that the full-width reading would give
+        not reproduced (p 0.18 to 0.38). The conclusion says the same.
+    - claim: fig2d-cf-behavioral-adaptation
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: fig7bc-vr-behavior-similar
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: figs2-covariance-preserved-example
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: figs3a-covariance-like-baseline-split
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: figs3b-covariance-preserved-vr
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: figs5e-glm-cell-counts
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: figs5e-pot-null-similar-training
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: fig3e-local-rpr2-unchanged
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: fig3g-local-models-generalize
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: fig4d-null-m1-fails-early
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: fig4c-null-tracks-behavior
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: figs6-pc-m1-fails
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: figs6de-per-monkey
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: figs5f-rpr2-distributions
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: figs7a-unnormalized-change
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: figs7e-dimensionality-range
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: figs7f-factor-analysis
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: figs7cd-single-neuron-models
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: fig5-washout-null-m1
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: fig6e-planning-change-in-null
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: fig7de-vr-all-generalize
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: fig7f-vr-washout-unchanged
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
+    - claim: cf-vr-dissociation
+      agrees: true
+      outcome: blocked
+      reason: No Force, Rotation or Washout trials (cells 3 to 8).
+      response: No change.
