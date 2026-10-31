@@ -1,0 +1,361 @@
+schema_version: 2
+id: 000897-neupane-2024-01
+dataset:
+  archive: dandi
+  id: "000897"
+  version: 0.240605.1710
+  doi: 10.48324/dandi.000897/0.240605.1710
+paper: doi:10.1038/s41586-024-07557-z
+date: 2026-10-31
+entry: 000897-neupane-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41223460625
+outcomes:
+- claim: fig1bc-produced-matches-actual
+  outcome: reproduced
+  notebook: reproduce_neupane_2024.ipynb
+  output: claim:fig1bc-produced-matches-actual
+  notes: Median session slope of v_p on v_a is 0.872 in monkey A (6 sessions, 0.825 to 0.946) and
+    0.860 in monkey M (9 sessions, 0.687 to 0.893); every slope is positive. One monkey M session
+    (04142021) is below 0.8. On validtrials_mm trials the medians are 0.936 and 0.869.
+  deviations:
+  - Only the 15 recorded sessions in the dandiset are used; Fig. 1c pools behavioural sessions with
+    at least 400 successful trials, most of them training sessions not deposited.
+  - All MNAV trials with a recorded production are used, including monkey M's seqq 3 trials, whose
+    vectors are in steps of 0.975 s.
+- claim: fig1e-immediate-generalization
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds only the 15 recording sessions, which came after training and
+    generalization (Methods, Electrophysiology, paragraph 1). The first generalization sessions are
+    not in it, and the code says the raw training data are shared on request.
+- claim: fig2-periodic-proportion
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_neupane_2024.ipynb
+  output: claim:fig2-periodic-proportion
+  measured:
+  - 88
+  - 124
+  - 34.7
+  notes: Under the main reading (code's score against the surrogate scores, null with the session's
+    own trial durations, Methods lags) 88 of 364 units in monkey A (24.2%) and 124 of 729 in monkey M
+    (17.0%) are periodic, against the paper's 37.6% and 36.0%; the highest session proportion is
+    34.7%. Across all twelve readings no monkey's proportion is within 10% of the paper's; a2
+    readings give 9.1 to 24.2% (A) and 8.2 to 17.0% (M), a1 at most 4.9% and 0.8%, and b (PI above
+    the surrogate at any lag) 78.0 to 81.3% and 58.0 to 60.6%, with session maxima of 87.5 to 95.3%.
+    Under a1 and a2 the session range holds, so at most one of the three conditions holds under any
+    reading. Without units labelled noise, 28.0% of monkey A units are periodic under the main
+    reading.
+  deviations:
+  - The dandiset holds 6 of 17 monkey A sessions and 9 of 15 monkey M sessions, so the counts are
+    compared as proportions of the units it holds (231/614 and 311/864, 10% relative tolerance);
+    the raw counts are recorded as measured.
+  - The Methods pass a zero-mean Gaussian process through a Poisson process without saying how it
+    becomes a rate. It is assumed here that rate = r exp(g - 1/2), with r the median unit rate of
+    the monkey in the navigation window (1.65 and 0.51 spikes/s), so that the mean rate is r. The
+    null is built by averaging single-trial surrogate ACGs from a bank of 3,564 (A) and 2,175 (M)
+    surrogate trials, matched to the trial durations, which gives the same null as generating each
+    surrogate afresh.
+  - The claims file's rule (a), "the maximum over lags of (mean + 2 SD) of the surrogate scores",
+    is run two ways, a1 (the maximum over lags of the surrogate PI mean + 2 SD) and a2 (the mean + 2
+    SD of the surrogate scores). The outcome is the same under every reading.
+  - The trial rate threshold of 0.05 (code line 3756) is read as spikes/s, as the claims file gives
+    no unit.
+  - All units in the files are counted, including the 103 monkey A units labelled noise.
+- claim: fig2d-periodicity-at-065
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_neupane_2024.ipynb
+  output: claim:fig2d-periodicity-at-065
+  measured: 0.65
+  notes: Under the main reading the median periodicity of periodic units is 0.630 s (A, direction
+    1), 0.590 (A, -1), 0.660 (M, 1) and 0.695 (M, -1), within 0.60 to 0.70 s in 3 of 4 groups;
+    measured is the median over all periodic unit-directions. Under the other a2 readings 2 to 4 of
+    4 groups are within; under a1, which selects 1 to 15 units per group, 0 or 1; under b, which
+    selects most units, none (0.72 to 0.95 s, close to the 0.73 to 0.91 s of all units).
+  deviations:
+  - The readings of the classification rule give different outcomes. Reading a2 (the code's score,
+    max PI minus mean PI from the first positive lag, against the mean + 2 SD of the same score in
+    the surrogates) is adopted, as it compares a measure with its own null distribution; a1
+    compares the score with a threshold on the raw PI, and b, the Methods' wording, classifies 58
+    to 81% of units as periodic. The question is for the paper's authors (findings).
+- claim: ed3-no-eye-hand-periodicity
+  outcome: reproduced
+  notebook: reproduce_neupane_2024.ipynb
+  output: claim:ed3-no-eye-hand-periodicity
+  measured:
+  - 0.148
+  - 0.136
+  - -0.4
+  notes: In the five monkey A sessions whose eye and joystick timestamps share the trial clock
+    (1,785 PI trials), the PI at 650 ms is below chance for all three signals under both bootstrap
+    and both chance readings (one-tailed t-test, p 2.7e-38 to 1.1e-161; t(99) -20.8 to -406.8), and
+    no signal is above chance (one-tailed p = 1.0). The mean PIs, 0.148 (horizontal eye), 0.136
+    (vertical eye) and -0.400 (joystick), are outside the tolerance of the paper's -0.25, -0.44 and
+    -0.53, against chance values of 0.204 to 0.282. The joystick trace deviates from rest by 1.95
+    to 2.49 V after the recorded onsets, 0.43 to 0.70 V before them and 1.08 to 1.32 V at times 7 s
+    later, which supports the shared clock in these sessions.
+  deviations:
+  - Monkey A only. In A 08152019 and all monkey M sessions the eye and joystick timestamps are on
+    another clock than the trial table, so those sessions are not used.
+  - The surrogate for continuous signals is the Gaussian process smoothed as the signals, without
+    the Poisson step of the spike null; the paper's code for this figure is not in its repository.
+  - Eye and joystick traces are interpolated to 1 ms and smoothed with the rate kernel (claims, the
+    paper gives no smoothing for these signals).
+- claim: ed2b-pi-navigation-above-iti
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_neupane_2024.ipynb
+  notes: The trial table marks no ITI or fixation event; each row ends where the next begins. The
+    time from a completed trial's joystick offset to the next trial's start has a median of 0.87 to
+    1.30 s per session and exceeds 4 s in 0 to 6 trials per session, so the ITI segments longer
+    than 4 s that the comparison uses cannot be located. After aborted trials the next trial starts
+    6.1 to 6.3 s after the abort in monkey M and 2.3 to 2.4 s in monkey A; the paper does not say
+    its ITI segments came from there.
+- claim: ed2c-pi-error-below-correct
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_neupane_2024.ipynb
+  output: claim:ed2c-pi-error-below-correct
+  notes: With the Methods' error trials (first attempt of two-attempt trials) and the code's neuron
+    selection (PI at 650 ms above the surrogate threshold), correct-trial PI exceeds error-trial PI
+    at p < 0.0001 in 3 of 4 groups (A -1 t = 5.24, n = 21; A 1 t = 5.21, n = 26; M 1 t = 4.67,
+    n = 35); M -1 has p = 0.012 (n = 26). With the Results' selection (periodicity in 0.60 to 0.70
+    s) 1 of 4 groups reaches p < 0.0001, all four in the same direction (p 5.7e-07 to 0.0095). With
+    the code's error trials all four groups meet it under the code's selection.
+  deviations:
+  - The neuron readings give different outcomes (3 of 4 groups under the code's, 1 of 4 under the
+    Results'). The code's selection is adopted, as it tests periodicity at 0.65 s, which is what the
+    claim names.
+  - Periodic units are those of fig2-periodic-proportion's main reading, which rests on an
+    assumption.
+  - Error productions longer than 5 s are left out so that every trial fits the ACG's FFT; the
+    longest correct vector is 3.25 s.
+  - Groups have 21 to 39 neurons against the paper's 66 to 104, as the dandiset holds about half of
+    the sessions.
+- claim: fig2e-first-peak-near-065
+  outcome: partially_reproduced
+  notebook: reproduce_neupane_2024.ipynb
+  output: claim:fig2e-first-peak-near-065
+  measured: -0.66
+  notes: Among units with KS p < 0.001, the median first-peak mode is -0.645 s in monkey A (50
+    units), within -0.70 to -0.60 s, and -0.735 s in monkey M (56 units), outside it. The KS test
+    gives p < 0.0001 in 44 of 67 (A) and 50 of 69 (M) units, and the pooled test p = 6.1e-61 and
+    9.0e-73, so both readings of the KS test hold. The code's window gives -0.675 (A) and -0.805 s
+    (M); by direction the medians are -0.67 and -0.595 s (A) and -0.58 and -0.90 s (M). Measured is
+    the median over both monkeys.
+  deviations:
+  - The claims give "low rate" in -1.5 to -0.5 s without a threshold; trials with mean rate at or
+    below 0.05 spikes/s there are dropped, the PI's threshold.
+  - The modes are taken in 10 ms bins, a standard choice.
+  - Periodic units are those of fig2-periodic-proportion's main reading, which rests on an
+    assumption; 136 of 259 periodic unit-directions had at least 25 trials.
+- claim: fig2f-earlier-peaks-multiples
+  outcome: partially_reproduced
+  notebook: reproduce_neupane_2024.ipynb
+  output: claim:fig2f-earlier-peaks-multiples
+  measured:
+  - -1.2
+  - -1.61
+  notes: In monkey A the median second-peak mode is -1.315 s, within 0.05 s of -1.30, and the third
+    -1.585 s; in monkey M -1.070 and -1.660 s. The second peak meets the criterion in one monkey;
+    the third in none. Measured are the medians over both monkeys.
+  deviations:
+  - As fig2e-first-peak-near-065.
+- claim: ed4d-overshoot-longer-period
+  outcome: partially_reproduced
+  notebook: reproduce_neupane_2024.ipynb
+  output: claim:ed4d-overshoot-longer-period
+  notes: In monkey M overshoot periodicity is longer (median 0.69 against 0.61 s, rank-sum Z = 3.13,
+    p = 0.0017, n = 53 unit-directions); in monkey A it is longer but not significantly (0.59
+    against 0.57 s, Z = 1.31, p = 0.19, n = 47). The code's lags give the same. The paper reports
+    194 and 161 for its Z degrees of freedom.
+  deviations:
+  - Periodic units are those of fig2-periodic-proportion's main reading, which rests on an
+    assumption; units are pooled over the directions in which they are periodic.
+  - Tertiles are formed per session and direction.
+- claim: fig3b-onset-and-offset-coding
+  outcome: reproduced
+  notebook: reproduce_neupane_2024.ipynb
+  output: claim:fig3b-onset-and-offset-coding
+  notes: In both monkeys and both windows, onset-only (A 0.7% and 1.0%, M 8.0% and 8.2%) and
+    offset-only (A 8.3% and 6.0%, M 2.3% and 3.6%) coding proportions exceed the shuffled-regressor
+    proportion (0 in every case), and coding at both (A 0%, M 1.1% and 2.9%) is less common than
+    either. The shuffled proportion is 0 because R2 averaged over 50 held-out halves is negative for
+    a shuffled regressor, so the comparison with the null is weak; the coding proportions are small.
+    Units with R2 below -1 were dropped (A 76 and 63, M 201 and 185 of 364 and 464).
+  deviations:
+  - 3 of 9 monkey M sessions have fewer than 10 trials per distance in a direction and are not used.
+  - The linear fit has an intercept; the Methods write y_pred = beta X.
+- claim: fig3d-offset-coding-stronger
+  outcome: partially_reproduced
+  notebook: reproduce_neupane_2024.ipynb
+  output: claim:fig3d-offset-coding-stronger
+  notes: Monkey A offset R2 exceeds onset R2 (medians 0.854 against 0.709, rank-sum Z = -5.14,
+    p = 2.8e-07; with PCA denoising 0.853 against 0.568, p = 5.2e-14). In monkey M onset R2 exceeds
+    offset R2 (0.787 against 0.684, Z = 6.85, p = 7.3e-12; the same with denoising).
+  deviations:
+  - The regression uses 20 ms bins, which the Methods do not give (a standard choice).
+  - 3 of 9 monkey M sessions are not used (fewer than 10 trials per distance in a direction).
+- claim: ed4e-rate-codes-distance-over-slope
+  outcome: not_reproduced
+  notebook: reproduce_neupane_2024.ipynb
+  output: claim:ed4e-rate-codes-distance-over-slope
+  notes: The two-sample t-test finds rate F above slope F at p < 0.0001 only in monkey M with the
+    legend's windows (mean F 3.27 against 1.86, p = 1.9e-05). Under the Methods' and Results'
+    windows neither monkey reaches it (p 0.003 to 0.47); in monkey A with the legend's windows
+    slope F is larger (2.77 against 2.29, p = 0.21). Median F is near 1 throughout. Units, 324 to
+    331 (A) and 330 to 363 (M).
+  deviations:
+  - Type II sums of squares, a standard choice; the Methods do not say which.
+  - The slope is fitted to the smoothed rate (100 ms Gaussian) in the window.
+  - 4 of 9 monkey M sessions have fewer than 10 trials in some condition and are not used.
+- claim: ed4fg-distance-over-landmark
+  outcome: partially_reproduced
+  notebook: reproduce_neupane_2024.ipynb
+  output: claim:ed4fg-distance-over-landmark
+  notes: Distance F exceeds start and target landmark F in every comparison, at p < 0.0001 in 8 of
+    16 main comparisons. In the last 200 ms with the t-test on differences all four monkey and
+    landmark comparisons meet it (p 6.8e-05 to 3.8e-17); in -500 to -300 ms only monkey M's start
+    landmark does (p 1.4e-04 to 4.5e-03 for the others).
+  deviations:
+  - Type II sums of squares, a standard choice.
+  - 4 of 9 monkey M sessions are not used (fewer than 10 trials in some condition).
+- claim: fig3e-xcorr-conserved-iti
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The ITI segments longer than 4 s cannot be located in the files (see
+    ed2b-pi-navigation-above-iti).
+- claim: ed5-xcorr-conserved-other-epochs
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on fig3e-xcorr-conserved-iti, which is blocked. The inference epoch, error trials
+    and directions are in the files, but the claim's comparisons are built on the fig3e pairs.
+- claim: fig4h-periodic-fano-factor
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_neupane_2024.ipynb
+  output: claim:fig4h-periodic-fano-factor
+  measured:
+  - 238
+  - 381
+  notes: Under the legend's selection and either direction, the median Fano periodicities are 0.69
+    s (A) and 0.66 s (M), within 0.60 to 0.70 s, while the units are 65.4% (238/364) and 52.3%
+    (381/729), against the paper's 55.5% and 43.8%. Direction 1 only gives 44.2% and 32.6%; the
+    code's selection gives 59.9% (A, within tolerance) and 54.0% (M), with M's median 0.72 s. No
+    combination puts both proportions within tolerance; the medians hold under the legend's
+    selection.
+  deviations:
+  - Counts are compared as proportions of the units the dandiset holds.
+  - The end of the Fano time course is not given; it is taken as 500 ms before the shortest
+    trial's offset, as for the PI (an assumption).
+  - PI at 650 ms is read at the nearest 30 ms step (660 ms).
+- claim: ed8-fano-periodic-without-rate-periodicity
+  outcome: reproduced
+  notebook: reproduce_neupane_2024.ipynb
+  output: claim:ed8-fano-periodic-without-rate-periodicity
+  notes: Under the legend's Fano selection and either direction, 166 of 276 rate non-periodic units
+    in monkey A and 287 of 605 in monkey M have a periodic Fano factor, far above 5% of all units
+    (binomial p 1.7e-113 and 3.3e-173). Every selection and direction reading gives p < 1e-36. The
+    code's unlabelled counts are 99/614 and 74/864.
+  deviations:
+  - Rests on the fig2 main reading for which units are periodic in rate, and on the fig4h
+    assumption about the Fano time course.
+- claim: ed10-motor-preparation-signal
+  outcome: partially_reproduced
+  notebook: reproduce_neupane_2024.ipynb
+  output: claim:ed10-motor-preparation-signal
+  measured:
+  - 275
+  - 495
+  - 178
+  - 208
+  - 272
+  - 318
+  notes: Under the code's test, 75.5% (275/364, A) and 67.9% (495/729, M) of units are
+    motor-related, within 10% of the paper's 77.7% and 70.3%; among non-periodic units 85.6%
+    (178/208) and 85.5% (272/318), within 10% of 81.4% and 89.8%. The non-periodic shares, 57.1% and
+    43.6% of units against 73.6% and 55.7%, are not, as they follow from the periodic proportion.
+    The four proportions are each above 50%. Counting increases only, 33.0% and 33.1% of units are
+    motor-related. The bootstrap t-test compares 200 resampled means, so its p-value depends on the
+    number of resamples.
+  deviations:
+  - Counts are compared as proportions of the units the dandiset holds.
+  - Non-periodic units follow fig2-periodic-proportion's main reading.
+- claim: fig4g-reset-model-fits-better
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted within the run's five hours. The paper's t-test degrees of freedom imply 79
+    and 103 behavioural sessions; the dandiset holds 15 recorded sessions, and the code for the
+    models compared in Fig. 4g is not in the paper's repository (claims file).
+- claim: fig4b-learned-landmark-input
+  outcome: blocked
+  blocked_by: other
+  notes: A model simulation, which uses no recorded data. Not attempted within the run's five hours.
+- claim: fig4d-model-subscalar-variability
+  outcome: blocked
+  blocked_by: other
+  notes: A model simulation, which uses no recorded data. Not attempted within the run's five hours.
+- claim: ed6d-model-fano-periodic
+  outcome: blocked
+  blocked_by: other
+  notes: A model simulation, which uses no recorded data. Not attempted within the run's five hours.
+- claim: ed5efg-tighter-phase-clustering
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on fig3e-xcorr-conserved-iti (blocked, metadata insufficient) and on
+    fig4d-model-subscalar-variability (not attempted).
+findings:
+- kind: data_missing
+  statement: The dandiset holds 15 of the paper's 32 recording sessions (monkey A 6 of 17, monkey M
+    9 of 15), with 364 and 729 units against the paper's 614 and 864. The behavioural training and
+    generalization sessions of Fig. 1c,e and the behavioural sessions behind Fig. 4g are not in it.
+- kind: metadata_insufficient
+  statement: About half of monkey M's MNAV trials have seqq 3, whose vectors come in steps of 0.975 s
+    (0.975 to 4.875 s) with ta/0.65 not equal to target minus curr. The paper describes a landmark
+    spacing of 0.65 s for both monkeys, and the seqq description ("which sequence, 1, 2, 3 or 4")
+    does not explain it.
+- kind: format_error
+  statement: In 10 of the 15 sessions (A 08152019 and all monkey M sessions) the eye and joystick
+    timestamps are on another clock than the trial table and the spikes; they start between 3,209
+    and 1,559,866 s while trials start near 4 s. The offset is not documented, so these traces cannot
+    be aligned with the task from the files.
+- kind: other
+  statement: In three sessions (A 09172019, M 04132021, M 04142021) no unit changes its rate
+    between 1.0 to 0.6 s and 0.4 to 0.1 s before joystick offset (paired t-test, p < 0.01), while 2
+    to 89% of units do in the others, and while preparing the notebook their population rate was
+    flat around every task event. In M 04132021 the spikes end at 9,306 s while the trials run to
+    18,599 s. That spikes and trials share a clock could not be established in these sessions.
+- kind: metadata_insufficient
+  statement: The inter-trial interval is not marked. Trial rows are contiguous, from stimulus onset
+    to the next stimulus onset, so the ITI segments longer than 4 s that the paper compares with the
+    navigation epoch cannot be located.
+- kind: selection_undocumented
+  statement: Monkey A units carry phy's quality label, and 103 of the 364 are labelled noise; monkey
+    M units carry only Kilosort's KSLabel. The paper analysed all single and multi-units, and the
+    files do not say which units are those. The unit columns amp, ch, depth, fr, n_spikes and sh
+    have no description.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which rule classifies a neuron as periodic, and how
+    is the Gaussian process surrogate turned into a firing rate for the Poisson step? The Methods
+    say PI above 2 SD of the surrogate PI at any lag; the code compares max PI minus the mean PI
+    from the first positive lag with a threshold from surrogates it loads from a file. On these data
+    the Methods' rule classifies 58 to 81% of units as periodic, the code's score against the
+    surrogate scores 8 to 24%, and against the per-lag surrogate maximum under 5%; the median
+    periodicity is near 0.65 s only under the second. This attempt assumed the second, with
+    rate = r exp(g - 1/2).
+- kind: methods_unavailable
+  statement: Questions for the paper's authors. Which neurons enter Extended Data Fig. 2c (PI at
+    the 650 ms lag above threshold, as the code does, or periodicity within 0.60 to 0.70 s, as the
+    Results say); this attempt assumed the code's. Where the Fano factor time course of Extended
+    Data Fig. 8 ends, and what "low rate" removes a trial in the phase analysis of Fig. 2e.
