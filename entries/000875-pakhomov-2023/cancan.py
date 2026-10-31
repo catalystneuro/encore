@@ -21,8 +21,13 @@ Where each parameter comes from:
   square ROIs centred on the diagonal: a standard choice named in the claims file header.
 - The geometrical center: the mean of the four electrode footprint centers (Methods 2.4,
   "distance from the geometrical center of the electrode array").
-- Background readings b1 (raw) and b2 (minus the median intensity inside the electrode
-  footprints, the only cell-free area of the array): the claims file header.
+- Background readings b1 (raw) and b2 (minus "a cell-free or dark offset, where the data hold
+  one"): the claims file header. The files hold no dark frame. b2-dark subtracts the 1st
+  percentile of the image's nonzero block means, which lie off the glass bottom of the dish with
+  no monolayer in focus; b2-min subtracts the darkest pixel of the full-resolution region around
+  the array. Both are standard choices for a dark offset. The median inside the electrode
+  footprints (b2-fp) was the b2 of the first round; the footprints hold a faint monolayer, so it
+  is not cell-free and is kept only as a variant outside the outcome.
 - Center readings c1 (the ROI nearest the center; with an even number of ROIs two are equally
   near, and their mean is taken, a standard choice) and c2 (the highest ROI between the minima on
   either side): the claims file header.
@@ -246,13 +251,50 @@ def geometric_half_span(electrodes):
 
 
 def footprint_level(overview, electrodes, block=BLOCK, frac=0.7):
-    """Median block intensity inside the electrode footprints (within ``frac`` of the radius)."""
+    """Median block intensity inside the electrode footprints (within ``frac`` of the radius).
+
+    The footprints hold a faint monolayer (the notebook shows a full-resolution crop), so this is
+    the level of cells that took up little dye, not a cell-free or dark offset. It is kept as the
+    variant b2-fp, outside the readings of the claims file.
+    """
     vals = []
     yy, xx = np.mgrid[0:overview.shape[0], 0:overview.shape[1]]
     for e in electrodes:
         m = np.hypot(yy - e["row"] / block, xx - e["col"] / block) < frac * e["radius"] / block
         vals.append(overview[m])
     return float(np.median(np.concatenate(vals)))
+
+
+def dark_level(overview, q=1.0):
+    """The ``q``-th percentile of the nonzero block means of the whole image (reading b2-dark).
+
+    The darkest blocks lie outside the glass bottom of the dish, where there is no monolayer in
+    focus (the notebook maps them). The files hold no dark frame, so this is the closest thing to
+    a dark offset the data hold; 1% is a standard choice, and the notebook prints 0.1% and 5% too.
+    """
+    return float(np.percentile(overview[overview > 0], q))
+
+
+def zone_values(overview, electrodes, block=BLOCK):
+    """Block means in three zones, for the histograms of the notebook.
+
+    footprint: within 0.7 of each footprint radius; monolayer outside: 1.2 to 1.6 times the mean
+    center-to-footprint distance from the array center, more than 1.3 radii from any footprint;
+    between: within 0.5 of that distance from the center (the exposed area of the array).
+    """
+    yy, xx = np.mgrid[0:overview.shape[0], 0:overview.shape[1]]
+    c = np.array([[e["row"], e["col"]] for e in electrodes]) / block
+    r = np.array([e["radius"] for e in electrodes]) / block
+    cen = c.mean(0)
+    R = np.mean(np.linalg.norm(c - cen, axis=1))
+    dfp = np.stack([np.hypot(yy - a, xx - b) / rr for (a, b), rr in zip(c, r)]).min(0)
+    dc = np.hypot(yy - cen[0], xx - cen[1])
+    nz = overview > 0
+    return {
+        "footprint": overview[(dfp < 0.7) & nz],
+        "outside": overview[(dc > 1.2 * R) & (dc < 1.6 * R) & (dfp > 1.3) & nz],
+        "between": overview[(dc < 0.5 * R) & nz],
+    }
 
 
 # ---------------------------------------------------------------- ROI profiles
@@ -357,7 +399,8 @@ def half_max_width(pos, profile, center_idx, peak, base):
 # ---------------------------------------------------------------- readings of the claims file
 
 LAYOUTS = ("r2", "r1-dA", "r1-dB")
-BACKGROUNDS = ("b1", "b2")
+BACKGROUNDS = ("b1", "b2-dark", "b2-min")
+VARIANT_BACKGROUNDS = ("b2-fp",)   # not a reading of the claims file: the footprints hold cells
 CENTERS = ("c1", "c2")
 PERIPHERIES = ("e1", "e2-neg", "e2-pos")
 NORMALIZATIONS = ("n1", "n2")
@@ -368,12 +411,16 @@ SMOOTHING = ("none", "loess-0.25", "loess-0.5")
 def dish_matrix(dishes, layout, background):
     """Per-dish ROI values (dishes x ROIs) and positions for one layout and background reading.
 
-    ``dishes`` is a list of dicts with ``profiles`` (from ``dish_profiles``) and ``footprint``.
+    ``dishes`` is a list of dicts with ``profiles`` (from ``dish_profiles``), ``dark``,
+    ``region_min`` and ``footprint``. b1: raw counts; b2-dark: minus ``dark_level``; b2-min: minus
+    the darkest pixel of the full-resolution region around the array; b2-fp (variant): minus the
+    footprint median.
     """
     pos = dishes[0]["profiles"][layout]["pos_mm"]
     P = np.array([d["profiles"][layout]["values"] for d in dishes], float)
-    if background == "b2":
-        P = P - np.array([d["footprint"] for d in dishes])[:, None]
+    key = {"b1": None, "b2-dark": "dark", "b2-min": "region_min", "b2-fp": "footprint"}[background]
+    if key is not None:
+        P = P - np.array([d[key] for d in dishes], float)[:, None]
     return pos, P
 
 

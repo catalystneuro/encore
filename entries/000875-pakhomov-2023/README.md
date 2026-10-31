@@ -24,7 +24,7 @@ center, periphery and normalization that the claims file names. The attempt reco
 reasons and the differences from the paper's method, is
 [`attempts/000875-pakhomov-2023-01.yaml`](../../attempts/000875-pakhomov-2023-01.yaml).
 
-- `reproduce_pakhomov_2023.ipynb`: the analysis. It takes about three minutes, most of it streaming
+- `reproduce_pakhomov_2023.ipynb`: the analysis. It takes about five minutes, most of it streaming
   the images.
 - `cancan.py`: loading, electrode detection, ROI profiles and the readings of the claims file.
   Other notebooks on this dandiset can import it.
