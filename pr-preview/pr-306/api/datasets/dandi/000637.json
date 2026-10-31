@@ -1,0 +1,1317 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000637",
+  "label": "DANDI:000637"
+ },
+ "page": "datasets/dandi/000637/",
+ "generated": "2026-10-31T19:04:58+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 31
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000637-gao-2025-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000637",
+    "version": "0.250829.1249",
+    "doi": "10.48324/dandi.000637/0.250829.1249"
+   },
+   "key": "dandi:000637",
+   "label": "DANDI:000637",
+   "dataset_version": "0.250829.1249",
+   "paper": "10.1523/jneurosci.2218-24.2025",
+   "paper_title": "Transcranial Focused Ultrasound Modulates Feedforward and Feedback Cortico-Thalamo-Cortical Pathways by Selectively Activating Excitatory Neurons",
+   "date": "2026-10-31",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-12"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41182673080"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000637-gao-2025",
+   "entry_title": "Transcranial focused ultrasound and S1 spiking (Gao et al. 2025) on dandiset 000637",
+   "description": "Tests the findings of Gao, Ramachandran, Yu and He (2025) on dandiset 000637, which holds spike times of sorted S1 units from 25 rats under tFUS at five PRFs and several pulse durations. Every claim is about units typed as RSU or FSU from their waveforms, which the dandiset lacks, and most also need POm or auditory cortex units, so all claims are blocked. The notebook checks the metadata against the data, the trial clock and the unit counts, and shows the responses of all S1 units pooled.",
+   "notebooks": [
+    {
+     "path": "reproduce_gao_2025.ipynb",
+     "title": "Gao et al. (2025) on dandiset 000637",
+     "executed": "notebooks/000637-gao-2025/reproduce_gao_2025.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "unit-counts",
+     "statement": "The analyses of PRF at constant 200 us pulse duration rest on 1,050 S1 RSUs, 247 S1 FSUs, 913 POm RSUs and 106 POm FSUs, and the 3000 Hz and 30 Hz sessions of Figure 4 on 312 and 148 S1 RSUs, 54 and 61 S1 FSUs, 233 and 189 POm RSUs, and 17 and 43 POm FSUs.",
+     "source": "Figure 4 legend; Figure 6 legend",
+     "quote": "There are 312 RSUs and 54 FSUs recorded from S1, 233 RSUs and 17 FSUs recorded from POm for PRF 3,000 Hz. There are 148 RSUs and 61 FSUs recorded from S1 and189 RSUs and 43 FSUs recorded from POm for PRF 30 Hz",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1). As a variant, S1 units with more than 2,000 spikes, all cell types together, number 4,642 in the PRF series at 200 us (4,023 at 5 V), 1,088 at 3000 Hz and 862 at 30 Hz, against the paper's S1 RSU plus FSU sums of 1,297, 366 and 209, about 3.6 times as many; so the dataset's units are not, or not only, the units the paper counted. The S1 totals already rule out reproduced whatever classification were applied. Each S1 RSU plus FSU pair would sum to the dataset's total (4,642, 1,088, 862) against the paper's 1,297, 366 and 209, so at most one count of each S1 pair could match, at most 9 of the 12 counts in all, below the criterion's 10. The outcome stays blocked because the six POm counts cannot be computed. The paper's two groups total 28 rats (16 and 12, Methods), the dataset 25.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-s1-rsu-timelocked-3000",
+     "statement": "With tFUS at 3000 Hz PRF and 60% DC targeting S1, S1 RSUs increase their firing during sonication.",
+     "source": "Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 1; Figure 4A",
+     "quote": "RSUs from S1 (n = 312, p = 3.13 \u00d7 10\u22127) and POm (n = 233, p = 0.0003) were both activated during 3,000 Hz PRF sonication",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon test against baseline",
+       "p": 3.13e-07,
+       "corrected": "Bonferroni",
+       "n": "312 S1 RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The 3000 Hz 60% DC (PD 200 us) and 30 Hz 0.6% DC (PD 200 us) recordings are present (30 and 26 recordings), so only the cell types are missing. The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). It depends on unit-counts, which is blocked for the same reason. As a variant that decides nothing, all S1 units pooled across cell types are shown in the notebook (variant:pooled-s1-prf). Pooled, the 0 to 67 ms rate at 3000 Hz is above baseline (signed-rank, corrected p 2.7e-87; mean N1 364%, driven by a few units, SEM 189%).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-pom-rsu-timelocked-3000",
+     "statement": "With 3000 Hz PRF tFUS on S1, POm RSUs are activated during sonication, synchronized with S1 RSUs.",
+     "source": "Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 1; Figure 4B",
+     "quote": "RSUs from S1 (n = 312, p = 3.13 \u00d7 10\u22127) and POm (n = 233, p = 0.0003) were both activated during 3,000 Hz PRF sonication",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon test against baseline",
+       "p": 0.0003,
+       "corrected": "Bonferroni",
+       "n": "233 POm RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1). The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-post-3000",
+     "statement": "After 3000 Hz PRF sonication, S1 RSUs, POm RSUs and S1 FSUs show delayed activation from about 134 ms.",
+     "source": "Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 1; Figure 4A and 4B",
+     "quote": "Postsonication activations were presented for S1 RSUs (p = 5 \u00d7 10\u221218), POm RSUs (p = 0.0007), and S1 FSUs (n = 54, p = 4.03 \u00d7 10\u22128) from 134 ms",
+     "statistics": [
+      {
+       "about": "S1 RSUs, postsonication against baseline",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 5e-18,
+       "corrected": "Bonferroni",
+       "n": "312 S1 RSUs"
+      },
+      {
+       "about": "POm RSUs, postsonication against baseline",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.0007,
+       "corrected": "Bonferroni",
+       "n": "233 POm RSUs"
+      },
+      {
+       "about": "S1 FSUs, postsonication against baseline",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 4.03e-08,
+       "corrected": "Bonferroni",
+       "n": "54 S1 FSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "Needs S1 RSUs, S1 FSUs and POm RSUs. The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1). It depends on unit-counts, which is blocked for the same reason. As a variant that decides nothing, all S1 units pooled across cell types are shown in the notebook (variant:pooled-s1-prf).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-30hz-s1-rsu-inhibition",
+     "statement": "With 30 Hz PRF and 0.6% DC, S1 RSUs show an inhibitory response just after sonication (67 to 134 ms).",
+     "source": "Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 1; Figure 4A, right",
+     "quote": "At 30 Hz PRF, the S1 RSUs showed an inhibitory response after sonication (67\u2013134 ms, n = 148, p = 0.0029)",
+     "statistics": [
+      {
+       "test": "post hoc one-tail two-sample Wilcoxon test against baseline",
+       "p": 0.0029,
+       "corrected": "Bonferroni",
+       "n": "148 S1 RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The 3000 Hz 60% DC (PD 200 us) and 30 Hz 0.6% DC (PD 200 us) recordings are present (30 and 26 recordings), so only the cell types are missing. The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). It depends on unit-counts, which is blocked for the same reason. As a variant that decides nothing, all S1 units pooled across cell types are shown in the notebook (variant:pooled-s1-prf). Pooled, the 67 to 134 ms rate at 30 Hz shows no decrease (signed-rank and rank-sum corrected p 1.0; mean N1 101%), which says nothing about RSUs alone.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-30hz-pom-rsu-delayed",
+     "statement": "With 30 Hz PRF, POm RSUs show delayed excitatory activity at 134 to 268 ms.",
+     "source": "Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 1; Figure 4B legend",
+     "quote": "POm RSUs expressed delayed excitatory activities (n = 189, p = 2 \u00d7 10\u22129)",
+     "statistics": [
+      {
+       "test": "post hoc one-tail two-sample Wilcoxon test against baseline",
+       "p": 2e-09,
+       "corrected": "Bonferroni",
+       "n": "189 POm RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1). The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-fsu-no-change",
+     "statement": "S1 FSUs show no time-locked response to 3000 Hz PRF, and S1 FSUs at 30 Hz and POm FSUs at both PRFs show no activity change.",
+     "source": "Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 1; Figure 4",
+     "quote": "There was no activity change among S1 FSUs (n = 61) to 30 Hz PRF and POm FSUs to both PRFs (3,000 Hz, n = 17; 30 Hz, n = 43)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "Needs S1 FSUs and POm FSUs. The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1). It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-sham-no-response",
+     "statement": "In sham sessions without tFUS, S1 and POm RSUs and FSUs show no time-locked and no delayed (201 to 268 ms) change.",
+     "source": "Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 2; Figure 5A",
+     "quote": "In sham condition (no tFUS), S1 neurons and POm neurons showed no time-locked (S1 RSUs: n = 31, p = 1.0; S1 FSUs: n = 53, p = 0.55; POm RSUs: n = 67, p = 1.0; POm FSUs: n = 67, p = 1.0) and delayed",
+     "statistics": [
+      {
+       "about": "S1 RSUs, time-locked",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon",
+       "p": 1.0,
+       "corrected": "Bonferroni",
+       "n": "31 S1 RSUs"
+      },
+      {
+       "about": "S1 FSUs, time-locked",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon",
+       "p": 0.55,
+       "corrected": "Bonferroni",
+       "n": "53 S1 FSUs"
+      },
+      {
+       "about": "POm RSUs, time-locked",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon",
+       "p": 1.0,
+       "corrected": "Bonferroni",
+       "n": "67 POm RSUs"
+      },
+      {
+       "about": "POm FSUs, time-locked",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon",
+       "p": 1.0,
+       "corrected": "Bonferroni",
+       "n": "67 POm FSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1). No recording is labelled sham. Three recordings are named BASELINE (BH458, BH460, BH461; 500 trials each) with no description of whether tFUS was off or how their trial times were made. Pooled over all their units (119 units), the rate rises over the pre-trial window at 134 to 201 and 201 to 268 ms under the signed-rank test (corrected p 6.0e-09 and 1.2e-05) and not under the rank-sum test, with mean N1 of 106%; this decides nothing (variant:baseline). If these were the paper's sham sessions this W2 result would weigh against the claim, which tests 201 to 268 ms in both tails. Their 119 units do not match the paper's 84 S1 units in sham (31 RSUs, 53 FSUs), and no field in any file describes them (full HDF5 tree listed in the data check).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-cg1-control-no-response",
+     "statement": "With tFUS steered to the cingulate cortex (CG1) at 3000 Hz PRF, S1 and POm RSUs and FSUs show no time-locked and no delayed (201 to 268 ms) change.",
+     "source": "Results, Synchronizing neuronal responses to tFUS in CTC pathway, paragraph 2; Figure 5B",
+     "quote": "In control condition (tFUS targeted at CG1), S1 neurons and POm neurons showed no time-locked (S1 RSUs: n = 12, p = 1.0; S1 FSUs: n = 34, p = 1.0; POm RSUs: n = 55, p = 1.0; POm FSUs: n = 42, p = 0.33) and delayed responses",
+     "statistics": [
+      {
+       "about": "POm FSUs, time-locked",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon",
+       "p": 0.33,
+       "corrected": "Bonferroni",
+       "n": "42 POm FSUs"
+      },
+      {
+       "about": "S1 FSUs, delayed 201 to 268 ms",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon",
+       "p": 0.1,
+       "corrected": "Bonferroni",
+       "n": "34 S1 FSUs"
+      },
+      {
+       "about": "POm RSUs, delayed 201 to 268 ms",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon",
+       "p": 0.32,
+       "corrected": "Bonferroni",
+       "n": "55 POm RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No recording is identified as targeting CG1; identifiers code PRF, pulse duration, ultrasound duration and voltage only, and the description names S1 as the target. The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-s1-rsu-timelocked-high-prf",
+     "statement": "At constant 200 us pulse duration, time-locked responses of S1 RSUs are elicited only by the high PRFs (1500, 3000 and 4500 Hz), with the highest level at 1500 Hz (123.34 +/- 4.3%), and S1 RSU responses during sonication differ across PRFs.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 1; Figure 6A",
+     "quote": "time-locked S1 RSUs\u2019 responses could only be elicited from high PRFs: 1,500 Hz (n = 284, p = 2.74 \u00d7 10\u22126 compared with baseline), 3,000 Hz (n = 312, p = 3.13 \u00d7 10\u22127), and 4,500 Hz (n = 152, p = 0.0028), among which 1,500 Hz evoked highest response level of 123.34 \u00b1 4.3%",
+     "statistics": [
+      {
+       "about": "across PRFs, 0 to 67 ms",
+       "test": "Kruskal-Wallis",
+       "p": 1.49e-15,
+       "n": "1,050 S1 RSUs"
+      },
+      {
+       "about": "1500 Hz against baseline",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 2.74e-06,
+       "corrected": "Bonferroni",
+       "n": "284 S1 RSUs"
+      },
+      {
+       "about": "3000 Hz against baseline",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 3.13e-07,
+       "corrected": "Bonferroni",
+       "n": "312 S1 RSUs"
+      },
+      {
+       "about": "4500 Hz against baseline",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.0028,
+       "corrected": "Bonferroni",
+       "n": "152 S1 RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "All five PRFs at 200 us are present (26 to 30 recordings each). The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). It depends on unit-counts, which is blocked for the same reason. As a variant that decides nothing, all S1 units pooled across cell types are shown in the notebook (variant:pooled-s1-prf). Pooled, every PRF raises the 0 to 67 ms rate over baseline under the signed-rank test, 30 Hz included (corrected p 2.6e-26), and mean N1 is highest at 3000 Hz (364%), against the paper's RSU-only pattern, though this mean is driven by a few units (SEM 189%) and is not a ranking of the PRFs; mixing FSUs in may explain any difference.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-s1-rsu-delayed",
+     "statement": "Delayed responses (201 to 268 ms) of S1 RSUs appear at PRFs above 30 Hz and are highest at 4500 Hz (148.39 +/- 5.41%), and differ across PRFs.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 1; Figure 6A legend",
+     "quote": "The delayed responses (201\u2013268 ms) of RSUs could be observed at PRFs higher than 30 Hz and the highest response occurred at 4,500 Hz (148.39 \u00b1 5.41%)",
+     "statistics": [
+      {
+       "about": "across PRFs, postsonication",
+       "test": "Kruskal-Wallis",
+       "p": 5.14e-13,
+       "n": "1,050 S1 RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "All five PRFs at 200 us are present. The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). It depends on unit-counts, which is blocked for the same reason. As a variant that decides nothing, all S1 units pooled across cell types are shown in the notebook (variant:pooled-s1-prf). Pooled, 300 to 4500 Hz raise the 201 to 268 ms rate and 30 Hz does not; mean N1 is highest at 4500 Hz (241%).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-s1-fsu",
+     "statement": "S1 FSUs show no time-locked response to any PRF, and delayed responses only at PRFs higher than 1500 Hz, highest at 4500 Hz (158.75 +/- 10.75%).",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 1; Figure 6B",
+     "quote": "FSUs did not show time-locked responses to any PRFs and only presented delayed responses at PRFs higher than 1,500 Hz, with the highest response level at 4,500 Hz (158.75 \u00b1 10.75%)",
+     "statistics": [
+      {
+       "about": "across PRFs, postsonication",
+       "test": "Kruskal-Wallis",
+       "p": 5.19e-13,
+       "n": "247 S1 FSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "All five PRFs at 200 us are present. The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-pom-rsu-timelocked",
+     "statement": "Time-locked responses of POm RSUs are elicited by 1500 and 3000 Hz PRFs, and POm RSU responses during sonication differ across PRFs.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 1; Figure 6C",
+     "quote": "time-locked responses (Fig. 6B) from POm RSUs could be elicited by 1,500 Hz (n = 153, p = 0.003) and 3,000 Hz PRFs (n = 233, p = 0.0003)",
+     "statistics": [
+      {
+       "about": "across PRFs, 0 to 67 ms",
+       "test": "Kruskal-Wallis",
+       "p": 2.09e-21,
+       "n": "913 POm RSUs"
+      },
+      {
+       "about": "1500 Hz against baseline",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.003,
+       "corrected": "Bonferroni",
+       "n": "153 POm RSUs"
+      },
+      {
+       "about": "3000 Hz against baseline",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.0003,
+       "corrected": "Bonferroni",
+       "n": "233 POm RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1). The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-pom-rsu-delayed",
+     "statement": "Delayed responses (201 to 268 ms) of POm RSUs are induced by PRFs from 1500 Hz up and are highest at 1500 Hz (141.68 +/- 2.38%).",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 1; Figure 6C legend",
+     "quote": "the delayed responses (201\u2013268 ms) of POm RSUs were induced by PRFs higher than 1,500 Hz and were highest (141.68 \u00b1 2.38%) at 1,500 Hz",
+     "statistics": [
+      {
+       "about": "across PRFs, postsonication",
+       "test": "Kruskal-Wallis",
+       "p": 6.03e-17,
+       "n": "913 POm RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1). The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6d-pom-fsu",
+     "statement": "POm FSUs show no time-locked response to any PRF relative to baseline, and delayed responses only to 4500 Hz.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 1; Figure 6D legend",
+     "quote": "The FSUs did not show any time-locked responses and only expressed the delayed responses to 4,500 Hz (n = 26, p = 4.2 \u00d7 10\u22126)",
+     "statistics": [
+      {
+       "about": "4500 Hz against baseline, 201 to 268 ms",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 4.2e-06,
+       "corrected": "Bonferroni",
+       "n": "26 POm FSUs"
+      },
+      {
+       "about": "30 against 1500 Hz, 0 to 67 ms",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.004,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "across PRFs, postsonication",
+       "test": "Kruskal-Wallis",
+       "p": 0.000399,
+       "n": "106 POm FSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1). The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7a-s1-rsu-dc-3000",
+     "statement": "At 3000 Hz PRF, S1 RSU time-locked responses depend on DC and are elicited at 30% and 60% DC; delayed responses appear at 6, 30 and 60% DC.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 4; Figure 7A",
+     "quote": "with 3,000 Hz PRF, the time-locked responses of S1 RSUs were dependent on DCs which can be elicited with DC of 30% (n = 194, p = 3.38 \u00d7 10\u22126) and 60% (n = 312, p = 5.96 \u00d7 10\u22126). Delayed activities of RSUs were found at 6% (n = 56, p = 0.001), 30% (n = 194, p = 9.64 \u00d7 10\u221232), and 60% (n = 312, p = 1.38 \u00d7 10\u221215)",
+     "statistics": [
+      {
+       "about": "across DCs, 0 to 67 ms",
+       "test": "Kruskal-Wallis",
+       "p": 1.34e-11,
+       "n": "645 S1 RSUs"
+      },
+      {
+       "about": "across DCs, 201 to 268 ms",
+       "test": "Kruskal-Wallis",
+       "p": 2.52e-29,
+       "n": "645 S1 RSUs"
+      },
+      {
+       "about": "30% DC against baseline, 0 to 67 ms",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 3.38e-06,
+       "corrected": "Bonferroni",
+       "n": "194 S1 RSUs"
+      },
+      {
+       "about": "60% DC against baseline, 0 to 67 ms",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 5.96e-06,
+       "corrected": "Bonferroni",
+       "n": "312 S1 RSUs"
+      },
+      {
+       "about": "6% DC against baseline, 201 to 268 ms",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.001,
+       "corrected": "Bonferroni",
+       "n": "56 S1 RSUs"
+      },
+      {
+       "about": "30% DC against baseline, 201 to 268 ms",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 9.64e-32,
+       "corrected": "Bonferroni",
+       "n": "194 S1 RSUs"
+      },
+      {
+       "about": "60% DC against baseline, 201 to 268 ms",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 1.38e-15,
+       "corrected": "Bonferroni",
+       "n": "312 S1 RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). Of the 3000 Hz DC series (PD 2, 20, 100, 200, 300 us) only 100 and 200 us (30% and 60%) are present (20 and 30 recordings); 0.6, 6 and 90% are missing. It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7b-s1-fsu-dc-3000",
+     "statement": "At 3000 Hz PRF, delayed responses of S1 FSUs are elicited by 6, 30 and 60% DC, the same range as S1 RSUs.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 4; Figure 7B",
+     "quote": "Delayed responses of FSUs could be elicited by 6% (n = 22, p = 1.29 \u00d7 10\u22128), 30% (n = 49, p = 2.32 \u00d7 10\u221211), and 60% (n = 54, p = 2.38 \u00d7 10\u22128) DCs (Fig. 7B), which were the same range of S1 RSUs",
+     "statistics": [
+      {
+       "about": "6% DC against baseline",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 1.29e-08,
+       "corrected": "Bonferroni",
+       "n": "22 S1 FSUs"
+      },
+      {
+       "about": "30% DC against baseline",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 2.32e-11,
+       "corrected": "Bonferroni",
+       "n": "49 S1 FSUs"
+      },
+      {
+       "about": "60% DC against baseline",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 2.38e-08,
+       "corrected": "Bonferroni",
+       "n": "54 S1 FSUs"
+      },
+      {
+       "about": "0.6% against 30% DC, postsonication",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.002,
+       "corrected": "Bonferroni",
+       "n": "171 S1 FSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). Of the 3000 Hz DC series only 30% and 60% are present. It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7c-pom-rsu-dc-3000",
+     "statement": "At 3000 Hz PRF, POm RSU time-locked responses do not depend on DC and are highest at 60% (106 +/- 0.77%); their delayed responses depend on DC and are activated at DCs of 6% and above.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 4; Figure 7C legend",
+     "quote": "The POm RSUs\u2019 time-locked responses did not show DC dependence and were highest at 60% (106 \u00b1 0.77%; Fig. 7C). Delayed responses could be activated by DC higher than 6% (6%, n = 22, p = 1.55 \u00d7 10\u22126; n = 7, p = 0.001; 60%, n = 233, p = 1.28 \u00d7 10\u22126; 90%, n = 18, p = 0.006)",
+     "statistics": [
+      {
+       "about": "across DCs, 201 to 268 ms",
+       "test": "Kruskal-Wallis",
+       "p": 0.000361,
+       "n": "286 POm RSUs"
+      },
+      {
+       "about": "6% DC against baseline, delayed",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 1.55e-06,
+       "corrected": "Bonferroni",
+       "n": "22 POm RSUs"
+      },
+      {
+       "about": "unlabelled DC (30% by position) against baseline, delayed",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.001,
+       "corrected": "Bonferroni",
+       "n": "7 POm RSUs"
+      },
+      {
+       "about": "60% DC against baseline, delayed",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 1.28e-06,
+       "corrected": "Bonferroni",
+       "n": "233 POm RSUs"
+      },
+      {
+       "about": "90% DC against baseline, delayed",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.006,
+       "corrected": "Bonferroni",
+       "n": "18 POm RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1). The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). Of the 3000 Hz DC series only 30% and 60% are present. It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7d-pom-fsu-dc-3000",
+     "statement": "At 3000 Hz PRF, POm FSUs show no time-locked response against baseline but higher activity at 30% DC than at 0.6% and 6% during sonication, and delayed responses at 30, 60 and 90% DC.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 4; Figure 7D",
+     "quote": "There was no time-locked responses of POm FSUs compared with baseline while 30% DC showed higher activities compared with 0.6% (p = 0.0001) and 6% DC (p = 0.0003). The delayed activities of POm FSUs occurred at 30% (n = 18, p = 0.003), 60% (n = 17, p = 0.005), and 90% (n = 52, p = 6.8 \u00d7 10\u22125) DCs",
+     "statistics": [
+      {
+       "about": "across DCs, 0 to 67 ms",
+       "test": "Kruskal-Wallis",
+       "p": 0.000332,
+       "n": "129 POm FSUs"
+      },
+      {
+       "about": "30% against 0.6% DC, 0 to 67 ms",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.0001,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "30% against 6% DC, 0 to 67 ms",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.0003,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "30% DC against baseline, delayed",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.003,
+       "corrected": "Bonferroni",
+       "n": "18 POm FSUs"
+      },
+      {
+       "about": "60% DC against baseline, delayed",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.005,
+       "corrected": "Bonferroni",
+       "n": "17 POm FSUs"
+      },
+      {
+       "about": "90% DC against baseline, delayed",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 6.8e-05,
+       "corrected": "Bonferroni",
+       "n": "52 POm FSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1). The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). Of the 3000 Hz DC series only 30% and 60% are present. It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8a-s1-rsu-dc-30",
+     "statement": "At 30 Hz PRF, S1 RSUs show time-locked responses to 6, 30 and 90% DC and delayed responses to 90% DC, with DC-dependent activity during and after sonication.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 4; Figure 8A",
+     "quote": "With 30 Hz PRF stimulation (Fig. 8A), the S1 RSUs showed time-locked responses to DC of 6% (n = 81, p = 1.19 \u00d7 10\u22128), 30% (n = 61, p = 0.001), and 90% (n = 66, p = 2.17 \u00d7 10\u22126) and delayed responses to 90% DC (n = 66, p = 1.5 \u00d7 10\u221224)",
+     "statistics": [
+      {
+       "about": "across DCs, during",
+       "test": "Kruskal-Wallis",
+       "p": 6.98e-12,
+       "n": "442 S1 RSUs"
+      },
+      {
+       "about": "across DCs, postsonication",
+       "test": "Kruskal-Wallis",
+       "p": 1.02e-27,
+       "n": "442 S1 RSUs"
+      },
+      {
+       "about": "6% DC against baseline, 0 to 67 ms",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 1.19e-08,
+       "corrected": "Bonferroni",
+       "n": "81 S1 RSUs"
+      },
+      {
+       "about": "30% DC against baseline, 0 to 67 ms",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.001,
+       "corrected": "Bonferroni",
+       "n": "61 S1 RSUs"
+      },
+      {
+       "about": "90% DC against baseline, 0 to 67 ms",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 2.17e-06,
+       "corrected": "Bonferroni",
+       "n": "66 S1 RSUs"
+      },
+      {
+       "about": "90% DC against baseline, 201 to 268 ms",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 1.5e-24,
+       "corrected": "Bonferroni",
+       "n": "66 S1 RSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). Of the 30 Hz DC series (PD 0.2, 2, 10, 20, 30 ms) only 0.2 ms (0.6%) is present; 6 to 90% are missing. It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8b-s1-fsu-dc-30",
+     "statement": "At 30 Hz PRF, 90% DC induces a time-locked increase in S1 FSUs, and S1 FSUs show delayed responses only to 90% DC; their responses depend on DC during sonication but not after.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 4; Figure 8B legend",
+     "quote": "90% DC with 30 Hz PRF induced positive time-locked response in S1 FSUs (Fig. 8B; n = 28, p = 4.57 \u00d7 10\u221211). Like S1 RSUs, S1 FSUs only showed delayed responses to 90% DC (n = 28, p = 0.007) with 30 Hz PRF",
+     "statistics": [
+      {
+       "about": "90% DC against baseline, 0 to 67 ms",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 4.57e-11,
+       "corrected": "Bonferroni",
+       "n": "28 S1 FSUs"
+      },
+      {
+       "about": "90% DC against baseline, 201 to 268 ms",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.007,
+       "corrected": "Bonferroni",
+       "n": "28 S1 FSUs"
+      },
+      {
+       "about": "across DCs, during",
+       "test": "Kruskal-Wallis",
+       "p": 1.89e-08,
+       "n": "147 S1 FSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). Of the 30 Hz DC series only 0.6% is present. It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9a-s1-rsu-60dc",
+     "statement": "At constant 60% DC, only 30 Hz PRF differs from the other PRFs in its effect on S1 RSUs during sonication, while postsonication activity is highest at 4500 Hz.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 4; Figure 9A",
+     "quote": "only 30 Hz PRF showed different effects to other PRFs (300 Hz, p = 0.008; 1,500 Hz, p = 0.006; 3,000 Hz, p = 0.007; 4,500 Hz, p = 0.0003) on S1 RSUs during sonication, while postsonication activities preferred 4,500 Hz",
+     "statistics": [
+      {
+       "about": "across PRFs, during",
+       "test": "Kruskal-Wallis",
+       "p": 0.000247,
+       "n": "759 S1 RSUs"
+      },
+      {
+       "about": "across PRFs, postsonication",
+       "test": "Kruskal-Wallis",
+       "p": 1.65e-25,
+       "n": "759 S1 RSUs"
+      },
+      {
+       "about": "30 against 300 Hz, during",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.008,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "30 against 1500 Hz, during",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.006,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "30 against 3000 Hz, during",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.007,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "30 against 4500 Hz, during",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.0003,
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). Of the 60% DC series (PD 20 ms, 2 ms, 400, 200, 133 us at 30 to 4500 Hz) only 1500 Hz at 400 us and 3000 Hz at 200 us are present (18 and 30 recordings). It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9b-s1-fsu-60dc",
+     "statement": "At constant 60% DC, S1 FSUs respond to 1500 Hz PRF during sonication and prefer 4500 Hz postsonication.",
+     "source": "Results, tFUS parameters on affecting neuronal activities of CTC pathway, paragraph 4; Figure 9B",
+     "quote": "S1 FSUs responded to 1,500 Hz PRF (n = 48, p = 3.35 \u00d710\u22126) during sonication and preferred 4,500 Hz post sonication (n = 18, p = 5.84 \u00d7 10\u221210; Fig. 9B)",
+     "statistics": [
+      {
+       "about": "1500 Hz against baseline, during",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 3.35e-06,
+       "corrected": "Bonferroni",
+       "n": "48 S1 FSUs"
+      },
+      {
+       "about": "4500 Hz against baseline, postsonication",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 5.84e-10,
+       "corrected": "Bonferroni",
+       "n": "18 S1 FSUs"
+      },
+      {
+       "about": "across PRFs, during",
+       "test": "Kruskal-Wallis",
+       "p": 0.0079,
+       "n": "151 S1 FSUs"
+      },
+      {
+       "about": "across PRFs, postsonication",
+       "test": "Kruskal-Wallis",
+       "p": 4.996e-05,
+       "n": "151 S1 FSUs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). Of the 60% DC series only 1500 and 3000 Hz are present. It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig10a-dsttc-3000",
+     "statement": "With 3000 Hz PRF and 60% DC, the directional correlation from S1 RSUs to POm RSUs and from POm RSUs to S1 FSUs increases during sonication; postsonication, the correlation from S1 RSUs to POm FSUs and from POm RSUs to S1 RSUs decreases.",
+     "source": "Results, tFUS elicited correlation change in CTC pathway, paragraph 1; Figure 10A",
+     "quote": "When 3,000 Hz PRF was applied, S1 RSUs showed an increased correlation to POm RSUs during sonication (p = 0.01). At the same period, POm RSUs showed enhanced correlation to S1 FSUs (p = 0.02)",
+     "statistics": [
+      {
+       "about": "S1 RSU to POm RSU, during against prestimulation",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon",
+       "p": 0.01
+      },
+      {
+       "about": "POm RSU to S1 FSU, during against prestimulation",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon",
+       "p": 0.02
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1). The directional correlation is between S1 and POm units. The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig10b-dsttc-30",
+     "statement": "With 30 Hz PRF, the directional correlation from S1 RSUs to POm FSUs increases and that from POm RSUs to S1 FSUs decreases during sonication.",
+     "source": "Results, tFUS elicited correlation change in CTC pathway, paragraph 1; Figure 10B legend",
+     "quote": "When delivering 30 Hz ultrasound, S1 RSUs to POm FSUs higher correlated (p = 0.0058), while POm RSUs showed decreased correlation to S1 FSUs during sonication (p = 0.0058)",
+     "statistics": [
+      {
+       "about": "S1 RSU to POm FSU, increase",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon",
+       "p": 0.0058
+      },
+      {
+       "about": "POm RSU to S1 FSU, decrease",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon",
+       "p": 0.0058
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1). The directional correlation is between S1 and POm units. The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig10c-sttc-constant-pd",
+     "statement": "At constant 200 us pulse duration, the S1 RSU to POm RSU correlation change during sonication does not depend on PRF, though 1500 Hz gives a higher change than 30 Hz.",
+     "source": "Results, tFUS elicited correlation change in CTC pathway, paragraph 2; Figure 10C",
+     "quote": "When applying tFUS with constant 200 \u03bcs PD, varying the DC and PRF, the correlation did not show PRF-dependent change. A total of 1,500 Hz PRF did show a higher correlation change compared with 30 Hz PRF (Fig. 10C; p = 0.02)",
+     "statistics": [
+      {
+       "about": "1500 against 30 Hz",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 0.02
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1). The STTC is between S1 RSUs and POm RSUs. The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig10d-sttc-60dc",
+     "statement": "At constant 60% DC, the S1 RSU to POm RSU correlation change during sonication depends on PRF, with a preference for 1500 and 3000 Hz.",
+     "source": "Results, tFUS elicited correlation change in CTC pathway, paragraph 2; Figure 10D",
+     "quote": "Then we fixed the DC to 60% and varied PRF. Unlike the neuronal responses (Fig. 9), the correlation showed the preference to 1,500 and 3,000 Hz",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis",
+       "p": 0.0012
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1). The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). Of the 60% DC series only 1500 and 3000 Hz are present. It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig10ef-sttc-dc",
+     "statement": "The S1 RSU to POm RSU correlation change depends on DC at 30 Hz PRF, changing most at middle DCs (6, 30, 60%), and does not depend on DC at 3000 Hz PRF.",
+     "source": "Results, tFUS elicited correlation change in CTC pathway, paragraph 2; Figure 10E and 10F",
+     "quote": "For 30 Hz PRF (Fig. 10E), the correlation tended to change most at a middle range (6, 30, 60%) and respond less to lower (e.g., 0.6%) and higher DC (e.g., 90%). For 3,000 Hz PRF, the pathway correlation showed DC independence (Fig. 10F)",
+     "statistics": [
+      {
+       "about": "across DCs at 30 Hz PRF",
+       "test": "Kruskal-Wallis",
+       "p": 0.0054
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No recording holds POm units (each file has one 32-channel probe with electrode locations 'unknown', and the description names only S1). The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477). Of the 30 Hz and 3000 Hz DC series only 0.6% at 30 Hz and 30% and 60% at 3000 Hz are present. It depends on unit-counts, which is blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig11b-ac-responses",
+     "statement": "Auditory cortex neurons respond to tFUS on S1 in a PRF-dependent way, time-locked to 1500 and 3000 Hz and postsonication to 30, 1500, 3000 and 4500 Hz, with the least response to 300 Hz.",
+     "source": "Results, Auditory confound on CTC pathway modulation using tFUS, paragraph 1; Figure 11B (legend labels it C)",
+     "quote": "During sonication, the AC neurons showed time-locked responses to 1,500 Hz (n = 107, p = 9.9 \u00d7 10\u22125) and 3,000 Hz PRF (n = 104, p = 1.98 \u00d7 10\u22127). Postsonication, neuronal responses were activated by 30 Hz (n = 83, p = 1.77 \u00d7 10\u221220), 1,500 Hz, (n = 107, p = 1.36 \u00d7 10\u22125), 3,000 Hz (n = 104, p = 4.47 \u00d7 10\u221213), and 4,500 Hz (n = 100, p = 1.66 \u00d7 10\u221240)",
+     "statistics": [
+      {
+       "about": "across PRFs, during",
+       "test": "Kruskal-Wallis",
+       "p": 0.000318,
+       "n": "453 AC neurons"
+      },
+      {
+       "about": "across PRFs, postsonication",
+       "test": "Kruskal-Wallis",
+       "p": 2.67e-43,
+       "n": "453 AC neurons"
+      },
+      {
+       "about": "1500 Hz, during",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 9.9e-05,
+       "corrected": "Bonferroni",
+       "n": "107 AC neurons"
+      },
+      {
+       "about": "3000 Hz, during",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 1.98e-07,
+       "corrected": "Bonferroni",
+       "n": "104 AC neurons"
+      },
+      {
+       "about": "30 Hz, postsonication",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 1.77e-20,
+       "corrected": "Bonferroni",
+       "n": "83 AC neurons"
+      },
+      {
+       "about": "1500 Hz, postsonication",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 1.36e-05,
+       "corrected": "Bonferroni",
+       "n": "107 AC neurons"
+      },
+      {
+       "about": "3000 Hz, postsonication",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 4.47e-13,
+       "corrected": "Bonferroni",
+       "n": "104 AC neurons"
+      },
+      {
+       "about": "4500 Hz, postsonication",
+       "test": "post hoc one-tail two-sample Wilcoxon",
+       "p": 1.66e-40,
+       "corrected": "Bonferroni",
+       "n": "100 AC neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No recording holds auditory cortex units; the dataset has one S1 probe per file and no recording of the paper's auditory-confound group.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig11c-ac-s1-dsttc-30",
+     "statement": "With 30 Hz PRF on S1, the directional correlation from AC neurons to S1 RSUs increases during sonication and lasts about 150 to 200 ms, and the correlation from AC neurons to S1 FSUs changes too.",
+     "source": "Results, Auditory confound on CTC pathway modulation using tFUS, paragraph 2; Figure 11C legend",
+     "quote": "During tFUS sonication with 30 Hz PRF, the correlation from 878 paired AC neurons to S1 RSUs significantly increased (p = 0.0014) which lasting for \u223c150 ms (left)",
+     "statistics": [
+      {
+       "about": "AC to S1 RSU, during against prestimulation",
+       "test": "Kruskal-Wallis, post hoc one-tail two-sample Wilcoxon",
+       "p": 0.0014,
+       "n": "878 pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No recording holds auditory cortex units; the dataset has one S1 probe per file and no recording of the paper's auditory-confound group. The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig11d-ac-s1-dsttc-3000",
+     "statement": "With 3000 Hz PRF on S1, the directional correlation between AC neurons and S1 RSUs does not change, and AC neurons and S1 FSUs show only a postsonication change at about 200 to 300 ms.",
+     "source": "Results, Auditory confound on CTC pathway modulation using tFUS, paragraph 2; Figure 11D legend",
+     "quote": "However, when delivering 3,000 Hz PRF ultrasound energy to S1, auditory neurons did not show directional correlation change with S1 RSUs. The correlation change of AC neurons with S1 FSUs only occurred \u223c200\u2013300 ms",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_gao_2025.ipynb",
+     "notes": "No recording holds auditory cortex units; the dataset has one S1 probe per file and no recording of the paper's auditory-confound group. The dandiset's Units tables hold spike times only, with no waveforms, waveform features, electrodes or cell-type labels (data check), so units cannot be classified as RSUs or FSUs by the initial phase and afterhyperpolarization of their waveforms (Methods, Neuronal type classification). The waveforms of these units are not public anywhere else that the attempt could find; the paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The Units tables hold spike times only, with no waveforms, waveform features, electrode assignments or quality metrics, so the units cannot be classified as regular- or fast-spiking as the paper does, and every finding of the paper is about one or the other.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds one S1 probe per recording. It has no POm or auditory cortex units, no recording identified as sham or as targeting CG1, and of the paper's duty-cycle series only the four conditions whose pulse duration is 100, 200 or 400 us, the three pulse durations the description lists (3000 Hz at 30 and 60%, 30 Hz at 0.6%, 1500 Hz at 60%).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The recordings cannot be linked to those the paper analysed. The paper's data statement names dandiset 000946, whose rats (BH494 to BH594, 20 rats) are not those of 000637 (BH401 to BH477), and 000637 has about 3.6 times as many S1 units over the paper's 2,000 spike threshold in the PRF series at 200 us as the paper reports S1 RSUs and FSUs (4,642 against 1,297). Which of these recordings, if any, the paper used is not stated.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The description says each recording has 500 trials; 73 of the 292 files have fewer (230 in 45 files, 425 in 13, 375 in 11, and 252 to 400 in four).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The description calls 100, 200 and 400 us the ultrasound durations (UDs) and says the pulse duration was kept at 67 ms; in the paper's terms and in the file identifiers these are the pulse durations and 67 ms is the ultrasound duration. A 600 us recording (BH446) and recordings at 3.5, 5.5 and 7 V are present and not described.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The stimulation condition is coded only in each file's identifier (PRF, pulse duration, ultrasound duration, voltage, repeat); the trials tables have start and stop times only, the electrode locations are all 'unknown' (the one electrode group's location is 'brain area', every electrode has z = 0, and no file has experiment_description, notes, stimulus or protocol fields), and three recordings named BASELINE are not described (whether tFUS was off, how their trial times were made).",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-31",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The handover of the first run, the executed notebook with the conclusions and summary removed, the helper module and the claims file. The verifier also queried the archive's asset list and metadata for version 0.250829.1249 and read the paper.",
+     "agreed": 31,
+     "of": 31,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-31",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the revised run, with its conclusion cells and summary, the helper module, the claims file, the README and the attempt record; the verifier also read the paper. Text fixes in reply that touch no claim are in cells 12 (91 to 94%; the 23 of 25 rats comparison limited to 201 to 268 ms), 14 (code comment), 25 and the summary (mean N2 60 to 86%), and the summary (missing full stop).",
+     "agreed": 31,
+     "of": 31,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000637-gao-2025",
+   "type": "reproduction",
+   "title": "Transcranial focused ultrasound and S1 spiking (Gao et al. 2025) on dandiset 000637",
+   "description": "Tests the findings of Gao, Ramachandran, Yu and He (2025) on dandiset 000637, which holds spike times of sorted S1 units from 25 rats under tFUS at five PRFs and several pulse durations. Every claim is about units typed as RSU or FSU from their waveforms, which the dandiset lacks, and most also need POm or auditory cortex units, so all claims are blocked. The notebook checks the metadata against the data, the trial clock and the unit counts, and shows the responses of all S1 units pooled.",
+   "datasets": [
+    "dandi:000637"
+   ],
+   "papers": [
+    "10.1523/jneurosci.2218-24.2025"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_gao_2025.ipynb",
+     "title": "Gao et al. (2025) on dandiset 000637",
+     "executed": "notebooks/000637-gao-2025/reproduce_gao_2025.html"
+    }
+   ]
+  }
+ ]
+}
