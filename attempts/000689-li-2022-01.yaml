@@ -1,0 +1,337 @@
+schema_version: 2
+id: 000689-li-2022-01
+dataset:
+  archive: dandi
+  id: "000689"
+  version: 0.240530.1923
+  doi: 10.48324/dandi.000689/0.240530.1923
+paper: doi:10.1038/s41586-022-04964-y
+date: 2026-10-31
+entry: 000689-li-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-12
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41202982900
+outcomes:
+- claim: fig1c-nt-sources
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The retrograde tracing in NT::Cre;Ai14 mice is not in the dandiset, which holds BLA
+    recordings, pose, confocal images of PVT slices from the recorded mice and NT sensor
+    photometry. The paper names no other archive for these data.
+- claim: ed1c-ntsr1-bla-cem
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The RNAscope images of BLA projectors are not in the dandiset.
+- claim: ed2-glutamate-corelease
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The slice patch-clamp recordings are not in the dandiset (no intracellular data in any
+    file).
+- claim: ed3-editing-efficiency
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The sequencing data of the guide RNA editing are not in the dandiset.
+- claim: ed5f-pvt-bla-cko-validation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No in situ quantification is in the dandiset. The ecephys files of 29 mice hold confocal
+    images of PVT slices (COFAImages), but no file says which mouse is CRISPR or control, what
+    each channel shows, or which cells are guide-positive, so they cannot stand in for the paper's
+    cell counts.
+- claim: fig1g-pvt-global-cko-reward
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The global Nt cKO behavior cohorts (MGN, vHPC, PVT) are not in the dandiset.
+- claim: fig1h-global-cko-no-shock-effect
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The global Nt cKO tone-shock sessions are not in the dandiset.
+- claim: fig2c-pvt-bla-cko-reduces-reward
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The criterion's session reading (a), the last tone-sucrose day, is not in the dandiset
+    (data missing); reading (b), the sucrose trials of the last discrimination day, is in the 31
+    recording sessions (port entries are in the trial tables), but no file says which mouse is
+    CRISPR and which control, so no reading can be run.
+- claim: fig2d-pvt-bla-cko-increases-freezing
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The tone-shock test session of the PVT-BLA cKO cohort is not in the dandiset, which holds
+    only discrimination-task sessions; the group labels are also missing (see fig2c).
+- claim: fig2g-photostim-enhances-reward
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The PVT-BLA:NT photostimulation behavior cohort is not in the dandiset.
+- claim: fig2h-photostim-reduces-freezing
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The PVT-BLA:NT photostimulation behavior cohort is not in the dandiset.
+- claim: fig3bc-head-fixed-learning
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The anticipatory licks and the eye videos of the axon-terminal photometry cohort (13 and
+    12 mice) are not in the dandiset. The NT sensor files hold lick events for 5 other mice but no
+    eye video.
+- claim: fig3e-terminal-sucrose-increase
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The PVT-BLA:NT axon-terminal GCaMP photometry is not in the dandiset; its only photometry
+    is the GRAB-NTS1.0 sensor (fluorophore "neurotensin-fluorescent sensor", 415 and 470 nm, 5
+    mice).
+- claim: fig3f-terminal-airpuff-decrease
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig3e-terminal-sucrose-increase.
+- claim: ed6-somatic-no-change
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The somatic GCaMP photometry of MGN, vHPC and PVT NT neurons is not in the dandiset.
+- claim: fig3h-sensor-specificity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The sensor imaging in cultured neurons is not in the dandiset.
+- claim: fig3k-nt-sensor-sucrose-increase
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_li_2022.ipynb
+  output: claim:fig3k-nt-sensor-sucrose-increase
+  notes: Five mice, early against late acquisition sessions as the files label them. Under the
+    per-trial z-score the US-window response (2 to 7 s) is larger late than early under all four
+    readings of the criterion (AUC +3.01, 95% CI -0.58 to 6.59, with the first 16 trials; +2.19
+    with all trials; 4 of 5 mice higher), in the direction and near the size of the paper's 4.14,
+    but no reading reaches p < 0.05 (smallest p = 0.081, t(4) = 2.33). Under the session-pooled
+    z-score the difference is absent (AUC -0.76 to +0.08, p >= 0.64). The CS window does not
+    change under any reading (p >= 0.49), as in the paper (P = 0.1483).
+  deviations:
+  - The files mark one kind of cue, 2 s long, and no US. All cues are taken as CS-US trials with
+    the US 2 s after CS onset (Methods, Head-fixed behavior, "The US ... was delivered 2 s after
+    the onset of the CS"). The Methods say about half the CSs were unpaired; in the late sucrose
+    sessions 49 to 58 of about 60 cues are followed by licking within 2 to 5 s, so most cues are
+    paired, but unpaired cues, if any, cannot be removed. This is an assumption.
+  - The median filter of 200 ms is applied at the native 20 Hz before averaging into 5 Hz bins,
+    since at 5 Hz it would do nothing (Methods, Fiber photometry, Data analysis, "down-sampled to
+    5Hz and filtered ... using a median filter with a span of 200 ms").
+  - Whether the residuals are z-scored against each trial's baseline or the session's pooled
+    baseline is not said (Methods, "Residuals from the regression were z-transformed using data a
+    baseline window of -5 s to 0 s relative to the start of the CS"); both are run and neither
+    gives p < 0.05.
+  - The 415 and 470 nm frames are taken from the files' LED event labels, since the single
+    photometry series interleaves three frame types at 60 Hz where the Methods give 40 Hz.
+- claim: fig3l-nt-sensor-airpuff-decrease
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_li_2022.ipynb
+  output: claim:fig3l-nt-sensor-airpuff-decrease
+  notes: The US-window response to airpuff is lower late than early under all eight readings
+    (per-trial z-score AUC -5.47, 95% CI -12.35 to 1.41, with the first 16 trials, 5 of 5 mice
+    lower; -4.66 with all trials), near the paper's -3.52, but no reading reaches p < 0.05
+    (smallest p = 0.074, t(4) = -2.40). The CS window does not change significantly under any
+    reading (p >= 0.08), as in the paper (P = 0.0994).
+  deviations:
+  - The files mark no airpuff, and the cue events last 2 s where the Methods give a 4 s CS. All
+    cues are taken as CS-US trials with the airpuff 2 s after CS onset (Methods, Head-fixed
+    behavior, "presented 2 s after the onset of the CS"). The Methods say about half the CSs were
+    unpaired; with about 60 cues per airpuff session where the Methods give about 30 pairings, up
+    to half the trials analysed may be unpaired, and the files cannot tell them apart. This is an
+    assumption.
+  - Same processing choices as fig3k-nt-sensor-sucrose-increase (median filter at 20 Hz, both
+    z-score baselines run, channels from the LED labels).
+- claim: fig3-nt-sensor-early-dip
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_li_2022.ipynb
+  output: claim:fig3-nt-sensor-early-dip
+  notes: In the early sessions the mean over 5 mice of the US-window z-score is below zero for
+    sucrose (-0.62 with the first 16 trials, per-trial z-score; 3 of 5 mice below zero) but above
+    zero for airpuff (+0.11; 4 of 5 mice are below zero, but M-4 is at +2.15). No reading has both
+    means below zero (0 of 8). Under the session-pooled z-score with the first 16 trials the signs
+    reverse (sucrose +0.34, airpuff -0.40). No mean differs from zero (p >= 0.23).
+  deviations:
+  - Same trial assumption and processing choices as fig3k-nt-sensor-sucrose-increase and
+    fig3l-nt-sensor-airpuff-decrease.
+- claim: fig4-recording-count
+  outcome: not_reproduced
+  notebook: reproduce_li_2022.ipynb
+  output: claim:fig4-recording-count
+  measured: [1739, 31]
+  notes: The dandiset holds 31 recording sessions from 31 mice with 1902 units; 1739 have a
+    baseline rate (1 s before each CS) of at least 0.3 Hz, and 1884 a whole-session rate of at
+    least 0.3 Hz. Neither unit count is within 68.5 of 685. The 31 mice are within the tolerance
+    of 30. The units are not sorted single units (finding), with a median of 64 per mouse against
+    the paper's 23.
+  deviations:
+  - The paper analyses sorted single units (Offline Sorter); the files' units are used as they are.
+- claim: ed8d-reduced-basal-firing
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the CRISPR and control groups and the tagged BLA-NAc and BLA-CeA neurons; every file
+    gives the genotype as "Wild type" and none names the group or the Cav2-Cre injection site. The
+    claim also depends on fig4c-photoidentification, blocked.
+- claim: fig4c-photoidentification
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The light pulses are in every file, in two blocks of about 427 events, but no label says
+    which block is the "fake" session the Methods' rule needs, and no file says whether the mouse
+    carries Cav2-Cre in the NAc or the CeA, so neither the rule nor the projection can be applied.
+    Run without the fake-session test, the Methods' rule passes 1355 of 1902 units with all 5 and
+    10 ms pulses and 1444 with the isolated 1 Hz pulses, against 71 tagged neurons in the paper,
+    so the fake-session test (or the paper's sorting) is essential.
+- claim: ed8fg-fewer-responsive-neurons
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Compares CRISPR and control; no file gives the group (see ed8d-reduced-basal-firing).
+- claim: fig4d-seven-clusters
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_li_2022.ipynb
+  output: claim:fig4d-seven-clusters
+  notes: Run on the 1399 units of 24 mice with baseline of at least 0.3 Hz in sessions with all
+    three CSs (163 units dropped for rate, 340 in the six sessions without neutral CSs, the
+    whole of H17 for rate since its spikes stop at 249 s). With Ward linkage cut at 35% of the
+    maximum distance, reading (a) gives 9, 12, 11, 12, 11, 10, 8 and 9 clusters for smoothing
+    windows of 20 to 420 ms, and 6, 7, 6, 6 and 8 for 620 ms to 2 s; reading (b) gives 8 to 14 and
+    never 7. Seven clusters come only under reading (a) with an 820 ms window. The paper's
+    "smoothing factor of 0.85" is a MATLAB smoothdata setting whose window the paper does not
+    give and that cannot be derived without MATLAB's heuristic, and the count moves with the
+    window, so no reading has a defensible basis over another. The count also moves with the cut
+    (13 at 30%, 10 at 35%, 7 at 40% for a 220 ms window). The question is for the paper's authors
+    (finding). The units are not the paper's sorted single units, which alone could change the
+    count.
+  deviations:
+  - The smoothing window is run from 20 ms to 2 s, as the paper gives only MATLAB's smoothing
+    factor (Methods, Functional hierarchical clustering, "a Gaussian-weighted moving average with
+    a smoothing factor of 0.85"); each CS trace is smoothed separately.
+  - The six sessions without neutral CS trials (H09 to H14) are left out, since the clustered
+    trace concatenates the three CSs (Methods, "Data from each experiment protocol (Sucrose CS,
+    Neutral CS, Shock CS) were concatenated").
+- claim: fig4e-cluster-responses-attenuated
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Compares CRISPR and control within clusters; no file gives the group. It also depends on
+    fig4d-seven-clusters, blocked.
+- claim: ed8i-projector-cluster-proportions
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the groups and the tagged projectors, which no file gives.
+- claim: fig4fg-projector-sucrose-responses
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the groups and the tagged projectors, which no file gives.
+- claim: fig4fg-control-projector-valence
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the control mice and the tagged projectors, which no file gives.
+- claim: fig5a-trajectories-reduced
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Compares CRISPR and control trajectories; no file gives the group.
+- claim: fig5b-within-group-decoding
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Decodes within each group; no file gives the group. It also depends on
+    fig5a-trajectories-reduced, blocked.
+- claim: fig5c-cross-group-decoding
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Decodes across groups; no file gives the group.
+- claim: ed8e-port-and-freezing
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Compares CRISPR and control mice; no file gives the group. Its freezing part would also
+    need the pose on the trial clock, which the files do not give (see fig5dh-behavior-clusters).
+- claim: fig5dh-behavior-clusters
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The DeepLabCut pose is in 29 recording files (H28 and H32 have pose only for another day,
+    in files with no trial table), but the pose series give only a start time of 0 s and a nominal
+    15 frames per second, no timestamps. At port entries the head should be at the port; the lag
+    that brings it closest is a median of 80 s from zero, and it changes by more than 5 s between
+    thirds of the session in 28 of 29 sessions, so the pose drifts against the trial clock and the
+    20 s after each CS cannot be cut from it. A test of the feature extraction on two sessions took
+    0.31 s per trial (about 15 minutes for all trials), so time did not block it; the alignment
+    did. The paper's video timestamps would settle it.
+- claim: fig5fi-active-strategy-preference
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Compares CRISPR and control mice and depends on fig5dh-behavior-clusters; both the group
+    labels and the pose alignment are missing.
+- claim: ed8os-active-trial-responses
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Compares CRISPR and control neurons in active and passive trials; needs the group labels
+    and the behavior clusters, neither available.
+- claim: ed9-nt-acute-epsc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The slice recordings are not in the dandiset.
+- claim: ed9kl-nt-preincubation-ltp
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The slice recordings are not in the dandiset.
+- claim: ed10b-ntsr1-antagonist-reward
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pharmacology behavior cohort is not in the dandiset.
+- claim: ed10-ntsr1-cko-reward
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Ntsr1 cKO behavior cohorts are not in the dandiset.
+findings:
+- kind: metadata_insufficient
+  statement: No file says which recorded mouse is in the CRISPR group and which in the control
+    group, nor whether its Cav2-Cre was injected in the NAc or the CeA; every subject's genotype is
+    "Wild type". The paper's electrophysiology findings compare the groups and the tagged
+    projectors, so 13 of its claims cannot be tested.
+- kind: format_error
+  statement: The units are not sorted single units, as the Methods describe (Offline Sorter). 21 of
+    31 sessions hold exactly 64 units on 32 channels, 1902 units in all against the paper's 685;
+    in 1061 units more than 5% of inter-spike intervals are below 1 ms, and in each session 6 to
+    65% of spike samples recur in another unit. The light rule of the
+    Methods, without the fake session, passes 1355 of them.
+- kind: format_error
+  statement: In H17 the spike times of all 64 units fall within the first 249 s of a 12118 s
+    recording, while its trial events cover the whole session, so its spikes cannot be aligned
+    with its trials.
+- kind: metadata_insufficient
+  statement: The DeepLabCut pose has no timestamps, only a start time of 0 s and a nominal rate of
+    15 frames per second. Against the trial clock, port entries match the head's approach to the
+    port at lags a median of 80 s from zero that drift within each session, so the pose cannot be
+    aligned with the trials.
+- kind: metadata_insufficient
+  statement: Each session holds about 854 light events in two blocks of about 427, which fits the
+    paper's "fake" phototagging session and the real one, but no label says which is which. In 12
+    sessions (H31 to H42) one block comes before the task, where the Methods put both after it.
+- kind: metadata_error
+  statement: Six sessions (H09 to H14) hold 75 sucrose and 45 shock CSs and no neutral CS, while
+    their session description says sucrose, shock and neutral CSs at 2 to 1 to 1.
+- kind: other
+  statement: The dandiset has recordings from 31 mice where the paper reports 30. For H28 and H32
+    the recorded session (Disc3, Disc5) is earlier than another discrimination day for which only
+    pose is deposited (Disc4, Disc6), while the paper analyses only the last day.
+- kind: metadata_insufficient
+  statement: The photometry files store one RoiResponseSeries at 60 Hz that interleaves the 415 nm
+    frames, the 470 nm frames and a third, undescribed frame type; the channels can be told apart
+    only from the LED event labels, and in one session (Mouse6, late sucrose) the frame order
+    shifts after an irregular frame. The cue events last 2 s where the Methods give a 4 s CS, and no
+    event marks the US or says whether a cue was paired. In two airpuff sessions the lick label is
+    on for most of the session.
+- kind: data_missing
+  statement: Only the in vivo recordings of Figures 4 and 5 and the NT sensor photometry of Figure
+    3j-l are deposited. The behavior cohorts of Figures 1 and 2 and Extended Data Figure 10, the
+    axon-terminal and somatic photometry with its head-fixed behavior (Figure 3b-f, Extended Data
+    Figure 6), the anatomy and in situ data, the slice physiology and the sensor validation are not,
+    so 20 of the paper's 39 findings in the claims file cannot be tested.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. The functional clustering smooths each PSTH with
+    MATLAB smoothdata and a smoothing factor of 0.85 (Methods, Functional hierarchical clustering).
+    What window did that produce, and was the smoothing applied to each CS trace or to the
+    concatenated trace? On the dandiset's units the number of clusters under the paper's cut-off
+    goes from 12 to 6 as the window grows, with seven only at about 820 ms.
