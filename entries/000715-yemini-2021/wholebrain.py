@@ -18,8 +18,12 @@ otherwise):
 - Premotor interneurons (AVA, AVB, AVD, AVE, PVC) and ventral-cord motor neurons (AS, DA, DB, DD,
   VA, VB, VC, VD) are excluded from testing.
 - Neurons within 5 um of each other whose traces correlate at 0.95 or more are removed (STAR
-  Methods; the README says they are kept in the files). Both members of such a pair are removed,
-  as the text does not say which one was kept: a choice that removes few traces.
+  Methods: "Neurons within 5 um distance of each other, whose traces showed at least 95%
+  correlation, were deemed too similar and removed"; the README says they are kept in the
+  files). The text does not say whether both members of a pair went or one. Removing both, the
+  literal reading, drops 647 of 3,550 head traces and 161 of 797 tail traces (the notebook prints
+  the counts); removing one drops fewer. Every reading is run (`both`), and the paper supports
+  none over the others; the notebook gives each claim's result under each.
 - Post-stimulus: stimulus mean above the pre-stimulus mean, then post-stimulus mean above the
   stimulus mean by a one-tailed paired t test, FDR corrected. The post-stimulus window is taken as
   the 10 s after the stimulus, the length of the stimulus (the text does not give it).
@@ -169,8 +173,9 @@ def responses(d, stim, mapping="order"):
 
 
 def peak_rate(x, fps, prominence_sd=1.0):
-    """Figure S1H: peaks per second of a trace median filtered at 0.5 s (3 samples at 4 Hz, the
-    nearest odd window), NaN samples (the first second) dropped. The peak rule (a prominence of
+    """Figure S1H: peaks per second of a trace median filtered at 0.5 s, NaN samples (the first
+    second) dropped. At 4 Hz 0.5 s is 2 samples; the median filter needs an odd window, so 3
+    samples (0.75 s) are used. The peak rule (a prominence of
     `prominence_sd` standard deviations of the filtered trace) is not given in the paper: an
     assumption, shown at several values."""
     from scipy.signal import find_peaks, medfilt

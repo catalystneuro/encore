@@ -40,6 +40,11 @@ Where the parameters come from:
   = 0:0.25:2*pi about the major axis with both signs, 10 alternations of assignment and
   regression (color ridge 1e5 towards the identity), mirror solutions rejected, lowest
   assignment cost kept.
+- Orientation: the files carry no orientation, and the oracle alignment shows that the five
+  heads imaged in dorsal-ventral view are stored rotated by about 90 degrees about the long axis
+  relative to the five in left-right view. Algorithm 5's identity start cannot undo this.
+  `identify_rotated` (not the paper's method, a variant) starts Algorithm 5 from four rotations
+  about the long axis and keeps the run with the lowest assignment cost.
 - Annotation (MS1 section 6.5; CELL_ID AutoId.update_log_likelihood): an annotated neuron's row
   is set to -1e9 except its true identity, set to 1e5; the assignment and the Sinkhorn matrix are
   recomputed without re-alignment.
@@ -312,9 +317,9 @@ def hungarian(cost):
 def sinkhorn(logL, niter=SINKHORN_ITER):
     """CELL_ID sinkhorn_logspace: pad to square with ~0, alternate column and row normalisation.
 
-    Run with scaling vectors on exp(logL - row maximum) for speed. Both converge to the same
-    doubly stochastic matrix; after 500 iterations they differed by at most 0.001 on one worm
-    checked while preparing this entry.
+    Run with scaling vectors on exp(logL - row maximum) for speed. Both iterate towards the same
+    doubly stochastic matrix; the notebook prints the largest difference from the log-space
+    version (`sinkhorn_logspace`) on every held-out worm.
     """
     logL = logL.copy()
     finite = np.isfinite(logL)
@@ -332,10 +337,28 @@ def sinkhorn(logL, niter=SINKHORN_ITER):
     return (r[:, None] * K * c[None, :])[:n1, :n2]
 
 
-def identify_methods(F, mu, sigma):
-    """MS1 Algorithm 5: identity start, alternate Hungarian (eq 4.18) and alignment (4.15-4.16)."""
+def sinkhorn_logspace(logL, niter=SINKHORN_ITER):
+    """CELL_ID sinkhorn_logspace as written, in log space: the same padding, then alternate
+    normalisation of columns and rows by logsumexp. Used only to check `sinkhorn`."""
+    logL = logL.copy()
+    finite = np.isfinite(logL)
+    logL[~finite] = logL[finite].min() - 10000
+    n1, n2 = logL.shape
+    s = max(n1, n2)
+    P = np.full((s, s), -1e-100)
+    P[:n1, :n2] = logL
+    for _ in range(niter):
+        P = P - logsumexp(P, axis=0, keepdims=True)
+        P = P - logsumexp(P, axis=1, keepdims=True)
+    return np.exp(P)[:n1, :n2]
+
+
+def identify_methods(F, mu, sigma, T0=None):
+    """MS1 Algorithm 5: identity start, alternate Hungarian (eq 4.18) and alignment (4.15-4.16).
+
+    T0, when given, replaces the identity start (used by `identify_rotated`)."""
     d = F.shape[1]
-    T = np.vstack([np.eye(d), np.zeros((1, d))])
+    T = np.vstack([np.eye(d), np.zeros((1, d))]) if T0 is None else T0
     for it in range(1, MAX_ITER + 1):
         Z = apply(T, F)
         a = hungarian(maha(Z, mu, sigma))
@@ -346,7 +369,51 @@ def identify_methods(F, mu, sigma):
         if change <= TOL:
             break
     Z = apply(T, F)
-    return Z, {"iterations": it, "converged": bool(change <= TOL)}
+    D = maha(Z, mu, sigma)
+    a = hungarian(D)
+    return Z, {"iterations": it, "converged": bool(change <= TOL), "cost": D[np.arange(len(a)), a].sum()}
+
+
+ROTATIONS = (0, 90, 180, 270)   # degrees about the image x axis (the head's length); see below
+
+
+def rotation_start(F, deg):
+    """Affine start that rotates the positions by deg about the image x axis through their centroid."""
+    d = F.shape[1]
+    t = np.deg2rad(deg)
+    R = np.array([[1, 0, 0], [0, np.cos(t), np.sin(t)], [0, -np.sin(t), np.cos(t)]])
+    T = np.vstack([np.eye(d), np.zeros((1, d))])
+    c = F[:, :3].mean(0)
+    T[:3, :3] = R
+    T[d, :3] = c - c @ R
+    return T
+
+
+def identify_rotated(F, mu, sigma):
+    """Not the paper's method: Algorithm 5 started from the identity and from rotations of 90, 180
+    and 270 degrees about the head's long axis, keeping the run with the lowest assignment cost
+    (the model's own criterion, no annotations used). The files carry no orientation, and half the
+    worms are imaged in dorsal-ventral view (subject names ending DV), so this variant asks whether
+    the shortfall of the identity start is one of orientation."""
+    best = None
+    for deg in ROTATIONS:
+        Z, info = identify_methods(F, mu, sigma, rotation_start(F, deg))
+        if best is None or info["cost"] < best[1]["cost"]:
+            best = (Z, {**info, "start_deg": deg})
+    return best
+
+
+def oracle_rotation(F, mu, sigma, true):
+    """Rotation part (polar decomposition) of the position block of the alignment of a worm to the
+    atlas by its true correspondences: its angle about the image x axis (degrees), the cosine
+    between the worm's x axis and the atlas's, and the determinant of the linear part."""
+    ok = true >= 0
+    T = align_block(F[ok], mu[true[ok]], sigma[true[ok]])
+    A = T[:3, :3]
+    u, _, vt = np.linalg.svd(A)
+    R = u @ vt
+    return {"angle_about_x_deg": float(np.degrees(np.arctan2(R[1, 2], R[1, 1]))),
+            "x_axis_cos": float(R[0, 0]), "det_linear": float(np.linalg.det(A))}
 
 
 def _pca(P):
@@ -366,7 +433,12 @@ def major_axis_align(P, sgn):
 
 
 def code_alignment(F, mu, sigma):
-    """CELL_ID AutoId.global_alignment / local_alignment (no annotated neurons)."""
+    """CELL_ID AutoId.global_alignment / local_alignment (no annotated neurons).
+
+    As in CELL_ID (AutoId.local_alignment), each candidate is rotated by theta about the major
+    axis and then passed through `major_axis_align` again, which re-runs the principal-axis fit
+    and undoes the rotation. So the search over theta yields the same start for every theta, up
+    to the signs of the axes; the notebook prints how many distinct starts it gives."""
     pos0, col0 = F[:, :3], F[:, 3:]
     has_color = F.shape[1] > 3
     # CELL_ID's atlas is centred on its principal axes; ours is in the initial worm's frame, so
@@ -573,8 +645,10 @@ def solution_violations(X, R, A, margin=1 / 3):
 def run_loo(feats, alignment="methods", color=True, atlas_iter=ATLAS_ITER, seed=0, gauge=True):
     """Leave-one-out identification of the annotated neurons of each worm.
 
-    alignment: "methods" (Algorithm 5), "code" (CELL_ID global alignment) or "oracle" (the
-    held-out worm aligned with its true correspondences: an upper bound, not the paper's method).
+    alignment: "methods" (Algorithm 5), "code" (CELL_ID global alignment), "rotated" (Algorithm 5
+    from four rotations about the long axis, `identify_rotated`, not the paper's method) or
+    "oracle" (the held-out worm aligned with its true correspondences: an upper bound, not the
+    paper's method).
 
     Returns one dict per held-out worm: atlas names, true names, true atlas index (-1 when the
     name is not in the training atlas), log likelihoods, Hungarian assignment, Sinkhorn matrix.
@@ -590,6 +664,8 @@ def run_loo(feats, alignment="methods", color=True, atlas_iter=ATLAS_ITER, seed=
         true = np.array([idx.get(l, -1) for l in labs])
         if alignment == "methods":
             Z, ainfo = identify_methods(F, mu, sigma)
+        elif alignment == "rotated":
+            Z, ainfo = identify_rotated(F, mu, sigma)
         elif alignment == "code":
             Z, ainfo = code_alignment(F, mu, sigma)
         else:
@@ -651,6 +727,43 @@ def guided_annotation(r, n_steps, order="entropy", rng=None, with_sinkhorn=True)
         if order != "random" and with_sinkhorn:
             P = sinkhorn(L)
     return np.array(acc_all), np.array(acc_rest)
+
+
+CELL_ID_HERM_URL = ("https://raw.githubusercontent.com/amin-nejat/CELL_ID/"
+                    "d9f5df92d1bc218d0b8b105e3cd880c8bba30764/Data/NeuroPAL/herm_data.mat")
+HEAD_GANGLIA = ("Anterior Pharyngeal Bulb", "Posterior Pharyngeal Bulb", "Anterior Ganglion", "Dorsal Ganglion",
+                "Lateral Ganglion", "Ventral Ganglion", "Retro-Vesicular Ganglion")
+
+
+def load_ganglia() -> dict:
+    """Ganglion of each neuron from the CELL_ID neuron tables (Data/NeuroPAL/herm_data.mat, the
+    source fig7bc-ventral-ganglion-lowest names), left and right halves of a ganglion merged."""
+    import io
+    import scipy.io as sio
+    m = sio.loadmat(io.BytesIO(requests.get(CELL_ID_HERM_URL, timeout=120).content), squeeze_me=True,
+                    struct_as_record=False)
+    out = {}
+    for g in m["ganglia"]:
+        name = str(g.name).replace(" (Left)", "").replace(" (Right)", "")
+        for n in np.atleast_1d(g.neurons):
+            out[str(n)] = name
+    return out
+
+
+def zenodo_annotations(zf, member: str) -> tuple[list[str], np.ndarray]:
+    """Names and positions (MATLAB voxel coordinates, 1-based, y before x) of the neurons in a
+    Zenodo *_ID.mat file, a Neurons.Image object that mat-io reads from a path; the bytes are held
+    in a temporary directory removed once read."""
+    import tempfile
+    from pathlib import Path
+    from matio import load_from_mat
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "id.mat"
+        path.write_bytes(zf.read(member))
+        neurons = np.ravel(load_from_mat(str(path))["neurons"].properties["neurons"])
+    names = [str(np.ravel(n.properties["annotation"])[0]) if np.size(n.properties["annotation"]) else ""
+             for n in neurons]
+    return names, np.array([np.ravel(n.properties["position"]) for n in neurons])
 
 
 # ---------------------------------------------------------------- detection (MS1 sections 2, 3)
@@ -782,11 +895,12 @@ def fit_gaussian(bpatch, colorvec, scale, fsize):
     col = xx[11:11 + C] * np.exp(xx[9])
     shape = _simulate(sz, xx[:3], cov, np.ones(1), np.zeros(1), xx[-1], grid)[..., 0]
     rel = (xh[:3] - x0[:3]) / norm[:3]
-    return shape, rel, cov, col
+    return shape, rel, cov, col, bool(res.success)
 
 
 def detect(image, rgbw, grid_um, k):
-    """CELL_ID BatchDetect + AutoDetect.detect for k neurons; returns centres in voxels (0-based)."""
+    """CELL_ID BatchDetect + AutoDetect.detect for k neurons; returns centres in voxels (0-based),
+    the number of Gaussian fits and the number whose optimiser reported success."""
     from scipy.ndimage import convolve
     from skimage.transform import resize
     z = _zscore_channels(image[..., rgbw])
@@ -801,15 +915,16 @@ def detect(image, rgbw, grid_um, k):
     fsize = np.array(filt.shape) - 1
     rho = np.stack([convolve(vol[..., c], filt, mode="constant") for c in range(4)], -1)
     szext = np.array(vol.shape[:3])
-    centres, n_fits = [], 0
+    centres, n_fits, n_ok = [], 0, 0
     while len(centres) < k and n_fits < 3 * k:
         mag = rho.max(-1)
         loc = np.array(np.unravel_index(np.argmax(mag), mag.shape))
         lo = np.maximum(loc - fsize, 0)
         hi = np.minimum(loc + fsize, szext - 1) + 1
         patch = vol[lo[0]:hi[0], lo[1]:hi[1], lo[2]:hi[2]]
-        shape, rel, cov, col = fit_gaussian(patch, rho[tuple(loc)], scale, loc - lo)
+        shape, rel, cov, col, ok = fit_gaussian(patch, rho[tuple(loc)], scale, loc - lo)
         n_fits += 1
+        n_ok += ok
         fshape = convolve(np.pad(shape, [(s // 2, s // 2) for s in filt.shape]), filt, mode="constant")
         # place fshape centred at loc (CELL_ID placement)
         res = np.zeros(szext)
@@ -824,7 +939,7 @@ def detect(image, rgbw, grid_um, k):
             centres.append(loc + rel)
     centres = np.array(centres)
     orig = (centres + 0.5) / factor - 0.5      # decimated voxel centre to original voxel index
-    return orig, n_fits
+    return orig, n_fits, n_ok
 
 
 def match_detections(det_um, ann_um, radius=MATCH_UM):
@@ -844,10 +959,10 @@ def _detect_asset(args):
     w = load_worm(asset, with_image=False)
     with h5py.File(remfile.File(asset["url"]), "r") as f:
         image = f["acquisition/NeuroPALImageRaw/data"][()]
-    centres, n_fits = detect(image, w["rgbw"], w["grid"], k)
+    centres, n_fits, n_ok = detect(image, w["rgbw"], w["grid"], k)
     vox = np.clip(np.round(centres).astype(int), 0, np.array(image.shape[:3]) - 1)
     colors = zscore_colors(image, vox, w["rgbw"][:3])
-    return {"subject": w["subject"], "centres": centres, "n_fits": n_fits, "colors": colors}
+    return {"subject": w["subject"], "centres": centres, "n_fits": n_fits, "n_converged": n_ok, "colors": colors}
 
 
 def detect_all(k, workers=4):
@@ -870,7 +985,8 @@ def run_loo_detections(feats, worms, detections, alignment="methods", atlas_iter
         names, mu, sigma, _ = fit_atlas(train, max_iter=atlas_iter)
         w, d = worms[j], detections[j]
         F = np.hstack([d["centres"] * w["grid"], d["colors"]])
-        Z = identify_methods(F, mu, sigma)[0] if alignment == "methods" else code_alignment(F, mu, sigma)[0]
+        align = {"methods": identify_methods, "rotated": identify_rotated, "code": code_alignment}[alignment]
+        Z = align(F, mu, sigma)[0]
         a = hungarian(maha(Z, mu, sigma))
         keep = [i for i, l in enumerate(w["labels"]) if l]
         labs = [w["labels"][i] for i in keep]

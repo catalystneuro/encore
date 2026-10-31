@@ -8,38 +8,41 @@ of the same worms, and the whole-brain activity recordings, are on the paper's Z
 
 | Claim | Outcome |
 |---|---|
-| Positional variability differs across neurons (head) | Reproduced |
+| Positional variability differs across neurons, head and tail | Partially reproduced: head only |
 | OLLR is over twice as variable as OLLL along the anterior-posterior axis | Reproduced |
 | Automatic detection, 80% accuracy and 90% precision and recall (head) | Partially reproduced |
 | Identification accuracy 86% in the head | Not reproduced |
 | Accuracy without color 50% in the head | Not reproduced |
 | Eight guided annotations bring head accuracy above 90% | Not reproduced |
-| Guided annotation beats random annotation (head) | Reproduced |
+| Guided annotation beats random annotation, head and tail | Partially reproduced: head only |
 | Confidence is calibrated | Blocked: the criterion's two readings disagree |
 | NeuroPAL leaves 3.5% color violations (with the paper's NeuroPAL colors) | Reproduced |
 | Optimal coloring finds 1.7% with 39 reporters and 10.5% with 3 (with the paper's reporter table) | Partially reproduced |
-| Ventral ganglion least accurate | Blocked |
-| Whole-brain activity, five claims on the Zenodo record (counted apart) | 2 reproduced, 1 partially, 2 not reproduced |
+| Ventral ganglion least accurate | Blocked: no tails (lowest of the head ganglia) |
+| Whole-brain activity, five claims on the Zenodo record (counted apart) | 2 reproduced, 1 partially, 1 not reproduced, 1 blocked |
 | Reporter expression, mutants, phenotypes and other activity claims | Blocked |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
 The files' metadata describe another strain (OH16230), microscope and preparation, and dates in
-2021; two of the volumes are identical to the Zenodo volumes of the otIs669 atlas worms. With the
-held-out worm aligned by its true correspondences the atlas and colors from the dandiset give 78 to
-80% head accuracy, so the shortfall in identification comes from the alignment step as the paper
-and its code describe it, run here on worms imaged in two orientations.
+2021; two of the volumes are identical to the Zenodo volumes of the otIs669 atlas worms, and the
+annotations of all ten match the Zenodo annotations. The five heads imaged in dorsal-ventral view
+are stored rotated by about 90 degrees about the long axis relative to the five in left-right
+view, and the files do not record it. Algorithm 5's identity start fails on those five (10%
+accuracy on average). Started from four rotations, not the paper's method, it reaches 75 to 77%,
+and with the held-out worm aligned by its true correspondences the atlas and colors from the
+dandiset give 78 to 80%, at the lower edge of the paper's 86 +/- 8.6%.
 
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000715-yemini-2021-01.yaml`](../../attempts/000715-yemini-2021-01.yaml).
 
-- `reproduce_yemini_2021.ipynb`: the dandiset's claims. It takes about 17 minutes, six of them
+- `reproduce_yemini_2021.ipynb`: the dandiset's claims. It takes about 13 minutes, four of them
   for the neuron detection.
 - `wholebrain_zenodo.ipynb`: five whole-brain activity claims on the Zenodo record, about 4
   minutes, most of it reading the record.
 - `optimal_coloring.ipynb`: the optimal-coloring claim, a Python port of the paper's solver run
-  on the dandiset's head atlas, about 20 minutes.
+  on the dandiset's head atlas, about 25 minutes.
 - `neuropal.py`: loading, color readout, the statistical atlas, identification, guided
   annotation, detection, color violations and the optimal-coloring solver, with the source of
   each parameter.
