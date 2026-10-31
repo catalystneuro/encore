@@ -15,7 +15,7 @@ Parameters and where they come from:
 - STOP_SPEED_CM_S = 4.7: a stop is registered when speed drops below 4.7 cm/s (Methods, Analysis of
   behaviour; also the files' notes). Speed is taken over the previous 100 ms, as the notes say.
 - The 600 to 6000 Hz band of the multi-unit check is the paper's spike sorting filter (Methods,
-  Spike sorting). The 1 s bins and the lag range of that check are standard choices for a
+  Spike sorting). The 100 ms bins and the lag range of that check are standard choices for a
   synchronisation check; they cannot change any claim's outcome, as no claim is tested on them.
 """
 from __future__ import annotations
@@ -37,6 +37,8 @@ TRACK_LENGTH_CM = 200
 MIN_TRIALS = 10
 STOP_SPEED_CM_S = 4.7
 FS_EPHYS = 30000.0
+# docs/protocol.md, Author, step 3 ("Keep it fast"): "CI fails a notebook over sixty" minutes.
+NOTEBOOK_LIMIT_MIN = 60
 
 _session = requests.Session()
 
@@ -199,6 +201,18 @@ def _of(f: h5py.File) -> dict:
     }
 
 
+def file_text(asset: dict) -> dict:
+    """The free-text metadata of one file: notes, experiment and session descriptions, protocol."""
+    def one(a):
+        f = open_nwb(a)
+        out = {"path": a["path"]}
+        for k in ("session_description", "general/notes", "general/experiment_description",
+                  "general/protocol", "general/session_id"):
+            out[k] = f[k][()].decode() if k in f else None
+        return out
+    return _retry(one, asset)
+
+
 def map_files(fn, assets, workers=16):
     """Apply fn to each asset in worker processes (h5py holds a global lock, so threads serialise)."""
     with ProcessPoolExecutor(workers) as ex:
@@ -281,11 +295,21 @@ def mua_and_speed(asset: dict, start_s: float, minutes: float, bin_s: float = 0.
 
 
 def shifted_contrast(mua: np.ndarray, speed: np.ndarray, shifts, stop_speed: float = STOP_SPEED_CM_S):
-    """Ratio of mean multi-unit counts in running bins to stopped bins, with the labels shifted."""
+    """Ratio of mean multi-unit counts in running bins to stopped bins, with the labels shifted.
+
+    For a shift of sh bins, mua[t] is labelled by speed[t + sh], the same sign convention as
+    lagged_corr(mua, speed); bins without a partner at the window ends are dropped (no wrap-around).
+    """
     out = []
+    n = len(mua)
     for sh in shifts:
-        st = np.roll(speed < stop_speed, sh)
-        out.append(mua[~st].mean() / mua[st].mean())
+        if sh >= 0:
+            m, sp = mua[:n - sh], speed[sh:]
+        else:
+            m, sp = mua[-sh:], speed[:n + sh]
+        ok = np.isfinite(sp)
+        st = sp[ok] < stop_speed
+        out.append(m[ok][~st].mean() / m[ok][st].mean())
     return np.array(out)
 
 
