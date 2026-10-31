@@ -67,12 +67,15 @@ def load_photometry(path):
     The file's single RoiResponseSeries interleaves three frame types at 60 Hz, in a fixed order.
     The LabeledEvents labels are exclusive per frame ("LED470", "Cued stimulus while LED470",
     "Lick while LED470", "Cued stimulus and lick while LED470", and the same for 415), so every
-    415 or 470 frame carries one of four labels. The frames whose timestamps match a 415 label
-    (within 4 ms) are the reference channel, those that match a 470 label the signal channel
-    (20 Hz each, Methods, Fiber photometry, Data acquisition: "each LED was modulated at 20 Hz
-    in an alternating fashion"). The labels are used, not the frame order, because the order
-    shifts after an irregular frame interval in some sessions. The third frame type is not
-    described and is not used. CS onsets are the starts of bouts of the "Cued stimulus"
+    415 or 470 frame carries one of four labels. Each channel is one phase of the three-frame
+    order (20 Hz each, Methods, Fiber photometry, Data acquisition: "each LED was modulated at 20 Hz
+    in an alternating fashion"): the phase that the 415 or 470 labels mark (timestamps matched
+    within 4 ms) before the first irregular frame interval (below 10 ms). In one session (Mouse6,
+    late sucrose) the labels move by one frame after such an interval while the data keep their
+    order (the mean of each phase is the same before and after it, printed in the notebook), so
+    taking the frames the labels mark after it would read the constant third frame type as the
+    470 nm channel; the frame order is used instead. The third frame type is not described and is
+    not used. CS onsets are the starts of bouts of the "Cued stimulus"
     frames (with or without lick), bouts separated by more than 1 s (standard choice; cues are at
     least 29 s apart).
     """
@@ -90,19 +93,27 @@ def load_photometry(path):
            "fiber_location": _s(h["general/fiber_photometry/fibers/location"][0]),
            "wavelengths": h["general/fiber_photometry/excitation_sources/peak_wavelength"][:].tolist(),
            "n_frames": len(ts), "events": {k: len(v) for k, v in ev.items()}}
+    irr = np.where(np.diff(ts) < 0.010)[0]
+    first_irregular = int(irr[0]) if len(irr) else len(ts)
+    out["first_irregular_frame"] = first_irregular
     for ch in ("415", "470"):
         t = np.sort(np.concatenate([v for k, v in ev.items()
                                     if k == "LED" + ch or k.endswith("while LED" + ch)]))
         i = np.clip(np.searchsorted(ts, t - 0.004), 0, len(ts) - 1)
         ok = np.abs(ts[i] - t) < 0.004
         ph, cnt = np.unique(i[ok] % 3, return_counts=True)
-        out["phase" + ch] = int(ph[np.argmax(cnt)])
         out["phase_agree" + ch] = float(cnt.max() / cnt.sum())
-        fr = np.unique(i[ok])
-        out["labelled" + ch] = len(fr)
+        pre = ok & (i < first_irregular)
+        ph0, cnt0 = np.unique(i[pre] % 3, return_counts=True)
+        out["phase" + ch] = int(ph0[np.argmax(cnt0)])
+        out["labels_moved" + ch] = int(np.sum(ok & (i > first_irregular) & (i % 3 != out["phase" + ch])))
+        fr = np.arange(out["phase" + ch], len(ts), 3)
+        out["labelled" + ch] = int(ok.sum())
         out["t" + ch] = ts[fr]
         out["f" + ch] = d[fr]
+    n = np.arange(len(ts))
     out["phase_means"] = [float(d[k::3].mean()) for k in range(3)]
+    out["phase_means_after_irregular"] = [float(np.mean(d[(n % 3 == k) & (n > first_irregular)])) if first_irregular < len(ts) - 3 else np.nan for k in range(3)]
     out["frame_dt"] = (float(np.diff(ts).min()), float(np.diff(ts).max()))
     cue = np.r_[ev["Cued stimulus while LED470"], ev["Cued stimulus and lick while LED470"]]
     b = _bouts(cue, 1.0)
@@ -112,7 +123,7 @@ def load_photometry(path):
     return out
 
 
-def photometry_trials(s, pre=5.0, post=10.0, zmode="trial"):
+def photometry_trials(s, pre=5.0, post=10.0, zmode="trial", fit="average", return_fit=False):
     """Trial matrix of the z-scored, reference-corrected NT sensor signal at 5 Hz.
 
     Methods, Fiber photometry, Data analysis: both channels "down-sampled to 5Hz and filtered ...
@@ -122,8 +133,12 @@ def photometry_trials(s, pre=5.0, post=10.0, zmode="trial"):
     data averaged across trials in a session in a time window of -5 s to 0 s from the start of the
     CS"; "Residuals ... were z-transformed using ... a baseline window of -5 s to 0 s". Whether the
     z-transform uses each trial's own baseline (zmode="trial") or the session's pooled baseline
-    (zmode="session") is not said: a reading, both run.
-    Returns time bin starts (s from CS onset) and an array trials x bins.
+    (zmode="session") is not said: a reading, both run. The 470 nm trace is regressed on the 415 nm
+    trace. fit="average" fits the trial-averaged -5 to 0 s traces, as the Methods say;
+    fit="pooled" fits the -5 to 0 s bins of every trial pooled (a variant: averaging can leave too
+    little variance in the baseline to estimate the slope).
+    Returns time bin starts (s from CS onset), an array trials x bins and the trials kept, and with
+    return_fit=True also the slope, the intercept and the correlation of the fitted traces.
     """
     edges = np.arange(-pre, post + 1e-9, 0.2)
     chans = {}
@@ -145,7 +160,9 @@ def photometry_trials(s, pre=5.0, post=10.0, zmode="trial"):
     R, G = chans["415"][keep], chans["470"][keep]
     tb = edges[:-1]
     base = tb < 0
-    a, b = np.polyfit(R[:, base].mean(0), G[:, base].mean(0), 1)
+    x, y = (R[:, base].mean(0), G[:, base].mean(0)) if fit == "average" else (R[:, base].ravel(), G[:, base].ravel())
+    a, b = np.polyfit(x, y, 1)
+    r = float(np.corrcoef(x, y)[0, 1])
     res = G - (a * R + b)
     if zmode == "trial":
         mu = res[:, base].mean(1, keepdims=True)
@@ -153,6 +170,8 @@ def photometry_trials(s, pre=5.0, post=10.0, zmode="trial"):
     else:
         mu = res[:, base].mean()
         sd = res[:, base].std(ddof=1)
+    if return_fit:
+        return tb, (res - mu) / sd, keep, (float(a), float(b), r)
     return tb, (res - mu) / sd, keep
 
 
@@ -288,3 +307,126 @@ def pose_measures(pose):
     return {"velocity": vel, "distance_to_port": dist, "direction": direc, "rel_direction": rel,
             "acceleration": dd(vel), "d_distance_to_port": dd(dist),
             "d_direction": dang(direc, "rad"), "d_rel_direction": dang(rel, "deg")}
+
+
+def _median_at(dist, rate, t0, times):
+    """Median of a per-frame measure at the frames of `times` (rows: one set of times each)."""
+    f = np.round((np.atleast_2d(times) - t0) * rate).astype(int)
+    ok = (f >= 0) & (f < len(dist))
+    v = np.where(ok, dist[np.clip(f, 0, len(dist) - 1)], np.nan)
+    med = np.nanmedian(v, axis=1)
+    med[ok.sum(1) <= 5] = np.nan
+    return med
+
+
+def fit_pose_clock(dist, rate, t0, events, max_lag=300.0):
+    """Map trial-clock times onto the pose clock: pose time = T + offset + factor * (t - T), with T
+    the median event time. At each port entry (`events`, trial clock) the head should be at the
+    port, so the map is the one that minimises the median head-to-port distance at port entries.
+    The pose series give only a start time and a nominal 15 frames/s, so this map is estimated from
+    the data (an assumption, stated in the notebook). Steps: a grid of factors from 0.96 to 1.04 (step
+    0.0005) and offsets within +/- max_lag (step 0.5 s), on at most 250 port entries spread over the session; then a finer grid around the best (factor
+    +/- 0.002 in steps of 0.0001, offset +/- 3 s in steps of 0.1 s). Search ranges and steps are standard
+    choices. Returns the map and, as checks, the best extra lag left in each third of the session
+    (zero when the map holds throughout) and the median distance under the map, at lag 0 and over
+    the whole session."""
+    events = np.sort(events)
+    T = float(np.median(events))
+    sub = events[np.unique(np.linspace(0, len(events) - 1, min(len(events), 250)).astype(int))]
+    offsets = np.arange(-max_lag, max_lag + 1e-9, 0.5)
+    best = (np.inf, 1.0, 0.0)
+    for f in np.arange(0.96, 1.04 + 1e-9, 0.0005):
+        med = _median_at(dist, rate, t0, T + offsets[:, None] + f * (sub - T)[None, :])
+        if np.all(np.isnan(med)):
+            continue
+        k = int(np.nanargmin(med))
+        if med[k] < best[0]:
+            best = (med[k], f, offsets[k])
+    _, factor0, offset0 = best
+    grid = [(f, o) for f in np.arange(factor0 - 0.002, factor0 + 0.002 + 1e-9, 0.0001)
+            for o in np.arange(offset0 - 3, offset0 + 3 + 1e-9, 0.1)]
+    tt = np.array([T + o + f * (events - T) for f, o in grid])
+    med = _median_at(dist, rate, t0, tt)
+    factor, offset = grid[int(np.nanargmin(med))]
+    resid = []
+    small = np.arange(-20, 20 + 1e-9, 0.2)
+    for seg in np.array_split(events, 3):
+        m = _median_at(dist, rate, t0, (T + offset + factor * (seg - T))[None, :] + small[:, None])
+        resid.append(float(small[np.nanargmin(m)]))
+    return {"T": T, "offset": float(offset), "factor": float(factor), "resid_lag_thirds": resid,
+            "med_dist_fit": float(np.nanmin(med)),
+            "med_dist_lag0": float(_median_at(dist, rate, t0, events[None, :])[0]),
+            "med_dist_all": float(np.nanmedian(dist))}
+
+
+def to_pose_time(t, clock):
+    """Trial-clock times to pose-clock times under a map from fit_pose_clock."""
+    return clock["T"] + clock["offset"] + clock["factor"] * (np.asarray(t) - clock["T"])
+
+
+POSE_MEASURES = ("velocity", "distance_to_port", "direction", "rel_direction",
+                 "acceleration", "d_distance_to_port", "d_direction", "d_rel_direction")
+
+
+def behavior_trials(measures, clock, rate, t0, onsets, n_frames=300):
+    """The eight pose measures for the `n_frames` frames (20 s at 15 frames/s) after each CS onset
+    (Methods, Unsupervised trial-based classification of behaviors: "Each of the eight
+    measurements were extracted for 300 frames (20 seconds) following the sucrose and shock cue").
+    Onsets are on the trial clock and are mapped to pose frames with fit_pose_clock. Returns an
+    array trials x 8 x n_frames and the onsets kept (trials whose frames run past the pose are
+    dropped)."""
+    start = np.round((to_pose_time(onsets, clock) - t0) * rate).astype(int)
+    n = len(measures["velocity"])
+    ok = (start >= 0) & (start + n_frames <= n)
+    X = np.stack([np.stack([measures[k][s:s + n_frames] for k in POSE_MEASURES]) for s in start[ok]])
+    return X, np.asarray(onsets)[ok]
+
+
+def density_peaks(Y, gridsize=200, cut=3.0, rel_floor=0.0):
+    """Number of local maxima of a Gaussian kernel density over a 2-D embedding, as seaborn.kdeplot
+    computes it by default (scipy gaussian_kde with Scott's bandwidth, a 200 x 200 grid extending
+    3 bandwidths beyond the data); each maximum is one watershed marker, so the count is the number
+    of watershed regions (Methods, Unsupervised trial-based classification of behaviors). Maxima
+    below `rel_floor` times the highest density are not counted (0: all count; a variant)."""
+    from scipy.stats import gaussian_kde
+    kde = gaussian_kde(Y.T, bw_method="scott")
+    bw = np.sqrt(np.diag(kde.covariance))
+    xs = [np.linspace(Y[:, i].min() - cut * bw[i], Y[:, i].max() + cut * bw[i], gridsize) for i in range(2)]
+    gx, gy = np.meshgrid(*xs, indexing="ij")
+    D = kde(np.vstack([gx.ravel(), gy.ravel()])).reshape(gridsize, gridsize)
+    peak = (D == ndimage.maximum_filter(D, size=3, mode="constant", cval=-np.inf)) & (D > rel_floor * D.max())
+    return int(peak.sum()), D
+
+
+class RangeFile:
+    """Minimal read-only file over HTTP range requests, for reading a video container's header
+    with PyAV without downloading the file. Reads past the end return what is left; at most
+    `max_bytes` are fetched in all (an error after that), so a container whose index needs the
+    whole file fails instead of downloading it."""
+
+    def __init__(self, url, max_bytes=50_000_000):
+        self.s = requests.Session()
+        r = self.s.get(url, headers={"Range": "bytes=0-0"}, allow_redirects=True, timeout=60)
+        self.url = r.url
+        self.size = int(r.headers["Content-Range"].split("/")[1])
+        self.pos, self.fetched, self.max_bytes = 0, 0, max_bytes
+
+    def read(self, n=-1):
+        if n is None or n < 0:
+            n = self.size - self.pos
+        end = min(self.pos + n, self.size) - 1
+        if end < self.pos:
+            return b""
+        self.fetched += end - self.pos + 1
+        if self.fetched > self.max_bytes:
+            raise IOError("more than max_bytes read")
+        b = self.s.get(self.url, headers={"Range": f"bytes={self.pos}-{end}"}, timeout=60).content
+        self.pos += len(b)
+        return b
+
+    def seek(self, offset, whence=0):
+        self.pos = {0: 0, 1: self.pos, 2: self.size}[whence] + offset
+        return self.pos
+
+    def tell(self):
+        return self.pos

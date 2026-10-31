@@ -9,20 +9,25 @@ learning.
 
 | Claim | Outcome |
 |---|---|
-| NT sensor response to sucrose increases after learning (Figure 3k) | Not reproduced |
+| NT sensor response to sucrose increases after learning (Figure 3k) | Partially reproduced |
 | NT sensor response to airpuff decreases after learning (Figure 3l) | Not reproduced |
 | NT sensor dips after both outcomes early in learning (Figure 3, text) | Not reproduced |
-| 685 BLA neurons from 30 mice (Figure 4) | Not reproduced |
+| 685 BLA neurons from 30 mice (Figure 4) | Partially reproduced |
+| Photoidentified BLA-NAc and BLA-CeA neurons (Figure 4c) | Not reproduced |
 | Seven functional clusters of BLA responses (Figure 4d) | Blocked: methods underspecified |
-| Behavior clusters from pose (Figure 5d-h) | Blocked: metadata insufficient |
+| Behavior clusters from pose (Figure 5d-h) | Partially reproduced |
 | 13 claims comparing CRISPR and control mice, or tagged projectors | Blocked: metadata insufficient |
-| 20 claims on experiments not in the dandiset | Blocked: data missing |
+| 19 claims on experiments not in the dandiset | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The NT sensor effects go in the paper's direction under the per-trial z-score, with sizes near the
-paper's, but none reaches p < 0.05 with five mice. No file says which recorded mice are CRISPR and
-which control, the units are not sorted single units, and the pose is not on the trial clock. The
+The NT sensor response to sucrose rises after learning with p = 0.005 when all trials are used, but
+not with the first 16 trials; the airpuff decrease goes in the paper's direction without reaching
+p < 0.05. The units are not sorted single units, so the neuron and tagged-unit counts are far above
+the paper's. The pose has no timestamps; a clock fitted to the port entries aligns it in 21 of 29
+sessions, and the behavior clustering gives the paper's seven sucrose clusters but not its five
+shock clusters under the reading adopted. No file says which recorded mice are CRISPR and which
+control. The
 attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000689-li-2022-01.yaml`](../../attempts/000689-li-2022-01.yaml).
