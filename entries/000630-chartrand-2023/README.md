@@ -10,16 +10,16 @@ come from the paper's cell table, which links to the files through the LIMS numb
 |---|---|
 | The files match the paper's cell table one to one (link) | Partially reproduced |
 | Cell counts by subclass (Table S2) | Reproduced |
-| Subclasses differ in sag and initial firing rate (FDR p < 1e-7) | Partially reproduced |
+| Subclasses differ in sag and initial firing rate (FDR p < 1e-7) | Reproduced, resting on an assumption |
 | Subclass profiles (PAX6 low sag and high initial firing rate) | Reproduced |
 | Upstroke adaptation against sag, R2 = 0.74 | Not reproduced |
-| Sag and firing rate gradient within LAMP5 t-types | Partially reproduced |
+| Sag and firing rate gradient within LAMP5 t-types | Not reproduced |
 | No effect of donor condition, sex or age | Reproduced |
 | Input resistance varies with region | Reproduced |
 | MC4R cells: strong sag and irregular firing | Reproduced |
 | ADARB2 MC4R against SST CHRNA4 | Not reproduced |
 | PAX6 TNFAIP8L3: initial firing rate and ADP | Reproduced |
-| Electrophysiological d' is smaller within subclasses | Partially reproduced |
+| Electrophysiological d' is smaller within subclasses | Not reproduced |
 | Gaussian mixture F1 per subclass | Reproduced |
 | Subclass classifier, 82% accuracy | Reproduced |
 | Held-out classifier on Amsterdam and Szeged cells | Blocked: data missing |
@@ -35,11 +35,12 @@ come from the paper's cell table, which links to the files through the LIMS numb
 | Ephys d' against transcriptomic d' (Fig. 6B) | Blocked: not attempted |
 | Twelve claims on transcriptomic references, mouse morphology and morphology models | Blocked: not attempted |
 
-After the second round of verification, three changes of outcome are proposed for a third round:
-the subclass differences in sag and initial firing rate to reproduced (they hold when the features
-are extracted without the Methods' 500 ms noise criterion, which the paper's own per-cell values
-show its pipeline did not apply as measured here), and the LAMP5 gradient and the d' structure to
-not reproduced (their criteria name no partial level).
+Three outcomes changed after the third round of verification. The subclass differences in sag
+and initial firing rate are reproduced when the features are extracted without the Methods' 500 ms
+noise criterion, which the paper's own per-cell values show its pipeline did not apply as measured
+here; the outcome rests on that assumption, and with the criterion as written the claim is partially
+reproduced. The LAMP5 gradient and the d' structure are not reproduced, as their criteria name no
+partial level and one part fails.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.

@@ -77,24 +77,26 @@ outcomes:
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: fig2c-subclass-ephys-differences
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_chartrand_2023.ipynb
   output: claim:fig2c-subclass-ephys-differences
+  assumed: true
   notes: 'Kruskal-Wallis across the four core subclasses (179 cells, 92 features). Sag has FDR p = 6.6e-20
     (epsilon2 0.57). The initial firing rate at rheobase + 40 pA (first_isi_inv_hero) has FDR p = 4.7e-7
     on the features computed here with the Methods'' sweep QC, above the claim''s 1e-7, and 1.7e-8 on
-    the paper''s own values (reading (b)), below it. The criterion judges on reading (a) where a feature
-    can be computed, so both features have FDR p < 0.05 but not both below 1e-7. 56 features have FDR
-    p < 0.05. The computed initial firing rate differs from the paper''s value by more than 1%, or has
-    a value on one side only, in 28 of the 179 cells: 10 take another repeat of the same amplitude, 6
-    another amplitude, 10 have no sweep here that gives the paper''s value and 2 have a value on one side
-    only. In 11 cells of the test no sweep passing QC lies 39 to 61 pA above rheobase and IPFX falls back
-    to a lower sweep; 6 of them disagree with the paper, and in 4 of these the paper''s value comes from
-    a sweep in range that fails here only the Methods'' 500 ms rms noise criterion. Extracted without
-    that criterion (variant a''), the features agree with the paper''s values for more cells in 38 of
-    39 features, and first_isi_inv_hero has FDR p = 3.9e-9 (sag 3.3e-20), so the claim holds in full;
-    a change to reproduced is proposed. With any one donor left out, the largest uncorrected p is 3.1e-19
-    for sag and 3.5e-5 for the initial firing rate.'
+    the paper''s own values (reading (b)), below it. 56 features have FDR p < 0.05. The computed initial
+    firing rate differs from the paper''s value by more than 1%, or has a value on one side only, in 28
+    of the 179 cells: 10 take another repeat of the same amplitude, 6 another amplitude, 10 have no sweep
+    here that gives the paper''s value and 2 have a value on one side only. In 11 cells of the test no
+    sweep passing QC lies 39 to 61 pA above rheobase and IPFX falls back to a lower sweep; 6 of them disagree
+    with the paper, and in 4 of these the paper''s value comes from a sweep in range that fails here only
+    the Methods'' 500 ms rms noise criterion. Extracted without that criterion (variant a''), the features
+    agree with the paper''s values for more cells in 38 of 39 features, and first_isi_inv_hero has FDR
+    p = 3.9e-9 (sag 3.3e-20), so the claim holds in full. The outcome rests on (a''), an assumption stated
+    under deviations; with the criterion as written the claim is partially reproduced. The outcome was
+    partially_reproduced through round 2 and was changed to reproduced after verification round 3. With
+    any one donor left out, the largest uncorrected p is 3.1e-19 for sag and 3.5e-5 for the initial firing
+    rate, on reading (a); this check was not run on (a'').'
   deviations:
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
@@ -105,14 +107,16 @@ outcomes:
     not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
     with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
     the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
-    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
-  - Which sweeps pass the Methods' QC decides this claim. The Methods (Quality control) require rms noise
-    below 0.5 mV over 500 ms; measured with IPFX on these files, that criterion leaves out sweeps from
-    which the paper's own per-cell values were computed (7 of the 9 fallback cells that disagree), and
-    IPFX then takes a lower sweep as the one at rheobase + 40 pA. The recomputation is run both with the
-    criterion as written (reading a, partial) and without it (variant a', which matches the paper's values
-    for more cells in 38 of 39 features, reproduced). How the paper measured this noise is asked of the
-    authors.
+    (a') for fig2c-subclass-ephys-differences, whose outcome rests on it.
+  - Assumed that the paper's sweep QC did not exclude the sweeps that fail here only the Methods' rms
+    noise criterion of 0.5 mV over 500 ms (Methods, Quality control) as IPFX measures it, so the outcome
+    is judged on variant (a'), extracted without that criterion. This departs from the Methods' QC as
+    IPFX measures it. The paper's own per-cell values were computed from such sweeps (7 of the 9 fallback
+    cells that disagree with the paper), and without the criterion 38 of the 39 recomputed features
+    agree with the paper's values for more cells (median share within 1% 0.933 against 0.895). With the
+    criterion as written (reading a) the claim is partially reproduced (first_isi_inv_hero FDR p 4.7e-7);
+    on the paper's values (reading b) it holds (1.7e-8). How the paper measured this noise is asked of
+    the authors (findings, methods_unavailable).
   - Sweep QC follows the Methods as far as the files allow (leak within 100 pA, rms noise below 0.2 mV
     over 1.5 ms and 0.5 mV over 500 ms, IPFX's integrity check, and sweeps stored with zeros before the
     end of the stimulus left out); the Methods' criterion of a baseline within 2 mV of target is not applied,
@@ -121,18 +125,6 @@ outcomes:
     as a variant.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
-  proposed:
-    outcome: reproduced
-    reason: 'The verifier asked to check the sweep at rheobase + 40 pA before the partial outcome stands.
-      In 16 cells no sweep passing QC is 39 to 61 pA above rheobase and IPFX falls back to a lower sweep;
-      in 7 of the 9 of these that disagree with the paper, the paper''s value comes from a sweep in range
-      that fails here only the Methods'' 500 ms rms noise criterion as IPFX measures it. Extracting the
-      features without that criterion (variant a'') brings 38 of the 39 computed features closer to the
-      paper''s values (median share within 1% 0.933 against 0.895) and gives first_isi_inv_hero FDR p
-      = 3.9e-9 and sag 3.3e-20, both below 1e-7. The paper''s own values show its pipeline kept these
-      sweeps, so (a'') is the recomputation best supported by the paper; the outcome would rest on that
-      assumption (assumed: true), with the question of how the noise was measured put to the authors.
-      No other claim''s outcome changes under (a'').'
 - claim: fig2b-subclass-ephys-profiles
   outcome: reproduced
   notebook: reproduce_chartrand_2023.ipynb
@@ -158,7 +150,7 @@ outcomes:
     not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
     with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
     the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
-    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
+    (a') for fig2c-subclass-ephys-differences, whose outcome rests on it.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: figs3a-sag-adaptation
@@ -192,11 +184,11 @@ outcomes:
     not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
     with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
     the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
-    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
+    (a') for fig2c-subclass-ephys-differences, whose outcome rests on it.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: fig2c-lamp5-gradient
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_chartrand_2023.ipynb
   output: claim:fig2c-lamp5-gradient
   notes: Over the 96 LAMP5 cells of the strict set in the dandiset, both features have a positive Spearman
@@ -207,8 +199,9 @@ outcomes:
     0.001). With the 14 Amsterdam and Szeged LAMP5 cells the code includes, taken from the paper's feature
     tables, sag has FDR p = 0.0039, still above 0.001. The test uses filter_dropouts=False, as the code's
     cell 59 calls run_correlations; with the function's default (True) sag, whose values are all below
-    1, is left out. The criterion names no partial level and sag fails under every reading, so a change
-    to not_reproduced is proposed.
+    1, is left out. The criterion names no partial level and sag fails under every reading, so the claim
+    is not reproduced, by the rule applied to fig4b-adarb2-irregular-firing. The outcome was partially_reproduced
+    through round 2 and was changed to not_reproduced after verification round 3.
   deviations:
   - The dandiset lacks the Amsterdam and Szeged LAMP5 cells the code includes; the test runs on the Seattle
     cells, and the three-site test is a variant using the paper's per-cell features for the other sites.
@@ -221,16 +214,9 @@ outcomes:
     not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
     with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
     the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
-    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
+    (a') for fig2c-subclass-ephys-differences, whose outcome rests on it.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion names no partial level, and the attempt changed fig4b-adarb2-irregular-firing,
-      fig4d-mouse-no-rosehip-ephys and fig5d-mouse-pax6-doublets to not_reproduced on that ground after
-      round 1; the verifier (round 2) asked that this claim follow the same rule. Sag misses FDR p < 0.001
-      under every reading (0.022 in reading a, 0.015 in a', 0.0020 on the paper's values, 0.0039 with
-      the other sites' cells), as the notebook shows.
 - claim: figs6-donor-condition-ephys
   outcome: reproduced
   notebook: reproduce_chartrand_2023.ipynb
@@ -257,7 +243,7 @@ outcomes:
     not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
     with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
     the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
-    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
+    (a') for fig2c-subclass-ephys-differences, whose outcome rests on it.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: figs6c-region-ephys
@@ -280,7 +266,7 @@ outcomes:
     not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
     with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
     the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
-    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
+    (a') for fig2c-subclass-ephys-differences, whose outcome rests on it.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: fig4b-mc4r-sag-irregularity
@@ -304,7 +290,7 @@ outcomes:
     not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
     with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
     the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
-    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
+    (a') for fig2c-subclass-ephys-differences, whose outcome rests on it.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: fig4b-adarb2-irregular-firing
@@ -330,7 +316,7 @@ outcomes:
     not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
     with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
     the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
-    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
+    (a') for fig2c-subclass-ephys-differences, whose outcome rests on it.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: fig5b-tnfaip8l3-ephys
@@ -354,11 +340,11 @@ outcomes:
     not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
     with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
     the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
-    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
+    (a') for fig2c-subclass-ephys-differences, whose outcome rests on it.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: fig6a-ephys-dprime-subclass-structure
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_chartrand_2023.ipynb
   output: claim:fig6a-ephys-dprime-subclass-structure
   notes: Nine t-types with at least 5 cells (the legend's rule of at least 4 keeps the same nine), 81
@@ -371,8 +357,8 @@ outcomes:
     the median between-subclass d' (2.40 to 2.62) no within-subclass pair is high. The subclass structure
     holds; the single high pair holds only under the first reading. The first run adopted the 2.2 reading
     as an assumption and recorded reproduced; changed to partially_reproduced after verification round
-    1, as the criterion asks for both readings. The criterion names no partial level, so a change to not_reproduced
-    is proposed.
+    1, as the criterion asks for both readings. The criterion names no partial level, so the claim is
+    not reproduced; changed to not_reproduced after verification round 3.
   deviations:
   - Random forest seeds 0, 1 and 2 are a standard choice; the code sets none.
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
@@ -384,16 +370,9 @@ outcomes:
     not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
     with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
     the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
-    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
+    (a') for fig2c-subclass-ephys-differences, whose outcome rests on it.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion names no partial level, and the attempt changed fig4b-adarb2-irregular-firing,
-      fig4d-mouse-no-rosehip-ephys and fig5d-mouse-pax6-doublets to not_reproduced on that ground after
-      round 1; the verifier (round 2) asked that this claim follow the same rule. Under the second reading
-      of high (above the median between-subclass d') no within-subclass pair is high in any of the nine
-      runs, as the notebook shows.
 - claim: fig6d-gmm-subclass-f1
   outcome: reproduced
   notebook: reproduce_chartrand_2023.ipynb
@@ -423,7 +402,7 @@ outcomes:
     not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
     with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
     the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
-    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
+    (a') for fig2c-subclass-ephys-differences, whose outcome rests on it.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: figs8a-classifier-cv
@@ -452,7 +431,7 @@ outcomes:
     not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
     with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
     the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
-    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
+    (a') for fig2c-subclass-ephys-differences, whose outcome rests on it.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: figs8b-classifier-holdout
@@ -500,8 +479,8 @@ outcomes:
     is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
     as computed. Two variants of reading (a) are shown, (a') with the features extracted without the Methods'
     500 ms rms noise criterion, and (a, ratios) with the adaptation ratios computed here, for figs3a,
-    fig6d and fig3g; neither changes an outcome except (a') for fig2c-subclass-ephys-differences, where
-    a change is proposed.
+    fig6d and fig3g; neither changes an outcome except (a') for fig2c-subclass-ephys-differences, whose outcome
+    rests on it.
   - Mouse cells from DANDI 000020 version 0.210913.1639 with the paper's mouse labels; 250 of 272 strict
     mouse L1 cells have a file there.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
@@ -553,8 +532,8 @@ outcomes:
     is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
     as computed. Two variants of reading (a) are shown, (a') with the features extracted without the Methods'
     500 ms rms noise criterion, and (a, ratios) with the adaptation ratios computed here, for figs3a,
-    fig6d and fig3g; neither changes an outcome except (a') for fig2c-subclass-ephys-differences, where
-    a change is proposed.
+    fig6d and fig3g; neither changes an outcome except (a') for fig2c-subclass-ephys-differences, whose outcome
+    rests on it.
   - Mouse cells from DANDI 000020 version 0.210913.1639; 250 of 272 strict mouse L1 cells have a file
     there, 205 of them in VISp.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
@@ -584,8 +563,8 @@ outcomes:
     is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
     as computed. Two variants of reading (a) are shown, (a') with the features extracted without the Methods'
     500 ms rms noise criterion, and (a, ratios) with the adaptation ratios computed here, for figs3a,
-    fig6d and fig3g; neither changes an outcome except (a') for fig2c-subclass-ephys-differences, where
-    a change is proposed.
+    fig6d and fig3g; neither changes an outcome except (a') for fig2c-subclass-ephys-differences, whose outcome
+    rests on it.
   - 22 of the paper's strict mouse L1 cells (20 in VISp layer 1) have no file in DANDI 000020.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
@@ -615,8 +594,8 @@ outcomes:
     is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
     as computed. Two variants of reading (a) are shown, (a') with the features extracted without the Methods'
     500 ms rms noise criterion, and (a, ratios) with the adaptation ratios computed here, for figs3a,
-    fig6d and fig3g; neither changes an outcome except (a') for fig2c-subclass-ephys-differences, where
-    a change is proposed.
+    fig6d and fig3g; neither changes an outcome except (a') for fig2c-subclass-ephys-differences, whose outcome
+    rests on it.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: mouse-cell-link
@@ -1469,3 +1448,54 @@ verifications:
       was that they were not data_missing.
     response: No outcome change. The round-1 reason is corrected to the verifier's words (not attempted,
       not data_missing); the point that the inputs are public stays in the claim's notes as the author's.
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 3. Only the three proposed changes of outcome and the analysis behind them in the executed
+    notebook, with the claims file and the paper. The verifier agreed with all three, for fig2c-subclass-ephys-differences
+    on the condition that the assumption be recorded as a structured field. Report in transcripts/000630/verifier-3-report.md.
+  results:
+  - claim: fig2c-subclass-ephys-differences
+    agrees: true
+    outcome: reproduced
+    reason: 'Yes, on one condition. The numbers come from the data (c27, c18), and the choice was not made
+      to reach the result: (a'') is justified by agreement with the paper''s own per-cell values across
+      all 39 features, is applied to every claim, and reading (b) also falls below 1e-7, so I accept (a'')
+      as the recomputation best supported by the paper''s own values. However, O1 reading (a) is the Methods''
+      definitions with IPFX conventions, and (a'') drops one of the Methods'' sweep QC criteria (rms <
+      0.5 mV over 500 ms); reproduced therefore rests on a departure from the Methods'' QC as IPFX measures
+      it. The record states this only in prose ("(assumed: true)" inside the reason). My condition: the
+      outcome should carry it as a structured assumption, together with the question to the authors about
+      how the 500 ms noise was measured. Fragility, not decisive: the leave-one-donor-out check (c28) was
+      run only on reading (a); its worst uncorrected p for first_isi_inv_hero is 3.5e-5, and it was not
+      run on (a'').'
+    response: Changed to reproduced. The outcome carries assumed true, and a deviation states what was assumed
+      (the sweeps that fail only the 500 ms rms criterion as IPFX measures it are kept, variant a'), that
+      this departs from the Methods' QC, why, and the outcome with the criterion as written; the question
+      to the authors is the methods_unavailable finding on the 500 ms noise. The notes say the leave-one-donor-out
+      check was run on reading (a) only.
+  - claim: fig2c-lamp5-gradient
+    agrees: true
+    outcome: not_reproduced
+    reason: 'first_isi_inv_hero passes under every reading; sag fails under every reading (FDR p 0.022
+      in a, 0.015 in a'', 0.0020 on the paper''s values, 0.0039 with three sites, threshold 0.001). The
+      criterion requires both features below 0.001 and names no partial level, and the record already applied
+      not_reproduced on that ground to fig4b-adarb2, fig4d and fig5d. For a reader: even the paper''s own
+      values, under the method the claims file prescribes, give sag FDR p above 0.001; either the claims
+      file''s method differs from what produced the paper''s p<10-3, or that statement does not hold for
+      sag.'
+    response: Changed to not_reproduced. The point for a reader is added to questions/000630.yaml; the
+      outcome stays as tested on the claims file.
+  - claim: fig6a-ephys-dprime-subclass-structure
+    agrees: true
+    outcome: not_reproduced
+    reason: 'In all nine runs mean within-subclass d'' (1.12 to 1.31) is below mean between-subclass d''
+      (2.39 to 2.56). Under high as d'' >= 2.2, NMBR/LCP2 is the only high within-subclass pair in 7 of
+      9 runs; under high as above the median between-subclass d'' (2.40 to 2.62) no within-subclass pair
+      is high in any run. The criterion requires both readings and names no partial level, so not_reproduced
+      follows. For a reader: in the paper the sentence on the single high within-subclass pair follows
+      the cross-modality comparison (Fig. 6B) and may refer to the transcriptomic matrix or to both matrices,
+      not the electrophysiological one alone; the outcome turns on the second reading of high, which the
+      paper does not define.'
+    response: Changed to not_reproduced. The point for a reader is added to questions/000630.yaml; the
+      outcome stays as tested on the claims file.
