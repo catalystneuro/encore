@@ -1,0 +1,417 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000632",
+  "label": "DANDI:000632"
+ },
+ "page": "datasets/dandi/000632/",
+ "generated": "2026-10-31T17:28:51+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 3,
+  "partially_reproduced": 0,
+  "not_reproduced": 2,
+  "blocked": 7
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000632-kim-2023-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000632",
+    "version": "0.231012.1930",
+    "doi": "10.48324/dandi.000632/0.231012.1930"
+   },
+   "key": "dandi:000632",
+   "label": "DANDI:000632",
+   "dataset_version": "0.231012.1930",
+   "paper": "10.3390/ijms241310921",
+   "paper_title": "Control of the Electroporation Efficiency of Nanosecond Pulses by Swinging the Electric Field Vector Direction",
+   "date": "2026-10-31",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-12"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41168492428"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000632-kim-2023",
+   "entry_title": "Co- and cross-directional paired nanosecond pulses in a square electrode array (Kim et al. 2023)",
+   "description": "Tests the Figure 3 findings of Kim, Semenov, Kiester, Keppler, Ibey, Bixler, Colunga Biancatelli and Pakhomov (2023) on dandiset 000632, which holds one stitched whole-dish image (MemBrite and YO-PRO-1) for each of 24 BPAE monolayers exposed to four co- or cross-directional paired pulses at 1 Hz or 770 kHz. It measures YO-PRO-1 uptake in the 200 um ROI at the center of the array, with and without the electrode-footprint background, and compares the four groups by t-tests. The triangular-array and strobe-imaging experiments of Figures 2, 4 and 5 are not in the dandiset; they are in DANDI:000631, 000633 and 000634.",
+   "notebooks": [
+    {
+     "path": "reproduce_kim_2023.ipynb",
+     "title": "Reproducing Kim et al. (2023), Figure 3, from dandiset 000632",
+     "executed": "notebooks/000632-kim-2023/reproduce_kim_2023.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig3-1hz-co-equals-cross",
+     "statement": "At 1 Hz, co-directional and cross-directional (90 degree) paired pulses in the square array have the same electroporation efficiency, measured as YP uptake at the array center.",
+     "source": "Results, 2.2, paragraph 1; Figure 3",
+     "quote": "Consistently with the measurements in Figure 2 , co- and cross-directional pulses at 1 Hz had the same electroporation efficiency ( Figure 3 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "Under background reading (b) the co-directional dishes at 1 Hz (mean 665, n = 5) average 0.68 of the cross-directional ones (972, n = 6); two-tailed Student's t-test p = 0.32, so the test does not find a difference. Reading (a) gives ratio 0.75, p = 0.31; Welch's test and the variants (whole-disc footprint background, YP over MemBrite, center ROIs of 150 and 250 um, without dishes whose footprint centers are more than 400 um from a parallelogram, the deposit as labelled) give p from 0.28 to 0.68. By experiment day the comparison goes opposite ways, 0.45 on 2022-11-29 (p = 0.023, n = 3 and 3) and 1.43 on 2022-12-04 (p = 0.49, n = 2 and 3). The test has little power, so p >= 0.05 shows that no difference was found, not that the groups are equal. The 95% interval of the difference is -968 to 356 counts (co/cross 0.00 to 1.37), and the test would detect with 80% power only a difference of 922 counts, 95% of the cross-directional mean; at the observed difference (-306 counts, s.e. 293) its power is 16%. With the ROIs at the refined footprint centers the ratio is 0.72, p = 0.40.",
+     "deviations": [
+      "The center ROI is placed automatically at the mean of the four electrode footprint centers, located by template matching on a reduced YP image (epimg.find_footprints); the paper placed it by hand in MetaMorph (Methods 4.4). The located footprints and ROI are shown for every dish. As a check the footprints are located again on a finer image (5.2 um blocks, epimg.refine_footprints); over the 23 distinct dishes the refined array center lies a median 55 um (6 to 193 um) from the one used, and placing the ROIs there is run as a variant with the same outcomes.",
+      "Assumption. The files give no pixel size. 0.65 um per pixel is assumed (the 6.5 um ORCA-Flash4 pixel behind the 10x objective named in Methods 4.4); under it the footprints measure a median 1.59 mm across against the 1.5 mm needles (Methods 4.2), and on the finer image a median 1.66 mm. If the footprints are 1.5 mm across, the true pixel is about 0.59 to 0.61 um and the 308-pixel center ROI covers about 180 to 190 um, smaller than the paper's 200 um. The 0.5 mm lumen cannot be seen in the images (YP inside it is 0.97 to 1.13 times the YP around it), so it gives no second check. Center ROIs of 150 and 250 um sides are run as variants and give the same outcomes.",
+      "Background reading (b) subtracts the mean YP of a 200 x 200 um ROI at the center of each of the four footprints. Methods 4.4 says only that measurements were made within the footprints 'to account for spontaneous YP uptake'; the ROI size is the paper's, its place a stated choice, and a variant over the whole disc inside 0.6 of the footprint radius gives the same outcome.",
+      "Assumption. The dataset holds 23 distinct dishes, not 24. The file labelled co-directional 1 Hz, sub-BPAE-8unipolar-1Hz-04, is a copy of the cross-directional 1 Hz file sub-BPAE-8bipolar-1Hz-600ns-04 and is counted once, as cross-directional (its start time is in the 2022-11-29 series, where number 04 is otherwise missing, and its anisotropy index is in the cross-directional range). The groups then have 5, 6, 5 and 7 dishes (co 1 Hz, cross 1 Hz, co 770 kHz, cross 770 kHz) against the paper's n = 6 each. The deposit as labelled is shown as a variant and gives the same outcome."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-770khz-co-enhanced",
+     "statement": "Raising the pulse frequency from 1 Hz to 770 kHz enhances electroporation by co-directional paired pulses, attributed to temporal summation of the induced membrane potential.",
+     "source": "Results, 2.2, paragraph 1; Figure 3",
+     "quote": "Increasing the pulse frequency to 770 kHz enhanced electroporation by the co-directional pulses because of the temporal summation of the induced membrane potential",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "The co-directional mean at 770 kHz is higher than at 1 Hz, 1.67-fold under reading (a) and 1.96-fold under reading (b) (1301 against 665, n = 5 and 5), but the two-tailed Student's t-test does not find the difference (p = 0.15 and 0.16). No variant reaches p < 0.05; the smallest p is 0.087 (YP over MemBrite). The two background readings agree, so the claim is not blocked. On 2022-11-29 the 770 kHz mean is 2.74 times the 1 Hz one (p = 0.060, n = 3 and 3), on 2022-12-04 0.76 times it (p = 0.47, n = 2 and 2). The 95% interval of the difference is -315 to 1586 counts (ratio 0.53 to 3.38), and the test would detect with 80% power only a difference of 1321 counts, 199% of the 1 Hz mean. If the observed difference (636 counts, s.e. 412) were the true one, the test would find it with a power of 27%. With the ROIs at the refined footprint centers the ratio is 1.66, p = 0.20. The temporal summation explanation is not tested.",
+     "deviations": [
+      "The center ROI is placed automatically at the mean of the four electrode footprint centers, located by template matching on a reduced YP image (epimg.find_footprints); the paper placed it by hand in MetaMorph (Methods 4.4). The located footprints and ROI are shown for every dish. As a check the footprints are located again on a finer image (5.2 um blocks, epimg.refine_footprints); over the 23 distinct dishes the refined array center lies a median 55 um (6 to 193 um) from the one used, and placing the ROIs there is run as a variant with the same outcomes.",
+      "Assumption. The files give no pixel size. 0.65 um per pixel is assumed (the 6.5 um ORCA-Flash4 pixel behind the 10x objective named in Methods 4.4); under it the footprints measure a median 1.59 mm across against the 1.5 mm needles (Methods 4.2), and on the finer image a median 1.66 mm. If the footprints are 1.5 mm across, the true pixel is about 0.59 to 0.61 um and the 308-pixel center ROI covers about 180 to 190 um, smaller than the paper's 200 um. The 0.5 mm lumen cannot be seen in the images (YP inside it is 0.97 to 1.13 times the YP around it), so it gives no second check. Center ROIs of 150 and 250 um sides are run as variants and give the same outcomes.",
+      "Background reading (b) subtracts the mean YP of a 200 x 200 um ROI at the center of each of the four footprints. Methods 4.4 says only that measurements were made within the footprints 'to account for spontaneous YP uptake'; the ROI size is the paper's, its place a stated choice, and a variant over the whole disc inside 0.6 of the footprint radius gives the same outcome.",
+      "Assumption. The dataset holds 23 distinct dishes, not 24. The file labelled co-directional 1 Hz, sub-BPAE-8unipolar-1Hz-04, is a copy of the cross-directional 1 Hz file sub-BPAE-8bipolar-1Hz-600ns-04 and is counted once, as cross-directional (its start time is in the 2022-11-29 series, where number 04 is otherwise missing, and its anisotropy index is in the cross-directional range). The groups then have 5, 6, 5 and 7 dishes (co 1 Hz, cross 1 Hz, co 770 kHz, cross 770 kHz) against the paper's n = 6 each. The deposit as labelled is shown as a variant and gives the same outcome."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-770khz-cross-same-as-1hz",
+     "statement": "Cross-directional paired pulses at 770 kHz are just as effective as at 1 Hz; charging two different regions of the membrane does not cause summation.",
+     "source": "Results, 2.2, paragraph 1; Figure 3",
+     "quote": "Interestingly, charging two different regions of the cell membrane did not cause summation, making cross-directional pulses at 770 kHz just as effective as at 1 Hz",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "Under reading (b) the cross-directional dishes at 770 kHz (mean 819, n = 7) average 0.84 of those at 1 Hz (972, n = 6); Student's p = 0.56, so the test does not find a difference. Reading (a) gives 0.87, p = 0.53, and no variant finds one (p from 0.37 to 0.82). By day the ratio is 0.71 on 2022-11-29 (p = 0.073) and 1.40 on 2022-12-04 (p = 0.36). The 95% interval of the difference is -715 to 409 counts (ratio 0.26 to 1.42); the test would detect with 80% power only a difference of 786 counts, 81% of the 1 Hz mean (power 9% at the observed difference), so p >= 0.05 shows that no difference was found, not that the groups are equal. With the ROIs at the refined footprint centers the ratio is 0.78, p = 0.46. The statement's interpretation, that charging two membrane regions does not sum, is not tested.",
+     "deviations": [
+      "The center ROI is placed automatically at the mean of the four electrode footprint centers, located by template matching on a reduced YP image (epimg.find_footprints); the paper placed it by hand in MetaMorph (Methods 4.4). The located footprints and ROI are shown for every dish. As a check the footprints are located again on a finer image (5.2 um blocks, epimg.refine_footprints); over the 23 distinct dishes the refined array center lies a median 55 um (6 to 193 um) from the one used, and placing the ROIs there is run as a variant with the same outcomes.",
+      "Assumption. The files give no pixel size. 0.65 um per pixel is assumed (the 6.5 um ORCA-Flash4 pixel behind the 10x objective named in Methods 4.4); under it the footprints measure a median 1.59 mm across against the 1.5 mm needles (Methods 4.2), and on the finer image a median 1.66 mm. If the footprints are 1.5 mm across, the true pixel is about 0.59 to 0.61 um and the 308-pixel center ROI covers about 180 to 190 um, smaller than the paper's 200 um. The 0.5 mm lumen cannot be seen in the images (YP inside it is 0.97 to 1.13 times the YP around it), so it gives no second check. Center ROIs of 150 and 250 um sides are run as variants and give the same outcomes.",
+      "Background reading (b) subtracts the mean YP of a 200 x 200 um ROI at the center of each of the four footprints. Methods 4.4 says only that measurements were made within the footprints 'to account for spontaneous YP uptake'; the ROI size is the paper's, its place a stated choice, and a variant over the whole disc inside 0.6 of the footprint radius gives the same outcome.",
+      "Assumption. The dataset holds 23 distinct dishes, not 24. The file labelled co-directional 1 Hz, sub-BPAE-8unipolar-1Hz-04, is a copy of the cross-directional 1 Hz file sub-BPAE-8bipolar-1Hz-600ns-04 and is counted once, as cross-directional (its start time is in the 2022-11-29 series, where number 04 is otherwise missing, and its anisotropy index is in the cross-directional range). The groups then have 5, 6, 5 and 7 dishes (co 1 Hz, cross 1 Hz, co 770 kHz, cross 770 kHz) against the paper's n = 6 each. The deposit as labelled is shown as a variant and gives the same outcome."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-770khz-co-above-cross",
+     "statement": "At 770 kHz, co-directional paired pulses electroporate more than cross-directional ones.",
+     "source": "Results, 2.2, paragraph 1; Figure 3",
+     "quote": "",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "No sentence states this comparison. It is read from the two sentences of Results 2.2 that co-directional pulses gain from 770 kHz while cross-directional pulses do not, with the two equal at 1 Hz. The text does not say which pairs of groups the p-values printed in Figure 3 compare, so whether the paper tested this pair is unknown.",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "At 770 kHz the co-directional mean is the higher, 1.45-fold under reading (a) and 1.59-fold under reading (b) (1301 against 819, n = 5 and 7), but the Student's t-test does not find the difference (p = 0.19 and 0.20), nor does any variant (p from 0.19 to 0.52). The two background readings agree. By day the ratio is 1.75 on 2022-11-29 (p = 0.14) and 0.78 on 2022-12-04 (p = 0.38). The 95% interval of the difference is -302 to 1267 counts (ratio 0.63 to 2.55), and the test would detect with 80% power only a difference of 1094 counts, 134% of the cross-directional mean, and at the observed difference (482 counts, s.e. 352) its power is 24%. With the ROIs at the refined footprint centers the ratio is 1.52, p = 0.20.",
+     "deviations": [
+      "The center ROI is placed automatically at the mean of the four electrode footprint centers, located by template matching on a reduced YP image (epimg.find_footprints); the paper placed it by hand in MetaMorph (Methods 4.4). The located footprints and ROI are shown for every dish. As a check the footprints are located again on a finer image (5.2 um blocks, epimg.refine_footprints); over the 23 distinct dishes the refined array center lies a median 55 um (6 to 193 um) from the one used, and placing the ROIs there is run as a variant with the same outcomes.",
+      "Assumption. The files give no pixel size. 0.65 um per pixel is assumed (the 6.5 um ORCA-Flash4 pixel behind the 10x objective named in Methods 4.4); under it the footprints measure a median 1.59 mm across against the 1.5 mm needles (Methods 4.2), and on the finer image a median 1.66 mm. If the footprints are 1.5 mm across, the true pixel is about 0.59 to 0.61 um and the 308-pixel center ROI covers about 180 to 190 um, smaller than the paper's 200 um. The 0.5 mm lumen cannot be seen in the images (YP inside it is 0.97 to 1.13 times the YP around it), so it gives no second check. Center ROIs of 150 and 250 um sides are run as variants and give the same outcomes.",
+      "Background reading (b) subtracts the mean YP of a 200 x 200 um ROI at the center of each of the four footprints. Methods 4.4 says only that measurements were made within the footprints 'to account for spontaneous YP uptake'; the ROI size is the paper's, its place a stated choice, and a variant over the whole disc inside 0.6 of the footprint radius gives the same outcome.",
+      "Assumption. The dataset holds 23 distinct dishes, not 24. The file labelled co-directional 1 Hz, sub-BPAE-8unipolar-1Hz-04, is a copy of the cross-directional 1 Hz file sub-BPAE-8bipolar-1Hz-600ns-04 and is counted once, as cross-directional (its start time is in the 2022-11-29 series, where number 04 is otherwise missing, and its anisotropy index is in the cross-directional range). The groups then have 5, 6, 5 and 7 dishes (co 1 Hz, cross 1 Hz, co 770 kHz, cross 770 kHz) against the paper's n = 6 each. The deposit as labelled is shown as a variant and gives the same outcome."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-no-area-dependence",
+     "statement": "Unlike with long pulses, YP uptake after nsEP does not depend on whether the same or a larger area of the membrane is electroporated.",
+     "source": "Results, 2.2, paragraph 1 (last sentence); Discussion, paragraph 1",
+     "quote": "Contrary to data with \u201clong\u201d pulses [ 10 , 11 ], electroporative dye uptake after nsEP did not depend on whether we electroporated the same or a larger area of the cell membrane",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "Judged by fig3-1hz-co-equals-cross, which is reproduced (co over cross at 1 Hz 0.68, p = 0.32). It carries the same limit, as that test would detect with 80% power only a difference of 95% of the cross-directional mean. The Figure 2 evidence the Discussion also cites (fig2-facilitation-plateau) is not tested, as its data are not in this dataset (they are in DANDI:000631).",
+     "deviations": [
+      "The center ROI is placed automatically at the mean of the four electrode footprint centers, located by template matching on a reduced YP image (epimg.find_footprints); the paper placed it by hand in MetaMorph (Methods 4.4). The located footprints and ROI are shown for every dish. As a check the footprints are located again on a finer image (5.2 um blocks, epimg.refine_footprints); over the 23 distinct dishes the refined array center lies a median 55 um (6 to 193 um) from the one used, and placing the ROIs there is run as a variant with the same outcomes.",
+      "Assumption. The files give no pixel size. 0.65 um per pixel is assumed (the 6.5 um ORCA-Flash4 pixel behind the 10x objective named in Methods 4.4); under it the footprints measure a median 1.59 mm across against the 1.5 mm needles (Methods 4.2), and on the finer image a median 1.66 mm. If the footprints are 1.5 mm across, the true pixel is about 0.59 to 0.61 um and the 308-pixel center ROI covers about 180 to 190 um, smaller than the paper's 200 um. The 0.5 mm lumen cannot be seen in the images (YP inside it is 0.97 to 1.13 times the YP around it), so it gives no second check. Center ROIs of 150 and 250 um sides are run as variants and give the same outcomes.",
+      "Background reading (b) subtracts the mean YP of a 200 x 200 um ROI at the center of each of the four footprints. Methods 4.4 says only that measurements were made within the footprints 'to account for spontaneous YP uptake'; the ROI size is the paper's, its place a stated choice, and a variant over the whole disc inside 0.6 of the footprint radius gives the same outcome.",
+      "Assumption. The dataset holds 23 distinct dishes, not 24. The file labelled co-directional 1 Hz, sub-BPAE-8unipolar-1Hz-04, is a copy of the cross-directional 1 Hz file sub-BPAE-8bipolar-1Hz-600ns-04 and is counted once, as cross-directional (its start time is in the 2022-11-29 series, where number 04 is otherwise missing, and its anisotropy index is in the cross-directional range). The groups then have 5, 6, 5 and 7 dishes (co 1 Hz, cross 1 Hz, co 770 kHz, cross 770 kHz) against the paper's n = 6 each. The deposit as labelled is shown as a variant and gives the same outcome."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-180-cancellation",
+     "statement": "At a 180 degree change of field direction, paired-pulse trains give less YP uptake than single-pulse trains, 2-fold less at 1 Hz and 20-fold less at 833 kHz.",
+     "source": "Results, 2.1, paragraph 3; Figure 2",
+     "quote": "Maximum cancellation was expectedly observed at the 180\u00b0 vector change, reducing YP uptake compared to single-pulse trains 2-fold at 1 Hz and as much as 20-fold at 833 kHz",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "The claims file scopes this claim to DANDI:000632 (data dataset), which holds only the square-array experiment of Figure 3 (24 files, all labelled co- or cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The Figure 2 recordings are public in DANDI:000631 (version 0.231012.1508, 15 assets, single- and paired-pulse trains at 1 Hz and 833 kHz), whose metadata name this paper as IsPublishedIn, although the paper's Data Availability Statement says the data are available on request. As the data are public, the block is not data_missing; the claim was not tested on 000631 because the claims file does not name it, and a reader is asked (questions/000632.yaml) whether to mark the claim data elsewhere. Even then it may stay blocked, as each ROI's angle comes from a field simulation the paper does not give.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-crossover-angle",
+     "statement": "Cancellation weakens as the angle is reduced, and paired and single pulses become equally effective at about 160 degrees at 1 Hz and about 130 degrees at 833 kHz.",
+     "source": "Results, 2.1, paragraph 3; Figure 2",
+     "quote": "Cancellation weakened as the angle was reduced, and at about 160\u00b0 (1 Hz) or 130\u00b0 (833 kHz), the effects of paired-pulse trains became the same as those of single-pulse ones",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "The claims file scopes this claim to DANDI:000632 (data dataset), which holds only the square-array experiment of Figure 3 (24 files, all labelled co- or cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The Figure 2 recordings are public in DANDI:000631 (version 0.231012.1508, 15 assets, single- and paired-pulse trains at 1 Hz and 833 kHz), whose metadata name this paper as IsPublishedIn, although the paper's Data Availability Statement says the data are available on request. As the data are public, the block is not data_missing; the claim was not tested on 000631 because the claims file does not name it, and a reader is asked (questions/000632.yaml) whether to mark the claim data elsewhere. Even then it may stay blocked, as each ROI's angle comes from a field simulation the paper does not give.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-facilitation-plateau",
+     "statement": "Below the crossover, paired pulses enhance electroporation up to about three-fold over single pulses at 90 to 100 degrees for both frequencies, followed by a plateau down to 0 degrees.",
+     "source": "Results, 2.1, paragraph 3; Figure 2",
+     "quote": "Further reduction of the angle enhanced electroporation, up to about three-fold at 90\u2013100\u00b0 for both nsEP frequencies, followed by a plateau all the way to 0\u00b0",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "The claims file scopes this claim to DANDI:000632 (data dataset), which holds only the square-array experiment of Figure 3 (24 files, all labelled co- or cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The Figure 2 recordings are public in DANDI:000631 (version 0.231012.1508, 15 assets, single- and paired-pulse trains at 1 Hz and 833 kHz), whose metadata name this paper as IsPublishedIn, although the paper's Data Availability Statement says the data are available on request. As the data are public, the block is not data_missing; the claim was not tested on 000631 because the claims file does not name it, and a reader is asked (questions/000632.yaml) whether to mark the claim data elsewhere. Even then it may stay blocked, as each ROI's angle comes from a field simulation the paper does not give.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-60-fold-co-counter",
+     "statement": "At 833 kHz the electroporation efficiency of co-directional and counter-directional pulse pairs differs about 60-fold.",
+     "source": "Results, 2.3, paragraph 1; Figure 2",
+     "quote": "The profound, 60-fold difference in electroporation efficiency of co- and counter-directional nsEPs at 833 kHz ( Figure 2 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "The claims file scopes this claim to DANDI:000632 (data dataset), which holds only the square-array experiment of Figure 3 (24 files, all labelled co- or cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The Figure 2 recordings are public in DANDI:000631 (version 0.231012.1508, 15 assets, single- and paired-pulse trains at 1 Hz and 833 kHz), whose metadata name this paper as IsPublishedIn, although the paper's Data Availability Statement says the data are available on request. As the data are public, the block is not data_missing; the claim was not tested on 000631 because the claims file does not name it, and a reader is asked (questions/000632.yaml) whether to mark the claim data elsewhere. Even then it may stay blocked, as each ROI's angle comes from a field simulation the paper does not give. It also depends on fig2-180-cancellation and fig2-facilitation-plateau, blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-unipolar-pattern",
+     "statement": "With single-pulse trains on one base electrode, YP uptake follows the electric field map; with paired pulses on both base electrodes at 833 kHz, uptake is strong near the (grounded, never energized) apex electrode and weak or absent near the base electrodes despite the strong field there, forming a comet-shaped region pointing from the apex toward the base.",
+     "source": "Results, 2.3, paragraph 1; Figure 4A to 4C; Discussion, paragraph 3",
+     "quote": "In control cell monolayers exposed to a train of five single pulses applied to one of the base electrodes (833 kHz, 4 kV), the distribution of YP fluorescence ( Figure 4 A) simply followed the electric field strength map ... produced a strong effect near the apex electrode (ground) but weak or no effect near the base electrodes, despite the strong electric field there",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "The claims file scopes this claim to DANDI:000632 (data dataset), which holds only the square-array experiment of Figure 3. The Figure 4 images appear to be in DANDI:000633 (version 0.231013.2226, 2 assets, single against paired pulse trains), whose metadata name this paper as IsPublishedIn. As the data are public, the block is not data_missing; the claim was not tested on 000633 because the claims file does not name it, and a reader is asked (questions/000632.yaml) whether to mark it data elsewhere.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-base-sawtooth",
+     "statement": "Cells between the base electrodes show sawtooth-like membrane potential changes in synchrony with the alternating pulses, about a 10% FluoVolt emission increase at the cathode-facing pole and a 10% decrease at the anode-facing pole.",
+     "source": "Results, 2.4, paragraph 2; Figure 5",
+     "quote": "Cells placed between the base electrodes displayed sawtooth-like changes in membrane potential in synchrony with the applied pulses ( Figure 5 ). Depolarization at the cathode-facing pole of the cell manifested as a ~10% emission increase, and hyperpolarization at the anode-facing pole caused a ~10% emission decrease",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "The claims file scopes this claim to DANDI:000632 (data dataset), which holds only the square-array experiment of Figure 3. The FluoVolt strobe images of Figure 5 appear to be in DANDI:000634 (version 0.231005.1820, 10 assets), whose metadata link this paper as IsPublishedIn. As the data are public, the block is not data_missing; the claim was not tested on 000634 because the claims file does not name it, and a reader is asked (questions/000632.yaml) whether to mark it data elsewhere.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-apex-larger-polarization",
+     "statement": "Cells near the apex reach a much larger polarization, about 25% FluoVolt emission change, which follows the envelope of the pulse train and not the individual pulses, more than twice that near the base electrodes.",
+     "source": "Results, 2.4, paragraph 2; Figure 5",
+     "quote": "In stark contrast, the cells near the apex reached a much higher polarization (~25% change in FluoVolt emission), which followed the envelope of the pulse train but not the individual pulses of it",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "The claims file scopes this claim to DANDI:000632 (data dataset), which holds only the square-array experiment of Figure 3. The FluoVolt strobe images of Figure 5 appear to be in DANDI:000634 (version 0.231005.1820, 10 assets), whose metadata link this paper as IsPublishedIn. As the data are public, the block is not data_missing; the claim was not tested on 000634 because the claims file does not name it, and a reader is asked (questions/000632.yaml) whether to mark it data elsewhere. It also depends on fig5-base-sawtooth, blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "other",
+     "statement": "One recording is deposited twice under two conditions. sub-BPAE-8unipolar-1Hz-04 (session Co-directional_1Hz) and sub-BPAE-8bipolar-1Hz-600ns-04 (session Cross-directional_1Hz) have identical chunk indexes, identical images and the same start time (2022-11-29 16:57). The start time and the image's pattern of uptake point to the cross-directional label, so the co-directional 1 Hz group holds 5 distinct dishes.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The group sizes do not match the paper. By label the files are 6 co-directional 1 Hz, 6 cross-directional 1 Hz, 5 co-directional 770 kHz and 7 cross-directional 770 kHz (5, 6, 5 and 7 with the copy counted once), where the paper's Figure 3 reports n = 6 for each group. The 2022-12-04 series has four cross-directional and two co-directional dishes at 770 kHz, and lacks a number 04. One cross-directional dish more and one co-directional dish fewer than the paper's n = 6 at 770 kHz would follow from one mislabelled dish, but the four cross-directional 770 kHz dishes of 2022-12-04, the day with the extra dish, have anisotropy indexes of 0.06 to 0.18, below every co-directional dish (0.31 to 0.75), so the labels are used as deposited.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The dandiset description and every session description say the electrodes were arranged in a triangular array. The images show four electrode footprints in a square, as the paper describes for this experiment (Methods 4.2, a 4-electrode square array).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The files give no pixel size (the ImageSeries has no resolution or field of view) and name the channels only in a free-text description. A scale of 0.65 um per pixel had to be inferred from the camera and objective; under it the electrode footprints measure 1.59 mm against the 1.5 mm needles.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The subject names carry undocumented tokens ('8bipolar', '8unipolar', '600ns'). 'bipolar' and 'unipolar' match the cross- and co-directional sessions, and '600ns' marks the files of 2022-11-29; the trailing numbers run 01 to 12 in order of start time within each day. None of this is described.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The dataset holds only the Figure 3 experiment. The data of Figures 2, 4 and 5 are in DANDI:000631, 000633 and 000634, whose metadata name the paper, but 000632 does not point to them, and the paper's Data Availability Statement says the data are available on request without naming any of the four dandisets.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors. Methods 4.4 says spontaneous YP uptake was measured within the electrode footprints but not where in the footprint, over what area, or how it entered the Figure 3 values (subtracted from the center ROI, or not). This attempt subtracts the mean of a 200 x 200 um ROI at the center of each footprint, and shows the raw values and a whole-disc variant; all give the same outcomes. Which pairs of groups the p-values printed in Figure 3 compare is also not stated in the text.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-31",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier tested find_footprints, _roi_mean, _disc_mean and ov_to_px on synthetic input, and checked the archive's other dandisets. It agreed with every outcome. Its main point was that the Figure 2, 4 and 5 data are public in DANDI:000631, 000633 and 000634, so the notebook's statement that they are not public elsewhere is false. It asked for each dish's center offset or a finer view of the center ROI, and for an independent check of the 0.65 um pixel size. In reply the revision locates the footprints again on a finer image, prints the offsets and shows the arrays at 10.4 um, runs the refined positions as a variant, prints the 95% interval and the smallest detectable difference for each test, lists the three other dandisets from the archive, changes the reason of the seven blocks to other, and asks a reader whether to mark those claims data elsewhere. The verifier also noted that the extra cross-directional and missing co-directional 770 kHz dish were not discussed; the notebook and the group-size finding now discuss them. Its other points (the assignment of the duplicated image, the YP and MemBrite correlation, the opposite day effects, the footprint background area, the triangular-array description) were already shown in the notebook and needed no change.",
+     "agreed": 12,
+     "of": 12,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-31",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the round-1 revision with its conclusions and summary, the README, the attempt record, the helper module and the claims file, with the paper. The verifier agreed with all 12 outcomes and found no misreading of the paper in the claims file. It found that every number in the conclusions, summary, README and notes matches the outputs, but that three sentences are not supported. The sentence that the co-directional 770 kHz test could not have found the observed ratio is wrong, as the test had less than 80% power, not zero (about 25 to 30%). The summary's statement that the two not reproduced differences were smaller than the tests could detect is circular. The deviation saying the ROI may be up to 10% larger than the paper's has the direction reversed. It also noted that the median offset and diameter counted the duplicated dish twice, that two statements (the draft listing the same assets, and the other dandisets being by the same group) were not shown by any output, and that the pixel-size and duplicate-assignment assumptions should carry assumed true. In reply the revision prints, for each test, the power at the observed difference (16%, 27%, 9% and 24%) and rewrites the two power sentences with it, corrects the direction of the ROI-size deviation, computes the medians over the 23 distinct dishes (offset 55 um, diameter 1663 um), prints the dandiset's listed versions with asset counts and sizes and the contributors of all four dandisets, and sets assumed true on the five Figure 3 outcomes, whose deviations now name the two assumptions. The pixel size still has no independent check and the paper gives no Figure 3 p-values to compare; neither changes an outcome. No outcome is changed or proposed.",
+     "agreed": 12,
+     "of": 12,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000632-kim-2023",
+   "type": "reproduction",
+   "title": "Co- and cross-directional paired nanosecond pulses in a square electrode array (Kim et al. 2023)",
+   "description": "Tests the Figure 3 findings of Kim, Semenov, Kiester, Keppler, Ibey, Bixler, Colunga Biancatelli and Pakhomov (2023) on dandiset 000632, which holds one stitched whole-dish image (MemBrite and YO-PRO-1) for each of 24 BPAE monolayers exposed to four co- or cross-directional paired pulses at 1 Hz or 770 kHz. It measures YO-PRO-1 uptake in the 200 um ROI at the center of the array, with and without the electrode-footprint background, and compares the four groups by t-tests. The triangular-array and strobe-imaging experiments of Figures 2, 4 and 5 are not in the dandiset; they are in DANDI:000631, 000633 and 000634.",
+   "datasets": [
+    "dandi:000632"
+   ],
+   "papers": [
+    "10.3390/ijms241310921"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_kim_2023.ipynb",
+     "title": "Reproducing Kim et al. (2023), Figure 3, from dandiset 000632",
+     "executed": "notebooks/000632-kim-2023/reproduce_kim_2023.html"
+    }
+   ]
+  }
+ ]
+}
