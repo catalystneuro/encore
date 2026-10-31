@@ -17,6 +17,19 @@ questions:
     990 (commented calculateHeadDirection_shuff).
   why: The readings give different outcomes. With the trials shifted afresh in every iteration, 0 of
     3179 single-cue cells pass (reproduced), but that reading cannot fail. With each trial shifted
-    once before the test, 166 of 3179 (5.22%) pass, above the criterion's 1% limit (not
+    once before the test, 165 of 3179 (5.19%) pass, above the criterion's 1% limit (not
     reproduced). The attempt adopts the second reading, as only it tests whether the count is due
     to chance.
+- claim: fig1g-rotation-heading-fraction
+  asked: 2026-10-31
+  question: The opening comment describes the trial rule as dropping segments whose heading lies
+    "more than 50 degrees from +-90". The code it cites drops a segment when
+    any(90 - abs(prctile(heading, [25, 75])) > 50), that is, when the 25th or 75th heading
+    percentile lies within 40 degrees of 0. Read literally, the comment's wording would also drop
+    segments with a percentile beyond 140 degrees from 0, which the code keeps. Is the code's rule
+    the one meant?
+  passage: Code, ControlledRotation.m (getTrialResponses) at commit c6344f5, line 224; the claims
+    file's opening comment on trial segmentation.
+  why: The attempt follows the code's rule (rsc.py). The verifier reported in round 2 that the
+    comment's paraphrase does not match the code; under the literal paraphrase other trials would
+    be dropped and the selected cells could differ.

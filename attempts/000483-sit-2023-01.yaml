@@ -20,100 +20,100 @@ provenance:
     platform: GitHub Actions
     url: https://github.com/catalystneuro/encore/actions/runs/41061724658
 inputs:
-- what: Method details only, no data. The analysis classes the paper links (trial segmentation, heading-selection
-    test, Gaussian fit bounds, light and dark segments, flip score), read and reimplemented in Python.
+- what: Method details only, no data. The analysis classes the paper links (trial segmentation, heading-selection test,
+    Gaussian fit bounds, light and dark segments, flip score), read and reimplemented in Python.
   source: https://github.com/ucsb-goard-lab/Neurotar-HD-Experiments at commit c6344f5
 outcomes:
 - claim: fig1-free-heading-fraction
   outcome: blocked
   blocked_by: data_missing
-  notes: The dataset holds no free-chamber recording. All 16 single-cue files rotate at a steady 3.1 to 8.0 rpm
-    (median heading step per frame) and hold 3179 ROIs over 5 mice, exactly the controlled-rotation experiment of
-    Figure 1G. The only animal-controlled files are 5 dual-cue recordings of 2022 (Figure S6). The paper names a
-    Dryad deposit (doi 10.25349/D91G8Q) of processed objects; it needs an account to download and was not checked.
+  notes: The dataset holds no free-chamber recording. All 16 single-cue files rotate at a steady 3.1 to 8.0 rpm (median
+    heading step per frame) and hold 3179 ROIs over 5 mice, exactly the controlled-rotation experiment of Figure 1G.
+    The only animal-controlled files are 5 dual-cue recordings of 2022 (Figure S6). The paper names a Dryad deposit (doi
+    10.25349/D91G8Q) of processed objects; it needs an account to download and was not checked.
+  deviations: []
 - claim: fig1g-rotation-heading-fraction
   outcome: reproduced
   assumed: true
   notebook: single_cue.ipynb
   output: claim:fig1g-rotation-heading-fraction
   measured:
-  - 15.29
-  - 486
-  notes: With the centred fit, 486 of 3179 ROIs (15.29%) pass, within 14.2 +- 1.42% and 452 +- 45; by mouse 8.9
-    to 25.2%, by recording 2.2 to 33.0%. With the fit as the code calls it, without centring, 345 (10.85%), outside
-    the tolerance. With stricter reliability thresholds (KS p < 0.01, d > 1.2) the centred count is 394 (12.39%).
-    The test is liberal. Its reliability step runs a KS test on 1000 split-half correlations of the same trials,
-    as the paper's code does (ControlledRotation.calculateHeadDirection), and synthetic untuned cells pass the whole
-    test at 4.7% (centred) and 1.7% (uncentred); real cells with each trial shifted once pass at 5.22% (selection-shuffled-control).
-    The count matches the paper's, but about a third of the selected cells could pass by chance. The numbers are
-    from the re-run after verification round 1, which differ slightly from the first run (for example 486 against
-    485 selected cells), as floating-point results differ between machines.
+  - 15.26
+  - 485
+  notes: With the centred fit, 485 of 3179 ROIs (15.26%) pass, within 14.2 +- 1.42% and 452 +- 45; by mouse 8.9 to 25.2%,
+    by recording 2.2 to 33.0%. With the fit as the code calls it, without centring, 345 (10.85%), outside the tolerance.
+    With stricter reliability thresholds (KS p < 0.01, d > 1.2) the centred count is 393 (12.36%). The test is liberal.
+    Its reliability step runs a KS test on 1000 split-half correlations of the same trials, as the paper's code does
+    (ControlledRotation.calculateHeadDirection), and synthetic untuned cells pass the whole test at 4.7% (centred) and
+    1.7% (uncentred); real cells with each trial shifted once pass at 5.19% (selection-shuffled-control). The count matches
+    the paper's, but about a third of the selected cells could pass by chance.
   deviations:
-  - Inferred spikes are computed here from the raw ROI fluorescence (OASIS AR(1), Python port) without the neuropil
-    correction of the Methods (eq. 1), as the files hold no neuropil trace, dF/F or spikes.
-  - The selection test (code ControlledRotation.calculateHeadDirection) and its Gaussian fits are reimplemented
-    in numpy (bounded Levenberg-Marquardt in place of MATLAB fit).
-  - Assumption. The code fits the trial-mean curve as it is, with the peak location bounded to pi/2 +- pi/6, so
-    only cells whose peak lies near one heading can pass; its center_flag option, used by its 'fit' preferred direction,
-    first shifts the peak to bin 15. The Methods do not say. The centred fit is adopted because with the uncentred
-    one 93.6% of the selected cells lie in one quadrant, which contradicts the tiling of Figure 1H; both readings
-    are shown, and they give different outcomes.
+  - Inferred spikes are computed here from the raw ROI fluorescence (OASIS AR(1), Python port) without the neuropil correction
+    of the Methods (eq. 1), as the files hold no neuropil trace, dF/F or spikes.
+  - The selection test (code ControlledRotation.calculateHeadDirection) and its Gaussian fits are reimplemented in numpy
+    (bounded Levenberg-Marquardt in place of MATLAB fit).
+  - Assumption. The code fits the trial-mean curve as it is, with the peak location bounded to pi/2 +- pi/6, so only
+    cells whose peak lies near one heading can pass; its center_flag option, used by its 'fit' preferred direction, first
+    shifts the peak to bin 15. The Methods do not say. The centred fit is adopted because with the uncentred one 93.6%
+    of the selected cells lie in one quadrant, which contradicts the tiling of Figure 1H; both readings are shown, and
+    they give different outcomes.
 - claim: selection-shuffled-control
   outcome: not_reproduced
   assumed: true
   notebook: single_cue.ipynb
   output: claim:selection-shuffled-control
-  notes: With each trial shifted once by its own random amount before the whole test, as the Methods' "pre-shuffled
-    data" and the criterion's "before the test" say, 166 of 3179 ROIs (5.22%) pass, above the criterion's 1% limit;
-    481 pass the reliability step. Run as the commented calculateHeadDirection_shuff of Cue.m does it (the trials
-    re-shifted in every iteration), 0 of 3179 pass under both fits, but under that reading the "real" and null split-half
-    correlations come from the same distribution, so no cell can pass whatever the data. Synthetic untuned cells
-    pass at 4.7% (fig1g). Which reading the claims file intends is asked in questions/000483.yaml.
+  notes: With each trial shifted once by its own random amount before the whole test, as the Methods' "pre-shuffled data"
+    and the criterion's "before the test" say, 165 of 3179 ROIs (5.19%) pass, above the criterion's 1% limit; 478 pass
+    the reliability step. Run as the commented calculateHeadDirection_shuff of Cue.m does it (the trials re-shifted in
+    every iteration), 0 of 3179 pass under both fits, but under that reading the "real" and null split-half correlations
+    come from the same distribution, so no cell can pass whatever the data. Synthetic untuned cells pass at 4.7% (fig1g).
+    Which reading the claims file intends is asked in questions/000483.yaml.
   deviations:
-  - Assumption. The trials are shifted once before the test (the variant of the first run). The criterion names
-    both "before the test" and the commented code, which shifts them afresh in every iteration; only the first can
-    show whether the count is due to chance. Both are shown.
+  - Assumption. The trials are shifted once before the test (the variant of the first run). The criterion names both
+    "before the test" and the commented code, which shifts them afresh in every iteration; only the first can show whether
+    the count is due to chance. Both are shown.
   - Spikes computed without neuropil correction, and the test reimplemented, as for fig1g-rotation-heading-fraction.
 - claim: fig1h-preferred-headings-tile
   outcome: partially_reproduced
   assumed: true
   notebook: single_cue.ipynb
   output: claim:fig1h-preferred-headings-tile
-  notes: Tiling holds. The 486 cross-validated preferred headings (centred fit) fill all 60 bins of 6 degrees, and
-    the four quadrants hold 18.1 to 40.1%. The overrepresentation cannot be judged. The files give heading relative
-    to "cage door dead north" and do not say where the cue is. Within 45 degrees of the dataset's 0 lie 24.7% (not
-    above 25%). The densest 90-degree window, centred at -102 degrees, holds 40.5% (Rayleigh p = 1.7e-05), and the
-    densest heading differs between mice (SKKS090 and SKKS091 near +90 to +120). Were the cue at dataset heading
-    -90, the share near it would be 40.1%; nothing in the files says so. The code's uncentred fit puts 93.6% of
-    its cells near -90 because its bounds hold the Gaussian's peak at dataset headings -120 to -60, which says nothing
-    about the cue.
+  notes: Tiling holds. The 485 cross-validated preferred headings (centred fit) fill all 60 bins of 6 degrees, and the
+    four quadrants hold 18.1 to 40.0%. The overrepresentation cannot be judged. The files give heading relative to "cage
+    door dead north" and do not say where the cue is. Within 45 degrees of the dataset's 0 lie 24.7% (not above 25%).
+    The densest 90-degree window, centred at -102 degrees, holds 40.4% (Rayleigh p = 2e-05), and the densest heading
+    differs between mice (in 30-degree bins SKKS090 peaks at +60 to +120 and SKKS091 at +60 to +90). Were the cue at
+    dataset heading -90, the share near it would be 40.0%; nothing in the files says so. The code's uncentred fit puts
+    93.6% of its cells near -90 because its bounds hold the Gaussian's peak at dataset headings -120 to -60, which says
+    nothing about the cue.
   deviations:
   - Rests on the centred fit of fig1g-rotation-heading-fraction.
-  - The position of the cue in the dataset's heading frame is not in the files, so heading 0 of the claim could
-    not be located.
+  - The position of the cue in the dataset's heading frame is not in the files, so heading 0 of the claim could not be
+    located.
 - claim: fig2f-head-chamber-same-preference
   outcome: partially_reproduced
   assumed: true
   notebook: rotation_remapping.ipynb
   output: claim:fig2f-head-chamber-same-preference
   measured: 34.6
-  notes: 'The criterion''s test passes only under assumptions. Cells selective in both conditions, peak preference,
-    chamber-rotation (CR) heading mirrored, the 5 pairs whose stored headings run in opposite directions, give V
-    = 34.6, n = 228, p = 5.9e-04 (''fit'' preference V = 36.0, p = 3.8e-04; cells selective in CR V = 47.7, p =
-    7.3e-05). 4 of 24 readings give p < 0.05 with V > 0. With all 7 pairs none does, and with the headings as stored
-    every V is negative. The V is not the paper''s 14.1 (n = 32), and no reading has n near 32. Matched ROIs do
-    not keep their preference better than random pairs: pairing ROIs at random over the 5 pairs gives a larger V
-    (mean 46.2, 95th percentile 57.6), and within every pair the real V lies inside its own random-pairing null
-    (share of 1000 random pairings at or above it 0.21 to 0.998; SKKS116, the one pair with a large V, 58.9 against
-    a null mean of 56.8). Head-rotation files have more selective cells (53 to 83% against 8 to 65%) and more activity
-    (0.095 to 3.19 spikes/s against 0.063 to 0.114) than their CR partners, so heading-locked artefacts of derotation
-    are not excluded. A 6-frame clock offset would move preferences by 4 to 8 degrees (head rotation) or 12 degrees
-    (CR).'
+  notes: 'The criterion''s test passes only under assumptions. Cells selective in both conditions, peak preference, chamber-rotation
+    (CR) heading mirrored, the 5 pairs whose stored headings run in opposite directions, give V = 34.6, n = 228, p =
+    5.9e-04 (''fit'' preference V = 36.0, p = 3.8e-04; cells selective in CR V = 47.7, p = 7.3e-05). 4 of 24 readings
+    give p < 0.05 with V > 0. With all 7 pairs none does, and with the headings as stored every V is negative. Neither
+    the mirroring nor the choice of 5 pairs can be checked against the data. The V is not the paper''s 14.1 (n = 32),
+    and no reading has n near 32. Matched ROIs do not keep their preference better than random pairs: pairing ROIs at
+    random over the 5 pairs gives a larger V (mean 46.2, 95th percentile 57.6), and within every pair the real V lies
+    inside its own random-pairing null (share of 1000 random pairings at or above it 0.222 to 0.998; SKKS116, the one
+    pair with a large V, 58.9 against a null mean of 56.8). Head-rotation files have more selective cells (52 to 83%
+    against 8 to 65%) and more activity (0.095 to 3.19 spikes/s against 0.063 to 0.114) than their CR partners, so heading-locked
+    artefacts of derotation are not excluded. A 6-frame clock offset would move preferences by 4 to 8 degrees (head rotation)
+    or 12 degrees (six of the CR files); the clock check of single_cue.ipynb peaks at -6 frames in one of four files,
+    so the timing is not established. The seventh CR file, 210526 SKKS112-PlatformRotation-002, barely rotates (median
+    step 0.12 degree per frame against about 2 in the others; 10 trials against 26).'
   deviations:
-  - Assumption. The stored headings of 5 of the 7 pairs run in opposite directions in the two conditions, while
-    the paper says the cue moves across the visual field in the same direction in both (Figure 2B legend), so the
-    CR heading is mirrored to put both in the frame of the wall pattern. The files do not say how either heading
-    is defined.
+  - Assumption. The stored headings of 5 of the 7 pairs run in opposite directions in the two conditions, while the paper
+    says the cue moves across the visual field in the same direction in both (Figure 2B legend), so the CR heading is
+    mirrored to put both in the frame of the wall pattern. The files do not say how either heading is defined.
   - Assumption. The dataset holds 7 pairs over 5 mice; the paper reports 5 over 4, which matches the 5 opposite-direction
     pairs. Both sets are shown.
   - Cells selected with the centred fit of fig1g-rotation-heading-fraction; spikes without neuropil correction.
@@ -124,97 +124,94 @@ outcomes:
   output: claim:fig3c-coherent-remapping
   measured: 47.0
   notes: All 8 readings give V > 0 with p < 0.05. Cells selective in both contexts, peak preference, expected offset
-    (i), give V = 47.0, n = 85 over 9 recording pairs, p = 2.8e-13, against V = 25.6 with n = 66 in the paper; no
-    reading gives a V within the tolerance (38.4 to 233.5). Pairing neurons at random gives a V of 36.2 on average
-    (95th percentile 45.7, 1000 draws); 2.6% of random pairings reach the real V, so it lies only just above the
-    null. 8 of the 9 pairs with 3 or more cells have V > 0. The SKKS091 2021-05-04 pair, whose files are both named
-    context 1, has fewer than 3 cells selective in both and enters only the readings with cells selective in either.
+    (i), give V = 47.0, n = 85 over 9 recording pairs, p = 2.8e-13, against V = 25.6 with n = 66 in the paper; no reading
+    gives a V within the tolerance (38.4 to 233.5). Pairing neurons at random gives a V of 36.2 on average (95th percentile
+    45.7, 1000 draws); 2.6% of random pairings reach the real V, so it lies only just above the null. 8 of the 9 pairs
+    with 3 or more cells have V > 0. The SKKS091 2021-05-04 pair, whose files are both named context 1, has fewer than
+    3 cells selective in both and enters only the readings with cells selective in either.
   deviations:
   - Cells selected with the centred fit of fig1g-rotation-heading-fraction; spikes without neuropil correction.
   - The medians of the Methods are taken as circular medians (a standard choice for angles).
-  - The 12 remapping pairs are the two files of each mouse and day; one pair (SKKS091, 2021-05-04) is named 1-001
-    and 1-002 and is taken as a pair.
+  - The 12 remapping pairs are the two files of each mouse and day; one pair (SKKS091, 2021-05-04) is named 1-001 and
+    1-002 and is taken as a pair.
 - claim: fig4-axons-light-on-shape
   outcome: reproduced
   notebook: axons.ipynb
   output: claim:fig4-axons-light-on-shape
-  notes: Under reading (b), all 1084 ADN and 247 visual axons, the mean aligned light-on curve has a flip score
-    of -0.206 (ADN) and 1.875 (visual), and single visual axons score higher (means 0.506 and -0.109, KS p = 1.6e-24).
-    Under reading (a), selective axons, the visual mean curve is bimodal (1.814) and single axons differ (KS p =
-    1.7e-21), but the ADN mean curve has a flip score of 0.277 with the centred fit and 1.132 with the code fit,
-    above 0. One ADN mouse (SKKS092) has a mean flip score above 0 under reading (a) (0.48, 0.42) and about 0 under
-    (b) (-0.001).
+  notes: Under reading (b), all 1084 ADN and 247 visual axons, the mean aligned light-on curve has a flip score of -0.207
+    (ADN) and 1.875 (visual), and single visual axons score higher (means 0.506 and -0.109, KS p = 1.6e-24). Under reading
+    (a), selective axons, the visual mean curve is bimodal (1.814) and single axons differ (KS p = 1.7e-21), but the
+    ADN mean curve has a flip score of 0.277 with the centred fit and 1.132 with the code fit, above 0. One ADN mouse
+    (SKKS092) has a mean flip score above 0 under reading (a) (0.48, 0.423) and about 0 under (b) (-0.001).
   deviations:
-  - Axon traces are inferred spikes from the raw fluorescence, with no neuropil correction; the paper used Suite2P
-    traces and excluded duplicate axons (r > 0.5), and the files give ROIs as they are.
+  - Axon traces are inferred spikes from the raw fluorescence, with no neuropil correction; the paper used Suite2P traces
+    and excluded duplicate axons (r > 0.5), and the files give ROIs as they are.
   - Light and dark segments are the code's hard-coded ones (Separator.m); the files do not mark them.
 - claim: fig4-axons-light-off
   outcome: partially_reproduced
   notebook: axons.ipynb
   output: claim:fig4-axons-light-off
-  notes: Visual axons lose their tuning in light-off (mean light-off curve 5 to 11% of the light-on range, under
-    half). The ADN part fails. Over all axons (reading b) the per-recording fraction selective in light-off is not
-    significantly higher for ADN than for visual axons (medians 0.050 and 0.015, Mann-Whitney p = 0.3); pooled,
-    94 of 1084 against 11 of 247 (Fisher p = 0.026, the variant). Among selective axons (reading a) the share also
-    selective in light-off has medians 0.143 and 0.000 (Mann-Whitney p = 0.074, 14 and 7 recordings); pooled 40
-    of 135 against 5 of 106 (Fisher p = 2.8e-07). The ADN mean light-off curve keeps 72 to 86% of the light-on range,
-    but its peak lies 24 degrees (reading a) or 30 degrees (reading b) from the light-on peak, beyond 18 degrees
-    (18 degrees with the code fit).
+  notes: Visual axons lose their tuning in light-off (mean light-off curve 5 to 11% of the light-on range, under half).
+    The ADN part fails. Over all axons (reading b) the per-recording fraction selective in light-off is not significantly
+    higher for ADN than for visual axons (medians 0.050 and 0.015, Mann-Whitney p = 0.35); pooled, 93 of 1084 against
+    11 of 247 (Fisher p = 0.035, the variant). Among selective axons (reading a) the share also selective in light-off
+    has medians 0.134 and 0.000 (Mann-Whitney p = 0.15, 14 and 7 recordings); pooled 39 of 135 against 5 of 106 (Fisher
+    p = 5.4e-07). The ADN mean light-off curve keeps 72 to 86% of the light-on range, but its peak lies 24 degrees (reading
+    a, centred fit) or 30 degrees (reading b) from the light-on peak, beyond 18 degrees; with the code fit it lies at
+    18 degrees.
   deviations:
-  - Light-off curves take the circular shift of the mean light-on curve; the code's aligner (leaveOneOutAligner)
-    is not public.
+  - Light-off curves take the circular shift of the mean light-on curve; the code's aligner (leaveOneOutAligner) is not
+    public.
   - As for fig4-axons-light-on-shape.
 - claim: figs5-rotation-direction
   outcome: reproduced
   notebook: directions.ipynb
   output: claim:figs5-rotation-direction
   notes: Reading (b) passes. For the 407 cells selective in the four files that rotate both ways, each cell's clockwise
-    and counterclockwise tuning curves correlate more (median 0.211) than randomly paired cells (0.122), bootstrapped
-    KS p = 0.002. Reading (a), differences in preferred heading, gives p = 0.165 (median 24 against 30 degrees).
-    By mouse, with random pairs from the same mouse, (b) passes for SKKS125 only (p = 0.046; SKKS126 0.114, SKKS127
-    0.697); over all active cells neither reading passes (p = 0.512 and 0.543). The pooled random pairs cross files.
-    The statement's light and dark responses are not separated, as the files do not mark the light condition, so
-    the "diversity" part is not tested beyond tuning stability.
+    and counterclockwise tuning curves correlate more (median 0.210) than randomly paired cells (0.118), bootstrapped
+    KS p = 0.002. Reading (a), differences in preferred heading, gives p = 0.16 (median 24 against 30 degrees). The pass
+    is fragile. The pooled random pairs cross files, and by mouse, with random pairs from the same mouse, (b) passes
+    for SKKS125 only (p = 0.044; SKKS126 0.119, SKKS127 0.699); over all active cells neither reading passes (p = 0.512
+    and 0.543). The statement's light and dark responses are not separated, as the files do not mark the light condition,
+    so the "diversity" part is not tested beyond tuning stability.
   deviations:
   - Figure S5 was not read; what is compared follows the claims file's readings.
   - The dataset's 4 recordings in both directions are over 3 mice, where the paper reports 2; all 4 are used.
-  - In each bootstrap iteration both samples are drawn with replacement and the random pairing is drawn afresh (a
-    standard choice); dual-cue preferred headings are compared modulo 180 degrees.
+  - In each bootstrap iteration both samples are drawn with replacement and the random pairing is drawn afresh (a standard
+    choice); dual-cue preferred headings are compared modulo 180 degrees.
   - Spikes without neuropil correction; cells selected with the centred fit.
 - claim: figs6-arena-control
   outcome: not_reproduced
   notebook: directions.ipynb
   output: claim:figs6-arena-control
-  notes: 'Without the pair whose animal-controlled file visits 6 of 60 heading bins (SKKS125, 2022-07-21), neither
-    reading passes: n = 270, (a) p = 0.969, (b) p = 0.903 (median correlation 0.090 against 0.104 at random), and
-    no pair passes on its own (p 0.781 to 1). With it, reading (b) passes over all 5 pairs (n = 382, median 0.026
-    against -0.031, p = 0.034; (a) p = 0.912), but its 112 cells (29% of n) have animal-controlled tuning curves
-    that are 0 in 54 of 60 bins, and the pooled random pairs cross pairs of files.'
+  notes: 'Without the pair whose animal-controlled file visits 6 of 60 heading bins (SKKS125, 2022-07-21), neither reading
+    passes: n = 269, (a) p = 0.973, (b) p = 0.9 (median correlation 0.093 against 0.086 at random), and no pair passes
+    on its own (p 0.781 to 1). With it, reading (b) passes over all 5 pairs (n = 381, median 0.027 against -0.011, p
+    = 0.026; (a) p = 0.889), but its 112 cells (29% of n) have animal-controlled tuning curves that are 0 in 54 of 60
+    bins, and the pooled random pairs cross pairs of files.'
   deviations:
   - Figure S6 was not read; what is compared follows the claims file's readings.
-  - The dataset holds 5 pairs over 4 mice, where the paper reports 7 recordings over 3; all 5 are used. Tuning in
-    the animal-controlled file is built from all turning frames (more than 0.5 degree per frame), as these files
-    have few full rotations.
+  - The dataset holds 5 pairs over 4 mice, where the paper reports 7 recordings over 3; all 5 are used. Tuning in the
+    animal-controlled file is built from all turning frames (more than 0.5 degree per frame), as these files have few
+    full rotations.
   - As for figs5-rotation-direction.
-  - Assumption. Pairs whose animal-controlled file visits fewer than half of the 60 heading bins are left out (one
-    pair, 6 of 60 bins), as their tuning curves are mostly the 0 that bin_tuning gives an unvisited bin. The result
-    with it is shown.
+  - Assumption. Pairs whose animal-controlled file visits fewer than half of the 60 heading bins are left out (one pair,
+    6 of 60 bins), as their tuning curves are mostly the 0 that bin_tuning gives an unvisited bin. The result with it
+    is shown.
   assumed: true
 - claim: fig5-three-classes
   outcome: not_reproduced
   notebook: somata.ipynb
   output: claim:fig5-three-classes
-  notes: The silhouette value is highest at k = 2 under both readings. Selective cells (1419) give 0.274, 0.023
-    and 0.039 for k = 2, 3 and 4, and all cells (11329) give 0.189, 0.143 and -0.054, so neither has a local maximum
-    at 3. The reviewer-code variant, each curve centred on its own peak, has none either (selective 0.450, 0.036,
-    0.007; all 0.254, -0.019, 0.017); in the first run it had one for selective cells. The numbers are from the
-    re-run after verification round 1, which differ slightly from the first run (for example 486 against 485 selected
-    cells), as floating-point results differ between machines.
+  notes: The silhouette value is highest at k = 2 under both readings of the criterion. Selective cells (1419) give 0.272,
+    0.019 and 0.032 for k = 2, 3 and 4, and all cells (11329) give 0.190, 0.120 and -0.052, so neither has a local maximum
+    at 3. The reviewer-code variant, each curve centred on its own peak, has one for selective cells (0.114, 0.393, 0.004)
+    but not for all cells (0.260, -0.015, 0.016); the criterion reports the variant and decides on readings (a) and (b).
   deviations:
   - Spikes without neuropil correction; cells selected with the centred fit; light-off curves aligned with the shift
     of the mean light-on curve (leaveOneOutAligner not public).
-  - GaussianMixture of scikit-learn (full covariance, 20 initialisations, 1000 iterations) in place of MATLAB's
-    fitgmdist; the silhouette is computed on the hard assignments.
+  - GaussianMixture of scikit-learn (full covariance, 20 initialisations, 1000 iterations) in place of MATLAB's fitgmdist;
+    the silhouette is computed on the hard assignments.
   - One 1950-frame recording (2021-01-18, SKKS088 DualCue-002) has no light-on trial and is left out.
 - claim: fig5-class-proportions
   outcome: not_reproduced
@@ -222,46 +219,44 @@ outcomes:
   output: claim:fig5-class-proportions
   measured:
   - 12.1
-  - 8.8
+  - 7.6
   - 78.9
-  - 12.4
-  notes: 12.10% of somata are tuned (mean over recordings, s.e.m. 1.44; pooled 12.53%, over mice 11.51%), within
-    12.1 +- 1.1. The class shares do not match. Over recordings with no outlier step, landmark-like cells are 8.8%,
-    alignment-like 78.9% and heading-like 12.4%; with the chi-square outlier step (58 cells to the null cluster)
-    8.6, 75.3 and 12.2%. Every reading orders them alignment > heading > landmark. The counts are 75 landmark, 1150
-    alignment and 194 heading, against 522, 409 and 332 from the paper's degrees of freedom. All three light-on
-    archetypes are bimodal (a2/a1 0.70 to 0.80), so no class is a unimodal heading class. measured gives reading
-    (b) with average (i).
+  - 13.5
+  notes: 12.10% of somata are tuned (mean over recordings, s.e.m. 1.44; pooled 12.53%, over mice 11.51%), within 12.1
+    +- 1.1. The class shares do not match. Over recordings with no outlier step, landmark-like cells are 7.6%, alignment-like
+    78.9% and heading-like 13.5%; with the chi-square outlier step (58 cells to the null cluster) 7.4, 75.3 and 13.3%.
+    Every reading orders them alignment > heading > landmark. The counts are 67 landmark, 1150 alignment and 202 heading,
+    against 522, 409 and 332 from the paper's degrees of freedom. All three light-on archetypes are bimodal (a2/a1 0.70
+    to 0.80), so no class is a unimodal heading class. measured gives reading (b) with average (i).
   deviations:
-  - Classes are named by a rule on the archetypes (heading, the least bimodal light-on archetype; landmark, the
-    weaker light-off archetype of the other two), as the paper names them by their curves without a rule.
+  - Classes are named by a rule on the archetypes (heading, the least bimodal light-on archetype; landmark, the weaker
+    light-off archetype of the other two), as the paper names them by their curves without a rule.
   - As for fig5-three-classes.
 - claim: fig5e-alignment-peaks-coregistered
   outcome: partially_reproduced
   notebook: somata.ipynb
   output: claim:fig5e-alignment-peaks-coregistered
-  notes: 'The criterion''s V-test passes for the 1150 alignment-like cells (V = 743.2, p < 1e-300), but taking the
-    nearer of two peaks 180 degrees apart folds offsets into +-90 and gives a large V by itself: uniform light-off
-    peaks give V = 669.4 on average (V/n 0.582 against 0.646), and light-off peaks paired at random with other alignment-like
-    cells give 706.9 (95th percentile 727.7, 1000 draws). The real V exceeds the random pairing (share at or above
-    it 0.002), a small coregistration. Only 29.1% of offsets lie within 18 degrees, against 26.2% under random pairing,
-    with a median offset of 36 degrees, so "always" is not supported. In the heading-like and landmark-like classes
-    the V does not exceed random pairing (shares 0.368 and 0.510). The class is not the paper''s alignment class
-    (fig5-class-proportions).'
+  notes: 'The criterion''s V-test passes for the 1150 alignment-like cells (V = 743.5, p < 1e-300), but taking the nearer
+    of two peaks 180 degrees apart folds offsets into +-90 and gives a large V by itself: uniform light-off peaks give
+    V = 669.5 on average (V/n 0.582 against 0.646), and light-off peaks paired at random with other alignment-like cells
+    give 707.2 (95th percentile 728.4, 1000 draws). The real V exceeds the random pairing (share at or above it 0.002),
+    a small coregistration. Only 29.2% of offsets lie within 18 degrees, against 26.2% under random pairing, with a median
+    offset of 36 degrees, so "always" is not supported. In the heading-like and landmark-like classes the V does not
+    exceed random pairing (shares at or above it 0.677 and 0.230). The class is not the paper''s alignment class (fig5-class-proportions).'
   deviations:
   - Tested on the classes found here, which differ from the paper's.
-  - The V is compared with a random-pairing null and a uniform-peak null, which the criterion does not ask for,
-    because the nearer-peak offset biases the V-test towards 0.
+  - The V is compared with a random-pairing null and a uniform-peak null, which the criterion does not ask for, because
+    the nearer-peak offset biases the V-test towards 0.
 - claim: fig5f-heading-flip-unchanged
   outcome: partially_reproduced
   notebook: somata.ipynb
   output: claim:fig5f-heading-flip-unchanged
-  notes: The criterion is met on a class that is not the paper's. The 194 heading-like cells have flip scores 0.374
-    in light-on and 0.282 in light-off, F(1,386) = 1.8, p = 0.18 (mixed model with mouse as random intercept); with
-    the outlier step p = 0.18, with a random intercept per cell p = 0.14. The class has 194 cells where the paper's
-    degrees of freedom imply 332, and its light-on archetype is bimodal (a2/a1 0.70), so it is only the least bimodal
-    of three bimodal classes. In the first round's development, with a different selection seed, the class held
-    380 cells and the light effect was significant (not run here).
+  notes: The criterion is met on a class that is not the paper's. The 202 heading-like cells have flip scores 0.378 in
+    light-on and 0.279 in light-off, F(1,402) = 2.2, p = 0.141 (mixed model with mouse as random intercept); with the
+    outlier step p = 0.138, with a random intercept per cell p = 0.116. The class has 202 cells where the paper's degrees
+    of freedom imply 332, and its light-on archetype is bimodal (a2/a1 0.70), so it is only the least bimodal of three
+    bimodal classes. In the first round's development, with a different selection seed, the class held 380 cells and
+    the light effect was significant (not run here).
   deviations:
   - statsmodels MixedLM (REML), F as the squared z of the light effect, in place of MATLAB fitlme.
   - Tested on the classes found here, which differ from the paper's.
@@ -269,277 +264,340 @@ outcomes:
   outcome: partially_reproduced
   notebook: somata.ipynb
   output: claim:fig5gh-landmark-alignment-flip-drop
-  notes: The criterion is met on classes that are not the paper's. Flip scores fall in light-off for landmark-like
-    cells (0.482 to -0.242, F(1,148) = 47.3, p = 6.0e-12, n = 75) and alignment-like cells (0.365 to 0.014, F(1,2298)
-    = 135.2, p = 3.0e-31, n = 1150), against F(1,1042) = 1062.5 and F(1,816) = 209.5 in the paper.
+  notes: The criterion is met on classes that are not the paper's. Flip scores fall in light-off for landmark-like cells
+    (0.478 to -0.239, F(1,132) = 44.3, p = 2.8e-11, n = 67) and alignment-like cells (0.365 to 0.014, F(1,2298) = 135.4,
+    p = 2.7e-31, n = 1150), against F(1,1042) = 1062.5 and F(1,816) = 209.5 in the paper.
   deviations:
   - As for fig5f-heading-flip-unchanged.
 - claim: fig5i-axons-in-clusters
   outcome: partially_reproduced
   notebook: somata.ipynb
   output: claim:fig5i-axons-in-clusters
-  notes: The criterion is met, but the ellipses do not separate the axon groups. Under reading (a), 88.9% of ADN
-    axons lie inside the heading-class 95% ellipse and 86.8% of visual axons inside the landmark-class ellipse;
-    under (b), 71.9% and 61.9%. The alignment-class ellipse holds 84.8 to 96.2% of both axon groups, the heading
-    ellipse holds 79.8 to 91.5% of visual axons (more than the landmark ellipse), and the LDA assigns 83.7 to 98.0%
-    of axons to the alignment class. The classes come from fig5-class-proportions, which is not reproduced.
+  notes: The criterion is met, but the ellipses do not separate the axon groups. Under reading (a), 88.1% of ADN axons
+    lie inside the heading-class 95% ellipse and 83.0% of visual axons inside the landmark-class ellipse; under (b),
+    72.4% and 55.5%. The alignment-class ellipse holds 84.3 to 96.2% of both axon groups, the heading ellipse holds 81.0
+    to 92.5% of visual axons (more than the landmark ellipse), and the LDA assigns 85.2 to 98.0% of axons to the alignment
+    class. The classes come from fig5-class-proportions, which is not reproduced.
   deviations:
   - Tested on the classes found here, which differ from the paper's.
-  - The 95% ellipse is read as the 95% region of a bivariate normal fitted to the class's LDA points, as the claims
-    file says.
+  - The 95% ellipse is read as the 95% region of a bivariate normal fitted to the class's LDA points, as the claims file
+    says.
 - claim: fig5k-visual-cue-only
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The two visual-cue-only recordings (Suspended, SKKS125 2022-08-10 with 446 ROIs and SKKS127 2022-08-11
-    with 691 ROIs, 15050 frames each) share their number of ROIs with no other file of their mouse (the others have
-    213 to 670), and no matching of ROIs is given, so the matched neurons of Figure 5K cannot be found in another
-    file. Inside each file the 1250-frame blocks alternate between the two directions of rotation at about 2 degrees
-    per frame and the last block is still; nothing in the heading or the mean fluorescence marks some blocks as
-    standard rotation, and light-on and light-off are not marked (directions.ipynb).
+  notes: The two visual-cue-only recordings (Suspended, SKKS125 2022-08-10 with 446 ROIs and SKKS127 2022-08-11 with
+    691 ROIs, 15050 frames each) share their number of ROIs with no other file of their mouse (the others have 213 to
+    670), and no matching of ROIs is given, so the matched neurons of Figure 5K cannot be found in another file. Inside
+    each file the 1250-frame blocks alternate between the two directions of rotation at about 2 degrees per frame and
+    the last block is still; nothing in the heading or the mean fluorescence marks some blocks as standard rotation,
+    and light-on and light-off are not marked (directions.ipynb).
   notebook: directions.ipynb
+  deviations: []
 - claim: fig6a-population-light-on
   outcome: not_reproduced
   notebook: decoding.ipynb
   output: claim:fig6a-population-light-on
   measured: 0.708
-  notes: No decoder reading gives a light-on mean within 0.82 +- 0.04. The naive Bayes decoder gives 0.708 [0.665,
-    0.747] (dF/F) and 0.712 [0.677, 0.745] (spikes); the HeadingDecoder 0.202 and 0.215. Chance is 0.10. measured
-    gives dF/F with the Bayes decoder, the first reading.
+  notes: No decoder reading gives a light-on mean within 0.82 +- 0.04. The naive Bayes decoder gives 0.708 [0.665, 0.747]
+    (dF/F) and 0.712 [0.678, 0.746] (spikes); the Bayes variants without shared frames 0.239 to 0.532; the HeadingDecoder
+    0.202 and 0.215. Chance is 0.10 (0.101 to 0.102 with each decoder). measured gives dF/F with the Bayes decoder, the
+    first reading.
   deviations:
-  - The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with
-    the same files, seeds and code; they differ from the paper's.
+  - The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with the
+    same files, seeds and code; they differ from the paper's.
   - Pseudopopulations from the 25 7550-frame recordings with 5 trials on each side of all three light-to-dark transitions
-    (15 trials a side; 1331 of 1419 tuned cells); the 1950-frame recordings are left out. Trials are resampled to
-    200 bins on heading in place of time, so bins line up across recordings.
-  - 'The naive Bayes decoder is written here after Etter et al. (2020): activity binarized (spikes above 0; dF/F
-    above the mean plus 2 SD, a standard choice), 60 states of 6 degrees, a +1/+2 prior, trained on even and tested
-    on odd bins. The HeadingDecoder (github.com/ucsb-goard-lab/HeadingDecoder at ca9842e) is reimplemented in numpy
-    with leave-one-trial-out tuning weights; it decodes near chance here (0.20 to 0.22 for all tuned cells).'
-  - 'Chance is measured with each decoder by decoding with each cell''s test activity circularly shifted along the
-    trial: 0.101 to 0.102, the 0.10 reading of the claims file.'
+    (15 trials a side; 1331 of 1419 tuned cells); the 1950-frame recordings are left out. Trials are resampled to 200
+    bins on heading in place of time, so bins line up across recordings.
+  - 'The naive Bayes decoder is written here after Etter et al. (2020): activity binarized (spikes above 0; dF/F above
+    the mean plus 2 SD, a standard choice), 60 states of 6 degrees, a +1/+2 prior, trained on even and tested on odd
+    bins of the trials resampled to 200 bins, as the Methods split even and odd time points after resampling. The HeadingDecoder
+    (github.com/ucsb-goard-lab/HeadingDecoder at ca9842e) is reimplemented in numpy with leave-one-trial-out tuning weights.
+    It decodes synthetic cells at 0.908 to 0.999, and these data at 0.202 and 0.215 for all tuned cells in light-on,
+    twice chance and close to the naive Bayes decoder trained and tested on different trials (0.239 and 0.255). The synthetic
+    test shows the algorithm as written works; a difference from the lab''s code in some detail cannot be excluded.'
+  - 'Chance is measured with each decoder by decoding with each cell''s test activity circularly shifted along the trial:
+    0.101 to 0.102, the 0.10 reading of the claims file.'
+  - 'Two Bayes variants in which no test bin shares a frame with a training bin are shown as further readings: (a'')
+    even trials to train and odd trials to test; (a'''') the paper''s split of even and odd time points on 100 heading
+    bins that each hold the nearest frame.'
 - claim: fig6a-population-light-off
   outcome: partially_reproduced
   assumed: true
   notebook: decoding.ipynb
   output: claim:fig6a-population-light-off
   measured: 0.569
-  notes: 'Under the Bayes decoder light-off accuracy drops and stays above chance: 0.569 [0.525, 0.612] (dF/F) and
-    0.571 [0.537, 0.606] (spikes), both intervals above 0.18 and 0.10, light-off lower with p = 0.016 and p < 0.001
-    (paired; unpaired 0.061 and 0.001). The mean is outside 0.44 +- 0.10 under every reading, so the criterion is
-    not met in full. The HeadingDecoder gives 0.137 and 0.144, intervals including chance, and no significant drop
-    (p 0.23 to 0.36).'
+  notes: 'Under the Bayes decoder light-off accuracy drops and stays above chance: 0.569 [0.525, 0.612] (dF/F) and 0.572
+    [0.535, 0.608] (spikes), both intervals above 0.18 and 0.10, light-off lower with p = 0.016 and p < 0.001 (paired;
+    unpaired 0.061 and 0.002). The mean is outside 0.44 +- 0.10 under reading (a), so the criterion is not met in full.
+    Without shared frames (a''''), dF/F gives 0.406 [0.361, 0.452], within the tolerance and above both chance levels,
+    but the drop is not significant (paired p = 0.105); spikes give 0.206 [0.177, 0.233]. The trial split (a'') gives
+    0.167 and 0.140. The HeadingDecoder gives 0.137 [0.101, 0.178] and 0.144 [0.112, 0.176], above 0.10 and below 0.18,
+    with no significant drop (p 0.231 to 0.361).'
   deviations:
-  - Assumption. The decoder readings give different outcomes; the naive Bayes decoder is adopted, as the Methods
-    name Bayesian decoding (Etter et al. 2020) and the claims file puts the Methods first, and the HeadingDecoder
-    decodes near chance here. Every reading is shown.
-  - The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with
-    the same files, seeds and code; they differ from the paper's.
+  - 'Assumption. The decoder readings give different outcomes; the naive Bayes decoder is adopted, as the Methods name
+    Bayesian decoding (Etter et al. 2020), resample each trial to 200 bins and split even and odd time points for training
+    and testing (Methods, Decoding RSC somatic activity), which reading (a) follows, and the claims file puts the Methods
+    first. Every reading is shown, with two Bayes variants in which no test bin shares a frame with a training bin: (a'')
+    even trials to train and odd trials to test, (a'''') the paper''s split of even and odd time points on 100 heading
+    bins that each hold the nearest frame, without interpolation. Both give lower accuracies (all tuned cells, light-on,
+    0.239 to 0.532 against 0.708 and 0.712), so the accuracies of reading (a) depend heavily on test bins sharing frames
+    with training bins, as the paper''s own procedure does.'
+  - The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with the
+    same files, seeds and code; they differ from the paper's.
   - Pseudopopulations from the 25 7550-frame recordings with 5 trials on each side of all three light-to-dark transitions
-    (15 trials a side; 1331 of 1419 tuned cells); the 1950-frame recordings are left out. Trials are resampled to
-    200 bins on heading in place of time, so bins line up across recordings.
-  - 'The naive Bayes decoder is written here after Etter et al. (2020): activity binarized (spikes above 0; dF/F
-    above the mean plus 2 SD, a standard choice), 60 states of 6 degrees, a +1/+2 prior, trained on even and tested
-    on odd bins. The HeadingDecoder (github.com/ucsb-goard-lab/HeadingDecoder at ca9842e) is reimplemented in numpy
-    with leave-one-trial-out tuning weights; it decodes near chance here (0.20 to 0.22 for all tuned cells).'
-  - 'Chance is measured with each decoder by decoding with each cell''s test activity circularly shifted along the
-    trial: 0.101 to 0.102, the 0.10 reading of the claims file.'
+    (15 trials a side; 1331 of 1419 tuned cells); the 1950-frame recordings are left out. Trials are resampled to 200
+    bins on heading in place of time, so bins line up across recordings.
+  - 'The naive Bayes decoder is written here after Etter et al. (2020): activity binarized (spikes above 0; dF/F above
+    the mean plus 2 SD, a standard choice), 60 states of 6 degrees, a +1/+2 prior, trained on even and tested on odd
+    bins of the trials resampled to 200 bins, as the Methods split even and odd time points after resampling. The HeadingDecoder
+    (github.com/ucsb-goard-lab/HeadingDecoder at ca9842e) is reimplemented in numpy with leave-one-trial-out tuning weights.
+    It decodes synthetic cells at 0.908 to 0.999, and these data at 0.202 and 0.215 for all tuned cells in light-on,
+    twice chance and close to the naive Bayes decoder trained and tested on different trials (0.239 and 0.255). The synthetic
+    test shows the algorithm as written works; a difference from the lab''s code in some detail cannot be excluded.'
+  - 'Chance is measured with each decoder by decoding with each cell''s test activity circularly shifted along the trial:
+    0.101 to 0.102, the 0.10 reading of the claims file.'
 - claim: fig6b-heading-cells
   outcome: partially_reproduced
   assumed: true
   notebook: decoding.ipynb
   output: claim:fig6b-heading-cells
   measured:
-  - 0.425
-  - 0.372
-  notes: Under the Bayes decoder, heading-like cells (175 used) decode above chance in both conditions (dF/F 0.425
-    and 0.372; spikes 0.407 and 0.344; every interval above 0.18) with no significant difference (p 0.31 to 0.97),
-    as the claim says, but both means are outside 0.61 +- 0.05 and 0.44 +- 0.08 under every reading. The HeadingDecoder
-    gives 0.127 to 0.148 in light-on. The class is not the paper's heading class.
+  - 0.429
+  - 0.377
+  notes: Under the Bayes decoder, heading-like cells (179 used) decode above chance in both conditions (dF/F 0.429 and
+    0.377; spikes 0.415 and 0.341; every interval above 0.18) with no significant difference (p 0.170 to 0.964), as the
+    claim says, but both means are outside 0.61 +- 0.05 and 0.44 +- 0.08 under every reading. Without shared frames the
+    pattern holds at lower accuracy ((a'') dF/F 0.328 and 0.280, both intervals above 0.18, p = 0.806); the trial split
+    and the HeadingDecoder give 0.130 to 0.161 in light-on. The class is not the paper's heading class.
   deviations:
-  - Assumption. The decoder readings give different outcomes; the naive Bayes decoder is adopted, as the Methods
-    name Bayesian decoding (Etter et al. 2020) and the claims file puts the Methods first, and the HeadingDecoder
-    decodes near chance here. Every reading is shown.
-  - The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with
-    the same files, seeds and code; they differ from the paper's.
+  - 'Assumption. The decoder readings give different outcomes; the naive Bayes decoder is adopted, as the Methods name
+    Bayesian decoding (Etter et al. 2020), resample each trial to 200 bins and split even and odd time points for training
+    and testing (Methods, Decoding RSC somatic activity), which reading (a) follows, and the claims file puts the Methods
+    first. Every reading is shown, with two Bayes variants in which no test bin shares a frame with a training bin: (a'')
+    even trials to train and odd trials to test, (a'''') the paper''s split of even and odd time points on 100 heading
+    bins that each hold the nearest frame, without interpolation. Both give lower accuracies (all tuned cells, light-on,
+    0.239 to 0.532 against 0.708 and 0.712), so the accuracies of reading (a) depend heavily on test bins sharing frames
+    with training bins, as the paper''s own procedure does.'
+  - The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with the
+    same files, seeds and code; they differ from the paper's.
   - Pseudopopulations from the 25 7550-frame recordings with 5 trials on each side of all three light-to-dark transitions
-    (15 trials a side; 1331 of 1419 tuned cells); the 1950-frame recordings are left out. Trials are resampled to
-    200 bins on heading in place of time, so bins line up across recordings.
-  - 'The naive Bayes decoder is written here after Etter et al. (2020): activity binarized (spikes above 0; dF/F
-    above the mean plus 2 SD, a standard choice), 60 states of 6 degrees, a +1/+2 prior, trained on even and tested
-    on odd bins. The HeadingDecoder (github.com/ucsb-goard-lab/HeadingDecoder at ca9842e) is reimplemented in numpy
-    with leave-one-trial-out tuning weights; it decodes near chance here (0.20 to 0.22 for all tuned cells).'
-  - 'Chance is measured with each decoder by decoding with each cell''s test activity circularly shifted along the
-    trial: 0.101 to 0.102, the 0.10 reading of the claims file.'
+    (15 trials a side; 1331 of 1419 tuned cells); the 1950-frame recordings are left out. Trials are resampled to 200
+    bins on heading in place of time, so bins line up across recordings.
+  - 'The naive Bayes decoder is written here after Etter et al. (2020): activity binarized (spikes above 0; dF/F above
+    the mean plus 2 SD, a standard choice), 60 states of 6 degrees, a +1/+2 prior, trained on even and tested on odd
+    bins of the trials resampled to 200 bins, as the Methods split even and odd time points after resampling. The HeadingDecoder
+    (github.com/ucsb-goard-lab/HeadingDecoder at ca9842e) is reimplemented in numpy with leave-one-trial-out tuning weights.
+    It decodes synthetic cells at 0.908 to 0.999, and these data at 0.202 and 0.215 for all tuned cells in light-on,
+    twice chance and close to the naive Bayes decoder trained and tested on different trials (0.239 and 0.255). The synthetic
+    test shows the algorithm as written works; a difference from the lab''s code in some detail cannot be excluded.'
+  - 'Chance is measured with each decoder by decoding with each cell''s test activity circularly shifted along the trial:
+    0.101 to 0.102, the 0.10 reading of the claims file.'
 - claim: fig6b-landmark-cells
   outcome: partially_reproduced
   assumed: true
   notebook: decoding.ipynb
   output: claim:fig6b-landmark-cells
   measured:
-  - 0.397
-  - 0.21
-  notes: Under the Bayes decoder, landmark-like cells (54 used, sampled 332 with replacement) fall to near chance
-    in light-off (dF/F 0.210 [0.195, 0.223]; spikes 0.192 [0.181, 0.205]), within 0.20 +- 0.07, with p < 0.001 for
-    the drop, but their light-on accuracy (0.397 and 0.395) is half the paper's 0.80, so the criterion is not met.
-    The light-off intervals exclude 0.18 (by 0.001 for spikes) and 0.10. The HeadingDecoder gives 0.207 and 0.247
-    in light-on. The class is not the paper's.
+  - 0.396
+  - 0.207
+  notes: Under the Bayes decoder, landmark-like cells (50 used, sampled 332 with replacement) fall towards chance in
+    light-off (dF/F 0.207 [0.192, 0.220]; spikes 0.187 [0.175, 0.199]), within 0.20 +- 0.07, with p < 0.001 for the drop,
+    but their light-on accuracy (0.396 and 0.383) is half the paper's 0.80, so the criterion is not met. The spikes light-off
+    interval includes 0.18 and the dF/F interval excludes it; neither includes 0.10. Every other reading also gives a
+    significant drop (p 0.014 or less) with light-on accuracy 0.201 to 0.352. The class is not the paper's.
   deviations:
-  - Assumption. The decoder readings give different outcomes; the naive Bayes decoder is adopted, as the Methods
-    name Bayesian decoding (Etter et al. 2020) and the claims file puts the Methods first, and the HeadingDecoder
-    decodes near chance here. Every reading is shown.
-  - The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with
-    the same files, seeds and code; they differ from the paper's.
+  - 'Assumption. The decoder readings give different outcomes; the naive Bayes decoder is adopted, as the Methods name
+    Bayesian decoding (Etter et al. 2020), resample each trial to 200 bins and split even and odd time points for training
+    and testing (Methods, Decoding RSC somatic activity), which reading (a) follows, and the claims file puts the Methods
+    first. Every reading is shown, with two Bayes variants in which no test bin shares a frame with a training bin: (a'')
+    even trials to train and odd trials to test, (a'''') the paper''s split of even and odd time points on 100 heading
+    bins that each hold the nearest frame, without interpolation. Both give lower accuracies (all tuned cells, light-on,
+    0.239 to 0.532 against 0.708 and 0.712), so the accuracies of reading (a) depend heavily on test bins sharing frames
+    with training bins, as the paper''s own procedure does.'
+  - The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with the
+    same files, seeds and code; they differ from the paper's.
   - Pseudopopulations from the 25 7550-frame recordings with 5 trials on each side of all three light-to-dark transitions
-    (15 trials a side; 1331 of 1419 tuned cells); the 1950-frame recordings are left out. Trials are resampled to
-    200 bins on heading in place of time, so bins line up across recordings.
-  - 'The naive Bayes decoder is written here after Etter et al. (2020): activity binarized (spikes above 0; dF/F
-    above the mean plus 2 SD, a standard choice), 60 states of 6 degrees, a +1/+2 prior, trained on even and tested
-    on odd bins. The HeadingDecoder (github.com/ucsb-goard-lab/HeadingDecoder at ca9842e) is reimplemented in numpy
-    with leave-one-trial-out tuning weights; it decodes near chance here (0.20 to 0.22 for all tuned cells).'
-  - 'Chance is measured with each decoder by decoding with each cell''s test activity circularly shifted along the
-    trial: 0.101 to 0.102, the 0.10 reading of the claims file.'
+    (15 trials a side; 1331 of 1419 tuned cells); the 1950-frame recordings are left out. Trials are resampled to 200
+    bins on heading in place of time, so bins line up across recordings.
+  - 'The naive Bayes decoder is written here after Etter et al. (2020): activity binarized (spikes above 0; dF/F above
+    the mean plus 2 SD, a standard choice), 60 states of 6 degrees, a +1/+2 prior, trained on even and tested on odd
+    bins of the trials resampled to 200 bins, as the Methods split even and odd time points after resampling. The HeadingDecoder
+    (github.com/ucsb-goard-lab/HeadingDecoder at ca9842e) is reimplemented in numpy with leave-one-trial-out tuning weights.
+    It decodes synthetic cells at 0.908 to 0.999, and these data at 0.202 and 0.215 for all tuned cells in light-on,
+    twice chance and close to the naive Bayes decoder trained and tested on different trials (0.239 and 0.255). The synthetic
+    test shows the algorithm as written works; a difference from the lab''s code in some detail cannot be excluded.'
+  - 'Chance is measured with each decoder by decoding with each cell''s test activity circularly shifted along the trial:
+    0.101 to 0.102, the 0.10 reading of the claims file.'
 - claim: fig6b-alignment-cells
   outcome: not_reproduced
   notebook: decoding.ipynb
   output: claim:fig6b-alignment-cells
   measured:
-  - 0.721
-  - 0.579
-  notes: Under the Bayes decoder both means of alignment-like cells are within tolerance (dF/F 0.721 and 0.579;
-    spikes 0.712 and 0.579), with light-off intervals above chance, but their light-on accuracy is the highest of
-    the three classes, not between heading-like (0.425, 0.407) and landmark-like (0.397, 0.395) cells, and light-off
-    is significantly lower (p = 0.010 and 0.001, paired; unpaired 0.041 and 0.003), which the criterion counts against
-    the claim under the reading that matches the values. The HeadingDecoder gives 0.202 and 0.219. The class is
-    not the paper's.
+  - 0.72
+  - 0.58
+  notes: Under the Bayes decoder both means of alignment-like cells are within tolerance (dF/F 0.720 and 0.580; spikes
+    0.711 and 0.581), with light-off intervals above chance, but their light-on accuracy is the highest of the three
+    classes, not between heading-like (0.429, 0.415) and landmark-like (0.396, 0.383) cells, and light-off is lower,
+    by the paired test significantly (p = 0.011 and 0.001; unpaired 0.053 and 0.001), which the criterion counts against
+    the claim under the reading that matches the values. No other reading puts both means within tolerance (light-on
+    0.203 to 0.548). The class is not the paper's.
   deviations:
-  - The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with
-    the same files, seeds and code; they differ from the paper's.
+  - The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with the
+    same files, seeds and code; they differ from the paper's.
   - Pseudopopulations from the 25 7550-frame recordings with 5 trials on each side of all three light-to-dark transitions
-    (15 trials a side; 1331 of 1419 tuned cells); the 1950-frame recordings are left out. Trials are resampled to
-    200 bins on heading in place of time, so bins line up across recordings.
-  - 'The naive Bayes decoder is written here after Etter et al. (2020): activity binarized (spikes above 0; dF/F
-    above the mean plus 2 SD, a standard choice), 60 states of 6 degrees, a +1/+2 prior, trained on even and tested
-    on odd bins. The HeadingDecoder (github.com/ucsb-goard-lab/HeadingDecoder at ca9842e) is reimplemented in numpy
-    with leave-one-trial-out tuning weights; it decodes near chance here (0.20 to 0.22 for all tuned cells).'
-  - 'Chance is measured with each decoder by decoding with each cell''s test activity circularly shifted along the
-    trial: 0.101 to 0.102, the 0.10 reading of the claims file.'
+    (15 trials a side; 1331 of 1419 tuned cells); the 1950-frame recordings are left out. Trials are resampled to 200
+    bins on heading in place of time, so bins line up across recordings.
+  - 'The naive Bayes decoder is written here after Etter et al. (2020): activity binarized (spikes above 0; dF/F above
+    the mean plus 2 SD, a standard choice), 60 states of 6 degrees, a +1/+2 prior, trained on even and tested on odd
+    bins of the trials resampled to 200 bins, as the Methods split even and odd time points after resampling. The HeadingDecoder
+    (github.com/ucsb-goard-lab/HeadingDecoder at ca9842e) is reimplemented in numpy with leave-one-trial-out tuning weights.
+    It decodes synthetic cells at 0.908 to 0.999, and these data at 0.202 and 0.215 for all tuned cells in light-on,
+    twice chance and close to the naive Bayes decoder trained and tested on different trials (0.239 and 0.255). The synthetic
+    test shows the algorithm as written works; a difference from the lab''s code in some detail cannot be excluded.'
+  - 'Chance is measured with each decoder by decoding with each cell''s test activity circularly shifted along the trial:
+    0.101 to 0.102, the 0.10 reading of the claims file.'
+  - 'Two Bayes variants in which no test bin shares a frame with a training bin are shown as further readings: (a'')
+    even trials to train and odd trials to test; (a'''') the paper''s split of even and odd time points on 100 heading
+    bins that each hold the nearest frame.'
 - claim: fig6b-180-errors
   outcome: reproduced
   assumed: true
   notebook: decoding.ipynb
   output: claim:fig6b-180-errors
-  notes: Under the Bayes decoder, 11.9% (dF/F) and 13.7% (spikes) of the landmark-like decoder's light-on errors
-    lie within 18 degrees of 180, above 0.10, and 7.1% and 9.1% of the heading-like decoder's, no more than 0.10.
-    Under the HeadingDecoder the criterion fails (heading-like 0.105 and 0.106), but that decoder is near chance,
-    so its errors are spread almost evenly (all groups 0.105 to 0.158). The classes are not the paper's.
+  notes: 'Under the Bayes decoder, 12.0% (dF/F) and 13.6% (spikes) of the landmark-like decoder''s light-on errors lie
+    within 18 degrees of 180, above 0.10, and 7.0% and 9.1% of the heading-like decoder''s, no more than 0.10. The result
+    is fragile: without shared frames it holds for dF/F ((a'''') landmark 0.135, heading 0.078) but not for spikes (heading
+    0.137), and under the trial split and the HeadingDecoder it fails (heading-like 0.104 to 0.157); those readings decode
+    at 0.13 to 0.26, and all their groups have 0.104 to 0.202. The classes are not the paper''s.'
   deviations:
-  - Assumption. The decoder readings give different outcomes; the naive Bayes decoder is adopted, as the Methods
-    name Bayesian decoding (Etter et al. 2020) and the claims file puts the Methods first, and the HeadingDecoder
-    decodes near chance here. Every reading is shown.
-  - The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with
-    the same files, seeds and code; they differ from the paper's.
+  - 'Assumption. The decoder readings give different outcomes; the naive Bayes decoder is adopted, as the Methods name
+    Bayesian decoding (Etter et al. 2020), resample each trial to 200 bins and split even and odd time points for training
+    and testing (Methods, Decoding RSC somatic activity), which reading (a) follows, and the claims file puts the Methods
+    first. Every reading is shown, with two Bayes variants in which no test bin shares a frame with a training bin: (a'')
+    even trials to train and odd trials to test, (a'''') the paper''s split of even and odd time points on 100 heading
+    bins that each hold the nearest frame, without interpolation. Both give lower accuracies (all tuned cells, light-on,
+    0.239 to 0.532 against 0.708 and 0.712), so the accuracies of reading (a) depend heavily on test bins sharing frames
+    with training bins, as the paper''s own procedure does.'
+  - The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with the
+    same files, seeds and code; they differ from the paper's.
   - Pseudopopulations from the 25 7550-frame recordings with 5 trials on each side of all three light-to-dark transitions
-    (15 trials a side; 1331 of 1419 tuned cells); the 1950-frame recordings are left out. Trials are resampled to
-    200 bins on heading in place of time, so bins line up across recordings.
-  - 'The naive Bayes decoder is written here after Etter et al. (2020): activity binarized (spikes above 0; dF/F
-    above the mean plus 2 SD, a standard choice), 60 states of 6 degrees, a +1/+2 prior, trained on even and tested
-    on odd bins. The HeadingDecoder (github.com/ucsb-goard-lab/HeadingDecoder at ca9842e) is reimplemented in numpy
-    with leave-one-trial-out tuning weights; it decodes near chance here (0.20 to 0.22 for all tuned cells).'
-  - 'Chance is measured with each decoder by decoding with each cell''s test activity circularly shifted along the
-    trial: 0.101 to 0.102, the 0.10 reading of the claims file.'
+    (15 trials a side; 1331 of 1419 tuned cells); the 1950-frame recordings are left out. Trials are resampled to 200
+    bins on heading in place of time, so bins line up across recordings.
+  - 'The naive Bayes decoder is written here after Etter et al. (2020): activity binarized (spikes above 0; dF/F above
+    the mean plus 2 SD, a standard choice), 60 states of 6 degrees, a +1/+2 prior, trained on even and tested on odd
+    bins of the trials resampled to 200 bins, as the Methods split even and odd time points after resampling. The HeadingDecoder
+    (github.com/ucsb-goard-lab/HeadingDecoder at ca9842e) is reimplemented in numpy with leave-one-trial-out tuning weights.
+    It decodes synthetic cells at 0.908 to 0.999, and these data at 0.202 and 0.215 for all tuned cells in light-on,
+    twice chance and close to the naive Bayes decoder trained and tested on different trials (0.239 and 0.255). The synthetic
+    test shows the algorithm as written works; a difference from the lab''s code in some detail cannot be excluded.'
+  - 'Chance is measured with each decoder by decoding with each cell''s test activity circularly shifted along the trial:
+    0.101 to 0.102, the 0.10 reading of the claims file.'
 - claim: fig6-heading-below-population
   outcome: reproduced
   notebook: decoding.ipynb
   output: claim:fig6-heading-below-population
-  notes: Under every decoder and input reading, the 95% interval of light-on accuracy for heading-like cells lies
-    below that of all tuned cells (Bayes dF/F 0.425 [0.397, 0.453] against 0.708 [0.665, 0.747]; spikes 0.407 [0.383,
-    0.432] against 0.712 [0.677, 0.745]; HeadingDecoder 0.127 to 0.148 against 0.202 to 0.215), reading (a); heading-like
-    cells decode worse in 99.8 to 100% of iterations. Reading (b), a mixed model with recording or mouse as random
-    intercept, cannot be formed, as each pseudopopulation trial pools cells of many recordings and mice. The heading-like
-    class is not the paper's.
+  notes: Under every decoder and input reading, the 95% interval of light-on accuracy for heading-like cells lies below
+    that of all tuned cells (Bayes dF/F 0.429 [0.399, 0.457] against 0.708 [0.665, 0.747]; spikes 0.415 [0.390, 0.441]
+    against 0.712 [0.678, 0.746]; Bayes without shared frames 0.158 to 0.328 against 0.239 to 0.532; HeadingDecoder 0.130
+    and 0.146 against 0.202 and 0.215), reading (a); heading-like cells decode worse in 99.8 to 100% of iterations. Reading
+    (b), a mixed model with recording or mouse as random intercept, cannot be formed, as each pseudopopulation trial
+    pools cells of many recordings and mice. The heading-like class is not the paper's.
   deviations:
-  - The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with
-    the same files, seeds and code; they differ from the paper's.
+  - The classes are those of somata.ipynb (fig5-class-proportions, not reproduced), rebuilt in decoding.ipynb with the
+    same files, seeds and code; they differ from the paper's.
   - Pseudopopulations from the 25 7550-frame recordings with 5 trials on each side of all three light-to-dark transitions
-    (15 trials a side; 1331 of 1419 tuned cells); the 1950-frame recordings are left out. Trials are resampled to
-    200 bins on heading in place of time, so bins line up across recordings.
-  - 'The naive Bayes decoder is written here after Etter et al. (2020): activity binarized (spikes above 0; dF/F
-    above the mean plus 2 SD, a standard choice), 60 states of 6 degrees, a +1/+2 prior, trained on even and tested
-    on odd bins. The HeadingDecoder (github.com/ucsb-goard-lab/HeadingDecoder at ca9842e) is reimplemented in numpy
-    with leave-one-trial-out tuning weights; it decodes near chance here (0.20 to 0.22 for all tuned cells).'
-  - 'Chance is measured with each decoder by decoding with each cell''s test activity circularly shifted along the
-    trial: 0.101 to 0.102, the 0.10 reading of the claims file.'
+    (15 trials a side; 1331 of 1419 tuned cells); the 1950-frame recordings are left out. Trials are resampled to 200
+    bins on heading in place of time, so bins line up across recordings.
+  - 'The naive Bayes decoder is written here after Etter et al. (2020): activity binarized (spikes above 0; dF/F above
+    the mean plus 2 SD, a standard choice), 60 states of 6 degrees, a +1/+2 prior, trained on even and tested on odd
+    bins of the trials resampled to 200 bins, as the Methods split even and odd time points after resampling. The HeadingDecoder
+    (github.com/ucsb-goard-lab/HeadingDecoder at ca9842e) is reimplemented in numpy with leave-one-trial-out tuning weights.
+    It decodes synthetic cells at 0.908 to 0.999, and these data at 0.202 and 0.215 for all tuned cells in light-on,
+    twice chance and close to the naive Bayes decoder trained and tested on different trials (0.239 and 0.255). The synthetic
+    test shows the algorithm as written works; a difference from the lab''s code in some detail cannot be excluded.'
+  - 'Chance is measured with each decoder by decoding with each cell''s test activity circularly shifted along the trial:
+    0.101 to 0.102, the 0.10 reading of the claims file.'
+  - 'Two Bayes variants in which no test bin shares a frame with a training bin are shown as further readings: (a'')
+    even trials to train and odd trials to test; (a'''') the paper''s split of even and odd time points on 100 heading
+    bins that each hold the nearest frame.'
 findings:
 - kind: data_missing
-  statement: The free-chamber recordings of Figure 1D and E (4 recordings over 3 mice, 2665 neurons) are not in
-    the dandiset. The files hold 20 mice where the paper used 26.
+  statement: The free-chamber recordings of Figure 1D and E (4 recordings over 3 mice, 2665 neurons) are not in the dandiset.
+    The files hold 20 mice where the paper used 26.
 - kind: data_missing
-  statement: The files hold the raw fluorescence of each ROI but no neuropil trace, dF/F or inferred spikes, so
-    the paper's neuropil-corrected signals cannot be rebuilt without reprocessing the raw video (about 695 GB).
-    The axon recordings lack the Suite2P traces the paper used.
+  statement: The files hold the raw fluorescence of each ROI but no neuropil trace, dF/F or inferred spikes, so the paper's
+    neuropil-corrected signals cannot be rebuilt without reprocessing the raw video (about 695 GB). The axon recordings
+    lack the Suite2P traces the paper used.
 - kind: metadata_insufficient
   statement: The experiment a file belongs to (single cue, dual cue, axons, head rotation, remapping, rotation direction,
     animal control, visual cue only) is given only inside its identifier string; the session description is "floating
     air cage experiment" for every file.
 - kind: metadata_insufficient
-  statement: Light-on and light-off periods, which most dual-cue analyses need, are not marked in any file; the
-    paper's code hard-codes them by recording length.
+  statement: Light-on and light-off periods, which most dual-cue analyses need, are not marked in any file; the paper's
+    code hard-codes them by recording length.
 - kind: metadata_insufficient
   statement: The heading is relative to "cage door dead north"; where the cue or cues sit in that frame is not given,
     so heading relative to the cue cannot be computed. In the head-rotation pairs the stored headings run in opposite
     directions in the two conditions in 5 of 7 pairs, and how each is defined is not stated.
 - kind: metadata_insufficient
-  statement: The visual-cue-only recordings of Figure 5K share no ROIs with any standard recording and no matching
-    is given, and nothing in them marks standard and visual-only rotation, so the matched neurons of Figure 5K cannot
-    be found.
+  statement: The visual-cue-only recordings of Figure 5K share no ROIs with any standard recording and no matching is
+    given, and nothing in them marks standard and visual-only rotation, so the matched neurons of Figure 5K cannot be
+    found.
 - kind: metadata_error
-  statement: The heading and position series state a rate of 0.1 Hz; they have one sample per imaging frame, at
-    10 Hz. The two-photon series states about 20 Hz with the same number of frames.
+  statement: The heading and position series state a rate of 0.1 Hz; they have one sample per imaging frame, at 10 Hz.
+    The two-photon series states about 20 Hz with the same number of frames.
 - kind: metadata_error
-  statement: Every file's imaging plane is described as "soma recording from retrosplenial cortex", including the
-    24 axon recordings.
+  statement: Every file's imaging plane is described as "soma recording from retrosplenial cortex", including the 24
+    axon recordings.
 - kind: metadata_error
-  statement: Four files of mouse SKKS089 (2021-04-29 head rotation, 2021-05-18 remapping) carry identifiers naming
-    SKKS088.
+  statement: Four files of mouse SKKS089 (2021-04-29 head rotation, 2021-05-18 remapping) carry identifiers naming SKKS088.
 - kind: selection_undocumented
-  statement: The dandiset holds 7 head-rotation pairs over 5 mice (paper 5 over 4), 35 dual-cue soma recordings
-    (paper 36), 4 recordings in both rotation directions over 3 mice (paper 4 over 2) and 5 animal-controlled recordings
-    over 4 mice (paper 7 over 3); which recordings the paper used is not stated.
+  statement: The dandiset holds 7 head-rotation pairs over 5 mice (paper 5 over 4), 35 dual-cue soma recordings (paper
+    36), 4 recordings in both rotation directions over 3 mice (paper 4 over 2) and 5 animal-controlled recordings over
+    4 mice (paper 7 over 3); which recordings the paper used is not stated.
 - kind: methods_unavailable
-  statement: Question for the authors. The heading-selection code fits the Gaussian to the trial-mean curve without
-    centring it (center_flag false) and bounds the peak location to pi/2 +- pi/6, which passes only cells whose
-    peak lies near one heading (here 10.85% of single-cue cells, 93.6% of them in one quadrant). Was the curve centred
-    on its peak before the fit, as the 'fit' preferred direction does? With centring, 15.26% pass and their preferred
-    headings tile the circle.
+  statement: Question for the authors. The heading-selection code fits the Gaussian to the trial-mean curve without centring
+    it (center_flag false) and bounds the peak location to pi/2 +- pi/6, which passes only cells whose peak lies near
+    one heading (here 10.85% of single-cue cells, 93.6% of them in one quadrant). Was the curve centred on its peak before
+    the fit, as the 'fit' preferred direction does? With centring, 15.26% pass and their preferred headings tile the
+    circle.
 - kind: methods_unavailable
   statement: Question for the authors. In the head-rotation experiment, how are the stored headings of the head-rotation
-    and chamber-rotation files defined, and was one mirrored before comparing preferred headings? Which 5 of the
-    7 pairs in the dandiset were used?
+    and chamber-rotation files defined, and was one mirrored before comparing preferred headings? Which 5 of the 7 pairs
+    in the dandiset were used?
 - kind: methods_unavailable
   statement: The code that aligns light-off to light-on trials (leaveOneOutAligner), and the code for the clustering,
     V-tests, decoding and statistics, are not in the linked repository.
 - kind: methods_unavailable
-  statement: Question for the authors. Were the pre-shuffled data of the selection control (Methods) shifted once
-    before the test, or afresh in every iteration as in the commented calculateHeadDirection_shuff of Cue.m? The
-    second passes no cell by construction. Shifted once, 5.22% of single-cue cells pass here, and synthetic untuned
-    cells pass at 4.7%, as the KS test of the code compares 1000 split-half correlations of the same trials.
+  statement: Question for the authors. Were the pre-shuffled data of the selection control (Methods) shifted once before
+    the test, or afresh in every iteration as in the commented calculateHeadDirection_shuff of Cue.m? The second passes
+    no cell by construction. Shifted once, 5.19% of single-cue cells pass here, and synthetic untuned cells pass at 4.7%,
+    as the KS test of the code compares 1000 split-half correlations of the same trials.
 - kind: methods_unavailable
-  statement: Question for the authors. Which decoder gave Figure 6, the Bayesian decoder of the Methods (Etter et
-    al. 2020) or the lab's HeadingDecoder, on dF/F or on spikes, and how was activity binarized? Neither the decoder
-    code nor the trial selection for the pseudopopulations is in the linked repository.
+  statement: Question for the authors. Which decoder gave Figure 6, the Bayesian decoder of the Methods (Etter et al.
+    2020) or the lab's HeadingDecoder, on dF/F or on spikes, and how was activity binarized? Neither the decoder code
+    nor the trial selection for the pseudopopulations is in the linked repository.
+- kind: other
+  statement: 'The chamber-rotation file 210526 SKKS112-PlatformRotation-002 barely rotates: its median heading step is
+    0.12 degree per frame, against about 2 in the other chamber-rotation files, and it yields 10 trials against 26 in
+    the other 5100-frame files. It is paired with a head-rotation file in which 64% of the ROIs pass the selection test.'
+- kind: other
+  statement: The decoding procedure of the Methods resamples each trial to 200 bins and then splits even and odd time
+    points for training and testing, so test bins share frames with training bins. Here, removing that sharing lowers
+    the light-on accuracy of all tuned cells from 0.708 to 0.532 (dF/F) and from 0.712 to 0.296 (spikes) under the naive
+    Bayes decoder; the paper's accuracies may be raised in the same way.
 verifications:
 - date: '2026-10-30'
   kind: agent
   by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
-  reviewed: 'Round 1. The executed notebooks of the first run with the conclusion cells and the summaries removed,
-    the helper module and the claims file, with the paper. The verifier tested the selection test, the flip score
-    and the peak-offset measure on synthetic inputs. fig5k and the seven Figure 6 claims had no notebook output
-    then, so it gave no outcome for them. Its points that bear on no single claim are answered as follows. The clock
-    check (B7) is now read in single_cue.ipynb: the lag peaks after 0 in three files and before 0 in one, so the
-    clock is not established in general, and rotation_remapping.ipynb gives the size of a 6-frame offset in degrees.
-    The trial rule (B11) matches the code, any(90 - abs(prctile(heading, [25, 75])) > 50), as rsc.py now quotes.
-    The smoothdata window (B12) is stated in rsc.py as an assumption. The counts that differ from the paper''s (B15)
-    stay recorded as selection_undocumented.'
+  reviewed: 'Round 1. The executed notebooks of the first run with the conclusion cells and the summaries removed, the
+    helper module and the claims file, with the paper. The verifier tested the selection test, the flip score and the
+    peak-offset measure on synthetic inputs. fig5k and the seven Figure 6 claims had no notebook output then, so it gave
+    no outcome for them. Its points that bear on no single claim are answered as follows. The clock check (B7) is now
+    read in single_cue.ipynb: the lag peaks after 0 in three files and before 0 in one, so the clock is not established
+    in general, and rotation_remapping.ipynb gives the size of a 6-frame offset in degrees. The trial rule (B11) matches
+    the code, any(90 - abs(prctile(heading, [25, 75])) > 50), as rsc.py now quotes. The smoothdata window (B12) is stated
+    in rsc.py as an assumption. The counts that differ from the paper''s (B15) stay recorded as selection_undocumented.'
   results:
   - claim: fig1-free-heading-fraction
     agrees: true
@@ -550,67 +608,63 @@ verifications:
   - claim: fig1g-rotation-heading-fraction
     agrees: true
     outcome: reproduced
-    reason: 'With the centred fit, 485/3179 = 15.26%, inside 14.2 +- 1.42 and 452 +- 45. The code''s uncentred fit
-      gives 10.85%, but it only passes cells whose peak is near -90, which contradicts Fig. 1H, so the centred reading
-      is reasonable. Caveat: the test also passes untuned noise (B1).'
-    response: Added the false-positive rate on synthetic untuned cells (4.7% centred, 1.7% uncentred) and quoted
-      the code to show the KS test on 1000 overlapping split-halves is the paper's own procedure (ControlledRotation.m).
-      The re-run gives 486 (15.29%); the outcome stands and the notes say about a third of the cells could pass
-      by chance.
+    reason: 'With the centred fit, 485/3179 = 15.26%, inside 14.2 +- 1.42 and 452 +- 45. The code''s uncentred fit gives
+      10.85%, but it only passes cells whose peak is near -90, which contradicts Fig. 1H, so the centred reading is reasonable.
+      Caveat: the test also passes untuned noise (B1).'
+    response: Added the false-positive rate on synthetic untuned cells (4.7% centred, 1.7% uncentred) and quoted the
+      code to show the KS test on 1000 overlapping split-halves is the paper's own procedure (ControlledRotation.m).
+      The outcome stands, and the notes say about a third of the cells could pass by chance.
   - claim: selection-shuffled-control
     agrees: false
     outcome: not_reproduced
     reason: The paper says data were shuffled before running the procedure, and the criterion says "before the test".
-      That reading (the "once" variant) passes 165/3179 = 5.19%, above the 1% limit. The 0% "each" reading cannot
-      fail by construction (B2).
-    response: Changed to not_reproduced, resting on the "once" reading as an assumption (166, 5.22% in the re-run).
-      The code shows the commented function reshuffles in every iteration; the conflict within the criterion is
-      asked of a reader in questions/000483.yaml, and a methods_unavailable finding asks the authors.
+      That reading (the "once" variant) passes 165/3179 = 5.19%, above the 1% limit. The 0% "each" reading cannot fail
+      by construction (B2).
+    response: Changed to not_reproduced, resting on the "once" reading as an assumption (165, 5.19%). The code shows
+      the commented function reshuffles in every iteration; the conflict within the criterion is asked of a reader in
+      questions/000483.yaml, and a methods_unavailable finding asks the authors.
   - claim: fig1h-preferred-headings-tile
     agrees: true
     outcome: partially_reproduced
-    reason: 'Tiling holds under both readings. The overrepresentation can''t be judged because where the cue sits
-      in the heading frame is unknown. At dataset heading 0 the share is 0.247, below 0.25. The densest window (-102,
-      0.40) depends on the mouse: SKKS090 and SKKS091 peak about 180 away from it (B9).'
-    response: No change of outcome. The notebook now shows that the code fit's clustering near -90 comes from its
-      bounds on the Gaussian's peak (dataset headings -120 to -60), so it does not locate the cue, and prints the
-      share near -90 (40.1%) as what the share would be were the cue there. No file or code gives the cue's position.
+    reason: 'Tiling holds under both readings. The overrepresentation can''t be judged because where the cue sits in
+      the heading frame is unknown. At dataset heading 0 the share is 0.247, below 0.25. The densest window (-102, 0.40)
+      depends on the mouse: SKKS090 and SKKS091 peak about 180 away from it (B9).'
+    response: No change of outcome. The notebook now shows that the code fit's clustering near -90 comes from its bounds
+      on the Gaussian's peak (dataset headings -120 to -60), so it does not locate the cue, and prints the share near
+      -90 (40.0%) as what the share would be were the cue there. No file or code gives the cue's position.
   - claim: fig2f-head-chamber-same-preference
     agrees: false
     outcome: partially_reproduced
-    reason: 'p < 0.05 with V > 0 appears only when the chamber-rotation heading is mirrored and only 5 of 7 pairs
-      are used: V = 34.6, n = 228. V is outside 14.1 +- 1.41. One pair (SKKS116) drives it. Randomly paired ROIs
-      give a higher V (mean 46.2), so there is no evidence that matched ROIs keep their preference. Head-rotation
-      files show implausibly many selective cells and heading-locked artefacts from derotation are not ruled out
-      (B4).'
-    response: Changed to partially_reproduced. Added the random-pairing null per pair (the real V lies within it
-      in every pair, SKKS116 included), the selective share and activity of the two files of each pair, and the
-      size of a clock offset in degrees. The notes say matched ROIs do not keep their preference better than random
-      pairs here.
+    reason: 'p < 0.05 with V > 0 appears only when the chamber-rotation heading is mirrored and only 5 of 7 pairs are
+      used: V = 34.6, n = 228. V is outside 14.1 +- 1.41. One pair (SKKS116) drives it. Randomly paired ROIs give a higher
+      V (mean 46.2), so there is no evidence that matched ROIs keep their preference. Head-rotation files show implausibly
+      many selective cells and heading-locked artefacts from derotation are not ruled out (B4).'
+    response: Changed to partially_reproduced. Added the random-pairing null per pair (the real V lies within it in every
+      pair, SKKS116 included), the selective share and activity of the two files of each pair, and the size of a clock
+      offset in degrees. The notes say matched ROIs do not keep their preference better than random pairs here.
   - claim: fig3c-coherent-remapping
     agrees: false
     outcome: partially_reproduced
-    reason: All 8 readings give p < 0.05 with V > 0. V (47.0 at n = 85, or 208.9 at n = 830) is outside 25.6 +-
-      2.56. The main reading is only just above the random-pairing null (95th percentile 44.6, from just 100 draws).
-    response: Changed to partially_reproduced. The null now has 1000 draws (95th percentile 45.7; 2.6% of random
-      pairings reach the real V). The SKKS091 210504 pair (B14) has fewer than 3 cells selective in both and enters
-      only the "either" readings, as now said.
+    reason: All 8 readings give p < 0.05 with V > 0. V (47.0 at n = 85, or 208.9 at n = 830) is outside 25.6 +- 2.56.
+      The main reading is only just above the random-pairing null (95th percentile 44.6, from just 100 draws).
+    response: Changed to partially_reproduced. The null now has 1000 draws (95th percentile 45.7; 2.6% of random pairings
+      reach the real V). The SKKS091 210504 pair (B14) has fewer than 3 cells selective in both and enters only the "either"
+      readings, as now said.
   - claim: fig4-axons-light-on-shape
     agrees: true
     outcome: reproduced
-    reason: 'Under reading (b), all axons: mean-curve flip score ADN -0.207 and visual 1.875; single-axon means
-      -0.109 vs 0.506, KS p = 1.6e-24. Reading (a) fails: the ADN mean-curve flip score is 0.277 (centred) or 1.132
-      (code fit).'
+    reason: 'Under reading (b), all axons: mean-curve flip score ADN -0.207 and visual 1.875; single-axon means -0.109
+      vs 0.506, KS p = 1.6e-24. Reading (a) fails: the ADN mean-curve flip score is 0.277 (centred) or 1.132 (code fit).'
     response: No change needed.
   - claim: fig4-axons-light-off
     agrees: true
     outcome: partially_reproduced
     reason: Visual axons lose tuning. The ADN fraction selective in light-off is higher, but the per-recording comparison
-      is not significant (p = 0.35); only the Fisher variant is. The ADN light-off peak is 24 to 30 degrees from
-      the light-on peak under readings (a) centred and (b). The light-off selective fraction is computed over all
-      axons only, not for reading (a) (B8).
-    response: 'Added reading (a): among selective axons the per-recording share also selective in light-off has
-      medians 0.143 and 0.000, Mann-Whitney p = 0.074; Fisher p = 2.8e-07. The outcome stands.'
+      is not significant (p = 0.35); only the Fisher variant is. The ADN light-off peak is 24 to 30 degrees from the
+      light-on peak under readings (a) centred and (b). The light-off selective fraction is computed over all axons only,
+      not for reading (a) (B8).
+    response: 'Added reading (a): among selective axons the per-recording share also selective in light-off has medians
+      0.134 and 0.000, Mann-Whitney p = 0.15; Fisher p = 5.4e-07. The outcome stands.'
   - claim: figs5-rotation-direction
     agrees: true
     outcome: reproduced
@@ -621,111 +675,337 @@ verifications:
   - claim: figs6-arena-control
     agrees: true
     outcome: reproduced
-    reason: Reproduced (fragile). Reading (b) gives p = 0.026, with median correlation 0.027 real vs -0.011 random.
-      Reading (a) gives p = 0.89. It uses 5 pairs over 4 mice, and 112 of the 381 cells come from a file that visits
-      6 of 60 heading bins, and no run without it is shown (B10).
-    response: Added the run without that pair and each pair alone. Without it neither reading passes ((a) p = 0.969,
-      (b) p = 0.903) and no pair passes alone, so the outcome is changed to not_reproduced, resting on leaving that
-      pair out as an assumption. This differs from the verifier's outcome; round 2 reviews it.
+    reason: Reproduced (fragile). Reading (b) gives p = 0.026, with median correlation 0.027 real vs -0.011 random. Reading
+      (a) gives p = 0.89. It uses 5 pairs over 4 mice, and 112 of the 381 cells come from a file that visits 6 of 60
+      heading bins, and no run without it is shown (B10).
+    response: Added the run without that pair and each pair alone. Without it neither reading passes ((a) p = 0.973,
+      (b) p = 0.9) and no pair passes alone, so the outcome is changed to not_reproduced, resting on leaving that pair
+      out as an assumption. This differs from the verifier's outcome; round 2 reviews it.
   - claim: fig5-three-classes
     agrees: true
     outcome: not_reproduced
-    reason: The silhouette at k = 3 is not a local maximum under either reading. Only the reviewer-code variant,
-      (a) centred on each curve's own peak, peaks at 3 (0.393).
-    response: No change of outcome. In the re-run the reviewer-code variant has no local maximum at 3 either (0.450,
-      0.036, 0.007).
+    reason: The silhouette at k = 3 is not a local maximum under either reading. Only the reviewer-code variant, (a)
+      centred on each curve's own peak, peaks at 3 (0.393).
+    response: No change of outcome.
   - claim: fig5-class-proportions
     agrees: true
     outcome: not_reproduced
-    reason: 'Tuned cells match (12.10%). The classes do not: landmark 7.4%, alignment 75.3%, heading 13.3% (counts
-      67, 1150, 202 against 522, 409, 332), and the order fails under every reading. All three GMM light-on archetypes
-      are bimodal, so no component is a unimodal heading class; the names come from a heuristic the notebook makes
-      up (B5).'
-    response: No change of outcome. The re-run gives 75, 1150 and 194 cells; the notes now say all three archetypes
-      are bimodal.
+    reason: 'Tuned cells match (12.10%). The classes do not: landmark 7.4%, alignment 75.3%, heading 13.3% (counts 67,
+      1150, 202 against 522, 409, 332), and the order fails under every reading. All three GMM light-on archetypes are
+      bimodal, so no component is a unimodal heading class; the names come from a heuristic the notebook makes up (B5).'
+    response: No change of outcome. The notes now say all three archetypes are bimodal.
   - claim: fig5e-alignment-peaks-coregistered
     agrees: false
     outcome: not_reproduced
-    reason: The V-test passes (V = 743.5), but this measure gives the same V/n under random light-off peaks (B3).
-      Only 29.2% of offsets are within 18 degrees, against about 0.21 to 0.23 by chance. This is far from "always",
-      and lower than the heading and landmark classes.
-    response: 'Added two nulls. Uniform peaks give V/n 0.582 against 0.646; light-off peaks paired at random within
-      the class give V 706.9 (95th percentile 727.7) against 743.2, so a small excess remains (p = 0.002; 29.1%
-      within 18 degrees against 26.2%). Changed to partially_reproduced, not to not_reproduced: the effect is present
-      but far weaker than "always". The disagreement is recorded; round 2 reviews it.'
+    reason: The V-test passes (V = 743.5), but this measure gives the same V/n under random light-off peaks (B3). Only
+      29.2% of offsets are within 18 degrees, against about 0.21 to 0.23 by chance. This is far from "always", and lower
+      than the heading and landmark classes.
+    response: 'Added two nulls. Uniform peaks give V/n 0.582 against 0.646; light-off peaks paired at random within the
+      class give V 707.2 (95th percentile 728.4) against 743.5, so a small excess remains (p = 0.002; 29.2% within 18
+      degrees against 26.2%). Changed to partially_reproduced, not to not_reproduced: the effect is present but far weaker
+      than "always". The disagreement is recorded; round 2 reviews it.'
   - claim: fig5f-heading-flip-unchanged
     agrees: false
     outcome: partially_reproduced
-    reason: 'The criterion is met: p = 0.14. But the cells are not the paper''s heading class: n = 202, and this
-      class''s light-on archetype is bimodal (a2/a1 = 0.70).'
-    response: 'Changed to partially_reproduced. Re-run: 194 cells, p = 0.18.'
+    reason: 'The criterion is met: p = 0.14. But the cells are not the paper''s heading class: n = 202, and this class''s
+      light-on archetype is bimodal (a2/a1 = 0.70).'
+    response: Changed to partially_reproduced.
   - claim: fig5gh-landmark-alignment-flip-drop
     agrees: false
     outcome: partially_reproduced
-    reason: Both classes are lower in light-off, so the criterion is met. The classes come from a failed clustering
-      and differ in size from the paper's (67 and 1150 cells).
+    reason: Both classes are lower in light-off, so the criterion is met. The classes come from a failed clustering and
+      differ in size from the paper's (67 and 1150 cells).
     response: Changed to partially_reproduced.
   - claim: fig5i-axons-in-clusters
     agrees: false
     outcome: partially_reproduced
-    reason: 'The criterion is met as written. The ellipses don''t separate the groups: visual axons fall more often
-      inside the heading (0.93) and alignment (0.96) ellipses than the landmark one, and LDA assigns 85 to 98% of
-      all axons to alignment. The classes come from fig5-class-proportions, which failed (B6).'
+    reason: 'The criterion is met as written. The ellipses don''t separate the groups: visual axons fall more often inside
+      the heading (0.93) and alignment (0.96) ellipses than the landmark one, and LDA assigns 85 to 98% of all axons
+      to alignment. The classes come from fig5-class-proportions, which failed (B6).'
     response: Changed to partially_reproduced.
   - claim: fig5k-visual-cue-only
     agrees: false
-    reason: 'No outcome: no notebook output. Not blocked by data. Two Suspended files exist (SKKS125 2022-08-10,
-      SKKS127 2022-08-11, 15050 frames each). Each is the only file of its day, so whether matched standard-rotation
-      ROIs exist inside them is unknown.'
-    response: 'Added a section to directions.ipynb with the ROI counts of every file of the two mice and the block
-      structure of the two files: no other file shares their ROIs, and their blocks differ only in the direction
-      of rotation, so nothing marks standard rotation. Kept blocked, metadata_insufficient.'
+    reason: 'No outcome: no notebook output. Not blocked by data. Two Suspended files exist (SKKS125 2022-08-10, SKKS127
+      2022-08-11, 15050 frames each). Each is the only file of its day, so whether matched standard-rotation ROIs exist
+      inside them is unknown.'
+    response: 'Added a section to directions.ipynb with the ROI counts of every file of the two mice and the block structure
+      of the two files: no other file shares their ROIs, and their blocks differ only in the direction of rotation, so
+      nothing marks standard rotation. Kept blocked, metadata_insufficient.'
   - claim: fig6a-population-light-on
     agrees: false
-    reason: 'No outcome: no notebook output. The inputs are in the archive: somata, heading, and light/dark from
-      the hard-coded segments. Not data_missing. The notebook needs the decoding means, 95% intervals and bootstrapped
-      t-tests under each reading of the decoder and of chance.'
-    response: Tested in a new notebook, decoding.ipynb, under every reading of input, decoder, t-test and chance,
-      with chance measured for each decoder (0.10). Outcome now not_reproduced.
+    reason: 'No outcome: no notebook output. The inputs are in the archive: somata, heading, and light/dark from the
+      hard-coded segments. Not data_missing. The notebook needs the decoding means, 95% intervals and bootstrapped t-tests
+      under each reading of the decoder and of chance.'
+    response: Tested in a new notebook, decoding.ipynb, under every reading of input, decoder, t-test and chance, with
+      chance measured for each decoder (0.10). Outcome now not_reproduced.
   - claim: fig6a-population-light-off
     agrees: false
-    reason: 'No outcome: no notebook output. The inputs are in the archive: somata, heading, and light/dark from
-      the hard-coded segments. Not data_missing. The notebook needs the decoding means, 95% intervals and bootstrapped
-      t-tests under each reading of the decoder and of chance.'
-    response: Tested in a new notebook, decoding.ipynb, under every reading of input, decoder, t-test and chance,
-      with chance measured for each decoder (0.10). Outcome now partially_reproduced.
+    reason: 'No outcome: no notebook output. The inputs are in the archive: somata, heading, and light/dark from the
+      hard-coded segments. Not data_missing. The notebook needs the decoding means, 95% intervals and bootstrapped t-tests
+      under each reading of the decoder and of chance.'
+    response: Tested in a new notebook, decoding.ipynb, under every reading of input, decoder, t-test and chance, with
+      chance measured for each decoder (0.10). Outcome now partially_reproduced.
   - claim: fig6b-heading-cells
     agrees: false
-    reason: 'No outcome: no notebook output. The inputs are in the archive: somata, heading, and light/dark from
-      the hard-coded segments. Not data_missing. The notebook needs the decoding means, 95% intervals and bootstrapped
-      t-tests under each reading of the decoder and of chance.'
-    response: Tested in a new notebook, decoding.ipynb, under every reading of input, decoder, t-test and chance,
-      with chance measured for each decoder (0.10). Outcome now partially_reproduced.
+    reason: 'No outcome: no notebook output. The inputs are in the archive: somata, heading, and light/dark from the
+      hard-coded segments. Not data_missing. The notebook needs the decoding means, 95% intervals and bootstrapped t-tests
+      under each reading of the decoder and of chance.'
+    response: Tested in a new notebook, decoding.ipynb, under every reading of input, decoder, t-test and chance, with
+      chance measured for each decoder (0.10). Outcome now partially_reproduced.
   - claim: fig6b-landmark-cells
     agrees: false
-    reason: 'No outcome: no notebook output. The inputs are in the archive: somata, heading, and light/dark from
-      the hard-coded segments. Not data_missing. The notebook needs the decoding means, 95% intervals and bootstrapped
-      t-tests under each reading of the decoder and of chance.'
-    response: Tested in a new notebook, decoding.ipynb, under every reading of input, decoder, t-test and chance,
-      with chance measured for each decoder (0.10). Outcome now partially_reproduced.
+    reason: 'No outcome: no notebook output. The inputs are in the archive: somata, heading, and light/dark from the
+      hard-coded segments. Not data_missing. The notebook needs the decoding means, 95% intervals and bootstrapped t-tests
+      under each reading of the decoder and of chance.'
+    response: Tested in a new notebook, decoding.ipynb, under every reading of input, decoder, t-test and chance, with
+      chance measured for each decoder (0.10). Outcome now partially_reproduced.
   - claim: fig6b-alignment-cells
     agrees: false
-    reason: 'No outcome: no notebook output. The inputs are in the archive: somata, heading, and light/dark from
-      the hard-coded segments. Not data_missing. The notebook needs the decoding means, 95% intervals and bootstrapped
-      t-tests under each reading of the decoder and of chance.'
-    response: Tested in a new notebook, decoding.ipynb, under every reading of input, decoder, t-test and chance,
-      with chance measured for each decoder (0.10). Outcome now not_reproduced.
+    reason: 'No outcome: no notebook output. The inputs are in the archive: somata, heading, and light/dark from the
+      hard-coded segments. Not data_missing. The notebook needs the decoding means, 95% intervals and bootstrapped t-tests
+      under each reading of the decoder and of chance.'
+    response: Tested in a new notebook, decoding.ipynb, under every reading of input, decoder, t-test and chance, with
+      chance measured for each decoder (0.10). Outcome now not_reproduced.
   - claim: fig6b-180-errors
     agrees: false
-    reason: 'No outcome: no notebook output. The inputs are in the archive: somata, heading, and light/dark from
-      the hard-coded segments. Not data_missing. The notebook needs the decoding means, 95% intervals and bootstrapped
-      t-tests under each reading of the decoder and of chance.'
-    response: Tested in a new notebook, decoding.ipynb, under every reading of input, decoder, t-test and chance,
-      with chance measured for each decoder (0.10). Outcome now reproduced.
+    reason: 'No outcome: no notebook output. The inputs are in the archive: somata, heading, and light/dark from the
+      hard-coded segments. Not data_missing. The notebook needs the decoding means, 95% intervals and bootstrapped t-tests
+      under each reading of the decoder and of chance.'
+    response: Tested in a new notebook, decoding.ipynb, under every reading of input, decoder, t-test and chance, with
+      chance measured for each decoder (0.10). Outcome now reproduced.
   - claim: fig6-heading-below-population
     agrees: false
-    reason: 'No outcome: no notebook output. The inputs are in the archive: somata, heading, and light/dark from
-      the hard-coded segments. Not data_missing. The notebook needs the decoding means, 95% intervals and bootstrapped
-      t-tests under each reading of the decoder and of chance.'
-    response: Tested in a new notebook, decoding.ipynb, under every reading of input, decoder, t-test and chance,
-      with chance measured for each decoder (0.10). Outcome now reproduced.
+    reason: 'No outcome: no notebook output. The inputs are in the archive: somata, heading, and light/dark from the
+      hard-coded segments. Not data_missing. The notebook needs the decoding means, 95% intervals and bootstrapped t-tests
+      under each reading of the decoder and of chance.'
+    response: Tested in a new notebook, decoding.ipynb, under every reading of input, decoder, t-test and chance, with
+      chance measured for each decoder (0.10). Outcome now reproduced.
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: 'Round 2. The full executed notebooks of the round-1 revision, the helper module, the claims file and the
+    attempt record, with the paper. The verifier agreed with all 24 outcomes and found that most conclusions, Summaries
+    and the record quoted another run than the printed one (point 1, which run the conclusions describe). The likeliest
+    cause is multithreaded BLAS, which sums in a different order with a different number of cores; every notebook now
+    sets one BLAS thread before importing numpy, and the re-run reproduces the verifier''s printed numbers exactly (485
+    selected cells, 165 in the shuffled control, 202/67/1150 per class, V = 743.5). Every conclusion, Summary, the README
+    and the record were rewritten from this run. The stale claim tables in the headers of axons.ipynb and somata.ipynb
+    are corrected. The verifier''s two places where the claims file misreads its sources: the trial-rule paraphrase is
+    added to questions/000483.yaml as a question for a reader, and the selection-shuffled-control criterion was already
+    asked there.'
+  results:
+  - claim: fig1-free-heading-fraction
+    agrees: true
+    outcome: blocked
+    reason: Agrees (data_missing).
+    response: No change needed.
+  - claim: fig1g-rotation-heading-fraction
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees: the printed 485 / 15.26% is within tolerance; the centred fit is a reasonable assumption. Remaining
+      point 2 (B1): the selection test passes noise, quantified (4.7% of synthetic untuned cells; 5.19% of shuffled real
+      cells) but not fixed; about a third of the selected cells could pass by chance, and every downstream claim inherits
+      this.'
+    response: Conclusion, Summary and record now quote the printed run (485, 15.26%; 393, 12.36%; 5.19%). Text rewritten
+      from the printed outputs, which now match the verifier's. The liberal test is the paper's own procedure (ControlledRotation.calculateHeadDirection),
+      so it is not changed; the notes keep the statement that about a third of the cells could pass by chance. A question
+      to a reader on the claims file's paraphrase of the trial rule is added to questions/000483.yaml.
+  - claim: selection-shuffled-control
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees: the printed 5.19% is above the 1% limit; shifting trials once before the test is reasonable. The
+      criterion names both "before the test" and calculateHeadDirection_shuff, which re-shuffles in every iteration;
+      those are two different procedures, and the second cannot fail.'
+    response: Text and record now quote 165, 5.19% and 478 reliable. The conflict in the criterion is already asked of
+      a reader in questions/000483.yaml; its numbers there are updated to the printed run.
+  - claim: fig1h-preferred-headings-tile
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees; centred fit and unknown cue position stated and reasonable. Remaining point 5 (B9): the cue''s position
+      in the heading frame is still unknown, so the overrepresentation part cannot be judged. SKKS091 peaks at +60 to
+      +90, not +90 to +120 (cell 23).'
+    response: Text corrected to the printed numbers (485; quadrants 18.1 to 40.0%; densest window 40.4%, Rayleigh p =
+      2e-05; SKKS090 peaks at +60 to +120 and SKKS091 at +60 to +90). The cue's position is in neither the files nor
+      the code, so that part stays open.
+  - claim: fig2f-head-chamber-same-preference
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees, though generously: matched ROIs are no closer than random pairs in any pair (cell 9). Mirroring
+      the chamber-rotation heading and using 5 of 7 pairs is stated, not checked against data. Remaining point 3 (B4,
+      B7): derotation artefacts are not excluded (head-rotation files show 52 to 83% selective cells and up to 3.19 spikes/s);
+      the timing alignment is not established (lag -6 in one of four files); SKKS112-PlatformRotation-002 barely rotates
+      (median step 0.12 degree per frame). Cell 10 had 0.21 (printed 0.222), 53 to 83% (printed 52%), and 12 degrees
+      in a chamber-rotation file where one shifts 1 degree.'
+    response: Text corrected (0.222 to 0.998; 52 to 83%; 12 degrees in six chamber-rotation files and 1 in the seventh).
+      The conclusion and notes now say that neither assumption can be checked against the data, that the clock is not
+      established, and that SKKS112-PlatformRotation-002 barely rotates, which is also added as a finding. No analysis
+      can check the mirroring or the pair choice from the files, so the outcome stays partially_reproduced resting on
+      them.
+  - claim: fig3c-coherent-remapping
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the centred fit is a reasonable assumption.
+    response: No change needed; the conclusion's numbers match the printed output.
+  - claim: fig4-axons-light-on-shape
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (reading b). Cell 9 gave -0.206 where -0.207 is printed.
+    response: Corrected to -0.207.
+  - claim: fig4-axons-light-off
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Cell 12 gave reading (a) as medians 0.143, Mann-Whitney p = 0.074, 40 of 135, Fisher p = 2.8e-07
+      (printed 0.134, p = 0.15, 39/135, Fisher p = 5.4e-07) and reading (b) as p = 0.3, 94 of 1084, Fisher p = 0.026
+      (printed 0.35, 93, 0.035).
+    response: Conclusion and notes rewritten from the printed numbers; the outcome is unchanged.
+  - claim: figs5-rotation-direction
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, but fragile: by mouse only SKKS125 passes (p = 0.044), and the pooled random pairs cross files.
+      Cell 7 numbers differ from the printed ones (0.210/0.118, 0.16, 0.044/0.119/0.699).'
+    response: Conclusion and notes rewritten from the printed numbers and now call the pass fragile, for both reasons.
+  - claim: figs6-arena-control
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees, which changes its round-1 view: without the 6-bin pair p = 0.9, and no pair passes alone (p 0.781
+      to 1); the pooled pass comes from mixing files. Leaving that pair out is a reasonable assumption. Cells 10 and
+      14 numbers differ from the printed ones (381, 0.027 vs -0.011, 0.026, 0.889; 269, 0.973/0.9, 0.093 vs 0.086).'
+    response: Conclusion, Summary and notes rewritten from the printed numbers.
+  - claim: fig5-three-classes
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. The printed variant does peak at k = 3, but the criterion only reports the variant. Cell 11 and
+      the record said the variant has no maximum (selective 0.450, 0.036, 0.007), the opposite of the printed {2: 0.1136,
+      3: 0.3926, 4: 0.0043}.'
+    response: 'Corrected: the conclusion, Summary and notes now say the centred variant has a local maximum at 3 for
+      selective cells (0.114, 0.393, 0.004) and not for all cells, and that the outcome rests on readings (a) and (b),
+      as the criterion says. The other silhouettes are now the printed ones.'
+  - claim: fig5-class-proportions
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Cell 14 gave 12.4/8.8/78.9%, 12.2/8.6/75.3% and counts 194/75 (printed 13.5/7.6/78.9, 13.3/7.4/75.3
+      and 202/67); the measured values were from the run not shown.
+    response: Conclusion, notes and measured (12.1, 7.6, 78.9, 13.5) now from the printed run.
+  - claim: fig5e-alignment-peaks-coregistered
+    agrees: true
+    outcome: partially_reproduced
+    reason: Now accepts this instead of not_reproduced. Against the random-pairing null a small excess remains (share
+      0.002; 29.2% vs 26.2% within 18 degrees). "Always" fails. Cell 17 gave the heading-like and landmark-like shares
+      as 0.368 and 0.510 (printed 0.677 and 0.230) and other values of the run not shown.
+    response: Conclusion, Summary and notes rewritten from the printed numbers (743.5, 669.5, 707.2, 728.4, 29.2%; shares
+      0.677 and 0.230).
+  - claim: fig5f-heading-flip-unchanged
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (printed p = 0.141). Cell 20 gave n = 194, F(1,386) = 1.8, p = 0.18 (printed n = 202, F(1,402) = 2.2,
+      p = 0.141, variant p = 0.116).
+    response: Conclusion, Summary and notes rewritten from the printed numbers.
+  - claim: fig5gh-landmark-alignment-flip-drop
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Cell 20 gave landmark n = 75, F(1,148) = 47.3, p = 6.0e-12 (printed n = 67, F(1,132) = 44.3, p =
+      2.8e-11).
+    response: Conclusion and notes rewritten from the printed numbers.
+  - claim: fig5i-axons-in-clusters
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Cell 23 percentages differ from the printed ones (88.1/83.0, 72.4/55.5, 84.3 to 96.2, 81.0 to 92.5,
+      85.2).
+    response: Conclusion and notes rewritten from the printed numbers.
+  - claim: fig5k-visual-cue-only
+    agrees: true
+    outcome: blocked
+    reason: Agrees. No other file shares the ROI count, and the blocks differ only in direction (directions cell 12).
+      data_missing could equally be argued.
+    response: 'Kept metadata_insufficient: the files exist, and what is missing is a mapping (ROI matching and which
+      blocks are standard rotation).'
+  - claim: fig6a-population-light-on
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: Spikes interval corrected to [0.678, 0.746]. Added to decoding.ipynb a synthetic test of both decoders
+      and two Bayes variants without shared frames (point 4). The reimplemented HeadingDecoder decodes synthetic cells
+      at 0.908 to 0.999, so it is not a coding error in the algorithm as written; on these data it gives 0.202 and 0.215,
+      close to the Bayes decoder trained and tested on different trials (0.239 and 0.255). The Methods resample to 200
+      bins and then split even and odd time points, which reading (a) follows, so the frame sharing the verifier points
+      to is in the paper's own procedure. Removing it lowers the accuracies (all tuned, light-on, 0.532 dF/F and 0.296
+      spikes, against 0.708 and 0.712). The Bayes reading is kept as the Methods' procedure, the assumption is restated
+      without the claim that the HeadingDecoder decodes near chance, and the variants are reported under each claim.
+  - claim: fig6a-population-light-off
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees: 0.569 is outside 0.44 +- 0.10. The Bayes decoder is stated and reasonable but weak: it is chosen
+      partly because the reimplemented HeadingDecoder "decodes near chance", while its light-on accuracy is 0.20 to 0.22,
+      twice chance, with intervals that exclude 0.10, which points more to a reimplementation problem; training on even
+      and testing on odd heading-resampled bins, about 1.8 degrees apart and interpolated from the same frames, risks
+      leakage that would inflate the Bayes accuracies. The record said the HeadingDecoder intervals include chance; the
+      printed [0.101, 0.178] and [0.112, 0.176] include neither 0.10 nor 0.18.'
+    response: 'Corrected: the HeadingDecoder intervals lie above 0.10 and below 0.18. Added to decoding.ipynb a synthetic
+      test of both decoders and two Bayes variants without shared frames (point 4). The reimplemented HeadingDecoder
+      decodes synthetic cells at 0.908 to 0.999, so it is not a coding error in the algorithm as written; on these data
+      it gives 0.202 and 0.215, close to the Bayes decoder trained and tested on different trials (0.239 and 0.255).
+      The Methods resample to 200 bins and then split even and odd time points, which reading (a) follows, so the frame
+      sharing the verifier points to is in the paper''s own procedure. Removing it lowers the accuracies (all tuned,
+      light-on, 0.532 dF/F and 0.296 spikes, against 0.708 and 0.712). The Bayes reading is kept as the Methods'' procedure,
+      the assumption is restated without the claim that the HeadingDecoder decodes near chance, and the variants are
+      reported under each claim. Under (a'''') the dF/F light-off mean is within the tolerance but the drop is not significant
+      (p = 0.105), so no reading meets the criterion in full and the outcome stands.'
+  - claim: fig6b-heading-cells
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Bayes decoder as for fig6a-population-light-off. Cell 20 gave 175 cells, 0.425/0.372, 0.407/0.344,
+      p 0.31 to 0.97, HeadingDecoder 0.127 to 0.148 (printed 179; 0.429/0.377; 0.415/0.341; 0.170 to 0.964; 0.130 to
+      0.146).
+    response: Conclusion, notes and measured (0.429, 0.377) rewritten from the printed numbers. Added to decoding.ipynb
+      a synthetic test of both decoders and two Bayes variants without shared frames (point 4). The reimplemented HeadingDecoder
+      decodes synthetic cells at 0.908 to 0.999, so it is not a coding error in the algorithm as written; on these data
+      it gives 0.202 and 0.215, close to the Bayes decoder trained and tested on different trials (0.239 and 0.255).
+      The Methods resample to 200 bins and then split even and odd time points, which reading (a) follows, so the frame
+      sharing the verifier points to is in the paper's own procedure. Removing it lowers the accuracies (all tuned, light-on,
+      0.532 dF/F and 0.296 spikes, against 0.708 and 0.712). The Bayes reading is kept as the Methods' procedure, the
+      assumption is restated without the claim that the HeadingDecoder decodes near chance, and the variants are reported
+      under each claim. The pattern (above chance in both, no significant difference) holds in every variant.
+  - claim: fig6b-landmark-cells
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Bayes decoder as for fig6a-population-light-off. Cell 23 said the light-off intervals exclude 0.18
+      (by 0.001 for spikes), but the printed spikes interval [0.175, 0.199] includes 0.18; the outcome is unaffected
+      because light-on fails anyway.
+    response: 'Corrected: the spikes interval includes 0.18 and the dF/F interval excludes it. Other numbers (50 cells,
+      0.207, 0.187, 0.396, 0.383) and measured (0.396, 0.207) now from the printed run. Added to decoding.ipynb a synthetic
+      test of both decoders and two Bayes variants without shared frames (point 4). The reimplemented HeadingDecoder
+      decodes synthetic cells at 0.908 to 0.999, so it is not a coding error in the algorithm as written; on these data
+      it gives 0.202 and 0.215, close to the Bayes decoder trained and tested on different trials (0.239 and 0.255).
+      The Methods resample to 200 bins and then split even and odd time points, which reading (a) follows, so the frame
+      sharing the verifier points to is in the paper''s own procedure. Removing it lowers the accuracies (all tuned,
+      light-on, 0.532 dF/F and 0.296 spikes, against 0.708 and 0.712). The Bayes reading is kept as the Methods'' procedure,
+      the assumption is restated without the claim that the HeadingDecoder decodes near chance, and the variants are
+      reported under each claim.'
+  - claim: fig6b-alignment-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. For dF/F the paired p is 0.011 but the unpaired p is 0.053; the "between the other classes" condition
+      fails anyway.
+    response: Conclusion and notes now give the printed 0.720/0.580, p = 0.011 paired and 0.053 unpaired, and say that
+      the drop is significant by the paired test; measured is (0.72, 0.58).
+  - claim: fig6b-180-errors
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, under Bayes. Bayes decoder as for fig6a-population-light-off. Cell 29 numbers differ from the printed
+      ones (0.120/0.136, 0.070, 0.104, 0.104 to 0.159).
+    response: 'Corrected to the printed numbers. Added to decoding.ipynb a synthetic test of both decoders and two Bayes
+      variants without shared frames (point 4). The reimplemented HeadingDecoder decodes synthetic cells at 0.908 to
+      0.999, so it is not a coding error in the algorithm as written; on these data it gives 0.202 and 0.215, close to
+      the Bayes decoder trained and tested on different trials (0.239 and 0.255). The Methods resample to 200 bins and
+      then split even and odd time points, which reading (a) follows, so the frame sharing the verifier points to is
+      in the paper''s own procedure. Removing it lowers the accuracies (all tuned, light-on, 0.532 dF/F and 0.296 spikes,
+      against 0.708 and 0.712). The Bayes reading is kept as the Methods'' procedure, the assumption is restated without
+      the claim that the HeadingDecoder decodes near chance, and the variants are reported under each claim. Without
+      shared frames the criterion holds for dF/F and fails for spikes; the conclusion and notes now call the result fragile.
+      The outcome is kept under reading (a), the Methods'' procedure, and no change is proposed: the variants are not
+      readings of the claims file.'
+  - claim: fig6-heading-below-population
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: Cell 32 intervals corrected to the printed ones. The result holds under both new variants too.

@@ -41,11 +41,13 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000483-sit-2023-01.yaml`](../../attempts/000483-sit-2023-01.yaml).
 
-- `single_cue.ipynb`: the data check of all 128 files, and Figure 1 (about 9 minutes).
-- `rotation_remapping.ipynb`: Figures 2 and 3 (about 11 minutes).
-- `axons.ipynb`: Figure 4 (about 6 minutes).
-- `somata.ipynb`: Figure 5 (about 17 minutes).
-- `directions.ipynb`: Figures S5 and S6, and the visual-cue-only files of Figure 5K (about 10 minutes).
-- `decoding.ipynb`: Figure 6; it rebuilds the classes of `somata.ipynb` (about 16 minutes).
+- `single_cue.ipynb`: the data check of all 128 files, and Figure 1 (about 7 minutes).
+- `rotation_remapping.ipynb`: Figures 2 and 3 (about 9 minutes).
+- `axons.ipynb`: Figure 4 (about 5 minutes).
+- `somata.ipynb`: Figure 5 (about 14 minutes).
+- `directions.ipynb`: Figures S5 and S6, and the visual-cue-only files of Figure 5K (about 7 minutes).
+- `decoding.ipynb`: Figure 6; it rebuilds the classes of `somata.ipynb`, checks both decoders on synthetic
+  cells, and shows two naive Bayes variants in which no test bin shares a frame with a training bin
+  (about 15 minutes).
 - `rsc.py`: loading, dF/F and spikes, trials, the heading-selection test of the paper's code,
   alignment, flip score and V-test. Other notebooks on this dandiset can import it.
