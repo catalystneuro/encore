@@ -1,0 +1,45 @@
+# Chartrand et al. (2023) from dandiset 000630
+
+Tests the findings of [Chartrand et al. (2023)](https://doi.org/10.1126/science.adf0805) that can be
+tested on [DANDI:000630](https://dandiarchive.org/dandiset/000630/0.230915.2257), which holds the
+current clamp recordings of the paper's 210 Seattle human L1 patch-seq cells. Features are computed
+with IPFX from the long square sweeps and compared with the paper's own per-cell values; cell types
+come from the paper's cell table, which links to the files through the LIMS number in `session_id`.
+
+| Claim | Outcome |
+|---|---|
+| The files match the paper's cell table one to one (link) | Reproduced |
+| Cell counts by subclass (Table S2) | Reproduced |
+| Subclasses differ in sag and initial firing rate (FDR p < 1e-7) | Partially reproduced |
+| Subclass profiles (PAX6 highest initial firing rate) | Not reproduced |
+| Upstroke adaptation against sag, R2 = 0.74 | Not reproduced |
+| Sag and firing rate gradient within LAMP5 t-types | Partially reproduced |
+| No effect of donor condition, sex or age | Reproduced |
+| Input resistance varies with region | Reproduced |
+| MC4R cells: strong sag and irregular firing | Reproduced |
+| ADARB2 MC4R against SST CHRNA4 | Partially reproduced |
+| PAX6 TNFAIP8L3: initial firing rate and ADP | Reproduced |
+| Electrophysiological d' is smaller within subclasses | Reproduced (assumption) |
+| Gaussian mixture F1 per subclass | Reproduced |
+| Subclass classifier, 82% accuracy | Reproduced |
+| Held-out classifier on Amsterdam and Szeged cells | Blocked: data missing |
+| Mouse comparison (DANDI 000020): link, variability dimensions, mouse MC4R and PAX6 cells | Partially reproduced or reproduced |
+| Human against mouse sag, AP height and rheobase | Blocked: methods underspecified |
+| Four morphology claims on the paper's deposited features | Three partially reproduced, one blocked |
+| Transcriptomic, cytoarchitecture and other morphology claims | Blocked |
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
+
+The record, with the reasons and the differences from the paper's method, is
+[`attempts/000630-chartrand-2023-01.yaml`](../../attempts/000630-chartrand-2023-01.yaml).
+
+- `reproduce_chartrand_2023.ipynb`: the claims on the dandiset. It takes about 15 minutes, of
+  which about 4 are streaming the files and 6 the Gaussian mixture search.
+- `mouse_comparison.ipynb`: the claims that compare the human cells with the paper's mouse cells
+  from DANDI:000020 (about 7 minutes).
+- `morphology_tables.ipynb`: four morphology claims on the paper's deposited morphology features
+  (under a minute).
+- `l1ephys.py`: loading the files, the IPFX feature extraction with the Methods' sweep QC, the
+  paper's tables, and the statistics of the paper's code. Other notebooks on this dandiset can
+  import it.
