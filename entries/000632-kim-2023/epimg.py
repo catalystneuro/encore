@@ -248,6 +248,54 @@ def ov_to_px(row, col):
     return (row + 0.5) * (218 // RED_R), (col + 0.5) * (464 // RED_C)
 
 
+# ---- checking the footprints at finer resolution ----
+
+CROP_UM = 3800.0  # half-width of the crop around the array center; holds all four footprints
+CROP_RED = 8      # block size of the crop, 8 x 8 pixels (5.2 um)
+
+
+def refine_footprints(im, pts):
+    """Footprint centers and diameters located again on a finer image, as a check of find_footprints.
+
+    Reads the YP channel within CROP_UM of the array center, reduced to 8 x 8 pixel blocks, smooths
+    its log with a Gaussian of 4 blocks, and for each footprint takes the dark connected region
+    around the overview center: below half-way between the median within 400 um of that center
+    and the median 1000 to 1200 um from it. Its centroid is the refined center, and the diameter
+    of a disc of the same area its diameter. The thresholds and smoothing are standard choices
+    that only locate the footprints. Also returns the mean YP within 250 um of each refined center
+    (the 0.5 mm lumen) and from 250 to 600 um, and the crop itself (reduced by a further 2) for
+    the figure.
+    """
+    from scipy import ndimage
+    cr, cc = np.mean([p[0] for p in pts]), np.mean([p[1] for p in pts])
+    F = CROP_RED
+    H = int(CROP_UM / UM_PER_PX) // F * F
+    r0, c0 = int(cr) - H, int(cc) - H
+    x = im.region(YP, r0, r0 + 2 * H, c0, c0 + 2 * H).astype(float)
+    x = x.reshape(2 * H // F, F, 2 * H // F, F).mean(axis=(1, 3))
+    sm = ndimage.gaussian_filter(np.log(np.clip(x, 1, None)), 4)
+    um = F * UM_PER_PX
+    Y, X = np.ogrid[:x.shape[0], :x.shape[1]]
+    out = []
+    for r, c in pts:
+        i, j = (r - r0) / F, (c - c0) / F
+        rad = np.hypot(Y - i, X - j) * um
+        lo, hi = np.median(sm[rad < 400]), np.median(sm[(rad > 1000) & (rad < 1200)])
+        m = (sm < (lo + hi) / 2) & (rad < 1200)
+        m = ndimage.binary_fill_holes(ndimage.binary_opening(m, iterations=3))
+        lab, _ = ndimage.label(m)
+        comp = lab == lab[int(round(i)), int(round(j))]
+        ci, cj = ndimage.center_of_mass(comp)
+        rad2 = np.hypot(Y - ci, X - cj) * um
+        out.append(dict(r=r0 + (ci + 0.5) * F, c=c0 + (cj + 0.5) * F,
+                        diameter_um=float(2 * np.sqrt(comp.sum() / np.pi) * um),
+                        lumen_yp=float(x[rad2 < 250].mean()),
+                        annulus_yp=float(x[(rad2 >= 250) & (rad2 < 600)].mean())))
+    n = x.shape[0] // 2 * 2
+    crop = x[:n, :n].reshape(n // 2, 2, n // 2, 2).mean(axis=(1, 3)).astype(np.float32)
+    return out, dict(crop=crop, r0=r0, c0=c0, block=2 * F)
+
+
 # ---- measuring one dish ----
 
 def _roi_mean(im, channel, r, c, half_px):
@@ -274,6 +322,8 @@ def measure_dish(asset):
     fp_disc_yp: mean YP inside 0.6 of the outer radius of each footprint (variant).
     diag_yp: mean YP on the overview within 250 um of the point half-way from the array center
     to each electrode (4 values, same order as the footprints), for the label check.
+    refined, crop, refined_center_px: the check of refine_footprints; center_yp_refined and
+    fp_yp_refined, the center and footprint ROIs placed at the refined centers (variant).
     """
     im = DishImage(asset["asset_id"])
     meta = im.meta()
@@ -294,6 +344,12 @@ def measure_dish(asset):
     out["fp_mb"] = [_roi_mean(im, MEMBRITE, r, c, half) for r, c in pts]
     rad = 0.6 * FOOTPRINT_OD_UM / 2 / UM_PER_PX
     out["fp_disc_yp"] = [_disc_mean(im, YP, r, c, rad) for r, c in pts]
+    # the same ROIs at the footprint centers located on the finer crop (variant)
+    ref, crop = refine_footprints(im, pts)
+    rr, rc = np.mean([f["r"] for f in ref]), np.mean([f["c"] for f in ref])
+    out["refined"], out["crop"], out["refined_center_px"] = ref, crop, (rr, rc)
+    out["center_yp_refined"] = _roi_mean(im, YP, rr, rc, half)
+    out["fp_yp_refined"] = [_roi_mean(im, YP, f["r"], f["c"], half) for f in ref]
     pr, pc = ov_px_um()
     Y, X = np.mgrid[0:ov.shape[0], 0:ov.shape[1]]
     ocr = np.mean([f["row"] for f in fps])

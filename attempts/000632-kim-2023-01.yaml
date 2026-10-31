@@ -30,14 +30,23 @@ outcomes:
     footprint background, YP over MemBrite, center ROIs of 150 and 250 um, without dishes whose footprint
     centers are more than 400 um from a parallelogram, the deposit as labelled) give p from 0.28 to 0.68.
     By experiment day the comparison goes opposite ways, 0.45 on 2022-11-29 (p = 0.023, n = 3 and 3) and
-    1.43 on 2022-12-04 (p = 0.49, n = 2 and 3).
+    1.43 on 2022-12-04 (p = 0.49, n = 2 and 3). The test has little power, so p >= 0.05 shows that no
+    difference was found, not that the groups are equal. The 95% interval of the difference is -968
+    to 356 counts (co/cross 0.00 to 1.37), and the test would detect with 80% power only a difference
+    of 922 counts, 95% of the cross-directional mean. With the ROIs at the refined footprint centers
+    the ratio is 0.72, p = 0.40.
   deviations: &id001
   - The center ROI is placed automatically at the mean of the four electrode footprint centers, located
     by template matching on a reduced YP image (epimg.find_footprints); the paper placed it by hand in
-    MetaMorph (Methods 4.4). The located footprints and ROI are shown for every dish.
+    MetaMorph (Methods 4.4). The located footprints and ROI are shown for every dish. As a check the
+    footprints are located again on a finer image (5.2 um blocks, epimg.refine_footprints); the refined
+    array center lies a median 54 um (6 to 193 um) from the one used, and placing the ROIs there is run
+    as a variant with the same outcomes.
   - The files give no pixel size. 0.65 um per pixel is assumed (the 6.5 um ORCA-Flash4 pixel behind the
     10x objective named in Methods 4.4); under it the footprints measure a median 1.59 mm across against
-    the 1.5 mm needles (Methods 4.2), so the 200 um ROI may be about 6% larger than the paper's. Center
+    the 1.5 mm needles (Methods 4.2), and on the finer image a median 1.66 mm, so the 200 um ROI may be
+    up to about 10% larger than the paper's. The 0.5 mm lumen cannot be seen in the images (YP inside
+    it is 0.97 to 1.13 times the YP around it), so it gives no second check. Center
     ROIs of 150 and 250 um sides are run as variants and give the same outcomes.
   - Background reading (b) subtracts the mean YP of a 200 x 200 um ROI at the center of each of the four
     footprints. Methods 4.4 says only that measurements were made within the footprints 'to account for
@@ -58,7 +67,10 @@ outcomes:
     the difference (p = 0.15 and 0.16). No variant reaches p < 0.05; the smallest p is 0.087 (YP over
     MemBrite). The two background readings agree, so the claim is not blocked. On 2022-11-29 the 770 kHz
     mean is 2.74 times the 1 Hz one (p = 0.060, n = 3 and 3), on 2022-12-04 0.76 times it (p = 0.47, n
-    = 2 and 2). The temporal summation explanation is not tested.
+    = 2 and 2). The 95% interval of the difference is -315 to 1586 counts (ratio 0.53 to 3.38), and the
+    test would detect with 80% power only a difference of 1321 counts, 199% of the 1 Hz mean, so with
+    these dishes it could not have found the observed 1.96-fold ratio. With the ROIs at the refined
+    footprint centers the ratio is 1.66, p = 0.20. The temporal summation explanation is not tested.
   deviations: *id001
 - claim: fig3-770khz-cross-same-as-1hz
   outcome: reproduced
@@ -67,7 +79,10 @@ outcomes:
   notes: Under reading (b) the cross-directional dishes at 770 kHz (mean 819, n = 7) average 0.84 of those
     at 1 Hz (972, n = 6); Student's p = 0.56, so the test does not find a difference. Reading (a) gives
     0.87, p = 0.53, and no variant finds one (p from 0.37 to 0.82). By day the ratio is 0.71 on 2022-11-29
-    (p = 0.073) and 1.40 on 2022-12-04 (p = 0.36). The statement's interpretation, that charging two membrane
+    (p = 0.073) and 1.40 on 2022-12-04 (p = 0.36). The 95% interval of the difference is -715 to 409
+    counts (ratio 0.26 to 1.42); the test would detect with 80% power only a difference of 786 counts,
+    81% of the 1 Hz mean, so p >= 0.05 shows that no difference was found, not that the groups are
+    equal. With the ROIs at the refined footprint centers the ratio is 0.78, p = 0.46. The statement's interpretation, that charging two membrane
     regions does not sum, is not tested.
   deviations: *id001
 - claim: fig3-770khz-co-above-cross
@@ -77,73 +92,94 @@ outcomes:
   notes: At 770 kHz the co-directional mean is the higher, 1.45-fold under reading (a) and 1.59-fold under
     reading (b) (1301 against 819, n = 5 and 7), but the Student's t-test does not find the difference
     (p = 0.19 and 0.20), nor does any variant (p from 0.19 to 0.52). The two background readings agree.
-    By day the ratio is 1.75 on 2022-11-29 (p = 0.14) and 0.78 on 2022-12-04 (p = 0.38).
+    By day the ratio is 1.75 on 2022-11-29 (p = 0.14) and 0.78 on 2022-12-04 (p = 0.38). The 95% interval
+    of the difference is -302 to 1267 counts (ratio 0.63 to 2.55), and the test would detect with 80%
+    power only a difference of 1094 counts, 134% of the cross-directional mean. With the ROIs at the
+    refined footprint centers the ratio is 1.52, p = 0.20.
   deviations: *id001
 - claim: fig3-no-area-dependence
   outcome: reproduced
   notebook: reproduce_kim_2023.ipynb
   output: claim:fig3-no-area-dependence
   notes: Judged by fig3-1hz-co-equals-cross, which is reproduced (co over cross at 1 Hz 0.68, p = 0.32).
-    The Figure 2 evidence the Discussion also cites (fig2-facilitation-plateau) is blocked, as its data
-    are not in the dataset.
+    It carries the same limit, as that test would detect with 80% power only a difference of 95% of
+    the cross-directional mean. The Figure 2 evidence the Discussion also cites (fig2-facilitation-plateau)
+    is not tested, as its data are not in this dataset (they are in DANDI:000631).
   deviations: *id001
 - claim: fig2-180-cancellation
   outcome: blocked
-  blocked_by: data_missing
-  notes: The dataset holds only the square-array experiment of Figure 3 (24 files, all labelled co- or
-    cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The triangular-array
-    experiments of Figure 2 (32 ROIs along the bisecting line, single and paired pulses at 1 Hz and 833
-    kHz) are not in it. The paper's Data Availability Statement says the data are available on request,
-    and no other public deposit is named in the paper or in the dandiset's metadata.
+  blocked_by: other
+  notes: The claims file scopes this claim to DANDI:000632 (data dataset), which holds only the square-array
+    experiment of Figure 3 (24 files, all labelled co- or cross-directional, 1 Hz or 770 kHz, and all
+    showing a four-electrode square array). The Figure 2 recordings are public in DANDI:000631 (version
+    0.231012.1508, 15 assets, single- and paired-pulse trains at 1 Hz and 833 kHz), whose metadata name
+    this paper as IsPublishedIn, although the paper's Data Availability Statement says the data are
+    available on request. As the data are public, the block is not data_missing; the claim was not
+    tested on 000631 because the claims file does not name it, and a reader is asked (questions/000632.yaml)
+    whether to mark the claim data elsewhere. Even then it may stay blocked, as each ROI's angle comes
+    from a field simulation the paper does not give.
 - claim: fig2-crossover-angle
   outcome: blocked
-  blocked_by: data_missing
-  notes: The dataset holds only the square-array experiment of Figure 3 (24 files, all labelled co- or
-    cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The triangular-array
-    experiments of Figure 2 (32 ROIs along the bisecting line, single and paired pulses at 1 Hz and 833
-    kHz) are not in it. The paper's Data Availability Statement says the data are available on request,
-    and no other public deposit is named in the paper or in the dandiset's metadata.
+  blocked_by: other
+  notes: The claims file scopes this claim to DANDI:000632 (data dataset), which holds only the square-array
+    experiment of Figure 3 (24 files, all labelled co- or cross-directional, 1 Hz or 770 kHz, and all
+    showing a four-electrode square array). The Figure 2 recordings are public in DANDI:000631 (version
+    0.231012.1508, 15 assets, single- and paired-pulse trains at 1 Hz and 833 kHz), whose metadata name
+    this paper as IsPublishedIn, although the paper's Data Availability Statement says the data are
+    available on request. As the data are public, the block is not data_missing; the claim was not
+    tested on 000631 because the claims file does not name it, and a reader is asked (questions/000632.yaml)
+    whether to mark the claim data elsewhere. Even then it may stay blocked, as each ROI's angle comes
+    from a field simulation the paper does not give.
 - claim: fig2-facilitation-plateau
   outcome: blocked
-  blocked_by: data_missing
-  notes: The dataset holds only the square-array experiment of Figure 3 (24 files, all labelled co- or
-    cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The triangular-array
-    experiments of Figure 2 (32 ROIs along the bisecting line, single and paired pulses at 1 Hz and 833
-    kHz) are not in it. The paper's Data Availability Statement says the data are available on request,
-    and no other public deposit is named in the paper or in the dandiset's metadata.
+  blocked_by: other
+  notes: The claims file scopes this claim to DANDI:000632 (data dataset), which holds only the square-array
+    experiment of Figure 3 (24 files, all labelled co- or cross-directional, 1 Hz or 770 kHz, and all
+    showing a four-electrode square array). The Figure 2 recordings are public in DANDI:000631 (version
+    0.231012.1508, 15 assets, single- and paired-pulse trains at 1 Hz and 833 kHz), whose metadata name
+    this paper as IsPublishedIn, although the paper's Data Availability Statement says the data are
+    available on request. As the data are public, the block is not data_missing; the claim was not
+    tested on 000631 because the claims file does not name it, and a reader is asked (questions/000632.yaml)
+    whether to mark the claim data elsewhere. Even then it may stay blocked, as each ROI's angle comes
+    from a field simulation the paper does not give.
 - claim: fig2-60-fold-co-counter
   outcome: blocked
-  blocked_by: data_missing
-  notes: The dataset holds only the square-array experiment of Figure 3 (24 files, all labelled co- or
-    cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The triangular-array
-    experiments of Figure 2 (32 ROIs along the bisecting line, single and paired pulses at 1 Hz and 833
-    kHz) are not in it. The paper's Data Availability Statement says the data are available on request,
-    and no other public deposit is named in the paper or in the dandiset's metadata. It also depends on
-    fig2-180-cancellation and fig2-facilitation-plateau, which are blocked for the same reason.
+  blocked_by: other
+  notes: The claims file scopes this claim to DANDI:000632 (data dataset), which holds only the square-array
+    experiment of Figure 3 (24 files, all labelled co- or cross-directional, 1 Hz or 770 kHz, and all
+    showing a four-electrode square array). The Figure 2 recordings are public in DANDI:000631 (version
+    0.231012.1508, 15 assets, single- and paired-pulse trains at 1 Hz and 833 kHz), whose metadata name
+    this paper as IsPublishedIn, although the paper's Data Availability Statement says the data are
+    available on request. As the data are public, the block is not data_missing; the claim was not
+    tested on 000631 because the claims file does not name it, and a reader is asked (questions/000632.yaml)
+    whether to mark the claim data elsewhere. Even then it may stay blocked, as each ROI's angle comes
+    from a field simulation the paper does not give.
+    It also depends on fig2-180-cancellation and fig2-facilitation-plateau, blocked for the same reason.
 - claim: fig4-unipolar-pattern
   outcome: blocked
-  blocked_by: data_missing
-  notes: The dataset holds only the square-array experiment of Figure 3 (24 files, all labelled co- or
-    cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The triangular-array
-    images of Figure 4 (single against paired pulses at 833 kHz, 4 kV) are not in it. The paper's Data
-    Availability Statement says the data are available on request, and no other public deposit is named
-    in the paper or in the dandiset's metadata.
+  blocked_by: other
+  notes: The claims file scopes this claim to DANDI:000632 (data dataset), which holds only the square-array
+    experiment of Figure 3. The Figure 4 images appear to be in DANDI:000633 (version 0.231013.2226, 2
+    assets, single against paired pulse trains), whose metadata name this paper as IsPublishedIn. As the
+    data are public, the block is not data_missing; the claim was not tested on 000633 because the claims
+    file does not name it, and a reader is asked (questions/000632.yaml) whether to mark it data elsewhere.
 - claim: fig5-base-sawtooth
   outcome: blocked
-  blocked_by: data_missing
-  notes: The dataset holds only the square-array experiment of Figure 3 (24 files, all labelled co- or
-    cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The FluoVolt strobe
-    images of CHO-K1 cells of Figure 5 are not in it. The paper's Data Availability Statement says the
-    data are available on request, and no other public deposit is named in the paper or in the dandiset's
-    metadata.
+  blocked_by: other
+  notes: The claims file scopes this claim to DANDI:000632 (data dataset), which holds only the square-array
+    experiment of Figure 3. The FluoVolt strobe images of Figure 5 appear to be in DANDI:000634 (version
+    0.231005.1820, 10 assets), whose metadata link this paper as IsPublishedIn. As the data are public,
+    the block is not data_missing; the claim was not tested on 000634 because the claims file does not
+    name it, and a reader is asked (questions/000632.yaml) whether to mark it data elsewhere.
 - claim: fig5-apex-larger-polarization
   outcome: blocked
-  blocked_by: data_missing
-  notes: The dataset holds only the square-array experiment of Figure 3 (24 files, all labelled co- or
-    cross-directional, 1 Hz or 770 kHz, and all showing a four-electrode square array). The FluoVolt strobe
-    images of CHO-K1 cells of Figure 5 are not in it. The paper's Data Availability Statement says the
-    data are available on request, and no other public deposit is named in the paper or in the dandiset's
-    metadata. It also depends on fig5-base-sawtooth, blocked for the same reason.
+  blocked_by: other
+  notes: The claims file scopes this claim to DANDI:000632 (data dataset), which holds only the square-array
+    experiment of Figure 3. The FluoVolt strobe images of Figure 5 appear to be in DANDI:000634 (version
+    0.231005.1820, 10 assets), whose metadata link this paper as IsPublishedIn. As the data are public,
+    the block is not data_missing; the claim was not tested on 000634 because the claims file does not
+    name it, and a reader is asked (questions/000632.yaml) whether to mark it data elsewhere.
+    It also depends on fig5-base-sawtooth, blocked for the same reason.
 findings:
 - kind: other
   statement: One recording is deposited twice under two conditions. sub-BPAE-8unipolar-1Hz-04 (session
@@ -155,7 +191,11 @@ findings:
   statement: The group sizes do not match the paper. By label the files are 6 co-directional 1 Hz, 6 cross-directional
     1 Hz, 5 co-directional 770 kHz and 7 cross-directional 770 kHz (5, 6, 5 and 7 with the copy counted
     once), where the paper's Figure 3 reports n = 6 for each group. The 2022-12-04 series has four cross-directional
-    and two co-directional dishes at 770 kHz, and lacks a number 04.
+    and two co-directional dishes at 770 kHz, and lacks a number 04. One cross-directional dish more and
+    one co-directional dish fewer than the paper's n = 6 at 770 kHz would follow from one mislabelled
+    dish, but the four cross-directional 770 kHz dishes of 2022-12-04, the day with the extra dish,
+    have anisotropy indexes of 0.06 to 0.18, below every co-directional dish (0.31 to 0.75), so the
+    labels are used as deposited.
 - kind: metadata_error
   statement: The dandiset description and every session description say the electrodes were arranged in
     a triangular array. The images show four electrode footprints in a square, as the paper describes
@@ -168,10 +208,11 @@ findings:
   statement: The subject names carry undocumented tokens ('8bipolar', '8unipolar', '600ns'). 'bipolar'
     and 'unipolar' match the cross- and co-directional sessions, and '600ns' marks the files of 2022-11-29;
     the trailing numbers run 01 to 12 in order of start time within each day. None of this is described.
-- kind: data_missing
-  statement: The dataset holds only the Figure 3 experiment. The triangular-array experiments of Figures
-    2 and 4 and the strobe imaging of Figure 5 are not in it, and the paper says its data are available
-    on request.
+- kind: other
+  statement: The dataset holds only the Figure 3 experiment. The data of Figures 2, 4 and 5 are in DANDI:000631,
+    000633 and 000634, whose metadata name the paper, but 000632 does not point to them, and the paper's
+    Data Availability Statement says the data are available on request without naming any of the four
+    dandisets.
 - kind: methods_unavailable
   statement: Question for the paper's authors. Methods 4.4 says spontaneous YP uptake was measured within
     the electrode footprints but not where in the footprint, over what area, or how it entered the Figure
@@ -179,3 +220,108 @@ findings:
     um ROI at the center of each footprint, and shows the raw values and a whole-disc variant; all give
     the same outcomes. Which pairs of groups the p-values printed in Figure 3 compare is also not stated
     in the text.
+verifications:
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper. The verifier tested find_footprints, _roi_mean, _disc_mean
+    and ov_to_px on synthetic input, and checked the archive's other dandisets. It agreed with every outcome.
+    Its main point was that the Figure 2, 4 and 5 data are public in DANDI:000631, 000633 and 000634, so
+    the notebook's statement that they are not public elsewhere is false. It asked for each dish's center
+    offset or a finer view of the center ROI, and for an independent check of the 0.65 um pixel size.
+    In reply the revision locates the footprints again on a finer image, prints the offsets and shows
+    the arrays at 10.4 um, runs the refined positions as a variant, prints the 95% interval and the
+    smallest detectable difference for each test, lists the three other dandisets from the archive,
+    changes the reason of the seven blocks to other, and asks a reader whether to mark those claims data
+    elsewhere. The verifier also noted that the extra cross-directional and missing co-directional 770
+    kHz dish were not discussed; the notebook and the group-size finding now discuss them. Its other points
+    (the assignment of the duplicated image, the YP and MemBrite correlation, the opposite day effects,
+    the footprint background area, the triangular-array description) were already shown in the notebook
+    and needed no change.
+  results:
+  - claim: fig3-1hz-co-equals-cross
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (b): Student p = 0.32, co/cross ratio 0.68 (n = 5 vs 6); reading (a) p = 0.31; every
+      variant has p >= 0.30. This meets the criterion (p >= 0.05), but the evidence for "same" is weak:
+      the means differ by 32%, and on 2022-11-29 alone p = 0.023.'
+    response: Outcome kept. Added the 95% interval of the difference (co/cross 0.00 to 1.37) and the
+      smallest difference the test detects with 80% power (95% of the cross-directional mean) to the conclusion
+      and the notes, which now say that p >= 0.05 shows no difference was found, not that the groups are
+      equal. Added the refined-center variant (ratio 0.72, p = 0.40).
+  - claim: fig3-770khz-co-enhanced
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The 770 kHz mean is higher (ratio 1.96 under (b), 1.67 under (a)), but Student p = 0.16 and
+      0.15. No variant reaches p < 0.05 (lowest is YP/MemBrite, p = 0.087). Readings (a) and (b) agree,
+      so this is not blocked.'
+    response: Outcome kept. Added the interval and detectable difference (199% of the 1 Hz mean, larger
+      than the observed ratio) and the refined-center variant (1.66, p = 0.20).
+  - claim: fig3-770khz-cross-same-as-1hz
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (b): p = 0.56, ratio 0.84; reading (a) p = 0.53; all variants p >= 0.38.'
+    response: Outcome kept. Added the interval (ratio 0.26 to 1.42), the detectable difference (81% of
+      the 1 Hz mean) with the same caveat on absence, and the refined-center variant (0.78, p = 0.46).
+  - claim: fig3-770khz-co-above-cross
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The co mean is higher (ratio 1.59 under (b)), but p = 0.20 under (b) and 0.19 under (a). The
+      readings agree.'
+    response: Outcome kept. Added the interval, the detectable difference (134% of the cross-directional
+      mean) and the refined-center variant (1.52, p = 0.20).
+  - claim: fig3-no-area-dependence
+    agrees: true
+    outcome: reproduced
+    reason: The criterion judges it by fig3-1hz-co-equals-cross (p = 0.32). It carries the same low-power
+      caveat. The Figure 2 evidence the Discussion cites was not tested.
+    response: Outcome kept. The conclusion and notes now state the low-power limit and that the Figure
+      2 evidence was not tested.
+  - claim: fig2-180-cancellation
+    agrees: true
+    outcome: blocked
+    reason: The Figure 2 recordings are not in 000632; the archive asset list has 24 Figure 3 files only.
+      They are in DANDI:000631. The claims file pins dataset 000632, so data_missing is correct within that
+      scope, but the stated reason (not public elsewhere) is wrong.
+    response: Outcome kept as blocked. Corrected the notes and the notebook, which now list DANDI:000631,
+      000633 and 000634 from the archive with their link to the paper. As the data are public, the reason
+      is changed from data_missing to other (the claims file scopes the claim to 000632), and a reader
+      is asked in questions/000632.yaml whether to mark the Figure 2 claims data elsewhere. The verifier
+      gave data_missing; the disagreement on the reason is recorded here.
+  - claim: fig2-crossover-angle
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2-180-cancellation. With 000631 in scope it might still be blocked as metadata_insufficient,
+      because ROI angles come from a simulation the paper does not give.
+    response: As for fig2-180-cancellation; the possible metadata block is noted in the notes and in the
+      question to the reader.
+  - claim: fig2-facilitation-plateau
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2-crossover-angle.
+    response: As for fig2-crossover-angle.
+  - claim: fig2-60-fold-co-counter
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2-crossover-angle.
+    response: As for fig2-crossover-angle.
+  - claim: fig4-unipolar-pattern
+    agrees: true
+    outcome: blocked
+    reason: Not in 000632. DANDI:000633 holds the single- and paired-pulse images for Figure 4. The apex-versus-base
+      ROI comparison in the criterion looks testable from it.
+    response: Outcome kept as blocked, reason changed from data_missing to other as for fig2-180-cancellation.
+      Not tested on 000633 because the claims file scopes the claim to 000632; a reader is asked whether
+      to mark it data elsewhere with DANDI:000633 as where.
+  - claim: fig5-base-sawtooth
+    agrees: true
+    outcome: blocked
+    reason: Not in 000632. DANDI:000634 (10 FluoVolt strobe files) holds Figure 5.
+    response: Outcome kept as blocked, reason changed to other as above; a reader is asked whether to
+      mark the Figure 5 claims data elsewhere with DANDI:000634 as where.
+  - claim: fig5-apex-larger-polarization
+    agrees: true
+    outcome: blocked
+    reason: Same as fig5-base-sawtooth.
+    response: As for fig5-base-sawtooth.

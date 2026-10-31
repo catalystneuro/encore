@@ -12,8 +12,11 @@ the footprints. `reproduce_kim_2023.ipynb` runs the tests of the claims file.
 Of the five Figure 3 claims, three are reproduced (no difference between co- and cross-directional
 pulses at 1 Hz, none between 770 kHz and 1 Hz for cross-directional pulses, and the conclusion that
 follows from the first) and two are not (the 770 kHz enhancement of co-directional pulses and the
-co over cross difference at 770 kHz go the paper's way but are not significant). The claims on
-Figures 2, 4 and 5 are blocked, as their data are not in the dandiset.
+co over cross difference at 770 kHz go the paper's way but are not significant). With 5 to 7 dishes
+per group the tests have little power: they would find a difference with 80% power only when it is
+81% to 199% of the reference group's mean. The claims on Figures 2, 4 and 5 are blocked: their data
+are not in this dandiset but in DANDI:000631, 000633 and 000634, which the claims file does not name,
+and a reader is asked whether to test them there.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
 and the differences from the paper's method.
