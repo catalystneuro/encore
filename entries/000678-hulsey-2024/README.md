@@ -42,7 +42,7 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The GLM-HMM of the paper's ssm fork is reimplemented in `hulsey.py`, and the decoders use fewer
-shuffle runs than the paper, to keep the notebook near 26 minutes on 4 cores. The attempt record, with the reasons and the differences from the paper's
+shuffle runs than the paper, to keep the notebook short: it prints its run time, 15.7 minutes on 4 cores in the last run here (its stages took about 5 minutes longer on the workflow's runner). The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/000678-hulsey-2024-01.yaml`](../../attempts/000678-hulsey-2024-01.yaml).
 
 - `reproduce_hulsey_2024.ipynb`: the analysis.

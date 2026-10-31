@@ -180,7 +180,9 @@ outcomes:
     one (vertex -1.6%). On stationary trials under reading (b), absolute speed below 0.02 m/s (32,495
     trials, 21 bins), both hold (vertices -3.3 and -6.1). Counting the 214 trials at or below -0.02
     m/s as stationary, as the first version did, changes the vertices by at most 0.1. Reading (a),
-    speed exactly 0, leaves 1,821 trials and no bin with 7 mice, so it cannot be tested.
+    speed exactly 0, leaves 1,821 trials and no bin with 7 mice, so it cannot be tested. Exact
+    zeros depend on rounding in the filter (9,869 more trials have a speed below 1e-9 m/s that is
+    not exactly 0), and a run on another machine counted 1,879.
   deviations:
   - Stationary under reading (b) is taken as absolute speed below 0.02 m/s, so that backward
     movement is not counted as stationary.
@@ -193,7 +195,8 @@ outcomes:
   - 0.428
   - 0.567
   notes: Pupil r2 0.690 +/- 0.039 (within 0.72 +/- 0.03). Face 0.428 +/- 0.092 with plotting bins
-    (a), within, and 0.409 with 50 bins (b), just outside. Locomotion 0.567 (a), outside, and 0.413
+    (a), within, and 0.409 with 50 bins (b), just outside. Locomotion 0.567 (a), outside (0.570 in
+    a run on another machine), and 0.413
     (b), within. No bin reading puts all three in tolerance. Both are lower than pupil on average (by
     0.12 to 0.28), but by Wilcoxon only locomotion under (b) is lower at p < 0.05 (p = 0.011); face p
     = 0.11 and 0.057, locomotion (a) p = 0.41. The criterion's r2 comes from one shuffled split per
@@ -313,9 +316,9 @@ outcomes:
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:figs8a-regression-weights
   notes: Optimal fits, pupil squared, locomotion squared, pupil SD and locomotion SD weights negative
-    (medians -1.11, -1.10, -0.26, -0.33; Wilcoxon against zero p below 0.001, 0.001, 0.008, 0.027).
-    Disengaged fits, the same weights positive (0.56, 0.64, 0.19, 0.20; p below 0.001, below 0.001,
-    0.033, 0.008). Face squared and face SD weights do not differ from zero (p 0.19 to 0.84). Reading
+    (medians -1.11, -1.10, -0.26, -0.33; Wilcoxon against zero p = 0.00024, 0.0012, 0.0081, 0.027).
+    Disengaged fits, the same weights positive (0.56, 0.64, 0.19, 0.20; p = 0.00049, 0.00024, 0.033,
+    0.0081). Face squared and face SD weights do not differ from zero (p 0.19 to 0.84). Reading
     (a) holds, and so does (b).
 - claim: figs8b-pupil-movement-interaction
   outcome: reproduced
@@ -349,7 +352,8 @@ outcomes:
   notebook: reproduce_hulsey_2024.ipynb
   output: claim:figs7-pupil-best-raw-measure
   notes: Reading (a), accuracy, pupil 71.5%, face 66.1%, locomotion 68.1%; pupil above face in 24 of
-    33 (p = 0.0011) and above locomotion on average (p = 0.053). The z-scores and reading (b) agree
+    33 (p = 0.0011) and above locomotion on average (p = 0.053; 0.051 in a run on another machine).
+    The z-scores and reading (b) agree
     for face (p from 0.00029 to 0.0013); under (b) pupil is also above locomotion (p = 0.029 and
     0.022).
   deviations:
@@ -607,4 +611,199 @@ verifications:
     outcome: reproduced
     reason: Median ITI r between -0.044 and -0.007, all Wilcoxon p >= 0.13; four-group Kruskal-Wallis
       p = 0.23.
+    response: No change.
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the first revision, with the conclusions and summary, the README,
+    the attempt record, the helper module and the claims file. The README gave the run time as near 26
+    minutes and cell 0 as about 27 minutes, with stage times above the printed 2.3, 12.9 and 5.7 minutes;
+    neither total was printed. The notebook now prints its run time, and cell 0 and the README give the
+    times printed in the last run here (15.7 minutes; 2.0, 9.1 and 4.1 for the stages) and the stage times
+    of the run the verifier read.
+  results:
+  - claim: cohort-inclusion
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Both counts are shown and the record notes the difference (B7). Which 381 sessions
+      the paper used is still open, and is now a question to the authors in the record; it does not affect
+      a conclusion. The cohort counts (14 sessions fail both counts and 3 fail one) are supported by the
+      outputs.
+    response: No change.
+  - claim: training-duration
+    agrees: true
+    outcome: blocked
+    reason: I agree with the stated outcome; the numbers support the notebook text and the record's notes.
+    response: No change.
+  - claim: distractor-response-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The stage 6 'no discernible change' part is not tested, as the claims file says; this
+      does not affect a conclusion.
+    response: No change.
+  - claim: figs2-n-states
+    agrees: true
+    outcome: reproduced
+    reason: Stays reproduced by the criterion's range rule, although the expected largest count of 5 +/-
+      0.5 is not reached (largest is 4); the notes say so. The cross-validation now runs 10 initialisations
+      (B1, resolved).
+    response: No change.
+  - claim: fig1g-example-mouse-prediction
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the stated outcome; the numbers support the notebook text and the record's notes.
+    response: No change.
+  - claim: fig2a-state-types
+    agrees: true
+    outcome: reproduced
+    reason: The assumption is stated in the conclusion, the notes and the deviations, and it is reasonable.
+      BW059's state 2 has no trial with posterior >= 0.8 in the sessions with the optimal state, so it
+      is typed on all sessions. The outcome does not hinge on it, since BW059 also has a typed avoid-left
+      state. B4 resolved, every state of BW061 and BW048 is nearest the template of its label.
+    response: No change.
+  - claim: fig2b-optimal-occupancy
+    agrees: true
+    outcome: reproduced
+    reason: Now reproduced. Indeterminate is 13.1 +/- 1.6% and all three Wilcoxon p = 0.00024 (cell 23).
+      The criterion is met.
+    response: No change.
+  - claim: fig2c-dwell-times
+    agrees: true
+    outcome: partially_reproduced
+    reason: Remains partial for the reasons the notes give. Cell 27 says the dwells are longer than the
+      paper's 37 and about 15 under every reading, which is wrong for the disengaged dwell. Cell 26 gives
+      14.0 under (a)(y), 13.8 under (a)(x) and 14.2 to 14.6 under (c), at or below 15 and within tolerance.
+      The record's notes state this correctly and the outcome is unaffected. B5 resolved, 3 zero-dwell
+      epochs and no number changes.
+    response: Cell 27 now says that the optimal and sub-optimal dwells are longer than 37 and about 15
+      under every reading, and that the disengaged dwell is within tolerance under readings (a) and (c).
+  - claim: fig2d-prediction-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the stated outcome; the numbers support the notebook text and the record's notes.
+    response: No change.
+  - claim: fig3c-inverted-u-pupil
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the stated outcome; the numbers support the notebook text and the record's notes.
+    response: No change.
+  - claim: fig3d-optimal-pupil-modality
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the stated outcome; the numbers support the notebook text and the record's notes.
+    response: No change.
+  - claim: fig3e-u-disengaged-pupil
+    agrees: true
+    outcome: reproduced
+    reason: Stationary is now |speed| < 0.02; the claims file's reading (b) is signed speed < 0.02. The
+      change is listed as a deviation and both rules give the same result (cell 42), so it needs no assumed
+      flag; the 214 backward trials move the vertices by at most 0.1 (B3 resolved). Cell 43 and the notes
+      say reading (a) leaves 1,821 trials; cell 42 prints 1879.
+    response: Re-run twice on this machine, both runs print 1,821 trials under (a), and the text keeps
+      that number. The cell now also prints the trials whose speed is below 1e-9 m/s but not exactly 0
+      (9,869), which shows that the count of exact zeros depends on rounding in the Savitzky-Golay filter;
+      the verifier's run on another machine counted 1,879. Cell 43 and the notes now say this. Readings
+      (b) and (b') do not depend on it.
+  - claim: figs4-r2-individual-movement
+    agrees: true
+    outcome: partially_reproduced
+    reason: Remains partial for the reasons the notes give. Cell 47 and the notes, and measured, give
+      locomotion 0.567 under (a); cell 45 prints 0.5700 +/- 0.0854. It is outside tolerance either way.
+      B6 resolved, BW051's pupil r2 ranges from 0.001 to 0.562 over 10 splits and the test results are
+      unchanged.
+    response: Both runs on this machine print 0.5673 +/- 0.0855, so the text and measured keep 0.567.
+      The difference from the verifier's 0.570 comes from a run on another machine, most likely through
+      the speeds that round to zero (see fig3e). Cell 47 and the notes now give both values.
+  - claim: fig3f-movement-index-inverted-u
+    agrees: true
+    outcome: reproduced
+    reason: Now reproduced. r2 is 0.5737 under (a), inside [0.57, 0.69]; the shape holds (vertex 0.28)
+      and p = 0.216 against pupil (cells 45, 49). The margin is 0.004, on a single random split as the
+      criterion specifies, but the mean over 10 splits, 0.573, is also inside (cell 46). Accepted, but
+      marginal.
+    response: No change. The re-run on this machine prints the same 0.5737, and the summary says the value
+      is close to the lower bound.
+  - claim: fig3f-movement-index-u-disengaged
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the stated outcome; the numbers support the notebook text and the record's notes.
+    response: No change.
+  - claim: figs5-movement-index-correlations
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the stated outcome; the numbers support the notebook text and the record's notes.
+    response: No change.
+  - claim: fig3-distance-from-optimal-pupil
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the stated outcome; the numbers support the notebook text and the record's notes.
+    response: No change.
+  - claim: fig3-raw-face-energy-trend
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the stated outcome; the numbers support the notebook text and the record's notes.
+    response: No change.
+  - claim: fig3-raw-locomotion-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the stated outcome; the numbers support the notebook text and the record's notes.
+    response: No change.
+  - claim: fig4a-lower-variability
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the stated outcome; the numbers support the notebook text and the record's notes.
+    response: No change.
+  - claim: fig4b-variability-at-transitions
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the stated outcome; the numbers support the notebook text and the record's notes.
+    response: No change.
+  - claim: fig4d-pupil-movement-decoupling
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the stated outcome; the numbers support the notebook text and the record's notes.
+    response: No change.
+  - claim: figs6-individual-measure-decoupling
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the stated outcome; the numbers support the notebook text and the record's notes.
+    response: No change.
+  - claim: figs1-iti-independence
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the stated outcome; the numbers support the notebook text and the record's notes.
+    response: No change.
+  - claim: figs8a-regression-weights
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The notes give 'p below 0.001, 0.001' for the optimal L*L weight; cell 80 prints 0.001
+      at three decimals, which does not show it is below 0.001.
+    response: Cell 80 now also prints each p with two significant digits. The notes now give p = 0.00024,
+      0.0012, 0.0081 and 0.027 for the optimal fits and 0.00049, 0.00024, 0.033 and 0.0081 for the disengaged
+      fits.
+  - claim: figs8b-pupil-movement-interaction
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the stated outcome; the numbers support the notebook text and the record's notes.
+    response: No change.
+  - claim: fig5c-state-classification
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. B8, the 3 and 20 decoder runs, is unchanged; the smallest z is 4.87, so significance
+      does not depend on it.
+    response: No change.
+  - claim: figs7-pupil-best-raw-measure
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 90 and the notes give p = 0.053 for pupil against locomotion; cell 89 prints
+      p = 0.051.
+    response: Both runs on this machine print p = 0.053, and the text keeps it. Cell 90 and the notes
+      now also give the verifier's 0.051 from a run on another machine; neither is below 0.05 and the
+      outcome rests on face.
+  - claim: fig5c-movement-index-best
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced. The main reading gives 68.6 against 71.5%, p = 0.086, so the movement index
+      does not exceed pupil. B2 resolved, the conclusion now says the variants keep pupil information
+      and do not test the claim.
     response: No change.
