@@ -254,7 +254,8 @@ def _block(a, k=BLOCK):
 def volume_maps(blobs_by_z, keep_planes=False, stabilise=True, threads=12):
     """One trial: blobs ordered by plane. Returns the peak map (minimum filter, maximum
     projection over all planes, clipped), the same without the plane at 0 um (the macro's
-    projection), the maximum projection of F0, the shifts, and with keep_planes the per-plane
+    projection), the same without the minimum filter (to show the filter's offset), the maximum
+    projection of F0, the shifts, and with keep_planes the per-plane
     peak maps (clipped, before the minimum filter) and F0 in BLOCK x BLOCK means."""
     with ThreadPoolExecutor(threads) as ex:
         res = list(ex.map(lambda b: plane_maps(b, stabilise), blobs_by_z))
@@ -262,6 +263,7 @@ def volume_maps(blobs_by_z, keep_planes=False, stabilise=True, threads=12):
                      for _, pk, _ in res])
     out = {"peak": np.clip(filt.max(0), *CLIP).astype(np.float32),
            "peak_no_z0": np.clip(filt[1:].max(0), *CLIP).astype(np.float32),
+           "peak_no_min": np.clip(np.array([pk for _, pk, _ in res]).max(0), *CLIP).astype(np.float32),
            "raw_max": np.array([f0 for f0, _, _ in res]).max(0).astype(np.float32),
            "shifts": [s for _, _, s in res]}
     if keep_planes:
@@ -379,28 +381,71 @@ def s2_peaks(s2):
     return x.groupby(["subject", "glomerulus", "set", "odor_ds", "rep"]).dff.mean().rename("s2_peak").reset_index()
 
 
+def smooth_planes(planes):
+    """The value `locate` searches, for one trial's per-plane peak maps (33, 128, 128): the ROI
+    disk in blocks, then the maximum over the plane and its neighbours, so that it is close to the
+    ROI measure of the three-plane projection."""
+    fp = _disk((ROI_RADIUS / BLOCK) ** 2)
+    X = ndimage.uniform_filter(planes, size=(1,) + fp.shape, mode="nearest")
+    return ndimage.maximum_filter(X, size=(3, 1, 1), mode="nearest")
+
+
+def _corr_maps(X, V):
+    """Pearson r of each row of V (k, trials) with every voxel of X (trials, z, by, bx)."""
+    V = np.atleast_2d(np.asarray(V, float))
+    V = (V - V.mean(1, keepdims=True)) / (V.std(1, keepdims=True) + 1e-12)
+    Xc = (X - X.mean(0)).reshape(len(X), -1)
+    sd = X.std(0).reshape(-1) + 1e-12
+    return (V @ Xc) / X.shape[0] / sd                          # k, voxels
+
+
 def locate(planes_peak, trial_keys, s2_vals, mask=None, smooth=True):
     """Find the voxel (plane, block row, block column) whose per-trial peak fold change best
     correlates (Pearson r) with the Data S2 per-trial peaks of one glomerulus.
-    planes_peak: dict trial key -> (33, 128, 128); trial_keys and s2_vals aligned."""
-    X = np.stack([planes_peak[k] for k in trial_keys])          # trials, z, by, bx
-    if smooth:
-        # the ROI disk in blocks, then the maximum over the plane and its neighbours, so that the
-        # value searched is close to the ROI measure of the three-plane projection
-        fp = _disk((ROI_RADIUS / BLOCK) ** 2)[None, None]
-        X = ndimage.uniform_filter(X, size=(1, 1) + fp.shape[2:], mode="nearest")
-        X = ndimage.maximum_filter(X, size=(1, 3, 1, 1), mode="nearest")
-    v = np.asarray(s2_vals, float)
-    v = (v - v.mean()) / (v.std() + 1e-12)
-    Xc = X - X.mean(0)
-    sd = X.std(0) + 1e-12
-    r = np.tensordot(v, Xc, axes=(0, 0)) / len(v) / sd
+    planes_peak: dict trial key -> (33, 128, 128), smoothed already when smooth is False;
+    trial_keys and s2_vals aligned; mask (128, 128) restricts the search to the AL."""
+    X = np.stack([smooth_planes(planes_peak[k]) if smooth else planes_peak[k] for k in trial_keys])
+    r = _corr_maps(X, s2_vals)[0].reshape(X.shape[1:])
     if mask is not None:
         r = np.where(mask[None], r, -np.inf)
     z, by, bx = np.unravel_index(np.argmax(r), r.shape)
     slope = float(np.polyfit(np.asarray(s2_vals, float), X[:, z, by, bx], 1)[0])
     return {"z_index": int(z), "y": int(by * BLOCK + BLOCK // 2), "x": int(bx * BLOCK + BLOCK // 2),
             "r": float(r[z, by, bx]), "slope": slope}
+
+
+def locate_null(planes_peak, trial_keys, s2_vals, mask=None, n=200, rng=None, smooth=True, odors=None,
+                batch=25):
+    """Chance level of `locate`: the best r over the same voxels when the Data S2 values are
+    shuffled, n times; returns the n maxima. With odors=None the values are shuffled across trials.
+    With odors (the odor of each trial), the odors are shuffled as blocks: each trial takes the
+    Data S2 value of the same repeat of another odor (the mean of that odor's values when Data S2
+    lacks that repeat), so the null keeps the structure of three repeats of an odor and asks whether
+    a voxel follows this glomerulus's tuning better than a voxel follows another tuning. A
+    placement is above chance when its r exceeds the 95th percentile of the maxima (a standard
+    permutation test; the paper gives no placement procedure)."""
+    rng = np.random.default_rng(0) if rng is None else rng
+    X = np.stack([smooth_planes(planes_peak[k]) if smooth else planes_peak[k] for k in trial_keys]).astype(np.float32)
+    v = np.asarray(s2_vals, float)
+    keep = np.ones(X.shape[1:], bool) if mask is None else np.broadcast_to(mask[None], X.shape[1:])
+    X = X[:, keep]                                             # trials, voxels in the AL
+    if odors is not None:
+        od = np.asarray(odors)
+        names = sorted(set(od))
+        rep = np.array([np.sum(od[:i] == o) for i, o in enumerate(od)])
+        val = {(o, r): x for o, r, x in zip(od, rep, v)}
+        mean = {o: v[od == o].mean() for o in names}
+
+    def draw():
+        if odors is None:
+            return rng.permutation(v)
+        pm = dict(zip(names, rng.permutation(names)))
+        return np.array([val.get((pm[o], r), mean[pm[o]]) for o, r in zip(od, rep)])
+    out = []
+    for i in range(0, n, batch):
+        V = np.array([draw() for _ in range(min(batch, n - i))])
+        out.append(_corr_maps(X, V).max(1))
+    return np.concatenate(out)
 
 
 SHIFT_PLANE = 16     # the middle plane (80 um) of 33, used to measure motion over all 40 frames
@@ -427,11 +472,15 @@ def all_trial_shifts(blobs, processes=4):
         return list(ex.map(_shift_job, blobs))
 
 
-def roi_trace(blobs_by_z, z_index, y, x, radius=ROI_RADIUS, radii=(), shifts=None):
+def roi_trace(blobs_by_z, z_index, y, x, radius=ROI_RADIUS, radii=(), shifts=None, f0_floor=0.0):
     """All 40 frames of the planes z-1, z, z+1 around (y, x), read row by row; the maximum
     projection of the three planes; for each radius, the ROI fold change under reading (a) ROI
     mean of the projected raw signal, then fold change, and (b) fold change per pixel, then the
-    ROI mean. Frames are not stabilised."""
+    ROI mean. The ROI follows the frame's shift (`shifts`, one (dy, dx) per frame, from
+    `trial_shifts`), so the frames are stabilised by whole pixels. Under reading (b) a pixel whose
+    baseline F0 is at or below f0_floor has no defined fold change and is left out (the notebook
+    sets the floor to the ant's background level outside the AL, an assumption: a pixel at
+    background level divides by noise); b is NaN when no pixel is left."""
     rr = sorted(set((radius,) + tuple(radii)))
     R = max(rr)
     sh = np.zeros((N_FRAMES, 2), int) if shifts is None else np.asarray(shifts, int)
@@ -456,16 +505,16 @@ def roi_trace(blobs_by_z, z_index, y, x, radius=ROI_RADIUS, radii=(), shifts=Non
         fa = f.mean(1)
         a = (fa - fa[BASE].mean()) / fa[BASE].mean()
         f0 = f[BASE].mean(0)
-        ok = f0 > 0       # pixels with no baseline signal (F0 = 0) have no fold change
+        ok = f0 > max(f0_floor, 0.0)
         with np.errstate(divide="ignore", invalid="ignore"):
-            b = ((f[:, ok] - f0[ok]) / f0[ok]).mean(1)
+            b = ((f[:, ok] - f0[ok]) / f0[ok]).mean(1) if ok.any() else np.full(N_FRAMES, np.nan)
         out[rad] = (a, b)
     return out
 
 
 def _trace_job(args):
-    key, blobs, z, y, x, radius, radii, shifts = args
-    return key, roi_trace(blobs, z, y, x, radius, radii, shifts)
+    key, blobs, z, y, x, radius, radii, shifts, floor = args
+    return key, roi_trace(blobs, z, y, x, radius, radii, shifts, floor)
 
 
 def _trace_chunk(args):
@@ -475,7 +524,7 @@ def _trace_chunk(args):
 
 
 def all_roi_traces(jobs, processes=4, threads=16):
-    """jobs: list of (key, blobs_by_z, z_index, y, x, radius, radii, shifts); run over processes, each
+    """jobs: list of (key, blobs_by_z, z_index, y, x, radius, radii, shifts, f0_floor); run over processes, each
     with a pool of threads."""
     chunks = [(jobs[i::processes], threads) for i in range(processes)]
     out = {}
