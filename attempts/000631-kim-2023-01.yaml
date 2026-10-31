@@ -125,7 +125,10 @@ outcomes:
       degrees), one or two on L1. At 1 Hz the value keeps rising as the angle falls (slope -2.00 to -3.41
       % per degree under (b), CI excluding zero under every reading); the level at 90 to 100 degrees is
       1.15 to 1.36 fold and the mean from 100 degrees down 2.07 to 2.36, and 1.14 to 1.25 and 2.08 to
-      2.37 on L2 under every footprint region. Without background subtraction no level is within 2.7 to
+      2.37 on L2 under every footprint region. The 833 kHz half, which makes the outcome partial, holds
+      only with the 0.5 mm and 0.6 mm footprint disks (2.58 to 3.09 fold, reached at 94.6 degrees on L2);
+      with the lumen alone the levels are 3.39 to 13.31 fold, none within 2.7 to 3.3, and with the wall
+      ring alone the one level within tolerance (2.79) is reached at 80.2 degrees, outside 81 to 110. Without background subtraction no level is within 2.7 to
       3.3 (1.08 to 1.74). P2 needs ROIs below 10 degrees and is untestable under model C, which has none
       (smallest angle about 22 degrees), so model B decides it. Under background (b) the criterion is
       not met under either plateau reading, so it is not blocked. What the reader's answer changed (questions/000631.yaml)
@@ -201,8 +204,12 @@ outcomes:
       (three of four values within 60 +- 6, namely 56.8, 54.8 and 61.6) and the other ratios 32.7 to 36.2.
       Three things the outcome rests on are checked in the notebook. (1) Layout: on L1 the ratios under
       (b) are 25.8 to 34.5, not meeting the criterion; L2 decides as an assumption (deviations). (2) The
-      lowest of 32 ROIs is biased toward a larger fold; with the bias estimated by a bootstrap over dishes
-      removed, level 2 over it is 56.9 (normalisation ii, within tolerance) and 48.2 (i). (3) Footprint
+      lowest of 32 ROIs is biased toward a larger fold. A bootstrap over dishes puts the bias at 0.4 to
+      0.8 percentage points (level 2 over the corrected minimum 56.9 under normalisation ii, 48.2 under
+      i), but it keeps each dish''s ROI-to-ROI noise and so underestimates the bias of a minimum over 32
+      ROIs; it does not settle it. Over less selected 180 degree values the ratio is outside 60 +- 6,
+      45.7 to 52.6 fold over the lowest ROI and its two neighbours and 36.0 to 39.1 over the mean of
+      the ROIs above 160 degrees, so the criterion is met only at the single lowest ROI. (3) Footprint
       region of the background: the criterion is met with the 0.5 mm disk, the 0.6 mm disk and the wall
       ring alone, and not with the lumen alone (33.3 to 218.9, scattered), because the lumen of the three
       833 kHz controls holds bright material that puts their lumen mean up to 66 counts above the wall
@@ -345,7 +352,7 @@ verifications:
       - claim: fig2-180-cancellation
         agrees: true
         outcome: partially_reproduced
-        reason: Under background (b), no ROI layout gives both values (cell 21). Layout L2 gives 18.5
+        reason: Under background (b), no ROI layout gives both values (cell 21 as the verifier numbered it in round 1; the table is cell 25 of the full notebook). Layout L2 gives 18.5
           / 22.0-fold at 833 kHz (holds), but 2.42 to 2.51-fold at 1 Hz, outside 2 +- 0.2. Layout L1 gives
           1.92 / 2.19-fold at 1 Hz (holds), but only about 11-fold at 833 kHz. Cancellation at 180 degrees,
           and stronger cancellation at 833 kHz, are clear under every reading. The fold values are extremely
@@ -452,4 +459,104 @@ verifications:
         agrees: true
         outcome: blocked
         reason: Same as fig5-base-sawtooth.
+        response: No change.
+  - date: '2026-10-31'
+    kind: agent
+    by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+    reviewed: 'Round 2. The full executed notebook of the first revision, the helper module, the claims
+      file and the attempt record, with the paper. The verifier agreed with all 12 outcomes and found
+      no place where the claims file misreads the paper. Its other points: the Summary said the footprint
+      regions change only the 60-fold outcome, though the 833 kHz half of fig2-facilitation-plateau fails
+      with the lumen alone and the wall ring alone (corrected in the plateau result, the Summary, the
+      README and the plateau notes); the Summary table listed the ROI layout as an assumption of fig2-crossover-angle
+      and fig2-frequency-dependence, whose outcomes are the same on both layouts (corrected); a stale
+      cell number in its round-1 reason for fig2-180-cancellation (annotated with the current cell);
+      and that the 833 kHz paired dishes and controls were imaged on different days, which the files
+      cannot settle (already stated in the notes, the Summary and the findings; unchanged).'
+    results:
+      - claim: fig2-180-cancellation
+        agrees: true
+        outcome: partially_reproduced
+        reason: The pixel size, the ROI layout and the 0.5 mm background disk are stated in the deviations
+          and reasonable. Each layout passes a different frequency, 833 kHz holds on L2 and 1 Hz holds
+          on L1, and the record says so.
+        response: No change of outcome. The stale cell number in the round-1 reason is annotated with
+          the current cell (25).
+      - claim: fig2-crossover-angle
+        agrees: true
+        outcome: reproduced
+        reason: Yes, as the criterion is written. Confidence at 1 Hz is low, and the record says so. The
+          outcome is the same under both layouts, so it does not actually depend on the layout assumption;
+          the Summary table lists "ROI layout" as an assumption for it, which contradicts the Summary's
+          own bullet (minor, errs on the cautious side).
+        response: No change of outcome. The Summary table now lists only the pixel size for this claim,
+          and the Summary says the two layouts give the same outcome for it.
+      - claim: fig2-facilitation-plateau
+        agrees: true
+        outcome: partially_reproduced
+        reason: The 833 kHz half, which is the only reason the outcome is partial, depends on the background
+          region. With the lumen alone the levels are 13.31, 3.71, 4.52 and 3.39, none within 2.7 to 3.3;
+          with the wall ring alone the only level in tolerance (2.79) is reached at 80.2 degrees, outside
+          81 to 110. So the 833 kHz half holds only with the 0.5 mm and 0.6 mm disks, and the result text
+          and the record do not say this.
+        response: No change of outcome (the 0.5 mm disk decides and gives the same label). The plateau
+          result cell, the Summary, the README and the notes now say that the 833 kHz half holds only with
+          the 0.5 mm and 0.6 mm disks, with the levels under the lumen and the wall ring.
+      - claim: fig2-frequency-dependence
+        agrees: true
+        outcome: reproduced
+        reason: It holds under all 16 readings and every footprint region. The Summary table lists "ROI
+          layout" as an assumption though the outcome is the same on L1 and L2.
+        response: No change of outcome. The Summary table now lists only the pixel size for this claim.
+      - claim: fig2-60-fold-co-counter
+        agrees: true
+        outcome: reproduced
+        reason: Yes, as the criterion is written, with low confidence. The ratio holds only at the single
+          lowest ROI and the bootstrap correction does not clear this; it resamples dishes and keeps each
+          dish's ROI-to-ROI noise, so it underestimates the bias of a minimum over 32 ROIs. With the lowest
+          ROI and its two neighbours, plateau level 2 over it is about 48.6 (i) and 52.6 (ii), with all
+          ROIs above 160 degrees about 39, all outside 60 +- 6; the notebook does not print this ratio.
+          The bias-removed 56.9 should not be read as resolving the bias. The 833 kHz paired dishes and
+          controls were imaged on different days and cannot be checked against each other.
+        response: No change of outcome; kept at low confidence. The notebook now prints the plateau levels
+          over the lowest ROI with its two neighbours (45.7 to 52.6 fold) and over the mean of the ROIs
+          above 160 degrees (36.0 to 39.1), all outside 60 +- 6. The result text, the Summary, the README
+          and the notes say the criterion is met only at the single lowest ROI and that the bootstrap
+          underestimates the bias and does not settle it. The comparison across days stays as stated;
+          the files give no exposure or gain.
+      - claim: fig3-1hz-co-equals-cross
+        agrees: true
+        outcome: blocked
+        reason: Blocked as data_missing; agreed, no assumptions.
+        response: No change.
+      - claim: fig3-770khz-co-enhanced
+        agrees: true
+        outcome: blocked
+        reason: Blocked as data_missing; agreed, no assumptions.
+        response: No change.
+      - claim: fig3-770khz-cross-same-as-1hz
+        agrees: true
+        outcome: blocked
+        reason: Blocked as data_missing; agreed, no assumptions.
+        response: No change.
+      - claim: fig3-no-area-dependence
+        agrees: true
+        outcome: blocked
+        reason: Blocked as data_missing; agreed, no assumptions.
+        response: No change.
+      - claim: fig4-unipolar-pattern
+        agrees: true
+        outcome: reproduced
+        reason: Taking the base with the larger uptake as the energised one does not matter, as in every
+          single-pulse dish, under every background-(b) reading, both bases exceed the apex (cell 45).
+        response: No change.
+      - claim: fig5-base-sawtooth
+        agrees: true
+        outcome: blocked
+        reason: Blocked as data_missing; agreed, no assumptions.
+        response: No change.
+      - claim: fig5-apex-larger-polarization
+        agrees: true
+        outcome: blocked
+        reason: Blocked as data_missing; agreed, no assumptions.
         response: No change.
