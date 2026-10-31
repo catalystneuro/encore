@@ -42,10 +42,11 @@ outcomes:
 - claim: ed5f-pvt-bla-cko-validation
   outcome: blocked
   blocked_by: data_missing
-  notes: No in situ quantification is in the dandiset. The ecephys files of 29 mice hold confocal
-    images of PVT slices (COFAImages), but no file says which mouse is CRISPR or control, what
-    each channel shows, or which cells are guide-positive, so they cannot stand in for the paper's
-    cell counts.
+  notes: No in situ quantification is in the dandiset. The ecephys files of 27 mice (all but H01,
+    H02, H07 and H08) hold stacks of 8 to 42 confocal images (COFAImages) whose descriptions name
+    an Olympus FLUOVIEW file of the PVT (data check). The images are named only by depth, and no
+    file says which mouse is CRISPR or control, what each image shows (channel or probe), or which
+    cells are guide-positive, so they cannot stand in for the paper's RNAscope cell counts.
 - claim: fig1g-pvt-global-cko-reward
   outcome: blocked
   blocked_by: data_missing
@@ -109,13 +110,28 @@ outcomes:
     early under all four readings of the criterion. With all trials it is significant, AUC +3.53
     (95% CI 1.82 to 5.24), t(4) = 5.74, p = 0.0046, 5 of 5 mice higher, inside the paper's CI of
     2.744 to 5.538 around 4.14 (mean z +0.71, same test). With the first 16 trials it is not, AUC
-    +2.94 (95% CI -0.77 to 6.66), t(4) = 2.20, p = 0.093, 4 of 5 mice higher. So p < 0.05 holds in 2
-    of the criterion's 4 readings, not in every one, and the effect holds in part. Under the
-    session-pooled z-score no reading reaches p < 0.05 (AUC -2.92 to +0.16, p >= 0.16); with the
-    regression fitted on the pooled baseline bins of every trial neither (AUC +1.45 to +2.53, p >=
-    0.44). The CS window does not change under any reading (p >= 0.25), as in the paper (P =
-    0.1483). The first run read the 470 nm channel of Mouse6's late sucrose session from the
-    constant third frame type (see deviations); with that corrected the all-trials readings pass.
+    +2.94 (95% CI -0.77 to 6.66), t(4) = 2.20, p = 0.093, 4 of 5 mice higher. AUC and mean give the
+    same t and p, so the two passing readings are one result. The criterion asks for p < 0.05 with
+    late higher under every reading; it holds in 2 of the 4, so the criterion is not met, and only
+    the direction holds in all four. The significant result also rests on the regression fitted on
+    the trial-averaged baseline, whose correlation is 0.48 to 0.75 in four of the ten sucrose
+    sessions (M-0 early and late, M-1 late, M-3 early). With the regression fitted on the pooled
+    baseline bins of every trial (correlation at least 0.938) no reading reaches p < 0.05 (AUC +1.45
+    to +2.53, p >= 0.44), nor under the session-pooled z-score (AUC -2.92 to +0.16, p >= 0.16). The
+    CS window does not change under any reading (p >= 0.25), as in the paper (P = 0.1483). The first
+    run read the 470 nm channel of Mouse6's late sucrose session from the constant third frame type
+    (see deviations); with that corrected the all-trials readings pass. The outcome is kept as
+    reviewed in round 2, and not_reproduced is proposed (see proposed).
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion is "p < 0.05 with late higher under every reading", and p < 0.05 holds in 2
+      of its 4 readings (all trials, AUC and mean, which give the same t and p); with the first 16
+      trials p = 0.093. The criterion has no partial condition, so a failed criterion with the
+      direction right in every reading is not_reproduced, as the round-2 verifier says. The
+      significant reading also needs the per-trial z-score and the trial-averaged regression
+      together; the session z-score (p >= 0.16) and the pooled-bin regression (p >= 0.44) give no
+      reading with p < 0.05 (notebook, claim:fig3k-nt-sensor-sucrose-increase, which counts the
+      passing readings per z-score, 2 of 4 and 0 of 4).
   deviations:
   - The files mark one kind of cue, 2 s long, and no US. All cues are taken as CS-US trials with
     the US 2 s after CS onset (Methods, Head-fixed behavior, "The US ... was delivered 2 s after
@@ -214,9 +230,25 @@ outcomes:
     light events) and 133 under reading (b) (isolated 1 Hz pulses). With block 2 as the fake one it
     is 256 and 233; letting H31 to H42, where one block precedes the task, take either order gives
     at least 104 and 102; with a baseline rate of at least 0.3 Hz the lowest is 91. Every reading is
-    above 78.1, so the counts cannot both match whatever the projections. Without the fake test 1243
-    to 1474 units respond, and 88% of those responsive to block 2 also respond to block 1. The
-    units are not sorted single units (finding), which can inflate the count.
+    above 78.1, so the counts cannot both match whatever the projections. But the fake-session
+    test does not work as the Methods describe it. Without it, block 1 evokes a short-latency
+    response in 1353 of 1902 units and block 2 in 1243 (reading a; 1474 and 1374 under reading b),
+    and 88% of the units responsive to block 2 also respond to block 1. A session with the patch
+    cord disconnected should evoke none, so either neither block is that fake session or the
+    responses are light artefacts on units that are not sorted single units (finding). The 91 to
+    256 tagged units are then units that cross the threshold in one block and not the other, and
+    their count does not test the claim. The outcome is kept as reviewed in round 2, and blocked
+    (metadata_insufficient) is proposed (see proposed).
+  proposed:
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    reason: The rule needs a fake session that evokes no light response, and neither block is one.
+      Block 1, the fake one in the Methods' order, evokes a short-latency response in 1353 of 1902
+      units, block 2 in 1243, and 88% of block-2 responders also respond to block 1 (notebook,
+      claim:fig4c-photoidentification). The files do not label the fake and real blocks, nor the
+      projection of each mouse, so the count the rule gives (91 to 256 over every reading) measures
+      differences between two similar blocks and does not test the claim, as the round-2 verifier
+      says. Every block order was run, so no other choice of the fake block is left to try.
   deviations:
   - Which light block is the fake session is not labelled. Block 1 is taken as the fake one (Methods,
     In vivo electrophysiology, "a phototagging session was conducted after a 'fake' phototagging
@@ -296,20 +328,29 @@ outcomes:
   assumed: true
   notebook: reproduce_li_2022.ipynb
   output: claim:fig5dh-behavior-clusters
-  measured: [7, 4]
+  measured: [7, 3]
   notes: The pose has no timestamps, but a linear map of the trial clock onto the pose clock
     (offset and rate factor) fitted to the port entries holds in 21 of 29 sessions (best extra lag
     within 1 s in each third; 20 of the 21 factors between 0.9874 and 0.9885; median head-to-port
     distance at port entries 38 pixels against 105 over all frames). On the 1319 sucrose and 688
     shock trials of those sessions (300 frames after each CS, 6264 tsfresh features, 5931 and 5927
-    kept), with features z-scored and the t-SNE defaults of the paper's time (random
-    initialisation, learning rate 200), the reading adopted, the kernel density has 7, 7, 8, 8 and 7
-    peaks for sucrose (7 for 3 of 5 seeds) and 4, 4, 4, 5 and 3 for shock (5 for 1 of 5 seeds). The
-    sucrose count holds and the shock count does not. Under the literal reading of the criterion
-    (raw features, the installed scikit-learn defaults) both hold, 7 and 5 for all 5 seeds; the other
-    readings give 9 and 4 (z-scored, current defaults) and 4 to 6 and 3 to 6 (raw, 2020 defaults).
-    The count therefore rests on choices the paper does not state. The statement's "separate
-    passive and active strategies" is not tested.
+    kept), no reading gives both counts; each of the four meets one and not the other. With
+    features z-scored and the installed scikit-learn defaults, the reading adopted, the kernel
+    density has 7 peaks for sucrose and 3 for shock for all 5 seeds; with the 2020 defaults 7, 7, 8,
+    7, 8 and 4, 3, 4, 3, 3. With raw features it has 6 for sucrose and 5 for shock for all 5 seeds
+    (installed defaults), and 7, 5, 7, 5, 6 and 5, 5, 5, 6, 7 (2020 defaults). So the sucrose count
+    holds and the shock count does not under the z-scored features, and the reverse under the raw
+    ones, and the outcome is partially_reproduced under every reading. The raw-feature counts are
+    not stable. In the raw features the 3 largest features carry 95% (sucrose) and 98% (shock) of
+    the variance and the 10 largest all of it; with the installed defaults an exact PCA in place of
+    the randomized one gives 8 and 5, and multiplying each feature by 1 + 1e-9 noise gives 7 and 7.
+    With z-scored features the same changes give 7 and 4, so the sucrose count stays at 7 and the
+    shock count stays below 5. The run reviewed in round 2, with the same code on another runner,
+    printed 7 and 5 (raw, installed defaults) and 9 and 4 (z-scored, installed defaults), which
+    shows the same sensitivity. Without H08, H10 and H24, whose clock is checked least well
+    (head-to-port distance under the map 29.0, 27.7 and 38.4 px against 35.1, 34.8 and 46.8 px over
+    all frames), the adopted reading gives 5 and 4. The statement's "separate passive and active
+    strategies" is not tested.
   deviations:
   - The pose is put on the trial clock by a linear map fitted to the port entries (nb.fit_pose_clock),
     since the files give only a start time and a nominal 15 frames per second; this is an
@@ -318,13 +359,15 @@ outcomes:
   - tsfresh 0.16.0 does not install with Python 3.13; tsfresh 0.21.2 with its comprehensive default
     feature set is used (6264 features per trial, the paper's "~6000").
   - Features that are not finite or are constant are dropped. Whether the features were scaled
-    before PCA is not said (Methods, Unsupervised trial-based classification of behaviors); z-scoring
-    is adopted, since without it the 30 PCs carry the variance of a few features with the largest
-    scales, and the raw features are shown.
-  - The criterion's "defaults of scikit-learn" are read as those of the releases contemporary with
-    tsfresh 0.16.0 (2020; t-SNE with random initialisation and learning rate 200), an assumption;
-    the defaults of the installed release (1.9, PCA initialisation, automatic learning rate) are
-    shown. The kernel density is seaborn's default (scipy gaussian_kde, Scott's bandwidth, a 200 by
+    before PCA is not said (Methods, Unsupervised trial-based classification of behaviors); both are
+    run and give the same outcome. z-scoring is the reading adopted for the measured counts, since
+    on the raw features 10 features carry all the variance of the 30 PCs and the counts change with
+    the PCA solver and with changes of 1e-9 in the features.
+  - The criterion's "defaults of scikit-learn" are read as those of the installed release (1.9, PCA
+    initialisation, automatic learning rate), as the criterion says; the defaults of the releases
+    contemporary with tsfresh 0.16.0 (2020; random initialisation, learning rate 200) are run as a
+    reading and give the same outcome. Under either set the tsfresh release is 0.21.2, not 0.16.0.
+    The kernel density is seaborn's default (scipy gaussian_kde, Scott's bandwidth, a 200 by
     200 grid reaching 3 bandwidths beyond the data); each local maximum is a watershed marker, so
     the count of maxima is the count of regions. Counting only maxima above 5% of the highest gives
     the same counts.
@@ -367,8 +410,10 @@ findings:
   statement: The units are not sorted single units, as the Methods describe (Offline Sorter). 21 of
     31 sessions hold exactly 64 units on 32 channels, 1902 units in all against the paper's 685;
     in 1061 units more than 5% of inter-spike intervals are below 1 ms, and in each session 6 to
-    65% of spike samples recur in another unit. The light rule of the Methods with the fake-session
-    test tags 91 to 256 of them, against 71 tagged neurons in the paper.
+    65% of spike samples recur in another unit. Both light blocks evoke a short-latency response in
+    most of them (1353 and 1243 of 1902), so the light rule of the Methods with the fake-session test
+    (91 to 256 tagged units, against 71 tagged neurons in the paper) cannot single out tagged
+    neurons.
 - kind: format_error
   statement: In H17 the spike times of all 64 units fall within the first 249 s of a 12118 s
     recording, while its trial events cover the whole session, so its spikes cannot be aligned
@@ -376,18 +421,25 @@ findings:
 - kind: metadata_insufficient
   statement: The DeepLabCut pose has no timestamps, only a start time of 0 s and a nominal rate of
     15 frames per second, and the mp4 videos give a constant 15 frames per second. Against the trial
-    clock, port entries match the head's approach to the port at lags a median of 80 s from zero
-    that drift within 28 of 29 sessions. A linear map fitted to the port entries removes the drift
-    in 21 sessions, with a rate factor of about 0.988 in 20 of them, as if the true frame rate were
-    about 1.2% below 15; in 8 sessions no such map holds. The videos of H07, H09 and H10 run 800 to
-    1500 s longer than their pose series. Video timestamps, or the frame times of the original .asf
-    files, would settle the alignment.
+    clock, port entries match the head's approach to the port at lags a median of 80 s and up to
+    192 s from zero that drift within 28 of 29 sessions. A linear map fitted to the port entries
+    removes the drift in 21 sessions, with a rate factor of about 0.988 in 20 of them, as if the
+    true frame rate were about 1.2% below 15; in 8 sessions no such map holds (lags of 2.8 to 19.2 s
+    are left in some third). The videos of H07, H09 and H10 run 818 to 1528 s longer than their pose
+    series, and that of H11 426 s longer; the others are within 10 s. Video timestamps, or the frame
+    times of the original .asf files, would settle the alignment.
+- kind: metadata_insufficient
+  statement: 27 of the 31 ecephys files (all but H01, H02, H07 and H08) hold a stack of 8 to 42
+    confocal images (COFAImages) whose description names an Olympus FLUOVIEW file of the PVT. The
+    images are named only by depth, with no channel, probe, stain or group label, so what they show
+    cannot be read from the files.
 - kind: metadata_insufficient
   statement: Each session holds about 854 light events in two blocks of about 427, which fits the
     paper's "fake" phototagging session and the real one, but no label says which is which. In 12
     sessions (H31 to H42) one block comes before the task, where the Methods put both after it. The
-    two blocks evoke much the same short-latency responses (88% of the units responsive to the
-    second block also respond to the first). The files hold light events of 5, 10 and 100 ms and
+    two blocks evoke much the same short-latency responses (1353 and 1243 of 1902 units respond to
+    the first and the second, and 88% of the units responsive to the second block also respond to
+    the first), so neither behaves like a session with the patch cord disconnected. The files hold light events of 5, 10 and 100 ms and
     none of the 1 s light the Methods describe.
 - kind: metadata_error
   statement: Six sessions (H09 to H14) hold 75 sucrose and 45 shock CSs and no neutral CS, while
@@ -416,7 +468,8 @@ findings:
     MATLAB smoothdata and a smoothing factor of 0.85 (Methods, Functional hierarchical clustering).
     What window did that produce, and was the smoothing applied to each CS trace or to the
     concatenated trace? On the dandiset's units the number of clusters under the paper's cut-off
-    goes from 12 to 6 as the window grows, with seven only at about 820 ms.
+    ranges from 6 to 12 over windows of 20 ms to 2 s, not monotonically (9 at 20 ms, 12 at 60 ms,
+    6 at 620 ms, 8 at 2 s), with seven only at 820 ms.
 - kind: methods_unavailable
   statement: Question for the paper's authors. The NT sensor residuals were "z-transformed using
     data a baseline window of -5 s to 0 s" (Methods, Fiber photometry, Data analysis). Was each
@@ -427,8 +480,10 @@ findings:
   statement: Question for the paper's authors. For the behavior clustering (Methods, Unsupervised
     trial-based classification of behaviors), were the tsfresh features scaled before PCA, and which
     scikit-learn release and t-SNE settings (perplexity, initialisation, learning rate) were used?
-    On the dandiset's pose the sucrose and shock cluster counts range from 4 to 9 and 3 to 6 across
-    these choices, and 7 and 5 together come only with unscaled features and the current defaults.
+    On the dandiset's pose the sucrose and shock cluster counts range from 5 to 8 and 3 to 7 across
+    these choices, the PCA solver and the seeds, and no reading gives 7 and 5 together. On unscaled
+    features 10 features carry all the variance, and the counts change with the PCA solver and with
+    changes of 1e-9 in the features, and between two runs of the same code on different runners.
 verifications:
 - date: '2026-10-31'
   kind: agent
@@ -559,7 +614,8 @@ verifications:
       the effect is about zero. The criterion needs p < 0.05 under every reading. Problem 4, the regression
       coefficients are never printed, and on synthetic data with a nearly flat averaged baseline the fit
       returned a slope of -0.07 where the true slope was 2. Problem 5, the session z-score is a reading
-      the claims file does not list.
+      the claims file does not list. Cell 19 says "415 regressed on 470", but the code correctly regresses
+      470 on 415.
     response: Printed the slope, intercept and correlation of every session. They showed that Mouse6 late
       sucrose had a slope of -0.02 and a correlation of -0.30, and the cause is that the LED labels move
       by one frame after a 2.3 ms interval while the data keep their order, so the 470 nm channel was
@@ -783,4 +839,273 @@ verifications:
     reason: The archive's 85 assets are 31 ecephys NWB files, 2 pose-only NWB files, 20 NT-sensor photometry
       files and 32 videos. There is no anatomy, histology, slice physiology, sequencing, freely-moving
       cKO or photostimulation behaviour, or GCaMP photometry.
+    response: No change.
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the round-1 revision, with the conclusions and the
+    summary, the helper module, the claims file and the attempt record, with the paper. Report in
+    transcripts/000689/verifier-2-report.md.
+  results:
+  - claim: fig1c-nt-sources
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: ed1c-ntsr1-bla-cem
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: ed2-glutamate-corelease
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: ed3-editing-efficiency
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: ed5f-pvt-bla-cko-validation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block. The record's ed5f notes say the ecephys files of 29 mice
+      hold confocal images of PVT slices (COFAImages), but no notebook output shows this; cell 9
+      leaves out acquisition/ and processing/. Its round-1 statement that there is no histology is
+      repeated in the data_missing reasons; if the images exist it was wrong on that point, but the
+      ed5f block still holds.
+    response: Cell 9 now lists every object under acquisition/ and processing/ of the 31 files. 27 files
+      (all but H01, H02, H07 and H08), not 29, hold a COFAImages stack of 8 to 42 images whose
+      description names a FLUOVIEW file of the PVT; the images are named only by depth, with no
+      channel, probe or group label. The note is corrected to 27 and says this, and a
+      metadata_insufficient finding is added. The block stays data_missing, since the paper's
+      RNAscope cell counts are not in the files. The round-1 reasons are kept as the verifier gave
+      them.
+  - claim: fig1g-pvt-global-cko-reward
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: fig1h-global-cko-no-shock-effect
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: fig2c-pvt-bla-cko-reduces-reward
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 9 shows that no field holds a group or projection label.
+    response: No change.
+  - claim: fig2d-pvt-bla-cko-increases-freezing
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: fig2g-photostim-enhances-reward
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: fig2h-photostim-reduces-freezing
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: fig3bc-head-fixed-learning
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: fig3e-terminal-sucrose-increase
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: fig3f-terminal-airpuff-decrease
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: ed6-somatic-no-change
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: fig3h-sensor-specificity
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: fig3k-nt-sensor-sucrose-increase
+    agrees: false
+    outcome: not_reproduced
+    reason: Should be not_reproduced. The criterion says "Reproduced when the US comparison has p < 0.05
+      with late higher under every reading". It has one part, and only 2 of its 4 readings pass
+      (cell 25). Those 2 are really one result, because AUC and mean give the same t and p. With the
+      first 16 trials p = 0.093. The direction matches in all four readings, and the record can say
+      so. The per-trial z-score is a reasonable assumption, but p = 0.0046 also depends on the
+      trial-averaged regression, which has r = 0.25 to 0.75 in all four M-0 sessions and in M-1 late
+      sucrose (cell 23); the pooled fit (r >= 0.94) gives p = 0.64 with all trials. The record
+      reports this, but the conclusion depends on this one fit choice. The README sentence that the
+      response rises after learning with p = 0.005 when all trials are used holds only under the
+      per-trial z-score with the trial-averaged fit (session z-score p = 0.16, pooled fit p = 0.64).
+      Cell 27, "partially reproduced, holds in 2 of its 4 readings", contradicts the criterion's
+      "under every reading".
+    response: Agreed. The outcome stays partially_reproduced as reviewed in round 2, and not_reproduced is
+      proposed under proposed. Cell 25 now counts the passing readings per z-score (2 of 4
+      per-trial, 0 of 4 session). The conclusion cell, the notes, the summary and the README now say
+      that the criterion is not met, that the two passing readings are one result, that the
+      direction holds in all four, and that the significant result needs the trial-averaged fit,
+      whose correlation is 0.48 to 0.75 in four sucrose sessions, and that the pooled fit and the
+      session z-score give no p < 0.05.
+  - claim: fig3l-nt-sensor-airpuff-decrease
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The assumption that all cues are CS-US trials is stated and reasonable.
+    response: No change.
+  - claim: fig3-nt-sensor-early-dip
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, judged on the criterion as written. The assumption is stated and reasonable.
+    response: No change.
+  - claim: fig4-recording-count
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: ed8d-reduced-basal-firing
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 9 shows that no field holds a group or projection label.
+    response: No change.
+  - claim: fig4c-photoidentification
+    agrees: false
+    outcome: blocked
+    reason: Block 1, taken as the fake session, gets a short-latency response from 1353 of 1902 units, and
+      88% of block-2 responders also respond to block 1 (cell 42). So it does not behave like a
+      session with the patch cord disconnected, or the responses are light artefacts on unsorted
+      channels. The 91 to 256 tagged units are then units that cross the threshold in one block but
+      not the other, on units the record itself calls unsorted. Cell 43 says a count matching the
+      paper was not expected. This does not test the claim, so it should be blocked (format_error,
+      or the fake/real labels as metadata_insufficient). "Block 1 is the fake one" is an assumption
+      not flagged assumed; all the orders were run, so this does not matter for the result.
+    response: Agreed. The outcome stays not_reproduced as reviewed in round 2, and blocked with
+      metadata_insufficient (the fake and real blocks, and the projections, are not labelled) is
+      proposed under proposed; format_error is not a reason a claim can be blocked for, and the
+      unsorted units stay a format_error finding. Cell 42 now prints the units responsive to each
+      block out of all units (1353 and 1243 of 1902, reading a; 1474 and 1374, reading b). The
+      conclusion, the notes, the summary, the README and the findings say why the count does not
+      test the claim. assumed is not set, since every block order was run and all give the same
+      outcome.
+  - claim: ed8fg-fewer-responsive-neurons
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 9 shows that no field holds a group or projection label.
+    response: No change.
+  - claim: fig4d-seven-clusters
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The smoothdata window for SmoothingFactor 0.85 is still open (MATLAB was not
+      available), which keeps fig4d blocked, and it accepts that.
+    response: No change to the outcome. The smoothing-window finding said the count goes from 12 to 6 as the
+      window grows, which is not monotonic (9 at 20 ms, 12 at 60 ms, 8 at 2 s); it now says the
+      count ranges from 6 to 12 over the windows, not monotonically.
+  - claim: fig4e-cluster-responses-attenuated
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 9 shows that no field holds a group or projection label.
+    response: No change.
+  - claim: ed8i-projector-cluster-proportions
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 9 shows that no field holds a group or projection label.
+    response: No change.
+  - claim: fig4fg-projector-sucrose-responses
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 9 shows that no field holds a group or projection label.
+    response: No change.
+  - claim: fig4fg-control-projector-valence
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 9 shows that no field holds a group or projection label.
+    response: No change.
+  - claim: fig5a-trajectories-reduced
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 9 shows that no field holds a group or projection label.
+    response: No change.
+  - claim: fig5b-within-group-decoding
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 9 shows that no field holds a group or projection label.
+    response: No change.
+  - claim: fig5c-cross-group-decoding
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 9 shows that no field holds a group or projection label.
+    response: No change.
+  - claim: ed8e-port-and-freezing
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 9 shows that no field holds a group or projection label.
+    response: No change.
+  - claim: fig5dh-behavior-clusters
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome but not the reason. The criterion says "the defaults of scikit-learn"
+      and does not mention feature scaling; read that way (raw features, installed defaults) it
+      gives 7 and 5 clusters for all 5 seeds (cell 47), so the counts meet the criterion. Partially
+      is still right because "separate passive and active strategies" was not tested. The record's
+      reason, "the shock count does not hold", depends on a reading that is not the criterion's. The
+      pose clock is stated and reasonable (20 of 21 factors 0.9874 to 0.9885) but only weakly
+      checked where the head sits near the port most of the time (H08 29.0 vs 35.1 px, H10 27.7 vs
+      34.8, H24 38.4 vs 46.8). Z-scored features with the 2020 t-SNE defaults is a choice between
+      equals, not the best supported reading, and even under the 2020 defaults the attempt does not
+      use tsfresh 0.16.0. Cell 48 and the notes give "4 to 6 and 3 to 6 (raw, 2020 defaults)", but
+      shock there is 5, 5, 5, 6, 4, so 4 to 6, and 5 in 3 of 5 seeds; the shock count holds under
+      that reading.
+    response: 'Revised the reading adopted. The criterion''s installed defaults are now the main reading and
+      the 2020 defaults a variant, and both scalings are shown. Re-running the same code on this
+      runner changed the counts: raw features with the installed defaults give 6 sucrose and 5 shock
+      clusters for all seeds, not 7 and 5. Added checks of that reading. On raw features the 10
+      largest features carry all the variance; an exact PCA gives 8 and 5, and multiplying each
+      feature by 1 + 1e-9 noise gives 7 and 7, so the raw counts are not determined by the data.
+      z-scored features are therefore adopted for the measured counts (7 and 3 with the installed
+      defaults; 7 and 4 under the exact PCA and the perturbation). Under every reading one count
+      holds and the other does not, so partially_reproduced no longer depends on the scaling or the
+      defaults, and no change is proposed; the criterion decides it and the untested passive and
+      active part is noted. Added the adopted reading without H08, H10 and H24 (5 and 4). The wrong
+      ranges are replaced by the new run''s counts, and the deviations say tsfresh is 0.21.2 under
+      either set of defaults.'
+  - claim: fig5fi-active-strategy-preference
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 9 shows that no field holds a group or projection label.
+    response: No change.
+  - claim: ed8os-active-trial-responses
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 9 shows that no field holds a group or projection label.
+    response: No change.
+  - claim: ed9-nt-acute-epsc
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: ed9kl-nt-preincubation-ltp
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: ed10b-ntsr1-antagonist-reward
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
+    response: No change.
+  - claim: ed10-ntsr1-cko-reward
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the data_missing block (19 claims).
     response: No change.
