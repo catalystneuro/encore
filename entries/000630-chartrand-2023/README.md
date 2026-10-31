@@ -2,7 +2,7 @@
 
 Tests the findings of [Chartrand et al. (2023)](https://doi.org/10.1126/science.adf0805) that can be
 tested on [DANDI:000630](https://dandiarchive.org/dandiset/000630/0.230915.2257), which holds the
-current clamp recordings of the paper's 210 Seattle human L1 patch-seq cells. Features are computed
+recordings of the paper's 210 Seattle human L1 patch-seq cells. Features are computed
 with IPFX from the long square sweeps and compared with the paper's own per-cell values; cell types
 come from the paper's cell table, which links to the files through the LIMS number in `session_id`.
 
@@ -27,8 +27,19 @@ come from the paper's cell table, which links to the files through the LIMS numb
 | Human and mouse vary along different features | Reproduced |
 | Mouse MC4R and PAX6 cells (irregular firing, doublets) | Not reproduced |
 | Human against mouse sag, AP height and rheobase | Partially reproduced |
+| Mouse TEa recordings (Fig. 3E) | Blocked: data missing |
+| A-type potassium conductance densities (Fig. 3F) | Blocked: patch surface areas not public |
+| Subclass proportions by species (Fig. 1E) | Blocked: metadata insufficient |
+| L1 cytoarchitecture (Fig. 3B) | Blocked: metadata insufficient |
 | Four morphology claims on the paper's deposited features | Three partially reproduced, one blocked |
-| Transcriptomic, cytoarchitecture and other morphology claims | Blocked |
+| Ephys d' against transcriptomic d' (Fig. 6B) | Blocked: not attempted |
+| Twelve claims on transcriptomic references, mouse morphology and morphology models | Blocked: not attempted |
+
+After the second round of verification, three changes of outcome are proposed for a third round:
+the subclass differences in sag and initial firing rate to reproduced (they hold when the features
+are extracted without the Methods' 500 ms noise criterion, which the paper's own per-cell values
+show its pipeline did not apply as measured here), and the LAMP5 gradient and the d' structure to
+not reproduced (their criteria name no partial level).
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -36,10 +47,11 @@ reasoning and the differences from the paper's method.
 The record, with the reasons and the differences from the paper's method, is
 [`attempts/000630-chartrand-2023-01.yaml`](../../attempts/000630-chartrand-2023-01.yaml).
 
-- `reproduce_chartrand_2023.ipynb`: the claims on the dandiset. It takes about 11 minutes, of
-  which about 2 are streaming the files and 6 the Gaussian mixture search.
+- `reproduce_chartrand_2023.ipynb`: the claims on the dandiset. It takes about 20 minutes, of
+  which about 6 are streaming the files and extracting the features twice (with and without the
+  500 ms noise criterion) and 10 the Gaussian mixture search.
 - `mouse_comparison.ipynb`: the claims that compare the human cells with the paper's mouse cells
-  from DANDI:000020 (about 4 minutes).
+  from DANDI:000020 (about 10 minutes).
 - `morphology_tables.ipynb`: four morphology claims on the paper's deposited morphology features
   (under a minute).
 - `l1ephys.py`: loading the files, the IPFX feature extraction with the Methods' sweep QC, the

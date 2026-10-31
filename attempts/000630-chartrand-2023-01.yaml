@@ -42,15 +42,21 @@ outcomes:
     ages as whole years times 365 days, and the one mismatch of the first run came from dividing by 365.25.
     The records do not all agree, so the partial level applies (at least 90% of files match and agree).
     One file (H19.03.321.12.04.01.04) states sex unknown where the table gives M, and the two files of
-    donor 922967568 state an age of P0.0D where the table has none. The features computed here agree with
-    the paper''s table within 1% for 71 to 98% of cells in 39 of the 44 features computed (Spearman 0.92
-    to 1.00); the five adaptation ratios agree for 4 to 53%. Where a feature at rheobase + 40 pA differs,
-    the sweep chosen here is often another one than the paper''s. For the initial firing rate at rheobase
-    + 40 pA, 31 cells differ by more than 1% or have a value on one side only: 10 take another repeat
-    of the same amplitude here, 6 another amplitude, 13 have no sweep here that gives the paper''s value
-    (5 of all cells have a different rheobase), and 2 have a value on one side only. The dandiset holds
-    exactly the paper''s primary set P (210 Seattle cells of the strict L1 set with long square features);
-    the 62 Amsterdam and Szeged cells of the strict set are not in it.'
+    donor 922967568 state an age of P0.0D where the table has none. Of the 44 features computed here,
+    the 39 used in reading (a) agree with the paper''s table within 1% for 53 to 98% of cells (Spearman
+    0.886 to 0.997); the five adaptation ratios not used agree for 4 to 37%. Where a feature at rheobase
+    + 40 pA differs, the sweep chosen here is often another one than the paper''s. For the initial firing
+    rate at rheobase + 40 pA, 31 cells differ by more than 1% or have a value on one side only: 10 take
+    another repeat of the same amplitude here, 6 another amplitude, 13 have no sweep here that gives the
+    paper''s value (5 of all cells have a different rheobase), and 2 have a value on one side only. In
+    16 cells no sweep passing QC lies 39 to 61 pA above rheobase and IPFX falls back to the spiking sweep
+    closest to rheobase + 39 pA; 7 of them agree with the paper''s value, and in 7 of the 9 that do not,
+    the paper''s value comes from a sweep in range that fails here only the Methods'' 500 ms rms noise
+    criterion. Without that criterion the 39 features agree with the paper''s values for more cells in
+    38 of them (median share 0.933 against 0.895). The dandiset holds exactly the paper''s primary set
+    P (210 Seattle cells of the strict L1 set with long square features); the other 62 cells of the strict
+    set, 50 Amsterdam and Szeged cells and 12 Seattle cells that failed feature extraction, are not in
+    it.'
   deviations:
   - The match uses the LIMS number, as no file names its t-type or the table's specimen id.
 - claim: patchseq-counts
@@ -74,23 +80,39 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_chartrand_2023.ipynb
   output: claim:fig2c-subclass-ephys-differences
-  notes: Kruskal-Wallis across the four core subclasses (179 cells, 92 features). Sag has FDR p = 6.6e-20
+  notes: 'Kruskal-Wallis across the four core subclasses (179 cells, 92 features). Sag has FDR p = 6.6e-20
     (epsilon2 0.57). The initial firing rate at rheobase + 40 pA (first_isi_inv_hero) has FDR p = 4.7e-7
-    on the features computed here, above the claim's 1e-7, and 1.7e-8 on the paper's own values (reading
-    (b)), below it. The criterion judges on reading (a) where a feature can be computed, so both features
-    have FDR p < 0.05 but not both below 1e-7. 56 features have FDR p < 0.05. The computed initial firing
-    rate differs from the paper's value by more than 1% in 28 of the 179 cells, mostly where the sweep
-    at rheobase + 40 pA is another repeat or another amplitude than the paper's (listed in the notebook
-    under dandiset-cell-link), so the difference between the readings comes from sweep choice. Leaving
-    out any one donor keeps the sag p below 1e-18.
+    on the features computed here with the Methods'' sweep QC, above the claim''s 1e-7, and 1.7e-8 on
+    the paper''s own values (reading (b)), below it. The criterion judges on reading (a) where a feature
+    can be computed, so both features have FDR p < 0.05 but not both below 1e-7. 56 features have FDR
+    p < 0.05. The computed initial firing rate differs from the paper''s value by more than 1%, or has
+    a value on one side only, in 28 of the 179 cells: 10 take another repeat of the same amplitude, 6
+    another amplitude, 10 have no sweep here that gives the paper''s value and 2 have a value on one side
+    only. In 11 cells of the test no sweep passing QC lies 39 to 61 pA above rheobase and IPFX falls back
+    to a lower sweep; 6 of them disagree with the paper, and in 4 of these the paper''s value comes from
+    a sweep in range that fails here only the Methods'' 500 ms rms noise criterion. Extracted without
+    that criterion (variant a''), the features agree with the paper''s values for more cells in 38 of
+    39 features, and first_isi_inv_hero has FDR p = 3.9e-9 (sag 3.3e-20), so the claim holds in full;
+    a change to reproduced is proposed. With any one donor left out, the largest uncorrected p is 3.1e-19
+    for sag and 3.5e-5 for the initial firing rate.'
   deviations:
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
-    least half of the cells (39 features), and the paper's values for the other 55 (custom features the
-    paper did not release, ramp, short square and chirp features, and the adaptation ratios, which agree
-    within 1% for only 4 to 53% of cells). Reading (b) uses the paper's values throughout. The 50% rule
-    is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
-    as computed.
+    least half of the cells (39 features, which agree within 1% for 53 to 98% of cells), and the paper's
+    values for the others (custom features the paper did not release, ramp, short square and chirp features,
+    and five adaptation ratios, which agree within 1% for only 4 to 37% of cells). Reading (b) uses the
+    paper's values throughout. The 50% rule is an assumption of this attempt; the claims file's O1 does
+    not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
+    with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
+    the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
+    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
+  - Which sweeps pass the Methods' QC decides this claim. The Methods (Quality control) require rms noise
+    below 0.5 mV over 500 ms; measured with IPFX on these files, that criterion leaves out sweeps from
+    which the paper's own per-cell values were computed (7 of the 9 fallback cells that disagree), and
+    IPFX then takes a lower sweep as the one at rheobase + 40 pA. The recomputation is run both with the
+    criterion as written (reading a, partial) and without it (variant a', which matches the paper's values
+    for more cells in 38 of 39 features, reproduced). How the paper measured this noise is asked of the
+    authors.
   - Sweep QC follows the Methods as far as the files allow (leak within 100 pA, rms noise below 0.2 mV
     over 1.5 ms and 0.5 mV over 500 ms, IPFX's integrity check, and sweeps stored with zeros before the
     end of the stimulus left out); the Methods' criterion of a baseline within 2 mV of target is not applied,
@@ -99,27 +121,44 @@ outcomes:
     as a variant.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
+  proposed:
+    outcome: reproduced
+    reason: 'The verifier asked to check the sweep at rheobase + 40 pA before the partial outcome stands.
+      In 16 cells no sweep passing QC is 39 to 61 pA above rheobase and IPFX falls back to a lower sweep;
+      in 7 of the 9 of these that disagree with the paper, the paper''s value comes from a sweep in range
+      that fails here only the Methods'' 500 ms rms noise criterion as IPFX measures it. Extracting the
+      features without that criterion (variant a'') brings 38 of the 39 computed features closer to the
+      paper''s values (median share within 1% 0.933 against 0.895) and gives first_isi_inv_hero FDR p
+      = 3.9e-9 and sag 3.3e-20, both below 1e-7. The paper''s own values show its pipeline kept these
+      sweeps, so (a'') is the recomputation best supported by the paper; the outcome would rest on that
+      assumption (assumed: true), with the question of how the noise was measured put to the authors.
+      No other claim''s outcome changes under (a'').'
 - claim: fig2b-subclass-ephys-profiles
   outcome: reproduced
   notebook: reproduce_chartrand_2023.ipynb
   output: claim:fig2b-subclass-ephys-profiles
-  notes: Parts (i) and (ii) hold under both readings, with median sag MC4R 0.336 and L1 VIP 0.277 above
-    LAMP5 0.116 and PAX6 0.051, PAX6 lowest. Part (iii) as amended holds under both readings, as PAX6's
-    median initial firing rate is 49.3 Hz, above LAMP5 (31.8 to 32.1 Hz) and MC4R (28.8 to 30.5 Hz) with
-    Dunn FDR p of 3.4e-5 or less. What the answer changed. The first run tested part (iii) as PAX6 having
-    the highest median of the four and recorded not_reproduced, since L1 VIP is higher (54.6 Hz; Dunn
-    FDR p 0.39 to 1 between PAX6 and L1 VIP). Asked whether that read the paper's "high initial firing
-    rate" correctly, a reader amended part (iii) to PAX6 above LAMP5 and MC4R (questions/000630.yaml),
-    because the paper does not compare PAX6 with L1 VIP on this feature. Re-run on the amended criterion,
-    the claim is reproduced; the notebook still prints the earlier part (iii), which fails.
+  notes: Parts (i) and (ii) hold under both readings and in variant (a'), with median sag MC4R 0.336 and
+    L1 VIP 0.277 above LAMP5 0.116 and PAX6 0.051, PAX6 lowest. Part (iii) as amended holds under both
+    readings and in (a'), as PAX6's median initial firing rate is 49.3 Hz, above LAMP5 (31.8 to 32.1 Hz)
+    and MC4R (28.8 to 30.5 Hz) with Dunn FDR p of 3.4e-5 or less. What the answer changed. The first author
+    run, before the reader's answer and before verification, tested part (iii) as PAX6 having the highest
+    median of the four and recorded not_reproduced, since L1 VIP is higher (54.6 Hz; Dunn FDR p 0.39 to
+    1 between PAX6 and L1 VIP). Asked whether that read the paper's "high initial firing rate" correctly,
+    a reader amended part (iii) to PAX6 above LAMP5 and MC4R (questions/000630.yaml), because the paper
+    does not compare PAX6 with L1 VIP on this feature. Re-run on the amended criterion (author-answers),
+    the claim is reproduced, the outcome both verification rounds reviewed; the notebook still prints
+    the earlier part (iii), which fails.
   deviations:
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
-    least half of the cells (39 features), and the paper's values for the other 55 (custom features the
-    paper did not release, ramp, short square and chirp features, and the adaptation ratios, which agree
-    within 1% for only 4 to 53% of cells). Reading (b) uses the paper's values throughout. The 50% rule
-    is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
-    as computed.
+    least half of the cells (39 features, which agree within 1% for 53 to 98% of cells), and the paper's
+    values for the others (custom features the paper did not release, ramp, short square and chirp features,
+    and five adaptation ratios, which agree within 1% for only 4 to 37% of cells). Reading (b) uses the
+    paper's values throughout. The 50% rule is an assumption of this attempt; the claims file's O1 does
+    not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
+    with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
+    the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
+    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: figs3a-sag-adaptation
@@ -128,26 +167,32 @@ outcomes:
   output: claim:figs3a-sag-adaptation
   measured: 0.334
   notes: 'OLS of the upstroke adaptation ratio (third over first spike, the order that matches the paper''s
-    table) on sag with HC3 errors over 192 cells gives R2 = 0.334 (p = 1.3e-12) on the features computed
-    here and R2 = 0.359 (p = 3.3e-14) on the paper''s values, against 0.74 +/- 0.074. With the order first
-    over third R2 is 0.149. All ratios are below 1 (0.38 to 0.97), so the upstroke falls from the first
-    to the third spike, and the slope is negative (-0.61 here, -0.64 on the paper''s values): cells with
-    more sag have a larger fall, so more change, the opposite of the direction the criterion states. The
-    paper says only inverse relationship, which a negative slope matches; whether the criterion misreads
-    the paper is asked of a reader (questions/000630.yaml), and it cannot change the outcome, which fails
-    on R2. On the medians of the ten t-types R2 is 0.28 to 0.31. The paper''s own per-cell values with
-    the code''s regression do not give 0.74 either.'
+    table) on sag with HC3 errors over 192 cells. In reading (a) the ratio is the paper''s value (the
+    ratio computed here agrees within 1% for 19% of cells and is not used) and sag is computed here: R2
+    = 0.334 (p = 1.3e-12). On the paper''s values R2 = 0.359 (p = 3.3e-14), and in variant (a'') 0.346,
+    against 0.74 +/- 0.074. With both sag and the ratio computed here R2 is 0.204 (third over first, p
+    = 1.6e-7) or 0.149 (first over third). All the paper''s ratios are below 1 (0.38 to 0.97), so the
+    upstroke falls from the first to the third spike, and the slope is negative (-0.61 in reading (a),
+    -0.64 on the paper''s values): cells with more sag have a larger fall, so more change, the opposite
+    of the direction the criterion states. The paper says only inverse relationship, which a negative
+    slope matches; whether the criterion misreads the paper is asked of a reader (questions/000630.yaml),
+    and it cannot change the outcome, which fails on R2. On the medians of the ten t-types R2 is 0.28
+    to 0.31. The paper''s own per-cell values with the code''s regression do not give 0.74 either.'
   deviations:
   - The adaptation ratio is computed here on the lowest long square with at least 4 spikes (Methods);
-    it agrees with the paper's value within 1% for 19% of cells (median difference 2.7%), so the outcome
-    is also shown on the paper's values.
+    it agrees with the paper's value within 1% for 19% of cells (median difference 2.7%), so reading (a)
+    uses the paper's ratio with sag computed here, and the regression on the ratio computed here, in both
+    orders, is a variant.
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
-    least half of the cells (39 features), and the paper's values for the other 55 (custom features the
-    paper did not release, ramp, short square and chirp features, and the adaptation ratios, which agree
-    within 1% for only 4 to 53% of cells). Reading (b) uses the paper's values throughout. The 50% rule
-    is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
-    as computed.
+    least half of the cells (39 features, which agree within 1% for 53 to 98% of cells), and the paper's
+    values for the others (custom features the paper did not release, ramp, short square and chirp features,
+    and five adaptation ratios, which agree within 1% for only 4 to 37% of cells). Reading (b) uses the
+    paper's values throughout. The 50% rule is an assumption of this attempt; the claims file's O1 does
+    not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
+    with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
+    the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
+    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: fig2c-lamp5-gradient
@@ -157,23 +202,35 @@ outcomes:
   notes: Over the 96 LAMP5 cells of the strict set in the dandiset, both features have a positive Spearman
     rho with the code LCP2 = 0, DBP = 1, NMBR = 2, the direction the criterion asks for; the medians are
     highest in NMBR, but the initial firing rate is not monotone (DBP 18.6 Hz, LCP2 22.5 Hz). The initial
-    firing rate meets the threshold (rho 0.46, FDR p = 2.6e-5; paper's values 2.5e-5). Sag does not (rho
-    0.28, FDR p = 0.022; paper's values rho 0.36, FDR p = 0.0020; threshold 0.001). With the 14 Amsterdam
-    and Szeged LAMP5 cells the code includes, taken from the paper's feature tables, sag has FDR p = 0.0039,
-    still above 0.001. The test uses filter_dropouts=False, as the code's cell 59 calls run_correlations;
-    with the function's default (True) sag, whose values are all below 1, is left out.
+    firing rate meets the threshold (rho 0.46, FDR p = 2.6e-5; 3.0e-5 in variant a'; paper's values 2.5e-5).
+    Sag does not (rho 0.28, FDR p = 0.022; 0.015 in a'; paper's values rho 0.36, FDR p = 0.0020; threshold
+    0.001). With the 14 Amsterdam and Szeged LAMP5 cells the code includes, taken from the paper's feature
+    tables, sag has FDR p = 0.0039, still above 0.001. The test uses filter_dropouts=False, as the code's
+    cell 59 calls run_correlations; with the function's default (True) sag, whose values are all below
+    1, is left out. The criterion names no partial level and sag fails under every reading, so a change
+    to not_reproduced is proposed.
   deviations:
   - The dandiset lacks the Amsterdam and Szeged LAMP5 cells the code includes; the test runs on the Seattle
     cells, and the three-site test is a variant using the paper's per-cell features for the other sites.
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
-    least half of the cells (39 features), and the paper's values for the other 55 (custom features the
-    paper did not release, ramp, short square and chirp features, and the adaptation ratios, which agree
-    within 1% for only 4 to 53% of cells). Reading (b) uses the paper's values throughout. The 50% rule
-    is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
-    as computed.
+    least half of the cells (39 features, which agree within 1% for 53 to 98% of cells), and the paper's
+    values for the others (custom features the paper did not release, ramp, short square and chirp features,
+    and five adaptation ratios, which agree within 1% for only 4 to 37% of cells). Reading (b) uses the
+    paper's values throughout. The 50% rule is an assumption of this attempt; the claims file's O1 does
+    not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
+    with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
+    the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
+    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion names no partial level, and the attempt changed fig4b-adarb2-irregular-firing,
+      fig4d-mouse-no-rosehip-ephys and fig5d-mouse-pax6-doublets to not_reproduced on that ground after
+      round 1; the verifier (round 2) asked that this claim follow the same rule. Sag misses FDR p < 0.001
+      under every reading (0.022 in reading a, 0.015 in a', 0.0020 on the paper's values, 0.0039 with
+      the other sites' cells), as the notebook shows.
 - claim: figs6-donor-condition-ephys
   outcome: reproduced
   notebook: reproduce_chartrand_2023.ipynb
@@ -186,17 +243,21 @@ outcomes:
     of the 194 cells (65 epileptic, 21 not), so the condition test has less power than the paper's. The
     dropout filter the criterion takes from the code leaves 56 of the 92 features out of the age test,
     sag and three adaptation ratios among them; without the filter no feature reaches FDR p < 0.05 for
-    age either (smallest FDR p 0.73, sag p = 0.11).
+    age either (smallest FDR p 0.73, sag p = 0.11). Variant (a') gives the same (smallest FDR p 0.19,
+    0.99 and 0.43).
   deviations:
   - The table's medical_conditions, donor_sex and donor_age stand in for the LIMS donor records the code
     reads, as the criterion says; 108 of 194 cells have no medical condition in the public table.
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
-    least half of the cells (39 features), and the paper's values for the other 55 (custom features the
-    paper did not release, ramp, short square and chirp features, and the adaptation ratios, which agree
-    within 1% for only 4 to 53% of cells). Reading (b) uses the paper's values throughout. The 50% rule
-    is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
-    as computed.
+    least half of the cells (39 features, which agree within 1% for 53 to 98% of cells), and the paper's
+    values for the others (custom features the paper did not release, ramp, short square and chirp features,
+    and five adaptation ratios, which agree within 1% for only 4 to 37% of cells). Reading (b) uses the
+    paper's values throughout. The 50% rule is an assumption of this attempt; the claims file's O1 does
+    not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
+    with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
+    the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
+    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: figs6c-region-ephys
@@ -206,16 +267,20 @@ outcomes:
   notes: Regions ITG (23 cells, 4 donors), MTG (115, 27), MFG (5, 3) and SFG (14, 5); 83 features, 6 with
     FDR p < 0.05. Input resistance (input_resistance_ss) has FDR p = 0.029; medians ITG 291, MTG 234,
     MFG 367, SFG 222 MOhm; no region is below MTG with Dunn FDR p < 0.05 (SFG against MTG p = 0.13; MFG
-    above MTG, p = 0.0073). sag_peak_t, downstroke_rheo and avg_rate_max have FDR p 0.016 to 0.029.
+    above MTG, p = 0.0073). sag_peak_t, downstroke_rheo and avg_rate_max have FDR p 0.016 to 0.029. Variant
+    (a') gives the same input resistance result (13 features with FDR p < 0.05 there).
   deviations:
   - input_resistance_ss is not computed here and is the paper's value under both readings.
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
-    least half of the cells (39 features), and the paper's values for the other 55 (custom features the
-    paper did not release, ramp, short square and chirp features, and the adaptation ratios, which agree
-    within 1% for only 4 to 53% of cells). Reading (b) uses the paper's values throughout. The 50% rule
-    is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
-    as computed.
+    least half of the cells (39 features, which agree within 1% for 53 to 98% of cells), and the paper's
+    values for the others (custom features the paper did not release, ramp, short square and chirp features,
+    and five adaptation ratios, which agree within 1% for only 4 to 37% of cells). Reading (b) uses the
+    paper's values throughout. The 50% rule is an assumption of this attempt; the claims file's O1 does
+    not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
+    with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
+    the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
+    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: fig4b-mc4r-sag-irregularity
@@ -225,17 +290,21 @@ outcomes:
   notes: Reading (a) of the group (MC4R subclass, 35 of 210 Seattle strict-set cells, against the rest)
     gives sag median 0.336 against 0.118 (FDR p = 1.6e-18) and irregularity ratio 0.232 against 0.135
     (FDR p = 1.2e-5), both higher and below 1e-4. Under reading (b) ADARB2 MC4R alone meets it (FDR p
-    3.1e-17 and 4.2e-6) and SST CHRNA4 alone does not (0.084 and 0.6).
+    3.1e-17 and 4.2e-6) and SST CHRNA4 alone does not (0.084 and 0.6). Variant (a') gives the same (FDR
+    p 8.6e-19 and 1.2e-5).
   deviations:
   - The irregularity ratio (ir_late_mean) is custom code the paper did not release; it is the paper's
     value under both readings.
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
-    least half of the cells (39 features), and the paper's values for the other 55 (custom features the
-    paper did not release, ramp, short square and chirp features, and the adaptation ratios, which agree
-    within 1% for only 4 to 53% of cells). Reading (b) uses the paper's values throughout. The 50% rule
-    is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
-    as computed.
+    least half of the cells (39 features, which agree within 1% for 53 to 98% of cells), and the paper's
+    values for the others (custom features the paper did not release, ramp, short square and chirp features,
+    and five adaptation ratios, which agree within 1% for only 4 to 37% of cells). Reading (b) uses the
+    paper's values throughout. The 50% rule is an assumption of this attempt; the claims file's O1 does
+    not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
+    with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
+    the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
+    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: fig4b-adarb2-irregular-firing
@@ -249,16 +318,19 @@ outcomes:
     cells. (ii) fails, as SST CHRNA4 (0.153) is above LAMP5 (0.114) with Dunn FDR p = 0.046. The criterion
     names no partial level, and the parts that fail are the claim's point that only ADARB2 MC4R fires
     irregularly; the direction of the irregularity difference holds, its significance does not. The first
-    run recorded partially_reproduced; changed after verification round 1.
+    run recorded partially_reproduced; changed after verification round 1. Variant (a') gives the same.
   deviations:
   - ir_late_mean, sag_peak_t and sag_tau are not computed here and are the paper's values under both readings.
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
-    least half of the cells (39 features), and the paper's values for the other 55 (custom features the
-    paper did not release, ramp, short square and chirp features, and the adaptation ratios, which agree
-    within 1% for only 4 to 53% of cells). Reading (b) uses the paper's values throughout. The 50% rule
-    is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
-    as computed.
+    least half of the cells (39 features, which agree within 1% for 53 to 98% of cells), and the paper's
+    values for the others (custom features the paper did not release, ramp, short square and chirp features,
+    and five adaptation ratios, which agree within 1% for only 4 to 37% of cells). Reading (b) uses the
+    paper's values throughout. The 50% rule is an assumption of this attempt; the claims file's O1 does
+    not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
+    with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
+    the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
+    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: fig5b-tnfaip8l3-ephys
@@ -268,17 +340,21 @@ outcomes:
   notes: Two PAX6 TNFAIP8L3 cells against 208. The initial firing rate at rheobase (computed here, equal
     to the paper's values) is 136 and 123 Hz against a median of 6.5 Hz (FDR p = 0.0081); the ADP slope
     (postap_slope_rheo, the paper's value) is 2.4 and 2.85 V/s against -0.43 (FDR p = 0.0051). Both are
-    higher and below 0.01. The adp_deltav variant has FDR p = 0.07.
+    higher and below 0.01. The adp_deltav variant has FDR p = 0.07. Variant (a') gives the same (FDR p
+    0.0079 and 0.0051).
   deviations:
   - postap_slope_rheo and adp_v_last_rheo are custom features the paper did not release; they are the
     paper's values.
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
-    least half of the cells (39 features), and the paper's values for the other 55 (custom features the
-    paper did not release, ramp, short square and chirp features, and the adaptation ratios, which agree
-    within 1% for only 4 to 53% of cells). Reading (b) uses the paper's values throughout. The 50% rule
-    is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
-    as computed.
+    least half of the cells (39 features, which agree within 1% for 53 to 98% of cells), and the paper's
+    values for the others (custom features the paper did not release, ramp, short square and chirp features,
+    and five adaptation ratios, which agree within 1% for only 4 to 37% of cells). Reading (b) uses the
+    paper's values throughout. The 50% rule is an assumption of this attempt; the claims file's O1 does
+    not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
+    with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
+    the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
+    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: fig6a-ephys-dprime-subclass-structure
@@ -286,26 +362,38 @@ outcomes:
   notebook: reproduce_chartrand_2023.ipynb
   output: claim:fig6a-ephys-dprime-subclass-structure
   notes: Nine t-types with at least 5 cells (the legend's rule of at least 4 keeps the same nine), 81
-    features. Mean within-subclass d' is below the mean between-subclass d' in all six runs (features
-    computed here 1.24 to 1.31 against 2.48 to 2.54, paper's values 1.12 to 1.23 against 2.39 to 2.49,
-    seeds 0 to 2). The criterion asks that NMBR against LCP2 be the only high within-subclass pair under
-    both of its readings of high. With high as d' >= 2.2 it is so on the features computed here for every
-    seed (2.39 for seed 0) and on the paper's values for seed 0 only (no within-subclass pair reaches
-    2.2 for seeds 1 and 2). With high as above the median between-subclass d' (2.40 to 2.62) no within-subclass
-    pair is high. The subclass structure holds; the single high pair holds only under the first reading.
-    The first run adopted the 2.2 reading as an assumption and recorded reproduced; changed after verification
-    round 1, as the criterion asks for both readings.
+    features. Mean within-subclass d' is below the mean between-subclass d' in all nine runs (features
+    computed here 1.24 to 1.31 against 2.48 to 2.54, variant a' 1.28 to 1.30 against 2.52 to 2.56, paper's
+    values 1.12 to 1.23 against 2.39 to 2.49, seeds 0 to 2). The criterion asks that NMBR against LCP2
+    be the only high within-subclass pair under both of its readings of high. With high as d' >= 2.2 it
+    is so on the features computed here and in (a') for every seed (2.39 for seed 0) and on the paper's
+    values for seed 0 only (no within-subclass pair reaches 2.2 for seeds 1 and 2). With high as above
+    the median between-subclass d' (2.40 to 2.62) no within-subclass pair is high. The subclass structure
+    holds; the single high pair holds only under the first reading. The first run adopted the 2.2 reading
+    as an assumption and recorded reproduced; changed to partially_reproduced after verification round
+    1, as the criterion asks for both readings. The criterion names no partial level, so a change to not_reproduced
+    is proposed.
   deviations:
   - Random forest seeds 0, 1 and 2 are a standard choice; the code sets none.
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
-    least half of the cells (39 features), and the paper's values for the other 55 (custom features the
-    paper did not release, ramp, short square and chirp features, and the adaptation ratios, which agree
-    within 1% for only 4 to 53% of cells). Reading (b) uses the paper's values throughout. The 50% rule
-    is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
-    as computed.
+    least half of the cells (39 features, which agree within 1% for 53 to 98% of cells), and the paper's
+    values for the others (custom features the paper did not release, ramp, short square and chirp features,
+    and five adaptation ratios, which agree within 1% for only 4 to 37% of cells). Reading (b) uses the
+    paper's values throughout. The 50% rule is an assumption of this attempt; the claims file's O1 does
+    not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
+    with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
+    the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
+    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion names no partial level, and the attempt changed fig4b-adarb2-irregular-firing,
+      fig4d-mouse-no-rosehip-ephys and fig5d-mouse-pax6-doublets to not_reproduced on that ground after
+      round 1; the verifier (round 2) asked that this claim follow the same rule. Under the second reading
+      of high (above the median between-subclass d') no within-subclass pair is high in any of the nine
+      runs, as the notebook shows.
 - claim: fig6d-gmm-subclass-f1
   outcome: reproduced
   notebook: reproduce_chartrand_2023.ipynb
@@ -318,20 +406,24 @@ outcomes:
   notes: 177 Seattle cells with soma in L1 (the depth table's layer, as clustering_classification.ipynb
     cell 16), 83 features, 3486 one- and two-feature subspaces per group. On the features computed here,
     Methods preprocessing (O3 a) gives best F1 LAMP5 0.785, MC4R 0.709, PAX6 0.896, all others 0.490;
-    the code's preprocessing (O3 b) gives 0.806, 0.703, 0.892 and 0.526. On the paper's values the four
-    combinations give LAMP5 0.785 to 0.806, MC4R 0.693 to 0.712, PAX6 0.892 to 0.896 and all others 0.490
-    to 0.526. All are within tolerance; the closest to a bound is all others at 0.490 (floor 0.45). With
-    the layer filled from the LIMS layer (189 cells, code preprocessing) the values are 0.840, 0.707,
-    0.879 and 0.494. Several best features are the paper's values (adaptation ratios, sag_tau, sag_peak_t,
-    ramp and short square features).
+    the code's preprocessing (O3 b) gives 0.806, 0.703, 0.892 and 0.526. On the paper's values alone the
+    two give LAMP5 0.802 to 0.806, MC4R 0.693 to 0.712, PAX6 0.892 to 0.896 and all others 0.495 to 0.506.
+    All are within tolerance; the closest to a bound is all others at 0.490 (floor 0.45). With the layer
+    filled from the LIMS layer (189 cells, code preprocessing) the values are 0.840, 0.707, 0.879 and
+    0.494; in variant (a') 0.806, 0.703, 0.892 and 0.519; with the adaptation ratios computed here 0.825,
+    0.694, 0.892 and 0.511. Several best features are the paper's values (sag_tau, sag_peak_t, ramp and
+    short square features).
   deviations:
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
-    least half of the cells (39 features), and the paper's values for the other 55 (custom features the
-    paper did not release, ramp, short square and chirp features, and the adaptation ratios, which agree
-    within 1% for only 4 to 53% of cells). Reading (b) uses the paper's values throughout. The 50% rule
-    is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
-    as computed.
+    least half of the cells (39 features, which agree within 1% for 53 to 98% of cells), and the paper's
+    values for the others (custom features the paper did not release, ramp, short square and chirp features,
+    and five adaptation ratios, which agree within 1% for only 4 to 37% of cells). Reading (b) uses the
+    paper's values throughout. The 50% rule is an assumption of this attempt; the claims file's O1 does
+    not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
+    with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
+    the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
+    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: figs8a-classifier-cv
@@ -342,9 +434,10 @@ outcomes:
   notes: 164 Seattle cells of the four core subclasses with soma in L1 (depth table layer, as the code's
     cell 26). Accuracy with features common to all sites (72) is 83.5% with the Methods' preprocessing
     and 84.6% with the code's; with the 35 site-aligned features 79.7% and 78.8%. On the paper's values
-    (reading b) and with the layer filled from the LIMS layer (176 cells) accuracy is 79.6 to 84.2%. All
-    are within 82 +/- 8.2. Balanced accuracy is 74.5 to 78.8%. The largest class is 52.4% of cells (54.0%
-    with the filled layer) and balanced chance is 25%; the paper states no chance level.
+    (reading b) and with the layer filled from the LIMS layer (176 cells) accuracy is 79.6 to 84.2%, and
+    in variant (a') 79.4 to 85.0%. All are within 82 +/- 8.2. Balanced accuracy is 74.5 to 79.0%. The
+    largest class is 52.4% of cells (54.0% with the filled layer) and balanced chance is 25%; the paper
+    states no chance level.
   deviations:
   - Choosing features by site uses the Amsterdam and Szeged feature tables of the paper's code (tamas_features_E.csv,
     mansvelder_features_E.csv); those cells are not in the dandiset and are used only for this choice.
@@ -352,11 +445,14 @@ outcomes:
     seed is a standard choice).
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
-    least half of the cells (39 features), and the paper's values for the other 55 (custom features the
-    paper did not release, ramp, short square and chirp features, and the adaptation ratios, which agree
-    within 1% for only 4 to 53% of cells). Reading (b) uses the paper's values throughout. The 50% rule
-    is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
-    as computed.
+    least half of the cells (39 features, which agree within 1% for 53 to 98% of cells), and the paper's
+    values for the others (custom features the paper did not release, ramp, short square and chirp features,
+    and five adaptation ratios, which agree within 1% for only 4 to 37% of cells). Reading (b) uses the
+    paper's values throughout. The 50% rule is an assumption of this attempt; the claims file's O1 does
+    not say when a recomputed feature counts as computed. Two variants of reading (a) are shown, (a')
+    with the features extracted without the Methods' 500 ms rms noise criterion, and (a, ratios) with
+    the adaptation ratios computed here, for figs3a, fig6d and fig3g; neither changes an outcome except
+    (a') for fig2c-subclass-ephys-differences, where a change is proposed.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: figs8b-classifier-holdout
@@ -366,11 +462,11 @@ outcomes:
     in the dandiset (it holds only the 210 Seattle cells of P), and the paper names no other deposit of
     their recordings; the criterion blocks the claim as data_missing in that case. Two DANDI datasets
     published in 2026 were checked from their metadata. DANDI 000228 (version 0.260829.2040) holds 91
-    Szeged files from 32 donors, including the donors of 15 of the 17 held-out Szeged cells, but its files
-    carry no cell identifier (session_id PLACEHOLDER), so they could be linked to cells only by matching
-    features. DANDI 000337 (version 0.260917.2218) holds 21 Amsterdam files; none has the LIMS session
-    id of a held-out Amsterdam cell (5 of the 9 have one in the table). Whether the claims file should
-    name 000228 as an input is asked of a reader (questions/000630.yaml).
+    Szeged files from 32 donors, including the donors of 15 of the 17 held-out Szeged cells, but its file
+    paths carry no session id, so they could be linked to cells only by matching features. DANDI 000337
+    (version 0.260917.2218) holds 21 Amsterdam files; none has the LIMS session id of a held-out Amsterdam
+    cell (5 of the 9 have one in the table), and 8 carry the session id PLACEHOLDER in their paths. Whether
+    the claims file should name 000228 as an input is asked of a reader (questions/000630.yaml).
   notebook: reproduce_chartrand_2023.ipynb
   output: claim:figs8b-classifier-holdout
 - claim: fig3d-ephys-species
@@ -391,16 +487,21 @@ outcomes:
     from DANDI 000020 added from the paper's table (168 VISp cells) the readings disagree as well (sag
     2.7e-36 under (a), all three below 1e-38 under (b)), so the missing cells lower the power of the test.
     With the human layer not filled (164 cells, as the code's other notebooks select) and VISp, AP height
-    has species FDR p 9.3e-32 and 3.7e-33, also above 1e-38 under both readings.
+    has species FDR p 9.3e-32 and 3.7e-33, also above 1e-38 under both readings. Variant (a') gives the
+    same on VISp (AP height 3.4e-33 and 3.3e-34, sag 3.1e-36 under O2 a).
   deviations:
   - AP height at the ramp (peak_deltav_ramp) is not computed here and is the paper's value for both species.
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
-    least half of the cells (39 features), and the paper's values for the other 55 (custom features the
-    paper did not release, ramp, short square and chirp features, and the adaptation ratios, which agree
-    within 1% for only 4 to 53% of cells). Reading (b) uses the paper's values throughout. The 50% rule
+    least half of the cells (38 features computed for both species; 39 for the human cells alone, which
+    agree within 1% for 53 to 98% of cells), and the paper's values for the others (custom features the
+    paper did not release, ramp, short square and chirp features, and five adaptation ratios, which agree
+    within 1% for only 4 to 37% of cells). Reading (b) uses the paper's values throughout. The 50% rule
     is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
-    as computed.
+    as computed. Two variants of reading (a) are shown, (a') with the features extracted without the Methods'
+    500 ms rms noise criterion, and (a, ratios) with the adaptation ratios computed here, for figs3a,
+    fig6d and fig3g; neither changes an outcome except (a') for fig2c-subclass-ephys-differences, where
+    a change is proposed.
   - Mouse cells from DANDI 000020 version 0.210913.1639 with the paper's mouse labels; 250 of 272 strict
     mouse L1 cells have a file there.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
@@ -438,17 +539,22 @@ outcomes:
     and less in mouse (0.22 and 0.17). In mouse the ISI adaptation features isi_adapt_ratio, adapt_mean
     and adapt_hero (epsilon2 0.38 to 0.41) and the AHP features fast_trough_deltav_rheo, fast_trough_deltav_hero
     and trough_slowdeltav_hero (0.31 to 0.40) have FDR p < 1e-4 and larger epsilon2 than in human. Both
-    feature readings agree, and the same holds with every visual area (VIS, 250 cells), which the first
-    run used. The amount, outside the outcome, is 56 FDR-significant features in human and 73 in mouse
-    VISp (77 in VIS), mean epsilon2 0.17 and 0.22.
+    feature readings agree, and the same holds in variant (a'), with the adaptation ratios computed here
+    (upstroke adaptation ratio epsilon2 0.43 in human against 0.18 in mouse) and with every visual area
+    (VIS, 250 cells), which the first run used. The amount, outside the outcome, is 56 FDR-significant
+    features in human and 73 in mouse VISp (77 in VIS), mean epsilon2 0.17 and 0.22.
   deviations:
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
-    least half of the cells (39 features), and the paper's values for the other 55 (custom features the
-    paper did not release, ramp, short square and chirp features, and the adaptation ratios, which agree
-    within 1% for only 4 to 53% of cells). Reading (b) uses the paper's values throughout. The 50% rule
+    least half of the cells (38 features computed for both species; 39 for the human cells alone, which
+    agree within 1% for 53 to 98% of cells), and the paper's values for the others (custom features the
+    paper did not release, ramp, short square and chirp features, and five adaptation ratios, which agree
+    within 1% for only 4 to 37% of cells). Reading (b) uses the paper's values throughout. The 50% rule
     is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
-    as computed.
+    as computed. Two variants of reading (a) are shown, (a') with the features extracted without the Methods'
+    500 ms rms noise criterion, and (a, ratios) with the adaptation ratios computed here, for figs3a,
+    fig6d and fig3g; neither changes an outcome except (a') for fig2c-subclass-ephys-differences, where
+    a change is proposed.
   - Mouse cells from DANDI 000020 version 0.210913.1639; 250 of 272 strict mouse L1 cells have a file
     there, 205 of them in VISp.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
@@ -464,17 +570,22 @@ outcomes:
     Ntn1 Npy2r (6). These two parts fail under both readings, and the criterion names no partial level.
     With all 272 strict cells from the paper's table, 18 of 34 irregular cells are LAMP5, a majority,
     but the largest t-type is still Lamp5 Plch2 Dock5 (11), so the outcome is the same; cuts of 0.3 and
-    0.5 give the same order of t-types or put Vip Col15a1 Pde1a first. The moderate sag holds. The first
-    run recorded partially_reproduced; changed after verification round 1.
+    0.5 give the same order of t-types or put Vip Col15a1 Pde1a first. Variant (a') gives the same counts.
+    The moderate sag holds. The first run recorded partially_reproduced; changed after verification round
+    1.
   deviations:
   - ir_late_mean is the paper's value (custom code not released).
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
-    least half of the cells (39 features), and the paper's values for the other 55 (custom features the
-    paper did not release, ramp, short square and chirp features, and the adaptation ratios, which agree
-    within 1% for only 4 to 53% of cells). Reading (b) uses the paper's values throughout. The 50% rule
+    least half of the cells (38 features computed for both species; 39 for the human cells alone, which
+    agree within 1% for 53 to 98% of cells), and the paper's values for the others (custom features the
+    paper did not release, ramp, short square and chirp features, and five adaptation ratios, which agree
+    within 1% for only 4 to 37% of cells). Reading (b) uses the paper's values throughout. The 50% rule
     is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
-    as computed.
+    as computed. Two variants of reading (a) are shown, (a') with the features extracted without the Methods'
+    500 ms rms noise criterion, and (a, ratios) with the adaptation ratios computed here, for figs3a,
+    fig6d and fig3g; neither changes an outcome except (a') for fig2c-subclass-ephys-differences, where
+    a change is proposed.
   - 22 of the paper's strict mouse L1 cells (20 in VISp layer 1) have no file in DANDI 000020.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
@@ -487,17 +598,25 @@ outcomes:
     + 40 pA. Their depolarizing sag ratios (0.257, 0.273, 0.304) exceed the medians of every other mouse
     subclass (0.035 to 0.132). Their median initial firing rate, 97.7 Hz (58 and 137 Hz), exceeds LAMP5
     (20 Hz) and MC4R (26 Hz) but not L1 VIP (171 to 177 Hz), under both readings and with all 272 strict
-    cells. The hump holds; the doublet part of the criterion does not, and the criterion names no partial
-    level. The first run recorded partially_reproduced; changed after verification round 1.
+    cells. Variant (a') gives the same medians. The hump holds; the doublet part of the criterion does
+    not, and the criterion names no partial level. The paper says only that these cells tended to fire
+    in doublets at stimulus onset and does not compare them with L1 VIP; whether the criterion's comparison
+    with every other subclass misreads the paper is asked of a reader (questions/000630.yaml). Under the
+    narrower reading, above LAMP5 and MC4R, both parts hold. The first run recorded partially_reproduced;
+    changed after verification round 1.
   deviations:
   - sag_depol is the paper's value (custom code not released).
   - Features follow the claims file's O1. Reading (a) uses the features computed here with IPFX 2.1.2
     from the long square sweeps where they agree with the paper's aibs_features_E.csv within 1% for at
-    least half of the cells (39 features), and the paper's values for the other 55 (custom features the
-    paper did not release, ramp, short square and chirp features, and the adaptation ratios, which agree
-    within 1% for only 4 to 53% of cells). Reading (b) uses the paper's values throughout. The 50% rule
+    least half of the cells (38 features computed for both species; 39 for the human cells alone, which
+    agree within 1% for 53 to 98% of cells), and the paper's values for the others (custom features the
+    paper did not release, ramp, short square and chirp features, and five adaptation ratios, which agree
+    within 1% for only 4 to 37% of cells). Reading (b) uses the paper's values throughout. The 50% rule
     is an assumption of this attempt; the claims file's O1 does not say when a recomputed feature counts
-    as computed.
+    as computed. Two variants of reading (a) are shown, (a') with the features extracted without the Methods'
+    500 ms rms noise criterion, and (a, ratios) with the adaptation ratios computed here, for figs3a,
+    fig6d and fig3g; neither changes an outcome except (a') for fig2c-subclass-ephys-differences, where
+    a change is proposed.
   - Cell labels (t-type, subclass, layer, region, donor) come from the paper's cell table through the
     link claim dandiset-cell-link.
 - claim: mouse-cell-link
@@ -555,11 +674,11 @@ outcomes:
   notebook: morphology_tables.ipynb
   output: claim:figs6a-tumor-dendrite-branching
   blocked_by: metadata_insufficient
-  notes: The public cell table gives a medical condition for 20 of the 78 reconstructed cells (13 epileptic,
-    7 not); the code read the conditions of all donors from the Allen Institute's donor database. On these
-    20 cells the dendrite branch count is higher in non-epileptic donors (median 37 against 26) with FDR
-    p = 0.94, and the check within MTG LAMP5 cells cannot be run, as only epileptic donors are labelled
-    there.
+  notes: The public cell table gives a medical condition for 20 of the 71 reconstructed strict-set cells
+    with an L1 t-type (13 epileptic, 7 not; 51 have none); the code read the conditions of all donors
+    from the Allen Institute's donor database. On these 20 cells the dendrite branch count is higher in
+    non-epileptic donors (median 37 against 26) with FDR p = 0.94, and the check within MTG LAMP5 cells
+    cannot be run, as only epileptic donors are labelled there.
 - claim: fig3b-l1-cytoarchitecture
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -665,10 +784,9 @@ findings:
     the table gives M. Ages are stated as whole years times 365 days. The species is written as Homo Sapiens
     in 192 files and Homo sapiens in 18.
 - kind: data_missing
-  statement: The dandiset holds only the 210 Seattle cells of the paper's primary set. The Amsterdam and
-    Szeged recordings (62 cells of the strict L1 set, 136 in the paper's table), which the paper uses
-    as held-out validation (Fig. S8B) and in its LAMP5 t-type analysis, are not in it, and the paper names
-    no other deposit of them.
+  statement: The dandiset holds only the 210 Seattle cells of the paper's primary set. The 50 Amsterdam
+    (22) and Szeged (28) cells of the strict L1 set, which the paper uses as held-out validation (Fig.
+    S8B) and in its LAMP5 t-type analysis, are not in it, and the paper names no other deposit of them.
 - kind: selection_undocumented
   statement: The dandiset holds exactly the paper's primary set P, the Seattle cells of the strict L1
     set (soma in L1 or within 40 um of the L1/L2 border) whose long square features were extracted. The
@@ -676,16 +794,17 @@ findings:
     paper's table are not deposited, and the dandiset's description does not say how the cells were selected.
 - kind: metadata_insufficient
   statement: The donor medical condition is given in the public cell table for only 86 of the 194 cells
-    of P in L1 t-types and 20 of the 78 reconstructed strict-set cells; the paper's code read it from
-    the Allen Institute's donor database. The claims on medical condition cannot be repeated on the paper's
-    cells.
+    of P in L1 t-types and 20 of the 71 reconstructed strict-set cells with an L1 t-type; the paper's
+    code read it from the Allen Institute's donor database. The claims on medical condition cannot be
+    repeated on the paper's cells.
 - kind: methods_unavailable
   statement: Several features the claims rest on (irregularity ratio, depolarizing sag, ADP slope and
     voltage, sag time to peak and time constant, the ramp, short square and chirp features) come from
     code the Methods say will be released in a future IPFX version; it is not in IPFX 2.1.2 nor in the
     code repository. The adaptation ratios computed here from the Methods' definition (third over first
     spike on the lowest step with at least 4 spikes) agree with the paper's values within 1% for only
-    4 to 53% of cells. The authors are asked whether the feature code can be released.
+    4 to 53% of cells (six ratios; 4 to 37% for the five not used). The authors are asked whether the
+    feature code can be released.
 - kind: methods_unavailable
   statement: The authors are asked what d' counts as high in Fig. 6A, where LAMP5 NMBR against LCP2 is
     said to be the only within-subclass pair with high d'. With the 2.2 grouping threshold it holds here
@@ -697,6 +816,14 @@ findings:
     Type I sums of squares, as the code calls anova_lm without its robust option. With every visual area,
     as the code takes the mouse cells, the AP height species effect is FDR p = 2.6e-38 under the first
     and 1.4e-43 under the second, on either side of the legend's 1e-38.
+- kind: methods_unavailable
+  statement: 'The authors are asked how the sweep QC criterion of rms noise below 0.5 mV over 500 ms (Methods,
+    Quality control) was measured. Measured with IPFX on the deposited files, it leaves out sweeps from
+    which the paper''s per-cell values were computed: in 7 of the 9 cells where IPFX falls back to a lower
+    sweep at rheobase + 40 pA and the value disagrees with the paper''s, the paper''s value comes from
+    a sweep that fails only this criterion here. Without it, 38 of the 39 recomputed features agree with
+    the paper''s values for more cells, and the initial firing rate difference across subclasses (Fig.
+    2C) has FDR p 3.9e-9 against 4.7e-7 with it.'
 - kind: code_mismatch
   statement: The Fig. S3A legend gives R2 = 0.74 for the upstroke adaptation ratio against sag. The code's
     regression (run_regressions, OLS with HC3) on the paper's own per-cell values over the cells of P
@@ -957,31 +1084,31 @@ verifications:
   - claim: fig1a-human-types-separated
     agrees: true
     outcome: blocked
-    reason: elsewhere claims the attempt did not run. Not data_missing; their inputs are public (B10).
+    reason: elsewhere claims the attempt did not run. Not data_missing.
     response: Outcome kept; the notes and the header table now say the claim was not attempted and that
       its inputs are public.
   - claim: fig1b-three-subclasses
     agrees: true
     outcome: blocked
-    reason: elsewhere claims the attempt did not run. Not data_missing; their inputs are public (B10).
+    reason: elsewhere claims the attempt did not run. Not data_missing.
     response: Outcome kept; the notes and the header table now say the claim was not attempted and that
       its inputs are public.
   - claim: fig1d-four-homology-subclasses
     agrees: true
     outcome: blocked
-    reason: elsewhere claims the attempt did not run. Not data_missing; their inputs are public (B10).
+    reason: elsewhere claims the attempt did not run. Not data_missing.
     response: Outcome kept; the notes and the header table now say the claim was not attempted and that
       its inputs are public.
   - claim: figs2a-patchseq-vs-snrnaseq
     agrees: true
     outcome: blocked
-    reason: elsewhere claims the attempt did not run. Not data_missing; their inputs are public (B10).
+    reason: elsewhere claims the attempt did not run. Not data_missing.
     response: Outcome kept; the notes and the header table now say the claim was not attempted and that
       its inputs are public.
   - claim: figs1d-marker-correlation
     agrees: true
     outcome: blocked
-    reason: elsewhere claims the attempt did not run. Not data_missing; their inputs are public (B10).
+    reason: elsewhere claims the attempt did not run. Not data_missing.
     response: Outcome kept; the notes and the header table now say the claim was not attempted and that
       its inputs are public.
   - claim: fig3d-morphology-species
@@ -993,37 +1120,37 @@ verifications:
   - claim: figs3c-size-similar
     agrees: true
     outcome: blocked
-    reason: elsewhere claims the attempt did not run. Not data_missing; their inputs are public (B10).
+    reason: elsewhere claims the attempt did not run. Not data_missing.
     response: Outcome kept; the notes and the header table now say the claim was not attempted and that
       its inputs are public.
   - claim: figs3g-morphology-input-resistance
     agrees: true
     outcome: blocked
-    reason: elsewhere claims the attempt did not run. Not data_missing; their inputs are public (B10).
+    reason: elsewhere claims the attempt did not run. Not data_missing.
     response: Outcome kept; the notes and the header table now say the claim was not attempted and that
       its inputs are public.
   - claim: figs3e-k-channel-genes
     agrees: true
     outcome: blocked
-    reason: elsewhere claims the attempt did not run. Not data_missing; their inputs are public (B10).
+    reason: elsewhere claims the attempt did not run. Not data_missing.
     response: Outcome kept; the notes and the header table now say the claim was not attempted and that
       its inputs are public.
   - claim: fig4c-mc4r-genes
     agrees: true
     outcome: blocked
-    reason: elsewhere claims the attempt did not run. Not data_missing; their inputs are public (B10).
+    reason: elsewhere claims the attempt did not run. Not data_missing.
     response: Outcome kept; the notes and the header table now say the claim was not attempted and that
       its inputs are public.
   - claim: fig5c-cacna1g
     agrees: true
     outcome: blocked
-    reason: elsewhere claims the attempt did not run. Not data_missing; their inputs are public (B10).
+    reason: elsewhere claims the attempt did not run. Not data_missing.
     response: Outcome kept; the notes and the header table now say the claim was not attempted and that
       its inputs are public.
   - claim: fig6c-subclass-distinctness-species
     agrees: true
     outcome: blocked
-    reason: elsewhere claims the attempt did not run. Not data_missing; their inputs are public (B10).
+    reason: elsewhere claims the attempt did not run. Not data_missing.
     response: Outcome kept; the notes and the header table now say the claim was not attempted and that
       its inputs are public.
   - claim: fig1e-subclass-proportions
@@ -1035,3 +1162,310 @@ verifications:
       holds only cells of the 8 mouse L1 t-types (547 rows, none of a deeper t-type), while the test counts
       every mouse patch-seq cell with soma in L1, deeper t-types included, from metadata the code reads
       from Allen Institute servers; the test cannot be formed from the public tables.
+- date: '2026-10-31'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2. The full executed notebooks, with the conclusion cells, the summaries and the attempt
+    record, the helper module and the claims file, with the paper. The verifier agreed with 39 outcomes
+    and disagreed with two (fig2c-lamp5-gradient and fig6a-ephys-dprime-subclass-structure, which it would
+    give as not_reproduced), asked for the sweep at rheobase + 40 pA to be checked for fig2c-subclass-ephys-differences,
+    reported a possible misreading for fig5d-mouse-pax6-doublets, and listed sentences the outputs do
+    not support. Report in transcripts/000630/verifier-2-report.md.
+  results:
+  - claim: dandiset-cell-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. The notes overstate in places: the 39 features range from 53% to 98% (peak_v_adapt_ratio
+      0.534 is among them) and the five excluded ratios agree for 4% to 37%; R c15 gives Spearman 0.886
+      to 0.997, not 0.92 to 1.00; R c19 gives 50 Amsterdam and Szeged cells, the other 12 of the 62 being
+      Seattle cells that failed feature extraction.'
+    response: Notes and notebook corrected to 53 to 98% for the 39 features, 4 to 37% for the five ratios,
+      Spearman 0.886 to 0.997, and 50 Amsterdam and Szeged cells plus 12 Seattle cells that failed feature
+      extraction. The notebook now also lists the cells whose sweep at rheobase + 40 pA is IPFX's fallback.
+  - claim: patchseq-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig2c-subclass-ephys-differences
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees, with caveats. Reading (a) decides partial over reproduced, and its hero sweep looks
+      wrong in some cells: in R c17 the computed rheobase + 40 pA sweep is at the rheobase itself or only
+      10 pA above it in 6 of the 31 listed cells, against the helper''s docstring of 39 to 61 pA above
+      rheobase; either stim_amp_hero is mis-indexed or the wrong sweep is used, and this should be checked
+      before the partial outcome stands. Leaving out one donor raises first_isi_inv_hero''s uncorrected
+      p to 3.5e-5, which the record does not mention. The fig2c breakdown of the 28 cells is not printed,
+      so mostly is unsupported, and in R c17 only 16 of 31 cells are explained by sweep choice.'
+    response: 'Checked. The index is right: the 6 cells are IPFX''s own fallback (find_hero_sweep takes
+      the spiking sweep closest to rheobase + 39 pA when none passing QC is 39 to 61 pA above rheobase),
+      now described in the helper''s docstring. In 7 of the 16 fallback cells the value agrees with the
+      paper''s; in 7 of the 9 that disagree the paper''s value comes from a sweep in range that fails
+      here only the Methods'' 500 ms rms noise criterion. Extracted without that criterion (variant a''),
+      38 of 39 features agree with the paper''s values for more cells and first_isi_inv_hero has FDR p
+      3.9e-9, so reproduced is proposed, resting on that assumption, and the authors are asked how the
+      noise was measured. The breakdown for the 28 cells is printed (10 another repeat, 6 another amplitude,
+      10 no sweep gives the paper''s value, 2 one side only) and the text no longer says mostly; the leave-one-donor-out
+      p of 3.5e-5 is stated.'
+  - claim: fig2b-subclass-ephys-profiles
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Its verifications entry reads agrees true / No change needed, while its outcome notes
+      say the first run recorded not_reproduced; one of the two is inaccurate about the round-1 state.
+    response: 'Both are accurate: the not_reproduced outcome was recorded by the first author run, before
+      the reader''s answer and before any verification; the run after the answer recorded reproduced,
+      which round 1 reviewed. The notes now say so.'
+  - claim: figs3a-sag-adaptation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome is unaffected. In reading (a) the ratio is the paper's value (upstroke_adapt_ratio
+      is not in COMPUTED), so R2 = 0.334 is computed sag against the paper's ratio, and the 0.149 row
+      uses the computed ratio, so it compares data sources as well as order. The deviation that says the
+      ratio is computed here, so the outcome is also shown on the paper's values, has it backwards; regression
+      on the computed third-over-first ratio is never shown. The direction question is with a reader.
+    response: 'Notes, deviation and notebook corrected: reading (a) is sag computed here with the paper''s
+      ratio (R2 0.334); the regression on the ratio computed here is now shown in both orders (0.204 third
+      over first, 0.149 first over third), and variant (a'') gives 0.346.'
+  - claim: fig2c-lamp5-gradient
+    agrees: false
+    outcome: not_reproduced
+    reason: Neither criterion names a partial level. The record changed fig4b-adarb2, fig4d and fig5d
+      to not_reproduced on exactly that ground, so this claim should follow the same rule; sag misses
+      0.001 under every reading.
+    response: Kept as partially_reproduced, as round 2 may not change an outcome; not_reproduced is proposed
+      for a third round with that reason. Variant (a') also misses (sag FDR p 0.015).
+  - claim: figs6-donor-condition-ephys
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed; variant (a') gives the same.
+  - claim: figs6c-region-ephys
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed; variant (a') gives the same.
+  - claim: fig4b-mc4r-sag-irregularity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed; variant (a') gives the same.
+  - claim: fig4b-adarb2-irregular-firing
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change needed; variant (a') gives the same.
+  - claim: fig5b-tnfaip8l3-ephys
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed; variant (a') gives the same.
+  - claim: fig6a-ephys-dprime-subclass-structure
+    agrees: false
+    outcome: not_reproduced
+    reason: Neither criterion names a partial level, and the record changed fig4b-adarb2, fig4d and fig5d
+      to not_reproduced on exactly that ground, so this claim should follow the same rule; the second
+      reading of high fails.
+    response: Kept as partially_reproduced, as round 2 may not change an outcome; not_reproduced is proposed
+      for a third round with that reason. Variant (a') gives the same d' pattern.
+  - claim: fig6d-gmm-subclass-f1
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The record's sentence that on the paper's values the four combinations give LAMP5
+      0.785 to 0.806, all others 0.490 to 0.526 covers both feature readings; on the paper's values alone
+      (R c57) they are LAMP5 0.802 to 0.806, MC4R 0.693 to 0.712, PAX6 0.892 to 0.896, all others 0.495
+      to 0.506. Reading (a) never uses the computed adaptation ratios, although O1 treats them as computable,
+      and the effect is unshown here, where upstroke_adapt_ratio is among the best features; an outcome
+      change is unlikely.
+    response: Notes corrected to the paper's values alone. The search now also runs with the adaptation
+      ratios computed here (0.825, 0.694, 0.892, 0.511) and in variant (a') (0.806, 0.703, 0.892, 0.519),
+      all within tolerance.
+  - claim: figs8a-classifier-cv
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Random-forest and cross-validation seeds are reasonable.
+    response: No change needed; variant (a') gives 79.4 to 85.0%, within tolerance.
+  - claim: figs8b-classifier-holdout
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The notes' session_id PLACEHOLDER is not printed; R c63 shows only 0 files with a
+      numeric session id.
+    response: 'The notebook now prints the session part of the paths: 000228 paths carry none, and PLACEHOLDER
+      is in 8 of the 21 paths of 000337. The notes and the reader question are corrected.'
+  - claim: fig3d-ephys-species
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (VISp, both O2 readings partial). The deviation block says 39 features where M c6 uses
+      38 for both species.
+    response: Deviation corrected to 38 features for both species. Variant (a') gives the same.
+  - claim: fig3e-tea-validation
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig3f-a-type-conductance
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig3g-variability-dimensions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The deviation block says 39 features where M c6 uses 38. Reading (a) never uses the
+      computed adaptation ratios, and the effect is unshown here, where upstroke_adapt_ratio is among
+      the best features; an outcome change is unlikely.
+    response: Deviation corrected to 38. The test now also runs with the adaptation ratios computed here
+      (upstroke ratio epsilon2 0.43 in human, 0.18 in mouse) and in variant (a'); both parts hold in each.
+  - claim: fig4d-mouse-no-rosehip-ephys
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The deviation block says 39 features where M c6 uses 38.
+    response: Deviation corrected to 38. Variant (a') gives the same.
+  - claim: fig5d-mouse-pax6-doublets
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees, but the criterion may misread the paper: it requires Lamp5 Krt73''s initial firing
+      rate to exceed every other mouse subclass, L1 VIP included, where the paper says only that these
+      cells tended to fire in doublets at stimulus onset. This is the comparison a reader removed from
+      fig2b part (iii); the outcome fails only on it (97.7 Hz against L1 VIP''s 171 Hz). It should go
+      to a reader. The deviation block says 39 features where M c6 uses 38.'
+    response: Asked of a reader in questions/000630.yaml; the claim and outcome are unchanged, and the
+      notes say both parts would hold under the narrower reading. Deviation corrected to 38.
+  - claim: mouse-cell-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig6b-dprime-correlation
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig2d-subclass-morphology
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The threshold the claims file does not give is reasonable, taken from the legends.
+    response: No change needed.
+  - claim: fig4b-mc4r-axon
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The threshold is reasonable, taken from the legend.
+    response: No change needed.
+  - claim: fig5b-tnfaip8l3-dendrites
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The threshold is reasonable, taken from the legend.
+    response: No change needed.
+  - claim: figs6a-tumor-dendrite-branching
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The notes say 20 of the 78 reconstructed cells, where Mo c13 counts 51 missing plus
+      20 known, which is 71 cells; Mo c2 says 71 cells with morphology in the strict L1 set where Mo c1
+      prints 78.
+    response: 'Corrected: 20 of the 71 reconstructed strict-set cells with an L1 t-type (Mo c13), and
+      78 cells with morphology in the strict set (Mo c1), in the notes, the notebook and the finding.'
+  - claim: fig3b-l1-cytoarchitecture
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig1a-human-types-separated
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The 12 not-attempted elsewhere claims carry their inputs are public (B10), which the
+      verifier said only for fig6b and fig3d-morphology; its round-1 reason for the 13 not-attempted claims
+      was that they were not data_missing.
+    response: No outcome change. The round-1 reason is corrected to the verifier's words (not attempted,
+      not data_missing); the point that the inputs are public stays in the claim's notes as the author's.
+  - claim: fig1b-three-subclasses
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The 12 not-attempted elsewhere claims carry their inputs are public (B10), which the
+      verifier said only for fig6b and fig3d-morphology; its round-1 reason for the 13 not-attempted claims
+      was that they were not data_missing.
+    response: No outcome change. The round-1 reason is corrected to the verifier's words (not attempted,
+      not data_missing); the point that the inputs are public stays in the claim's notes as the author's.
+  - claim: fig1d-four-homology-subclasses
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The 12 not-attempted elsewhere claims carry their inputs are public (B10), which the
+      verifier said only for fig6b and fig3d-morphology; its round-1 reason for the 13 not-attempted claims
+      was that they were not data_missing.
+    response: No outcome change. The round-1 reason is corrected to the verifier's words (not attempted,
+      not data_missing); the point that the inputs are public stays in the claim's notes as the author's.
+  - claim: fig1e-subclass-proportions
+    agrees: true
+    outcome: blocked
+    reason: Agrees with caveat. The reason fits the outputs (the public mouse table has no deeper t-types);
+      whether any other public mouse patch-seq metadata gives t-types for the deeper cells was not checked.
+    response: Not checked in this round; the outcome is kept.
+  - claim: figs2a-patchseq-vs-snrnaseq
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The 12 not-attempted elsewhere claims carry their inputs are public (B10), which the
+      verifier said only for fig6b and fig3d-morphology; its round-1 reason for the 13 not-attempted claims
+      was that they were not data_missing.
+    response: No outcome change. The round-1 reason is corrected to the verifier's words (not attempted,
+      not data_missing); the point that the inputs are public stays in the claim's notes as the author's.
+  - claim: figs1d-marker-correlation
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The 12 not-attempted elsewhere claims carry their inputs are public (B10), which the
+      verifier said only for fig6b and fig3d-morphology; its round-1 reason for the 13 not-attempted claims
+      was that they were not data_missing.
+    response: No outcome change. The round-1 reason is corrected to the verifier's words (not attempted,
+      not data_missing); the point that the inputs are public stays in the claim's notes as the author's.
+  - claim: fig3d-morphology-species
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The 12 not-attempted elsewhere claims carry their inputs are public (B10), which the
+      verifier said only for fig6b and fig3d-morphology; its round-1 reason for the 13 not-attempted claims
+      was that they were not data_missing.
+    response: No change needed; for this claim the verifier did say its inputs are public.
+  - claim: figs3c-size-similar
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The 12 not-attempted elsewhere claims carry their inputs are public (B10), which the
+      verifier said only for fig6b and fig3d-morphology; its round-1 reason for the 13 not-attempted claims
+      was that they were not data_missing.
+    response: No outcome change. The round-1 reason is corrected to the verifier's words (not attempted,
+      not data_missing); the point that the inputs are public stays in the claim's notes as the author's.
+  - claim: figs3g-morphology-input-resistance
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The 12 not-attempted elsewhere claims carry their inputs are public (B10), which the
+      verifier said only for fig6b and fig3d-morphology; its round-1 reason for the 13 not-attempted claims
+      was that they were not data_missing.
+    response: No outcome change. The round-1 reason is corrected to the verifier's words (not attempted,
+      not data_missing); the point that the inputs are public stays in the claim's notes as the author's.
+  - claim: figs3e-k-channel-genes
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The 12 not-attempted elsewhere claims carry their inputs are public (B10), which the
+      verifier said only for fig6b and fig3d-morphology; its round-1 reason for the 13 not-attempted claims
+      was that they were not data_missing.
+    response: No outcome change. The round-1 reason is corrected to the verifier's words (not attempted,
+      not data_missing); the point that the inputs are public stays in the claim's notes as the author's.
+  - claim: fig4c-mc4r-genes
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The 12 not-attempted elsewhere claims carry their inputs are public (B10), which the
+      verifier said only for fig6b and fig3d-morphology; its round-1 reason for the 13 not-attempted claims
+      was that they were not data_missing.
+    response: No outcome change. The round-1 reason is corrected to the verifier's words (not attempted,
+      not data_missing); the point that the inputs are public stays in the claim's notes as the author's.
+  - claim: fig5c-cacna1g
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The 12 not-attempted elsewhere claims carry their inputs are public (B10), which the
+      verifier said only for fig6b and fig3d-morphology; its round-1 reason for the 13 not-attempted claims
+      was that they were not data_missing.
+    response: No outcome change. The round-1 reason is corrected to the verifier's words (not attempted,
+      not data_missing); the point that the inputs are public stays in the claim's notes as the author's.
+  - claim: fig6c-subclass-distinctness-species
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The 12 not-attempted elsewhere claims carry their inputs are public (B10), which the
+      verifier said only for fig6b and fig3d-morphology; its round-1 reason for the 13 not-attempted claims
+      was that they were not data_missing.
+    response: No outcome change. The round-1 reason is corrected to the verifier's words (not attempted,
+      not data_missing); the point that the inputs are public stays in the claim's notes as the author's.

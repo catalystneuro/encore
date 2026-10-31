@@ -22,8 +22,10 @@ Where the parameters come from:
   hyperpolarizing long squares between -10 and -90 pA (IPFX LongSquareAnalysis with
   subthresh_min_amp = -100, which keeps amplitudes above -100 pA); sag on the hyperpolarizing
   sweep whose response is closest to -100 mV (IPFX); rheobase and f-I slope; spike train
-  features on the rheobase sweep and the sweep 40 pA above it (IPFX's "hero" sweep, 39 to
-  61 pA above rheobase); single spike features of the first spike; the initial firing rate
+  features on the rheobase sweep and the sweep 40 pA above it (IPFX's "hero" sweep, the
+  lowest spiking sweep 39 to 61 pA above rheobase; where no sweep passing QC is in that range,
+  IPFX takes the spiking sweep closest to rheobase + 39 pA, which can be the rheobase sweep);
+  single spike features of the first spike; the initial firing rate
   as the inverse of the first ISI; adaptation ratios between the first and third spike (and
   the first and third ISI) on the lowest amplitude long square with at least 4 spikes.
 - The order of the adaptation ratio (third over first, or first over third) is not given by
@@ -32,7 +34,9 @@ Where the parameters come from:
 - Sweep quality control follows the Methods' criteria as far as the files allow: the bias
   (leak) current within 0 +/- 100 pA, and the rms noise of the pre-stimulus baseline below
   0.2 mV over 1.5 ms and below 0.5 mV over 500 ms. The criterion "within 2 mV of target" needs
-  the target potential, which the files do not state; it is not applied (a deviation).
+  the target potential, which the files do not state; it is not applied (a deviation). A
+  variant (`slow_noise_variant`) extracts the features without the 500 ms noise criterion, as
+  the paper's own per-cell values show its pipeline kept sweeps that fail it as measured here.
 - Which computed features enter reading (a) (`hybrid_table`) is chosen in the notebook: those
   within 1% of the paper's value for at least half of the cells. This is an assumption; the
   claims file's O1 does not say when a recomputed feature counts as computed.
@@ -243,7 +247,7 @@ def read_file(url: str) -> dict:
     return out
 
 
-def sweep_qc(sw: dict) -> dict:
+def sweep_qc(sw: dict, max_rms_long_mv: float = MAX_RMS_LONG_MV) -> dict:
     """The Methods' sweep QC criteria that the files allow (see the module docstring), measured
     with IPFX's sweep QC functions: rms noise over 1.5 ms at the start of the experiment epoch
     (pre_noise_rms_mv) and over 500 ms before the stimulus (slow_noise_rms_mv), the bias current,
@@ -279,7 +283,7 @@ def sweep_qc(sw: dict) -> dict:
         not integrity
         and (np.isnan(leak) or abs(leak) <= MAX_LEAK_PA)
         and q["pre_noise_rms_mv"] is not None and q["pre_noise_rms_mv"] < MAX_RMS_SHORT_MV
-        and q["slow_noise_rms_mv"] is not None and q["slow_noise_rms_mv"] < MAX_RMS_LONG_MV)
+        and q["slow_noise_rms_mv"] is not None and q["slow_noise_rms_mv"] < max_rms_long_mv)
     return out
 
 
@@ -328,8 +332,9 @@ def _patch_ipfx():
     _PATCHED = True
 
 
-def extract_features(rec: dict) -> dict:
-    """IPFX long square features of one cell, named as in the paper's table."""
+def extract_features(rec: dict, max_rms_long_mv: float = MAX_RMS_LONG_MV) -> dict:
+    """IPFX long square features of one cell, named as in the paper's table. `max_rms_long_mv`
+    is the sweep QC limit on the rms noise over 500 ms (Methods: 0.5 mV); a variant lifts it."""
     from ipfx.sweep import Sweep, SweepSet
     import ipfx.stim_features as stf
     import ipfx.data_set_features as dsf
@@ -360,7 +365,7 @@ def extract_features(rec: dict) -> dict:
             after = np.abs(sw["i"][i0 + 10:] - pre) < 0.5 * abs(step)
             if abs(step) > 0 and after.any():
                 dur = (np.argmax(after) + 10) / sw["rate"]
-        q = sweep_qc(sw)
+        q = sweep_qc(sw, max_rms_long_mv)
         qcs.append(q)
         if not q["passed"]:
             continue
@@ -466,10 +471,14 @@ def extract_features(rec: dict) -> dict:
     return out
 
 
-def cell_features(url: str) -> dict:
-    """Metadata, stimulus code counts and features of one file."""
+def cell_features(url: str, slow_noise_variant: bool = False) -> dict:
+    """Metadata, stimulus code counts and features of one file. With `slow_noise_variant`, the
+    features are also extracted without the 500 ms rms noise criterion, under names prefixed
+    with "noslow__"."""
     rec = read_file(url)
     feats = extract_features(rec)
+    if slow_noise_variant:
+        feats.update({f"noslow__{k}": v for k, v in extract_features(rec, np.inf).items()})
     meta = {k: rec[k] for k in ["cell_name", "session_id", "subject_id", "sex", "age", "species",
                                 "institution", "session_start"]}
     meta["n_ccs_codes"] = len(rec["codes"])
@@ -477,11 +486,11 @@ def cell_features(url: str) -> dict:
     return {**meta, **feats}
 
 
-def all_cell_features(assets: pd.DataFrame, workers: int = 8) -> pd.DataFrame:
+def all_cell_features(assets: pd.DataFrame, workers: int = 8, slow_noise_variant: bool = False) -> pd.DataFrame:
     """`cell_features` for every asset, streamed in parallel threads."""
     def one(row):
         try:
-            return {"path": row.path, **cell_features(row.url)}
+            return {"path": row.path, **cell_features(row.url, slow_noise_variant)}
         except Exception as e:  # a file that cannot be read is reported, not skipped silently
             return {"path": row.path, "error": f"read failed: {type(e).__name__}: {e}"}
     with ThreadPoolExecutor(workers) as ex:
