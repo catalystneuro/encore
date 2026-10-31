@@ -17,7 +17,11 @@ electrodes in alternation. The data of Figures 2, 3 and 5 are not in it.
 
 The field map of the paper's simulation is not deposited; it is computed here from the geometry
 the paper states and the electrode positions measured in the images. The file does not say which
-base electrode was pulsed in the single-pulse image. The attempt record, with the reasons and the
+base electrode was pulsed in the single-pulse image; it is taken from the labels of the paper's
+Figure 4A, assuming the image is not mirrored. The single-pulse file's description gives the
+settings of another exposure, and the file is taken as Figure 4A from its name and its image. For
+the comet shape, one bright object in both channels, likely debris, is left out before the
+maximum is taken; with it the region is empty. The attempt record, with the reasons and the
 differences from the paper's method, is
 [`attempts/000633-kim-2023-01.yaml`](../../attempts/000633-kim-2023-01.yaml).
 

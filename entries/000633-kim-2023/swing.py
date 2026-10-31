@@ -31,6 +31,9 @@ Where the parameters come from:
 - The readings of the criteria (distances of 100 and 500 um from the footprint edge, half and
   quarter maximum, Spearman correlation, the order of the electrode neighbourhoods) are the claims
   file's.
+- `DEBRIS_FACTOR = 10`: objects with MemBrite above ten times the dish median are left out before
+  the maximum of the comet claim is taken (an assumption; the notebook shows 5 and 20 too).
+  `DEBRIS_DILATE` is a standard choice.
 - The field map is computed here (`field_map`), as the paper's Sim4Life map (Methods 4.3) is not
   deposited. Electrodes span the 3.5 mm solution from the glass up, so the field in the plane
   1 um above the glass is the two-dimensional field between three equipotential discs of 1.5 mm
@@ -395,3 +398,55 @@ def roi_field(mag, origin, h, centres, um_per_bin, side_um=ROI_UM):
     for x, y in centres:
         out.append(np.mean(sample(mag, origin, h, x * um_per_bin + dx.ravel(), y * um_per_bin + dy.ravel())))
     return np.array(out)
+
+
+def thin_rois(centres, um_per_bin, step_um, side_um=ROI_UM):
+    """Indices of the ROIs of a contiguous grid (from `roi_grid`) that lie on a coarser grid of
+    spacing `step_um`, so that neighbouring ROIs kept are `step_um` apart. Used to test a rank
+    correlation with fewer, less spatially dependent ROIs (the spacing is a choice; the notebook
+    shows two)."""
+    side = side_um / um_per_bin
+    k = int(round(step_um / side_um))
+    ix = np.round((centres[:, 0] - centres[:, 0].min()) / side).astype(int)
+    iy = np.round((centres[:, 1] - centres[:, 1].min()) / side).astype(int)
+    return np.nonzero((ix % k == 0) & (iy % k == 0))[0]
+
+
+# ---------------------------------------------------------------- bright objects off the monolayer
+
+DEBRIS_FACTOR = 10.0   # MemBrite above this multiple of the dish median marks an object (assumption)
+DEBRIS_DILATE = 3      # binned pixels (about 30 um) added around each object (standard choice)
+
+
+def load_crop(url, x0, y0, x1, y1):
+    """Full-resolution crop (channel, y, x) of the stitched image, streamed from the archive."""
+    f = h5py.File(remfile.File(url), "r")
+    c = f[DATA_PATH][y0:y1, x0:x1, :]
+    f.close()
+    return np.moveaxis(c, 2, 0)
+
+
+def debris_mask(membrite, valid, factor=DEBRIS_FACTOR, dilate=DEBRIS_DILATE):
+    """Binned pixels on objects that are bright in the MemBrite channel: above `factor` times the
+    median MemBrite inside `valid`, grown by `dilate` binned pixels. MemBrite stains the membranes
+    of all cells about evenly, so an object many times brighter than the monolayer in it is not a
+    monolayer cell (an assumption: the notebook shows the brightest such object at full resolution,
+    and how the result changes with `factor`)."""
+    from scipy.ndimage import binary_dilation
+    m = membrite > factor * np.median(membrite[valid])
+    if dilate:
+        m = binary_dilation(m, iterations=dilate)
+    return m
+
+
+def masked_mean_filter(img, mask, size):
+    """Mean of `img` over a `size` x `size` window, using only pixels inside `mask` (normalised
+    convolution), so that masked-out pixels (footprints, the dark corners, objects) do not enter
+    the mean. NaN outside `mask`."""
+    from scipy.ndimage import uniform_filter
+    w = uniform_filter(mask.astype(float), size)
+    s = uniform_filter(np.where(mask, img, 0.0), size)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        out = s / w
+    out[~mask] = np.nan
+    return out
