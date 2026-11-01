@@ -352,6 +352,14 @@ def test_the_dashboard_counts_each_dandiset_from_its_first_attempt():
     assert list(p["series"]) == ["all"]
     panel = site.progress_panel(data)
     assert 'data-metric="findings"' in panel and "data-subset" not in panel
+    # Attempts are also counted by protocol version, in version order, with "not recorded" last.
+    data["attempts"][0]["agent"] = {"protocol": "pilot-10"}
+    data["attempts"][2]["agent"] = {"protocol": "pilot-9"}
+    p = site.progress_data(data)
+    assert p["protocols"] == ["pilot-9", "pilot-10", "not recorded"]
+    every = p["series"]["all"]
+    assert every["protocol:pilot-10"] == [1, 0, 0] and every["protocol:pilot-9"] == [0, 0, 1]
+    assert every["protocol:not recorded"] == [1, 0, 0]
 
 
 def test_the_overview_shows_the_dashboard(built):
