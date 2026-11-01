@@ -10,14 +10,14 @@ to 001035 (Figures 1 and 2) and 001272 (Figure S1).
 | Claim | Outcome |
 |---|---|
 | TTX experiment replicated in at least 4 neurons, with vehicle controls | Reproduced |
-| Before TTX, APs at lower fields and sustained depolarization at the highest | Partially reproduced (change to not reproduced proposed) |
+| Before TTX, APs at lower fields and sustained depolarization at the highest | Not reproduced |
 | Sustained depolarization reverses when the stimulus ends | Blocked: other |
 | TTX abolishes the APs | Blocked: methods underspecified |
 | TTX blocks the sustained depolarization | Blocked: other |
 | Vehicle neurons keep firing and depolarization | Blocked: methods underspecified |
 | Typical APs 11.3% dF high and 8 ms long | Blocked: methods underspecified |
 | Adiabatic heating 2.5, 1.24 and 4.1 C | Blocked: methods underspecified |
-| 2-s sine wave in NaGlu, firing for the whole wave, then block (001030) | Partially reproduced (change to not reproduced proposed) |
+| 2-s sine wave in NaGlu, firing for the whole wave, then block (001030) | Not reproduced |
 | Pure sine waves excite every neuron, ceiling 60 to 90 Hz (001032 to 001035) | Not reproduced |
 | 20-kHz thresholds about twice the 2-kHz ones | Not reproduced |
 | Modulated thresholds higher; 2-kHz threshold 57.7 V/cm | Not reproduced |

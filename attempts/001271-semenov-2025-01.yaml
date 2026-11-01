@@ -50,11 +50,11 @@ outcomes:
     20 to 60 s between sessions and the TTX neurons' gaps before TTX are 3.6 to 10.0 minutes). Three vehicle-labelled
     neurons have no such gap and count as having no change. Reading (a) does not depend on it.
 - claim: figs2-before-firing-then-depolarization
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_semenov_2025.ipynb
   output: claim:figs2-before-firing-then-depolarization
-  notes: Each of the 24 combinations of the claims file's readings (O1 to O4) gives not reproduced, and the criterion
-    has no partial outcome. Firing before the change holds under some readings only. With O1(a) every neuron fires
+  notes: Each of the 16 combinations of the claims file's readings (O1 to O4) gives not reproduced, and the criterion
+    has no partial outcome; the 8 rows of the whole-frame variant fail too. Firing before the change holds under some readings only. With O1(a) every neuron fires
     with the 5% height (20 of 20) and 18 or 19 of 20 with the 5-SD height, and 18 to 20 have APs without sustained
     depolarization at a lower field; with O1(b) all 7 fire with the 5% height and 1 of 7 with the 5-SD height. No
     neuron shows sustained depolarization (O4) at its highest field under any reading (0 of 20; 0 of 7 under
@@ -67,13 +67,6 @@ outcomes:
     claims file's measure, which cannot detect plateaus of this size in these recordings; the failed part says the
     measure finds none, not that the data show none. The maximum firing rate rises with field in most neurons
     (tables in the notebook). Whether O4 suits these data is asked of a reader (questions/001271.yaml).
-  proposed:
-    outcome: not_reproduced
-    reason: Every one of the 24 claims-file readings gives not reproduced (notebook, the table of this claim), and
-      the criterion has no partial outcome; firing in every neuron also fails under the 5-SD height (18 or 19 of 20
-      neurons with O1(a), 1 of 7 with O1(b)). The round-2 verifier gives not_reproduced for this reason. The failure
-      rests on O4, whose levels are above the plateaus of these recordings, so the claims file's measure cannot
-      detect them; this is asked of a reader.
   deviations:
   - The files hold 16 x 16 crops and no soma outline, where the paper drew the soma on 64 x 64 images; the claims
     file's ROI readings O1 were run as written. The Otsu component nearest the centre is often a few pixels of bright
@@ -320,12 +313,12 @@ outcomes:
   deviations:
   - Calculated from the paper's values; no data used.
 - claim: fig3c-sustained-firing-2s
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_fig3c_001030.ipynb
   output: claim:fig3c-sustained-firing-2s
   notes: Each of the 48 combinations of the claims file's readings gives not reproduced, and the criterion has no
-    partial outcome. The first two parts hold with the O1(a) ROI. Under every F0, height and bleaching reading, c7
-    (the cell with six fields, 1.0 to 2.3 V) has APs in the last 250 ms of the 2-s wave at an intermediate field and
+    partial outcome. The first two parts fail only with O1(b) and the 5-SD height; with O1(b) and the 5% height
+    both remaining cells meet both. With O1(a), under every F0, height and bleaching reading, c7 (the cell with six fields, 1.0 to 2.3 V) has APs in the last 250 ms of the 2-s wave at an intermediate field and
     an AP count that rises from its lowest field; with the 5% height all four cells do, and with the 5-SD height 1
     to 3 cells meet the first part and 3 or 4 the second. With O1(b) and the 5-SD height no cell meets the first
     part. The third part fails in every reading, in the claims file's ROIs and the whole frame. No cell's highest field meets sustained depolarization
@@ -338,13 +331,6 @@ outcomes:
     13.73% with the raw reference under O1(a), F0 all, 5-SD height). In the whole frame reading (c) lets one cell,
     c8, meet all three parts with F0 over the last 20 ms (a variant). Whether O4, with its no-AP condition, suits
     the paper's firing block is asked of a reader (questions/001271.yaml).
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion gives not reproduced in all 48 claims-file readings (notebook, the table of this claim)
-      and has no partial outcome; the first two parts hold only with the O1(a) ROI (with O1(b) and the 5-SD height
-      no cell meets the first part), and the third part fails everywhere. The round-1 and round-2 verifiers give
-      not_reproduced. The failing part rests on O4, whose levels are above the plateau of c7 at 2.3 V (6.97 to
-      7.07% against 7.93 to 13.28% with the smoothed reference); this is asked of a reader.
   deviations:
   - Only c7 has an AP-free session for the bleaching correction; for the other cells readings (a) no correction
     and (b) subtracting c7's 1.0-V trace are both run. Reading (c) subtracts the reference after a 101-ms running
@@ -786,3 +772,36 @@ verifications:
     outcome: blocked
     reason: Blocked (other), not attempted.
     response: No change; depends on fig6-sine-less-than-pulse.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 3. Only the two proposed changes of outcome (figs2-before-firing-then-depolarization and
+    fig3c-sustained-firing-2s) and the analysis behind them in the executed notebooks, the attempt record and the
+    claims file of DANDI:001271, with the paper.
+  results:
+  - claim: figs2-before-firing-then-depolarization
+    agrees: true
+    outcome: not_reproduced
+    reason: The criterion fails in every reading (main notebook cell 26). In all 16 claims-file readings sd_at_top
+      is 0, so no neuron shows sustained depolarization (O4) at its highest field, where the criterion needs more
+      than half; the whole-frame variant also fails in its 8 rows. The firing part also fails in some readings (18
+      or 19 of 20 neurons with O1(a) and the 5-SD height, 1 of 7 with O1(b)). The criterion has no partial outcome,
+      so not_reproduced is the outcome it gives as written. The O4 measure matches the header, and its levels were
+      fixed by the claims file. One wording error, which does not change the outcome, the record says 24 claims-file
+      readings where there are 16; the other 8 rows are the whole-frame variant. Both failures mean that the claims
+      file's measure finds no sustained depolarization, not that the data have none.
+    response: Outcome set to not_reproduced and the proposal removed. The notes and the notebook conclusion now say
+      16 readings, with the 8 whole-frame rows apart; the round-2 verifier's "24" above is left as it gave it.
+  - claim: fig3c-sustained-firing-2s
+    agrees: true
+    outcome: not_reproduced
+    reason: All 48 readings give not reproduced (fig3c notebook cell 11), for both the any-cell and every-cell
+      readings; top_sd is 0 everywhere, and with the third part failing in all readings and no partial outcome,
+      not_reproduced is the criterion's result. The c7 numbers check against cell 14 (6.97 to 7.07% against O4
+      levels of 7.93 to 13.28% with the smoothed reference), and bleaching reading (c) was not chosen to reach this
+      result. One wrong sentence, which does not change the outcome, the proposed reason says the first two parts
+      hold only with the O1(a) ROI, but with O1(b) and the 5% height both remaining cells meet both parts; the first
+      two parts fail only with O1(b) and the 5-SD height.
+    response: Outcome set to not_reproduced and the proposal removed. The notes and the notebook conclusion now say
+      that the first two parts fail only with O1(b) and the 5-SD height, and that with O1(b) and the 5% height both
+      remaining cells meet both.
