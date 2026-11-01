@@ -1,0 +1,330 @@
+schema_version: 2
+id: 001262-heeringa-2024-01
+dataset:
+  archive: dandi
+  id: '001262'
+  version: 0.241205.0959
+  doi: 10.48324/dandi.001262/0.241205.0959
+paper: doi:10.1038/s41597-024-03259-3
+date: '2026-11-01'
+entry: 001262-heeringa-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41311677966
+outcomes:
+- claim: table1-animals-units
+  outcome: reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:table1-animals-units
+  measured:
+  - 104
+  - 1160
+  - 60
+  - 32
+  - 13
+  - 7
+  - 31
+  - 11
+  - 759
+  - 87
+  - 314
+  notes: All eleven counts match. Animals are counted by subject_id (each subject's metadata is the same
+    in all its files), age groups by age in days as the paper's code defines them.
+- claim: table1-age-abr-weight
+  outcome: reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:table1-age-abr-weight
+  measured:
+  - 5.55
+  - 22.49
+  - 38.33
+  - 18.1
+  - 34.17
+  - 49.03
+  - 74.61
+  - 83.35
+  - 86.41
+  assumed: true
+  notes: All nine means are within tolerance and equal Table 1 after rounding; the SDs and ranges also
+    match (ABR SD 5.33, 10.19 and 18.00). 10 young adults and 1 middle-aged animal have NaN for the ABR
+    threshold and are left out, as the code's omitnan does. The ABR means rest on reading the stored character
+    as its code point.
+  deviations:
+  - The ABR threshold is not readable as written; general/notes ends with one character, or NaN. It is
+    read as the character's code point (for example '#' is 35), an interpretation the data support (all
+    values are multiples of 5 from 10 to 85 dB SPL, the range of Table 1, and the group means and SDs
+    then equal Table 1's) but do not prove.
+- claim: table1-bf-range
+  outcome: reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:table1-bf-range
+  notes: 428 to 15,825 Hz, 350 to 15,091 Hz and 620 to 15,762 Hz, the paper's values exactly. 8 units
+    have no BF recording; 5 of them have a CF recording, and their recomputed CFs (700 to 4000 Hz) lie
+    inside the young-adult range, so the ranges are the same with or without them.
+  deviations:
+  - The CF of units without a BF recording is recomputed (see fig7a-cf-matches-bf); it does not change
+    any bound.
+- claim: fig3-abr-age
+  outcome: reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:fig3-abr-age
+  assumed: true
+  notes: Mean ABR threshold 18.1, 34.2 and 49.0 dB SPL from young to old; the old animals' SD (18.0) is
+    the largest (5.3 and 10.2 in the others), with old thresholds from 20 to 85 dB SPL. Over 93 animals
+    age and threshold correlate (Spearman rho 0.85, p = 5.7e-27).
+  deviations:
+  - The ABR threshold is not readable as written; general/notes ends with one character, or NaN. It is
+    read as the character's code point (for example '#' is 35), an interpretation the data support (all
+    values are multiples of 5 from 10 to 85 dB SPL, the range of Table 1, and the group means and SDs
+    then equal Table 1's) but do not prove.
+- claim: females-fewer-in-old
+  outcome: reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:females-fewer-in-old
+  notes: 11 of 31 old animals are female (0.355), against 32 of 60 young adults (0.533). Fisher's exact
+    test, which the paper does not report, gives p = 0.125. The cause is not tested.
+- claim: oxygen-78
+  outcome: reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:oxygen-78
+  measured: 78
+  notes: 78 of 104 animals have 'oxygen yes' in general/surgery (41 young, 6 middle aged, 31 old).
+- claim: complex-stimuli-experiments
+  outcome: reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:complex-stimuli-experiments
+  measured:
+  - 21
+  - 5
+  - 17
+  notes: NOISE in 21, SPS in 5 and CVC in 17 of 104 experiments (143, 22 and 135 units).
+- claim: recording-type-counts
+  outcome: partially_reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:recording-type-counts
+  measured:
+  - 119
+  - 271
+  - 203
+  - 143
+  - 22
+  - 135
+  notes: Five of six counts match under both readings (CF 119, SR 203, NOISE 143, SPS 22, CVC 135). CLICK
+    does not; 275 units have one CLICK recording each, and 271 give a recomputed 2-bin latency (272 with
+    a 5 ms click delay), against 261. The files hold no stored latency, so it cannot be told which 10
+    units had none in the paper, or whether some had a second CLICK recording in the MATLAB files that
+    the code would leave out. 1 CLICK unit has 75 spikes or fewer.
+  deviations:
+  - The stored CF and click latency are not in the files; reading 1 uses the values recomputed with the
+    paper's functions.
+  - The click delay is not in the files (the trial table gives NaN for CLICK trials). The 2-bin latency
+    of Clickextract_func.m and getFSL2bins.m needs it; 7.75 ms, the delay of every tone recording in the
+    dataset, is assumed, and 5 ms is shown as a variant.
+- claim: fig7-sampling-by-age
+  outcome: reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:fig7-sampling-by-age
+  notes: No middle-aged unit has an SR, SPS or CVC recording; all 22 SPS units are from young adults.
+- claim: isi-exclusion
+  outcome: not_reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:isi-exclusion
+  notes: Units with two or more within-trial ISIs below 0.6 ms are in the dataset under every reading,
+    370 of 1160 under (a), 391 under (b), 148 under (c), from 79 of 104 animals; 538 units have at least
+    one. In failing units short ISIs are a median 0.13% of all ISIs (largest 22.3%), and 162 units have
+    more than 10. Of 13,904 short ISIs, 10,192 are 0.3 to 0.6 ms and 1171 below 0.1 ms. With a 0.3 ms
+    limit 140 units fail under (a), with 0.1 ms 5 do. Spike times are sorted within trials and no spike
+    train is duplicated. The paper's check was visual (checkAN.m plots the count); it does not say how
+    many short ISIs 'multiple' allows.
+  deviations:
+  - A recording is taken as a recording type of the unit; each type occurs once per unit in the files.
+- claim: no-prepotentials
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The check was a visual inspection of the median spike waveform (checkAN.m); neither the paper
+    nor its code gives a rule for a prepotential, so no criterion fixed from the paper can judge it, as
+    the claims file says. The raw voltage traces are in the files (acquisition), so the waveforms are
+    available; they were not read.
+- claim: rlf-monotonic
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:rlf-monotonic
+  notes: The check was visual and the paper gives no rule for nonmonotonicity. As a description only,
+    with rates per level computed from the spike times in the stimulus window (the stored rates are not
+    in the files), 249 of 952 RLF recordings have a fall in mean rate between successive levels below
+    80 dB SPL larger than the SD at the lower level, and 104 have two or more.
+- claim: fig5b-example
+  outcome: reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:fig5b-example
+  measured:
+  - 7.62
+  - 19.0
+  notes: Stored BF 7620 Hz and RLF threshold 19 dB SPL. The BF recording is at 30 dB SPL with 5 repetitions
+    per frequency, and the RLF recording (7700 Hz) has 10 repetitions per level and includes 40 dB SPL,
+    as the legend says.
+- claim: fig6a-young-two-sensitive-regions
+  outcome: reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:fig6a-young-two-sensitive-regions
+  notes: Under reading (b) the highest young-adult mean threshold between the two sensitive regions is
+    27.6 dB SPL in the bin plotted at 3.48 kHz, with 25.4 and 24.4 dB in the neighbouring bins; the sensitive
+    regions have their lowest means at 1.73 kHz (20.9 dB) and 8.34 kHz (21.2 dB). Under reading (a) the
+    highest mean of all bins is 36.7 dB at 0.72 kHz, from 3 units. The criterion is met under one reading,
+    as it requires. The bins plotted at 2.06 to 4.14 kHz hold 30 to 34 units, fewer than at 4.93 to 11.83
+    kHz (43 to 83) and about as many as at 1.02 to 1.73 kHz (33 to 36).
+  deviations:
+  - The two readings of 'highest' differ; the claims file's criterion takes the claim as reproduced under
+    either, and only (b) holds.
+- claim: fig6b-young-bf-gap
+  outcome: not_reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:fig6b-young-bf-gap
+  notes: The bin from 2423 to 2936 Hz holds 34 young-adult units. It is not the fewest of the non-empty
+    span (the 356 Hz bin holds 1, and the bins below 766 Hz hold 1 to 11), nor fewer than both neighbours
+    (34 and 35). Among the bins from 1363 to 4309 Hz it ties for the fewest (34) with the 1363 and 2000
+    Hz bins.
+- claim: fig6c-sr-distributions
+  outcome: reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:fig6c-sr-distributions
+  measured:
+  - 2.5
+  - 57.5
+  notes: Measured values are bin centres. Low-BF young-adult units (314) have their two largest modes
+    of spontaneous rate in the bins 0 to 5 (27 units) and 55 to 60 spikes/s (21), separated by a bin of
+    5. High-BF units (437) have their largest local maximum at 0 to 5 spikes/s (66), below 18. 26.1% of
+    high-BF and 18.5% of low-BF units are below 18 spikes/s.
+- claim: fig6d-max-phase-locking-bf
+  outcome: reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:fig6d-max-phase-locking-bf
+  measured: 4.598
+  notes: The highest BF of a young-adult unit with significant phase locking (p < 0.001) is 4598 Hz; the
+    next are 4121 to 4377 Hz. No young PH unit with a higher BF (27 units, 4718 to 12,359 Hz) reaches
+    p < 0.001. The value depends on the threshold, 6539 Hz with p < 0.01 and 4377 Hz with p < 0.0001;
+    the Methods fix 0.001.
+  deviations:
+  - Vector strength and its p-value are not in the NWB files. They are recomputed per level of the PH
+    recording with PHextract_func.m and TytoView_calcVS.m (Methods, 'The analysis procedures were carried
+    out by the function PHextract_func.m'), spikes between tone onset and offset, p = exp(-N vs^2), NaN
+    when N is 50 or fewer (the code's ntot > 50; the Methods say N < 50). The silent trials' value, which
+    the code also stores, is left out.
+- claim: fig6d-highest-vs-low-bf-low-sr
+  outcome: reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:fig6d-highest-vs-low-bf-low-sr
+  notes: All four readings hold. The largest maximum vector strength (0.882) is from a unit with BF 428
+    Hz and SR 1.25 spikes/s, and the median is highest in the low-BF low-SR group (0.821 over 6 young
+    adults, 0.804 over 19 units of all ages; low-BF high-SR 0.695 and 0.702). Young adults with BF below
+    1.5 kHz, low-SR against high-SR, Mann-Whitney p = 0.0039 (6 and 51 units).
+  deviations:
+  - Vector strength and its p-value are not in the NWB files. They are recomputed per level of the PH
+    recording with PHextract_func.m and TytoView_calcVS.m (Methods, 'The analysis procedures were carried
+    out by the function PHextract_func.m'), spikes between tone onset and offset, p = exp(-N vs^2), NaN
+    when N is 50 or fewer (the code's ntot > 50; the Methods say N < 50). The silent trials' value, which
+    the code also stores, is left out.
+- claim: fig7a-cf-matches-bf
+  outcome: reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:fig7a-cf-matches-bf
+  notes: Over 114 units with a recomputed CF and a stored BF, Pearson r(log CF, log BF) = 0.973 (p = 2.1e-73),
+    Spearman 0.964; median CF/BF 1.003 (log2 0.0041, 95% bootstrap interval -0.0111 to 0.0398); 58 units
+    above and 56 below; 13 differ by more than half an octave.
+  deviations:
+  - The stored CF is not in the NWB files. CF is recomputed from the CF recording's spike times with CFextract_func.m,
+    getSpikeCounts.m and getQ10dB.m (named in the Methods, 'The analysis procedures were carried out by
+    the function CFextract_func.m'), automatic first pass only. The code asks the experimenter to accept
+    or change the response criterion and the CF ('T could be manually adjusted when needed', Methods);
+    those manual choices are not in the files.
+- claim: fig7b-click-latency-bf
+  outcome: reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:fig7b-click-latency-bf
+  assumed: true
+  notes: Over 268 units, Pearson r(latency, log BF) = -0.882 (p = 5.9e-89), Spearman -0.864; negative
+    in each age group (-0.78 to -0.92). Latencies span 0.42 to 2.78 ms, inside Fig. 7b's 0 to 3.5 ms axis.
+    With a 5 ms click delay, r = -0.662 and Spearman -0.820 over 269 units, so the outcome is the same
+    under both delays.
+  deviations:
+  - The stored 2-bin latency is not in the files; it is recomputed with Clickextract_func.m and getFSL2bins.m
+    (named in the Methods).
+  - The click delay is not in the files (the trial table gives NaN for CLICK trials). The 2-bin latency
+    of Clickextract_func.m and getFSL2bins.m needs it; 7.75 ms, the delay of every tone recording in the
+    dataset, is assumed, and 5 ms is shown as a variant.
+- claim: fig7ab-representative-sampling
+  outcome: not_reproduced
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:fig7ab-representative-sampling
+  notes: No reading holds for both subsets. The CF units' BFs differ from both references (KS p = 0.018
+    against young adults, 0.003 against all units; median 3454 Hz, 0.75 times the references' 4589 and
+    4592 Hz). The CLICK units' BFs do not differ by KS (p = 0.20 and 0.45) but their median (5180 Hz)
+    is 1.13 times the references'. The criterion says not reproduced 'when none does'; this record reads
+    'a reading holds' as holding for both CF and CLICK, as the criterion's reproduced case does. Under
+    the other reading of 'none' (no reading holds for either subset) the claim would be blocked as methods_underspecified,
+    since the CLICK KS reading holds.
+  deviations:
+  - The claims file's criterion can be read two ways when the CF and CLICK subsets give different results;
+    the reading taken is stated in the notes.
+- claim: old-success-rate
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_heeringa_2024.ipynb
+  output: claim:old-success-rate
+  notes: The denominators are the animals operated on, including those that gave no single units. Every
+    one of the 104 subjects has at least one unit file, and neither the files, the dandiset metadata nor
+    its description list animals that gave none. The paper names no other deposit of them.
+- claim: psth-primary-like
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The check was visual; the paper and its code (makePSTH.m) give no rule for a non-primary-like
+    shape, as the claims file says.
+findings:
+- kind: format_error
+  statement: The ABR threshold in general/notes ('threshold (db SPL) ...') is written as a single character
+    whose code point is the threshold, for example '#' for 35 and 'K' for 75, and control characters such
+    as a line feed for 10; 11 animals have 'NaN'. Read as code points, the values give Table 1's means
+    and SDs exactly, so the number appears to have been converted to a character in the conversion to
+    NWB.
+- kind: data_missing
+  statement: The analysed outcomes the paper describes as stored with each recording (exp.data.[type].analysis)
+    are in the NWB files only as best frequency, spontaneous rate and threshold per recording type. The
+    characteristic frequency, Q10, vector strength with its p-value and levels, the click latencies and
+    first-spike statistics, and the rate-level and frequency-response rates are not there. Most can be
+    recomputed from the spike times with the paper's code, but the manual corrections the code allows
+    (CF and response criterion, RLF threshold) cannot.
+- kind: metadata_insufficient
+  statement: The CLICK trials carry no delay (NaN in the trial table), so the click's onset within the
+    trial, needed for click latencies, is not in the files. The SR, NOISE, SPS and CVC trials also have
+    no delay.
+- kind: methods_unavailable
+  statement: Question for the paper's author. What was the click delay (curvesettings.delay) of the CLICK
+    recordings, and was it the same in all of them? This attempt assumed 7.75 ms, the delay of every tone
+    recording, which gives latencies of 0.42 to 2.78 ms; the correlation with best frequency is negative
+    under 7.75 or 5 ms.
+- kind: other
+  statement: 370 of 1160 units have two or more within-trial inter-spike intervals below 0.6 ms in one
+    recording (391 pooled over recordings, 148 in the BF recording alone), although the paper says units
+    with multiple such intervals were excluded. Most short intervals are 0.3 to 0.6 ms; 1171 of 13,904
+    are below 0.1 ms, which suggests double detection of one spike.
+- kind: other
+  statement: 275 units have a CLICK recording, one each, and 271 give a 2-bin latency with the paper's
+    function, where the Fig. 7 legend counts 261 units with a CLICK recording. Without the stored latencies
+    the difference cannot be traced.
+- kind: metadata_error
+  statement: The recordings are extracellular single-unit recordings with a glass electrode (as the file's
+    own device description says), but they are stored as intracellular (icephys) VoltageClampStimulusSeries,
+    and the archive's summary lists the measurement technique as 'voltage clamp technique'.
+- kind: data_missing
+  statement: The dataset holds only the 104 animals with recorded units. The animals operated on without
+    a successful recording, which the paper's success rates (43% of old and 88% of young-adult gerbils)
+    count, are not listed in the files or the metadata.
