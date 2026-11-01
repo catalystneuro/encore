@@ -15,7 +15,7 @@ with no sensor labels and no well, wash-on, injection or stimulation times.
 | On-target and off-target EC50s of Table 1 | Not reproduced |
 | Peak dF/F0 of Table 1 | Not reproduced |
 | EC50s consistent across probes | Not reproduced |
-| tau-on under 1 minute for almost all sensors | Reproduced |
+| tau-on under 1 minute for almost all sensors | Reproduced, marginally (holds only under the main choices of labels, constants and fit) |
 | tau-on rises with depth for all sensors but ATP | Not reproduced |
 | 70 to 130 cells tracked per probe across recordings | Reproduced |
 | Hydrogel deformation and stability, photometry, ELISA, choroid plexus, histology (13 claims) | Blocked: data missing |
@@ -26,9 +26,11 @@ reasoning and the differences from the paper's method.
 
 The files carry no sensor labels and no well timing. The well order and mixture concentrations of
 the ten revision probes come from the paper's code (github.com/pkalugin/kalugin-et-al-morse at
-commit fa4526a), and the labels are made from the traces by the Methods' clustering, without the
-code's hand corrections. The attempt record, with the reasons and the differences from the paper's
-method, is [`attempts/001074-kalugin-2026-01.yaml`](../../attempts/001074-kalugin-2026-01.yaml).
+commit fa4526a), and the labels are made from the traces by the Methods' clustering, with two
+choices of this attempt that the Methods do not give (the ligand time course as a boxcar over the
+first minute of each well, and a cluster kept only when its mean derivative peaks in its ligand's
+well), and without the code's hand corrections. The attempt record, with the reasons and the
+differences from the paper's method, is [`attempts/001074-kalugin-2026-01.yaml`](../../attempts/001074-kalugin-2026-01.yaml).
 
 - `reproduce_kalugin_2026.ipynb`: the analysis. It takes about eighteen minutes, most of it the
   survey of the 713 files.

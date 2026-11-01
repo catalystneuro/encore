@@ -62,7 +62,7 @@ outcomes:
     not tested.
   deviations:
   - Reading (a) of the criterion cannot be run; only reading (b) is tested.
-  - Assumed that the gel thickness is the imaged z range of each recording (15 to 26 planes); the claims file and
+  - Assumed that the gel thickness is the imaged z range of each recording (16 to 26 planes); the claims file and
     the paper do not say how the thickness is bounded.
   - Depth uses the masks reordered from their scrambled storage (see findings).
   - Probes are pooled over all contexts (dipping, slice and in vivo recordings); Figure 1C shows one dipping probe.
@@ -83,7 +83,9 @@ outcomes:
     9, 10, 5, 9, 10, 9, 8, 9 against the code''s 5, 8, 9, 10, 6, 9, 10, 9, 9, 9. Variants (b and a): the code''s
     30-frame window 550 and 383 cells (6.71 and 4.73); without the peak rule 606 and 402 (7.21 and 4.90); a whole-well
     boxcar 539 and 372 (6.57 and 4.59). The sensor counts match; the cell counts do not under any variant. The run
-    of the first round gave 382 cells in reading (a); this run gives 384, with the same code.'
+    of the first round gave 382 cells in reading (a); this run gives 384, with the same code. The claims file''s
+    header gives the derivative window as 30 frames, the Methods 1 minute (31 frames); this is asked of a reader
+    in questions/001074.yaml.'
   deviations:
   - The dandiset gives no sensor labels. Labels are made from the identification traces by the Methods' procedure
     (Quantification and statistical analysis, paragraphs 2-3) with these choices, assumed where the Methods do not
@@ -227,8 +229,11 @@ outcomes:
     the concentration fits give 7 of 10 (MT 63.6 s), so the two readings of the criterion would differ there. With
     the EC50s fitted in reading (i) of table1-ec50-on-target in place of Table 1''s, 8 and 7 of 10 (reading b labels),
     10 and 8 (reading a). Fixing xinf to the median of frames 47-78, as the code does, underestimates long time
-    constants (a synthetic 40-frame tau is fitted as 24.7); with xinf fitted, 9 and 6 (b) and 8 and 6 (a). The "most
-    signals plateau within 1 minute" part of the statement is not tested by the criterion.'
+    constants (a synthetic 40-frame tau is fitted as 24.7); with xinf fitted, 9 and 6 (b) and 8 and 6 (a). The outcome
+    is marginal: the concentration count is exactly at the threshold (8 of 10), and each alternative (the reading
+    (a) labels, the fitted EC50s, xinf fitted) gives a split between the criterion''s two readings, so it holds
+    only under the main choices. The "most signals plateau within 1 minute" part of the statement is not tested
+    by the criterion.'
   deviations:
   - The well and the concentration conversion use the claims file's CONSTANTS (Table 1 EC50s, the code's F), since
     the EC50s fitted here do not reproduce Table 1.
@@ -254,25 +259,29 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_kalugin_2026.ipynb
   output: claim:figs2f-cells-tracked
+  assumed: true
   measured:
   - 27
   - 108
   notes: 'In the code''s Figure S2F sets (morse_figs2_2 cell 2; ten dipping probes with 40 pairs, 22 in vivo recordings
     matched to their post hoc dipping, 11 slice pairs of which two are not in the dandiset), per-probe mean matched
     counts range from 27 to 108 (given as measured), and 26 of 39 probes (0.67) lie in 63 to 143: 8 of 10 dipping,
-    15 of 22 in vivo and 3 of 7 slice probes. In 70 of the 71 pairs with both files, the two hold the same count.
-    Over all 72 probes of the dandiset and 110 pairs, 44 (0.61) are in range (15 of 21 dipping, 24 of 40 in vivo,
-    5 of 11 slice), means 10 to 140, with 2 to 8 recordings per probe. The slice probes alone are not mostly in
-    range. The claims file cites printed counts of 53 to 108 in morse_figs2_2 cell 4; that cell has no outputs at
-    the pinned commit.'
+    15 of 22 in vivo and 3 of 7 slice probes. Of the 71 pairs of these sets with a matched file, 70 have both the
+    reference''s and the moving recording''s matched<k> file (20230922-PL28 pair 3 has only the reference''s), and
+    in 69 of the 70 the two hold the same count (20230922-PL28 pair 0 does not); the 70 include 29 dipping pairs
+    with k of 1 or more, all equal. Over all 72 probes of the dandiset and 110 pairs, 44 (0.61) are in range (15
+    of 21 dipping, 24 of 40 in vivo, 5 of 11 slice), means 10 to 140, with 2 to 8 recordings per probe. The slice
+    probes alone are not mostly in range. The claims file cites printed counts of 53 to 108 in morse_figs2_2 cell
+    4; that cell has no outputs at the pinned commit.'
   deviations:
   - The probe sets are those of morse_figs2_2 cell 2, listed in the notebook; the figure's in vivo n=25 and slice
     n=15 are not the code's 22 and 11, and two of the code's slice probes (20230509-DA1PL53, 20230607-SL1PL47) are
     not in the dandiset. All probes of the dandiset are shown as a variant.
-  - That a matched<k> file holds the k-th pair of a probe is taken from the code (8_mask_matching cell 8 writes
-    one pair's matched masks to both recordings; morse_figs2_2 cell 3 loads matched{k} for the k-th pair). Duplicated
-    files are counted once; for 20230922-PL28 the pairs are taken from wells001, whose matched suffixes are consistent
-    (the matching notebook, cells 15-17, re-saves that probe's matched1 file as matched).
+  - Assumed that a matched<k> file holds the k-th pair of a probe; the files do not say. The reading is taken from
+    the code (8_mask_matching cell 8 writes one pair's matched masks to both recordings; morse_figs2_2 cell 3 loads
+    matched{k} for the k-th pair). Duplicated files are counted once; for 20230922-PL28 the pairs are taken from
+    wells001, whose matched suffixes are consistent (the matching notebook, cells 15-17, re-saves that probe's matched1
+    file as matched).
 - claim: fig1d-collagen-reduces-warping
   outcome: blocked
   blocked_by: data_missing
@@ -471,7 +480,7 @@ findings:
     information, and the stage of each file (mr-raw, mr-m-raw, refit, matched<k>) is described only by the paper's
     code README.
 - kind: other
-  statement: The mask volumes have 15 to 26 planes, where the Methods describe 30 planes per volume (about 270 um);
+  statement: The mask volumes have 16 to 26 planes, where the Methods describe 30 planes per volume (about 270 um);
     the files do not say whether planes were cropped.
 - kind: data_missing
   statement: The deformation fields, raw two-photon imaging, Cellpose probability maps, fiber photometry, ELISA
@@ -484,9 +493,10 @@ findings:
     background fit and then peak-normalized"; the code subtracts a baseline well and divides by a peak well, after
     per-cell background fits over hand-set windows (cells 285-293, 338-339). Which windows and wells were used,
     and is the noise cut of cells 343 and 365 part of the published fits? The EC50s fitted here depend strongly
-    on this (median log10 distance from Table 1 0.12 to 1.49 across readings). (3) Is the deposited plane index
-    the code's z, so that depth from the front face grows as the index falls (cell 718)? (4) How was the jump artefact's
-    30 s decay and the background-fit window chosen per recording?
+    on this (median log10 distance from Table 1 0.12 to 1.48 across the normalizations with the reading (b) labels,
+    0.11 to 0.67 with the reading (a) labels). (3) Is the deposited plane index the code's z, so that depth from
+    the front face grows as the index falls (cell 718)? (4) How was the jump artefact's 30 s decay and the background-fit
+    window chosen per recording?
 verifications:
 - date: '2026-11-01'
   kind: agent
@@ -852,4 +862,391 @@ verifications:
     outcome: blocked
     reason: The archive holds only CaImAn traces and masks; there are no deformation fields, raw imaging, photometry,
       ELISA, mass-spectrometry, choroid-plexus or histology files among the 713 assets.
+    response: No change needed.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, the helper module, the claims file and the
+    attempt record, with the paper. The verifier agreed with all 47 outcomes. It also quoted cell 6, "All dipping
+    files but a few have frame counts that are multiples of 93", where cell 5 prints 254 of 384 (130 files, 34%,
+    are not); the sentence now gives these counts. Of its round-1 points it listed B8 (the residual of the jump
+    removal) and the 13/14 in vivo stability denominator as not acted on and not affecting a conclusion. B8 is left
+    as is, since the jump is measured as the code measures it (morse_figs3_rev cell 23); the stability denominator
+    cannot be tested, since the files give no stability flag and hold only processed recordings, as the notes of
+    methods-revision-probe-stability say.
+  results:
+  - claim: link-revision-well-order
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; not flagged as assumed, and the threshold was set by the author and is stated. B3 is partly
+      resolved: the well increments show the failure is carry-over, the label check is circular, as the notebook
+      says, and the only independent check of the labels is still the dose-block test in cell 14, where DA scores
+      0.41.'
+    response: No change; the notes already say the label check is not independent of the labels and give the DA
+      cells' 41% in the dose-block test. Outcome kept.
+  - claim: fig1c-cells-per-gel
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. Stated and reasonable: reading (b) only, gel thickness taken as the imaged z range, contexts
+      pooled. Cell 4 and the attempt record''s fig1c deviation and finding say "mask volumes have 15 to 26 planes";
+      cell 3 prints a minimum of 16, so it is 16 to 26.'
+    response: Corrected to 16 to 26 planes in cell 4, the deviation and the finding. Outcome kept.
+  - claim: fig1g-sensor-yield
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. Stated: the peak rule, the boxcar, and no hand corrections; no variant brings the cell counts
+      into range (cell 22). The README''s "the labels are made from the traces by the Methods'' clustering" leaves
+      out the two assumptions the author added (the peak rule and the 1-minute boxcar), which are not in the Methods.
+      Claims-file issue: the SENSOR IDENTITY header gives the derivative window as 30 frames and credits it to the
+      Methods, which say 1 minute; this changes nothing material (559 vs 550 cells).'
+    response: The README now names both assumptions. The window is asked of a reader in questions/001074.yaml, and
+      cell 12 says the header's 30 frames is shown as a variant; the claim is not changed. Outcome kept.
+  - claim: fig1g-all-ten-sensors-respond
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees, as the criterion is written. Claims-file issue: the Methods say Figure 1G''s bottom panel is
+      the derivative; the criterion instead asks whether peak-normalized dF/F0 is highest in each well, which carry-over
+      defeats. The failure probably reflects how the criterion reads the figure, not missing responses; referring
+      this to a reader is right, and the question is still open.'
+    response: No change; the question is in questions/001074.yaml and the notes say so. Outcome kept.
+  - claim: fig1h-crosstalk-pairs
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Stated; it fails under both labellings and both windows (cell 28).
+    response: No change needed.
+  - claim: table1-ec50-on-target
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. Every normalization and labelling fails, including the Methods reading (iii/iii-b): at most
+      3 of 10 on-target (cell 31). The methods_unavailable finding (2) gives "median log10 distance from Table 1
+      0.12 to 1.49 across readings", the round-1 figure; cell 31 now prints 0.12 to 1.48 for the reading (b) labels
+      and 0.11 to 0.67 for reading (a).'
+    response: Finding (2) corrected to 0.12 to 1.48 with the reading (b) labels and 0.11 to 0.67 with reading (a).
+      Outcome kept.
+  - claim: table1-ec50-off-target
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. Every normalization and labelling fails, including the Methods reading (iii/iii-b): 0 of 4
+      off-target (cell 31).'
+    response: No change needed.
+  - claim: table1-peak-dff-morse
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Stated (at most 5 of 14 within 10%).
+    response: No change needed.
+  - claim: fig1j-ec50-consistent-across-probes
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Stated. Neither reading holds in any variant, so the result is not a split.
+    response: No change needed.
+  - claim: figs3e-tau-on-under-one-minute
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, but marginal. Stated, but the outcome rests on every main choice. The concentration count is
+      exactly at the threshold (8 of 10). Each variant gives a split that the criterion would block as methods_underspecified:
+      reading (a) labels (10 vs 7), the fitted EC50s (8 vs 7), and free xinf, which corrects the bias raised in
+      B7 (9 vs 6; 8 vs 6 with reading a). Reproduced holds only under the reading (b) labels, the Table 1 constants
+      and the fixed xinf, and this should be stated as marginal.'
+    response: The notes, the conclusion cell, the summary and the README now say the outcome is marginal, at the
+      threshold, and holds only under the main choices, each alternative giving a split. The fixed xinf and the
+      Table 1 constants are the method the criterion itself gives (morse_figs3_rev cells 688-692 and the claims
+      file's CONSTANTS), and the reading (b) labels are the main labelling of every claim, so no change of outcome
+      is proposed. Outcome kept.
+  - claim: figs3f-depth-delay
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Stated. The code's depth orientation is reasonable, and no variant reaches 9 of 10.
+    response: No change needed.
+  - claim: figs2f-cells-tracked
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. Not flagged as assumed, yet it rests on reading matched<k> as one pair (taken from the code)
+      and on the code''s S2F sets; both are stated in the deviations, and the all-probes variant (0.61) does not
+      change the outcome. It should arguably carry assumed true. "In 70 of the 71 pairs with both files, the two
+      hold the same count" is unsupported: cell 49 counts every pair present in the dandiset, and a pair whose moving
+      recording has no file with that suffix counts as agreeing. No output shows how many of the 71 pairs actually
+      have two files, so the check may say nothing about pairs k of 1 or more.'
+    response: 'Marked assumed, with the matched<k> reading stated as an assumption in the deviations. Cell 49 now
+      counts the files of each pair: of the 71 pairs with a matched file, 70 have both the reference''s and the
+      moving recording''s file (20230922-PL28 pair 3 has one), and 69 of the 70 hold equal counts, including all
+      29 dipping pairs with k of 1 or more. The notes and cell 50 say so. Outcome kept.'
+  - claim: fig1d-collagen-reduces-warping
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for missing data.
+    response: No change needed.
+  - claim: fig1f-koh-stability
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for missing data.
+    response: No change needed.
+  - claim: methods-revision-probe-stability
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for missing data.
+    response: No change needed.
+  - claim: figs2c-stabilization
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for missing data.
+    response: No change needed.
+  - claim: slices-probe-stability
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for missing data.
+    response: No change needed.
+  - claim: fig2c-dlgn-kcl-activates-sensors
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: fig2c-dlgn-da-explained-by-ne
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: fig2d-dlgn-robust-counts
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: fig2e-dlgn-peak-concentrations
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: fig2f-dlgn-5ht-delay
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: figs4de-deconvolution
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: slices-no-peptide-release
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: figs5c-kcl-no-direct-effect
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: figs5d-pvh-ne-alone
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: figs5f-pvh-robust-counts
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: figs5g-pvh-dose-dependence
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: figs5i-pvh-ne-concentration
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: fig2h-lc-ne-da-peaks
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: fig2i-lc-increments
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: fig2jk-lc-robust-counts
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: fig2l-lc-ne-delay
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: fig3df-ip-responses
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: figs6ef-photometry-kinetics
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for missing data.
+    response: No change needed.
+  - claim: fig3g-ten-sensor-yield
+    agrees: true
+    outcome: blocked
+    reason: Agrees. fig3g is now partly shown (two of four probes); keeping it blocked is right.
+    response: No change needed.
+  - claim: fig3h-each-sensor-responds-ip
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: fig4-ip-csf-concentrations
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: fig4-ex-vivo-elevations
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for missing data.
+    response: No change needed.
+  - claim: fig4-ex-vivo-two-orders-lower
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for missing data.
+    response: No change needed.
+  - claim: figs6j-serum-dipping-matches-elisa
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for missing data.
+    response: No change needed.
+  - claim: fig5ab-spontaneous-5ht
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: fig5cd-spontaneous-5ht-dynamics
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for insufficient metadata. Cell 52's "No file of any context holds ... a region or a
+      sensor label" is a fixed print statement; the table only shows acquisition and stimulus counts, the rates
+      and the starts, so the region and label part is asserted, not shown.
+    response: 'The survey now reads the imaging plane''s location and description, the session description, the
+      mask table''s columns, the subject fields and the analysis group of every file, and cell 52 prints their values
+      by context in place of the fixed sentence: the same placeholders everywhere (location "brain"), no label column
+      and no analysis object. Outcome kept.'
+  - claim: fig5gh-chp-calcium
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for missing data.
+    response: No change needed.
+  - claim: fig6-chp-grab-similar-time-courses
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for missing data.
+    response: No change needed.
+  - claim: fig6c-ip-5ht-reaches-chp-fast-enough
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for missing data.
+    response: No change needed.
+  - claim: figs6a-no-implant-inflammation
+    agrees: true
+    outcome: blocked
+    reason: Agrees; blocked for missing data.
     response: No change needed.

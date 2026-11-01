@@ -481,6 +481,12 @@ def file_summary(path):
             "mask_shape": tuple(ps["image_mask"].shape[1:]),
             "accepted": int(ps["accepted"][:].sum()), "rejected": int(ps["rejected"][:].sum()),
             "acquisition": len(f["acquisition"]), "stimulus": len(f["stimulus/presentation"]),
+            "analysis": len(f["analysis"]),
+            "location": f["general/optophysiology/ImagingPlane/location"][()].decode(),
+            "plane_description": f["general/optophysiology/ImagingPlane/description"][()].decode(),
+            "session_description": f["session_description"][()].decode(),
+            "roi_columns": ",".join(sorted(ps.keys())),
+            "subject_fields": ",".join(sorted(f["general/subject"].keys())) if "subject" in f["general"] else "",
             "first_values": tuple(np.round(rr["data"][0, :min(3, n_roi)], 3)),
         }
 
