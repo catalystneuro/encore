@@ -33,7 +33,13 @@ Where each parameter comes from:
   lower bound to exclude single-frame noise (about 3 frames at 3,086.4 or 3,130 frames/s), since the
   Methods' "lasted about 10 ms" is the whole AP duration and bounds the half-height width from above
   only; the 20-ms upper bound and the 5 ms are its standard choices. Its earlier 2-ms lower bound is
-  run as a variant.
+  run as a variant. The height may also be read as the peak's prominence (`height_ref`), an
+  assumption made here: the null test below shows that on the inverted Di-8-ANEPPS trace, raised by
+  bleaching, the value reading counts noise peaks, so prominence is adopted for the Di-8-ANEPPS
+  claims and for the raised late plateau of Figure 3C, and the value reading elsewhere.
+- Null test of the detector (added after verification round 1): the same detection, with the same
+  threshold, on the frames before the onset and on those from 10 ms after the stimulus to the end of
+  the recording, where no AP is expected. `session_table` counts them as `null_pre`, `null_post`.
 - sustained_firing, sustained_depolarization: O6 (standard choices of the claims file).
 - first_two_rate: F5, inverse of the interval between the first two APs.
 """
@@ -182,7 +188,8 @@ def dff(trace: np.ndarray, t: np.ndarray, f0: str = "a", invert: bool = False,
 
 
 def detect_aps(y: np.ndarray, t: np.ndarray, height: str = "a", stim_ms: float = STIM_MS,
-               onset_ms: float = ONSET_MS, min_width_ms: float = 1.0, height_ref: str = "value") -> dict:
+               onset_ms: float = ONSET_MS, min_width_ms: float = 1.0, height_ref: str = "value",
+               window: tuple[float, float] | None = None) -> dict:
     """O3: APs as local maxima of the (inverted for Di-8-ANEPPS) dF trace.
 
     Returns peak times (ms from the onset), heights (dF at the peak), widths (ms) and the height
@@ -190,7 +197,9 @@ def detect_aps(y: np.ndarray, t: np.ndarray, height: str = "a", stim_ms: float =
     file's earlier bound, is run as a variant (FluoVolt APs are about 2 ms wide at half height).
     `height_ref` "value" compares the dF at the peak with the threshold (the Methods' "APs peaked at
     a more than 5% dF"); "prominence", a variant, compares the peak's prominence, which does not
-    count a depolarized baseline towards the height."""
+    count a depolarized baseline towards the height. `window`, in ms from the onset, replaces the
+    stimulus as the interval whose peaks are kept; the null tests use it on the frames before the
+    onset and after the stimulus."""
     dt = float(np.median(np.diff(t)))
     pre = y[t < onset_ms]
     thr = 5.0 if height == "a" else 5.0 * float(np.std(pre))
@@ -199,7 +208,8 @@ def detect_aps(y: np.ndarray, t: np.ndarray, height: str = "a", stim_ms: float =
                                      width=(min_width_ms / dt, 20.0 / dt), rel_height=0.5, **hk)
     props["peak_heights"] = y[peaks]
     tp = t[peaks] - onset_ms
-    keep = (tp >= 0) & (tp <= stim_ms)
+    lo, hi = (0.0, stim_ms) if window is None else window
+    keep = (tp >= lo) & (tp <= hi)
     return dict(times=tp[keep], heights=props["peak_heights"][keep],
                 widths=props["widths"][keep] * dt, threshold=thr, pre_sd=float(np.std(pre)))
 
@@ -283,6 +293,10 @@ def session_table(recs: list[dict], roi: str, f0: str, height: str, invert: bool
         stim = min(stim_ms, float(tt[-1]) - onset_ms)
         ap = detect_aps(y, tt, height, stim_ms=stim, onset_ms=onset_ms, min_width_ms=min_width_ms,
                         height_ref=height_ref)
+        kw = dict(onset_ms=onset_ms, min_width_ms=min_width_ms, height_ref=height_ref)
+        null_pre = detect_aps(y, tt, height, window=(-onset_ms, -0.001), **kw)["times"]
+        post = (stim + 10.0, float(tt[-1]) - onset_ms)
+        null_post = detect_aps(y, tt, height, window=post, **kw)["times"] if post[1] > post[0] else []
         rows.append(dict(
             subject=r["subject"], path=r["path"], start=r["start"], volts=r["volts"],
             field=r["field"], freq_hz=r["freq_hz"], modulated=r["modulated"], ttx=r["ttx"],
@@ -295,6 +309,7 @@ def session_table(recs: list[dict], roi: str, f0: str, height: str, invert: bool
             late_aps=int(np.sum(ap["times"] >= stim - late_ms)),
             sust_firing=sustained_firing(ap, stim_ms=stim),
             rate_hz=first_two_rate(ap),
+            null_pre=len(null_pre), null_post=len(null_post), post_ms=max(0.0, post[1] - post[0]),
         ))
     df = pd.DataFrame(rows)
     # O6 sustained depolarization, both levels: (a) 5 SD of the trace before the onset,

@@ -36,6 +36,7 @@ from __future__ import annotations
 import json
 import re
 import urllib.request
+import warnings
 from concurrent.futures import ThreadPoolExecutor
 
 import h5py
@@ -149,18 +150,32 @@ def load_experiment(metas: list[dict], workers: int = 8) -> dict:
         tr = np.array([s[:, m].mean(axis=1) for s in stacks])
         f0 = np.nanmean(tr[:, t < 0], axis=1, keepdims=True)
         traces[key] = 100.0 * (tr - f0) / f0
-    whole = np.array([np.nanmean(s.reshape(n, -1), axis=1) for s in stacks])
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)   # the dark frame is all NaN
+        whole = np.array([np.nanmean(s.reshape(n, -1), axis=1) for s in stacks])
     return dict(t=t, traces=traces, rois={k: v for k, v in rois.items() if k[1] in ("extreme", "pixel")},
                 roi_px={k: int(v.sum()) for k, v in rois.items() if k[1] in ("a", "b")},
                 cell_px=int(cell.sum()), ratio=ratio[::8, ::8], frame_means=whole,
                 n_replicates=len(stacks))
 
 
+TAU_BOUNDS = (0.01, 20.0)
+"""Bounds of the fitted tau, in us. A fit that ends within 1% of either bound has not found a time
+constant; `fit_tau` flags it, and such fits are counted as failed, not as results."""
+
+
+def at_bound(tau: float) -> bool:
+    lo, hi = TAU_BOUNDS
+    return bool(np.isfinite(tau) and (tau <= lo * 1.01 or tau >= hi * 0.99))
+
+
 def fit_tau(t: np.ndarray, reps: np.ndarray, weighting: str, discharge_amp: str) -> dict:
-    """001273-F4 with the O2 and O3 readings, on the mean over replicates."""
+    """001273-F4 with the O2 and O3 readings, on the mean over replicates.
+
+    `ok` is True when both fits converged; `c_bound` and `d_bound` flag a tau stuck at a bound."""
     y = np.nanmean(reps, axis=0)
     sem = np.nanstd(reps, axis=0, ddof=1) / np.sqrt(np.sum(np.isfinite(reps), axis=0))
-    out = dict(tau_c=np.nan, tau_d=np.nan, amp_c=np.nan, ok=False)
+    out = dict(tau_c=np.nan, tau_d=np.nan, amp_c=np.nan, ok=False, c_bound=False, d_bound=False)
     on = (t >= 0) & (t < PULSE_US) & np.isfinite(y)
     off = (t >= PULSE_US) & np.isfinite(y)
     sig_on = sem[on] if weighting == "b" else None
@@ -168,18 +183,19 @@ def fit_tau(t: np.ndarray, reps: np.ndarray, weighting: str, discharge_amp: str)
     try:
         a0 = float(np.nanmean(y[on][-10:]))
         p, _ = optimize.curve_fit(lambda x, a, tau: a * (1 - np.exp(-x / tau)), t[on], y[on],
-                                  p0=(a0, 0.5), sigma=sig_on, bounds=([-np.inf, 0.01], [np.inf, 20]), maxfev=10000)
+                                  p0=(a0, 0.5), sigma=sig_on, bounds=([-np.inf, TAU_BOUNDS[0]], [np.inf, TAU_BOUNDS[1]]), maxfev=10000)
         out.update(amp_c=p[0], tau_c=p[1])
         x = t[off] - PULSE_US
         if discharge_amp == "a":
             q, _ = optimize.curve_fit(lambda x, b, tau: b * np.exp(-x / tau), x, y[off], p0=(p[0], 0.5),
-                                      sigma=sig_off, bounds=([-np.inf, 0.01], [np.inf, 20]), maxfev=10000)
+                                      sigma=sig_off, bounds=([-np.inf, TAU_BOUNDS[0]], [np.inf, TAU_BOUNDS[1]]), maxfev=10000)
             out["tau_d"] = q[1]
         else:
             q, _ = optimize.curve_fit(lambda x, tau: p[0] * np.exp(-x / tau), x, y[off], p0=(0.5,),
-                                      sigma=sig_off, bounds=([0.01], [20]), maxfev=10000)
+                                      sigma=sig_off, bounds=([TAU_BOUNDS[0]], [TAU_BOUNDS[1]]), maxfev=10000)
             out["tau_d"] = q[0]
         out["ok"] = True
     except (RuntimeError, ValueError):
         pass
+    out["c_bound"], out["d_bound"] = at_bound(out["tau_c"]), at_bound(out["tau_d"])
     return out
