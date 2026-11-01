@@ -83,7 +83,18 @@ outcomes:
     subject 4 one at 201 ms, so 2 of 3 neurons meet it. One or a few APs near threshold hold in all three
     neurons, later than at higher fields, and a delay of 100 ms or more in one or two of the three,
     depending on the height reading. The questions on "delayed" and on the AP height are for the paper's
-    authors (findings).
+    authors (findings). Verification round 2 found that the criterion is one per-neuron test, so the
+    outcome under the stated assumptions is not reproduced; the change is proposed below.
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion is one test per neuron, which needs the median near-threshold session to have
+      1 to 3 APs and its first AP delayed, and it is met when more than half of the neurons pass it.
+      Under the adopted readings (whole frame, F0 (a), height (b) read as prominence, O5 (a)) 1 of 3
+      neurons passes, under O4 (a) and (b) alike, and the criterion is met in 0 of 24 combinations under
+      O5 (a) with prominence (6 of 24 with the dF value). Partially reproduced described the two halves
+      of the per-neuron test, which the criterion does not judge apart. The outcome would still rest on
+      the assumptions (assumed true). The analysis is the claim:figs1-near-threshold-delayed-aps cell of
+      di8_controls.ipynb, whose conclusion now states the proposal.
   deviations:
   - Assumed the AP height read as prominence for Di-8-ANEPPS, after verification round 1. With the
     height as the dF value, the whole frame and height (b), the detector finds 46 peaks after the
@@ -93,7 +104,8 @@ outcomes:
     quantifies the near-threshold delay only for FluoVolt (100 to 200 ms, Results, Stimulation by 2- and
     20-kHz unmodulated sine waves, paragraph 1) and says the Di-8-ANEPPS effects did not differ (Results,
     Sensitivity to unmodulated sine waves was not caused by FluoVolt dye). Under O5 (b), relative to the
-    neuron's own higher fields, the outcome depends on the ROI and height readings (12 of 24).
+    neuron's own higher fields, the outcome depends on the ROI and height readings (met in 13 of 24
+    combinations with the height as the dF value, 20 of 24 as prominence).
 - claim: figs1-stronger-field-shorter-delay-sustained-firing
   outcome: reproduced
   assumed: true
@@ -113,7 +125,7 @@ outcomes:
   - Assumed O3 height reading (b), 5 SD of the trace before onset, for Di-8-ANEPPS. The 5% level is the
     Methods' selection level for FluoVolt APs, and the paper says Di-8-ANEPPS has a lower voltage
     sensitivity (Results, Sensitivity to unmodulated sine waves was not caused by FluoVolt dye); the
-    Di-8-ANEPPS APs measured here have a median height of 4.1 to 6.6%.
+    Di-8-ANEPPS APs measured here have a median height of 3.7 to 6.7% over the readings.
 - claim: figs1-culminates-in-sustained-depolarization
   outcome: not_reproduced
   notebook: di8_controls.ipynb
@@ -124,7 +136,8 @@ outcomes:
     than half needed), as with 2 ms, and also with the AP height taken as prominence. Subjects 2 and 4
     were stimulated up to 234 V/cm only, close to their thresholds (108 to 180 and 108 to 205 V/cm), and
     never reach sustained depolarization. Subject 3, stimulated up to 504 V/cm, meets it only with the
-    whole frame and the 5% height (with 2 ms also with the Otsu ROI and level (b)); with the whole frame
+    whole frame and the 5% height (with the height as prominence also with the Otsu ROI and level (b));
+    with the whole frame
     and height (b) it still fires 6 APs in the last 100 ms at 504 V/cm, with a late inverted dF of 2.9
     to 3.3% at 396 to 504 V/cm against 1.4 to 2.4% at most lower fields (with the height as prominence
     1 AP remains in the last 100 ms at 504 V/cm). Bleaching raises the inverted trace late in the
@@ -168,7 +181,11 @@ outcomes:
     reproduced is not met; its condition for not reproduced, a threshold difference, is not met under the
     adopted unit reading either. The FluoVolt mean, about 150 V/cm, is far above the paper's 57.7 V/cm
     (reported, not judged); the one-sample tests of the Di-8-ANEPPS thresholds against 57.7 V/cm give p
-    0.14 to 0.36 with n = 2 or 3.
+    0.14 to 0.36 with n = 2 or 3. With n = 2 or 3 and intervals this wide, the absence of a difference
+    carries little information. The criterion gives no outcome for a pattern that fails with no
+    threshold difference; this is asked of a reader in questions/001272.yaml. The proposed change of
+    figs1-near-threshold-delayed-aps to not reproduced would leave this outcome as it is, as the pattern
+    fails either way.
   deviations:
   - Assumed unit reading (i), the volts as the files state them times the files' 36 V/cm per volt in
     both groups. The 001032 to 001035 files call their volts peak-to-peak, and the 001272 files say only
@@ -195,8 +212,9 @@ outcomes:
     is 25 to 177 Hz (whole frame 45 to 47 Hz, below the 54-Hz bound; 21 to 61 Hz with 2 ms), and the
     median first-AP latency at the lowest exciting field is 15 to 77 ms (whole frame 62 to 64 ms; 66 to
     79 ms with 2 ms), below the 90-ms bound. Under a/a/a and a/b/a the rate, 63 Hz, is within its
-    bounds, and the latency, 32 and 36 ms, is not; these readings detect peaks before the onset and
-    after the stimulus at nearly the rate during it (null test). At most 1 of 32 neurons shows sustained
+    bounds, and the latency, 32 and 36 ms, is not; in the null test these readings detect 1.04 to 1.06
+    peaks per 100 ms after the stimulus and 1.07 to 1.10 before the onset, against 2.44 to 2.47 during
+    it, and 20 in the 5 sham sessions. At most 1 of 32 neurons shows sustained
     depolarization at its highest field. Split by carrier, which the criterion's median does not do, the
     whole-frame latency is 49 ms at 2 kHz and 112 to 124 ms at 20 kHz. Leaving out the 38 sessions of
     900 frames gives whole-frame rates of 47 to 49 Hz and latencies of 56 to 59 ms, and the height read
@@ -256,11 +274,14 @@ outcomes:
     APs in 5 sham sessions. Under the 4 whole-frame readings one modulated session (001032 neuron 10_1,
     2 kHz, 8 V) has 13 APs, against 17 in the neuron's unmodulated session at that field, and no
     modulated session shows sustained depolarization. With 2 ms the whole-frame readings failed instead
-    on sustained depolarization by O6 level (a) in one session (001032 neuron 2_1, 11 V), with no
-    session over 10 APs, and so do they with the height read as prominence (at most 9 APs; met under 4
-    of 12 readings). The null test of the detector finds 0.09 to 0.10 peaks per 100 ms after the
-    stimulus under the whole frame, against 1.77 to 1.83 during it, and 1.04 to 2.14 under the Otsu ROI
-    with the 5% height.
+    on sustained depolarization by O6 level (a) in one session, with no session over 10 APs, and so do
+    they with the height read as prominence (at most 9 APs; met under 4 of 12 readings). The null test
+    of the detector finds 0.09 to 0.10 peaks per 100 ms after the stimulus under the whole frame,
+    against 1.77 to 1.83 during it, and under the Otsu ROI with the 5% height 1.04 to 1.06 (ROI a,
+    against 2.44 to 2.47 during) and 2.12 to 2.14 (ROI b, against 3.33 to 3.38). The statement's "no
+    sustained firing" is not tested by the criterion; the O6 sustained-firing rule is met by
+    beat-locked firing (45 or 46 of 84 modulated sessions under the whole frame), and a reader is asked
+    in questions/001272.yaml whether the criterion should test it.
   deviations:
   - Assumed the whole deposited frame as the soma ROI where the ROI readings disagree (here and in
     fig3c-sustained-firing-2s and figs2-ttx-blocks-depolarization). The Methods measure "the emission
@@ -284,8 +305,10 @@ outcomes:
   outcome: blocked
   blocked_by: other
   notes: No deposit holds the data. The claim needs 1-AP thresholds for 250-ms unmodulated sine waves at
-    2 to 20 kHz in both NaCl and sodium gluconate solution. Every file of DANDI 001032 to 001035 and 001271
-    describes standard NaCl solution (0 of 1,090 mention gluconate), 001030 holds only 2-s ramped 2-kHz
+    2 to 20 kHz in both NaCl and sodium gluconate solution. No file read of DANDI 001032, 001033, 001035
+    and 001271 mentions gluconate (0 of the 454 2- and 20-kHz files of 001032, 001033 and 001035, 0 of
+    the 287 of 001271; the other files of these deposits are at other frequencies and were not read),
+    001030 holds only 2-s ramped 2-kHz
     waves in sodium gluconate (17 files), and 001031 holds 100-kHz bipolar pulses. The paper names no
     other deposit. This would be data_missing, which the registry's check does not allow for a claim
     marked elsewhere.
@@ -299,8 +322,18 @@ outcomes:
     pattern is present in neuron c7 of DANDI 001030. Under the whole frame with the AP height taken as
     prominence it fires through the 2-s wave at 1.45 to 2.0 V (75 to 91 APs, 8 to 10 in the last 250
     ms), and at 2.3 V fires 19 APs, none in the last 250 ms, with a late dF of 6.0% against 5.4% or less
-    at lower fields; it meets all three parts under either bleaching correction. With the height as the
-    dF value, 9 detections in the last 250 ms at 2.3 V count as firing and c7 fails. No reading has more
+    at lower fields; it meets all three parts. Under the whole frame c7's 1.0-V session is the only
+    session without APs, so the two bleaching corrections subtract the same trace from c7's sessions
+    and are one check for c7, not two. With the height as the dF value, 9 detections in the last 250 ms
+    at 2.3 V count as firing and c7 fails. A null test on 001030, added after verification round 2,
+    does not decide between the height readings. Under the whole frame neither detects a peak in the
+    25 ms before the onset, and after the stimulus, where the trace is back near baseline, the value
+    reading detects none and prominence 0 to 7 (up to 0.24 per 100 ms, against 1.85 to 2.60 during the
+    stimulus). The 9 late detections at 2.3 V have prominences of 1.9 to 4.4%, below the 4.43%
+    threshold, but the session's earlier detections have prominences of 1.3 to 19.1% (median 4.0%), so
+    prominence does not set the late ones apart by size. The outcome rests on the prominence reading,
+    supported by the figure of the traces (a flat plateau at 2.3 V) and the verifier's synthetic test,
+    and not confirmed by a null test. No reading has more
     than 1 of the 4 neurons meeting the criterion (at most 2 with 2 ms, when c8 also met it under the
     shared correction), and no Otsu-ROI reading has any. c5 and c6 were stimulated up to 2.0 and 1.45 V
     only and keep firing; two c5 files end at 1,913 ms, before the stimulus ends.
@@ -333,7 +366,10 @@ outcomes:
     part is tested in 6 neurons and the sustained-depolarization part in 1. With the height read as
     prominence, a variant, 3 or 4 of the 6 TTX neurons keep detections after TTX under the whole frame
     (1 to 6 each under whole/a/b); that reading detects 1 or 2 peaks in the 5 sham sessions, where the
-    value reading detects none.
+    value reading detects none. The record uses prominence for fig3c-sustained-firing-2s and the value
+    reading here; under prominence this claim would fail. A reader is asked in questions/001272.yaml
+    whether the criterion should require sustained depolarization before TTX, which the conditional
+    criterion lets pass when it is absent.
   deviations:
   - Nothing in the files marks when the vehicle was added; for vehicle neurons the largest gap between
     consecutive sessions (0.6 to 10.8 min) is taken as the change. One vehicle neuron (17_20240801) has
@@ -410,15 +446,17 @@ findings:
   statement: None of the paper's ten deposits holds the 250-ms sine wave sessions in sodium gluconate
     solution behind Figure 3B; 001030 holds only 2-s ramped waves in that solution.
 - kind: other
-  statement: DANDI 001034 duplicates DANDI 001032. All 178 files have frame stacks identical to those of
-    001032, under subject names ending in _3 in place of _1.
+  statement: DANDI 001034 appears to duplicate DANDI 001032. All 80 of its 2-kHz unmodulated files have
+    frame stacks identical to those of 001032, under subject names ending in _3 in place of _1; its
+    other files were not compared.
 - kind: metadata_error
-  statement: Every file of DANDI 001272 describes the session as performed "without tetrodotoxin
+  statement: Every file of DANDI 001272 (65 of 65) describes the session as performed "without tetrodotoxin
     (vehicle control)", wording taken from the tetrodotoxin experiment (001271); the Di-8-ANEPPS
     experiment had no tetrodotoxin arm.
 - kind: metadata_error
-  statement: The tetrodotoxin sessions of DANDI 001271 describe tetrodotoxin as having "caused sustained
-    depolarization during application of stimulating waves". The paper says it blocked the sustained
+  statement: The tetrodotoxin sessions of DANDI 001271 (71 of 71) describe tetrodotoxin as one "which
+    abolished the action potentials and caused sustained depolarization during application of
+    stimulating waves". The paper says it blocked the sustained
     depolarization, and in the data the late dF after tetrodotoxin is -0.38 to -0.70% in all 6 neurons.
 - kind: metadata_insufficient
   statement: The stimulus onset is not stored in DANDI 001272 or 001271 (the Methods put it at 50 ms; the
@@ -453,6 +491,10 @@ findings:
     fluctuation of the order of the signal dominates the replicate-mean traces. The files form 22
     experiments of 7 or 8 replicates, one pair and 4 single files, where the paper reports 19, with no
     mapping.
+- kind: other
+  statement: In DANDI 001273, 164 of the 175 replicates fitted have at least one dark frame (257 in all,
+    0.34 to 0.80 of the median frame mean), in 95 of them only the first acquired frame. They are left
+    out of the fits.
 - kind: other
   statement: The paper lists ten dandisets for its raw images without saying which figure each holds; the
     claims file and this attempt assign them from their titles.
@@ -606,7 +648,7 @@ verifications:
   - claim: threshold-depolarization-estimate
     agrees: false
     outcome: not_reproduced
-    reason: The FluoVolt 2-kHz mean 1-AP threshold is 140-178 V/cm with the files' scale, or 70-89 V/cm
+    reason: Not reproduced for the threshold part; the rest untested. The FluoVolt 2-kHz mean 1-AP threshold is 140-178 V/cm with the files' scale, or 70-89 V/cm
       with it halved (di8 cell 26). Neither is within 57.7 +/- 3.6 V/cm. The sensitivity terms need DANDI:001274,
       which was not loaded. Calibration caveat in problem 7.
     response: Outcome kept, blocked, as the claim depends on fig6-sine-less-than-pulse, which was not
@@ -639,3 +681,160 @@ verifications:
     response: Outcome kept, blocked. The two parts that need no labels are now run and reported, no pole
       difference under any reading, and discharging tau larger than charging but not at p below 0.001
       under reading (a).
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The three full executed notebooks with their conclusions and summaries, the helper
+    modules, the claims file for this dataset (claims/001272/10.1016-j.xcrp.2025.102660.yaml), the
+    attempt record with its round-1 entry, and the paper.
+  results:
+  - claim: figs1-eight-neurons
+    agrees: true
+    outcome: not_reproduced
+    reason: 3 subjects (di8 cell 14).
+    response: No change needed.
+  - claim: figs1-aps-as-emission-decrease
+    agrees: true
+    outcome: reproduced
+    reason: 12 of 12 readings (cell 17).
+    response: No change needed.
+  - claim: figs1-near-threshold-delayed-aps
+    agrees: false
+    outcome: not_reproduced
+    reason: The two assumptions are stated; prominence is well founded (null test 0.02 against 1.43 per
+      100 ms) and O5 (a) has a source in the paper. But under those assumptions the criterion is met in 0
+      of 24 combinations under O5 (a) (cell 20), only 1 of 3 neurons qualifies, and more than half are
+      needed. The criterion is one per-neuron test that needs "1-3 APs" and "delayed" together and does
+      not split into parts, so the outcome under the assumptions is not_reproduced. "Partially" only
+      describes the halves of that test.
+    response: Agreed. In round 2 the outcome may not change, so the verified outcome is kept and a change
+      to not reproduced, still resting on the assumptions, is written under proposed with its reason;
+      the notebook conclusion, the summary and the README state it. Also corrected the deviation's "12 of
+      24" under O5 (b) to the printed 13 of 24 (value) and 20 of 24 (prominence).
+  - claim: figs1-stronger-field-shorter-delay-sustained-firing
+    agrees: true
+    outcome: reproduced
+    reason: The assumptions (prominence, height (b)) are stated and reasonable, and the outcome is the
+      same with the value reading. Subject 3's rho is -0.03 (p 0.88); it counts as negative only because
+      the criterion looks at the sign alone.
+    response: No change of outcome; the notes already give rho and p per neuron. Corrected the median
+      Di-8-ANEPPS AP height in the deviation to the printed 3.7 to 6.7%.
+  - claim: figs1-culminates-in-sustained-depolarization
+    agrees: true
+    outcome: not_reproduced
+    reason: Subjects 2 and 4 were never stimulated above 234 V/cm, so in effect only subject 3 tests this
+      claim.
+    response: No change of outcome. Corrected the notes, which gave a result for the 2-ms bound that is
+      not printed; the printed result (cell 26) is for the height as prominence.
+  - claim: figs1-noisier-than-fluovolt
+    agrees: true
+    outcome: not_reproduced
+    reason: The SD is higher for Di-8-ANEPPS in 0 of 12 readings.
+    response: No change needed.
+  - claim: figs1-effects-same-as-fluovolt
+    agrees: true
+    outcome: partially_reproduced
+    reason: The criterion does not cover the case "pattern fails, no threshold difference", so partial is
+      a fair call. Unit reading (i) is stated, but its only basis is the 001271 check (p = 0.29), and
+      reading (ii) flips the result (difference in 9 of 12 readings). With n = 2-3 and 95% intervals as
+      wide as -156 to 124 V/cm, "no difference" carries almost no information.
+    response: No change of outcome. The notes now say that the absence of a difference carries little
+      information at this n, and that the proposed change to figs1-near-threshold-delayed-aps would not
+      change this outcome. The missing case in the criterion is asked of a reader in
+      questions/001272.yaml.
+  - claim: fig1-pure-sine-excites-all
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 12 readings, also in all three variants (cell 11).
+    response: No change of outcome. Replaced "at nearly the rate during it" in the notes with the printed
+      null-test rates (1.04 to 1.06 per 100 ms after the stimulus against 2.44 to 2.47 during it).
+  - claim: fig1-20khz-needs-twice-the-field
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 12 (cell 14). The nominal-volts caveat is stated.
+    response: No change needed.
+  - claim: fig2d-modulated-thresholds-higher
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 12. Under whole/a/a and whole/b/a it fails only at p = 0.0500.
+    response: No change needed; the notes say so.
+  - claim: fig2-modulated-locks-to-beats
+    agrees: true
+    outcome: partially_reproduced
+    reason: The whole-frame assumption is stated and backed by the sham and null tests. Possible gap in
+      the claims file, the statement includes "triggered no sustained firing", but the criterion tests
+      only sustained depolarization, and the O6 rule for sustained firing is met by firing locked to the
+      beats (45-46 of 84 modulated sessions, cell 20).
+    response: No change of outcome. The gap is asked of a reader in questions/001272.yaml and stated in
+      the notes. Removed the session named in the notes (001032 neuron 2_1, 11 V), which no output
+      prints, and replaced "at nearly the rate during it" with the printed rates in the notes and the
+      notebook.
+  - claim: fig2c-pure-more-aps
+    agrees: true
+    outcome: reproduced
+    reason: 12 of 12 readings, under all three variants.
+    response: No change needed.
+  - claim: fig3b-low-conductivity-halves-threshold
+    agrees: true
+    outcome: blocked
+    reason: In substance this is data_missing; the notes explain why it is recorded as other. "0 of
+      1,090 mention gluconate" is not printed; the notebook shows 0 of 454.
+    response: No change of outcome. The sanity cell of fluovolt_elsewhere.ipynb now also prints the count
+      for 001271 (0 of 287), and the notes give the printed counts.
+  - claim: fig3c-sustained-firing-2s
+    agrees: true
+    outcome: partially_reproduced
+    reason: The figure supports the prominence assumption (c7 at 2.3 V fires about 6 APs, then sits on a
+      flat plateau, so the 9 late detections under the value reading are noise), and c8 at 2.0 V also
+      looks like a block, so partial may be conservative. No null test was run on 001030, and the two
+      bleaching corrections subtract the same trace from c7's sessions, so "either correction" is one
+      check, not two. The prominence reading decides the outcome, and for FluoVolt the record uses
+      prominence only here and the value reading elsewhere, each the reading that favours the claim.
+    response: No change of outcome. Added a null test on 001030 and the prominences of c7's late
+      detections at 2.3 V. Neither decides between the height readings (under the whole frame no reading
+      detects a peak before the onset; after the stimulus the value reading detects none and prominence
+      0 to 7; the late detections have prominences of 1.9 to 4.4%, under the 4.43% threshold, but so do
+      many earlier detections), and the notes and conclusion now say the outcome rests on prominence
+      with no null test to confirm it. "Either correction" is replaced by a statement that the two are
+      one check for c7. The choice of reading per claim is recorded as the verifier states it; the
+      record keeps it, as prominence was adopted for a raised late plateau only.
+  - claim: figs2-ttx-blocks-depolarization
+    agrees: true
+    outcome: reproduced
+    reason: Yes, by the criterion. The second part passes on 1 neuron (14_20240731); no TTX neuron has a
+      late mean above 5% before TTX (cell 30). Possible gap in the claims file, the criterion is
+      conditional, so the depolarization part passes trivially when no neuron is depolarized before TTX,
+      while the paper describes a depolarization present before TTX. Prominence would fail (3-4 TTX
+      neurons keep detections).
+    response: No change of outcome. The gap is asked of a reader in questions/001272.yaml, and the notes
+      now say that this claim would fail under prominence.
+  - claim: fig4-pooled-time-constants
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 8 readings, also with whole-frame scaling (cell 9). The unscaled fits follow 001273-F2.
+      58 of 352 charging fits are left out at a bound, and the signal is a median 1.97 times the
+      pre-pulse SD; the failure may come from the missing debris scaling, as the record says.
+    response: No change needed. The strobe summary's "the first acquired frame of every file is dark",
+      which no output backed, is replaced by printed counts (164 of 175 replicates have a dark frame,
+      95 only the first acquired), and the helper's docstring now says what is left out.
+  - claim: fig4-orientation-and-poles
+    agrees: true
+    outcome: blocked
+    reason: The files have no cell-shape groups. Combining the three separate round-1 fig4 rows into
+      this claim is fair.
+    response: No change needed.
+  - claim: fig6-sine-less-than-pulse
+    agrees: true
+    outcome: blocked
+    reason: The record is accurate, but the data are in 001274 (point 9, still not attempted).
+    response: Not attempted. The protocol leaves a change that needs an analysis not yet run to a new
+      attempt; testing it needs ROIs and fits on the 001274 strobe images, which this revision did not
+      start.
+  - claim: threshold-depolarization-estimate
+    agrees: true
+    outcome: blocked
+    reason: Its first expected value, 57.7 +/- 3.6 V/cm, already fails on either stated scale (140-178,
+      or 70-89 V/cm if halved). The round-1 record shortened the verifier's "not_reproduced (threshold
+      part); rest untested" to not_reproduced.
+    response: No change of outcome, as the claim depends on fig6-sine-less-than-pulse, which is blocked.
+      The round-1 reason now opens with the verifier's full outcome.

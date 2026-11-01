@@ -15,8 +15,8 @@ Where each parameter comes from:
   pulse (Methods, Pulsed laser fluorescence microscopy; the files' descriptions). The frame at the
   pulse onset is checked against the data in the notebook.
 - Backward recordings are reversed so that every replicate runs forward in time (file descriptions).
-- The first acquired frame of every file is dark (about 0.55 of the median); it is left out. Standard
-  choice, shown in the notebook.
+- A frame whose mean is below 0.8 of the file's median frame mean is dark and left out (the
+  notebook prints which frames these are and how dark). Standard choice.
 - ratio_image: 001273 claims header and the Methods: the mean of the frames in the last 0.5 us of the
   pulse over the CONTROL image (frames before the pulse and from 4 us after its end), both low-pass
   filtered over 12 x 12 pixels.
@@ -78,13 +78,17 @@ def read_meta(asset: dict) -> dict:
                 backward="backward manner" in desc, electrodes=pos)
 
 
-def read_stack(meta: dict) -> np.ndarray:
-    """One replicate as float32 frames in forward time, the dark first-acquired frame set to NaN."""
+def read_stack(meta: dict) -> tuple[np.ndarray, list]:
+    """One replicate as float32 frames in forward time, the dark first-acquired frame set to NaN.
+
+    Also returns the dark frames, as (index in acquisition order, mean over the median frame mean)."""
     with h5py.File(remfile.File(meta["url"]), "r") as f:
         d = f["acquisition/StrobeImaging/data"][:].astype(np.float32)
     means = d.reshape(d.shape[0], -1).mean(axis=1)
-    d[means < 0.8 * np.median(means)] = np.nan
-    return d[::-1] if meta["backward"] else d
+    dark = means < 0.8 * np.median(means)
+    info = [(int(i), float(means[i] / np.median(means))) for i in np.flatnonzero(dark)]
+    d[dark] = np.nan
+    return (d[::-1] if meta["backward"] else d), info
 
 
 def times_us(n: int) -> np.ndarray:
@@ -136,7 +140,8 @@ def roi_masks(ratio: np.ndarray, cell: np.ndarray) -> dict:
 def load_experiment(metas: list[dict], workers: int = 8) -> dict:
     """Stream the replicates of one experiment; keep the ROI traces of each replicate, not the frames."""
     with ThreadPoolExecutor(workers) as ex:
-        stacks = list(ex.map(read_stack, metas))
+        read = list(ex.map(read_stack, metas))
+    stacks = [r[0] for r in read]
     n = min(s.shape[0] for s in stacks)
     stacks = [s[:n] for s in stacks]
     t = times_us(n)
@@ -156,7 +161,7 @@ def load_experiment(metas: list[dict], workers: int = 8) -> dict:
     return dict(t=t, traces=traces, rois={k: v for k, v in rois.items() if k[1] in ("extreme", "pixel")},
                 roi_px={k: int(v.sum()) for k, v in rois.items() if k[1] in ("a", "b")},
                 cell_px=int(cell.sum()), ratio=ratio[::8, ::8], frame_means=whole,
-                n_replicates=len(stacks))
+                n_replicates=len(stacks), dark=[r[1] for r in read])
 
 
 TAU_BOUNDS = (0.01, 20.0)
