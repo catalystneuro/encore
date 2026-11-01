@@ -31,6 +31,11 @@ Where each parameter comes from:
   weak (score below MATCH_MIN, a choice, shown with its effect in the notebook), the centre is the
   weighted centroid of the half-maximum region of the smoothed image, an assumption: the staining
   pattern is four-fold symmetric about the array centre in every condition.
+- Burst labels. The files give the burst number only as a subject label (x1, x2, x3, x5), and
+  their protocol text says that "upon completion of the protocol, it was either repeated 2, 3, or 5
+  times". BURSTS gives the two readings: label = repeats after the first burst ("after_first",
+  adopted: x1 is the paper's 2 bursts (x4) and x5 its largest number, 6 bursts (x4), Figure 7), or
+  label = total number of bursts ("total").
 - Lorentzian YP(x) = a (b/2)^2 / (x^2 + (b/2)^2) and Gaussian Pr(x) = a exp(-x^2 / (2 s^2)),
   FWHM = 2.4 s (Methods 2.5), fitted by least squares (claims file F4).
 """
@@ -63,6 +68,7 @@ ROI_ALONG_MM, ROI_ACROSS_MM = 0.406, 0.325  # Methods 2.5
 MATCH_MIN = 0.035  # a choice; see the module docstring
 
 RATE = {"011": "0.2 MHz", "013": "1 Hz"}
+BURSTS = {"after_first": {"x1": 2, "x2": 3, "x3": 4, "x5": 6}, "total": {"x1": 1, "x2": 2, "x3": 3, "x5": 5}}
 
 
 def list_assets():
@@ -114,7 +120,12 @@ def parse(meta):
     sides = ["L", "R"] if len(subs) == 2 else ["W"]
     rows, cols = meta["shape"][1:]
     pixel_um = 1.625 if sides == ["W"] else 3.25  # inferred, see the module docstring
-    return {"file": name, "cells": "CT26", "channel": ch, "phase": "post", "pixel_um": pixel_um,
+    # Hoechst (DAPI) images were acquired before the YP and Pr images of the same wells (checked
+    # in the notebook from the acquisition times), as the paper's pre-exposure Hoechst images
+    phase = "pre" if ch == "DAPI" else "post"
+    # subject "011C_x5" (protocol code "C", "Unknown protocol type") is taken as a control: every
+    # control subject carries the same "Unknown protocol type" text
+    return {"file": name, "cells": "CT26", "channel": ch, "phase": phase, "pixel_um": pixel_um,
             "areas": [{"side": s, "rate": r, "protocol": "CANCAN" if p == "CC" else "control", "label": "x" + x,
                        "subject": f"{r}{p}_x{x}"} for (r, p, x), s in zip(subs, sides)]}
 
@@ -263,9 +274,15 @@ def fwhm(res, kind):
     return res["w"] if kind == "lorentz" else 2.4 * res["w"]
 
 
-def gap_significant(m1, se1, m2, se2):
-    """The paper's reading of its plots (Methods 2.5): a gap between the error bars longer than
-    the error bars. Here the gap must exceed the mean of the two s.e. arms."""
+ARMS = ("long", "mean", "short")
+
+
+def gap_significant(m1, se1, m2, se2, arm="long"):
+    """The paper's reading of its plots (Methods 2.5): "A gap exceeding the length of the error
+    bars indicates a significant difference at p<0.05". Where the two s.e. arms differ, the length
+    the gap must exceed is not given; readings: the longer arm ("long", adopted: the gap exceeds
+    each error bar, the literal reading), the mean of the two ("mean") or the shorter ("short")."""
     lo_hi = (m1 - se1, m2 + se2) if m1 > m2 else (m2 - se2, m1 + se1)
     gap = lo_hi[0] - lo_hi[1]
-    return bool(gap > (se1 + se2) / 2), float(gap)
+    need = {"long": max(se1, se2), "mean": (se1 + se2) / 2, "short": min(se1, se2)}[arm]
+    return bool(gap > need), float(gap)
