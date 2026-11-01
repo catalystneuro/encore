@@ -12,10 +12,11 @@ and each image is reduced as it loads to means over 10 x 10 pixel bins. Nothing 
 
 Where the parameters come from:
 
-- `UM_PER_PX = 1.625`. The files give no pixel size. The paper images with a 4x objective on an
-  ORCA-Flash4 sCMOS camera (Methods 2.4), whose sensor pixels are 6.5 um (manufacturer's
-  specification), so 6.5 / 4 = 1.625 um per pixel. This is an assumption; the notebook checks it
-  against the electrode geometry (`square_fit` with the side left free).
+- `UM_PER_PX = 1.625`. The OME-XML at the end of each image description gives PhysicalSizeX and
+  PhysicalSizeY of 1.625 um (`parse_ome`; the notebook prints them for every file). This agrees
+  with the 4x objective and ORCA-Flash4 sCMOS camera of Methods 2.4, whose sensor pixels are
+  6.5 um (6.5 / 4 = 1.625), and the notebook also checks it against the electrode geometry
+  (`square_fit` with the side left free).
 - Geometry (Methods 2.2, Results 3.1). Four needles of 2.8 mm outer diameter form a square with
   15.3 mm side-to-side diagonals, so the electrode centers are 15.3 + 2.8 = 18.1 mm apart along a
   diagonal (12.8 mm along a side); 6 and 7 mm from the center are 1.65 and 0.65 mm from an
@@ -26,17 +27,28 @@ Where the parameters come from:
   legend). `square_fit` places a square of the known size where the four corners are darkest
   relative to their surroundings, so a footprint that is faint in one image is placed by the
   other three. The disk and annulus radii of the detector (`LUMEN_R_MM`, `RING_MM`) are a
-  standard choice for a lumen of about 2 mm; the notebook shows each fit for checking.
+  standard choice for a lumen of about 2 mm; the notebook shows each fit for checking. On
+  synthetic squares the verifier of round 1 found this center off by 0.10 to 0.13 mm, which
+  widens a 1 mm FWHM by about 3% at 1 mm ROI spacing; it is not corrected here.
 - ROIs of 325 x 406 um along the diagonals, background as the mean of 3 ROIs inside an electrode
   footprint, measurements of two diagonals pooled (Methods 2.5). The long side lies across the
   diagonal (claims file, standard choice). The paper does not say which footprint holds the
   background ROIs; here 3 ROIs (the footprint center and 0.45 mm to either side across the
   diagonal) are placed in each of the four footprints, and the background is the median of the
-  four footprint means, a standard choice that keeps one footprint with bright debris, or lying
-  outside the image, from setting it; the notebook shows the spread between footprints.
+  four footprint means. This is an assumption: Methods 2.5 places the 3 ROIs "within a footprint
+  of an electrode", one footprint, without saying which. No footprint has a better claim than
+  another, and the median of the four is the choice that does not rest on that arbitrary pick
+  and that keeps one footprint with bright debris, or lying outside the image, from setting it.
+  The notebook shows the results with each single footprint as the background
+  (`per_footprint`, in corner order: upper left, upper right, lower right, lower left of the
+  image for the small angles found), since the ratio claims depend on it.
 - ROI spacing along the diagonal, 1 mm or 0.5 mm (claims file, header, the two readings).
 - Lorentzian YP(x) = a (b/2)^2 / (x^2 + (b/2)^2), b the FWHM in mm (Methods 2.5).
-- Lines through the center parallel to the sides (Methods 2.5, Fig. 3C) use the same ROIs.
+- Lines through the center parallel to the sides (Methods 2.5, Fig. 3C) use the same ROIs. They
+  run toward the midpoints of the sides, 6.4 mm from the center, so their ROIs at 6.5 and 7 mm lie
+  just outside the square of the electrode centers.
+- `NEAR_FULL_SCALE = 65000`, near the uint16 maximum of 65535; a standard choice for counting
+  saturated pixels, which cannot change a result as long as the count is near zero.
 """
 
 from __future__ import annotations
@@ -58,7 +70,7 @@ DANDISET_VERSION = "0.250701.1609"
 
 IMAGE_PATH = "acquisition/SingleTimePointImaging/data"
 BIN = 10                      # pixels per bin side, as the image loads
-UM_PER_PX = 1.625             # 6.5 um camera pixel / 4x objective (assumption, see docstring)
+UM_PER_PX = 1.625             # OME-XML PhysicalSizeX; 6.5 um camera pixel / 4x objective
 UM_PER_BIN = UM_PER_PX * BIN
 
 DIAG_CENTER_TO_ELECTRODE_MM = (15.3 + 2.8) / 2   # 9.05 mm, Methods 2.2
@@ -67,6 +79,7 @@ ROI_ALONG_UM, ROI_ACROSS_UM = 325.0, 406.0       # Methods 2.5; long side across
 LUMEN_R_MM = 0.8              # dark disk of the detector (inside the lumen)
 RING_MM = (1.25, 1.9)         # annulus of the detector (outside the needle wall)
 BG_OFFSETS_MM = (-0.45, 0.0, 0.45)
+NEAR_FULL_SCALE = 65000       # pixels at or above count as at the camera's maximum (uint16)
 
 
 # ---------------------------------------------------------------- archive and metadata
@@ -114,7 +127,25 @@ def read_metadata(asset: dict) -> dict:
             "description": desc,
         }
     row.update(parse_description(desc))
+    row.update(parse_ome(desc))
     return row
+
+
+def parse_ome(text: str) -> dict:
+    """Pixel size, exposure, acquisition date and stage position from the OME-XML in a description."""
+    def get(pattern, cast=str):
+        m = re.search(pattern, text)
+        return cast(m.group(1)) if m else None
+    return {
+        "um_per_px_x": get(r'PhysicalSizeX="([\d.]+)"', float),
+        "um_per_px_y": get(r'PhysicalSizeY="([\d.]+)"', float),
+        "exposure_ms": get(r'ExposureTime="([\d.]+)"', float),
+        "acquired": get(r"<OME:AcquisitionDate>([^<]+)<"),
+        "stage_x_um": get(r'Plane[^>]*PositionX="([\d.-]+)"', float),
+        "stage_y_um": get(r'Plane[^>]*PositionY="([\d.-]+)"', float),
+        "objective_mag": get(r'NominalMagnification="([\d.]+)"', float),
+        "detector": get(r'Detector Manufacturer="[^"]*" Model="([^"]+)"'),
+    }
 
 
 def load_metadata(assets: list[dict], workers: int = 16) -> pd.DataFrame:
@@ -133,7 +164,8 @@ def load_binned(url: str, plane: int = 0, workers: int = 24) -> dict:
     """Stream one image and reduce it to means over BIN x BIN pixels.
 
     Pixels equal to 0 lie outside the stitched area; they are left out of the means, and a bin
-    with none inside is NaN. Returns the binned image and the fraction of pixels inside.
+    with none inside is NaN. Returns the binned image, the fraction of pixels inside, and the
+    fraction of pixels at or above NEAR_FULL_SCALE (a check for camera saturation).
     `plane` selects the image in the files that hold two (shape (1, 2, H, W)).
     """
     with h5py.File(remfile.File(url), "r") as f:
@@ -150,6 +182,7 @@ def load_binned(url: str, plane: int = 0, workers: int = 24) -> dict:
     hb, wb = -(-H // BIN), -(-W // BIN)
     total = np.zeros((hb, wb))
     count = np.zeros((hb, wb))
+    nsat = np.zeros((hb, wb))
     index.sort(key=lambda c: c[1])
     groups, cur = [], []
     for c in index:
@@ -179,16 +212,20 @@ def load_binned(url: str, plane: int = 0, workers: int = 24) -> dict:
             inside = a > 0
             s = a.reshape(ph // BIN, BIN, pw // BIN, BIN).sum((1, 3))
             n = inside.reshape(ph // BIN, BIN, pw // BIN, BIN).sum((1, 3))
+            k = (a >= NEAR_FULL_SCALE).reshape(ph // BIN, BIN, pw // BIN, BIN).sum((1, 3))
             yb, xb = y // BIN, x // BIN
             total[yb:yb + s.shape[0], xb:xb + s.shape[1]] = s
             count[yb:yb + s.shape[0], xb:xb + s.shape[1]] = n
+            nsat[yb:yb + s.shape[0], xb:xb + s.shape[1]] = k
         return len(buf)
 
     with ThreadPoolExecutor(workers) as ex:
         nbytes = sum(ex.map(fetch, groups))
     with np.errstate(invalid="ignore", divide="ignore"):
         img = np.where(count > 0, total / count, np.nan)
+        sat = np.where(count > 0, nsat / count, np.nan)
     return {"image": img.astype(np.float32), "inside": (count / BIN**2).astype(np.float32),
+            "saturated": sat.astype(np.float32),
             "bytes": nbytes, "n_chunks": len(index), "full_shape": (H, W)}
 
 
@@ -233,11 +270,12 @@ def square_corners(cx: float, cy: float, theta: float, side_bins: float) -> np.n
     return base @ rot.T + [cx, cy]
 
 
-def square_fit(img: np.ndarray, free_side: bool = False) -> dict:
+def square_fit(img: np.ndarray, free_side: bool = False, angle_deg: float | None = None) -> dict:
     """Place the electrode square where the four corners are darkest against their surround.
 
     The side is fixed at SIDE_MM unless free_side, when it is fitted too (a check of UM_PER_PX).
-    Returns the center (bins), angle, side, the corner positions and the corner scores.
+    With angle_deg the angle is fixed too and only the center is fitted (used for the wells left
+    out, with the angle of the other wells imaged on the same plate and day). Returns the center (bins), angle, side, the corner positions and the corner scores.
     """
     dmap, step = darkness_map(img)
     side0 = SIDE_MM * 1000.0 / UM_PER_BIN
@@ -253,8 +291,9 @@ def square_fit(img: np.ndarray, free_side: bool = False) -> dict:
     padded = np.pad(dmap, pad, constant_values=-1.0)
     best = (-np.inf, None)
     sides = [side0] if not free_side else side0 * np.linspace(0.85, 1.15, 31)
+    angles = np.arange(-45, 45, 1.0) if angle_deg is None else [angle_deg]
     for side in sides:
-        for th in np.deg2rad(np.arange(-45, 45, 1.0)):
+        for th in np.deg2rad(angles):
             offs = np.rint(square_corners(0, 0, th, side) / step).astype(int)
             total = np.zeros_like(dmap)
             for ox, oy in offs:
@@ -268,11 +307,13 @@ def square_fit(img: np.ndarray, free_side: bool = False) -> dict:
 
     def neg(p):
         side = p[3] if free_side else side0
-        return -score(p[0], p[1], p[2], side).sum()
+        th = p[2] if angle_deg is None else x0[2]
+        return -score(p[0], p[1], th, side).sum()
 
-    res = optimize.minimize(neg, x0 if free_side else x0[:3], method="Nelder-Mead",
-                            options={"xatol": 0.2, "fatol": 1e-5})
-    cx, cy, th = res.x[:3]
+    res = optimize.minimize(neg, x0 if free_side else x0[:3] if angle_deg is None else x0[:2],
+                            method="Nelder-Mead", options={"xatol": 0.2, "fatol": 1e-5})
+    cx, cy = res.x[:2]
+    th = res.x[2] if angle_deg is None else x0[2]
     side = res.x[3] if free_side else side0
     corners = square_corners(cx, cy, th, side)
     return {"cx": cx, "cy": cy, "theta_deg": float(np.rad2deg(th)), "side_bins": side,
@@ -378,6 +419,24 @@ def fit_lorentz(x: np.ndarray, y: np.ndarray, fit_range: float) -> dict:
     r, p = stats.pearsonr(fit, ys)
     r2 = 1 - np.sum((ys - fit) ** 2) / np.sum((ys - ys.mean()) ** 2)
     return {"a": a, "b": b, "R": r, "p": p, "R2": r2, "n": int(m.sum())}
+
+
+def fit_gauss(x: np.ndarray, y: np.ndarray, fit_range: float) -> dict:
+    """Least-squares Gaussian on the points with |x| <= fit_range; FWHM is 2.355 sigma."""
+    m = (np.abs(x) <= fit_range + 1e-9) & np.isfinite(y)
+    xs, ys = x[m], y[m]
+    (a, sigma), _ = optimize.curve_fit(gauss, xs, ys, p0=[max(ys.max(), 1e-3), 1.0],
+                                       bounds=([0, 0.01], [np.inf, 100.0]), maxfev=20000)
+    fit = gauss(xs, a, sigma)
+    r2 = 1 - np.sum((ys - fit) ** 2) / np.sum((ys - ys.mean()) ** 2)
+    return {"a": a, "sigma": sigma, "fwhm": 2 * np.sqrt(2 * np.log(2)) * sigma, "R2": r2, "n": int(m.sum())}
+
+
+def r_p(r: float, n: int, n_params: int = 0) -> float:
+    """Two-sided p of a correlation r over n points, with n - 2 - n_params degrees of freedom."""
+    df = n - 2 - n_params
+    t = r * np.sqrt(df / (1 - r ** 2))
+    return float(2 * stats.t.sf(abs(t), df))
 
 
 def slope_test(x, y) -> dict:

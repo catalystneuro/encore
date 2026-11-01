@@ -9,13 +9,13 @@ pulses) and its thermometry are not in this dandiset.
 
 | Claim | Outcome |
 |---|---|
-| Center YP rises linearly with burst number in both cell lines (p < 0.001) | Partially reproduced |
+| Center YP rises linearly with burst number in both cell lines (p < 0.001) | Partially reproduced (assumption) |
 | CT26 center YP saturates at 6 bursts (x4), CHO does not | Partially reproduced |
 | FWHM grows with burst number in CT26 but not in CHO | Reproduced |
 | 1 burst (x4) in CT26 gives FWHM 1.1 mm, 7.3% of the gap, 2.3% of the array area | Reproduced (assumption) |
-| Near-electrode YP 40 to 50 times smaller than at the center after 1 burst (x4) | Not reproduced |
+| Near-electrode YP 40 to 50 times smaller than at the center after 1 burst (x4) | Not reproduced (assumption) |
 | CHO cells show the same central focusing | Reproduced |
-| 40-fold center to near-electrode ratio at 0.2 MHz | Not reproduced |
+| 40-fold center to near-electrode ratio at 0.2 MHz | Not reproduced (assumption) |
 | CANCAN enhances the center, the control does not | Partially reproduced |
 | The profile follows a Lorentzian within 4 mm (R > 0.9) | Reproduced |
 | The excess over the Lorentzian beyond 4 mm falls with packet rate | Reproduced |
@@ -28,13 +28,16 @@ pulses) and its thermometry are not in this dandiset.
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The files give no pixel size and no electrode positions. The analysis takes 1.625 um per pixel from
-the camera and objective named in the Methods, finds the electrode footprints in each image by fitting
-a square of the paper's size, and places the paper's ROIs along the diagonals from its center. The
+The files give no electrode positions; the pixel size, 1.625 um, is only in OME-XML appended to each
+image description. The analysis finds the electrode footprints in each image by fitting a square of the
+paper's size, and places the paper's ROIs along the diagonals from its center. Three outcomes rest on
+choices the paper leaves open: which wells can be placed (the CT26 slope of Figure 7B reaches
+p < 0.001 with three left-out wells added) and which electrode footprint gives the background (the
+two ratio claims fall in range under some single footprints). The
 attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001276-silkuniene-2025-01.yaml`](../../attempts/001276-silkuniene-2025-01.yaml).
 
-- `reproduce_silkuniene_2025.ipynb`: the analysis. It takes about 14 minutes, most of it streaming
+- `reproduce_silkuniene_2025.ipynb`: the analysis. It takes about 25 minutes, most of it streaming
   the 54 YO-PRO-1 images (19 GB).
 - `cancan.py`: streaming and binning the images, locating the electrode array, the ROI profiles and
   the Lorentzian fit. Other notebooks on this dandiset can import it.

@@ -22,6 +22,7 @@ provenance:
 outcomes:
 - claim: fig7be-center-linear-with-bursts
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_silkuniene_2025.ipynb
   output: claim:fig7be-center-linear-with-bursts
   notes: Center YP rises with burst number in both cell lines. CHO, fit to individual experiments over
@@ -29,18 +30,29 @@ outcomes:
     means p = 0.0026. CT26 over 1, 2 and 4 bursts (x4), slope 1058.2 a.u. per burst, p = 0.0013 to
     individual experiments (11 wells) and p = 0.024 to group means, so p < 0.001 holds in CHO only.
     With the 6-burst point included, the CT26 slope has p = 0.00011 (individual experiments). The
-    CT26 wells come from three experiment dates, 1 burst (x4) from one date only.
+    CT26 wells come from three experiment dates, 1 burst (x4) from one date only. Under each single
+    footprint as the background the CT26 p is 0.0011 to 0.0015 (individual experiments). With the
+    three wells left out by the placement rule added (placed with the angle of their plate and day),
+    the CT26 p is 0.00098 for individual experiments and 0.059 for group means, which would make the
+    claim reproduced; the outcome rests on leaving out well P1_20240627_B1.
   deviations:
   - The dandiset has 3, 5 (one of 6 left out, see the findings), 3 and 3 usable CT26 wells and 3,
     8, 7 and 8 CHO wells for 1, 2, 4 and 6 bursts (x4), where the paper has n = 3 to 5 and n = 4.
     The paper does not say which wells it used.
-  - Pixel size 1.625 um, from the 4x objective and ORCA-Flash4 camera of Methods 2.4 (6.5 um sensor
-    pixels), checked against the electrode spacing; the array center is the center of a square of
-    the paper's size (Methods 2.2) fitted to the dark electrode footprints (Fig. 3A legend), on
-    images reduced to 16.25 um bins. The paper placed ROIs in MetaMorph.
-  - Background is the median over the four footprints of 3 ROIs in each, where Methods 2.5 places 3
-    ROIs in one footprint without saying which; a standard choice, with the spread between
-    footprints shown.
+  - Pixel size 1.625 um, from the OME-XML PhysicalSizeX in every file's description, which matches
+    the 4x objective and ORCA-Flash4 camera of Methods 2.4 and the electrode spacing; the array
+    center is the center of a square of the paper's size (Methods 2.2) fitted to the dark electrode
+    footprints (Fig. 3A legend), on images reduced to 16.25 um bins. The paper placed ROIs in
+    MetaMorph.
+  - Assumed, wells whose footprints the fit cannot find are left out (fixed-size and free-size fits
+    disagree by 0.5 mm or more, or the free side is off by more than 4%); this drops one CT26
+    2-burst well and two CHO 1-burst wells. The paper placed ROIs by eye and reports no exclusion.
+    The variant with these wells placed at the angle of their plate and day is shown and changes
+    this outcome.
+  - Assumed, the background is the median over the four footprints of 3 ROIs in each, where Methods
+    2.5 places 3 ROIs "within a footprint of an electrode" without saying which; no footprint has a
+    better claim, and the median does not rest on that pick. Each single footprint is shown as a
+    variant.
 - claim: fig7b-ct26-saturation
   outcome: partially_reproduced
   notebook: reproduce_silkuniene_2025.ipynb
@@ -63,7 +75,9 @@ outcomes:
     individual-experiment readings (p 0.025 to 0.047). CT26 FWHM is 1.01, 2.02, 3.38 and 7.26 mm for 1, 2, 4
     and 6 bursts (x4), and CHO FWHM 2.09, 2.08 and 2.65 mm for 2, 4 and 6 (fit range 5 mm, 1 mm spacing). The
     outcome follows the criterion's rule of one reading; under the fit range and spacing adopted for
-    fig7-sharpest-peak-one-burst (0.5 mm, 5 mm) it also holds.
+    fig7-sharpest-peak-one-burst (0.5 mm, 5 mm) it also holds. The pass is fragile, with both parts
+    holding in 2 of 12 readings; the dataset has 23 CHO wells at 2, 4 and 6 bursts (x4) where the
+    paper has 12, which gives the CHO slope of 0.12 to 0.15 mm per burst more power to reach p < 0.05.
   deviations:
   - The ROI spacing and the fit range for Fig. 7 are not in the paper; all readings of the claims
     file are run.
@@ -94,6 +108,7 @@ outcomes:
   - Same wells, center and background as fig7be-center-linear-with-bursts.
 - claim: fig7-offtarget-40-50-fold
   outcome: not_reproduced
+  assumed: true
   notebook: reproduce_silkuniene_2025.ipynb
   output: claim:fig7-offtarget-40-50-fold
   measured: 31.9
@@ -101,10 +116,15 @@ outcomes:
     (mean of per-experiment ratios) at 6 mm, and 14.9 and 14.4 at 7 mm, all below 36. The three
     experiments give 16.3, 37.4 and 50.7 at 6 mm. Under reading B the ratios are 45.1 and 52.1 at 6 mm
     for 2 bursts (x4) but 7.7 and 7.9 for 4 bursts (x4), so not all lie in 36 to 55. YP near the
-    electrodes is small, 15 to 48 a.u. at 6 mm after background, so the ratio is sensitive to the
-    background level.
+    electrodes is small, 15 to 48 a.u. at 6 mm after background, about the spread between the four
+    footprints, and the outcome rests on the background. With the lower-left footprint as the
+    background the 1-burst ratios at 6 mm are 42.3 and 53.7, with the lower-right one 32.7 and 45.2,
+    and with the highest footprint 48.5 and 58.4; over the 64 ways of taking one footprint per well,
+    31% put the 6 mm group-mean ratio in 36 to 55, 50% the mean of ratios, and 62.5% at least one
+    reading. No footprint brings the 7 mm ratios (12.3 to 17.6) or reading B into range.
   deviations:
-  - Same wells, center and background as fig7be-center-linear-with-bursts.
+  - Same wells, center and background as fig7be-center-linear-with-bursts; the background (median
+    of the four footprints) is the assumption this outcome rests on.
 - claim: fig7-cho-replicates-ct26
   outcome: reproduced
   notebook: reproduce_silkuniene_2025.ipynb
@@ -117,18 +137,25 @@ outcomes:
   - Same wells, center and background as fig7be-center-linear-with-bursts.
 - claim: fig4b-40-fold-at-02mhz
   outcome: not_reproduced
+  assumed: true
   notebook: reproduce_silkuniene_2025.ipynb
   output: claim:fig4b-40-fold-at-02mhz
   measured: 45.08
   notes: CT26, 0.2 MHz, 2 bursts (x4), five wells. The ratio of center YP to YP at 6 mm is 45.1 of group
     means and 52.1 as the mean of per-experiment ratios, just above the 36 to 44 tolerance; at 7 mm
     it is 10.7 and 12.5. Per-experiment ratios at 6 mm span 17.9 to 81.9. The roughly 4-fold stronger
-    field near the electrodes is a model output not in the dataset and is not tested.
+    field near the electrodes is a model output not in the dataset and is not tested. The outcome
+    rests on the background. With the upper-left footprint the 6 mm ratios are 35.75 and 38.41, with
+    the upper-right one 40.38 and 68.86, so single footprints put a reading in 36 to 44; over the 1024
+    ways of taking one footprint per well, 34% put the group-mean ratio in range and 42% at least one
+    reading. With the left-out well P1_20240627_B1 added (YP 207 a.u. at 6 mm), the ratios are 25.57
+    and 44.23.
   deviations:
   - Five usable wells where the paper has n = 3 for Fig. 4; the paper does not say which it used.
     These wells are those of the 2-burst group of the Fig. 7 series; the paper's Fig. 4 wells may
     be different experiments.
-  - Same center and background method as fig7be-center-linear-with-bursts.
+  - Same center and background method as fig7be-center-linear-with-bursts; the background (median
+    of the four footprints) is the assumption this outcome rests on.
 - claim: fig3a-cancan-center-enhanced
   outcome: partially_reproduced
   notebook: reproduce_silkuniene_2025.ipynb
@@ -137,10 +164,15 @@ outcomes:
     CANCAN at 1 Hz (2 wells) and 45.1 and 10.7 at 0.2 MHz (5 wells), above 1 as the criterion asks,
     but 1.10 and 1.11 for the control (4 wells), where it asks for below 1. Per control well the ratio
     at 6 mm is 0.73 to 1.30. The control profile is nearly flat (2275 a.u. at the center, 1837 to 2085
-    from 1 to 7 mm; Spearman rho -0.36, p = 0.39).
+    from 1 to 7 mm; Spearman rho -0.36, p = 0.39), with its center the brightest point. The outcome
+    is partial because the CANCAN part holds for the two rates present and the control part fails.
+    With the left-out 0.2 MHz well added the 0.2 MHz ratios are 25.6 and 10.8.
   deviations:
   - Only two of the four CANCAN packet rates are in the dandiset (1 Hz and 0.2 MHz); 1 kHz and 10 kHz
     are missing. The controls are all at a packet rate of 1 Hz.
+  - The wells are those of the dandiset that match the conditions (CT26, 2 bursts (x4)); the 0.2 MHz
+    wells may be those of the Fig. 7 series, and the paper's Fig. 3 and 4 series had n = 3 per rate
+    and n = 5 controls, where here 1 Hz CANCAN has 2 wells and the control 4.
   - Same center and background method as fig7be-center-linear-with-bursts.
 - claim: fig3bc-lorentzian-profile
   outcome: reproduced
@@ -148,7 +180,10 @@ outcomes:
   output: claim:fig3bc-lorentzian-profile
   notes: The Lorentzian fitted to the group-mean profile from -4 to 4 mm gives R = 0.965 (diagonal) and
     0.927 (sides) at 1 Hz and 0.990 and 0.992 at 0.2 MHz with 1 mm spacing (9 points), and 0.963,
-    0.941, 0.992 and 0.993 with 0.5 mm spacing (17 points), all with p < 0.001.
+    0.941, 0.992 and 0.993 with 0.5 mm spacing (17 points), all with p < 0.001. The p uses n - 2
+    degrees of freedom; with two fewer, for the fitted parameters, it stays below 0.001 except for
+    the 1 Hz lines parallel to the sides at 1 mm spacing (p = 0.0027), and all pass at 0.5 mm.
+    The 1 Hz group has 2 wells.
   deviations:
   - Only the 1 Hz (2 wells) and 0.2 MHz (5 wells) rates are in the dandiset.
   - The lines parallel to the sides use the same ROIs as the diagonals, through the center toward the
@@ -159,7 +194,9 @@ outcomes:
   output: claim:fig3bc-offtarget-deviation-falls-with-rate
   notes: Mean excess of observed over fitted YP beyond 4 mm, in % of the fitted peak, is 2.67 (diagonal)
     and 2.57 (sides) at 0.2 MHz against 27.31 and 29.42 at 1 Hz with 1 mm spacing, and 1.66 and 2.48
-    against 24.16 and 30.23 with 0.5 mm spacing.
+    against 24.16 and 30.23 with 0.5 mm spacing. The lines parallel to the sides end at the side
+    midpoints, 6.4 mm out; keeping only ROIs inside that, the sides give 2.30 and 2.03% at 0.2 MHz
+    against 27.28 and 27.53% at 1 Hz (1 and 0.5 mm spacing).
   deviations:
   - Only the 1 Hz and 0.2 MHz rates are in the dandiset.
 - claim: fig4b-center-no-rate-effect
@@ -168,7 +205,8 @@ outcomes:
   output: claim:fig4b-center-no-rate-effect
   notes: Center YP is 3088 a.u. (s.e. 821, n = 2) at 1 Hz and 1985 (s.e. 445, n = 5) at 0.2 MHz, 36%
     lower; Student t = -1.28, p = 0.257, 0.770 with the paper's threefold Bonferroni correction (Welch
-    p = 0.381). With two 1 Hz wells the test has little power.
+    p = 0.381). With two 1 Hz wells the test has little power. With the left-out 0.2 MHz well added,
+    p = 0.175 (0.525 corrected).
   deviations:
   - Only the 0.2 MHz against 1 Hz comparison can be made; 1 kHz and 10 kHz are not in the dandiset.
 - claim: fig4b-near-electrode-rate-decline
@@ -177,7 +215,8 @@ outcomes:
   output: claim:fig4b-near-electrode-rate-decline
   notes: YP at 6 mm is 899 a.u. at 1 Hz and 44 at 0.2 MHz (4.9%), at 7 mm 1851 and 185 (10.0%). The
     power-function exponents are -0.246 and -0.188, the same for the fit to group means and to
-    individual experiments; two-sided t-tests give p = 3.2e-06 and 0.00036.
+    individual experiments; two-sided t-tests give p = 3.2e-06 and 0.00036. With the left-out 0.2 MHz
+    well added the exponents are -0.207 and -0.195 and p = 9.1e-06 and 7.6e-05.
   deviations:
   - Only two rates are in the dandiset, so the power function passes through two group means.
 - claim: fig4c-fwhm-decreases-with-rate
@@ -192,7 +231,8 @@ outcomes:
     0.2 MHz mean is within 1.8 to 2.2 mm and is 12.3 to 13.1% of the gap, below 15%; the 1 Hz mean is
     above 4.4 mm. The 1 kHz and 10 kHz means and their tests, which the criterion needs, cannot be
     computed. The 0.2 MHz against 1 Hz difference has p = 0.003, 0.009 with the threefold correction,
-    where the paper reports p = 0.09.
+    where the paper reports p = 0.09. With the left-out 0.2 MHz well added the 0.2 MHz FWHM is 2.28
+    mm at 1 mm spacing and 2.17 mm at 0.5 mm spacing.
   deviations:
   - Only the 1 Hz and 0.2 MHz rates are in the dandiset.
 - claim: fig4c-log-dependence
@@ -213,7 +253,11 @@ outcomes:
   outcome: blocked
   blocked_by: other
   notes: Needs propidium images, which this dandiset does not hold (FITC and DAPI channels only). They
-    appear to be in DANDI:001284, which cites the same paper and describes propidium staining.
+    appear to be in DANDI:001284, which cites the same paper and describes propidium staining. The
+    YP half, computed on the CT26 0.2 MHz 2 bursts (x4) wells (0 mm elevation), holds. The group-mean
+    profile in % of its center, fitted from -5 to 5 mm, gives R2 0.979 for the Lorentzian and 0.975
+    for the Gaussian at 1 mm spacing (0.982 and 0.979 at 0.5 mm), both within tolerance, with the
+    Lorentzian better.
 - claim: fig5-yp-spot-slightly-larger-than-pr
   outcome: blocked
   blocked_by: other
@@ -221,12 +265,16 @@ outcomes:
 - claim: fig5c-irreversible-center
   outcome: blocked
   blocked_by: other
-  notes: The criterion needs the Fig. 5 wells with a post-exposure Hoechst counterstain. This dandiset
-    holds Hoechst images taken before exposure only, and no propidium, so the Hoechst part cannot be
-    tested; DANDI:001284 appears to hold the Fig. 5 series. The YP part, shown in the notebook for
-    reference on the CT26 0.2 MHz 2 bursts (x4) wells, holds there (center 1985 a.u., 1030 at 1 mm and at
-    most 244 from 2 to 7 mm). The reader's check also noted that the paper defines no Hoechst
-    background.
+  notes: The Hoechst part of the criterion stands for the paper's check that cells inside the
+    footprint were still present after exposure. The paper made it on the Pr samples, which "were
+    also re-imaged for Hoechst fluorescence, to check for possible cell loss due to detachment"
+    (Methods 2.4), and Hoechst "proved that cells were still present and the lack of YP staining was
+    not a result of cell detachment" (Results 3.2). This dandiset holds Hoechst images taken before
+    exposure only; DANDI:001284 appears to hold the Fig. 5 series. The paper also defines no Hoechst
+    background, so the reference level is open as well. Shown for reference on the CT26 0.2 MHz 2
+    bursts (x4) wells. The YP part holds (center 1985 a.u., 1030 at 1 mm and at most 244 from 2 to 7
+    mm). Before exposure, Hoechst inside every footprint is 0.74 to 0.99 times the monolayer level and
+    20 to 60 times the camera offset (53.5 a.u.), so cells were present there before exposure.
 - claim: fig6b-900ns-peak-not-significant
   outcome: blocked
   blocked_by: other
@@ -259,9 +307,11 @@ findings:
     citing the paper (001047, 001277, 001284) appear to hold several of these series, but 001276 does
     not point to them.
 - kind: metadata_insufficient
-  statement: The files give no pixel size or spatial calibration, no electrode positions and no ROI
-    coordinates. Cell line is in the subject strain, but protocol, packet rate, number of bursts,
-    channel and phase are only in free-text descriptions. The stated inter-electrode distance of
+  statement: The files give no electrode positions and no ROI coordinates. Pixel size (1.625 um),
+    exposure (200 ms for YO-PRO-1, 600 ms for Hoechst) and stage position are only in OME-XML
+    appended to the free-text description of the image series, and one YO-PRO-1 file
+    (P2_20240827_A3) has none. Cell line is in the subject strain, but protocol, packet rate, number
+    of bursts, channel and phase are only in free-text descriptions. The stated inter-electrode distance of
     10.0 mm fits the paper's 15.3 mm diagonal only as the edge-to-edge distance along a side; the
     electrode footprints in the images are 12.8 mm apart center to center at 1.625 um per pixel.
 - kind: selection_undocumented
@@ -286,5 +336,205 @@ findings:
   statement: The paper does not give the spacing of the ROIs along the diagonals, the fit range used
     for Fig. 7, or which electrode footprint holds the background ROIs. With 1 mm spacing the 1-burst
     CT26 FWHM is 1.00 mm and with 0.5 mm spacing 1.09 mm, which decides whether the 7.3% and 2.3%
-    figures are reproduced. Question for the authors, what ROI spacing and fit range were used for
-    the FWHM values of Fig. 7, and which wells of the dandiset form each group.
+    figures are reproduced. The background footprint decides whether the 40 to 50-fold and 40-fold
+    ratios are reproduced, since YP near the electrodes is about as small as the spread between
+    footprints. Question for the authors, what ROI spacing and fit range were used for the FWHM
+    values of Fig. 7, which footprint gave the background in each image, and which wells of the
+    dandiset form each group.
+verifications:
+- date: 2026-11-01
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusions and summary
+    removed, the helper module and the claims file, with the paper. The verifier also read the
+    descriptions of all 108 assets through the archive API.
+  results:
+  - claim: fig7be-center-linear-with-bursts
+    agrees: true
+    outcome: partially_reproduced
+    reason: CHO slope 643.9 a.u. per burst, p = 2.2e-10 (individual experiments). The CT26 slope is
+      positive but p = 0.0013 (individual) and 0.024 (group means), so it misses p < 0.001 under both
+      readings. The well exclusion rule is the author's own and drops CT26 well P1_20240627_B1, which
+      counts toward this claim (p = 0.0013 against a 0.001 threshold); no alternative placement or
+      sensitivity check was shown.
+    response: The three left-out wells are now refitted with the angle fixed at that of their plate
+      and day, shown in a figure, and added as a variant. With them the CT26 p is 0.00098
+      (individual experiments) and 0.059 (group means), which would make the claim reproduced. The
+      outcome is kept, marked as resting on the exclusion (assumed), since the left-out well's
+      footprints are not found and its corner contrast is below the median of the wells used. The
+      CT26 p under each single-footprint background (0.0011 to 0.0015) is shown too.
+  - claim: fig7b-ct26-saturation
+    agrees: true
+    outcome: partially_reproduced
+    reason: The CT26 6-burst mean (4827) is below the fitted line (6272) but inside the 95% band (4234
+      to 8311) under both readings. The CHO 6-burst point is inside its band. The criterion calls
+      this partial. Camera saturation could create the CT26 6-burst saturation and was not checked.
+    response: The share of pixels at full scale is now computed for every ROI; it is at most 5.4e-4
+      in any diagonal ROI and 0 at the center of every group, so camera saturation does not cause
+      the plateau. No change of outcome.
+  - claim: fig7cf-fwhm-with-bursts
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced but fragile. At 0.5 mm spacing, fit range 5 or 6 mm, individual experiments,
+      CT26 p < 1e-4 and CHO p = 0.064 or 0.090; in 10 of the 12 readings the CHO slope is
+      significant or the CT26 p is too large. The dataset has 23 CHO wells where the paper had 12,
+      which gives power to detect the 0.13 mm-per-burst CHO slope. The criterion allows the one
+      reading rule.
+    response: The notes and the conclusion now say the pass is fragile and why. No change of outcome.
+  - claim: fig7-sharpest-peak-one-burst
+    agrees: true
+    outcome: reproduced
+    reason: At 0.5 mm spacing FWHM is 1.093 to 1.103 mm, 7.14 to 7.21% of the gap, area reading (b)
+      2.29 to 2.33%, all within tolerance. At 1 mm spacing the area test fails. On synthetic images
+      the square fit's center was off by 0.10 to 0.13 mm, which inflates FWHM by about 3% at 1 mm
+      spacing.
+    response: The center bias the verifier found is now stated in the helper's docstring; it is not
+      corrected. No change of outcome.
+  - claim: fig7-offtarget-40-50-fold
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced, not robust. For 1 burst the ratios are 31.9, 34.8, 14.9 and 14.4, and
+      reading B fails too. The background is the median over four footprints where Methods 2.5 says
+      one footprint, an author choice presented as standard; the spread between footprints is
+      comparable to YP at 6 mm, so the 6 mm ratios can move by a large factor. The four
+      single-footprint readings were never run.
+    response: The ratios are now computed with each single footprint, the lowest and the highest as
+      the background, and over all 64 ways of taking one footprint per well. With the lower-left
+      footprint the 6 mm ratios are 42.3 and 53.7, in range, and 62.5% of the ways put at least one
+      6 mm reading in range; no footprint brings the 7 mm readings or reading B into range. The median
+      is kept and recorded as an assumption (assumed), and the question of which footprint the paper
+      used is added to the methods_unavailable finding.
+  - claim: fig7-cho-replicates-ct26
+    agrees: true
+    outcome: reproduced
+    reason: At 2, 4 and 6 bursts, center YP exceeds YP at 6 mm (18.2x, 23.1x, 18.9x) and at 7 mm
+      (7.4x, 6.3x, 5.3x). The CHO linear part also holds.
+    response: No change.
+  - claim: fig4b-40-fold-at-02mhz
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced, not robust. Ratios 45.08, 52.10, 10.73 and 12.51 against a window of 36
+      to 44. The 6 mm group-mean ratio misses by 1.1 and has the same background sensitivity as the
+      fig7 ratio claim. The exclusion rule drops a well that counts toward this claim (ratio 45.1
+      against a 44 limit).
+    response: The single-footprint readings are now run (upper left gives 35.75 and 38.41, upper
+      right 40.38, both partly in range; 42% of the 1024 ways of taking one footprint per well put a
+      reading in range), and the left-out well is added as a variant (25.57 and 44.23). The outcome
+      is kept, recorded as resting on the median background (assumed).
+  - claim: fig3a-cancan-center-enhanced
+    agrees: false
+    outcome: not_reproduced
+    reason: The CANCAN ratios exceed 1 (3.43/1.67 at 1 Hz, 45.1/10.7 at 0.2 MHz). The control ratios
+      are 1.10 and 1.11, where the criterion requires below 1, and the control center is the
+      brightest point. Only 2 of 4 CANCAN rates are present. The wells may come from the Fig. 7
+      series, and 1 Hz CANCAN has n = 2.
+    response: Outcome kept as partially reproduced, with the disagreement recorded. The claim has two
+      parts and the criterion names no partial case; the CANCAN part holds for both rates present
+      and the control part fails, which is the protocol's "holds only in part". The notes now say
+      the control center is the brightest point, and a deviation states the provenance of the
+      wells and their n.
+  - claim: fig3bc-lorentzian-profile
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced on 2 of 4 rates. R is 0.93 to 0.99 with p < 0.001 for 1 Hz and 0.2 MHz in both
+      directions and at both spacings; the 1 Hz group has only 2 wells. The p comes from Pearson with
+      n - 2 degrees of freedom and ignores the two fitted parameters; for 1 Hz sides at 1 mm spacing
+      5 degrees of freedom would give p of about 0.003, while the 0.5 mm reading still passes.
+    response: The p with two fewer degrees of freedom is now printed for every fit (0.0027 for 1 Hz
+      sides at 1 mm, below 0.001 elsewhere and for all at 0.5 mm) and stated in the notes. No change
+      of outcome.
+  - claim: fig3bc-offtarget-deviation-falls-with-rate
+    agrees: true
+    outcome: reproduced
+    reason: The deviation is 1.7 to 2.7% of a at 0.2 MHz and 24 to 30% at 1 Hz. The sides profile runs
+      past the array edge (6.5 and 7 mm ROIs beyond the 6.4 mm side midpoint), but the difference is
+      about 10-fold.
+    response: A variant keeping only ROIs inside the side midpoints is now shown (sides 2.30 and 2.03%
+      at 0.2 MHz against 27.28 and 27.53% at 1 Hz), and the helper's docstring states the geometry.
+      No change of outcome.
+  - claim: fig4b-center-no-rate-effect
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced on 1 of 3 comparisons. 0.2 MHz against 1 Hz p = 0.257, or 0.770 with x3
+      correction. With n = 2 against 5 and a 36% lower mean, the test has little power.
+    response: The left-out well is added as a variant (p = 0.175). No change of outcome.
+  - claim: fig4b-near-electrode-rate-decline
+    agrees: true
+    outcome: reproduced
+    reason: Exponents are -0.246 at 6 mm and -0.188 at 7 mm; t-test p = 3.2e-6 and 3.6e-4. With two
+      rates the power fit is a two-point slope.
+    response: The left-out well is added as a variant (exponents -0.207 and -0.195). No change of
+      outcome.
+  - claim: fig4c-fwhm-decreases-with-rate
+    agrees: true
+    outcome: partially_reproduced
+    reason: 0.2 MHz FWHM is 2.00 or 1.88 mm (in tolerance) and the smallest value is 12 to 13% of the
+      gap. The 1 Hz FWHM is 4.56 or 4.54 mm, outside 3.6 to 4.4 (n = 2). The required 1 kHz and 10 kHz
+      tests are impossible.
+    response: The left-out well is added as a variant (0.2 MHz FWHM 2.28 and 2.17 mm). No change of
+      outcome.
+  - claim: fig4c-log-dependence
+    agrees: true
+    outcome: blocked
+    reason: Blocked, data_missing. All 108 asset descriptions give only 0.2 MHz and 1 Hz packet rates.
+    response: Kept as blocked with blocked_by other, since a rate series appears to be public in
+      DANDI:001047, which data_missing excludes; the notes say so.
+  - claim: fig5-raised-electrodes-weaker-center
+    agrees: true
+    outcome: blocked
+    reason: Blocked, data_missing. No asset description mentions elevation or raised electrodes.
+    response: Kept as blocked with blocked_by other, since the raised-electrode series appears to be
+      public in DANDI:001284.
+  - claim: fig5b-pr-gaussian-yp-lorentzian
+    agrees: true
+    outcome: blocked
+    reason: Blocked, data_missing for the Pr part, as all files are DAPI-pre or FITC-post. The YP half
+      (Lorentzian against Gaussian R2, CT26 0.2 MHz 2 bursts) could be tested on the wells present
+      and was not.
+    response: The YP half is now computed and shown (R2 0.979 Lorentzian against 0.975 Gaussian at
+      1 mm spacing, 0.982 and 0.979 at 0.5 mm, both within tolerance, Lorentzian better). The claim
+      stays blocked (other, propidium apparently in DANDI:001284).
+  - claim: fig5-yp-spot-slightly-larger-than-pr
+    agrees: true
+    outcome: blocked
+    reason: Blocked, data_missing. Needs propidium.
+    response: Kept as blocked with blocked_by other, as for fig5b-pr-gaussian-yp-lorentzian.
+  - claim: fig5c-irreversible-center
+    agrees: true
+    outcome: blocked
+    reason: Blocked, but for methods_underspecified, not data_missing. The YP part passes. Pre-exposure
+      Hoechst exists for every well and the criterion does not ask for post-exposure Hoechst; only
+      the undefined Hoechst reference level blocks that part.
+    response: Pre-exposure Hoechst is now measured inside the footprints of the CT26 0.2 MHz 2-burst
+      wells (0.74 to 0.99 of the monolayer, 20 to 60 times the camera offset). The block is kept with
+      blocked_by other. The notes now quote Methods 2.4 and Results 3.2, which say the paper's
+      Hoechst check was made after exposure, to show cells had not detached, which a pre-exposure
+      image cannot show; the undefined reference level is given as a second reason.
+  - claim: fig6b-900ns-peak-not-significant
+    agrees: true
+    outcome: blocked
+    reason: Blocked, data_missing. All 324 pulse-duration mentions in the descriptions are 600 ns.
+    response: Kept as blocked with blocked_by other, since the pulse-duration series appears to be
+      public in DANDI:001277.
+  - claim: fig6c-normalized-decline-similar
+    agrees: true
+    outcome: blocked
+    reason: Blocked, data_missing, for the same reason as fig6b-900ns-peak-not-significant.
+    response: As for fig6b-900ns-peak-not-significant.
+  - claim: fig6d-fwhm-sharper-longer-pulses
+    agrees: true
+    outcome: blocked
+    reason: Blocked, data_missing, for the same reason as fig6b-900ns-peak-not-significant.
+    response: As for fig6b-900ns-peak-not-significant.
+  - claim: fig2-heating-below-44c
+    agrees: true
+    outcome: blocked
+    reason: Blocked, data_missing. The files hold only well images; there are no thermochromic film
+      images.
+    response: No change.
+  - claim: fig1e-field-simulation
+    agrees: true
+    outcome: blocked
+    reason: Blocked, data_missing. Simulation output; the model is not public and not in the dataset.
+    response: No change.
