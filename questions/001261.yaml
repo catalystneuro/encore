@@ -1,0 +1,48 @@
+# Questions from attempt 001261-luo-2024-01 about claims/001261/10.1002-cne.70001.yaml, raised by
+# the verifier in rounds 1 (author-revise-1) and 2 (author-revise-2), 2026-11-01.
+dandiset: "001261"
+paper: doi:10.1002/cne.70001
+questions:
+- claim: fig2d-mouse-ahp
+  attempt: 001261-luo-2024-01
+  asked: 2026-11-01
+  question: The claims file makes the Methods' window the deciding reading of the AHP (F12 to F14,
+    the rheobase step, the minimum within 100 ms of the threshold crossing), with the code's window
+    (afterhyperpolarization.m, the first step at or above rheobase with two spikes, between the first
+    and the second peak) as a variant. Methods (12) says only "after the first action potential" and
+    does not name the rheobase step; the rheobase step comes from the Fig. S2-1 legend. Should the
+    AHP claims be judged on the code's window, as the paper's reported values suggest? The same
+    question applies to fig7d-macaque-threshold-ahp and to the AHP features counted in
+    fig2-mouse-c-nc-15-of-18 and fig7-macaque-mouse-feature-count.
+  passage: Methods 2.5, "(12) afterhyperpolarization potential (AHP) amplitude (mV), measured after
+    the first action potential and defined as the difference between threshold and the minimum
+    potential 100 ms later; (13) AHP latency (ms), the time after spike threshold is crossed by the
+    first action potential and the AHP minimum; (14) AHP width (ms), the time difference at half
+    maximum of the first AHP"; Fig. S2-1 legend (spike parameters assayed at rheobase); code
+    afterhyperpolarization.m at commit 17a3265.
+  why: On this dandiset the Methods' window gives a noncholinergic AHP width longer than the
+    cholinergic one (298.9 against 183.1 ms, p = 4.1e-5), the opposite of the paper, and a
+    noncholinergic AHP amplitude of 16.35 mV against the paper's 12.4, so fig2d-mouse-ahp is not
+    reproduced. The code's window gives 30.06 and 12.14 mV and 184.3 and 77.4 ms against the paper's
+    28.9, 12.4, 177.9 and 85.0, all within tolerance, with p = 4.1e-14 and 5.2e-8, which would
+    reproduce the claim. For the macaque comparison the code's window gives 119.1 against 184.3 ms
+    (p = 3.5e-4), as in the paper, where the Methods' window gives no difference (p = 0.17).
+- claim: fig2d-mouse-ahp
+  attempt: 001261-luo-2024-01
+  asked: 2026-11-01
+  question: The claims file's F14 measures the AHP width between the first two crossings of threshold
+    minus half the AHP amplitude, "Window as in F12" (the 100 ms after the threshold crossing), and to
+    the end of the step when the potential does not recross. Is that span what the paper measured?
+    Methods 2.5 (14) gives the width as "the time difference at half maximum of the first AHP", which
+    reads as a width of the AHP trough itself, and does not say to run it to the end of the step. The
+    same question applies to fig7d-macaque-threshold-ahp and to the AHP width counted in
+    fig2-mouse-c-nc-15-of-18 and fig7-macaque-mouse-feature-count.
+  passage: Methods 2.5, "(14) AHP width (ms), the time difference at half maximum of the first AHP";
+    claims file, opening comment, F14; code afterhyperpolarization.m at commit 17a3265.
+  why: On this dandiset the potential does not recross within the 100 ms window in 43 of 47 mouse
+    cholinergic and 35 of 43 noncholinergic neurons, so F14 runs to the end of the analysed 500 ms and
+    measures the time from the first spike to the end of the step (latency plus width 495.5 and 495.6
+    ms on average; Spearman rho of width with latency -0.996 and -0.990). Noncholinergic neurons spike
+    earlier, so they get the longer widths (298.9 against 183.1 ms, p = 4.1e-5), the opposite of the
+    paper, and fig2d-mouse-ahp is not reproduced. In the 4 and 8 neurons that recross within the window
+    the width is 9.9 against 54.8 ms (p = 0.051).
