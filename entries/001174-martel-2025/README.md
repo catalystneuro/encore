@@ -31,10 +31,11 @@ The cells' first occurrences come from the paper's per-cell table on Zenodo
 record, with the reasons and the differences from the paper's method, is
 [`attempts/001174-martel-2025-01.yaml`](../../attempts/001174-martel-2025-01.yaml).
 
-- `reproduce_martel_2025.ipynb`: data check, the link to the Zenodo table, Figures 1 and 3. About two
-  minutes, most of it streaming.
+- `reproduce_martel_2025.ipynb`: data check, the link to the Zenodo table, Figures 1 and 3. About one and a
+  half minutes on the last run (82 s), most of it streaming.
 - `sequences_martel_2025.ipynb`: the sequence detection of Figure 4 on every 10-min slice, under each
   reading of the paper's open parameters, and a sweep of the detection's parameters against the paper's
-  own counts. About twenty-two minutes.
+  own counts. About fifteen minutes on the last run (915 s); an earlier run on another machine took about
+  twenty-six.
 - `sma_m1.py`: loading the files, the per-cell descriptors, the Z-Jaccard and the Zenodo tables.
 - `sequences.py`: a Python (numba) port of the paper's `identify_sequences.m`.

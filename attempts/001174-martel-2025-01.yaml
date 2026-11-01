@@ -38,7 +38,9 @@ inputs:
   source: doi:10.5281/zenodo.14976651
 - what: The paper's code, read for method details (ReorganizedData_Final.m and ISI_Final.m for the
     descriptors; permfun.R and 1_JaccardIndexAnalysisAllSessions.R for the Z-Jaccard; identify_sequences.m,
-    ported to Python in sequences.py, for the sequences).
+    ported to Python in sequences.py, for the sequences; identify_sequences.m, md5
+    6fe2a4f0f36ec29b78683d71aed0ef34, is downloaded by the sequences notebook, which prints its
+    double-counting step).
   source: doi:10.5281/zenodo.14963213, doi:10.5281/zenodo.14977106 and doi:10.5281/zenodo.14963234
 outcomes:
 - claim: zenodo-descriptors-link
@@ -150,8 +152,10 @@ outcomes:
     conditions; the paper gives p = 0.03. The same test on the paper's own per-cell table gives
     p = 0.0138 (medians 3.407 and 3.124, 36 and 48 cells, against 36 and 52 here), so the difference
     comes from the dandiset's event amplitudes, which differ from the table's (zenodo-descriptors-link),
-    not from the method. Most of the gap comes from U SMA 2023-03-07 and 2023-03-14, where every
-    dandiset amplitude is above the table's. Without them the task test gives p = 0.041 uncorrected
+    not from the method. U SMA 2023-03-07 and 2023-03-14, where every dandiset amplitude is above the
+    table's, account for most of the gap in the SMA task median (3.193 with them, 3.133 without,
+    3.124 in the table) but for less than half of it in the p-value on a log scale (0.0988 with
+    them, 0.041 without, 0.0138 in the table). Without them the task test gives p = 0.041 uncorrected
     (medians 3.384 and 3.133, 36 and 39 cells) and q = 0.082 corrected over the two conditions
     (spontaneous p = 0.11), so the readings would then disagree. Leaving out sessions is not the
     claims file's method, and the outcome stays on all cells.
@@ -169,7 +173,9 @@ outcomes:
     and the archive's variableMeasured lists only imaging variables for every asset. As a check that
     decides nothing, method Z's test run on the paper's z-scored windows finds 20 of 129 Q SMA cells
     modulated with FDR over the chamber (21 with FDR per condition column, 42 uncorrected), against
-    the paper's 43.
+    the paper's 43. Run on the paper's own windows, method Z thus falls far short of the paper's
+    count, which suggests that method Z is not the paper's procedure; this is put to a reader in
+    questions/001174.yaml and does not change the outcome, which rests on the missing event times.
 - claim: fig2c-q-sma-direction
   outcome: blocked
   blocked_by: data_missing
@@ -263,6 +269,13 @@ outcomes:
     readings of the two 0.05 s rules and of the task slice were all run.
   - The code's double-counting step writes 2 into a logical array, so it removes nothing; the main
     count does what the code does, as the claims file asks, and the documented step is a variant.
+    The sequences notebook prints the lines of identify_sequences.m (DA = false(...), the test
+    DA(...) == 2 and the assignment DA(...) = 2) so that this reading can be checked.
+  - The outcome departs from the criterion. The criterion's rule gives not_reproduced when every
+    reading of method S fails, as here. The attempt blocks the claim as methods_underspecified
+    because the sweep shows that the readings the criterion lists do not include the procedure
+    behind the paper's own Figure 4D counts, so the failure says nothing about the dandiset. The
+    point is put to a reader in questions/001174.yaml.
 - claim: fig4b-example-three-segments-q
   outcome: blocked
   blocked_by: methods_underspecified
@@ -278,7 +291,8 @@ outcomes:
     documented double-counting step); 2022-10-03 gives 3, 4 and 12 to 13. The three slices' sets
     differ in every reading, with at most 4 sequences shared by all three.
   deviations:
-  - As fig4a-example-sequences-q.
+  - As fig4a-example-sequences-q, including the departure from the criterion's rule, which gives
+    not_reproduced when every reading fails.
 - claim: fig4d-sequence-measures-vary
   outcome: reproduced
   notebook: sequences_martel_2025.ipynb
@@ -302,11 +316,15 @@ outcomes:
     pooling mixes fields of view of different geometry. Within sessions, with the code's
     double-counting step, no session differs (0 of 25 at p < 0.05 by KS or Mann-Whitney under each
     reading), and the stratified tests agree (percentile KS p 0.5485 to 0.7846, Mann-Whitney 0.5673
-    to 0.9362, cell-relabelling permutation 0.3305 to 0.9110). With the double-counting step as its
-    comments describe it, the stratified tests find sequence pairs closer under readings (a) and (b)
-    (permutation p 0.0025 and 0.0105, percentile KS 0.0027 and 0.0247), with no session at q < 0.05.
-    The outcome thus turns on a detection step that the paper's own counts do not pin down
-    (fig4a-example-sequences-q), and the claim stays blocked. The Results describe reading (ii) and
+    to 0.9362, cell-relabelling permutation 0.3305 to 0.9110). So under the code's step, which
+    removes nothing as the code runs (the notebook prints the lines), the pooled test and the
+    within-session test of reading (ii) disagree; the within-session and stratified tests were
+    chosen after the first verification, and the criterion names neither. With the double-counting
+    step as its comments describe it, the stratified tests find sequence pairs closer under readings
+    (a) and (b) (permutation p 0.0025 and 0.0105, percentile KS 0.0027 and 0.0247), with no session
+    at q < 0.05. The claim stays blocked, as the readings disagree once the pooled test is counted, and
+    which cells enter sequences rests on a detection that the paper's own counts do not pin down
+    (fig4a-example-sequences-q). The Results describe reading (ii) and
     the Figure 4C legend reading (i); Figure S2 is not in the text read, and the paper gives no test.
     The question of which comparison and test the paper meant is put to its authors (findings).
   deviations:
@@ -348,7 +366,7 @@ findings:
     within 3 pixels for 93.8%), but event rates agree within 1% for only 40.9% of cell-conditions and
     the table's are a median 4.2% higher (up to 50% at the 95th percentile); one-frame inter-event
     intervals are rarer in the dandiset (3.9% against 11.9% of cells with a one-frame median IEI),
-    consistent with events lost when they were put on the frame grid. U SMA 2023-03-07 and 2023-03-14
+    so some events of the paper's table are missing from the dandiset's event arrays. U SMA 2023-03-07 and 2023-03-14
     differ by factors of 0.04 to 20; in both the dandiset has far fewer spontaneous events and a higher
     amplitude in every cell, which is not a swap of conditions and looks like a different event
     detection. With the dandiset's amplitudes the U task M1 against SMA difference is not significant
@@ -596,3 +614,186 @@ verifications:
     outcome: blocked
     reason: Same reason as histology-lens-placement.
     response: blocked_by changed from not_runnable to other.
+- date: 2026-11-01
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The second run, the full executed notebooks with their conclusions and summaries, the
+    helper modules, the attempt record, the claims file and the paper. The verifier could not see
+    identify_sequences.m, permfun.R or the protocol.
+  results:
+  - claim: zenodo-descriptors-link
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The finding of kind other says the one-frame intervals are
+      "consistent with events lost when they were put on the frame grid", but no output shows this
+      mechanism; cell 13 shows only that one-frame IEIs are rarer (3.9% against 11.9%). Cell 15's
+      weaker wording ("events missing from the dandiset's event arrays") is supported.
+    response: The finding now says only that some events of the paper's table are missing from the
+      dandiset's event arrays, as cell 15 does. No change of outcome.
+  - claim: cell-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. Round-1 point P1 is resolved; the notes and cell 18 now say that
+      reading (i) compares the paper's table with its text.
+    response: No change.
+  - claim: cells-tracked-18pct
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (metadata_insufficient). The roi_ids are now checked, 0..n-1 in
+      all 45 files.
+    response: No change.
+  - claim: fig1d-rate-no-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig1e-ieicv-no-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig1f-amplitude-u-sma-spont-higher
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. P2 is resolved; cell 14 shows the two U SMA sessions are not a
+      swap of conditions, and cell 36 reruns the test without them (p = 0.0078).
+    response: No change.
+  - claim: fig1d-rate-m1-above-sma-u
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. Without the two U SMA sessions the rate tests give p = 1.9e-05
+      and 2e-06 (cell 36).
+    response: No change.
+  - claim: fig1f-amplitude-m1-above-sma-u-task
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome, which stands on the claims file's method. It is decided by two
+      U SMA sessions whose deposited events appear to come from a different event detection; without
+      them p = 0.041 uncorrected and q = 0.082, and a finding records this. The outcome reflects the
+      deposit, not the paper's analysis. Cell 40 and the notes say "Most of the gap comes from U SMA
+      2023-03-07 and 2023-03-14"; this holds for the SMA task median (3.193 falls to 3.133, against
+      the table's 3.124) but not for the p-value (0.099 falls to 0.041, against the table's 0.014,
+      less than half the gap on a log scale). The wording should say which measure it means.
+    response: Cell 40 and the notes now say that the two sessions account for most of the gap in the
+      SMA task median and for less than half of it in the p-value on a log scale, with the three
+      values of each. No change of outcome.
+  - claim: fig2-q-sma-modulated-34pct
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (data_missing). P3 is resolved; cell 8 opens all 45 files and
+      lists variableMeasured for all assets. Method Z run on the paper's own z-scored windows (cell
+      42) gives 20 modulated Q SMA cells against the paper's 43. This suggests the claims file's
+      method Z is not the paper's procedure; the claims are blocked anyway, but no finding or question
+      records the mismatch, and one should.
+    response: The mismatch is added to questions/001174.yaml as a question for a reader, covering the
+      six Figure 2 and Figure S1 claims, and the notes and the summary of the first notebook say so.
+      No change of outcome.
+  - claim: fig2c-q-sma-direction
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (data_missing). On the paper's windows the class split is 14
+      direction-related and 6 not, against 32 and 11; as for fig2-q-sma-modulated-34pct, no finding or
+      question records the mismatch.
+    response: As for fig2-q-sma-modulated-34pct.
+  - claim: fig2-q-magnitude-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (data_missing).
+    response: No change; the question on method Z covers it.
+  - claim: figs1-u-sma-direction
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (data_missing).
+    response: No change; the question on method Z covers it.
+  - claim: figs1-u-m1-target-onset
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (data_missing). For U M1 at target onset method Z on the paper's
+      windows gives 6 modulated and 3 direction-related, against 4 and 0.
+    response: As for fig2-q-sma-modulated-34pct.
+  - claim: figs1-u-m1-movement-onset
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome (data_missing).
+    response: No change; the question on method Z covers it.
+  - claim: fig3-synchronized-pairs-exist
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. P9 is resolved; cells 47 and 48 list the eight SMA
+      session-conditions at or below 0.05. permfun.R (joined series or each part shifted) is still
+      unverified, but agreement with the paper's Jaccard table is good (r = 0.950). The summary of
+      the first notebook says the paper's Jaccard and Figure 4D tables count fewer cells than the
+      dandiset in four sessions; that holds for the Jaccard table, but the Figure 4D table has fewer
+      in three only (V 2023-03-09 has 11 in both), as the selection_undocumented finding states.
+    response: The summary now says four sessions for the Jaccard table and three for the Figure 4D
+      table, naming them. No change of outcome.
+  - claim: fig3ab-synchrony-not-distance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig3c-sync-no-condition-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig4a-example-sequences-q
+    agrees: true
+    outcome: blocked
+    reason: On the sweep evidence agrees with methods_underspecified; in cell 13 no setting gives the
+      paper's own Figure 4D counts, even in the two task slices whose events match the paper's table.
+      However, the criterion's own rule gives not_reproduced when every reading fails. The notes
+      explain the departure, but the deviations do not list it as a departure from the criterion;
+      they should. The Figure 4D table gives n.a. for Q 2022-09-15's first spontaneous 10 min and 13
+      for its second, while the deposited spontaneous file lasts 10 min, so the spontaneous half may
+      not be testable on the dandiset at all; the paper_inconsistency finding records this. The
+      README's "about twenty-two minutes" for the sequences notebook does not match the printed
+      timings, which add up to about 26 minutes.
+    response: A deviation now records the departure from the criterion's rule, and the result cell
+      says so. The sequences notebook now prints the double-counting lines of identify_sequences.m.
+      The README gives the run time of the last run (915 s) and the earlier one (about 26 min). No
+      change of outcome.
+  - claim: fig4b-example-three-segments-q
+    agrees: true
+    outcome: blocked
+    reason: As for fig4a-example-sequences-q, the deviations should list blocking as a departure from
+      the criterion's rule, which gives not_reproduced when every reading fails.
+    response: The deviation and the result cell now say so. No change of outcome.
+  - claim: fig4d-sequence-measures-vary
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. The summary of the sequences notebook lists Q 2022-10-03 and Q
+      2022-12-01 as sessions where the Figure 4D table counts fewer cells and leaves out V 2023-03-16
+      (table 13, dandiset 14); incomplete, not wrong.
+    response: The summary now names V 2023-03-16 as well. No change of outcome.
+  - claim: fig4c-sequence-cells-not-clustered
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Under the code's double-counting step, with the within-session and stratified
+      tests, every reading finds no difference; with the pooled test of reading (ii) the readings
+      disagree, so the claim is blocked under either test choice. The notes rest the blocking mainly
+      on the documented-dedupe variant and would be stronger if they said that the pooled and the
+      within-session test of reading (ii) disagree, and that the within-session test was chosen after
+      verification. The outcome turns on the double-counting step, and the verifier cannot see
+      identify_sequences.m to confirm that it removes nothing. If confirmed, and the within-session
+      test is accepted as the reading, every reading agrees and the claim would be reproduced; if the
+      step works as its comments describe, the stratified tests find sequence pairs closer and the
+      claim stays blocked.
+    response: The notes and the result cell now rest the blocking on the disagreement of the pooled
+      and within-session tests of reading (ii) under the code's step, say that the within-session
+      test was chosen after verification, and keep the detection's link to fig4a as a second reason.
+      The sequences notebook now downloads identify_sequences.m and prints the lines in question (DA
+      created by false(...), the test DA(...) == 2 and the assignment DA(...) = 2), so the step can be
+      checked. No change is proposed; the criterion leaves the test open, the pooled test is one of
+      its readings, and so the readings still disagree.
+  - claim: histology-lens-placement
+    agrees: true
+    outcome: blocked
+    reason: The verifier cannot see the protocol; other is reasonable for both histology claims.
+    response: No change.
+  - claim: histology-gcamp-not-gabaergic
+    agrees: true
+    outcome: blocked
+    reason: As histology-lens-placement, other is reasonable.
+    response: No change.
