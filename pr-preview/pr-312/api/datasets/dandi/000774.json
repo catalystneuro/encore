@@ -1,0 +1,1541 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000774",
+  "label": "DANDI:000774"
+ },
+ "page": "datasets/dandi/000774/",
+ "generated": "2026-11-01T01:18:51+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 11,
+  "partially_reproduced": 3,
+  "not_reproduced": 7,
+  "blocked": 21
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000774-hickman-2026-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000774",
+    "version": "0.260520.1753",
+    "doi": "10.48324/dandi.000774/0.260520.1753"
+   },
+   "key": "dandi:000774",
+   "label": "DANDI:000774",
+   "dataset_version": "0.260520.1753",
+   "paper": "10.1016/j.celrep.2026.117420",
+   "paper_title": "Neural population dynamics of direct electrical stimulation of neocortex",
+   "date": "2026-10-31",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-12"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41222527911"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000774-hickman-2026",
+   "entry_title": "Direct electrical stimulation of mouse visual cortex with three Neuropixels probes (Hickman et al. 2026)",
+   "description": "Tests the single-unit findings of Hickman, Hughes, Sahai, Miles and Denman (2026) on dandiset 000774, which holds spike times, templates, CCF coordinates and regions of the units of nine acute recordings with three Neuropixels probes around a stimulating electrode in mouse V1, and the table of single electrical pulses. It tests the direct response window, the sparse and amplitude-dependent direct responders, their clustering by amplitude and polarity, the FS and RS differences, the circuit response, cortical state and population dimensionality. The evoked potentials need the raw AP band and the behaviour is not deposited, so those claims are blocked.",
+   "notebooks": [
+    {
+     "path": "reproduce_hickman_2026.ipynb",
+     "title": "Reproducing Hickman et al. (2026) from dandiset 000774",
+     "executed": "notebooks/000774-hickman-2026/reproduce_hickman_2026.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig1l-saturation-amplitude",
+     "statement": "Recording amplifier saturation after a 0.2 ms pulse lasts about 0.14, 0.24, 0.26 and 0.30 ms at 5, 25, 50 and 100 uA, increasing with amplitude.",
+     "source": "Results, Orthogonal multi-Neuropixels recordings, paragraph 3; Figure 1L",
+     "quote": "saturation persisted for approximately 0.14 \u00b1 0.00 ms at 5 \u03bc A, 0.24 \u00b1 0.01 ms at 25 \u03bc A, 0.26 \u00b1 0.01 ms at 50 \u03bc A, and 0.30 \u00b1 0.01 ms at 100 \u03bc A ( Figure 1L , one-way ANOVA, F = 105.62, p < 0.001)",
+     "statistics": [
+      {
+       "test": "one-way ANOVA",
+       "statistic": "F = 105.62",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "25 probes from 9 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Saturation is measured on the raw AP band, which the dandiset does not hold (its NWB files have units and trials only, no acquisition). The paper says the raw AP, LFP and NI-DAQ binaries are available on request; no public copy was found on DANDI (searches for Denman and Hickman return only this dandiset) or in the code repository.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1b-saturation-polarity",
+     "statement": "Saturation duration increases with amplitude, and polarity does not significantly change it.",
+     "source": "Results, Orthogonal multi-Neuropixels recordings, paragraph 3; Figure S1B",
+     "quote": "despite increases in saturation with amplitude (two-way ANOVA, F = 236.04, p < 0.001), and polarity alone did not significantly change saturation duration ( F = 2.48, p = 0.09)",
+     "statistics": [
+      {
+       "about": "amplitude",
+       "test": "two-way ANOVA",
+       "statistic": "F = 236.04",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "polarity",
+       "test": "two-way ANOVA",
+       "statistic": "F = 2.48",
+       "p": 0.086,
+       "n": "9 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the raw AP band (see fig1l-saturation-amplitude), and depends on that claim.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2g-extent-increases",
+     "statement": "The spatial extent of the evoked potential, both superficial and deep to the stimulation source, increases with amplitude (superficial about -424, -683, -742 and -744 um; deep about 510, 591, 662 and 712 um at 5, 25, 50 and 100 uA).",
+     "source": "Results, Evoked potential spatial extent increases sub-linearly with amplitude, paragraph 3; Figure 2G",
+     "quote": "Both the superficial and deep distance from stimulation increased with amplitude ( Figure 2G , superficial ... p = 0.002, linear mixed-effects model",
+     "statistics": [
+      {
+       "about": "amplitude, Results and Figure S2E legend",
+       "test": "linear mixed-effects model, random intercept for recording",
+       "p": 0.002,
+       "n": "25 probes from 9 recordings"
+      },
+      {
+       "about": "amplitude, Figure 2G legend",
+       "test": "linear mixed-effects model, random intercept for recording",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "25 probes from 9 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The evoked-potential extents are computed from the raw AP band, which is not in the dandiset (see fig1l-saturation-amplitude). The code repository holds the extents it computed (EP_boundaries_w_array_distances_curated.pkl, EP_distances.pkl), but these are results derived from the missing data, not data, so the claim was not tested on them.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2g-extent-sublinear",
+     "statement": "The increase in spatial extent with amplitude is sublinear and poorly fit by a linear regression (superficial R2 = 0.02, deep R2 = 0.17), unlike the linear growth of the point-source model.",
+     "source": "Results, Evoked potential spatial extent increases sub-linearly with amplitude, paragraph 3; Figure 2G; Figure S2F",
+     "quote": "the increase in spatial extent of the biologically observed evoked potential was sublinear and poorly fit by linear regression (superficial R 2 = 0.02 and deep R 2 = 0.17)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the raw AP band; depends on fig2g-extent-increases.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-extent-polarity",
+     "statement": "Spatial extents do not differ across polarities.",
+     "source": "Results, Evoked potential spatial extent increases sub-linearly with amplitude, paragraph 3; Figure 2I; Figure S2E",
+     "quote": "Notably, spatial extents did not differ across polarities ( Figures 2J and S2E , linear mixed-effects model, p = 0.151",
+     "statistics": [
+      {
+       "about": "polarity, Results",
+       "test": "linear mixed-effects model",
+       "p": 0.151
+      },
+      {
+       "about": "polarity, 50 uA, Figure 2I and S2E legends",
+       "test": "linear mixed-effects model, random intercept for recording",
+       "p": 0.495,
+       "n": "25 probes from 9 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the raw AP band; depends on fig2g-extent-increases.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2h-probe-identity",
+     "statement": "Probe trajectory affects spatial extent, with larger extents on probe C, which stays in cortex, than on probes A and B, which cross the white matter into subcortical areas.",
+     "source": "Results, Evoked potential spatial extent increases sub-linearly with amplitude, paragraph 4; Figure 2H",
+     "quote": "we observed probe trajectory had a significant effect on average spatial extent, most notably with an increase in spatial extent for probe C ( Figure 2H , probe A vs. probe C: p < 0.001, probe B vs. probe C: p < 0.001",
+     "statistics": [
+      {
+       "about": "probe A against probe C",
+       "test": "linear mixed-effects model",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "probe B against probe C",
+       "test": "linear mixed-effects model",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "probe A 7, probe B 9, probe C 9 probes from 9 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the raw AP band; depends on fig2g-extent-increases.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs2gh-magnitude-linear",
+     "statement": "For all polarities, the maximum evoked potential and its area under the curve at 1 ms increase nearly linearly with amplitude.",
+     "source": "Results, Evoked potential spatial extent increases sub-linearly with amplitude, paragraph 2; Figure S2G and S2H",
+     "quote": "For all polarities, both the maximum evoked potential and AUC increased nearly linearly ( Figures S2G and S2H",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the raw AP band; depends on fig2g-extent-increases.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-volume",
+     "statement": "The evoked-potential volume, the convex hull of the six extents on the three probes, tends to increase sublinearly with amplitude (cathodal 0.31, 0.43 and 0.61 mm3 at 25, 50 and 100 uA), with no significant main effect of amplitude or polarity.",
+     "source": "Results, Anisotropic volumetric profile of the induced electrical field, paragraph 1; Figure 3C",
+     "quote": "trended to increase sublinearly with stimulation amplitude ( Figure 3C ; cathodal polarity ... 0.31 \u00b1 0.20 mm 3 , \u221250 \u03bc A: 0.43 \u00b1 0.19 mm 3 , \u2212100 \u03bc A: 0.61 \u00b1 0.22 mm 3 ; linear R 2 = 0.259",
+     "statistics": [
+      {
+       "about": "amplitude",
+       "test": "two-way ANOVA",
+       "statistic": "F = 1.96",
+       "p": 0.16
+      },
+      {
+       "about": "polarity",
+       "test": "two-way ANOVA",
+       "statistic": "F = 0.42",
+       "p": 0.66,
+       "n": "4 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The volumes are built from the six evoked-potential extents, which need the raw AP band; depends on fig2g-extent-increases.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-ventral-compression",
+     "statement": "Evoked potentials extend broadly within cortex but are compressed ventrally at the corpus callosum; along probe C, which stays in cortex, they extend beyond a fitted isotropic sphere, and along probe B, which crosses into white matter, they are truncated relative to it.",
+     "source": "Results, Anisotropic volumetric profile of the induced electrical field, paragraph 2; Figure 3D and 3E",
+     "quote": "when probes remained in cortex (probe C, Figure 3E ), responses extended beyond the symmetric fit, whereas when probes traversed into subcortical white matter (probe B, Figure 3E ), responses were truncated relative to the sphere",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the raw AP band; depends on fig3c-volume.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3fg-anisotropy-strength",
+     "statement": "Anisotropy strength averages 0.493 +- 0.288 across amplitudes and polarities and does not vary with amplitude or polarity.",
+     "source": "Results, Anisotropic volumetric profile of the induced electrical field, paragraph 3; Figure 3F and 3G",
+     "quote": "Across all amplitudes and polarities, anisotropy strength averaged 0.493 \u00b1 0.288 and did not vary systematically with stimulation amplitude or polarity",
+     "statistics": [
+      {
+       "about": "polarity",
+       "test": "two-way ANOVA",
+       "statistic": "F = 2.81",
+       "p": 0.1
+      },
+      {
+       "about": "amplitude",
+       "test": "two-way ANOVA",
+       "statistic": "F = 0.143",
+       "p": 0.86,
+       "n": "4 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the raw AP band; depends on fig3c-volume.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3h-com-displacement",
+     "statement": "The centre of mass of the evoked-potential volume is displaced from the stimulating contact (displacement greater than zero), with a dorsal component of 105 +- 46 um away from the corpus callosum that does not reach significance.",
+     "source": "Results, Anisotropic volumetric profile of the induced electrical field, paragraph 3; Figure 3H",
+     "quote": "The displacement magnitude exceeded zero (one-sample t test vs. 0, p = 0.02), indicating anisotropy. The dorsal (superficial) component averaged 105 \u00b1 46 \u03bc m away from the corpus callosum and, while directionally consistent, did not reach significance (one-sample t test vs. 0, p = 0.1095)",
+     "statistics": [
+      {
+       "about": "displacement magnitude",
+       "test": "one-sample t test against 0",
+       "p": 0.02,
+       "n": "4 recordings"
+      },
+      {
+       "about": "dorsal component",
+       "test": "one-sample t test against 0",
+       "p": 0.1095,
+       "n": "4 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the raw AP band; depends on fig3c-volume.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-latency-trough",
+     "statement": "First-spike latencies after a pulse are bimodal, with an early peak, a pause at a median of 1.95 ms across parameters and a broader peak from about 2.5 ms, which sets the 2 ms direct window.",
+     "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 3; Figure 4D; Figure S3B",
+     "quote": "the distribution of first-spike latencies, which exhibited a bimodal shape: an early peak immediately after stimulation, followed by a brief pause occurring at a median value of 1.95 ms across parameters",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "The trough of the first-spike latency histogram (0.1 ms bins, centre in 0.5 to 5 ms) lies at 1.95, 1.75, 1.95 and 1.95 ms for 5 to 100 uA cathodal pulses, median 1.95 ms, with a higher bin before and after it in all 12 conditions. Over all 12 polarity and amplitude conditions the median is 1.45 ms (anodal and bipolar troughs 1.05 to 1.45 ms); the criterion takes the four cathodal amplitudes, as the code does. The later cathodal peaks are at 3.75 to 11.85 ms. With the first 75 trials and stable units only, the cathodal median is 1.85 ms. The verifier reads the paper's \"median across parameters\" as all 12 conditions (1.45 ms, outside tolerance); this is asked of a reader (questions/000774.yaml).",
+     "deviations": [
+      "Latencies come from all trials of the condition's contact and all good units, as the code (figure4_figure5_figure6.ipynb cell 20), from the seven recordings that hold cathodal pulses."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3cd-gmm-window",
+     "statement": "Gaussian mixtures of first-spike latencies give amplitude-specific direct windows (0.68, 1.14, 1.22 and 1.47 ms at 5, 25, 50 and 100 uA cathodal), and the proportion of direct responders does not differ from that of the 2 ms window.",
+     "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 3; Figure S3C and S3D",
+     "quote": "create a direct response window for each amplitude (5 \u03bcA: 0.68 ms; 25 \u03bcA: 1.14 ms; 50 \u03bcA: 1.22 ms, and 100 \u03bcA: 1.47 ms, Figure S3C ); there was no statistical difference in the overall proportion of direct responders compared to the 2-ms window used",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "Four-component mixtures give windows of 0.683, 1.139, 1.221 and 1.470 ms, and BIC chooses four components at every amplitude, so readings (a) and (b) agree. Over the seven recordings with cathodal pulses the responder proportion with the GMM windows does not differ from the 2 ms window at any amplitude (Wilcoxon, FDR-adjusted p 1.0, 0.667, 0.25 and 0.25) under both baseline readings. Pooled over amplitudes, the GMM windows give fewer responders (Wilcoxon p = 0.0022), a test the legend does not name.",
+     "deviations": [
+      "Seven recordings, where the S3D legend implies nine; two recordings hold no cathodal pulses.",
+      "The crossover is taken as the first latency after the earliest component's mean where the second component's posterior reaches the first's; the Methods say only \"crossover points where adjacent component responsibilities were equal\" (STAR Methods, Gaussian mixture models)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4f-responders-within-ep",
+     "statement": "Direct responders are sparse and mostly lie within the average boundaries of the evoked potential (33.3%, 74.1%, 88.2% and 100% at 5, 25, 50 and 100 uA), with more outside at 5 uA.",
+     "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 4; Figure 4F",
+     "quote": "Direct responders were sparse and generally constrained within the average boundaries of the evoked potential (33.3% for 5 \u03bc A, 74.1% for 25 \u03bc A, 88.2% for 50 \u03bc A, and 100% for 100 \u03bc A",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "With the code's mean evoked-potential boundaries (outside input; -424 to 510, -725 to 605, -812 to 747 and -750 to 888 um at 5 to 100 uA) and the dataset's coordinates, the fractions of RS responders within (reading b, the code's classes) are 0.400, 0.778, 0.882 and 1.000; three are within 10% and 5 uA is the lowest, but 0.400 is outside 0.333 +- 0.033. Over all responders (reading a) they are 0.552, 0.794, 0.889 and 1.000. The 5 uA fraction is outside tolerance under every reading run, and the criterion has no partial clause, so the claim is not reproduced. With the code's coordinates reading (b) gives 0.333, 0.741, 0.882 and 1.000 and reading (a) 0.483, 0.765, 0.889 and 1.000, the paper's and the code's values; the 5 uA difference comes from the contact coordinates of jlh31 and jlh32. Under the Methods' k-means classes the RS fractions are 0.520, 0.774, 0.900 and 1.000. The claim depends on fig2g-extent-increases, which is blocked; it is tested on the boundaries the code computed, which its criterion names as an outside input. Whether such claims should be marked as using outside inputs is asked of a reader.",
+     "deviations": [
+      "The evoked-potential boundaries are the code's EP_distances.pkl (outside input), not computed from the raw AP band, which the dandiset does not hold.",
+      "Assumed the code's FS and RS classes for reading (b) (see fig5-fsrs-proportion).",
+      "Signed distances as in fig4h-extent-constant (fitted channel coordinates, the dataset's contact coordinates)."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4h-extent-constant",
+     "statement": "The spatial extent of direct responders stays relatively constant across amplitudes (1180 +- 559, 884 +- 652, 965 +- 451 and 522 +- 313 um), with no significant amplitude effect.",
+     "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 4; Figure 4H and 4I",
+     "quote": "the spatial extent of single-unit responders remained relatively constant across amplitudes (5 \u03bc A: 1180 \u00b1 559 \u03bc m, 25 \u03bc A: 884 \u00b1 652 \u03bc m, 50 \u03bc A: 965 \u00b1 451 \u03bc m, and 100 \u03bc A: 522 \u00b1 313 \u03bc m, One-way ANOVA, F = 1.265, p = 0.312)",
+     "statistics": [
+      {
+       "test": "one-way ANOVA",
+       "statistic": "F = 1.265",
+       "p": 0.312
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "The per-recording extent of cathodal responders does not change with amplitude (one-way ANOVA F = 1.250, p = 0.317, 6, 6, 6 and 7 recordings). The means are 1121, 825, 813 and 452 um; those at 50 and 100 uA are outside 10% of 965 and 522 um. With the code's coordinates the means are 1179, 884, 868 and 522 um and F = 1.265, p = 0.312, the paper's F and p and its means at 5, 25 and 100 uA; 868 um at 50 uA (which the code also prints) is just outside 10% of the paper's 965 um.",
+     "deviations": [
+      "The signed distance needs CCF coordinates of every channel, which the dandiset does not give; they are fitted per probe by a straight line through the units' coordinates on their channel number. The distances use the dataset's stimulation contact coordinates, which differ from the code's for jlh31 and jlh32."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4h-distance-decreases",
+     "statement": "Higher amplitudes bring direct responders closer to the stimulation site (mean distance 426, 300, 137 and 146 um at 5, 25, 50 and 100 uA), driven by 5 against 50 and 5 against 100 uA.",
+     "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 4; Figure 4H",
+     "quote": "Stimulation amplitude significantly decreased the average distance from stimulation of responsive units ... one-way ANOVA, F = 4.15, p = 0.007), driven specifically by differences between 5 \u03bc A and 50 \u03bc A and between 5 \u03bc A and 100 \u03bc A (post hoc Tukey tests: 5 vs. 50 \u03bc A, p = 0.015; 5 vs. 100 \u03bc A, p = 0.019",
+     "statistics": [
+      {
+       "test": "one-way ANOVA",
+       "statistic": "F = 4.15",
+       "p": 0.007
+      },
+      {
+       "about": "5 against 50 uA",
+       "test": "Tukey HSD",
+       "p": 0.015
+      },
+      {
+       "about": "5 against 100 uA",
+       "test": "Tukey HSD",
+       "p": 0.019
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "Mean signed distances of cathodal responders are 414, 264, 129 and 142 um (29, 34, 45 and 45 responders). The tests hold (ANOVA F = 3.97, p = 0.0094; Tukey 5 against 50 uA p = 0.0134, 5 against 100 uA p = 0.0199, other pairs above 0.42). The 25 uA mean is outside 10% of 300 um. With the code's coordinates the means are 426, 300, 137 and 146 um and F = 4.15, p = 0.0074, the paper's values; the difference is the dataset's contact coordinates for jlh31 and jlh32.",
+     "deviations": [
+      "Signed distances as in fig4h-extent-constant (fitted channel coordinates, the dataset's contact coordinates)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4h-ks-distinct",
+     "statement": "5 and 100 uA recruit distinct spatial populations of direct responders; the other pairs the paper reports (5-25, 25-50, 25-100 and 50-100 uA) do not differ after correction.",
+     "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 4; Figure 4H and 4I",
+     "quote": "Further, 5 \u03bc A and 100 \u03bc A recruited distinct spatial populations (pairwise two-sample Kolmogorov-Smirnov tests, corrected for six comparisons using the Holm-\u0160id\u00e1k procedure",
+     "statistics": [
+      {
+       "about": "5 against 100 uA",
+       "test": "two-sample Kolmogorov-Smirnov, Holm-Sidak corrected",
+       "p": 0.016,
+       "corrected": "Holm-Sidak, six comparisons"
+      },
+      {
+       "about": "50 against 100 uA",
+       "test": "two-sample Kolmogorov-Smirnov, Holm-Sidak corrected",
+       "p": 0.083,
+       "corrected": "Holm-Sidak, six comparisons"
+      },
+      {
+       "about": "5 against 25 uA",
+       "test": "two-sample Kolmogorov-Smirnov, Holm-Sidak corrected",
+       "p": 0.566,
+       "corrected": "Holm-Sidak, six comparisons"
+      },
+      {
+       "about": "25 against 50 uA",
+       "test": "two-sample Kolmogorov-Smirnov, Holm-Sidak corrected",
+       "p": 0.566,
+       "corrected": "Holm-Sidak, six comparisons"
+      },
+      {
+       "about": "25 against 100 uA",
+       "test": "two-sample Kolmogorov-Smirnov, Holm-Sidak corrected",
+       "p": 0.363,
+       "corrected": "Holm-Sidak, six comparisons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "With the dataset's coordinates, 5 against 100 uA has KS p = 0.0193 and Holm-Sidak adjusted p = 0.1105, so the two populations do not differ after correction; 5-25, 25-50, 25-100 and 50-100 do not differ (adjusted p 0.5255, 0.8290, 0.7439, 0.8290), and 5-50 has adjusted p 0.1309 (not judged). With the code's coordinates the adjusted p are 0.5662, 0.0164, 0.5662, 0.3625 and 0.8245 for 5-25, 5-100, 25-50, 25-100 and 50-100, which reproduce the claim (for 50-100 the paper prints 0.083, against 0.8245 here). The outcome turns on the stimulation contact coordinates of jlh31 and jlh32, which in the dataset differ from those the paper used.",
+     "deviations": [
+      "Signed distances as in fig4h-extent-constant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4i-proportion-within-ep",
+     "statement": "The proportion of direct responders among units within the evoked potential is small and increases with amplitude (0.014, 0.020, 0.031 and 0.030), so fewer than 5% of neurons are directly activated.",
+     "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 5; Figure 4I",
+     "quote": "The proportion of responders within the evoked potential increased with amplitude (5 \u03bc A: 0.014 \u00b1 0.12, 25 \u03bc A: 0.020 \u00b1 0.14, 50 \u03bc A: 0.031 \u00b1 0.172, and 100 \u03bc A: 0.030 \u00b1 0.170; linear ANOVA, F = 5.41, p = 0.020",
+     "statistics": [
+      {
+       "test": "linear ANOVA",
+       "statistic": "F = 5.41",
+       "p": 0.02,
+       "n": "9 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "Under reading (c), the amplitude's own boundaries on the raw signed distance, the proportions of responders among units within the evoked potential are 0.0133, 0.0208, 0.0307 and 0.0301 (678 to 1427 units), all within 10% and below 0.05, rising with amplitude (OLS F = 4.99, p = 0.0256). With the code's coordinates reading (c) gives F = 5.41, p = 0.0201, the paper's values. Readings (a) and (b) give the trend (p = 0.0154 and 0.0015) with values below the paper's at 50 and 100 uA (0.0242 and 0.0254 under a). Reading (c) signs the raw distance as the code does (figure4_figure5_figure6.ipynb cell 7 makes it negative from the channel closest to the contact on); in the code's direct_df.csv distance <= 0 exactly where norm_distance <= 0 (all rows). The unsigned raw distance gives 0.0129, 0.0221, 0.0312 and 0.0293 (F = 4.55, p = 0.0330), with 0.0221 just outside 0.020 +- 0.002, so the outcome rests on the code's sign. The boundaries are the code's (outside input); the claim depends on fig2g-extent-increases, which is blocked.",
+     "deviations": [
+      "The evoked-potential boundaries are the code's EP_distances.pkl (outside input)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4j-drp-increases",
+     "statement": "Among units responsive at any amplitude (99 units), direct response probability increases with amplitude (0.12, 0.14, 0.19 and 0.23), so higher amplitude both recruits more neurons and raises their spiking probability.",
+     "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 5; Figure 4J",
+     "quote": "among responders, direct-response probability increased with amplitude (5 \u03bc A: 0.12 \u00b1 0.20, 25 \u03bc A: 0.14 \u00b1 0.21, 50 \u03bc A: 0.19 \u00b1 0.25, and 100 \u03bc A: 0.23 \u00b1 0.31; F = 12.78, p = 0.0004, Figure 4J )",
+     "statistics": [
+      {
+       "test": "one-way ANOVA",
+       "statistic": "F = 12.78",
+       "p": 0.0004,
+       "n": "99 single units from 9 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "103 units respond (nDRP > 0.15) at some cathodal amplitude and 99 have a value at all four (from 7 recordings, 2 to 28 each). Mean nDRP is 0.116, 0.142, 0.194 and 0.233. Reading (a), the code's regression on numeric amplitude, gives F = 12.779, p = 0.00039 (paper F = 12.78, p = 0.0004); (b) a one-way ANOVA with amplitude categorical gives F = 4.44, p = 0.0044 and (c) a repeated-measures ANOVA F = 4.66, p = 0.0034. The number of good stable units per cathodal condition (2056, 2068, 2070, 2071) equals that of the code's intermediate table direct_df.csv (outside input, printed as a check). jlh31 and jlh34 ran most cathodal conditions twice at the one cathodal contact; the first run is used. With the second run, 91 units respond with values at all four amplitudes, mean nDRP 0.125, 0.092, 0.157 and 0.223, F = 12.41, p = 0.00048.",
+     "deviations": [
+      "The stability filter is recomputed from the Methods (the paper's flags are not in the dataset); the time origin of the fit and the set of units the quartiles are taken over are not stated and were chosen as the first spike of the recording and all units (a standard choice). The unit counts per cathodal and anodal condition match the code's; bipolar ones differ by 1 to 5 units."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3e-early-windows",
+     "statement": "Broader windows (5 and 10 ms) give more responsive units than the 2 ms window (0.092 and 0.175 at 100 uA), and their amplitude dependence is stronger.",
+     "source": "Results, Evoked spiking is sparse and increases in density with amplitude, paragraph 6; Figure S3E",
+     "quote": "As expected, broader windows increased the proportion of responsive units (0.092 \u00b1 0.01 for the 5 ms window and 0.175 \u00b1 0.01 for the 10 ms window at 100 \u03bc A, FDR-corrected p < 0.001, paired Wilcoxon signed-rank tests",
+     "statistics": [
+      {
+       "test": "paired Wilcoxon signed-rank tests",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "FDR",
+       "n": "9 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "Broader windows give more responders and a stronger amplitude dependence. Under reading (a) the mean proportions at 100 uA are 0.021 (2 ms), 0.058 (5 ms) and 0.106 (10 ms), and both broader windows exceed 2 ms (FDR p = 0.0208; 0.0417 under reading b); from 5 to 100 uA the proportion rises by 0.005, 0.041 and 0.073. The 100 uA proportions are below the paper's 0.092 and 0.175 under both readings (b gives 0.057 and 0.091), and the criterion has no partial clause, so the claim is not reproduced. With seven recordings the smallest exact Wilcoxon p is 0.0156.",
+     "deviations": [
+      "Seven recordings in place of nine."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5bc-amplitude-clusters",
+     "statement": "Clustering the direct responders by response probability across amplitude gives six clusters, broadly dose-dependent (58.6% of responders) or amplitude-selective, responding almost only at one amplitude (19.2% at 5 uA, 15.2% at 25 uA, 7.1% at 100 uA).",
+     "source": "Results, Stimulation amplitude and polarity tune unit-specific recruitment, paragraph 1; Figure 5A to 5C; Figure S5A",
+     "quote": "Hierarchical clustering produced six clusters ( Figure S5A ; cophenetic correlation coefficient (CCC) = 0.702, mean silhouette score = 0.352) that were broadly either dose-dependent or amplitude-selective. Surprisingly, while 58.6% of direct responders exhibited dose-dependent increases in response probability",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "Under reading (a), the code's unscaled nDRP, Ward clustering of the 99 responders gives CCC = 0.702, silhouette = 0.352 and clusters of 15, 19, 40, 13, 7 and 5 units. Labelling them 25 uA, 5 uA, dose, dose, 100 uA and dose gives 15.2%, 19.2%, 58.6% and 7.1%, the paper's fractions, the assignment the criterion allows. By the claims file's half-peak rule the 7-unit cluster peaks at 50 uA (mean nDRP 0.651 against 0.343 at 100 uA) and the 13-unit cluster is the one selective for 100 uA, so no assignment that follows the clusters' peaks matches; the paper's \"100 uA\" cluster is better described as selective for 50 uA. Reading (b), vectors divided by their maximum, gives CCC 0.840, silhouette 0.501 and no matching assignment. Whether the criterion's \"some assignment\" clause is meant to pass clusters that do not respond almost only at one amplitude is asked of a reader.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5ef-polarity-clusters",
+     "statement": "Clustering responders by their response to cathodal, anodal and bipolar pulses shows a polarity bias - 69.1% are polarity-specific, preferring bipolar (27.7%), anodal (23.6%) or cathodal (17.7%) pulses; smaller groups are dose-selective but polarity-agnostic (10.9%), cathodal-phase-led (12.7%) or monopolar-only (3.3%).",
+     "source": "Results, Stimulation amplitude and polarity tune unit-specific recruitment, paragraph 2; Figure 5D to 5F; Figure S5B",
+     "quote": "revealed a striking polarity bias: 69.1% of directly activated units were polarity-specific, preferring bipolar (27.7%, Figure 5F , i ), anodal (23.6%, Figure 5F , ii ), or cathodal (17.7%, Figure 5F , iii ) stimulation",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "Under reading (a), the code's population of units responsive to any polarity (220 units), CCC = 0.773 and silhouette = 0.538 are within 10%. Five assignments of the six clusters to the three polarities or none give all three fractions within 10%, and in two of them each labelled cluster's highest mean is at its label; the first of these gives bipolar 0.287, anodal 0.232 and cathodal 0.186 (polarity-specific 0.705), the criterion's \"some assignment\". It labels as bipolar both a cluster of 45 units (mean 1.0, 0.04, 0.03 for bipolar, cathodal, anodal) and one of 18 units (0.98, 0.40, 0.79), whose anodal response is 0.79 of its bipolar one. By the half-maximum rule only the first prefers bipolar, giving 0.205, 0.232 and 0.186 (total 0.623). With the bipolar contact nearest layer 5 units (235 units), the half-maximum rule gives 0.260, 0.213 and 0.196. Among the 99 cathodal responders (reading b) CCC 0.711 and silhouette 0.393 are outside tolerance. Whether the \"some assignment\" clause is meant this loosely is asked of a reader.",
+     "deviations": [
+      "The contact nearest layer 5 is judged from the region of the nearest unit, as the dataset gives no region for the contacts."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-fsrs-proportion",
+     "statement": "Direct responders stay sparse for both FS and RS units across amplitudes, with a main effect of amplitude but no effect of waveform class or interaction.",
+     "source": "Results, Cell type correlates with direct activation distance distributions, paragraph 1 (the text cites Figure 6I; the panels are Figure 5I and 5J)",
+     "quote": "The proportion of direct responders remained sparse across amplitudes for both FS ... and RS neurons ... with a significant main effect of amplitude but no effect of waveform class or interaction",
+     "statistics": [
+      {
+       "about": "amplitude",
+       "test": "two-way ANOVA",
+       "statistic": "F = 3.04",
+       "p": 0.028
+      },
+      {
+       "about": "waveform class",
+       "test": "two-way ANOVA",
+       "statistic": "F = 1.33",
+       "p": 0.262
+      },
+      {
+       "about": "interaction",
+       "test": "two-way ANOVA",
+       "statistic": "F = 1.34",
+       "p": 0.21
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "No reading gives the four proportions within 10%. Over all FS and RS units (reading a), under the code's classes (616 FS and 1352 RS units), FS 0.0196 and 0.0227 and RS 0.0111 and 0.0221 at 5 and 100 uA. Within the evoked potential (reading b, the code's boundaries as outside input) the closest is reading (c) of fig4i, FS 0.0275 and 0.0324 and RS 0.0069 and 0.0299. Responders are sparse in both classes, and class and interaction have no effect under the code's classes (class p 0.437 over all units; 0.983, 0.608 and 0.821 within, under readings a, b and c of fig4i). The amplitude term, which the paper's F = 3.04 with p = 0.028 implies is categorical, has p = 0.123 over all units and 0.039, 0.005 and 0.051 within under the three readings; with amplitude numeric p is 0.037 or less. Under the Methods' k-means (one run) the class effect is significant (F = 4.85, p = 0.028), and in 4 of 20 k-means runs (that run and 19 from other seeds and initialisations).",
+     "deviations": [
+      "FS and RS classes shown under the code's 0.4 ms duration threshold and the Methods' k-means; the outcome is the same under both.",
+      "Reading (b) uses the code's evoked-potential boundaries (outside input)."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5j-fs-closer",
+     "statement": "FS direct responders lie closer to the stimulation site than RS responders, and higher amplitude brings both closer.",
+     "source": "Results, Cell type correlates with direct activation distance distributions, paragraph 2; Figure 5I and 5J",
+     "quote": "FS responders were clustered significantly closer to the stimulation site than RS responders (two-way ANOVA, F waveform = 8.04, p = 0.005)",
+     "statistics": [
+      {
+       "about": "waveform class",
+       "test": "two-way ANOVA",
+       "statistic": "F = 8.04",
+       "p": 0.005
+      },
+      {
+       "about": "amplitude",
+       "test": "two-way ANOVA",
+       "statistic": "F = 4.10",
+       "p": 0.008
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "With the code's classes and the dataset's coordinates FS responders lie closer than RS (mean 111 against 267 um; waveform F = 7.02, p = 0.0090) and amplitude has an effect (F = 3.95, p = 0.0097); FS 205 um at 5 uA and RS 556 and 183 um at 5 and 100 uA are within 10%. With the code's coordinates F = 8.04, p = 0.0052 and F = 4.10, p = 0.0080, the paper's values. Under the Methods' k-means classes the waveform effect is not significant (F = 2.96, p = 0.0874). Over 20 k-means runs (that run and 19 from other seeds and initialisations; 296 to 470 FS units) the waveform effect is never significant (p 0.087 to 0.401); the run of lowest within-cluster sum of squares gives p = 0.127.",
+     "deviations": [
+      "Assumed the code's FS and RS classes (a 0.4 ms duration threshold), where the Methods describe k-means. The code is what the paper ran, its classes give the paper's statistics exactly here, they are deterministic, and the k-means classes change with the initialisation (296 to 470 FS units over 20 runs); the k-means reading is shown. Asked of the authors (see findings).",
+      "Signed distances as in fig4h-extent-constant."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5i-fs-within-ep",
+     "statement": "FS responders lie almost entirely within the evoked potential even at low amplitude (75%, 83.3%, 100%, 100%), while only 33% of RS responders do at 5 uA, rising with amplitude.",
+     "source": "Results, Cell type correlates with direct activation distance distributions, paragraph 2; Figure 5I and 5J",
+     "quote": "FS responders were almost entirely constrained within the evoked-potential boundary, even at low amplitudes (75.0% for 5 \u03bc A; 83.3% for 25 \u03bc A; 100% for 50 \u03bc A; and 100% for 100 \u03bc A). In contrast, only 33.0% of RS responders were within the evoked potential at 5 \u03bc A",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "Under the code's threshold classes and the dataset's coordinates, FS responders lie within the evoked potential at 0.750, 0.833, 1.000 and 1.000 and RS responders at 0.400, 0.778, 0.882 and 1.000 at 5 to 100 uA. FS at 5 and 25 uA and RS at 25 uA are within 10% and FS is at or above RS at every amplitude; RS at 5 uA (0.400) is outside 0.33 +- 0.033. With the code's coordinates RS gives 0.333 and 0.741, and all four match. Under the Methods' k-means FS responders are 2, 2, 4 and 7 units, all within (1.000), outside tolerance. No class choice gives the four values, and the criterion has no partial clause, so the claim is not reproduced. The boundaries are the code's (outside input); the claim depends on fig4f-responders-within-ep.",
+     "deviations": [
+      "The evoked-potential boundaries are the code's EP_distances.pkl (outside input).",
+      "Assumed the code's FS and RS classes (see fig5j-fs-closer).",
+      "Signed distances as in fig4h-extent-constant."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs6b-fsrs-early-firing",
+     "statement": "In the 10 ms after a pulse, the firing of FS and RS cortical units differs at every amplitude.",
+     "source": "Results, Cell type correlates with direct activation distance distributions, paragraph 3; Figure S6B",
+     "quote": "we observed pronounced differences in spiking between waveform classes across amplitudes that evolved with stimulation strength (Kolmogorov-Smirnov tests at each amplitude",
+     "statistics": [
+      {
+       "about": "5 uA",
+       "test": "Kolmogorov-Smirnov, adjusted",
+       "p": 0.01
+      },
+      {
+       "about": "25 uA",
+       "test": "Kolmogorov-Smirnov, adjusted",
+       "p": 0.007
+      },
+      {
+       "about": "50 uA",
+       "test": "Kolmogorov-Smirnov, adjusted",
+       "p": 0.019
+      },
+      {
+       "about": "100 uA",
+       "test": "Kolmogorov-Smirnov, adjusted",
+       "p": 0.01,
+       "n": "9 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "With the code's classes and 1 ms bins (the code's), FS and RS early firing differ at every amplitude (Holm-Sidak adjusted p 0.0056, 0.0038, 0.0127, 0.0127; 70 bins per class). With the legend's 2 ms bins no adjusted p is below 0.05 (0.0598 to 0.1151). Under the Methods' k-means classes only 100 uA differs (1 ms bins, adjusted p 0.0139). Over 20 k-means runs (that run and 19 from other seeds and initialisations) all four amplitudes differ in 9 and one in 11.",
+     "deviations": [
+      "Assumed the code's FS and RS classes (see fig5j-fs-closer).",
+      "Seven recordings with cathodal pulses, where the legend gives nine."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-modulation-cortex",
+     "statement": "Spiking modulation after a single pulse increases with amplitude for cortical units (12.60, 13.37, 15.11, 20.21) but stays about constant for subcortical units (12.27, 12.60, 12.08, 13.48), differing between them at 50 and 100 uA.",
+     "source": "Results, Single pulse electrical stimulation leads to extensive circuit response, paragraph 1; Figure 6C",
+     "quote": "The magnitude of spiking modulation ( STAR Methods ) increased with amplitude for cortical units ... but remained relatively constant for subcortical units",
+     "statistics": [
+      {
+       "about": "region",
+       "test": "two-way ANOVA",
+       "statistic": "F = 106.28",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "amplitude",
+       "test": "two-way ANOVA",
+       "statistic": "F = 487.36",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "amplitude x region",
+       "test": "two-way ANOVA",
+       "statistic": "F = 90.88",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "cortical against subcortical, 50 uA and 100 uA",
+       "test": "Student's t test",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "Under reading (a), the code's (0 to 500 ms, 10 ms bins), the magnitudes are 12.60, 13.37, 15.11, 20.21 (cortical, 1287 units) and 12.27, 12.60, 12.08, 13.48 (subcortical, 351 units), the paper's values, with region F = 106.27, amplitude F = 487.36 and interaction F = 90.88 (all p < 1e-20), and cortical against subcortical Student p = 4.65e-09 at 50 uA and 5.50e-29 at 100 uA. Under the legend's 5 ms bins (b) the three terms hold (p 4.76e-05 or less) but the 50 uA comparison has p = 1.10e-02. Under the Methods' window (c, 500 to 1000 ms) there is no region effect (p = 0.457), the amplitude term has p = 1.06e-03, and no amplitude comparison has p < 0.001. The criterion asks for every reading and has no partial clause, so the claim is not reproduced.",
+     "deviations": [
+      "Seven recordings with cathodal pulses, where the legend gives nine."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6d-hva-subcortical",
+     "statement": "At 100 uA higher visual areas, beyond the reach of direct activation, are more modulated than subcortical units (15.82 against 13.48) although both lie at similar distances from the stimulation site.",
+     "source": "Results, Single pulse electrical stimulation leads to extensive circuit response, paragraph 1; Figure 6D; Figure S8A",
+     "quote": "Higher visual areas (HVAs) exhibited responses at higher amplitudes (magnitude of modulation = 15.82 \u00b1 9.97) that were significantly different from those of subcortical units (magnitude of modulation = 13.48 \u00b1 7.70) at 100 \u03bc A (Tukey HSD, p = 0.004",
+     "statistics": [
+      {
+       "about": "HVA against subcortical modulation, 100 uA",
+       "test": "Tukey HSD",
+       "p": 0.004
+      },
+      {
+       "about": "distance from stimulation, HVA against subcortical",
+       "test": "Mann-Whitney",
+       "p": 0.511
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "With the legend's groups (HVA LM, AM and PM, 120 units; subcortical CA1, subiculum, dentate gyrus and superior colliculus, 460 units in the seven recordings with cathodal pulses, 273 of them CA1 units that the code's list leaves out) HVA units have a magnitude of 13.91 at 100 uA and subcortical units 13.26, Tukey p = 0.784; the distances do not differ (Mann-Whitney p = 0.54), as in the paper. With the code's subcortical list (351 units) the values are 13.91 and 13.48, Tukey p = 0.902. With the code's broader HVA group (any layered name outside V1, 349 units, of which 91 are superior colliculus or dentate gyrus units) the values are 15.82 and 13.68 and Tukey p = 0.0202, but the distances then differ (p = 5.92e-08). The paper's 15.82 is the code's group; the legend's groups show no difference.",
+     "deviations": [
+      "In the code's variant each unit is put in one group (V1, then HVA, then subcortical); the code lets superior colliculus units fall in both its HVA and subcortical groups."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6e-circuit-responders",
+     "statement": "The proportion of cortical units in the circuit response grows with amplitude (0.14, 0.21, 0.52, 0.79), so more than half are recruited at the higher amplitudes; subcortical units respond less but also increase (0.08, 0.09, 0.17, 0.35).",
+     "source": "Results, Single pulse electrical stimulation leads to extensive circuit response, paragraph 2; Figure 6E; Figure S7C",
+     "quote": "Further, the proportion of cortical neurons participating in this circuit response increased with amplitude (5 \u03bc A: 0.14 \u00b1 0.05, 25 \u03bc A: 0.21 \u00b1 0.08, 50 \u03bc A: 0.52 \u00b1 0.26, and 100 \u03bc A: 0.79 \u00b1 0.21; F amplitude = 175.18, p < 0.001), such that at the highest amplitudes, over half of all recorded cortical units were recruited",
+     "statistics": [
+      {
+       "about": "amplitude",
+       "test": "multivariate ANOVA",
+       "statistic": "F = 175.18",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "region",
+       "test": "multivariate ANOVA",
+       "statistic": "F = 81.50",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "polarity",
+       "test": "multivariate ANOVA",
+       "statistic": "F = 5.19",
+       "p": 0.006,
+       "n": "9 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "With zetapy 2.7.2 getZeta (the function the code calls) the proportion of cortical circuit responders is 0.125, 0.209, 0.520 and 0.785 and of subcortical ones 0.089, 0.094, 0.164 and 0.360 (7 recordings), above one half for cortex at 50 and 100 uA. The cathodal model gives amplitude F = 89.48 (p = 6.84e-13), region F = 36.59 (p = 1.61e-07) and interaction F = 15.26 (p = 2.72e-04); the Results print F region 40.14 and interaction 15.61 next to F amplitude 175.18, without naming the model. Two values are just outside 10% (cortical 0.125 against 0.14, subcortical 0.089 against 0.08 at 5 uA). The recomputed p-values agree with the paper's cached ones (Pearson r = 0.992, same decision for 0.970 of 7980 tests), and the cached ones give 0.14, 0.21, 0.52, 0.79 and 0.08, 0.09, 0.17, 0.35 on the dataset's units, the paper's values, and amplitude F = 172.99 and region F = 85.99 in the code's full model (paper 175.18 and 81.50). The difference is the resampling of the ZETA test.",
+     "deviations": [
+      "Only the cathodal conditions were tested with ZETA (7980 tests, 9 minutes); the code's full model over three polarities would take about 20 minutes more and is shown with the cached p-values.",
+      "zetapy 2.7.2 imports scipy.signal.gaussian, which current scipy keeps under scipy.signal.windows; the helper adds it before importing zetapy.",
+      "As the code (get_zetas), the trials are all those of the run that holds the condition's first trial, with no other filter; each run holds only the condition's single 100 us pulses, except in jlh53concat, where a run number covers 150 trials of monopolar and bipolar pulses. With jlh53concat's own 75 cathodal trials the proportions are 0.121, 0.203, 0.514 and 0.756 (cortical) and 0.095 and 0.339 (subcortical at 5 and 100 uA)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6f-no-propagating-wave",
+     "statement": "Response timing shows no propagating wave - time to peak inhibition and to peak rebound excitation do not correlate with distance from the stimulation site.",
+     "source": "Results, Single pulse electrical stimulation leads to extensive circuit response, paragraph 3; Figure 6F",
+     "quote": "This was confirmed statistically by the absence of a relationship between distance from stimulation and time to peak inhibition ( Figure 6F , ii ; Pearson r = 0.09) or time to peak rebound excitation ( Figure 6F , iii ; Pearson r = \u22120.03)",
+     "statistics": [
+      {
+       "about": "time to peak inhibitory response, Figure 6F legend",
+       "test": "Pearson correlation",
+       "statistic": "r = -0.03",
+       "p": 0.51
+      },
+      {
+       "about": "time to peak excitatory response, Figure 6F legend",
+       "test": "Pearson correlation",
+       "statistic": "r = 0.09",
+       "p": 0.64
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "With the code's peak rule, among 614 cortical circuit responders at 50 uA cathodal, time to peak excitation (median 205 ms) and to peak inhibition (median 70 ms) do not correlate with signed distance (Pearson r = -0.001, p = 0.987; r = 0.047, p = 0.244); with the cathodal contact for jlh32 too, r = 0.004 and 0.047 (p = 0.918 and 0.240); dropping the 19 units without a prominent peak, r = 0.002 and 0.050 (p = 0.969 and 0.219). With the criterion's 4 ms minimum width applied, both correlate (r = 0.131, p = 0.001 and r = -0.115, p = 0.004; with units without such a peak dropped, r = 0.153, p < 0.001 and r = -0.121, p = 0.004). jlh39 and jlh49v1 hold no cathodal pulses, so the readings with and without them are the same.",
+     "deviations": [
+      "Assumed the code's peak rule. The criterion lists a minimum width of 4 ms and a centre of mass over +-6 ms, the values in the code's configuration (figure7.ipynb cell 11); the code converts them to 5 ms bins with round(), so the width (0.8 bins, rounded to 1) is not applied, as the code applies it only above 1 bin, and the centre of mass spans +-1 bin. The paper's r values come from this rule and the Methods give none. Applying the width filter changes the outcome; asked of a reader and of the authors."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs9-state-drp",
+     "statement": "Direct response probability is slightly but significantly higher on high than on low cortical-state trials at every cathodal amplitude.",
+     "source": "Results, Single pulse electrical stimulation leads to extensive circuit response, paragraph 4; Figure S9B",
+     "quote": "DRP was slightly higher during high cortical states across stimulation amplitudes",
+     "statistics": [
+      {
+       "about": "5 uA",
+       "test": "paired Wilcoxon signed-rank, FDR corrected",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "FDR"
+      },
+      {
+       "about": "25 uA",
+       "test": "paired Wilcoxon signed-rank, FDR corrected",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "FDR"
+      },
+      {
+       "about": "50 uA",
+       "test": "paired Wilcoxon signed-rank, FDR corrected",
+       "p": 0.01,
+       "corrected": "FDR"
+      },
+      {
+       "about": "100 uA",
+       "test": "paired Wilcoxon signed-rank, FDR corrected",
+       "p": 0.03,
+       "corrected": "FDR"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "Under readings (a, i, x), all good stable units, the whole population and DRP, DRP is higher on high-state trials at every amplitude (0.0124 against 0.0120 at 5 uA, 0.0143 against 0.0126, 0.0159 against 0.0150, 0.0165 against 0.0159 at 100 uA; FDR p 0.0016 or less); the cortical population gives the same (FDR p up to 0.0156). The values are about a quarter of the paper's at 5 uA (0.051 and 0.056) and a sixth at 100 uA (0.104 and 0.107), and no reading reaches them; among the 99 direct responders the values are 0.12 to 0.25 and no difference is significant (FDR p 0.3008 to 0.9463). With nDRP over all units the low state is higher at every amplitude (FDR p 0.0336 or less).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6g-dimensionality-collapse",
+     "statement": "After a pulse the population's dimensionality drops (participation ratio and effective dimensionality fall), even as firing rate fluctuates, with a brief rise in effective dimensionality within 20 ms at 5, 25 and 50 uA.",
+     "source": "Results, Single pulse electrical stimulation leads to extensive circuit response, paragraph 5; Figure 6G",
+     "quote": "the response window was associated with a pronounced reduction in neural dimensionality, as reflected by decreases in both PR and effective dimensionality",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hickman_2026.ipynb",
+     "notes": "With 2 ms bins the normalised participation ratio in 12 to 150 ms is 0.982, 0.951, 0.765 and 0.459 and the effective dimensionality 0.986, 0.961, 0.778 and 0.476 at 5 to 100 uA, all below 1. Within 0 to 20 ms the largest bin of effective dimensionality is 1.024, 1.087 and 1.094 at 5, 25 and 50 uA (reading b; 1.043 at 100 uA as well), while its mean over the window is 0.929, 0.994 and 0.960 (reading a). With 5 ms bins the largest bin exceeds 1 only at 25 and 50 uA. The code's \"layer\" unit filter gives the same pattern. Against the pre-stimulus spread (-200 to -4 ms; largest normalised effective dimensionality 1.079, 1.056, 1.091 and 1.054 at 5 to 100 uA), the largest bin in 0 to 20 ms exceeds the pre-stimulus maximum at 25 uA (5 bins) and 50 uA (3 bins) but not at 5 uA (1.024) or 100 uA; the criterion does not compare with it.",
+     "deviations": [
+      "Seven recordings with cathodal pulses, where the legend gives nine."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7d-learning",
+     "statement": "Mice learned to detect high-contrast static gratings over 1353.8 +- 496.8 rewarded high-contrast trials and 14802 +- 5154 total trials.",
+     "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 2; Figure 7D",
+     "quote": "Mice successfully learned to detect high-contrast static gratings (>30% contrast) over an average of 1353.8 \u00b1 496.8 rewarded high-contrast trials and 14802 \u00b1 5154 total trials",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The behaviour of the four trained mice is not in the dandiset, which holds only the acute recordings; the paper names only these NWB files as deposited, and its code reads the behaviour from local CSV files. No other dandiset of the lab holds it (DANDI search for Denman and Hickman).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7e-generalization",
+     "statement": "Mice generalized from gratings to the moving-circle stimulus before electrical testing (d' 2.35 +- 0.30), comparable to high-contrast gratings (1.62 +- 0.92).",
+     "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 2; Figure 7E",
+     "quote": "These mice generalized detection of static gratings to the moving-circle stimulus before testing electrical stimulation, achieving a sensitivity index of d \u2032 = 2.35 \u00b1 0.30, comparable to their performance on high-contrast grating stimuli ( d \u2032 = 1.62 \u00b1 0.92, p = 0.113)",
+     "statistics": [
+      {
+       "about": "moving circles against gratings",
+       "test": "paired t test",
+       "statistic": "t = -2.2",
+       "p": 0.113,
+       "n": "4 mice"
+      },
+      {
+       "about": "moving circles against 0",
+       "test": "one-sample t test",
+       "statistic": "t = 15.68",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "gratings against 0",
+       "test": "one-sample t test",
+       "statistic": "t = 3.55",
+       "p": 0.03
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Behaviour not deposited (see fig7d-learning).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7g-no-amplitude-effect",
+     "statement": "Mice detect single pulses at similar rates across amplitudes (d' 0.37, 0.32, 0.36 and 0.45 at 5, 25, 50 and 100 uA); amplitude has no significant effect.",
+     "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 4; Figure 7G",
+     "quote": "Mice detected single pulses of electrical stimulation at similar rates across amplitudes ( d \u2032 for 5 \u03bc A: 0.37 \u00b1 0.04, 25 \u03bc A: 0.32 \u00b1 0.14, 50 \u03bc A: 0.36 \u00b1 0.06, and 100 \u03bc A: 0.45 \u00b1 0.14; F amplitude = 1.74, p = 0.21",
+     "statistics": [
+      {
+       "test": "one-way ANOVA",
+       "statistic": "F = 1.74",
+       "p": 0.21,
+       "n": "4 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Behaviour not deposited (see fig7d-learning).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7h-pulses-detected",
+     "statement": "Single pulses are detected above chance (average d' 0.37 +- 0.06).",
+     "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 4; Figure 7H",
+     "quote": "and above chance levels (average pulse d \u2032 = 0.37 \u00b1 0.06; one-sample t test compared to d \u2032 = 0, p = 0.001",
+     "statistics": [
+      {
+       "test": "one-sample t test against 0",
+       "statistic": "t = 12.59",
+       "p": 0.001,
+       "n": "4 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Behaviour not deposited (see fig7d-learning).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs10c-anodal-cathodal",
+     "statement": "Anodal-leading pulses are marginally more detectable than cathodal-leading pulses (d' 0.44 against 0.33).",
+     "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 4; Figure S10C",
+     "quote": "Anodal-leading waveforms were marginally more detectable than cathodal-leading waveforms (anodal d \u2032 = 0.44 \u00b1 0.06, cathodal d \u2032 = 0.33 \u00b1 0.09; paired t test, p = 0.028",
+     "statistics": [
+      {
+       "test": "paired t test",
+       "p": 0.028,
+       "n": "4 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Behaviour not deposited (see fig7d-learning).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7h-trains-better",
+     "statement": "High-frequency trains (100 to 300 Hz, 10 to 50 pulses) are detected better than single pulses (d' 0.66 against 0.37), with no significant difference by frequency.",
+     "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 4; Figure 7H; Figure S10D",
+     "quote": "yielded higher detection sensitivity than single pulses ( d \u2032 = 0.66 \u00b1 0.11 vs. 0.37 \u00b1 0.06; paired t test, p = 0.019). Within stimulation trains, detection sensitivity did not differ significantly by frequency",
+     "statistics": [
+      {
+       "about": "trains against single pulses",
+       "test": "paired t test",
+       "statistic": "t = -4.59",
+       "p": 0.019,
+       "n": "4 mice"
+      },
+      {
+       "about": "trains against 0",
+       "test": "one-sample t test",
+       "statistic": "t = 12.19",
+       "p": 0.001
+      },
+      {
+       "about": "frequency",
+       "test": "one-way ANOVA",
+       "statistic": "F = 3.22",
+       "p": 0.112
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Behaviour not deposited (see fig7d-learning).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7i-contrast-and-equivalence",
+     "statement": "Detection of visual stimuli increases with contrast for gratings and moving circles, emerges at 4% contrast for gratings and 2% for circles, and single pulses perform like 2 to 4% contrast while trains perform near 8%.",
+     "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 4; Figure 7I",
+     "quote": "Perceptual detection in highly trained mice emerged at 4% contrast for static gratings (one-sample t test, p = 0.035) and 2% contrast for moving circles (one-sample t test, p = 0.018, Figure 7I ). Single pulses of electrical stimulation performed comparably to visual contrasts between 2% and 4%, whereas stimulation trains performed near the level of an 8% visual contrast",
+     "statistics": [
+      {
+       "about": "contrast, gratings",
+       "test": "one-way ANOVA",
+       "statistic": "F = 18.28",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "contrast, moving circles",
+       "test": "one-way ANOVA",
+       "statistic": "F = 46.52",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "gratings at 4% against 0",
+       "test": "one-sample t test",
+       "p": 0.035
+      },
+      {
+       "about": "circles at 2% against 0",
+       "test": "one-sample t test",
+       "p": 0.018,
+       "n": "4 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Behaviour not deposited (see fig7d-learning).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7j-habituation",
+     "statement": "Within sessions, electrical stimulation becomes less detectable across trials (slope -0.004 per trial).",
+     "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 5; Figure 7J",
+     "quote": "Within individual sessions, electrical stimulation became less detectable across trials (mixed linear model regression",
+     "statistics": [
+      {
+       "about": "slope on trial",
+       "test": "linear mixed-effects model",
+       "statistic": "z = -15.18",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "4 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Behaviour not deposited (see fig7d-learning).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "no-learning-across-sessions",
+     "statement": "Detection of electrical stimulation does not improve across sessions.",
+     "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 6; Figure S10F",
+     "quote": "We observed no evidence of such learning: detection performance did not increase across sessions (ordinary least-squares regression, R 2 = 0.01, F = 1.12, slope = \u22120.004, p slope = 0.29",
+     "statistics": [
+      {
+       "test": "ordinary least-squares regression",
+       "statistic": "F = 1.12",
+       "p": 0.29
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Behaviour not deposited (see fig7d-learning).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs10e-reaction-times",
+     "statement": "Reaction times fall with contrast for both visual classes, while reaction times to electrical stimulation are like those to low-contrast visual stimuli.",
+     "source": "Results, Single pulses of electrical stimulation are weakly detected, paragraph 5; Figure S10E (the text cites S10F)",
+     "quote": "Reaction times decreased with increasing contrast for both classes of visual stimuli, whereas reaction times for electrical stimuli were similar to those for low-contrast visual stimuli",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Behaviour not deposited (see fig7d-learning).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The raw AP band, LFP band and NI-DAQ files are not deposited (the paper says they are available on request), so the evoked-potential analyses of Figures 1 to 3, S1 and S2 cannot be repeated (11 claims blocked), and the comparisons of units with the evoked-potential boundaries (Figures 4F, 4I and 5I) can be made only with the boundaries the paper's code computed, taken here from its repository.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The behaviour of the four trained mice (Figure 7 and S10) is not deposited on DANDI or elsewhere that the paper names; the paper's code reads it from local CSV files. 10 claims are blocked for this reason.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The stimulation contact coordinates of jlh31 and jlh32 in the trials table differ from those in the paper's code repository by 206 um (100, 150, -100) and 373 um (370, 0, -50); the other seven recordings agree exactly. With the code's coordinates the distance results of Figure 4H give the paper's statistics and most of its values (not the 50 uA extent, 868 against 965 um, or the 50 against 100 uA KS p, 0.8245 against 0.083); with the dataset's, the 5 against 100 uA KS test is no longer significant after correction.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The file of session jlh49v1, which the paper and its code treat as a separate recording and mouse, is filed under subject jlh48. Its subject age (P381D) is one day more than that of the jlh48 file, which was recorded four months later.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The electrodes table holds placeholders (location \"none\" for all 1152 channels, x 5 to 53, y 0, z 3820, impedance 0), so channel CCF coordinates and regions are not given; the paper's signed distances need them and here they are fitted from the units' coordinates. The stimulation contacts have coordinates but no region.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The units table holds neither the waveform classes (FS, RS, up, axon) nor the stability flags the paper uses to select units; both are recomputed here (the stability filter gives the same number of units per cathodal and anodal condition as the code's intermediate table direct_df.csv, and 1 to 5 more or fewer per bipolar condition).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The dandiset holds ten recordings; the paper analyses nine. The tenth, jlh41 (\"lots of noise issues ... not much analyzed yet here\"), has no CCF coordinates or regions, and the dandiset does not say it was left out.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "Cathodal single pulses are in seven of the nine recordings (jlh39 and jlh49v1 hold only bipolar pulses, jlh40 no bipolar), while the legends of the cathodal analyses give n = 9 recordings. jlh33 has 60 trials per condition, where the Methods state 75, and no anodal 50 uA single pulse. Trial and spike times of jlh40 and jlh53concat are negative in part.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The FS and RS classes of the paper's code are a 0.4 ms threshold on waveform duration (dlab classify_waveform_shape called with kmeans=0), where the Methods describe k-means on three normalised features. The two give 616 and 332 FS units and different outcomes for fig5j-fs-closer and figs6b-fsrs-early-firing.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Were the FS and RS classes of Figures 5G to 5J and S6 assigned by k-means (Methods) or by the 0.4 ms duration threshold the code runs? This attempt assumed the threshold, whose classes give the paper's statistics exactly; k-means on the Methods' three features depends on its initialisation here (296 to 470 FS units over 20 runs), and under none of those runs are FS responders significantly closer than RS responders (p 0.087 to 0.401).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "For Figure 6D the code's HVA group takes any CCF name with \"layer\" outside V1, which adds superior colliculus and dentate gyrus units to LM, AM, PM and other areas (151 good stable units in the nine recordings, 91 in the seven with cathodal pulses), and its subcortical list has no CA1 (315 good stable units); the legend names LM, AM and PM, and CA1, subiculum, dentate gyrus and superior colliculus. The paper's 15.82 comes from the code's groups; with the legend's groups HVA and subcortical modulation do not differ (13.91 against 13.26, Tukey p = 0.784).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The code's map_region_to_group looks for \"posteromedial area\", which matches no CCF name in the files (\"posteromedial visual area\"), so 16 PM units are left out of the cortical circuit responders of Figure 6E.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. The Methods compute the modulation index over 500 to 1000 ms with 5 ms bins, the Figure 6C legend over a 500 ms window from onset with 5 ms bins, and the code over 0 to 500 ms with 10 ms bins; the printed magnitudes are the code's. Which is meant? Over 500 to 1000 ms there is no cortical against subcortical difference (p = 0.457).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "In jlh53concat, a concatenated recording, the trials table's run numbers 0 to 7 are each used by a monopolar and a bipolar run, so a run number does not identify one condition; code that selects trials by run, as the paper's ZETA code does, takes 150 trials of both polarities.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "In all nine recordings the population fires less in the 3 ms before the logged pulse onset, down to 0.07 to 0.20 spikes per trial from 2 to 1 ms before it (0.61 in jlh31), against 0.81 to 2.03 from 8 to 7 ms before; the trials table does not say whether the onset is logged after the pulse begins or spikes were removed around it.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Was the 4 ms minimum peak width of the Figure 6F peak times meant to apply? The code's configuration sets it, but its conversion to 5 ms bins rounds it to one bin and skips it, and the Methods give no rule. Without it time to peak does not correlate with distance (r = -0.001 and 0.047); with it both correlate (r = 0.131, p = 0.001 and r = -0.115, p = 0.004).",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-31",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (verifier-1; same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebook of the author run (commit 432df9787) with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier read the archive metadata and tested helper functions on synthetic inputs. Its outcomes differ from the record on fig5ef-polarity-clusters and fig5-fsrs-proportion; it asked for fig4f, fig4i, fig5i and reading (b) of fig5-fsrs to be run with the code's EP_distances.pkl.",
+     "agreed": 40,
+     "of": 42,
+     "disagreements": [
+      {
+       "claim": "fig5ef-polarity-clusters",
+       "outcome": "reproduced",
+       "reason": "Reading a gives n = 220, CCC 0.773, silhouette 0.538. Under the criterion's \"some assignment\" (clusters 2 and 5 bipolar 0.286, cluster 1 anodal 0.232, cluster 3 cathodal 0.186; each is that cluster's highest polarity) all three fractions are within tolerance. The notebook did no assignment search, although it does one for fig5bc, and its half-maximum rule gives bipolar 0.205 (B1)."
+      },
+      {
+       "claim": "fig5-fsrs-proportion",
+       "outcome": "not_reproduced",
+       "reason": "No reading gets the proportions within tolerance (FS at 5 uA 0.006 or 0.020 against 0.032, RS at 100 uA 0.022 against 0.037). The paper's F = 3.04 with p = 0.028 implies 3 df, so amplitude was categorical, and then the amplitude term has p = 0.12. Under the k-means classes the class effect is significant. Reading b, units within the evoked potential, was not run, and the paper's proportions look like that population (B2)."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-31",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (verifier-2; same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the author-revise-1 run (commit b357179b9) with its conclusions and summary, the README, the attempt record, the helper module and the claims file, with the paper. The verifier disagrees with four outcomes (fig4f, fig5i, figs3e, fig6c: partially reproduced where the criteria have no partial clause) and quoted sentences of the conclusions and the record that the outputs do not support.",
+     "agreed": 38,
+     "of": 42,
+     "disagreements": [
+      {
+       "claim": "fig4f-responders-within-ep",
+       "outcome": "not_reproduced",
+       "reason": "N1. The criterion has no partial clause; RS at 5 uA is 0.400 against 0.333 +- 0.033 (cell 16), so by the rule used for fig5-fsrs this is not reproduced. The FS/RS assumption is stated but the outcome does not depend on it: k-means RS fractions also fail at 5 uA (0.520). The outcome turns on the contact coordinates."
+      },
+      {
+       "claim": "figs3e-early-windows",
+       "outcome": "not_reproduced",
+       "reason": "N1. The criterion has no partial clause; the 100 uA proportions are 0.058 and 0.106 against 0.092 and 0.175 (cell 34). The rule the record used to change fig5-fsrs makes this not reproduced; in round 1 it accepted partial and revises that so one rule is applied throughout."
+      },
+      {
+       "claim": "fig5i-fs-within-ep",
+       "outcome": "not_reproduced",
+       "reason": "N1. The criterion has no partial clause; RS at 5 uA is 0.400 (cell 49). The FS/RS assumption is stated but the outcome does not depend on it: under k-means FS is 1.000 at 5 uA from n = 2. The outcome turns on the contact coordinates."
+      },
+      {
+       "claim": "fig6c-modulation-cortex",
+       "outcome": "not_reproduced",
+       "reason": "N1. The criterion has no partial clause and requires every reading to hold; under reading (c) the region term has p = 0.457 (cell 57). In round 1 it accepted partial and revises that so one rule is applied throughout."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-31",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (verifier-3; same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 3. The four outcome changes proposed by the author-revise-2 run (commit 05897771f) and the analysis behind them in the executed notebook, with the claims file and the paper. Nothing else was reviewed.",
+     "agreed": 4,
+     "of": 4,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000774-hickman-2026",
+   "type": "reproduction",
+   "title": "Direct electrical stimulation of mouse visual cortex with three Neuropixels probes (Hickman et al. 2026)",
+   "description": "Tests the single-unit findings of Hickman, Hughes, Sahai, Miles and Denman (2026) on dandiset 000774, which holds spike times, templates, CCF coordinates and regions of the units of nine acute recordings with three Neuropixels probes around a stimulating electrode in mouse V1, and the table of single electrical pulses. It tests the direct response window, the sparse and amplitude-dependent direct responders, their clustering by amplitude and polarity, the FS and RS differences, the circuit response, cortical state and population dimensionality. The evoked potentials need the raw AP band and the behaviour is not deposited, so those claims are blocked.",
+   "datasets": [
+    "dandi:000774"
+   ],
+   "papers": [
+    "10.1016/j.celrep.2026.117420"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_hickman_2026.ipynb",
+     "title": "Reproducing Hickman et al. (2026) from dandiset 000774",
+     "executed": "notebooks/000774-hickman-2026/reproduce_hickman_2026.html"
+    }
+   ]
+  }
+ ]
+}
