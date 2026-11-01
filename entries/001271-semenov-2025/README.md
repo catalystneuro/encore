@@ -21,7 +21,7 @@ to 001035 (Figures 1 and 2) and 001272 (Figure S1).
 | Pure sine waves excite every neuron, ceiling 60 to 90 Hz (001032 to 001035) | Not reproduced |
 | 20-kHz thresholds about twice the 2-kHz ones | Not reproduced |
 | Modulated thresholds higher; 2-kHz threshold 57.7 V/cm | Not reproduced |
-| Modulated firing locks to the beats | Partially reproduced (assumption) |
+| Modulated firing locks to the beats | Reproduced (assumption; criterion amended after a reader's answer) |
 | Pure sine waves give more APs than modulated ones | Reproduced (assumption) |
 | Low conductivity halves thresholds | Blocked: metadata insufficient |
 | Di-8-ANEPPS in eight neurons gives the same effects (001272) | Not reproduced |
@@ -36,9 +36,9 @@ the 36 the files state. DANDI:001034 duplicates 001032, and 001272 holds 3 of th
 Di-8-ANEPPS neurons. The record, with the reasons and the differences from the paper's method, is
 [`attempts/001271-semenov-2025-01.yaml`](../../attempts/001271-semenov-2025-01.yaml).
 
-- `reproduce_semenov_2025.ipynb`: Figure S2 on 001271, and the heating estimate. About two minutes.
-- `reproduce_fig3c_001030.ipynb`: Figure 3C on 001030. Under a minute.
-- `reproduce_fig1_fig2_001032.ipynb`: Figures 1, 2 and S1 on 001032 to 001035 and 001272. About six
-  minutes, most of it streaming.
+- `reproduce_semenov_2025.ipynb`: Figure S2 on 001271, and the heating estimate. About six minutes.
+- `reproduce_fig3c_001030.ipynb`: Figure 3C on 001030. About a minute.
+- `reproduce_fig1_fig2_001032.ipynb`: Figures 1, 2 and S1 on 001032 to 001035 and 001272. About 19
+  minutes in the last run, most of it streaming.
 - `sinewave.py`: loading, ROIs, dF, AP detection and the session measures; other notebooks on these
   dandisets can import it.

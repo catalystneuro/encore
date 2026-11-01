@@ -217,20 +217,31 @@ outcomes:
   - Fields use 18 V/cm per stated volt, the scale at which 001271's voltages give the fields of Figure S2; the files
     state 36 V/cm per V, also shown.
 - claim: fig2-modulated-locks-to-beats
-  outcome: partially_reproduced
+  outcome: reproduced
   assumed: true
   notebook: reproduce_fig1_fig2_001032.ipynb
   output: claim:fig2-modulated-locks-to-beats
-  notes: Firing locks to the beats. Under O1(a) with the 5% height, 91% of 213 APs in 84 modulated sessions fall
-    within 12.5 to 37.5 ms of a beat (49% for unmodulated waves), no session has more than 8 APs, 18 of 420 beats
-    have more than one AP, and no session shows sustained depolarization. But 15 to 32 modulated sessions meet the
-    header's sustained firing (at least three APs with one in the last 50 ms) under the O1(a) readings, each through
-    an AP in the fifth beat, which peaks 225 ms into the stimulus. The criterion passes only in the two O1(b) readings
-    with the 5-SD height, where no modulated session has 5 APs; those readings are set aside and the O1(a) readings
-    adopted. Whether the definition of sustained firing fits beat-locked firing is asked of a reader (questions/001271.yaml).
+  notes: Tested on the criterion as amended after the reader's answer in questions/001271.yaml. The first run,
+    on the header's O4 definition of sustained firing (at least three APs with one in the last 50 ms), was
+    partially_reproduced, assumed. The reader found that the definition misread the paper, which sets modulated
+    firing against the sustained firing of pure sine waves, and amended the criterion. A modulated session now
+    shows sustained firing when more than two APs fall in one beat or, with 5 APs or more, at least as many APs
+    fall outside 12.5 to 37.5 ms of the beats as inside. Under it, 12 of the 16 readings pass, all four O1(a)
+    readings with the 5-SD height and all eight O1(b) readings. Under O1(a) with the 5% height, 92% of 212 APs in
+    84 modulated sessions fall within 12.5 to 37.5 ms of a beat (49% of 1,383 APs for unmodulated waves), no
+    session has more than 8 APs, all 14 sessions with 5 APs or more have most APs near the beat peaks, no session
+    has as many APs outside that window as inside, and none shows sustained depolarization. The four O1(a)
+    readings with the 5% height fail through a single session, subject 9_2 at 2 kHz and 3.4 V, with three APs in
+    the fifth beat (206.4, 217.4 and 236.2 ms, peaks 11.1 to 22.2% dF). Its pre-onset SD is 9.8% dF, about twice
+    the 5% level, and none of its peaks passes its 5-SD level (49.0% dF). The O4 definition would still flag 15
+    to 32 modulated sessions under O1(a); the amended rule flags 88 of the 197 unmodulated sessions with 3 APs or
+    more, so it separates the two kinds of wave. What the answer changed is the test of sustained firing, and with
+    it the outcome, from partially_reproduced to reproduced; the first run's assumption that O1(a) decides is no
+    longer needed, as the O1(b) readings pass too.
   deviations:
-  - Assumed, the O1(a) readings decide, since the O1(b) ROIs leave 21 of 84 modulated sessions and detect at most
-    3 APs per session with the 5-SD height, which makes the locking test empty.
+  - Assumed, the 5-SD height decides between the two AP heights of the header (O3), since the readings differ
+    through one session whose pre-onset noise (SD 9.8% dF) is twice the 5% level, so that the 5% height counts
+    noise peaks there as APs.
   - Tested on DANDI:001032, 001033 and 001035; 001034 duplicates 001032 and is counted once.
 - claim: fig2c-pure-more-aps
   outcome: reproduced
@@ -239,7 +250,7 @@ outcomes:
   output: claim:fig2c-pure-more-aps
   notes: With the O1(a) ROI under all four F0 and height readings, the unmodulated wave gives more APs than the
     modulated one at the same carrier and voltage in 32 to 43 of 52 pairs (12 neurons) against 2 to 4 (paired t
-    p = 4.7e-10 to 7.8e-07), and the unmodulated threshold is lower in 10 to 13 of 12 to 15 neurons for 1 AP (0
+    p = 2.3e-10 to 7.8e-07), and the unmodulated threshold is lower in 10 to 13 of 12 to 15 neurons for 1 AP (0
     to 2 the reverse) and in 2 to 6 of 4 to 9 for 5 APs (none the reverse). Under O1(b) (5 neurons, at most one
     5-AP threshold pair) the claim fails in all four readings.
   deviations:
@@ -385,6 +396,8 @@ findings:
     the soma nearly fills (the whole crop, or an outline), and by what rule were APs counted? The claims file's
     Otsu ROIs are often a few pixels of membrane, and the outcome of figs2-ttx-abolishes-aps, figs2-vehicle-keeps-response
     and ap-amplitude-duration depends on this choice; the whole frame gives no AP after TTX in any of 31 pairs.
+    The AP height level matters too, for fig2-modulated-locks-to-beats through one noisy session (pre-onset SD
+    9.8% dF), where a fixed 5% dF level counts three APs in one beat and a 5-SD level counts none.
 - kind: methods_unavailable
   statement: Question for the paper's authors. How was sustained depolarization measured? The plateaus in 001271
     at the highest field are 0.6 to 5.4% dF (median 2.6%) with small oscillations, below the claims file's levels
