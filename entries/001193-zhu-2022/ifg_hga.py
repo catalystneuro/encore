@@ -85,6 +85,21 @@ def _all_paths(f):
     return names
 
 
+def _describe(f, top):
+    """Every object under `top`, as "path (Group)" or "path (Dataset shape dtype)", with neurodata types."""
+    out = []
+
+    def visit(name, obj):
+        kind = obj.attrs.get("neurodata_type")
+        kind = f" [{_text(kind)}]" if kind is not None else ""
+        if isinstance(obj, h5py.Dataset):
+            out.append(f"{top}/{name} (Dataset {obj.shape} {obj.dtype}){kind}")
+        else:
+            out.append(f"{top}/{name} (Group){kind}")
+    f[top].visititems(visit)
+    return out
+
+
 def _peak_excess(spectrum, freqs, target):
     """log10 power at `target` (cycles per sample) minus the median log10 power in the flanking band."""
     i = int(np.argmin(np.abs(freqs - target)))
@@ -102,6 +117,7 @@ def summarize(asset):
         groups = [p for p in _all_paths(f) if p.split("/")[0] in ("stimulus", "intervals", "analysis", "processing", "units")]
         out = {
             "path": asset.path,
+            "asset_size": asset.size,
             "identifier": _text(f["identifier"][()]),
             "subject_id": _text(f["general/subject/subject_id"][()]),
             "sex": _text(f["general/subject/sex"][()]),
@@ -127,6 +143,11 @@ def summarize(asset):
             "group_descriptions": {g: _text(f[f"general/extracellular_ephys/{g}"].attrs["description"]) for g in ("Grid_1", "Grid_2")},
             "group_locations": {g: _text(f[f"general/extracellular_ephys/{g}"].attrs["location"]) for g in ("Grid_1", "Grid_2")},
             "other_objects": groups,
+            "top_level": sorted(f.keys()),
+            "acquisition_listing": _describe(f, "acquisition"),
+            "general_listing": _describe(f, "general"),
+            "data_storage": {"chunks": series["data"].chunks, "compression": series["data"].compression,
+                             "dtype": str(series["data"].dtype)},
             "has_trials": "intervals/trials" in f,
         }
     out["n_nan"] = int(np.isnan(data).sum())
