@@ -32,7 +32,10 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 and the differences from the paper's method.
 
 The soma outline, the stimulus onset in the 2024 files and the scale of the stated amplitudes are not
-deposited, so several outcomes rest on stated assumptions. Thresholds in V/cm, from the files' nominal
+deposited, so several outcomes rest on stated assumptions. APs are detected with a width at half
+height of 1 to 20 ms, as the claims file gives it after a reader answered a question on it
+([`questions/001272.yaml`](../../questions/001272.yaml)); no outcome differs from those with the
+2 to 20 ms first tested. Thresholds in V/cm, from the files' nominal
 volts and 36 V/cm per volt, are about 150 V/cm at 2 kHz, against the paper's 57.7 V/cm; the files say
 the delivered amplitude is smaller by a calibration that is not deposited. The attempt record, with
 the reasons and the differences from the paper's method, is

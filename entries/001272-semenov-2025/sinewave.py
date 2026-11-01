@@ -27,10 +27,13 @@ Where each parameter comes from:
   claims file's standard choices. The whole 16 x 16 frame is offered as a variant only.
 - dff: F1, dF = 100 (F - F0) / F0, F0 under O2 (a) all frames before the onset, (b) the last
   20 ms before it. No filtering or detrending (F2). `invert` gives -dF for Di-8-ANEPPS (F1).
-- detect_aps: O3. A local maximum with width at half prominence of 2 to 20 ms, at least 5 ms from
+- detect_aps: O3. A local maximum with width at half prominence of 1 to 20 ms, at least 5 ms from
   a larger maximum; height (the dF value at the peak, as the Methods' "APs peaked at a more than
-  5% dF") above (a) 5% or (b) 5 SD of the trace before the onset. The bounds and the 5 ms are the
-  claims file's standard choices.
+  5% dF") above (a) 5% or (b) 5 SD of the trace before the onset. The claims file sets the 1-ms
+  lower bound to exclude single-frame noise (about 3 frames at 3,086.4 or 3,130 frames/s), since the
+  Methods' "lasted about 10 ms" is the whole AP duration and bounds the half-height width from above
+  only; the 20-ms upper bound and the 5 ms are its standard choices. Its earlier 2-ms lower bound is
+  run as a variant.
 - sustained_firing, sustained_depolarization: O6 (standard choices of the claims file).
 - first_two_rate: F5, inverse of the interval between the first two APs.
 """
@@ -179,12 +182,12 @@ def dff(trace: np.ndarray, t: np.ndarray, f0: str = "a", invert: bool = False,
 
 
 def detect_aps(y: np.ndarray, t: np.ndarray, height: str = "a", stim_ms: float = STIM_MS,
-               onset_ms: float = ONSET_MS, min_width_ms: float = 2.0, height_ref: str = "value") -> dict:
+               onset_ms: float = ONSET_MS, min_width_ms: float = 1.0, height_ref: str = "value") -> dict:
     """O3: APs as local maxima of the (inverted for Di-8-ANEPPS) dF trace.
 
     Returns peak times (ms from the onset), heights (dF at the peak), widths (ms) and the height
-    threshold used, for peaks during the stimulus. `min_width_ms` is 2 ms (O3); 1 ms is run as a
-    variant, since FluoVolt APs are about 2 ms wide at half height (shown in the notebooks).
+    threshold used, for peaks during the stimulus. `min_width_ms` is 1 ms (O3); 2 ms, the claims
+    file's earlier bound, is run as a variant (FluoVolt APs are about 2 ms wide at half height).
     `height_ref` "value" compares the dF at the peak with the threshold (the Methods' "APs peaked at
     a more than 5% dF"); "prominence", a variant, compares the peak's prominence, which does not
     count a depolarized baseline towards the height."""
@@ -260,7 +263,7 @@ def load_prepared(assets: list[dict], workers: int = 8, onset_ms: float = ONSET_
 
 def session_table(recs: list[dict], roi: str, f0: str, height: str, invert: bool,
                   onset_ms: float = ONSET_MS, stim_ms: float = STIM_MS, late_ms: float = 100.0,
-                  baseline: dict | None = None, min_width_ms: float = 2.0, height_ref: str = "value"):
+                  baseline: dict | None = None, min_width_ms: float = 1.0, height_ref: str = "value"):
     """One row per session: AP count, first-AP latency, F5 rate, late mean dF and O6 measures.
 
     `late_ms` is the O6 window at the end of the stimulus. `baseline`, for the 2-s recordings of
