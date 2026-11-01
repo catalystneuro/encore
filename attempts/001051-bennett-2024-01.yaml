@@ -37,12 +37,16 @@ outcomes:
     agree for all 99 sessions. In 81 of 87 sessions the code's units table and the dandiset agree unit by unit (no
     matched unit differs in max_drift, firing_rate or quality). In 6 sessions (1176989662, 1178460518, 1178693650,
     1179911454, 1180266229, 1181096406) 55 to 99.8% of matched units differ in max_drift and firing_rate and 14
-    to 38% in quality, and the RF p values recomputed here are uncorrelated with the code's there (r = -0.02 over
-    234 units, against 0.9989 over 6790 units in the other sessions), so the same unit ids name other units. In
-    5 of them the code's table has 328 units (133 CP) on probes the dandiset does not hold; the dandiset has no
-    unit missing from the code's table. Recomputed RF significance agrees with the code's for 98.8% of units where
-    the units agree. The dependent claims are tested on all 87 sessions; leaving out the 6 changes their numbers
-    little (shown for the unit counts, drift, QC fraction and yield).
+    to 38% in quality; there the files' spike counts fit the files' firing rates (coefficient of variation of n_spikes
+    / firing_rate 0 in five sessions, 0.076 in 1176989662) but not the code's (5.4 to 11.8, against 0 elsewhere),
+    and the RF p values recomputed here are uncorrelated with the code's (r = 0.03 over 251 units, against 0.9990
+    over 7095 units in the other sessions), so the same unit ids name other units. In 5 of them the code's table
+    has 328 units (133 CP) on probes the dandiset does not hold; the dandiset has no unit missing from the code's
+    table. Where the units agree, recomputed RF significance at 0.01 agrees for 98.8% of units pooled; per session
+    the fraction differing has a median of 0.008 and a maximum of 0.038 and exceeds 1% in 33 of 79 sessions, all
+    83 differing units having p values of 0.003 to 0.020 in both computations, at the threshold (two bootstraps
+    with different random draws). The dependent claims are tested on all 87 sessions; leaving out the 6 changes
+    their numbers little (shown for the unit counts, drift, QC fraction and yield).
   deviations:
   - A link claim added by the author; the code's notebook and tables are matched to the dandiset by session and
     unit identifiers.
@@ -117,7 +121,9 @@ outcomes:
   output: claim:penetration-success
   measured: 5.83
   notes: 507 probes with units over 87 sessions give 5.83 per session (a), 578 over 99 give 5.84 (b), within 5.46
-    +- 0.546; with the code's 467 insertions, 5.37. No reading gives 5.46 exactly.
+    +- 0.546; with the code's 467 insertions, 5.37. The code's probes table lists 467 probes for the 87 sessions
+    and 533 for the 99 (5.37 and 5.38 per session), every one marked inserted, so it records no failed attempt.
+    No count gives 5.46.
 - claim: fig4b-trajectory-consistency
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -221,19 +227,27 @@ outcomes:
     holds. The medians do not all match: over the 87 sessions (a) all rewards 73, 65, 61, 53.5 and (b) earned rewards
     67, 59, 55, 48 (days 2 and 3 within tolerance in each); over all sessions (a) 68, 63.5, 60, 56.5 (days 2 to
     4) and (b) 62.5, 57.5, 54, 50.5 (days 1 to 3). Medians fall from day 1 to day 4 in every reading. Hit trials
-    exceed earned rewards because of the no-reward block.'
+    exceed earned rewards because of the no-reward block. The paper''s medians end in .5 on days 1 and 3, which
+    needs an even number of sessions those days; the 87-session set has 23 on day 1 and the 99-session set 25 on
+    day 3, so neither set is the paper''s.'
 - claim: figs4i-insertion-suppression
   outcome: not_reproduced
   notebook: reproduce_bennett_2024.ipynb
   output: claim:figs4i-insertion-suppression
   measured: 36.0
   notes: Activity recovers over the session (normalised rate 0.826 in minute 1, 0.999 at minute 30, 1.077 at the
-    end, reading a), but the fitted time constant is 36.0 min (SE 2.3) under (a) and 35.4 min (SE 2.3) under (b),
-    outside 22.5 to 33 min; per-session fits give a median of 34.8 min (IQR 23.1 to 52.5). 87 sessions, 77.3 min
-    common length from the first stimulus.
+    end, reading a), but the fitted time constant over the common 77.3 min from the first stimulus is 36.0 min (SE
+    2.3) under (a) and 35.4 min (SE 2.3) under (b), outside 22.5 to 33 min; per-session fits give a median of 34.8
+    min (IQR 23.1 to 52.5). Shorter windows give longer time constants, 41.2 to 42.2 min over the shortest active
+    block (64 min), 45.9 to 47.1 at 60 min, 65.2 to 84.0 at 40 to 50 min, and no recovery at 30 min (tau unbounded);
+    per-session fits over each session's active block give a median of 39.8 min (IQR 25.7 to 66.8), 26 of 87 sessions
+    inside the range. No window gives a pooled tau inside the range, so the outcome does not rest on the window.
   deviations:
   - The fit (a - b exp(-t / tau) on 1-minute means, least squares) and the 87 sessions (the paper has 85) are not
     given by the paper.
+  - The fit window is not given (the S4I legend plots the change over time from experiment start); the main fit
+    uses the longest window all sessions share, 77.3 min from the first stimulus, which runs past the active block.
+    Windows of 30 to 64 min and per-session active blocks are shown; all give tau above 33 min.
 - claim: figs4de-retraction-reduces-drift
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -279,15 +293,25 @@ outcomes:
   - 4.0
   - 4.5
   notes: Under frequency reading (b), the autocorrelogram spectrum peak, VISp events at 4.0 Hz and MOp at 4.5 Hz
-    (medians), MOp higher by the one-sided rank-sum test (p 0.0016 to 5.3e-7) in all 8 L, E and set combinations,
-    which the criterion accepts. Under reading (a), the inverse of the median interval between maxima, VISp 4.17
-    to 4.21 Hz and MOp 4.35 to 4.55 Hz, and MOp is not significantly higher (p 0.078 to 0.77). 1469 to 1704 qualifying
-    VISp events and 80 to 122 MOp events. The MOp median is at the lower edge of the widened 4.5 to 7.7 Hz range,
-    below the paper's 5 to 7 Hz.
+    (medians), MOp higher by the one-sided rank-sum test (p 5.3e-7 to 0.0016) in all 8 L, E and set combinations,
+    which the criterion accepts. The 2 s autocorrelogram gives a 0.5 Hz grid on which the MOp median sits on the
+    lower edge of the widened 4.5 to 7.7 Hz range (22.7% of L2 E2 MOp values are exactly 4.5 Hz); with the spectrum
+    zero-padded to 0.049 Hz steps the medians are 4.05 to 4.10 Hz (VISp) and 4.64 to 4.74 Hz (MOp), inside the ranges,
+    with MOp higher at p 7.1e-7 to 0.0038 in all 8. Under reading (a), the inverse of the median interval between
+    maxima, VISp 4.17 to 4.21 Hz and MOp 4.35 to 4.55 Hz, and MOp is not significantly higher (p 0.078 to 0.76).
+    1469 to 1704 qualifying VISp events and 80 to 122 MOp events. The detector finds synthetic sinusoidal rates
+    of 3 to 5 Hz only (none at 2.5 Hz or below or 5.5 Hz or above), so a 5 to 7 Hz MOp band cannot appear under
+    either reading; this follows from the event rule of the claims file.
   deviations:
   - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
-    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
-  - Reading (b) restricts the spectrum peak to 1 to 20 Hz, a standard choice.
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session. Events are detected
+    on the smoothed rate, and the autocorrelogram threshold, CCGs and coherence use the unsmoothed rate, a detail
+    taken from the code's printed counts quoted in the claims file's header (1653 VISp and 113 MOp qualifying events,
+    code cell 12), which the unsmoothed autocorrelogram matches (1643 to 1704 and 119 to 122 under E2) and the smoothed
+    one does not (3035 to 3426 and 152 to 170). The Benjamini-Hochberg family of the pair test holds brain areas
+    only (not CP-RF, CP-noRF, VIS or unannotated labels); this changes significance for 4 of 734 pair results.
+  - Reading (b) restricts the spectrum peak to 1 to 20 Hz, a standard choice; the zero-padded spectrum (2048 points)
+    is a standard interpolation shown as a variant.
 - claim: fig7b-low-arousal
   outcome: partially_reproduced
   notebook: reproduce_bennett_2024.ipynb
@@ -296,10 +320,19 @@ outcomes:
   notes: 'At qualifying events the pupil is smaller (Wilcoxon p at most 9.1e-15) and running lower (0.03 to 1.16
     against 4.1 to 7.7 cm/s at random times, p at most 8.0e-6) for VISp and for MOp in every combination. The change
     is not 25%: VISp -12.9 to -15.4% (area, mean), -7.5 to -8.8% (diameter); MOp -30.8 to -36.5% (area), -17.3 to
-    -20.9% (diameter); pooled -14.0 to -16.3% (area). No reading falls within -22.5 to -27.5%.'
+    -20.9% (diameter); pooled -14.0 to -16.3% (area). No reading falls within -22.5 to -27.5%. The running and pupil
+    streams share the stimulus clock as far as the data check shows: running slows after hits against misses from
+    a median 0.225 s after the change, and the pupil constricts after white against black flashes from a median
+    0.35 s, with small contrasts before time 0; alignment is not shown in 5 sessions for running and 3 for the pupil,
+    and 2 sessions have no eye tracking.'
   deviations:
   - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
-    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session. Events are detected
+    on the smoothed rate, and the autocorrelogram threshold, CCGs and coherence use the unsmoothed rate, a detail
+    taken from the code's printed counts quoted in the claims file's header (1653 VISp and 113 MOp qualifying events,
+    code cell 12), which the unsmoothed autocorrelogram matches (1643 to 1704 and 119 to 122 under E2) and the smoothed
+    one does not (3035 to 3426 and 152 to 170). The Benjamini-Hochberg family of the pair test holds brain areas
+    only (not CP-RF, CP-noRF, VIS or unannotated labels); this changes significance for 4 of 734 pair results.
   - Diameter is the square root of window-mean area; two sessions without eye tracking contribute no pupil values.
 - claim: fig7b-visp-offset-locked
   outcome: reproduced
@@ -310,7 +343,12 @@ outcomes:
     p 0.28 to 0.62).
   deviations:
   - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
-    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session. Events are detected
+    on the smoothed rate, and the autocorrelogram threshold, CCGs and coherence use the unsmoothed rate, a detail
+    taken from the code's printed counts quoted in the claims file's header (1653 VISp and 113 MOp qualifying events,
+    code cell 12), which the unsmoothed autocorrelogram matches (1643 to 1704 and 119 to 122 under E2) and the smoothed
+    one does not (3035 to 3426 and 152 to 170). The Benjamini-Hochberg family of the pair test holds brain areas
+    only (not CP-RF, CP-noRF, VIS or unannotated labels); this changes significance for 4 of 734 pair results.
   - The stimulus before an event is the last active image presentation, as the code's stimulus-trials table holds
     active presentations.
 - claim: figs6-replay
@@ -320,10 +358,19 @@ outcomes:
   measured: 0.633
   notes: Across sessions (7 under L1, as in the paper, 8 under L2; four points each) the correlation of evoked and
     event responses is r = 0.21 to 0.63 over 32 combinations of the readings and windows, below 0.693 in all; p
-    < 0.05 in 18 of 32. The per-unit variant gives r = 0.46 to 0.67.
+    < 0.05 in 18 of 32. Events are assigned to the last presentation before them, as the criterion says, which takes
+    events that start during an image (473 of 1656 L2 E2 events over all sessions) and after the active block (64);
+    keeping only events 0 to 0.5 s after the offset, the post-stimulus events of the S6 legend, gives r = 0.19 to
+    0.53, p < 0.05 in 14 of 32, none within tolerance. The per-unit variant gives r = 0.46 to 0.67 (0.52 to 0.66
+    with post-offset events only).
   deviations:
   - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
-    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session. Events are detected
+    on the smoothed rate, and the autocorrelogram threshold, CCGs and coherence use the unsmoothed rate, a detail
+    taken from the code's printed counts quoted in the claims file's header (1653 VISp and 113 MOp qualifying events,
+    code cell 12), which the unsmoothed autocorrelogram matches (1643 to 1704 and 119 to 122 under E2) and the smoothed
+    one does not (3035 to 3426 and 152 to 170). The Benjamini-Hochberg family of the pair test holds brain areas
+    only (not CP-RF, CP-noRF, VIS or unannotated labels); this changes significance for 4 of 734 pair results.
   - Rows are normalised by their maximum, a standard choice; sessions enter when each of the four images precedes
     a qualifying event.
 - claim: fig7cd-visp-coupling
@@ -333,65 +380,104 @@ outcomes:
   output: claim:fig7cd-visp-coupling
   notes: 'The CCG part holds in every combination (LP and VISl peak at 0 to 20 ms, heights 0.335 to 0.508, above
     PO and SSp at 0.055 to 0.092). The coherence part holds under R1 in all 8 combinations, but under R2 only with
-    L2 E1: with L1 SSp is also significant (+0.008 to +0.011, q 0.003 and 2.2e-5), with L2 E2 PO (q 0.05) and SSp
-    (q 0.047) are. The readings disagree, which the claims file''s header makes methods underspecified. Open for
-    the authors is how the random-time coherence is formed (the Methods'' wording reads as R1, the code does R2).'
+    L2 E1: with L1 SSp is also significant (+0.008 to +0.011, q 0.0032 and 2.5e-5), with L2 E2 SSp is (+0.007, q
+    0.048 and 0.036; PO +0.011 at q 0.051). Every part is tested in every combination. The readings disagree, which
+    the claims file''s header makes methods underspecified. Open for the authors is how the random-time coherence
+    is formed (the Methods'' wording reads as R1, the code does R2).'
   deviations:
   - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
-    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session. Events are detected
+    on the smoothed rate, and the autocorrelogram threshold, CCGs and coherence use the unsmoothed rate, a detail
+    taken from the code's printed counts quoted in the claims file's header (1653 VISp and 113 MOp qualifying events,
+    code cell 12), which the unsmoothed autocorrelogram matches (1643 to 1704 and 119 to 122 under E2) and the smoothed
+    one does not (3035 to 3426 and 152 to 170). The Benjamini-Hochberg family of the pair test holds brain areas
+    only (not CP-RF, CP-noRF, VIS or unannotated labels); this changes significance for 4 of 734 pair results.
 - claim: fig7cd-mop-coupling
   outcome: reproduced
   notebook: reproduce_bennett_2024.ipynb
   output: claim:fig7cd-mop-coupling
-  notes: Under E2 in all 8 combinations MOp is significantly coherent with PO (+0.15 to +0.20) and SSp (+0.19 to
-    +0.25) and not with LP or VISl where recorded, and the CCGs of PO and SSp peak at 0 to 20 ms (0.20 to 0.33)
-    against 0.03 to 0.06 for LP and VISl. Under E1 PO has fewer than 25 events and could not be tested; SSp and
-    LP agree with E2. VISl has fewer than 25 MOp events under L1.
+  notes: 'Under E2 in all 8 combinations MOp is significantly coherent with PO (+0.15 to +0.20) and SSp (+0.19 to
+    +0.25) and not with LP, and the CCGs of PO and SSp peak at 0 to 20 ms (0.20 to 0.33) against 0.03 to 0.06 for
+    LP and VISl. Parts with fewer than 25 events are untested, not counted as not significant: under E1 PO, and
+    under L1 and under L2 E1 VISl. Every part is tested only under L2 E2 (4 combinations), where all hold (VISl
+    +0.005 and +0.027, q 0.89 and 0.34). No tested part contradicts the claim in any of the 16 combinations. The
+    verifier would block the claim as methods underspecified because the E1 readings cannot test PO; the outcome
+    is kept, as no reading gives a different result, and the disagreement is recorded.'
   deviations:
   - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
-    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
-  - Under E1 the PO part is untested; the outcome rests on the E2 combinations, where all parts could be tested.
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session. Events are detected
+    on the smoothed rate, and the autocorrelogram threshold, CCGs and coherence use the unsmoothed rate, a detail
+    taken from the code's printed counts quoted in the claims file's header (1653 VISp and 113 MOp qualifying events,
+    code cell 12), which the unsmoothed autocorrelogram matches (1643 to 1704 and 119 to 122 under E2) and the smoothed
+    one does not (3035 to 3426 and 152 to 170). The Benjamini-Hochberg family of the pair test holds brain areas
+    only (not CP-RF, CP-noRF, VIS or unannotated labels); this changes significance for 4 of 734 pair results.
+  - Under E1 the PO part, and under L1 and L2 E1 the VISl part, are untested (fewer than 25 events); the outcome
+    rests on the combinations where the parts could be tested, all four parts only under L2 E2.
 - claim: fig7e-lags-straddle-zero
   outcome: not_reproduced
   notebook: reproduce_bennett_2024.ipynb
   output: claim:fig7e-lags-straddle-zero
   notes: On the code's test 94 of 102 pair results differ from zero after correction; only VISp to VISl under L1
     does not. Median lags are -23 to +14 ms and the fraction of positive lags 0.12 (MOp to PO) to 0.97 (VISp to
-    VISal).
+    VISal), over 25 to 1143 events per pair. Whether the claim means that the median lag does not differ from zero
+    (the criterion) or that the distribution of lags spans zero is asked of a reader (questions/001051.yaml).
   deviations:
   - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
-    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session. Events are detected
+    on the smoothed rate, and the autocorrelogram threshold, CCGs and coherence use the unsmoothed rate, a detail
+    taken from the code's printed counts quoted in the claims file's header (1653 VISp and 113 MOp qualifying events,
+    code cell 12), which the unsmoothed autocorrelogram matches (1643 to 1704 and 119 to 122 under E2) and the smoothed
+    one does not (3035 to 3426 and 152 to 170). The Benjamini-Hochberg family of the pair test holds brain areas
+    only (not CP-RF, CP-noRF, VIS or unannotated labels); this changes significance for 4 of 734 pair results.
 - claim: fig7f-visp-network
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_bennett_2024.ipynb
   output: claim:fig7f-visp-network
-  notes: ACA, RSP, CP, LGd, LP and VISl are each significant and positive in 22 of 32 combinations (14 with any
-    subdivision, 8 with all); under L1 E2 R1 CP is not (q = 0.095), and with all subdivisions required ACAv or RSPagl
-    or RSPd fail under R1. The readings disagree.
+  notes: ACA, RSP, CP, LGd, LP and VISl are each significant and positive in 22 of 32 combinations (14 of 16 with
+    any subdivision, 8 of 16 with all); under L1 E2 R1 CP is not (q = 0.1), and with all subdivisions required ACAv
+    or RSPagl or RSPd fail under R1. SSp has no subdivisions in these files; RSP has RSPagl, RSPd and RSPv, ACA
+    has ACAd and ACAv, under both L1 and L2. The readings disagree.
   deviations:
   - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
-    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session. Events are detected
+    on the smoothed rate, and the autocorrelogram threshold, CCGs and coherence use the unsmoothed rate, a detail
+    taken from the code's printed counts quoted in the claims file's header (1653 VISp and 113 MOp qualifying events,
+    code cell 12), which the unsmoothed autocorrelogram matches (1643 to 1704 and 119 to 122 under E2) and the smoothed
+    one does not (3035 to 3426 and 152 to 170). The Benjamini-Hochberg family of the pair test holds brain areas
+    only (not CP-RF, CP-noRF, VIS or unannotated labels); this changes significance for 4 of 734 pair results.
 - claim: fig7f-mop-network
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_bennett_2024.ipynb
   output: claim:fig7f-mop-network
   notes: Under E2, SSp, PO, MRN and SCiw are significant and positive with L1 (R1 and R2) and L2 R2; with L2 R1
-    MRN is not (q = 0.12); under E1 PO, MRN and SCiw have too few events. The readings disagree.
+    MRN is not (q = 0.11); under E1 PO, MRN and SCiw have too few events. MRN and SCiw each come from one session.
+    The readings disagree.
   deviations:
   - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
-    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session. Events are detected
+    on the smoothed rate, and the autocorrelogram threshold, CCGs and coherence use the unsmoothed rate, a detail
+    taken from the code's printed counts quoted in the claims file's header (1653 VISp and 113 MOp qualifying events,
+    code cell 12), which the unsmoothed autocorrelogram matches (1643 to 1704 and 119 to 122 under E2) and the smoothed
+    one does not (3035 to 3426 and 152 to 170). The Benjamini-Hochberg family of the pair test holds brain areas
+    only (not CP-RF, CP-noRF, VIS or unannotated labels); this changes significance for 4 of 734 pair results.
 - claim: fig7-hippocampus-not-engaged
   outcome: not_reproduced
   notebook: reproduce_bennett_2024.ipynb
   output: claim:fig7-hippocampus-not-engaged
   notes: For VISp events DG is significantly and positively coherent in every combination (+0.012 to +0.032), with
-    CA1, CA3, ProS, SUB or POST also under R2; for MOp events CA1 and DG under L2 E1 R2. The hippocampal effects
-    are small next to the visual areas (+0.06 to +0.39).
+    CA1, CA3, ProS, SUB or POST also under R2; for MOp events CA1 and DG under L2 E1 R2, and CA1 (+0.025, q = 0.044)
+    under L1 E2 R2. 20 of 32 combinations and references have a significant positive hippocampal pair. The hippocampal
+    effects are small next to the visual areas (+0.06 to +0.39).
   deviations:
   - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
-    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session. Events are detected
+    on the smoothed rate, and the autocorrelogram threshold, CCGs and coherence use the unsmoothed rate, a detail
+    taken from the code's printed counts quoted in the claims file's header (1653 VISp and 113 MOp qualifying events,
+    code cell 12), which the unsmoothed autocorrelogram matches (1643 to 1704 and 119 to 122 under E2) and the smoothed
+    one does not (3035 to 3426 and 152 to 170). The Benjamini-Hochberg family of the pair test holds brain areas
+    only (not CP-RF, CP-noRF, VIS or unannotated labels); this changes significance for 4 of 734 pair results.
 - claim: fig8bc-cp-rf-location
   outcome: partially_reproduced
   notebook: reproduce_bennett_2024.ipynb
@@ -404,20 +490,24 @@ outcomes:
   - RF significance recomputed here (link-code-tables); the CCF z axis orientation is checked against VISp (3050)
     and midline structures (5300).
 - claim: fig8d-cp-rf-larger-response
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_bennett_2024.ipynb
   output: claim:fig8d-cp-rf-larger-response
   measured:
-  - 76
-  - 209
-  - 239
+  - 70
+  - 162
+  - 218
   notes: In the five sessions CP-RF units respond more than CP-noRF units in 53 bins of 0 to 250 ms (first at 55
-    ms), CP-RF higher in all, none before onset, with the Methods' QC; with the code's presence-ratio 0.9 filter
-    90 bins. Unit counts are 70, 162 and 218 with the Methods' QC (CP-RF and CP-noRF outside tolerance) and 76,
-    209 and 239 with the code's filter, within tolerance.
+    ms), CP-RF higher in all, none before onset, with the Methods' QC, the criterion's units. The unit counts there,
+    70, 162 and 218, miss the expected 80 +- 8 and 205 +- 20.5 for CP-RF and CP-noRF (VISp 218 is within 239 +-
+    23.9). With the code's filter (presence ratio above 0.9, noise units kept and split by their RF p values) the
+    counts are 79, 206 and 239, within one unit of the paper's, with 78 significant bins, all CP-RF higher. The
+    effect holds under both; the expected counts only under the variant, so the claim holds in part. Whether the
+    criterion should take the code's filter is asked of a reader (questions/001051.yaml).
   deviations:
   - The unit counts match only with the code's filter (presence ratio above 0.9 and no noise filter), which the
-    claims file names as a variant; the effect holds with both.
+    claims file names as a variant; the effect holds with both. Noise CP units now have RF p values, so the variant
+    splits them by RF as the code does.
 - claim: fig8d-response-latencies
   outcome: reproduced
   notebook: reproduce_bennett_2024.ipynb
@@ -426,10 +516,11 @@ outcomes:
   - 16
   - 20
   notes: With latency as the first time the population mean reaches half its peak (b), CP-RF lags VISp by 16 ms
-    and CP-noRF lags CP-RF by 20 ms, within 20 +- 5. With the time of peak (a) the lags are 34 and 9 ms (Methods'
-    QC) or 43 and 0 ms (code filter). The readings disagree; half-peak latency is adopted, as the paper speaks of
-    response onsets lagging ("slower responses") and peak times of broad CP responses are poorly defined. Question
-    for the authors - which latency measure was used.
+    and CP-noRF lags CP-RF by 20 ms, within 20 +- 5, with the Methods' QC and with the code's filter alike. With
+    the time of peak (a) the lags are 34 and 9 ms under both filters. The readings disagree; half-peak latency is
+    adopted, as the paper speaks of response onsets lagging ("slower responses") and peak times of broad CP responses
+    are poorly defined. Question for the authors - which latency measure was used. The verifier would block the
+    claim as methods underspecified; the outcome is kept, resting on the assumption, and the disagreement is recorded.
   deviations:
   - Assumed - latency as the half-peak time of the population mean (reading b); the paper gives no measure.
   assumed: true
@@ -443,7 +534,12 @@ outcomes:
     variant gives 98 to 216 bins.
   deviations:
   - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
-    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session. Events are detected
+    on the smoothed rate, and the autocorrelogram threshold, CCGs and coherence use the unsmoothed rate, a detail
+    taken from the code's printed counts quoted in the claims file's header (1653 VISp and 113 MOp qualifying events,
+    code cell 12), which the unsmoothed autocorrelogram matches (1643 to 1704 and 119 to 122 under E2) and the smoothed
+    one does not (3035 to 3426 and 152 to 170). The Benjamini-Hochberg family of the pair test holds brain areas
+    only (not CP-RF, CP-noRF, VIS or unannotated labels); this changes significance for 4 of 734 pair results.
 - claim: fig8f-cp-rf-higher-coherence
   outcome: blocked
   blocked_by: methods_underspecified
@@ -454,14 +550,20 @@ outcomes:
     E2 readings give 439 events, the paper's count, and p = 1.9e-10 under R2.
   deviations:
   - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
-    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session. Events are detected
+    on the smoothed rate, and the autocorrelogram threshold, CCGs and coherence use the unsmoothed rate, a detail
+    taken from the code's printed counts quoted in the claims file's header (1653 VISp and 113 MOp qualifying events,
+    code cell 12), which the unsmoothed autocorrelogram matches (1643 to 1704 and 119 to 122 under E2) and the smoothed
+    one does not (3035 to 3426 and 152 to 170). The Benjamini-Hochberg family of the pair test holds brain areas
+    only (not CP-RF, CP-noRF, VIS or unannotated labels); this changes significance for 4 of 734 pair results.
 findings:
 - kind: metadata_error
   statement: In 6 of the 87 sessions the paper analysed (1176989662, 1178460518, 1178693650, 1179911454, 1180266229,
     1181096406) the units under each unit id differ from the paper's units table at the cited code commit (max_drift
     and firing_rate differ for 55 to 99.8% of units, quality for 14 to 38%, and receptive-field p values recomputed
-    from the files are uncorrelated with the table's). The dandiset seems to hold a different spike sorting or unit
-    assignment for these sessions than the one the paper used.
+    from the files are uncorrelated with the table's; the files' spike counts fit the files' firing rates but not
+    the table's). The dandiset seems to hold a different spike sorting or unit assignment for these sessions than
+    the one the paper used.
 - kind: data_missing
   statement: In 5 of those sessions (1176989662, 1178693650, 1179911454, 1180266229, 1181096406) the paper's units
     table has 328 units, 133 of them in CP, on probes the session files do not hold.
@@ -478,7 +580,10 @@ findings:
     histories), the dual-hemisphere sessions of Figure 5, or the VGAT-ChR2 and Vglut2-Cre mice of Figure 6; its
     27 mice are all single-hemisphere change-detection mice.
 - kind: data_missing
-  statement: Sessions 1187475832 and 1202438738 have no eye tracking.
+  statement: Sessions 1187475832 and 1202438738 have no eye tracking. In the others the running and pupil streams
+    follow the stimulus and trial clock (running slows after hits from a median 0.225 s after the change, the pupil
+    constricts after white flashes from a median 0.35 s), but in 5 sessions for running and 3 for the pupil the
+    contrasts are too weak to show it.
 - kind: paper_inconsistency
   statement: The Methods describe 8 natural images in the change detection task; every session holds four image
     stimuli (three natural images and im115_r at 0.7 contrast) besides omitted flashes.
@@ -492,5 +597,331 @@ findings:
     reproduce the 439 events of Figure 8F.
 - kind: methods_unavailable
   statement: Please state the latency measure of Figure 8D (half-peak time was assumed here; the time of peak gives
-    other lags), the fit and normalisation behind the 25 to 30 min recovery time constant of Figure S4I (fits here
-    give 35 to 36 min), and the windows and row normalisation of Figure S6F.
+    other lags), the fit, its window and the normalisation behind the 25 to 30 min recovery time constant of Figure
+    S4I (fits here give 35 to 36 min over 77 min and longer time constants over shorter windows), and the windows
+    and row normalisation of Figure S6F.
+verifications:
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module
+    and the claims file, with the paper. The verifier queried the archive metadata for the blocked claims and tested
+    find_events and rf_pvalues on synthetic inputs. Its report had no attempt record and gave its own outcome for
+    each claim; 43 of 46 agree with the record as it then stood.
+  results:
+  - claim: link-code-tables
+    agrees: true
+    outcome: partially_reproduced
+    reason: All 87 sessions are found, and type, mouse and genotype agree for 99 of 99. Five sessions have a different
+      unit count, and in those five plus 1178460518, 55-99% of units differ on max_drift and firing_rate. RF significance
+      agreement is reported only pooled (98.8%), not per session, so the '<=1% per session' condition is not evaluated.
+      Whether the dandiset or the code table holds a re-sort could not be told; spike counts per unit against the
+      code's firing_rate times duration would show it.
+    response: Added RF agreement per session (median 0.008, maximum 0.038 differing; above 1% in 33 of 79 sessions,
+      all differing units with p of 0.003 to 0.020 in both computations) and the spike-count check (n_spikes / firing_rate
+      is constant within a session with the files' rates, coefficient of variation 0 in five of the six sessions,
+      and scatters with the code's, 5.4 to 11.8), which shows the files' spikes belong to the files' metrics and
+      the code's table to other units. Noise CP units now get RF p values. Outcome kept.
+  - claim: fig3b-surgical-outcomes
+    agrees: true
+    outcome: blocked
+    reason: The archive holds only 666 ephys/LFP NWB files; there are no surgery records. (data_missing)
+    response: No change needed.
+  - claim: fig3c-isi-through-implant
+    agrees: true
+    outcome: blocked
+    reason: No ISI images in the archive. (data_missing)
+    response: No change needed.
+  - claim: fig3d-histology-intact
+    agrees: true
+    outcome: blocked
+    reason: No histology in the archive. (data_missing)
+    response: No change needed.
+  - claim: tracks-rare-bleeding
+    agrees: true
+    outcome: blocked
+    reason: No histology in the archive. (data_missing)
+    response: No change needed.
+  - claim: fig3fh-mri-deformation
+    agrees: true
+    outcome: blocked
+    reason: No MRI in the archive. (data_missing)
+    response: No change needed.
+  - claim: fig3i-learning-similar
+    agrees: true
+    outcome: blocked
+    reason: Only EPHYS_1 to EPHYS_4 sessions; no training sessions. (data_missing)
+    response: No change needed.
+  - claim: fig4b-units-areas-per-session
+    agrees: true
+    outcome: reproduced
+    reason: 1821.0 (SD 341.9) units and 28.11 (SD 5.12) areas over 44 six-probe sessions.
+    response: No change needed.
+  - claim: figs4ab-insertions-per-mouse
+    agrees: true
+    outcome: partially_reproduced
+    reason: Insertions per mouse are 20.28 under reading (a) and 21.41 under (b), both within 20 +- 4.1. Implant
+      holes are not in the data (metadata_insufficient).
+    response: No change needed.
+  - claim: scale-mice-sessions-insertions
+    agrees: true
+    outcome: reproduced
+    reason: 25 mice, 87 sessions and 507 insertions, which is within 467 +- 46.7. The 467 insertions also present
+      in the code's table match exactly.
+    response: No change needed.
+  - claim: penetration-success
+    agrees: true
+    outcome: reproduced
+    reason: 5.83 under (a) and 5.84 under (b), both within 5.46 +- 0.546. The value 5.46 itself is not recovered
+      by any count. The code's probes table has an inserted column that the notebook never prints; its value counts
+      would give a direct penetration count, and perhaps failed attempts per probe.
+    response: 'Printed the code''s probes table: 467 probes for the 87 sessions and 533 for the 99, all marked inserted
+      (5.37 and 5.38 per session), so it records no failed attempt and gives no direct penetration count. Outcome
+      kept.'
+  - claim: fig4b-trajectory-consistency
+    agrees: true
+    outcome: blocked
+    reason: The NWB probe and electrode-group attributes, and the asset metadata, have no hole or orientation (metadata_insufficient).
+    response: No change needed.
+  - claim: fig4c-drift-discontinuities-rare
+    agrees: true
+    outcome: blocked
+    reason: Judged by eye with no rule. Also, the NWB has no per-spike depths, so no drift map can be built; data_missing
+      applies as well.
+    response: No change needed; the notes already give both reasons.
+  - claim: fig4d-unit-drift
+    agrees: true
+    outcome: reproduced
+    reason: Medians 25.05 um (SHIELD) and 22.82 um (VBN) against 25.1 +- 0.1 and 22.82 +- 0.05.
+    response: No change needed.
+  - claim: fig4d-qc-metrics-comparable
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Reading (a): 0 of 7 metrics non-significant. Reading (b): 5 of 7 medians within 10% (amplitude_cutoff
+      ratio 0.891, isi_violations 0.787). Both readings fail.'
+    response: No change needed.
+  - claim: qc-pass-fraction-similar
+    agrees: true
+    outcome: reproduced
+    reason: 41.09% and 40.69% against 41.1% and 40.7%.
+    response: No change needed.
+  - claim: fig4e-unit-yield-stable
+    agrees: true
+    outcome: reproduced
+    reason: 'Kruskal-Wallis p = 0.333, day medians 308, 302, 287.5 and 277, all within 300 +- 30. Insertions in
+      the code''s table: p = 0.477 and counts 129, 126, 121, 91 exactly.'
+    response: No change needed.
+  - claim: fig4e-vbn-yield-drops
+    agrees: true
+    outcome: reproduced
+    reason: VBN day-2 median 261 against 321 on day 1. p = 1.2e-24 under reading (a), 1.2e-19 under (b).
+    response: No change needed.
+  - claim: fig4e-firing-rate-stable
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.223 (paper text 0.21, code 0.26); sessions per day 23, 24, 22, 18 as in the paper.
+    response: No change needed.
+  - claim: fig4ef-rf-fraction-stable
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.671 with p values computed here, 0.864 with the code's, at 0.01; sessions per day 12, 11, 12,
+      11.
+    response: No change needed.
+  - claim: fig4f-rf-match-retinotopy
+    agrees: true
+    outcome: blocked
+    reason: RF centres could be computed, but the ISI maps and insertion images are absent (data_missing).
+    response: No change needed.
+  - claim: fig4g-visual-responses-similar
+    agrees: true
+    outcome: reproduced
+    reason: Units 595, 482, 534, 446 (paper 595, 482, 536, 446). Kruskal-Wallis p = 0.343 under (a), 0.70 under
+      (b).
+    response: No change needed.
+  - claim: behavior-stable-across-days
+    agrees: true
+    outcome: partially_reproduced
+    reason: Kruskal-Wallis p ranges 0.73-0.82, so the absence holds. But days 1 and 4 miss the +-10% tolerance in
+      both 87-session readings, and every reading misses at least one day. The paper's medians end in .5 on days
+      1 and 3, which needs an even number of sessions those days; the 87-session set has 23 on day 1 and the 99-session
+      set has 25 on day 3, so the paper used neither set.
+    response: Added the point about the .5 medians to the notes. Outcome kept.
+  - claim: figs4i-insertion-suppression
+    agrees: true
+    outcome: not_reproduced
+    reason: 'tau = 36.0 and 35.4 min against the 22.5-33 min range; per-session median 34.8 min. The fit window
+      is the author''s own choice and is not stated as an assumption: it is the shortest session''s length, 77.3
+      min from the first stimulus, so it runs past the ~65 min active block into the Gabor and flash epochs and
+      spans the no-reward block. tau depends on this window. A fit restricted to the active-behavior block, and
+      the per-session fit range, would show whether tau falls in 25-30 min.'
+    response: Stated the window as an assumption in the notebook and the record, and added fits over 30, 40, 45,
+      50, 60 and 64 min (the shortest active block) and per-session fits over each session's active block. Shorter
+      windows give longer time constants (41.2 to 42.2 min at 64 min, 45.9 to 47.1 at 60, 65 to 84 at 40 to 50,
+      no recovery at 30); per session the median is 39.8 min, 26 of 87 inside the range. No window brings the pooled
+      tau into the range, so the outcome does not rest on the window. Outcome kept.
+  - claim: figs4de-retraction-reduces-drift
+    agrees: true
+    outcome: blocked
+    reason: No retraction flag in the NWB, the asset metadata or the code's session table; the paper gives no date
+      rule (metadata_insufficient).
+    response: No change needed.
+  - claim: figs4f-retraction-yield-similar
+    agrees: true
+    outcome: blocked
+    reason: Same as figs4de (metadata_insufficient).
+    response: No change needed.
+  - claim: figs4gh-sharpened-probes
+    agrees: true
+    outcome: blocked
+    reason: No sharpening flag or failed-attempt record in the archive (metadata_insufficient).
+    response: The code's probes table, now printed, marks every probe inserted and records no failed attempt. No
+      change of outcome.
+  - claim: figs3d-duragel-yield-stable
+    agrees: true
+    outcome: blocked
+    reason: The Dura-Gel mice (optotagging and dual-hemisphere) are not in the dandiset (data_missing).
+    response: No change needed.
+  - claim: fig5-bilateral-recordings
+    agrees: true
+    outcome: blocked
+    reason: All annotated units are in the left hemisphere (data_missing).
+    response: No change needed.
+  - claim: fig6bc-cortical-silencing
+    agrees: true
+    outcome: blocked
+    reason: No VGAT-ChR2 genotype among the 27 subjects (data_missing).
+    response: No change needed.
+  - claim: fig6ef-optotagging-mrn
+    agrees: true
+    outcome: blocked
+    reason: No Vglut2-Cre genotype. Optotagging tables exist, but only for Sst and Vip;Ai32 mice (data_missing).
+    response: No change needed.
+  - claim: fig7a-mop-higher-frequency
+    agrees: true
+    outcome: reproduced
+    reason: 'Holds by the letter of ''under a reading'': reading (b) passes in 8 of 8 combinations (VISp 4.0 Hz,
+      MOp 4.5 Hz, p <= 1.6e-3). Reading (a) fails in all 8. Fragile: the spectrum of a 2 s autocorrelogram has 0.5
+      Hz resolution, so the MOp median (4.5 Hz) sits exactly on the inclusive lower bound of the widened range,
+      and the significant MOp > VISp test is on heavily tied values. Synthetic tests of find_events show the specified
+      detector only finds sinusoidal rhythms of about 3.3-5 Hz, so a 5-7 Hz MOp band cannot come out of reading
+      (a); this follows from the method as the claims file gives it.'
+    response: 'Added the zero-padded spectrum (0.049 Hz steps) as a variant: medians 4.05 to 4.10 Hz (VISp) and
+      4.64 to 4.74 Hz (MOp), inside the ranges, MOp higher at p 7.1e-7 to 0.0038 in all 8, so the outcome does not
+      rest on the 0.5 Hz grid. Printed the share of MOp values at 4.5 Hz (22.7%) and a synthetic test of the detector
+      (it finds 3 to 5 Hz sinusoids only). Outcome kept.'
+  - claim: fig7b-low-arousal
+    agrees: true
+    outcome: partially_reproduced
+    reason: Pupil is smaller and running lower for both areas in every combination (p < 1e-5). No reading gives
+      -25 +- 2.5%. The alignment of the eye-tracking and running clocks to the spikes is not established; an event-triggered
+      pupil and running trace against a stimulus- or lick-locked reference would show it.
+    response: 'Added a clock check to the data check: running around the change time of hit against miss trials
+      and pupil area around white against black flashes, per session. The running contrast starts a median 0.225
+      s after the change and the pupil contrast a median 0.35 s after the flash, with small contrasts before time
+      0; it is not shown in 5 sessions for running and 3 for the pupil, and 2 sessions have no eye tracking. Outcome
+      kept.'
+  - claim: fig7b-visp-offset-locked
+    agrees: true
+    outcome: reproduced
+    reason: VISp chi-square p near 0 with the largest bin at 100-150 ms. MOp p = 0.41-0.53 (chi-square) and 0.28-0.62
+      (KS) in all combinations.
+    response: No change needed.
+  - claim: figs6-replay
+    agrees: true
+    outcome: not_reproduced
+    reason: r = 0.21-0.63 in all 32 combinations, none within 0.77 +- 0.077. Every qualifying event is assigned
+      to the last presentation starting before it, including events during a stimulus (since_offset < 0) and after
+      omitted flashes; about a third of VISp events lie outside 0-0.5 s after an offset. The S6 legend speaks of
+      post-stimulus events. Leaving those events in may lower r; a run keeping only events with 0 <= since_offset
+      < 0.5 s would test it.
+    response: 'Added that run: keeping only events 0 to 0.5 s after the offset gives r = 0.19 to 0.53, p < 0.05
+      in 14 of 32, none within tolerance (per-unit 0.52 to 0.66), so the events during an image do not lower r.
+      Events after omitted flashes are assigned to ''omitted'', not one of the four images, and already drop out;
+      the notebook now says so. Outcome kept.'
+  - claim: fig7cd-visp-coupling
+    agrees: true
+    outcome: blocked
+    reason: The CCG part holds everywhere. The coherence part holds in all 8 R1 combinations but fails in 6 of 8
+      R2 combinations, where SSp (and PO under L2 E2) become significant (methods_underspecified). The Benjamini-Hochberg
+      family includes CP-RF, CP-noRF and non-areas, which shifts marginal q values (PO 0.049-0.05, SSp 0.035-0.047).
+    response: The family now holds brain areas only; PO under L2 E2 R2 moves to q = 0.051 and SSp stays significant
+      (q 0.048 and 0.036), so the coherence part still fails in 6 of 8 R2 combinations. Outcome kept.
+  - claim: fig7cd-mop-coupling
+    agrees: false
+    outcome: blocked
+    reason: Holds in all 8 E2 combinations, coherence and CCG. Under E1, PO has fewer than 25 events and is not
+      tested (methods_underspecified). An area that is absent (fewer than 25 events) counts as not significant in
+      the negative parts; MOp-VISl under L1 is never tested.
+    response: 'Absent areas are now reported as untested, not as not significant, and the notebook prints which
+      parts are untested in each combination: all four parts are tested only under L2 E2, where all hold, and no
+      tested part contradicts the claim in any combination. Outcome kept as reproduced, since no reading gives another
+      result, with the untested parts in the notes and a deviation; the disagreement is recorded.'
+  - claim: fig7e-lags-straddle-zero
+    agrees: true
+    outcome: not_reproduced
+    reason: '94 of 102 pair tests are significant; only VISp-VISl under L1 is not. The criterion likely misreads
+      the paper: the Figure 7E legend shows a distribution of time lags, and judging ''straddled zero'' with a signed-rank
+      test of the median against zero over ~100-1100 events goes beyond what the paper claims. Under a descriptive
+      reading the median lags are small (-23 to +14 ms), but VISp-VISal is 96% positive and MOp-PO is 12% positive.'
+    response: Added a question for a reader to questions/001051.yaml and said so in the notes; the claim is tested
+      as the claims file has it. Outcome kept.
+  - claim: fig7f-visp-network
+    agrees: true
+    outcome: blocked
+    reason: '''Any subdivision'': 14 of 16 combinations hold (CP has q = 0.095 under L1 E2 R1). ''All subdivisions'':
+      8 of 16 (methods_underspecified). Whether L1 has SSp or RSP subdivisions that the area lists leave out could
+      not be seen; a list of the area labels and unit counts per session under L1 and L2 would show it.'
+    response: 'Printed the area labels under L1 and L2 with sessions and median units: SSp has no subdivisions in
+      these files, RSP has RSPagl, RSPd and RSPv and ACA has ACAd and ACAv under both, all in the lists. With the
+      new family CP has q = 0.1 under L1 E2 R1; the counts are unchanged. Outcome kept.'
+  - claim: fig7f-mop-network
+    agrees: true
+    outcome: blocked
+    reason: Holds in 6 of 16. Under E1, PO, MRN and SCiw are untested; under L2 E2 R1, MRN has q = 0.12. MRN and
+      SCiw each come from 1 session of 32 events (methods_underspecified).
+    response: Notes now say MRN and SCiw come from one session; MRN q = 0.11 with the new family. Outcome kept.
+  - claim: fig7-hippocampus-not-engaged
+    agrees: true
+    outcome: not_reproduced
+    reason: VISp-DG is significant and positive in all 16 combinations, as are others in many (CA1, SUB, ProS);
+      MOp-CA1/DG under L2 E1 R2.
+    response: With the new family MOp-CA1 is also significant under L1 E2 R2 (q = 0.044); notes updated. Outcome
+      kept.
+  - claim: fig8bc-cp-rf-location
+    agrees: true
+    outcome: partially_reproduced
+    reason: CP-RF units are more dorsal (p = 1.9e-58) but more lateral, not medial (z 4075 against 4350 um, two-sided
+      p = 1.8e-33).
+    response: No change needed.
+  - claim: fig8d-cp-rf-larger-response
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'The response test holds: 53 significant bins, all with CP-RF higher. Under the Methods QC filter the
+      counts are 70 and 162, outside 80 +- 8 and 205 +- 20.5; only the code''s presence 0.9 variant gives 76, 209
+      and 239. Noise CP units have no RF p value, because rf_pvalues covers only good units, so they fall into CP-noRF
+      in the variant.'
+    response: Changed the outcome to partially reproduced, as the counts of the criterion's units miss two of the
+      three expected values; measured now gives those counts (70, 162, 218). Noise CP units now get RF p values,
+      and the variant gives 79, 206 and 239, within one unit of the paper's, with 78 significant bins. Asked a reader
+      whether the criterion should take the code's filter (questions/001051.yaml).
+  - claim: fig8d-response-latencies
+    agrees: false
+    outcome: blocked
+    reason: 'Half-peak reading: lags 16 and 20 ms, within tolerance. Peak reading: 34 and 9 ms (QC) or 43 and 0
+      ms (variant), outside it (methods_underspecified).'
+    response: Kept reproduced resting on the half-peak assumption, which the record states with its reasons (the
+      paper speaks of slower responses, an onset measure; peak times of broad CP responses are poorly defined),
+      and the question for the authors is a finding. With noise CP units split by RF the variant now gives the same
+      lags as the QC units (half-peak 16 and 20 ms, peak 34 and 9 ms). The disagreement is recorded.
+  - claim: fig8e-cp-rf-more-modulated
+    agrees: true
+    outcome: reproduced
+    reason: Significant bins at the VISp troughs and a larger CP-RF range under both readings in all 8 combinations.
+      L2 E2 gives 439 events, as the paper does.
+    response: No change needed.
+  - claim: fig8f-cp-rf-higher-coherence
+    agrees: true
+    outcome: blocked
+    reason: 'R2: p = 1.2e-14 to 6.5e-11 (L2 E2 R2 with 439 events: p = 1.9e-10). R1: p = 0.36-0.75, and CP-RF is
+      not higher (methods_underspecified).'
+    response: No change needed.

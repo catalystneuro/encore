@@ -19,17 +19,32 @@ Where the parameters come from:
   3c09a0dc2972381f06393ddf5c000e16462c7037. The claims file names this list as the session set.
 - `NOT_IN_AREA`: the code's exclusion of 'No Area', 'out of brain' and 'Track not annotated'
   (same notebook, the cell defining dg_metrics_inarea; claim fig4b-units-areas-per-session).
-- Receptive fields (`rf_pvalue`): spike counts in the 250 ms of each Gabor presentation summed
-  per position on the 9 x 9 grid; chi-square test of the map against a uniform expectation
+- Receptive fields (`rf_pvalues`): spike counts in the 250 ms of each Gabor presentation summed
+  per position on the 9 x 9 grid; chi-square statistic of the map against a uniform expectation
   weighted by the number of presentations per position (Methods, "Receptive Field Mapping",
   which cites reference 18, Siegle et al. 2021; the chi-square test of that paper, as in the
   AllenSDK receptive-field code, compares the summed counts per position with the counts expected
-  from the mean). p < 0.01 is significant (Methods). The AllenSDK computes the p value by a
-  permutation of this statistic; the analytic chi-square p value is used here, a standard choice
-  stated as an assumption in the notebook.
+  from the mean). The p value is the AllenSDK bootstrap (compute_chi_shuffle, 1000 resamplings
+  of presentations), as the code's p_value_rf is, not the analytic chi-square p value. p < 0.01
+  is significant (Methods).
 - Alpha events (`detect_alpha_events`): STAR Methods, "Identification of alpha events", with the
   window, stepping and the event rule readings given in the claims file's header (from
   run_4Hz_bursts.py and analysis_utils.py of the same repository).
+- Population rates: events are detected on the smoothed rate (the header's symmetrical
+  exponential filter, inside `find_events`). The autocorrelogram threshold, the CCGs and the
+  coherence are computed on the unsmoothed 10 ms rate. The claims file defines the population
+  rate as smoothed but does not say which steps use the smoothed trace; the detail is taken from
+  the code's printed output that the claims file's header quotes (1653 VISp and 113 MOp
+  qualifying events, code cell 12), which the unsmoothed autocorrelogram matches and the smoothed
+  one does not (`auto_power_smooth`, kept to show its counts).
+- `freq_auto`: the peak of the spectrum of the 2 s autocorrelogram (200 samples, 0.5 Hz steps).
+  `freq_auto_pad` is the same spectrum zero-padded to 2048 samples (0.049 Hz steps), a standard
+  interpolation of the peak, shown because the 0.5 Hz grid ties the values.
+- Clock check (`clock`): running speed around the change time of hit and miss trials (-2 to 3 s)
+  and pupil area around full-field white and black flashes (-0.5 to 1.5 s), on the 10 ms grid,
+  to show that the running and eye-tracking streams share the stimulus clock (protocol, data
+  check). Mice slow down to lick after a detected change, and the pupil constricts after a white
+  flash, so the contrasts should start only after time 0.
 """
 
 from __future__ import annotations
@@ -404,9 +419,10 @@ def session_spike_products(asset_id, units, session_id, seed=0, cp_rf_sessions=(
         # table covers all units, these are the ones the claims use)
         gab = _read_table_times(f, "gabor_20_deg_250ms_presentations",
                                 ["start_time", "position_x", "position_y", "orientation"])
-        rfu = u[u["qc90"] & (u["quality"] == "good")
-                & ((isi == "VISp") | u["structure_acronym"].str.startswith("VISp")
-                   | (u["structure_acronym"] == "CP"))]
+        # (noise CP units are included so that the Figure 8D variant without a noise filter can
+        # split them by RF; the resamplings do not depend on the units, so other p values are unchanged)
+        rfu = u[u["qc90"] & ((((isi == "VISp") | u["structure_acronym"].str.startswith("VISp"))
+                              & (u["quality"] == "good")) | (u["structure_acronym"] == "CP"))]
         p, az, el = rf_pvalues(spk, list(zip(rfu["a"], rfu["b"])), gab, rng_rf)
         out["rf"] = pd.DataFrame({"p_rf": p, "azimuth_peak": az, "elevation_peak": el}, index=rfu.index)
         sig = pd.Series(False, index=u.index)
@@ -474,6 +490,24 @@ def session_spike_products(asset_id, units, session_id, seed=0, cp_rf_sessions=(
         rs = f["processing/running/speed"]
         rg, rv = _resample_ffill(rs["timestamps"][:], rs["data"][:])
 
+        # clock check: running around the change time of hit and miss trials; pupil around
+        # full-field white and black flashes
+        tr = _read_table_times(f, "trials", ["change_time", "hit", "miss", "response_latency"])
+        clock = {}
+        for cond in ("hit", "miss"):
+            ct = tr.loc[tr[cond].astype(bool), "change_time"].dropna().values
+            segs = [x for x in _triggered(rg, rv, ct, before=2.0, after=3.0) if x.size >= 500]
+            clock[("running", cond)] = np.nanmean([x[:500] for x in segs], 0) if segs else np.full(500, np.nan)
+            clock[("n", cond)] = len(ct)
+        clock["response_latency"] = float(np.nanmedian(tr.loc[tr["hit"].astype(bool), "response_latency"]))
+        fl = _read_table_times(f, "flash_250ms_presentations", ["start_time", "color"])
+        for col, nm in ((1.0, "white"), (-1.0, "black")):
+            ft_ = fl.loc[fl["color"] == col, "start_time"].values
+            segs = [x for x in _triggered(pg, pv, ft_, before=0.5, after=1.5) if x.size >= 200]
+            clock[("pupil", nm)] = np.nanmean([x[:200] for x in segs], 0) if segs else np.full(200, np.nan)
+            clock[("n", nm)] = len(ft_)
+        out["clock"] = clock
+
         # VISp units for the replay analysis (Figure S6): mean evoked rate per image
         imgs = [n for n in out["image_names"] if n != "omitted"]
         events_out = {}
@@ -486,6 +520,7 @@ def session_spike_products(asset_id, units, session_id, seed=0, cp_rf_sessions=(
                 if ref not in g:
                     continue
                 r0 = rates[ref]
+                r0s = exponential_convolve(r0)
                 for E in ("E1", "E2"):
                     ev, pk = find_events(r0, E)
                     rng = np.random.default_rng([seed, session_id, 10 + ["L1", "L2"].index(L),
@@ -505,10 +540,16 @@ def session_spike_products(asset_id, units, session_id, seed=0, cp_rf_sessions=(
                         spec = np.abs(np.fft.rfft(auto - auto.mean()))
                         fr = np.fft.rfftfreq(len(auto), BIN)
                         band = (fr >= 1) & (fr <= 20)
+                        spec_p = np.abs(np.fft.rfft(auto - auto.mean(), n=2048))
+                        fr_p = np.fft.rfftfreq(2048, BIN)
+                        band_p = (fr_p >= 1) & (fr_p <= 20)
+                        w2s = window(r0s, t, CCG_HALF)
                         ipk = np.diff(pk[i])
                         rec = {"t": t, "t_rand": tr, "auto_power": power,
                                "freq_peaks": 1 / np.median(ipk) if len(ipk) else np.nan,
                                "freq_auto": fr[band][np.argmax(spec[band])],
+                               "freq_auto_pad": fr_p[band_p][np.argmax(spec_p[band_p])],
+                               "auto_power_smooth": auto_band_power(crosscorrelogram(w2s, w2s)),
                                "n_maxima": len(pk[i])}
                         res.append(rec)
                     evdf = pd.DataFrame(res)
@@ -593,7 +634,8 @@ def session_spike_products(asset_id, units, session_id, seed=0, cp_rf_sessions=(
                                         mtx[j, k2] = np.mean(np.searchsorted(st, s0 + wl) - np.searchsorted(st, s0)) / wl
                                 evoked[wl] = mtx
                             entry["replay"] = {"event_rates": ev_counts, "evoked": evoked, "images": imgs,
-                                               "event_prev_image": evdf.loc[evdf["qual"], "prev_image"].values}
+                                               "event_prev_image": evdf.loc[evdf["qual"], "prev_image"].values,
+                                               "event_since_offset": evdf.loc[evdf["qual"], "since_offset"].values}
                     events_out[(L, ref, E)] = entry
             del rates
         out["alpha"] = events_out
