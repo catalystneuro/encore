@@ -1,0 +1,733 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001273",
+  "label": "DANDI:001273"
+ },
+ "page": "datasets/dandi/001273/",
+ "generated": "2026-11-01T22:51:17+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 2,
+  "partially_reproduced": 0,
+  "not_reproduced": 1,
+  "blocked": 3
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 1,
+  "not_reproduced": 1,
+  "blocked": 9
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001273-semenov-2025-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001273",
+    "version": "0.250805.1356",
+    "doi": "10.48324/dandi.001273/0.250805.1356"
+   },
+   "key": "dandi:001273",
+   "label": "DANDI:001273",
+   "dataset_version": "0.250805.1356",
+   "paper": "10.1016/j.xcrp.2025.102660",
+   "paper_title": "Excitation and polarization of isolated neurons by high-frequency sine waves for temporal interference stimulation",
+   "date": "2026-11-01",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41319240351"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "001273-semenov-2025",
+   "entry_title": "Membrane charging kinetics by 2-us pulses in cultured neurons (Semenov et al. 2025, Figure 4)",
+   "description": "Tests the Figure 4 findings of Semenov, Kim, Silkuniene and Pakhomov (2025) on dandiset 001273, which holds the pulsed laser strobe imaging of FluoVolt-loaded rat hippocampal neurons exposed to 2-us pulses. It rebuilds the RATIO image and the polarized ROIs of the Methods, fits the charging and discharging time constants, and checks where the poles lie against the field axis. Two more notebooks test the 2-s sine wave recordings of Figure 3C (dandiset 001030) and the Di-8-ANEPPS recordings of Figure S1 (dandiset 001272). The paper's other figures, in other dandisets, are not tested; a fourth notebook surveys those dandisets' metadata.",
+   "notebooks": [
+    {
+     "path": "reproduce_semenov_2025.ipynb",
+     "title": "Reproducing Semenov et al. (2025), Figure 4, from dandiset 001273",
+     "executed": null
+    },
+    {
+     "path": "elsewhere_001030.ipynb",
+     "title": "Semenov et al. (2025), Figure 3C, from dandiset 001030 (data elsewhere)",
+     "executed": null
+    },
+    {
+     "path": "elsewhere_001272.ipynb",
+     "title": "Semenov et al. (2025), Figure S1, from dandiset 001272 (data elsewhere)",
+     "executed": null
+    },
+    {
+     "path": "survey_other_dandisets.ipynb",
+     "title": "Semenov et al. (2025): a metadata survey of the paper's other dandisets",
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig4-polarized-poles-face-electrodes",
+     "statement": "A 2-us pulse polarizes mainly the membrane facing the electrodes, depolarized at the cathode-facing pole and hyperpolarized at the anode-facing one, while even large neurites show little or no polarization.",
+     "source": "Results, Kinetics of membrane charging by pulsed electric fields, the paragraph after the Figure 4 legend; Figures 4A to 4C",
+     "quote": "In neurons of all shapes, the electric field primarily polarized membrane portions facing the electrodes ... Unexpectedly, even large neurites showed little to no polarization and did not seem to impact the charging of cell soma",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "Tested on the 14 experiments whose session description names the electrode axis (January 19 and March 11). In 13 of 14 the extreme depolarized and hyperpolarized pixels of the soma lie on opposite sides of its centroid with their separation within 45 degrees of the field axis (median angle 13.8 degrees); the exception (cell 1 of March 11) is at 48.7 degrees. With the axes swapped, 1 of 14 passes. In the 40 V experiments, 10 of 11 pass. The shape groups are not in the dataset, so the majority is taken over all experiments with an axis (O4), not per group. The polarity of the electrodes is not given, so which pole faced the cathode is not tested. With the soma mask opened by a disc of radius 8 pixels, to trim neurite stumps the threshold mask can take in, 12 of 14 pass (median angle 17.1 degrees). The neurite part is reported, not judged; the 99th percentile of the absolute RATIO change outside the soma is below that within it in 21 of 22 experiments.",
+     "deviations": [
+      "The ROIs are not in the dataset. The extreme pixels are taken from the RATIO image rebuilt as the Methods describe (Pulsed laser fluorescence microscopy, CONTROL, POLARIZED and RATIO images, 12 x 12 pixel low-pass filter), within the soma, defined as the connected region of the filtered CONTROL image brighter than halfway between the image median and the brightest central pixel (a standard choice; the neuron was centred in the field, Methods, Sine wave and square pulse stimulation). The centroid is that of the soma region.",
+      "Assumed that \"Up and Bottom\" in the session description is the image's vertical axis and \"Right and Left\" its horizontal axis. The files do not give the orientation of the camera image relative to the stage; this is the plain reading of the description.",
+      "The 8 January 17 experiments have \"Electrode position not specified\" and are left out."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-orientation-time-constants",
+     "statement": "In elongated neurons, charging was about 2-fold faster with the field orthogonal to the long axis; aligning elongated cells with the field doubled the time constants compared with the same cells perpendicular to it or with randomly shaped cells.",
+     "source": "Results, Kinetics of membrane charging by pulsed electric fields, the paragraph after the Figure 4 legend; Figures 4A, 4D and 4E",
+     "quote": "Aligning elongated cells with the electric field doubled the time constants, as compared to either the same cells oriented perpendicular to the field ( p < 0.001, paired t test) or to randomly shaped cells ( p < 0.01, unpaired t test)",
+     "statistics": [
+      {
+       "about": "elongated cells, parallel against perpendicular (text)",
+       "test": "paired t test",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "elongated cells, between the orthogonal orientations (Figure 4D and 4E legend)",
+       "test": "unpaired two-tailed t test",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "parallel n = 3, perpendicular n = 6"
+      },
+      {
+       "about": "elongated parallel against random cells",
+       "test": "unpaired t test",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "parallel n = 3, random n = 10"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "The groups of Figure 4D and 4E (elongated parallel n = 3, elongated perpendicular n = 6, random n = 10) are not in the dataset, and the paper judged shape and orientation by eye (O4). The four January 19 cells were imaged on both electrode axes, but which axis was parallel to each cell's long axis is not recorded. Their charging tau per axis is printed for reference only.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-no-pole-difference",
+     "statement": "The maximum optical TMP and the charging and discharging time constants did not differ between the cathode- and anode-facing poles, indicating no rectification of the field.",
+     "source": "Results, Kinetics of membrane charging by pulsed electric fields, the paragraph after the Figure 4 legend; Figures 4D and 4E",
+     "quote": "\u0394 F max did not differ at the cathodic and anodic cell poles, indicating the lack of rectification of the applied electric field. Charging and discharging time constants did not differ between the two poles either",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "Two-sided paired t tests, cathodic against anodic, of |dFmax|, charging tau and discharging tau. None of the 16 unscaled readings (ROI a and b, weighting none or 1/SEM^2, discharge amplitude free or fixed, in both experiment sets) finds a difference at p < 0.05, and none of the frame-scaled variants does. Main reading (all 22 experiments, ROI a, unweighted, free amplitude) |dFmax| difference -2.36% (95% CI -6.92 to 2.21, p = 0.29, n = 15 pairs), charging tau 0.35 us (-0.48 to 1.18, p = 0.38), discharging tau -0.03 us (n = 14). The intervals are wide and, in set A, 7 to 10 of 22 experiments per reading lose a pair to a failed fit, so the test has little power. The time constants do not differ under any variant (each experiment's estimated onset, fits with tau beyond its window dropped, ROI a clipped to the soma). The amplitude does in two variants. With fits whose tau exceeds its window dropped, |dFmax| differs at p = 0.046 in 2 of 8 set A readings (n = 12). The |dF| over the last 0.5 us of the pulse, which needs no fit and keeps all 22 experiments, is larger at the anodic pole in set A (cathodic minus anodic -2.86%, p = 0.014, ROI a; -2.54%, p = 0.011, ROI b) but not in the 40 V set (p = 0.28 and 0.24); the difference grows with amplitude (-0.95% at 40 V, -14.82% and -12.23% at 100 and 130 V, ROI a), and without the 100 and 130 V runs it is -1.79% (p = 0.048). The criterion's quantity, the fitted |dFmax|, shows no difference under any of the header readings (O1 to O3); only the window variant, which drops fits, gives p = 0.046 in 2 of its 8 set A readings. The outcome follows the criterion's quantity and readings. The absence of a pole difference in amplitude is weak in set A, and depends on whether the 100 and 130 V runs belong to the paper's 19 experiments, which the dataset does not say.",
+     "deviations": [
+      "The test is run over the 22 experiments in the dataset (set A) and over the 15 at 40 V (set B); the paper's 19 cannot be identified.",
+      "Unscaled data only; the debris ROI used for scaling is not in the dataset (claims file, F2).",
+      "ROIs rebuilt from the RATIO image under the claims file's readings O1 (a) and (b), within the soma region described under fig4-polarized-poles-face-electrodes.",
+      "Fits that fail or end at a bound (tau 0.005 or 50 us, amplitude 200%) are dropped, a standard choice; the counts are printed. Fits are least squares in SciPy, not Origin 8.0."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-discharging-slower",
+     "statement": "Discharging time constants were larger than charging ones in the same cell, except in elongated cells aligned with the field.",
+     "source": "Results, Kinetics of membrane charging by pulsed electric fields, the paragraph after the Figure 4 legend; Figures 4D and 4E",
+     "quote": "discharging time constants were always larger than the charging ones in the same cell ( p < 0.001, paired t test), with the exception of elongated cells aligned with the field",
+     "statistics": [
+      {
+       "about": "discharging against charging tau (text)",
+       "test": "paired t test",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "discharging against charging tau, per group and pole (Figure 4D and 4E legend, hash sign)",
+       "test": "paired two-tailed t test",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "The criterion needs the elongated parallel group for the exception (O4), which the dataset does not label. Reading (a), all experiments and both poles, is shown for each reading of the header. Its result depends on the reading. In set A, discharging minus charging tau averages -0.09 to 1.25 us, with p from 0.0016 to 0.90; none reaches the paper's p < 0.001.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-pooled-time-constants",
+     "statement": "Pooled over all 19 experiments, charging and discharging time constants averaged 0.7 and 0.91 us at the cathodic pole and 0.65 and 0.8 us at the anodic pole.",
+     "source": "Results, Kinetics of membrane charging by pulsed electric fields, the paragraph after the Figure 4 legend; Figures 4D and 4E (ALL)",
+     "quote": "The time constants pooled together for all cells averaged 0.7 \u00b1 0.08 (charging) and 0.91 \u00b1 0.08 (discharging) \u03bcs for the cathodic cell pole and 0.65 \u00b1 0.05 and 0.8 \u00b1 0.07 \u03bcs for the anodic pole, respectively (mean \u00b1 SEM, n = 19)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "Means over experiment fits, all 22 experiments, unscaled. Under no reading of O1 to O3, in either experiment set, are all four within the paper's SEMs. In set A the cathodic charging means are 0.65 to 1.01 us (0.7 plus or minus 0.08), the cathodic discharging means are 1.37 to 4.20 us (0.91 plus or minus 0.08), the anodic charging means are 0.62 to 2.28 us (0.65 plus or minus 0.05), and the anodic discharging means are 1.32 to 2.22 us (0.8 plus or minus 0.07). The measured values are from reading ROI a, unweighted, free amplitude. The medians over experiments are lower (cathodic discharging 1.02 to 1.46 us). The frame-scaled variant has no row within tolerance either. The per-experiment fits are noisy (charging tau from 0.02 to 4.3 us at the cathodic pole), and 2 to 6 of 22 fits per pole and reading are dropped. Three variants give the same outcome, with no reading in either set within the SEMs. With each experiment's estimated onset the set A cathodic discharging means are 1.43 to 3.77 us; with fits dropped whose tau exceeds the time it is fitted over (2 us charging, 5 us discharging) they are 1.55 to 1.92 us, and the cathodic charging means fall to 0.41 to 0.50 us; with ROI a clipped to the soma they are 1.36 to 1.58 us.",
+     "deviations": [
+      "The ROIs and the debris ROI are not in the dataset. The polarized ROIs are rebuilt from the RATIO image (O1 a and b), and the traces are unscaled (F2). The paper scaled to the debris ROI to remove flash-to-flash laser fluctuations, which this attempt could not do; the whole-frame scaling shown as a variant is not the paper's.",
+      "22 experiments in the dataset against the paper's 19; set A uses all 22, set B the 15 at 40 V.",
+      "Dim frames (below 70% of the file's median frame mean, mostly the first image acquired) are dropped, a standard choice; 204 of 28,000 frames.",
+      "The time base is the Methods' (frame 20 is the pulse onset, 50 ns per frame); the onset estimated from the data has median 19.9 frames (18.0 to 21.0), and the fits are repeated with it as a variant.",
+      "Fits are kept up to tau 50 us, a standard choice; values beyond the fitted window are poorly constrained, so a variant drops them."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-full-charge-within-3us",
+     "statement": "Membranes exceed 95% of full charge in under 3 us, even in the largest neurons and with the least efficient alignment with the field, so each cycle of a sine wave fully polarizes the membrane even at 100 to 200 kHz.",
+     "source": "Results, Kinetics of membrane charging by pulsed electric fields, the paragraph after the Figure 4 legend",
+     "quote": "It will take <3 \u03bcs to exceed 95% of the full charge, even in the largest neurons and with the least efficient cell alignment with the field",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_semenov_2025.ipynb",
+     "notes": "Reading (a) needs the elongated parallel group, which the dataset does not label (O4). Reading (b) fails under every reading of the header (3 to 5 experiments per pole and reading have 3 tau above 3 us; the largest cathodic charging tau is 4.29 us under ROI a, unweighted), so it cannot stand in for (a). It fails too with charging fits whose tau exceeds the 2-us pulse dropped (largest tau 1.64 to 1.97 us, 4 to 6 pole fits with 3 tau above 3 us). The claim also depends on fig4-pooled-time-constants, which was not reproduced.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1-pure-sine-excites-all",
+     "statement": "Unmodulated 250-ms sine waves at 2 and 20 kHz excited every neuron tested, with APs 100 to 200 ms after onset near threshold, firing rate rising to a ceiling of 60 to 90 Hz, and an excitation block with sustained depolarization at the highest fields.",
+     "source": "Results, Stimulation by 2- and 20-kHz unmodulated sine waves, paragraph 1; Figures 1A to 1C and inset",
+     "quote": "Pure sine waves at 2 and even 20 kHz excited 100% of neurons ... The maximum firing rate increased linearly until reaching a ceiling of 60-90 Hz",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": "survey_other_dandisets.ipynb",
+     "notes": "Data elsewhere (DANDI:001032 to 001035). Not tested; the author run ran out of time after the Figure 4 analysis. A metadata survey of those dandisets (survey_other_dandisets.ipynb) finds 16 x 16 pixel image stacks at 3,086.4 frames/s with the stimulus given only in free text, and 001034 holding the same 178 image arrays as 001032, byte for byte, with the same session descriptions under other subject ids.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001032, 001033, 001034 and 001035 (assigned from their titles; the paper does not map figures to dandisets)",
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-modulated-thresholds-higher",
+     "statement": "Thresholds for 1 and 5 APs at 20 kHz were about 2-fold those at 2 kHz, and thresholds for sine waves modulated at 20 Hz were significantly higher than for pure sine waves for 5 APs at 2 kHz and for 1 and 5 APs at 20 kHz.",
+     "source": "Results, Excitation thresholds are similar or lower for pure 2- and 20-kHz sine waves than those for modulated sine waves, paragraph 1; Figure 2D",
+     "quote": "All thresholds at 20 kHz were about 2-fold higher than at 2 kHz ( p < 0.0001, two-tailed unpaired t test) ... thresholds for modulated sine waves, which emulate the TI stimulus at the target, were significantly higher than those for pure sine waves at the same frequency",
+     "statistics": [
+      {
+       "about": "20 kHz against 2 kHz, all thresholds",
+       "test": "two-tailed unpaired t test",
+       "p": 0.0001,
+       "p_relation": "<"
+      },
+      {
+       "about": "modulated against unmodulated, 2 kHz, 5 APs",
+       "test": "two-tailed unpaired t test",
+       "p": 0.0079
+      },
+      {
+       "about": "modulated against unmodulated, 20 kHz, 1 AP",
+       "test": "two-tailed unpaired t test",
+       "p": 0.0142
+      },
+      {
+       "about": "modulated against unmodulated, 20 kHz, 5 APs",
+       "test": "two-tailed unpaired t test",
+       "p": 0.0037
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Data elsewhere (DANDI:001032 to 001035). Not tested for lack of time, as for fig1-pure-sine-excites-all, on which it depends.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001032, 001033, 001034 and 001035 (assigned from their titles)",
+     "proposed": null
+    },
+    {
+     "claim": "fig2-modulated-locks-to-beats",
+     "statement": "With 20-Hz modulation, firing above threshold locked to the beats, one AP near the peak of each of the five beats and at most two per beat (ten in all), and modulated sine waves triggered no sustained firing or sustained depolarization.",
+     "source": "Results, Stimulation by 2- and 20-kHz sinusoids modulated at 20 Hz, paragraph 1; Figures 2A and 2B",
+     "quote": "single APs emerged near the peak of each beat, so the firing rate equaled the modulation rate ... the maximum number of APs evoked by five beats was limited to ten. Unlike pure sine waves, modulated stimuli did not trigger sustained firing or sustained depolarization",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Data elsewhere (DANDI:001032 to 001034, the \"spindle\" sessions). Not tested for lack of time, as for fig1-pure-sine-excites-all, on which it depends.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001032, 001033, 001034 and 001035 (assigned from their titles)",
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-pure-more-aps",
+     "statement": "In the same neuron at the same field strength, pure sine waves triggered more APs than modulated ones.",
+     "source": "Results, Stimulation by 2- and 20-kHz sinusoids modulated at 20 Hz, paragraph 2; Figure 2C",
+     "quote": "At the same field strengths, pure sine waves triggered a larger number of APs",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Data elsewhere (DANDI:001032 to 001034). Not tested for lack of time, as for fig1-pure-sine-excites-all, on which it depends.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001032, 001033, 001034 and 001035 (assigned from their titles)",
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-low-conductivity-halves-threshold",
+     "statement": "Lowering solution conductivity from 16.4 to 8.4 mS/cm with sodium gluconate reversibly lowered excitation thresholds about 2-fold at all sine wave frequencies from 2 to 20 kHz.",
+     "source": "Results, Decreased extracellular conductivity lowers excitation thresholds, paragraph 1; Figures 3A and 3B",
+     "quote": "Switching to the NaGlu-based solution reversibly and reproducibly decreased excitation thresholds ~2-fold across all sine wave frequencies tested",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": "survey_other_dandisets.ipynb",
+     "notes": "Data elsewhere, but not found there. The metadata survey (survey_other_dandisets.ipynb) finds every session description of DANDI:001032 to 001035 (803 files) naming the 140 mM NaCl solution; the only sodium gluconate sessions are the 17 of 001030, all with a 2-s ramped 2-kHz stimulus. The NaGlu thresholds of Figure 3B do not appear to be deposited. Not tested further for lack of time; the claim also depends on fig1-pure-sine-excites-all.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001032, 001033, 001034 and 001035 (assigned from their titles)",
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-sustained-firing-2s",
+     "statement": "In the low-conductivity solution, a 2-s unmodulated 2-kHz sine wave ramped over 250 ms evoked firing for its whole duration, rising with field until replaced by a firing block with sustained depolarization.",
+     "source": "Results, Decreased extracellular conductivity lowers excitation thresholds, paragraph 3; Figure 3C",
+     "quote": "we observed sustained firing for the entire duration of the sine wave ( Figure 3C ). The rate of firing increased with the electric field strength until it was replaced by a firing block and sustained depolarization",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "elsewhere_001030.ipynb",
+     "notes": "DANDI:001030 version 0.240520.1924, 17 sessions of four cells (c5 to c8) at 1.0 to 2.3 V. Judged per cell, bleach-corrected. In all four cells, under both AP readings, an intermediate field fires in the last 250 ms of the stimulus and the AP count after the ramp rises with field. Cell c7 meets the whole criterion under both readings; at 2.3 V it has no AP after the ramp and a corrected mean dF of 6.66%. Cells c5 and c8 stop firing at their highest field (1 and 0 APs after the ramp under reading (a), 0 under (b)) but their mean dF there is 3.48% and 3.63%, below the 5% level. Cell c6 keeps firing at its highest field, 1.45 V (32 APs after the ramp). So the criterion holds in 1 of 4 cells, and the firing part in all 4. With the first run's detector it holds in none (reading (a) counts 197 noise peaks on the c7 plateau, reading (b) one, at 1,707 ms), which also gives a partial result; without the bleaching correction it holds in no cell (c7 at 2.3 V has a mean dF of 3.30%).",
+     "deviations": [
+      "Data elsewhere, in DANDI:001030, as the claims file assigns from the dandiset's title.",
+      "F is the mean over the whole 16 x 16 frame. At this resolution the soma the Methods name (\"emission intensity over the entire cell soma\") cannot be outlined.",
+      "The bleaching trace is the only session without APs during the stimulus under both readings (c7 at 1.0 V), used for every cell (Methods, \"corrected for bleaching by subtracting a trace without APs\"). Uncorrected results are shown too.",
+      "The first 20 frames (6.4 ms) of each file are dropped, a standard choice. The first frame is 2.6 to 7.6 times brighter than the rest, and the next ones recover from it.",
+      "The criterion does not say how cells are combined. Each cell's field series is judged on its own, as Figure 3C shows one cell (\"Sustained firing and depolarization in a neuron\", Figure 3 legend). Assumed that the claim is reproduced when the criterion holds in most cells, partially reproduced when it holds in at least one cell or its firing parts hold in most, and not reproduced otherwise. The Results present the neuron of Figure 3C as what was observed (\"we observed sustained firing for the entire duration of the sine wave\"), so a typical cell should show it, which a single cell does not establish. The outcome rests on this rule. Judged on any one cell the claim would be reproduced (c7); judged on most cells it would not.",
+      "AP detection runs on a 1-ms running mean of the trace; a reading (a) peak must stand 5% dF above its surroundings, and peaks of both readings must be at least 5 ms apart. These are standard choices (APs last about 10 ms, Methods). The first run used no smoothing and a prominence of 2.5%, which counted noise on a depolarized plateau as APs; it is shown as a variant."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "DANDI:001030 (assigned from its title)",
+     "proposed": null
+    },
+    {
+     "claim": "figs1-di8-anepps-control",
+     "statement": "With Di-8-ANEPPS instead of FluoVolt, in eight neurons, near-threshold stimulation elicited one or a few delayed APs and stronger fields induced sustained firing ending in sustained depolarization, as with FluoVolt.",
+     "source": "Results, Sensitivity to unmodulated sine waves was not caused by FluoVolt dye, paragraph 1; Figure S1",
+     "quote": "Stimulation near the threshold elicited one or a few delayed APs. Increasing the electric field strength reduced the delay and induced sustained firing that culminated in sustained depolarization",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "elsewhere_001272.ipynb",
+     "notes": "DANDI:001272 version 0.250805.1358, 65 sessions of three neurons (the paper reports eight). The criterion holds under none of the three AP readings. In no neuron does the highest field end in depolarization at the criterion's 5% level; the largest mean inverted dF over the last 100 ms of any session is 3.2%. Under reading (c), 5 SD of the pre-stimulus trace, every neuron fires and first-AP latency falls with field in all 3; under reading (a) the 5% level finds APs only in neuron 3_20240806 (4 sessions), and under reading (b) in no neuron. In 19 of 52 sessions with APs under reading (c) the first AP comes within 5 ms of the onset, which may be an onset artefact; without those, latency falls in 2 of 3. No variant changes the outcome. With the first run's detector, without the first 5 ms, or with the depolarization level at 5 SD of each neuron's pre-stimulus trace (2.2 to 2.5%), the highest field ends in depolarization in at most one neuron under any reading. The Di-8-ANEPPS signals are smaller than the FluoVolt signals the 5% level comes from, so the failure may lie in that level and not in the data; whether the level suits this dye is asked of a reader (questions/001273.yaml).",
+     "deviations": [
+      "Data elsewhere, in DANDI:001272, as the claims file assigns from the dandiset's title. Three neurons where the paper reports eight.",
+      "F is the mean over the whole 16 x 16 frame (the soma cannot be outlined), inverted, with the first 20 frames dropped (standard choices).",
+      "The stimulus timing (50 ms before, 250 ms during) is from the Methods (\"The standard imaging protocol started 50 ms before sine wave stimulation and continued for 250 ms during\"); the files do not give it.",
+      "The criterion does not fix how \"latency falls with field\" or the window of \"ends in depolarization\" are judged. Latency falls when the Spearman correlation of field and first-AP latency over a neuron's sessions with APs is negative. A neuron ends in depolarization when its highest-field sessions have no APs in the last 100 ms of the stimulus and mean dF above 5% there, the window the claims file uses for 250-ms stimuli (fig2-modulated-locks-to-beats). Both are standard choices; no window gives the 5% level, as no session reaches it over its last 100 ms.",
+      "AP detection runs on a 1-ms running mean, and a peak of reading (a) or (c) must stand above its surroundings by the detection level (standard choices, as for fig3c-sustained-firing-2s). The first run's detector is a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001272 (assigned from its title)",
+     "proposed": null
+    },
+    {
+     "claim": "figs2-ttx-blocks-depolarization",
+     "statement": "1 uM tetrodotoxin abolished both the APs and the sustained depolarization caused by intense unmodulated 2-kHz sine waves.",
+     "source": "Results, Tetrodotoxin blocks sustained depolarization, paragraph 1; Figure S2",
+     "quote": "the inhibition of sodium channels with 1 \u03bcM tetrodotoxin not only abolished the APs but also fully blocked the sustained depolarization",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": "survey_other_dandisets.ipynb",
+     "notes": "Data elsewhere (DANDI:001271, 287 sessions of 20 subject ids, 71 described as recorded in the presence of tetrodotoxin and 216 without it; survey_other_dandisets.ipynb). Not tested for lack of time.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001271 (assigned from its title)",
+     "proposed": null
+    },
+    {
+     "claim": "fig6-sine-less-than-pulse",
+     "statement": "FluoVolt sensitivity to 2-us pulses averaged 28% plus or minus 2.5% per 1 kV/cm (15% to 47%), and to 2-kHz sine waves 11.8% plus or minus 1.7% per 1 kV/cm, 42% of the pulse value, smaller in every ROI.",
+     "source": "Results, Asymmetric and less-efficient membrane charging by sine waves compared to pulses, paragraphs 4 and 5; Figures 6B to 6D",
+     "quote": "All numbers were invariably smaller than those measured for the same ROIs with the pulse ( Figure 6D ). The electric field sensitivity averaged across all ROIs in all the cells was 11.8% \u00b1 1.7% per 1 kV/cm, just 42% of the value for the 2-\u03bcs pulses",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": "survey_other_dandisets.ipynb",
+     "notes": "Data elsewhere (DANDI:001274, 232 files, 25.0 GB of strobe images; survey_other_dandisets.ipynb). Not started for lack of time in the author run, as for fig1-pure-sine-excites-all; its criterion also takes its readings from the claims file for 001274. The nine cells' 2-us, 257 V/cm pulse recordings are not in this dandiset. Its files were recorded on 2024-01-17, 01-19 and 03-11, all name the three-electrode array of Figure 4, and 001274's files date from May and August 2024 (reproduce_semenov_2025.ipynb, data check).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001274 (assigned from its title); the 2-us pulse recordings of these nine cells may be in 001274 or in this dandiset",
+     "proposed": null
+    },
+    {
+     "claim": "fig5-sine-asymmetry",
+     "statement": "In single cells, sine waves polarized the two poles more asymmetrically than a 2-us pulse (ROI 2 up to 90% smaller than ROI 1 with sine waves against 30% with the pulse in Figure 5; 40% against 20% in Figure S3), with carrier oscillations antiphasic in the two ROIs on a gradual whole-cell depolarization.",
+     "source": "Results, Asymmetric and less-efficient membrane charging by sine waves compared to pulses, paragraphs 2 and 3; Figures 5B to 5D and S3",
+     "quote": "Unexpectedly, in this cell, the oscillations in ROI 2 were up to 90% smaller than those in ROI 1 (compared to just 30% smaller when the same cell was polarized with the 2-\u03bcs pulse)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Data elsewhere (DANDI:001274), as for fig6-sine-less-than-pulse. Not started for lack of time.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001274 (assigned from its title)",
+     "proposed": null
+    },
+    {
+     "claim": "threshold-depolarization-estimate",
+     "statement": "The 2-kHz AP threshold of 57.7 V/cm times the sine wave sensitivity gives a 0.68% emission change, about 6.8 mV, so the threshold depolarization is 5 to 15 mV, as with intracellular current injection.",
+     "source": "Results, Asymmetric and less-efficient membrane charging by sine waves compared to pulses, paragraph 6",
+     "quote": "This threshold corresponds to a 0.68% \u00b1 0.11% FluoVolt emission change (11.8 \u00d7 57.7/1,000) ... a 0.68% emission change corresponds to a 6.8-mV depolarization at the AP threshold",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Depends on fig6-sine-less-than-pulse and fig2d-modulated-thresholds-higher, neither tested for lack of time.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:001032 to 001035 for the threshold and DANDI:001274 for the sensitivity (assigned from their titles)",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The dandiset holds only the raw images. The ROIs over the de- and hyperpolarized poles, the debris ROI used to scale out laser-flash fluctuations, and the shape and orientation group of each experiment (elongated parallel, elongated perpendicular, random) are not in it, so the group comparisons of Figure 4D and 4E cannot be made and the time constants cannot be recomputed as the paper did.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The electrode axis is given for the January 19 and March 11 experiments, but the January 17 files say \"Electrode position not specified\", and no file says which electrode was the cathode or how the camera image is oriented relative to the named directions.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The files form 22 runs of 7 or 8 replicates (one run of cell 1 of January 17 has 7) plus six single files at 100 V; the paper reports 19 experiments. Nothing says which runs the paper used or why the others were left out. The nominal amplitudes vary (40, 60, 80, 100 and 130 V) where the paper gives one field, 140 V/cm, and no file gives the field.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Files recorded \"in a backward manner\" are stored in acquisition order, so their frames run back in time; the data show this (the backward files match the forward ones only once reversed), but the files do not say it beyond the stepping direction in prose.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The time base of the series (50 ns per frame, pulse 1 us after the first image) is given only in prose. The ImageSeries rate is the camera's 6 Hz, and starting_time holds the session start as a Unix time (about 1.7e9 s) where NWB expects seconds after the session start.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The subjects (13) are cells identified by number and date, not animals, and their age is P18D with reference birth, for neurons dissected at E18 and cultured about one week.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The Results say images ran from 1 us before to 6 us after the pulse, 1,440 images per experiment of eight replicates (180 each); the Methods say 160 images over 8 us. The files hold 160 images each, as the Methods say.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The first image acquired in 156 of 175 files of the experiments is about half as bright as the rest (a failed or partial flash); 204 frames in all were dropped as dim.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The paper's other dandisets were surveyed from their metadata and images (survey_other_dandisets.ipynb). DANDI:001034 holds the same 178 image arrays as DANDI:001032, byte for byte, with the same session descriptions, under other subject ids (1_1 against 1_3, and so on for all 14). Every session description of 001032 to 001035 names the NaCl solution, so the sodium gluconate thresholds of Figure 3B do not appear to be deposited.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "DANDI:001272, used here for Figure S1, holds three Di-8-ANEPPS neurons (subject ids 2, 3 and 4 of 2024-08-06) where the paper reports eight, and its files do not give the stimulus timing.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "In DANDI:001030, used here for Figure 3C, every file gives the species as Mus musculus, where the paper used E18 rat hippocampal neurons; two of its 17 sessions (cell c5 at 1.5 and 2.0 V) end at 1.91 s, before the 2-s stimulus does.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the paper's authors. The Methods do not give the size or placement of the ROIs over the polarized membrane, how the fits were weighted in Origin 8.0, or whether the discharge amplitude was a free parameter. This attempt rebuilt the ROIs from the RATIO image (a 12 x 12 pixel square at the extreme pixel, or the pixels beyond half the extreme) and ran every combination; the pooled time constants differ from the paper's under all of them. Could the ROIs, the debris ROI and the list of the 19 experiments with their groups be deposited?",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-01",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "The handover of the first run, the three executed notebooks with the conclusions and summaries removed, the helper modules strobe.py and fastimg.py, and the claims file. The verifier also read the paper under paper/ and checked the archive's asset metadata and session descriptions. The attempt record was not among its materials.",
+     "agreed": 16,
+     "of": 17,
+     "disagreements": [
+      {
+       "claim": "fig3c-sustained-firing-2s",
+       "outcome": "not_reproduced",
+       "reason": "Not reproduced, by the letter of the criterion. The block test fails for every cell under both AP readings, while the other two parts (late firing at an intermediate field, count rising with field) pass in all cells. In the figure, c7 at 2.3 V shows exactly the block the paper describes, a plateau of about 7% from about 0.25 s to the end. It fails only because of detector false positives on that plateau. Reading (a), a peak above 5% dF with prominence 2.5, counts noise peaks as APs, 197 at c7 2.3 V, and reading (b) gives one false detection at 1707 ms. A detector that does not count plateau noise would likely pass c7, so the claim could plausibly be reproduced."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-01",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "The revision after round 1, with the full executed notebooks, the helper modules, the claims file and the attempt record with the author's conclusions.",
+     "agreed": 17,
+     "of": 17,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001048-semenov-2025",
+   "type": "reproduction",
+   "title": "High-frequency sine waves excite isolated neurons (Semenov et al. 2025)",
+   "description": "Tests the findings of Semenov, Kim, Silkuniene and Pakhomov (2025). Dandiset 001048 names the paper but holds HEK-cell recordings of another study, so the claims are tested on the ten dandisets the paper lists (001030 to 001035, 001271 to 001274). These hold optical recordings of rat hippocampal neurons stimulated by unmodulated and 20-Hz modulated sine waves at 2 and 20 kHz, with TTX and Di-8-ANEPPS controls, and strobe images of membrane charging by 2-us pulses and sine waves.",
+   "datasets": [
+    "dandi:001030",
+    "dandi:001032",
+    "dandi:001033",
+    "dandi:001034",
+    "dandi:001035",
+    "dandi:001048",
+    "dandi:001271",
+    "dandi:001272",
+    "dandi:001273",
+    "dandi:001274"
+   ],
+   "papers": [
+    "10.1016/j.xcrp.2025.102660"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_semenov_2025.ipynb",
+     "title": "Reproducing Semenov et al. (2025) from the DANDI datasets it names",
+     "executed": "notebooks/001048-semenov-2025/reproduce_semenov_2025.html"
+    }
+   ]
+  },
+  {
+   "name": "001272-semenov-2025",
+   "type": "reproduction",
+   "title": "Excitation of isolated neurons by high-frequency sine waves (Semenov et al. 2025)",
+   "description": "Tests the findings of Semenov, Kim, Silkuniene and Pakhomov (2025) on dandiset 001272, which holds the Di-8-ANEPPS control recordings of Figure S1 (three neurons stimulated with 250-ms, 2-kHz sine waves), and the paper's FluoVolt findings on its other deposits, 001030, 001032, 001033, 001035 and 001271 (Figures 1 to 3 and S2), and fits the strobe imaging of Figure 4 (001273) without the debris ROI the paper scaled to, which is not deposited.",
+   "datasets": [
+    "dandi:001030",
+    "dandi:001032",
+    "dandi:001033",
+    "dandi:001034",
+    "dandi:001035",
+    "dandi:001271",
+    "dandi:001272",
+    "dandi:001273"
+   ],
+   "papers": [
+    "10.1016/j.xcrp.2025.102660"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "di8_controls.ipynb",
+     "title": "Di-8-ANEPPS controls on DANDI:001272, with a FluoVolt reference group",
+     "executed": "notebooks/001272-semenov-2025/di8_controls.html"
+    },
+    {
+     "path": "fluovolt_elsewhere.ipynb",
+     "title": "FluoVolt findings on the paper's other deposits",
+     "executed": "notebooks/001272-semenov-2025/fluovolt_elsewhere.html"
+    },
+    {
+     "path": "strobe_check.ipynb",
+     "title": "Strobe imaging of membrane charging on DANDI:001273",
+     "executed": "notebooks/001272-semenov-2025/strobe_check.html"
+    }
+   ]
+  },
+  {
+   "name": "001273-semenov-2025",
+   "type": "reproduction",
+   "title": "Membrane charging kinetics by 2-us pulses in cultured neurons (Semenov et al. 2025, Figure 4)",
+   "description": "Tests the Figure 4 findings of Semenov, Kim, Silkuniene and Pakhomov (2025) on dandiset 001273, which holds the pulsed laser strobe imaging of FluoVolt-loaded rat hippocampal neurons exposed to 2-us pulses. It rebuilds the RATIO image and the polarized ROIs of the Methods, fits the charging and discharging time constants, and checks where the poles lie against the field axis. Two more notebooks test the 2-s sine wave recordings of Figure 3C (dandiset 001030) and the Di-8-ANEPPS recordings of Figure S1 (dandiset 001272). The paper's other figures, in other dandisets, are not tested; a fourth notebook surveys those dandisets' metadata.",
+   "datasets": [
+    "dandi:001030",
+    "dandi:001272",
+    "dandi:001273"
+   ],
+   "papers": [
+    "10.1016/j.xcrp.2025.102660"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_semenov_2025.ipynb",
+     "title": "Reproducing Semenov et al. (2025), Figure 4, from dandiset 001273",
+     "executed": null
+    },
+    {
+     "path": "elsewhere_001030.ipynb",
+     "title": "Semenov et al. (2025), Figure 3C, from dandiset 001030 (data elsewhere)",
+     "executed": null
+    },
+    {
+     "path": "elsewhere_001272.ipynb",
+     "title": "Semenov et al. (2025), Figure S1, from dandiset 001272 (data elsewhere)",
+     "executed": null
+    },
+    {
+     "path": "survey_other_dandisets.ipynb",
+     "title": "Semenov et al. (2025): a metadata survey of the paper's other dandisets",
+     "executed": null
+    }
+   ]
+  },
+  {
+   "name": "001274-semenov-2025",
+   "type": "reproduction",
+   "title": "Excitation and polarization of neurons by high-frequency sine waves (Semenov et al. 2025)",
+   "description": "Tests the findings of Semenov, Kim, Silkuniene and Pakhomov (2025) on dandiset 001274, which holds the strobe images of membrane polarization by pulses and sine waves (Figures 5, 6 and S3), and on the other dandisets of the same paper that hold the fast optical recordings of action potentials (001030, 001032, 001033, 001035, 001271, 001272). The strobe claims are blocked, as the dandisets hold no ROIs; the fast recordings test excitation by 2- and 20-kHz sine waves, thresholds, beat locking, the 2-s ramped stimulus and tetrodotoxin.",
+   "datasets": [
+    "dandi:001030",
+    "dandi:001032",
+    "dandi:001033",
+    "dandi:001034",
+    "dandi:001035",
+    "dandi:001271",
+    "dandi:001272",
+    "dandi:001273",
+    "dandi:001274"
+   ],
+   "papers": [
+    "10.1016/j.xcrp.2025.102660"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_semenov_2025.ipynb",
+     "title": "Reproducing Semenov et al. (2025) from dandiset 001274 and the paper's other dandisets",
+     "executed": "notebooks/001274-semenov-2025/reproduce_semenov_2025.html"
+    }
+   ]
+  }
+ ]
+}
