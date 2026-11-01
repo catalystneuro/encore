@@ -18,10 +18,10 @@ and no raw traces, so the task-aligned analyses of Figure 2 and Figure S1 cannot
 | U task amplitude higher in M1 than in SMA | Not reproduced |
 | Task-aligned responses (Figure 2, Figure S1; six claims) | Blocked: data missing |
 | Synchronized pairs in SMA and M1, unrelated to distance, not changed by the task | Reproduced (three claims) |
-| Example sequence counts (Figure 4A, 4B) | Not reproduced (two claims) |
+| Example sequence counts (Figure 4A, 4B) | Blocked: methods underspecified (no setting of the detection gives the paper's own counts; two claims) |
 | Sequence measures vary across conditions and sites | Reproduced |
 | Cells in sequences not clustered | Blocked: methods underspecified |
-| Histology (two claims) | Blocked: not runnable |
+| Histology (two claims) | Blocked: other (needs an anatomist's reading) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -34,6 +34,7 @@ record, with the reasons and the differences from the paper's method, is
 - `reproduce_martel_2025.ipynb`: data check, the link to the Zenodo table, Figures 1 and 3. About two
   minutes, most of it streaming.
 - `sequences_martel_2025.ipynb`: the sequence detection of Figure 4 on every 10-min slice, under each
-  reading of the paper's open parameters. About fourteen minutes.
+  reading of the paper's open parameters, and a sweep of the detection's parameters against the paper's
+  own counts. About twenty-two minutes.
 - `sma_m1.py`: loading the files, the per-cell descriptors, the Z-Jaccard and the Zenodo tables.
 - `sequences.py`: a Python (numba) port of the paper's `identify_sequences.m`.
