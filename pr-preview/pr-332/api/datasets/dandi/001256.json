@@ -1,0 +1,1011 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001256",
+  "label": "DANDI:001256"
+ },
+ "page": "datasets/dandi/001256/",
+ "generated": "2026-11-01T21:21:36+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 7,
+  "partially_reproduced": 3,
+  "not_reproduced": 7,
+  "blocked": 7
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001256-cody-2024-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001256",
+    "version": "0.241120.2150",
+    "doi": "10.48324/dandi.001256/0.241120.2150"
+   },
+   "key": "dandi:001256",
+   "label": "DANDI:001256",
+   "dataset_version": "0.241120.2150",
+   "paper": "10.1523/jneurosci.0939-23.2024",
+   "paper_title": "Cortical Zinc Signaling Is Necessary for Changes in Mouse Pupil Diameter That Are Evoked by Background Sounds with Different Contrasts",
+   "date": "2026-11-01",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41306208091"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "001256-cody-2024",
+   "entry_title": "Cortical zinc and sound-contrast pupil responses (Cody, Kumar and Tzounopoulos 2024)",
+   "description": "Tests the findings of Cody, Kumar and Tzounopoulos (2024) on dandiset 001256, which holds two-photon imaging of auditory cortex and pupillometry in 30 mice during low- and high-contrast sound, before and after ZX1 or ACSF, in C57BL6/J, ZnT3-WT and ZnT3-KO mice. It tests how pure-tone responses and contrast gain control vary with baseline pupil size, whether evoked pupil responses depend on contrast and on cortical zinc, and the controls of Figure 6. The widefield experiments of Figure 5 are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_cody_2024.ipynb",
+     "title": "Reproducing Cody et al. (2024) from dandiset 001256",
+     "executed": "notebooks/001256-cody-2024/reproduce_cody_2024.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig1f-tone-response-inverse-u",
+     "statement": "Peak pure-tone responses of A1 principal cells, contrasts combined, vary with baseline PD in an inverse U, largest at intermediate baseline PD (Kruskal-Wallis p = 5.91e-7, 295 tone-responsive cells from eight animals).",
+     "source": "Results, CGC is more robust at intermediate baseline PD, paragraph 2; Figure 1f",
+     "quote": "we also observed an inverse U relationship, where pure-tone response amplitudes are largest at baseline PDs that are within ... the intermediate range of an animal's PD [Fig. 1f, relative to maximum animal PD; p = 5.91 \u00d7 10\u22127, one-way Kruskal\u2013Wallis test, 295 tone-responsive cells",
+     "statistics": [
+      {
+       "test": "one-way Kruskal-Wallis test",
+       "p": 5.91e-07,
+       "n": "295 tone-responsive cells from eight animals"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "Under the main reading (SD over time, responsive in both contrasts, peak window 2-2.8 s, maximum of the averaged trace) 318 cells are tone-responsive, within 295 plus or minus 29.5; the other inclusion readings give 339, 215 and 241. Peak responses differ across the seven bins (Kruskal-Wallis H = 51.83, p = 2.0e-09), largest in the 21-32% bin (15.88% dF/F) against 8.12 in the lowest and 13.08 in the highest. All 32 readings give p from 1.0e-10 to 7.3e-08 and the same top bin. Under the other cleanings and without the ZnT3-WT mouse AA0335 the main reading gives p = 2.8e-10 to 3.2e-06 with an interior top bin. The bins are not independent of mouse; the lowest bin holds cells of three mice. No trial is below 10% of animal max, so the two bin-1 readings are the same.",
+     "deviations": [
+      "Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used. Keeping the ZnT3-WT mouse AA0335, as the label does, is an assumption; the fig2b-evoked-pd-whole-drc and fig3b-lme-coefficients outcomes rest on it, and group A without AA0335 is a variant in the notebook.",
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook.",
+      "The FRA-mapping reading of cell inclusion cannot be run; mapping trials are in 7 of 30 files and one group A mouse.",
+      "Peak and response windows are half-open frame windows at 5 Hz, frames timed from the trial's first frame minus stimDelay (Methods, 2PCI processing and analysis)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1g-reliability-intermediate",
+     "statement": "Response reliability (trial-to-trial zero-lag cross-correlation of pure-tone responses at 2-3.2 s) is highest at intermediate baseline PD, along with response amplitude (Kruskal-Wallis p = 3.25e-8).",
+     "source": "Results, CGC is more robust at intermediate baseline PD, paragraph 2; Figure 1g",
+     "quote": "increased trial-to-trial consistency in the timing of pure-tone responses, termed reliability, coincides with increased pure-tone response amplitudes at intermediate baseline PD (Fig. 1g; reliability calculated as average zero lag trial-to-trial cross-correlation between all pairs of pure-tone response \u0394F/F traces at 2\u20133.2 s; p = 3.25 \u00d7 10\u22128, one-way Kruskal\u2013Wallis test)",
+     "statistics": [
+      {
+       "test": "one-way Kruskal-Wallis test",
+       "p": 3.25e-08
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "Reliability differs across bins under all eight readings (two inclusion SDs, both or pooled contrasts, Pearson or no mean removal), Kruskal-Wallis p = 1.1e-09 to 6.2e-07, with the highest mean in the 21-32% bin in every reading (Pearson, main inclusion, 0.766 against 0.633 in the lowest bin and 0.590 in the highest).",
+     "deviations": [
+      "Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used. Keeping the ZnT3-WT mouse AA0335, as the label does, is an assumption; the fig2b-evoked-pd-whole-drc and fig3b-lme-coefficients outcomes rest on it, and group A without AA0335 is a variant in the notebook.",
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook.",
+      "The 2-3.2 s window holds six frames at 5 Hz."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1h-cgc-largest-intermediate",
+     "statement": "The contrast scaling factor (CGC magnitude) is largest at intermediate baseline PD (Kruskal-Wallis p = 3.03e-5).",
+     "source": "Results, CGC is more robust at intermediate baseline PD, paragraph 3; Figure 1h",
+     "quote": "the magnitude of CGC is, like pure-tone response amplitudes (Fig. 1f), largest at intermediate baseline PDs (Fig. 1h; p= 3.03 \u00d7 10\u22125, one-way Kruskal\u2013Wallis test)",
+     "statistics": [
+      {
+       "test": "one-way Kruskal-Wallis test",
+       "p": 3.03e-05
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "Kruskal-Wallis p = 2.5e-17 to 1.1e-09 across the eight readings; the highest mean factor is in the 54-65% bin in seven readings and the 43-54% bin in one, never the first or last. Means are pulled by cells whose high-contrast peak is near or below 0 (factors from -109.5 to 37.8 in the main reading); the medians also peak at 54-65% (1.34). The paper's figure has its maximum in the fourth bin (43-54%), which the main reading gives without AA0335.",
+     "deviations": [
+      "Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used. Keeping the ZnT3-WT mouse AA0335, as the label does, is an assumption; the fig2b-evoked-pd-whole-drc and fig3b-lme-coefficients outcomes rest on it, and group A without AA0335 is a variant in the notebook.",
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1h-cgc-evident-all-bins",
+     "statement": "CGC is evident throughout the baseline PD range, the contrast scaling factor being significantly above 1 in every baseline PD bin.",
+     "source": "Results, CGC is more robust at intermediate baseline PD, paragraph 3; Figure 1h; Discussion, paragraph 3",
+     "quote": "We deemed CGC evident when contrast scaling factors were significantly >1. Contrast scaling factors plotted across baseline PD reveal that CGC is evident throughout the baseline PD range",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "Under no reading are all seven bins significantly above 1. The 32-43% bin has a mean factor of 1.006 to 1.035 with p >= 0.17 under every reading and test. The best readings reach six of seven bins under some tests; the main reading has five bins passing all four tests, and its 43-54% bin has a mean of 0.619 (median 1.207) because of a few negative factors.",
+     "deviations": [
+      "Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used. Keeping the ZnT3-WT mouse AA0335, as the label does, is an assumption; the fig2b-evoked-pd-whole-drc and fig3b-lme-coefficients outcomes rest on it, and group A without AA0335 is a variant in the notebook.",
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1i-baseline-contrast-interaction",
+     "statement": "Peak pure-tone responses depend on baseline PD (F(6,1871) = 10.74, p = 9.04e-12), with a significant interaction between contrast and baseline PD (F(6,1871) = 6.01, p = 3.10e-6).",
+     "source": "Results, CGC is more robust at intermediate baseline PD, paragraph 3; Figure 1i",
+     "quote": "we observed a significant association between baseline PD and response amplitude (Fig. 1i; F(6,1871) = 10.74, p =9.04\u00d7 10\u221212, two-way ANOVA). Notably, we found a significant interaction between contrast and baseline PD (Fig. 1i; F(6,1871)= 6.01, p = 3.10 \u00d7 10\u22126)",
+     "statistics": [
+      {
+       "about": "main effect of baseline PD bin",
+       "test": "two-way ANOVA",
+       "statistic": "F(6,1871) = 10.74",
+       "p": 9.04e-12
+      },
+      {
+       "about": "contrast x baseline PD interaction",
+       "test": "two-way ANOVA",
+       "statistic": "F(6,1871) = 6.01",
+       "p": 3.1e-06
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "Keeping only cell-bins with both contrasts gives 1830 values (SD over time, both contrasts; 1932 with contrasts pooled), within 1885 plus or minus 188.5. On these the bin effect is F = 38.07 to 41.12 (p <= 1.0e-43) and the interaction F = 2.21 to 3.02 (p = 0.0061 to 0.040). Keeping every cell-bin-contrast gives 2185 or 2304 values (outside tolerance), interaction F = 4.52 to 4.97 (p <= 0.00015). The bin effect is larger than the paper's F = 10.74 in every reading. Without AA0335 the main reading's interaction p is 0.0046; with the Methods' single cleaning pass it is 0.17, which would make the claim partially reproduced, so the outcome rests on the cleaning; with the round-1 cleaning and the narrower step rule it is 0.0084.",
+     "deviations": [
+      "Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used. Keeping the ZnT3-WT mouse AA0335, as the label does, is an assumption; the fig2b-evoked-pd-whole-drc and fig3b-lme-coefficients outcomes rest on it, and group A without AA0335 is a variant in the notebook.",
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1i-contrast-effect-intermediate-only",
+     "statement": "Only at the intermediate baseline PD bin of 43-54% do peak pure-tone responses differ significantly between low and high contrast (Bonferroni corrected post hoc, p = 3.65e-5).",
+     "source": "Discussion, paragraph 3; Figure 1i, fourth bin",
+     "quote": "solely at the intermediate baseline PD range where CGC is maximal, we observed a significant effect of contrast on pure-tone responses between low and high contrast (p = 3.65 \u00d7 10\u22125, Bonferroni\u2019s corrected post hoc test)",
+     "statistics": [
+      {
+       "about": "low against high contrast in the 43-54% bin",
+       "test": "Bonferroni corrected post hoc test",
+       "p": 3.65e-05,
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "On the ANOVAs whose count is within tolerance (cell-bins with both contrasts), the 43-54% bin is not significant under either Bonferroni family (corrected p = 0.095 to 0.22 for 7 comparisons, 1 for 91) and the 54-65% bin is the only significant one under both. With every cell-bin-contrast (2185 or 2304 values, outside the count tolerance) the 43-54% bin is significant (LOW 15.54 against HIGH 10.43% dF/F; corrected p = 0.00016 for 7 and 0.0021 for 91) and is the only one under the 91-comparison family in 5 of the 8 readings with SD over time (2185 or 2304 values) and in 8 of 8 with SD across trials (1504 or 1669 values, also outside tolerance), as the paper reports, while the 7-comparison family also flags 54-65%.",
+     "deviations": [
+      "Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used. Keeping the ZnT3-WT mouse AA0335, as the label does, is an assumption; the fig2b-evoked-pd-whole-drc and fig3b-lme-coefficients outcomes rest on it, and group A without AA0335 is a variant in the notebook.",
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook.",
+      "The post hoc test is a t test on the ANOVA's pooled error, Bonferroni corrected, as MATLAB multcompare does; the paper does not name the software."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-evoked-pd-whole-drc",
+     "statement": "Evoked PD averaged over the DRC (0-8 s) is larger in high than in low contrast (Wilcoxon rank sum p = 0.0066).",
+     "source": "Results, Sound-evoked PD responses are contrast-dependent but do not predict CGC magnitude, paragraph 1; Figure 2a, b",
+     "quote": "We found that evoked PD responses to high-contrast sound are significantly larger than those in low contrast across a temporal average of the DRC stimulus (Fig, 2a; 0\u20138 s; Wilcoxon rank sum test, p = 0.0066)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank sum test",
+       "p": 0.0066
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "HIGH is above LOW under every reading but never significantly. Group A trials, 42 and 40 trials from six mice, medians 109.10 against 105.05% (z = 1.336, p = 0.18); group B trials p = 0.40; A and B pooled p = 0.054; per-mouse means p = 0.29 to 0.83. Only 82 of 209 group A trials have a baseline below 50% of animal max. Without the 50% limit, group A gives z = 2.747, p = 0.0060 (a variant). With the single cleaning pass the trial readings give p = 0.078 to 0.43, and with the round-1 cleaning 0.096 to 0.55. With the narrower step rule they give p = 0.088 to 0.54. Without the ZnT3-WT mouse AA0335, group A trials give p = 0.028, which would make the readings disagree and the claim methods_underspecified, so the outcome rests on keeping AA0335 in group A, as the files' label does.",
+     "deviations": [
+      "Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used. Keeping the ZnT3-WT mouse AA0335, as the label does, is an assumption; the fig2b-evoked-pd-whole-drc and fig3b-lme-coefficients outcomes rest on it, and group A without AA0335 is a variant in the notebook.",
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook.",
+      "Group B is the twelve mice with CGC-assay trials before and after ZX1 (no label names it); the paper gives fourteen."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-evoked-pd-1-2s",
+     "statement": "Before the pure tone, evoked PD averaged over 1-2 s is also larger in high than in low contrast (Wilcoxon rank sum p = 0.043).",
+     "source": "Results, Sound-evoked PD responses are contrast-dependent but do not predict CGC magnitude, paragraph 1; Figure 2c",
+     "quote": "we analyzed responses at 1\u20132 s and again observed significantly larger evoked PD during high contrast (Fig. 2c; 1\u20132 s; Wilcoxon rank sum test, p = 0.043)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank sum test",
+       "p": 0.043
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "The readings disagree. With groups A and B pooled and trials as units HIGH exceeds LOW (109.10 against 104.47%, z = 2.558, p = 0.011); group A alone (p = 0.099), group B alone (p = 0.16) and every per-mouse reading (p = 0.23 to 0.57) are not significant. The criterion blocks the claim when readings differ. They also disagree without AA0335 (group A trials p = 0.008), under the round-1 cleaning (pooled p = 0.0098), the single pass (pooled p = 0.037) and the narrower step rule (pooled p = 0.010). Question for the authors (finding methods_unavailable) which mice and which unit the Fig. 2c test used. The outcome rests on the pupil cleaning (an assumption, see deviations); the record's schema does not allow the assumed flag on a blocked outcome.",
+     "deviations": [
+      "Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used. Keeping the ZnT3-WT mouse AA0335, as the label does, is an assumption; the fig2b-evoked-pd-whole-drc and fig3b-lme-coefficients outcomes rest on it, and group A without AA0335 is a variant in the notebook.",
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2e-drc-responses-no-difference",
+     "statement": "A1 principal cell responses averaged over the first 2 s of the DRC do not differ between low and high contrast, before or after ZX1 (520 tone-responsive cells from 14 mice).",
+     "source": "Results, Sound-evoked PD responses are contrast-dependent but do not predict CGC magnitude, paragraphs 1 and 2; Figure 2d, e",
+     "quote": "we averaged cell response magnitude across 0\u20132 s (Fig. 2e). We did not observe any significant difference in response magnitude in either control or ZX1 (Wilcoxon rank sum test for control: z = 0.0073, p = 0.9942; after ZX1, z = \u22121.2425, p = 0.2141)",
+     "statistics": [
+      {
+       "about": "CTRL, low against high contrast",
+       "test": "Wilcoxon rank sum test",
+       "statistic": "z = 0.0073",
+       "p": 0.9942,
+       "n": "520 tone-responsive cells from 14 mice"
+      },
+      {
+       "about": "after ZX1, low against high contrast",
+       "test": "Wilcoxon rank sum test",
+       "statistic": "z = -1.2425",
+       "p": 0.2141,
+       "n": "520 tone-responsive cells from 14 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "LOW and HIGH DRC responses over 0 to 2 s differ under every reading, in CTRL and after ZX1, LOW below HIGH (median cell difference -1.05 to -2.03% dF/F; Wilcoxon rank sum z = -4.94 to -7.57, p = 3.7e-14 to 7.7e-07). Under the main inclusion reading 359 cells in CTRL and 363 after ZX1 from 12 mice (two ZnT3-KO); without the KO mice, and with the six C57BL6/J mice only, the result is the same. The counts (149 to 375) are all outside 520 plus or minus 52. The test is the paper's; the effect it finds is about 1 to 2% dF/F.",
+     "deviations": [
+      "Group B is the twelve mice with CGC-assay trials before and after ZX1 (six C57BL6/J, four ZnT3-WT, two ZnT3-KO); the paper gives fourteen C57BL6/J mice. Variants without the KO mice and with the C57BL6/J mice only are shown.",
+      "Cells are segmented separately before and after ZX1 in most files, so inclusion is decided within each condition.",
+      "Whether the files' fluorescence is neuropil-corrected (FISSA, scaled by 0.8) is not stated; it is used as it is."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-lme-coefficients",
+     "statement": "In an LME model of cell peak pure-tone responses, baseline PD contributes significantly (F(1,165.06) = 8.70, p = 3.64e-3), while evoked PD at 1-2 s (p = 0.108) and its interaction with contrast (p = 0.756) do not.",
+     "source": "Results, Sound-evoked PD responses are contrast-dependent but do not predict CGC magnitude, paragraph 2; Figure 3b; Methods, Pupillometry, analysis, paragraph 3",
+     "quote": "we found that the baseline PD model coefficient significantly differed from zero and thus significantly contributed to neuronal responses (F(1,165.06) = 8.70; p = 3.64 \u00d7 10\u22123). Neither sound-evoked PD responses (F(1,167.17)= 2.61; p = 0.108) nor their interaction with contrast (F(1,169.59) = 0.0971; p = 0.756) contributed to predicting neuronal pure-tone responses",
+     "statistics": [
+      {
+       "about": "baseline PD",
+       "test": "LME coefficient test",
+       "statistic": "F(1,165.06) = 8.70",
+       "p": 0.00364
+      },
+      {
+       "about": "evoked PD at 1-2 s",
+       "test": "LME coefficient test",
+       "statistic": "F(1,167.17) = 2.61",
+       "p": 0.108
+      },
+      {
+       "about": "evoked PD x contrast",
+       "test": "LME coefficient test",
+       "statistic": "F(1,169.59) = 0.0971",
+       "p": 0.756
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "In all sixteen fits (four cell inclusion readings, both contrasts or all tone-responsive cells with either SD; all trials or below 50%; two peak windows) the baseline PD coefficient is significant (b = -0.100 to -0.191% dF/F per % of max, p = 1.2e-04 to 0.032), while evoked PD at 1-2 s (p = 0.42 to 0.92) and its interaction with contrast (p = 0.22 to 0.72) are not. All fits converged. The paper does not give the sign of the baseline coefficient. Without the ZnT3-WT mouse AA0335 the baseline coefficient is not significant in the trials below 50% (p = 0.087, one fit), which would make the claim partially reproduced, so the outcome rests on keeping AA0335 in group A, as the files' label does.",
+     "deviations": [
+      "Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used. Keeping the ZnT3-WT mouse AA0335, as the label does, is an assumption; the fig2b-evoked-pd-whole-drc and fig3b-lme-coefficients outcomes rest on it, and group A without AA0335 is a variant in the notebook.",
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook.",
+      "Fixed effects tested with Wald z tests from statsmodels MixedLM (REML), not Satterthwaite F tests from fitlme or lmer; with thousands of denominator df the p-values agree closely.",
+      "The random intercepts (1 | baseline_PD) and (1 | pupil_at_1-2s) group rows by per-trial values, so both are one random intercept per trial; they are fitted as a single trial intercept nested in subject, by maximum likelihood."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-lme-likelihood-ratio",
+     "statement": "The full LME model with evoked PD and its contrast interaction does not predict pure-tone responses better than a null model with baseline PD alone (likelihood ratio test p = 0.330).",
+     "source": "Results, Sound-evoked PD responses are contrast-dependent but do not predict CGC magnitude, paragraph 2; Figure 3c",
+     "quote": "The full model including sound-evoked PD responses and their interaction with contrast did not significantly improve neuronal pure-tone response prediction when compared with the null model (p = 0.330)",
+     "statistics": [
+      {
+       "test": "likelihood ratio test",
+       "p": 0.33
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "With all trials the likelihood ratio test of the full against the null model is significant in all eight fits (chi-squared on 3 df, p = 0.0013 to 0.015), against the paper's p = 0.330; with trials below 50% it gives p = 0.041 to 0.17. The criterion asks for p >= 0.05 under each trial reading. The full model carries the contrast main effect (b = -1.41 to -1.61, p = 0.030 to 0.060 with all trials and SD over time), which accounts for part of the difference.",
+     "deviations": [
+      "Group A is the ten mice the files label pupilPTinContrast (four F, six M, one ZnT3-WT), where the paper gives eight C57BL6/J mice (four F, four M); CTRL trials of the CGC assay are used. Keeping the ZnT3-WT mouse AA0335, as the label does, is an assumption; the fig2b-evoked-pd-whole-drc and fig3b-lme-coefficients outcomes rest on it, and group A without AA0335 is a variant in the notebook.",
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook.",
+      "Random intercepts as in fig3b-lme-coefficients."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-wt-contrast-zx1-effects",
+     "statement": "In ZnT3-WT mice, contrast and ZX1 both affect the GCA intercept and slope of evoked PD, and contrast interacts with ZX1 (F(1,7921.6) = 24.2, p = 8.85e-7).",
+     "source": "Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high- versus low-contrast sound, paragraph 1; Figure 4a, c, e",
+     "quote": "In ZnT3-WT mice, we observed a significant effect of both contrast and ZX1 on the intercept ... and on the first-order (linear) time polynomial coefficient (slope) ... We also observed a significant interaction between contrast and ZX1 treatment (Fig. 4c, F(1,7921.6) = 24.2, p = 8.85 \u00d7 10\u22127)",
+     "statistics": [
+      {
+       "about": "contrast, intercept",
+       "test": "LME growth curve analysis",
+       "statistic": "F(1,7921.6) = 19.48",
+       "p": 1.03e-05
+      },
+      {
+       "about": "contrast, slope",
+       "test": "LME growth curve analysis",
+       "statistic": "F(1,7918.8) = 26.54",
+       "p": 2.64e-07
+      },
+      {
+       "about": "ZX1, intercept",
+       "test": "LME growth curve analysis",
+       "statistic": "F(1,7926.3) = 4.47",
+       "p": 0.0344
+      },
+      {
+       "about": "ZX1, slope",
+       "test": "LME growth curve analysis",
+       "statistic": "F(1,7918.8) = 40.45",
+       "p": 2.13e-10
+      },
+      {
+       "about": "contrast x ZX1",
+       "test": "LME growth curve analysis",
+       "statistic": "F(1,7921.6) = 24.2",
+       "p": 8.85e-07
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "328 ZnT3-WT trials below 50% (6888 rows; the paper's denominator df are about 7920). Under reference coding all five terms are significant in both models (contrast intercept b = 2.48, p = 6.3e-09; contrast slope p = 0.049 and 0.0029; ZX1 intercept b = 1.25, p = 0.010; ZX1 slope b = -8.24 and -4.96, p = 4.0e-08 and 0.017; contrast by ZX1 b = -2.76, p = 3.0e-05). Under sum coding the ZX1 intercept is not significant (p = 0.72) and in the full factorial nor is the contrast slope (p = 0.12), so four and three terms pass. Every reading meets the partial condition (the contrast by ZX1 term and at least two main terms), two also the full one, so the readings agree on partially_reproduced and differ only on whether the full condition also holds. Reference coding is the default of both fitlme and lmer, which the Methods name. The partial condition holds under all four readings with the main cleaning, with the narrower step rule (three or four terms, interaction p <= 0.00093) and with the round-1 cleaning without AA0319 and AA0334, and under none with the round-1 cleaning (interaction p = 0.25) or the single pass (p = 0.56), so the outcome rests on the cleaning (an assumption, see deviations). Changed from blocked after the third verification round. Mean traces at 2 s, CTRL HIGH 113.2 against LOW 108.5%; ZX1 HIGH 106.9 against LOW 109.1%.",
+     "deviations": [
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook.",
+      "Contrast of a DRC trial without the tone is that of its first 10 s; the files' DRCs switch contrast after 10 s (50-60 to 40-70 dB or the reverse), which the paper does not describe. The analysed 0 to 2 s lie in the first block.",
+      "Fixed effects tested with Wald z tests from statsmodels MixedLM (REML), not Satterthwaite F tests from fitlme or lmer; with thousands of denominator df the p-values agree closely.",
+      "Group C is the ten mice labelled pupil_contrast_ZnT3WT (five F, five M); the paper gives six F and four M.",
+      "Orthogonal polynomials with unit-norm columns over the 21 samples from 0 to 2 s (R poly()), as the claims file says.",
+      "Fits use several optimizers and keep the converged fit with the highest finite likelihood; lbfgs alone stopped at a degenerate point (infinite likelihood, intercept 0, subject variance 0) in some fits in the first round."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-wt-posthoc",
+     "statement": "In ZnT3-WT mice, post hoc Tukey tests show an effect of contrast before but not after ZX1, and an effect of ZX1 only on high-contrast evoked PD (p < 0.0001).",
+     "source": "Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high- versus low-contrast sound, paragraph 1; Figure 4c",
+     "quote": "Pairwise post hoc Tukey tests revealed a significant effect of contrast before, but not after ZX1 treatment, and solely a significant effect of ZX1 on high-contrast\u2013evoked PD (p < 0.0001 for both comparisons)",
+     "statistics": [
+      {
+       "test": "Tukey adjusted pairwise comparisons (emmeans)",
+       "p": 0.0001,
+       "p_relation": "<",
+       "corrected": "Tukey"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "At the cell means (time polynomials at 0), HIGH exceeds LOW in CTRL by 2.48% (Tukey p = 3.9e-08) and not after ZX1 (-0.28, p = 0.95), and ZX1 lowers HIGH (-1.51, p = 0.015), but ZX1 also raises LOW (1.25, p = 0.0496), which the criterion requires not to be significant, and the ZX1 effect on HIGH is weaker than the paper's p < 0.0001. Three of four parts hold; the fourth fails at the threshold, and the criterion has no partial level, so it is not met. The same under all four readings. With the round-1 cleaning HIGH minus LOW in CTRL is not significant (p = 0.078) and ZX1 has no effect (p = 0.83 and 0.89); without AA0319 and AA0334 under that cleaning ZX1 changes LOW (p = 0.00011) and not HIGH (p = 0.31); with the single pass HIGH and LOW also differ after ZX1 (p = 0.0045). Only with the narrower step rule are all four parts met (p = 1.7e-05, 0.98, 0.00036 and 0.99), so the outcome rests on the main cleaning and on a p-value at the threshold. Changed from partially_reproduced after the third verification round.",
+     "deviations": [
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook.",
+      "Contrast of a DRC trial without the tone is that of its first 10 s; the files' DRCs switch contrast after 10 s (50-60 to 40-70 dB or the reverse), which the paper does not describe. The analysed 0 to 2 s lie in the first block.",
+      "Tukey adjustment over the six pairs from the studentized range with the residual df; emmeans is not used."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4f-ko-no-contrast-effect",
+     "statement": "In ZnT3-KO mice, neither contrast nor ZX1 affects the GCA intercept of evoked PD and they do not interact; contrast does not affect the slope.",
+     "source": "Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high- versus low-contrast sound, paragraph 2; Figure 4b, d, f",
+     "quote": "In ZnT3-KO mice (Fig. 4b), we did not observe a significant effect of either contrast or ZX1 on evoked PD intercept (Fig. 4d,f; contrast, F(1,4500.8) = \u22121.14, p = 0.255; ZX1, F(1,4502.4) = 1.45, p = 0.147), nor a significant interaction between the two (F(1,4500.2) = \u22120.540, p = 0.589)",
+     "statistics": [
+      {
+       "about": "contrast, intercept",
+       "test": "LME growth curve analysis",
+       "statistic": "F(1,4500.8) = -1.14",
+       "p": 0.255
+      },
+      {
+       "about": "ZX1, intercept",
+       "test": "LME growth curve analysis",
+       "statistic": "F(1,4502.4) = 1.45",
+       "p": 0.147
+      },
+      {
+       "about": "contrast x ZX1",
+       "test": "LME growth curve analysis",
+       "statistic": "F(1,4500.2) = -0.540",
+       "p": 0.589
+      },
+      {
+       "about": "contrast, slope",
+       "test": "LME growth curve analysis",
+       "statistic": "F(1,4500.0) = 1.31",
+       "p": 0.19
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "176 ZnT3-KO trials below 50% (3696 rows, against about 4500). The contrast intercept (p = 0.32 to 0.74), ZX1 intercept (p = 0.26 to 0.30) and contrast by ZX1 (p = 0.58) terms are not significant under any reading, but the contrast slope is significant in three of four (z = 2.60 to 2.66, p = 0.0078 to 0.0095) and not under the full factorial with reference coding (p = 0.18). The criterion treats a disagreement between model readings as methods_underspecified. With the paper's single cleaning pass no reading has all four terms non-significant. Question for the authors (finding methods_unavailable) on the model formula and coding. The outcome rests on the pupil cleaning (an assumption, see deviations); the record's schema does not allow the assumed flag on a blocked outcome.",
+     "deviations": [
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook.",
+      "Contrast of a DRC trial without the tone is that of its first 10 s; the files' DRCs switch contrast after 10 s (50-60 to 40-70 dB or the reverse), which the paper does not describe. The analysed 0 to 2 s lie in the first block.",
+      "Fixed effects tested with Wald z tests from statsmodels MixedLM (REML), not Satterthwaite F tests from fitlme or lmer; with thousands of denominator df the p-values agree closely."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4f-ko-zx1-slope",
+     "statement": "In ZnT3-KO mice ZX1 still reduces the GCA slope (p = 0.0129), but its slope weight (-0.64) is less than half that in ZnT3-WT mice (-1.41).",
+     "source": "Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high- versus low-contrast sound, paragraph 2; Figure 4e, f",
+     "quote": "however, we observed a significant effect of ZX1 (F(1,4500.0) = \u22122.49, p = 0.0129) ... the GCA slope coefficient (weight) for ZX1 in the ZnT3-KO mice (\u22120.64, Fig. 4f) was less than half that of ZnT3-WT (\u22121.41, Fig. 4e)",
+     "statistics": [
+      {
+       "about": "ZX1, slope, ZnT3-KO",
+       "test": "LME growth curve analysis",
+       "statistic": "F(1,4500.0) = -2.49",
+       "p": 0.0129
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "The criterion is evaluated under each of the four model and coding readings and none meets it: the KO ZX1 slope term is negative but not significant (b = -0.85 to -3.18, p = 0.20 to 0.33). The KO weight is less than half the WT weight in magnitude in three of four readings, and neither weight is near the expected values (KO -0.85 to -3.18 against -0.64; WT -4.12 to -8.24 against -1.41), so the paper's polynomial scaling differs from unit-norm columns. The disagreement that blocks fig4f-ko-no-contrast-effect does not bear on this claim, since its criterion fails under every reading; in the first round it was blocked through that dependency.",
+     "deviations": [
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook.",
+      "Contrast of a DRC trial without the tone is that of its first 10 s; the files' DRCs switch contrast after 10 s (50-60 to 40-70 dB or the reverse), which the paper does not describe. The analysed 0 to 2 s lie in the first block."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-contralateral-zx1-increases",
+     "statement": "ZX1 infused into the contralateral (left) ACtx increases sound-evoked responses of right A1 principal neurons (one-way repeated measures ANOVA F = 33.44, p = 4.1e-5; control against contralateral ZX1 p = 0.016, Bonferroni; three mice).",
+     "source": "Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high- versus low-contrast sound, paragraph 4; Figure 5c-e",
+     "quote": "infusion of ZX1 to the contralateral ACtx increased the sound-evoked responses of ipsilateral A1 PNs (Fig. 5c\u2013e; three mice, one-way repeated measure ANOVA, F = 33.44, p = 4.1 \u00d7 10\u22125; control vs ZX1 in contralateral ACtx, p = 0.016, Bonferroni's multiple-comparisons test)",
+     "statistics": [
+      {
+       "about": "three conditions (control, contralateral ZX1, ipsilateral ZX1)",
+       "test": "one-way repeated measure ANOVA",
+       "statistic": "F = 33.44",
+       "p": 4.1e-05,
+       "n": "three mice"
+      },
+      {
+       "about": "control against contralateral ZX1",
+       "test": "Bonferroni's multiple-comparisons test",
+       "p": 0.016,
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The widefield imaging of right A1 in mice with a cannula in the left auditory cortex is not in the dandiset; all 30 files hold two-photon imaging and pupillometry, and no file or label refers to widefield or cannula experiments. The paper names no other repository.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-ipsilateral-zx1-reduces",
+     "statement": "Subsequent ZX1 infusion into the ipsilateral ACtx reduces sound-evoked A1 responses compared with contralateral ZX1 (p = 3.2e-5, Bonferroni).",
+     "source": "Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high- versus low-contrast sound, paragraph 4; Figure 5d-f",
+     "quote": "subsequent infusion of ZX1 to ipsilateral ACtx reduced the sound-evoked responses of A1 PNs (Fig. 5d\u2013f; ZX1 in contralateral vs ipsilateral ACtx, p = 3.2 \u00d7 10\u22125, Bonferroni's multiple-comparisons test)",
+     "statistics": [
+      {
+       "test": "Bonferroni's multiple-comparisons test",
+       "p": 3.2e-05,
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on the widefield data of fig5-contralateral-zx1-increases, which are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-no-dye-in-other-hemisphere",
+     "statement": "After infusion of ZX1 with Alexa Fluor 594 into the left ACtx, no Alexa Fluor 594 is seen in the right ACtx, suggesting ZX1 does not travel to the other hemisphere.",
+     "source": "Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high- versus low-contrast sound, paragraph 3; Figure 5c",
+     "quote": "We found that the infusion of ZX1 + Alexa Fluor 594 to the left (contralateral) ACtx does not show the presence of Alexa Fluor 594 in the ipsilateral ACtx under the red channel (Fig. 5c)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The red-channel widefield images are not in the dandiset; its imaging is two-photon GCaMP only.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-baseline-pd-drift",
+     "statement": "Baseline PD increases with recording time in both ZX1 (slope 95% CI 0.0798 to 0.183, p = 1.26e-6) and ACSF experiments (95% CI 0.0159 to 0.279, p = 0.0282), and the intervals overlap.",
+     "source": "Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high- versus low-contrast sound, paragraph 5; Figure 6a",
+     "quote": "We observed a significant time-dependent increase in baseline PD across the recording duration of ZX1 experiments [Fig. 6a; slope 95% CI = (0.0798, 0.183), p = 1.26 \u00d7 10\u22126] ... we used ACSF as a control and found a similar time-dependent increase in baseline PD [Fig. 6a; slope 95% CI = (0.0159, 0.279), p = 0.0282]",
+     "statistics": [
+      {
+       "about": "ZX1 experiments",
+       "test": "linear regression",
+       "p": 1.26e-06,
+       "ci": {
+        "level": 0.95,
+        "low": 0.0798,
+        "high": 0.183
+       }
+      },
+      {
+       "about": "ACSF experiments",
+       "test": "linear regression",
+       "p": 0.0282,
+       "ci": {
+        "level": 0.95,
+        "low": 0.0159,
+        "high": 0.279
+       }
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "Baseline PD rises with recording time in both experiments. ZX1 readings, (a) groups C and D 0.131 per minute (95% CI 0.107 to 0.155), (b) C 0.141 (0.111 to 0.171), (c) B, C and D 0.165 (0.145 to 0.185), (d) the eleven mice labelled ZX1_uBasePupilPctMax_wEpoch 0.229 (0.203 to 0.255), all p <= 7.7e-19; ACSF 0.351 (0.304 to 0.398), p = 4.3e-35. Both drifts are present, as reported, and readings (a) and (b) lie inside the paper's ZX1 interval, but the ACSF interval overlaps none of the ZX1 intervals, which the criterion requires, and lies above the paper's ACSF interval; no cleaning variant gives an overlap under readings (a) to (c), which the criterion lists; with the round-1 cleaning without AA0319 and AA0334 the added reading (d) overlaps (0.231 to 0.285 against ACSF 0.281 to 0.371). Per-mouse slopes range from -0.349 to 0.776.",
+     "deviations": [
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook.",
+      "Recording time is taken from the .tif creation times, since the stimulus table's starting times wrap by 24 h for trials recorded before the reference file.",
+      "Trials are CGC-assay and DRC trials; mapping and LED trials are left out, as their baseline epochs differ."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-acsf-contrast-effect",
+     "statement": "After ACSF injection the contrast effect on evoked PD remains, on both the GCA intercept (F(1,2558.3) = 46.22, p = 1.31e-11) and slope (F(1,2558) = 15.076, p = 1.10e-4).",
+     "source": "Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high- versus low-contrast sound, paragraph 5; Figure 6b",
+     "quote": "following ACSF injection, unlike following ZX1 injection (Fig. 4a,c,e), we observed a significant effect of contrast on both the intercept and fitted slope coefficient of the first-order time polynomial (Fig. 6b; intercept, F(1,2558.3) = 46.22, p = 1.31 \u00d7 10\u221211; slope, F(1,2558)= 15.076, p = 1.10\u00d7 10\u22124)",
+     "statistics": [
+      {
+       "about": "contrast, intercept",
+       "test": "LME growth curve analysis",
+       "statistic": "F(1,2558.3) = 46.22",
+       "p": 1.31e-11
+      },
+      {
+       "about": "contrast, slope",
+       "test": "LME growth curve analysis",
+       "statistic": "F(1,2558) = 15.076",
+       "p": 0.00011
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "The contrast intercept effect holds after ACSF under every reading (ACSF trials only, b = 4.40% HIGH above LOW, p = 1.5e-05; trials before and after, contrast term p = 3.7e-05 with reference and 9.0e-10 with sum coding, and HIGH minus LOW within ACSF 4.17 at the cell means, Tukey p = 2.6e-05), but the contrast slope does not under any reading (p = 0.11 with ACSF trials only; 0.066 to 0.51 with both). Only 33 ACSF trials (693 rows) and 100 trials before and after (2100 rows, against about 2560) are below 50%.",
+     "deviations": [
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook.",
+      "Contrast of a DRC trial without the tone is that of its first 10 s; the files' DRCs switch contrast after 10 s (50-60 to 40-70 dB or the reverse), which the paper does not describe. The analysed 0 to 2 s lie in the first block.",
+      "Fixed effects tested with Wald z tests from statsmodels MixedLM (REML), not Satterthwaite F tests from fitlme or lmer; with thousands of denominator df the p-values agree closely."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-no-baseline-evoked-correlation",
+     "statement": "Below 50% of animal max baseline PD, baseline PD and evoked PD at 1-2 s are not significantly correlated (r(238) = -0.0928, p = 0.1537).",
+     "source": "Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high- versus low-contrast sound, paragraph 5; Figure 6c",
+     "quote": "we limited our pupil response analyses to the 50th percentile of baseline PD ... at which there was no significant correlation between baseline PD and evoked PD (Fig. 6c; Pearson's correlation coefficient, r(238) = \u22120.0928, p = 0.1537)",
+     "statistics": [
+      {
+       "test": "Pearson's correlation coefficient",
+       "statistic": "r(238) = -0.0928",
+       "p": 0.1537,
+       "n": "240 responses"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "No reading the claims file lists (groups A, B before ZX1, C, D, F; CTRL or all trials) has a count below 50% within 240 plus or minus 24 (they range from 67 to 328), and they disagree: group D, all trials, gives r = -0.273, p = 0.00025, and the other eight p = 0.076 to 0.70. The criterion then gives methods_underspecified. One added reading, all CGC-assay trials of group B before and after ZX1, matches the count (230) and gives r = 0.0096, p = 0.88, as the paper reports. Which reading matches depends on the cleaning: with the round-1 cleaning group B, all trials, has 262 (p = 0.072); with the single pass group C, CTRL (250, p = 0.032) and group D, all trials (233, p = 0.00095) match, which would give not_reproduced; with the narrower step rule no listed reading matches and one of nine is significant, as with the main cleaning. The outcome rests on the cleaning. The outcome rests on the pupil cleaning (an assumption, see deviations); the record's schema does not allow the assumed flag on a blocked outcome.",
+     "deviations": [
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook.",
+      "Two kinds of reading are added to the claims file's list and marked in the notebook: group B with its trials after ZX1, and the mice the files label pupilBaseline_vs_evoked. The outcome is decided on the listed readings."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "methods-baseline-evoked-correlation",
+     "statement": "Evoked pupil responses are negatively correlated with baseline PD over all responses (r(624) = -0.35, p = 1.20e-19), and the correlation is small and not significant below 50% of animal max PD (r(382) = -0.055, p = 0.285).",
+     "source": "Materials and Methods, Pupillometry, analysis, paragraph 2",
+     "quote": "evoked pupil responses are significantly negatively correlated with baseline PD (data not shown; r(624) = \u22120.35, p = 1.20 \u00d7 10\u221219). At PDs <50% of maximum animal PD, this correlation becomes much smaller and is no longer significant (Fig. 6b; r(382) = \u22120.055, p = 0.285)",
+     "statistics": [
+      {
+       "about": "all responses",
+       "test": "Pearson's correlation",
+       "statistic": "r(624) = -0.35",
+       "p": 1.2e-19,
+       "n": "626 responses"
+      },
+      {
+       "about": "responses with baseline PD below 50% of animal max",
+       "test": "Pearson's correlation",
+       "statistic": "r(382) = -0.055",
+       "p": 0.285,
+       "n": "384 responses"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "No reading matches both counts (626 plus or minus 62.6 and 384 plus or minus 38.4), listed or added. The closest, the eleven mice labelled pupilBaseline_vs_evoked with DRC trials before and after ZX1, has 563 responses (just under 563.4) and 330 below 50% (r = -0.277 and 0.045, p = 0.42 below 50%). Over all responses r ranges from -0.213 to -0.422 (within -0.35 plus or minus 0.035 for groups A and F, all trials), and below 50% group D, all trials, is significant (p = 0.00025) while the others are not, so the readings disagree and the criterion gives methods_underspecified. Under no cleaning variant does a reading match both counts. In the first round the label reading matched both counts under the round-1 cleaning (598 and 379, r = -0.218) and was adopted as an assumption. The outcome rests on the pupil cleaning (an assumption, see deviations); the record's schema does not allow the assumed flag on a blocked outcome.",
+     "deviations": [
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook.",
+      "Two kinds of reading are added to the claims file's list and marked in the notebook: group B with its trials after ZX1, and the mice the files label pupilBaseline_vs_evoked. The outcome is decided on the listed readings."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6d-ko-reduced-high-contrast",
+     "statement": "Before ZX1, ZnT3-KO mice have smaller evoked PD increases to high-contrast sound than ZnT3-WT mice, a genotype effect on the GCA slope (F(1,3869) = 22.37, p = 2.33e-6).",
+     "source": "Results, Cortical synaptic zinc signaling is necessary for the increased evoked PD in high- versus low-contrast sound, paragraphs 6 and 7; Figure 6d",
+     "quote": "observed a significant effect of genotype on the slope coefficient of the first-order time polynomial (Fig. 6d; F(1,3869) = 22.37, p = 2.33 \u00d7 10\u22126). Namely, ZnT3-KO mice have reduced PD responses in high contrast",
+     "statistics": [
+      {
+       "test": "LME growth curve analysis, genotype on slope",
+       "statistic": "F(1,3869) = 22.37",
+       "p": 2.33e-06
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "134 CTRL high-contrast trials of 16 mice below 50% (2814 rows, against about 3870). The genotype by tPoly1 term is negative (b = -7.51 with reference coding, z = -3.47, p = 0.00052; same test under sum coding), so the KO slope is below the WT slope. The genotype intercept is not significant (p = 0.39). Both fits converged with a subject variance of 45.4. The mean KO trace rises faster at first and is below WT from 1.2 s (109.8 against 113.2% at 2 s). With the Methods' single cleaning pass the term is not significant (b = -3.24, p = 0.20).",
+     "deviations": [
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook.",
+      "Contrast of a DRC trial without the tone is that of its first 10 s; the files' DRCs switch contrast after 10 s (50-60 to 40-70 dB or the reverse), which the paper does not describe. The analysed 0 to 2 s lie in the first block.",
+      "Fixed effects tested with Wald z tests from statsmodels MixedLM (REML), not Satterthwaite F tests from fitlme or lmer; with thousands of denominator df the p-values agree closely.",
+      "Fits use several optimizers and keep the converged fit with the highest finite likelihood; in the first round lbfgs stopped at a degenerate point here (infinite likelihood, subject variance 0, genotype intercept -52.5 with p = 1)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "discussion-zx1-wt-like-ko",
+     "statement": "After ZX1, high-contrast PD responses of ZnT3-WT mice peak at about 110% of baseline, like the high-contrast responses of ZnT3-KO mice, and with zinc signaling blocked both contrasts resemble low-contrast responses.",
+     "source": "Discussion, paragraphs 6 and 7; Figure 4c, d",
+     "quote": "upon blockade, responses to both low and high contrast resembled low-contrast responses, which were of comparable magnitude in ZnT3-WT and ZnT3-KO mice (Fig. 4) ... the magnitude of PD responses to high-contrast sound after ZX1 infusion in ZnT3-WT mice (Fig. 4c; peak at \u223c110% PD) is not different from the magnitude of high-contrast PD responses in ZnT3-KO mice (Fig. 4d; peak at \u223c110% PD)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_cody_2024.ipynb",
+     "notes": "The mean high-contrast trace peaks 10.49% above baseline in ZnT3-WT after ZX1 (67 trials) and 11.17% in ZnT3-KO CTRL (47 trials; 10.93 with ZX1 pooled), all within 10 plus or minus 2.5. The WT CTRL high-contrast peak (13.23) is outside the interval, but WT low contrast (9.76 and 10.01) falls inside it, so the measure separates conditions only in part. The statement's second part (both contrasts resemble low contrast) is not tested by the criterion; fig4-wt-posthoc covers it and was partially reproduced.",
+     "deviations": [
+      "Pupil cleaning (assumption). The files hold the pupil radius with dropped frames and tracking failures (up to 1.5e6 pixels); the Methods' single pass (6 SD outliers of the first derivative) leaves these in, so a Hampel spike filter was added, the derivative step repeated, trials with more than half their frames missing dropped, and trials whose raw trace steps by more than a factor 2 between tracked frames dropped (118 of 2113 trials; a pupil does not double or halve its radius in 100 ms). The last step was added after the first verification round, because runs of tracking failures in AA0319 and AA0334 set their maxima. This sets each animal's maximum PD, hence baseline PD in % of maximum and the 50% selection. The rule reads the raw trace, before the spike filter, so it drops trials in 15 mice, not only AA0319 and AA0334, including trials whose only fault is a spike the filter removes; counted after the spike filter it drops 39 trials in 6 mice and gives the same animal maxima. The round-1 cleaning, the single pass and the narrower step rule are shown as variants in the notebook.",
+      "Contrast of a DRC trial without the tone is that of its first 10 s; the files' DRCs switch contrast after 10 s (50-60 to 40-70 dB or the reverse), which the paper does not describe. The analysed 0 to 2 s lie in the first block."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The widefield imaging of Figure 5 (three mice with a cannula in the left auditory cortex, before and after contralateral and ipsilateral ZX1, with red-channel images) is not in the dandiset, so the three Figure 5 claims cannot be tested.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The pupil radius series hold tracking failures, single frames and runs at 3 to 1e6 times the pupil size, often next to dropped frames (68 trials have a maximum above three times their median; 118 trials step by more than a factor 2 between consecutive tracked frames). In AA0319 and AA0334 the failures also come as runs at a second level (130 to 160 against a pupil of about 25) that a spike filter does not remove. The DeepLabCut points and likelihoods that the Methods use to drop frames are not deposited, and the Methods' single derivative pass does not remove these failures, so each animal's maximum PD, and every baseline in % of maximum, depends on how they are cleaned.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Every pupil_radius series's description names one TwoPhotonSeries (the file's last, for example TwoPhotonSeries_036), not its own; the series can be matched to its trial only through the .tif file named in its comments.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "25 pupil series attached to DRC trials have the length of a mapping trial (1430 samples) or an LED trial (300 samples) in place of twice the trial's 170 frames, in seven files.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "format_error",
+     "statement": "In the stimulus table, starting_time is wrong by 24 h for 84 trials in seven files (AA0318, AA0319, AA0320, AA0322, AA0327, AA0330, AA0333). Trials recorded before the reference .tif have starting times near 86400 s, where the .tif creation times show they came minutes earlier. The pupil and fluorescence series take the same starting times.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The DRCs without a tone in the files (pulseSets PC_contrastChange) are 10 s of one contrast followed by 10 s of the other. The paper describes the sound-evoked pupil stimuli as low- or high-contrast DRCs and does not mention the switch.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "Group sizes in the files differ from the paper. The files label ten mice pupilPTinContrast (four F, six M, one ZnT3-WT), where the paper gives eight C57BL6/J mice (four F, four M) for Figures 1 to 3. The pupil_contrast_ZnT3WT label holds five F and five M, where the paper gives six F and four M. Twelve mice have CGC-assay trials before and after ZX1 (two of them ZnT3-KO), where the paper gives fourteen C57BL6/J mice for Fig. 2d, e.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "No label identifies the mice of Fig. 2d, e, and the FRA mapping trials used to select cells are in only 7 of 30 files. Whether the RoiResponseSeries are neuropil-corrected is not stated (unit lumens, description 'motion corrected ROIs'). The pupil radius has unit 'na' and no spatial scale.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors on Fig. 2c. Which mice (the eight of Figs. 1-3, the fourteen of Fig. 2d, e, or both) and which unit (trials or per-mouse means) does the Wilcoxon rank sum test use? Pooled trials of both groups give p = 0.011, each group alone p = 0.099 and 0.16.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors on Fig. 4c, d, f. What is the exact fixed-effect formula (the written formula has no contrast by treatment term, which the Results report), and is the coding reference or effects? In ZnT3-KO mice the contrast slope term is significant under three of four readings and not under the fourth.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors on the GCA weights. How are the time polynomials scaled? With unit-norm orthogonal polynomials over the 21 samples from 0 to 2 s the ZnT3-WT ZX1 slope weight is -4.12 to -8.24, against the reported -1.41.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors on the pupil cleaning. How were frames with tracking failures handled beyond the 6 SD derivative step? This sets each animal's maximum PD and the 50% selection.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors on the Methods' correlation (r(624) = -0.35). Which trials does it use? No group and trial set here matches both counts (626 and 384); the closest, the mice labelled pupilBaseline_vs_evoked with DRC trials before and after ZX1, has 563 and 330, and r = -0.277. The same question holds for Fig. 6c (240 responses).",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-01",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (verifier-1; same harness, separate context, did not write the notebook)",
+     "reviewed": "The handover of the first run: the executed notebook with the conclusions and summary removed, the helper module and the claims file; the verifier also checked the archive's file list and metadata for the blocked claims.",
+     "agreed": 21,
+     "of": 24,
+     "disagreements": [
+      {
+       "claim": "fig4f-ko-zx1-slope",
+       "outcome": "not_reproduced",
+       "reason": "The notebook marks this blocked, but its own criterion can be evaluated. The KO ZX1 slope has p = 0.20 to 0.52 in all 4 readings. Neither weight is within tolerance, KO -0.55 to -3.1 against -0.64, WT -3.8 to -7.7 against -1.41."
+      },
+      {
+       "claim": "fig6a-baseline-pd-drift",
+       "outcome": "partially_reproduced",
+       "reason": "Both slopes are positive with p < 1e-15. The ZX1 slopes (0.12 to 0.19) lie within the paper's ZX1 CI. But the ACSF slope is 0.326 (CI 0.28 to 0.37), above the paper's ACSF CI, and it overlaps no ZX1 CI. The criterion has no partial outcome; read strictly, this is not_reproduced."
+      },
+      {
+       "claim": "fig6b-acsf-contrast-effect",
+       "outcome": "not_reproduced",
+       "reason": "The contrast slope is not significant in any reading, p = 0.07 for (a), 0.27 to 0.83 for (b). In reading (b), the within-ACSF HIGH-LOW contrast has p = 0.37. Only reading (b) has a row count (2604) that matches the df."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-01",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (verifier-2; same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the first revision, with its conclusions and summary, the helper module, the claims file and the attempt record.",
+     "agreed": 22,
+     "of": 24,
+     "disagreements": [
+      {
+       "claim": "fig4c-wt-contrast-zx1-effects",
+       "outcome": "partially_reproduced",
+       "reason": "Terms passing per reading are 5, 5, 4 and 3, and the interaction is significant in all four, so every reading meets the partial condition and the readings differ only on whether the full condition holds. Reading the partial clause as applying under every reading gives partially_reproduced; blocking is a possible literal reading, but the readings agree on the partial level. It should carry assumed true: under round-1 cleaning it would be not_reproduced (interaction p = 0.25), and the jump rule reaches 118 trials in 15 mice."
+      },
+      {
+       "claim": "fig4-wt-posthoc",
+       "outcome": "not_reproduced",
+       "reason": "The criterion has no partial level. Its \"solely on HIGH\" part fails, ZX1 on LOW has p = 0.0496. The parts that hold are not robust either: under round-1 cleaning without AA0319/AA0334, ZX1 on HIGH has p = 0.31 and ZX1 on LOW p = 0.00011, the reverse pattern. The notes do not mention this variant."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-01",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (verifier-3; same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 3. The two proposed changes of outcome (fig4c-wt-contrast-zx1-effects, blocked to partially reproduced; fig4-wt-posthoc, partially reproduced to not reproduced) and the analysis behind them in the executed notebook after the round-2 revision (cells 43, 46 and 71), with the claims file and the paper. Nothing else was reviewed. Report in transcripts/001256/verifier-3-report.md.",
+     "agreed": 2,
+     "of": 2,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001256-cody-2024",
+   "type": "reproduction",
+   "title": "Cortical zinc and sound-contrast pupil responses (Cody, Kumar and Tzounopoulos 2024)",
+   "description": "Tests the findings of Cody, Kumar and Tzounopoulos (2024) on dandiset 001256, which holds two-photon imaging of auditory cortex and pupillometry in 30 mice during low- and high-contrast sound, before and after ZX1 or ACSF, in C57BL6/J, ZnT3-WT and ZnT3-KO mice. It tests how pure-tone responses and contrast gain control vary with baseline pupil size, whether evoked pupil responses depend on contrast and on cortical zinc, and the controls of Figure 6. The widefield experiments of Figure 5 are not in the dandiset.",
+   "datasets": [
+    "dandi:001256"
+   ],
+   "papers": [
+    "10.1523/jneurosci.0939-23.2024"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_cody_2024.ipynb",
+     "title": "Reproducing Cody et al. (2024) from dandiset 001256",
+     "executed": "notebooks/001256-cody-2024/reproduce_cody_2024.html"
+    }
+   ]
+  }
+ ]
+}
