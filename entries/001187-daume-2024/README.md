@@ -10,12 +10,12 @@ in 46 sessions of a Sternberg working memory task and a later recognition test.
 | Sessions and units (46 sessions, 950 units, 351 and 532 after the rate filter) | Reproduced |
 | Per-session unit counts of Table S1 | Partially reproduced |
 | Behaviour (accuracy, d', load, confidence, probe effects; five claims) | Reproduced |
-| WM responses faster in load 1 | Partially reproduced |
+| WM responses faster in load 1 | Reproduced |
 | Category neuron counts | Reproduced |
 | Persistent and preferred-category maintenance activity in hippocampus (Fig. 2b) | Partially reproduced |
-| Accuracy and load effects for preferred trials (Fig. 2c) | Partially reproduced |
-| Persistent and preferred-category maintenance activity in amygdala (Fig. 2e) | Reproduced |
-| Load but not accuracy effect in amygdala (Fig. 2f) | Reproduced |
+| Accuracy and load effects for preferred trials (Fig. 2c) | Blocked: the readings disagree |
+| Persistent and preferred-category maintenance activity in amygdala (Fig. 2e) | Blocked: the readings disagree |
+| Load but not accuracy effect in amygdala (Fig. 2f) | Blocked: the readings disagree |
 | Area interactions (Fig. 3a) | Partially reproduced |
 | Hippocampal maintenance activity predicts later memory (Fig. 3b) | Reproduced |
 | No prediction in amygdala (Fig. 3b, 3d, 3f) | Reproduced |
@@ -24,9 +24,9 @@ in 46 sessions of a Sternberg working memory task and a later recognition test.
 | No effect for non-preferred pictures (Fig. 3g) | Reproduced |
 | No effect during encoding (Fig. 3h) | Reproduced |
 | Memory-selective neurons, their AUC and overlap with category neurons (Fig. 4b, 4c) | Reproduced |
-| Category neurons carry no memory signal (Fig. 4d) | Blocked: metadata insufficient |
+| Category neurons carry no memory signal (Fig. 4d) | Reproduced |
 | FS neurons fire more after strong maintenance (Fig. 4e) | Not reproduced |
-| NS neurons show no such effect (Fig. 4f) | Reproduced |
+| NS neurons show no such effect (Fig. 4f) | Blocked: the readings disagree |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -34,7 +34,10 @@ reasoning and the differences from the paper's method.
 Several of the mixed-model outcomes depend on the outlier rule. After a reader's answer in
 `questions/001187.yaml`, the claims file takes for the GLMs of Figures 2 and 3 the neuron means of
 the paper's code with the Methods' threshold of mean +- 3 SD; the code's own threshold, shown as a
-variant, gives the paper's betas for Figure 3a, which the main rule does not. The new pictures of the
-recognition test carry no category in the dataset, which blocks Figure 4d. The attempt record,
+variant, gives the paper's betas for Figure 3a, which the main rule does not. Four claims are
+blocked because the readings of a method detail the paper leaves open give different outcomes
+(for Figure 2, the rows, the baseline and the model; for Figure 4f, the pairs and trials). The new
+pictures of the recognition test carry no category in the dataset's metadata; for Figure 4d their
+categories were read from their images in the files. The attempt record,
 with the reasons and the differences from the paper's method, is
 [`attempts/001187-daume-2024-01.yaml`](../../attempts/001187-daume-2024-01.yaml).

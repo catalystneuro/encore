@@ -528,3 +528,44 @@ def binned_counts(spikes, t0, centres, width):
     lo = t0 + np.asarray(centres)[None, :] - width / 2
     return (np.searchsorted(spikes, lo + width, side="left")
             - np.searchsorted(spikes, lo, side="left"))
+
+
+def read_images(path, ids):
+    """Stimulus images of one session (stimulus/templates/StimulusTemplates, named image_<ID>),
+    for the picture IDs given that the file holds."""
+    asset = next(a for a in list_assets() if a["path"] == path)
+    f = h5py.File(remfile.File(s3_url(asset["asset_id"])), "r")
+    g = f["stimulus/templates/StimulusTemplates"]
+    out = {i: g[f"image_{i}"][:] for i in ids if f"image_{i}" in g}
+    f.close()
+    return out
+
+
+def contact_sheet(images, old_ids, new_ids, w=60, h=80):
+    """JPEG of the images, one band per category 1 to 5: the old pictures whose leading digit
+    is the category, then the new pictures of the matching block of 40 IDs, each with its ID.
+    Images are drawn as stored in the file."""
+    from io import BytesIO
+    from PIL import Image, ImageDraw
+    cols = 20
+    bands = []
+    for k in range(1, 6):
+        old = [i for i in old_ids if i // 100 == k and i in images]
+        new = [i for i in new_ids if (i - 1001) // 40 + 1 == k and i in images]
+        bands.append([("old %d" % k, old), ("new %d" % k, new)])
+    nrows = sum(-(-len(ids) // cols) for b in bands for _, ids in b)
+    sheet = Image.new("RGB", (40 + cols * w, nrows * (h + 12)), "white")
+    draw = ImageDraw.Draw(sheet)
+    y = 0
+    for b in bands:
+        for label, ids in b:
+            for r in range(0, len(ids), cols):
+                draw.text((2, y + h // 2), label, fill="black")
+                for j, i in enumerate(ids[r:r + cols]):
+                    x = 40 + j * w
+                    sheet.paste(Image.fromarray(images[i]).resize((w, h)), (x, y + 12))
+                    draw.text((x + 2, y), str(i), fill="black")
+                y += h + 12
+    buf = BytesIO()
+    sheet.save(buf, format="JPEG", quality=80)
+    return buf.getvalue()
