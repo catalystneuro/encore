@@ -18,7 +18,7 @@ mental navigation task.
 | Earlier peaks near multiples of 0.65 s | Not reproduced |
 | Longer periodicity on overshoot trials | Partially reproduced |
 | Single neurons code distance at onset, offset or both | Reproduced |
-| Population coding stronger at offset | Reproduced |
+| Population coding stronger at offset | Reproduced (a change to partially reproduced is proposed) |
 | Rate codes distance more than slope | Not reproduced |
 | Distance explains more variance than landmarks | Partially reproduced |
 | Cross-correlations conserved in the ITI | Blocked: metadata insufficient |
@@ -36,6 +36,6 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000897-neupane-2024-01.yaml`](../../attempts/000897-neupane-2024-01.yaml).
 
-- `reproduce_neupane_2024.ipynb`: the analysis. It takes about 26 minutes.
+- `reproduce_neupane_2024.ipynb`: the analysis. It takes about 30 minutes.
 - `mnav.py`: loading the sessions, smoothed rates, the periodicity index with its Gaussian
   process null, the clock offset of the behaviour traces, the Bayesian observer models and the CAN model. Other notebooks on this dandiset can import it.
