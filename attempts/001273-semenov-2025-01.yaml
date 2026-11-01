@@ -76,8 +76,11 @@ outcomes:
     set A (cathodic minus anodic -2.86%, p = 0.014, ROI a; -2.54%, p = 0.011, ROI b) but not in the
     40 V set (p = 0.28 and 0.24); the difference grows with amplitude (-0.95% at 40 V, -14.82% and
     -12.23% at 100 and 130 V, ROI a), and without the 100 and 130 V runs it is -1.79% (p = 0.048).
-    The criterion's quantity, the fitted |dFmax|, shows no difference under any of its readings,
-    so the outcome stands, but the absence of a pole difference in amplitude is weak in set A.
+    The criterion's quantity, the fitted |dFmax|, shows no difference under any of the header
+    readings (O1 to O3); only the window variant, which drops fits, gives p = 0.046 in 2 of its 8
+    set A readings. The outcome follows the criterion's quantity and readings. The absence of a
+    pole difference in amplitude is weak in set A, and depends on whether the 100 and 130 V runs
+    belong to the paper's 19 experiments, which the dataset does not say.
   deviations:
   - The test is run over the 22 experiments in the dataset (set A) and over the 15 at 40 V (set
     B); the paper's 19 cannot be identified.
@@ -146,10 +149,12 @@ outcomes:
 - claim: fig1-pure-sine-excites-all
   outcome: blocked
   blocked_by: other
+  notebook: survey_other_dandisets.ipynb
   notes: Data elsewhere (DANDI:001032 to 001035). Not tested; the author run ran out of time
-    after the Figure 4 analysis. A metadata survey of those dandisets (not in the notebook) found
-    16 x 16 pixel image stacks at 3,086.4 frames/s with the stimulus given only in free text, and
-    001034 holding the same 178 recordings as 001032 byte for byte under other subject ids.
+    after the Figure 4 analysis. A metadata survey of those dandisets (survey_other_dandisets.ipynb)
+    finds 16 x 16 pixel image stacks at 3,086.4 frames/s with the stimulus given only in free
+    text, and 001034 holding the same 178 image arrays as 001032, byte for byte, with the same
+    session descriptions under other subject ids.
 - claim: fig2d-modulated-thresholds-higher
   outcome: blocked
   blocked_by: other
@@ -168,15 +173,17 @@ outcomes:
 - claim: fig3b-low-conductivity-halves-threshold
   outcome: blocked
   blocked_by: other
-  notes: Data elsewhere, but not found there. A metadata survey (not in the notebook) of
-    DANDI:001030 and 001032 to 001035 found every 250-ms session of 001032 to 001035 in the NaCl
-    solution; the only sodium gluconate sessions are the 2-s ramped 2-kHz ones of 001030. The
-    NaGlu thresholds of Figure 3B do not appear to be deposited. Not tested further for lack of
-    time; the claim also depends on fig1-pure-sine-excites-all.
+  notebook: survey_other_dandisets.ipynb
+  notes: Data elsewhere, but not found there. The metadata survey (survey_other_dandisets.ipynb)
+    finds every session description of DANDI:001032 to 001035 (803 files) naming the 140 mM NaCl
+    solution; the only sodium gluconate sessions are the 17 of 001030, all with a 2-s ramped
+    2-kHz stimulus. The NaGlu thresholds of Figure 3B do not appear to be deposited. Not tested
+    further for lack of time; the claim also depends on fig1-pure-sine-excites-all.
 - claim: fig3c-sustained-firing-2s
   outcome: partially_reproduced
   notebook: elsewhere_001030.ipynb
   output: claim:fig3c-sustained-firing-2s
+  assumed: true
   notes: DANDI:001030 version 0.240520.1924, 17 sessions of four cells (c5 to c8) at 1.0 to 2.3 V.
     Judged per cell, bleach-corrected. In all four cells, under both AP readings, an intermediate
     field fires in the last 250 ms of the stimulus and the AP count after the ramp rises with
@@ -197,8 +204,15 @@ outcomes:
     subtracting a trace without APs"). Uncorrected results are shown too.
   - The first 20 frames (6.4 ms) of each file are dropped, a standard choice. The first frame is
     2.6 to 7.6 times brighter than the rest, and the next ones recover from it.
-  - The criterion does not say whether it applies per cell. Each cell's field series is judged
-    on its own, as Figure 3C shows one cell.
+  - The criterion does not say how cells are combined. Each cell's field series is judged on its
+    own, as Figure 3C shows one cell ("Sustained firing and depolarization in a neuron", Figure 3
+    legend). Assumed that the claim is reproduced when the criterion holds in most cells,
+    partially reproduced when it holds in at least one cell or its firing parts hold in most,
+    and not reproduced otherwise. The Results present the neuron of Figure 3C as what was
+    observed ("we observed sustained firing for the entire duration of the sine wave"), so a
+    typical cell should show it, which a single cell does not establish. The outcome rests on
+    this rule. Judged on any one cell the claim would be reproduced (c7); judged on most cells it
+    would not.
   - AP detection runs on a 1-ms running mean of the trace; a reading (a) peak must stand 5% dF
     above its surroundings, and peaks of both readings must be at least 5 ms apart. These are
     standard choices (APs last about 10 ms, Methods). The first run used no smoothing and a
@@ -212,8 +226,9 @@ outcomes:
     eight). The criterion holds under none of the three AP readings. In no neuron does the
     highest field end in depolarization at the criterion's 5% level; the largest mean inverted dF
     over the last 100 ms of any session is 3.2%. Under reading (c), 5 SD of the pre-stimulus
-    trace, every neuron fires and first-AP latency falls with field in all 3; under readings (a)
-    and (b) the 5% level finds APs only in neuron 3_20240806 (4 sessions under a, none under b).
+    trace, every neuron fires and first-AP latency falls with field in all 3; under reading (a)
+    the 5% level finds APs only in neuron 3_20240806 (4 sessions), and under reading (b) in no
+    neuron.
     In 19 of 52 sessions with APs under reading (c) the first AP comes within 5 ms of the onset,
     which may be an onset artefact; without those, latency falls in 2 of 3. No variant changes
     the outcome. With the first run's detector, without the first 5 ms, or with the depolarization
@@ -243,27 +258,30 @@ outcomes:
 - claim: figs2-ttx-blocks-depolarization
   outcome: blocked
   blocked_by: other
-  notes: Data elsewhere (DANDI:001271, 287 sessions of 20 subject ids, 71 with TTX). Not tested
+  notebook: survey_other_dandisets.ipynb
+  notes: Data elsewhere (DANDI:001271, 287 sessions of 20 subject ids, 71 described as recorded
+    in the presence of tetrodotoxin and 216 without it; survey_other_dandisets.ipynb). Not tested
     for lack of time.
 - claim: fig6-sine-less-than-pulse
   outcome: blocked
-  blocked_by: too_large
-  notes: Data elsewhere (DANDI:001274, 232 files, 25.0 GB of strobe images). Streaming the 10.6 GB
-    of this dandiset took 1,115 s here (about 9.5 MB/s), so 001274 would take about 45 minutes to
-    stream before any analysis, beyond the time left in this run; its criterion also takes its
-    readings from the claims file for 001274. Not started. The nine cells' 2-us, 257 V/cm pulse
-    recordings are not in this dandiset. Its files were recorded on 2024-01-17, 01-19 and 03-11,
-    all name the three-electrode array of Figure 4, and 001274's subjects date from May and
-    August 2024 (notebook, data check).
+  blocked_by: other
+  notebook: survey_other_dandisets.ipynb
+  notes: Data elsewhere (DANDI:001274, 232 files, 25.0 GB of strobe images;
+    survey_other_dandisets.ipynb). Not started for lack of time in the author run, as for
+    fig1-pure-sine-excites-all; its criterion also takes its readings from the claims file for
+    001274. The nine cells' 2-us, 257 V/cm pulse recordings are not in this dandiset. Its files
+    were recorded on 2024-01-17, 01-19 and 03-11, all name the three-electrode array of Figure 4,
+    and 001274's files date from May and August 2024 (reproduce_semenov_2025.ipynb, data check).
 - claim: fig5-sine-asymmetry
   outcome: blocked
-  blocked_by: too_large
-  notes: Data elsewhere (DANDI:001274), as for fig6-sine-less-than-pulse. Not started.
+  blocked_by: other
+  notes: Data elsewhere (DANDI:001274), as for fig6-sine-less-than-pulse. Not started for lack of
+    time.
 - claim: threshold-depolarization-estimate
   outcome: blocked
-  blocked_by: too_large
-  notes: Depends on fig6-sine-less-than-pulse (too large for this run) and
-    fig2d-modulated-thresholds-higher (not tested for lack of time).
+  blocked_by: other
+  notes: Depends on fig6-sine-less-than-pulse and fig2d-modulated-thresholds-higher, neither tested
+    for lack of time.
 findings:
 - kind: metadata_insufficient
   statement: The dandiset holds only the raw images. The ROIs over the de- and hyperpolarized
@@ -300,10 +318,11 @@ findings:
   statement: The first image acquired in 156 of 175 files of the experiments is about half as
     bright as the rest (a failed or partial flash); 204 frames in all were dropped as dim.
 - kind: other
-  statement: The paper's other dandisets were surveyed from their metadata only, not in a notebook.
-    DANDI:001034 holds the same 178 recordings as DANDI:001032, byte for byte, under other subject
-    ids (1_1 against 1_3); the 250-ms sessions of 001032 to 001035 are all in NaCl solution, so the
-    sodium gluconate thresholds of Figure 3B do not appear to be deposited.
+  statement: The paper's other dandisets were surveyed from their metadata and images
+    (survey_other_dandisets.ipynb). DANDI:001034 holds the same 178 image arrays as DANDI:001032,
+    byte for byte, with the same session descriptions, under other subject ids (1_1 against
+    1_3, and so on for all 14). Every session description of 001032 to 001035 names the NaCl
+    solution, so the sodium gluconate thresholds of Figure 3B do not appear to be deposited.
 - kind: data_missing
   statement: DANDI:001272, used here for Figure S1, holds three Di-8-ANEPPS neurons (subject ids
     2, 3 and 4 of 2024-08-06) where the paper reports eight, and its files do not give the
@@ -325,6 +344,24 @@ inputs:
   source: doi:10.48324/dandi.001030/0.240520.1924
 - what: The Di-8-ANEPPS sessions of Figure S1 (claim figs1-di8-anepps-control, data elsewhere).
   source: doi:10.48324/dandi.001272/0.250805.1358
+- what: Session metadata and image hashes of DANDI:001032, surveyed for the notes of claims not
+    tested (survey_other_dandisets.ipynb).
+  source: doi:10.48324/dandi.001032/0.240527.1432
+- what: Session metadata and image hashes of DANDI:001033, surveyed for the notes of claims not
+    tested (survey_other_dandisets.ipynb).
+  source: doi:10.48324/dandi.001033/0.240527.1432
+- what: Session metadata and image hashes of DANDI:001034, surveyed for the notes of claims not
+    tested (survey_other_dandisets.ipynb).
+  source: doi:10.48324/dandi.001034/0.240527.1431
+- what: Session metadata and image hashes of DANDI:001035, surveyed for the notes of claims not
+    tested (survey_other_dandisets.ipynb).
+  source: doi:10.48324/dandi.001035/0.240527.1432
+- what: Session metadata and image hashes of DANDI:001271, surveyed for the notes of claims not
+    tested (survey_other_dandisets.ipynb).
+  source: doi:10.48324/dandi.001271/0.250805.1352
+- what: The asset listing and size of DANDI:001274, for the notes of fig6-sine-less-than-pulse
+    (survey_other_dandisets.ipynb and the data check of reproduce_semenov_2025.ipynb).
+  source: doi:10.48324/dandi.001274/0.250805.1401
 verifications:
 - date: 2026-11-01
   kind: agent
@@ -506,3 +543,137 @@ verifications:
     reason: Blocked (other; data elsewhere, not tested in this attempt).
     response: No change; the record gives too_large, through its dependence on
       fig6-sine-less-than-pulse.
+- date: 2026-11-01
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebooks)
+  reviewed: The revision after round 1, with the full executed notebooks, the helper modules, the
+    claims file and the attempt record with the author's conclusions.
+  results:
+  - claim: fig4-polarized-poles-face-electrodes
+    agrees: true
+    outcome: reproduced
+    reason: The assumption that "Up and Bottom" means the image's vertical axis is stated and
+      reasonable, and decides the outcome; with the axes swapped, 1 of 14 pass. In each of the
+      four January 19 cells imaged on both axes the separation turns with the stated axis. The
+      opened-soma variant still passes 12 of 14, but the set of passing experiments changes
+      (1_20240119 hori goes to 78.3 degrees and 2_20240311 to 60.6 degrees). Individual
+      experiments are sensitive to the mask; the majority holds.
+    response: No change.
+  - claim: fig4-orientation-time-constants
+    agrees: true
+    outcome: blocked
+    reason: Cell 4 now shows the file tree, with no ROIs, no labels and no notes.
+    response: No change.
+  - claim: fig4-no-pole-difference
+    agrees: true
+    outcome: reproduced
+    reason: Yes, but weak. Under the criterion's readings 0 of 16 are significant. The fit-free
+      variant finds a larger anodic |dF| in set A (p = 0.014 for ROI a and 0.011 for ROI b, and
+      p = 0.048 without the 100 and 130 V runs), and the fitted |dFmax| reaches p = 0.046 in 2 of
+      8 readings of the window variant. The outcome holds only because the criterion names the
+      fitted |dFmax| and the header readings. It depends on whether the 100 to 130 V runs belong
+      to the paper's 19. The sentence that the fitted |dFmax| shows no difference under any of its
+      readings is true of the header readings, but the window variant, also on fitted |dFmax|,
+      gives p = 0.046.
+    response: No change of outcome. The sentence in the record and in the notebook's conclusion
+      now says the header readings (O1 to O3) find no difference and the window variant gives
+      p = 0.046 in 2 of its 8 set A readings, that the outcome follows the criterion's quantity
+      and readings, and that it depends on whether the 100 and 130 V runs belong to the paper's
+      19.
+  - claim: fig4-discharging-slower
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig4-pooled-time-constants
+    agrees: true
+    outcome: not_reproduced
+    reason: No row is within the SEMs under any reading or any variant.
+    response: No change.
+  - claim: fig4-full-charge-within-3us
+    agrees: true
+    outcome: blocked
+    reason: Reading (b) fails both with and without the window filter. Reading (a) cannot be
+      tested.
+    response: No change.
+  - claim: fig3c-sustained-firing-2s
+    agrees: true
+    outcome: partially_reproduced
+    reason: With the revised detector c7 meets the whole criterion and the firing parts hold in
+      all 4 cells; with the first-run detector the result is also partial. However, the record
+      states the per-cell judgement only as a deviation, not as `assumed`, and the outcome rests
+      on it. Judged "any cell" (Figure 3C shows one cell) the claim would be reproduced; judged
+      "most cells" it would not. This should be flagged as an assumption, with the rule stated.
+      c7 also passes only with the bleaching correction (6.66% corrected, 3.30% uncorrected).
+    response: No change of outcome. The outcome is now marked `assumed`, and a deviation states the
+      rule (reproduced when the criterion holds in most cells, partially reproduced when it holds
+      in at least one or its firing parts hold in most) with the passages behind it; the
+      notebook's conclusion and summary state it too. The bleaching dependence was already in the
+      notes.
+  - claim: figs1-di8-anepps-control
+    agrees: true
+    outcome: not_reproduced
+    reason: The outcome rests on the claims file's 5% level, not on any assumption by the author;
+      with a 5 SD level one neuron ends depolarized, still not a majority. The notes say that
+      under readings (a) and (b) the 5% level finds APs only in neuron 3_20240806 (4 sessions
+      under a, none under b); under (b) no neuron fires, so "only in neuron 3" is true of (a)
+      alone.
+    response: No change of outcome; the reader question on the 5% level stands. The sentence in the
+      record and in the notebook's conclusion now says reading (a) finds APs only in neuron
+      3_20240806 and reading (b) in no neuron.
+  - claim: fig1-pure-sine-excites-all
+    agrees: true
+    outcome: blocked
+    reason: The 16 x 16 stacks at 3,086.4 frames/s, 001034 as a byte-for-byte copy of 001032, the
+      250-ms sessions all in NaCl and the 287 sessions with 71 TTX in 001271 come from a survey
+      that is not in any notebook, so none of it can be checked against outputs.
+    response: No change of outcome. A new notebook, survey_other_dandisets.ipynb, reads every file
+      of 001030, 001032 to 001035 and 001271 and prints these facts. It confirms them, with one
+      correction of wording; the session descriptions of 001035 give no stimulus duration, so the
+      notes now say every session of 001032 to 001035 names the NaCl solution.
+  - claim: fig2d-modulated-thresholds-higher
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig2-modulated-locks-to-beats
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig2c-pure-more-aps
+    agrees: true
+    outcome: blocked
+    response: No change.
+  - claim: fig3b-low-conductivity-halves-threshold
+    agrees: true
+    outcome: blocked
+    reason: The survey behind the notes is not in any notebook (as for fig1-pure-sine-excites-all).
+    response: No change of outcome; the survey is now in survey_other_dandisets.ipynb, which the
+      notes cite.
+  - claim: figs2-ttx-blocks-depolarization
+    agrees: true
+    outcome: blocked
+    reason: The survey behind the notes is not in any notebook (as for fig1-pure-sine-excites-all).
+    response: No change of outcome; survey_other_dandisets.ipynb prints the 287 sessions, 20 subject
+      ids and 71 sessions with tetrodotoxin.
+  - claim: fig5-sine-asymmetry
+    agrees: true
+    outcome: blocked
+    reason: Outcome yes, reason no. I would still give `other`. The stated reason is the time left
+      in the run, the same reason as for fig1, not the size of the data.
+    response: blocked_by changed from too_large to other, as the verifier gives; the outcome stays
+      blocked.
+  - claim: fig6-sine-less-than-pulse
+    agrees: true
+    outcome: blocked
+    reason: Outcome yes, reason no; `blocked_by` should be `other`, as the stated reason is the time
+      left in the run. The notes' "Streaming the 10.6 GB of this dandiset took 1,115 s" is not
+      printed; the notebook prints 232 s for listing and 1195 s for loading and reducing, and
+      neither 10.6 GB, 1,115 s nor the 25.0 GB of 001274 appears in any output.
+    response: blocked_by changed to other. The timing and its extrapolation are removed from the
+      notes, which now give the reason as lack of time; the sizes of 001273 (10.6 GB) and 001274
+      (25.0 GB) are printed by survey_other_dandisets.ipynb.
+  - claim: threshold-depolarization-estimate
+    agrees: true
+    outcome: blocked
+    reason: Outcome yes, reason no; `blocked_by` should be `other`.
+    response: blocked_by changed to other.

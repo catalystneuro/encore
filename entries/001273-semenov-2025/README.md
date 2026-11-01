@@ -3,7 +3,8 @@
 Tests the Figure 4 findings of [Semenov et al. (2025)](https://doi.org/10.1016/j.xcrp.2025.102660)
 on [DANDI:001273](https://dandiarchive.org/dandiset/001273/0.250805.1356), which holds the pulsed
 laser strobe imaging of FluoVolt-loaded rat hippocampal neurons exposed to 2-us pulses: 181 files,
-each one replicate of 160 images at 50-ns steps, forming 22 experiments of 7 or 8 replicates.
+each one replicate of 160 images at 50-ns steps. 175 of them form 22 experiments of 7 or 8
+replicates; the other 6 are single files and are not used.
 
 | Claim | Outcome |
 |---|---|
@@ -27,11 +28,14 @@ The attempt record, with the reasons and the differences from the paper's method
 [`attempts/001273-semenov-2025-01.yaml`](../../attempts/001273-semenov-2025-01.yaml).
 
 - `reproduce_semenov_2025.ipynb`: the analysis. It takes about 25 minutes, nearly all of it
-  streaming the 10 GB of images.
+  streaming the 10.6 GB of images.
 - `elsewhere_001030.ipynb`: the Figure 3C claim, on the 2-s sine wave sessions of dandiset 001030
   (about a minute).
 - `elsewhere_001272.ipynb`: the Figure S1 claim, on the Di-8-ANEPPS sessions of dandiset 001272
   (about two minutes).
+- `survey_other_dandisets.ipynb`: a survey of the metadata of the paper's other dandisets (001030,
+  001032 to 001035, 001271 and 001274), behind the notes of the claims not tested (about 10
+  minutes).
 - `fastimg.py`: loading those sessions and the AP detection readings of the claims file.
 - `strobe.py`: listing and grouping the files, loading an experiment in time order, the RATIO
   image, the ROIs, dF and the exponential fits. Other notebooks on this dandiset can import it.
