@@ -1,0 +1,195 @@
+schema_version: 2
+id: 001193-zhu-2022-01
+dataset:
+  archive: dandi
+  id: "001193"
+  version: 0.240921.1006
+  doi: 10.48324/dandi.001193/0.240921.1006
+paper: doi:10.1038/s41562-022-01334-6
+date: 2026-11-01
+entry: 001193-zhu-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41284865063
+outcomes:
+- claim: participants
+  outcome: partially_reproduced
+  notebook: reproduce_zhu_2022.ipynb
+  output: claim:participants
+  notes: The dataset holds 10 distinct subjects (TC5, TC6, TC7, TC9, TC12, TC16 to TC20), each
+    with 256 electrodes in two groups of 128, so the counts of participants (10) and electrodes per
+    participant (256) match. The sex field is U in every file, so 0 male and 0 female participants
+    are found against 4 and 6; the numbers 4 and 6 appear only in the free-text subject description
+    "chinese, 4 males and 6 females", copied into every file, which cannot be checked per subject.
+    Ages are given only as the group range P19Y/P50Y, which matches the paper's 19 to 50 years but
+    not the per-participant ages of Supplementary Table 1. No file says which task a participant
+    did, so the 5 COM and 5 NL participants cannot be counted. No `measured` is given, as four of
+    the six expected values cannot be measured.
+- claim: task-structure
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The files hold no trials table, intervals, events or photodiode signal, and no condition
+    labels, so neither the trials per condition nor the word timing can be read. The stimulus,
+    analysis and processing groups are empty in all 40 files. Each participant has four files named
+    block 1 to 4, which matches the four blocks of the Methods.
+- claim: behaviour-response-time
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No button responses, response times or question onsets are in the dataset.
+- claim: fig1b-high-gamma-best-band
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds only the high-gamma activity (series description "High gamma data"),
+    no broadband signal and no other band, and no condition labels or resting-state periods to
+    classify.
+- claim: fig1c-responsive-in-ifg
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The rest against stimulus test needs the fixation and word periods, and the IFG count
+    needs anatomical labels; there are no event times, every electrode location is "unknown" and
+    there are no coordinates.
+- claim: fig1d-only-after-keyword
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs first-word and keyword onsets and condition labels, none of which is in the
+    dataset; also depends on fig2b-violation-electrodes, blocked.
+- claim: fig2b-violation-electrodes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs keyword onsets and condition labels (CORR, SYN-P, SYN-C, SEM) for the test of V,
+    the rest and stimulus periods for E, and pars opercularis and pars triangularis labels; the
+    dataset holds none of these.
+- claim: fig2b-single-type
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2b-violation-electrodes, blocked; the F values also need condition labels.
+- claim: suppfig6a-half-split
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs condition labels, keyword onsets and which sentence each trial showed, none of
+    which is in the dataset.
+- claim: suppfig6b-duration-metric
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs condition labels and keyword onsets, which are not in the dataset.
+- claim: fig2c-euclidean-similarity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2b-violation-electrodes, blocked; the condition time courses need condition
+    labels and keyword onsets.
+- claim: suppfig7a-com-overlap
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No COM labels, no record of which participants did COM, and no event times.
+- claim: suppfig7b-not-nonlinguistic
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No NL-CORR or NL-VIO labels, no record of which participants did NL, and no event times;
+    also depends on fig2b-violation-electrodes, blocked.
+- claim: fig2de-no-spatial-separation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No MNI coordinates or electrode positions of any kind in the electrode table (columns
+    location, group, group_name, filtering; location "unknown"); also depends on
+    fig2b-violation-electrodes, blocked.
+- claim: suppfig8b-individual-no-separation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No native or MNI coordinates; depends on fig2b-violation-electrodes, blocked.
+- claim: fig2f-circuit-diameter
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2b-single-type, blocked for missing event times and condition labels.
+- claim: suppfig9-predict-from-corr
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The features come from CORR responses aligned to keyword onset, and the labels from
+    fig2b-single-type; neither condition labels nor onsets are in the dataset.
+- claim: fig3-latency-values
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Latencies need keyword-locked responses per condition; there are no keyword onsets or
+    condition labels, and no precentral, pars opercularis or pars triangularis labels for E+.
+- claim: fig3d-latency-differences
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig3-latency-values, blocked.
+- claim: fig3-sync-latency-variability
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig3-latency-values, blocked.
+- claim: fig3e-latency-not-location
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No electrode coordinates or anatomical labels; depends on fig3-latency-values, blocked.
+- claim: suppfig10a-separable-400-700
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Classifying conditions after the keyword needs condition labels and keyword onsets, which
+    are not in the dataset.
+- claim: suppfig10b-duration-differs
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2b-violation-electrodes, blocked.
+- claim: nl-low-frequency
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the 4 to 10 Hz amplitude, which the dataset (high gamma only) does not hold, and NL
+    labels and onsets, which it also lacks.
+- claim: stimuli-word-frequency
+  outcome: blocked
+  blocked_by: other
+  notes: This claim uses no data of the dataset. It needs the keywords of the paper's stimulus
+    list (Supplementary Information) and the word frequency list of Jun Da's Chinese text computing
+    site (lingua.mtsu.edu/chinese-computing), which the Methods name. The site answers, but it has
+    no DOI, release or commit, so the frequencies cannot be pinned, and the protocol (Author, step
+    1.4) allows outside data only when pinned. The keyword list exists only in the paper's
+    supplement, which the notebook cannot stream from the archive. Not run.
+findings:
+- kind: data_missing
+  statement: No file holds trial, word or keyword event times, condition labels (CORR, SYN-P,
+    SYN-C, SEM, COM, NL-CORR, NL-VIO), button responses or the photodiode signal the Methods
+    describe. The stimulus, analysis and processing groups are empty and there is no trials table
+    or intervals, so no analysis of the paper can be repeated, although the description says the
+    dataset supports the paper's findings.
+- kind: data_missing
+  statement: The electrode table has no coordinates (MNI or native) and no anatomical labels; every
+    electrode's location is "unknown", and the two electrode groups (Grid_1 and Grid_2, location
+    "unknown") do not say which covers the IFG and which the MFG or STG. The paper's selection of
+    IFG electrodes and its spatial analyses need these.
+- kind: data_missing
+  statement: Only the high-gamma activity is deposited. The broadband signal, or any other band,
+    which the frequency analyses of Figure 1b and Supplementary Figures 3, 4 and 7c use, is not in
+    the dataset.
+- kind: metadata_insufficient
+  statement: Every subject has sex U and age P19Y/P50Y (the range of the whole group), with the
+    sentence "chinese, 4 males and 6 females" as the subject description in every file.
+    Supplementary Table 1 gives each participant's sex, age and grid coverage, but nothing maps the
+    subject ids TC5 to TC20 to its participants 1 to 10, and nothing says which participants did the
+    COM task and which the NL task.
+- kind: metadata_error
+  statement: The ECoG series is stated in volts, but every channel of every file has mean 0 (within
+    3e-6) and standard deviation 1 (within 1e-4); the values are z scores per channel and per block,
+    as the Methods describe for the HGA.
+- kind: metadata_error
+  statement: The series' rate is stated as 400 Hz. At 400 Hz every block lasts 70 to 95 s, less
+    than 3 s per trial for the at least 32 linguistic trials a block holds, while each trial lasts
+    at least 4.3 s before the question; at 100 Hz, the rate the Methods give for the HGA, blocks
+    last 282 to 381 s. The data are consistent with 100 Hz, not 400 Hz (400 Hz is the Methods' rate
+    before the HGA was taken), unless each file holds under half of its block. A weak spectral check
+    leans the same way (power at the 2 Hz word rate above its flanking band in 34 of 40 files under
+    the 100 Hz reading, 19 of 40 under the 400 Hz reading). Without event times this cannot be
+    shown directly.
+- kind: metadata_insufficient
+  statement: The Methods exclude bad channels and bad time intervals, but all 256 channels are
+    present in every file and nothing marks which channels or intervals were excluded (filtering
+    is "none" for every electrode); as each file is z scored on its own, bad channels cannot be told
+    apart by scale.
