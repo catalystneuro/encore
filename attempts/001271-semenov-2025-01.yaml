@@ -1,0 +1,396 @@
+schema_version: 2
+id: 001271-semenov-2025-01
+dataset:
+  archive: dandi
+  id: '001271'
+  version: 0.250805.1352
+  doi: 10.48324/dandi.001271/0.250805.1352
+paper: doi:10.1016/j.xcrp.2025.102660
+date: '2026-11-01'
+entry: 001271-semenov-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41312711624
+inputs:
+- what: DANDI:001030 version 0.240520.1924, for the claims with data elsewhere (fig3c-sustained-firing-2s)
+  source: 10.48324/dandi.001030/0.240520.1924
+- what: DANDI:001032 version 0.240527.1432, for the claims with data elsewhere (Figures 1 and 2 claims and the FluoVolt
+    side of figs1)
+  source: 10.48324/dandi.001032/0.240527.1432
+- what: DANDI:001033 version 0.240527.1432, for the claims with data elsewhere (Figures 1 and 2 claims)
+  source: 10.48324/dandi.001033/0.240527.1432
+- what: DANDI:001034 version 0.240527.1431, for the claims with data elsewhere (read to check duplication; not counted)
+  source: 10.48324/dandi.001034/0.240527.1431
+- what: DANDI:001035 version 0.240527.1432, for the claims with data elsewhere (Figures 1 and 2 claims)
+  source: 10.48324/dandi.001035/0.240527.1432
+- what: DANDI:001272 version 0.250805.1358, for the claims with data elsewhere (figs1-di8-same-as-fluovolt)
+  source: 10.48324/dandi.001272/0.250805.1358
+outcomes:
+- claim: figs2-neurons-tested
+  outcome: reproduced
+  notebook: reproduce_semenov_2025.ipynb
+  output: claim:figs2-neurons-tested
+  measured: 6
+  notes: 6 TTX neurons (two on each of 30 July, 31 July and 1 August 2024) and 11 vehicle neurons with a visible
+    solution change, so both readings hold (TTX at least 4, and TTX and vehicle together at least 4). Three more
+    neurons are labelled vehicle but show no gap over 3 minutes. Each subject is one neuron (every session's least
+    similar session of its own subject is more similar than any session of another subject), and all 287 data arrays
+    are distinct.
+  deviations:
+  - The files do not mark the solution change. For TTX neurons it is the first session labelled with TTX; for vehicle
+    neurons it is placed at the last gap of more than 3 minutes between sessions (an assumption; the Methods give
+    20 to 60 s between sessions and the TTX neurons' gaps before TTX are 3.6 to 10.0 minutes). Three vehicle-labelled
+    neurons have no such gap and count as having no change. Reading (a) does not depend on it.
+- claim: figs2-before-firing-then-depolarization
+  outcome: partially_reproduced
+  notebook: reproduce_semenov_2025.ipynb
+  output: claim:figs2-before-firing-then-depolarization
+  notes: Firing holds and sustained depolarization does not, under every combination of the claims file's readings
+    (O1 to O4). With O1(a) every neuron fires before the change (20 of 20 with the 5% height, 18 or 19 with the
+    5-SD height) and all have APs without sustained depolarization at a lower field. No neuron shows sustained depolarization
+    (O4) at its highest field under any reading (0 of 20; 0 of 7 under O1(b)), where the criterion needs more than
+    half. At the highest field the mean dF over the last 100 ms of the stimulus is above zero in 20 of 20 neurons
+    (median 2.63%, range 0.55 to 5.41% with O1(a)), below both O4 levels (medians 7.29% and 4.93%), and 9 of the
+    20 still have an AP in that window. The whole-frame variant finds 1 of 20. The depolarization the paper describes
+    is present but weaker than the claims file's measure of a sustained one; the maximum firing rate rises with
+    field in most neurons (tables in the notebook).
+  deviations:
+  - The files hold 16 x 16 crops and no soma outline, where the paper drew the soma on 64 x 64 images; the claims
+    file's ROI readings O1 were run as written. The Otsu component nearest the centre is often a few pixels of bright
+    membrane, and the 2-pixel erosion of O1(b) is empty in 210 of 287 sessions of 001271, which are dropped from
+    that reading. The whole frame is shown as a variant that decides nothing.
+  - Frames 0 and 1199 of every file are left out of every trace (frame 0 is 1.8 to 8.6 times the mean of the others,
+    the last frame 3 to 8% above the one before), a choice of this attempt; the paper does not mention them.
+  - The three vehicle-labelled neurons with no visible change are included (all their sessions are before any change);
+    without them the outcome is the same (0 or 1 of 17).
+- claim: figs2-depolarization-reversible
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_semenov_2025.ipynb
+  output: claim:figs2-depolarization-reversible
+  notes: No session qualifies. The criterion judges sessions with sustained depolarization (O4), and under every
+    combination of the claims file's readings there are none, so the claim cannot be tested. The whole-frame variant
+    finds 2 or 3 such sessions under its 5-SD readings, and in each dF falls below the O4 level in both windows
+    after the stimulus. Not judged, at each neuron's highest field dF drops from the last 100 ms of the stimulus
+    to 10 to 40 ms after it in 20 of 20 neurons (median drop 3.04 points), and the next session's F0 is within 10%
+    of the one before in 246 of 262 consecutive pairs.
+  deviations:
+  - The files hold 16 x 16 crops and no soma outline, where the paper drew the soma on 64 x 64 images; the claims
+    file's ROI readings O1 were run as written. The Otsu component nearest the centre is often a few pixels of bright
+    membrane, and the 2-pixel erosion of O1(b) is empty in 210 of 287 sessions of 001271, which are dropped from
+    that reading. The whole frame is shown as a variant that decides nothing.
+  - The claim is tested on the Figure S2 neurons, while the paper's sentence cites Figures 1 and 3 (as the criterion
+    says).
+- claim: figs2-ttx-abolishes-aps
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_semenov_2025.ipynb
+  output: claim:figs2-ttx-abolishes-aps
+  notes: The claims file's readings give different outcomes, and its header blocks a claim when they do. With the
+    O1(a) ROI no AP is found after TTX at the highest common voltage (O5 b, 6 pairs), but over every common voltage
+    (O5 a, 31 pairs) one pair has a single peak after TTX, 19.7 to 21.3% high and 2.8 ms wide, in a 14_20240731
+    session whose O1(a) ROI is one pixel (pre-stimulus SD 11.8%); these readings find 158 to 204 APs before TTX.
+    With the O1(b) ROI, left with 3 TTX neurons, the 5% height finds peaks 2.0 to 3.9 ms wide after TTX in 9 of
+    12 pairs, in ROIs whose pre-stimulus SD is about 3 to 12%, and the 5-SD height finds none. In the whole-frame
+    variant no AP is found after TTX in any of 31 pairs under any reading, against 215 to 253 before. The open detail
+    is the soma ROI (methods_unavailable finding).
+  deviations:
+  - The files hold 16 x 16 crops and no soma outline, where the paper drew the soma on 64 x 64 images; the claims
+    file's ROI readings O1 were run as written. The Otsu component nearest the centre is often a few pixels of bright
+    membrane, and the 2-pixel erosion of O1(b) is empty in 210 of 287 sessions of 001271, which are dropped from
+    that reading. The whole frame is shown as a variant that decides nothing.
+  - Frames 0 and 1199 of every file are left out of every trace (frame 0 is 1.8 to 8.6 times the mean of the others,
+    the last frame 3 to 8% above the one before), a choice of this attempt; the paper does not mention them.
+  - Where a voltage was tested more than once in a phase, APs count when any session has them (a standard choice).
+- claim: figs2-ttx-blocks-sustained-depolarization
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_semenov_2025.ipynb
+  output: claim:figs2-ttx-blocks-sustained-depolarization
+  notes: The criterion blocks the claim (other) when no TTX neuron has sustained depolarization (O4) before TTX,
+    and none has under any combination of the claims file's readings. In the whole-frame variant one TTX neuron
+    qualifies under the 5-SD level and loses it after TTX. Not judged, the mean dF over the last 100 ms of the stimulus
+    falls after TTX at the same voltage under every reading (whole frame, 31 pairs, 1.31% before against -0.59%
+    after, paired t p = 1.6e-07; O1(a) 1.21% against -0.64%, p = 9.5e-07) and is below zero after TTX at every voltage
+    up to 10 V; in vehicle pairs it falls from 1.80% to 1.55% (p = 0.00054).
+  deviations:
+  - The files hold 16 x 16 crops and no soma outline, where the paper drew the soma on 64 x 64 images; the claims
+    file's ROI readings O1 were run as written. The Otsu component nearest the centre is often a few pixels of bright
+    membrane, and the 2-pixel erosion of O1(b) is empty in 210 of 287 sessions of 001271, which are dropped from
+    that reading. The whole frame is shown as a variant that decides nothing.
+  - After the change the 5-SD level of O4(a) is the median pre-stimulus SD of the neuron's sessions before the change,
+    as O3 has it for APs, an extension of O3 to O4 made by this attempt.
+- claim: figs2-vehicle-keeps-response
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_semenov_2025.ipynb
+  output: claim:figs2-vehicle-keeps-response
+  notes: The readings of which pairs are compared (O5) disagree. Over every common voltage (O5 a) some pairs with
+    APs before have none after (3 or 4 of 50 to 59 under O1(a), 1 of 9 under O1(b) with the 5% height, 2 of 59 in
+    the whole frame), all near threshold, so the claim fails there; at the highest common voltage (O5 b) every pair
+    keeps its APs under O1(a) with the 5-SD height, and 1 of 11 loses them with the 5% height. No vehicle pair has
+    sustained depolarization (O4) before, so that part is empty. Under O1(a) with the 5% height vehicle neurons
+    fire 334 APs before and 327 after over 59 pairs (p = 0.77). The paper does not say which sessions it compared
+    (methods_unavailable finding).
+  deviations:
+  - The files hold 16 x 16 crops and no soma outline, where the paper drew the soma on 64 x 64 images; the claims
+    file's ROI readings O1 were run as written. The Otsu component nearest the centre is often a few pixels of bright
+    membrane, and the 2-pixel erosion of O1(b) is empty in 210 of 287 sessions of 001271, which are dropped from
+    that reading. The whole frame is shown as a variant that decides nothing.
+  - The files do not mark the solution change. For TTX neurons it is the first session labelled with TTX; for vehicle
+    neurons it is placed at the last gap of more than 3 minutes between sessions (an assumption; the Methods give
+    20 to 60 s between sessions and the TTX neurons' gaps before TTX are 3.6 to 10.0 minutes). Three vehicle-labelled
+    neurons have no such gap and count as having no change.
+- claim: ap-amplitude-duration
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_semenov_2025.ipynb
+  output: claim:ap-amplitude-duration
+  notes: One of 32 combinations of the claims file's readings (O1 a, F0 over all frames, 5-SD height, first AP of
+    each session, duration to the return to F0) gives means within the paper's SEM (10.76% and 7.62 ms over 18 neurons);
+    the other 31 do not, and the criterion blocks the claim when the readings disagree. With O1(a) mean peaks are
+    9.29 to 10.82% and widths at half height 3.56 to 4.06 ms (about half the paper's 8 ms); durations to F0 are
+    6.52 to 9.28 ms. With O1(b) (7 neurons, 1 with the 5-SD height) peaks are 16.3 to 18.9%. In the whole frame
+    peaks are 7.67 to 9.54%. The dataset's neurons are not known to be among the paper's 22.
+  deviations:
+  - The files hold 16 x 16 crops and no soma outline, where the paper drew the soma on 64 x 64 images; the claims
+    file's ROI readings O1 were run as written. The Otsu component nearest the centre is often a few pixels of bright
+    membrane, and the 2-pixel erosion of O1(b) is empty in 210 of 287 sessions of 001271, which are dropped from
+    that reading. The whole frame is shown as a variant that decides nothing.
+  - The paper's 22 neurons are not identified; the 20 neurons of this dataset are used, as the criterion says.
+- claim: fig1-pure-sine-excites-all
+  outcome: not_reproduced
+  notebook: reproduce_fig1_fig2_001032.ipynb
+  output: claim:fig1-pure-sine-excites-all
+  measured: 88.2
+  notes: No combination of the claims file's readings meets the criterion at both frequencies (0 of 16). The measured
+    value is the 20-kHz excited fraction under the first reading (O1 a, F0 all, 5% height), 88.2% of 17 neurons;
+    at 2 kHz it is 96.4% of 28. The median highest firing rate is 22.2 to 36.7 Hz under O1(a) (54 to 99 Hz needed;
+    1 to 5 neurons per frequency reach it) and the median first-AP latency at threshold 53.5 to 70.0 ms at 2 kHz
+    and 67.4 to 123.8 ms at 20 kHz (90 to 220 ms needed). Under O1(b) (14 and 10 neurons) the ceilings are 21.7
+    to 53.9 Hz. Sustained depolarization at the highest field is found in at most one neuron (reported, not judged).
+  deviations:
+  - Tested on DANDI:001032, 001033 and 001035; 001034 duplicates 001032 and is counted once.
+  - The files hold 16 x 16 crops and no soma outline; the claims file's ROI readings O1 were run as written. The
+    2-pixel erosion of O1(b) leaves pixels in 245 of 624 sessions of 001032, 001033 and 001035; the others are dropped
+    from that reading.
+  - Thresholds and latencies come from the sessions as deposited (the lowest voltage with an AP), not from a threshold
+    search the files record.
+- claim: fig1-20khz-needs-twice-the-field
+  outcome: not_reproduced
+  notebook: reproduce_fig1_fig2_001032.ipynb
+  output: claim:fig1-20khz-needs-twice-the-field
+  measured: 2.16
+  notes: 20-kHz thresholds are higher than 2-kHz ones in every reading (pooled p < 0.0001 in 7 of 8 readings), but
+    no reading has all four ratios within 1.8 to 2.2 (6 of 32 stimulus and AP-count rows are), so the criterion
+    fails under every reading. The measured value is the unmodulated 1-AP ratio under the first reading (2.16; 2.15
+    to 2.19 with the 5% height, 2.56 or 3.51 to 3.53 with the 5-SD height). Unmodulated 5-AP ratios are 2.06 to
+    2.84 and modulated ones 2.24 to 2.96, with 1 to 3 neurons with modulated 20-kHz thresholds. The ratios are of
+    the stated generator voltages; the files say the actual amplitude is smaller by a frequency-dependent factor
+    they do not give, so the field ratio may differ.
+  deviations:
+  - Tested on DANDI:001032, 001033 and 001035; 001034 duplicates 001032 and is counted once.
+  - Thresholds are in stated generator volts; the frequency-dependent calibration to the actual field is not given
+    in the files.
+- claim: fig2d-modulated-thresholds-higher
+  outcome: not_reproduced
+  notebook: reproduce_fig1_fig2_001032.ipynb
+  output: claim:fig2d-modulated-thresholds-higher
+  measured: 74.1
+  notes: Under no reading do the three comparisons the paper reports as significant all hold. Modulated thresholds
+    are higher on average wherever they can be compared, but the 2-kHz 5-AP difference is not significant (p = 0.082
+    to 0.28 under O1(a)), and only 1 to 3 neurons have modulated 20-kHz thresholds (1-AP p = 0.013 with the 5% height,
+    0.80 with the 5-SD height; the 5-AP test cannot be run). The 2-kHz 1-AP threshold is not lower for modulated
+    waves in any reading. The measured value is the mean 2-kHz unmodulated 1-AP threshold under the first reading
+    at 18 V/cm per V, 74.1 V/cm (74.1 to 79.0 under O1(a), 61.2 to 67.6 under O1(b), twice these at the files' 36
+    V/cm per V), against 57.7 +/- 3.6.
+  deviations:
+  - Tested on DANDI:001032, 001033 and 001035; 001034 duplicates 001032 and is counted once.
+  - Fields use 18 V/cm per stated volt, the scale at which 001271's voltages give the fields of Figure S2; the files
+    state 36 V/cm per V, also shown.
+- claim: fig2-modulated-locks-to-beats
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_fig1_fig2_001032.ipynb
+  output: claim:fig2-modulated-locks-to-beats
+  notes: Firing locks to the beats. Under O1(a) with the 5% height, 91% of 213 APs in 84 modulated sessions fall
+    within 12.5 to 37.5 ms of a beat (49% for unmodulated waves), no session has more than 8 APs, 18 of 420 beats
+    have more than one AP, and no session shows sustained depolarization. But 15 to 32 modulated sessions meet the
+    header's sustained firing (at least three APs with one in the last 50 ms) under the O1(a) readings, each through
+    an AP in the fifth beat, which peaks 225 ms into the stimulus. The criterion passes only in the two O1(b) readings
+    with the 5-SD height, where no modulated session has 5 APs; those readings are set aside and the O1(a) readings
+    adopted. Whether the definition of sustained firing fits beat-locked firing is asked of a reader (questions/001271.yaml).
+  deviations:
+  - Assumed, the O1(a) readings decide, since the O1(b) ROIs leave 21 of 84 modulated sessions and detect at most
+    3 APs per session with the 5-SD height, which makes the locking test empty.
+  - Tested on DANDI:001032, 001033 and 001035; 001034 duplicates 001032 and is counted once.
+- claim: fig2c-pure-more-aps
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_fig1_fig2_001032.ipynb
+  output: claim:fig2c-pure-more-aps
+  notes: With the O1(a) ROI under all four F0 and height readings, the unmodulated wave gives more APs than the
+    modulated one at the same carrier and voltage in 32 to 43 of 52 pairs (12 neurons) against 2 to 4 (paired t
+    p = 4.7e-10 to 7.8e-07), and the unmodulated threshold is lower in 10 to 13 of 12 to 15 neurons for 1 AP (0
+    to 2 the reverse) and in 2 to 6 of 4 to 9 for 5 APs (none the reverse). Under O1(b) (5 neurons, at most one
+    5-AP threshold pair) the claim fails in all four readings.
+  deviations:
+  - Assumed, the O1(a) readings decide, since the O1(b) ROIs leave 5 neurons and at most one 5-AP threshold pair.
+  - The criterion does not say whether the threshold is for 1 or 5 APs; both are required here.
+  - Tested on DANDI:001032, 001033 and 001035; 001034 duplicates 001032 and is counted once.
+- claim: fig3b-low-conductivity-halves-threshold
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_fig1_fig2_001032.ipynb
+  output: claim:fig3b-low-conductivity-halves-threshold
+  notes: None of the 803 sessions of 001032 to 001035 names the low-conductivity NaGlu solution, and 001030, the
+    only NaGlu dandiset of the paper found, holds 2-s ramped 2-kHz waves in four cells and no NaCl sessions. No
+    250-ms NaGlu sessions at 2 to 20 kHz were found in any dandiset of the paper's list that was read (001030 to
+    001035, 001271, 001272); 001031, 001273 and 001274 hold other stimuli by their titles.
+  deviations:
+  - The paper does not say which dandiset holds Figures 3A and 3B; the claims file's assignment (001030, 001032
+    to 001035) is from titles, and none of them holds the data. Blocked as metadata_insufficient (the data cannot
+    be located from the paper or the archive), since the checker does not allow data_missing for a claim with data
+    elsewhere.
+- claim: fig3-not-heating
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_semenov_2025.ipynb
+  output: claim:fig3-not-heating
+  notes: Neither reading gives the paper's temperatures (peak field 3.89, 1.99 and 6.44 C; RMS field 1.95, 1.00
+    and 3.22 C, against 2.5, 1.24 and 4.1 C), while the paper's ratios follow the formula (81 over 63 V/cm within
+    0.8%, NaGlu over NaCl within 3.2%), which the criterion rules blocked. 2.5 C would need a heat capacity of 6.51
+    MJ per m3 per K with the peak field or 3.25 with the RMS field, against 4.18 for water.
+  deviations:
+  - Calculated from the paper's values; no data used.
+- claim: fig3c-sustained-firing-2s
+  outcome: partially_reproduced
+  notebook: reproduce_fig3c_001030.ipynb
+  output: claim:fig3c-sustained-firing-2s
+  notes: The first two parts hold with the O1(a) ROI. Under every F0, height and bleaching reading, c7 (the cell
+    with six fields, 1.0 to 2.3 V) has APs in the last 250 ms of the 2-s wave at an intermediate field and an AP
+    count that rises from its lowest field; with the 5% height all four cells do. The third part fails in every
+    reading, in the claims file's ROIs and the whole frame. No cell's highest field meets sustained depolarization
+    (O4), so the criterion is not met for one cell or for every cell. In c7 firing drops at 2.3 V (16 APs with O1(a),
+    against 70 to 90 at 1.45 to 2.0 V), with O1(a) its mean dF over the last 250 ms (1.7 to 7.1%) stays below the
+    O4 levels (6.5 to 14.5%), and in the whole frame it is 6.0%, above the 5-SD level, but a single 8.0% peak in
+    the window counts as an AP. The O1(b) ROI leaves two cells, not c7.
+  deviations:
+  - Only c7 has an AP-free session for the bleaching correction; for the other cells readings (a) no correction
+    and (b) subtracting c7's 1.0-V trace are both run.
+  - Which neurons are judged is not given (Figure 3C shows one); readings (a) at least one neuron and (b) every
+    neuron with three or more fields are both run and agree.
+  - The c5 recordings at 1.5 and 2.0 V end at 1,914 ms, before the stimulus ends at 2,025 ms; their last-250-ms
+    window is cut to 139 ms.
+  - Tested on DANDI:001030; fields are the stated one-polarity voltages.
+- claim: figs1-di8-same-as-fluovolt
+  outcome: not_reproduced
+  notebook: reproduce_fig1_fig2_001032.ipynb
+  output: claim:figs1-di8-same-as-fluovolt
+  notes: DANDI:001272 holds 3 Di-8-ANEPPS neurons (three distinct cells by their images, 65 sessions), where the
+    paper reports eight and the 001272 claims file's count allows no other value, so its figs1-eight-neurons part
+    fails. On the three, under the O1(a) readings, the mean 1-AP threshold is 3.73 to 4.23 V against 4.11 to 4.39
+    V for 25 to 27 FluoVolt neurons of 001032, 001033 and 001035 (two-sided unpaired t p = 0.72 to 0.93), so no
+    difference is found; the O1(b) ROI is empty in every 001272 session. The three response-pattern claims of the
+    001272 claims file, which its figs1-effects-same-as-fluovolt also needs, are not run here.
+  deviations:
+  - Only the neuron count and the threshold test of the 001272 claims file are run; its pattern claims (near-threshold
+    delayed APs, shorter delay and sustained firing, sustained depolarization) are not.
+  - Thresholds of the two dyes are compared in stated volts, assuming 001272 and 001032 to 001035 state voltages
+    on the same scale.
+- claim: fig4-pooled-time-constants
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run. The criterion follows the claims file of DANDI:001273, whose fits (charging
+    and discharging time constants of the cathodic and anodic poles from 2-us strobe images of 512 x 512 pixels,
+    160 frames per file, 181 files, 10.6 GB) are an analysis of their own; after the other claims the run's five
+    hours left no time to build and check it. Streaming is not the limit (a 59-MB file of 001273 read in 2.3 s).
+- claim: fig4-orientation-and-poles
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run. The criterion follows the claims file of DANDI:001273, whose fits (charging
+    and discharging time constants of the cathodic and anodic poles from 2-us strobe images of 512 x 512 pixels,
+    160 frames per file, 181 files, 10.6 GB) are an analysis of their own; after the other claims the run's five
+    hours left no time to build and check it. Streaming is not the limit (a 59-MB file of 001273 read in 2.3 s).
+- claim: fig6-sine-less-than-pulse
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run. The criterion follows five claims of the claims file of DANDI:001274 (per-ROI
+    field sensitivity to 2-us pulses and to sine waves from strobe images, 232 files, 25.0 GB), an analysis of its
+    own that the run's time did not allow after the other claims. Streaming is not the limit (a 116-MB file read
+    in 4.0 s).
+- claim: threshold-depolarization-estimate
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on fig6-sine-less-than-pulse, which is blocked (other), so it is blocked for the same reason. Its
+    other input, the mean 2-kHz unmodulated 1-AP threshold, is 74.1 V/cm under the first reading here (fig2d-modulated-thresholds-higher),
+    against the paper's 57.7.
+findings:
+- kind: metadata_error
+  statement: DANDI:001271 states in every file that 1 V translates to 36 V/cm, but its stated voltages give the
+    fields marked in Figure S2 at 18 V/cm per V (45, 63, 72; 90, 108, 117; 54, 72, 81 V/cm match neurons tested
+    at 2.5, 3.5, 4; 5, 6, 6.5; 3, 4, 4.5 V before and after the change) and at no voltages at 36 V/cm per V. The
+    voltages are likely peak-to-peak, which the 001271 descriptions do not say (001032 to 001035 say peak-to-peak;
+    001030 says one polarity).
+- kind: metadata_error
+  statement: The descriptions of the 71 TTX sessions of DANDI:001271 say TTX abolished the action potentials and
+    "caused sustained depolarization during application of stimulating waves". The paper and the dandiset's own
+    description say TTX prevented it, and the data agree with them (mean dF over the last 100 ms of the stimulus
+    below zero after TTX at every voltage up to 10 V).
+- kind: metadata_insufficient
+  statement: DANDI:001271 does not mark the solution change. Sessions before it carry the same label, "without tetrodotoxin
+    (vehicle control)", as vehicle sessions after it; the change of the 11 vehicle neurons was placed from gaps
+    between session start times, and 3 vehicle-labelled neurons (13_20240731, 17_20240801, 4_20240730) show no such
+    gap.
+- kind: metadata_insufficient
+  statement: The files of 001271, 001272 and 001032 to 001035 hold 16 x 16 frames, where the paper describes 64
+    x 64 images after 4 x 4 binning, with no soma ROI, no stimulus record and no stimulus onset; the timing (50
+    ms onset, 250 ms) is from the Methods and agrees with the aliased stimulus at 10 and 12 V (52 to 299 ms) and
+    with the AP times.
+- kind: other
+  statement: In every file of 001271, 001030 and 001032 to 001035 the first frame is 1.5 to 24 times brighter than
+    the rest and the last frame a few percent brighter than the one before, which no description mentions.
+- kind: other
+  statement: All 178 data arrays of DANDI:001034 are identical to those of DANDI:001032, with the same start times,
+    under other subject identifiers (1_3 for 1_1 and so on); the same recordings are deposited twice as parts 1
+    and 3.
+- kind: metadata_error
+  statement: Some subjects of DANDI:001032 hold sessions of more than one cell. The 20-kHz sessions of 13_1 show
+    the same image as the sessions of 14_1 (correlation 0.997) and correlate 0.09 with 13_1's 2-kHz sessions; 9
+    subjects of 001032, 001033 and 001035 have pairs of sessions whose mean frames correlate below 0.8.
+- kind: identifier_missing
+  statement: In DANDI:001030 each file is its own subject, named by cell and voltage (c7_1,0V is cell 7 at 1.0 V,
+    not 0 V), so the four cells are identified only by the file names; two c5 recordings (1.5 and 2.0 V) end at
+    1,914 ms, before the 2-s stimulus ends.
+- kind: data_missing
+  statement: DANDI:001272 holds 3 Di-8-ANEPPS neurons, where the paper reports experiments on eight.
+- kind: data_missing
+  statement: No 250-ms recordings in the low-conductivity NaGlu solution (Figures 3A and 3B) were found in the paper's
+    dandisets read here (001030 to 001035, 001271, 001272).
+- kind: metadata_insufficient
+  statement: The descriptions of 001032 to 001035 say the actual amplitude is smaller than the stated voltage by
+    frequency-dependent calibration factors "reported separately"; the factors are not in the dandisets, so fields
+    at 2 and 20 kHz cannot be compared exactly. 001030 and 001032 to 001035 do not name the paper in their metadata,
+    and the paper does not say which figure is in which dandiset.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How was the soma ROI drawn on the deposited 16 x 16 crops, which
+    the soma nearly fills (the whole crop, or an outline), and by what rule were APs counted? The claims file's
+    Otsu ROIs are often a few pixels of membrane, and the outcome of figs2-ttx-abolishes-aps, figs2-vehicle-keeps-response
+    and ap-amplitude-duration depends on this choice; the whole frame gives no AP after TTX in any of 31 pairs.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How was sustained depolarization measured? The plateaus in 001271
+    at the highest field are 0.6 to 5.4% dF (median 2.6%) with small oscillations, below the claims file's levels
+    (5 pre-stimulus SD, or half the AP height, with no AP in the last 100 ms), so that no session qualifies and
+    three claims are blocked or partial.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which session pairs were compared before and after the vehicle change
+    (every field, or the highest), which APs and which duration measure give 11.3% and 8 ms, and which heat capacity
+    and field (peak or RMS) give 2.5 C at 63 V/cm? Each choice changes an outcome here.
