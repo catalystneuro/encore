@@ -1,0 +1,14 @@
+dandiset: "000897"
+paper: doi:10.1038/s41586-024-07557-z
+questions:
+- claim: fig4d-model-subscalar-variability
+  asked: 2026-10-31
+  question: The criterion gives a Weber fraction of 0.8 for the simulations of Fig. 4c,d ("Fig. 4c
+    loads wm8"). Should it be 0.08? The code names its simulation files with 100 times the Weber
+    fraction, and its Fig. 4c section sets the value to 0.08.
+  passage: gc_CAN_model_simulation.m builds the file name as ['int_5lms_60deg_wm' num2str(NN.wm*100)
+    ...]; mnav_ec_fig4.m, section "CAN e.g. model simulation Fig 4c", sets wmm=.08 and loads
+    ['int_5lms_60deg_wm' num2str(wmm*100) ...] (repository at commit 4bee109).
+  why: With 0.8 the velocity noise v_base * 0.8 * randn makes some velocities negative, so the
+    network never reaches its end state and the simulation cannot be run; the attempt used 0.08,
+    under which the claim is not reproduced.
