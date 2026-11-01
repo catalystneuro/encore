@@ -36,10 +36,9 @@ resting potential is not recorded, so the feature counts are out of 17. Where th
 code differ, the claims file makes the Methods decide; for the AHP and for tau the paper's values
 match the code's choices, not the Methods'. The dandiset repeats two recordings (one of them under
 both mouse groups) and holds one macaque file scaled 20 times too large. In 8 files a test pulse
-comes before the step in every sweep, so the step onset is read from the longest run of current. The attempt record, with the reasons and the differences from the
+comes before the step in every sweep that holds a step, so the step onset is read from the longest run of current. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/001261-luo-2024-01.yaml`](../../attempts/001261-luo-2024-01.yaml).
 
-- `reproduce_luo_2024.ipynb`: the analysis. It takes about two minutes, an eighth of it reading
-  the files.
+- `reproduce_luo_2024.ipynb`: the analysis. It runs in under five minutes.
 - `nbmsi.py`: loading the files, the 18 features of the paper with their variants, the rank-sum
   tables, the UMAP and the LDA. Other notebooks on this dandiset can import it.

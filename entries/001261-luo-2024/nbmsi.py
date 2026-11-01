@@ -74,6 +74,7 @@ SAG_STEP = -60.0             # Methods 2.5 (2)
 RIN_STEP = -20.0             # Methods 2.5 (3, 4)
 DVDT_THRESHOLD = 10.0        # mV/ms, Methods 2.5 (6)
 AHP_WINDOW_MS = 100.0        # Methods 2.5 (12)
+AMPLIFIER_FIELDS = ["bias_current", "bridge_balance", "capacitance_compensation", "gain"]
 FEATURES = ["rmp", "sag", "rin", "tau", "rheobase", "threshold", "amplitude", "width", "latency",
             "upstroke", "downstroke", "ahp_amp", "ahp_latency", "ahp_width", "fi_slope",
             "max_rate", "adaptation", "cv_isi"]
@@ -120,6 +121,7 @@ def load_file(asset):
         sweeps.append({"name": name, "sweep_number": int(g.attrs["sweep_number"]),
                        "rate": float(g["starting_time"].attrs["rate"]), "v_unit": g["data"].attrs["unit"],
                        "i_unit": s["data"].attrs["unit"], "bias": float(g["bias_current"][()]),
+                       "amplifier": tuple(float(g[k][()]) if k in g else None for k in AMPLIFIER_FIELDS),
                        "n": len(v), "v": v, "i": i, "nz": nz})
     # onset: first sample of the largest step (code: analysis_of_neurophysiology_data.m)
     big = max(sweeps, key=lambda s: np.max(s["i"]))
@@ -130,6 +132,7 @@ def load_file(asset):
     out["rates"] = sorted({s["rate"] for s in sweeps})
     out["units"] = sorted({(s["v_unit"], s["i_unit"]) for s in sweeps})
     out["bias"] = sorted({s["bias"] for s in sweeps})
+    out["amplifier"] = sorted({s["amplifier"] for s in sweeps}, key=str)
     out["n_sweeps"] = len(sweeps)
     out["hash"] = hashlib.md5(np.concatenate([s["v"] for s in sweeps]).tobytes()).hexdigest()
     out["hash_first"] = hashlib.md5(sweeps[0]["v"].tobytes()).hexdigest()
@@ -277,7 +280,7 @@ def features(cell, repeat="first"):
     # AHP, Methods: rheobase step, 100 ms after threshold
     a = _ahp_methods(rheo_sw["v"][pre: pre + n], sp)
     r["ahp_amp"], r["ahp_latency"], r["ahp_width_to_end"] = a
-    r["ahp_width"] = _ahp_width_window(rheo_sw["v"][pre: pre + n], sp)
+    r["ahp_width"], r["ahp_width_recross"] = _ahp_width_window(rheo_sw["v"][pre: pre + n], sp)
     a = _ahp_code([s for st, c, s in counts if st >= rheo_step], pre, n)
     r["ahp_amp_code"], r["ahp_latency_code"], r["ahp_width_code"] = a
 
@@ -415,7 +418,8 @@ def _ahp_methods(v, sp):
 
 def _ahp_width_window(v, sp):
     """F14 (claims file, "Window as in F12"): the crossings searched only within the 100 ms window
-    of F12; with no upward crossing there, to the end of the step (the code's rule)."""
+    of F12; with no upward crossing there, to the end of the step (the code's rule). Also whether
+    the potential recrossed within the window."""
     i0 = int(round(sp["th_ms"] / DT))
     w = int(AHP_WINDOW_MS / DT)
     win = v[i0: i0 + w]
@@ -423,10 +427,10 @@ def _ahp_width_window(v, sp):
     below = (win < sp["threshold"] - amp / 2).astype(int)
     cross = np.flatnonzero(np.diff(below))
     if len(cross) > 1:
-        return (cross[1] - cross[0]) * DT
+        return (cross[1] - cross[0]) * DT, True
     if len(cross) == 1:
-        return (len(v) - i0 - cross[0]) * DT
-    return np.nan
+        return (len(v) - i0 - cross[0]) * DT, False
+    return np.nan, False
 
 
 def _ahp_code(sweeps, pre, n):
