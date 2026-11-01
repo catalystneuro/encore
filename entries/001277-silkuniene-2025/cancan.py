@@ -322,15 +322,16 @@ def background(img: np.ndarray, geom: dict, which: str = "darkest") -> float:
     return float(vals.min() if which == "darkest" else vals.mean())
 
 
-def diagonal_profiles(img: np.ndarray, geom: dict, spacing: str, bg: float) -> tuple[np.ndarray, np.ndarray]:
+def diagonal_profiles(img: np.ndarray, geom: dict, spacing: str, bg: float,
+                      scaled: bool = True) -> tuple[np.ndarray, np.ndarray]:
     """Background-subtracted ROI means along both diagonals.
 
     Returns x (mm, signed; positive toward the first electrode of each pair) and an array of
     shape (2, len(x)), one row per diagonal. Distances are scaled to the paper's geometry: a
     footprint centre is 9.05 mm from the array centre (Methods 2.2), so x is measured as a
     fraction of the measured centre-to-footprint distance times 9.05 mm. This takes out a small
-    difference in the stitched image's scale; the unscaled pixel distance is checked in the
-    notebook.
+    difference in the stitched image's scale. scaled=False uses the pixel size of the OME
+    metadata instead (variant, shown in the notebook).
     """
     x = positions(spacing)
     c = geom["centre"]
@@ -340,7 +341,7 @@ def diagonal_profiles(img: np.ndarray, geom: dict, spacing: str, bg: float) -> t
         half = (ea - eb) / 2
         mid = (ea + eb) / 2  # the diagonal's own midpoint, which differs little from c
         u = half / np.hypot(*half)
-        scale = np.hypot(*half) / FOOTPRINT_CENTRE_MM  # blocks per paper-mm
+        scale = np.hypot(*half) / FOOTPRINT_CENTRE_MM if scaled else 1 / BLOCK_MM  # blocks per mm
         prof = [roi_mean(img, mid + xi * scale * u, u) - bg for xi in x]
         out.append(prof)
     return x, np.array(out)

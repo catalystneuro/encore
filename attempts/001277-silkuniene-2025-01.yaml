@@ -34,7 +34,10 @@ outcomes:
     difference. The same holds with all 7 wells at 600 ns (ANOVA p = 0.52), with the background from
     all four footprints, and with the fitted Lorentzian centre (variant). Over the 21 choices of 5 of
     the 7 600-ns wells no test is significant, and 900 ns is highest in 14. Centre YP differs more
-    between plates than between durations (plate P3 is two to four times P1 and P2).
+    between plates than between durations (plate P3 is two to four times P1 and P2). The criterion's
+    tests are unpaired; with the five plate rows as blocks (variant), paired t-tests give Bonferroni p
+    of 0.415 (900 against 300 ns) and 1.000 (900 against 600 ns) and a repeated-measures ANOVA gives
+    p = 0.071, so this reading also finds no difference.
   deviations:
   - The paper reports n=5 per duration; the dandiset has 7 wells at 600 ns and does not say which
     five were analysed. Assumed that the Fig. 6 experiments are the five plate rows that each hold
@@ -85,13 +88,21 @@ outcomes:
     fit, as both diagonals are sampled at the same distances. No Lorentzian fit failed (204 fits).
     Questions for the paper's authors (finding methods_unavailable) are which wells form Fig. 6 at
     600 ns, how far apart the ROIs were along the diagonals, and whether the trend of Fig. 6D was
-    fitted to the 15 values or to the 3 means.
+    fitted to the 15 values or to the 3 means. The block depends on leaving out the two P1 row B
+    wells; with either of them kept the slope is significant under no reading and the outcome would be
+    not_reproduced. With distances from the OME pixel size, unscaled, the linear slope on the 15
+    values gives p 0.0044 to 0.0051 with contiguous ROIs and 0.040 to 0.045 with 1-mm steps, the same
+    pattern.
   deviations:
   - Well selection, ROI placement and background as for fig6b-peak-900ns-not-significant.
+  - Contiguous ROIs are axis-aligned boxes stepped 0.406 mm along diagonals near 45 degrees, so
+    neighbouring ROIs overlap (each step moves the box 0.29 mm along each axis). This does not enter
+    the slope test on per-well FWHMs, but the points of each Lorentzian fit are not independent.
   - Distances along each diagonal are scaled so that the footprint centre is at 9.05 mm from the
     centre (7.65 mm to the footprint edge, Results 3.1, plus the 1.4-mm needle radius, Methods 2.2).
     The footprint diagonals measured at the stated 1.625 um per pixel are 17.7 to 18.5 mm against
-    18.1 mm, so the scaling changes distances by less than 3%.
+    18.1 mm, so the scaling changes distances by less than 3%. The unscaled variant is shown and
+    gives the same outcome.
 - claim: fig6d-600-900-differ-from-300
   outcome: blocked
   blocked_by: methods_underspecified
@@ -104,7 +115,9 @@ outcomes:
     300 ns is significant under no reading (p 0.058 to 0.092 with contiguous ROIs, 0.44 to 0.66 with
     1-mm steps, against the paper's 0.028). So 12 readings give one significant comparison and 12
     give none; FWHM is smaller at both longer durations under every reading (Cohen's d -0.84 to
-    -2.71). With all 7 wells at 600 ns, 600 against 300 ns gives p 0.69 to 1.00.
+    -2.71). With all 7 wells at 600 ns, 600 against 300 ns gives p 0.69 to 1.00. With unscaled
+    distances, over 2 comparisons, 900 against 300 ns gives p 0.0087 to 0.0096 with contiguous ROIs and
+    0.067 to 0.076 with 1-mm steps, and 600 against 300 ns 0.091 to 0.092 and 0.31 to 0.32.
   deviations:
   - Well selection, ROI placement and background as for fig6b-peak-900ns-not-significant.
 - claim: fig6d-900ns-fwhm
@@ -117,50 +130,55 @@ outcomes:
     dandiset, and its own criterion (both values within tolerance under one reading) would be met.
     With contiguous ROIs the mean FWHM is 1.69 to 1.71 mm (s.e. 0.081 to 0.086), 11.0 to 11.1% of
     15.3 mm, within both tolerances under all six contiguous readings; with 1-mm steps it is 1.78 to
-    1.80 mm (11.7 to 11.8%), just above the upper bound of 1.78 mm.
+    1.80 mm (11.7 to 11.8%), just above the upper bound of 1.78 mm. With distances from the OME pixel
+    size, unscaled, it is 1.69 to 1.71 mm (11.0 to 11.1%) with contiguous ROIs and 1.81 to 1.83 mm with
+    1-mm steps, so within tolerance in 6 of 12 readings, as with the scaling.
   deviations:
-  - ROI placement and background as for fig6b-peak-900ns-not-significant.
+  - ROI placement and background as for fig6b-peak-900ns-not-significant, and distances scaled as for
+    fig6d-longer-pulses-sharper-peak (unscaled variant shown).
 - claim: fig5-yp-lorentzian-pr-gaussian
-  outcome: not_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: metadata_insufficient
   notebook: reproduce_silkuniene_2025.ipynb
   output: claim:fig5-yp-lorentzian-pr-gaussian
-  measured:
-  - 0.822
-  - 0.731
-  - 0.932
-  - 0.750
-  notes: On the mean diagonal profiles of the 600-ns wells, fitted from -5 to 5 mm, the Lorentzian
-    fits YP better than the Gaussian under all 12 readings (R2 0.93 to 0.99 against 0.75 to 0.97),
-    as the paper reports, but it also fits Pr better under all 12 (R2 0.81 to 0.95 against 0.72 to
-    0.86), the reverse of the paper. The Pr Gaussian R2 is within its tolerance (0.864 to 1.056)
-    under none; the Pr Lorentzian R2 under 6 of 12, the YP Lorentzian under 12 and the YP Gaussian
-    under 6. Measured values are for the first reading (1-mm steps, YP from all 7 wells, Pr from all
-    5). All fits have p < 0.001. The Pr images show diffuse staining over most of the area between
-    the electrodes with a faint central spot, so the Pr profiles have broad shoulders (for example
-    P1_20240926_A3, 789 at the centre and 260 to 360 at 3 to 5 mm).
+  notes: Nothing in the dandiset links its wells to Fig. 5. The 600-ns wells share the 0-mm group's
+    protocol (MHz-CANCAN, 600-ns packets with no interval, 2 bursts (x4), CT26, Results 3.2) and their
+    counts match the Fig. 5 legend (7 YP wells against n=6-7, 5 Pr wells against n=4-5), but the
+    dandiset title and description name only the pulse-duration experiment, the raised-electrode
+    wells of the same series are absent, and Pr images exist also for three 300-ns and three 900-ns
+    wells. If the 600-ns wells were the 0-mm group, the claim would fail as the criterion states it.
+    On the mean diagonal profiles, fitted from -5 to 5 mm, the Lorentzian fits YP better than the
+    Gaussian under all 12 readings (R2 0.93 to 0.99 against 0.75 to 0.97) and also fits Pr better
+    under all 12 (R2 0.81 to 0.95 against 0.72 to 0.86); the Pr Gaussian R2 is within its tolerance
+    under none. With 1-mm steps, YP from all 7 wells and Pr from all 5, the four R2 are 0.822 and
+    0.731 (Pr Lorentzian and Gaussian) and 0.932 and 0.750 (YP). The Pr profiles sit on a broad
+    pedestal (Pr within 5 mm of the centre is 40 to 53% of the centre in the three main-row wells and
+    about 100% in the two P1 row B wells). With a constant offset added, which the Methods' fits do
+    not have, the Gaussian fits the mean Pr profile better than the Lorentzian under all 8 readings
+    shown (R2 0.935 to 0.979 against 0.922 to 0.972). The Pr footprints are located less reliably in
+    P1_20240926_B3 and P2_20240925_A3 (weakest rim contrast 74 to 76 against 193 to 416). The fit
+    p-values for contiguous ROIs treat overlapping ROIs as independent.
   deviations:
-  - Assumed that the dandiset's 600-ns wells are the 0-mm group of Fig. 5. The protocol is the same
-    (MHz-CANCAN, 600-ns packets with no interval, 2 bursts (x4), CT26, Results 3.2), and the counts
-    match the Fig. 5 legend (7 YP wells against n=6-7, 5 Pr wells against n=4-5), but the dandiset
-    describes only the pulse-duration experiment and names no figure.
   - Readings run because the wells are not identified are YP from all 7 or the 5 main wells, and
     Pr from all 5, the 4 without P1_20240926_B3 (central cell loss at 2 h) or the 3 in the main rows.
     The fits are to the mean of the wells' background-subtracted profiles; R2 does not depend on
     the scaling to 100% of Fig. 5B.
   - ROI placement and background as for fig6b-peak-900ns-not-significant, with footprints found in
-    each Pr image (the plate was moved between the YP and Pr images).
+    each Pr image (the plate was moved between the YP and Pr images). Channel 0 of the Cy3-DAPI files
+    is taken as Pr; the OME metadata of each file name it Cy3 (emission 565 nm) and channel 1 DAPI.
 - claim: fig5-yp-spot-slightly-larger-than-pr
-  outcome: not_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: metadata_insufficient
   notebook: reproduce_silkuniene_2025.ipynb
   output: claim:fig5-yp-spot-slightly-larger-than-pr
-  notes: The YP spot is smaller than the Pr spot under all 12 readings. The YP Lorentzian FWHM is
-    1.73 to 2.67 mm against a Pr Gaussian FWHM of 6.40 to 8.93 mm (2.4 sigma, Methods 2.5), a ratio of
-    0.20 to 0.41. With 1-mm steps, YP from all 7 wells and Pr from all 5, it is 2.67 against 8.93 mm.
+  notes: Blocked for the same reason as fig5-yp-lorentzian-pr-gaussian. If the 600-ns wells were the
+    0-mm group, the YP spot would be smaller than the Pr spot under all 12 readings. The YP Lorentzian
+    FWHM is 1.73 to 2.67 mm against a Pr Gaussian FWHM of 6.40 to 8.93 mm (2.4 sigma, Methods 2.5), a
+    ratio of 0.20 to 0.41. With 1-mm steps, YP from all 7 wells and Pr from all 5, it is 2.67 against
+    8.93 mm. With a constant offset in the Pr Gaussian the Pr FWHM is 3.2 to 3.6 mm, still larger.
   deviations:
-  - Same assumption and readings as fig5-yp-lorentzian-pr-gaussian. Only 0-mm elevation is tested;
-    the dandiset has no raised-electrode wells.
+  - Same readings as fig5-yp-lorentzian-pr-gaussian. Only 0-mm elevation could be looked at; the
+    dandiset has no raised-electrode wells.
 - claim: fig5-raised-electrodes-weaker-centre
   outcome: blocked
   blocked_by: data_missing
@@ -231,7 +249,8 @@ findings:
     and the Fig. 6D trend depends on it. With the five plate rows that hold one well of each duration,
     the FWHM trend is close to the paper's (p 0.002 to 0.004 with contiguous ROIs); with all 7 it is
     absent (p 0.83 to 1.00). Nor does anything say whether the 600-ns wells, with their propidium
-    images, are also the 0-mm group of Fig. 5.
+    images, are also the 0-mm group of Fig. 5; propidium images exist also for three 300-ns and three
+    900-ns wells.
 - kind: other
   statement: Two 600-ns wells, P1_20240926_B2 and P1_20240926_B3 (plate P1 row B, with the sham
     well), show YO-PRO-1 uptake over the whole electrode array (YP at 6 and 7 mm is 78% and 36% of
@@ -261,3 +280,136 @@ findings:
     or to the 3 means, and was it linear in pulse duration (legend) or logarithmic (Results 3.3)?
     This attempt ran every reading; the readings disagree for fig6d-longer-pulses-sharper-peak and
     fig6d-600-900-differ-from-300.
+verifications:
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of commit bb105370a (author-answers) with the conclusion cells
+    and the summary removed, the helper module and the claims file, with the paper. The verifier also
+    read the archive's asset metadata and tested the helper functions on synthetic input. The reason the
+    verifier gave is in its own words; agrees compares its outcome with the record it reviewed.
+  results:
+  - claim: fig6b-peak-900ns-not-significant
+    agrees: true
+    outcome: reproduced
+    reason: In the main wells 900 ns has the highest centre YP (899 against 866 and 551). Bonferroni
+      t-tests give p >= 0.876 and the ANOVA gives p = 0.543. No test reaches p < 0.05 with all 7 600-ns
+      wells, with the all-4-footprint background, with Lorentzian a, or in any of the 21 subsets. The
+      unpaired t-tests and ANOVA follow the criterion but ignore that the experiments are blocked by
+      plate row, with centre YP about 2-fold different between plates.
+    response: Added a variant with the plate rows as blocks (paired t-tests and a repeated-measures
+      ANOVA); it also finds no difference (Bonferroni p 0.415 and 1.000, ANOVA p = 0.071). Outcome kept.
+  - claim: fig6c-normalized-decline-similar
+    agrees: true
+    outcome: not_reproduced
+    reason: Every reading (1-mm or contiguous ROIs, to 5 mm or to 7 mm, main or all 7 wells, mean or
+      longer bar) has at least one distance where the error-bar gap is longer than the bars. The gaps
+      mostly fall at 1 to 2 mm, where 300 ns is broader. The readings agree, so the criterion gives not
+      reproduced.
+    response: No change.
+  - claim: fig6d-longer-pulses-sharper-peak
+    agrees: true
+    outcome: blocked
+    reason: The slope is negative with p < 0.05 in only 28 of 48 readings, and with all 7 600-ns wells
+      in 0 of 48. The choice of the five main 600-ns wells is stated, decided independently of the
+      results and reasonable, but the claim changes from blocked to not reproduced in every reading if
+      either P1_B2 or P1_B3 is kept, so the conclusion depends on this exclusion. The distance rescaling
+      to 9.05 mm is the author's choice and unscaled distances are not shown. Contiguous ROIs overlap.
+    response: The notes and the notebook now say that the block depends on leaving out both P1 row B
+      wells and that keeping either gives not reproduced. Added the unscaled-distance variant (slope p
+      0.0044 to 0.0051 contiguous, 0.040 to 0.045 with 1-mm steps, the same pattern) and a deviation on
+      the overlapping contiguous ROIs. Outcome kept.
+  - claim: fig6d-600-900-differ-from-300
+    agrees: true
+    outcome: blocked
+    reason: 900 v 300 is significant only with contiguous ROIs (corrected p = 0.005 to 0.009), and 600 v
+      300 is never significant (p >= 0.058). The readings differ (one comparison significant in 12, none
+      in 12), and no reading reproduces the claim. Its parent claim is also blocked.
+    response: Added the unscaled-distance variant, which gives the same pattern. Outcome kept.
+  - claim: fig6d-900ns-fwhm
+    agrees: false
+    outcome: reproduced
+    reason: With contiguous ROIs, FWHM is 1.69 to 1.71 mm and 11.0 to 11.1% of 15.3 mm, both inside
+      tolerance, in 6 of 12 readings. With 1-mm ROIs it is 1.78 to 1.80 mm, just outside. All five
+      900-ns wells are used, so this does not depend on the choice of 600-ns wells.
+    response: Kept blocked and the disagreement recorded. The claims file lists
+      fig6d-longer-pulses-sharper-peak under depends_on, and docs/protocol.md (Author, step 1.5) says a
+      claim that depends on a blocked claim is blocked for the same reason. The notes and the notebook
+      say that the claim's own criterion would be met. Added the unscaled-distance variant (1.69 to 1.71
+      mm contiguous, 1.81 to 1.83 mm with 1-mm steps; within tolerance in 6 of 12 readings).
+  - claim: fig5-yp-lorentzian-pr-gaussian
+    agrees: false
+    outcome: blocked
+    reason: The test assumes that the dandiset's 600-ns wells are Fig. 5's 0-mm group. Nothing in the
+      archive says so; the only support is the same protocol and matching n. Pr images also exist for the
+      300- and 900-ns wells on P1 and P2, the dandiset title and description describe the pulse-duration
+      experiment only, and the raised-electrode wells are absent. The Pr images show bright rings at
+      every footprint and a broad Pr level across the array, 40 to 55% of the centre within 5 mm, which
+      a Gaussian with no offset cannot fit, so these may not be comparable to the paper's Pr data. If the
+      assumption holds, the claim fails in every reading. Channel 0 as Pr is unverified.
+    response: Changed to blocked, metadata_insufficient, as the verifier gives it. The notebook keeps the
+      analysis as what the claim would give if the wells were Fig. 5's. Added the OME channel names of
+      each Cy3-DAPI file (channel 0 Cy3, 565 nm; channel 1 DAPI), the per-well Pr profiles, the Pr
+      footprint rim contrast, and fits with a constant offset (with it the Gaussian fits Pr better under
+      all 8 readings shown).
+  - claim: fig5-yp-spot-slightly-larger-than-pr
+    agrees: false
+    outcome: blocked
+    reason: Same assumption. If it holds, the claim also fails; the YP/Pr FWHM ratio is 0.20 to 0.41 and
+      the Pr spot is 6.4 to 8.9 mm wide, larger than the YP spot in every reading.
+    response: Changed to blocked, metadata_insufficient, for the same reason. With an offset the Pr
+      Gaussian FWHM is 3.2 to 3.6 mm, still larger than the YP spot; this is shown, not judged.
+  - claim: fig5-raised-electrodes-weaker-centre
+    agrees: true
+    outcome: blocked
+    reason: The archive description says the array sat at 0 mm, and no file has raised electrodes.
+    response: No change.
+  - claim: fig3-cancan-centre-enhancement
+    agrees: true
+    outcome: blocked
+    reason: There is no packet-rate series and no single-pulse control. The 0.2-MHz part could be looked
+      at on the 600-ns wells, but the controls are absent.
+    response: No change.
+  - claim: fig3-lorentzian-decline
+    agrees: true
+    outcome: blocked
+    reason: There is no packet-rate series. Only the 0.2-MHz-like protocol is present, and those are not
+      the Fig. 3 wells.
+    response: No change.
+  - claim: fig4b-suppression-near-electrodes
+    agrees: true
+    outcome: blocked
+    reason: There is no rate series. On the 600-ns wells the centre/near ratio is 25 at 6 mm and 10 at 7
+      mm, well below 40. This is shown, not judged.
+    response: No change.
+  - claim: fig4b-centre-no-rate-effect
+    agrees: true
+    outcome: blocked
+    reason: Only one packet rate is present.
+    response: No change.
+  - claim: fig4c-fwhm-falls-with-rate
+    agrees: true
+    outcome: blocked
+    reason: Only one packet rate is present.
+    response: No change.
+  - claim: fig7be-burst-number-centre
+    agrees: true
+    outcome: blocked
+    reason: Every file says "repeated 2 time(s)", and there are no CHO cells (the archive strain is CT26
+      only).
+    response: No change.
+  - claim: fig7-fwhm-burst-number
+    agrees: true
+    outcome: blocked
+    reason: Same reason.
+    response: No change.
+  - claim: fig7-sharpest-peak-1-burst-ct26
+    agrees: true
+    outcome: blocked
+    reason: There are no 1-burst wells.
+    response: No change.
+  - claim: fig2-heating-below-44c
+    agrees: true
+    outcome: blocked
+    reason: There are no thermochromic film images. All 49 assets are well images (checked via the API).
+    response: No change.

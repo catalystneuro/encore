@@ -13,8 +13,8 @@ array. The packet-rate, raised-electrode, burst-number and thermometry experimen
 | FWHM falls with pulse duration (p = 0.003) | Blocked: methods underspecified |
 | FWHM at 600 and 900 ns each smaller than at 300 ns | Blocked: methods underspecified |
 | FWHM at 900 ns is 1.7 mm, 11.1% of the gap | Blocked: methods underspecified (depends on the claim above) |
-| Pr fits a Gaussian and YP a Lorentzian better | Not reproduced (assumption on the wells) |
-| The YP spot is slightly larger than the Pr spot | Not reproduced (assumption on the wells) |
+| Pr fits a Gaussian and YP a Lorentzian better | Blocked: metadata insufficient |
+| The YP spot is slightly larger than the Pr spot | Blocked: metadata insufficient |
 | Figures 2, 3, 4, 7 and the raised electrodes of Figure 5 (ten claims) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -26,8 +26,9 @@ and shows all seven and every choice of five. With those rows the FWHM trend is 
 under most readings; with all seven it disappears, because two wells on plate P1 take up dye over
 the whole array. The ROI spacing along the diagonals is not given in the paper, and the significance
 of the Figure 6D tests depends on it, so those claims are blocked as the claims file's criteria
-require. The Figure 5 claims assume that the 600-ns wells with propidium images are the 0-mm group
-of Figure 5; their propidium staining is broad, not a small central spot.
+require. The Figure 5 claims are blocked because nothing in the dandiset says whether its 600-ns
+wells with propidium images are the 0-mm group of Figure 5. The notebook shows what they would give
+if they were: their propidium staining is broad, not a small central spot.
 
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001277-silkuniene-2025-01.yaml`](../../attempts/001277-silkuniene-2025-01.yaml).
