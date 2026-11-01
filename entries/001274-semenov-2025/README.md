@@ -19,7 +19,7 @@ second deposit of 001032.
 | Firing locks to the 20-Hz beats, with no sustained depolarization | Not reproduced |
 | Pure sine waves give more APs than modulated ones at the same field | Reproduced |
 | Low conductivity halves thresholds (Figure 3B) | Blocked: metadata insufficient |
-| 2-s ramped sine waves give sustained firing, then a block (Figure 3C) | Not reproduced |
+| 2-s ramped sine waves give sustained firing, then a block (Figure 3C) | Not reproduced (change to reproduced proposed) |
 | Di-8-ANEPPS gives the same responses (Figure S1) | Not reproduced |
 | Tetrodotoxin abolishes APs and the sustained depolarization (Figure S2) | Not reproduced |
 | Membrane charging kinetics (Figure 4, four claims) | Blocked: metadata insufficient |
@@ -29,6 +29,6 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 differences from the paper's method.
 
 The strobe dandisets (001274, 001273) hold raw image stacks only, with no ROIs, field values or cell
-identifiers, so their claims are blocked; ROIs rebuilt from the paper's RATIO image are shown as a
-variant. The attempt record, with the reasons and the differences from the paper's method, is
+identifiers, so their claims are blocked; ROIs rebuilt from a RATIO image computed by the Methods'
+recipe are shown as a variant. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001274-semenov-2025-01.yaml`](../../attempts/001274-semenov-2025-01.yaml).
