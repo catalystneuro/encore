@@ -13,11 +13,11 @@ Figures 1 to 5 and 8 are not in it.
 | EPSP amplitude differs by region, CeA above BLP (Figure 6J) | Partially reproduced |
 | IPSP trough differs by region (Figure 6K) | Partially reproduced, on an assumption |
 | Responses survive TTX/4AP (Figure 6 supplement 1D-E) | Blocked: metadata insufficient |
-| CeA clusters: late-firing excited, regular-firing inhibited (Figure 6N-O) | Partially reproduced |
+| CeA clusters: late-firing excited, regular-firing inhibited (Figure 6N-O) | Partially reproduced; not reproduced is proposed |
 | CeA clusters differ in their four properties | Reproduced |
 | BLP clusters: 93% of pyramidal inhibited, 62% of interneurons excited (Figure 6P-Q) | Partially reproduced |
 | BLP clusters differ in their four properties | Reproduced |
-| Voltage area differs between clusters (Figure 6 supplement 1J-K) | Reproduced |
+| Voltage area differs between clusters (Figure 6 supplement 1J-K) | Reproduced, on an assumption |
 | Combined CeA and BLP clustering (Figure 6 supplement 1L-N) | Not reproduced as the claims file asks; asked of a reader |
 | Red light evokes larger ChrimsonR potentials than blue (Figure 7 supplement 1E-F) | Reproduced, on an assumption |
 | Red-evoked potentials smaller during blue light (Figure 7 supplement 1H-I) | Partially reproduced |
@@ -29,7 +29,8 @@ reasoning and the differences from the paper's method.
 
 The files do not record when the light was on, so the notebook takes the time from the responses. The
 threshold rule the claims file names for an EPSP or IPSP also finds one in many light-free windows, which the
-notebook measures. Three subjects are labelled female, where the paper used male mice only. The imaging
+notebook measures. Three subjects are labelled female, where the paper used male mice only; the voltage-area finding of Figure 6
+supplement 1J-K holds only with their cells. The imaging
 files are stated at 25 Hz but match the behaviour videos only at the Methods' 20 Hz, hold about twice as many ROIs
 as the paper's cell counts, and describe another experiment in their virus and stimulus fields. The attempt record,
 with the reasons and the differences from the paper's method, is

@@ -33,7 +33,9 @@ outcomes:
     also passes in a light-free window of the same traces, so it does not by itself show evoked responses; the contrast
     does. At 3 SD 92.7% of cells have an EPSP and 53.2% an IPSP after the light against 79.8% and 30.3% without light; at
     5 SD 84.4% and 19.3% against 40.4% and 4.6%; 55 rest averages exceed 10 SD in the 200 ms after the light and 2 six seconds
-    later. At 2 SD most cells are mix (73 to 84%), at 5 SD most are excitation only (62 to 74%). The dataset holds 15, 38
+    later. For IPSPs the contrast is
+    weak at 3 SD (53.2% against 30.3%) and clear from 4 SD up (27.5% against 11.0%). At 2 SD most cells are
+    mix (73 to 84%), at 5 SD most are excitation only (62 to 74%). The dataset holds 15, 38
     and 56 ChR2 cells with usable 30 s rest sweeps where the paper reports 19, 36 and 48 (14, 35 and 48 from the mice labelled
     male), so the counts do not match and the claim is judged on the cells present, as the criterion says. 19 ChR2 cells
     have no such sweeps, and 2 (C51, C52) fire before the light in all of theirs.
@@ -87,7 +89,9 @@ outcomes:
     (a) at 3 SD is significant, narrowly: Kruskal-Wallis H = 6.02, p = 0.049, Dunn CeA against BLP p = 0.043 (13, 35 and
     53 cells; medians 1.9, 2.5 and 1.2 mV). Reading (a) at 2 SD gives p = 0.088, reading (b) p = 0.86 and 0.27. At 2 and
     3 SD the rule finds an IPSP in 67% and 30% of light-free windows, so most excitation cells become mix and reading (b)
-    keeps 19 and 48 cells. At 5 SD both readings are significant (p = 0.016 and 0.037). With the mice labelled male only,
+    keeps 19 and 48 cells. The one passing reading rests on one cell: without C15, whose rest average carries an evoked action potential,
+    reading (a) at 3 SD gives p = 0.075 (Dunn p = 0.071). At 5 SD both readings are significant (p = 0.016 and 0.037),
+    and reading (a) stays so without C15 (p = 0.026). With the mice labelled male only,
     reading (a) is significant at 2 and 3 SD (p = 0.022 and 0.014). The paper reports H = 6.790, p = 0.0335.'
   deviations:
   - The files do not record the light; the first pulse is taken 5.468 s into each 30 s light sweep, where the average responses
@@ -129,8 +133,11 @@ outcomes:
   - 'The 17 ChR2 cells of subjects 23, C137 and C150, labelled female in the files, are kept although the Methods use male
     mice only: without them the dataset has 25 BLP cells with current steps, fewer than the 27 the paper clusters. Male
     mice only is run as a variant (notebook, last section).'
-  - Assumed the 3 SD reading. The 2 SD reading finds an IPSP in 67% of light-free windows of the same traces, against 30%
-    at 3 SD, so at 2 SD most detected IPSPs are noise. The 2 SD result is shown and does not reproduce.
+  - Assumed the 3 SD reading, because it agrees with 5 SD, the threshold at which IPSPs separate from noise (19.3% of cells
+    after the light against 4.6% in the light-free window), where the CeA trough is also deeper (BNST has 1 cell there, so
+    only two regions are compared). The false-detection rate alone does not justify 3 SD over 2 SD; at 3 SD the rule finds
+    an IPSP in 30.3% of light-free windows against 53.2% after the light, so more than half of the 3 SD IPSPs may be noise,
+    as most of the 2 SD ones are (67.0% against 82.6%). The 2 SD result is shown and does not reproduce.
   assumed: true
 - claim: fig6-s1de-monosynaptic
   outcome: blocked
@@ -144,14 +151,23 @@ outcomes:
   notebook: reproduce_lee_2025.ipynb
   output: claim:fig6no-cea-clusters
   measured: 27
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion reproduces the claim when every late-firing cell is excited and more than half of the other
+      cluster is inhibited, and it has no partial clause (the claims file gives one where it means one, as for fig6pq).
+      The first part fails in all 16 readings at 2 and 3 SD (2 or 3 inhibited and 3 without response data of 17 or 18 in the
+      late-firing cluster), and at 5 SD the second part fails too (3 of 9 or 10 inhibited). The readings agree, so the
+      criterion gives not reproduced, as the verifier said in both rounds (notebook, fig6no, the count of readings in
+      which each part holds).
   notes: All 16 readings (ramp ratio absolute or from deflections, sag steady state 100 or 200 ms, detection 2 or 3 SD,
     IEI reading a or b) give two clusters of 27 ChR2 CeA cells (the paper has 26), a late-firing cluster (mean firing delay
     415 ms, maximum frequency 32 Hz, sag 1.7 mV) and a regular-firing one (168 ms, 79 Hz, 5.7 mV). The late cluster is mostly
     excited (11 to 13 of 17 or 18 cells) but has 2 or 3 inhibited cells (C20, a mix with a negative area; C53, from its
     IEI; C41 at 2 SD) and 3 without response data, so not every cell is excited as the criterion requires; 6 of 9 or 10
-    regular-firing cells are inhibited, more than half. The readings agree. One part of the criterion holds and the other
-    mostly holds, so the effect is present but weaker. With 5 SD labels the late cluster has one inhibited cell (C53) but
-    only 3 of 9 or 10 regular-firing cells are inhibited. The cells come from 14 subjects.
+    regular-firing cells are inhibited, more than half. The readings agree; the first part of the criterion fails in all
+    16 readings and the second holds in all 16. With 5 SD labels the late cluster has one inhibited cell (C53) and only
+    3 of 9 or 10 regular-firing cells are inhibited, so both parts fail. The cells come from 14 subjects. Not reproduced
+    is proposed (see proposed).
   deviations:
   - The files do not record the light; the first pulse is taken 5.468 s into each 30 s light sweep, where the average responses
     start, with later maxima of the grand average about 33 ms apart (data check). Cells recorded only with other light protocols
@@ -192,7 +208,8 @@ outcomes:
     maximum frequency (27 against 133 Hz), the putative pyramidal neurons (17 cells), and one of 11. Of the pyramidal cluster
     64.7% (2 SD) or 58.8% (3 SD) are inhibited, against 93 +- 9.3%; of the other cluster 72.7% are excited, against 62 +-
     6.2%. The direction holds, the percentages are outside tolerance. With 5 SD labels 41.2% of the pyramidal cluster are
-    inhibited. With the mice labelled male only, 22 cells, 56 to 63% and 83%.
+    inhibited and 52.9% excited, so the direction fails at 5 SD. With the mice labelled male only, 22 cells, 56 to 63% and
+    83% at 2 and 3 SD; at 5 SD 44% and the direction fails.
   deviations:
   - The files do not record the light; the first pulse is taken 5.468 s into each 30 s light sweep, where the average responses
     start, with later maxima of the grand average about 33 ms apart (data check). Cells recorded only with other light protocols
@@ -210,8 +227,8 @@ outcomes:
   - Response labels follow the Methods (Ex vivo electrophysiology, last paragraph), the IEI when the cell has firing sweeps,
     else the EPSP/IPSP class with a mix labelled by the sign of the 0-5.5 s voltage area; labels at 5 SD are a variant.
   - Capacitance is taken by the Q-method from the 5 mV square pulses of the seal test, the only voltage-clamp test pulses
-    in the files; the Methods use a 5 mV, 250 ms step and unpublished MATLAB code. Without correction for series and membrane
-    resistance the estimate reads low by about the same factor in every cell.
+    in the files; the Methods use a 5 mV, 250 ms step and unpublished MATLAB code. No correction for series and membrane
+    resistance is made, so the error of the estimate depends on each cell's own resistances.
   - Rheobase and firing delay also use the further step series from 220 pA up that six BLP cells have; the Methods describe
     steps from -120 to 260 pA.
 - claim: fig6-s1i-blp-cluster-properties
@@ -219,12 +236,13 @@ outcomes:
   notebook: reproduce_lee_2025.ipynb
   output: claim:fig6-s1i-blp-cluster-properties
   notes: 'Under both readings the BLP clusters differ in capacitance (t(26) = 3.69, p = 0.0011), maximum frequency (t =
-    7.58, p below 0.0001), firing delay (t = 3.98, p = 0.0005) and sag (p = 0.0021 and 0.0032). The split is sensitive to
-    single cells: in a preparatory version that left out P10 (not run in the notebook) the delay did not differ.'
+    7.58, p below 0.0001), firing delay (t = 3.98, p = 0.0005) and sag (p = 0.0021 and 0.0032). The split depends on single
+    cells: leaving out each of the 28 cells in turn, all four tests stay significant in 24 cases; without P10, P19, P29
+    or P43 the clusters have 12 or 13 and 14 or 15 cells and the delay no longer differs (p = 0.053 to 0.063).'
   deviations:
   - Capacitance is taken by the Q-method from the 5 mV square pulses of the seal test, the only voltage-clamp test pulses
-    in the files; the Methods use a 5 mV, 250 ms step and unpublished MATLAB code. Without correction for series and membrane
-    resistance the estimate reads low by about the same factor in every cell.
+    in the files; the Methods use a 5 mV, 250 ms step and unpublished MATLAB code. No correction for series and membrane
+    resistance is made, so the error of the estimate depends on each cell's own resistances.
   - Rheobase and firing delay also use the further step series from 220 pA up that six BLP cells have; the Methods describe
     steps from -120 to 260 pA.
   - 28 cells, where the paper has 27.
@@ -238,7 +256,9 @@ outcomes:
   notes: Under every reading the total voltage area differs between the CeA clusters (U = 97 or 101, p = 0.0001 or below;
     medians 0.66 against -0.73 mV s) and the BLP clusters (U = 38, p = 0.020; -0.25 against 0.57 mV s); the EPSP peak differs
     between the BLP clusters (t(24) = -2.43, p = 0.023 at 2 and 3 SD) and not between the CeA clusters (p = 0.097 to 0.21).
-    With the mice labelled male only the BLP area and EPSP tests are not significant.
+    With the mice labelled male only (18 CeA and 21 BLP cells with an area) the BLP tests are not significant (area U = 20,
+    p = 0.11; EPSP peak p = 0.099 at 2 and 3 SD), while the CeA area test is (p = 0.0047 or below) and the CeA EPSP test
+    is not (p = 0.076 to 0.25 at 2 and 3 SD). The outcome rests on keeping the cells labelled female (see deviations).
   deviations:
   - The files do not record the light; the first pulse is taken 5.468 s into each 30 s light sweep, where the average responses
     start, with later maxima of the grand average about 33 ms apart (data check). Cells recorded only with other light protocols
@@ -253,6 +273,12 @@ outcomes:
   - 'The 17 ChR2 cells of subjects 23, C137 and C150, labelled female in the files, are kept although the Methods use male
     mice only: without them the dataset has 25 BLP cells with current steps, fewer than the 27 the paper clusters. Male
     mice only is run as a variant (notebook, last section).'
+  - Assumed that the cells of the mice labelled female (subjects 23, C137 and C150) belong in the analysis, although the
+    Methods use male mice only. They are kept because without them the dataset has 25 BLP and 26 CeA cells with current
+    steps, fewer than the 27 BLP cells the paper clusters; against this, the mice labelled male give 48 BLP cells with
+    rest sweeps, the paper's count. With male mice only the BLP area and EPSP tests fail, so the outcome rests on this
+    choice. The question is for the paper's authors (findings).
+  assumed: true
 - claim: fig6-s1ln-combined-clusters
   outcome: not_reproduced
   notebook: reproduce_lee_2025.ipynb
@@ -282,8 +308,8 @@ outcomes:
   - Response labels follow the Methods (Ex vivo electrophysiology, last paragraph), the IEI when the cell has firing sweeps,
     else the EPSP/IPSP class with a mix labelled by the sign of the 0-5.5 s voltage area; labels at 5 SD are a variant.
   - Capacitance is taken by the Q-method from the 5 mV square pulses of the seal test, the only voltage-clamp test pulses
-    in the files; the Methods use a 5 mV, 250 ms step and unpublished MATLAB code. Without correction for series and membrane
-    resistance the estimate reads low by about the same factor in every cell.
+    in the files; the Methods use a 5 mV, 250 ms step and unpublished MATLAB code. No correction for series and membrane
+    resistance is made, so the error of the estimate depends on each cell's own resistances.
   - Rheobase and firing delay also use the further step series from 220 pA up that six BLP cells have; the Methods describe
     steps from -120 to 260 pA.
 - claim: fig7e-no-behavioural-change
@@ -354,7 +380,9 @@ outcomes:
     readings (mean 9.9 mV red against 1.8 and 0.9 mV blue), red larger in 8 of 9 cells against each blue; area F(2,16) =
     11.0 (signed, p = 0.001) or 7.0 (absolute, p = 0.0067), red larger in 9 of 9. Paired t-tests of red against each blue
     give p from 0.0006 to 0.045. The paper's F values (200.1, 404.2) are much larger; one cell (C1, 0.68 mV to red) barely
-    responds. The outcome rests on reading the blue sweeps as blue light alone.
+    responds. The outcome rests on reading the blue sweeps as blue light alone. The per-cell values support that reading;
+    in C4 and C9 of subject 235 red light during constant blue gives 16.1 and 11.9 mV, while the blue sweeps give 1.14 mV
+    or less, so those sweeps cannot be red pulses under blue light.
   deviations:
   - Assumed that the sweeps described '+0.3mW blue light' and '+0.2mW blue light' are the blue light conditions of Figure
     7 supplement 1E-F, without red pulses, although their descriptions begin with the red protocol; '+0.3mW cont blue light'
@@ -372,7 +400,8 @@ outcomes:
   notebook: reproduce_lee_2025.ipynb
   output: claim:fig7-s1hi-red-during-blue
   notes: 13 cells have red alone and red during constant blue (the paper's t11 implies 12). A PSP is detected during blue
-    light in 13 of 13 at 2 and 3 SD (10 of 13 at 5 SD). The amplitude is smaller during blue light (8.1 against 4.1 mV,
+    light in 13 of 13 at 2 and 3 SD, which says little given the rule's detections in light-free windows (fig6df-epsp-ipsp-at-rest),
+    and in 10 of 13 at 5 SD. The amplitude is smaller during blue light (8.1 against 4.1 mV,
     t(12) = 3.23, p = 0.0072, 11 of 13 cells; reading b p = 0.0083), but the area is not significantly smaller (signed p
     = 0.26, absolute p = 0.16, smaller in 12 and 11 of 13). The paper finds both smaller.
   deviations:
@@ -514,7 +543,8 @@ findings:
 - kind: other
   statement: The files label three subjects female (23, C137 and C150; 17 ChR2 cells), where the paper says all experiments
     were in male mice. Without these cells the dataset has 25 BLP cells with current steps, fewer than the 27 the paper
-    clusters, so either the sex in the files or the paper's statement is wrong for them.
+    clusters, but the mice labelled male give 48 BLP cells with rest sweeps, the paper's count. So either the sex in the
+    files or the paper's statement is wrong for them, or these cells are not among the paper's.
 - kind: metadata_error
   statement: 'The holding current named in the sweep descriptions disagrees with the measured ch-1 current in 88 ChR2 light
     sweeps: 77 rest sweeps in 13 cells carry more than +20 pA (B16, described as -100 pA, carries +106 pA) and 11 firing
@@ -525,6 +555,10 @@ findings:
     does Figure 6J include mix cells? A rule of 2 or 3 SD of the baseline of the average trace finds an IPSP in 67% or 30%
     of light-free windows, gives 90 or 58 cells for the IPSP test against the paper's 34, and makes the EPSP region effect
     depend on the reading.
+- kind: methods_unavailable
+  statement: For the paper's authors (fig6-s1jk and the clustering claims). Were the cells of subjects 23, C137 and C150,
+    labelled female in the files, among the cells analysed? With them the voltage-area finding of Figure 6 supplement 1J-K
+    holds; without them its BLP tests are not significant.
 - kind: methods_unavailable
   statement: The capacitance of the BLP clustering came from custom MATLAB Q-method code on a 5 mV, 250 ms step, which is
     not published and whose step is not in the files; it was estimated here from the seal-test pulses.
@@ -802,4 +836,241 @@ verifications:
     outcome: blocked
     reason: 'The API lists 230 assets: 148 patch-clamp NWB files, 41 imaging NWB files and 41 mp4 videos. There are no tracing,
       behaviour or RNAscope files.'
+    response: No change.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of commit db3c3227 (author-revise-1), with the attempt record, the helper
+    module, the claims file and the paper. agrees compares its outcome with the outcome of the record it reviewed. Its list
+    of statements the outputs did not support (P10's sweep count, the P10-removed BLP clustering, capacitance reading low
+    by the same factor in every cell, the male-only sentence of cell 57, and the sex of three subjects) is answered under
+    the claims they bear on and in the data check.
+  results:
+  - claim: fig6df-epsp-ipsp-at-rest
+    agrees: true
+    outcome: reproduced
+    reason: The criterion's own test also passes on the light-free window (cell 15), and the record says so. The support is
+      the contrast between light and no light. For IPSPs that contrast is weak at 3 SD (53.2% against 30.3%) and clear only
+      at 4 SD and above.
+    response: No change of outcome. The notes and the notebook now say that for IPSPs the contrast is weak at 3 SD and clear
+      from 4 SD up (27.5% against 11.0%). In the data check, the P10 sentence is corrected from the printed counts, now shown
+      in cell 7 (79 rest sweeps, 51 failed, 28 valid, none firing before the light, 13 firing sweeps), and the sentence on
+      the cells labelled female now names the third possibility, that they are not among the paper's cells (the mice labelled
+      male give the paper's 48 BLP cells); the finding says the same.
+  - claim: fig6gi-firing-responses
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (no further reason given).
+    response: No change.
+  - claim: fig6j-epsp-amplitude-region
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Yes, but the notes leave out a fact that bears on it. The only criterion reading that passes, (a) at 3 SD with
+      p = 0.049, fails when the one cell with an evoked action potential (C15) is dropped: p = 0.075, Dunn p = 0.071 (cell
+      21, second table). Neither the notes nor cell 22 mention this. The support comes from the 5 SD variant and the male-only
+      variant.'
+    response: No change of outcome. The notes and the result cell now say that without C15 reading (a) at 3 SD gives p = 0.075
+      (Dunn p = 0.071), and that at 5 SD it stays significant without C15 (p = 0.026).
+  - claim: fig6k-ipsp-amplitude-region
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Yes, but the reason given for the assumption does not hold. The same arithmetic that rejects 2 SD applies at
+      3 SD: 30.3% without light against 53.2% with light, so more than half of the 3 SD IPSPs could also be noise. Only 5
+      SD separates signal from noise (4.6% against 19.3%), and there the CeA trough is also deeper, though BNST has 1 cell,
+      so only two regions are compared. The assumption''s justification should rest on the agreement between 3 SD and 5 SD.'
+    response: No change of outcome. The assumption's deviation and the result cell now justify 3 SD by its agreement with
+      5 SD, where IPSPs separate from noise, and say that the false-detection rate alone does not favour 3 SD over 2 SD.
+  - claim: fig6-s1de-monosynaptic
+    agrees: true
+    outcome: blocked
+    reason: Yes (cell 6).
+    response: No change.
+  - claim: fig6no-cea-clusters
+    agrees: false
+    outcome: not_reproduced
+    reason: The criterion has no partial clause. In every reading the late-firing cluster has 2-3 inhibited cells, and the
+      readings agree (cell 31). At 5 SD the regular-firing condition also fails (3 of 9-10 inhibited).
+    response: 'Outcome kept as verified (partially reproduced), and not reproduced proposed for round 3. The notebook now
+      prints, per detection threshold, the number of readings in which each part of the criterion holds: the first fails in
+      all 16 readings at 2 and 3 SD and the second holds in all 16; at 5 SD both fail. As the criterion has no partial clause
+      and the readings agree, it gives not reproduced.'
+  - claim: fig6-s1h-cea-cluster-properties
+    agrees: true
+    outcome: reproduced
+    reason: Yes (cell 34).
+    response: No change.
+  - claim: fig6pq-blp-clusters
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Yes, on the criterion''s 2 and 3 SD readings. At 5 SD the direction fails: 41.2% of the pyramidal cluster are
+      inhibited and 52.9% excited (cell 37). The notes give the 41.2% but do not say the direction fails.'
+    response: No change of outcome. The notes and the result cell now say the direction fails at 5 SD (and with male mice
+      only at 5 SD, 44%).
+  - claim: fig6-s1i-blp-cluster-properties
+    agrees: true
+    outcome: reproduced
+    reason: Yes (cell 40). The statement that a version leaving out P10 gave clusters of 12 and 15 cells in which the delay
+      no longer differed is not shown by any output; since it bears on whether this outcome is robust, it should be run or
+      the sentence removed.
+    response: 'No change of outcome. Cell 40 now leaves out each of the 28 BLP cells in turn: all four tests stay significant
+      in 24 cases; without P10, P19, P29 or P43 the delay no longer differs (p = 0.053 to 0.063; without P10 the clusters
+      have 12 and 15 cells). The notes and the result cell say so.'
+  - claim: fig6-s1jk-cluster-voltage-area
+    agrees: true
+    outcome: reproduced
+    reason: 'Yes on all cells. With male mice only it fails at every k (cell 56). Keeping the cells labelled female goes against
+      the paper''s Methods, which use male mice only, and this outcome turns on that choice. It should be marked assumed.
+      The notes'' statement that the BLP area and EPSP tests fail with male mice only is not shown: cell 56 prints only ''k=2:
+      False; k=3: False; k=5: False''.'
+    response: 'Marked assumed: true, with a deviation stating the assumption and the evidence on both sides, and a methods_unavailable
+      finding asking the paper''s authors. Cell 56 now prints every male-only test: BLP area p = 0.11 and BLP EPSP p = 0.099
+      fail, the CeA tests still hold; the notes give these values.'
+  - claim: fig6-s1ln-combined-clusters
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Yes. At 5 SD the pattern of Figure 6 supplement 1N fails. Cell 57''s statement that the combined clustering does
+      not show that pattern in every reading with male mice only is true but misleading: the printed flag is an all-readings
+      test that includes k = 5, which fails even with all cells; whether the pattern holds at 2 and 3 SD with male mice only
+      is not shown. Whether the claims file misreads the figure is still open and has been sent to a reader.'
+    response: 'No change of outcome. Cell 56 now prints the male-only combined clustering per reading and counts by k: the
+      Figure 6 supplement 1N pattern holds in 6 of 8 readings at 2 SD, 4 of 8 at 3 SD and none at 5 SD; cell 57 says so. The
+      question in questions/001195.yaml stands.'
+  - claim: fig7e-no-behavioural-change
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig7gh-delta-auroc-trend
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig7j-proportions-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig7i-little-overlap
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig7m-social-excited-predicts-preference
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig7-s1no-no-other-correlations
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig7-s1l-tdtomato-no-change
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig7-s2-functional-clusters
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig7-s1ef-red-vs-blue
+    agrees: true
+    outcome: reproduced
+    reason: 'Yes. The assumption that the blue sweeps carry blue light only is stated and reasonable. The per-cell data support
+      it more than the record says: in cells C4 and C9 of subject 235, red light during constant blue gives 16.1 and 11.9
+      mV, while the ''blue'' sweeps give under 1.2 mV (cells 49 and 52). So in those cells the blue sweeps cannot be red pulses
+      under blue light.'
+    response: No change of outcome. The notes and the result cell now give this per-cell support.
+  - claim: fig7-s1hi-red-during-blue
+    agrees: true
+    outcome: partially_reproduced
+    reason: Yes. Detection 'in 13 of 13' at 2 and 3 SD is uninformative given the false-detection rate; at 5 SD it is 10 of
+      13.
+    response: No change of outcome. The notes and the result cell now say so.
+  - claim: fig1c-drn-vta-projections
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig1h-collateralization
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig1-s2d-fewer-blp-projectors
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig2d-blp-place-avoidance
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig2-s2-no-icss
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig3a-c-epm-no-effect
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig3-s1-oft-no-effect
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig3g-bnst-rearing
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig4e-cea-social-preference
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig4h-cea-rank-correlation
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig4k-cea-face-investigation
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig4r-markov-transitions
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig4-s2d-baseline-correlations
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig5-receptor-segregation
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig8c-cea-inhibition-blocks-rebound
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig8d-cea-inhibition-rank
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
+    response: No change.
+  - claim: fig8-s1-no-effect-group-housed
+    agrees: true
+    outcome: blocked
+    reason: Yes (data missing).
     response: No change.
