@@ -507,6 +507,14 @@ def om_remove(df, conds, value="FR", unit="neuron", zero_col=None, marginal=Fals
     return bad
 
 
+def og_remove(df, value="FR", unit="neuron"):
+    """Rule O-G (claims O, the reading for the GLMs of Figures 2 and 3): each unit's mean value
+    over all its rows, as NWB_computeGLM.m computes it; units whose mean lies outside the mean
+    +- 3 SD of the unit means are removed ("differed ±3 SD from the mean", Methods, Statistics)."""
+    m = df.groupby(unit)[value].mean()
+    return set(m.index[np.abs(m - m.mean()) > 3 * m.std()])
+
+
 def oc_remove(df, value="FR", unit="neuron"):
     """Rule O-C (NWB_computeGLM.m): units whose mean value over all their rows exceeds 3 SD of
     the unit means, without centring and on the upper side only."""

@@ -102,103 +102,132 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_daume_2024.ipynb
   output: claim:fig2b-hippocampus-persistent
-  measured: [17.29, 7.79]
-  notes: Under all four readings with the Methods outlier rule (O-M) the intercept and the
-    preferred effect are positive at p < 0.05, with one beta outside tolerance in each. One row
-    per trial, baseline B1, gives intercept 17.29 (p = 0.0008) and preferred 7.79 (p = 0.0008);
-    B2 gives 22.38 and 11.86; the code's rows give 21.93 and 7.06 (B1) or 27.84 and 6.18 (B2). The
-    code's rule (O-C) with one row per trial and B1 gives 19.39 and 13.12. The outlier rule for
-    the GLMs is asked of a reader (questions/001187.yaml).
+  measured: [20.22, 14.11]
+  notes: Re-run after a reader's answer (questions/001187.yaml), which made O-G the outlier rule
+    for this GLM in place of O-M. Under all four readings with O-G the intercept and the preferred
+    effect are positive at p < 0.05 with at least one beta outside tolerance. One row per trial,
+    baseline B1, gives intercept 20.22 (p = 0.00096) and preferred 14.11 (p = 0.000001), both
+    above tolerance; B2 gives 22.38 and 11.86 (preferred within tolerance); the code's rows give
+    22.98 and 8.82 (B1) or 25.42 and 6.90 (B2). O-G removes 1 or 2 of 102 neurons. The code's
+    rule (O-C, variant) with one row per trial and B1 gives 19.39 and 13.12, both within
+    tolerance. The outcome is the same as under O-M (partially reproduced, 17.29 and 7.79).
   deviations:
-  - The conditions of the O-M rule for this GLM are the levels of the preferred factor; the
-    Methods do not define conditions for a GLM.
+  - O-G takes each neuron's mean normalized rate over all rows of its table before trial
+    selection (incorrect trials included), as NWB_computeGLM.m takes the means for O-C; claims
+    header O, as amended.
   - Mixed models are fitted by maximum likelihood with statsmodels MixedLM, not MATLAB fitglme;
     p-values from the t distribution on n - p degrees of freedom.
 - claim: fig2c-hippocampus-correct-load
-  outcome: not_reproduced
+  outcome: partially_reproduced
   assumed: true
   notebook: reproduce_daume_2024.ipynb
   output: claim:fig2c-hippocampus-correct-load
-  measured: [6.88, 4.96]
-  notes: Under the adopted reading (one row per trial, main effects, baseline B1, O-M) 88 of 102
-    neurons remain and neither effect is significant (accuracy 6.88, p = 0.26; load 4.96, p =
-    0.14). With baseline B2 load is significant (9.19, p = 0.030) and accuracy is not (10.76, p =
-    0.16), which the criterion grades partial; with the interaction term, no main effect is
-    significant under either baseline. The code's rule (O-C, variant) gives accuracy 18.68 (p =
-    0.028) and load 13.63 (p = 0.0034), the paper's pattern with the load beta within tolerance.
-    The outlier rule for the GLMs is asked of a reader.
+  measured: [18.48, 18.64]
+  notes: Re-run after a reader's answer (questions/001187.yaml), which made O-G the outlier rule
+    for this GLM in place of O-M; the earlier outcome under O-M was not reproduced (accuracy
+    6.88, p = 0.26; load 4.96, p = 0.14). Under the adopted reading (main effects) with O-G, 101
+    of 102 neurons remain; baseline B1 gives accuracy 18.48 (p = 0.0499) and load 18.64 (p =
+    0.0003), both positive at p < 0.05 with both betas above tolerance; B2 gives load 12.94 (p =
+    0.0069, within tolerance) and accuracy 16.46 (p = 0.060). Both baselines grade the claim
+    partially reproduced, so the baseline no longer decides the outcome. The accuracy p with B1
+    lies just below 0.05. With the interaction term (reading b) the load main effect is -14.24 (p
+    = 0.56) or -18.66 (p = 0.41), which would grade it not reproduced. O-C gives accuracy 18.68
+    (p = 0.028) and load 13.63 (p = 0.0034) with B1.
   deviations:
-  - Assumed baseline B1 (mean baseline over all WM trials of the neuron) for this trial-level
-    model; the Results describe one row per trial ("all correct WM trials"), and B2, the mean
-    over the rows of the code's Fig. 3a table, belongs to that table. B2 grades the claim
-    partially reproduced.
-  - Assumed the main-effects model (reading a), as the text names two effects.
-  - O-M conditions are the cells of accuracy and load; taking each factor's levels separately
-    removes the same neurons.
+  - Assumed the main-effects model (reading a), as the text names two effects ("modelling WM
+    accuracy ... as well as load ... as fixed effects", Results, Category neurons remain
+    persistently active, paragraph 2); with the interaction the outcome would be not reproduced.
+  - Baseline B1 (mean baseline over all WM trials of the neuron) is reported first; B2 gives the
+    same grade.
+  - O-G as in fig2b-hippocampus-persistent.
 - claim: fig2e-amygdala-persistent
-  outcome: partially_reproduced
-  notebook: reproduce_daume_2024.ipynb
-  output: claim:fig2e-amygdala-persistent
-  measured: [10.06, 5.44]
-  notes: Under all four O-M readings the intercept and preferred effect are positive at p <
-    0.05 (p at most 0.0038). The preferred beta is below tolerance in every reading (4.28 to
-    5.44 against 6.91 +- 0.69); the intercept is within tolerance in three (10.06, 9.46, 10.32)
-    and above it with the code's rows and B1 (11.99). O-C gives preferred 5.08 to 6.88.
-  deviations:
-  - As fig2b-hippocampus-persistent.
-- claim: fig2f-amygdala-load-not-accuracy
-  outcome: partially_reproduced
-  notebook: reproduce_daume_2024.ipynb
-  output: claim:fig2f-amygdala-load-not-accuracy
-  measured: [10.77]
-  notes: The accuracy effect is absent under every reading (O-M p 0.056 to 0.11, betas -8.90 to
-    -9.95; paper -6.13, p = 0.24). The load effect is positive at p < 0.05 in the main-effects
-    model (10.77 with B1, 8.95 with B2) but below 12.309 +- 1.231, and not significant with the
-    interaction term (p = 0.55 and 0.61). Only the accuracy part holds under every reading. O-C
-    gives load 11.55 and 9.92.
-  deviations:
-  - As fig2c-hippocampus-correct-load, without the assumption, since all readings give the same
-    grade.
-- claim: fig3a-area-interactions
-  outcome: partially_reproduced
+  outcome: reproduced
   assumed: true
   notebook: reproduce_daume_2024.ipynb
-  output: claim:fig3a-area-interactions
-  measured: [17.84, 49.18, -24.46]
-  notes: With O-M, conditions the levels of LTM accuracy (adopted), 310 neurons; confidence x
-    area 17.84 (p = 0.027), LTM accuracy x area 49.18 (p = 0.022), three-way -24.46 (p = 0.017);
-    main effects and accuracy x confidence p >= 0.27. Two betas are outside tolerance. With
-    confidence levels also as conditions, 53 neurons are removed and the interactions give p =
-    0.27, 0.056 and 0.056. The code's rule (O-C) gives 16.60, 56.61 and -27.83 (p = 0.038, 0.0075,
-    0.0059), all within tolerance, and with the all-sure session kept as the code does, 17.84,
-    59.96 and -29.16. The outlier rule for the GLMs is asked of a reader.
+  output: claim:fig2e-amygdala-persistent
+  measured: [10.50, 6.88]
+  notes: Re-run after a reader's answer (questions/001187.yaml), which made O-G the outlier rule
+    for this GLM in place of O-M; the earlier outcome under O-M was partially reproduced (the
+    preferred beta 4.28 to 5.44 in every reading). With one row per trial and O-G both terms are
+    positive at p < 0.05 with both betas within tolerance, intercept 10.50 and preferred 6.88
+    with B1 (p = 0.00046 and 0.000002; 220 of 222 neurons), 10.06 and 6.55 with B2. With the
+    code's rows (reading b) the intercept is above tolerance and the preferred beta below it
+    (13.06 and 5.62 with B1, 11.26 and 5.61 with B2), which grades the claim partially
+    reproduced. O-C gives 10.50 and 6.88 (B1) and 9.34 and 5.89 (B2) with one row per trial.
   deviations:
-  - Assumed the O-M conditions of this GLM are the levels of LTM accuracy only, since confidence
-    enters the model as a continuous variable (Methods, Relating WM maintenance activity to LTM
-    formation); with confidence levels as conditions the outcome would be not reproduced.
+  - Assumed one row per trial (reading a), since the Results describe the model "across all
+    correct trials" (Results, Category neurons remain persistently active, paragraph 3) and the
+    code's table (one row per picture later tested) belongs to the Figure 3 analysis; with the
+    code's rows the outcome would be partially reproduced.
+  - O-G and the fitting as in fig2b-hippocampus-persistent.
+- claim: fig2f-amygdala-load-not-accuracy
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig2f-amygdala-load-not-accuracy
+  measured: [11.55]
+  notes: Re-run after a reader's answer (questions/001187.yaml), which made O-G the outlier rule
+    for this GLM in place of O-M; the earlier outcome under O-M was partially reproduced (load
+    10.77 with B1, below tolerance). The accuracy effect has p >= 0.05 under every reading and
+    outlier rule (O-G p 0.19 to 0.24, betas -6.39 to -7.44; paper -6.13, p = 0.24). Under the
+    adopted reading (main effects, B1) with O-G the load effect is 11.55 (p = 0.00002), within
+    12.309 +- 1.231, with 220 of 222 neurons. With B2 it is 9.51 (p = 0.00025), below
+    tolerance, and with the interaction term not significant (p = 0.70 and 0.82); these grade
+    the claim partially reproduced. O-C gives the same as O-G with B1.
+  deviations:
+  - Assumed the main-effects model and baseline B1, as for fig2c-hippocampus-correct-load (B1,
+    the mean over all WM trials of the neuron, for a model with one row per trial; B2 is the
+    mean over the rows of the code's Figure 3 table). With B2 or the interaction term the
+    outcome would be partially reproduced.
+  - O-G and the fitting as in fig2b-hippocampus-persistent.
+- claim: fig3a-area-interactions
+  outcome: partially_reproduced
+  notebook: reproduce_daume_2024.ipynb
+  output: claim:fig3a-area-interactions
+  measured: [19.12, 70.57, -32.52]
+  notes: Re-run after a reader's answer (questions/001187.yaml), which made O-G the main outlier
+    rule in the criterion in place of O-M. The earlier outcome under O-M was partially
+    reproduced and rested on the assumption of which conditions O-M compares; O-G removes that
+    assumption. With O-G (5 neurons removed, 313 remain) confidence x area 19.12 (p = 0.019),
+    LTM accuracy x area 70.57 (p = 0.0011) and the three-way -32.52 (p = 0.0017) have the
+    paper's signs, and no main effect or the LTM accuracy x confidence term has p < 0.05
+    (smallest 0.24); all three betas are outside tolerance, larger than the paper's. With the
+    all-sure session kept, as the code does, 20.23, 73.60 and -33.74. The code's rule (O-C,
+    variant, 8 removed) gives 16.60, 56.61 and -27.83, all within tolerance (17.84, 59.96 and
+    -29.16 with the all-sure session kept).
+  deviations:
+  - O-G takes each neuron's mean normalized rate over all rows of the code's table, before the
+    selection of correct, preferred and rated rows and with the all-sure session's neurons
+    included, as NWB_computeGLM.m takes the means for O-C.
   - The session whose ratings are all sure (sub-11, P69cs) is left out, as the paper says one
     patient was excluded from all confidence analyses (Results, paragraph 2); the code keeps it,
     shown as a variant.
 - claim: fig3b-hippocampus-predicts-ltm
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_daume_2024.ipynb
   output: claim:fig3b-hippocampus-predicts-ltm
-  measured: [19.18, 43.57, -21.80]
-  notes: Under every O-M reading the three effects are significant with the paper's signs, with
-    outliers over both areas or within the area confidence 19.18 (p = 0.008), LTM accuracy 43.57
-    (p = 0.026), interaction -21.80 (p = 0.019); with confidence levels as conditions 11.07 to
-    13.13, 37.92 to 51.95, -18.38 to -22.63. LTM accuracy and the interaction are outside
-    tolerance in every O-M reading. O-C gives 21.25, 67.37 and -30.69, all within tolerance.
+  measured: [21.25, 67.37, -30.69]
+  notes: Re-run after a reader's answer (questions/001187.yaml), which made O-G the main outlier
+    rule in the criterion in place of O-M; the earlier outcome under O-M was partially
+    reproduced (19.18, 43.57, -21.80). With O-G, outliers over both areas (5 removed) or within
+    the hippocampus (2 removed) leave the same 98 neurons, and confidence 21.25 (p = 0.0045),
+    LTM accuracy 67.37 (p = 0.00085) and the interaction -30.69 (p = 0.0014) are all within
+    tolerance with the paper's signs. With the all-sure session kept, 21.51, 68.18 and -31.05.
+    The code's rule (O-C) gives the same within the area; over both areas, 20.25, 57.52 and
+    -27.98, with LTM accuracy below tolerance.
   deviations:
-  - As fig3a-area-interactions; the grade is the same under both O-M readings, so it rests on no
-    assumption.
+  - As fig3a-area-interactions. For outliers over both areas, the neuron means are taken over
+    the full table of both areas.
 - claim: fig3b-amygdala-no-prediction
   outcome: reproduced
   notebook: reproduce_daume_2024.ipynb
   output: claim:fig3b-amygdala-no-prediction
-  notes: No effect has p < 0.05 under any reading or outlier rule (smallest p 0.34). Under O-M
-    with outliers over both areas, confidence 1.28 (p = 0.77), LTM accuracy -5.68 (p = 0.61),
-    interaction 2.72 (p = 0.62).
+  notes: Re-run after a reader's answer (questions/001187.yaml), which made O-G the outlier rule
+    in place of O-M; the outcome is unchanged. No effect has p < 0.05 under any reading or
+    outlier rule (smallest p 0.43). With O-G and outliers over both areas, confidence 1.81 (p =
+    0.68), LTM accuracy -4.08 (p = 0.71), interaction 2.28 (p = 0.67).
+  deviations:
+  - As fig3a-area-interactions.
 - claim: fig3c-hippocampus-high-confidence
   outcome: not_reproduced
   notebook: reproduce_daume_2024.ipynb
@@ -235,29 +264,28 @@ outcomes:
   notes: No cluster has p < 0.025 under any reading; the smallest cluster p is 0.43.
 - claim: fig3g-nonpreferred-no-effect
   outcome: reproduced
-  assumed: true
   notebook: reproduce_daume_2024.ipynb
   output: claim:fig3g-nonpreferred-no-effect
-  notes: With O-M, conditions the levels of LTM accuracy, no fixed effect other than the
-    intercept has p < 0.05 in either set of rows (smallest p 0.071 and 0.23); with O-C 0.067 and
-    0.11. With confidence levels also as conditions, the area main effect is 13.28 (p = 0.035)
-    in reading (a) and nothing in (b).
+  notes: Re-run after a reader's answer (questions/001187.yaml), which made O-G the outlier rule
+    in place of O-M. The outcome is unchanged and no longer rests on an assumption (under O-M it
+    rested on which conditions O-M compares). With O-G no fixed effect other than the intercept
+    has p < 0.05 in either set of rows (smallest p 0.089 for all non-preferred pictures, 0.11 for
+    trials without a preferred picture); with O-C 0.067 and 0.11.
   deviations:
-  - Assumed the O-M conditions are the levels of LTM accuracy, as for fig3a-area-interactions.
+  - As fig3a-area-interactions.
 - claim: fig3h-encoding-no-effect
-  outcome: not_reproduced
-  assumed: true
+  outcome: reproduced
   notebook: reproduce_daume_2024.ipynb
   output: claim:fig3h-encoding-no-effect
-  notes: With O-M, conditions the levels of LTM accuracy, an effect reaches p < 0.05 under both
-    readings, the area main effect in (a) (56.58, p = 0.048) and LTM accuracy x confidence in (b)
-    (15.63, p = 0.027). With confidence levels as conditions (smallest p 0.0505 and 0.41) or with
-    O-C (0.35 and 0.074), nothing reaches p < 0.05. No reading shows an effect of LTM accuracy or
-    confidence alone. The criterion counts any fixed effect, including area.
+  notes: Re-run after a reader's answer (questions/001187.yaml), which made O-G the outlier rule
+    in place of O-M; the earlier outcome under O-M was not reproduced (assumed), an effect
+    reaching p < 0.05 under each reading (area 56.58, p = 0.048; LTM accuracy x confidence
+    15.63, p = 0.027). With O-G (5 neurons removed) no fixed effect other than the intercept has
+    p < 0.05 under either reading (smallest p 0.30 with picture 1 preferred, 0.078 with a
+    preferred picture in any slot); with O-C 0.35 and 0.074.
   deviations:
-  - Assumed the O-M conditions are the levels of LTM accuracy, as for fig3a-area-interactions;
-    the other O-M reading and the code's rule give reproduced.
-  - The zero-spike rule is applied to the picture 1 window, the window tested.
+  - O-G as in fig3a-area-interactions, on the neuron means of the picture 1 rate over all rows
+    of the table.
 - claim: ms-neuron-counts
   outcome: reproduced
   notebook: reproduce_daume_2024.ipynb
@@ -349,19 +377,21 @@ findings:
     and one has 139 WM trials, where the paper describes 400 and 140. Picture 1 lasts 1.57 to 2.04
     s and the maintenance period 2.53 to 3.20 s, where the Methods say 2 s and 2.55 to 2.85 s.
 - kind: code_mismatch
-  statement: The paper's code for the Fig. 3a GLM (NWB_computeGLM.m) removes outlier neurons by
-    their mean normalized rate above 3 SD, without centring, where the Methods remove neurons with
-    no spikes in a tested condition or outside mean +- 3 SD; and it keeps the session whose
-    ratings are all sure, which the Results say was excluded from confidence analyses. With the
-    code's choices the GLMs of Fig. 3a and 3b give the paper's betas within tolerance; with the
-    Methods' rule they do not.
+  statement: The paper's code for the Fig. 3a GLM (NWB_computeGLM.m) removes outlier neurons whose
+    mean normalized rate exceeds 3 SD of the neuron means, without centring and on the upper side
+    only, where the Methods remove neurons that differ by more than 3 SD from the mean; and it
+    keeps the session whose ratings are all sure, which the Results say was excluded from
+    confidence analyses. With the code's rule the Fig. 3a GLM gives the paper's betas within
+    tolerance (16.60, 56.61, -27.83); with the Methods' threshold on the same neuron means it
+    gives 19.12, 70.57 and -32.52.
 - kind: methods_unavailable
-  statement: For the authors. How was the outlier rule of the Methods ("no spikes in at least one
-    of the tested conditions ... or differed ±3 SD from the mean across all neurons and all tested
-    conditions") applied to the mixed-effects GLMs, whose confidence term is continuous, and to
-    which baseline mean were trial-level rates normalized in Fig. 2? Here the conditions were
-    taken as the levels of the categorical factors and the baseline as the mean over all WM
-    trials; other readings change the outcomes of Fig. 2c, 3a, 3g and 3h.
+  statement: For the authors. Which outlier rule was applied to the mixed-effects GLMs, the
+    Methods' "±3 SD from the mean" or the code's threshold of 3 SD without centring
+    (NWB_computeGLM.m), and on which values; and for the GLMs of Fig. 2, which the code does not
+    cover, were the rows one per trial or one per picture, and to which baseline mean were rates
+    normalized? Here the code's neuron means with the Methods' threshold, one row per trial and
+    the mean baseline over all WM trials were used; the other choices change the outcomes of
+    Fig. 2e, 2f and 3a.
 - kind: methods_unavailable
   statement: For the authors. The Methods sentence on the GLM of Fig. 4e and 4f lost its variable
     names ("with (2 levels, high vs low, categorical) as fixed effect and nested into as random
