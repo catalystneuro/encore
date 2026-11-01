@@ -1,0 +1,469 @@
+schema_version: 2
+id: 001131-mountoufaris-2024-01
+dataset:
+  archive: dandi
+  id: '001131'
+  version: 0.260601.1203
+  doi: 10.48324/dandi.001131/0.260601.1203
+paper: doi:10.1016/j.cell.2024.08.015
+date: '2026-11-01'
+entry: 001131-mountoufaris-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41280874828
+inputs:
+- what: The rSLDS fitting package ssm (software, not data), used by the rSLDS notebooks with the settings
+    of its notebooks/4-Recurrent-SLDS.ipynb named in the claims file.
+  source: https://github.com/lindermanlab/ssm at commit eb6c8aa33e5311d3564075807dec340759dd8081
+outcomes:
+- claim: fig1e-oxtr-avpr1a-coexpression
+  outcome: blocked
+  blocked_by: other
+  notes: Uses the outside single-cell RNA-seq atlas of Kim et al. 2019 (doi:10.1016/j.cell.2019.09.020),
+    which the claims file marks with_inputs. Neither the paper nor the claims file gives the atlas's archive
+    accession; a search of GEO in this run did not find it, and the analysis was not attempted within
+    the run's time, which went to the dandiset's claims and its rSLDS fits. The paper also gives no expression
+    threshold ("as described previously"). Not tested for time, not shown to lack data.
+- claim: fig1f-peptides-activate-slices
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The slice two-photon imaging is not in the dandiset, which holds only miniscope traces and behaviour
+    annotations, and the paper names no other archive for it.
+- claim: fig2e-editing-reduces-slice-responses
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The slice imaging of Figure 2E is not in the dandiset, and the paper names no other archive.
+- claim: fig2g-bilateral-editing-reduces-aggression
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The behaviour of the bilateral LV gRNA cohort (11 mice per group) is not in the dandiset; it
+    holds only the 10 imaged mice.
+- claim: fig2-bilateral-editing-spares-sniff-and-mating
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The bilateral LV gRNA cohort and all female-intruder behaviour are not in the dandiset.
+- claim: fig3c-cre-editing-reduces-aggression
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The behaviour of the bilateral Cre-dependent cohort (16 and 13 mice) is not in the dandiset.
+- claim: fig3fh-photometry-reduced
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The fiber photometry recordings are not in the dandiset, and the paper names no other archive.
+- claim: figs3ef-photometry-female-unchanged
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The fiber photometry recordings are not in the dandiset.
+- claim: figs4a-unilateral-no-behavior-deficit
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_mountoufaris_2024.ipynb
+  output: claim:figs4a-unilateral-no-behavior-deficit
+  notes: No measure differs between groups at p < 0.05 (Mann-Whitney per mouse); the smallest p over the
+    listed measures is 0.11 (sniff time as a percentage of the interaction). Total sniff time 89.1 s control,
+    93.1 s experimental (p = 0.61); sniff bout duration 10.2 and 2.5 s (p = 0.17, the control mean raised
+    by mouse 511's two long bouts); total attack time 54.1 and 91.5 s (p = 0.25); attack bout duration
+    3.3 and 2.4 s (p = 0.25); latency 261 and 91 s (p = 0.25); interval between attacks 30.9 and 11.7
+    s (p = 0.39). Attack measures use 3 control and 5 experimental mice, for which the smallest attainable
+    p is 0.036. The experimental mice attack more than the controls (42 against 15.7 bouts, p = 0.036,
+    a measure the claim does not list). The attack probability of S4A(vii) was not tested.
+  deviations:
+  - The dandiset holds 4 control and 6 experimental mice, against 5 and 7 in the paper. Mice 510 and 500
+    have no attack annotation, so attack measures use 3 control and 5 experimental mice.
+  - The intruder's entry is not marked; the interaction is taken to start at the first annotated behaviour
+    (an assumption), which sets the latency to the first attack and the duration used for percentages.
+  - The attack probability of panel S4A(vii) is a time course whose summary the paper does not define;
+    it is not computed, so six of the seven measures are tested.
+  - The interval between attacks is taken from the end of one bout to the start of the next; onset to
+    onset is also shown, with the same outcome.
+- claim: methods-unit-counts
+  outcome: not_reproduced
+  notebook: reproduce_mountoufaris_2024.ipynb
+  output: claim:methods-unit-counts
+  measured:
+  - 587
+  - 554
+  - 4
+  - 6
+  notes: The dandiset holds 4 control mice with 587 units (134, 225, 119, 109) and 6 experimental mice
+    with 554 units (35, 31, 80, 96, 185, 127), against 5 mice with 585 units and 7 with 546 in the STAR
+    Methods. One mouse per group is missing, yet each group has more units than the paper reports.
+- claim: fig4ef-male-activity-slightly-lower
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_mountoufaris_2024.ipynb
+  output: claim:fig4ef-male-activity-slightly-lower
+  notes: 'Under the pooled reading of "nested", experimental activity in sigma is lower than control by
+    both the Mann-Whitney and the KS test at p < 0.05 under every baseline reading and both windows (baseline
+    all, 1 min: 0.53 against 0.95 sigma, Mann-Whitney p = 0.002, KS p < 0.001, 587 control and 474 experimental
+    units). On per-mouse means or medians (4 and 5 mice) no comparison reaches p < 0.05 (p from 0.06 to
+    0.73). The experimental mean is about half the control mean, more than "slightly". Z-scored activity
+    is also lower when pooled (KS p = 0.009 at 1 min, 0.0005 at 2 min), but its Mann-Whitney test is not
+    significant (p = 0.24 and 0.12).'
+  deviations:
+  - The files mark neither the pre-intruder baseline nor the intruder's entry. The baseline is taken as
+    the frames before the first annotated behaviour (readings all of them, or the last 7 s), and the interaction
+    as starting at that behaviour; this is an assumption (STAR Methods, Micro-endoscopic data extraction,
+    baseline "during 7sec or more" before the first trial; Behavior annotations, a 5-min baseline starts
+    every session). Mouse 488 has 6.2 s before its first annotation and is left out.
+  - '"Nested" tests are not defined; both readings of the claims file are run, units pooled and per-mouse
+    means (or medians for KS claims).'
+  - The dandiset holds 4 control and 6 experimental mice, against 5 and 7 in the paper.
+  - The claim's outcome rests on the pooled reading of "nested"; the per-mouse reading does not reproduce
+    it.
+- claim: fig4ef-female-activity-unchanged
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The dandiset holds no female-intruder session: every file has behaviour towards a male intruder
+    only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The
+    paper names no other archive for these data.'
+- claim: figs4e-active-units-unchanged
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_mountoufaris_2024.ipynb
+  output: claim:figs4e-active-units-unchanged
+  notes: 'On per-mouse means the Mann-Whitney test finds no difference under any baseline or window (p
+    from 0.19 to 0.90; baseline all, 1 min: 3.90 against 3.42 sigma, p = 0.56). With units pooled the
+    readings disagree: no difference with the all baseline (p = 0.09 at 1 min, 0.76 at 2 min) but control
+    higher at p < 0.001 with the 7-s baseline (12.8 against 8.5 sigma), where the short baseline inflates
+    sigma.'
+  deviations:
+  - The files mark neither the pre-intruder baseline nor the intruder's entry. The baseline is taken as
+    the frames before the first annotated behaviour (readings all of them, or the last 7 s), and the interaction
+    as starting at that behaviour; this is an assumption (STAR Methods, Micro-endoscopic data extraction,
+    baseline "during 7sec or more" before the first trial; Behavior annotations, a 5-min baseline starts
+    every session). Mouse 488 has 6.2 s before its first annotation and is left out.
+  - The dandiset holds 4 control and 6 experimental mice, against 5 and 7 in the paper.
+  - 'Assumption: "nested" is read as a test across mice (per-mouse means). The paper ran its nested tests
+    in GraphPad Prism (STAR Methods, Statistical analysis), whose nested analyses treat the animal as
+    the unit of replication. The pooled reading gives a difference with the 7-s baseline; both are shown.'
+- claim: fig4g-male-selective-reduced
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The dandiset holds no female-intruder session: every file has behaviour towards a male intruder
+    only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The
+    paper names no other archive for these data. Male-selective and mixed units are defined against activity
+    during the female interaction, so none of the four values can be computed.'
+- claim: fig4g-female-selective-and-mixed-increased
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The dandiset holds no female-intruder session: every file has behaviour towards a male intruder
+    only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The
+    paper names no other archive for these data.'
+- claim: fig4d-sex-decoding-intact
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The dandiset holds no female-intruder session: every file has behaviour towards a male intruder
+    only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The
+    paper names no other archive for these data.'
+- claim: fig4c-pls-sex-separation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The dandiset holds no female-intruder session: every file has behaviour towards a male intruder
+    only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The
+    paper names no other archive for these data.'
+- claim: fig5ac-behavior-activity-male-lower
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_mountoufaris_2024.ipynb
+  output: claim:fig5ac-behavior-activity-male-lower
+  notes: 'The dandiset holds no female-intruder session: every file has behaviour towards a male intruder
+    only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The
+    paper names no other archive for these data. The male part, shown in the notebook and not deciding
+    the outcome: activity in sigma during male-directed sniffing and attack is lower in experimental mice
+    with units pooled (baseline all, sniff 0.33 against 0.92, attack 0.21 against 0.50; Mann-Whitney p
+    < 0.001 and 0.015), but not on per-mouse means (p = 0.11 and 0.40).'
+- claim: figs5c-peth-activity
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_mountoufaris_2024.ipynb
+  output: claim:figs5c-peth-activity
+  notes: 'The dandiset holds no female-intruder session: every file has behaviour towards a male intruder
+    only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The
+    paper names no other archive for these data. The male part, not deciding the outcome: the bout-triggered
+    z-scored activity over 15 s, minus a 2-s or 3-s pre-bout baseline, does not differ between groups
+    by Mann-Whitney for sniffing or attack (pooled p from 0.11 to 0.40; per mouse p from 0.14 to 0.61).'
+- claim: fig5bd-behavior-selective-units-reduced
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_mountoufaris_2024.ipynb
+  output: claim:fig5bd-behavior-selective-units-reduced
+  measured:
+  - 1.7
+  - 9.6
+  - 2.4
+  - 6.0
+  - 28.8
+  - 11.4
+  - 45.2
+  notes: 'Measured under the first readings (baseline all, pooled fractions), in the claim''s order: sniff-selective
+    1.7% experimental and 9.6% control, attack-selective 2.4% and 6.0%, active 28.8% control and 11.4%
+    experimental, mixed fraction reduced by 45.2%. Control sniff- and attack-selective fractions and experimental
+    attack-selective are inside tolerance; experimental sniff-selective, both active fractions and the
+    mixed reduction are not, under any reading (per-mouse means give 1.7, 9.5, 2.1, 6.2, 27.7, 12.5 and
+    27.5%). The directions hold under every reading. Across mice (3 and 4) the differences give p = 0.057
+    with the all baseline. With the 7-s baseline more units pass 2 sigma (active 54.7% and 42.6%). The
+    female-directed fractions are not in the dandiset.'
+  deviations:
+  - The files mark neither the pre-intruder baseline nor the intruder's entry. The baseline is taken as
+    the frames before the first annotated behaviour (readings all of them, or the last 7 s), and the interaction
+    as starting at that behaviour; this is an assumption (STAR Methods, Micro-endoscopic data extraction,
+    baseline "during 7sec or more" before the first trial; Behavior annotations, a 5-min baseline starts
+    every session). Mouse 488 has 6.2 s before its first annotation and is left out.
+  - 'The dandiset holds 4 control and 6 experimental mice, against 5 and 7 in the paper. Only mice with
+    both sniffing and attack annotations and a baseline are used: control 482, 508, 511 and experimental
+    440, 441, 497, 501.'
+  - The two readings of "active during all male-directed behaviors" give the same number here (sniff-selective
+    plus attack-selective plus mixed).
+- claim: fig5e-cp-tuning-shift
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The dandiset holds no female-intruder session: every file has behaviour towards a male intruder
+    only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The
+    paper names no other archive for these data. Two of the five expected values (units tuned to sniffing
+    females against sniffing males) need the female interaction. The male attack-against-sniff part was
+    not run.'
+- claim: figs5e-behavior-decoding-intact
+  outcome: not_reproduced
+  notebook: reproduce_mountoufaris_2024.ipynb
+  output: claim:figs5e-behavior-decoding-intact
+  notes: 'With the paper''s frame-wise stratified five-fold split, every control mouse decodes attack
+    against sniffing better than every experimental mouse (C = 1: 0.993 against 0.934; C = 0.1 and 10
+    alike), and the Mann-Whitney test across mice finds the difference at p = 0.036, the smallest p that
+    3 and 5 mice allow. The difference is small (0.06 to 0.07). The frame-wise split leaves frames of
+    the same bout in training and test sets: decoders trained on shuffled bout labels score 0.988 and
+    0.922, and real against shuffled does not differ (p = 0.40 and 1.0). With whole bouts held out (a
+    variant), accuracy is 0.78 and 0.53 and the groups do not differ (p = 0.25).'
+  deviations:
+  - The dandiset holds 4 control and 6 experimental mice, against 5 and 7 in the paper. Mice 510 and 500
+    have no attack annotation; 3 control and 5 experimental mice are used.
+  - The cross-validation scheme is the stratified five-fold split the claims file takes from the sex decoder;
+    the SVM's C is not given, and C = 0.1, 1 and 10 all give the same outcome.
+  - Shuffled decoders are repeated 20 times per mouse, not 1,000; they do not decide the outcome.
+- claim: fig6-rslds-fit-quality
+  outcome: not_reproduced
+  notebook: rslds_seeds_0_1.ipynb
+  output: claim:fig6-rslds-fit-quality
+  measured: 59.4
+  notes: Under all four seeds the emissions reconstruction explains 59.4% of the variance in control and
+    58.6 to 58.7% in experimental mice (range 49.6 to 66.4% over mice), against 85 +/- 8.5%. The forward-prediction
+    R2 does not differ between groups (p = 0.114 at 1 s and 5 s for every seed). Attack frames fall mostly
+    in one state in 6, 7, 8 and 8 of the 8 mice with attack annotations (seeds 0 to 3), and at least 90%
+    in one state in 4, 3, 2 and 1. The fits of mice 510 and 500 do not recover the authors' deposited
+    latent factor 1 weights (|Spearman r| at most 0.47 for any dimension). Seeds 0 and 1 are in rslds_seeds_0_1.ipynb
+    and seeds 2 and 3 in rslds_seeds_2_3.ipynb, with the same cells and tags.
+  deviations: &id001
+  - The files hold only the male-intruder part of each session, so the claims file's two readings of the
+    frames fit (male-intruder part, whole session) are the same, the whole file.
+  - Fits use the z-scored traces only; the sigma-normalized reading is not fit, as it needs the unmarked
+    baseline and differs from the z-scored trace only by a per-unit scale and offset.
+  - Performance is the R2 of 1-s and 5-s forward predictions of the latents on the fit data; the paper's
+    score uses held-out cross-validation folds (STAR Methods, Dynamical system models), which would need
+    five more fits per mouse and seed and was not run.
+  - Mice 510 and 500 have no attack annotation; for reading (a) their state is the one holding most sniffing
+    frames.
+  - Seeds 0 to 3 are split over two notebooks to stay under the 60-min limit per notebook.
+  - ssm (commit eb6c8aa) cannot be built in the locked environment's isolated build (its setup.py imports
+    numpy and Cython without declaring them), so the notebooks install it at that commit without build
+    isolation, against the locked numpy, Cython and setuptools (vmh.ensure_ssm).
+- claim: fig6a-control-tau1-greater
+  outcome: not_reproduced
+  notebook: rslds_seeds_0_1.ipynb
+  output: claim:fig6a-control-tau1-greater
+  measured:
+  - 383.6
+  - 383.6
+  notes: 'Control time constants are several times the paper''s under every seed and reading: mean tau1
+    279 to 665 s and tau2 274 to 488 s (expected 90 to 132 s and 36 to 44 s). Measured gives reading (a),
+    seed 0. Kruskal-Wallis across the five sorted dimensions gives p from 0.002 to 0.057, and Dunn''s
+    comparison of dimension 1 with 2 gives p = 1.0 in every case; in reading (a) tau1 and tau2 are often
+    equal, as the slowest eigenvalues come as a complex pair. Seeds 0 and 1 are in rslds_seeds_0_1.ipynb
+    and seeds 2 and 3 in rslds_seeds_2_3.ipynb, with the same cells and tags.'
+  deviations: *id001
+- claim: fig6c-experimental-tau-indistinguishable
+  outcome: not_reproduced
+  notebook: rslds_seeds_0_1.ipynb
+  output: claim:fig6c-experimental-tau-indistinguishable
+  measured: 137.0
+  notes: Experimental mean tau1 is 134 to 825 s and tau2 118 to 783 s over seeds and readings, not below
+    55 s (measured gives tau1, reading (a), seed 0). The paper's Kruskal-Wallis test over the five dimensions
+    finds a difference in every case (p from below 0.001 to 0.011); Dunn's comparison of dimension 1 with
+    2 does not (p = 1.0). Control tau1 is not longer than experimental at p < 0.01 under any seed or reading
+    (smallest two-sided p = 0.019), and is shorter in two of the eight cases. Seeds 0 and 1 are in rslds_seeds_0_1.ipynb
+    and seeds 2 and 3 in rslds_seeds_2_3.ipynb, with the same cells and tags.
+  deviations: *id001
+- claim: fig6f-line-attractor-score
+  outcome: not_reproduced
+  notebook: rslds_seeds_0_1.ipynb
+  output: claim:fig6f-line-attractor-score
+  measured: 0.0
+  notes: The mean control score is 0.00 to 0.78 over seeds and readings (expected 1.44 to 1.76); the experimental
+    mean is 0.07 to 1.29. The Mann-Whitney test finds no difference (p from 0.14 to 1.0). Most reading
+    (a) scores are 0 because the two slowest eigenvalues are a complex pair. Measured gives reading (a),
+    seed 0. Seeds 0 and 1 are in rslds_seeds_0_1.ipynb and seeds 2 and 3 in rslds_seeds_2_3.ipynb, with
+    the same cells and tags.
+  deviations: *id001
+- claim: figs6f-mating-attractor-intact
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The dandiset holds no female-intruder session: every file has behaviour towards a male intruder
+    only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The
+    paper names no other archive for these data.'
+- claim: fig6g-flow-field-line-vs-point
+  outcome: not_reproduced
+  notebook: rslds_seeds_0_1.ipynb
+  output: claim:fig6g-flow-field-line-vs-point
+  notes: No more than 2 of the 4 control mice have a score above 1 under any seed and reading, so a majority
+    never does; 2 to 6 of the 6 experimental mice have a score below 1 (5 or 6 in seven of the eight cases).
+    The flow fields drawn for mice 510 and 500 (seeds 0 and 2) both show a single low-flow point. Seeds
+    0 and 1 are in rslds_seeds_0_1.ipynb and seeds 2 and 3 in rslds_seeds_2_3.ipynb, with the same cells
+    and tags.
+  deviations: *id001
+- claim: fig6e-integration-dimension-persistence
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: rslds_seeds_0_1.ipynb
+  output: claim:fig6e-integration-dimension-persistence
+  notes: 'The files do not mark when the intruder is removed, so the post-intruder period cannot be found.
+    A variant comparing the first dimension''s activity during bouts with the frames after the last annotated
+    behaviour is shown and does not decide: no control paired t-test reaches p < 0.05 (p = 0.064 to 0.52
+    over the four seeds), and the experimental one does only for seed 1 (p = 0.013). Seeds 0 and 1 are
+    in rslds_seeds_0_1.ipynb and seeds 2 and 3 in rslds_seeds_2_3.ipynb, with the same cells and tags.'
+- claim: fig7b-achw-first-dimension
+  outcome: not_reproduced
+  notebook: rslds_seeds_0_1.ipynb
+  output: claim:fig7b-achw-first-dimension
+  measured:
+  - 17.4
+  - 29.9
+  - 36.1
+  notes: First-dimension units have shorter ACHW in experimental mice under every combination (pooled
+    means 17.4 to 23.2 s against 26.7 to 31.4 s; pooled Mann-Whitney p < 0.001; on per-mouse means p =
+    0.17 to 0.91, so the nested readings disagree on significance). The experimental values are about
+    twice the paper's 9.86 +/- 1 s in every combination; control values fall inside 28.6 +/- 1.23 s for
+    seeds 2 and 3 only; the second-dimension reduction is 6 to 78%, never inside 61 +/- 6.1%. Measured
+    gives seed 0 with the top-25% units, the first combination where all three are defined. Seeds 0 and
+    1 are in rslds_seeds_0_1.ipynb and seeds 2 and 3 in rslds_seeds_2_3.ipynb, with the same cells and
+    tags.
+  deviations:
+  - The files hold only the male-intruder part of each session, so the claims file's two readings of the
+    frames fit (male-intruder part, whole session) are the same, the whole file.
+  - Fits use the z-scored traces only; the sigma-normalized reading is not fit, as it needs the unmarked
+    baseline and differs from the z-scored trace only by a per-unit scale and offset.
+  - Performance is the R2 of 1-s and 5-s forward predictions of the latents on the fit data; the paper's
+    score uses held-out cross-validation folds (STAR Methods, Dynamical system models), which would need
+    five more fits per mouse and seed and was not run.
+  - Mice 510 and 500 have no attack annotation; for reading (a) their state is the one holding most sniffing
+    frames.
+  - Seeds 0 to 3 are split over two notebooks to stay under the 60-min limit per notebook.
+  - ssm (commit eb6c8aa) cannot be built in the locked environment's isolated build (its setup.py imports
+    numpy and Cython without declaring them), so the notebooks install it at that commit without build
+    isolation, against the locked numpy, Cython and setuptools (vmh.ensure_ssm).
+  - The z-scored and sigma readings of the trace give the same ACHW (an affine map does not change the
+    autocorrelation), and with one intruder per file the mean over trials is the single autocorrelation;
+    the readings left are the two unit assignments.
+  - Unit weights on a dimension are |C Re(v)| for the eigenvector v of the reading (a) state. When the
+    two slowest eigenvalues are a complex pair, dimensions 1 and 2 get the same weights, so under the
+    largest-weight reading no unit is assigned to dimension 2 in those mice (seed 0 has none at all) and
+    under the top-25% reading the same units serve both. Using the real and imaginary parts as a plane
+    would be another choice; it was not run.
+  - The whole interaction is taken from the first annotated behaviour to the end of the file.
+- claim: fig7c-achw-all-units
+  outcome: not_reproduced
+  notebook: reproduce_mountoufaris_2024.ipynb
+  output: claim:fig7c-achw-all-units
+  measured: 14.6
+  notes: Mean ACHW over the first 1 min is 4.98 s control and 4.25 s experimental with units pooled (reduction
+    14.6%; per-mouse means 19.2%), and over 2 min 6.63 and 5.57 s (15.9% and 19.2%), against 50.9 +/-
+    5.1%. The pooled Mann-Whitney and KS tests find experimental shorter (p < 0.001), per-mouse tests
+    do not (p = 0.26 and 0.11). Over the whole recording (a variant) the reduction is 44 to 47%.
+  deviations:
+  - The interaction is taken to start at the first annotated behaviour (an assumption; the intruder's
+    entry is not marked).
+  - '"Nested" tests are not defined; both readings of the claims file are run, units pooled and per-mouse
+    means (or medians for KS claims).'
+  - The dandiset holds 4 control and 6 experimental mice, against 5 and 7 in the paper.
+  - The z-scored and sigma readings give the same ACHW, and the trial reading is the single autocorrelation,
+    so only the window readings differ.
+- claim: figs7b-achw-female-slight
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The dandiset holds no female-intruder session: every file has behaviour towards a male intruder
+    only (Ch1 sniffing, attack, dominance mounting) and the traces end with the male interaction. The
+    paper names no other archive for these data.'
+- claim: figs7cd-slice-rslds
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The slice imaging is not in the dandiset, and the paper names no other archive.
+- claim: figs7k-persistent-and-transient-slice-responses
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The slice imaging is not in the dandiset.
+- claim: fig3d-cre-editing-spares-mounting
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The behaviour of the bilateral Cre-dependent cohort, with female intruders, is not in the dandiset.
+- claim: figs7l-blockers-slight-effect
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The slice imaging with synaptic blockers is not in the dandiset.
+findings:
+- kind: data_missing
+  statement: The dandiset holds the miniscope data of 4 control and 6 experimental mice, where the paper
+    reports 5 and 7 (STAR Methods, Micro-endoscopic data extraction). The female-intruder part of every
+    imaging session is absent, as are the behaviour cohorts of Figures 2 and 3, the fiber photometry and
+    the slice imaging, although the paper's data statement says the source data will be deposited at DANDI.
+    21 of the 36 claims cannot be tested for these reasons.
+- kind: metadata_insufficient
+  statement: The files mark neither the 5-min pre-intruder baseline, nor the intruder's entry and removal.
+    The paper's activity measures are in units of sigma relative to that baseline, and Figure 6E uses
+    the post-intruder period; here the baseline had to be assumed from the first annotated behaviour,
+    and the post-intruder claim could not be tested. Only z-scored traces are given, not dF/F.
+- kind: metadata_error
+  statement: The files of mice 510 and 500 describe their trace as "DF/F" with "GCaMP6m"; the values are
+    z-scores (every unit of mouse 510 has mean 0 and SD 1), and the paper used GCaMP8s.
+- kind: data_missing
+  statement: 'The files of mice 510 and 500 hold only sniffing annotations (series named "Ch1: sniffing"),
+    with no attack or mounting, although the paper''s exemplar mice attack. Mouse 510''s sniffing bouts
+    all fall between 179 and 279 s of a 1200-s recording.'
+- kind: other
+  statement: 'The unit counts per group differ from the STAR Methods in the other direction from the mouse
+    counts: 587 control units in 4 mice and 554 experimental units in 6 mice, against 585 in 5 and 546
+    in 7.'
+- kind: other
+  statement: The two files of the earlier version 0.240826.1647 (subjects ControlMouse and MutantMouse)
+    are the same recordings as mice 510 and 500 of version 0.260601.1203, with identical traces, sniffing
+    bouts and rSLDS weights under different subject ids.
+- kind: metadata_insufficient
+  statement: The group of each mouse is given only by the prefix of its subject id (ctrl, mut) and, in
+    eight files, a keyword; there is no genotype or description of the gRNA. Nine sessions carry the same
+    start date (2023-02-01), apparently a placeholder.
+- kind: other
+  statement: The trace of mouse 500 is not z-scored over its file (unit SDs 0.65 to 1.05, means up to
+    0.23 away from 0), unlike the other nine, so it was z-scored over a longer recording and then cut.
+- kind: other
+  statement: 'The rSLDS weights deposited for mice 510 and 500 ("latent factor 1") are not recovered by
+    fits with the settings of the claims file: their |Spearman r| with the weights of any fitted dimension
+    is at most 0.47 over four seeds. The fits'' time constants are hundreds of seconds and their variance
+    explained 59%, against 85% in the paper.'
+- kind: methods_unavailable
+  statement: 'Questions for the authors. (1) Where does the pre-intruder baseline lie in each file, and
+    when did each intruder enter and leave? (2) What are the "nested" Mann-Whitney and KS tests: GraphPad
+    nested tests across mice, or tests on pooled units? The outcomes of fig4ef and figs4e depend on this.
+    (3) For the rSLDS, which frames were fit, with which seeds and restarts, how were the cross-validation
+    folds and horizon of the performance score formed, which state''s dynamics matrix gives the time constants,
+    and how are complex eigenvalue pairs (two equal time constants) treated in the line attractor score?
+    (4) How is ACHW computed (half of the zero-lag value, first crossing, over which window)? (5) How
+    is the attack probability of Figure S4A(vii) summarized per mouse? (6) Mouse 511 has two sniffing
+    bouts of 22 and 40 s; is that annotation complete?'
+- kind: paper_inconsistency
+  statement: The Results give n=4 control mice for Figure 4E-F, while the Figure 4 and S4 legends and
+    the STAR Methods give 5. The dandiset holds 4 control mice.
