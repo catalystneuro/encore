@@ -17,7 +17,7 @@ a figure panel. The pooled samples behind most of the paper's statistics are not
 | Fig. 3: dSpikes never start in the dendrites | Not reproduced |
 | Fig. 3: two motifs, independent of stimulus location | Not reproduced |
 | Fig. 3e: soma stimulation, 6 of 54 third-bAP dSpikes | Not reproduced |
-| Fig. 3d: distal stimulation, 35 of 54 first-bAP dSpikes | Reproduced, on an assumption |
+| Fig. 3d: distal stimulation, 35 of 54 first-bAP dSpikes | Reproduced, on an assumption (a change to blocked, methods underspecified, is proposed) |
 | Fig. 3f: soma plus distal, third-bAP dSpike in 54 of 54 | Not reproduced |
 | Fig. 3: dSpikes need 15 ms of distal depolarization | Not reproduced |
 | Fig. S7b: first components hold 96% of the variance | Blocked: methods underspecified |
@@ -43,15 +43,17 @@ reasoning and the differences from the paper's method.
 
 The files hold no regions, structural images, stimulus masks or pixel size, so the soma and a line
 along the apical trunk are found on each movie's mean image, and distances use the Methods' 0.65 µm
-per pixel. Spike and dSpike thresholds follow the claims file's rules where the paper set them by
-hand, and several outcomes depend on them (see the notebook). The attempt record, with the
+per pixel. The paper set its spike and dSpike thresholds by hand. The dSpike threshold follows the
+claims file's rule (a trough of the amplitude histogram). The somatic threshold departs from the
+claims file's 5 s.d. for the Fig. 3 counts, where 4 s.d. is assumed and 5 s.d. shown, and several
+outcomes depend on these choices (see the notebook). The attempt record, with the
 reasons and the differences from the paper's method, is
 [`attempts/001266-park-2025-01.yaml`](../../attempts/001266-park-2025-01.yaml).
 
-- `reproduce_park_2025.ipynb`: the analysis. It takes about 17 minutes, most of it streaming 43
+- `reproduce_park_2025.ipynb`: the analysis. It takes about 26 minutes, most of it streaming 43
   movies (about 41 GB) from the archive.
 - `simulations_park_2025.ipynb`: runs the paper's published NEURON model (Supplementary Software 1)
   for the model claims, its three phase diagrams (429 runs on 4 processes) and a Python port of
-  the Izhikevich model (Supplementary Software 2), in about 37 minutes.
+  the Izhikevich model (Supplementary Software 2), in 24 to 34 minutes (the run time varies).
 - `dendrite.py`: streaming the movies into soma and trunk traces, the trunk tracer, bAP and
   dSpike calls, and the AUC and duration measures. Other notebooks on this dandiset can import it.

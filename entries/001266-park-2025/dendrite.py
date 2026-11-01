@@ -18,11 +18,13 @@ Where each parameter comes from:
 - High-pass filter: the claims file header, open item (1). Reading "median": subtract a 20 ms
   moving median; reading "butter": zero-phase 2nd order Butterworth high-pass at 20 Hz.
 - Somatic spike threshold: claims file header, item (4), 5 times the robust s.d. (1.4826 MAD) of
-  the filtered trace, with peaks at least 3 ms apart (a standard refractory choice).
+  the filtered trace, with peaks at least 3 ms apart (a standard refractory choice); 4 s.d. is
+  run as a variant, and assumed for the Fig. 3 counts (see the attempt record).
 - dSpike threshold: claims file header, item (2), trough of the distal amplitude histogram
   (here `first_min_threshold`, the first minimum of a Gaussian kernel density above its lowest
   mode; an assumption, see its docstring), with the FWHM < 5 ms rule (Methods, Counting bAPs
-  and dSpikes). Where the density has one mode the threshold is undefined (nan).
+  and dSpikes). Where the density has no minimum above the failure mode the threshold is
+  undefined (nan).
 - bAP to distal event: claims file header, item (3), the distal peak within 5 ms after the
   somatic peak.
 - Distal region: trunk segments more than 300 µm from the soma along the traced trunk (Methods,
@@ -172,6 +174,40 @@ def extract(hdr, W, n_workers=N_WORKERS, sta=None):
     acc = sum(p[1][0] for p in parts)
     cnt = sum(p[1][1] for p in parts)
     return X, acc / np.maximum(cnt, 1)[:, None]
+
+
+def _pixreg_job(args):
+    url, a, b, r = args
+    f = open_nwb(url)
+    d = f["acquisition/camera_1/data"][a:b]
+    dx = np.diff(d.reshape(d.shape[0], -1).astype(np.float64), axis=0)
+    dr = np.diff(np.asarray(r[a:b], np.float64))
+    return dx.T @ dr, (dx ** 2).sum(0), float(dr @ dr), len(dr)
+
+
+def ml_weights(hdr, ref, n_workers=N_WORKERS):
+    """Maximum-likelihood pixel weights (Methods, Extracting fluorescence from movies: "the
+    fluorescence at each pixel was correlated with the whole-field average fluorescence. Pixels
+    that showed stronger correlation to the mean were preferentially weighted", after Kralj et al.
+    2012, ref. 33). Each pixel is regressed on the reference trace `ref` (the whole-field mean),
+    x_i = a_i + b_i ref + e_i, and weighted by b_i / var(e_i), negative slopes set to zero. The
+    regression uses frame-to-frame differences, so that the slow bleaching trend does not enter
+    the slope or the noise variance (a choice made here; the paper gives no detail).
+    Returns a 1 x pixels sparse matrix whose row sums to 1, for `extract`."""
+    from scipy import sparse
+    T = hdr["shape"][0]
+    step = hdr["chunks"][0] * 2
+    jobs = [(hdr["url"], a, min(a + step, T), ref) for a in range(0, T, step)]
+    with ProcessPoolExecutor(n_workers) as ex:
+        parts = list(ex.map(_pixreg_job, jobs))
+    sxr = sum(p[0] for p in parts)
+    sxx = sum(p[1] for p in parts)
+    srr = sum(p[2] for p in parts)
+    n = sum(p[3] for p in parts)
+    b = sxr / srr
+    var_e = np.maximum(sxx - b * sxr, 1e-12) / (2 * n)
+    w = np.clip(b, 0, None) / var_e
+    return sparse.csr_matrix((w / w.sum())[None, :].astype(np.float32))
 
 
 def cell_traces(key, soma_lower=0.55, soma=None, sta=None, n_workers=N_WORKERS, trace=(4, 1.5)):
@@ -406,14 +442,20 @@ def bap_table(o, on, reading="median", window_s=(0.0, 0.06), distal_um=300.0, di
 def first_min_threshold(a, bw="scott", grid=1000):
     """dSpike threshold: the first minimum of the amplitude density (Gaussian KDE) above its
     lowest mode, the trough that closes the failure mode (claims file header, item 2, "a threshold
-    between the two modes"). The failure mode is the lowest-amplitude mode, not the highest, so
-    that a recording with more dSpikes than failures still gets its trough; density peaks lower
-    than a quarter of the highest (a few outlying amplitudes) are not counted as modes. Both
-    are assumptions: the paper set its thresholds by hand.
+    between the two modes"). The failure mode is the lowest-amplitude density peak at least a
+    quarter as high as the highest peak (so that a few outlying low amplitudes are not taken
+    for it, and a recording with more dSpikes than failures still gets its trough). Above the
+    failure mode any density minimum counts, whatever the height of the bump beyond it: a
+    small group of large amplitudes, which is what a few dSpikes among many failures look like
+    (8 of 110 bAPs in Fig. 2), gets a threshold, and so do two outlying amplitudes (on 100
+    failures around 0.4 and 2 values near 1, the threshold is about 0.7 to 0.8). `trough_support`
+    reports, per recording, how many amplitudes lie above the threshold and how high the bump
+    beyond it is, so that a threshold resting on a few outliers can be seen. Both choices are
+    assumptions: the paper set its thresholds by hand.
 
-    Returns nan when the density has a single mode: then no trough separates dSpikes from
-    failures, and the dSpike count of that recording is undefined (the notebook reports it as
-    such, not as zero dSpikes)."""
+    Returns nan when no density minimum lies above the failure mode (the density falls
+    monotonically from it): then no trough separates dSpikes from failures, and the dSpike count
+    of that recording is undefined (the notebook reports it as such, not as zero dSpikes)."""
     a = np.asarray(a, float)
     if len(a) < 5 or np.ptp(a) == 0:
         return np.nan
@@ -426,6 +468,19 @@ def first_min_threshold(a, bw="scott", grid=1000):
     mins, _ = signal.find_peaks(-y)
     mins = mins[mins > low]
     return (g[mins[0]] if len(mins) else np.nan)
+
+
+def trough_support(a, thr, bw="scott", grid=1000):
+    """What lies above a `first_min_threshold` trough: the number of amplitudes above it, and the
+    highest density peak above it as a fraction of the highest peak overall (the rule's quarter
+    applies to the failure mode only). nan, 0 when there is no threshold."""
+    a = np.asarray(a, float)
+    if not np.isfinite(thr) or len(a) < 5:
+        return np.nan, 0
+    kde = stats.gaussian_kde(a, bw_method=bw)
+    g = np.linspace(a.min(), a.max(), grid)
+    y = kde(g)
+    return float(y[g > thr].max() / y.max()), int((a > thr).sum())
 
 
 def mark_dspikes(df, threshold, max_fwhm_ms=5.0):

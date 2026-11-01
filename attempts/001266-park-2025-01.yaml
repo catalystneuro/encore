@@ -61,8 +61,10 @@ outcomes:
     along it falls to 0.73 to 0.89 of the image median in the Fig. 2 and 3 files, notebook section "Where the regions lie"),
     so 300 to 400 µm is shown as a variant.
   - 'dSpike threshold at the first minimum of a Gaussian kernel density (Scott bandwidth) of the distal amplitudes above its
-    lowest mode (density peaks under a quarter of the highest are not modes), with interpolated FWHM < 5 ms; where the density
-    has one mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
+    failure mode (the lowest density peak at least a quarter as high as the highest), with interpolated FWHM < 5 ms. Any
+    minimum above the failure mode counts, whatever the size of the bump beyond it, so a few outlying large amplitudes also
+    get a threshold (the notebook shows how many amplitudes lie above each trough); where the density has no minimum above
+    the failure mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
     by hand. The claims file places it at the histogram''s trough; the trough between the two highest modes (tried while preparing,
     not in the notebook) falls between two small clusters of dSpikes and was not used.'
   - File D3, the index's Fig. 2 entry (the legend calls the stimulus D1).
@@ -78,17 +80,19 @@ outcomes:
     supports "clearly bimodal".
   deviations:
   - 'dSpike threshold at the first minimum of a Gaussian kernel density (Scott bandwidth) of the distal amplitudes above its
-    lowest mode (density peaks under a quarter of the highest are not modes), with interpolated FWHM < 5 ms; where the density
-    has one mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
+    failure mode (the lowest density peak at least a quarter as high as the highest), with interpolated FWHM < 5 ms. Any
+    minimum above the failure mode counts, whatever the size of the bump beyond it, so a few outlying large amplitudes also
+    get a threshold (the notebook shows how many amplitudes lie above each trough); where the density has no minimum above
+    the failure mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
     by hand. The claims file places it at the histogram''s trough; the trough between the two highest modes (tried while preparing,
     not in the notebook) falls between two small clusters of dSpikes and was not used.'
 - claim: fig2e-f-dspike-maps
   outcome: not_reproduced
   notebook: reproduce_park_2025.ipynb
   output: claim:fig2e-f-dspike-maps
-  notes: Neither of the criterion's thresholds is met under any reading. With dF/F_ref the -dSpike distal value is 0.72 of
+  notes: The criterion's two thresholds are never met together. With dF/F_ref the -dSpike distal value is 0.72 of
     the soma's beyond 300 µm, not below half; between 300 and 400 µm it is 0.50 to 0.51, but the +dSpike value is then 0.81
-    to 0.86 of the soma's, below it (1.01 to 1.06 beyond 300 µm). With raw -dF/F the -dSpike ratio is 0.27 to 0.44 and the
+    to 0.86 of the soma's, below it; beyond 300 µm the +dSpike threshold alone is met (1.01 to 1.06). With raw -dF/F the -dSpike ratio is 0.27 to 0.44 and the
     +dSpike ratio 0.38 to 0.74. bAPs with a dSpike are larger in the distal region than bAPs without (dF/F_ref 3.3 against
     2.1 beyond 300 µm, 2.6 to 2.8 against 1.5 between 300 and 400 µm).
   deviations:
@@ -106,13 +110,13 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_park_2025.ipynb
   output: claim:fig2h-length-constant
-  measured: 1488.2
+  measured: 1457.0
   notes: No reading gives 255 ± 10 µm. Per-spike fits of dF/F_ref over the traced trunk (to 400 µm) fail or exceed 5000 µm
     for 23 to 42% of the -dSpike bAPs, and give a mean λ of 1407 to 1488 µm for A exp(-x/λ) and 54 to 58 µm for A exp(-x/λ)
-    + c, for the Fig. 2 file and for all six files. Fits of raw -dF/F give 356 ± 4 µm (Fig. 2 file, 109 to 110 spikes) and
+    + c, for the Fig. 2 file and for all six files. Fits of raw -dF/F give 356 ± 4 µm (Fig. 2 file, 106 to 110 spikes) and
     402 to 404 ± 4 µm (all six files, about 600 spikes) without an offset; with an offset they mostly fail. The amplitude
     profile rises near the stimulated branch before it falls, which an exponential from the soma does not describe. The sample
-    is 109 to 110 -dSpike bAPs in the Fig. 2 file and 590 to 646 in all six, against the paper's 93.
+    is 106 to 110 -dSpike bAPs in the Fig. 2 file and 590 to 646 in all six, against the paper's 93.
   deviations:
   - The fit runs over the traced trunk to 400 µm; beyond it the line leaves the dendrite. The paper does not give the fit
     range.
@@ -133,15 +137,19 @@ outcomes:
   - Only the neuron of Figs. 2, 3 and S8 (six files, one per stimulus location) is in the dandiset, of the 17.
   - Somatic spikes above 4 robust s.d. of the high-passed trace, where the claims file's standard choice is 5 (its header,
     item 4, says the choice cannot change the outcome). The 5 s.d. threshold misses closely spaced spikes in the burst files
-    (150 and 139 to 150 bAPs in the soma and D4+soma files, where the Fig. 3 legend counts 167 and 170); 4 s.d. gives 161
-    to 167. Assumed, as the reading the paper's own counts support; 5 s.d. is shown.
+    (139 to 150 and 148 to 150 bAPs in the soma and D4+soma files, where the Fig. 3 legend counts 167 and 170); 4 s.d. gives
+    161 to 165 and 167, closer to the legend's totals without reaching them. Assumed, as the reading closer to the paper's
+    counts in the burst files; 5 s.d. is shown. In the file of the legend's D2, 5 s.d. gives the legend's 84 bAPs exactly
+    and 4 s.d. 85 to 88.
   - The distal region is the traced line beyond 300 µm (claims file). The line was traced on the mean image as the brightest
     ridge, where the paper drew it by hand on a structural image; beyond about 400 µm it runs off the trunk (the mean image
     along it falls to 0.73 to 0.89 of the image median in the Fig. 2 and 3 files, notebook section "Where the regions lie"),
     so 300 to 400 µm is shown as a variant.
   - 'dSpike threshold at the first minimum of a Gaussian kernel density (Scott bandwidth) of the distal amplitudes above its
-    lowest mode (density peaks under a quarter of the highest are not modes), with interpolated FWHM < 5 ms; where the density
-    has one mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
+    failure mode (the lowest density peak at least a quarter as high as the highest), with interpolated FWHM < 5 ms. Any
+    minimum above the failure mode counts, whatever the size of the bump beyond it, so a few outlying large amplitudes also
+    get a threshold (the notebook shows how many amplitudes lie above each trough); where the density has no minimum above
+    the failure mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
     by hand. The claims file places it at the histogram''s trough; the trough between the two highest modes (tried while preparing,
     not in the notebook) falls between two small clusters of dSpikes and was not used.'
 - claim: fig3-two-motifs-location-independent
@@ -158,8 +166,10 @@ outcomes:
   - Only the neuron of Figs. 2, 3 and S8 (six files, one per stimulus location) is in the dandiset, of the 17.
   - Somatic spikes above 4 robust s.d. of the high-passed trace, where the claims file's standard choice is 5 (its header,
     item 4, says the choice cannot change the outcome). The 5 s.d. threshold misses closely spaced spikes in the burst files
-    (150 and 139 to 150 bAPs in the soma and D4+soma files, where the Fig. 3 legend counts 167 and 170); 4 s.d. gives 161
-    to 167. Assumed, as the reading the paper's own counts support; 5 s.d. is shown.
+    (139 to 150 and 148 to 150 bAPs in the soma and D4+soma files, where the Fig. 3 legend counts 167 and 170); 4 s.d. gives
+    161 to 165 and 167, closer to the legend's totals without reaching them. Assumed, as the reading closer to the paper's
+    counts in the burst files; 5 s.d. is shown. In the file of the legend's D2, 5 s.d. gives the legend's 84 bAPs exactly
+    and 4 s.d. 85 to 88.
   - Profiles are compared over the traced trunk to 400 µm; dF/F_ref as in fig2e-f-dspike-maps, with raw -dF/F as a variant.
 - claim: fig3h-dspike-peak-distance
   outcome: blocked
@@ -188,15 +198,19 @@ outcomes:
   deviations:
   - Somatic spikes above 4 robust s.d. of the high-passed trace, where the claims file's standard choice is 5 (its header,
     item 4, says the choice cannot change the outcome). The 5 s.d. threshold misses closely spaced spikes in the burst files
-    (150 and 139 to 150 bAPs in the soma and D4+soma files, where the Fig. 3 legend counts 167 and 170); 4 s.d. gives 161
-    to 167. Assumed, as the reading the paper's own counts support; 5 s.d. is shown.
+    (139 to 150 and 148 to 150 bAPs in the soma and D4+soma files, where the Fig. 3 legend counts 167 and 170); 4 s.d. gives
+    161 to 165 and 167, closer to the legend's totals without reaching them. Assumed, as the reading closer to the paper's
+    counts in the burst files; 5 s.d. is shown. In the file of the legend's D2, 5 s.d. gives the legend's 84 bAPs exactly
+    and 4 s.d. 85 to 88.
   - The distal region is the traced line beyond 300 µm (claims file). The line was traced on the mean image as the brightest
     ridge, where the paper drew it by hand on a structural image; beyond about 400 µm it runs off the trunk (the mean image
     along it falls to 0.73 to 0.89 of the image median in the Fig. 2 and 3 files, notebook section "Where the regions lie"),
     so 300 to 400 µm is shown as a variant.
   - 'dSpike threshold at the first minimum of a Gaussian kernel density (Scott bandwidth) of the distal amplitudes above its
-    lowest mode (density peaks under a quarter of the highest are not modes), with interpolated FWHM < 5 ms; where the density
-    has one mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
+    failure mode (the lowest density peak at least a quarter as high as the highest), with interpolated FWHM < 5 ms. Any
+    minimum above the failure mode counts, whatever the size of the bump beyond it, so a few outlying large amplitudes also
+    get a threshold (the notebook shows how many amplitudes lie above each trough); where the density has no minimum above
+    the failure mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
     by hand. The claims file places it at the histogram''s trough; the trough between the two highest modes (tried while preparing,
     not in the notebook) falls between two small clusters of dSpikes and was not used.'
   - The soma file of the Fig. 3 neuron (index entry branch_stim (Fig.3), file soma).
@@ -207,24 +221,40 @@ outcomes:
   measured: 33
   notes: The file whose totals match the legend's D2 is the file named D4 (84 to 88 bAPs, legend 84). Its first bAP carries
     a dSpike in 33 (median filter) and 32 (Butterworth) of 54 trials with 4 s.d., within 35 ± 3.5; with the region cut at
-    400 µm, 34 in both. With the claims file's 5 s.d. the counts are 32 and 31, the Butterworth one just outside the tolerance,
-    so the outcome rests on the 4 s.d. threshold. The file named D2 gives 0 to 3. The claims file's statement that the somatic
+    400 µm, 34 in both. With the claims file's 5 s.d. the counts are 32 and 31, the Butterworth one just outside the tolerance
+    (33 in both between 300 and 400 µm), so the outcome rests on the 4 s.d. threshold. The criterion counts under the reading
+    whose totals match the legend, and in this file that is 5 s.d. (84 bAPs in both filter readings, against 85 to 88 at 4
+    s.d.), where the filter readings disagree; a change to blocked is proposed below. The file named D2 gives 0 to 3. The claims file's statement that the somatic
     threshold cannot change the outcome (header, item 4) is asked of a reader in questions/001266.yaml.
   deviations:
   - Somatic spikes above 4 robust s.d. of the high-passed trace, where the claims file's standard choice is 5 (its header,
     item 4, says the choice cannot change the outcome). The 5 s.d. threshold misses closely spaced spikes in the burst files
-    (150 and 139 to 150 bAPs in the soma and D4+soma files, where the Fig. 3 legend counts 167 and 170); 4 s.d. gives 161
-    to 167. Assumed, as the reading the paper's own counts support; 5 s.d. is shown.
+    (139 to 150 and 148 to 150 bAPs in the soma and D4+soma files, where the Fig. 3 legend counts 167 and 170); 4 s.d. gives
+    161 to 165 and 167, closer to the legend's totals without reaching them. Assumed, as the reading closer to the paper's
+    counts in the burst files; 5 s.d. is shown. In the file of the legend's D2, 5 s.d. gives the legend's 84 bAPs exactly
+    and 4 s.d. 85 to 88.
   - The distal region is the traced line beyond 300 µm (claims file). The line was traced on the mean image as the brightest
     ridge, where the paper drew it by hand on a structural image; beyond about 400 µm it runs off the trunk (the mean image
     along it falls to 0.73 to 0.89 of the image median in the Fig. 2 and 3 files, notebook section "Where the regions lie"),
     so 300 to 400 µm is shown as a variant.
   - 'dSpike threshold at the first minimum of a Gaussian kernel density (Scott bandwidth) of the distal amplitudes above its
-    lowest mode (density peaks under a quarter of the highest are not modes), with interpolated FWHM < 5 ms; where the density
-    has one mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
+    failure mode (the lowest density peak at least a quarter as high as the highest), with interpolated FWHM < 5 ms. Any
+    minimum above the failure mode counts, whatever the size of the bump beyond it, so a few outlying large amplitudes also
+    get a threshold (the notebook shows how many amplitudes lie above each trough); where the density has no minimum above
+    the failure mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
     by hand. The claims file places it at the histogram''s trough; the trough between the two highest modes (tried while preparing,
     not in the notebook) falls between two small clusters of dSpikes and was not used.'
   assumed: true
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: The criterion counts under the reading whose totals match the legend. In file D4 that is the claims file's 5 s.d.
+      somatic threshold, which gives the legend's 84 bAPs exactly in both filter readings (4 s.d. gives 85 to 88; notebook,
+      the fig3d table under claim:fig3d-distal-first-bap). At 5 s.d. and beyond 300 µm the median filter gives 32 of 54 first
+      bAPs with a dSpike, within 35 ± 3.5, and the Butterworth filter 31, outside it, so the filter readings disagree. The
+      4 s.d. threshold the outcome rests on does not give the legend's totals in this file, nor in the soma and D4+soma files
+      (161 to 165 against 167, and 167 against 170), so it has no better support than 5 s.d. here, and the paper does not
+      say which filter it used. The readings give different outcomes and no choice between them is defensible.
 - claim: fig3f-soma-plus-distal
   outcome: not_reproduced
   notebook: reproduce_park_2025.ipynb
@@ -239,15 +269,19 @@ outcomes:
   deviations:
   - Somatic spikes above 4 robust s.d. of the high-passed trace, where the claims file's standard choice is 5 (its header,
     item 4, says the choice cannot change the outcome). The 5 s.d. threshold misses closely spaced spikes in the burst files
-    (150 and 139 to 150 bAPs in the soma and D4+soma files, where the Fig. 3 legend counts 167 and 170); 4 s.d. gives 161
-    to 167. Assumed, as the reading the paper's own counts support; 5 s.d. is shown.
+    (139 to 150 and 148 to 150 bAPs in the soma and D4+soma files, where the Fig. 3 legend counts 167 and 170); 4 s.d. gives
+    161 to 165 and 167, closer to the legend's totals without reaching them. Assumed, as the reading closer to the paper's
+    counts in the burst files; 5 s.d. is shown. In the file of the legend's D2, 5 s.d. gives the legend's 84 bAPs exactly
+    and 4 s.d. 85 to 88.
   - The distal region is the traced line beyond 300 µm (claims file). The line was traced on the mean image as the brightest
     ridge, where the paper drew it by hand on a structural image; beyond about 400 µm it runs off the trunk (the mean image
     along it falls to 0.73 to 0.89 of the image median in the Fig. 2 and 3 files, notebook section "Where the regions lie"),
     so 300 to 400 µm is shown as a variant.
   - 'dSpike threshold at the first minimum of a Gaussian kernel density (Scott bandwidth) of the distal amplitudes above its
-    lowest mode (density peaks under a quarter of the highest are not modes), with interpolated FWHM < 5 ms; where the density
-    has one mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
+    failure mode (the lowest density peak at least a quarter as high as the highest), with interpolated FWHM < 5 ms. Any
+    minimum above the failure mode counts, whatever the size of the bump beyond it, so a few outlying large amplitudes also
+    get a threshold (the notebook shows how many amplitudes lie above each trough); where the density has no minimum above
+    the failure mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
     by hand. The claims file places it at the histogram''s trough; the trough between the two highest modes (tried while preparing,
     not in the notebook) falls between two small clusters of dSpikes and was not used.'
   - The legend's Soma + D2 is the file D4+soma (see source-data-index).
@@ -261,16 +295,19 @@ outcomes:
   notebook: reproduce_park_2025.ipynb
   output: claim:fig3-predepolarization-rule
   notes: The stimulus-triggered distal -dF/F rises above its baseline by 2 s.d. within 2 to 5 ms of stimulus onset in every
-    file. Only 45 to 48% of dSpikes come after 15 ms or more of distal depolarization (criterion 90%), while 87 to 89% of
-    bAPs that come earlier fail (criterion 90%). The early dSpikes are mostly first-bAP dSpikes under distal stimulation (file
-    D4, 7 to 8) and dSpikes in the D4+soma file (45 to 53). The onset measure is the claims file's standard choice; one that
+    file. Only 44 to 48% of dSpikes come after 15 ms or more of distal depolarization (criterion 90%), while 87 to 89% of
+    bAPs that come earlier fail (criterion 90%). Of the 58 to 69 earlier dSpikes, 45 to 53 are in the D4+soma file, mostly
+    on its third bAP (46 to 51 third-bAP and 2 second-bAP dSpikes at 4 s.d.; 30 to 35 and 14 to 15 at 5 s.d.), and 7 to 8
+    are first-bAP dSpikes in file D4. The onset measure is the claims file's standard choice; one that
     waits for a larger depolarization would move these numbers.
   deviations:
   - Only the neuron of Figs. 2, 3 and S8 (six files, one per stimulus location) is in the dandiset, of the 17.
   - Somatic spikes above 4 robust s.d. of the high-passed trace, where the claims file's standard choice is 5 (its header,
     item 4, says the choice cannot change the outcome). The 5 s.d. threshold misses closely spaced spikes in the burst files
-    (150 and 139 to 150 bAPs in the soma and D4+soma files, where the Fig. 3 legend counts 167 and 170); 4 s.d. gives 161
-    to 167. Assumed, as the reading the paper's own counts support; 5 s.d. is shown.
+    (139 to 150 and 148 to 150 bAPs in the soma and D4+soma files, where the Fig. 3 legend counts 167 and 170); 4 s.d. gives
+    161 to 165 and 167, closer to the legend's totals without reaching them. Assumed, as the reading closer to the paper's
+    counts in the burst files; 5 s.d. is shown. In the file of the legend's D2, 5 s.d. gives the legend's 84 bAPs exactly
+    and 4 s.d. 85 to 88.
   - The distal region is the traced line beyond 300 µm (claims file). The line was traced on the mean image as the brightest
     ridge, where the paper drew it by hand on a structural image; beyond about 400 µm it runs off the trunk (the mean image
     along it falls to 0.73 to 0.89 of the image median in the Fig. 2 and 3 files, notebook section "Where the regions lie"),
@@ -291,8 +328,10 @@ outcomes:
     along it falls to 0.73 to 0.89 of the image median in the Fig. 2 and 3 files, notebook section "Where the regions lie"),
     so 300 to 400 µm is shown as a variant.
   - 'dSpike threshold at the first minimum of a Gaussian kernel density (Scott bandwidth) of the distal amplitudes above its
-    lowest mode (density peaks under a quarter of the highest are not modes), with interpolated FWHM < 5 ms; where the density
-    has one mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
+    failure mode (the lowest density peak at least a quarter as high as the highest), with interpolated FWHM < 5 ms. Any
+    minimum above the failure mode counts, whatever the size of the bump beyond it, so a few outlying large amplitudes also
+    get a threshold (the notebook shows how many amplitudes lie above each trough); where the density has no minimum above
+    the failure mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
     by hand. The claims file places it at the histogram''s trough; the trough between the two highest modes (tried while preparing,
     not in the notebook) falls between two small clusters of dSpikes and was not used.'
   - Index entry branch_adaptation (Fig.4a).
@@ -314,15 +353,20 @@ outcomes:
   output: claim:fig4d-example-alternation
   notes: Only 0 to 3 of the 58 to 160 bAPs in the five wide-field epochs carry a dSpike, so no epoch alternates; the best
     epoch matches the target sequence at 7 or 8 of 12 positions, mostly through failures. The outputs do not show whether
-    the alternation is missed by the dSpike rule (a trough threshold in a recording with few dSpikes) or absent.
+    the alternation is missed by the dSpike rule (a trough threshold in a recording with few dSpikes) or absent. The troughs
+    here have 1 to 6 amplitudes above them and a bump beyond them 0.02 to 0.08 as high as the failure mode, so the 0 to 3
+    dSpikes rest on a few outlying amplitudes. Somatic detection is unstable in this file (58 to 160 bAPs across readings)
+    and is not validated against a patch recording.
   deviations:
   - The distal region is the traced line beyond 300 µm (claims file). The line was traced on the mean image as the brightest
     ridge, where the paper drew it by hand on a structural image; beyond about 400 µm it runs off the trunk (the mean image
     along it falls to 0.73 to 0.89 of the image median in the Fig. 2 and 3 files, notebook section "Where the regions lie"),
     so 300 to 400 µm is shown as a variant.
   - 'dSpike threshold at the first minimum of a Gaussian kernel density (Scott bandwidth) of the distal amplitudes above its
-    lowest mode (density peaks under a quarter of the highest are not modes), with interpolated FWHM < 5 ms; where the density
-    has one mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
+    failure mode (the lowest density peak at least a quarter as high as the highest), with interpolated FWHM < 5 ms. Any
+    minimum above the failure mode counts, whatever the size of the bump beyond it, so a few outlying large amplitudes also
+    get a threshold (the notebook shows how many amplitudes lie above each trough); where the density has no minimum above
+    the failure mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
     by hand. The claims file places it at the histogram''s trough; the trough between the two highest modes (tried while preparing,
     not in the notebook) falls between two small clusters of dSpikes and was not used.'
   - Index entry branch_bifurcation (Fig.4c,d). The soma search was limited to the lower 30% of the frame, where the soma is.
@@ -332,17 +376,24 @@ outcomes:
   output: claim:figs15-stochastic
   notes: Each of the twenty 100 ms stimuli is a trial; the 488 nm drive is the same in all twenty (0.200 V), so they are repeats.
     Somatic spike times at the same bAP position span 14 to 85 ms across trials (s.d. 2.8 to 24 ms), not within 2 ms, and
-    bAPs per trial vary (2 to 9). Beyond 300 µm the distal amplitudes have one density mode in every reading, so no dSpike
-    can be called; between 300 and 400 µm, 3 to 6 dSpikes in three readings give 7 or 8 distinct sequences, and every trial
-    ends in failures. The spike-time part fails under every reading.
+    bAPs per trial vary (2 to 9). The somatic counts change with the reading (71 to 132 bAPs), so missed or extra spikes that
+    shift the positions may produce part of this spread. Beyond 300 µm the distal amplitudes have no density trough in any
+    reading, so no dSpike can be called; between 300 and 400 µm, 3 to 6 dSpikes in three readings give 7 or 8 distinct
+    sequences, and every trial ends in failures. The spike-time part fails under every reading. The Fig. S15 legend ("The
+    spike train in the soma was regular, but the pattern of bAP propagation showed trial-to-trial variability") may mean
+    regularity within a train, which the criterion does not test; this is asked of a reader in questions/001266.yaml. As a
+    variant, the coefficient of variation of the somatic inter-spike intervals within a trial has a median of 0.29 to 0.34
+    (range 0 to 0.72); the paper gives no bound for regular, so the variant does not decide the claim.
   deviations:
   - The distal region is the traced line beyond 300 µm (claims file). The line was traced on the mean image as the brightest
     ridge, where the paper drew it by hand on a structural image; beyond about 400 µm it runs off the trunk (the mean image
     along it falls to 0.73 to 0.89 of the image median in the Fig. 2 and 3 files, notebook section "Where the regions lie"),
     so 300 to 400 µm is shown as a variant.
   - 'dSpike threshold at the first minimum of a Gaussian kernel density (Scott bandwidth) of the distal amplitudes above its
-    lowest mode (density peaks under a quarter of the highest are not modes), with interpolated FWHM < 5 ms; where the density
-    has one mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
+    failure mode (the lowest density peak at least a quarter as high as the highest), with interpolated FWHM < 5 ms. Any
+    minimum above the failure mode counts, whatever the size of the bump beyond it, so a few outlying large amplitudes also
+    get a threshold (the notebook shows how many amplitudes lie above each trough); where the density has no minimum above
+    the failure mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
     by hand. The claims file places it at the histogram''s trough; the trough between the two highest modes (tried while preparing,
     not in the notebook) falls between two small clusters of dSpikes and was not used.'
   - The file holds twenty 100 ms stimuli at 5 Hz; the paper does not say what a trial is for Fig. S15, and each stimulus is
@@ -372,20 +423,24 @@ outcomes:
   outcome: blocked
   notebook: reproduce_park_2025.ipynb
   output: claim:figs17e-ttx-high-dose
-  notes: The filter readings disagree on whether the baseline has dSpikes at all. In 5 of 8 readings (all four median-filter
-    readings, and Butterworth at 4 s.d. between 300 and 400 µm) the baseline's distal amplitudes have one density mode, so
-    no dSpike threshold exists. In the other 3 (Butterworth) the baseline has 6, 2 and 22 dSpikes, and the 100 nM recording
+  notes: The filter readings differ on whether the baseline's dSpikes can be counted at all. In 5 of 8 readings (all four
+    median-filter readings, and Butterworth at 4 s.d. between 300 and 400 µm) the baseline's distal amplitudes have no density
+    trough, so no dSpike threshold exists and the count is undefined. In the other 3 (Butterworth) the baseline has 6, 2 and 22 dSpikes, and the 100 nM recording
     has somatic spikes (1, 1 and 8 bAPs) and no dSpike under the baseline's threshold, as the claim says. Somatic bAPs fall
     from 18 to 62 to 1 to 12 at 100 nM, and the largest distal amplitude from 1.5 to 3.0% to 0.1 to 0.8%; at 500 nM no somatic
-    spike is found. The question for the paper's authors is the one on thresholds below.
+    spike is found. Under its own threshold (0.34%, below the baseline's 0.96%) the 100 nM file has 4 dSpikes in the Butterworth
+    reading at 4 s.d. beyond 300 µm. The somatic counts vary threefold with the reading (18 to 62 at baseline) and are not
+    validated against a patch recording. The question for the paper's authors is the one on thresholds below.
   deviations:
   - The distal region is the traced line beyond 300 µm (claims file). The line was traced on the mean image as the brightest
     ridge, where the paper drew it by hand on a structural image; beyond about 400 µm it runs off the trunk (the mean image
     along it falls to 0.73 to 0.89 of the image median in the Fig. 2 and 3 files, notebook section "Where the regions lie"),
     so 300 to 400 µm is shown as a variant.
   - 'dSpike threshold at the first minimum of a Gaussian kernel density (Scott bandwidth) of the distal amplitudes above its
-    lowest mode (density peaks under a quarter of the highest are not modes), with interpolated FWHM < 5 ms; where the density
-    has one mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
+    failure mode (the lowest density peak at least a quarter as high as the highest), with interpolated FWHM < 5 ms. Any
+    minimum above the failure mode counts, whatever the size of the bump beyond it, so a few outlying large amplitudes also
+    get a threshold (the notebook shows how many amplitudes lie above each trough); where the density has no minimum above
+    the failure mode no threshold exists and the dSpike count is undefined, not zero. An assumption: the paper set its thresholds
     by hand. The claims file places it at the histogram''s trough; the trough between the two highest modes (tried while preparing,
     not in the notebook) falls between two small clusters of dSpikes and was not used.'
   - Index entries baseline_TTX and after_TTX (100nM; Fig.S17e); four 1 s ramps each.
@@ -406,8 +461,9 @@ outcomes:
   notes: With one threshold for the three files, the baseline's (defined in all 8 readings), every reading and both duration
     readings give no putative Ca2+ spike (distal event over 20 ms after a 151 ms moving median is removed) at baseline, 1.0
     to 2.5 per stimulus after Ba2+, and none after Ba2+ with Ni2+ (16 of 16). With the Ba2+ file's threshold the pattern holds
-    in the 12 readings where it is defined. With each file's own threshold the Ni2+ file has no trough in 6 of 8 readings
-    and the Ba2+ file in 2, so that comparison is defined in 2 readings, where it holds (0, 2.0 to 3.75, 0).
+    in all 12 cases where it is defined (4 undefined). With each file's own threshold the Ni2+ file has no trough in 7 of 8
+    readings and the Ba2+ file in 2, so that comparison is defined in one reading only (Butterworth, 5 s.d., beyond 300 µm),
+    where it holds (0, 2.0 or 2.5, 0).
   deviations:
   - The distal region is the traced line beyond 300 µm (claims file). The line was traced on the mean image as the brightest
     ridge, where the paper drew it by hand on a structural image; beyond about 400 µm it runs off the trunk (the mean image
@@ -441,8 +497,8 @@ outcomes:
 - claim: figs20-model-robustness
   outcome: not_reproduced
   notebook: simulations_park_2025.ipynb
-  notes: All 429 runs of the three phase diagrams ran (154, 154 and 121, the grids of Plot_Phase_Diagrams.m; about 34 min
-    on 4 processes). With the -40 mV at 500 µm rule on the first 6 bAPs, the motif F S+ F+ occupies 11 of 154 cells of Fig.
+  notes: All 429 runs of the three phase diagrams ran (154, 154 and 121, the grids of Plot_Phase_Diagrams.m; 22 to 31
+    min on 4 processes over two runs). With the -40 mV at 500 µm rule on the first 6 bAPs, the motif F S+ F+ occupies 11 of 154 cells of Fig.
     S20c in 2 regions at the lowest dendritic NaV, 17 of 154 of Fig. S20d in one region, and none of the 121 of Fig. S20e.
     In none does the motif region include the Table 1 parameters, where the runs give SSFFFF, SSSFFF or SSSSFF. The published
     matrices in the same zip give the motif in 51, 48 and 88 cells, including every Table 1 cell, and the 6-bAP pattern of
@@ -519,8 +575,9 @@ outcomes:
   output: claim:fig5d-single-bap-no-plateau
   notes: The two window readings disagree on the one cell of five in the dandiset (four 10 ms files of index entry Plateau_varying_timing
     (Fig.5c)). Up to the end of the cumulative rise (a) the ratio is 2.58 (+30 ms), 1.35 (+100), 3.77 (-100) and 1.06 (-30),
-    above 2 in two timings. To the end of the epoch (b) the single-stimulus areas are near zero or negative and the ratios
-    are -2.03, 1.59, -9.9 and 1.28. The criterion makes disagreeing window readings methods_underspecified. The question for
+    above 2 in two timings. To the end of the epoch (b) the single-stimulus areas sum to a negative value at +30 and -100
+    ms, so the ratio is undefined there (printed as -2.03 and -9.9), and it is 1.59 and 1.28 at +100 and -30 ms. Reading (a)
+    fails the claim at two timings and reading (b) leaves those two undecided. The criterion makes disagreeing window readings methods_underspecified. The question for
     the paper's authors is the integration window.
   deviations:
   - One of the five cells.
@@ -559,7 +616,10 @@ outcomes:
   notes: The dendrite-minus-soma -dF/F is positive from 30 to 300 ms in 8 of 9 cells (7 of 9 with the region beyond 200 µm),
     but the longest persistence after the stimulus ends is 206 ms (5 ms smoothing) or 222 ms (20 ms) with the region anywhere
     on the trunk, and 170 or 220 ms beyond 200 µm, short of 270 to 330 in every reading. Cell 160204, with a positive mean
-    difference (+1.3 to +2.7%), returns within 2 s.d. at once (0 to 6 ms) in every reading.
+    difference (+1.3 to +2.7%), returns within 2 s.d. at once (0 to 6 ms) in every reading. The measure counts a deviation of
+    either sign as persisting (002658, with a negative mean difference, gets 134 ms with 20 ms smoothing); counting only a
+    positive difference gives 002658 0 ms and leaves the longest persistence unchanged (206, 222, 170 and 220 ms). The 20 ms
+    smoothing lengthens the median persistence but turns two cells beyond 200 µm into 0 ms returns (215424, 204403).
   deviations:
   - The nine files of the index's Plateau (Fig.S22) entries are taken as the nine neurons of the Fig. S23 gallery.
   - The dendritic region (5 segments, about 33 µm, the Methods' example width) is chosen per cell as the one with the largest
@@ -589,11 +649,20 @@ outcomes:
     2 kHz, 254 of 1159 are missed and 385 added. The two rates together hold 2265 electrical spikes, close to the paper's
     2212. Counting an electrical spike only after the membrane repolarized below -30 mV (largest rate 91 Hz, against 333 and
     263 Hz with the 3 ms rule) gives 1105 spikes with 5 missed and 19 added at 1 kHz, and 1107 with 189 missed and 372 added
-    at 2 kHz, so the false detections are not an artefact of the electrical count. The maximum-likelihood pixel weighting
-    was not run.
+    at 2 kHz, so the false detections are not an artefact of the electrical count. Two NEV variants were added. Reading (a)
+    in the quietest 1 s window after the first second gives 2.1 ± 0.6 mV at 1 kHz and 3.4 ± 1.1 mV at 2 kHz. With the Methods'
+    maximum-likelihood pixel weighting it gives 1.9 ± 0.6 and 2.5 ± 0.5 mV (in the first second 3.5 ± 0.7 and 7.6 ± 3.8;
+    reading b 3.2 ± 0.9 and 4.3 ± 0.7), so the 2 kHz value falls within 2.5 ± 0.8 and the 1 kHz value stays above 1.2 ± 0.5;
+    the weights lower the sensitivity to 8.1 ± 2.2% at 1 kHz, and 8 spikes are missed and 20 added at 1 kHz (181 and 297 at
+    2 kHz). The false detections fail the criterion's zero under every reading, so the outcome does not depend on the NEV.
   deviations:
-  - Fluorescence is the mean of the brightest 20% of pixels (the Methods' unweighted region), not the maximum-likelihood weighting
-    the Methods also describe; the weighting would lower the noise.
+  - Fluorescence is the mean of the brightest 20% of pixels (the Methods' unweighted region). The Methods' maximum-likelihood
+    weighting ("the fluorescence at each pixel was correlated with the whole-field average fluorescence. Pixels that showed
+    stronger correlation to the mean were preferentially weighted", Methods, Extracting fluorescence from movies) is shown
+    as a variant, each pixel weighted by its regression slope on the whole-field mean over its residual variance, both from
+    frame-to-frame differences so that bleaching does not enter (a choice made here; the paper gives no detail).
+  - NEV reading (a) uses the first second, as before; the quietest 1 s window after it (least variance of the membrane
+    potential) is shown as a variant.
   - Optical spikes use the claims file's 5 s.d. rule on the high-passed trace; the paper set its threshold by hand.
   - Membrane potential uses the dandiset description's gain of 50 mV/V.
 - claim: figs2d-frame-rate-same-sensitivity
@@ -682,9 +751,11 @@ findings:
   statement: 'Question for the paper''s authors: what somatic spike threshold, dSpike threshold and distal region (its far
     end along the dendrite) were used for the bAP and dSpike counts of Figs. 2 to 4 and S8 to S18? The Methods say the thresholds
     were set by hand and the region was typically beyond 300 µm. Here a somatic threshold of 5 robust s.d. misses spikes in
-    bursts (150 against the legend''s 167 and 170 bAPs), and the counts for Fig. 3f move from 46 to 51 of 54 when the region
+    bursts (139 to 150 against the legend''s 167 and 170 bAPs), and the counts for Fig. 3f move from 46 to 51 of 54 when the region
     stops at 400 µm. In several example recordings (the Fig. S15 file beyond 300 µm, the TTX baseline under the median filter,
-    the Ni2+ file of Fig. S18g) the distal amplitudes have one density mode, so no trough threshold exists.'
+    the Ni2+ file of Fig. S18g) the density of the distal amplitudes has no minimum above its failure mode, so no trough
+    threshold exists. In the file of the Fig. 3 legend''s D2, the first-bAP count is within tolerance under one high-pass
+    filter and just outside it under the other (32 and 31 of 54, tolerance 31.5 to 38.5).'
 - kind: methods_unavailable
   statement: 'Question for the paper''s authors: how was dF_ref taken when bAPs come in bursts during a 20 ms stimulus, and
     over what range and with what amplitude measure was the length constant of Fig. 2h fitted? With the reference 10 to 20
@@ -919,7 +990,7 @@ verifications:
     reason: Blocked (too_large). About 60 min for the 154 runs of Fig. S20c (23 s each); that is feasible, so this is not
       a convincing too_large (disputed).
     response: 'Outcome changed from blocked (too_large) to not_reproduced: all 429 runs of the three diagrams were run on
-      4 processes (about 34 min). The motif region includes the Table 1 parameters in none of them.'
+      4 processes (22 to 31 min over two runs). The motif region includes the Table 1 parameters in none of them.'
   - claim: figs20ab-model-patch-vs-opto
     agrees: true
     outcome: reproduced
@@ -1047,4 +1118,375 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Blocked (data_missing). There are no eYFP images or Fig. S3e calibration data in the dandiset.
+    response: No change.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebooks, with their conclusions and summaries, the helper module, the claims file
+    and the attempt record, with the paper. Report in transcripts/001266/verifier-2-report.md.
+  results:
+  - claim: source-data-index
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with 54 of the 55 outcomes (report, section 1). In [15], "161 to 167 and 165 to 170 bAPs with the 4 s.d.
+      variant" is wrong: at 4 s.d. the D4+soma file has 167 in both readings; and "the totals of the legend (167, 170) are
+      met only at 4" is wrong, as they are not met at 4.'
+    response: 'Corrected [15]: 161 to 165 (soma) and 167 (D4+soma) bAPs at 4 s.d., closer to the legend''s totals without
+      reaching them. The same correction is made in the record''s threshold deviations, which now also say that file D4 has
+      exactly 84 bAPs at 5 s.d.'
+  - claim: fig2a-dspike-dichotomy
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 54 of the 55 outcomes (report, section 1). Under the region cut at 400 µm the Butterworth reading
+      gives 6, not 8 (B3).
+    response: No change; the notes already give 6 under the Butterworth filter with the region cut at 400 µm.
+  - claim: fig2b-bimodal-distal-amplitudes
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1).
+    response: No change.
+  - claim: fig2e-f-dspike-maps
+    agrees: true
+    outcome: not_reproduced
+    reason: 'not_reproduced holds under the claims file''s region (beyond 300 µm). The record''s note "Neither of the criterion''s
+      thresholds is met under any reading" is wrong: the +dSpike threshold is met beyond 300 µm (1.01 to 1.06 ≥ 1); only both
+      together are never met.'
+    response: 'Corrected the notes: the two thresholds are never met together, and the +dSpike threshold alone is met beyond
+      300 µm (1.01 to 1.06).'
+  - claim: fig2h-length-constant
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The notes' "109 to 110 -dSpike bAPs in the Fig. 2 file"
+      should be 106 to 110 [31]; measured 1488.2 is the median k=4 variant, the claims-setting value is 1457.0 (minor).
+    response: Corrected the notes to 106 to 110 and measured to 1457.0, the claims file's setting.
+  - claim: fig3-subthreshold-no-dendritic-initiation
+    agrees: true
+    outcome: not_reproduced
+    reason: The outcome holds at both 4 and 5 s.d., because the D4+soma events remain. Whether those events are noise is unresolved,
+      as the record says.
+    response: No change.
+  - claim: fig3-two-motifs-location-independent
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 54 of the 55 outcomes (report, section 1).
+    response: No change.
+  - claim: fig3h-dspike-peak-distance
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: fig3g-later-bap-ratio
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: figs12-bap-velocity
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: fig3e-soma-third-bap
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 54 of the 55 outcomes (report, section 1). In [44], "the 4 s.d. threshold (which gives the legend's
+      bAP total, 161 to 165 against 167)" contradicts itself.
+    response: 'Corrected the conclusion: 4 s.d. gives 161 to 165 bAPs against 167, closer than the 139 to 150 at 5 s.d.'
+  - claim: fig3d-distal-first-bap
+    agrees: false
+    outcome: blocked
+    reason: Disagree; blocked (methods_underspecified). The 4 s.d. assumption is stated but not reasonable for this file. The criterion asks for the count under
+      the reading whose total counts match the legend; file D4 has exactly the legend's 84 bAPs at 5 s.d., and 85 to 88 at
+      4 s.d., so the criterion points to 5 s.d. There the median filter gives 32 (inside 31.5 to 38.5) and the Butterworth
+      filter 31 (outside); the readings disagree, so the claim should be blocked (methods_underspecified). The 4 s.d. justification
+      comes from the two burst files, and even there 4 s.d. does not reach the legend's totals (161 to 165 against 167, and
+      167 against 170). The response misstated B2, which said running k=4 as a variant was right, not adopting it.
+    response: 'Outcome kept as reproduced, as round 2 may not change it; a change to blocked (methods_underspecified) is proposed
+      on the outcome, with the reason. Added a table that shows, for files D4 and D2 under every reading, the bAP total against
+      the legend''s 84 and the first-bAP count against 35 ± 3.5: only the four 5 s.d. readings match the total, and of them
+      the Butterworth reading beyond 300 µm is outside the tolerance (31). The notes, the conclusion and the summary say so,
+      and the round-1 response''s reading of B2 is withdrawn.'
+  - claim: fig3f-soma-plus-distal
+    agrees: true
+    outcome: not_reproduced
+    reason: not_reproduced holds under the claims file's region (beyond 300 µm). fig3f passes when the region is cut at 400
+      µm (51 and 49), and [19] shows the traced line leaves the trunk beyond about 400 µm.
+    response: No change; the notes give the 400 µm variant and why it is not adopted.
+  - claim: fig3i-distance-dependence
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: fig3-predepolarization-rule
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with 54 of the 55 outcomes (report, section 1). In [47], "The early dSpikes are mostly … second-bAP dSpikes
+      in the D4+soma file" is wrong: the D4+soma dSpikes are mostly on the third bAP (2 on the second against 46 to 51 on
+      the third at 4 s.d.; 14 against 30 to 35 at 5 s.d.). "only 45 to 48%" should be 44% at the low end (minor).'
+    response: 'Corrected the conclusion and the notes: 44 to 48%, and of the 58 to 69 earlier dSpikes 45 to 53 are in the
+      D4+soma file, mostly on its third bAP.'
+  - claim: figs13-ramp-first-spike
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: fig4a-step-example
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 54 of the 55 outcomes (report, section 1).
+    response: No change.
+  - claim: fig4b-dspike-window
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: fig4b-few-late-dspikes
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: fig4ce-period-doubling
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: fig4d-example-alternation
+    agrees: true
+    outcome: not_reproduced
+    reason: not_reproduced, but it rests on a dSpike rule and a somatic detection that are not validated. The rule's statement
+      that density peaks under a quarter of the highest are not modes only picks the lowest mode and does not stop a trough
+      in front of a small tail bump (on 100 failures around 0.4 plus 2 outliers near 0.95 to 1.0, first_min_threshold returns
+      0.78, not undefined) (B1); 174900 gives 58 to 160 bAPs across readings (B12). In [58], "8 of 12 positions" is 7/12 in
+      the Butterworth k=5 readings (minor).
+    response: 'Corrected the helper''s docstring, the record''s deviations and the notebook to the rule as it runs: the quarter
+      applies to the failure mode only, and any minimum above it counts. The rule is kept: a few dSpikes among many failures
+      also make a low bump (on synthetic data 8 dSpikes among 100 failures give a bump 0.08 as high as the failure mode, 2
+      outliers 0.03), so a bump-height rule would also drop the 8 dSpikes of Fig. 2. Added, for each example file, the number
+      of amplitudes above the trough and the bump''s height: in 174900 the troughs have 1 to 6 amplitudes above them and a
+      bump 0.02 to 0.08 high, which the notes now state. Corrected 8 of 12 to 7 or 8 of 12. Somatic detection in this file
+      is still not validated; it has no patch channel, which the notes state.'
+  - claim: figs15-stochastic
+    agrees: true
+    outcome: not_reproduced
+    reason: The claims file may misread the paper. Its criterion requires somatic spike times "within 2 ms of each other across
+      trials"; the Fig. S15 legend (supp1) says only "The spike train in the soma was regular, but the pattern of bAP propagation
+      showed trial-to-trial variability", which more naturally means regular within a train, which was not tested. The 14
+      to 85 ms spreads also coincide with unstable somatic counts (71 to 132 bAPs across readings), so misaligned spike positions
+      may produce them.
+    response: Added the question to questions/001266.yaml for a reader; the claim is tested as written. Added the within-train
+      reading as a variant (coefficient of variation of the somatic inter-spike intervals per trial, median 0.29 to 0.34),
+      which cannot decide the claim as the paper gives no bound for regular. The conclusion and notes now say that the count
+      instability may produce part of the spread.
+  - claim: figs14-low-rate-attenuation
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: figs14-high-rate-window
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: figs16-ba-increases-dspikes
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: figs16-4ap-increases-dspikes
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: figs17-ttx-decreases-dspikes
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: figs17e-ttx-high-dose
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (methods_underspecified) is reasonable. Two omissions: under the median filter the count is undefined,
+      not opposite, so "disagree" overstates it; and under its own threshold the 100 nM file has 4 dSpikes in the Butterworth
+      k=4 >300 µm reading [63], which the result leaves out.'
+    response: 'Corrected the conclusion and the notes: under the median filter the baseline count is undefined; added the
+      4 dSpikes of the 100 nM file under its own threshold (0.34%, below the baseline''s 0.96%).'
+  - claim: figs18e-ni-no-effect-on-dspikes
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: figs18-ni-blocks-calcium-spikes
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: figs18g-ba-increases-calcium-spikes
+    agrees: true
+    outcome: reproduced
+    reason: Agree. [67], repeated in the record's notes, says the Ni2+ file has no trough in 6 of 8 readings; [52] shows 7
+      of 8. The per-file comparison is defined in one reading only (Butterworth k=5 >300 µm), with Ba2+ means of 2.0 and 2.5,
+      not up to 3.75; at Butterworth k=4 300 to 400 µm the Ni2+ file is NaN.
+    response: 'Corrected the conclusion and the notes: 7 of 8, one reading, 2.0 or 2.5.'
+  - claim: fig4f-g-model-accelerometer
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 54 of the 55 outcomes (report, section 1).
+    response: No change.
+  - claim: figs20-model-robustness
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 54 of the 55 outcomes (report, section 1). [S15] and the record's notes and response give "about
+      34 min on 4 processes"; [S13] prints 22 s plus 22.3 min, and the whole notebook ran in 23.9 min [S20]. The README gives
+      about 37 minutes.
+    response: Corrected [S15], the notes, the round-1 response, the README and entry.yaml to the printed times. The sweep
+      took 31.1 min and the notebook 33.6 min in the final run, so the times are given as a range.
+  - claim: figs20ab-model-patch-vs-opto
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 54 of the 55 outcomes (report, section 1).
+    response: No change.
+  - claim: figs21-izhikevich
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The criterion itself names the Methods' parameters, and the Methods give u_D = -13.
+    response: No change.
+  - claim: fig5a-plateau-collision
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 54 of the 55 outcomes (report, section 1).
+    response: No change.
+  - claim: fig5b-supralinear-auc
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with 54 of the 55 outcomes (report, section 1). The summary''s "All results except the Fig. S2 ones rest
+      on one neuron or one example recording per claim" is wrong: fig5b uses 10 cells and figs23 uses 9.'
+    response: Corrected the summary.
+  - claim: fig5d-timing-window
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: fig5d-single-bap-no-plateau
+    agrees: true
+    outcome: blocked
+    reason: Agree. Under window (b) the ratios at +30 and -100 ms are undefined, not lower; the disagreement is between a
+      fail under (a) and undefined under (b) (B10).
+    response: 'Corrected the conclusion and the notes: under (b) the single-stimulus areas sum to a negative value at +30
+      and -100 ms, so the ratio is undefined there.'
+  - claim: fig5ef-late-efs-no-plateau
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: fig5gh-weak-step-equal
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: fig6-dap5-reduces-plateau
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: fig6-ni-reduces-plateau
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: fig6-ttx-reduces-plateau
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: figs24-drugs-selective
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: figs23-dendrite-drives-soma
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agree. Cell 160204 still gets 0 to 6 ms, and the measure counts deviations of either sign: 002658, with a negative
+      mean difference, gets 134 ms. The outcome holds in every reading (B8). In [81], "The 20 ms smoothing removes most of
+      the noise-driven early returns" is not supported: beyond 200 µm it creates new 0 ms returns (215424 from 2.1 to 0.0
+      ms, 204403 from 3.1 to 0.0 ms) (minor).'
+    response: Added a signed variant that counts only a positive difference as persisting (002658 gets 0 ms; the longest persistence
+      is unchanged, 206, 222, 170 and 220 ms). Corrected the sentence on the 20 ms smoothing.
+  - claim: figs25-temperature
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: figs1-no-perturbation
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: figs2-imaging-fidelity
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. The noise-equivalent voltage was still computed without the maximum-likelihood pixel weighting, which the
+      Methods describe and which would lower the noise; the NEV with that weighting and away from the first second was not
+      run, and the NEV failure may hinge on it (B14).
+    response: 'Ran both: the maximum-likelihood weighting (each pixel weighted by its slope on the whole-field mean over its
+      residual variance) and reading (a) in the quietest 1 s window after the first second. In the quiet window with the weighting
+      the NEV is 1.9 ± 0.6 mV at 1 kHz (outside 1.2 ± 0.5) and 2.5 ± 0.5 mV at 2 kHz (within 2.5 ± 0.8). The false detections
+      stay under every reading (8 and 20 at 1 kHz with the weights), so the outcome holds.'
+  - claim: figs2d-frame-rate-same-sensitivity
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 54 of the 55 outcomes (report, section 1).
+    response: No change.
+  - claim: figs3-eyfp-dosimetry
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: figs4-stimulus-localization
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: figs5-focal-selectivity
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
+    response: No change.
+  - claim: fig1-denoising-variance
+    agrees: true
+    outcome: blocked
+    reason: Acceptable under the claims header's rule. The only reading that passes is raw counts, which [50] itself says
+      measures resting brightness.
+    response: No change.
+  - claim: fig3-cheriff-current
+    agrees: true
+    outcome: blocked
+    reason: I agree with 54 of the 55 outcomes (report, section 1). The single-cell parts of the blocked claims were not run
+      "for lack of time"; this does not change any blocked outcome (B4).
     response: No change.
