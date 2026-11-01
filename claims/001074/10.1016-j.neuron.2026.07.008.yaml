@@ -248,6 +248,9 @@ claims:
     threshold (morse_figs3_rev cells 139-143). Cells per sensor per probe is the total number of
     cells divided by the number of (probe, sensor) pairs with at least one cell (cells 139, 144,
     506/84). Percentiles by numpy's default linear interpolation (cell 142, which prints 8.25).
+  data: with_labels
+  depends_on:
+  - link-revision-well-order
 - id: fig1g-all-ten-sensors-respond
   statement: Dipping ten-sensor probes into each ligand in turn gave rapid, strong and consistent
     responses in a subset of cells for each ligand, and all ten sensors were activated.
@@ -260,7 +263,9 @@ claims:
     minus mean of the lowest 10%), except that the DA and NE sensors and the AVP and OXT sensors may
     also respond to each other's ligand (fig1h-crosstalk-pairs). Background correction by an
     exponential fit to the signal before activation (Methods), as in morse_figs3_rev cells 21-24.
+  data: with_labels
   depends_on:
+  - link-revision-well-order
   - fig1g-sensor-yield
 - id: fig1h-crosstalk-pairs
   statement: Among the ten sensors, only the DA and NE sensors, and to a lesser extent the AVP and
@@ -279,7 +284,9 @@ claims:
     Reproduced when the DA-NE correlation is the largest off-diagonal value, the AVP-OXT
     correlation is the second largest, and every other pair is lower than both. Variant (code, cell
     219), a band-pass 3-minute dipping artefact subtracted before averaging.
+  data: with_labels
   depends_on:
+  - link-revision-well-order
   - fig1g-sensor-yield
 - id: table1-ec50-on-target
   statement: The MORSE EC50 of each sensor for its own ligand, from consensus dose-response fits,
@@ -340,7 +347,9 @@ claims:
     background, cells dropped by a noise cut, and ACh, ATP, MT and HA pooled with an older probe
     set (cell 365, groups_merge_rev). The Methods and the code disagree on the plateau; the Methods
     reading decides and the code's is shown. Each value within 10%.
+  data: with_labels
   depends_on:
+  - link-revision-well-order
   - fig1g-sensor-yield
 - id: table1-ec50-off-target
   statement: The crosstalk sensors respond to the partner ligand with EC50s of 28.7 uM (AVP sensor
@@ -368,7 +377,9 @@ claims:
   criterion: As table1-ec50-on-target, each sensor's cells fitted against the partner ligand's
     concentrations in the mixture wells, signals peak-normalized to the on-target maximum and
     scaled by the crosstalk ratio (morse_figs3_rev cells 365 and 368). Each value within 10%.
+  data: with_labels
   depends_on:
+  - link-revision-well-order
   - fig1g-sensor-yield
 - id: table1-peak-dff-morse
   statement: On MORSE probes the peak dF/F0 of each sensor to a saturating dose of its ligand is
@@ -428,7 +439,9 @@ claims:
     cells with a positive peak (cells 248 and 263; the S3B legend draws the median). For AVP, NE and
     CCK the code takes the well after the ligand well (cell 248); readings (a) the ligand well,
     (b) the code's well. Each value within 10%.
+  data: with_labels
   depends_on:
+  - link-revision-well-order
   - fig1g-sensor-yield
 - id: fig1j-ec50-consistent-across-probes
   statement: Dose-response relationships, after peak normalization and averaging over cells of the
@@ -444,7 +457,9 @@ claims:
     dose step of the consensus EC50 (between a tenth and ten times it); (b) for every sensor, the
     SEM across probes is less than half the mean. Reproduced when both hold; blocked as
     methods_underspecified when they differ.
+  data: with_labels
   depends_on:
+  - link-revision-well-order
   - table1-ec50-on-target
 - id: figs3e-tau-on-under-one-minute
   statement: Ligands diffuse quickly through the hydrogel; almost all sensors show an onset time
@@ -462,7 +477,9 @@ claims:
     as the diffusion measure; readings (a) the dF/F0 fits, (b) the concentration fits (larger by
     construction, S3E legend). The outcome is the one both give; if they differ, the claim is
     blocked as methods_underspecified.
+  data: with_labels
   depends_on:
+  - link-revision-well-order
   - table1-ec50-on-target
 - id: figs3f-depth-delay
   statement: Onset times increase only modestly with cell depth in the gel, with a positive slope
@@ -474,7 +491,9 @@ claims:
     712-718, 9.89 um per plane), a least-squares line per sensor. Reproduced when 9 of the 10 slopes
     are positive (tau-on rising with distance from the front face) and the ATP slope is the
     negative one. "Modest" is read as a slope below 1 s per um. Needs masks with depth.
+  data: with_labels
   depends_on:
+  - link-revision-well-order
   - figs3e-tau-on-under-one-minute
 - id: figs2c-stabilization
   statement: Registration using probability maps of the GRAB signal stabilizes the images as well
@@ -1130,6 +1149,24 @@ claims:
     Iba1 and GFAP intensities on the implanted side are within the range of the other side in every
     mouse, and the BSA profile (S6C) is symmetric. Needs histology images, which the paper does not
     say are deposited.
+- id: link-revision-well-order
+  kind: link
+  statement: The well order and mixture concentrations that the paper's code gives for the ten
+    ten-sensor revision probes apply to the dandiset's identification (wells001) and dose-response
+    (wells101) recordings of those probes, whose files name no wells.
+  source: Data and code availability; 6_trace_analysis/morse_figs3_rev.ipynb cells 0-2, 8, 338 and
+    345 of github.com/pkalugin/kalugin-et-al-morse at commit fa4526ac02eaa2c5a24c4cfdcaab5c36ed5ae4ed
+  data: with_labels
+  criterion: Added by the author. The code lists, per probe, an identification recording of 11
+    wells (AVP, 5-HT, NE, ACh, ATP, OXT, HA, DA, CCK, MT, PBS) and a dose recording of 15 (the
+    A5NAA mixture at seven 10-fold steps, the OHDCM mixture at seven, PBS), each well 93 frames
+    (cell 8). Recordings are matched by the date and probe in the subject name. The link holds
+    (reproduced) when every identification recording of the ten probes has 11 wells of 93 frames
+    and every dose recording 15, more than half of the cells rise most steeply in the first minute
+    of a well (one third if rises were unrelated to the wells), and, for each sensor without
+    crosstalk, more than half of the cells labelled with it rise more in the dose block of its own
+    mixture than in the other block. Partially reproduced when the frame counts fit and only one of
+    the other two holds; not reproduced otherwise.
 checks:
 - date: 2026-10-22
   kind: agent

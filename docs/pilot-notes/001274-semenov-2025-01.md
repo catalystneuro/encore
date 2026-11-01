@@ -1,0 +1,131 @@
+# 001274, Semenov et al. 2025
+
+No claim reproduced on the dataset: its eight claims, on the strobe imaging of
+Figures 5, 6 and S3, are blocked as `metadata_insufficient`. Of the 18 claims on
+data elsewhere, other dandisets of the same paper, two reproduced, one
+partially, nine not reproduced and six blocked. The first verification round
+agreed with 19 of the 26 outcomes as they stood and the second with 25, and a
+third round, held on the one change of outcome proposed after the second,
+agreed with it. It pins version 0.250805.1401, the latest published version;
+the paper cites none, and the earlier version has the same assets. The paper,
+Semenov, Kim, Silkuniene and Pakhomov, "Excitation and polarization of isolated
+neurons by high-frequency sine waves for temporal interference stimulation" in
+Cell Reports Physical Science, stimulates cultured rat hippocampal neurons
+stained with FluoVolt with 250-ms unmodulated or 20-Hz modulated sine waves at
+2 and 20 kHz and records optical APs by fast imaging (Figures 1 to 3, S1 and
+S2), and images membrane charging by 2-us pulses (Figure 4) and polarization by
+single beats of modulated 2-kHz sine waves (Figures 5, 6 and S3) with pulsed
+laser strobe imaging. The claims were written from the NIH author manuscript
+(PMC12320893) with its supplement; the paper reports no original code. The
+paper deposited its images in ten dandisets without saying which figure is in
+which; going by its title, 001274 holds the sine-wave part of Figures 5, 6 and
+S3, and the other claims were tested on 001030, 001032, 001033, 001035, 001271
+and 001272, with only the asset list and descriptions of 001273 read and 001034
+found to be a copy of 001032. The fast-imaging outcomes rest on the whole 16 x
+16 frame as the soma and on 36 V/cm times half the generator's peak-to-peak
+voltage as the field; the brighter half of the frame and the whole voltage
+change no outcome. `fig2c-pure-more-aps` reproduces (47 of 52 pairs with more
+APs unmodulated, none with fewer, p = 7.3e-10). `fig3c-sustained-firing-2s`
+reproduces on an assumption, tested on neuron c7 of 001030 alone: part (iii),
+no APs after 250 ms, is read as no more detections than the trace's noise
+gives (5 and 1 peaks found against 6 and 7 on the mirrored trace), and taken
+literally it fails. `fig2d-modulated-thresholds-higher` is partial, the
+modulated mean higher in all three pairs and two of them reaching p < 0.05 (p =
+0.021 and 0.017 under reading a). `fig1-pure-sine-excites-all` is not
+reproduced, 15 of 17 neurons (88%) firing at 20 kHz against 90%, one of the two
+others showing upticks of 2.5% that no reading counts; the median first-AP
+latency of `fig1-onset-delay` is 64 ms against 90 to 220 ms;
+`fig1-max-rate-ceiling`, resting on the revised AP reading (a), gives 39.1 Hz
+and reading (b) 42.9 Hz against 54 to 99 Hz; `fig1-excitation-block` holds in 3
+of 42 neuron-carrier pairs; the threshold ratios of
+`fig2d-20khz-twofold-threshold` are 2.27, 2.62, 2.37 and 2.82 against 1.8 to
+2.2, and no single calibration factor can bring all four into the band; the
+2-kHz threshold is 75.6 +- 6.2 V/cm against 57.7 +- 3.6;
+`fig2-modulated-locks-to-beats` fails on one session ending at 5.9% though
+0.96 of APs fall 12.5 to 37.5 ms into a beat; `figs1-di8-anepps-control`
+fails on the 3 neurons deposited, none reaching the block; and
+`figs2-ttx-blocks-depolarization` fails, only 1 of 6 neurons having the
+sustained depolarization before tetrodotoxin. The outcomes of fig1-onset-delay
+and threshold-2khz-unmodulated depend on pooling 001032, 001033 and 001035, as
+the claims file's where does; 001035 alone gives 101 ms and 58.3 V/cm, inside
+the paper's ranges. `fig3b-low-conductivity-halves-threshold`, the four Figure
+4 claims and `threshold-depolarization-estimate` are blocked as
+`metadata_insufficient` with the eight claims on the dataset. As a variant
+only, ROIs rebuilt by the Methods' recipe give a pulse sensitivity of 19.5 +-
+2.4 %/kV/cm (paper 28 +- 2.5) and a sine sensitivity of 5.5 +- 0.8 %/kV/cm,
+the mean sine value 28% of the pulse value (paper 42%). The author's first run
+gave 2 reproduced, 7 partially, 3 not reproduced and 14 blocked, with
+fig1-max-rate-ceiling reproduced on an assumption (59.9 Hz under reading a).
+The author asked a reader nothing, so the answer and author-answers runs
+changed nothing. Round 1 disagreed with seven outcomes and found that AP
+reading (a) counted noise on a depolarized plateau as APs (about 18 per 250 ms
+on a synthetic 6% plateau), that the generator calibration was not estimated
+and that the summary scored as partial claims whose criteria have no partial
+outcome; in reply reading (a) was given a 5% prominence and a 1-ms half-width,
+six partial outcomes became not reproduced as the verifier gave them,
+fig1-max-rate-ceiling became not reproduced on the assumption where the
+verifier had proposed blocked, the two readings now agreeing, and traces with
+the detected APs, a calibration estimate and a gluconate check were added.
+Round 2 disagreed with fig3c, asked that the dependence on pooling be stated,
+and found sentences the numbers did not support (the fig2d calibration
+estimate, the short-latency APs, brightness, the shifted-beat fraction, a
+round-1 count, the RATIO image in the README, the frame counts), which were
+corrected; a cell measuring the false-detection rate on c7's own trace was
+added and the change of fig3c to reproduced was proposed, and round 3 agreed
+provided it be marked assumed, noting that the criterion gives no allowance
+for false detections on a plateau, a flaw in putting it into practice and not
+a misreading of the paper. The author's run took about 1.5 hours (15:16 to
+16:44 UTC); an early AP detector that counted an AP's shoulder twice and
+carrier noise as APs was fixed during development, and the per-cycle reading
+(b) of the sine regression was dropped, swamped by single-frame noise.
+`tools/build_site.py` was found modified before the revisions and left
+untouched. The notebook ran in 20.4 minutes at first, 700 s after the answer,
+643 s after round 1, 21.5 min after round 2 and 1280 s after round 3.
+
+DANDI:001274 holds only raw strobe image stacks (512 x 512 pixels), with no
+ROIs, no RATIO images, no frame times, no electric field in V/cm (only
+generator volts) and no identifier linking its 20 subjects to the paper's
+cells C1 to C9, C7 (Figure 5) and C8 (Figure S3); no subject has 12 sessions at
+100 Hz, as the cell of Figure 5 had. DANDI:001273 (Figure 4) likewise holds raw
+strobe stacks only, without the ROIs, each cell's shape group or, in 63 of 181
+files, the field direction, so the paper's 19 experiments cannot be formed
+from its 13 subjects. The fast recordings give the generator's peak-to-peak
+voltage and "1V translates into 36 V/cm", but say the voltage is not the
+measured amplitude and that frequency-dependent calibration factors "will be
+reported separately", which are in none of the dandisets; whether the 36 V/cm
+applies to the peak-to-peak or the peak voltage is not stated, and 001030 gives
+one-polarity volts. No 250-ms session in 001032, 001033 or 001035 is described
+as recorded in the sodium gluconate solution of Figures 3A and 3B, and
+001272 holds 3 neurons recorded with Di-8-ANEPPS where the paper reports eight.
+DANDI:001034 is a second deposit of 001032: all 178 assets match one to one by
+session start time and size (116 also by name), and the image arrays and start
+times of ten compared pairs are identical. The tetrodotoxin session
+descriptions of 001271 and 001274 say tetrodotoxin "abolished the action
+potentials and caused sustained depolarization", where the paper says it
+"fully blocked the sustained depolarization" and the mean dF over the last 100
+ms of the stimulus in 001271 is at most 0.4% in every tetrodotoxin session.
+The fast recordings are 16 x 16 pixels where the Methods give 64 x 64 after
+binning, 59 of 178 sessions of 001032 have 900 frames, one has 1,400 and one
+1,800, against 1,200 in the Methods, and the first frame of every fast
+recording is a bright artifact (median 3.05 times the other pre-stimulus
+frames). The descriptions of 001032 to 001035 give a 140-um gap between the
+stimulating electrodes, where the paper and 001274 give 120 um. 001030 makes
+one subject per session, so its 17 subjects are 4 neurons, and two of its
+recordings of c5 have 6,000 frames and end before the 2-s stimulus does. Many
+strobe sessions of 001274 recorded on 2024-08-24 are described as made in 1 uM
+tetrodotoxin, which the paper does not mention for Figures 5, 6 or S3.
+Questions are put to the paper's authors: which pixels form the soma ROI of the
+fast recordings, how the generator voltages were converted to the field in
+V/cm, and what rule counted APs.
+
+The author's points on the protocol: most claims are on other dandisets while
+the protocol assumes one dataset per entry, and every dandiset was put under
+`related` and `inputs`; the readings of step 1.6 multiply into grids, and one
+reading was adopted with the others shown as variants and an assumption
+recorded only where the readings changed an outcome; a criterion that blocks
+when readings disagree does not cover readings disagreeing on a part that does
+not decide the outcome, and the Di-8-ANEPPS claim was recorded as not
+reproduced with the reason; the clock check does not fit image files with no
+stimulus channel, and the absence of APs before the stimulus and the locking of
+APs to the 20-Hz beats were used in its place; and there is no finding kind for
+a duplicate deposit, so `other` was used.
