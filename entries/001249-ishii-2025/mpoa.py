@@ -196,8 +196,12 @@ def decay_length(long_trace, reading, unreturned="window"):
 
 
 def elbow_pcs(explained_variance_ratio):
-    """Number of PCs at the elbow of the scree plot, as Figure 5 Spectral clustering.ipynb
-    computes it (distance below the line from the first to the last point)."""
+    """Number of PCs kept, as Figure 5 Spectral clustering.ipynb computes it: the 0-based index of
+    the scree point furthest below the line from the first to the last point (np.argmin(xprime)),
+    used as the count of leading components kept (transformed_data[:, :num_retained_pcs]). So the
+    components before the elbow are kept and the elbow component itself is not ("the number of
+    components just below the minimum of this rotated plot", the code's comment). With the elbow
+    at the 3rd component this returns 2."""
     x = np.asarray(explained_variance_ratio)
     xprime = x - (x[0] + (x[-1] - x[0]) / (x.size - 1) * np.arange(x.size))
     return int(np.argmin(xprime))
@@ -221,7 +225,9 @@ def spectral_grid(X, n_clusters=range(2, 12), n_neighbors=np.linspace(10, 70, 13
 
 def order_clusters(labels, traces):
     """Renumber clusters by mean response over 0 to +5 s, largest first (the code's
-    reorder_clusters), so that cluster 0 is the strongest early response."""
+    reorder_clusters, Figure 5 Spectral clustering.ipynb, which averages frames before_frames to
+    2 * before_frames, that is 0 to +5 s), so that cluster 0 is the strongest early response, the
+    paper's type 1."""
     labels = np.asarray(labels)
     means = {c: traces[ONSET:ONSET + 5 * RATE_HZ, labels == c].mean() for c in np.unique(labels)}
     order = sorted(means, key=lambda c: -means[c])

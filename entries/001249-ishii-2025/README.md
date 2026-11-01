@@ -26,7 +26,7 @@ that is not deposited. The decay length of Figure 6C is reproduced
 under the reading from the peak that a reader added to the claims file, which matches the deposited
 values, provided cells that never return below 0 count as 120 s, as the deposited table has them;
 the readings from onset do not reproduce it. Figure 7F and G hold by the code's signed-rank test but not fully by the
-rank-sum test the legend names. The attempt record, with the reasons and the differences from the
+rank-sum test the legend names; whether the claims file should take the signed-rank test as its main reading is asked of a reader. The results of Figures 4 to 6 treat cells as units, as the paper does; with animals as units the magnitude differences of Figure 4H and the decay length of Figure 6C are not significant. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/001249-ishii-2025-01.yaml`](../../attempts/001249-ishii-2025-01.yaml).
 
 - `reproduce_ishii_2025.ipynb`: the analysis. It takes a few minutes, most of it streaming.
