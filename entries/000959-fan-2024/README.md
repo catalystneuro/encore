@@ -23,8 +23,8 @@ pupil of both monkeys at 1 kHz, the stimulation and sham times, the day's ROIs a
 | Causal decomposition and epoch slopes (six claims) | Blocked: too large |
 | Trigger fixation duration unchanged | Partially reproduced (OFC unchanged; dmPFC p = 0.019) |
 | Pupil unchanged | Reproduced |
-| Saccade counts unchanged (with outside software) | Partially reproduced (OFC macrosaccades p = 0.044, paper 0.055) |
-| Saccade kinematics unchanged (with outside software) | Reproduced |
+| Saccade counts unchanged (with outside software) | Partially reproduced (OFC macrosaccades p = 0.044, paper 0.055), resting on an assumption about the detection |
+| Saccade kinematics unchanged (with outside software) | Reproduced, resting on the same assumption |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -35,4 +35,6 @@ each run into small tables (trials, fixation events with positions and hemifield
 and holds the measures, including a Python port of the Otero-Millan et al. (2014) saccade
 detector (github.com/ocular-motor-lab/otero-millan_et_al_microsaccade_detection at ce2c10dc), called
 as the paper's own code calls it; the files hold no saccade events, so the two saccade claims use
-that outside software.
+that outside software. Both rest on an assumption: that this detection, on the files' gaze unfiltered
+as the paper's code passes it, stands in for the paper's. On these data its saccades are longer than
+physiological (median 147 ms), and the port could not be run against the MATLAB code here.

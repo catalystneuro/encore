@@ -418,6 +418,10 @@ def reciprocation(trials, m1_ev, m2_ev, t1=LATENCY_WINDOW_S, first="m2"):
 # (EyeMovRecording.GetTrials).
 # Differences from the MATLAB code: scipy's k-means (Lloyd iterations from the same starting
 # centres; MATLAB's default also runs batch updates only) in place of MATLAB's kmeans.
+# Assumption: the gaze is passed unfiltered, as the paper's code passes it (the paper does not say
+# whether it filtered the gaze first), and this detection stands in for the paper's. The port was
+# not run against the MATLAB code (MATLAB is not available here); the notebook checks it on
+# synthetic gaze.
 # ---------------------------------------------------------------------------------------------
 
 SAC_RATE_OF_PEAKS = 5

@@ -64,8 +64,7 @@ outcomes:
   output: claim:figs1d-stim-counts-nonsocial
   notes: No FDR-corrected p is below 0.05 (smallest 0.108 for stimulations, 0.082 for shams). The
     paper's "all p > 0.10" does not hold for two sham tests between the monkeys (OFC and dmPFC,
-    corrected 0.082, uncorrected 0.014 and 0.010); monkey T has more control trials per day (71 to
-    76) than monkey L (52 to 57).
+    corrected 0.082, uncorrected 0.014 and 0.010); monkey T has more control trials per day (71 to 77) than monkey L (52 to 57).
 - claim: figs1e-eyes-more-than-face
   outcome: reproduced
   notebook: reproduce_fan_2024.ipynb
@@ -106,7 +105,7 @@ outcomes:
   output: claim:fig2a-density-map-ofc
   notes: The day-averaged OFC stimulation minus sham density summed over the whole Face squares is
     7.47 (z-scored) and 0.0093 (by total), and over the Eyes squares 3.71 and 0.0046; it is positive
-    in each monkey under each normalisation. dmPFC (whole Face -2.46 and -0.0026) and ACCg (-2.55 and
+    in each monkey under each normalisation. dmPFC (whole Face -2.56 and -0.0027) and ACCg (-2.55 and
     -0.0048) are negative. 10,771 of 53,542 post-gaze fixations fall outside the 40-degree grid.
   deviations:
   - Fixations are the Methods reading (M1-only and mutual events). The grid is centred on each
@@ -301,8 +300,7 @@ outcomes:
     smallest p 0.19 (paper 1, 0.866, 0.249). M2 reciprocation latency, reading (b) from the trial
     time, smallest p 0.46; reading (a), from the start of the M1 look (the mirror of M1's measure),
     OFC 0.56, dmPFC 0.044 (median 0.11 s longer after stimulation), ACCg 0.99 (paper 0.665, 0.773,
-    0.701). The criterion asks that no test give p below 0.05 under every reading; 1 of 21 tests
-    does, so the claim holds for the distance and the interval and in part for the reciprocation
+    0.701). The criterion asks that no test give p below 0.05 under every reading; 1 of 18 tests (6 distance tests and 3 for each of the four other measures) does, so the claim holds for the distance and the interval and in part for the reciprocation
     latency.
   deviations:
   - M2's distance is to the centre of `roi_m2_eyes` (M1's Eyes in M2's coordinates); the Methods
@@ -320,10 +318,7 @@ outcomes:
   notes: The relative causal strength needs the causal decomposition of Yang, Peng and Huang (2018),
     whose code runs 2 + 2 x (number of IMFs) ensemble EMDs per trial, each with 10 fixed sifts per
     IMF. Neither the noise level nor the ensemble size has a default in that code, and its example
-    uses 1,000 ensembles, as does the claims file's reading (a), so both readings cost the same. One
-    EEMD of one 150-bin series with 1,000 ensembles takes 18.3 s on one core with PyEMD (9.2 s on four
-    processes) and yields 7 IMFs, so a trial takes about 293 CPU s, and the 19,474 social Eyes trials
-    about 1,590 CPU hours (about 790 hours of wall time on four processes). A compiled implementation
+    uses 1,000 ensembles, as does the claims file's reading (a), so both readings cost the same. In the run recorded here, one EEMD of one 150-bin series with 1,000 ensembles takes 15.9 s on one core with PyEMD (6.8 s on four processes; the round-2 run gave 13.1 and 5.5 s, so the timing varies between runs) and yields 7 IMFs, so a trial takes about 255 CPU s, and the 19,474 social Eyes trials about 1,380 CPU hours (about 591 hours of wall time on four processes). A compiled implementation
     at 10 microseconds per cubic-spline envelope would still need about 104 CPU hours. The notebook
     limit is one hour. The trials, distances and epochs the analysis would use are all in the
     dataset.
@@ -346,29 +341,28 @@ outcomes:
   blocked_by: too_large
   notes: Depends on figs4a-causal-strength-no-stim-effect, blocked by the cost of the causal
     decomposition. This claim needs only the first 90 stimulation trials of the 25 OFC epoch days,
-    2,250 trials, which the notebook times at about 183 CPU hours (92 hours of wall time on four
-    processes; about 12 CPU hours even at 10 microseconds per spline envelope), beyond the one-hour
+    2,250 trials, which the notebook times at about 159 CPU hours (68 hours of wall time on four processes; about 12 CPU hours even at 10 microseconds per spline envelope, which would fit in an hour only on a dozen or more cores), beyond the one-hour
     notebook limit.
 - claim: fig4c-dmpfc-slope-late-greater
   outcome: blocked
   blocked_by: too_large
   notes: Depends on ofc-slope-unchanged-by-epoch and the causal strengths, blocked by the cost of
     the causal decomposition. The 2,250 stimulation trials of the 25 dmPFC epoch days alone take about
-    183 CPU hours in the notebook's timing (2,340 for ACCg, about 191), beyond the one-hour notebook
+    159 CPU hours (68 hours of wall time on four processes) in the notebook's timing (2,340 for ACCg, about 166), beyond the one-hour notebook
     limit.
 - claim: fig4d-dmpfc-slope-permutation
   outcome: blocked
   blocked_by: too_large
   notes: Depends on fig4c-dmpfc-slope-late-greater and the causal strengths, blocked by the cost of
     the causal decomposition. The 2,250 stimulation trials of the 25 dmPFC epoch days alone take about
-    183 CPU hours in the notebook's timing (2,340 for ACCg, about 191), beyond the one-hour notebook
+    159 CPU hours (68 hours of wall time on four processes) in the notebook's timing (2,340 for ACCg, about 166), beyond the one-hour notebook
     limit.
 - claim: dmpfc-slope-positive
   outcome: blocked
   blocked_by: too_large
   notes: Depends on fig4c-dmpfc-slope-late-greater and the causal strengths, blocked by the cost of
     the causal decomposition. The 2,250 stimulation trials of the 25 dmPFC epoch days alone take about
-    183 CPU hours in the notebook's timing (2,340 for ACCg, about 191), beyond the one-hour notebook
+    159 CPU hours (68 hours of wall time on four processes) in the notebook's timing (2,340 for ACCg, about 166), beyond the one-hour notebook
     limit.
 - claim: fig5a-trigger-duration-unchanged
   outcome: partially_reproduced
@@ -399,6 +393,7 @@ outcomes:
     correction, as the Methods describe none.
 - claim: fig5cd-saccade-counts-unchanged
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_fan_2024.ipynb
   output: claim:fig5cd-saccade-counts-unchanged
   notes: With the claims file's reading (a), a microsaccade lying strictly within an M1 fixation,
@@ -411,8 +406,24 @@ outcomes:
     ms (95th percentile 1,062 ms), median amplitude 13.7 degrees; in one run the gaze velocity inside
     fixations has a median of 19.7 deg/s and is under the detector's 5 deg/s saccade limit for 5.4%
     of samples, so many detected saccades span several fixations. In 202 of the 1,179 runs the
-    MATLAB code's merge of overlapping saccades would not pair starts and ends.
+    MATLAB code's merge of overlapping saccades would not pair starts and ends. The port was not run
+    against the MATLAB code, which is not available here. On synthetic gaze with little noise it finds
+    all 93 saccades with their durations (median 38 ms detected and true); with white noise that gives
+    the data's velocity inside fixations (median 19.8 deg/s, 4.3% under 5 deg/s) it finds 86.7% and
+    doubles their median duration (72.5 against 37.5 ms; 95th percentile 172 ms). The data's durations
+    are longer still, so their noise is not only white. The outcome rests on the assumption stated in
+    the deviations, and the micro/macro labelling changes it (reading b gives 0 of 4).
   deviations:
+  - Assumption. The detection here is taken to stand in for the paper's. The paper names the
+    software (Key resources table, Otero-Millan et al. 2014) and says it "captured both canonical
+    microsaccades ... and macrosaccades" (STAR Methods, Control analyses), but not whether the gaze
+    was filtered first, and it reports no property of the detected saccades. The paper's code passes
+    M1's gaze unfiltered (script/detect_microsaccades.m at cc0bf994), so unfiltered gaze is the
+    best-supported choice, and the files' gaze is taken to be the gaze the paper passed. On these
+    data the detector's output is not physiological (median duration 147 ms, 95th percentile 1,062
+    ms, velocity inside fixations under the 5 deg/s limit for 5.4% of samples in one run), which a
+    filter would change; whether the paper's saccades looked the same is asked of the paper's
+    authors in the findings.
   - The dataset holds no saccade events. Saccades are detected with a Python port of the
     Otero-Millan et al. (2014) detector, from the authors' MATLAB code at a pinned commit (inputs),
     with that code's defaults, called as the paper's code calls it (script/run_saccade_detection.m
@@ -429,6 +440,7 @@ outcomes:
     (script/label_saccades.m).
 - claim: fig5e-h-saccade-kinematics-unchanged
   outcome: reproduced
+  assumed: true
   notebook: reproduce_fan_2024.ipynb
   output: claim:fig5e-h-saccade-kinematics-unchanged
   notes: With reading (a) of the macrosaccade, none of the 14 OFC and dmPFC tests gives p below
@@ -438,8 +450,14 @@ outcomes:
     and 0.31). With the paper's code's labelling, reading (b), 3 of the 14 give p below 0.05 (dmPFC
     slope difference 0.030, OFC IC 0.048, dmPFC CC 0.037), so the result depends on how microsaccades
     are told from macrosaccades. 15,961 of 19,474 trials have a first macrosaccade under (a), 11,354
-    under (b).
+    under (b). The outcome rests on the same assumption as fig5cd-saccade-counts-unchanged, that this
+    detection on the files' unfiltered gaze stands in for the paper's.
   deviations:
+  - Assumption, as for fig5cd-saccade-counts-unchanged. The detection on the files' unfiltered gaze,
+    as the paper's code passes it, is taken to stand in for the paper's, whose detected saccades are
+    not described; the detector's output on these data is not physiological (median duration 147
+    ms), and the labelling of micro- and macrosaccades changes the count of failing tests (0 of 14
+    under reading a, 3 of 14 under b).
   - Saccades as in fig5cd-saccade-counts-unchanged (a Python port of the Otero-Millan et al. 2014
     detector, with_inputs). Slopes are least-squares lines over at least 3 saccades per trial type
     and day; the permutation seed 5 is a standard choice. Hemifields of the saccade's start and end
@@ -513,6 +531,14 @@ findings:
     detected saccades span several fixations. In 202 of 1,179 social runs, the MATLAB code's merge of
     overlapping saccades yields unequal numbers of starts and ends, where that code would stop with
     an error. Whether the paper's gaze was filtered before detection is not stated.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Was M1's gaze filtered before the Otero-Millan et al.
+    (2014) detector was run, and what durations and amplitudes did the detected saccades have? Run on
+    the files' gaze unfiltered, as script/detect_microsaccades.m passes it, the detector gives a
+    median duration of 147 ms (95th percentile 1,062 ms), and the two saccade outcomes (OFC
+    macrosaccade counts p = 0.044 against the paper's 0.055; 0 of 14 kinematics tests failing)
+    rest on this detection standing in for the paper's. With the code's labelling of
+    microsaccades the counts give no failing test and the kinematics 3 of 14.
 verifications:
 - date: '2026-11-01'
   kind: agent
@@ -696,10 +722,9 @@ verifications:
       (b), and does not consider running in parallel or a faster EMD implementation; too_large is plausible
       but not demonstrated (B3).
     response: 'Replaced the estimate: one EEMD at 1,000 ensembles with the Yang code''s 10 fixed sifts is
-      timed directly on one core (18.3 s) and on four processes (9.2 s). Reading (b), the Yang code''s settings,
+      timed directly on one core and on four processes (15.9 s and 6.8 s in the run now recorded). Reading (b), the Yang code''s settings,
       needs 1,000 ensembles as well (the code has no default; its example uses 1,000), so both readings
-      cost the same. The notebook gives CPU and wall hours per subset (every social trial about 1,590 CPU
-      hours; the 2,250 OFC epoch trials about 183) and a floor for a compiled implementation at 10 microseconds
+      cost the same. The notebook gives CPU and wall hours per subset (now every social trial about 1,380 CPU hours; the 2,250 OFC epoch trials about 159) and a floor for a compiled implementation at 10 microseconds
       per spline envelope (12 to 104 CPU hours). Outcome kept, blocked as too_large.'
   - claim: figs4b-causal-strength-no-epoch-effect
     agrees: true
@@ -719,14 +744,13 @@ verifications:
       90 stimulation trials per day, about 6,840 trials over 76 days, or about 2,430 for the OFC days alone
       (B3).
     response: 'The notebook now costs this subset: the 2,250 stimulation trials of the 25 OFC epoch days
-      take about 183 CPU hours (92 hours of wall time on four processes, about 12 CPU hours at the compiled
+      take about 159 CPU hours (68 hours of wall time on four processes, about 12 CPU hours at the compiled
       floor), beyond the one-hour limit. Outcome kept.'
   - claim: fig4c-dmpfc-slope-late-greater
     agrees: true
     outcome: blocked
     reason: Same as figs4a-causal-strength-no-stim-effect (B3).
-    response: Costed per subset as for ofc-slope-unchanged-by-epoch (dmPFC days about 183 CPU hours, ACCg
-      about 191). Outcome kept.
+    response: Costed per subset as for ofc-slope-unchanged-by-epoch (dmPFC days about 159 CPU hours, ACCg about 166). Outcome kept.
   - claim: fig4d-dmpfc-slope-permutation
     agrees: true
     outcome: blocked
@@ -773,3 +797,309 @@ verifications:
     reason: Same as fig5cd-saccade-counts-unchanged (B2).
     response: Tested with the same detector; outcome changed from blocked to reproduced under the claims
       file's reading (0 of 14 tests below 0.05); the paper's code's labelling gives 3 of 14.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the round-1 revision, the helper module, the claims file and
+    the attempt record, with the paper. The verifier agrees with 34 of the 36 outcomes; for the two saccade claims
+    it agrees with the outcomes as computed but asks that they be marked as resting on an assumption. It also corrected
+    the headline counts of its round-1 report (22 reproduced, 4 partially reproduced, 2 not reproduced and 8 blocked),
+    and reported that the Summary's "6% of the M1 Eyes events have a mean position outside the Eyes rectangle" holds
+    only for social runs (6.3%; Dot runs 10.7%); the Summary now gives both.
+  results:
+  - claim: design-days-per-area
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: design-sessions-per-day
+    agrees: true
+    outcome: partially_reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: fig1e-stim-counts-comparable
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: figs1d-stim-counts-nonsocial
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1. In the notes, monkey T's control trials per day are 71 to 77 (cell 16), not
+      71 to 76.
+    response: Corrected the notes to 71 to 77. Outcome kept.
+  - claim: figs1e-eyes-more-than-face
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: figs1e-eyes-vs-rdm-comparable
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Unchanged since round 1. Still open: it is not reproduced only because of the claims file''s deciding
+      reading (a), which the verifier still takes to misread the paper. That is referred to a reader and is pending
+      (B1).'
+    response: No change; the question stays with a reader in questions/000959.yaml, and the outcome is judged on
+      the claims file as it stands.
+  - claim: fig2a-density-map-ofc
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1. The record has "dmPFC (whole Face -2.46 and -0.0026)"; cell 27 prints -2.5599
+      and -0.0027, and cell 28's text agrees with cell 27.
+    response: Corrected the notes to -2.56 and -0.0027. Outcome kept.
+  - claim: fig2c-ofc-social-gaze-distance
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: fig2c-dmpfc-accg-no-distance-effect
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: fig2e-ofc-contralateral
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: fig2e-dmpfc-accg-no-hemifield-effect
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: fig2f-nonsocial-no-distance-effect
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: fig2gh-nonsocial-no-hemifield-effect
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: methods-ofc-distance-longer-windows
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: methods-ofc-no-change-in-fixation-number
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: methods-ofc-longer-face-looking
+    agrees: true
+    outcome: partially_reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: methods-mouth-stimulation-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: methods-eyes-vs-mouth-bootstrap
+    agrees: true
+    outcome: not_reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: fig3b-ofc-inter-looking-interval
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1. Still open: p = 0.044 becomes 0.058 when the 91 events that start on the trial
+      sample are counted. The question is put to the paper''s authors; the outcome stays fragile (B5).'
+    response: No change; the notes give both p values and the question stays with the paper's authors in the findings.
+  - claim: ili-nonsocial-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: ili-missing-trials-41
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: figs3b-ili-trial-level
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: figs3c-reciprocation-day-level-none
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: fig3d-ofc-reciprocation-latency
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: partner-monkey-unchanged
+    agrees: true
+    outcome: partially_reproduced
+    reason: Unchanged since round 1. The text says "1 of the 21 tests does"; cell 86 prints 18 tests, 6 distance
+      tests, then 3 each for interval (a), interval (b), latency (a) and latency (b). The outcome is not affected.
+    response: Corrected cell 87 and the notes to 1 of 18 tests, with the breakdown. Outcome kept.
+  - claim: figs4a-causal-strength-no-stim-effect
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, too_large. Cell 92 now times the decomposition directly; at the claims file's reading
+      (a), 1,000 ensembles, one EEMD takes 13.1 s on one core, 209 CPU s per trial, and the smallest subset any
+      of the six claims needs, the 2,250 OFC epoch trials, costs 130.7 CPU hours, or 55 hours of wall time on four
+      processes; the spline floor is 12 CPU hours for that subset. Reading (a) alone is enough to block the claims.
+      The figures in the record (18.3 s, 9.2 s, 293 s per trial, about 1,590 CPU hours, about 183 and 191 CPU hours
+      for the epoch subsets) were not updated after the re-run and do not match cell 92. Cell 93's "would still
+      exceed it for every subset" compares CPU hours with a wall-time limit; at four processes it does not fit,
+      so the conclusion holds, but the sentence should say so.
+    response: Updated every figure in the notes and the round-1 responses to the run now recorded (15.9 s on one
+      core, 6.8 s on four processes, 255 CPU s per trial, about 1,380 CPU hours for every social trial, about 159
+      CPU hours or 68 hours of wall time for the 2,250 OFC or dmPFC epoch trials and about 166 for ACCg; spline
+      floor 12 CPU hours). The timing varies between runs (13.1 s in the round-2 run), and the notes now say so.
+      Cell 93 now says the 12 CPU hours of the spline floor would fit in an hour only on a dozen or more cores and
+      do not on the four processes timed. Outcome kept.
+  - claim: figs4b-causal-strength-no-epoch-effect
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, too_large. Cell 92 now times the decomposition directly; at the claims file's reading
+      (a), 1,000 ensembles, one EEMD takes 13.1 s on one core, 209 CPU s per trial, and the smallest subset any
+      of the six claims needs, the 2,250 OFC epoch trials, costs 130.7 CPU hours, or 55 hours of wall time on four
+      processes; the spline floor is 12 CPU hours for that subset. Reading (a) alone is enough to block the claims.
+      The figures in the record (18.3 s, 9.2 s, 293 s per trial, about 1,590 CPU hours, about 183 and 191 CPU hours
+      for the epoch subsets) were not updated after the re-run and do not match cell 92. Cell 93's "would still
+      exceed it for every subset" compares CPU hours with a wall-time limit; at four processes it does not fit,
+      so the conclusion holds, but the sentence should say so.
+    response: Updated every figure in the notes and the round-1 responses to the run now recorded (15.9 s on one
+      core, 6.8 s on four processes, 255 CPU s per trial, about 1,380 CPU hours for every social trial, about 159
+      CPU hours or 68 hours of wall time for the 2,250 OFC or dmPFC epoch trials and about 166 for ACCg; spline
+      floor 12 CPU hours). The timing varies between runs (13.1 s in the round-2 run), and the notes now say so.
+      Cell 93 now says the 12 CPU hours of the spline floor would fit in an hour only on a dozen or more cores and
+      do not on the four processes timed. Outcome kept.
+  - claim: epoch-days-76-of-81
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1. Cell 90 says the five excluded days are "the days the paper names"; the paper
+      gives only their composition, and the dates come from the code, as cell 89 and the record say.
+    response: Cell 90 now says the days are those the paper's code names and that the paper gives only their composition.
+      Outcome kept.
+  - claim: ofc-slope-unchanged-by-epoch
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, too_large. Cell 92 now times the decomposition directly; at the claims file's reading
+      (a), 1,000 ensembles, one EEMD takes 13.1 s on one core, 209 CPU s per trial, and the smallest subset any
+      of the six claims needs, the 2,250 OFC epoch trials, costs 130.7 CPU hours, or 55 hours of wall time on four
+      processes; the spline floor is 12 CPU hours for that subset. Reading (a) alone is enough to block the claims.
+      The figures in the record (18.3 s, 9.2 s, 293 s per trial, about 1,590 CPU hours, about 183 and 191 CPU hours
+      for the epoch subsets) were not updated after the re-run and do not match cell 92. Cell 93's "would still
+      exceed it for every subset" compares CPU hours with a wall-time limit; at four processes it does not fit,
+      so the conclusion holds, but the sentence should say so.
+    response: Updated every figure in the notes and the round-1 responses to the run now recorded (15.9 s on one
+      core, 6.8 s on four processes, 255 CPU s per trial, about 1,380 CPU hours for every social trial, about 159
+      CPU hours or 68 hours of wall time for the 2,250 OFC or dmPFC epoch trials and about 166 for ACCg; spline
+      floor 12 CPU hours). The timing varies between runs (13.1 s in the round-2 run), and the notes now say so.
+      Cell 93 now says the 12 CPU hours of the spline floor would fit in an hour only on a dozen or more cores and
+      do not on the four processes timed. Outcome kept.
+  - claim: fig4c-dmpfc-slope-late-greater
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, too_large. Cell 92 now times the decomposition directly; at the claims file's reading
+      (a), 1,000 ensembles, one EEMD takes 13.1 s on one core, 209 CPU s per trial, and the smallest subset any
+      of the six claims needs, the 2,250 OFC epoch trials, costs 130.7 CPU hours, or 55 hours of wall time on four
+      processes; the spline floor is 12 CPU hours for that subset. Reading (a) alone is enough to block the claims.
+      The figures in the record (18.3 s, 9.2 s, 293 s per trial, about 1,590 CPU hours, about 183 and 191 CPU hours
+      for the epoch subsets) were not updated after the re-run and do not match cell 92. Cell 93's "would still
+      exceed it for every subset" compares CPU hours with a wall-time limit; at four processes it does not fit,
+      so the conclusion holds, but the sentence should say so.
+    response: Updated every figure in the notes and the round-1 responses to the run now recorded (15.9 s on one
+      core, 6.8 s on four processes, 255 CPU s per trial, about 1,380 CPU hours for every social trial, about 159
+      CPU hours or 68 hours of wall time for the 2,250 OFC or dmPFC epoch trials and about 166 for ACCg; spline
+      floor 12 CPU hours). The timing varies between runs (13.1 s in the round-2 run), and the notes now say so.
+      Cell 93 now says the 12 CPU hours of the spline floor would fit in an hour only on a dozen or more cores and
+      do not on the four processes timed. Outcome kept.
+  - claim: fig4d-dmpfc-slope-permutation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, too_large. Cell 92 now times the decomposition directly; at the claims file's reading
+      (a), 1,000 ensembles, one EEMD takes 13.1 s on one core, 209 CPU s per trial, and the smallest subset any
+      of the six claims needs, the 2,250 OFC epoch trials, costs 130.7 CPU hours, or 55 hours of wall time on four
+      processes; the spline floor is 12 CPU hours for that subset. Reading (a) alone is enough to block the claims.
+      The figures in the record (18.3 s, 9.2 s, 293 s per trial, about 1,590 CPU hours, about 183 and 191 CPU hours
+      for the epoch subsets) were not updated after the re-run and do not match cell 92. Cell 93's "would still
+      exceed it for every subset" compares CPU hours with a wall-time limit; at four processes it does not fit,
+      so the conclusion holds, but the sentence should say so.
+    response: Updated every figure in the notes and the round-1 responses to the run now recorded (15.9 s on one
+      core, 6.8 s on four processes, 255 CPU s per trial, about 1,380 CPU hours for every social trial, about 159
+      CPU hours or 68 hours of wall time for the 2,250 OFC or dmPFC epoch trials and about 166 for ACCg; spline
+      floor 12 CPU hours). The timing varies between runs (13.1 s in the round-2 run), and the notes now say so.
+      Cell 93 now says the 12 CPU hours of the spline floor would fit in an hour only on a dozen or more cores and
+      do not on the four processes timed. Outcome kept.
+  - claim: dmpfc-slope-positive
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, too_large. Cell 92 now times the decomposition directly; at the claims file's reading
+      (a), 1,000 ensembles, one EEMD takes 13.1 s on one core, 209 CPU s per trial, and the smallest subset any
+      of the six claims needs, the 2,250 OFC epoch trials, costs 130.7 CPU hours, or 55 hours of wall time on four
+      processes; the spline floor is 12 CPU hours for that subset. Reading (a) alone is enough to block the claims.
+      The figures in the record (18.3 s, 9.2 s, 293 s per trial, about 1,590 CPU hours, about 183 and 191 CPU hours
+      for the epoch subsets) were not updated after the re-run and do not match cell 92. Cell 93's "would still
+      exceed it for every subset" compares CPU hours with a wall-time limit; at four processes it does not fit,
+      so the conclusion holds, but the sentence should say so.
+    response: Updated every figure in the notes and the round-1 responses to the run now recorded (15.9 s on one
+      core, 6.8 s on four processes, 255 CPU s per trial, about 1,380 CPU hours for every social trial, about 159
+      CPU hours or 68 hours of wall time for the 2,250 OFC or dmPFC epoch trials and about 166 for ACCg; spline
+      floor 12 CPU hours). The timing varies between runs (13.1 s in the round-2 run), and the notes now say so.
+      Cell 93 now says the 12 CPU hours of the spline floor would fit in an hour only on a dozen or more cores and
+      do not on the four processes timed. Outcome kept.
+  - claim: fig5a-trigger-duration-unchanged
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees; now partially reproduced, the outcome the verifier gave in round 1. Cell 95 holds it up: OFC
+      p = 0.61 and 0.36; dmPFC p = 0.019 and 0.028, and 0.020 in the variant.'
+    response: No change needed.
+  - claim: fig5b-pupil-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1; the verifier keeps the outcome and the reasons it gave then.
+    response: No change needed.
+  - claim: fig5cd-saccade-counts-unchanged
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Agrees with the outcome as computed, but it rests on an assumption that is not stated. The detector''s
+      output is not physiological: cell 101 gives a median saccade duration of 147 ms, 95th percentile 1,062 ms,
+      median amplitude 13.7 degrees and 386 saccades per run, and in cell 102 gaze velocity inside fixations has
+      a median of 19.7 deg/s and is under the 5 deg/s limit for only 5.4% of samples. The micro/macro labels may
+      not mean much, as the record says many detected saccades span several fixations. The outcome depends on the
+      labelling (reading b gives 0 of 4 failing tests, against 1 of 4 under a), and the port was never checked against
+      the MATLAB code on any sample. The outcome depends on this detection standing in fairly for the paper''s,
+      including that the paper did not filter the gaze first, and should be marked assumed: true with the assumption
+      stated; it is not clearly reasonable given the notebook''s own diagnostics.'
+    response: 'Marked assumed: true, with a deviation that states the assumption: the detection on the files'' gaze,
+      unfiltered as the paper''s code passes it, stands in for the paper''s, which names the software but says nothing
+      of filtering or of the detected saccades. Unfiltered gaze is kept as the best-supported choice, since it is
+      what the paper''s code does. MATLAB is not available here, so the port could not be run against it; a new
+      cell checks it on synthetic gaze: with little noise it finds all 93 saccades with their durations (median
+      38 ms detected and true), and with white noise that gives the data''s velocity inside fixations (median 19.8
+      deg/s) it finds 86.7% and doubles their median duration, as on the data, where durations are longer still.
+      Added a methods_unavailable finding that asks the paper''s authors whether the gaze was filtered and what
+      the detected saccades looked like. Cell 102 now also lists the groups of a social file, which hold no saccade
+      tables. Outcome kept.'
+  - claim: fig5e-h-saccade-kinematics-unchanged
+    agrees: false
+    outcome: reproduced
+    reason: 'Agrees with the outcome as computed, but it rests on an assumption that is not stated. The detector''s
+      output is not physiological: cell 101 gives a median saccade duration of 147 ms, 95th percentile 1,062 ms,
+      median amplitude 13.7 degrees and 386 saccades per run, and in cell 102 gaze velocity inside fixations has
+      a median of 19.7 deg/s and is under the 5 deg/s limit for only 5.4% of samples. The micro/macro labels may
+      not mean much, as the record says many detected saccades span several fixations. The outcome depends on the
+      labelling (reading b gives 3 of 14 failing tests, against 0 of 14 under a), and the port was never checked
+      against the MATLAB code on any sample. The outcome depends on this detection standing in fairly for the paper''s,
+      including that the paper did not filter the gaze first, and should be marked assumed: true with the assumption
+      stated; it is not clearly reasonable given the notebook''s own diagnostics.'
+    response: 'Marked assumed: true, with a deviation that states the assumption: the detection on the files'' gaze,
+      unfiltered as the paper''s code passes it, stands in for the paper''s, which names the software but says nothing
+      of filtering or of the detected saccades. Unfiltered gaze is kept as the best-supported choice, since it is
+      what the paper''s code does. MATLAB is not available here, so the port could not be run against it; a new
+      cell checks it on synthetic gaze: with little noise it finds all 93 saccades with their durations (median
+      38 ms detected and true), and with white noise that gives the data''s velocity inside fixations (median 19.8
+      deg/s) it finds 86.7% and doubles their median duration, as on the data, where durations are longer still.
+      The kinematics outcome carries the same assumption and its own deviation. Added a methods_unavailable finding
+      that asks the paper''s authors whether the gaze was filtered and what the detected saccades looked like. Cell
+      102 now also lists the groups of a social file, which hold no saccade tables. Outcome kept.'
