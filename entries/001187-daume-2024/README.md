@@ -9,7 +9,7 @@ in 46 sessions of a Sternberg working memory task and a later recognition test.
 |---|---|
 | Sessions and units (46 sessions, 950 units, 351 and 532 after the rate filter) | Reproduced |
 | Per-session unit counts of Table S1 | Partially reproduced |
-| Behaviour (accuracy, d', load, confidence, probe effects; five claims) | Reproduced |
+| Behaviour (accuracy, d', load, confidence, probe effects; six claims) | Reproduced |
 | WM responses faster in load 1 | Reproduced |
 | Category neuron counts | Reproduced |
 | Persistent and preferred-category maintenance activity in hippocampus (Fig. 2b) | Partially reproduced |
