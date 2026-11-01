@@ -4,7 +4,8 @@ Tests the findings of [Silkuniene et al. (2025)](https://doi.org/10.1016/j.bioel
 that can be tested on [DANDI:001047](https://dandiarchive.org/dandiset/001047/0.250701.1609), which
 holds stitched YO-PRO-1, Hoechst and propidium images of CT26 monolayers exposed to CANCAN and
 control packets at 1 Hz and 0.2 MHz, and images of CHO monolayers. The paper's 1 kHz and 10 kHz
-rates, pulse durations, electrode elevations, film thermometry and CHO burst series are not in it.
+rates, pulse durations, film thermometry and CHO burst series are not in it, and no file gives the
+electrode elevation.
 
 | Claim | Outcome |
 |---|---|
@@ -37,7 +38,7 @@ be checked from the images. The attempt record, with the reasons and the
 differences from the paper's method, is
 [`attempts/001047-silkuniene-2025-01.yaml`](../../attempts/001047-silkuniene-2025-01.yaml).
 
-- `reproduce_silkuniene_2025.ipynb`: the analysis. It takes seven to ten minutes, most of it
+- `reproduce_silkuniene_2025.ipynb`: the analysis. It takes six to ten minutes, most of it
   streaming 42 images (11.5 GB).
 - `cancan.py`: listing and streaming the files, parsing their conditions, locating the electrode
   array, ROI profiles along the diagonals and the fits of the Methods. Other notebooks on this
