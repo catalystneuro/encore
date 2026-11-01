@@ -16,11 +16,32 @@
   var state = { subset: "all", metric: "datasets" };
   var root = document.querySelector(".progress");
   var line = document.getElementById("progress-line"), cols = document.getElementById("progress-outcomes");
-  var outcomeKeys = Object.keys(P.outcomes);
+  var outcomeKeys = Object.keys(P.outcomes), protocols = P.protocols || [];
+  // Two measures are stacked: claims by outcome, and attempts by the protocol version they followed, shaded in
+  // the bar colour from light (the oldest version) to dark (the newest), with attempts that recorded none in gray.
+  function protocolFill(v) {
+    if (v === "not recorded") return "var(--muted)";
+    var known = protocols.filter(function (p) { return p !== "not recorded"; }), i = known.indexOf(v);
+    var share = known.length > 1 ? 30 + 70 * i / (known.length - 1) : 100;
+    return "color-mix(in srgb, var(--bar) " + share.toFixed(0) + "%, var(--surface))";
+  }
+  function stackOf(m) {
+    if (m === "claims") return {
+      keys: outcomeKeys, label: function (k) { return P.outcomes[k].label.toLowerCase(); },
+      paint: function (node, k) { node.setAttribute("class", "seg-" + P.outcomes[k].css); },
+      swatch: function (k) { return '<span class="swatch ' + P.outcomes[k].css + '" aria-hidden="true"></span>'; } };
+    if (m === "attempts" && protocols.length) return {
+      keys: protocols.map(function (v) { return "protocol:" + v; }),
+      label: function (k) { var v = k.slice(9); return v === "not recorded" ? "protocol not recorded" : "protocol " + v; },
+      // A thin line of the surface between versions, as their shades are close.
+      paint: function (node, k) { node.setAttribute("style", "fill:" + protocolFill(k.slice(9)) + ";stroke:var(--surface);stroke-width:1"); },
+      swatch: function (k) { return '<span class="swatch" style="background:' + protocolFill(k.slice(9)) + '" aria-hidden="true"></span>'; } };
+    return null;
+  }
   var DAY_NOTES = {
     datasets: "Each dataset on the date of its first attempt.",
     papers: "Each paper on the date of its first attempt.",
-    attempts: "Each attempt on its own date.",
+    attempts: "Each attempt on its own date, shaded by the protocol version it followed (the strongest colour is the newest).",
     claims: "Claims that rest on the dataset, on the date of their attempt.",
     findings: "Findings of the current attempts, on the date of their attempt."
   };
@@ -67,24 +88,25 @@
     f.tip.style.top = Math.max(y - f.tip.offsetHeight - 12, 0) + "px";
   }
 
-  // Claims tested: the running total stacked by outcome, reproduced at the bottom and blocked on top.
-  function drawStacked() {
-    var rows = P.series[state.subset], n = rows.length, run = {}, f = frame(line, 230);
-    outcomeKeys.forEach(function (k) { run[k] = 0; });
+  // A stacked running total: claims by outcome (reproduced at the bottom, blocked on top), or attempts by
+  // protocol version (the oldest at the bottom).
+  function drawStacked(S) {
+    var rows = P.series[state.subset], n = rows.length, run = {}, f = frame(line, 230), keys = S.keys;
+    keys.forEach(function (k) { run[k] = 0; });
     var cum = rows.map(function (r) {
-      var c = {}; outcomeKeys.forEach(function (k) { run[k] += r[k]; c[k] = run[k]; }); return c;
+      var c = {}; keys.forEach(function (k) { run[k] += r[k]; c[k] = run[k]; }); return c;
     });
-    var totals = cum.map(function (c) { return outcomeKeys.reduce(function (s, k) { return s + c[k]; }, 0); });
+    var totals = cum.map(function (c) { return keys.reduce(function (s, k) { return s + c[k]; }, 0); });
     var top = Math.max(totals[n - 1], 1), step = niceStep(top, 4), yMax = Math.ceil(top / step) * step;
     var x = function (i) { return f.left + i * (f.w - f.left - f.right) / (n - 1); };
     var y = function (v) { return f.top + (f.h - f.top - f.bottom) * (1 - v / yMax); };
     axes(f, yMax, step, n, x);
     var below = cum.map(function () { return 0; });
-    outcomeKeys.forEach(function (k) {
+    keys.forEach(function (k) {
       var upper = cum.map(function (c, i) { return below[i] + c[k]; });
       var pts = upper.map(function (v, i) { return x(i).toFixed(1) + "," + y(v).toFixed(1); });
       for (var i = n - 1; i >= 0; i--) pts.push(x(i).toFixed(1) + "," + y(below[i]).toFixed(1));
-      el("polygon", { "class": "seg-" + P.outcomes[k].css, points: pts.join(" ") }, f.svg);
+      S.paint(el("polygon", { points: pts.join(" ") }, f.svg), k);
       below = upper;
     });
     el("text", { "class": "end-label", x: x(n - 1) - 8, y: y(totals[n - 1]) - 9, "text-anchor": "end" }, f.svg)
@@ -96,8 +118,8 @@
       var hit = el("rect", { "class": "hit", x: x0, y: f.top, width: x1 - x0, height: f.h - f.top - f.bottom }, f.svg);
       var show = function () {
         cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("visibility", "visible");
-        var parts = outcomeKeys.filter(function (k) { return c[k]; })
-          .map(function (k) { return c[k].toLocaleString() + " " + P.outcomes[k].label.toLowerCase(); });
+        var parts = keys.filter(function (k) { return c[k]; })
+          .map(function (k) { return c[k].toLocaleString() + " " + S.label(k); });
         place(f, x(i), y(totals[i]), day(P.days[i], true) + ": " + totals[i].toLocaleString() + " in all" +
           (parts.length ? " (" + parts.join(", ") + ")" : ""));
       };
@@ -105,13 +127,15 @@
     });
     f.svg.addEventListener("mouseleave", function () { cross.setAttribute("visibility", "hidden"); f.tip.hidden = true; });
     f.svg.setAttribute("role", "img");
-    f.svg.setAttribute("aria-label", P.metrics.claims + ": " + totals[n - 1] + " by " + day(P.days[n - 1], true) + ", " +
-      outcomeKeys.map(function (k) { return cum[n - 1][k] + " " + P.outcomes[k].label.toLowerCase(); }).join(", "));
-    document.getElementById("progress-title").textContent = P.metrics.claims + " over time";
+    f.svg.setAttribute("aria-label", P.metrics[state.metric] + ": " + totals[n - 1] + " by " + day(P.days[n - 1], true) + ", " +
+      keys.filter(function (k) { return cum[n - 1][k]; })
+        .map(function (k) { return cum[n - 1][k] + " " + S.label(k); }).join(", "));
+    document.getElementById("progress-title").textContent = P.metrics[state.metric] + " over time";
   }
 
   function drawLine() {
-    if (state.metric === "claims") return drawStacked();
+    var S = stackOf(state.metric);
+    if (S) return drawStacked(S);
     var rows = P.series[state.subset], m = state.metric, total = 0;
     var values = rows.map(function (r) { total += r[m]; return total; });
     var f = frame(line, 230), n = values.length, top = Math.max(values[n - 1], 1);
@@ -147,12 +171,12 @@
     document.getElementById("progress-title").textContent = P.metrics[m] + " over time";
   }
 
-  // What is new each day in the chosen measure; claims are stacked by outcome.
+  // What is new each day in the chosen measure; claims are stacked by outcome, attempts by protocol version.
   function drawColumns() {
     var rows = P.series[state.subset], n = rows.length, f = frame(cols, 230), m = state.metric;
-    var stacked = m === "claims", keys = stacked ? outcomeKeys : [m];
-    var css = function (k) { return stacked ? "seg-" + P.outcomes[k].css : "seg-bar"; };
-    var label = function (k) { return stacked ? P.outcomes[k].label.toLowerCase() : P.metrics[m].toLowerCase(); };
+    var S = stackOf(m), stacked = !!S, keys = stacked ? S.keys : [m];
+    var paint = function (node, k) { if (stacked) S.paint(node, k); else node.setAttribute("class", "seg-bar"); };
+    var label = function (k) { return stacked ? S.label(k) : P.metrics[m].toLowerCase(); };
     var sums = rows.map(function (r) { return keys.reduce(function (s, k) { return s + r[k]; }, 0); });
     var top = Math.max.apply(null, sums.concat([1])), step = niceStep(top, 4), yMax = Math.ceil(top / step) * step;
     var band = (f.w - f.left - f.right) / n, bw = Math.min(24, band * 0.7);
@@ -168,7 +192,7 @@
           ? "M" + (x(i) - bw / 2) + "," + y0 + "V" + (y0 - hgt + rx) + "Q" + (x(i) - bw / 2) + "," + (y0 - hgt) + " " + (x(i) - bw / 2 + rx) + "," + (y0 - hgt) +
             "H" + (x(i) + bw / 2 - rx) + "Q" + (x(i) + bw / 2) + "," + (y0 - hgt) + " " + (x(i) + bw / 2) + "," + (y0 - hgt + rx) + "V" + y0 + "Z"
           : "M" + (x(i) - bw / 2) + "," + y0 + "V" + (y0 - hgt) + "H" + (x(i) + bw / 2) + "V" + y0 + "Z";
-        el("path", { "class": css(k), d: d }, g);
+        paint(el("path", { d: d }, g), k);
         base += r[k];
       });
       var hit = el("rect", { "class": "hit", x: f.left + band * i, y: f.top, width: band, height: f.h - f.top - f.bottom }, f.svg);
@@ -182,16 +206,16 @@
     });
     f.svg.addEventListener("mouseleave", function () { f.tip.hidden = true; });
     f.svg.setAttribute("role", "img");
-    var title = stacked ? "Outcomes of claims tested, by day" : P.metrics[m] + ", new each day";
+    var title = m === "claims" ? "Outcomes of claims tested, by day"
+      : stacked ? P.metrics[m] + " by protocol version, new each day" : P.metrics[m] + ", new each day";
     f.svg.setAttribute("aria-label", title);
     document.getElementById("progress-day-title").textContent = title;
     document.getElementById("progress-day-note").textContent = DAY_NOTES[m] || "";
     var totals = {};
-    outcomeKeys.forEach(function (k) { totals[k] = rows.reduce(function (s, r) { return s + r[k]; }, 0); });
+    keys.forEach(function (k) { totals[k] = rows.reduce(function (s, r) { return s + r[k]; }, 0); });
     document.getElementById("progress-legend").innerHTML = !stacked ? "" : '<ul class="legend compact" style="margin-top:8px">' +
-      outcomeKeys.map(function (k) {
-        return '<li><span class="swatch ' + P.outcomes[k].css + '" aria-hidden="true"></span><strong>' +
-          totals[k].toLocaleString() + "</strong> " + P.outcomes[k].label.toLowerCase() + "</li>";
+      keys.filter(function (k) { return totals[k]; }).map(function (k) {
+        return "<li>" + S.swatch(k) + "<strong>" + totals[k].toLocaleString() + "</strong> " + S.label(k) + "</li>";
       }).join("") + "</ul>";
   }
 
