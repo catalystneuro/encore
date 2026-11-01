@@ -11,10 +11,11 @@ subclass labels come from the per-cell tables of the paper's code on Zenodo, mat
 | The files are the cells of the paper's tables (link) | Reproduced |
 | Cohort: 58 macaques; 300 new recordings | Reproduced |
 | L5 ET neurons differ from other neurons: higher resonance, lower input resistance, faster spikes | Reproduced |
-| Projection type has the largest effects; a classifier predicts subclass from physiology | Reproduced |
+| Projection type has the largest effects; classifiers on sparse PCs match those on features | Reproduced |
+| A classifier predicts subclass from physiology | Partially reproduced (50% held-out score below tolerance) |
 | CS neurons lie only among L5 ET neurons in the UMAP | Not reproduced |
 | The largest projection effects are subthreshold features; interactions with area are small | Not reproduced |
-| No effect of species | Not reproduced |
+| No effect of species | Reproduced |
 | MCx and TCx L5 ET neurons differ (resonance, fAHP, symmetry, input resistance, instantaneous FI slopes) | Reproduced |
 | MCx L5 ET neurons need more current to fire | Not reproduced |
 | Firing to 4 nA: higher MCx spike counts, equal instantaneous rates, upstroke ratio | Reproduced |

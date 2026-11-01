@@ -37,17 +37,21 @@ outcomes:
   output: claim:link-cells
   notes: All 294 files match a row of L5_physiology_121223.csv by cell name; 47 of its 341 rows are not
     in the dataset. Donor agrees for 293 of 294 cells and species for 292 of 294 (99.3%). The median Spearman
-    correlation over the 39 features computed here against the table's values is 0.952, with 27 of 39
+    correlation over the 39 features computed here against the table's values is 0.957, with 28 of 39
     features at 0.9 or more; the lowest are i_max_gain (0.33), initial_ifreq_gain (0.47) and initial_gain
-    (0.63), and SFA correlates at -0.989 as the table holds the inverse ratio. All 68 cells of MCx.pkl
-    and TCx.pkl have a 200 pA series in the files; 7 have exactly the pickle's steps, and the maximum
-    spike counts of 67 of 68 are within 10% of the pickle's (Spearman 0.996). The link holds for the cells
-    in the dataset; 47 cells of the paper's table cannot be linked as they are absent.
+    (0.63), and SFA correlates at -0.989 as the table holds the inverse ratio. After the sweep check,
+    maximum and steady-state input resistance agree with the table at Pearson r 0.993 and 0.990. All 68
+    cells of MCx.pkl and TCx.pkl have a 200 pA series in the files; 7 have exactly the pickle's steps,
+    and the maximum spike counts of 67 of 68 are within 10% of the pickle's (Spearman 0.996). The link
+    holds for the cells in the dataset; 47 cells of the paper's table cannot be linked as they are absent.
   deviations:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -64,8 +68,10 @@ outcomes:
   - 48
   - 9
   notes: 57 subjects have files (expected 58 within 5.8), 22 male, 34 female and 1 of unknown sex, 48
-    M. nemestrina and 9 M. mulatta (species from the NCBI taxon in the files), all within tolerance. Ages
-    run from 1 to 19 years, where the paper says 2 to 19.
+    M. nemestrina and 9 M. mulatta (species from the NCBI taxon in the files), all within tolerance. The
+    M. mulatta count rests on subject Q19.01.001, M. mulatta in the files and M. nemestrina in the paper's
+    table; by the table's species the count is 8, outside the tolerance. Which source is right cannot
+    be told from the data. Ages run from 1 to 19 years, where the paper says 2 to 19.
 - claim: cohort-recordings
   outcome: reproduced
   notebook: reproduce_dembrow_2024.ipynb
@@ -127,18 +133,21 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:fig3a-cs-with-l5et
-  notes: In the UMAP (20 PCs kept, 93% of variance) the nearest labelled non-CS neighbour of 46 of 52
-    CS neurons is L5 ET (reading a needs all), and in PC space 18 of 52 (0.346) have at least 9 of 10
+  notes: In the UMAP (19 PCs kept, 93.2% of variance) the nearest labelled non-CS neighbour of 38 of 52
+    CS neurons is L5 ET (reading a needs all), and in PC space 22 of 52 (0.423) have at least 9 of 10
     L5 ET neighbours (reading b needs 0.9). The 122 labelled non-CS cells are 43 L5 ET and 79 others.
     All 52 CS neurons are MCx and M. nemestrina, so independence of area and species cannot be tested;
-    by preparation reading (a) holds for 6 of 6 acute and 40 of 46 cultured CS neurons.
+    by preparation reading (a) holds for 6 of 6 acute and 32 of 46 cultured CS neurons.
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
     13749343), matched by cell name (link-cells).
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -147,27 +156,30 @@ outcomes:
   - 39 of the code's 40 features are used; zap_tau has no definition in the paper and is not computed.
     SFA follows the Methods (second over last ISI), the inverse of the table's.
 - claim: fig3e-classifier-accuracy
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:fig3e-classifier-accuracy
   measured:
-  - 95.2
-  - 79.2
-  - 75.7
-  - 99.5
+  - 94.6
+  - 78.3
+  - 75.1
+  - 100.0
   - 91.7
-  notes: 'Stratified splits, f1 reading (a): weighted f1 95.2, 79.2 and 75.7% (100%, 50% and 25% training),
-    L5 ET f1 99.5 and 91.7%, all within tolerance; the 50% score is 0.1 point above its lower bound of
-    79.11. Unstratified splits give 78.3% at 50% under both score readings, outside the tolerance, and
-    the recall reading (b) gives 79.1% with stratification, also outside. 167 training cells (95 L5 ET,
-    39 L5 IT, 27 L6 IT, 6 L5/6 NP); the most frequent class is 56.9%.'
+  notes: 'Stratified splits, f1 reading (a): weighted f1 94.6, 78.3 and 75.1% (100%, 50% and 25% training),
+    L5 ET f1 100 and 91.7%. Four of the five are within tolerance; the 50% score is below its lower bound
+    of 79.11 under every reading and split rule (unstratified 77.5%, recall reading 78.2% stratified and
+    77.6% unstratified). The criterion gives no partial rule; partially reproduced as four of five values
+    hold. 167 training cells (95 L5 ET, 39 L5 IT, 27 L6 IT, 6 L5/6 NP); the most frequent class is 56.9%.'
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
     13749343), matched by cell name (link-cells).
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -175,25 +187,26 @@ outcomes:
     paper's.
   - 39 of the code's 40 features are used; zap_tau has no definition in the paper and is not computed.
     SFA follows the Methods (second over last ISI), the inverse of the table's.
-  - Assumed that random splits were stratified by subclass. predict_subclass was not deposited and the
-    paper does not say; stratified splits are the usual choice with a class of 6 cells, and an unstratified
-    50% split puts the score outside the tolerance. scikit-learn defaults (L2, C = 1, lbfgs) as the claims
-    file's standard choice.
-  assumed: true
+  - Whether the random splits were stratified by subclass is open (predict_subclass was not deposited);
+    both are run and give the same outcome. scikit-learn defaults (L2, C = 1, lbfgs) as the claims file's
+    standard choice.
 - claim: fig3-spc-classifier
   outcome: reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:fig3-spc-classifier
   notes: On 8 sparse PCs (alpha 7) all five scores are within 10 points of the feature-based ones under
-    every reading and split rule; the largest difference is 9.3 points (weighted score on all cells, 85.9
-    against 95.2%).
+    every reading and split rule; the largest difference is 8.6 points (weighted score on all cells, 86.0
+    against 94.6%).
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
     13749343), matched by cell name (link-cells).
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -207,8 +220,8 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:fig3h-projection-largest-effect
-  notes: Median partial eta squared over the 39 features is 0.067 for projection class, 0.021 for preparation
-    and 0.008 for area (code's formula 0.054, 0.016, 0.006); means 0.106, 0.038 and 0.024. 294 cells,
+  notes: Median partial eta squared over the 39 features is 0.075 for projection class, 0.027 for preparation
+    and 0.0085 for area (code's formula 0.060, 0.023, 0.0064); means 0.124, 0.052 and 0.025. 294 cells,
     132 L5 ET.
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
@@ -216,7 +229,10 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -228,17 +244,23 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:fig4a-top-subthreshold
-  notes: 26 of 39 features have a BH-corrected projection effect. The largest effect sizes are min dV/dt
-    (0.381), min dV/dt of the 3 ms step spike (0.341) and maximum impedance (0.316); the 3 dB cutoff is
-    eighth (0.261) and resonant frequency ninth (0.190). None of the three named features is in the top
-    five, also with the code's formula.
+  notes: 27 of 39 features have a BH-corrected projection effect. The largest effect sizes are resonant
+    frequency (0.409), min dV/dt (0.381) and min dV/dt of the 3 ms step spike (0.341); maximum input resistance
+    is fourth (0.332), steady-state input resistance seventh and the 3 dB cutoff eleventh, so one named
+    feature is in the top three and the cutoff is not in the top five. The paper's own table values for
+    the same 294 cells give the same failure (Fr first, min dV/dt second, MaxRn third, cutoff tenth),
+    so it comes from the cells in the dataset or the paper's ranking, not from the extraction here. On
+    ranks of the values computed here (a variant) MaxRn, SSRn, MaxZ and Fr lead and the cutoff is sixth.
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
     13749343), matched by cell name (link-cells).
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -246,15 +268,15 @@ outcomes:
     paper's.
   - 39 of the code's 40 features are used; zap_tau has no definition in the paper and is not computed.
     SFA follows the Methods (second over last ISI), the inverse of the table's.
-  - The ranking depends on every feature's extraction; features such as phase0, MaxZ and the 3 ms step
-    spike, computed here by standard choices, enter the top five.
+  - 'Variants added after verification round 1: the same ANOVAs on the paper''s table values for the same
+    cells, and on the ranks of the values computed here. They do not decide the outcome.'
 - claim: fig4c-et-higher-resonance
   outcome: reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:fig4c-et-higher-resonance
-  notes: Projection effect on resonant frequency BH p = 4e-14 (partial eta squared 0.190). L5 ET higher
-    in MCx (5.37 against 2.31 Hz), TCx (3.33 against 1.79), acute (3.68 against 1.46) and culture (4.85
-    against 2.34). 132 L5 ET and 162 non-ET cells against 147 and 177. In all 18 donors with at least
+  notes: Projection effect on resonant frequency BH p = 7.6e-33 (partial eta squared 0.409). L5 ET higher
+    in MCx (4.89 against 2.31 Hz), TCx (3.33 against 1.79), acute (2.94 against 1.46) and culture (4.85
+    against 2.34). 131 L5 ET and 162 non-ET cells against 147 and 177. In all 18 donors with at least
     two cells of each class L5 ET is higher.
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
@@ -262,7 +284,10 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -272,16 +297,19 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:fig4e-et-lower-rin
-  notes: Projection effect on maximum input resistance BH p = 2.3e-7 (0.097). L5 ET lower in MCx (43.1
-    against 148.3 MOhm), TCx (59.7 against 163.2), acute (59.3 against 209.4) and culture (45.5 against
-    115.5); 129 and 159 cells against 145 and 173; lower in 18 of 18 donors.
+  notes: Projection effect on maximum input resistance BH p = 4.7e-25 (0.332). L5 ET lower in MCx (41.5
+    against 148.3 MOhm), TCx (59.6 against 143.2), acute (59.3 against 178.4) and culture (44.2 against
+    115.5); 128 and 158 cells against 145 and 173; lower in 18 of 18 donors.
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
     13749343), matched by cell name (link-cells).
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -291,17 +319,19 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:fig4g-et-faster-spikes
-  notes: Projection effects with L5 ET faster for max dV/dt (BH p = 4.9e-20), min dV/dt (5.9e-30) and
-    half-width (9.4e-12); min dV/dt more negative in L5 ET within each area and preparation (MCx -137
-    against -105, TCx -119 against -76, acute -117 against -77, culture -135 against -90 V/s), and in
-    18 of 18 donors.
+  notes: Projection effects with L5 ET faster for max dV/dt (BH p = 2.8e-20), min dV/dt (3e-30) and half-width
+    (8e-12); min dV/dt more negative in L5 ET within each area and preparation (MCx -137 against -105,
+    TCx -119 against -76, acute -117 against -77, culture -135 against -90 V/s), and in 18 of 18 donors.
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
     13749343), matched by cell name (link-cells).
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -312,17 +342,22 @@ outcomes:
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:fig4-interaction-small
   notes: (a) The projection by area interaction of max_ifreq_gain (partial eta squared 0.080) exceeds
-    the median projection effect (0.067); the other 38 are below it. (b) 15 features have an interaction
+    the median projection effect (0.075); the other 38 are below it. (b) 14 features have an interaction
     at uncorrected p < 0.05, and for 4 of them (initial_ifreq_gain, max_ifreq_gain, SFA, f_AHP) L5 ET
-    and non-ET differ in opposite directions in the two areas. Both readings fail. The interactions are
-    small in absolute terms (median 0.006).
+    and non-ET differ in opposite directions in the two areas. Both readings fail. On the paper's table
+    values for the same cells (variant) reading (a) holds (0.087 against a median of 0.092) and reading
+    (b) fails for 4 features (initial_ifreq_gain, max_ifreq_gain, SFA, inst_gain_CV), so the claim fails
+    there too.
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
     13749343), matched by cell name (link-cells).
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -331,22 +366,28 @@ outcomes:
   - 39 of the code's 40 features are used; zap_tau has no definition in the paper and is not computed.
     SFA follows the Methods (second over last ISI), the inverse of the table's.
 - claim: species-no-effect
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:species-no-effect
-  notes: 'Species from the files'' NCBI taxon (35 M. mulatta cells from 9 subjects, 259 M. nemestrina).
-    Reading (a), projection class: 11 features have a BH-corrected species effect (smallest p 5.9e-15,
-    resting potential). Reading (b), predicted subclass: 1 feature (AP amplitude, BH p 0.00047). Both
-    readings find an effect, so the claim of absence fails on the paper''s test. The four-way model with
-    all interactions is rank deficient, as some species, preparation, area and subclass cells are empty,
-    so these p values rest on a partly unidentified design.'
+  notes: Species from the files' NCBI taxon (35 M. mulatta cells from 9 subjects, 259 M. nemestrina).
+    No M. mulatta cell comes from acute MCx slices, and under reading (b) several subclasses have 0 to
+    2 M. mulatta cells, so the four-way model with all interactions is rank deficient (rank 14 of 16 columns
+    under reading a, 29 of 56 under reading b). With type II sums of squares computed from nested least-squares
+    fits, valid on such a design, no feature has a species effect at BH-corrected p < 0.05 under either
+    reading (smallest uncorrected p 0.054, Fr, reading a; 0.041, max_ifreq_gain, reading b; uncorrected
+    p < 0.05 for 0 and 2 features). The additive model (variant) agrees (smallest p 0.067 and 0.11). statsmodels'
+    type II table on the rank-deficient design, the round 1 result, gives 13 features under reading (a)
+    and 1 under reading (b); those sums of squares come from aliased columns.
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
     13749343), matched by cell name (link-cells).
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -355,7 +396,10 @@ outcomes:
   - 39 of the code's 40 features are used; zap_tau has no definition in the paper and is not computed.
     SFA follows the Methods (second over last ISI), the inverse of the table's.
   - The paper's four-way ANOVA code was not deposited; the code's other ANOVAs (OLS, all interactions,
-    type II, BH per term) are used, as the criterion says.
+    type II, BH per term) are used, as the criterion says. As the design is rank deficient, the type II
+    sums of squares are computed by comparing nested least-squares fits (dembrow.anova_estimable), which
+    equals statsmodels' table on a full-rank design (tested on synthetic data) and stays valid when cells
+    are empty; statsmodels' table is shown as well.
 - claim: tcx-et-types-no-difference
   outcome: reproduced
   notebook: reproduce_dembrow_2024.ipynb
@@ -370,7 +414,10 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -386,7 +433,8 @@ outcomes:
   notes: On RawFeatureWide.csv (10 MCx and 9 TCx reconstructions, paper 12 and 11), the largest MCx basal
     Euclidean distance from the soma is 1.390 mm (reading a), within tolerance, and every TCx value (largest
     0.686 mm) is below the MCx median (0.772 mm). Reading (b), path distance, gives 1.583 mm, outside
-    the tolerance. The CS and apical tuft parts of the statement are not tested by the criterion.
+    the tolerance. The CS and apical tuft parts of the statement are not tested by the criterion. RawFeatureWide.csv
+    holds 19 cells, not the 23 reconstructions, so this is not an independent test from the reconstructions.
   deviations:
   - The paper's deposited dendritic features (RawFeatureWide.csv, Zenodo 13749343) are used, not the reconstructions
     in the Brain Image Library; they hold 19 of the 23 cells.
@@ -394,10 +442,12 @@ outcomes:
   outcome: blocked
   blocked_by: other
   notes: Dendrite length per cortical layer needs the reconstructions in the Brain Image Library (doi:10.35077/g.1160)
-    aligned to layer boundaries; the deposited RawFeatureWide.csv has no per-layer lengths. Fetching and
-    aligning the reconstructions was not attempted within this run's time limit.
+    aligned to layer boundaries. The columns of the deposited RawFeatureWide.csv, printed in the notebook,
+    hold no per-layer length (only three apical depth PCs and soma depth from pia), so the claim cannot
+    be tested from them. Fetching and aligning the reconstructions was not attempted within this run's
+    time limit.
 - claim: fig5c-basal-apical-features
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:fig5c-basal-apical-features
   measured:
@@ -405,12 +455,13 @@ outcomes:
   - 2.79
   - 1.64
   - 2.11
-  notes: All four features differ at BH-corrected p < 0.05 in the stated direction, with longer read as
-    the maximum basal path distance (p 0.0095, d 1.94), horizontal extent (0.0015, d 2.79), apical branches
-    (0.017, d 1.64) and maximum apical branch order (0.0054, d 2.11). Total basal length does not differ
-    (0.48). The d values of extent and branches are within tolerance; those of length (1.94 against 2.22)
-    and branch order (2.11 against 1.55) are not. The deposited notebook printed the same extent and branch
-    order d (2.79, 2.11), as the claims file notes.
+  notes: All four features differ at BH-corrected p < 0.05 in the stated direction, the criterion's rule,
+    with longer read as the maximum basal path distance (p 0.0095, d 1.94), horizontal extent (0.0015,
+    d 2.79), apical branches (0.017, d 1.64) and maximum apical branch order (0.0054, d 2.11). Total basal
+    length (the other reading of longer) does not differ (0.48). The d values of extent and branches are
+    within tolerance; those of length (1.94 against 2.22) and branch order (2.11 against 1.55) are not,
+    a comparison the criterion reports without making it decide. The deposited notebook printed the same
+    extent and branch order d (2.79, 2.11), as the claims file notes.
   deviations:
   - The paper's deposited features of 19 reconstructions are used, not the 23 reconstructions themselves.
 - claim: fig5e-morph-classifier
@@ -435,7 +486,7 @@ outcomes:
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:fig6a-area-variation
   notes: '71 MCx and 61 TCx L5 ET neurons (paper 77 or 78 and 70). 16 of 39 features have a BH-corrected
-    area effect (the code''s table has 19 of 40): 5 subthreshold (cutoff, MaxRn, Fr, phase0, SSRn) and
+    area effect (the code''s table has 19 of 40): 5 subthreshold (SSRn, MaxRn, cutoff, Fr, phase0) and
     11 suprathreshold. Of the 12 computed features the claims file names from the code''s table, 10 are
     significant; MaxZ and threshold_current are not. Donors give cells of one area (17 MCx, 28 TCx, 1
     in both); on donor means the area differences of the named features keep their direction, with Welch
@@ -446,7 +497,10 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -458,15 +512,18 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:fig6b-mcx-higher-resonance
-  notes: Resonant frequency 5.37 Hz in MCx and 3.33 Hz in TCx (BH p = 0.013), 3 dB cutoff 10.6 and 7.58
-    Hz (BH p = 0.0026); the code's means are 5.16 and 3.30, and 10.99 and 8.10 Hz.
+  notes: Resonant frequency 4.89 Hz in MCx and 3.33 Hz in TCx (BH p = 0.0055), 3 dB cutoff 10.6 and 7.58
+    Hz (BH p = 0.0017); the code's means are 5.16 and 3.30, and 10.99 and 8.10 Hz.
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
     13749343), matched by cell name (link-cells).
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -477,7 +534,7 @@ outcomes:
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:fig6d-mcx-deeper-fahp-symmetric
   notes: In MCx the fAHP is deeper (-15.9 against -11.4 mV, BH p = 6.9e-5), the up/down ratio lower (2.69
-    against 3.31, 0.0013), the half-width shorter (0.629 against 0.741 ms, 0.035) and min dV/dt more negative
+    against 3.31, 0.0009), the half-width shorter (0.629 against 0.741 ms, 0.032) and min dV/dt more negative
     (-137 against -119 V/s, 0.048). Max dV/dt is lower in MCx (356 against 376 V/s, 0.048), where the
     code found no difference. The Figure 6D and 6E legend states the opposite direction for the fAHP and
     symmetry; the Results are tested, as the criterion says.
@@ -487,7 +544,10 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -497,9 +557,10 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:figs6b-mcx-lower-rin
-  notes: Steady-state input resistance lower in MCx (27.3 against 43.0 MOhm, BH p = 0.037), and lower
-    in MCx within acute (30.8 against 51.4) and cultured slices (26.6 against 28.9, a small difference).
-    Maximum input resistance (variant) BH p = 0.0075, lower in MCx in both. Cells 129 against the legend's
+  notes: Steady-state input resistance lower in MCx (25.6 against 43.6 MOhm, BH p = 0.00073), and lower
+    in MCx within acute (30.8 against 51.4) and cultured slices (24.6 against 30.7). Maximum input resistance
+    (variant) BH p = 0.00093, lower in MCx in both; the paper's table SSRn for the same cells BH p = 0.0051.
+    After the sweep check no cell has a negative or zero input resistance. Cells 128 against the legend's
     144.
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
@@ -507,7 +568,10 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -518,15 +582,20 @@ outcomes:
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:figs6b-mcx-higher-rheobase
   notes: Rheobase is higher in MCx (268 against 193 pA) but the area effect has p = 0.08 uncorrected and
-    0.16 after BH correction (partial eta squared 0.024), against the paper's corrected 0.0496. On donor
-    means, a variant, MCx 360 and TCx 186 pA, Welch p = 0.018.
+    0.16 after BH correction (partial eta squared 0.024), against the paper's corrected 0.0496. The paper's
+    table values for the same 132 cells (variant) give p = 0.048 and BH p = 0.095, so the shortfall comes
+    from the cells in the dataset, not from the extraction. On donor means, a variant, MCx 360 and TCx
+    186 pA, Welch p = 0.018.
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
     13749343), matched by cell name (link-cells).
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -536,7 +605,7 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:figs6b-avg-gain-no-difference
-  notes: Maximum gain 0.093 Hz/pA in MCx and 0.121 in TCx; area effect BH p = 0.59, partial eta squared
+  notes: Maximum gain 0.093 Hz/pA in MCx and 0.121 in TCx; area effect BH p = 0.62, partial eta squared
     0.003.
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
@@ -544,7 +613,10 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -554,8 +626,8 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:fig6h-tcx-steeper-instantaneous-fi
-  notes: Initial slope of the instantaneous FI curve 0.575 Hz/pA in TCx against 0.061 in MCx (BH p = 0.036),
-    maximum slope 1.05 against 0.33 (BH p = 0.0019). The initial-slope link with the table is weak (Spearman
+  notes: Initial slope of the instantaneous FI curve 0.575 Hz/pA in TCx against 0.061 in MCx (BH p = 0.033),
+    maximum slope 1.05 against 0.33 (BH p = 0.0011). The initial-slope link with the table is weak (Spearman
     0.47), so this feature differs from the paper's most among those tested.
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
@@ -563,7 +635,10 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -586,7 +661,10 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -605,7 +683,10 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -627,7 +708,10 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -638,11 +722,13 @@ outcomes:
   measured:
   - 1.24
   - 1.28
-  notes: At the step with the most spikes the last-to-first half-width ratio is 1.55 in TCx and 1.24 in
-    MCx (Welch p = 2.9e-5, d = 1.28); the code's indexing gives 1.53 and 1.26 (d = 1.20). The direction
+  notes: 'At the step with the most spikes the last-to-first half-width ratio is 1.55 in TCx and 1.24
+    in MCx (Welch p = 2.9e-5, d = 1.28); the code''s indexing gives 1.53 and 1.26 (d = 1.20). The direction
     holds, but the TCx ratio is not above 2, the MCx ratio is outside 1.35 to 1.65 and d is outside 1.82
-    to 2.22 under both readings. The half-width of late spikes in a train depends on the extraction, which
-    the paper does not describe beyond the Methods' definition.
+    to 2.22 under both readings. Two other width definitions, run as variants, also fail: threshold at
+    5% of the mean max dV/dt, TCx 1.69 and MCx 1.31 (d 1.52); IPFX''s width, which agrees best with the
+    pickle''s per-step width ratios (Spearman 0.958, against 0.863 for the Methods'' width), TCx 2.84
+    and MCx 1.89 (d 1.42).'
   deviations:
   - The 4 nA cells are the keys of the code's MCx.pkl and TCx.pkl (42 and 26, all in the dataset); their
     spike data are read from the files, not the pickles.
@@ -651,10 +737,17 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
+  - 'Variants added after verification round 1: the half-width with a threshold at 5% of the sweep''s
+    mean max dV/dt, and IPFX''s width (half the peak-to-fast-trough height), as the pickle''s per-step
+    outputs carry IPFX''s names. The Methods'' definition (20 V/s threshold, half the threshold-to-peak
+    height) decides the outcome.'
 - claim: fig6k-upstroke-ratio
   outcome: reproduced
   notebook: reproduce_dembrow_2024.ipynb
@@ -674,7 +767,10 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Files hold several runs of each protocol; the paper does not say which it used. The first run is used
     (for the 1 s steps, the first series reaching 1 nA), a standard choice of this attempt; the link check
     finds the features close to the paper's table (median Spearman 0.952).
@@ -684,7 +780,8 @@ outcomes:
   output: claim:figs7-cv-isi-higher-mcx
   notes: CV of ISIs 0.652 in MCx and 0.469 in TCx, on 267 sweeps from 63 cells and 126 from 57 (legend
     273 from 64 and 131 from 65). The area effect of the two-way ANOVA with spike-count bins has p = 0.010
-    (bins of 10) and 0.017 (bins of 25), below 0.05 and not below 0.001.
+    (bins of 10) and 0.017 (bins of 25), below 0.05 and not below 0.001. An additive model that keeps
+    every sweep (variant) gives p = 0.021 and 0.18.
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
     13749343), matched by cell name (link-cells).
@@ -692,7 +789,10 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Bins holding sweeps of one area only cannot enter a two-way ANOVA with interaction and are left out
     (43 and 36 sweeps).
 - claim: fig7-oscillation-frequency-vm
@@ -701,14 +801,17 @@ outcomes:
   output: claim:fig7-oscillation-frequency-vm
   measured:
   - 0.284
-  - 0.27
+  - 0.282
   notes: MCx frequency rises with membrane potential by autocorrelation (r = 0.53, r squared 0.284, p
-    = 1.2e-5, 60 observations from 45 cells) and by FFT (r = 0.52, r squared 0.270, p = 2.9e-6, 72 from
-    53). TCx FFT shows no relation (p = 0.24), but the TCx autocorrelation frequency falls with membrane
-    potential (r = -0.32, p = 0.028), so one of the four conditions fails; the criterion has no partial
-    rule, and partially reproduced is used as three of four hold. The autocorrelation r squared is within
-    tolerance; the FFT r squared is outside 0.288 to 0.352. Observation counts are below the legend's
-    (79 and 91 in MCx). 10.6% of segments peak at the 3 Hz lower band edge.
+    = 1.2e-5, 60 observations from 45 cells) and by the spline FFT peak (r = 0.53, r squared 0.282, p
+    = 3.7e-6, 67 observations from 53 cells; one spline per cell and bin, r squared 0.276, p = 2.1e-6).
+    TCx FFT shows no relation (p = 0.75; 0.21 per cell and bin), but the TCx autocorrelation frequency
+    falls with membrane potential (r = -0.32, p = 0.028), so one of the four conditions fails; the criterion
+    has no partial rule, and partially reproduced is used as three of four hold. The autocorrelation r
+    squared is within tolerance; the FFT r squared is outside 0.288 to 0.352 under both spline readings.
+    The spline maximum lies at 3 to 3.5 Hz, the band's lower edge, in 52% of sweeps, and the largest interior
+    maximum (variant) has no relation with membrane potential in MCx (r = -0.04, p = 0.77), so the FFT
+    result may reflect low-frequency power. Observation counts are below the legend's (79 and 91 in MCx).
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
     13749343), matched by cell name (link-cells).
@@ -716,23 +819,31 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - The oscillation analysis was R code that was not deposited. It is rebuilt from STAR Methods with the
     standard choices the claims file names (exponential fit from the AHP trough, baseline within 1 mV
     of its asymptote, zero-phase 4th-order Butterworth 3 to 50 Hz, autocorrelogram frequency from its
-    first peak). The smoothing spline over segments is replaced by the mean over a sweep's segments, and
-    the trace is resampled to 1 kHz. These are assumed; the paper does not fix them.
+    first peak). The sweep's FFT peak frequency and strength are the maximum of a smoothing spline fitted
+    to the pooled spectra of its segments (STAR Methods; Figure 7G legend), with the smoothing chosen
+    by generalized cross-validation as R smooth.spline does (the claims file's standard choice); one spline
+    per cell and 5 mV bin is run as a second reading. Strength is the amplitude of the Hann-windowed spectrum
+    (mV), and the trace is resampled to 1 kHz. These are assumed; the paper does not fix them. In round
+    1 the spline was replaced by the mean of the segments' peaks; that is now a variant.
   assumed: true
 - claim: fig7k-oscillation-power-vm
   outcome: not_reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:fig7k-oscillation-power-vm
   measured:
-  - 0.003
-  - 0.04
-  notes: FFT strength does not rise with membrane potential in MCx (r = 0.057, p = 0.63, 72 observations);
-    TCx r = 0.20, p = 0.14. Strength here is the peak amplitude of the windowed spectrum of each segment,
-    which the paper does not define further.
+  - 0.0
+  - 0.059
+  notes: The strength of the spline maximum does not rise with membrane potential in MCx (r = -0.002,
+    p = 0.99, 67 observations; one spline per cell and bin r = 0.008, p = 0.94); TCx r = 0.24, p = 0.083.
+    No variant (interior maximum, mean of the segments' peaks, segments without a spline) has an MCx p
+    below 0.3. Strength is the amplitude of the windowed spectrum, which the paper does not define further.
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
     13749343), matched by cell name (link-cells).
@@ -740,21 +851,31 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - The oscillation analysis was R code that was not deposited. It is rebuilt from STAR Methods with the
     standard choices the claims file names (exponential fit from the AHP trough, baseline within 1 mV
     of its asymptote, zero-phase 4th-order Butterworth 3 to 50 Hz, autocorrelogram frequency from its
-    first peak). The smoothing spline over segments is replaced by the mean over a sweep's segments, and
-    the trace is resampled to 1 kHz. These are assumed; the paper does not fix them.
+    first peak). The sweep's FFT peak frequency and strength are the maximum of a smoothing spline fitted
+    to the pooled spectra of its segments (STAR Methods; Figure 7G legend), with the smoothing chosen
+    by generalized cross-validation as R smooth.spline does (the claims file's standard choice); one spline
+    per cell and 5 mV bin is run as a second reading. Strength is the amplitude of the Hann-windowed spectrum
+    (mV), and the trace is resampled to 1 kHz. These are assumed; the paper does not fix them. In round
+    1 the spline was replaced by the mean of the segments' peaks; that is now a variant.
   assumed: true
 - claim: figs7-oscillations-with-blockers
   outcome: partially_reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:figs7-oscillations-with-blockers
-  notes: Oscillations are found in cells recorded with synaptic blockers (140 sweeps from 42 cells; without,
-    151 from 49; legend 55 and 64 cells), at a slightly lower mean frequency (5.43 against 5.58 Hz), but
-    the blocker effect is not significant (p = 0.72 with bins of 10 spikes, 0.82 with bins of 25). Blockers
-    are read from the drug column of the code's table (entries naming DNQX).
+  notes: 'Oscillations are found in cells the table lists with synaptic blockers (140 sweeps from 42 cells;
+    without, 151 from 49; legend 55 and 64 cells), at a slightly lower mean spline frequency (4.43 against
+    4.59 Hz), but the blocker effect is not significant (p = 0.67 with bins of 10 spikes, 0.61 with bins
+    of 25; additive model 0.67 and 0.36; the round 1 segment mean 0.72 and 0.82). Blockers are read from
+    the drug column of the code''s table (entries naming DNQX). The files do not record them: none of
+    the 51 L5 ET cells the table lists with blockers mentions a blocker in its user comment, sweep comments
+    or lab notebook text, so sweeps before wash-in cannot be told apart.'
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
     13749343), matched by cell name (link-cells).
@@ -762,21 +883,29 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - The oscillation analysis was R code that was not deposited. It is rebuilt from STAR Methods with the
     standard choices the claims file names (exponential fit from the AHP trough, baseline within 1 mV
     of its asymptote, zero-phase 4th-order Butterworth 3 to 50 Hz, autocorrelogram frequency from its
-    first peak). The smoothing spline over segments is replaced by the mean over a sweep's segments, and
-    the trace is resampled to 1 kHz. These are assumed; the paper does not fix them.
+    first peak). The sweep's FFT peak frequency and strength are the maximum of a smoothing spline fitted
+    to the pooled spectra of its segments (STAR Methods; Figure 7G legend), with the smoothing chosen
+    by generalized cross-validation as R smooth.spline does (the claims file's standard choice); one spline
+    per cell and 5 mV bin is run as a second reading. Strength is the amplitude of the Hann-windowed spectrum
+    (mV), and the trace is resampled to 1 kHz. These are assumed; the paper does not fix them. In round
+    1 the spline was replaced by the mean of the segments' peaks; that is now a variant.
   assumed: true
 - claim: fig7l-firing-tracks-oscillation
   outcome: partially_reproduced
   notebook: reproduce_dembrow_2024.ipynb
   output: claim:fig7l-firing-tracks-oscillation
-  measured: 0.444
-  notes: MCx modal firing rate correlates with the sweep's oscillation frequency (r = 0.667, r squared
-    0.444, p = 3e-28, 209 sweeps from 53 cells; 0.454 with 2 Hz bins), below the tolerance of 0.63; TCx
-    p = 0.22 (1 Hz bins) and 0.13 (2 Hz). Observations are sweeps (legend 122 from 42 cells).
+  measured: 0.469
+  notes: MCx modal firing rate correlates with the sweep's spline peak frequency (r = 0.685, r squared
+    0.469, p = 2.7e-30, 209 sweeps from 53 cells; 0.509 with 2 Hz bins), below the tolerance of 0.567
+    to 0.693; TCx p = 0.35 (1 Hz bins) and 0.64 (2 Hz). The round 1 segment mean gives r squared 0.444
+    and 0.454. Observations are sweeps (legend 122 from 42 cells).
   deviations:
   - Area, preparation and subclass labels come from L5_physiology_121223.csv of the paper's code (Zenodo
     13749343), matched by cell name (link-cells).
@@ -784,12 +913,19 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - The oscillation analysis was R code that was not deposited. It is rebuilt from STAR Methods with the
     standard choices the claims file names (exponential fit from the AHP trough, baseline within 1 mV
     of its asymptote, zero-phase 4th-order Butterworth 3 to 50 Hz, autocorrelogram frequency from its
-    first peak). The smoothing spline over segments is replaced by the mean over a sweep's segments, and
-    the trace is resampled to 1 kHz. These are assumed; the paper does not fix them.
+    first peak). The sweep's FFT peak frequency and strength are the maximum of a smoothing spline fitted
+    to the pooled spectra of its segments (STAR Methods; Figure 7G legend), with the smoothing chosen
+    by generalized cross-validation as R smooth.spline does (the claims file's standard choice); one spline
+    per cell and 5 mV bin is run as a second reading. Strength is the amplitude of the Hann-windowed spectrum
+    (mV), and the trace is resampled to 1 kHz. These are assumed; the paper does not fix them. In round
+    1 the spline was replaced by the mean of the segments' peaks; that is now a variant.
   assumed: true
 - claim: figs7g-modal-rates-long-isis
   outcome: reproduced
@@ -808,7 +944,10 @@ outcomes:
   - All features are computed here from the traces, as the paper's extraction code was not deposited,
     with the definitions of STAR Methods and the standard choices named in the claims file and the helper
     (peak and steady-state windows, linear range of the V-I relation, averaged chirp profiles, fAHP window,
-    spike detection, filtering).
+    spike detection, filtering). Added after verification round 1, a sweep check of the 1 s hyperpolarizing
+    steps (a sweep must hyperpolarize, from a baseline below -40 mV, with the voltage below -20 mV in
+    the step; 13 sweeps of 10 cells rejected) and a chirp check (a profile with no 3 dB cutoff after its
+    maximum is left out; 1 cell), standard choices of this attempt.
   - Assumed that Figure S7G, part of the oscillation analysis, uses the sweeps that STAR Methods admit
     to it (at least one spike and no more than 200); without that limit the claim fails.
   assumed: true
@@ -817,7 +956,9 @@ findings:
   statement: The files carry no cortical area, brain region, slice preparation (acute or culture), transcriptomic
     or predicted subclass, retrograde label or drug condition, and session_description is a placeholder.
     These come only from the per-cell tables of the paper's code on Zenodo, matched by the electrode cell_id,
-    which every file has.
+    which every file has. For the 51 L5 ET cells the table lists with synaptic blockers, no user comment,
+    sweep comment or lab notebook text in the files mentions a blocker, so when blockers were applied
+    cannot be read from the files.
 - kind: data_missing
   statement: 47 of the 341 cells of the code's L5 physiology table (35 of them recorded by one user) are
     not in the dandiset, which holds 294; the paper reports 333 cells in its physiology analysis, 33 of
@@ -842,18 +983,22 @@ findings:
 - kind: methods_unavailable
   statement: Question for the authors. Were the random training splits of the logistic regression classifiers
     (Figure 3E to 3G and 5E) stratified by class, and with what regularization? predict_subclass was not
-    deposited. With stratified splits the scores reproduce here; unstratified, the 50% held-out score
-    is 78.3% against 87.9%.
+    deposited. Here the weighted f1 holding out 50% is 78.3% (stratified) or 77.5% (unstratified), against
+    87.9%.
 - kind: methods_unavailable
   statement: Question for the authors. How were the subthreshold oscillations of Figure 7 and S7 computed
-    (the curve fitted to find the return to baseline after the AHP, the filter, the spline over segments,
+    (the curve fitted to find the return to baseline after the AHP, the filter, the smoothing of the spline,
     the measure of strength, and which sweeps enter Figure S7G)? The R code was not deposited. Rebuilt
-    from the Methods, the MCx frequency rises with membrane potential as reported, but oscillation strength
-    does not, and the TCx autocorrelation frequency falls with membrane potential.
+    from the Methods with a smoothing spline over each sweep's segment spectra, the MCx frequency rises
+    with membrane potential as reported, but the spline maximum lies at the 3 Hz edge of the band in 52%
+    of sweeps, oscillation strength does not rise with membrane potential, and the TCx autocorrelation
+    frequency falls with membrane potential.
 - kind: methods_unavailable
   statement: Question for the authors. Which sweeps of each protocol were used for the features, and how
-    was the half-width of late spikes in the 4 nA trains measured? The extraction code was not deposited.
-    The last-to-first half-width ratio is 1.55 in TCx here against 2.27 in the code's pickle.
+    were threshold and half-width of late spikes in the 4 nA trains measured? The extraction code was
+    not deposited; the per-step outputs in MCx.pkl carry the names of the Allen Institute's IPFX. The
+    last-to-first half-width ratio in TCx is 1.55 with the Methods' definition and 2.84 with IPFX's width
+    here, against 2.27 in the code's pickle.
 - kind: code_mismatch
   statement: The paper's table holds SFA as the last ISI over the second, the inverse of the STAR Methods'
     ratio of the second ISI to the last (Spearman -0.989 with the Methods' ratio computed here).
@@ -864,3 +1009,319 @@ findings:
 - kind: other
   statement: The paper's deposited morphology features (RawFeatureWide.csv) cover 19 reconstructions,
     10 MCx and 9 TCx, where the paper reports 12 and 11.
+- kind: other
+  statement: In 10 files the first run of 1 s hyperpolarizing steps holds sweeps that do not hyperpolarize
+    the cell, start from a baseline above -40 mV or reach -20 mV (13 sweeps; some read 0 mV, as from a
+    lost recording), and nothing in the files marks them. Used as they are, they gave negative steady-state
+    input resistances for 3 cells.
+verifications:
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier queried the archive metadata and tested
+    helper functions on synthetic inputs. Its report had no attempt record and gave its own outcome for
+    each of the 42 claims; 41 agree with the record and one (fig5c-basal-apical-features) does not.
+  results:
+  - claim: link-cells
+    agrees: true
+    outcome: reproduced
+    reason: All 294 files match a table row. Donor agrees for 293 of 294 and species for 292 of 294, both
+      at least 99%. Median Spearman is 0.952, at least 0.9. All 68 cells of the 4 nA series were found.
+    response: Added a sweep check of the 1 s hyperpolarizing steps and a chirp check (problems 2 and 3);
+      the median Spearman is now 0.957 and MaxRn and SSRn agree with the table at Pearson 0.993 and 0.990.
+      Outcome kept.
+  - claim: cohort-animals
+    agrees: true
+    outcome: reproduced
+    reason: '57 animals, 22 M, 34 F, 48 nemestrina, 9 mulatta (10 ± 1). The mulatta count depends on subject
+      Q19.01.001: the file says mulatta, the table says nemestrina. If the table is right, the count is
+      8, outside tolerance.'
+    response: Added the count by the table's species (8, outside tolerance) to the notebook and the notes;
+      which source is right cannot be told from the data, and the disagreement stays a metadata_error
+      finding. Outcome kept, on the dataset's metadata.
+  - claim: cohort-recordings
+    agrees: true
+    outcome: reproduced
+    reason: 294 files, inside reading (b) (300 ± 30) but outside reading (a). This only counts files;
+      nothing shows the 294 are the 300 new cells, and 35 of the 47 table cells not in the dataset are
+      Nikolai's.
+    response: No change; the criterion counts recordings, and the notes already give the 47 missing cells
+      by user.
+  - claim: patchseq-qc-177
+    agrees: true
+    outcome: blocked
+    reason: The archive has no Patch-seq reads or mapping. The only other source is the paper's own QC
+      calls in cell_list_L5.csv, and counting those would just repeat the paper's labels. The verifier
+      gives blocked_by data_missing.
+    response: 'Kept blocked. blocked_by stays other: the claim is data: elsewhere (SRA PRJNA1088539, public),
+      and the protocol does not allow data_missing for data deposited elsewhere; the reads were not processed
+      for time.'
+  - claim: cs-map-to-l5et
+    agrees: true
+    outcome: blocked
+    reason: The archive has no Patch-seq reads or mapping. The only other source is the paper's own QC
+      calls in cell_list_L5.csv, and counting those would just repeat the paper's labels. The verifier
+      gives blocked_by data_missing.
+    response: 'Kept blocked. blocked_by stays other: the claim is data: elsewhere (SRA PRJNA1088539, public),
+      and the protocol does not allow data_missing for data deposited elsewhere; the reads were not processed
+      for time.'
+  - claim: fig3a-cs-with-l5et
+    agrees: true
+    outcome: not_reproduced
+    reason: Reading (a) holds for 48 of 52 CS cells, but it needs all 52. Reading (b) holds for 18 of
+      52 (0.346), and it needs at least 0.9. Both readings fail.
+    response: 'Re-run after the feature checks: 38 of 52 and 22 of 52 (0.423); the conclusion''s round
+      1 count (46) is corrected to the executed numbers. Outcome kept.'
+  - claim: fig3e-classifier-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Stratified f1 gives [95.2, 79.2, 75.7, 99.5, 91.7], and all five are within tolerance. The
+      50% value passes by 0.09 points (lower bound 79.11). Unstratified runs fail at 50%.
+    response: After the sweep check of the input resistance features (problem 3), the stratified 50% score
+      is 78.3% (unstratified 77.5%), below 79.11 under every reading; the other four are within tolerance.
+      Changed to partially_reproduced, and the outcome no longer rests on the stratification assumption.
+  - claim: fig3-spc-classifier
+    agrees: true
+    outcome: reproduced
+    reason: All 5 scores are within 10 points under every reading.
+    response: No change of outcome; numbers updated from the re-run. Largest difference 8.6 points.
+  - claim: fig3h-projection-largest-effect
+    agrees: true
+    outcome: reproduced
+    reason: Median partial eta squared is 0.067 for projection, 0.021 for preparation and 0.008 for area.
+      The code's formula gives the same order.
+    response: No change of outcome; numbers updated from the re-run. Now 0.075, 0.027 and 0.0085.
+  - claim: fig4a-top-subthreshold
+    agrees: true
+    outcome: not_reproduced
+    reason: The top three are min_dvdt, min_dvdt_short and MaxZ. Cutoff ranks 8th, Fr 9th, and MaxRn/SSRn
+      are outside the top 10. Parametric effect sizes are computed on features with outliers (MaxRn Pearson
+      0.508, maximum 2575 MOhm; Fr Pearson 0.642, maximum 38.8 Hz); the low Fr and MaxRn ranking may be
+      an extraction artefact, and the notebook never ranks the table's values for the same cells.
+    response: 'Fixed the outliers (sweep check, chirp check). Fr now ranks 1st, MaxRn 4th, cutoff 11th.
+      Added the same ANOVAs on the paper''s table values for the same cells (Fr 1st, MaxRn 3rd, cutoff
+      10th) and on ranks (cutoff 6th): the failure is not an extraction artefact. Outcome kept.'
+  - claim: fig4c-et-higher-resonance
+    agrees: true
+    outcome: reproduced
+    reason: BH p = 4e-14, and L5 ET is higher in both areas and both preparations. n is 132/162 against
+      the paper's 147/177.
+    response: No change of outcome; numbers updated from the re-run.
+  - claim: fig4e-et-lower-rin
+    agrees: true
+    outcome: reproduced
+    reason: BH p = 2.3e-7, and L5 ET is lower in all four groups.
+    response: No change of outcome; numbers updated from the re-run. BH p now 4.7e-25.
+  - claim: fig4g-et-faster-spikes
+    agrees: true
+    outcome: reproduced
+    reason: All three features are significant in the stated direction, and min dV/dt is faster in every
+      group.
+    response: No change of outcome; numbers updated from the re-run.
+  - claim: fig4-interaction-small
+    agrees: true
+    outcome: not_reproduced
+    reason: Reading (a) fails because the max_ifreq_gain interaction (eta squared 0.080) exceeds the median
+      projection effect (0.067). Reading (b) fails for 4 of 15 features.
+    response: 'Added the same test on the paper''s table values for the same cells (section C): (a) holds
+      there, (b) fails for 4 features, so the claim fails there too. Outcome kept.'
+  - claim: species-no-effect
+    agrees: true
+    outcome: not_reproduced
+    reason: '11 features (projection-class reading) and 1 feature (rmp, subclass reading) have BH species
+      p < 0.05. Both readings fail. The four-way models are probably rank-deficient: cell 1 suppresses
+      the rank-deficiency warnings, the notebook never shows the species x area x preparation x subclass
+      cell counts, and on a synthetic rank-deficient design statsmodels returned zero sums of squares
+      for main effects. The not_reproduced outcome is unreliable.'
+    response: Added the crosstab, the design rank (14 of 16 and 29 of 56 columns) and condition number,
+      and type II tests from nested least-squares fits, which hold on a rank-deficient design and equal
+      statsmodels' table on a full-rank one. No feature has a BH species p < 0.05 under either reading,
+      nor in the additive model. Changed to reproduced; the statsmodels table is shown as the round 1
+      result.
+  - claim: tcx-et-types-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: No feature reaches BH p < 0.05 under the Welch test (smallest 0.060) or the ANOVA (smallest
+      0.133). Largest |d| is 1.06. n is 21/17 against the paper's 25/19.
+    response: No change of outcome; numbers updated from the re-run.
+  - claim: fig4h-patchseq-genes-et
+    agrees: true
+    outcome: blocked
+    reason: Needs the SRA reads; the archive has none. The verifier gives blocked_by data_missing.
+    response: 'Kept blocked, blocked_by other: the claim is data: elsewhere and its data are public, so
+      data_missing does not apply.'
+  - claim: patchseq-genes-area
+    agrees: true
+    outcome: blocked
+    reason: Needs the SRA reads; the archive has none. The verifier gives blocked_by data_missing.
+    response: 'Kept blocked, blocked_by other: the claim is data: elsewhere and its data are public, so
+      data_missing does not apply.'
+  - claim: fig1-snrna-genes-et
+    agrees: true
+    outcome: blocked
+    reason: Needs the NeMO references; not in the archive. The verifier gives blocked_by data_missing.
+    response: 'Kept blocked, blocked_by other: the claim is data: elsewhere and its data are public, so
+      data_missing does not apply.'
+  - claim: fig1-snrna-genes-area
+    agrees: true
+    outcome: blocked
+    reason: Needs the NeMO references; not in the archive. The verifier gives blocked_by data_missing.
+    response: 'Kept blocked, blocked_by other: the claim is data: elsewhere and its data are public, so
+      data_missing does not apply.'
+  - claim: fig5-tap-root-dendrites
+    agrees: true
+    outcome: reproduced
+    reason: Euclidean MCx maximum is 1.39 mm, and every TCx value is below the MCx median. The input is
+      the 19-cell RawFeatureWide.csv, not the reconstructions. For fig5-tap-root, the "including CS neurons"
+      and "more complex apical tufts" parts are not checked.
+    response: No change; the notes say the test is on the deposited features of 19 cells and that the
+      CS and apical tuft parts are not tested by the criterion.
+  - claim: fig5b-dendrite-depth
+    agrees: true
+    outcome: blocked
+    reason: The reconstructions are not in the dandiset. I could not check whether RawFeatureWide.csv
+      holds per-layer lengths. The verifier gives blocked_by data_missing.
+    response: 'Printed the columns of RawFeatureWide.csv: no per-layer lengths (three apical depth PCs
+      and soma depth only), so it stays blocked; blocked_by stays other, as the claim is data: elsewhere.'
+  - claim: fig5c-basal-apical-features
+    agrees: false
+    outcome: reproduced
+    reason: Max path distance, extent_x, apical branches and apical max branch order all have BH p < 0.05
+      in the stated direction. Two d values are outside tolerance (1.94 against 2.22; 2.11 against 1.55),
+      but under the criterion d does not decide the outcome. Total length (another reading of "longer")
+      is not significant.
+    response: 'Agreed: the criterion''s rule is the four corrected tests. Changed from partially_reproduced
+      to reproduced; the d values are still reported.'
+  - claim: fig5e-morph-classifier
+    agrees: true
+    outcome: partially_reproduced
+    reason: Stratified gives 100 / 80.3 / 71.5. The 100% and 75%-held-out values are within tolerance;
+      the 50% value is below 82.7. The criterion gives no rule for a partial outcome; this is my call.
+    response: No change of outcome; numbers updated from the re-run.
+  - claim: fig6a-area-variation
+    agrees: true
+    outcome: reproduced
+    reason: 16 of 39 features have BH p < 0.05, with subthreshold and suprathreshold features among them
+      (the code's table had 19).
+    response: No change of outcome; numbers updated from the re-run.
+  - claim: fig6b-mcx-higher-resonance
+    agrees: true
+    outcome: reproduced
+    reason: Fr BH p 0.013 and cutoff BH p 0.0026, both higher in MCx.
+    response: No change of outcome; numbers updated from the re-run. Fr BH p now 0.0055.
+  - claim: fig6d-mcx-deeper-fahp-symmetric
+    agrees: true
+    outcome: reproduced
+    reason: fAHP (6.9e-5), up/down ratio (0.0013), AP_HW (0.035) and min_dvdt (0.048) are all in the stated
+      direction.
+    response: No change of outcome; numbers updated from the re-run.
+  - claim: figs6b-mcx-lower-rin
+    agrees: true
+    outcome: reproduced
+    reason: SSRn BH p 0.037 with MCx lower. Within culture the gap is small (26.6 against 28.9 MOhm).
+      SSRn has broken values (as low as -460.7 MOhm, with negative sag ratio and rebound); nothing checks
+      or excludes them.
+    response: Added the sweep check, which removes every negative input resistance; SSRn BH p is now 0.00073,
+      culture 24.6 against 30.7 MOhm, and the paper's table SSRn for the same cells gives BH p 0.0051.
+      Outcome kept.
+  - claim: figs6b-mcx-higher-rheobase
+    agrees: true
+    outcome: not_reproduced
+    reason: BH p 0.16 (uncorrected 0.08), though MCx is higher (268 against 193 pA).
+    response: 'Added the same ANOVA on the paper''s table values for the same cells (section C): p 0.048,
+      BH p 0.095, so the shortfall comes from the cells in the dataset. Outcome kept.'
+  - claim: figs6b-avg-gain-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: BH p 0.59.
+    response: No change of outcome; numbers updated from the re-run. BH p 0.62.
+  - claim: fig6h-tcx-steeper-instantaneous-fi
+    agrees: true
+    outcome: reproduced
+    reason: BH p 0.036 (initial) and 0.0019 (maximum), both TCx higher. The initial-slope feature agrees
+      poorly with the table (rho 0.47); when the first step already fires the slope is taken from 0 pA,
+      the author's own choice, though stated.
+    response: No change; the notes keep the weak link of the initial slope. BH p now 0.033 and 0.0011.
+  - claim: figs6c-mcx-higher-max-rate
+    agrees: true
+    outcome: reproduced
+    reason: p 1.5e-4, d 1.04 (1.0 ± 0.1). Five cells have 200 pA series with commands up to 16 nA; steps
+      above 4 nA are silently excluded, and the commands are not investigated.
+    response: The notebook now lists the five cells (all MCx) and their largest commands; they stay excluded
+      at the Methods' 4 nA limit and are recorded as a finding. Outcome kept.
+  - claim: figs6d-equal-max-instantaneous
+    agrees: true
+    outcome: reproduced
+    reason: p 0.62.
+    response: No change of outcome; numbers updated from the re-run.
+  - claim: fig6-depolarization-block
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both readings give MCx 5/42 and TCx 17/26. Both counts are outside tolerance, but the TCx
+      proportion exceeds the MCx one.
+    response: No change of outcome; numbers updated from the re-run.
+  - claim: fig6j-spike-width-ratio
+    agrees: true
+    outcome: not_reproduced
+    reason: MCx 1.24 (needs 1.5 ± 0.15), TCx 1.55 (needs > 2), |d| 1.28 (needs 2.02 ± 0.2). Only the direction
+      and the p value hold. The width ratios are far from the code's while the upstroke ratios match closely,
+      which points to a difference in how threshold or half-width is defined for late spikes; only one
+      definition is run.
+    response: 'Added two width definitions as variants (threshold at 5% of the mean max dV/dt; IPFX''s
+      width, as the pickle''s outputs carry IPFX names) and the per-step agreement with the pickle''s
+      width ratios. Neither reproduces the claim (IPFX width: TCx 2.84, MCx 1.89, d 1.42). Outcome kept.'
+  - claim: fig6k-upstroke-ratio
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (a): MCx 0.498, TCx 0.198, d 1.79 (1.69 ± 0.169), p 2.5e-11. All within tolerance.'
+    response: No change of outcome; numbers updated from the re-run.
+  - claim: figs7-cv-isi-higher-mcx
+    agrees: true
+    outcome: partially_reproduced
+    reason: Area p is 0.010 or 0.017, with MCx higher, under both bin widths. p is below 0.05 but not
+      below 0.001. Sweeps in bins that lack both groups are dropped (43 and 36 sweeps), an unstated departure;
+      an additive model would keep them.
+    response: Added the additive model as a variant (p 0.021 and 0.18); the dropping is stated in the
+      notes. Outcome kept.
+  - claim: fig7-oscillation-frequency-vm
+    agrees: true
+    outcome: partially_reproduced
+    reason: MCx is positive with p < 0.001 for both measures. TCx FFT has p 0.24, but TCx autocorrelation
+      has p 0.028 (r -0.32), which fails "p >= 0.05". FFT MCx r squared is 0.27, outside 0.32 ± 0.032.
+      The spline step was not done; the criterion and the STAR Methods call for a smoothing spline over
+      segments. 10.6% of FFT peaks sit at the 3 Hz band edge.
+    response: 'Added the smoothing spline over each sweep''s segment spectra (and one per cell and bin),
+      as the criterion says: MCx r squared 0.282 (0.276), TCx FFT p 0.75 (0.21); the TCx autocorrelation
+      still fails. The spline maximum lies at the band edge in 52% of sweeps, now reported. Outcome kept.'
+  - claim: fig7k-oscillation-power-vm
+    agrees: true
+    outcome: not_reproduced
+    reason: MCx r = 0.057, p = 0.63. The strength measure is the author's own and has no spline.
+    response: 'Added the spline strength: MCx r -0.002, p 0.99 (per cell and bin 0.008, 0.94); no variant
+      has an MCx p below 0.3. Strength stays the windowed spectrum amplitude, stated as an assumption.
+      Outcome kept.'
+  - claim: figs7-oscillations-with-blockers
+    agrees: true
+    outcome: partially_reproduced
+    reason: Oscillations are present with blockers (42 cells), and the mean is lower (5.43 against 5.58
+      Hz), but p is 0.72 or 0.82. Blocker status comes per cell from the Zenodo table's drug column, not
+      from the recording metadata the criterion names; sweeps recorded before wash-in would be labelled
+      as with blockers.
+    response: 'Added the drug column''s value counts and a search of the files'' user comments, sweep
+      comments and lab notebook text of the 51 blocker cells: none mentions a blocker, so the files cannot
+      place the wash-in. With the spline frequency p is 0.67 and 0.61. Outcome kept.'
+  - claim: fig7l-firing-tracks-oscillation
+    agrees: true
+    outcome: partially_reproduced
+    reason: MCx p < 1e-27 but r squared 0.44 to 0.45 (needs 0.63 ± 0.063). TCx p is 0.22 or 0.13.
+    response: With the spline frequency MCx r squared is 0.469 and 0.509, still outside tolerance, TCx
+      p 0.35 and 0.64. Outcome kept.
+  - claim: figs7g-modal-rates-long-isis
+    agrees: true
+    outcome: reproduced
+    reason: 'Holds only for sweeps with 1 to 200 spikes and 1 Hz bins (MCx 30.5, TCx 8.5). With 2 Hz bins
+      TCx is 9.0 (> 8.8); with all sweeps it is 147.5 / 99.5. Limiting to 1 to 200 spikes is the author''s
+      assumption, but a reasonable one: the paper ties the 650 ms window to the oscillation analysis,
+      which it restricts to 200 spikes or fewer.'
+    response: No change of outcome; numbers updated from the re-run.

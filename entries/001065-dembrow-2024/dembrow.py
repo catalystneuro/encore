@@ -152,6 +152,35 @@ def read_cell(asset_id, want=("chirp", "vi", "fi", "short", "s10"), with_meta=Fa
     return out
 
 
+def drug_mentions(asset_id, words=("dnqx", "apv", "gabazine", "picrotoxin", "drug", "wash", "5-ht", "5ht")):
+    """Where a file mentions a drug (added after verification round 1, to see whether the files
+    record when blockers were applied): the user comment, the comments of each sweep and the
+    textual values of the MIES lab notebook, searched for the words given (case ignored).
+    Returns the number of sweeps whose comments mention one, and the words found anywhere."""
+    f = h5py.File(remfile.File(s3_url(asset_id)), "r")
+    found, nsw = set(), 0
+    def scan(text):
+        t = str(text).lower()
+        hit = {w for w in words if w in t}
+        found.update(hit)
+        return bool(hit)
+    for dev in f.get("general/user_comment", {}):
+        g = f["general/user_comment"][dev]
+        for k in g:
+            scan(g[k][()])
+    for k in f["acquisition"]:
+        if scan(f["acquisition"][k].attrs.get("comments", "")):
+            nsw += 1
+    for dev in f.get("general/labnotebook", {}):
+        tv = f["general/labnotebook"][dev].get("textualValues")
+        if tv is not None:
+            vals = tv[()].astype(str).ravel()
+            for v in set(vals):
+                scan(v)
+    f.close()
+    return nsw, sorted(found)
+
+
 def runs(sweeps, p):
     """Blocks of consecutive sweeps of protocol p (by sweep number order in the file)."""
     out, cur, last = [], [], None
@@ -219,20 +248,46 @@ def detect_spikes(v, rate, t0, t1):
         s["trough"] = float(vf[s["pi"]:end].min()) if end > s["pi"] else np.nan
         s["fahp"] = s["trough"] - s["tv"]
         half = s["tv"] + (s["pv"] - s["tv"]) / 2
-        seg = vf[s["ti"]:end]
-        k_pk = s["pi"] - s["ti"]
-        rise = np.flatnonzero(seg[:k_pk + 1] >= half)
-        fall = np.flatnonzero(seg[k_pk:] <= half)
-        if len(rise) and len(fall):
-            r0 = rise[0]
-            f0 = k_pk + fall[0]
-            # linear interpolation of the crossings
-            tr = r0 - 1 + (half - seg[r0 - 1]) / (seg[r0] - seg[r0 - 1]) if r0 > 0 else r0
-            tf = f0 - 1 + (seg[f0 - 1] - half) / (seg[f0 - 1] - seg[f0]) if f0 > 0 else f0
-            s["hw"] = (tf - tr) / rate * 1000.0
-        else:
-            s["hw"] = np.nan
+        s["hw"] = _width(vf, s["ti"], s["pi"], end, half, rate)  # first crossing from threshold
+    # variants of the half-width, for late spikes of a train (fig6j; added after verification
+    # round 1). The code's MCx.pkl holds per-step ratios named as the outputs of the Allen
+    # Institute's IPFX (width_ratio, threshold_ratio, fast_trough_v), so its definitions are
+    # run as variants, not as the paper's: (t5) threshold where dV/dt, searched back from the
+    # spike's max dV/dt to the previous spike's peak, falls below 5% of the sweep's mean max
+    # dV/dt (IPFX refine_threshold_indexes), width at half the threshold-to-peak height; (ipfx)
+    # IPFX find_widths: from that threshold, at half the peak-to-fast-trough height, or at half
+    # the threshold-to-peak height when that level lies below the threshold
+    avg_up = np.mean([s["max_dvdt"] for s in spikes]) if spikes else np.nan
+    for j, s in enumerate(spikes):
+        nxt = spikes[j + 1]["ti"] if j + 1 < len(spikes) else len(v)
+        end = min(nxt, s["pi"] + int(0.010 * rate), len(v))
+        lo = spikes[j - 1]["pi"] if j > 0 else max(0, s["ti"] - int(0.002 * rate))
+        kmax = s["ti"] + int(np.argmax(dvdt[s["ti"]:s["pi"] + 1]))
+        below = np.flatnonzero(dvdt[lo:kmax] < 0.05 * avg_up)
+        t5 = lo + int(below[-1]) + 1 if len(below) else s["ti"]
+        h5 = vf[t5] + (s["pv"] - vf[t5]) / 2
+        s["hw_t5"] = _width(vf, t5, s["pi"], end, h5, rate)
+        lev = s["pv"] - (s["pv"] - s["trough"]) / 2 if np.isfinite(s["trough"]) else np.nan
+        s["hw_ipfx"] = _width(vf, t5, s["pi"], end, lev if lev >= vf[t5] else h5, rate)
     return spikes
+
+
+def _width(vf, t0, pk, end, half, rate):
+    """Time (ms) between the first sample at or above `half` from t0 (a threshold) to the peak
+    and the first sample at or below it after the peak (before end), linearly interpolated."""
+    seg = vf[t0:end]
+    k_pk = pk - t0
+    if k_pk < 0 or k_pk >= len(seg):
+        return np.nan
+    rise = np.flatnonzero(seg[:k_pk + 1] >= half)
+    fall = np.flatnonzero(seg[k_pk:] <= half)
+    if not (len(rise) and len(fall)):
+        return np.nan
+    r0 = int(rise[0])
+    f0 = k_pk + int(fall[0])
+    tr = r0 - 1 + (half - seg[r0 - 1]) / (seg[r0] - seg[r0 - 1]) if r0 > 0 else r0
+    tf = f0 - 1 + (seg[f0 - 1] - half) / (seg[f0 - 1] - seg[f0]) if f0 > 0 else f0
+    return (tf - tr) / rate * 1000.0
 
 
 # ---------------------------------------------------------------- features
@@ -338,6 +393,8 @@ def vi_features(sweeps):
         return out
     rows = []
     seen = set()
+    out["vi_sweeps_rejected"] = 0
+    unchecked, seen_u = [], set()  # without the sweep check, as in round 1, for the data check
     for s in rr[0]:
         a, b, amp = main_step(s["i"], s["rate"])
         if a is None or amp >= 0 or (b - a) / s["rate"] < 0.9:
@@ -345,14 +402,29 @@ def vi_features(sweeps):
         amp = round(amp)
         if amp in seen:
             continue
-        seen.add(amp)
         vf = filt(s["v"], s["rate"])
         base = np.mean(vf[max(0, a - int(0.1 * s["rate"])):a])
         peak = np.min(vf[a:b])
         ss = np.mean(vf[b - int(0.1 * s["rate"]):b])
+        if amp not in seen_u:
+            seen_u.add(amp)
+            unchecked.append((amp, ss - base))
+        # sweep check (standard choice of this attempt, added after verification round 1, which
+        # found negative steady-state resistances): a hyperpolarizing step must hyperpolarize
+        # (peak and steady state below baseline), from a baseline below -40 mV, with the
+        # voltage in the step below -20 mV (no spike, no lost or zeroed recording); sweeps that
+        # fail are skipped and the next sweep of the same amplitude, if any, is used
+        if not (peak < base and ss < base and base < -40 and np.max(vf[a:b]) < -20):
+            out["vi_sweeps_rejected"] += 1
+            continue
+        seen.add(amp)
         post = vf[b:min(len(vf), b + int(0.3 * s["rate"]))]
         reb = np.max(post) - base if len(post) else np.nan
         rows.append((amp, base, peak - base, ss - base, ss, reb))
+    u = np.array(unchecked).reshape(-1, 2)
+    su = u[u[:, 0] >= -200] if (u[:, 0] >= -200).sum() >= 2 else u
+    if len(su) >= 2:
+        out["SSRn_unchecked"] = float(np.polyfit(su[:, 0] / 1000.0, su[:, 1], 1)[0])
     if not rows:
         return out
     rows = np.array(rows)
@@ -482,8 +554,11 @@ def extended_fi(sweeps):
             hz = s["rate"] / np.diff([x["ti"] for x in sp]).min() if n > 1 else float(n > 0)
             wr = sp[-1]["hw"] / sp[0]["hw"] if n > 1 else np.nan
             ur = sp[-1]["max_dvdt"] / sp[0]["max_dvdt"] if n > 1 else np.nan
+            wv = {f"width_ratio_{k}": sp[-1][f"hw_{k}"] / sp[0][f"hw_{k}"] if n > 1 else np.nan
+                  for k in ("t5", "ipfx")}
             rows.append(dict(i_inject=amp, num_spikes=n, max_freq=hz, width_ratio=wr,
-                             upstroke_ratio=ur))
+                             upstroke_ratio=ur, hw_first=sp[0]["hw"] if n else np.nan,
+                             hw_last=sp[-1]["hw"] if n else np.nan, **wv))
         out = pd.DataFrame(rows)
         out.attrs["max_command_pA"] = float(max(steps))  # before the 4 nA limit
         return out
@@ -547,8 +622,38 @@ def oscillation_segments(v, rate, a, b, sp):
             peaks = signal.find_peaks(ac[int(fs / 50):int(fs / 3) + 1])[0]
             if len(peaks):
                 ac_f = fs / (peaks[0] + int(fs / 50))
-        out.append(dict(vm=vm, dur=dur, fft_f=float(Fq[m][k]), fft_p=float(S[m][k]), ac_f=ac_f))
+        out.append(dict(vm=vm, dur=dur, fft_f=float(Fq[m][k]), fft_p=float(S[m][k]), ac_f=ac_f,
+                        F=Fq[m].astype(np.float32), S=S[m].astype(np.float32)))
     return out
+
+
+def spline_peak(segs):
+    """Peak frequency and strength of a smoothing spline fitted to the FFT amplitude spectra
+    of a set of segments, pooled (STAR Methods: "A smooth spline curve was fitted to determine
+    the average peak frequency and signal strength of the sweep"; Figure 7G legend: "A black
+    line represents the spline fit of individual FFT segments"). The claims file's standard
+    choice is R smooth.spline with its defaults; scipy's make_smoothing_spline with the
+    smoothing chosen by generalized cross-validation is used, the R default's criterion, with
+    tied frequencies averaged and weighted by their count, as smooth.spline does. The curve is
+    read on a 0.05 Hz grid from 3 to 50 Hz. Returns the frequency and value of its maximum, and,
+    as a variant (added after verification round 1, as the maximum often lies at the 3 Hz
+    edge of the band), of its largest interior local maximum (NaN when there is none)."""
+    from scipy.interpolate import make_smoothing_spline
+    F = np.concatenate([np.round(g["F"].astype(float), 6) for g in segs])
+    S = np.concatenate([g["S"].astype(float) for g in segs])
+    u, inv, cnt = np.unique(F, return_inverse=True, return_counts=True)
+    if len(u) < 5:
+        return np.nan, np.nan, np.nan, np.nan
+    y = np.bincount(inv, weights=S) / cnt
+    sp = make_smoothing_spline(u, y, w=cnt.astype(float))
+    grid = np.arange(max(3.0, u[0]), min(50.0, u[-1]) + 1e-9, 0.05)
+    z = sp(grid)
+    k = int(np.argmax(z))
+    loc = signal.argrelmax(z)[0]
+    if len(loc):
+        j = int(loc[np.argmax(z[loc])])
+        return float(grid[k]), float(z[k]), float(grid[j]), float(z[j])
+    return float(grid[k]), float(z[k]), np.nan, np.nan
 
 
 def long_steps(sweeps):
@@ -632,6 +737,55 @@ def anova(df, y, factors):
     t["eta_code"] = pd.Series(code)
     t.loc["Residual", ["eta_p", "eta_code"]] = np.nan
     t.attrs["n"] = len(d)
+    return t
+
+
+def anova_estimable(df, y, factors):
+    """Type II tests that hold when the design is rank deficient (added after verification
+    round 1, for the four-way ANOVA of species-no-effect, where some factor cells are empty).
+    Same model as `anova` (OLS, all interactions), but each term's sum of squares is the drop
+    in residual sum of squares when the term is added to the model of every term that does not
+    contain it, both fitted by least squares on the columns patsy codes for the full model;
+    its degrees of freedom are the gain in rank, so aliased columns add nothing. The residual
+    is that of the full model with n - rank degrees of freedom. On a full-rank design this
+    equals statsmodels' type II table. Returns the table, the design's rank, its number of
+    columns and the condition number of the full design."""
+    import patsy
+    from scipy import stats as st
+    d = df[[y] + factors].dropna()
+    rhs = " * ".join(f"C({f})" for f in factors)
+    X = patsy.dmatrix(rhs, d, return_type="dataframe")
+    yv = d[y].astype(float).values
+    sl = X.design_info.term_slices
+    names = {t: t.name() for t in sl}
+    def fit(cols):
+        A = X.values[:, cols]
+        coef, *_ = np.linalg.lstsq(A, yv, rcond=None)
+        r = yv - A @ coef
+        return float(r @ r), int(np.linalg.matrix_rank(A))
+    allc = np.arange(X.shape[1])
+    rss_f, rk_f = fit(allc)
+    dfr = len(yv) - rk_f
+    rows = {}
+    for t in sl:
+        if names[t] == "Intercept":
+            continue
+        fs = set(t.factors)
+        keep = [u for u in sl if not fs <= set(u.factors) or names[u] == "Intercept"]
+        cols0 = np.concatenate([allc[sl[u]] for u in keep])
+        cols1 = np.concatenate([cols0, allc[sl[t]]])
+        rss0, rk0 = fit(cols0)
+        rss1, rk1 = fit(cols1)
+        dfe = rk1 - rk0
+        ss = rss0 - rss1
+        F = (ss / dfe) / (rss_f / dfr) if dfe > 0 and dfr > 0 else np.nan
+        rows[names[t]] = dict(sum_sq=ss, df=dfe, F=F,
+                              **{"PR(>F)": st.f.sf(F, dfe, dfr) if np.isfinite(F) else np.nan})
+    t = pd.DataFrame(rows).T
+    t.loc["Residual", ["sum_sq", "df"]] = [rss_f, dfr]
+    t["eta_p"] = t["sum_sq"] / (t["sum_sq"] + rss_f)
+    t.loc["Residual", "eta_p"] = np.nan
+    t.attrs.update(n=len(d), rank=rk_f, ncol=X.shape[1], cond=float(np.linalg.cond(X.values)))
     return t
 
 
