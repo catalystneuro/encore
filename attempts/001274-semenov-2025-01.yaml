@@ -210,34 +210,28 @@ outcomes:
     voltage series with APs, none has a series whose threshold drops to 0.6 or less of the series before
     and after it.'
 - claim: fig3c-sustained-firing-2s
-  outcome: not_reproduced
+  outcome: reproduced
+  assumed: true
   notebook: reproduce_semenov_2025.ipynb
   output: claim:fig3c-sustained-firing-2s
   notes: Tested on neuron c7 of 001030, the only neuron with a trace without APs (1.0 V), which the Methods'
     bleaching correction needs. (i) APs occur in the last 250 ms at 52, 61 and 72 V/cm (8 to 10 under
     both readings). (ii) The AP count rises with field, from 0 at 36 V/cm to 89 (a) or 90 (b) at 61 V/cm,
     then 88 and 13 (a) or 80 and 8 (b). (iii) At the highest field, 83 V/cm, the mean dF over 0.25 to
-    2 s is 6.7% and the APs stop within the ramp, but reading (a) finds 5 peaks after 250 ms (0.34 to
-    1.74 s) and reading (b) one (1.68 s). They are single events on the plateau of a corrected trace,
-    the difference of two recordings, and may be noise, but (iii) asks no APs after 250 ms and fails under
-    both readings. The other three neurons, corrected with the same trace, reach no block. Measured on
-    this trace (notebook section 11), noise alone gives as many detections over 0.25 to 2 s as were found
-    (residual SD 0.94%; mirrored trace 6 (a) and 7 (b); running median plus Gaussian noise a mean of 7.8
-    (a) and 5.1 (b), 5 or more in 91% of draws under (a), 1 or more in 99% under (b)), and about 1.1 (a)
-    and 0.7 (b) per 250-ms window against the 8 to 10 APs of part (i). A change to reproduced is proposed.
-  proposed:
-    outcome: reproduced
-    reason: The 5 (a) and 1 (b) peaks after 250 ms at 83 V/cm are no more than the noise of the bleaching-corrected
-      trace produces. On the same trace mirrored about its 31-ms running median, which turns upward noise
-      events into downward ones, the detectors find 6 (a) and 7 (b) over 0.25 to 2 s; on the running median
-      plus Gaussian noise of the plateau residual's SD (0.94%) they find a mean of 7.8 (a) and 5.1 (b), with
-      5 or more in 91% of 300 draws under (a) and 1 or more in 99% under (b); the shuffled residual gives
-      8.4 and 4.6. The peaks are therefore not evidence of APs, and read as no more detections after 250
-      ms than the trace's noise gives, (iii) holds; the mean dF over 0.25 to 2 s is 6.7%. Parts (i) and
-      (ii) hold well above that noise (8 to 10 APs in the last 250 ms at 52 to 72 V/cm, against about 1.1
-      (a) and 0.7 (b) false APs per 250 ms). The proposed outcome rests on that reading of (iii), an assumption,
-      and should be marked assumed. The verifier of round 2 would score c7 reproduced on the same grounds.
+    2 s is 6.7% and the APs stop within the ramp; reading (a) finds 5 peaks after 250 ms (0.34 to 1.74
+    s) and reading (b) one (1.68 s). Measured on this trace (notebook section 11), noise alone gives as
+    many detections over 0.25 to 2 s as were found (residual SD 0.94%, against 0.89% before the stimulus;
+    mirrored trace 6 (a) and 7 (b); running median plus Gaussian noise a mean of 7.8 (a) and 5.1 (b),
+    5 or more in 91% of draws under (a), 1 or more in 99% under (b); shuffled residual 8.4 and 4.6), and
+    about 1.1 (a) and 0.7 (b) per 250-ms window against the 8 to 10 APs of part (i). Read as no more detections
+    after 250 ms than the trace's noise gives, (iii) holds. Taken literally, no APs after 250 ms, it fails
+    under both readings, as it would on any plateau above 5% with this noise; the outcome was not_reproduced
+    until the third verification round. The test rests on c7 alone. The other three neurons, corrected
+    with the same trace, reach no block, which the criterion does not count against the claim.
   deviations:
+  - Assumption. Part (iii) is read as no more detections after 250 ms than the noise of the bleaching-corrected
+    trace gives, measured on the trace itself, as the claims file's AP readings have no allowance for false
+    detections on a depolarized plateau and the Methods give no detection rule. The outcome rests on it.
   - The field is 36 V/cm times the one-polarity voltage that 001030 gives.
   - The other neurons are corrected with c7's AP-free trace, as they have none of their own.
   - Two recordings of neuron c5 have 6,000 frames, which end before the 2-s stimulus does.
@@ -777,3 +771,28 @@ verifications:
     outcome: blocked
     reason: Agreed (blocked, with fig3b and the 12 strobe claims).
     response: No change needed.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 3. The one proposed change of outcome, fig3c-sustained-firing-2s to reproduced, and
+    the analysis behind it in notebook cells 57 and 59 (the false-detection rate measured on c7''s bleaching-corrected
+    trace), with the attempt record and the claims file. Nothing else was reviewed.'
+  results:
+  - claim: fig3c-sustained-firing-2s
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, provided it is marked assumed. The numbers come from c7''s own corrected trace at 83
+      V/cm; the 0.94% residual SD agrees with the pre-stimulus SD (0.89%) and the fast recordings (0.83%).
+      The mirrored trace keeps the trace''s temporal structure, and it, the Gaussian and the shuffled estimates
+      all give as many detections as were found or more; the detector is unchanged; the design was fixed
+      in advance and does not depend on the 31-ms window. Parts (i) and (ii) hold with a wide margin over
+      the noise rate, and the plateau is 6.7%. Taken literally (iii) fails on 5 (a) and 1 (b) peaks, so
+      reading it as no more detections than noise gives is a reinterpretation, accepted because the readings
+      are stand-ins and the literal test could not pass for any recording with this noise on a plateau
+      above 5%. The claims file''s criterion gives no allowance for false detections on a depolarized plateau,
+      a flaw in putting it into practice and not a misreading of the paper. The test rests on c7 alone;
+      the other three neurons reach no block, which does not count against the claim as written.'
+    response: Outcome changed to reproduced, marked assumed, and the proposal removed. A deviation states
+      the assumption; the notes, the result cell, the summary and the README give the outcome and the
+      caveats (c7 alone, the literal reading fails, the criterion has no allowance for false detections
+      on a plateau).
