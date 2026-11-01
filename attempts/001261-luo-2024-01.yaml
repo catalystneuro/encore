@@ -1,0 +1,425 @@
+schema_version: 2
+id: 001261-luo-2024-01
+dataset:
+  archive: dandi
+  id: "001261"
+  version: 0.250917.2023
+  doi: 10.48324/dandi.001261/0.250917.2023
+paper: doi:10.1002/cne.70001
+date: 2026-11-01
+entry: 001261-luo-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41308296315
+outcomes:
+- claim: sample-sizes
+  outcome: partially_reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:sample-sizes
+  measured:
+  - 48
+  - 45
+  - 46
+  - 27
+  - 9
+  notes: The dandiset has 48 mouse cholinergic, 46 mouse noncholinergic and 46 macaque cholinergic
+    files, from 27 mice and 9 macaques, with the sexes of Table 1 (mice 18 M and 9 F, macaques 7 M
+    and 2 F). One mouse noncholinergic file repeats, sample for sample, a recording also filed as
+    cholinergic (CG608_FL_S4C7_B+G+_-63mV.mat); counted once, the dandiset holds 45 distinct
+    noncholinergic recordings, one fewer than the paper's 46. The dandiset has no ChAT-unknown
+    category, so the code's wider reading of the noncholinergic group gives the same count. Four of
+    five counts match. The macaque cholinergic neurons come from 6 of the 9 macaques. Slices are not
+    recorded and the morphology is not in the dandiset, so the slice counts and the morphology
+    counts of the statement cannot be checked.
+  deviations:
+  - Each recording deposited twice is counted once (protocol, Author, step 1.2); the mouse
+    recording filed under both groups is counted as cholinergic, as its name says G+ (GFP-positive).
+- claim: fig2-mouse-c-nc-15-of-18
+  outcome: not_reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:fig2-mouse-c-nc-15-of-18
+  measured: 11
+  notes: F1 (resting potential) is not in the data, so the count is out of 17 and the criterion's
+    range is 13 to 15. Under the four sets of readings (F11 a or b, F17 and F18 a or b) 11 or 12 of
+    the 17 features differ at p < 0.05 (48 cholinergic and 45 noncholinergic neurons, NaN values
+    dropped per feature). Spike width (p = 0.92), upstroke (0.38) and downstroke (0.40) do not
+    differ, as in Fig. S2-2C, but neither do sag (0.21) and AHP latency (0.50), and adaptation on the
+    200 pA step does not (0.68). The last sweep of a repeated amplitude gives the same counts.
+    Variants that do not decide give 12 or 13 (the code's choices for input resistance, tau,
+    latency and the AHP) and 12 or 13 (without the eight neurons that do not depolarise). The
+    resting potential written in 8 cholinergic and 27 noncholinergic file names does not differ
+    (p = 0.35).
+  deviations: &common
+  - The features are re-implemented in Python (scipy.signal.find_peaks in place of MATLAB
+    findpeaks, scipy curve_fit in place of fit) from the claims file's definitions F1 to F18.
+  - Steps above 200 pA are left out, after Methods 2.4 ("a family of current steps (500 ms
+    duration, -60 to 200 pA amplitude)") and Methods 2.5 (16) ("a current step between 0 and 200
+    pA"); 23 files also hold steps to 250 pA or more. The steps last 500 to 1100 ms and only their
+    first 500 ms are analysed, as the code does (analysisDuration = 500).
+  - Short -20 pA pulses of 50 or 100 ms in 126 files are left out as not part of the family of
+    steps (Methods 2.4).
+  - Where an amplitude was recorded more than once, a one-step feature uses the first sweep; the
+    last sweep is shown as a variant and changes no outcome.
+  - The paper's quality control (access resistance, offset current, resting potential) cannot be
+    repeated, as the files do not record these measures; the groups are taken from
+    session_description as deposited.
+  - One macaque cholinergic file (2023_03_06_0002 R+B+A2C1 RMP -78.abf) is left out, as its
+    voltage is 20 times too large; one copy of each duplicated recording is left out.
+- claim: fig2d-mouse-max-firing-rate
+  outcome: partially_reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:fig2d-mouse-max-firing-rate
+  measured:
+  - 6.33
+  - 4.69
+  - 34.8
+  - 23.1
+  notes: Noncholinergic neurons fire faster, rank-sum p = 1.1e-12 (48 and 45 neurons). Both SDs are
+    within tolerance; both means are just below it (6.33 against 6.57 to 8.03 Hz, 34.8 against 35.1
+    to 42.9 Hz). The 200 pA reading gives 7.17 and 34.47 Hz. Seven cholinergic neurons fire no
+    spike up to 200 pA, six of them neurons that do not depolarise with positive steps; without
+    the eight such neurons the means are 7.24 and 35.23 Hz, both within tolerance, a variant that
+    does not decide.
+  deviations: *common
+- claim: fig2d-mouse-threshold-rheobase
+  outcome: partially_reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:fig2d-mouse-threshold-rheobase
+  measured:
+  - -33.22
+  - -36.77
+  - 59.63
+  - 42.05
+  notes: All four means are within tolerance. The threshold test holds (p = 6.4e-4, cholinergic more
+    depolarized). Rheobase is larger in cholinergic neurons but p = 2.3e-3, not below the paper's
+    0.001 (41 and 44 neurons with a spike). SDs are 4.45 and 6.02 mV (paper 4.6 and 6.3) and 31.9
+    and 34.1 pA (paper 41.2 and 33.2). The steps of most files are 10 to 50 pA apart, not the 10 pA
+    of the Fig. S2-1 legend, which limits the resolution of the rheobase. One feature of two holds.
+  deviations: *common
+- claim: fig2d-mouse-ahp
+  outcome: partially_reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:fig2d-mouse-ahp
+  measured:
+  - 30.87
+  - 16.35
+  - 158.9
+  - 226.3
+  notes: With the Methods' window (rheobase step, minimum within 100 ms of threshold), the AHP
+    amplitude is larger in cholinergic neurons (p = 3.7e-12), the cholinergic mean within tolerance
+    and the noncholinergic mean (16.35 mV) outside it. The AHP width is longer in noncholinergic
+    neurons (226.3 against 158.9 ms, p = 0.020), the opposite of the paper, and also with the
+    crossings searched only within the 100 ms window (298.9 against 179.2 ms, p = 2.6e-5). The
+    criterion names no outcome for one test holding and the other reversed; the claim holds in part
+    (the amplitude), the protocol's definition of partially reproduced. The code's window (first
+    step with two spikes, afterhyperpolarization.m) gives 29.71 and 12.14 mV and 180.8 and 77.4 ms,
+    all four within tolerance, with p = 5.5e-13 and 2.1e-7. The paper's values thus match the
+    code's window, not the Methods'. Question for the paper's authors, which window produced the
+    reported AHP values (finding below).
+  deviations:
+  - The AHP width with the Methods' window is the time below threshold minus half the AHP
+    amplitude, from the first downward crossing after threshold to the next upward crossing,
+    searched to the end of the step (Methods 2.5 (14) gives no window). The other reading, with the
+    crossings searched within the 100 ms window only, is shown and gives the same direction.
+  - The features are re-implemented in Python from the claims file's definitions F1 to F18; steps
+    above 200 pA and short test pulses are left out (Methods 2.4); duplicated recordings are counted
+    once and the macaque file with a wrong scale is left out.
+- claim: fig2d-mouse-adaptation
+  outcome: reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:fig2d-mouse-adaptation
+  measured:
+  - 0.884
+  - 0.606
+  notes: On the step with the most spikes (reading b, the code's), 0.884 +- 0.561 against 0.606 +-
+    0.296, p = 0.011, both means within tolerance (39 and 43 neurons). On the 200 pA step (reading
+    a), 0.667 against 0.553, p = 0.68, which does not hold. The criterion asks for one reading.
+    Question for the paper's authors, what "the maximal current step" of Methods 2.5 (17) is.
+  deviations: *common
+- claim: fig2d-mouse-passive
+  outcome: partially_reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:fig2d-mouse-passive
+  measured:
+  - -54.72
+  - -58.53
+  - 60.95
+  - 28.59
+  notes: The resting potential (F1) is not in the data, as every sweep is recorded with the holding
+    current, so the claim is judged on tau. Tau on the -20 pA step is longer in cholinergic neurons
+    (p = 6.7e-5, at the paper's p < 0.0001), but the means, 60.95 and 28.59 ms, are far above the
+    paper's 34.6 and 22.3 ms. The criterion names no outcome for a test that holds with means outside
+    tolerance when only one feature is judged; the effect is present with different values, the
+    protocol's definition of partially reproduced. Without the eight neurons that do not depolarise
+    tau is 41.42 against 29.01 ms (p = 1.6e-3); the code's step gives 56.38 against 22.04 ms. The
+    first two measured values are the resting potentials written in 8 cholinergic and 27
+    noncholinergic file names, a subset that does not decide; they are close to the paper's -54.4
+    and -58.7 mV but do not differ (p = 0.35).
+  deviations: *common
+- claim: figs2-2-mouse-amplitude-cv-sag
+  outcome: partially_reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:figs2-2-mouse-amplitude-cv-sag
+  notes: Spike amplitude is larger in cholinergic neurons (59.46 against 53.35 mV, p = 1.6e-4,
+    within p <= 0.001). The CV of the intervals is lower in cholinergic neurons on the step with the
+    most spikes (0.197 against 0.317, p = 2.6e-3, within p <= 0.01); on the 200 pA step p = 0.014.
+    Sag does not differ (2.66 against 3.01 mV, p = 0.21); without the eight neurons that do not
+    depolarise it is smaller in cholinergic neurons at p = 0.025, above the figure's 0.01. Two of
+    three hold.
+  deviations: *common
+- claim: fig2c-mouse-umap-separation
+  outcome: not_reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:fig2c-mouse-umap-separation
+  measured: 6
+  notes: On 17 features (F1 not computable), the UMAP separates the groups better than every one of
+    1000 label permutations for all 10 seeds under both readings of missing values, but a linear
+    boundary in the UMAP plane misclassifies a median of 6 neurons (range 4 to 7, 80 neurons with
+    every feature, 14 components) or 9.5 (8 to 10, 93 neurons with missing values imputed, 15
+    components), not 2. It fails under both readings.
+  deviations:
+  - UMAP is umap-learn 0.5 with n_neighbors 15 and min_dist 0.3, the defaults of Meehan's run_umap
+    the paper used, in place of the MATLAB implementation; the claims file calls the package
+    defaults a standard choice.
+  - The features are re-implemented in Python from the claims file's definitions; F1 is left out of
+    the 18, as it is not in the data.
+- claim: fig4d-mouse-morphology-3-of-13
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The morphological features are not in the dandiset, which holds only current-clamp
+    recordings (its asset summary lists CurrentClampSeries and CurrentClampStimulusSeries), and the
+    paper's Data Availability Statement names only the DANDI Archive. No other public copy was
+    found.
+- claim: figs4-1a-mouse-sholl-not-different
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Sholl counts are not in the dandiset, nor public elsewhere as far as the paper says
+    (Data Availability Statement names only the DANDI Archive).
+- claim: fig4c-mouse-morphology-umap-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the 13 morphological features, which are not in the dandiset nor public elsewhere.
+- claim: fig5a-mouse-lda-electrophysiology
+  outcome: reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:fig5a-mouse-lda-electrophysiology
+  measured: 1.0
+  notes: The LDA classifies 100% of the 80 neurons with every feature and 93.5% of all 93 with
+    missing values imputed, for both scalings, above the 95th percentile (0.74 to 0.78) and the
+    maximum (0.81 to 0.84) of 1000 shuffles of either kind (p = 0.001 in each case). The 10-fold
+    cross-validated accuracy is 0.90 to 0.95.
+  deviations:
+  - LDA is scikit-learn's LinearDiscriminantAnalysis (pooled covariance) in place of MATLAB
+    fitcdiscr, on 17 features (F1 is not in the data).
+- claim: fig5b-mouse-lda-ahp-amplitude-top
+  outcome: reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:fig5b-mouse-lda-ahp-amplitude-top
+  notes: AHP amplitude has the largest weight under both readings of the weights and both readings
+    of missing values (absolute coefficient 9.64 and 6.38, next 8.70 and 2.64; coefficient times
+    mean difference 14.24 and 8.64, next 9.40 and 2.86).
+  deviations:
+  - LDA is scikit-learn's in place of MATLAB fitcdiscr, on 17 z-scored features (F1 is not in the
+    data).
+- claim: fig5c-mouse-lda-morphology-fails
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the 13 morphological features, which are not in the dandiset nor public elsewhere.
+- claim: fig7d-macaque-more-excitable
+  outcome: partially_reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:fig7d-macaque-more-excitable
+  measured:
+  - 21.24
+  - 22.5
+  - 0.1236
+  - 0.0563
+  notes: All three tests hold in the reported direction at p < 0.0001 (maximum rate p = 4.9e-11,
+    rheobase 8.6e-10, f-I slope 2.2e-6; 45 macaque and 48 mouse neurons, 44 and 41 with a spike).
+    The rheobase and both f-I slopes are within tolerance; the macaque maximum rate, 21.24 Hz, is
+    below the tolerance of 23.67 to 28.93 Hz. The code's maximum over every step, including the steps above
+    200 pA that some macaque files hold, gives 23.82 Hz, a variant that does not decide.
+  deviations: *common
+- claim: fig7d-macaque-threshold-ahp
+  outcome: partially_reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:fig7d-macaque-threshold-ahp
+  measured:
+  - -39.57
+  - 20.48
+  - 190.7
+  notes: Two of three tests hold. The macaque threshold is more hyperpolarized (-39.57 against
+    -33.22 mV, p = 3.5e-7) and the AHP smaller (20.48 against 30.87 mV, p = 5.0e-8), both macaque
+    means within tolerance. With the Methods' window the AHP width does not differ (190.7 against
+    158.9 ms, p = 0.28; 229.0 against 179.2 ms, p = 0.11, with the crossings searched within 100
+    ms). The code's window gives 116.1 against 180.8 ms (p = 6.4e-4), the macaque mean within
+    tolerance.
+  deviations:
+  - The AHP width with the Methods' window is measured as for fig2d-mouse-ahp; both readings of its
+    window are shown and give the same outcome.
+  - The features are re-implemented in Python from the claims file's definitions F1 to F18; steps
+    above 200 pA and short test pulses are left out (Methods 2.4); duplicated recordings are counted
+    once and the macaque file with a wrong scale is left out.
+- claim: fig7-macaque-spike-width
+  outcome: partially_reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:fig7-macaque-spike-width
+  measured:
+  - 1.322
+  - 1.180
+  notes: Spikes are wider in macaque (1.322 against 1.180 ms), both means within tolerance, but p =
+    0.025, not below the paper's 0.01 (44 and 41 neurons). The criterion names no outcome for a
+    test at p < 0.05 but not at the reported 0.01; the effect is present but weaker, the protocol's
+    definition of partially reproduced.
+  deviations: *common
+- claim: figs7-1-macaque-amplitude-cv-sag-upstroke
+  outcome: partially_reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:figs7-1-macaque-amplitude-cv-sag-upstroke
+  notes: Three of the four differences hold at the figure's level, macaque larger, spike amplitude
+    (65.35 against 59.46 mV, p = 2.3e-3), CV of the intervals (0.450 against 0.183 on the 200 pA
+    step, p = 3.2e-5; 0.494 against 0.197 on the step with the most spikes, p = 2.1e-6) and
+    upstroke (170.9 against 119.4 mV/ms, p = 1.3e-5). Sag does not differ (3.79 against 2.66 mV, p
+    = 0.31). The downstroke, said to be shared, differs under both readings (-54.08 against -63.89
+    mV/ms, p = 0.015), which also keeps the claim at most partially reproduced.
+  deviations: *common
+- claim: fig7-macaque-mouse-feature-count
+  outcome: not_reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:fig7-macaque-mouse-feature-count
+  measured: 12
+  notes: With F1 not computable, 12 or 13 of 17 features differ at p < 0.05 between macaque (45)
+    and mouse (48) cholinergic neurons, below the 14 the criterion requires. Sag, tau, AHP latency
+    and AHP width do not differ under any set of readings, and adaptation not on the 200 pA step.
+    The resting potential written in 22 macaque and 8 mouse file names does not differ (p = 0.96),
+    so counting F1 would not raise the count. The last sweep of a repeated amplitude gives the same
+    counts.
+  deviations: *common
+- claim: fig7d-macaque-input-resistance
+  outcome: reproduced
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:fig7d-macaque-input-resistance
+  notes: On the -20 pA step (Methods) the macaque input resistance is larger (584.2 against 317.9
+    MOhm, p = 2.2e-5) and the rheobase smaller (22.5 against 59.63 pA, p = 8.6e-10). The code's
+    slope over the steps from -50 to 0 pA, a variant, gives 387.5 against 300.2 MOhm, p = 0.18.
+  deviations: *common
+- claim: fig7c-macaque-mouse-umap-separation
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_luo_2024.ipynb
+  output: claim:fig7c-macaque-mouse-umap-separation
+  notes: The criterion's reading (b) holds and reading (a) fails, the case it makes
+    methods_underspecified. The separation beats every one of 1000 label permutations for all 10
+    seeds under both readings of missing values, but a linear boundary misclassifies a median of 9
+    (range 7 to 10, of 82 neurons) and 10 (8 to 11, of 93), not at most 2. The paper does not say
+    how it judged a separation strong. Question for the paper's authors (finding below).
+- claim: fig9-macaque-convex-hull
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The convex hull features are not in the dandiset nor public elsewhere.
+- claim: fig9-macaque-morphology-feature-count
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The morphological features are not in the dandiset nor public elsewhere.
+- claim: fig9-macaque-fewer-branch-points
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The branch point counts are not in the dandiset nor public elsewhere.
+- claim: fig9c-morphology-umap-weak
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the morphological features, which are not in the dandiset nor public elsewhere; it
+    also depends on fig7c-macaque-mouse-umap-separation, which is blocked as methods_underspecified.
+- claim: fig10-combined-separation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the morphological features of the 46 macaque and 27 mouse cholinergic neurons, which
+    are not in the dandiset nor public elsewhere.
+- claim: fig10c-combined-lda-weights
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig10-combined-separation, blocked for lack of the morphological features.
+- claim: figs9-1a-macaque-mouse-sholl-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Sholl counts are not in the dandiset nor public elsewhere.
+findings:
+- kind: metadata_error
+  statement: The recording CG608_FL_S4C7_B+G+_-63mV.mat is deposited twice with identical traces,
+    once as a mouse cholinergic neuron (sub-CG608 obj-1ukhfn8) and once as a mouse noncholinergic
+    neuron (sub-CG608 obj-17liqyi). Its name says G+ (GFP-positive, cholinergic). Counted once, the
+    dandiset holds 45 distinct mouse noncholinergic recordings, not the paper's 46.
+- kind: metadata_error
+  statement: The macaque noncholinergic recording NHP_20220420-03 of M#12 Shahruk is deposited twice
+    with identical traces, under two session names (one of them with spaces in place of hyphens).
+    Counted once, the dandiset holds 11 macaque noncholinergic neurons, as the paper says.
+- kind: format_error
+  statement: In the macaque file "2023_03_06_0002 R+B+A2C1 RMP -78.abf" (sub-M#19-29511 obj-1nl2qam)
+    the voltage is 20 times too large (baseline -1557 "mV"; divided by 20 it is -77.9 mV, the value
+    in its name), while its conversion factor is 1.
+- kind: metadata_error
+  statement: The stimulus series are labelled amperes but hold pA (values -100 to 1200).
+- kind: metadata_error
+  statement: The amplifier fields of every sweep of every file hold one value each (bias current
+    1e-11 A, bridge balance 2e7 Ohm, capacitance compensation 1e-12 F, gain 1), although the neurons
+    were held at -65 mV by a bias current set per neuron (Methods 2.4); they are placeholders.
+- kind: other
+  statement: Eight neurons do not depolarise with positive current steps (the potential on the
+    largest step differs from that on the most negative step by -5.1 to 8.1 mV, against 17 mV or
+    more in the others) and fire no spike, six mouse cholinergic neurons recorded November 2021 to
+    February 2022 (CG250, CG268, CG269, CG337) and two macaque neurons of M#11. They respond to
+    negative steps. The paper reports spike features for all its neurons.
+- kind: data_missing
+  statement: The resting potential (feature 1 of Methods 2.5, "measured in the absence of a current
+    injection") is not recorded; every sweep carries the holding current. Some original file names,
+    kept as the NWB identifier, carry a value (63 of 152 files).
+- kind: data_missing
+  statement: The morphology of the paper (13 features, Sholl counts, reconstructions of 31 and 44
+    mouse and 52 macaque neurons) is not in the dandiset, whose description says it holds the
+    physiology data, and the paper names no other archive.
+- kind: metadata_insufficient
+  statement: The files record neither the quality-control measures (access resistance, offset
+    current) nor the slice of each neuron. The original file names carry labels such as R+, B+, G+
+    and B+R- that are not documented and do not follow session_description consistently (a macaque
+    file named R+B+G+ is filed as noncholinergic, and of three named B+R- two are filed as
+    cholinergic and one as noncholinergic).
+- kind: metadata_error
+  statement: Two files in the folder of mouse CG608 (subject_id CG608) are named for mouse CG609
+    (CG609_FL_S7LC4_B+G+_-62mV.mat, CG609_FL_S6RC1_B+G+_-67mV.mat).
+- kind: other
+  statement: The current steps differ between files and from the paper's description. The increments
+    up to 200 pA are 10 to 50 pA in most files and 100 pA in one, not the 10 pA of the Fig. S2-1
+    legend; 23 files go above 200 pA (one to 1200 pA); the steps last 500 to 1100 ms, not 500 ms.
+- kind: other
+  statement: The 46 macaque cholinergic files come from 6 of the 9 macaques, while the paper reports
+    46 cholinergic neurons from nine macaques.
+- kind: code_mismatch
+  statement: The paper's code (afterhyperpolarization.m, commit 17a3265) measures the AHP on the
+    first step with two spikes, between 0.75 ms before the first and the second peak, while Methods
+    2.5 (12 to 14) measure it after the first spike within 100 ms. On this dandiset the code's window
+    gives all four mouse AHP means of the Results within 10% (29.7, 12.1 mV, 180.8, 77.4 ms against
+    28.9, 12.4, 177.9, 85.0) and the Methods' window does not (noncholinergic AHP width 226 ms).
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which window produced the AHP amplitude, latency and
+    width reported in Results 3.1 and 3.3, the Methods' (rheobase step, 100 ms after threshold) or
+    the code's (first step with two spikes)? And for the Methods' window, over what span is the AHP
+    width at half maximum measured?
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Methods 2.5 (17, 18) measure the adaptation index and
+    the CV "for the maximal current step"; is that the 200 pA step or the step with the most spikes,
+    as in spikefrequencyadaptation.m? The mouse adaptation difference holds only with the latter.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How was the separation of the UMAP plots judged (the
+    "wrong side of the boundary" of Fig. 2C and the "strong separation" of Fig. 7C)? A linear
+    boundary in the UMAP plane misclassifies 6 to 10 neurons here in either comparison.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Where was the resting potential (feature 1) recorded,
+    and for how many neurons? The deposited sweeps all carry the holding current.
