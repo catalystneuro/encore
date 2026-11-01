@@ -1,0 +1,431 @@
+schema_version: 2
+id: 001195-lee-2025-01
+dataset:
+  archive: dandi
+  id: "001195"
+  version: 0.250408.1733
+  doi: 10.48324/dandi.001195/0.250408.1733
+paper: doi:10.7554/elife.105955
+date: 2026-11-01
+entry: 001195-lee-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41285146038
+outcomes:
+- claim: fig6df-epsp-ipsp-at-rest
+  outcome: reproduced
+  notebook: reproduce_lee_2025.ipynb
+  output: claim:fig6df-epsp-ipsp-at-rest
+  measured:
+  - 15
+  - 40
+  - 56
+  notes: Under both readings every region has cells with an EPSP and cells with an IPSP. At 2 SD the BNST, CeA and
+    BLP have 14, 39 and 54 cells with an EPSP and 10, 27 and 48 with an IPSP; at 3 SD 12, 37 and 54, and 6, 11 and
+    34. The classes at 2 SD are mostly mix (67, 65 and 82%); at 3 SD excitation 47, 73 and 36%, mix 33, 20 and 61%;
+    at 5 SD mostly excitation. The dataset holds 15, 40 and 56 ChR2 cells with 30 s rest sweeps where the paper
+    reports 19, 36 and 48, so the counts do not match and the claim is judged on the cells present, as the criterion
+    says. 19 ChR2 cells (12 CeA, 6 BNST, 1 BLP) have no such sweeps.
+  deviations:
+  - The files do not record the light; the first pulse is taken 5.468 s into each 30 s light sweep, where the average
+    responses start, with later maxima of the grand average about 33 ms apart (data check). Cells recorded only
+    with other light protocols (20 s or 60 s sweeps, light at other times) are left out.
+  - The paper gives no threshold for an EPSP or IPSP (measured by hand in Clampfit); the criterion's readings, 2
+    and 3 SD of the 5 s baseline of the average trace, are run, with 5 SD as a variant.
+  - Rest sweeps include those with a negative holding current (Methods, cells held subthreshold with negative current).
+- claim: fig6gi-firing-responses
+  outcome: partially_reproduced
+  notebook: reproduce_lee_2025.ipynb
+  output: claim:fig6gi-firing-responses
+  measured:
+  - 3
+  - 13
+  - 13
+  notes: In every reading (pooled or per-sweep IEI, 5 or 5.5 s baseline) the BNST cells that can be classed are
+    excited (2 of 2) and both classes occur in the CeA (8 excited, 2 inhibited) and the BLP (4 to 6 excited, 7 to
+    9 inhibited). The dataset holds 3, 13 and 13 ChR2 cells with firing sweeps where the paper reports 5, 20 and
+    17, and one BNST cell (B7, one sweep) has no spikes before the light, so the paper's 5 of 5 BNST cells cannot
+    be checked. Three CeA cells and one or no BLP cell have too few spikes for an IEI.
+  deviations:
+  - The files do not record the light; the first pulse is taken 5.468 s into each 30 s light sweep, where the average
+    responses start, with later maxima of the grand average about 33 ms apart (data check). Cells recorded only
+    with other light protocols (20 s or 60 s sweeps, light at other times) are left out.
+  - Firing sweeps are the 30 s light sweeps with a positive holding current in their description (Methods, "constant
+    positive current was injected to elicit consistent spontaneous action potentials").
+  - Action potentials are upward crossings of 0 mV, a standard choice.
+- claim: fig6j-epsp-amplitude-region
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_lee_2025.ipynb
+  output: claim:fig6j-epsp-amplitude-region
+  notes: With all cells with an EPSP (reading a), Kruskal-Wallis gives H = 6.92, p = 0.031 at 2 SD (14, 39 and 54
+    cells) and H = 10.04, p = 0.0066 at 3 SD; Dunn's test CeA against BLP p = 0.042 and 0.015; CeA median 2.6 and
+    2.8 mV against BLP 1.4 mV. With excitation-only cells (reading b) no test is significant (p = 0.76 and 0.55;
+    25 and 56 cells). The readings disagree, and reading (a) is adopted (see deviations). The question is for the
+    paper's authors (findings).
+  deviations:
+  - The files do not record the light; the first pulse is taken 5.468 s into each 30 s light sweep, where the average
+    responses start, with later maxima of the grand average about 33 ms apart (data check). Cells recorded only
+    with other light protocols (20 s or 60 s sweeps, light at other times) are left out.
+  - The paper gives no threshold for an EPSP or IPSP (measured by hand in Clampfit); the criterion's readings, 2
+    and 3 SD of the 5 s baseline of the average trace, are run, with 5 SD as a variant.
+  - Assumed that Figure 6J includes every cell with an EPSP, mix cells included. The legend calls it the 'optically-evoked
+    excitatory post-synaptic potential' at rest, which a mix cell also has, and the claims file notes a BNST point
+    in Figure 6K that only a mix cell can give. Reading (b) is shown and does not reproduce.
+- claim: fig6k-ipsp-amplitude-region
+  outcome: not_reproduced
+  notebook: reproduce_lee_2025.ipynb
+  output: claim:fig6k-ipsp-amplitude-region
+  measured: 85
+  notes: No reading reproduces. Inhibition and mix cells at 2 SD (85 cells) give F(2,82) = 0.37, p = 0.69; at 3
+    SD (51 cells) F(2,48) = 3.94, p = 0.026, but CeA against BLP is not significant (Tukey p = 0.16, Holm-Sidak
+    p = 0.13), with the CeA mean trough deeper (-0.80 against -0.49 mV). Inhibition-only cells number 3 or 4, too
+    few for the test. The paper's test has 34 cells; the detection readings find 85 or 51, mostly small troughs
+    (median -0.45 mV), so the difference may come from the detection rule, which the paper does not give.
+  deviations:
+  - The files do not record the light; the first pulse is taken 5.468 s into each 30 s light sweep, where the average
+    responses start, with later maxima of the grand average about 33 ms apart (data check). Cells recorded only
+    with other light protocols (20 s or 60 s sweeps, light at other times) are left out.
+  - The paper gives no threshold for an EPSP or IPSP (measured by hand in Clampfit); the criterion's readings, 2
+    and 3 SD of the 5 s baseline of the average trace, are run, with 5 SD as a variant.
+- claim: fig6-s1de-monosynaptic
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: No sweep description (103 distinct ones), session description or other field names TTX or 4-AP, so the
+    sweeps recorded after TTX/4AP cannot be told from the others. The files may hold them among the light sweeps.
+- claim: fig6no-cea-clusters
+  outcome: partially_reproduced
+  notebook: reproduce_lee_2025.ipynb
+  output: claim:fig6no-cea-clusters
+  measured: 27
+  notes: All 16 readings (ramp ratio absolute or from deflections, sag steady state 100 or 200 ms, detection 2 or
+    3 SD, IEI reading a or b) give two clusters of 27 ChR2 CeA cells (the paper has 26), a late-firing cluster (mean
+    firing delay 415 ms, maximum frequency 32 Hz, sag 1.7 mV) and a regular-firing one (168 ms, 79 Hz, 5.7 mV).
+    The late cluster is mostly excited (11 to 13 of 17 or 18 cells) but has 2 or 3 inhibited cells and 3 without
+    a label, so not every cell is excited as the criterion requires; 5 of 9 or 10 regular-firing cells are inhibited,
+    more than half. The readings agree. The cells come from 14 subjects.
+  deviations:
+  - The files do not record the light; the first pulse is taken 5.468 s into each 30 s light sweep, where the average
+    responses start, with later maxima of the grand average about 33 ms apart (data check). Cells recorded only
+    with other light protocols (20 s or 60 s sweeps, light at other times) are left out.
+  - The paper gives no threshold for an EPSP or IPSP (measured by hand in Clampfit); the criterion's readings, 2
+    and 3 SD of the 5 s baseline of the average trace, are run, with 5 SD as a variant.
+  - Response labels follow the Methods (Ex vivo electrophysiology, last paragraph), the IEI when the cell has firing
+    sweeps, else the EPSP/IPSP class with a mix labelled by the sign of the 0-5.5 s voltage area.
+  - Features computed here from the raw sweeps; the paper's values (Source data 13) are not in paper/.
+- claim: fig6-s1h-cea-cluster-properties
+  outcome: reproduced
+  notebook: reproduce_lee_2025.ipynb
+  output: claim:fig6-s1h-cea-cluster-properties
+  notes: Under all four clustering readings the two CeA clusters differ in ramp ratio (p = 0.007 to 0.029), maximum
+    frequency, firing delay (p = 0.009 to 0.014) and sag (p below 0.0001), with t(25) from 2.3 to 6.3.
+  deviations:
+  - As fig6no-cea-clusters, with 27 cells (t with 25 degrees of freedom, the paper's 24).
+- claim: fig6pq-blp-clusters
+  outcome: partially_reproduced
+  notebook: reproduce_lee_2025.ipynb
+  output: claim:fig6pq-blp-clusters
+  measured:
+  - 64.7
+  - 72.7
+  - 28
+  notes: Every reading gives 28 BLP cells (the paper has 27) in a cluster of larger capacitance (77 against 37 pF)
+    and lower maximum frequency (27 against 133 Hz), the putative pyramidal neurons (17 cells), and one of 11. Of
+    the pyramidal cluster 64.7% (2 SD) or 58.8% (3 SD) are inhibited, against 93 +- 9.3%; of the other cluster 72.7%
+    are excited, against 62 +- 6.2%. The direction holds, the percentages are outside tolerance.
+  deviations:
+  - The files do not record the light; the first pulse is taken 5.468 s into each 30 s light sweep, where the average
+    responses start, with later maxima of the grand average about 33 ms apart (data check). Cells recorded only
+    with other light protocols (20 s or 60 s sweeps, light at other times) are left out.
+  - The paper gives no threshold for an EPSP or IPSP (measured by hand in Clampfit); the criterion's readings, 2
+    and 3 SD of the 5 s baseline of the average trace, are run, with 5 SD as a variant.
+  - Response labels follow the Methods (Ex vivo electrophysiology, last paragraph), the IEI when the cell has firing
+    sweeps, else the EPSP/IPSP class with a mix labelled by the sign of the 0-5.5 s voltage area.
+  - Capacitance is taken by the Q-method from the 5 mV square pulses of the seal test, the only voltage-clamp test
+    pulses in the files; the Methods use a 5 mV, 250 ms step and unpublished MATLAB code.
+  - Rheobase and firing delay also use the further step series from 220 pA up that six BLP cells have; the Methods
+    describe steps from -120 to 260 pA.
+- claim: fig6-s1i-blp-cluster-properties
+  outcome: reproduced
+  notebook: reproduce_lee_2025.ipynb
+  output: claim:fig6-s1i-blp-cluster-properties
+  notes: Under both readings the BLP clusters differ in capacitance (t(26) = 3.69, p = 0.001), maximum frequency
+    (t = 7.58, p below 0.0001), firing delay (t = 3.98, p = 0.0005) and sag (p = 0.002 and 0.003).
+  deviations:
+  - Capacitance is taken by the Q-method from the 5 mV square pulses of the seal test, the only voltage-clamp test
+    pulses in the files; the Methods use a 5 mV, 250 ms step and unpublished MATLAB code.
+  - Rheobase and firing delay also use the further step series from 220 pA up that six BLP cells have; the Methods
+    describe steps from -120 to 260 pA.
+  - 28 cells, where the paper has 27.
+- claim: fig6-s1jk-cluster-voltage-area
+  outcome: reproduced
+  notebook: reproduce_lee_2025.ipynb
+  output: claim:fig6-s1jk-cluster-voltage-area
+  notes: Under every reading the total voltage area differs between the CeA clusters (U = 107 or 111, p = 0.0001
+    to 0.0005; medians 0.65 against -0.61 mV s) and the BLP clusters (U = 34, p = 0.011; -0.32 against 0.43 mV s);
+    the EPSP peak differs between the BLP clusters (t(24) = -2.66, p = 0.014) and not between the CeA clusters (p
+    = 0.42 to 0.83).
+  deviations:
+  - The files do not record the light; the first pulse is taken 5.468 s into each 30 s light sweep, where the average
+    responses start, with later maxima of the grand average about 33 ms apart (data check). Cells recorded only
+    with other light protocols (20 s or 60 s sweeps, light at other times) are left out.
+  - The paper gives no threshold for an EPSP or IPSP (measured by hand in Clampfit); the criterion's readings, 2
+    and 3 SD of the 5 s baseline of the average trace, are run, with 5 SD as a variant.
+- claim: fig6-s1ln-combined-clusters
+  outcome: not_reproduced
+  notebook: reproduce_lee_2025.ipynb
+  output: claim:fig6-s1ln-combined-clusters
+  notes: In every reading (52 cells) the combined clustering puts the CeA late-firing cells with the BLP putative
+    pyramidal cells and the CeA regular-firing cells with the BLP putative interneurons; the separate clusters map
+    onto the combined ones but for one cell. The excited CeA cluster (11 to 14 of 17 or 19 excited) is the one with
+    the BLP pyramidal cells (10 or 11 of 17 inhibited), and the excited BLP cluster (6 of 8) is the one with the
+    CeA regular-firing cells (5 of 8 or 10 inhibited), so the excited cluster is not the same in the two regions.
+  deviations:
+  - The files do not record the light; the first pulse is taken 5.468 s into each 30 s light sweep, where the average
+    responses start, with later maxima of the grand average about 33 ms apart (data check). Cells recorded only
+    with other light protocols (20 s or 60 s sweeps, light at other times) are left out.
+  - The paper gives no threshold for an EPSP or IPSP (measured by hand in Clampfit); the criterion's readings, 2
+    and 3 SD of the 5 s baseline of the average trace, are run, with 5 SD as a variant.
+  - Response labels follow the Methods (Ex vivo electrophysiology, last paragraph), the IEI when the cell has firing
+    sweeps, else the EPSP/IPSP class with a mix labelled by the sign of the 0-5.5 s voltage area.
+  - Capacitance is taken by the Q-method from the 5 mV square pulses of the seal test, the only voltage-clamp test
+    pulses in the files; the Methods use a 5 mV, 250 ms step and unpublished MATLAB code.
+  - Rheobase and firing delay also use the further step series from 220 pA up that six BLP cells have; the Methods
+    describe steps from -120 to 260 pA.
+- claim: fig7e-no-behavioural-change
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The imaging files hold CNMF-E traces and footprints, the raw one-photon movie and a link to the behaviour
+    video. They hold no pose estimates, cup interaction or position series, no epochs for the habituation and test
+    periods and no record of which cup held the juvenile; the SLEAP model is not published. The social-object ratio
+    needs the mouse's side and which side held the juvenile. The dataset holds 12 ChrimsonR mice, as Figure 7E says,
+    and C370 has no GH on session.
+- claim: fig7gh-delta-auroc-trend
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The imaging files hold CNMF-E traces and footprints, the raw one-photon movie and a link to the behaviour
+    video. They hold no pose estimates, cup interaction or position series, no epochs for the habituation and test
+    periods and no record of which cup held the juvenile; the SLEAP model is not published. The auROC needs the
+    cup interaction vectors. The files hold 869, 913 and 854 ROIs for the ChrimsonR mice in GH off, GH on and SI
+    off, against the paper's 429, 441 and 484 cells, and nothing marks the ROIs the paper kept.
+- claim: fig7j-proportions-unchanged
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The imaging files hold CNMF-E traces and footprints, the raw one-photon movie and a link to the behaviour
+    video. They hold no pose estimates, cup interaction or position series, no epochs for the habituation and test
+    periods and no record of which cup held the juvenile; the SLEAP model is not published. Depends on fig7gh-delta-auroc-trend.
+- claim: fig7i-little-overlap
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The imaging files hold CNMF-E traces and footprints, the raw one-photon movie and a link to the behaviour
+    video. They hold no pose estimates, cup interaction or position series, no epochs for the habituation and test
+    periods and no record of which cup held the juvenile; the SLEAP model is not published. The footprints for co-registration
+    are there, but the social-excited cells need the auROC; depends on fig7j-proportions-unchanged.
+- claim: fig7m-social-excited-predicts-preference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The imaging files hold CNMF-E traces and footprints, the raw one-photon movie and a link to the behaviour
+    video. They hold no pose estimates, cup interaction or position series, no epochs for the habituation and test
+    periods and no record of which cup held the juvenile; the SLEAP model is not published. Depends on fig7j-proportions-unchanged
+    and fig7e-no-behavioural-change.
+- claim: fig7-s1no-no-other-correlations
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The imaging files hold CNMF-E traces and footprints, the raw one-photon movie and a link to the behaviour
+    video. They hold no pose estimates, cup interaction or position series, no epochs for the habituation and test
+    periods and no record of which cup held the juvenile; the SLEAP model is not published. Depends on fig7m-social-excited-predicts-preference.
+- claim: fig7-s1l-tdtomato-no-change
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The imaging files hold CNMF-E traces and footprints, the raw one-photon movie and a link to the behaviour
+    video. They hold no pose estimates, cup interaction or position series, no epochs for the habituation and test
+    periods and no record of which cup held the juvenile; the SLEAP model is not published. The two TdTomato mice
+    are there, with 35, 138 and 89 ROIs against the paper's 39, 61 and 76 cells (C442 has 1 ROI in GH off).
+- claim: fig7-s2-functional-clusters
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The imaging files hold CNMF-E traces and footprints, the raw one-photon movie and a link to the behaviour
+    video. They hold no pose estimates, cup interaction or position series, no epochs for the habituation and test
+    periods and no record of which cup held the juvenile; the SLEAP model is not published. The trials are cup interactions;
+    depends on fig7gh-delta-auroc-trend.
+- claim: fig7-s1ef-red-vs-blue
+  outcome: reproduced
+  notebook: reproduce_lee_2025.ipynb
+  output: claim:fig7-s1ef-red-vs-blue
+  notes: 9 ChrimsonR CeA cells have all three lights, as in the paper. Amplitude F(2,16) = 25.6, p below 0.0001
+    under both readings (mean 9.9 mV red against 1.8 and 0.9 mV blue), red larger in 8 of 9 cells against each blue;
+    area F(2,16) = 11.0 (signed, p = 0.001) or 7.0 (absolute, p = 0.0067), red larger in 9 of 9. Paired t-tests
+    of red against each blue give p from 0.0006 to 0.045. The paper's F values (200.1, 404.2) are much larger; one
+    cell (C1, 0.68 mV to red) barely responds.
+  deviations:
+  - The ChrimsonR sweeps are matched to the light conditions by their descriptions; '+0.3mW blue light' and '+0.2mW
+    blue light' are read as the blue light conditions of Figure 7 supplement 1E-F and '+0.3mW cont blue light' as
+    red during constant blue (panels G-I). The blue-light responses (0.4 to 3.6 mV) are far below the red ones,
+    consistent with this reading.
+  - The files do not record the light; the first pulse is taken 5.468 s into each 30 s light sweep, where the average
+    responses start, with later maxima of the grand average about 33 ms apart (data check). Cells recorded only
+    with other light protocols (20 s or 60 s sweeps, light at other times) are left out. The ChrimsonR sweeps show
+    the same onset.
+  - The paper does not say how a PSP with both an EPSP and an IPSP gives one amplitude or area; the criterion's
+    two amplitude readings, and signed and absolute area, are run and agree.
+- claim: fig7-s1hi-red-during-blue
+  outcome: partially_reproduced
+  notebook: reproduce_lee_2025.ipynb
+  output: claim:fig7-s1hi-red-during-blue
+  notes: 13 cells have red alone and red during constant blue (the paper's t11 implies 12). A PSP is detected during
+    blue light in 13 of 13. The amplitude is smaller during blue light (8.1 against 4.1 mV, t(12) = 3.23, p = 0.0072,
+    11 of 13 cells; reading b p = 0.0083), but the area is not significantly smaller (signed p = 0.26, absolute
+    p = 0.16, smaller in 12 and 11 of 13). The paper finds both smaller.
+  deviations:
+  - The ChrimsonR sweeps are matched to the light conditions by their descriptions; '+0.3mW blue light' and '+0.2mW
+    blue light' are read as the blue light conditions of Figure 7 supplement 1E-F and '+0.3mW cont blue light' as
+    red during constant blue (panels G-I). The blue-light responses (0.4 to 3.6 mV) are far below the red ones,
+    consistent with this reading.
+  - The files do not record the light; the first pulse is taken 5.468 s into each 30 s light sweep, where the average
+    responses start, with later maxima of the grand average about 33 ms apart (data check). Cells recorded only
+    with other light protocols (20 s or 60 s sweeps, light at other times) are left out.
+- claim: fig1c-drn-vta-projections
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the anterograde
+    tracing images and fluorescence measures of Figure 1 are not in it.
+- claim: fig1h-collateralization
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the retrograde tracing
+    counts of Figure 1 are not in it.
+- claim: fig1-s2d-fewer-blp-projectors
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the retrograde tracing
+    counts of Figure 1 supplement 2 are not in it.
+- claim: fig2d-blp-place-avoidance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the real-time place
+    preference data of Figure 2 are not in it.
+- claim: fig2-s2-no-icss
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the self-stimulation
+    data of Figure 2 supplement 2 are not in it.
+- claim: fig3a-c-epm-no-effect
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the elevated plus
+    maze data of Figure 3 are not in it.
+- claim: fig3-s1-oft-no-effect
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the open field data
+    of Figure 3 supplement 1 are not in it.
+- claim: fig3g-bnst-rearing
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the juvenile intruder
+    data of Figure 3 are not in it.
+- claim: fig4e-cea-social-preference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the three-chamber
+    optogenetics data of Figure 4 are not in it.
+- claim: fig4h-cea-rank-correlation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the three-chamber
+    and tube test data of Figure 4 are not in it.
+- claim: fig4k-cea-face-investigation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the juvenile intruder
+    data of Figure 4 are not in it.
+- claim: fig4r-markov-transitions
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the juvenile intruder
+    behaviour sequences of Figure 4 are not in it.
+- claim: fig4-s2d-baseline-correlations
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the baseline behaviour
+    data of Figure 4 supplement 2 are not in it.
+- claim: fig5-receptor-segregation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the RNAscope images
+    and counts of Figure 5 are not in it.
+- claim: fig8c-cea-inhibition-blocks-rebound
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the photoinhibition
+    three-chamber data of Figure 8 are not in it.
+- claim: fig8d-cea-inhibition-rank
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the photoinhibition
+    and tube test data of Figure 8 are not in it.
+- claim: fig8-s1-no-effect-group-housed
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dataset holds the ex vivo patch-clamp recordings and the in vivo CeA imaging only; the photoinhibition
+    data of Figure 8 supplement 1 are not in it.
+findings:
+- kind: data_missing
+  statement: The dandiset holds the ex vivo patch-clamp recordings (Figure 6, Figure 7 supplement 1) and the in
+    vivo CeA imaging of Figure 7. The tracing (Figure 1), behavioural optogenetics (Figures 2 to 4 and 8) and RNAscope
+    (Figure 5) data, 17 of the paper's 38 findings in the claims file, are not in it.
+- kind: data_missing
+  statement: The imaging files hold traces, footprints, the raw movie and a link to the behaviour video, but no
+    pose estimates, cup interactions, position, habituation and test epochs, or record of which cup held the juvenile,
+    which every in vivo finding needs. The SLEAP model is not published. None of the 8 in vivo findings can be tested.
+- kind: selection_undocumented
+  statement: The imaging files hold 869, 913 and 854 ROIs for the ChrimsonR mice in GH off, GH on and SI off, about
+    twice the paper's 429, 441 and 484 cells, and 35, 138 and 89 for the TdTomato mice against 39, 61 and 76. Nothing
+    marks which ROIs the paper kept (the Methods say non-neuronal objects were excluded by hand).
+- kind: metadata_error
+  statement: The imaging traces and movie are stated at 25 Hz. Their 19,211 frames last 768 s at 25 Hz, but the
+    behaviour videos last 961 s (median); at the Methods' 20 frames/s the imaging lasts 961 s, within 4 s of the
+    video in 40 of 41 sessions (the video of C386, SI off, lasts 800 s). The data support 20 Hz.
+- kind: metadata_error
+  statement: Every imaging file describes another experiment. The virus field names a GRIN lens in the mPFC and
+    Chrimson in the BLA, the stimulus field 589 nm light at 20 Hz for 5 min, and the experiment description 5 min
+    habituation, 5 min stimulation and 5 min without, where the Methods give a GRIN lens over the CeA, Chrimson
+    in the DRN, 620 nm pulses (8 at 30 Hz every 1 s) and 5 min habituation then a 10 min test.
+- kind: metadata_insufficient
+  statement: The patch-clamp files do not record when the light was on; the stimulus series of the light sweeps
+    are zeros, and the protocol is named only in free-text series descriptions (103 distinct ones). The light time
+    had to be read from the responses, and protocols with other sweep lengths put the light at other times.
+- kind: metadata_insufficient
+  statement: No sweep or session is marked as recorded in TTX/4AP, so the recordings of Figure 6 supplement 1D-E
+    cannot be identified.
+- kind: metadata_error
+  statement: In current clamp the injected current (ch-1) is stored with unit volts; its values (pA, following the
+    holding current and the current steps) show it is current. The seal test, a voltage-clamp recording of current
+    with a 5 mV square command, is stored as an IZeroClampSeries with units volts.
+- kind: other
+  statement: Two cells named with the BLP letter (P4x and P42 of subject C141) are labelled BNST in inferred_layer
+    and targeted_layer; the 19 B-named files match the paper's 19 BNST cells. One cell (P10 of subject in_vivo_9)
+    has a resting potential of -18 mV and a ch-1 far outside any plausible current in its rest sweeps. Subject ids
+    are inconsistent ('4484' and '4484?', '235' and '235 cage', 'in_vivo_5' and 'in_vivo_5_2'), so whether these
+    are the same animals is not stated.
+- kind: other
+  statement: The dataset holds 15, 40 and 56 ChR2 cells with 30 s rest sweeps in the BNST, CeA and BLP, against
+    the paper's 19, 36 and 48, and 3, 13 and 13 with firing sweeps, against 5, 20 and 17; 19 ChR2 cells were recorded
+    only with other light protocols. 27 CeA and 28 BLP cells have all clustering features, against the paper's 26
+    and 27.
+- kind: methods_unavailable
+  statement: For the paper's authors (fig6df, fig6j, fig6k). What decided that a cell had an EPSP or an IPSP at
+    rest, and does Figure 6J include mix cells? With a 2 or 3 SD rule on the average trace, most cells show both,
+    the IPSP test has 51 or 85 cells against the paper's 34, and the EPSP region effect holds with mix cells included
+    (adopted here) and not with excitation-only cells.
+- kind: methods_unavailable
+  statement: The capacitance of the BLP clustering came from custom MATLAB Q-method code on a 5 mV, 250 ms step,
+    which is not published and whose step is not in the files; it was estimated here from the seal-test pulses.
