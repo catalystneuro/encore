@@ -1,0 +1,496 @@
+schema_version: 2
+id: 001051-bennett-2024-01
+dataset:
+  archive: dandi
+  id: '001051'
+  version: 0.260922.1827
+  doi: 10.48324/dandi.001051/0.260922.1827
+paper: doi:10.1016/j.neuron.2024.06.015
+date: '2026-11-01'
+entry: 001051-bennett-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41270696677
+inputs:
+- what: The list of the 87 sessions passing ephys QC (PASSING_EPHYS_SESSION_IDS in DynamicGating_ephys_metrics.ipynb),
+    the units, probes and session tables and the CCF structure tree, used for the session selection and the link
+    claim.
+  source: https://github.com/AllenInstitute/SHIELD_Dynamic_Gating_Analysis at commit 3c09a0dc2972381f06393ddf5c000e16462c7037
+- what: The VBN units and sessions tables (metadata_tables/VBN_units_table.csv, VBN_sessions.csv), the 5-mm window
+    comparison data from DANDI:000713 version 0.240702.1725, used by fig4d-unit-drift, fig4d-qc-metrics-comparable,
+    qc-pass-fraction-similar and fig4e-vbn-yield-drops.
+  source: https://github.com/AllenInstitute/SHIELD_Dynamic_Gating_Analysis at commit 3c09a0dc2972381f06393ddf5c000e16462c7037
+outcomes:
+- claim: link-code-tables
+  outcome: partially_reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:link-code-tables
+  notes: All 87 listed sessions are dandiset sessions (by the NWB identifier), and session type, mouse and genotype
+    agree for all 99 sessions. In 81 of 87 sessions the code's units table and the dandiset agree unit by unit (no
+    matched unit differs in max_drift, firing_rate or quality). In 6 sessions (1176989662, 1178460518, 1178693650,
+    1179911454, 1180266229, 1181096406) 55 to 99.8% of matched units differ in max_drift and firing_rate and 14
+    to 38% in quality, and the RF p values recomputed here are uncorrelated with the code's there (r = -0.02 over
+    234 units, against 0.9989 over 6790 units in the other sessions), so the same unit ids name other units. In
+    5 of them the code's table has 328 units (133 CP) on probes the dandiset does not hold; the dandiset has no
+    unit missing from the code's table. Recomputed RF significance agrees with the code's for 98.8% of units where
+    the units agree. The dependent claims are tested on all 87 sessions; leaving out the 6 changes their numbers
+    little (shown for the unit counts, drift, QC fraction and yield).
+  deviations:
+  - A link claim added by the author; the code's notebook and tables are matched to the dandiset by session and
+    unit identifiers.
+- claim: fig3b-surgical-outcomes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Surgery records and QC flags for the 106 mice entering surgery are not in the dandiset, which holds only
+    the 27 recorded mice (99 sessions); neither the files, the dandiset metadata nor the code's tables hold them.
+- claim: fig3c-isi-through-implant
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No intrinsic signal images or sign maps are in the dandiset; the files hold only an ISI-derived area label
+    per unit (isi_label).
+- claim: fig3d-histology-intact
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No histology (GFAP, DAPI, NeuN sections) is in the dandiset or the paper's repository.
+- claim: tracks-rare-bleeding
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Probe-track histology is not in the dandiset; the files give CCF positions of channels only, with no record
+    of bleeding.
+- claim: fig3fh-mri-deformation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No MRI volumes or contours are in the dandiset, and the naive-mouse data of Qiu et al. 2018 would only
+    be the comparison; the measurement itself is missing.
+- claim: fig3i-learning-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Training histories (sessions to criterion) of SHIELD and 5-mm window mice are not in the dandiset or the
+    paper's repository; the dandiset holds only the recording sessions.
+- claim: fig4b-units-areas-per-session
+  outcome: reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig4b-units-areas-per-session
+  measured:
+  - 1821.0
+  - 28.11
+  notes: 44 sessions of the 87 have in-area units on exactly six probes; they have 1821.0 non-noise units (SD 341.9)
+    and 28.11 areas (SD 5.12), the paper's values; unchanged without the 6 sessions that differ from the code's
+    table.
+- claim: figs4ab-insertions-per-mouse
+  outcome: partially_reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:figs4ab-insertions-per-mouse
+  measured:
+  - 20.28
+  notes: Insertions per mouse, mean 20.28 (SD 3.34) over the 87 sessions (reading a) and 21.41 (SD 3.33) over all
+    sessions (b), within 20 +- 4.1; with only the 467 insertions of the code's table, 18.68. The implant holes per
+    mouse (10.4 +- 2.3) could not be measured, as no file records the hole of an insertion; that part is untested,
+    so the claim holds only in the part that could be tested.
+  deviations:
+  - Holes per mouse not tested (no hole per insertion in the dandiset or the code's tables).
+- claim: scale-mice-sessions-insertions
+  outcome: reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:scale-mice-sessions-insertions
+  measured:
+  - 25
+  - 87
+  - 507
+  notes: Over the 87 sessions 25 mice, 87 experiments and 507 probes with units; 507 is within 467 +- 46.7. Of these
+    467 are in the code's units table; the other 40 probes carry 2004 units, 1873 on 'Track not annotated' channels,
+    which the paper's tables leave out. Over all 99 sessions 27 mice and 578 probes with units.
+  deviations:
+  - The dandiset holds 40 probe recordings in the 87 sessions that the paper's tables leave out; nothing in the
+    files marks them, so insertions are counted as probes with units, with the code's 467 shown.
+- claim: penetration-success
+  outcome: reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:penetration-success
+  measured: 5.83
+  notes: 507 probes with units over 87 sessions give 5.83 per session (a), 578 over 99 give 5.84 (b), within 5.46
+    +- 0.546; with the code's 467 insertions, 5.37. No reading gives 5.46 exactly.
+- claim: fig4b-trajectory-consistency
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The hole and probe orientation of each insertion are not recorded, so insertions cannot be grouped into
+    trajectories; the files give CCF channel positions only.
+- claim: fig4c-drift-discontinuities-rare
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The paper judged drift maps by eye and gives no rule for an abrupt shift, and the files do not hold per-spike
+    depths (only unit peak channels and spike amplitudes), from which drift maps are drawn.
+- claim: fig4d-unit-drift
+  outcome: reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig4d-unit-drift
+  measured:
+  - 25.05
+  - 22.82
+  notes: Median max_drift 25.05 um over 144,030 SHIELD non-noise units (paper 143,828) and 22.82 over 262,177 VBN
+    non-noise units, within 25.1 +- 0.1 and 22.82 +- 0.05; 25.22 without the 6 differing sessions.
+  deviations:
+  - SHIELD units include 202 more non-noise units than the paper's count, from the 40 probe recordings the paper's
+    tables leave out.
+- claim: fig4d-qc-metrics-comparable
+  outcome: not_reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig4d-qc-metrics-comparable
+  notes: Reading (a), the code's Mann-Whitney test, finds all 7 metrics different (p 3.9e-292 to 3.9e-6), as the
+    code's printed output does; reading (b), medians within 10%, holds for 5 of 7 (isi_violations ratio 0.79, amplitude_cutoff
+    0.89). Both readings give the same outcome. Effect sizes are small (rank-biserial at most 0.07 in absolute value)
+    and the two metrics outside 10% are better for SHIELD.
+- claim: qc-pass-fraction-similar
+  outcome: reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:qc-pass-fraction-similar
+  measured:
+  - 41.09
+  - 40.69
+  notes: 41.09% of SHIELD and 40.69% of VBN non-noise units pass the QC filter.
+- claim: fig4e-unit-yield-stable
+  outcome: reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig4e-unit-yield-stable
+  measured:
+  - 308
+  - 302
+  - 287.5
+  - 277
+  notes: Over all 500 insertions with non-noise units, medians 308, 302, 287.5 and 277 per day and Kruskal-Wallis
+    p = 0.333; over the 467 insertions of the code's table (129, 126, 121 and 91, the figure's counts) medians 314,
+    305.5, 295 and 303 and p = 0.477. Every median is within 300 +- 30.
+- claim: fig4e-vbn-yield-drops
+  outcome: reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig4e-vbn-yield-drops
+  measured: 1.18e-24
+  notes: VBN medians 321 (459 insertions) and 261 (446) on days 1 and 2; Kruskal-Wallis p = 1.2e-24 for day 1 against
+    day 2 (a) and 1.2e-19 over the code's six groups (b).
+- claim: fig4e-firing-rate-stable
+  outcome: reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig4e-firing-rate-stable
+  measured: 0.223
+  notes: Kruskal-Wallis p = 0.223 over 23, 24, 22 and 18 sessions (text 0.21, code 0.26).
+- claim: fig4ef-rf-fraction-stable
+  outcome: reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig4ef-rf-fraction-stable
+  measured: 0.671
+  notes: With RF p values recomputed here and p < 0.01, median fractions 0.900, 0.877, 0.913 and 0.900 over 12,
+    11, 12 and 11 sessions, Kruskal-Wallis p = 0.671; at 0.05, p = 0.368; with the code's p values, 0.864 and 0.813.
+  deviations:
+  - RF p values are recomputed with the AllenSDK chi-square bootstrap (1000 resamplings) with their own seed; they
+    match the code's table (r = 0.9989) where units agree.
+- claim: fig4f-rf-match-retinotopy
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The ISI retinotopic maps and the insertion images needed to predict each insertion's retinotopic location
+    are not in the dandiset.
+- claim: fig4g-visual-responses-similar
+  outcome: reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig4g-visual-responses-similar
+  measured:
+  - 595
+  - 482
+  - 534
+  - 446
+  notes: 595, 482, 534 and 446 VISp units with significant RFs on days 1 to 4 (12, 11, 12 and 11 sessions and mice);
+    Kruskal-Wallis p = 0.343 for the per-unit response 0 to 250 ms (a) and 0.70 for the time of peak (b); the day
+    population responses correlate at r = 0.977 to 0.991.
+- claim: behavior-stable-across-days
+  outcome: partially_reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:behavior-stable-across-days
+  measured:
+  - 73.0
+  - 65.0
+  - 61.0
+  - 53.5
+  notes: 'No reading finds a difference across days (Kruskal-Wallis p 0.731 to 0.817), so the claim of stability
+    holds. The medians do not all match: over the 87 sessions (a) all rewards 73, 65, 61, 53.5 and (b) earned rewards
+    67, 59, 55, 48 (days 2 and 3 within tolerance in each); over all sessions (a) 68, 63.5, 60, 56.5 (days 2 to
+    4) and (b) 62.5, 57.5, 54, 50.5 (days 1 to 3). Medians fall from day 1 to day 4 in every reading. Hit trials
+    exceed earned rewards because of the no-reward block.'
+- claim: figs4i-insertion-suppression
+  outcome: not_reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:figs4i-insertion-suppression
+  measured: 36.0
+  notes: Activity recovers over the session (normalised rate 0.826 in minute 1, 0.999 at minute 30, 1.077 at the
+    end, reading a), but the fitted time constant is 36.0 min (SE 2.3) under (a) and 35.4 min (SE 2.3) under (b),
+    outside 22.5 to 33 min; per-session fits give a median of 34.8 min (IQR 23.1 to 52.5). 87 sessions, 77.3 min
+    common length from the first stimulus.
+  deviations:
+  - The fit (a - b exp(-t / tau) on 1-minute means, least squares) and the 87 sessions (the paper has 85) are not
+    given by the paper.
+- claim: figs4de-retraction-reduces-drift
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: No file, and none of the code's tables, records which sessions had probes retracted 100 um; the 23 retracted
+    sessions cannot be identified. The drift and yield measures are in the files.
+- claim: figs4f-retraction-yield-similar
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: No file, and none of the code's tables, records which sessions had probes retracted 100 um; the 23 retracted
+    sessions cannot be identified. The drift and yield measures are in the files.
+- claim: figs4gh-sharpened-probes
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: No file records which probes were sharpened or the failed insertion attempts (failed probes leave no record,
+    or records of unannotated probes); the code's tables do not either.
+- claim: figs3d-duragel-yield-stable
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No session records Dura-Gel use or days since its application, and the 24 Dura-Gel insertions cannot be
+    identified; the paper used Dura-Gel for the optotagging and bilateral experiments, whose mice are not in the
+    dandiset.
+- claim: fig5-bilateral-recordings
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No dual-hemisphere session is in the dandiset; no annotated unit lies more than 550 um right of the midline
+    (largest z 6250 against midline 5700), and those that do are in midline structures (LSr, ACB, STR, TTd).
+- claim: fig6bc-cortical-silencing
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The VGAT-ChR2 mouse is not in the dandiset; its genotypes are Sst-IRES-Cre;Ai32, Vip-IRES-Cre;Ai32, Ai32
+    and wild type, and the optotagging tables hold the Sst and Vip ChR2 tagging at 0.95 to 2.05 power levels, not
+    the cortical silencing protocol.
+- claim: fig6ef-optotagging-mrn
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The Vglut2-IRES-Cre mouse with ChrimsonR in MRN is not in the dandiset (see genotypes); no session has
+    638 nm, five-pulse 20 Hz trains.
+- claim: fig7a-mop-higher-frequency
+  outcome: reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig7a-mop-higher-frequency
+  measured:
+  - 4.0
+  - 4.5
+  notes: Under frequency reading (b), the autocorrelogram spectrum peak, VISp events at 4.0 Hz and MOp at 4.5 Hz
+    (medians), MOp higher by the one-sided rank-sum test (p 0.0016 to 5.3e-7) in all 8 L, E and set combinations,
+    which the criterion accepts. Under reading (a), the inverse of the median interval between maxima, VISp 4.17
+    to 4.21 Hz and MOp 4.35 to 4.55 Hz, and MOp is not significantly higher (p 0.078 to 0.77). 1469 to 1704 qualifying
+    VISp events and 80 to 122 MOp events. The MOp median is at the lower edge of the widened 4.5 to 7.7 Hz range,
+    below the paper's 5 to 7 Hz.
+  deviations:
+  - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+  - Reading (b) restricts the spectrum peak to 1 to 20 Hz, a standard choice.
+- claim: fig7b-low-arousal
+  outcome: partially_reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig7b-low-arousal
+  measured: -12.9
+  notes: 'At qualifying events the pupil is smaller (Wilcoxon p at most 9.1e-15) and running lower (0.03 to 1.16
+    against 4.1 to 7.7 cm/s at random times, p at most 8.0e-6) for VISp and for MOp in every combination. The change
+    is not 25%: VISp -12.9 to -15.4% (area, mean), -7.5 to -8.8% (diameter); MOp -30.8 to -36.5% (area), -17.3 to
+    -20.9% (diameter); pooled -14.0 to -16.3% (area). No reading falls within -22.5 to -27.5%.'
+  deviations:
+  - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+  - Diameter is the square root of window-mean area; two sessions without eye tracking contribute no pupil values.
+- claim: fig7b-visp-offset-locked
+  outcome: reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig7b-visp-offset-locked
+  notes: In all combinations VISp events peak 100 to 150 ms after stimulus offset (KS against uniform p 1.7e-233
+    or less; chi-square p printed as 0) and MOp events do not differ from uniform (chi-square p 0.41 to 0.53, KS
+    p 0.28 to 0.62).
+  deviations:
+  - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+  - The stimulus before an event is the last active image presentation, as the code's stimulus-trials table holds
+    active presentations.
+- claim: figs6-replay
+  outcome: not_reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:figs6-replay
+  measured: 0.633
+  notes: Across sessions (7 under L1, as in the paper, 8 under L2; four points each) the correlation of evoked and
+    event responses is r = 0.21 to 0.63 over 32 combinations of the readings and windows, below 0.693 in all; p
+    < 0.05 in 18 of 32. The per-unit variant gives r = 0.46 to 0.67.
+  deviations:
+  - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+  - Rows are normalised by their maximum, a standard choice; sessions enter when each of the four images precedes
+    a qualifying event.
+- claim: fig7cd-visp-coupling
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig7cd-visp-coupling
+  notes: 'The CCG part holds in every combination (LP and VISl peak at 0 to 20 ms, heights 0.335 to 0.508, above
+    PO and SSp at 0.055 to 0.092). The coherence part holds under R1 in all 8 combinations, but under R2 only with
+    L2 E1: with L1 SSp is also significant (+0.008 to +0.011, q 0.003 and 2.2e-5), with L2 E2 PO (q 0.05) and SSp
+    (q 0.047) are. The readings disagree, which the claims file''s header makes methods underspecified. Open for
+    the authors is how the random-time coherence is formed (the Methods'' wording reads as R1, the code does R2).'
+  deviations:
+  - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+- claim: fig7cd-mop-coupling
+  outcome: reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig7cd-mop-coupling
+  notes: Under E2 in all 8 combinations MOp is significantly coherent with PO (+0.15 to +0.20) and SSp (+0.19 to
+    +0.25) and not with LP or VISl where recorded, and the CCGs of PO and SSp peak at 0 to 20 ms (0.20 to 0.33)
+    against 0.03 to 0.06 for LP and VISl. Under E1 PO has fewer than 25 events and could not be tested; SSp and
+    LP agree with E2. VISl has fewer than 25 MOp events under L1.
+  deviations:
+  - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+  - Under E1 the PO part is untested; the outcome rests on the E2 combinations, where all parts could be tested.
+- claim: fig7e-lags-straddle-zero
+  outcome: not_reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig7e-lags-straddle-zero
+  notes: On the code's test 94 of 102 pair results differ from zero after correction; only VISp to VISl under L1
+    does not. Median lags are -23 to +14 ms and the fraction of positive lags 0.12 (MOp to PO) to 0.97 (VISp to
+    VISal).
+  deviations:
+  - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+- claim: fig7f-visp-network
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig7f-visp-network
+  notes: ACA, RSP, CP, LGd, LP and VISl are each significant and positive in 22 of 32 combinations (14 with any
+    subdivision, 8 with all); under L1 E2 R1 CP is not (q = 0.095), and with all subdivisions required ACAv or RSPagl
+    or RSPd fail under R1. The readings disagree.
+  deviations:
+  - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+- claim: fig7f-mop-network
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig7f-mop-network
+  notes: Under E2, SSp, PO, MRN and SCiw are significant and positive with L1 (R1 and R2) and L2 R2; with L2 R1
+    MRN is not (q = 0.12); under E1 PO, MRN and SCiw have too few events. The readings disagree.
+  deviations:
+  - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+- claim: fig7-hippocampus-not-engaged
+  outcome: not_reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig7-hippocampus-not-engaged
+  notes: For VISp events DG is significantly and positively coherent in every combination (+0.012 to +0.032), with
+    CA1, CA3, ProS, SUB or POST also under R2; for MOp events CA1 and DG under L2 E1 R2. The hippocampal effects
+    are small next to the visual areas (+0.06 to +0.39).
+  deviations:
+  - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+- claim: fig8bc-cp-rf-location
+  outcome: partially_reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig8bc-cp-rf-location
+  notes: 688 of 2376 QC CP units (52 sessions, 21 mice) have significant RFs. They are more dorsal than CP-noRF
+    units (median y 3150 against 3500 um, one-sided p = 1.9e-58) but more lateral (median z 4075 against 4350 um,
+    two-sided p = 1.8e-33). Their median AP coordinate, 5388 um, is in the posterior part of the CP sampled (3700
+    to 6500 um), where the RF fraction rises from 0.10 to 0.45 across AP terciles.
+  deviations:
+  - RF significance recomputed here (link-code-tables); the CCF z axis orientation is checked against VISp (3050)
+    and midline structures (5300).
+- claim: fig8d-cp-rf-larger-response
+  outcome: reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig8d-cp-rf-larger-response
+  measured:
+  - 76
+  - 209
+  - 239
+  notes: In the five sessions CP-RF units respond more than CP-noRF units in 53 bins of 0 to 250 ms (first at 55
+    ms), CP-RF higher in all, none before onset, with the Methods' QC; with the code's presence-ratio 0.9 filter
+    90 bins. Unit counts are 70, 162 and 218 with the Methods' QC (CP-RF and CP-noRF outside tolerance) and 76,
+    209 and 239 with the code's filter, within tolerance.
+  deviations:
+  - The unit counts match only with the code's filter (presence ratio above 0.9 and no noise filter), which the
+    claims file names as a variant; the effect holds with both.
+- claim: fig8d-response-latencies
+  outcome: reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig8d-response-latencies
+  measured:
+  - 16
+  - 20
+  notes: With latency as the first time the population mean reaches half its peak (b), CP-RF lags VISp by 16 ms
+    and CP-noRF lags CP-RF by 20 ms, within 20 +- 5. With the time of peak (a) the lags are 34 and 9 ms (Methods'
+    QC) or 43 and 0 ms (code filter). The readings disagree; half-peak latency is adopted, as the paper speaks of
+    response onsets lagging ("slower responses") and peak times of broad CP responses are poorly defined. Question
+    for the authors - which latency measure was used.
+  deviations:
+  - Assumed - latency as the half-peak time of the population mean (reading b); the paper gives no measure.
+  assumed: true
+- claim: fig8e-cp-rf-more-modulated
+  outcome: reproduced
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig8e-cp-rf-more-modulated
+  notes: In every combination (387 to 493 events, 4 or 5 sessions) CP-RF and CP-noRF rates differ in 112 to 222
+    bins by the rank-sum test, 24 or 25 at the troughs of the VISp rate, and the CP-RF range over 0 to 1 s is larger
+    (1.96 to 2.11 against 1.18 to 1.34 Hz; 0.50 to 0.56 against 0.30 to 0.32 normalised). The code's signed-rank
+    variant gives 98 to 216 bins.
+  deviations:
+  - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+- claim: fig8f-cp-rf-higher-coherence
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bennett_2024.ipynb
+  output: claim:fig8f-cp-rf-higher-coherence
+  notes: Under R2 (the code) CP-RF coherence with VISp exceeds CP-noRF (0.096 to 0.110 against 0.042 to 0.052, paired
+    Wilcoxon p 6.5e-11 to 1.2e-14); under R1 it does not (p 0.36 to 0.75). The readings disagree. The code's L2
+    E2 readings give 439 events, the paper's count, and p = 1.9e-10 under R2.
+  deviations:
+  - Run under the claims file's 16 combinations of area membership (L1, L2), event rule (E1, E2), random-time coherence
+    (R1, R2) and session set (a, b); population windows are cut from one 10 ms grid per session.
+findings:
+- kind: metadata_error
+  statement: In 6 of the 87 sessions the paper analysed (1176989662, 1178460518, 1178693650, 1179911454, 1180266229,
+    1181096406) the units under each unit id differ from the paper's units table at the cited code commit (max_drift
+    and firing_rate differ for 55 to 99.8% of units, quality for 14 to 38%, and receptive-field p values recomputed
+    from the files are uncorrelated with the table's). The dandiset seems to hold a different spike sorting or unit
+    assignment for these sessions than the one the paper used.
+- kind: data_missing
+  statement: In 5 of those sessions (1176989662, 1178693650, 1179911454, 1180266229, 1181096406) the paper's units
+    table has 328 units, 133 of them in CP, on probes the session files do not hold.
+- kind: selection_undocumented
+  statement: The 87 sessions passing ephys QC are listed only in the paper's code; the files and the dandiset metadata
+    do not mark them, and the 12 other sessions are not explained. In the 87 sessions the files also hold 40 probe
+    recordings (2004 units, 1873 on unannotated channels) that the paper's tables leave out, and nothing marks them.
+- kind: metadata_insufficient
+  statement: No file records the implant hole or probe orientation of an insertion, which probes were sharpened,
+    which sessions had probes retracted 100 um, Dura-Gel use, or failed insertion attempts, so Figures 4B (trajectories),
+    S4B, S4D to S4H and S3D cannot be tested.
+- kind: data_missing
+  statement: The dandiset holds none of the Figure 3 material (surgery records, ISI images, histology, MRI, training
+    histories), the dual-hemisphere sessions of Figure 5, or the VGAT-ChR2 and Vglut2-Cre mice of Figure 6; its
+    27 mice are all single-hemisphere change-detection mice.
+- kind: data_missing
+  statement: Sessions 1187475832 and 1202438738 have no eye tracking.
+- kind: paper_inconsistency
+  statement: The Methods describe 8 natural images in the change detection task; every session holds four image
+    stimuli (three natural images and im115_r at 0.7 contrast) besides omitted flashes.
+- kind: methods_unavailable
+  statement: For the alpha-event analyses (Figures 7, 8E, 8F and S6), please confirm (1) how the random-time coherence
+    was formed, both areas at the random time (as the Methods read) or the reference area at the event against the
+    other area at the random time (as the code does); (2) whether area membership used the ISI labels and exact
+    CCF labels or the code's substring match (which puts POST units into PO and VISpm into VISp); (3) the event
+    rule, four maxima (Methods) or three in a window with more than three (code). The outcomes of fig7cd-visp-coupling,
+    fig7f-visp-network, fig7f-mop-network and fig8f-cp-rf-higher-coherence depend on these choices; the code's choices
+    reproduce the 439 events of Figure 8F.
+- kind: methods_unavailable
+  statement: Please state the latency measure of Figure 8D (half-peak time was assumed here; the time of peak gives
+    other lags), the fit and normalisation behind the 25 to 30 min recovery time constant of Figure S4I (fits here
+    give 35 to 36 min), and the windows and row normalisation of Figure S6F.
