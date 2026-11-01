@@ -10,10 +10,10 @@ with no sensor labels and no well, wash-on, injection or stimulation times.
 | The code's well order fits the revision probes' recordings (link) | Reproduced |
 | 100 to 200 cells per gel, through its thickness | Reproduced |
 | Sensor yield of the ten ten-sensor probes | Partially reproduced |
-| All ten sensors respond in their own wells | Partially reproduced |
-| Only DA/NE, and less so AVP/OXT, show crosstalk | Partially reproduced |
+| All ten sensors respond in their own wells | Not reproduced as the criterion is written (responses carry over between wells; asked of a reader) |
+| Only DA/NE, and less so AVP/OXT, show crosstalk | Not reproduced |
 | On-target and off-target EC50s of Table 1 | Not reproduced |
-| Peak dF/F0 of Table 1 | Partially reproduced |
+| Peak dF/F0 of Table 1 | Not reproduced |
 | EC50s consistent across probes | Not reproduced |
 | tau-on under 1 minute for almost all sensors | Reproduced |
 | tau-on rises with depth for all sensors but ATP | Not reproduced |
@@ -30,7 +30,7 @@ commit fa4526a), and the labels are made from the traces by the Methods' cluster
 code's hand corrections. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/001074-kalugin-2026-01.yaml`](../../attempts/001074-kalugin-2026-01.yaml).
 
-- `reproduce_kalugin_2026.ipynb`: the analysis. It takes about twelve minutes, most of it the
+- `reproduce_kalugin_2026.ipynb`: the analysis. It takes about eighteen minutes, most of it the
   survey of the 713 files.
 - `morse.py`: loading (traces, and masks reordered from their scrambled storage), the well timing
   and order, dF/F0, the dipping artefact and background corrections, the sensor clustering, and

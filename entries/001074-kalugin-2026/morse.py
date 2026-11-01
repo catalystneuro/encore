@@ -33,7 +33,15 @@ comes from:
   correlation of the cluster mean derivative with the time course of ligand
   administration (Methods). The administration time course is taken as a
   boxcar over the first minute of each well, an assumption (the Methods do
-  not give it).
+  not give it); a boxcar over the whole well is a variant. A match is kept
+  only when the cluster's mean derivative also peaks in the matched ligand's
+  well. This rule is the author's own, an assumption the Methods do not
+  state; it is meant to drop clusters whose best-correlated ligand is a weak
+  match. The notebook shows the labels without it (`require_peak=False`).
+- The jump is measured 2 frames after the onset, as the code does, when the
+  decay has begun; on a synthetic jump this leaves a residual of a few
+  percent of the jump (noted by the verifier, not corrected, since it is the
+  code's measure).
 - Eq. 8 and Eq. 9 (y = F/(1 + Kd/[L])), Powell least squares: Methods and
   morse_figs3_rev cell 365.
 """
@@ -282,35 +290,36 @@ def _hdbscan(der):
     return HDBSCAN(min_cluster_size=3, metric="precomputed", copy=True).fit(d).labels_
 
 
-def label_clusters(der, lab, wells=ID_WELLS):
+def label_clusters(der, lab, wells=ID_WELLS, require_peak=True, width=int(FRAMES_PER_MIN)):
     """Match each cluster to the ligand whose administration time course its mean
-    derivative correlates with best; keep the match only when the mean derivative
-    also peaks in that ligand's well (else the cluster stays unlabelled)."""
+    derivative correlates with best; with `require_peak`, keep the match only when the
+    mean derivative also peaks in that ligand's well (else the cluster stays
+    unlabelled). Both the boxcar `width` and `require_peak` are assumptions."""
     t = der.shape[1]
     ligs = [w for w in wells if w != "P"]
-    box = np.array([onset_boxcar(t, wells, l) for l in ligs])
+    box = np.array([onset_boxcar(t, wells, l, width) for l in ligs])
     out = np.array([""] * len(lab), dtype=object)
     for c in range(lab.max() + 1):
         m = der[lab == c].mean(axis=0)
         r = [np.corrcoef(m, b)[0, 1] for b in box]
         lig = ligs[int(np.argmax(r))]
-        if wells[int(np.argmax(m)) // FRAMES_PER_WELL] == lig:
+        if not require_peak or wells[int(np.argmax(m)) // FRAMES_PER_WELL] == lig:
             out[lab == c] = lig
     return out
 
 
-def identify(pn_list, window=SG_WINDOW):
+def identify(pn_list, window=SG_WINDOW, require_peak=True, width=int(FRAMES_PER_MIN)):
     """Sensor labels. Reading (a): one HDBSCAN over the cells of all probes pooled.
     Reading (b): (a), then cells left unlabelled take the label of their cluster in
     an HDBSCAN of their own probe (the code's second pass, morse_figs3_rev cells
     62-69, without its hand corrections, cells 73-78)."""
     der = np.vstack([derivative(x, window) for x in pn_list])
     grp = np.concatenate([[i] * len(x) for i, x in enumerate(pn_list)])
-    la = label_clusters(der, _hdbscan(der))
+    la = label_clusters(der, _hdbscan(der), require_peak=require_peak, width=width)
     lb = la.copy()
     for g in range(len(pn_list)):
         s = np.where(grp == g)[0]
-        lg = label_clusters(der[s], _hdbscan(der[s]))
+        lg = label_clusters(der[s], _hdbscan(der[s]), require_peak=require_peak, width=width)
         for i, l in zip(s, lg):
             if lb[i] == "" and l != "":
                 lb[i] = l
@@ -387,15 +396,30 @@ def normalized_dose_trace(x, group, fpw=FRAMES_PER_WELL):
     return (blk - pl[:, [wb - 1]]) / (pl[:, [wp]] - pl[:, [wb - 1]])
 
 
-def tau_on(trace, start, fpw=FRAMES_PER_WELL):
+def tau_on(trace, start, fpw=FRAMES_PER_WELL, free_inf=False):
     """Exponential rise (x0 - xinf) exp(-t/tau) + xinf over frames 0-78 of a well, x0 the
     first frame and xinf the median of frames 47-78, tau free (morse_figs3_rev cells
-    688-689). Returns tau in frames, NaN if the fit fails or tau > 200 frames."""
+    688-689). Fixing xinf this way underestimates long time constants (a true tau of 40
+    frames is fitted near 25); with `free_inf`, xinf is fitted by least squares with tau
+    (a variant, not the code's). Returns tau in frames, NaN if the fit fails or tau > 200
+    frames."""
     seg = trace[start:start + 79]
     x0, xi = seg[0], np.median(seg[47:79])
     t = np.arange(len(seg), dtype=float)
     if not np.all(np.isfinite(seg)) or x0 == xi:
         return np.nan
+    if free_inf:
+        # for a given tau, xinf is linear: seg - x0 e = xinf (1 - e)
+        def fit_inf(b):
+            e = np.exp(-t / b)
+            u = 1 - e
+            return np.dot(seg - x0 * e, u) / np.dot(u, u)
+        sse = lambda b: np.sum(((x0 - fit_inf(b)) * np.exp(-t / b) + fit_inf(b) - seg) ** 2)
+        grid = np.logspace(-1, 4, 200)
+        k = int(np.argmin([sse(b) for b in grid]))
+        lo, hi = grid[max(k - 1, 0)], grid[min(k + 1, len(grid) - 1)]
+        tau = optimize.minimize_scalar(sse, bounds=(lo, hi), method="bounded").x
+        return tau if tau <= 200 else np.nan
     # least squares in tau: a grid, then a bounded scalar search around its best point
     sse = lambda b: np.sum(((x0 - xi) * np.exp(-t / b) + xi - seg) ** 2)
     grid = np.logspace(-1, 4, 200)
@@ -425,7 +449,7 @@ def tau_well(group, kd):
     return int(above[0]) if len(above) else None
 
 
-def taus_for_group(x_block, group, kd, f):
+def taus_for_group(x_block, group, kd, f, free_inf=False):
     """tau-on (frames) per cell, on the normalized dF/F0 and on the Eq. 8 concentration,
     both after a 31-frame median filter (claims file, morse_figs3_rev cells 688-692)."""
     from scipy.ndimage import median_filter
@@ -434,9 +458,9 @@ def taus_for_group(x_block, group, kd, f):
         return np.array([]), np.array([]), None
     sm = median_filter(x_block, size=(1, 31), mode="nearest")
     st = w * FRAMES_PER_WELL
-    t_d = np.array([tau_on(sm[i], st) for i in range(len(sm))])
+    t_d = np.array([tau_on(sm[i], st, free_inf=free_inf) for i in range(len(sm))])
     conc = conc_eq8(sm, kd, f)
-    t_c = np.array([tau_on(conc[i], st) for i in range(len(conc))])
+    t_c = np.array([tau_on(conc[i], st, free_inf=free_inf) for i in range(len(conc))])
     return t_d, t_c, w
 
 
