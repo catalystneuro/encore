@@ -89,7 +89,7 @@ GITHUB_MARK = ('<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><p
 OUTCOMES = {  # key: (label, css class, icon)
     "reproduced": ("Reproduced", "good", "✓"),
     "partially_reproduced": ("Partially reproduced", "warning", "◐"),
-    "not_reproduced": ("Not reproduced", "critical", "✕"),
+    "not_reproduced": ("Not reproduced", "unresolved", "?"),
     "blocked": ("Blocked", "blocked", "⊘"),
 }
 BLOCKED_BY = {
