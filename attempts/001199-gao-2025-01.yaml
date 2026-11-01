@@ -1,0 +1,292 @@
+schema_version: 2
+id: 001199-gao-2025-01
+dataset:
+  archive: dandi
+  id: "001199"
+  version: 0.250829.1250
+  doi: 10.48324/dandi.001199/0.250829.1250
+paper: doi:10.1523/jneurosci.2218-24.2025
+date: 2026-11-01
+entry: 001199-gao-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41291066974
+inputs:
+- what: The asset list (paths only) of dandiset 000946, the repository the paper's Methods name for
+    all its data, read to compare its rats and session dates with those of 001199. Used for the
+    notes of the subjects claim and a finding; no measurement is taken from it.
+  source: DANDI:000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)
+outcomes:
+- claim: subjects
+  outcome: partially_reproduced
+  notebook: reproduce_gao_2025.ipynb
+  output: claim:subjects
+  measured:
+  - 6
+  - 6
+  notes: Simultaneous S1 and POm recordings in 6 rats (BH596, BH608, BH615, BH648, BH654, BH658),
+    paper 16; simultaneous S1 and AC recordings in 6 rats (BH646, BH648, BH650, BH655, BH657,
+    BH658), paper 12. Both readings of the targets (with and without the unexplained "S1-6") give
+    the same counts. Both counts are below the paper's and none above, the claims file's rule for a
+    partial result. Two rats (BH648, BH658) are in both groups, where the paper's AC rats are
+    another group. With files of both areas in a rat, simultaneous or not, the counts are 10 and 7.
+    The 13 rats were recorded from August 2024 to July 2025, after the paper's preprint (June
+    2024), and only BH594 (S1 only here) is among the 20 rats of dandiset 000946, the repository the
+    paper names, whose sessions run from August 2023 to April 2024. So the dandiset may not hold the
+    paper's rats at all.
+  deviations:
+  - A session is a file in the 2024 cohort and a group of files sharing an identical trial table in
+    the 2025 cohort, where each probe has its own file; the dandiset does not say this, the shared
+    trial tables show it.
+  - Units of BH590 and BH594 files are taken as S1, as their notes say recording at S1 and their
+    celltype_label holds 0; BH596 and BH615 units are given the area their celltype_label holds.
+- claim: fig2-target-artifact
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The claim needs the raw voltage of the target-determination trials (about 170 kPa) and
+    spike waveforms; the files hold sorted spike times only, and no target-determination trials.
+    Two BH615 sessions at 10 and 15 V show a burst of detected spikes confined to 0 to 75 ms after
+    the trial start (population rate 2.9 to 7.2 times its mean), which looks like an ultrasound-locked
+    artefact, but neither the voltage nor the waveform tail can be examined.
+- claim: fig4-unit-counts
+  outcome: blocked
+  blocked_by: data_missing
+  notes: RSU and FSU types come from the waveforms (IP and AHP, Methods, Neuronal type
+    classification), which the files do not hold; the celltype_label column is described as 1 = RSU,
+    2 = FSU but holds 0 or the area in every file that has it. Untyped, with more than 2,000 spikes,
+    the dandiset holds 465 S1 and 110 POm units at 3,000 Hz and 344 S1 and 93 POm at 30 Hz over all
+    voltages (201 and 76, 186 and 53 with the 2024 files limited to 5 V), against the paper's typed
+    sums of 366 and 250, 209 and 232.
+- claim: fig4-timelocked-rsu-3000
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU types (see fig4-unit-counts), and depends on fig4-unit-counts, which is blocked.
+- claim: fig4-postsonication-3000
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU and FSU types (see fig4-unit-counts), and depends on it.
+- claim: fig4-30hz-responses
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU types (see fig4-unit-counts), and depends on it.
+- claim: fig4-no-fsu-change
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs FSU types (see fig4-unit-counts), and depends on it.
+- claim: fig5-unit-counts
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU and FSU types (see fig4-unit-counts). There is also no CG1 session at 3,000 Hz,
+    the paper's control; CG1 sessions here are at 300 Hz (BH658) and 4,500 Hz (BH655, BH657,
+    BH658). Untyped, sham sessions hold 151 S1 and 37 POm units with more than 2,000 spikes (paper
+    84 and 134 typed).
+- claim: fig5a-sham-no-response
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU and FSU types (see fig4-unit-counts); depends on fig5-unit-counts.
+- claim: fig5b-cg1-control-no-response
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU and FSU types, and the dandiset holds no CG1 session at 3,000 Hz PRF (see
+    fig5-unit-counts).
+- claim: fig6-unit-counts
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU and FSU types (see fig4-unit-counts). Untyped, the five 200 us PD conditions
+    hold 1,243 S1 and 396 POm units with more than 2,000 spikes over all voltages (756 and 280 with
+    the 2024 files limited to 5 V), against the paper's typed sums of 1,297 and 1,019.
+- claim: fig6a-s1-rsu-timelocked-high-prf
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU types (see fig4-unit-counts); depends on fig6-unit-counts.
+- claim: fig6a-s1-rsu-delayed
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU types (see fig4-unit-counts); depends on fig6-unit-counts.
+- claim: fig6b-s1-fsu-prf
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs FSU types (see fig4-unit-counts); depends on fig6-unit-counts.
+- claim: fig6c-pom-rsu-prf
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU types (see fig4-unit-counts); depends on fig6-unit-counts.
+- claim: fig6d-pom-fsu-prf
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs FSU types (see fig4-unit-counts); depends on fig6-unit-counts.
+- claim: fig7-9-unit-counts
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Every stimulated file of the dandiset has PD 200 us, so the duty-cycle series at 3,000 Hz
+    (PD 2 to 300 us), at 30 Hz (PD 200 to 30,000 us) and at 60% DC (PD 133 to 20,000 us) are present
+    only at their 200 us point. RSU and FSU types are missing as well (see fig4-unit-counts).
+- claim: fig7a-s1-rsu-dc-3000
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The duty-cycle series is not in the dandiset, and RSU types are missing (see
+    fig7-9-unit-counts).
+- claim: fig7b-s1-fsu-dc-3000
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7a-s1-rsu-dc-3000.
+- claim: fig7c-pom-rsu-dc-3000
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7a-s1-rsu-dc-3000.
+- claim: fig7d-pom-fsu-dc-3000
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7a-s1-rsu-dc-3000.
+- claim: fig8a-s1-rsu-dc-30
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7a-s1-rsu-dc-3000, for the 30 Hz series.
+- claim: fig8b-s1-fsu-dc-30
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7a-s1-rsu-dc-3000, for the 30 Hz series.
+- claim: fig9a-s1-rsu-60dc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7a-s1-rsu-dc-3000, for the 60% DC series.
+- claim: fig9b-s1-fsu-60dc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7a-s1-rsu-dc-3000, for the 60% DC series.
+- claim: fig10a-dsttc-3000-during
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The directional correlations are between S1 and POm RSUs and FSUs, which cannot be typed
+    (see fig4-unit-counts); depends on fig4-unit-counts.
+- claim: fig10a-dsttc-3000-post
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig10a-dsttc-3000-during.
+- claim: fig10b-dsttc-30
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig10a-dsttc-3000-during.
+- claim: fig10c-sttc-constant-pd
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs S1 RSU and POm RSU pairs, which cannot be typed (see fig4-unit-counts); depends on
+    fig6-unit-counts.
+- claim: fig10d-sttc-60dc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 60% DC series is not in the dandiset and RSUs cannot be typed (see fig7-9-unit-counts).
+- claim: fig10e-sttc-30hz-dc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 30 Hz DC series is not in the dandiset and RSUs cannot be typed (see
+    fig7-9-unit-counts).
+- claim: fig10f-sttc-3000-dc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 3,000 Hz DC series is not in the dandiset and RSUs cannot be typed (see
+    fig7-9-unit-counts).
+- claim: fig11b-ac-responses
+  outcome: not_reproduced
+  notebook: reproduce_gao_2025.ipynb
+  output: claim:fig11b-ac-responses
+  measured: 194
+  notes: 194 AC units with more than 2,000 spikes in 7 rats (paper 453; per PRF 45, 29, 42, 40 and
+    38 against 83, 59, 107, 104 and 100). No Kruskal-Wallis test across the five PRFs is
+    significant at 0.01 under any reading of R (p 0.013 to 0.74); with BH654 left out the R2 tests
+    give 0.0095 and 0.006, with every R2 mean below 100%. Against baseline only 1,500 Hz during
+    sonication is significant, under R1 and T2 alone (mean 105.1%, uncorrected p = 6.4e-05, below
+    0.01 after factors 5, 10 and 15); 3,000 Hz is not (102.4%, p = 0.02 uncorrected), and no PRF is
+    above baseline after sonication under any reading. 300 Hz has the lowest mean only under R1
+    during sonication with BH654 left out. Per-rat R1 means are 88 to 127%. Sham AC units give R1
+    means of 99.6 and 99.9% and no significant increase. Leaving out the S1-6 sessions gives the
+    same result. Under R2 every mean is below 100%, sham included (69.8%), as R2 keeps only trials
+    with a prestimulus spike. In the 2025 cohort, which holds every AC file, the trial starts could
+    be shown to be sonication onsets only for the BH648 4,500 Hz session, whose S1 units rise from
+    about 200 ms; in the other sessions the spikes show no more locking to the true trial starts
+    than to shifted ones, so the absence of AC responses may come from the trial tables and not
+    from the neurons.
+  deviations:
+  - The paper's AC group is 12 rats with S1 and AC probes; the dandiset holds AC files from 7 rats,
+    and all 7 are used. A variant leaves out BH654, whose AC files share no session with an S1 file.
+  - Sessions with stimulation labelled "S1-6", which nothing in the dandiset explains, are taken as
+    S1-targeted; a variant leaves them out, with the same outcome.
+  - The pressure of the 2025 sessions is not stated in the files; the paper used 5 V (88 kPa).
+  - The Bonferroni factor B1 is taken as 5 (the PRFs compared with baseline in a window), with 10
+    (both windows) shown too; B2 is 15 (all pairs among the five PRFs and the baseline).
+- claim: fig11c-ac-to-s1-30hz
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs S1 RSU and FSU types (see fig4-unit-counts). Simultaneous AC and S1 files at 30 Hz
+    exist for 5 rats (BH646, BH648, BH650, BH655, BH657).
+- claim: fig11d-ac-to-s1-3000
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs S1 RSU and FSU types (see fig4-unit-counts). Simultaneous AC and S1 files at 3,000
+    Hz exist for 5 rats (BH646, BH648, BH650, BH655, BH657).
+findings:
+- kind: data_missing
+  statement: The files hold spike times only, with no spike waveforms and no RSU or FSU labels, so
+    the paper's typing of units (IP and AHP of the waveform, k-means) cannot be repeated and the 20
+    claims on RSUs and FSUs cannot be tested.
+- kind: metadata_error
+  statement: The units column celltype_label is described as "label 1 = RSU, label 2 = FSU", but no
+    file holds a 1 or a 2. It holds 0 in the 49 files of BH590 and BH594 and the area of the unit
+    (S1 or POm) in the 47 files of BH596 and BH615; the 133 files of the 2025 cohort have no such
+    column.
+- kind: data_missing
+  statement: Every stimulated file has a pulse duration of 200 us. The duty-cycle series of the
+    paper (Fig. 7 to 9 and 10D to 10F) are not in the dandiset, nor the target-determination trials
+    and raw voltage of Fig. 2, nor a CG1 control session at 3,000 Hz (CG1 sessions are at 300 and
+    4,500 Hz).
+- kind: other
+  statement: The dandiset names the paper as the description of its data, but its 13 rats were
+    recorded from August 2024 to July 2025, after the paper's preprint of June 2024, and it holds
+    conditions the paper does not describe (10 and 15 V, stimulation at POm, 64-channel probes with
+    and without z-coating, 2 mm offsets). Of its rats only BH594 has a file in dandiset 000946, which
+    the paper's Methods name as the repository of all its data and which lists 20 rats recorded from
+    August 2023 to April 2024. Simultaneous S1 and POm recordings exist for 6 rats and S1 and AC
+    recordings for 6, against the paper's 16 and 12.
+- kind: metadata_error
+  statement: The data_collection field gives "PRESSURE:67V" in most 2024 files whatever voltage the
+    identifier gives (the 67 is the ultrasound duration), and the 2025 files state no pressure or
+    voltage anywhere. The description says pressure is in the identifier, which holds for the 2024
+    files only.
+- kind: metadata_insufficient
+  statement: Stimulation targets "S1-6", "NEW", "y-1" and "SEP" in the notes of 2025 files, and the
+    identifier tags of 2024 files (coating, nocoating, NZ, C, P, 2mm, bad, break, x0y35z165), are not
+    explained anywhere in the dandiset. Electrode locations are "unknown" in every file.
+- kind: metadata_error
+  statement: In the 2025 cohort session_start_time does not date the session. Files of two probes
+    that share a trial table, and so are one session, have start times minutes apart, and the BH608
+    sham pair has start times five months apart (2025-02-06 and 2025-07-11). One file is named
+    ses-None.
+- kind: metadata_error
+  statement: In the BH608 30 Hz session the S1 file gives stimulation at S1 and the POm file, which
+    shares its trial table, stimulation at "SEP".
+- kind: format_error
+  statement: In 64 units of 16 files of the 2025 cohort the spike times are not in increasing order
+    (one to seven places per unit). Left unsorted they gave one AC unit a normalized rate of 4,224%
+    in this analysis.
+- kind: other
+  statement: The files sub-BH646_ses-None and sub-BH646_ses-20250308T003900 hold the same spike
+    trains and trial table (AC at 30 Hz); the recording is deposited twice.
+- kind: other
+  statement: The paper used two 32-channel A1x32-Poly3 probes; the S1 files here list 64-channel
+    A1x64-Edge probes with or without z-coating, as the dandiset's description says, and four BH590
+    files name a device "H9". The description gives 500 trials per recording; most files hold 499
+    and some 113 to 480.
+- kind: other
+  statement: In the 2025 cohort, which holds every AC recording, the spikes show no more locking to
+    the trial starts than to starts shifted by 1.25 s (true above shifted in 7 of 108 stimulated
+    files), except in the BH648 4,500 Hz session. In the 2024 cohort the locking is clear (0.39
+    against 0.13 of units modulated, 50 of 92 files). Either the 2025 sessions evoked no response
+    or their trial times are not the sonication onsets; the files cannot tell which.
