@@ -72,15 +72,17 @@ outcomes:
   output: claim:figs1e-eyes-more-than-face
   notes: Under both day counts (a, total; b, mean per run) and both event sets (M1-only and mutual,
     M1-only), Eyes fixations exceed non-eye Face fixations for every area, corrected p from 1.1e-07 to
-    4.4e-05, all below 1e-4. Median day totals are 384 to 408 Eyes and 129 to 177 non-eye Face
+    3.1e-05, all below 1e-4. Median day totals are 382 to 408 Eyes and 134 to 179 non-eye Face
     fixations.
   deviations:
   - The events counted are not fixed by the claims file. M1's fixations in the ROI including the M1
     side of mutual events are the main set, following the Methods' "total number of gaze fixations
     ... of the stimulated monkey" (STAR Methods, Frequency of microstimulations and regions of
     interest); M1-only events are shown and give the same outcome.
-  - The non-eye Face is the files' m1_neface table (with mutual_face for mutual events); the
-    notebook shows that m1_wholeface equals m1_eye plus m1_neface in every run.
+  - The non-eye Face is the files' m1_neface table, which includes the Mouth, with mutual_face and
+    mutual_mouth for mutual events (mutual_face is the face outside the Eyes and the Mouth; the
+    notebook shows that m1_wholeface equals m1_eye plus m1_neface and that mutual_wholeface equals
+    mutual_eye plus mutual_face plus mutual_mouth).
 - claim: figs1e-eyes-vs-rdm-comparable
   outcome: not_reproduced
   notebook: reproduce_fan_2024.ipynb
@@ -90,7 +92,10 @@ outcomes:
     median differences 177, 202 and 241 per day). A day holds about twice as many social runs as
     control runs (L 10 and 6, T 14 and 5), so day totals differ. Under the code's reading (b), the
     mean per run, the counts are comparable (corrected p 0.40, 0.40 and 0.52), as the paper
-    reports; M1-only events give the same pattern under both readings.
+    reports; M1-only events give the same pattern under both readings. Whether the claims file's
+    deciding reading (a) misreads the paper, given about twice as many social runs as control runs
+    per day, is asked of a reader in questions/000959.yaml; the outcome is judged on the claims file
+    as it stands.
   deviations:
   - The RDM fixations are the M1 events labelled Eyes in the Dot runs, whose Eyes ROI is the RDM
     location ("same location and size as Eyes ROI", STAR Methods, Closed-loop microstimulation
@@ -105,9 +110,10 @@ outcomes:
     -0.0048) are negative. 10,771 of 53,542 post-gaze fixations fall outside the 40-degree grid.
   deviations:
   - Fixations are the Methods reading (M1-only and mutual events). The grid is centred on each
-    run's Eyes ROI centre, and the ROI squares are those whose centres lie in the day's ROI
-    rectangle, a standard choice; pixels are converted with 27 cm at 50 cm over 768 pixels (claims
-    file, opening comment).
+    run's Eyes ROI centre, and the ROI squares are those whose centres lie in the ROI rectangle,
+    relative to the Eyes centre, of every social run of the day, a standard choice; the three
+    recalibrated days, which have two ROI sets, are dmPFC and ACCg days. Pixels are converted with
+    27 cm at 50 cm over 768 pixels (claims file, opening comment).
 - claim: fig2c-ofc-social-gaze-distance
   outcome: reproduced
   notebook: reproduce_fan_2024.ipynb
@@ -226,7 +232,10 @@ outcomes:
     (paper 0.510). The Mouth medians are -6.3 (contralateral), -8.4 (ipsilateral) and -0.24 pixels
     (both), the Eyes medians -21.2, -12.3 and -17.9. Neither reading gives significance for the
     contralateral fixations alone; under (a) both hemifields combined is the comparison that is
-    significant, the reverse of the paper's pattern.
+    significant, the reverse of the paper's pattern. With the code's M1-only fixations, contralateral
+    p = 0.049 (a) with all days (0.040 to 0.049 over five other seeds) and 0.006 with monkey T's days,
+    ipsilateral 0.30 and 0.35, but both hemifields 0.050 and 0.036, so that fixation set does not give
+    the paper's pattern either.
   deviations:
   - Seed 959 is a standard choice; five other seeds are shown.
 - claim: fig3b-ofc-inter-looking-interval
@@ -309,12 +318,15 @@ outcomes:
   notebook: reproduce_fan_2024.ipynb
   output: claim:figs4a-causal-strength-no-stim-effect
   notes: The relative causal strength needs the causal decomposition of Yang, Peng and Huang (2018),
-    built on ensemble empirical mode decomposition. One EEMD of one 150-bin series with 100
-    ensembles takes about 1.0 s here (PyEMD) and yields 7 IMFs; with one decomposition of each
-    series and one per IMF of each series with that IMF removed, the claims file's reading (a), 1,000
-    ensembles, needs about 160 s per trial, or about 870 CPU hours for the 19,474 social trials (about 90
-    hours at a tenth of the ensembles). This is beyond the notebook limit and the run. The trials,
-    distances and epochs the analysis would use are all in the dataset.
+    whose code runs 2 + 2 x (number of IMFs) ensemble EMDs per trial, each with 10 fixed sifts per
+    IMF. Neither the noise level nor the ensemble size has a default in that code, and its example
+    uses 1,000 ensembles, as does the claims file's reading (a), so both readings cost the same. One
+    EEMD of one 150-bin series with 1,000 ensembles takes 18.3 s on one core with PyEMD (9.2 s on four
+    processes) and yields 7 IMFs, so a trial takes about 293 CPU s, and the 19,474 social Eyes trials
+    about 1,590 CPU hours (about 790 hours of wall time on four processes). A compiled implementation
+    at 10 microseconds per cubic-spline envelope would still need about 104 CPU hours. The notebook
+    limit is one hour. The trials, distances and epochs the analysis would use are all in the
+    dataset.
 - claim: figs4b-causal-strength-no-epoch-effect
   outcome: blocked
   blocked_by: too_large
@@ -333,31 +345,45 @@ outcomes:
   outcome: blocked
   blocked_by: too_large
   notes: Depends on figs4a-causal-strength-no-stim-effect, blocked by the cost of the causal
-    decomposition.
+    decomposition. This claim needs only the first 90 stimulation trials of the 25 OFC epoch days,
+    2,250 trials, which the notebook times at about 183 CPU hours (92 hours of wall time on four
+    processes; about 12 CPU hours even at 10 microseconds per spline envelope), beyond the one-hour
+    notebook limit.
 - claim: fig4c-dmpfc-slope-late-greater
   outcome: blocked
   blocked_by: too_large
   notes: Depends on ofc-slope-unchanged-by-epoch and the causal strengths, blocked by the cost of
-    the causal decomposition.
+    the causal decomposition. The 2,250 stimulation trials of the 25 dmPFC epoch days alone take about
+    183 CPU hours in the notebook's timing (2,340 for ACCg, about 191), beyond the one-hour notebook
+    limit.
 - claim: fig4d-dmpfc-slope-permutation
   outcome: blocked
   blocked_by: too_large
   notes: Depends on fig4c-dmpfc-slope-late-greater and the causal strengths, blocked by the cost of
-    the causal decomposition.
+    the causal decomposition. The 2,250 stimulation trials of the 25 dmPFC epoch days alone take about
+    183 CPU hours in the notebook's timing (2,340 for ACCg, about 191), beyond the one-hour notebook
+    limit.
 - claim: dmpfc-slope-positive
   outcome: blocked
   blocked_by: too_large
   notes: Depends on fig4c-dmpfc-slope-late-greater and the causal strengths, blocked by the cost of
-    the causal decomposition.
+    the causal decomposition. The 2,250 stimulation trials of the 25 dmPFC epoch days alone take about
+    183 CPU hours in the notebook's timing (2,340 for ACCg, about 191), beyond the one-hour notebook
+    limit.
 - claim: fig5a-trigger-duration-unchanged
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_fan_2024.ipynb
   output: claim:fig5a-trigger-duration-unchanged
   notes: Under reading (a), M1-only and mutual Eyes events, the event in progress at the trial is
     longer on stimulation trials for dmPFC (median day difference 31 ms, p = 0.019; paper 0.269),
     not for OFC (8 ms, p = 0.61; paper 0.302). Reading (b), M1-only events, gives dmPFC 28 ms, p =
-    0.028 and OFC p = 0.36. ACCg, outside the claim, gives 0.30 and 0.13. 13,779 of 19,474 trials
-    fall inside an offline Eyes event under (a), 12,647 under (b); the others are left out.
+    0.028 and OFC p = 0.36. The claim holds for OFC and not for dmPFC. ACCg, outside the claim,
+    gives 0.30 and 0.13. 13,779 of 19,474 trials fall inside an offline Eyes event under (a), 12,647
+    under (b); the 5,695 others under (a) are spread evenly over areas and trial types (27.3% to
+    30.1%; stimulation minus sham per day, dmPFC p = 0.069, OFC 0.58), 4,227 of them fall inside
+    another M1 fixation (2,036 outside the face, 1,600 on the non-eye face), and 609 have an Eyes
+    event starting within 20 ms after the trial. Counting those as the trigger gives dmPFC p = 0.020
+    and OFC 0.58.
   deviations:
   - The triggering fixation is taken as the offline (EyeMMV) Eyes event that contains the trial
     time; the online fixation that triggered the trial is not in the files.
@@ -372,22 +398,75 @@ outcomes:
   - Pupil size is the raw file value (a.u.), averaged within 10-ms bins, without baseline
     correction, as the Methods describe none.
 - claim: fig5cd-saccade-counts-unchanged
-  outcome: blocked
-  blocked_by: not_runnable
-  notes: The files hold fixation events but no saccade events. The paper detects saccades with the
-    unsupervised clustering method of Otero-Millan et al. (2014), distributed as MATLAB code, which
-    cannot run in this entry's locked Python environment; no Python implementation of it was found
-    to substitute without changing the method. The gaze traces needed are in the dataset.
+  outcome: partially_reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:fig5cd-saccade-counts-unchanged
+  notes: With the claims file's reading (a), a microsaccade lying strictly within an M1 fixation,
+    microsaccade counts do not change for OFC (p = 0.069; paper 0.456) or dmPFC (0.89; paper 0.581)
+    and macrosaccade counts do not change for dmPFC (0.24; paper 0.230), but OFC stimulation trials
+    have fewer macrosaccades (median day difference -0.069 per post-gaze epoch, p = 0.044; paper
+    0.055). One of the four tests fails. With the paper's code's labelling, reading (b), none does
+    (smallest 0.15). ACCg, outside the claim, gives p = 0.009 (micro) and 0.004 (macro) under (a).
+    The detector finds 454,642 saccades in the 1,179 social runs (386 per run), median duration 147
+    ms (95th percentile 1,062 ms), median amplitude 13.7 degrees; in one run the gaze velocity inside
+    fixations has a median of 19.7 deg/s and is under the detector's 5 deg/s saccade limit for 5.4%
+    of samples, so many detected saccades span several fixations. In 202 of the 1,179 runs the
+    MATLAB code's merge of overlapping saccades would not pair starts and ends.
+  deviations:
+  - The dataset holds no saccade events. Saccades are detected with a Python port of the
+    Otero-Millan et al. (2014) detector, from the authors' MATLAB code at a pinned commit (inputs),
+    with that code's defaults, called as the paper's code calls it (script/run_saccade_detection.m
+    and script/detect_microsaccades.m at cc0bf994; M1's gaze in degrees from the first valid time
+    sample, passed as both eyes, NaN samples as blinks). The claim is with_inputs for that software,
+    as the claims file says.
+  - The port uses scipy's k-means (Lloyd iterations from the same starting centres) in place of
+    MATLAB's kmeans, and merges overlapping saccades as a union in the 202 runs where the MATLAB code
+    would stop with an error.
+  - The fixations that define a microsaccade are the files' M1 fixations (M1-only and mutual), the
+    EyeMMV events the claims file names; the paper's code detects its own fixations
+    (is_fixation with 20, 10 and 0.03), and its labelling, reading (b), counts a saccade as a
+    microsaccade when its start is at least 50 samples after a fixation's start and before its end
+    (script/label_saccades.m).
 - claim: fig5e-h-saccade-kinematics-unchanged
-  outcome: blocked
-  blocked_by: not_runnable
-  notes: Depends on fig5cd-saccade-counts-unchanged; the saccade detection cannot be run here.
+  outcome: reproduced
+  notebook: reproduce_fan_2024.ipynb
+  output: claim:fig5e-h-saccade-kinematics-unchanged
+  notes: With reading (a) of the macrosaccade, none of the 14 OFC and dmPFC tests gives p below
+    0.05. Peak velocity of the first macrosaccade, OFC p = 0.052 and dmPFC 0.88 (paper 0.848, 1);
+    slope difference against zero 0.70 and 0.59 (paper 0.665, 0.904); permutation 0.28 and 0.19
+    (paper 0.515, 0.164); by direction group the smallest p is 0.071 (OFC CI; paper all above 0.47
+    and 0.31). With the paper's code's labelling, reading (b), 3 of the 14 give p below 0.05 (dmPFC
+    slope difference 0.030, OFC IC 0.048, dmPFC CC 0.037), so the result depends on how microsaccades
+    are told from macrosaccades. 15,961 of 19,474 trials have a first macrosaccade under (a), 11,354
+    under (b).
+  deviations:
+  - Saccades as in fig5cd-saccade-counts-unchanged (a Python port of the Otero-Millan et al. 2014
+    detector, with_inputs). Slopes are least-squares lines over at least 3 saccades per trial type
+    and day; the permutation seed 5 is a standard choice. Hemifields of the saccade's start and end
+    are taken against the centre of roi_m2_face, as for the fixations.
+inputs:
+- what: The Otero-Millan et al. (2014) unsupervised clustering saccade detector (MATLAB), ported to
+    Python in microstim.py for the two saccade claims
+  source: https://github.com/ocular-motor-lab/otero-millan_et_al_microsaccade_detection at commit
+    ce2c10dc6d8c38348b31e479751ac0da8cda6e6e
+- what: The paper's code, read for how it calls the saccade detector and labels microsaccades
+    (script/run_saccade_detection.m, script/detect_microsaccades.m, script/label_saccades.m)
+  source: https://github.com/changlabneuro/microstim-ofc-social-attention at commit cc0bf994
+- what: bfw.px2deg, the pixel to degree conversion the paper's code uses (same factor as the claims
+    file's)
+  source: https://github.com/nfagan/bfw at commit 11bb850f86d047f04e228a5405c765ae2d519764
+- what: The causal decomposition code of Yang, Peng and Huang (2018), read for the steps and
+    settings whose cost is timed (no result computed with it)
+  source: https://github.com/accyang/causal-decomposition-analysis, release file
+    causal_decomposition_20180901.zip
 findings:
 - kind: other
   statement: The dataset holds 6.0 control (Dot) runs per day on average for monkey L (4 to 8; 14 of
     45 days have 8), where the paper reports 5 on average, and 14 social runs on every Eyes day of
     monkey T, where the paper reports 15 on average (14 to 15). Either some runs were not analysed in
-    the paper or the counts in the paper are off; the files do not say which runs the paper used.
+    the paper or the counts in the paper are off; the files do not say which runs the paper used. On
+    the 14 monkey L days with 8 control runs, the runs are numbered 1 to 8, each 295.8 to 296.9 s
+    long with 9 to 32 kept trials, so nothing in the files marks any of them as extra.
 - kind: code_mismatch
   statement: The Methods give the fixation counts of Figure S1E as the total per day, and the paper's
     code takes the mean per session. Because a day has about twice as many social runs as control
@@ -421,3 +500,276 @@ findings:
     consistent with a shared clock of trials and events, and shows that about 30% of online
     triggers do not coincide with an offline fixation in the ROI (65 of 954 social Eyes runs are
     below 50%).
+- kind: metadata_insufficient
+  statement: The fixation tables are named alike but cut the face differently. m1_neface (and
+    m2_neface) is the face outside the Eyes and includes the Mouth (all 23,641 m1_mouth events are
+    in it), while mutual_face is the face outside both the Eyes and the Mouth (mutual_wholeface
+    equals mutual_eye plus mutual_face plus mutual_mouth). The table descriptions do not say so.
+- kind: other
+  statement: The files hold no saccade events. Run on M1's gaze as the paper's code calls it, the
+    Otero-Millan et al. (2014) detector finds 386 saccades per social run with a median duration of
+    147 ms and a 95th percentile of 1,062 ms; the gaze velocity inside fixations (median about 20
+    deg/s in one run) is above the detector's 5 deg/s saccade limit for about 95% of samples, so many
+    detected saccades span several fixations. In 202 of 1,179 social runs, the MATLAB code's merge of
+    overlapping saccades yields unequal numbers of starts and ends, where that code would stop with
+    an error. Whether the paper's gaze was filtered before detection is not stated.
+verifications:
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier tested helper functions on synthetic inputs and checked signrank against a normal approximation. Its report had no attempt record and gave its own outcome for each claim; 35 of 36 agree with the record as it then stood.
+  results:
+  - claim: design-days-per-area
+    agrees: true
+    outcome: reproduced
+    reason: Cell 7 gives 15/15/15 days for L Eyes, 12/12/12 for T Eyes and 5/5/5 for T Mouth. Every count
+      matches.
+    response: No change needed.
+  - claim: design-sessions-per-day
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 9: monkey L has a mean of 6.02 control runs per day, against an expected 5 ± 0.5. Every
+      other mean, range and the duration hold (L social 10.0, range 9–11; T social 14.0, range 14; T control
+      5; about 296 s).'
+    response: 'Added the listing the verifier asked for: the 14 monkey L days with 8 control runs all have
+      runs numbered 1 to 8, each 295.8 to 296.9 s long with 9 to 32 kept trials, so nothing marks any as
+      extra; added to the finding. Outcome kept.'
+  - claim: fig1e-stim-counts-comparable
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 12: the smallest FDR-corrected p is 0.908 for stimulations and 0.942 for shams, so all
+      exceed 0.90.'
+    response: No change needed.
+  - claim: figs1d-stim-counts-nonsocial
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 13: no corrected p is below 0.05. Not all exceed 0.10, though: shams between monkeys give
+      corrected p = 0.082 (OFC and dmPFC).'
+    response: No change needed; the notes already say the paper's all p > 0.10 does not hold for two sham
+      tests.
+  - claim: figs1e-eyes-more-than-face
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 16: under both readings and both event sets, the corrected p ranges from 1.1e-7 to 4.4e-5,
+      which is below 10^-4. Eyes are higher in every case.'
+    response: Following the verifier's question on the mutual tables, the notebook now shows that mutual_face
+      excludes the Mouth while m1_neface includes it, and the non-eye Face count adds mutual_mouth for mutual
+      events. Corrected p now 1.1e-07 to 3.1e-05. Outcome kept.
+  - claim: figs1e-eyes-vs-rdm-comparable
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 17: under the deciding reading (a, the day''s total), Eyes exceed RDM with corrected p
+      of 0.0004, 0.00003 and 0.0004. Reading (b, the mean per run) gives p of 0.40–0.52. The deciding reading
+      (a) compares day totals over 10–15 social runs with totals over about 5 control runs, which is bound
+      to differ; the paper''s all p > 0.30 fits only reading (b). This looks like a misreading in the claims
+      file (B1).'
+    response: Added the question to questions/000959.yaml for a reader, as the protocol asks, and said so
+      in the notebook and the notes. The claim is tested as the claims file has it; outcome kept.
+  - claim: fig2a-density-map-ofc
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 21: the OFC stimulation-minus-sham sum is positive in the Face and in the Eyes, under
+      both normalisations (z-score 7.47 and 3.71; total 0.0093 and 0.0046). The x-axis label is reversed
+      for monkey L (B7), and the ROI masks use the first social run of each day while distances use each
+      run''s own ROIs; three recalibrated days are affected (B8).'
+    response: Corrected the axis label (negative is ipsilateral for both monkeys). The ROI squares are now
+      those inside the ROI of every social run of the day; the notebook prints that the three recalibrated
+      days are dmPFC and ACCg days, so the OFC sums are unchanged. Outcome kept.
+  - claim: fig2c-ofc-social-gaze-distance
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 23, Methods reading: combined p = 0.00021, L p = 0.0067, T p = 0.016, all with negative
+      medians.'
+    response: No change needed. The sanity cell now prints the range of all trial and event times (13.8
+      to 9,955 s), which confirms the 1e6 s run offset in window_pairs is valid (B12).
+  - claim: fig2c-dmpfc-accg-no-distance-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 25: dmPFC p = 0.21, ACCg p = 0.39.'
+    response: No change needed.
+  - claim: fig2e-ofc-contralateral
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 28, Methods reading: contralateral p = 0.00048 (negative), ipsilateral p = 0.058, contralateral
+      vs ipsilateral p = 0.046 with contralateral more negative. Per monkey: L 0.018/0.073, T 0.012/0.30,
+      against the paper''s 0.015/0.073 and 0.012/0.204.'
+    response: No change needed.
+  - claim: fig2e-dmpfc-accg-no-hemifield-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 29: all six p are 0.10 or higher.'
+    response: No change needed.
+  - claim: fig2f-nonsocial-no-distance-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 31: OFC 0.22, dmPFC 0.64, ACCg 0.50.'
+    response: No change needed.
+  - claim: fig2gh-nonsocial-no-hemifield-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 32: all nine combined tests give p of 0.16 or higher.'
+    response: No change needed.
+  - claim: methods-ofc-distance-longer-windows
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 34, Methods reading. 2 s: combined 0.003, L 0.012, T 0.23. 3 s: combined 0.003, L 0.007,
+      T 0.20.'
+    response: No change needed.
+  - claim: methods-ofc-no-change-in-fixation-number
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 37, reading (a): no per-monkey test is below 0.05 (smallest 0.121). The combined two-monkey
+      whole-Face count at 1.5 s changes with OFC stimulation (p = 0.025), outside the per-monkey criterion
+      and not reported by the paper (B9).'
+    response: No change needed; the notes already report the combined p = 0.025 as outside the claim.
+  - claim: methods-ofc-longer-face-looking
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 39 (a): all the tests hold (OFC whole Face 0.0025, dmPFC 0.80, ACCg 0.93, OFC Eyes 0.039).
+      Under the median reading the combined (52.8 ms) and monkey L (65.1 ms) differences fall within tolerance,
+      but monkey T''s (46.2 ms, against 39.5 ± 3.95) does not. Under the mean reading none of the three
+      falls within tolerance.'
+    response: No change needed.
+  - claim: methods-mouth-stimulation-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 41: 0 of 27 tests give p < 0.05, and the values are close to the paper''s. With 5 days
+      this test cannot fall below 0.0625, so it is uninformative (B11).'
+    response: No change needed; the notes already say the test cannot reach 0.05 with 5 days.
+  - claim: methods-eyes-vs-mouth-bootstrap
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 43: the contralateral test over all Eyes days gives p = 0.078 (a) or 0.156 (b), robust
+      across seeds (0.059–0.070). Both hemifields combined gives 0.043 (a), where the paper has 0.799, so
+      the pattern is inverted. Neither reading satisfies the rule. The bootstrap runs only the Methods fixation
+      reading; under the code''s M1-only reading the gap is larger, so the variant might differ (B4).'
+    response: 'Added the bootstrap under the code''s M1-only fixations: contralateral p = 0.049 (a) with
+      all days (0.040 to 0.049 over five seeds) and 0.006 with monkey T, ipsilateral 0.30 and 0.35, both
+      hemifields 0.050 and 0.036. It does not give the paper''s pattern either. Outcome kept.'
+  - claim: fig3b-ofc-inter-looking-interval
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 47: OFC p = 0.044 (stimulation shorter), dmPFC 0.77, ACCg 0.34. OFC p = 0.044 depends
+      on excluding events that start at the trial sample (91 trials); counting them gives p = 0.058. The
+      strict choice follows the criterion, but the result sits at the threshold (B5).'
+    response: No change needed; the notes and the conclusion already give p = 0.058 when those events count,
+      and the question is put to the paper's authors in the findings.
+  - claim: ili-nonsocial-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 49: OFC 0.70, dmPFC 0.13, ACCg 0.84.'
+    response: No change needed.
+  - claim: ili-missing-trials-41
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 51: 41.3% under reading (a) and 39.9% under (b), both within 41 ± 4.1.'
+    response: No change needed.
+  - claim: figs3b-ili-trial-level
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 54: OFC p = 0.017 (stimulation shorter), dmPFC 0.39, ACCg 0.62.'
+    response: No change needed.
+  - claim: figs3c-reciprocation-day-level-none
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 58: OFC 0.11, dmPFC 0.56, ACCg 0.32. Trials with no sequence: 86.4% (a) and 85.1% (b),
+      both within 86 ± 8.6.'
+    response: No change needed.
+  - claim: fig3d-ofc-reciprocation-latency
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 60: OFC p = 0.023 (stimulation shorter), dmPFC 0.72, ACCg 0.36.'
+    response: No change needed. The tie rule in reciprocation (B13) is recorded as a standard choice in
+      the deviations of figs3c-reciprocation-day-level-none.
+  - claim: partner-monkey-unchanged
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 62: under reading (a) of the M2 reciprocation latency, dmPFC gives p = 0.044. The criterion
+      needs no p < 0.05 under every reading. The distance and inter-looking-interval tests, and reading
+      (b), all hold.'
+    response: No change needed.
+  - claim: figs4a-causal-strength-no-stim-effect
+    agrees: true
+    outcome: blocked
+    reason: Cell 66 estimates 680 CPU hours with PyEMD. That is plausible, but the estimate times one 100-ensemble
+      single-threaded run multiplied by 10, applies it to all 19,474 social trials, never times reading
+      (b), and does not consider running in parallel or a faster EMD implementation; too_large is plausible
+      but not demonstrated (B3).
+    response: 'Replaced the estimate: one EEMD at 1,000 ensembles with the Yang code''s 10 fixed sifts is
+      timed directly on one core (18.3 s) and on four processes (9.2 s). Reading (b), the Yang code''s settings,
+      needs 1,000 ensembles as well (the code has no default; its example uses 1,000), so both readings
+      cost the same. The notebook gives CPU and wall hours per subset (every social trial about 1,590 CPU
+      hours; the 2,250 OFC epoch trials about 183) and a floor for a compiled implementation at 10 microseconds
+      per spline envelope (12 to 104 CPU hours). Outcome kept, blocked as too_large.'
+  - claim: figs4b-causal-strength-no-epoch-effect
+    agrees: true
+    outcome: blocked
+    reason: 'Same as figs4a-causal-strength-no-stim-effect: too_large is plausible but not demonstrated
+      (B3).'
+    response: As for figs4a-causal-strength-no-stim-effect. Outcome kept.
+  - claim: epoch-days-76-of-81
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 64, reading (a): 76 days, and the five excluded are exactly the dates the code names.'
+    response: No change needed.
+  - claim: ofc-slope-unchanged-by-epoch
+    agrees: true
+    outcome: blocked
+    reason: Same as figs4a-causal-strength-no-stim-effect. The epoch and slope claims need only the first
+      90 stimulation trials per day, about 6,840 trials over 76 days, or about 2,430 for the OFC days alone
+      (B3).
+    response: 'The notebook now costs this subset: the 2,250 stimulation trials of the 25 OFC epoch days
+      take about 183 CPU hours (92 hours of wall time on four processes, about 12 CPU hours at the compiled
+      floor), beyond the one-hour limit. Outcome kept.'
+  - claim: fig4c-dmpfc-slope-late-greater
+    agrees: true
+    outcome: blocked
+    reason: Same as figs4a-causal-strength-no-stim-effect (B3).
+    response: Costed per subset as for ofc-slope-unchanged-by-epoch (dmPFC days about 183 CPU hours, ACCg
+      about 191). Outcome kept.
+  - claim: fig4d-dmpfc-slope-permutation
+    agrees: true
+    outcome: blocked
+    reason: Same as figs4a-causal-strength-no-stim-effect (B3).
+    response: Costed per subset as for ofc-slope-unchanged-by-epoch. Outcome kept.
+  - claim: dmpfc-slope-positive
+    agrees: true
+    outcome: blocked
+    reason: Same as figs4a-causal-strength-no-stim-effect (B3).
+    response: Costed per subset as for ofc-slope-unchanged-by-epoch. Outcome kept.
+  - claim: fig5a-trigger-duration-unchanged
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cell 68: OFC holds (p = 0.61 / 0.36), but dmPFC triggering fixations are longer after stimulation
+      under both readings (p = 0.019 / 0.028; paper 0.269). 29% of trials (5,695 of 19,474) have no M1 Eyes
+      event in progress at the trial time; this selection is left uninvestigated, and the failing dmPFC
+      test depends on it (B6).'
+    response: 'Changed the outcome from not_reproduced to partially_reproduced: the claim of absence holds
+      for OFC and fails for dmPFC, so it holds in part. Added the breakdown asked for: the trials with no
+      Eyes event in progress are spread evenly over areas and trial types (27.3% to 30.1%; per day stimulation
+      minus sham, dmPFC p = 0.069), 4,227 of them fall inside another M1 fixation and 609 have an Eyes event
+      starting within 20 ms after the trial; counting those leaves dmPFC p = 0.020.'
+  - claim: fig5b-pupil-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 70: 0 of 70 bins below 0.05 in each area (smallest p: 0.31, 0.51, 0.11).'
+    response: No change needed.
+  - claim: fig5cd-saccade-counts-unchanged
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no saccade events; gaze at 1 kHz is present, so the claim could be tested
+      after an Otero-Millan detection run. The notebook's reason, not_runnable, is not an allowed reason.
+      The claims file prescribes a with_inputs run, the detection software is public, and this was not attempted
+      or costed (B2).
+    response: 'not_runnable is one of the protocol''s block reasons, but the claim is now tested: the detector''s
+      MATLAB code (pinned commit) is ported to Python and called as the paper''s own code calls it, with
+      the sanity cell listing the groups of a file (no saccade or processing tables). Outcome changed from
+      blocked to partially_reproduced: under the claims file''s reading, OFC macrosaccades are fewer after
+      stimulation (p = 0.044; paper 0.055), the other three tests hold; under the paper''s code''s labelling
+      none fails.'
+  - claim: fig5e-h-saccade-kinematics-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Same as fig5cd-saccade-counts-unchanged (B2).
+    response: Tested with the same detector; outcome changed from blocked to reproduced under the claims
+      file's reading (0 of 14 tests below 0.05); the paper's code's labelling gives 3 of 14.

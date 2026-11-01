@@ -11,7 +11,7 @@ pupil of both monkeys at 1 kHz, the stimulation and sham times, the day's ROIs a
 | Days per area, runs per day | Reproduced; partially reproduced (monkey L has 6.0 control runs per day, not 5) |
 | Stimulation and sham counts comparable across areas and monkeys (social, control) | Reproduced |
 | More fixations on the Eyes than on the non-eye Face | Reproduced |
-| Eyes fixations comparable to RDM fixations | Not reproduced under the Methods' day total; comparable under the code's mean per run |
+| Eyes fixations comparable to RDM fixations | Not reproduced under the Methods' day total; comparable under the code's mean per run (asked of a reader) |
 | OFC density map more clustered around the partner | Reproduced |
 | OFC lowers social gaze distance, not dmPFC or ACCg; stronger contralaterally; none in the control condition; longer windows | Reproduced |
 | No change in fixation number; longer whole Face looking after OFC stimulation | Reproduced; partially reproduced (tests hold, values in part) |
@@ -21,9 +21,10 @@ pupil of both monkeys at 1 kHz, the stimulation and sham times, the day's ROIs a
 | Partner monkey unchanged | Partially reproduced (one reading of M2's reciprocation latency gives dmPFC p = 0.044) |
 | 76 of 81 days with at least 90 stimulations | Reproduced, with the five named days |
 | Causal decomposition and epoch slopes (six claims) | Blocked: too large |
-| Trigger fixation duration unchanged | Not reproduced (dmPFC p = 0.019) |
+| Trigger fixation duration unchanged | Partially reproduced (OFC unchanged; dmPFC p = 0.019) |
 | Pupil unchanged | Reproduced |
-| Saccade counts and kinematics (two claims) | Blocked: not runnable (MATLAB detection, no saccades in the files) |
+| Saccade counts unchanged (with outside software) | Partially reproduced (OFC macrosaccades p = 0.044, paper 0.055) |
+| Saccade kinematics unchanged (with outside software) | Reproduced |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -31,4 +32,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000959-fan-2024-01.yaml`](../../attempts/000959-fan-2024-01.yaml). `microstim.py` reads
 each run into small tables (trials, fixation events with positions and hemifields, pupil traces)
-and holds the measures.
+and holds the measures, including a Python port of the Otero-Millan et al. (2014) saccade
+detector (github.com/ocular-motor-lab/otero-millan_et_al_microsaccade_detection at ce2c10dc), called
+as the paper's own code calls it; the files hold no saccade events, so the two saccade claims use
+that outside software.
