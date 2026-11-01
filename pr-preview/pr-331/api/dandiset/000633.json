@@ -1,0 +1,418 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000633",
+  "label": "DANDI:000633"
+ },
+ "page": "datasets/dandi/000633/",
+ "generated": "2026-11-01T21:17:28+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 2,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 5
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 4
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000633-kim-2023-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000633",
+    "version": "0.231013.2226",
+    "doi": "10.48324/dandi.000633/0.231013.2226"
+   },
+   "key": "dandi:000633",
+   "label": "DANDI:000633",
+   "dataset_version": "0.231013.2226",
+   "paper": "10.3390/ijms241310921",
+   "paper_title": "Control of the Electroporation Efficiency of Nanosecond Pulses by Swinging the Electric Field Vector Direction",
+   "date": "2026-10-31",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-12"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41173956226"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000633-kim-2023",
+   "entry_title": "Focal electroporation by swinging the field vector in a triangular electrode array (Kim et al. 2023)",
+   "description": "Tests the findings of Kim, Semenov, Kiester, Keppler, Ibey, Bixler, Colunga Biancatelli and Pakhomov (2023) on dandiset 000633, which holds the two whole-dish YO-PRO-1 images of the paper's Figure 4, a BPAE monolayer after five single pulses and one after five paired pulses applied in alternation to the base electrodes of a triangular array. It compares the uptake with a computed field map, near each electrode, and in the shape of the electroporated region. The data of Figures 2, 3 and 5 are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_kim_2023.ipynb",
+     "title": "Reproducing Kim et al. (2023) from dandiset 000633",
+     "executed": "notebooks/000633-kim-2023/reproduce_kim_2023.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig2-cancellation-at-180",
+     "statement": "At a 180 degree change of field direction, trains of paired pulses electroporate less than trains of single pulses, about 2-fold less at 1 Hz and about 20-fold less at 833 kHz, so cancellation is stronger at the higher rate.",
+     "source": "Results, Section 2.1, paragraph 2; Figure 2",
+     "quote": "Maximum cancellation was expectedly observed at the 180\u00b0 vector change, reducing YP uptake compared to single-pulse trains 2-fold at 1 Hz and as much as 20-fold at 833 kHz",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "The 32-ROI measurements of Figure 2 (n = 3 at each of 1 Hz and 833 kHz) are not in the dandiset, which holds only the two images of Figure 4; there are no 1 Hz data at all. The per-ROI angles of the Sim4Life simulation are not deposited either. For information only, the notebook computes an 833 kHz curve from the two Figure 4 images (one dish each, angles from a field map computed here). The ROI nearest the base (168.7 degrees) gives 17.2% of the single-pulse uptake, 5.8-fold weaker, and a quadratic fit over angles above 140 degrees gives 25.6% at 180 degrees, against the paper's 20-fold. These images are not the paper's Figure 2 data and decide nothing.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-crossover-angle",
+     "statement": "As the angle falls from 180 degrees, cancellation weakens, and paired-pulse trains equal single-pulse trains at about 160 degrees at 1 Hz and about 130 degrees at 833 kHz.",
+     "source": "Results, Section 2.1, paragraph 2; Figure 2",
+     "quote": "Cancellation weakened as the angle was reduced, and at about 160\u00b0 (1 Hz) or 130\u00b0 (833 kHz), the effects of paired-pulse trains became the same as those of single-pulse ones",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "Depends on fig2-cancellation-at-180 and needs the Figure 2 data, which are not deposited (no 1 Hz data at all). For information only, the 833 kHz curve from the Figure 4 images crosses 100% at 128.4 degrees by linear interpolation, and again at 123.7 and 120.4 degrees, as the single-pulse uptake falls near background toward the apex.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-facilitation-plateau",
+     "statement": "Below the crossover, paired pulses facilitate electroporation, up to about three times the single-pulse effect at 90 to 100 degrees at both rates, and the effect then stays on a plateau down to 0 degrees.",
+     "source": "Results, Section 2.1, paragraph 2; Figure 2; Discussion, paragraph 1",
+     "quote": "Further reduction of the angle enhanced electroporation, up to about three-fold at 90\u2013100\u00b0 for both nsEP frequencies, followed by a plateau all the way to 0\u00b0",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "Depends on fig2-cancellation-at-180 and needs the Figure 2 data, which are not deposited. For information only, the 833 kHz curve from the Figure 4 images has one ROI in 90 to 100 degrees, at 378%, and the 11 ROIs below 90 degrees have a mean of 1460% and a median of 741%; single-pulse uptake there is 4.3 to 169.5 above background, so the ratio is unstable.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-60-fold-co-counter",
+     "statement": "At 833 kHz co-directional pulse pairs electroporate about 60 times more than counter-directional ones.",
+     "source": "Results, Section 2.3, paragraph 1; Figure 2",
+     "quote": "The profound, 60-fold difference in electroporation efficiency of co- and counter-directional nsEPs at 833 kHz",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "Depends on fig2-cancellation-at-180 and fig2-facilitation-plateau, both blocked, and needs the Figure 2 data at 833 kHz, which are not deposited. For information only, the Figure 4 images give a ratio of 85 (plateau mean over the 180 degree value) or 56 (ROI nearest 0 degrees, at 11.4 degrees), resting on single-pulse values near background.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-1hz-co-cross-same",
+     "statement": "At 1 Hz, paired pulses that keep their direction and pairs whose second pulse turns by 90 degrees electroporate the cell monolayer equally.",
+     "source": "Results, Section 2.2, paragraph 1; Figure 3",
+     "quote": "Consistently with the measurements in Figure 2 , co- and cross-directional pulses at 1 Hz had the same electroporation efficiency",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No image from the square four-electrode array of Figure 3 is in the dandiset; both images show three footprints in a triangle. The single-pulse file's session description gives the settings of a Figure 3 experiment (co-directional pairs, 770 kHz, 10 kV/cm), but its image is a triangular array with the pattern of Figure 4A.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-770khz-co-enhanced",
+     "statement": "Raising the rate to 770 kHz increases electroporation by co-directional pulse pairs, through temporal summation of the induced membrane potential.",
+     "source": "Results, Section 2.2, paragraph 1; Figure 3",
+     "quote": "Increasing the pulse frequency to 770 kHz enhanced electroporation by the co-directional pulses because of the temporal summation of the induced membrane potential",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The Figure 3 data (n = 6 per group, square array) are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-770khz-cross-same-as-1hz",
+     "statement": "Cross-directional pulse pairs at 770 kHz are as effective as at 1 Hz, so charging two different regions of the membrane does not summate.",
+     "source": "Results, Section 2.2, paragraph 1; Figure 3",
+     "quote": "Interestingly, charging two different regions of the cell membrane did not cause summation, making cross-directional pulses at 770 kHz just as effective as at 1 Hz",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The Figure 3 data (n = 6 per group, square array) are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4a-single-pulse-follows-field",
+     "statement": "Under a train of five single pulses applied to one base electrode (833 kHz, 4 kV), YP uptake is distributed as the electric field strength map.",
+     "source": "Results, Section 2.3, paragraph 1; Figure 4A",
+     "quote": "In control cell monolayers exposed to a train of five single pulses applied to one of the base electrodes (833 kHz, 4 kV), the distribution of YP fluorescence ( Figure 4 A) simply followed the electric field strength map",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "Over 2627 ROIs of 200 um within 6 mm of the image centre, with E1 taken as the lower-right base electrode (base_a), as Figure 4A labels it, background-subtracted YP and the computed field have Spearman rho = 0.666 (p printed as 0 for the full grid, which treats contiguous ROIs as independent). On ROIs thinned to 1 mm spacing rho = 0.666 (p = 9.3e-15, 105 ROIs), and to 2 mm rho = 0.654 (p = 0.00053, 24 ROIs). The order of the three electrode neighbourhoods (0 to 500 um from the footprint edge) is the same by YP (base_a 649.8, base_b 262.6, apex 82.2) and by field (12.88, 7.38, 5.31 kV/cm). Across grid radii of 5 and 6 mm, margins of 150 and 400 um and neighbourhoods of 250, 500 and 1000 um, rho is 0.640 to 0.746 and the order always matches; p at 1 mm spacing is 2.7e-8 or less, and at 2 mm spacing below 0.05 in 8 of 10 variants (0.095 in the two with a 5 mm grid and a 400 um margin, 12 ROIs). With E1 taken as the other base electrode, rho is 0.424 to 0.510 (0.397 to 0.643 at 2 mm spacing, p up to 0.054) and the order never matches, so the criterion's two readings would disagree. Where Figure 4A places E1 is not shown in the notebook, so the assignment rests on the uptake (base_a has the most); the outcome also rests on this file being the image of Figure 4A, which its session description contradicts (findings). The question of which electrode was E1 is put to the paper's authors (findings). Outside the entry, the author of this revision mapped the deposited images onto the published Figure 4 image (PMC10341945) through the three electrode centres; the registry's checks keep a published figure out of the notebook, so this is not shown there and is not verified. The paired-pulse file matched Figure 4B in fine detail, turned by 180 degrees and not mirrored (correlation of fine detail 0.18, 0.34 after a one-pixel shift); the single-pulse file did not match Figure 4A in either orientation (at most 0.03 over shifts, rotations and scalings of the map, the level of mismatched pairs). If that holds, the image of Figure 4A is not deposited and the claim would be blocked (data missing); no change is proposed, as the analysis cannot be in the notebook.",
+     "deviations": [
+      "The field map is computed here by a two-dimensional finite-difference solve (40 um grid, electrodes as 1.5 mm discs of fixed potential, insulating wall of a 35 mm dish centred on the image centre), in place of the paper's Sim4Life model (Methods 4.3, \"1.6 S/m solution to a depth of 3.5 mm\", field \"in the plane 1 um above the glass\"). The needles span the solution from the glass up (Methods 4.2, \"lowered ... until the tips touched the glass bottom\"), so the field does not vary with height. Electrode positions are measured in the image, and the scale is set from the 1.5 mm needle diameter (Methods 4.2); it gives 0.654 um per pixel, the camera's 0.65.",
+      "Assumed that E1, the electrode pulsed in Figure 4A, is the lower-right base electrode of the file's image (base_a). The file does not record it, and the paper's text does not place it (the Figure 4 legend says only that the panels are shown \"with electrode positions labeled\"). The published panel A has the apex at the top and E1 at the lower right, as the deposited image has the apex at the top, but that is not shown in the notebook, and the deposited images do not keep one orientation (the paired-pulse image has its apex at the bottom). base_a is also the base electrode with the most uptake (with E1 = base_b the grounded electrode would show 2.5 times the uptake of the pulsed one), so the assignment rests on the uptake. The notebook shows both assignments.",
+      "The single-pulse file is taken as the image of Figure 4A from its name, the dandiset's title (the Figure 4 legend) and its layout (three electrodes in a triangle, uptake around one base electrode). Its session description gives another exposure (four co-directional paired-pulse trains at 770 kHz, 10 kV/cm, \"the electric field direction stayed the same in each pair\"). It does not say which electrodes were energized; that the field came from one base electrode is an inference from the uptake around one of them.",
+      "The ROI grid (within 6 mm of the image centre, leaving out ROIs within 150 um of a footprint edge) and the neighbourhood (0 to 500 um from the footprint edge) are choices the claims file does not fix; the notebook shows 5 and 6 mm, 150 and 400 um, and 250, 500 and 1000 um, and the outcome is the same under all of them. The Spearman test is also run on ROIs thinned to 1 and 2 mm spacing, as contiguous ROIs are spatially dependent.",
+      "The amplitude is taken as 4 kV (Section 2.3); the file's description says 2 kV. A rank correlation and an order do not depend on the amplitude."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4bc-paired-pulse-focal-apex",
+     "statement": "Under five paired pulses applied to the two base electrodes in alternation (833 kHz, 4 kV), electroporation is strong near the grounded apex electrode and weak or absent near the base electrodes, despite the strong field there.",
+     "source": "Results, Section 2.3, paragraph 1; Figure 4B,C; Discussion, paragraph 2",
+     "quote": "energizing two base electrodes in alternation (five paired pulses, 600 + 600 ns, 833 kHz, 4 kV) produced a strong effect near the apex electrode (ground) but weak or no effect near the base electrodes, despite the strong electric field there",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "In the paired-pulse image, background-subtracted YP in the ROI 100 um outside the footprint edge is 843.9 at the apex against 255.3 and 104.1 at the base electrodes (apex/base 3.31 and 8.11), and 500 um outside it is 725.7 against 269.6 and 119.0 (2.69 and 6.10). In the single-pulse image the apex/base ratios are 0.051 and 0.096 at 100 um and 0.156 and 0.200 at 500 um, so the ratio is higher in the paired-pulse image under both readings. Without background subtraction the order is the same (apex 1035.8 against 447.2 and 296.0 at 100 um). The computed field near each base electrode during its own pulse (19.6 and 20.0 kV/cm at 100 um, at 4 kV) is more than twice that near the apex (8.4 to 9.0), which is the \"despite the strong field there\" of the statement. The single-pulse half of the contrast rests on that file being the image of Figure 4A, which its session description contradicts (findings); the outcome is flagged as resting on that assumption. Outside the entry, the author of this revision mapped the deposited images onto the published Figure 4 image (PMC10341945) through the three electrode centres; the registry's checks keep a published figure out of the notebook, so this is not shown there and is not verified. The paired-pulse file matched Figure 4B in fine detail, turned by 180 degrees and not mirrored (correlation of fine detail 0.18, 0.34 after a one-pixel shift); the single-pulse file did not match Figure 4A in either orientation (at most 0.03 over shifts, rotations and scalings of the map, the level of mismatched pairs). If that holds, the image of Figure 4A is not deposited and the claim, whose criterion needs the single-pulse image of Figure 4A, would be blocked (data missing); no change is proposed, as the analysis cannot be in the notebook.",
+     "deviations": [
+      "The array centre, toward which the ROIs are placed, is taken as the centroid of the three electrode centres; the claims file says \"toward the array center\" without defining it.",
+      "The footprint edge is placed 750 um from the fitted footprint centre (the needle radius, Methods 4.2) in both images. The single-image footprints have soft edges and fit to diameters of 1.03 to 1.40 mm (edge s.d. 128 to 144 um, against 33 to 99 um in the paired-pulse image); only their centres are used, and the notebook shows the fits up close.",
+      "Assumed that the single-pulse file is the image of Figure 4A, as for fig4a-single-pulse-follows-field. The criterion compares the paired-pulse image with \"the single-pulse image of Figure 4A\", and the file's session description gives another exposure."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-comet-shape",
+     "statement": "Under paired pulses the electroporated cells form a comet-shaped region pointing from the apex electrode towards the base.",
+     "source": "Discussion, paragraph 2; Figure 4B,C",
+     "quote": "The electroporated cells formed a comet-shaped region pointing from the apex electrode towards the base",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "The literal maximum of the 200 um mean of background-subtracted YP (3999) lies on one object 2468 um from the apex centre. At full resolution it is a blurred disc about 105 um across (8688 um2), bright in both channels (YP median 14577, MemBrite median 5266, against 305 and 255 around it), likely debris above the monolayer. With it, the regions above half and a quarter of the maximum are empty and the claim fails under both readings. With the objects whose MemBrite exceeds 10 times the dish median left out (0.54% of the region), the literal maximum is 1063, 1063 um from the apex, and the region touches the apex footprint and reaches further toward the base than across the bisecting line at half (1755 against 1315 um) and at a quarter (3929 against 1749 um); thresholds of 5 and 20 times give the same. At half maximum the full extent of these regions along the line is smaller than across it (2446 against 2592 um at 10 and 20 times, 2446 against 2473 um at 5 times); at a quarter maximum it is larger (5218 against 3368 um). The 99.5th percentile of the 200 um mean (737; half 2935 against 1607 um, quarter 4127 against 2269 um) and the maximum of a 200 um median filter (632; half 2603 against 1248 um, quarter 4002 against 2064 um) agree. No region touches a base footprint.",
+     "deviations": [
+      "Assumed that objects bright in the MemBrite channel are not part of the electroporated monolayer, and their pixels are left out before the maximum is taken (0.54% of the region at 10 times the dish median, several objects). MemBrite stains all cell membranes about evenly (dish median 257); the object under the literal maximum is about 20 times brighter in it, larger than a cell and out of focus. The rule (MemBrite above 10 times the dish median, grown by 30 um) is a choice; 5 and 20 times are shown and give the same, as do two maxima robust to single objects (99.5th percentile, median filter). The paper gives no measure for this finding.",
+      "The 200 um mean is taken over pixels outside the footprints and inside 6 mm of the image centre only (normalised convolution), so that the dark footprints and image corners do not enter it. The median filter is not masked.",
+      "The criterion's further toward the base than across is measured from the apex centre, as the reach along the bisecting line toward the base against the largest distance across it. The extents along and across the line are shown too. They agree with it at a quarter maximum and in the 99.5th-percentile and median-filter versions, but not at half maximum in the versions without bright objects, on which the outcome rests. There the extent along the line is smaller than across it (2446 against 2592 um at 10 and 20 times, 2446 against 2473 um at 5 times), and the region is a blob around the apex footprint about as wide as it is long. The pass at half maximum depends on the reach measure."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-base-sawtooth",
+     "statement": "Cells between the base electrodes show sawtooth changes of membrane potential in step with the alternating pulses, about a 10% rise of FluoVolt emission at the cathode-facing pole and a 10% fall at the anode-facing pole.",
+     "source": "Results, Section 2.4, paragraph 2; Figure 5",
+     "quote": "Cells placed between the base electrodes displayed sawtooth-like changes in membrane potential in synchrony with the applied pulses ... Depolarization at the cathode-facing pole of the cell manifested as a ~10% emission increase, and hyperpolarization at the anode-facing pole caused a ~10% emission decrease",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The strobe images of FluoVolt-loaded CHO cells (220 photos per plot, 5 cells, Figure 5) are not in the dandiset, which holds only BPAE monolayer images.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-apex-larger-polarization",
+     "statement": "Cells near the apex reach a polarization of about 25% FluoVolt emission change, more than twice that between the base electrodes, which follows the envelope of the train and not its individual pulses.",
+     "source": "Results, Section 2.4, paragraph 2; Figure 5",
+     "quote": "In stark contrast, the cells near the apex reached a much higher polarization (~25% change in FluoVolt emission), which followed the envelope of the pulse train but not the individual pulses of it",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig5-base-sawtooth; the strobe imaging data of Figure 5 are not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds only the two whole-dish images of Figure 4. The ROI measurements of Figure 2 (n = 3 at 1 Hz and at 833 kHz), the square-array experiments of Figure 3 (n = 6 per group) and the strobe imaging of Figure 5, on which the paper's quantitative findings rest, are not deposited, nor is the field simulation of Methods 4.3 that gives each ROI its angle. Nine of the twelve claims cannot be tested.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "format_error",
+     "statement": "Each image is stored as an ImageSeries with data of shape (22323, 22323, 2) and a rate of 2 Hz. NWB reads the first axis of an ImageSeries as time, so a standard reader sees 22323 frames of 22323 x 2 pixels; the data are one stitched image of 22323 x 22323 pixels in two channels.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "No pixel size, channel names or intensity unit (unit \"n.a.\") are stored. The channel order comes only from the free-text description, and the scale only from the needle diameter in the paper (0.654 um per pixel, which matches the camera and objective named in the description). The file does not say which base electrode was pulsed in the single-pulse image (E1 in Figure 4A).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The session description of Single-pulse_trains describes another experiment (\"4 co-directional paired-pulse (600 + 600 ns) trains ... 770 kHz, amplitude 10 kV/cm\"), the settings of Figure 3, while its image shows a triangular array with the single-pulse pattern of Figure 4A.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The session description of Paired-pulse_trains gives an amplitude of 2 kV; the paper gives 4 kV for both Figure 4 images (Section 2.3). With the array measured in the image, a field model gives 4.2 to 9.7 kV/cm on the bisecting line at 4 kV, close to the 5 to 10 kV/cm of Section 2.1, and half that at 2 kV.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The image description says the tiles came from a six-well plate, where the paper used 35 mm glass-bottom dishes; the subject age is P1D for a cell line, and each subject is a condition (Single-pulse_trains, Paired-pulse_trains), not an animal or culture.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Questions for the paper's authors. (1) Is the deposited file Single-pulse_trains the image of Figure 4A, despite its session description (four co-directional pairs at 770 kHz), and which of its base electrodes is E1, the one pulsed? This attempt took it as Figure 4A and E1 as the lower-right base electrode (base_a), which has the most uptake. Compared outside the entry with the published figure, the file did not match Figure 4A in fine detail, while the paired-pulse file matched Figure 4B turned by 180 degrees. If Figure 4A's image is another file, can it be deposited? (2) How was the agreement of uptake with the field map (Figure 4A) and the comet-shaped region (Figure 4B,C) judged? The paper gives no measure; this attempt used rank correlation, the order of electrode neighbourhoods, and thresholds of half and a quarter of a maximum taken after leaving out objects bright in the membrane stain, likely debris.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The brightest YP in the paired-pulse image lies on one object about 105 um across, 2.5 mm from the apex electrode, bright in both channels (median 14577 in YO-PRO-1 and 5266 in MemBrite, against about 305 and 255 in the monolayer around it) and out of focus, likely debris above the monolayer. A maximum taken over the image without leaving it out is about four times the brightest uptake of the monolayer.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-31",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The executed notebook of the first run with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's full text. The verifier queried the archive's asset list, tested the helper functions on synthetic inputs (fit_circle, vector_angle, roi_mean, label_electrodes, find_footprints, solve_potential) and inspected the comet maximum in the binned image. Report in transcripts/000633/verifier-1-report.md.",
+     "agreed": 11,
+     "of": 12,
+     "disagreements": [
+      {
+       "claim": "fig4-comet-shape",
+       "outcome": "partially_reproduced",
+       "reason": "With the maximum taken literally as the claims file states it (3999), the region fails at both thresholds. With the 99.5th-percentile or median-filter maximum it passes at both. The literal maximum comes from one hotspot (binned YP 26996 against a 99.9th percentile of 2953) that the notebook never examines (problem 3); it looks like debris or saturation, but no crop of it and no MemBrite channel there are shown, and the two alternative maxima are the author's own choices that the outcome depends on. Smoothing runs before masking (problem 7)."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-31",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the second run, with its conclusions and summary, the helper module, the attempt record, the README and the claims file, with the paper's full text. Report in transcripts/000633/verifier-2-report.md.",
+     "agreed": 12,
+     "of": 12,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000633-kim-2023",
+   "type": "reproduction",
+   "title": "Focal electroporation by swinging the field vector in a triangular electrode array (Kim et al. 2023)",
+   "description": "Tests the findings of Kim, Semenov, Kiester, Keppler, Ibey, Bixler, Colunga Biancatelli and Pakhomov (2023) on dandiset 000633, which holds the two whole-dish YO-PRO-1 images of the paper's Figure 4, a BPAE monolayer after five single pulses and one after five paired pulses applied in alternation to the base electrodes of a triangular array. It compares the uptake with a computed field map, near each electrode, and in the shape of the electroporated region. The data of Figures 2, 3 and 5 are not in the dandiset.",
+   "datasets": [
+    "dandi:000633"
+   ],
+   "papers": [
+    "10.3390/ijms241310921"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_kim_2023.ipynb",
+     "title": "Reproducing Kim et al. (2023) from dandiset 000633",
+     "executed": "notebooks/000633-kim-2023/reproduce_kim_2023.html"
+    }
+   ]
+  }
+ ]
+}
