@@ -30,9 +30,16 @@ Where the parameters come from:
   (a) a peak of dF above 5%; (b) a rise of at least 5% dF within 5 ms. In both, peaks closer
   than 8 ms are merged into one AP, as an AP lasts 8 ms (Methods: "typical values: 11.3% +-
   0.9% dF and 8 +- 0.7 ms duration"); this caps the rate the detection can see at 125 Hz, above
-  the 60 to 90 Hz the paper reports. In (a) a peak must stand 2.5% above its surroundings
-  (scipy prominence; a standard choice, half the 5% level, to keep noise on a depolarized
-  plateau from counting as APs; the pre-stimulus SD is about 1%).
+  the 60 to 90 Hz the paper reports. In (a) a peak must also rise 5% dF above the trace on
+  both sides of it (scipy prominence, the Methods' AP level applied to the local baseline) and
+  be at least 1 ms wide at half its prominence (Methods: APs are "brief emission upticks" that
+  "lasted about 10 ms", "8 +- 0.7 ms duration"). This is an assumption: the claims file's
+  reading (a) asks only a peak above 5% over F0, and without these two conditions noise on a
+  depolarized plateau above 5% counts as APs (about 18 per 250 ms for a 6% plateau with the data's
+  0.8% noise SD; the notebook shows the test). In the data, 99% of the first APs of a session
+  have a prominence above 8.6% and a half-width above 1.6 ms, so the conditions keep real APs.
+  The first round of this attempt used a prominence of 2.5% and no width, which the verifier
+  showed lets plateau noise through.
 - Field. The session descriptions give the generator voltage, peak to peak, and say "1V
   translates into 36 V/cm at the location of neurons" (DANDI:001030 says its voltages are of
   one polarity, "peak-to-peak would be two-fold larger"). The claims file takes the field from
@@ -75,7 +82,8 @@ V_TO_V_PER_CM = 36.0          # session descriptions: "1V translates into 36 V/c
 AP_LEVEL = 5.0                # % dF, Methods
 AP_WIDTH_S = 0.005            # 5 ms: rise window of reading (b), claims file
 AP_MERGE_S = 0.008            # 8 ms: AP duration, Methods
-PROMINENCE = 2.5              # % dF, reading (a), standard choice
+PROMINENCE = 5.0              # % dF, reading (a): the AP level over the local baseline (assumption)
+MIN_WIDTH_S = 0.001           # s, reading (a): half-width; AP duration 8 ms, Methods (assumption)
 STIM_START_S = 0.050          # fast recordings, Methods
 STIM_DUR_S = 0.250
 ROIS = ("whole", "bright")
@@ -88,7 +96,7 @@ def _get(url):
 
 
 def list_assets(dandiset, threads=16):
-    """Assets of a dandiset at its pinned version, with S3 URL and session description."""
+    """Assets of a dandiset at its pinned version, with S3 URL, session start and description."""
     version = VERSIONS[dandiset]
     base = f"{API}/dandisets/{dandiset}/versions/{version}/assets/"
     assets, url = [], base + "?page_size=1000"
@@ -102,7 +110,7 @@ def list_assets(dandiset, threads=16):
         ses = [w for w in m["wasGeneratedBy"] if w["schemaKey"] == "Session"][0]
         s3 = [u for u in m["contentUrl"] if "s3" in u][0]
         return dict(path=a["path"], size=a["size"], url=s3, session=ses["name"],
-                    description=ses.get("description", ""))
+                    start_date=ses.get("startDate", ""), description=ses.get("description", ""))
 
     with ThreadPoolExecutor(threads) as ex:
         return sorted(ex.map(meta, assets), key=lambda r: r["path"])
@@ -176,13 +184,18 @@ def load_fast(assets, stim_start_s=STIM_START_S, threads=24):
         return list(ex.map(one, assets))
 
 
-def detect_aps(dF, rate, reading="a", level=AP_LEVEL, invert=False):
-    """Frame indices of AP peaks under reading (a) or (b) (module docstring)."""
+def detect_aps(dF, rate, reading="a", level=AP_LEVEL, invert=False, prominence=PROMINENCE,
+               min_width_s=MIN_WIDTH_S):
+    """Frame indices of AP peaks under reading (a) or (b) (module docstring). `prominence`
+    and `min_width_s` apply to reading (a); at levels other than 5% (the SD readings of
+    Di-8-ANEPPS) the prominence follows the level."""
     x = -dF if invert else dF
     w = int(round(AP_WIDTH_S * rate))
     dist = int(round(AP_MERGE_S * rate))
     if reading == "a":
-        p, _ = find_peaks(x, height=level, distance=dist, prominence=PROMINENCE)
+        prom = prominence * level / AP_LEVEL
+        p, _ = find_peaks(x, height=level, distance=dist, prominence=prom,
+                          width=(min_width_s * rate, None))
     else:
         p, _ = find_peaks(x, distance=dist)
         p = np.array([i for i in p if i >= w and x[i] - x[i - w:i].min() >= level], dtype=int)

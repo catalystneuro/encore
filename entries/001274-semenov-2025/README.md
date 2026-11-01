@@ -9,19 +9,19 @@ second deposit of 001032.
 
 | Claim | Outcome |
 |---|---|
-| Unmodulated 2- and 20-kHz sine waves excite every neuron | Partially reproduced |
-| Near-threshold APs come 100 to 200 ms after onset; stronger fields shorten the delay | Partially reproduced |
-| The maximum firing rate reaches a ceiling of 60 to 90 Hz | Reproduced (resting on an assumption) |
+| Unmodulated 2- and 20-kHz sine waves excite every neuron | Not reproduced |
+| Near-threshold APs come 100 to 200 ms after onset; stronger fields shorten the delay | Not reproduced |
+| The maximum firing rate reaches a ceiling of 60 to 90 Hz | Not reproduced (resting on an assumption) |
 | The highest fields give an excitation block | Not reproduced |
-| 20-kHz thresholds are about twice the 2-kHz ones | Partially reproduced |
+| 20-kHz thresholds are about twice the 2-kHz ones | Not reproduced |
 | Modulated sine waves have higher thresholds | Partially reproduced |
 | The 2-kHz threshold is 57.7 V/cm | Not reproduced |
-| Firing locks to the 20-Hz beats, with no sustained depolarization | Partially reproduced |
+| Firing locks to the 20-Hz beats, with no sustained depolarization | Not reproduced |
 | Pure sine waves give more APs than modulated ones at the same field | Reproduced |
 | Low conductivity halves thresholds (Figure 3B) | Blocked: metadata insufficient |
-| 2-s ramped sine waves give sustained firing, then a block (Figure 3C) | Partially reproduced |
+| 2-s ramped sine waves give sustained firing, then a block (Figure 3C) | Not reproduced |
 | Di-8-ANEPPS gives the same responses (Figure S1) | Not reproduced |
-| Tetrodotoxin abolishes APs and the sustained depolarization (Figure S2) | Partially reproduced |
+| Tetrodotoxin abolishes APs and the sustained depolarization (Figure S2) | Not reproduced |
 | Membrane charging kinetics (Figure 4, four claims) | Blocked: metadata insufficient |
 | Polarization by sine waves and pulses (Figures 5, 6, S3, nine claims) | Blocked: metadata insufficient |
 
