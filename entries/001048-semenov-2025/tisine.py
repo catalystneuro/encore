@@ -400,7 +400,10 @@ def find_rois(stack, good, half=6):
 
 
 def box(X, c, half=6):
-    return X[:, c[0] - half:c[0] + half, c[1] - half:c[1] + half].astype(float).mean((1, 2))
+    """Mean over a (2 half) x (2 half) box centred on c, clipped at the image edge. The 12 x 12 box
+    (half 6) is an assumption: the paper drew ROIs by hand and gives no size; 6 x 6 and 20 x 20 are
+    shown as a variant."""
+    return X[:, max(c[0] - half, 0):c[0] + half, max(c[1] - half, 0):c[1] + half].astype(float).mean((1, 2))
 
 
 def pulse_dF(F, good, base):
