@@ -1,0 +1,726 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001174",
+  "label": "DANDI:001174"
+ },
+ "page": "datasets/dandi/001174/",
+ "generated": "2026-11-01T23:24:48+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 9,
+  "partially_reproduced": 0,
+  "not_reproduced": 1,
+  "blocked": 10
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 2
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 1,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001174-martel-2025-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001174",
+    "version": "0.250331.2218",
+    "doi": "10.48324/dandi.001174/0.250331.2218"
+   },
+   "key": "dandi:001174",
+   "label": "DANDI:001174",
+   "dataset_version": "0.250331.2218",
+   "paper": "10.1016/j.isci.2025.112767",
+   "paper_title": null,
+   "date": "2026-11-01",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41282269219"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "001174-martel-2025",
+   "entry_title": "Calcium imaging in SMA and M1 of macaques at rest and during reaching (Martel et al. 2025)",
+   "description": "Tests the findings of Martel, Pittard, Devergnas, Risk, Nassi, Yu, Downer, Wichmann and Galvan (2025) on dandiset 001174, which holds one-photon miniscope imaging of SMA and M1 in four macaques, with the accepted cells' footprints, denoised traces and deconvolved events. It compares event rates, IEI CV and amplitudes between rest and the reaching task and between areas, tests pairwise coactivation (Z-Jaccard) and the paper's sequence detection, and checks the cells against the paper's per-cell table on Zenodo. The task-aligned analyses of Figure 2 and Figure S1 cannot be tested, as the dandiset holds no TTL or trial data and no raw traces.",
+   "notebooks": [
+    {
+     "path": "reproduce_martel_2025.ipynb",
+     "title": "Activity, task conditions and coactivation (Figures 1 and 3)",
+     "executed": "notebooks/001174-martel-2025/reproduce_martel_2025.html"
+    },
+    {
+     "path": "sequences_martel_2025.ipynb",
+     "title": "Sequences of calcium events (Figure 4)",
+     "executed": "notebooks/001174-martel-2025/sequences_martel_2025.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "zenodo-descriptors-link",
+     "statement": "The per-cell descriptors computed from the dandiset (event rate, IEI CV, mean amplitude, spontaneous and task) agree with the per-cell table the paper deposited on Zenodo, so that table can give the cells' first occurrences.",
+     "source": "Key resources table, Deposited data; Zenodo doi:10.5281/zenodo.14727695",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_martel_2025.ipynb",
+     "notes": "The cells link, the descriptors do not. 565 of 626 table rows match a dandiset cell by subject, site, date and accepted-cell index; the 61 unmatched rows are task rows of F, which has no task files. 93.8% of matched cells have both centroid coordinates within 3 pixels of the dandiset's footprint centroids (median differences -0.52 and -0.45 pixels), so the identity holds. 86 of 313 cells (27.5%) have rate and amplitude within 1% in every condition, below the 50% the criterion asks. The table's rates exceed the dandiset's by a median factor of 1.042 (5th to 95th percentile 0.999 to 1.499); 40.9% of cell-conditions agree within 1% for the rate and 66.3% for the amplitude. Two U SMA sessions differ by large factors (2023-03-07 spontaneous 20.0, 2023-03-14 task 0.042). One-frame inter-event intervals are rarer in the dandiset (median IEI of one frame in 3.9% of cell-conditions against 11.9% in the table). No unmatched dandiset cells are expected, as the table lists first occurrences only (313 of the 401 accepted cells). The two U SMA sessions are not a swap of conditions. In 2023-03-07 the table's task counts follow the dandiset's task counts (Spearman 0.975) and its spontaneous counts follow neither file (-0.354 and 0.205); in 2023-03-14 each condition follows its own file best (0.829 and 0.786). In both the dandiset has fewer spontaneous events (4 against 133 and 78 against 246 over the first-occurrence cells) and a higher amplitude in every cell-condition (medians 3.702 against 3.080 and 3.488 against 2.987), which points to a different event detection in those files.",
+     "deviations": [
+      "Rates use each file's duration from its frames ((n - 1) / rate), as ReorganizedData_Final.m divides by the segment's last time; the paper's segments were parts of one concatenated recording, the dandiset's are separate files."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "cell-counts",
+     "statement": "In SMA 129, 61 and 63 cells were identified in monkeys Q, F and U, and in M1 37 and 23 cells in monkeys U and V.",
+     "source": "Results, General description of calcium activity, paragraph 2 (Table S2)",
+     "quote": "In the SMA, we identified 129, 61, and 63 cells in monkeys Q, F, and U, respectively. In M1, we identified 37 and 23 cells in monkeys U and V, respectively",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_martel_2025.ipynb",
+     "notes": "Under reading (i), unique cells, the counts are Q 129, F 60 (61 with the one cell of 2024-03-19, which the opening comment's session list leaves out), U SMA 63, U M1 37, V 23, all within tolerance. Which cells repeat comes from the Zenodo table's first occurrences, matched to the dandiset by session and index (identity confirmed by centroids in zenodo-descriptors-link); the dandiset alone cannot give these counts. Under reading (ii), accepted cells summed over sessions, the only count the dandiset gives by itself, the counts are 160, 87, 85, 43 and 25, and only V is within tolerance. Reading (i) counts the rows of the paper's own table per site, so it compares the paper's table with the paper's text more than it tests the dandiset. The link claim is not reproduced on its descriptors, but this claim rests only on the identity of the cells, which holds.",
+     "deviations": [
+      "The first occurrences come from the Zenodo descriptors table (an outside input), as the claims file's method C allows; the claims file does not list the link claim under depends_on."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "cells-tracked-18pct",
+     "statement": "About 18% of cells were tracked across up to three recording sessions.",
+     "source": "Results, General description of calcium activity, paragraph 2",
+     "quote": "We could track a small portion of cells (18%) across up to three recording sessions.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "Neither the dandiset nor the Zenodo table identifies a cell's later occurrences. In all 45 files the PlaneSegmentation ids are 0 to n-1 and the table has no other column (image_mask only). The table lists each of 313 cells at its first session only; the code reads cross-session identity from Metadata_all_monkeys.xlsx, which is not deposited. Of 401 accepted cells summed over sessions, 88 are repeat occurrences, so between 44 and 88 cells (14.1% to 28.1%) were seen in two or more sessions; 18% lies inside this range, and the data cannot narrow it.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-rate-no-change",
+     "statement": "Calcium event rates did not differ between the spontaneous and reaching task conditions in either SMA or M1.",
+     "source": "Results, General description of calcium activity, paragraph 3; Figure 1D",
+     "quote": "The calcium event rates and the coefficient of variation of the inter-event intervals (IEI CV) did not differ between the spontaneous and reaching task conditions in either cortical region",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_martel_2025.ipynb",
+     "notes": "No reading finds a difference. Over pooled SMA and M1 and over Q SMA, U SMA, U M1 and V M1, the smallest uncorrected signed-rank p is 0.0666 (V M1) and no q is below 0.05 in family (a) or (b). Pooled SMA medians 0.0149 and 0.0166 events/s (n = 192), pooled M1 0.0874 and 0.0865 (n = 60).",
+     "deviations": [
+      "Only the claims file's reading D (i), a cell's value in its first session, could be run; reading D (ii), the median over the sessions a cell appears in, needs later occurrences that no source identifies.",
+      "Each cell counts once, in its first session (Methods, Cell identification, \"We only report results for the first session in which cells were identified\"), from the Zenodo table."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1e-ieicv-no-change",
+     "statement": "The IEI CV did not differ between the spontaneous and reaching task conditions in either SMA or M1.",
+     "source": "Results, General description of calcium activity, paragraph 3; Figure 1E",
+     "quote": "The calcium event rates and the coefficient of variation of the inter-event intervals (IEI CV) did not differ between the spontaneous and reaching task conditions in either cortical region",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_martel_2025.ipynb",
+     "notes": "No reading finds a difference; the smallest uncorrected p is 0.0841 (U SMA) and no q is below 0.05. 78 of 252 cells with a task part have fewer than two intervals in a part and are left out.",
+     "deviations": [
+      "As fig1d-rate-no-change; only reading D (i) was run."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-amplitude-u-sma-spont-higher",
+     "statement": "In monkey U's SMA, event amplitude was significantly higher in the spontaneous state than during the reaching task.",
+     "source": "Results, General description of calcium activity, paragraph 3; Figure 1F",
+     "quote": "In the SMA, the amplitude of the events was significantly higher in the spontaneous state, compared to the reaching task recordings in monkey U",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank test",
+       "p": 0.032,
+       "corrected": "FDR (Benjamini-Hochberg)",
+       "n": "monkey U SMA cells with both conditions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_martel_2025.ipynb",
+     "notes": "In U's SMA (44 cells with events in both parts) the spontaneous amplitude is higher (medians 3.409 and 3.166, 72.7% of cells higher at rest), p = 0.0017, q = 0.0204 in family (a) and 0.0068 in family (b); the paper gives p = 0.032. The spontaneous median is higher in each of the five U SMA sessions. The pooled SMA test is significant too (q = 0.0198 and 0.0066), Q's SMA alone is not (p = 0.1108). The paper's table gives p = 0.0074 for its 42 cells with amplitudes in both parts. Without U SMA 2023-03-07 and 2023-03-14, whose events differ most from the table, p = 0.0078 over 33 cells (medians 3.272 and 3.123), so the result does not rest on them.",
+     "deviations": [
+      "As fig1d-rate-no-change; only reading D (i) was run."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-rate-m1-above-sma-u",
+     "statement": "In monkey U the event rate was higher in M1 than in SMA, in both the spontaneous and the reaching task conditions.",
+     "source": "Results, General description of calcium activity, paragraph 3; Figure 1D",
+     "quote": "In monkey U, we found that the event rate was higher in M1 than in SMA, both during the spontaneous and reaching task conditions",
+     "statistics": [
+      {
+       "about": "spontaneous condition",
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "monkey U SMA and M1 cells"
+      },
+      {
+       "about": "reaching task condition",
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "monkey U SMA and M1 cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_martel_2025.ipynb",
+     "notes": "U M1 (37 cells) against U SMA (63 cells), rank-sum p below 1e-5 in both conditions, corrected or not; medians 0.0891 against 0.0042 events/s at rest and 0.1151 against 0.0089 in the task. Without U SMA 2023-03-07 and 2023-03-14 the p-values are 1.9e-05 and 2e-06.",
+     "deviations": [
+      "As fig1d-rate-no-change; only reading D (i) was run."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-amplitude-m1-above-sma-u-task",
+     "statement": "In monkey U, event amplitude during the task was higher in M1 than in SMA.",
+     "source": "Results, General description of calcium activity, paragraph 3; Figure 1F",
+     "quote": "Similarly, the amplitude of the events was higher for the task in M1, compared to SMA",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.03,
+       "n": "monkey U SMA and M1 cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_martel_2025.ipynb",
+     "notes": "The task amplitude is higher in U's M1 than in its SMA (medians 3.384 and 3.193, P(M1 > SMA) 0.604) but not significantly, p = 0.0988 uncorrected and q = 0.1976 corrected over the two conditions; the paper gives p = 0.03. The same test on the paper's own per-cell table gives p = 0.0138 (medians 3.407 and 3.124, 36 and 48 cells, against 36 and 52 here), so the difference comes from the dandiset's event amplitudes, which differ from the table's (zenodo-descriptors-link), not from the method. U SMA 2023-03-07 and 2023-03-14, where every dandiset amplitude is above the table's, account for most of the gap in the SMA task median (3.193 with them, 3.133 without, 3.124 in the table) but for less than half of it in the p-value on a log scale (0.0988 with them, 0.041 without, 0.0138 in the table). Without them the task test gives p = 0.041 uncorrected (medians 3.384 and 3.133, 36 and 39 cells) and q = 0.082 corrected over the two conditions (spontaneous p = 0.11), so the readings would then disagree. Leaving out sessions is not the claims file's method, and the outcome stays on all cells.",
+     "deviations": [
+      "As fig1d-rate-no-change; only reading D (i) was run."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-q-sma-modulated-34pct",
+     "statement": "In monkey Q's SMA, 43 of 129 cells (34%) significantly changed their activity after the rewarded target appeared.",
+     "source": "Results, Calcium traces in SMA and M1 show changes in activity, paragraph 2; Figure 2A",
+     "quote": "We found that in monkey Q's SMA, 34% (43/129) of cells significantly modulated their activity in response to the presentation of the rewarded target and the immediately ensuing movement",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The test needs the target-onset times, which the paper took from TTL pulses recorded on extra channels, and the raw traces. The dandiset's files hold neither (no trial table, no TTL or behavioural channel, and only the denoised trace). The Zenodo record of activity aligned to behavioural events (doi:10.5281/zenodo.14976651) holds the paper's z-scored trial windows, its output, not the event times, so it cannot place trials in the recordings. The TTL files are not public elsewhere. None of the 45 files has a trial table, intervals, stimulus or analysis group, and the archive's variableMeasured lists only imaging variables for every asset. As a check that decides nothing, method Z's test run on the paper's z-scored windows finds 20 of 129 Q SMA cells modulated with FDR over the chamber (21 with FDR per condition column, 42 uncorrected), against the paper's 43. Run on the paper's own windows, method Z thus falls far short of the paper's count, which suggests that method Z is not the paper's procedure; this is put to a reader in questions/001174.yaml and does not change the outcome, which rests on the missing event times.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-q-sma-direction",
+     "statement": "Of the 129 Q SMA cells, 11 (9%) had task responses that were not direction-related and 32 (25%) responded more for one target position.",
+     "source": "Results, Calcium traces in SMA and M1 show changes in activity, paragraph 2; Figure 2B and 2C",
+     "quote": "In 11/129 cells (9%), the activity was not direction-related, but 32/129 cells (25%) showed larger changes in activity in trials where the target was located at a specific position",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig2-q-sma-modulated-34pct; the TTL event times and raw traces are not in the dandiset or public elsewhere. On the paper's z-scored windows (Zenodo, a check that decides nothing) the classes are 14 direction-related and 6 not, against the paper's 32 and 11.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-q-magnitude-no-difference",
+     "statement": "In Q's SMA the size of the response did not differ between cells whose activity rose and cells whose activity fell, and was similar for all target positions.",
+     "source": "Results, Calcium traces in SMA and M1 show changes in activity, paragraph 2 (data not shown)",
+     "quote": "The magnitude of the responses did not differ between cells responding with an increase or decrease in firing (Mann-Whitney rank-sum test) and was similar regardless of the target position (Kruskal-Wallis test; data not shown)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig2-q-sma-modulated-34pct; the TTL event times and raw traces are not in the dandiset or public elsewhere.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1-u-sma-direction",
+     "statement": "In monkey U's SMA, 6 of 14 cells (43%) were modulated at rewarded target onset, all six direction-related, and the proportions were the same when aligned to movement onset.",
+     "source": "Results, Calcium traces in SMA and M1 show changes in activity, paragraph 3; Figure S1",
+     "quote": "In monkey U's SMA, we found that 43% (6/14) cells had significant modulation of activity when the calcium traces were aligned to the appearance of the rewarded target, and in all cases (6/6) these changes in activity were related to the direction of the movement. These proportions were the same when the data were aligned to the movement onset",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs U's target-onset and center-release times (TTL) and raw traces, which the dandiset does not hold; which U session carried TTL data is also not recorded in the files. On the paper's z-scored windows (Zenodo, 14 U SMA cells, a check that decides nothing) 5 cells are modulated at target onset and 6 at movement onset, all direction-related; the paper gives 6 and 6.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1-u-m1-target-onset",
+     "statement": "In monkey U's M1, aligned to rewarded target onset, 4 of 6 cells (67%) changed their activity, none direction-related.",
+     "source": "Results, Calcium traces in SMA and M1 show changes in activity, paragraph 4; Figure S1",
+     "quote": "In monkey U's M1, when the calcium traces were aligned to the appearance of the rewarded target, 4/6 cells (67%) showed changes in activity, without directional relation.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "As figs1-u-sma-direction. On the paper's z-scored windows (6 U M1 cells, a check that decides nothing) all 6 are modulated at target onset and 3 are direction-related; the paper gives 4 and 0.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1-u-m1-movement-onset",
+     "statement": "In monkey U's M1, aligned to movement onset, all 6 cells were modulated and half of them were direction-related.",
+     "source": "Results, Calcium traces in SMA and M1 show changes in activity, paragraph 4; Figure S1; Discussion, paragraph 7",
+     "quote": "When the data were aligned to the movement onset, 100% (6/6) cells were modulated, and 50% of them showed direction-related activity",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "As figs1-u-sma-direction. On the paper's z-scored windows (a check that decides nothing) all 6 U M1 cells are modulated at movement onset and 3 are direction-related, as the paper gives.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-synchronized-pairs-exist",
+     "statement": "Pairs of neurons with synchronous activity occur in both SMA and M1, in both the spontaneous and the task conditions.",
+     "source": "Results, Cells in SMA and M1 show coactivation, paragraph 1; Figure 3A to 3C",
+     "quote": "Pairs of neurons exhibited neuronal synchrony in both the SMA and M1 during the spontaneous and task conditions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_martel_2025.ipynb",
+     "notes": "Every site and condition has sessions with pairs of |Z-Jaccard| > 1.96. M1 6 of 6 sessions in each condition, SMA 18 of 20 spontaneous and 12 of 12 task sessions; 542 of 6089 defined pairs in all. Median proportions per session are SMA 0.0776 and 0.0647, M1 0.1006 and 0.1802 (spontaneous, task), against 0.05 expected under the null at this threshold (reported, not used). Eight SMA session-conditions are at or below 0.05 (spontaneous 0, 0, 0.038 and 0.044; task 0.026, 0.043, 0.044 and 0.045), and the median SMA task session is near chance, so synchrony exists in SMA in the sense the criterion asks and no more. The proportions correlate with the paper's Jaccard table at 0.950 over 43 session-conditions.",
+     "deviations": [
+      "Each condition is a separate file, so each is binned on its own and its last four bins dropped; the code bins the joined recording and drops the bin that mixes the two."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3ab-synchrony-not-distance",
+     "statement": "Synchrony between cell pairs was not related to the distance between their centroids, in SMA or M1.",
+     "source": "Results, Cells in SMA and M1 show coactivation, paragraph 1; Figure 3A and 3B; Discussion, paragraph 9",
+     "quote": "The cell pairs exhibiting synchrony were not related to the centroid distances in either SMA or M1",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_martel_2025.ipynb",
+     "notes": "With Pearson, 4 U SMA sessions and all 4 U M1 sessions show no significant correlation of Z-Jaccard with centroid distance in either condition; with Spearman, 5 U SMA and 4 U M1 sessions. Over all 44 session-conditions of all monkeys, 5 Pearson and 3 Spearman correlations reach p < 0.05.",
+     "deviations": [
+      "Centroids are footprint-weighted means of the dandiset's masks; they agree with the paper's IDPS centroids within 3 pixels for 93.8% of cells."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-sync-no-condition-change",
+     "statement": "The proportion of synchronized cell pairs did not differ between spontaneous and task conditions in SMA (p = 0.07) or M1 (p = 0.22).",
+     "source": "Results, Cells in SMA and M1 show coactivation, paragraph 1; Figure 3C",
+     "quote": "The proportion of cells that were synchronized did not significantly differ between spontaneous and reaching tasks in either SMA or M1",
+     "statistics": [
+      {
+       "about": "SMA, spontaneous against task",
+       "test": "Wilcoxon signed rank test",
+       "p": 0.07,
+       "n": "SMA sessions with both conditions (12 in the code, Q 7 and U 5)"
+      },
+      {
+       "about": "M1, spontaneous against task",
+       "test": "Wilcoxon signed rank test",
+       "p": 0.22,
+       "n": "M1 sessions with both conditions (6 in the code, U 4 and V 2)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_martel_2025.ipynb",
+     "notes": "Signed-rank tests over sessions with both conditions find no difference; SMA p = 0.1514 (12 sessions, median change -0.0198), M1 p = 0.2188 (6 sessions, median change +0.0509). Variants agree; the positive tail only gives 0.2036 and 0.0938, all pairs as denominator 0.4131 and 0.3125, and the code's 10-shift null for SMA 0.0771. The paper's own table gives 0.0674 and 0.2188, the paper's 0.07 and 0.22.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4a-example-sequences-q",
+     "statement": "In an example session of monkey Q's SMA with 40 cells, 13 sequences were detected in the spontaneous condition and 17 during the task, and the specific sequences differed between the two even where they involved the same cells.",
+     "source": "Results, Cells in SMA and M1 show sequential activation patterns, paragraph 2; Figure 4A",
+     "quote": "In an example imaging session in monkey Q's SMA, we detected 13 such sequences in spontaneous and 17 sequences during the task ... While some of the sequences detected involved the same cells ... the specific sequences differed",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "sequences_martel_2025.ipynb",
+     "notes": "Changed from not_reproduced after verification. The port of the claims file's method S does not reproduce the paper's own sequence counts. Run on the 56 slices of the paper's Figure 4D table under 32 settings (window upper bound 0.25, 0.5, 1 and 2 s; separation of repetitions 0.05, 0.5, 1 and 2 s; both double-counting steps), the best setting has 21.4% of slices within 10% of the paper's count. In the two slices where the dandiset's events match the paper's table (Q 2022-12-01 and 2022-12-06 task, at least 80% of cells with the rate within 1%), no setting gives the paper's 7 and 9 (2 to 13 and 8 to 111). So the readings of method S do not include the procedure behind 13 and 17, and the counts here cannot say whether the paper's numbers hold on the dandiset. The table also gives n.a. for this session's first spontaneous 10 min and 13 for its second, while the dandiset's spontaneous file lasts 10 min. As run, the only Q SMA session with 40 accepted cells is 2022-09-15, and the paper's Figure 4D table gives 13 and 17 for it. Under every reading of method S the counts are far off. With the double-counting step as the code runs it, 157 to 196 (spontaneous) and 176 to 311 (task); with the code's more-than-4 rule, 113 to 155 and 156 to 260; with the double-counting step as documented, 5 and 2 to 5. Every ordering of cells (reading a) gives 979 and 1856 significant patterns. The two conditions' sets of sequences differ under every reading (10 shared of 157 and 211 under reading a, task reading i). Across all slices the counts follow the paper's table in rank (Spearman 0.871) but are a median 3.12 times larger (0.40 times with the documented double-counting step), so the port, the parameters the paper used, or the dandiset's events differ from the paper's. The question of the parameters is put to the paper's authors (findings), and whether method S should name other readings to a reader (questions/001174.yaml).",
+     "deviations": [
+      "The detection is a Python port of identify_sequences.m (sequences.py), not the MATLAB code.",
+      "The parameter values the paper passed to identify_sequences.m are not recorded; the claims file's readings of the two 0.05 s rules and of the task slice were all run.",
+      "The code's double-counting step writes 2 into a logical array, so it removes nothing; the main count does what the code does, as the claims file asks, and the documented step is a variant. The sequences notebook prints the lines of identify_sequences.m (DA = false(...), the test DA(...) == 2 and the assignment DA(...) = 2) so that this reading can be checked.",
+      "The outcome departs from the criterion. The criterion's rule gives not_reproduced when every reading of method S fails, as here. The attempt blocks the claim as methods_underspecified because the sweep shows that the readings the criterion lists do not include the procedure behind the paper's own Figure 4D counts, so the failure says nothing about the dandiset. The point is put to a reader in questions/001174.yaml."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-example-three-segments-q",
+     "statement": "In another Q SMA session with 18 cells and 20 min of spontaneous recording, 8, 13 and 9 sequences were found in the two spontaneous halves and the task, and the sequences differed between all three segments.",
+     "source": "Results, Cells in SMA and M1 show sequential activation patterns, paragraph 2; Figure 4B; Discussion, paragraph 10",
+     "quote": "We detected 8, 13, and 9 unique sequences during ... The detected sequences differed between all three states",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "sequences_martel_2025.ipynb",
+     "notes": "Changed from not_reproduced after verification, for the reason given under fig4a-example-sequences-q. Over the 32 settings, 2022-12-06 gives 4 to 331, 6 to 613 and 8 to 111, and no setting gives 8, 13 and 9 within tolerance, even in the task slice, where at least 80% of cells' rates match the paper's table. As run, two Q SMA sessions have 18 cells and at least 20 min of spontaneous recording, 2022-10-03 and 2022-12-06; the paper's Figure 4D table gives 8, 13 and 9 for 2022-12-06, so measured is that session under reading (a), task reading (i). No reading is within tolerance (0 of 12). 2022-12-06 gives 331 to 386, 613 to 746 and 111 to 174 sequences (3 to 10, 9 to 10 and 10 to 13 with the documented double-counting step); 2022-10-03 gives 3, 4 and 12 to 13. The three slices' sets differ in every reading, with at most 4 sequences shared by all three.",
+     "deviations": [
+      "As fig4a-example-sequences-q, including the departure from the criterion's rule, which gives not_reproduced when every reading fails."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-sequence-measures-vary",
+     "statement": "The number of sequences per cell, their repetition and the proportion of cells in sequences varied across conditions and imaging sites.",
+     "source": "Results, Cells in SMA and M1 show sequential activation patterns, paragraph 3; Figure 4D",
+     "quote": "We found that these factors varied across conditions and across imaging sites, similar to observations made in monkey Q's SMA.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "sequences_martel_2025.ipynb",
+     "notes": "Under all six readings each measure's per-site medians differ across segments and across sites (sequences per cell 0.160 to 8.477, median repetitions 4.0 to 18.25, cells in sequences 24.0% to 100.0%). The criterion is met by any measure that is not constant, so the outcome carries little weight; the counts behind it are about three times the paper's (fig4a-example-sequences-q).",
+     "deviations": [
+      "As fig4a-example-sequences-q. F 2024-03-19 (one cell) is left out, as the Jaccard code leaves it out and the Figure 4D table has no row for it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-sequence-cells-not-clustered",
+     "statement": "Cells involved in sequences were spread across the field of view, with no preferred spatial relation between them.",
+     "source": "Results, Cells in SMA and M1 show sequential activation patterns, paragraph 4; Figure 4C and Figure S2",
+     "quote": "Plotting the distribution of distances between pairs of cells that were involved in sequences, as well as the overall distribution of distances between all detected cells showed that there is no preferred spatial relation between cells involved in sequences",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "sequences_martel_2025.ipynb",
+     "notes": "Reading (i), centroids of cells in sequences against all cells (spontaneous, Q SMA and U M1), finds no difference under any 0.05 s reading (smallest p 0.6776 over 24 tests). Reading (ii), distances between cells sharing a sequence against all pair distances, finds them shorter when pairs are pooled over sessions (medians 284 to 296 against 320 um; KS p 0.0001 to 0.0020), but pooling mixes fields of view of different geometry. Within sessions, with the code's double-counting step, no session differs (0 of 25 at p < 0.05 by KS or Mann-Whitney under each reading), and the stratified tests agree (percentile KS p 0.5485 to 0.7846, Mann-Whitney 0.5673 to 0.9362, cell-relabelling permutation 0.3305 to 0.9110). So under the code's step, which removes nothing as the code runs (the notebook prints the lines), the pooled test and the within-session test of reading (ii) disagree; the within-session and stratified tests were chosen after the first verification, and the criterion names neither. With the double-counting step as its comments describe it, the stratified tests find sequence pairs closer under readings (a) and (b) (permutation p 0.0025 and 0.0105, percentile KS 0.0027 and 0.0247), with no session at q < 0.05. The claim stays blocked, as the readings disagree once the pooled test is counted, and which cells enter sequences rests on a detection that the paper's own counts do not pin down (fig4a-example-sequences-q). The Results describe reading (ii) and the Figure 4C legend reading (i); Figure S2 is not in the text read, and the paper gives no test. The question of which comparison and test the paper meant is put to its authors (findings).",
+     "deviations": [
+      "Reading (ii) is tested within each session and stratified by session (the pooled test is shown); distances between cells exist only within a session's field of view, a choice made after verification."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "histology-lens-placement",
+     "statement": "Lenses and prisms were placed in the arm regions of SMA and M1, in deep cortical layers, with monkey Q's SMA lens at the anterior edge of SMA.",
+     "source": "Results, Expression of GCaMP6f and lens localization, paragraphs 1 and 2; Figure S3A",
+     "quote": "Postmortem histological examination confirmed that the lens and prism were placed in the arm regions of SMA and M1",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "The histology is on Zenodo (doi:10.5281/zenodo.15328390) as 13 whole-slide scans (about 8.6 GB, ndpi, svs and vsi). Judging where each lens track ends against the Paxinos atlas is an anatomist's reading of the images that the notebook cannot compute; nothing was run. The data are public and readable and no software is missing, so the reason is other, not not_runnable.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Zenodo doi:10.5281/zenodo.15328390",
+     "proposed": null
+    },
+    {
+     "claim": "histology-gcamp-not-gabaergic",
+     "statement": "GCaMP6f expression was robust around most imaging sites, sparse in monkey U's SMA, and GCaMP6f-positive cells were not GABAergic.",
+     "source": "Results, Expression of GCaMP6f and lens localization, paragraph 2; Figure S3B to S3D",
+     "quote": "We observed robust GFP expression around the lens/prism for most sites, except in monkey U's SMA, where the GFP expression was sparse ... We confirmed that GCaMP6f expression was specific for non-GABAergic neurons by performing a double immunofluorescence assay for GABA and GFP",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "As histology-lens-placement; the GFP and GABA double-label images (MR385R_507_GABA_GFP_20x.vsi among them) would need a visual or trained cell-level classification that the paper does not describe as a procedure.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Zenodo doi:10.5281/zenodo.15328390",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds no TTL or trial data and no raw traces. The Figure 2 and Figure S1 analyses, which align raw traces to TTL-marked target and movement onsets, cannot be run; six of the paper's findings are untestable. The Zenodo table of aligned activity holds the paper's z-scored windows, not the event times.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The trace in processing/ophys/Fluorescence/RoiResponseSeries is the CNMFe denoised trace (between events it decays by one constant factor per frame, in a median 90% and at least 77% of a file's samples), but is described only as \"Fluorescence data associated with spatial footprints\". EventAmplitude holds the deconvolved events as a dense frame by cell array without saying that zero means no event. ImagingPlane indicator and location are \"N/A\" in every file; the site is only in session_description.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "identifier_missing",
+     "statement": "No cross-session cell identity is deposited. The dandiset gives each file's cells 0..n-1; the paper's Zenodo table gives a global id only at a cell's first session, and the spreadsheet the code reads for identity (Metadata_all_monkeys.xlsx) is not public. The fraction of cells tracked across sessions (18%) cannot be checked.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The dandiset's events differ from the paper's per-cell table. The cells match (centroids within 3 pixels for 93.8%), but event rates agree within 1% for only 40.9% of cell-conditions and the table's are a median 4.2% higher (up to 50% at the 95th percentile); one-frame inter-event intervals are rarer in the dandiset (3.9% against 11.9% of cells with a one-frame median IEI), so some events of the paper's table are missing from the dandiset's event arrays. U SMA 2023-03-07 and 2023-03-14 differ by factors of 0.04 to 20; in both the dandiset has far fewer spontaneous events and a higher amplitude in every cell, which is not a swap of conditions and looks like a different event detection. With the dandiset's amplitudes the U task M1 against SMA difference is not significant (p = 0.099), with the table's it is (p = 0.014), and without those two sessions p = 0.041.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "U SMA 2023-03-14 is sampled at 20 Hz (both files), where the Methods give 10 Hz for all imaging.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The dandiset has arm-reaching files for monkey V (both M1 sessions), and the paper's Jaccard and sequence code treat them as task, while the Results and Methods say only Q and U performed the task.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The spontaneous file of Q's 2022-09-15 session is named sub-Q/sub-Q_ophys.nwb, without the session label the other 44 files carry.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The dandiset holds cells the paper's analyses leave out. The paper's Jaccard table has pairs for 17 cells in Q 2022-10-03, 11 in Q 2022-12-01, 10 in V 2023-03-09 and 13 in V 2023-03-16, and its Figure 4D table counts 17, 11, 11 and 13, where the dandiset has 18, 13, 11 and 14 accepted cells. V 2023-03-09 is V's first session, yet the descriptors table lists 10 of its 11 cells. Which cells were left out, and why, is not stated.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The paper's Jaccard table dates one F session \"20-Feb-23\"; F was imaged in 2024 and the dandiset's session is 2024-02-20.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The double-counting step of identify_sequences.m (eliminate_double_counting_v2) marks used events by writing 2 into the logical event array, which MATLAB stores as true, so its test for 2 never succeeds and it removes no repetition, contrary to its comments.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "1_JaccardIndexAnalysisAllSessions.R runs the SMA sessions with nperm = 10 shifts, where the Methods give 1000. On the dandiset, SMA spontaneous against task gives p = 0.077 with 10 shifts and 0.151 with 1000; the paper's p = 0.07 matches its own table (0.067).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Which values were passed to identify_sequences.m for Figure 4 (the time window tc, the minimal separation, min_num_reps, the sequence lengths), and does the 0.05 s of the Results apply to the window's lower bound, to the separation of repetitions, or both? Run on the dandiset's events under each reading, the port gives counts that follow the paper's Figure 4D table in rank (Spearman 0.87) but are about three times larger, or 0.4 times with the double-counting step as documented. No setting of 32 (window upper bound 0.25 to 2 s, separation 0.05 to 2 s, either double-counting step) puts more than 21.4% of slices within 10% of the table, even where the dandiset's events match the paper's.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. For \"no preferred spatial relation between cells involved in sequences\" (Figure 4C, Figure S2), which distributions were compared (centroid positions of cells in sequences against all cells, or distances between cells of the same sequence against all pair distances), and was a test used? On the dandiset the first comparison finds no difference and the second finds sequence pairs closer when pairs are pooled over sessions (medians 285 against 320 um) and not within sessions, unless the double-counting step removes repetitions as its comments describe.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The paper's Figure 4D table gives n.a. for the first spontaneous 10 min of Q 2022-09-15 and 13 sequences for the second, the 13 of Figure 4A, while the dandiset's spontaneous file of that session lasts 10.05 min. Either more spontaneous recording was analysed than was deposited, or the table's segment label is wrong.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-01",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The handover of the first run, the executed notebooks with the conclusions and summaries removed, the helper modules and the claims file. The verifier also read the paper, queried the archive's asset metadata and tested the helpers on synthetic inputs.",
+     "agreed": 23,
+     "of": 23,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-01",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The second run, the full executed notebooks with their conclusions and summaries, the helper modules, the attempt record, the claims file and the paper. The verifier could not see identify_sequences.m, permfun.R or the protocol.",
+     "agreed": 23,
+     "of": 23,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001174-martel-2025",
+   "type": "reproduction",
+   "title": "Calcium imaging in SMA and M1 of macaques at rest and during reaching (Martel et al. 2025)",
+   "description": "Tests the findings of Martel, Pittard, Devergnas, Risk, Nassi, Yu, Downer, Wichmann and Galvan (2025) on dandiset 001174, which holds one-photon miniscope imaging of SMA and M1 in four macaques, with the accepted cells' footprints, denoised traces and deconvolved events. It compares event rates, IEI CV and amplitudes between rest and the reaching task and between areas, tests pairwise coactivation (Z-Jaccard) and the paper's sequence detection, and checks the cells against the paper's per-cell table on Zenodo. The task-aligned analyses of Figure 2 and Figure S1 cannot be tested, as the dandiset holds no TTL or trial data and no raw traces.",
+   "datasets": [
+    "dandi:001174"
+   ],
+   "papers": [
+    "10.1016/j.isci.2025.112767",
+    "10.5281/zenodo.14727695",
+    "10.5281/zenodo.14976651"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_martel_2025.ipynb",
+     "title": "Activity, task conditions and coactivation (Figures 1 and 3)",
+     "executed": "notebooks/001174-martel-2025/reproduce_martel_2025.html"
+    },
+    {
+     "path": "sequences_martel_2025.ipynb",
+     "title": "Sequences of calcium events (Figure 4)",
+     "executed": "notebooks/001174-martel-2025/sequences_martel_2025.html"
+    }
+   ]
+  }
+ ]
+}
