@@ -12,7 +12,7 @@ holds the data of every other figure.
 | Figure 1 and its supplements, mating behavior after ejaculation (six claims) | Reproduced |
 | Figure 3, HCR: Fos in the MPN, in Vgat and Vglut2 cells and in marker subsets (three claims) | Reproduced |
 | Figures 4 and 5, response magnitudes, responders, specific classes (four claims) | Reproduced |
-| Figure 6C, Vgat ejaculation responders decay more slowly | Not reproduced |
+| Figure 6C, Vgat ejaculation responders decay more slowly | Reproduced, resting on an assumption |
 | Figure 6K, the late response cluster holds only Vgat cells | Reproduced |
 | Figure 7F and G, only post-ejaculatory ensemble activation suppresses motivation | Partially reproduced |
 | Figure 7 and its supplements, other chemogenetic results (four claims) | Reproduced |
@@ -22,9 +22,10 @@ reasoning and the differences from the paper's method.
 
 The dandiset holds only raw volumes, with no registration, segmentation or cell counts, so the
 Figure 2 claims would need 1.38 TB streamed, registered to an atlas and segmented with a classifier
-that is not deposited. The decay length of Figure 6C is not reproduced under the readings the
-claims file gives, and is reproduced by a reading from the peak that matches the deposited values;
-a reader is asked about it. Figure 7F and G hold by the code's signed-rank test but not fully by the
+that is not deposited. The decay length of Figure 6C is reproduced
+under the reading from the peak that a reader added to the claims file, which matches the deposited
+values, provided cells that never return below 0 count as 120 s, as the deposited table has them;
+the readings from onset do not reproduce it. Figure 7F and G hold by the code's signed-rank test but not fully by the
 rank-sum test the legend names. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/001249-ishii-2025-01.yaml`](../../attempts/001249-ishii-2025-01.yaml).
 

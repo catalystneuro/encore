@@ -12,7 +12,9 @@ Where each parameter comes from:
   were classified as 'responding' cells"), as the claims file gives them.
 - The 10 Hz rate and onset at index 50 of the deposited arrays are the code's parameter_dict
   (signal_framerate 10, before_frames 50), read from the deposit.
-- The decay-length readings are those of the claims file (fig6c-decay-length).
+- The decay-length readings are those of the claims file (fig6c-decay-length). The value given
+  to a trace that never returns below 0 (120 s) is an assumption, taken from the deposited table
+  (see decay_length).
 - The clustering procedure is the claims file's (fig6k-late-cluster-vgat), taken from the
   Methods and "Figure 5 Spectral clustering.ipynb" at commit 4e98c43; the random seed is a
   standard choice.
@@ -153,30 +155,44 @@ def magnitude(trace):
     return trace[ONSET:ONSET + 5 * RATE_HZ].mean(0)
 
 
-def decay_length(long_trace, reading):
+def decay_length(long_trace, reading, unreturned="window"):
     """Decay length in seconds of -5 to +120 s ejaculation traces (time x cells), baseline
     (-5 to 0 s) subtracted first (Methods). Readings of the claims file (fig6c-decay-length):
-    'a' time from onset to the first sample below 0 (120 s when it never falls below 0);
+    'a' time from onset to the first sample below 0;
     'b' total time below 0 between 0 and +120 s;
-    'c' (a variant, not a reading of the claims file) time from the peak after onset to the first
-    sample below 0 (120 s when it never falls below 0), the Results' "time for the increased
-    calcium signal to return to baseline" read from the peak."""
+    'c' time from the peak after onset (0 to +120 s) to the first sample below 0 after it, the
+    Results' "time for the increased calcium signal to return to baseline" (added to the claims
+    file on the reader's answer of 2026-11-01).
+    A trace that never falls below 0 (after onset for 'a', after the peak for 'c') is not fixed by
+    the paper. unreturned="window" gives it the full 120 s window, the value the deposited table
+    (male_analysis_magnitude.csv, Ejaculation_decay_length_seconds) holds for every such cell, an
+    assumption; "to_end" gives the time from the start of the measure to the end of the window
+    (the shortest value it can have); "drop" gives NaN. Both are shown as variants."""
     x = long_trace - long_trace[:ONSET].mean(0)
     post = x[ONSET:]
     below = post < 0
-    if reading == "a":
-        first = np.where(below.any(0), below.argmax(0), post.shape[0])
-        return first / RATE_HZ
     if reading == "b":
         return below.sum(0) / RATE_HZ
-    if reading == "c":
-        pk = post.argmax(0)
-        out = []
-        for i in range(post.shape[1]):
-            after = np.where(post[pk[i]:, i] < 0)[0]
-            out.append(after[0] if len(after) else post.shape[0])
-        return np.array(out) / RATE_HZ
-    raise ValueError(reading)
+    if reading == "a":
+        start = np.zeros(post.shape[1], dtype=int)
+    elif reading == "c":
+        start = post.argmax(0)
+    else:
+        raise ValueError(reading)
+    out = np.empty(post.shape[1])
+    for i in range(post.shape[1]):
+        after = np.where(below[start[i]:, i])[0]
+        if len(after):
+            out[i] = after[0]
+        elif unreturned == "window":
+            out[i] = post.shape[0]
+        elif unreturned == "to_end":
+            out[i] = post.shape[0] - start[i]
+        elif unreturned == "drop":
+            out[i] = np.nan
+        else:
+            raise ValueError(unreturned)
+    return out / RATE_HZ
 
 
 def elbow_pcs(explained_variance_ratio):
