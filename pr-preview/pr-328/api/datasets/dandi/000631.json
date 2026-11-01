@@ -1,0 +1,440 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000631",
+  "label": "DANDI:000631"
+ },
+ "page": "datasets/dandi/000631/",
+ "generated": "2026-11-01T17:35:27+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 4,
+  "partially_reproduced": 2,
+  "not_reproduced": 0,
+  "blocked": 6
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000631-kim-2023-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000631",
+    "version": "0.231012.1508",
+    "doi": "10.48324/dandi.000631/0.231012.1508"
+   },
+   "key": "dandi:000631",
+   "label": "DANDI:000631",
+   "dataset_version": "0.231012.1508",
+   "paper": "10.3390/ijms241310921",
+   "paper_title": "Control of the Electroporation Efficiency of Nanosecond Pulses by Swinging the Electric Field Vector Direction",
+   "date": "2026-10-31",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-12"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41163124778"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000631-kim-2023",
+   "entry_title": "Electroporation by paired nanosecond pulses against the angle of field direction change (Kim et al. 2023)",
+   "description": "Tests the findings of Kim, Semenov, Kiester, Keppler, Ibey, Bixler, Colunga Biancatelli and Pakhomov (2023) on dandiset 000631, which holds stitched YO-PRO-1 and MemBrite images of BPAE monolayers after paired-pulse and single-pulse trains in a triangular electrode array at 1 Hz and 833 kHz. Electrode footprints are found in each image, ROIs are placed along the bisector, the angle of field direction change is computed from field models, and uptake is compared between paired and single trains (Figures 2 and 4). The square-array data of Figure 3 and the strobe imaging of Figure 5 are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_kim_2023.ipynb",
+     "title": "Reproducing Kim et al. (2023) from dandiset 000631",
+     "executed": "notebooks/000631-kim-2023/reproduce_kim_2023.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig2-180-cancellation",
+     "statement": "At a 180 degree change of field direction (near the base electrodes), paired-pulse trains give less YP uptake than single-pulse trains, 2-fold less at 1 Hz and 20-fold less at 833 kHz.",
+     "source": "Results, 2.1, paragraph 3; Figure 2",
+     "quote": "Maximum cancellation was expectedly observed at the 180\u00b0 vector change, reducing YP uptake compared to single-pulse trains 2-fold at 1 Hz and as much as 20-fold at 833 kHz",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "Measured values are on layout L2, angle model B, background (b), normalisation (i), at the ROI of largest angle. Cancellation is present at both frequencies under every reading and is stronger at 833 kHz, but the two fold values are never both within tolerance. With background (b), L2 gives 2.42 to 2.51 fold at 1 Hz (expected 2 +- 0.2) and 11.77 to 21.98 at 833 kHz, the ROI of lowest value giving 18.52 to 21.98 (within 20 +- 2); L1 gives 1.92 to 2.48 at 1 Hz (1.92 and 2.19 within tolerance) and 11.22 to 11.48 at 833 kHz. The same pattern holds when the background is the lumen alone, the wall ring alone or a 0.6 mm disk (L2, 1 Hz 2.40 to 2.54, 833 kHz at the lowest ROI 16.44 to 22.80). The 833 kHz match on L2 rests on the lowest of 32 ROIs, which is biased toward a larger fold; the lowest ROI and its two neighbours give 16.42 to 18.77 fold, the mean of all ROIs above 160 degrees 13.10 to 13.93, and the lowest ROI with the bootstrap bias removed 16.22 to 20.14. Per paired dish at 833 kHz, ROIs 0 to 7 are 3.5 to 10.0% of the mean control, so no one dish sets the value. Without subtraction (a) the values are 1.26 to 1.55 and 2.66 to 3.38 fold, a variant that decides nothing. With the 1 Hz controls of 8-9-21 only, 1 Hz gives 2.26 to 2.27 fold under (b). What the reader's answer changed (questions/000631.yaml) is that reading (a), no correction for spontaneous uptake, is not one the paper allows. The criterion is now judged under background (b) alone, with (a) as a variant. The outcome is unchanged (partially reproduced before and after), as (a) and (b) both failed the criterion.",
+     "deviations": [
+      "The files give no pixel size. 0.65 um per pixel is assumed, from the ORCA-Flash4 camera and the 10x objective of Methods 4.4 (6.5 um camera pixels). It is consistent with the needle footprints (median dark radius 0.72 mm; the needles are 1.5 mm in outside diameter, Methods 4.2), with 32 ROIs of 200 um spanning base to apex (6.4 mm against 6.12 mm from the base midpoint to the apex centre, Methods 4.4), and with the field of 5 to 10 kV/cm along the bisector (Results 2.1; 4.6 to 12.7 kV/cm here).",
+      "The electrode positions are found in each image from the dark footprints (the ImageSeries description, \"dark circles indicate electrode footprints\") by fitting a rigid triangle; the paper placed its ROIs in MetaMorph (Methods 4.4) and the files hold no ROIs.",
+      "ROI layout, left open by the paper (claims file, opening comment). The claims file's standard choice, 32 contiguous ROIs from the base midpoint toward the apex outside the footprints, does not fit (5.37 mm from the base midpoint to the apex footprint against 6.4 mm for 32 ROIs of 200 um), so this is a deviation from the claims file. Two layouts were run. L1 has 32 ROIs evenly spaced from the base midpoint to the apex footprint, overlapping by about 15%; L2 has 32 contiguous ROIs from the apex footprint back along the bisector past the base midpoint. L2 decides and L1 is a variant, as an assumption. L2 keeps the ROIs 200 um and side by side (Methods 4.4) and outside the footprints, and its first ROI lies at the point where the angle is 180 degrees (0.84 to 1.03 mm beyond the base midpoint, against 0.85 to 1.00 mm for that ROI), so its angles run from 180 degrees at the base to near 0 at the apex, as Results 2.1 says (\"the electric field vector angle gradually changed from 180\u00b0 at the base to nearly 0\u00b0 at the apex electrode\"). L1 starts at the base midpoint, where the angle is 168 to 170 degrees, and never reaches 180.",
+      "The angle of each ROI is computed with the claims file's readings B (2D conduction on a 0.1 mm grid, equipotential disks of 1.5 mm, insulating wall of 17.5 mm radius centred on the image) and C (line sources at the electrode centres), as the paper does not say how the angles were obtained. Both give the same outcome.",
+      "Controls are the five unique 1 Hz single-pulse dishes (three of 7-31-21, two of 8-9-21) and the three 833 kHz ones (10-5-21). The paper does not give the number of control dishes or how they were matched with the paired dishes (Results 2.1, \"The values measured in control samples at 1 Hz and 833 kHz were taken as 100%\"); normalisation (i) averages the ratio over every pairing of a paired and a control dish. Control subsets are shown as variants.",
+      "Background reading (b) subtracts the mean YP within 0.5 mm of the three electrode centres of the same dish (Methods 4.4, footprint measurements made \"to account for 'spontaneous' YP uptake\"). The radius is a choice; the disk covers the needle lumen (0.25 mm radius, Methods 4.2) and the inner wall, where the YP profile is flat (to about 0.55 mm, apart from bright material in the lumen of the three 833 kHz controls). The lumen alone, the wall ring (0.25 to 0.5 mm) alone and a 0.6 mm disk are run as sensitivity checks.",
+      "BPAE-18 of 7-31-21 is left out as the same recording as BPAE-03; BPAE-13 of 8-24-21, whose session description is of another experiment, is used as a paired dish from its image, and the values without it are shown as a variant."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-crossover-angle",
+     "statement": "Cancellation weakens as the angle is reduced, and paired and single pulses become equally effective at about 160 degrees at 1 Hz and about 130 degrees at 833 kHz.",
+     "source": "Results, 2.1, paragraph 3; Figure 2",
+     "quote": "Cancellation weakened as the angle was reduced, and at about 160\u00b0 (1 Hz) or 130\u00b0 (833 kHz), the effects of paired-pulse trains became the same as those of single-pulse ones",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "Measured values are on layout L2, model B, background (b), normalisation (i). Under all 16 readings the crossover is 145.3 to 149.6 degrees at 1 Hz (160 +- 16) and 124.1 to 125.9 at 833 kHz (130 +- 13), and under every footprint region of the background 146.9 to 149.6 and 125.0 to 128.6. The 1 Hz angle is 1.3 to 5.6 degrees above the lower bound and rests on one ROI: on L2, ROI 11 (147.8 degrees) is above 100% while ROIs 12 to 14 are 79 to 93%. Without ROI 11 the 1 Hz crossover is 143.3 or 131.4 degrees (normalisations i and ii), and on a running mean of three ROIs 135.6 or 132.8, all below the tolerance; the 833 kHz crossover moves by at most 4.2 degrees under the same checks. It also depends on the controls; with the two 1 Hz controls of 8-9-21 only it is 130.5 to 161.4 degrees, with the three of 7-31-21 149.3 to 149.8. The criterion as written (interpolation between neighbouring ROIs) is met, so the outcome is reproduced, with low confidence at 1 Hz. What the reader's answer changed (questions/000631.yaml) is that the criterion is now judged under background (b) alone, with (a) a variant. The 8 readings under (b) all meet it, so the outcome is unchanged (reproduced before and after).",
+     "deviations": [
+      "The files give no pixel size. 0.65 um per pixel is assumed, from the ORCA-Flash4 camera and the 10x objective of Methods 4.4 (6.5 um camera pixels). It is consistent with the needle footprints (median dark radius 0.72 mm; the needles are 1.5 mm in outside diameter, Methods 4.2), with 32 ROIs of 200 um spanning base to apex (6.4 mm against 6.12 mm from the base midpoint to the apex centre, Methods 4.4), and with the field of 5 to 10 kV/cm along the bisector (Results 2.1; 4.6 to 12.7 kV/cm here).",
+      "The electrode positions are found in each image from the dark footprints (the ImageSeries description, \"dark circles indicate electrode footprints\") by fitting a rigid triangle; the paper placed its ROIs in MetaMorph (Methods 4.4) and the files hold no ROIs.",
+      "ROI layout, left open by the paper (claims file, opening comment). The claims file's standard choice, 32 contiguous ROIs from the base midpoint toward the apex outside the footprints, does not fit (5.37 mm from the base midpoint to the apex footprint against 6.4 mm for 32 ROIs of 200 um), so this is a deviation from the claims file. Two layouts were run. L1 has 32 ROIs evenly spaced from the base midpoint to the apex footprint, overlapping by about 15%; L2 has 32 contiguous ROIs from the apex footprint back along the bisector past the base midpoint. L2 decides and L1 is a variant, as an assumption. L2 keeps the ROIs 200 um and side by side (Methods 4.4) and outside the footprints, and its first ROI lies at the point where the angle is 180 degrees (0.84 to 1.03 mm beyond the base midpoint, against 0.85 to 1.00 mm for that ROI), so its angles run from 180 degrees at the base to near 0 at the apex, as Results 2.1 says (\"the electric field vector angle gradually changed from 180\u00b0 at the base to nearly 0\u00b0 at the apex electrode\"). L1 starts at the base midpoint, where the angle is 168 to 170 degrees, and never reaches 180.",
+      "The angle of each ROI is computed with the claims file's readings B (2D conduction on a 0.1 mm grid, equipotential disks of 1.5 mm, insulating wall of 17.5 mm radius centred on the image) and C (line sources at the electrode centres), as the paper does not say how the angles were obtained. Both give the same outcome.",
+      "Controls are the five unique 1 Hz single-pulse dishes (three of 7-31-21, two of 8-9-21) and the three 833 kHz ones (10-5-21). The paper does not give the number of control dishes or how they were matched with the paired dishes (Results 2.1, \"The values measured in control samples at 1 Hz and 833 kHz were taken as 100%\"); normalisation (i) averages the ratio over every pairing of a paired and a control dish. Control subsets are shown as variants.",
+      "Background reading (b) subtracts the mean YP within 0.5 mm of the three electrode centres of the same dish (Methods 4.4, footprint measurements made \"to account for 'spontaneous' YP uptake\"). The radius is a choice; the disk covers the needle lumen (0.25 mm radius, Methods 4.2) and the inner wall, where the YP profile is flat (to about 0.55 mm, apart from bright material in the lumen of the three 833 kHz controls). The lumen alone, the wall ring (0.25 to 0.5 mm) alone and a 0.6 mm disk are run as sensitivity checks.",
+      "BPAE-18 of 7-31-21 is left out as the same recording as BPAE-03; BPAE-13 of 8-24-21, whose session description is of another experiment, is used as a paired dish from its image, and the values without it are shown as a variant."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-facilitation-plateau",
+     "statement": "Below the crossover, paired pulses enhance electroporation up to about three-fold over single pulses at 90 to 100 degrees for both frequencies, followed by a plateau down to 0 degrees, so pulses at 90 degrees and at smaller angles are as efficient as co-directional pulses.",
+     "source": "Results, 2.1, paragraphs 3 and 4; Figure 2; Discussion, paragraph 1",
+     "quote": "Further reduction of the angle enhanced electroporation, up to about three-fold at 90\u2013100\u00b0 for both nsEP frequencies, followed by a plateau all the way to 0\u00b0",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "Measured values are on layout L2, model B, background (b), normalisation (i), level reading (1); the angle is that of 1 Hz (833 kHz, 94.6 degrees). Facilitation below the crossover is present at both frequencies; the three-fold plateau from 90 to 100 degrees holds only at 833 kHz. At 833 kHz with background (b) the level at 90 to 100 degrees is 2.29 to 2.78 fold and the mean from 100 degrees down 2.80 to 2.96; on L2 it is reached at 94.6 to 96.1 degrees and the slope over 0 to 90 degrees has a 95% CI that includes zero (P1). Level reading (1) is a single ROI on L2 (94.3 or 94.5 degrees), one or two on L1. At 1 Hz the value keeps rising as the angle falls (slope -2.00 to -3.41 % per degree under (b), CI excluding zero under every reading); the level at 90 to 100 degrees is 1.15 to 1.36 fold and the mean from 100 degrees down 2.07 to 2.36, and 1.14 to 1.25 and 2.08 to 2.37 on L2 under every footprint region. The 833 kHz half, which makes the outcome partial, holds only with the 0.5 mm and 0.6 mm footprint disks (2.58 to 3.09 fold, reached at 94.6 degrees on L2); with the lumen alone the levels are 3.39 to 13.31 fold, none within 2.7 to 3.3, and with the wall ring alone the one level within tolerance (2.79) is reached at 80.2 degrees, outside 81 to 110. Without background subtraction no level is within 2.7 to 3.3 (1.08 to 1.74). P2 needs ROIs below 10 degrees and is untestable under model C, which has none (smallest angle about 22 degrees), so model B decides it. Under background (b) the criterion is not met under either plateau reading, so it is not blocked. What the reader's answer changed (questions/000631.yaml) is that the criterion is now judged under (b) alone, with (a) a variant that no longer could block it; the outcome is unchanged (partially reproduced before and after). The statement's \"as efficient as co-directional pulses\" holds at 833 kHz with background (b) and not at 1 Hz.",
+     "deviations": [
+      "The files give no pixel size. 0.65 um per pixel is assumed, from the ORCA-Flash4 camera and the 10x objective of Methods 4.4 (6.5 um camera pixels). It is consistent with the needle footprints (median dark radius 0.72 mm; the needles are 1.5 mm in outside diameter, Methods 4.2), with 32 ROIs of 200 um spanning base to apex (6.4 mm against 6.12 mm from the base midpoint to the apex centre, Methods 4.4), and with the field of 5 to 10 kV/cm along the bisector (Results 2.1; 4.6 to 12.7 kV/cm here).",
+      "The electrode positions are found in each image from the dark footprints (the ImageSeries description, \"dark circles indicate electrode footprints\") by fitting a rigid triangle; the paper placed its ROIs in MetaMorph (Methods 4.4) and the files hold no ROIs.",
+      "ROI layout, left open by the paper (claims file, opening comment). The claims file's standard choice, 32 contiguous ROIs from the base midpoint toward the apex outside the footprints, does not fit (5.37 mm from the base midpoint to the apex footprint against 6.4 mm for 32 ROIs of 200 um), so this is a deviation from the claims file. Two layouts were run. L1 has 32 ROIs evenly spaced from the base midpoint to the apex footprint, overlapping by about 15%; L2 has 32 contiguous ROIs from the apex footprint back along the bisector past the base midpoint. L2 decides and L1 is a variant, as an assumption. L2 keeps the ROIs 200 um and side by side (Methods 4.4) and outside the footprints, and its first ROI lies at the point where the angle is 180 degrees (0.84 to 1.03 mm beyond the base midpoint, against 0.85 to 1.00 mm for that ROI), so its angles run from 180 degrees at the base to near 0 at the apex, as Results 2.1 says (\"the electric field vector angle gradually changed from 180\u00b0 at the base to nearly 0\u00b0 at the apex electrode\"). L1 starts at the base midpoint, where the angle is 168 to 170 degrees, and never reaches 180.",
+      "The angle of each ROI is computed with the claims file's readings B (2D conduction on a 0.1 mm grid, equipotential disks of 1.5 mm, insulating wall of 17.5 mm radius centred on the image) and C (line sources at the electrode centres), as the paper does not say how the angles were obtained. Both give the same outcome.",
+      "Controls are the five unique 1 Hz single-pulse dishes (three of 7-31-21, two of 8-9-21) and the three 833 kHz ones (10-5-21). The paper does not give the number of control dishes or how they were matched with the paired dishes (Results 2.1, \"The values measured in control samples at 1 Hz and 833 kHz were taken as 100%\"); normalisation (i) averages the ratio over every pairing of a paired and a control dish. Control subsets are shown as variants.",
+      "Background reading (b) subtracts the mean YP within 0.5 mm of the three electrode centres of the same dish (Methods 4.4, footprint measurements made \"to account for 'spontaneous' YP uptake\"). The radius is a choice; the disk covers the needle lumen (0.25 mm radius, Methods 4.2) and the inner wall, where the YP profile is flat (to about 0.55 mm, apart from bright material in the lumen of the three 833 kHz controls). The lumen alone, the wall ring (0.25 to 0.5 mm) alone and a 0.6 mm disk are run as sensitivity checks.",
+      "BPAE-18 of 7-31-21 is left out as the same recording as BPAE-03; BPAE-13 of 8-24-21, whose session description is of another experiment, is used as a paired dish from its image, and the values without it are shown as a variant.",
+      "The plateau readings P1 and P2 are the claims file's; the paper gives no test."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-frequency-dependence",
+     "statement": "Pairing pulses enhances electroporation at small angles and inhibits it at large angles in a frequency-dependent manner, with stronger cancellation at 833 kHz than at 1 Hz.",
+     "source": "Figure 2 legend; Results, 2.1, paragraph 3",
+     "quote": "Note that applying pulses in pairs enhanced electroporation at small angles but inhibited them at large angles in a frequency-dependent manner",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "Under all 16 readings the value at the 180 degree reading is lower at 833 kHz than at 1 Hz (L2, background b, 8.5 against 41.3%; background a, 37.6 against 79.3%), the crossover is smaller at 833 kHz (124.1 to 125.9 against 145.3 to 149.6 degrees), and at both frequencies the value is above 100% at the smallest angle (195.9 to 323.4%) and below 100% at the largest (7.9 to 79.3%). The order of the crossovers holds under every footprint region and with the 1 Hz crossover from a running mean of three ROIs (132.8 to 135.6 against 128.7 to 128.9 degrees). What the reader's answer changed (questions/000631.yaml) is that the criterion is now judged under background (b) alone, with (a) a variant. Background (b) decides and the variant (a) agrees, so the outcome is unchanged (reproduced before and after).",
+     "deviations": [
+      "The files give no pixel size. 0.65 um per pixel is assumed, from the ORCA-Flash4 camera and the 10x objective of Methods 4.4 (6.5 um camera pixels). It is consistent with the needle footprints (median dark radius 0.72 mm; the needles are 1.5 mm in outside diameter, Methods 4.2), with 32 ROIs of 200 um spanning base to apex (6.4 mm against 6.12 mm from the base midpoint to the apex centre, Methods 4.4), and with the field of 5 to 10 kV/cm along the bisector (Results 2.1; 4.6 to 12.7 kV/cm here).",
+      "The electrode positions are found in each image from the dark footprints (the ImageSeries description, \"dark circles indicate electrode footprints\") by fitting a rigid triangle; the paper placed its ROIs in MetaMorph (Methods 4.4) and the files hold no ROIs.",
+      "ROI layout, left open by the paper (claims file, opening comment). The claims file's standard choice, 32 contiguous ROIs from the base midpoint toward the apex outside the footprints, does not fit (5.37 mm from the base midpoint to the apex footprint against 6.4 mm for 32 ROIs of 200 um), so this is a deviation from the claims file. Two layouts were run. L1 has 32 ROIs evenly spaced from the base midpoint to the apex footprint, overlapping by about 15%; L2 has 32 contiguous ROIs from the apex footprint back along the bisector past the base midpoint. L2 decides and L1 is a variant, as an assumption. L2 keeps the ROIs 200 um and side by side (Methods 4.4) and outside the footprints, and its first ROI lies at the point where the angle is 180 degrees (0.84 to 1.03 mm beyond the base midpoint, against 0.85 to 1.00 mm for that ROI), so its angles run from 180 degrees at the base to near 0 at the apex, as Results 2.1 says (\"the electric field vector angle gradually changed from 180\u00b0 at the base to nearly 0\u00b0 at the apex electrode\"). L1 starts at the base midpoint, where the angle is 168 to 170 degrees, and never reaches 180.",
+      "The angle of each ROI is computed with the claims file's readings B (2D conduction on a 0.1 mm grid, equipotential disks of 1.5 mm, insulating wall of 17.5 mm radius centred on the image) and C (line sources at the electrode centres), as the paper does not say how the angles were obtained. Both give the same outcome.",
+      "Controls are the five unique 1 Hz single-pulse dishes (three of 7-31-21, two of 8-9-21) and the three 833 kHz ones (10-5-21). The paper does not give the number of control dishes or how they were matched with the paired dishes (Results 2.1, \"The values measured in control samples at 1 Hz and 833 kHz were taken as 100%\"); normalisation (i) averages the ratio over every pairing of a paired and a control dish. Control subsets are shown as variants.",
+      "Background reading (b) subtracts the mean YP within 0.5 mm of the three electrode centres of the same dish (Methods 4.4, footprint measurements made \"to account for 'spontaneous' YP uptake\"). The radius is a choice; the disk covers the needle lumen (0.25 mm radius, Methods 4.2) and the inner wall, where the YP profile is flat (to about 0.55 mm, apart from bright material in the lumen of the three 833 kHz controls). The lumen alone, the wall ring (0.25 to 0.5 mm) alone and a 0.6 mm disk are run as sensitivity checks.",
+      "BPAE-18 of 7-31-21 is left out as the same recording as BPAE-03; BPAE-13 of 8-24-21, whose session description is of another experiment, is used as a paired dish from its image, and the values without it are shown as a variant."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-60-fold-co-counter",
+     "statement": "At 833 kHz, co-directional and counter-directional pulse pairs differ about 60-fold in electroporation efficiency.",
+     "source": "Results, 2.3, paragraph 1; Figure 2",
+     "quote": "The profound, 60-fold difference in electroporation efficiency of co- and counter-directional nsEPs at 833 kHz ( Figure 2 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "Reproduced with low confidence. The measured value is on L2, model B, background (b), ratio (b), plateau level reading (1) over the ROI of lowest value, normalisation (ii); the ratio (a) and the plateau level over the ROI of largest angle are not within tolerance. On L2 with background (b), the plateau level over the ROI of lowest value is 51.5 to 61.6 fold under both angle models (three of four values within 60 +- 6, namely 56.8, 54.8 and 61.6) and the other ratios 32.7 to 36.2. Three things the outcome rests on are checked in the notebook. (1) Layout: on L1 the ratios under (b) are 25.8 to 34.5, not meeting the criterion; L2 decides as an assumption (deviations). (2) The lowest of 32 ROIs is biased toward a larger fold. A bootstrap over dishes puts the bias at 0.4 to 0.8 percentage points (level 2 over the corrected minimum 56.9 under normalisation ii, 48.2 under i), but it keeps each dish's ROI-to-ROI noise and so underestimates the bias of a minimum over 32 ROIs; it does not settle it. Over less selected 180 degree values the ratio is outside 60 +- 6, 45.7 to 52.6 fold over the lowest ROI and its two neighbours and 36.0 to 39.1 over the mean of the ROIs above 160 degrees, so the criterion is met only at the single lowest ROI. (3) Footprint region of the background: the criterion is met with the 0.5 mm disk, the 0.6 mm disk and the wall ring alone, and not with the lumen alone (33.3 to 218.9, scattered), because the lumen of the three 833 kHz controls holds bright material that puts their lumen mean up to 66 counts above the wall ring. The 833 kHz paired dishes and controls were imaged on different days with different MemBrite levels, and the files give no exposure or gain. The variant without correction (a) gives 3.6 to 5.8 on both layouts. Paired uptake alone is 25.0 times higher at the apex end than at the base end on L2 with (b), 4.5 with (a). What the reader's answer changed (questions/000631.yaml) is that reading (a) is not one the paper allows, and the criterion is now judged under background (b) alone. The claim was blocked (methods_underspecified) before the answer only because (a) and (b) gave different outcomes; it is now reproduced, on layout L2.",
+     "deviations": [
+      "The files give no pixel size. 0.65 um per pixel is assumed, from the ORCA-Flash4 camera and the 10x objective of Methods 4.4 (6.5 um camera pixels). It is consistent with the needle footprints (median dark radius 0.72 mm; the needles are 1.5 mm in outside diameter, Methods 4.2), with 32 ROIs of 200 um spanning base to apex (6.4 mm against 6.12 mm from the base midpoint to the apex centre, Methods 4.4), and with the field of 5 to 10 kV/cm along the bisector (Results 2.1; 4.6 to 12.7 kV/cm here).",
+      "The electrode positions are found in each image from the dark footprints (the ImageSeries description, \"dark circles indicate electrode footprints\") by fitting a rigid triangle; the paper placed its ROIs in MetaMorph (Methods 4.4) and the files hold no ROIs.",
+      "ROI layout, left open by the paper (claims file, opening comment). The claims file's standard choice, 32 contiguous ROIs from the base midpoint toward the apex outside the footprints, does not fit (5.37 mm from the base midpoint to the apex footprint against 6.4 mm for 32 ROIs of 200 um), so this is a deviation from the claims file. Two layouts were run. L1 has 32 ROIs evenly spaced from the base midpoint to the apex footprint, overlapping by about 15%; L2 has 32 contiguous ROIs from the apex footprint back along the bisector past the base midpoint. L2 decides and L1 is a variant, as an assumption. L2 keeps the ROIs 200 um and side by side (Methods 4.4) and outside the footprints, and its first ROI lies at the point where the angle is 180 degrees (0.84 to 1.03 mm beyond the base midpoint, against 0.85 to 1.00 mm for that ROI), so its angles run from 180 degrees at the base to near 0 at the apex, as Results 2.1 says (\"the electric field vector angle gradually changed from 180\u00b0 at the base to nearly 0\u00b0 at the apex electrode\"). L1 starts at the base midpoint, where the angle is 168 to 170 degrees, and never reaches 180.",
+      "The angle of each ROI is computed with the claims file's readings B (2D conduction on a 0.1 mm grid, equipotential disks of 1.5 mm, insulating wall of 17.5 mm radius centred on the image) and C (line sources at the electrode centres), as the paper does not say how the angles were obtained. Both give the same outcome.",
+      "Controls are the five unique 1 Hz single-pulse dishes (three of 7-31-21, two of 8-9-21) and the three 833 kHz ones (10-5-21). The paper does not give the number of control dishes or how they were matched with the paired dishes (Results 2.1, \"The values measured in control samples at 1 Hz and 833 kHz were taken as 100%\"); normalisation (i) averages the ratio over every pairing of a paired and a control dish. Control subsets are shown as variants.",
+      "Background reading (b) subtracts the mean YP within 0.5 mm of the three electrode centres of the same dish (Methods 4.4, footprint measurements made \"to account for 'spontaneous' YP uptake\"). The radius is a choice; the disk covers the needle lumen (0.25 mm radius, Methods 4.2) and the inner wall, where the YP profile is flat (to about 0.55 mm, apart from bright material in the lumen of the three 833 kHz controls). The lumen alone, the wall ring (0.25 to 0.5 mm) alone and a 0.6 mm disk are run as sensitivity checks.",
+      "BPAE-18 of 7-31-21 is left out as the same recording as BPAE-03; BPAE-13 of 8-24-21, whose session description is of another experiment, is used as a paired dish from its image, and the values without it are shown as a variant."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-1hz-co-equals-cross",
+     "statement": "In the square array at 1 Hz, co-directional and cross-directional (90 degree) paired pulses have the same electroporation efficiency at the array center.",
+     "source": "Results, 2.2, paragraph 1; Figure 3",
+     "quote": "Consistently with the measurements in Figure 2 , co- and cross-directional pulses at 1 Hz had the same electroporation efficiency ( Figure 3 )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The square-array experiment of Figure 3 (four 1.5 mm needles, 4 paired pulses at 1 Hz or 770 kHz, 10 kV/cm) is not in the dandiset: its 15 files are all triangular-array dishes (three footprints in every image) of the Figure 2 protocol at 1 Hz and 833 kHz. The paper says the data are available on request; they are not public elsewhere.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-770khz-co-enhanced",
+     "statement": "Raising the pulse frequency from 1 Hz to 770 kHz enhances electroporation by co-directional paired pulses, attributed to temporal summation of the induced membrane potential.",
+     "source": "Results, 2.2, paragraph 1; Figure 3",
+     "quote": "Increasing the pulse frequency to 770 kHz enhanced electroporation by the co-directional pulses because of the temporal summation of the induced membrane potential",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The square-array experiment of Figure 3 (four 1.5 mm needles, 4 paired pulses at 1 Hz or 770 kHz, 10 kV/cm) is not in the dandiset: its 15 files are all triangular-array dishes (three footprints in every image) of the Figure 2 protocol at 1 Hz and 833 kHz. The paper says the data are available on request; they are not public elsewhere. The reader's answer (questions/000631.yaml) changed its criterion to background reading (b) alone; it remains blocked for the missing data.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-770khz-cross-same-as-1hz",
+     "statement": "Cross-directional paired pulses at 770 kHz are just as effective as at 1 Hz; charging two different membrane regions does not cause summation.",
+     "source": "Results, 2.2, paragraph 1; Figure 3",
+     "quote": "Interestingly, charging two different regions of the cell membrane did not cause summation, making cross-directional pulses at 770 kHz just as effective as at 1 Hz",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The square-array experiment of Figure 3 (four 1.5 mm needles, 4 paired pulses at 1 Hz or 770 kHz, 10 kV/cm) is not in the dandiset: its 15 files are all triangular-array dishes (three footprints in every image) of the Figure 2 protocol at 1 Hz and 833 kHz. The paper says the data are available on request; they are not public elsewhere.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-no-area-dependence",
+     "statement": "Unlike with long pulses, YP uptake after nsEP does not depend on whether the same or a larger area of the cell membrane is electroporated.",
+     "source": "Results, 2.2, paragraph 1 (last sentence)",
+     "quote": "Contrary to data with \u201clong\u201d pulses [ 10 , 11 ], electroporative dye uptake after nsEP did not depend on whether we electroporated the same or a larger area of the cell membrane",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Judged by fig3-1hz-co-equals-cross, which is blocked because the Figure 3 data are not in the dandiset. The Figure 2 evidence the claims file reports alongside is fig2-facilitation-plateau (partially reproduced: a plateau from 90 degrees at 833 kHz, none at 1 Hz).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-unipolar-pattern",
+     "statement": "With single-pulse trains on one base electrode, YP uptake follows the electric field map; with paired pulses on both base electrodes at 833 kHz, uptake is strong near the grounded apex electrode and weak or absent near the base electrodes despite the strong field there.",
+     "source": "Results, 2.3, paragraph 1; Figure 4A to 4C",
+     "quote": "In control cell monolayers exposed to a train of five single pulses applied to one of the base electrodes (833 kHz, 4 kV), the distribution of YP fluorescence ( Figure 4 A) simply followed the electric field strength map ... produced a strong effect near the apex electrode (ground) but weak or no effect near the base electrodes, despite the strong electric field there",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_kim_2023.ipynb",
+     "notes": "In each of the three 833 kHz paired dishes, uptake next to the apex exceeds uptake next to both base electrodes under all eight readings (ROI touching the footprint or 200 um farther out, on the line to the centroid or around the electrode, background a or b); the smallest per-dish ratio of apex to the larger base is 1.86 to 3.68 across readings. In each of the three single-pulse dishes the base taken as energised exceeds the apex (smallest per-dish ratio 1.40 to 2.18), and the other base also exceeds the apex on average (1.25 to 2.31). Spearman correlation of uptake with field strength over about 1070 ROIs per dish is 0.50 to 0.96 in the single-pulse dishes and -0.10 to -0.26 in the paired dishes. What the reader's answer changed (questions/000631.yaml) is that the criterion is now judged under background (b) alone, with (a) a variant. Both meet it under every reading, so the outcome is unchanged (reproduced before and after).",
+     "deviations": [
+      "The files give no pixel size. 0.65 um per pixel is assumed, from the ORCA-Flash4 camera and the 10x objective of Methods 4.4 (6.5 um camera pixels). It is consistent with the needle footprints (median dark radius 0.72 mm; the needles are 1.5 mm in outside diameter, Methods 4.2), with 32 ROIs of 200 um spanning base to apex (6.4 mm against 6.12 mm from the base midpoint to the apex centre, Methods 4.4), and with the field of 5 to 10 kV/cm along the bisector (Results 2.1; 4.6 to 12.7 kV/cm here).",
+      "The electrode positions are found in each image from the dark footprints (the ImageSeries description, \"dark circles indicate electrode footprints\") by fitting a rigid triangle; the paper placed its ROIs in MetaMorph (Methods 4.4) and the files hold no ROIs.",
+      "Which side of an electrode the adjacent ROI is on is not given; the ROI on the line to the triangle's centroid and the mean of eight ROIs around the electrode are both run, and agree.",
+      "The files do not say which base electrode was energised in the single-pulse dishes; the base with the larger adjacent uptake is taken as energised.",
+      "The field map is computed with the claims file's models B and C over a grid of 200 um ROIs within 4 mm of the triangle's centroid; the paper's map is a Sim4Life simulation (Methods 4.3).",
+      "Background reading (b) subtracts the mean YP within 0.5 mm of the three electrode centres of the same dish (Methods 4.4, footprint measurements made \"to account for 'spontaneous' YP uptake\"). The radius is a choice; the disk covers the needle lumen (0.25 mm radius, Methods 4.2) and the inner wall, where the YP profile is flat (to about 0.55 mm, apart from bright material in the lumen of the three 833 kHz controls). The lumen alone, the wall ring (0.25 to 0.5 mm) alone and a 0.6 mm disk are run as sensitivity checks."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-base-sawtooth",
+     "statement": "Cells between the base electrodes show sawtooth-like membrane potential changes in synchrony with the alternating pulses, about a 10% FluoVolt emission increase at the cathode-facing pole and a 10% decrease at the anode-facing pole.",
+     "source": "Results, 2.4, paragraph 2; Figure 5",
+     "quote": "Cells placed between the base electrodes displayed sawtooth-like changes in membrane potential in synchrony with the applied pulses ( Figure 5 ). Depolarization at the cathode-facing pole of the cell manifested as a ~10% emission increase, and hyperpolarization at the anode-facing pole caused a ~10% emission decrease",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The FluoVolt strobe imaging of CHO-K1 cells (Figure 5, Methods 4.5), including cells near the base, is not in the dandiset, which holds only the BPAE monolayer images of the triangular array. The paper says the data are available on request; they are not public elsewhere.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-apex-larger-polarization",
+     "statement": "Cells near the apex reach a much larger polarization, about 25% FluoVolt emission change, more than twice that near the base electrodes, which follows the envelope of the pulse train and not the individual pulses.",
+     "source": "Results, 2.4, paragraph 2; Figure 5",
+     "quote": "In stark contrast, the cells near the apex reached a much higher polarization (~25% change in FluoVolt emission), which followed the envelope of the pulse train but not the individual pulses of it",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The FluoVolt strobe imaging of CHO-K1 cells (Figure 5, Methods 4.5), including cells near the apex, is not in the dandiset, which holds only the BPAE monolayer images of the triangular array. The paper says the data are available on request; they are not public elsewhere.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "BPAE-03 and BPAE-18 of 7-31-21 (1 Hz, single-pulse trains) are the same recording deposited twice as two subjects: every compressed image chunk is identical and both have session start time 2021-07-31T20:19:49-04:00.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The file of subject 600ns_4kV_0,8MHz_BP_8-24-21_BPAE_13, filed with the 833 kHz paired-pulse dishes, has the session id BPAE_5xBipolar_0,83MHz and the description of another experiment (bipolar pulses between two parallel cylinders 3 mm apart); its image shows the three footprints of the triangular array and the paired-pulse uptake pattern of the other two 833 kHz paired dishes.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The images carry no pixel size (resolution -1, unit n.a.) and no exposure or gain, and the files hold no electrode positions, ROIs, angles of field direction change or measured values, so the paper's Figure 2 values cannot be recomputed without placing ROIs and modelling the field anew. The channel order is stated only in the ImageSeries description text, and which base electrode was energised in the single-pulse dishes is not stated. The 833 kHz controls (10-5-21) read about 431 counts of MemBrite away from the array against about 295 in the 833 kHz paired dishes (8-24-21), so without the exposure and gain it cannot be checked whether their YP values compare.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The ImageSeries description of every file says \"144 images captured in a 12x12 grid from a six-well plate\" and \"216 additional images\"; the paper's dishes are 35 mm glass-bottom dishes imaged as 216 stitched images (Methods 4.1 and 4.4).",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The square-array experiment of Figure 3 and the FluoVolt strobe imaging of Figure 5 are not in the dandiset; the paper says its data are available on request.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The dandiset has five unique 1 Hz control dishes from two days (7-31-21 and 8-9-21) and three 833 kHz controls imaged six weeks after the paired dishes; the paper gives n = 3 for Figure 2 and does not say which control dishes were used or how they were matched. With all of them the 1 Hz crossover angle is 145.3 to 149.6 degrees; with the two of 8-9-21 only it is 130.5 to 161.4.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Questions for the paper's authors. (1) Where were the 32 ROIs of Figure 2 placed along the dashed line of Figure 7B; contiguous from the apex footprint back past the base midpoint (assumed here), or between the base midpoint and the apex? The two layouts give different outcomes for the 60-fold ratio. (2) How was the angle of each ROI obtained? (3) How were the footprint measurements used to account for spontaneous uptake; subtracted from each ROI (assumed here), and from which part of the footprint, the lumen or the whole dark disk? Without it no ratio approaches 20- or 60-fold. (4) Which control dishes formed the 100% of Figure 2, and were ratios taken per dish? (5) What is the pixel size of the stitched images (0.65 um assumed)?",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-31",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The handover of the run after the reader's answer: the executed notebook with the conclusions and summary removed, the helper module and the claims file. The verifier also read the paper and listed the archive's assets. Its other points, answered in the notebook: saturation inside the ROIs (at most 0.03% of the pixels of any bisector ROI, none at 833 kHz); cross-day comparability (YP footprint levels close on every day, MemBrite about 431 counts in the 833 kHz controls against 295 in the paired dishes, exposure and gain not in the files); the choice of 1 Hz controls (all five unique dishes, subsets as variants, unchanged).",
+     "agreed": 12,
+     "of": 12,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-31",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the first revision, the helper module, the claims file and the attempt record, with the paper. The verifier agreed with all 12 outcomes and found no place where the claims file misreads the paper. Its other points: the Summary said the footprint regions change only the 60-fold outcome, though the 833 kHz half of fig2-facilitation-plateau fails with the lumen alone and the wall ring alone (corrected in the plateau result, the Summary, the README and the plateau notes); the Summary table listed the ROI layout as an assumption of fig2-crossover-angle and fig2-frequency-dependence, whose outcomes are the same on both layouts (corrected); a stale cell number in its round-1 reason for fig2-180-cancellation (annotated with the current cell); and that the 833 kHz paired dishes and controls were imaged on different days, which the files cannot settle (already stated in the notes, the Summary and the findings; unchanged).",
+     "agreed": 12,
+     "of": 12,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000631-kim-2023",
+   "type": "reproduction",
+   "title": "Electroporation by paired nanosecond pulses against the angle of field direction change (Kim et al. 2023)",
+   "description": "Tests the findings of Kim, Semenov, Kiester, Keppler, Ibey, Bixler, Colunga Biancatelli and Pakhomov (2023) on dandiset 000631, which holds stitched YO-PRO-1 and MemBrite images of BPAE monolayers after paired-pulse and single-pulse trains in a triangular electrode array at 1 Hz and 833 kHz. Electrode footprints are found in each image, ROIs are placed along the bisector, the angle of field direction change is computed from field models, and uptake is compared between paired and single trains (Figures 2 and 4). The square-array data of Figure 3 and the strobe imaging of Figure 5 are not in the dandiset.",
+   "datasets": [
+    "dandi:000631"
+   ],
+   "papers": [
+    "10.3390/ijms241310921"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_kim_2023.ipynb",
+     "title": "Reproducing Kim et al. (2023) from dandiset 000631",
+     "executed": "notebooks/000631-kim-2023/reproduce_kim_2023.html"
+    }
+   ]
+  }
+ ]
+}
