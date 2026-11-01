@@ -1,0 +1,93 @@
+# 001027, Pakhomov et al. 2023
+
+No claim reproduced, none partially, three not reproduced and 15 blocked. The
+first verification round agreed with all 18 outcomes and the second with all
+18, so there was no third round. It pins version 0.240605.1859, the only
+published version; the paper cites none and the draft is identical. The paper,
+Pakhomov, Gudvangen, Mangalanathan, Kondratiev, Redondo and Semenov, "Next
+generation CANCAN focusing for remote stimulation by nanosecond electric
+pulses", measures YO-PRO-1 (YP) uptake in CHO-K1 cells after 600-ns pulses,
+in single cells between two electrodes (Figure 4) and in monolayers under a
+quadrupole array of four needles (e1 to e4) driven by Packets 1 (4 phases), 2
+(8 phases) and 3 (8 phases with 5-us delays) in various numbers, amplitudes,
+rotations, array sizes and gaps (Figures 5 to 9), and reports that Packet 2
+focuses uptake at the array center. The claims were written from the accepted
+author manuscript in PubMed Central (PMC10247516, NIHMS1891360), the version
+of record not being open access; PMC lists no supplement and the paper links
+no code. Only the three Figure 8 claims could be tested. The other 15, on the
+single-cell time-lapse of Figure 4 and the monolayer experiments of Figures 5,
+6, 7 and 9, and `array-size-independence`, are blocked as `data_missing`.
+`fig8a-equal-center-uptake` is not reproduced: in the main reading the center
+means are 648.7 a.u. (Packet 1), 388.5 (Packet 2) and 383.4 (Packet 3), none
+within 193.5 to 258.5, and Packet 1 differs from Packets 2 and 3 (p = 0.00044
+and 0.00093); every one of 48 readings gives not reproduced, and the failure
+rests largely on the Packet 1 dishes and so on a difference between imaging
+days. `fig8a-more-uptake-near-electrodes` is not reproduced: near the
+electrodes Packet 3 (296.2 a.u.) is below Packet 2 (480.9; t = -3.88, p =
+0.012) where the claim has it above, in all 48 readings. `fig8b-packet2-best-targeting`
+is not reproduced: the normalized center is 82.8% for Packet 2, 129.4% for
+Packet 3 and 81.3% for Packet 1, against 183, 83 and 74%, and Packet 3 is
+highest in all 96 readings. Reading (b) of the Figure 8 criteria, the ROI
+next to e1, was first left out because the files do not identify e1; at round
+1's request it was run with each image label as e1, with the end most
+favourable to the claim in each dish and over all 1,048,576 assignments of
+e1, and for fig8b, where choosing e1 to suit the claim gives partially
+reproduced in 27 of 64 readings, all with 92 ROIs per diagonal, and at most
+1.5% of assignments do, the outcome is decided by reading (a). No outcome
+rests on an assumption. The author asked a reader no questions, so the answer
+run and the following author run changed nothing. Round 1 agreed with every
+outcome and asked that the possible label exchange and the imaging-day
+difference be stated as unresolved, that reading (b) be run and that per-dish
+profiles be shown, which was done. Round 2 also agreed with every outcome and
+found sentences the outputs did not support (every Protocol 2 dish said to be
+highest at the electrode ends, where dish 2 is not, dish 11's spikes left
+out, a raw triple given in the wrong Packet order, a stale sentence saying
+reading (b) cannot be run, tile steps misdescribed, and dandiset 000686 said
+to be named in notes that did not name it), which were corrected. The
+author's run took about 40 minutes (01:14 to 01:55 UTC) and nothing failed.
+The notebook ran in 233 s at first, 362 s after the answer and 346 s after
+round 1.
+
+The packet labels of the files labelled Protocol 2 and Protocol 3 appear
+exchanged with respect to the paper: the files labelled Protocol 3 (8 phases
+with 5-us delays) show the strongest central focusing (center 125 to 137% of
+the most peripheral ROIs per dish, raw) and the least uptake next to the
+electrodes, which the paper reports for Packet 2, and the files labelled
+Protocol 2 show 63 to 106%, as the paper reports for Packet 3; with the two
+labels exchanged, fig8b would be partially reproduced in 92 of 96 readings and
+reproduced in 2. Each file's description defines the protocols as the paper
+defines the packets, so the data were tested as labelled, and whether the
+labels or the paper's figure are exchanged is unresolved. The dandiset holds
+only the Figure 8 experiment, ten stitched monolayer images (Packet 1, 3
+dishes; Packet 2, 4; Packet 3, 3; first pulse 4 kV, one rotation, small
+array), and the paper names no other archive; other dandisets from the same
+group, 000686 (Figure 5 conditions, tested in its own entry), 000875,
+001025 and 001028, may hold data for Figures 5, 6, 7 and 9 but are outside the
+dataset the claims file names. The images have no pixel size (ImageSeries
+resolution 96 in nine files and 1.0 in one, unit "n.a."), so 0.65 um per
+pixel was taken from the camera and objective, and a placement that needs no
+scale gives the same outcomes. The files do not record where the electrodes
+are or which is e1, and exposure and gain are not recorded; the three Packet
+1 dishes, imaged on 24 March 2021, have about twice the background of the
+seven others (mean 308.1 a.u., against 161.8 on 17 March and 150.3 on 18
+March), so a.u. values may not be comparable between imaging days, and as a
+ratio to each dish's own background the centers are 2.11, 2.37 and 2.50. The
+files hold no cell-free region, so the background was taken inside the
+electrode footprints. The species summary is "Cricetulus griseus - Cricetulus
+aureus" for one cell line, each dish is given the age P1D, and the file of
+dish 10 names no microscope, camera or objective and starts on 18 March 2021
+at 18:50, the evening after the other Packet 2 and 3 dishes; its center (382.7
+a.u. raw) lies between the other two Protocol 3 dishes. No questions are put
+to the paper's authors, as no outcome depends on an open method choice.
+
+The author's points on the protocol: the step-2 check that every data stream
+shares a clock does not apply to files holding one image each, which the
+notebook says; there is no finding kind for the data and the paper
+disagreeing about which condition is which when the data cannot say which is
+right, and `metadata_error` was used with the finding worded as apparent;
+nothing says what `measured` should hold when the expected values are the two
+ends of a range, and the lowest and highest per-packet values were recorded;
+there is no rule for one unrunnable reading among several, here the one that
+needs e1, and the values next to each electrode were shown; and with 48 to 96
+readings per claim it is unclear how much the notebook should print, so the
+main reading was printed in full with the spread over all readings.
