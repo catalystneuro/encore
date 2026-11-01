@@ -18,7 +18,7 @@ mental navigation task.
 | Earlier peaks near multiples of 0.65 s | Not reproduced |
 | Longer periodicity on overshoot trials | Partially reproduced |
 | Single neurons code distance at onset, offset or both | Reproduced |
-| Population coding stronger at offset | Reproduced (a change to partially reproduced is proposed) |
+| Population coding stronger at offset | Partially reproduced |
 | Rate codes distance more than slope | Not reproduced |
 | Distance explains more variance than landmarks | Partially reproduced |
 | Cross-correlations conserved in the ITI | Blocked: metadata insufficient |

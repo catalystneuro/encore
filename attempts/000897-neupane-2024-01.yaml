@@ -225,36 +225,30 @@ outcomes:
   - 3 of 9 monkey M sessions have fewer than 10 trials per distance in a direction and are not used.
   - The linear fit has an intercept; the Methods write y_pred = beta X.
 - claim: fig3d-offset-coding-stronger
-  outcome: reproduced
-  assumed: true
+  outcome: partially_reproduced
   notebook: reproduce_neupane_2024.ipynb
   output: claim:fig3d-offset-coding-stronger
-  notes: With each unit centred per window and time bin, offset R2 exceeds onset R2 in both monkeys
-    (A medians 0.853 against 0.502, rank-sum Z = -6.03, p = 1.6e-09; M 0.935 against 0.808, Z =
-    -6.90, p = 5.2e-12), with the code's denoising (p = 4.2e-08 and 4.0e-14) and without distance 1
-    (p = 2.4e-11 and 4.2e-14). With the Methods' centring across both windows, A holds (p =
-    2.8e-07, denoised 5.2e-14) and M reverses (onset 0.787 against offset 0.684, Z = 6.85, p =
-    7.3e-12); without distance 1, A no longer differs (p = 0.91) and M holds (p = 4.9e-12). The mean
-    rate in the offset window is 1.36 spikes/s above the onset window in M and 0.81 below it in A.
+  notes: With each unit centred by its mean across the two windows, as the Methods state, offset R2
+    exceeds onset R2 in monkey A (p = 2.8e-07, denoised 5.2e-14) and monkey M reverses (onset 0.787
+    against offset 0.684, Z = 6.85, p = 7.3e-12; denoised 6.6e-11), so the criterion holds in one
+    monkey. Without distance 1, the Methods' control and outside the criterion, A no longer differs
+    (p = 0.91) and M gives offset above onset (p = 4.9e-12). With the variant centring per window and
+    time bin, offset R2 exceeds onset R2 in both monkeys (A medians 0.853 against 0.502, Z = -6.03, p
+    = 1.6e-09; M 0.935 against 0.808, Z = -6.90, p = 5.2e-12), with denoising (p = 4.2e-08 and
+    4.0e-14) and without distance 1 (p = 2.4e-11 and 4.2e-14). The mean rate in the offset window is
+    1.36 spikes/s above the onset window in M and 0.81 below it in A.
   deviations:
-  - The Methods centre each unit by its mean across the two windows and regress without an
-    intercept, which loads a difference between the windows' mean rates onto the coefficients. The
-    method they cite for the regression (ref. 63, Mante et al. 2013) has a constant term at each
-    time point, equivalent to centring per window and time bin, which is adopted (an assumption);
-    the readings give different outcomes, and the question is for the paper's authors (findings).
+  - The main reading centres each unit by its mean across the two windows and regresses without an
+    intercept, as the Methods state (Targeted dimensionality reduction). The method they cite for the
+    regression (ref. 63, Mante et al. 2013) has a constant term at each time point, equivalent to
+    centring per window and time bin, which is run as a variant; the readings give different
+    outcomes, and the question is for the paper's authors (findings).
+  - The criterion's variant with the code's windows (-200 to -100 ms and -400 to -300 ms on
+    time-warped bins) is not run; only the Methods' windows are.
+  - The bin of largest coefficient norm is found separately in each window; the Methods do not say
+    whether per window or across both.
   - The regression uses 20 ms bins, which the Methods do not give (a standard choice).
   - 3 of 9 monkey M sessions are not used (fewer than 10 trials per distance in a direction).
-  proposed:
-    outcome: partially_reproduced
-    reason: The Methods (Targeted dimensionality reduction) state the centring explicitly, "We first
-      centred the responses of each neuron by subtracting its mean response across the two windows
-      of interest before joystick onset and offset", and the claims file takes the Methods first, so
-      the Methods' centring is the better supported main reading and the per-bin centring a
-      variant. Under it, with distances 1 to 5 as in the criterion, offset R2 exceeds onset R2 in
-      monkey A (p = 2.8e-07, denoised 5.2e-14) and monkey M reverses (onset 0.787 against offset
-      0.684, Z = 6.85, p = 7.3e-12; denoised 6.6e-11), which the criterion calls partially
-      reproduced (one monkey). The per-bin centring gives offset above onset in both monkeys, as
-      before. The analysis is in the notebook's fig3d section.
 - claim: ed4e-rate-codes-distance-over-slope
   outcome: not_reproduced
   notebook: reproduce_neupane_2024.ipynb
@@ -496,7 +490,7 @@ findings:
     intercept, as the Methods write, or does the regression have a constant term per time point, as
     in the method cited (Mante et al. 2013)? On these data the first gives onset R2 above offset R2
     in monkey M (p = 7.3e-12) and the second offset above onset in both monkeys; this attempt
-    assumed the second.
+    takes the first as the main reading.
 verifications:
 - date: '2026-10-31'
   kind: agent
@@ -926,3 +920,34 @@ verifications:
     reason: Agrees. Its monkey side remains computable.
     response: Not run in this revision; the model side needs a simulation not yet run, and a new
       attempt would take it up with fig4b and ed6d.
+- date: '2026-11-01'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. Only the proposed change of outcome for fig3d-offset-coding-stronger and the
+    analysis behind it in the full executed notebook of the author-revise-2 run (commit 45d630444),
+    cells 40 to 42, with the claims file, the paper's Methods and the attempt record. Nothing else was
+    reviewed. Report in transcripts/000897/verifier-3-report.md.
+  results:
+  - claim: fig3d-offset-coding-stronger
+    agrees: true
+    outcome: partially_reproduced
+    reason: The Methods state the centring, "We first centred the responses of each neuron by
+      subtracting its mean response across the two windows of interest before joystick onset and
+      offset", and regress without an intercept, and the claims file reads the Methods first. Cell 41
+      follows them under centring "windows" (one mean per unit over both windows from the training
+      trials, no intercept, axis at the bin of largest norm, R2 on distances 1 to 5, 50 resamples,
+      two-sided rank-sum), and the values in the proposal match its output. Monkey A meets the
+      criterion under every centring and denoising reading; monkey M reverses under the main reading
+      with and without denoising, and only the per-bin variant meets it in M, which gives partially
+      reproduced. The distances 2 to 5 rows fall outside the criterion's distances 1 to 5. The change
+      moves to a less favourable outcome on the Methods' explicit wording. Smaller points, none
+      changing the outcome. The assumed flag and the deviation text still describe per-bin centring
+      as adopted and should be updated. The criterion's variant with the code's windows (-200 to -100
+      ms and -400 to -300 ms on time-warped bins) is not run. The bin of largest norm is found in each
+      window separately, which the Methods leave open.
+    response: Outcome changed to partially_reproduced and the proposal removed. The assumed flag is
+      removed, since the main reading is now the Methods' stated centring; the notes and deviations
+      give the Methods' centring as the main reading and per-bin centring as a variant, and the
+      deviations now state that the code's windows were not run and that the bin of largest norm is
+      found per window. The finding for the authors, the conclusion in cell 42, the summary and the
+      README updated.
